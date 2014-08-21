@@ -1,0 +1,139 @@
+/* ====================================
+   The footer at the bottom of the site
+   ==================================== */
+  
+footer.site-footer {
+  background-color: @footer-color;
+  position: relative;
+  z-index: 100;
+  box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.25);
+  padding: 0 20px;
+  overflow: auto;
+}
+
+.footer-col {
+  float: left;
+  margin-top: 80px;
+  margin-bottom: 80px;
+  margin-right: 5%;
+  min-height: 50px;
+  width: 30%;
+  -webkit-font-smoothing: antialiased;
+  text-align: center;
+
+  &:nth-child(3) {
+    margin-right: 0;
+  }
+
+  .centered {
+    width: 200px;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      font-size: 18px;
+      font-weight:300;
+      line-height: 2;
+      color: #efefef;
+
+      a {
+        color: #CCDEE3;
+        text-decoration: none;
+
+        &:hover {
+          color: #ffffff;
+        }
+      }
+    }
+  }
+
+  h5 {
+    line-height: 2;
+    margin-top: 8%;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+  }
+}
+
+.copyright-wrapper {
+  margin-top: 40px;
+}
+
+.copyright {
+    display: block;
+    font-weight: 300;
+    font-size: 16px;
+    color: #efefef;
+    margin-top: 30px;
+    margin-left: 0;
+
+    a {
+      text-decoration: none;
+      color: #efefef;
+
+      &:hover {
+        color: #ffffff;
+      }
+    }
+  }
+
+.copyright-bottom {
+    display: none;
+}
+
+@media (max-width: 860px) {
+	.footer-col > .png-cp-logo {
+		width: 200px;
+		margin-left: -11px;
+	}
+	
+	.footer-col {
+		float: none;
+		font-size: 16px;
+		width: 100%;
+		margin: 0;
+		text-align: center;
+		
+		&.one {
+			display: none;
+		}
+
+		&.two, &.three {
+			margin-top: 40px;
+		}
+
+		&.three {
+		  width: 100%;
+		}
+		
+		&:last-child {
+			width: 100%;
+			margin-bottom: 40px;
+		}
+		
+		h5 {
+			margin-top: 20px;
+		}
+	}
+
+	.copyright-bottom {
+		display: block;
+		position: relative;
+		margin-top: 40px;
+		
+		img {
+			width: 100px;
+		}
+		
+		.copyright {
+			margin-top: 40px;
+			font-size: 18px;
+			text-align: center;
+		}
+	}
+}

@@ -1,0 +1,101 @@
+<div class="header-wrapper">
+  <header class="site-header">
+    <div class="header-logo">
+      <h1>
+        <a href="/">{{ site_globals.logo|default:"Tethys" }}</a>
+      </h1>
+    </div>
+
+    {% block header_nav %}
+    <ul class="header-nav">
+      {% block header_nav_items %}
+        <li><a href="/" title="Apps">Apps</a></li>
+        <li><a href="/" title="Community">Community</a></li>
+      {% endblock %}
+
+      {% if user.is_authenticated and user.is_active %}
+
+        <li class="user-dropdown">
+          <div class="user-profile-nav-item">
+            <a id="user-profile" class="user-profile" href="" class="image" title="User Profile"><span>{{ user.username|default:"Username" }}</span></a>
+            <a id="user-dropdown-toggle" class="user-dropdown-toggle" title="User Menu" href="javascript:void(0);" onclick="toggle_menu('#user-profile', this, '#user-dropdown-menu');"><span class="glyphicon glyphicon-chevron-down"></span></a>
+          </div>
+          <ul id="user-dropdown-menu" class="user-dropdown-menu">
+            <li>
+              <a href="" title="User Settings">
+                <span class="glyphicon glyphicon-user"></span><span>    Settings</span>
+              </a>
+            </li>
+
+            {% if user.is_staff %}
+              <li class="separator"></li>
+              <li>
+                <a href="" title="System Admin Settings">
+                  <span class="glyphicon glyphicon-cog"></span><span>   Admin</span>
+                </a>
+              </li>
+            {% endif %}
+
+            <li class="separator"></li>
+            <li>
+              <a href="" title="Log Out">
+                <span class="glyphicon glyphicon-log-out"></span><span>   Log Out</span>
+              </a>
+            </li>
+          </ul> {# END user-dropdown-menu #}
+        </li> {# END user-dropdown #}
+
+      {% else %}
+
+        <li class="action header-action"><a href="" title="Log In">Log In</a></li>
+
+      {% endif %}
+
+    </ul>
+    {% endblock %}
+
+    {# Mobile site navigation #}
+    {% block mobile_nav %}
+      <div class="mobile-nav mobile-nav-links">
+        <ul>
+          {% block mobile_nav_items %}
+            <li><a href="/" title="Apps">Apps</a></li>
+            <li><a href="/" title="Community">Community</a></li>
+          {% endblock %}
+        </ul>
+      </div>
+    {% endblock %}
+
+    {# Mobile user navigation #}
+    {% block mobile_user_nav %}
+      {% if user.is_authenticated and user.is_active %}
+      <div class="mobile-nav mobile-user-links">
+        <ul>
+          {% block mobile_user_nav_items %}
+            <li>
+              <a href="" title="User Settings">
+                <span>Settings</span>
+              </a>
+            </li>
+          {% endblock %}
+
+          {% if user.is_staff %}
+            <li>
+              <a href="" title="System Admin Settings">
+                <span>Admin</span>
+              </a>
+            </li>
+          {% endif %}
+
+          <li>
+            <a href="" title="Log Out">
+              <span>Log Out</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      {% endif %}
+    {% endblock %}
+  </header>
+</div>
+<div class="clear-header"></div>
