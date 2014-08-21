@@ -1,0 +1,31 @@
+#site-wrapper {
+  /* equal to footer height */
+  margin-bottom: -1 * @footer-height;
+  min-height: 100%;
+  padding-top: @header-height;
+
+  &:after {
+    content: "";
+    display: block;
+  }
+}
+
+#site-footer, #site-wrapper:after {
+  /* .push must be the same height as footer */
+  height: @footer-height;
+}
+
+@media (max-width: 860px) {
+
+  #site-wrapper {
+    margin-bottom: -1 * @footer-mobile-height;
+  }
+
+  #site-footer, #site-wrapper:after {
+    /* .push must be the same height as footer */
+    height: @footer-mobile-height;
+  }
+
+}
+
+
