@@ -13,7 +13,7 @@
   {% endblock %}
 
   {# Use wrapper_class to add classes to the content wrapper element #}
-  <div class="wrapper {% block wrapper_class %}{% endblock %}">
+  <div id="site-wrapper" class="wrapper{% block wrapper_class %}{% endblock %}">
     {% block flash %}
       <div class="flash-messages">
         {% comment "flash_messages explanation" %}
