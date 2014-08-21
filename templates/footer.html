@@ -1,0 +1,36 @@
+{% load staticfiles %}
+
+<footer class="site-footer">
+    {% block footer_content %}
+        <div class="footer-col one">
+            <div class="copyright-wrapper">
+                <img class="nsf-logo" src="{% static 'tethys_site/images/nsf1.gif' %}" alt="National Science Foundation Logo" title="National Science Foundation Logo" />
+                <span class="copyright">Copyright © 2014 <a href="http://ci-water.org" target="_blank">CI-Water</a></span>
+            </div>
+        </div>
+        <div class="footer-col two">
+            <h5>Participants</h5>
+            <ul>
+                <li><a href="http://home.byu.edu/" target="_blank">Brigham Young University</a></li>
+                <li><a href="http://www.utah.edu/" target="_blank">University of Utah</a></li>
+                <li><a href="http://www.uwyo.edu/" target="_blank">University of Wyoming</a></li>
+                <li><a href="http://www.usu.edu/" target="_blank">Utah State University</a></li>
+                <li><a href="http://www.uen.org/" target="_blank">Utah Education Network</a></li>
+                <li><a href="http://utepscor.org/" target="_blank">EPSCoR Utah</a></li>
+                <li><a href="http://www.uwyo.edu/epscor/" target="_blank">EPSCoR Wyoming</a></li>
+            </ul>
+        </div>
+        <div class="footer-col three">
+            <h5>Connect</h5>
+            <ul>
+                <li><a href="http://www.facebook.com/pages/CI-WATER/345859345485160" target="_blank">Facebook</a></li>
+                <li><a href="https://twitter.com/CIWATER" target="_blank">Twitter</a></li>
+                <li><a href="http://www.youtube.com/user/ciwaterepscor" target="_blank">YouTube</a></li>
+            </ul>
+        </div>
+        <div class="footer-col copyright-bottom">
+                <img class="nsf-logo" src="{% static 'tethys_site/images/nsf1.gif' %}" alt="National Science Foundation Logo" title="National Science Foundation Logo" />
+            <span class="copyright">Copyright © 2014 <a href="http://ci-water.org" target="_blank">CI-Water</a></span>
+            </div>
+    {% endblock %}
+</footer>
