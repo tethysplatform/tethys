@@ -1,0 +1,377 @@
+/* ===========================================
+   Hero Section
+   =========================================== */
+  
+.hero {
+    position: relative;
+    width: 100%;
+    height: 450px;
+    padding: 0px;
+    background: none;
+  	overflow: visible;
+}
+
+.hero .bucket {
+  overflow: visible;
+}
+
+.hero-background {
+  position: fixed;
+  width: 100%;
+  height: 500px;
+  /*background-image: url(images/textures/water-paint-2.jpg);*/
+  background: white;
+  background-position: center;
+  background-size:100%;
+  -webkit-transform: scaleX(-1);
+     -moz-transform: scaleX(-1);
+       -o-transform: scaleX(-1);
+      -ms-filter: "FlipH";
+  transform: scaleX(-1);
+  filter: FlipH;
+}
+
+.float-image {
+  position: fixed;
+  left: -100px;
+  top: 168px;
+  width: 900px;
+  max-width: none;
+}
+
+.hero-message {
+  position: absolute;
+  right: 0;
+  top: 125px;
+}
+
+.hero-message h2 {
+  font-size: 33px;
+  white-space: pre;
+  text-align: center;
+}
+
+.hero-message a {
+  color: #666;
+  background-color:#ddd;
+}
+
+.hero-message a:hover {
+  background-color: @highlight-color;
+  color: white;
+}
+
+@media (max-width: 1050px) {
+	.float-image {
+		top: 200px;
+		left: -100px;
+		width: 750px;
+	}
+}
+
+@media (max-width: 930px) {
+	.float-image {
+		width: 700px;
+		top: 200px;
+		left: -120px;
+	}
+}
+
+@media (max-width: 810px) {
+	.float-image {
+		width: 600px;
+		top: 200px;
+		left: -140px;
+	}
+}
+
+@media (max-width: 700px) {
+	.float-image {
+		display: none;
+	}
+	
+	.hero {
+		height: auto;
+		margin-bottom: 60px;
+	}
+	
+	.hero-message {
+		position: static;
+		padding: 60px 40px;
+		
+		h2 {
+			white-space: normal;
+		}
+	}
+}
+
+  
+/* ===========================================
+   Blurb Secton
+   =========================================== */ 
+
+.blurb {
+  position: relative;
+  max-height: 200px;
+  z-index: 100;
+  background-color: @blurb-background-color;
+  box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.25);
+}
+
+.blurb h3 {
+  display: block;
+  color: @blurb-text-color;
+  padding: 50px 0;
+  white-space: pre;
+  text-align: center;
+}
+
+@media (max-width: 1024px) {
+	.blurb {
+		height: auto;
+		
+		h3 {
+			white-space: normal;
+		}
+	}
+}
+
+@media (max-width: 700px) {
+	.blurb h3 {
+		padding: 40px 0;
+		font-size: 18px;
+		line-height: 1.4;
+	}
+}
+  
+  
+/* ===========================================
+   Carousel Section
+   =========================================== */
+
+.feature-slide {
+  position: relative;
+  height: 800px;
+  z-index: 100;
+  background-color: #f2f2f2;
+}
+
+/* ===========================================
+   Features Section
+   =========================================== */
+
+.features {
+  position: relative;
+  z-index: 200;
+  box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.25);
+  background-color: #fff;
+}
+
+.features .feature {
+  position: relative;
+  width: 30%;
+  margin-right: 5%;
+  padding: 80px 0;
+  float: left;
+}
+
+.features .feature:last-child {
+  margin-right: 0;
+}
+
+.features .feature img {
+  position: absolute;
+  width: 75%;
+  left: 12.5%;
+  border-radius: 50%;
+}
+
+.features .feature h4 {
+  margin-top: 90%;
+  text-align: center;
+}
+
+.features .feature span {
+  font-size: 18px;
+  font-weight: 200;
+  color: #666666;
+  text-align: center;
+  margin-top: 1em;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (max-width: 1050px) {
+	.features {
+		.feature span {
+			font-size: 16px;
+			line-height: 1.4;
+		}
+	}
+}
+
+@media (max-width: 700px) {
+	.features {
+		padding: 80px 40px;
+		max-height: none;
+		
+		.feature {
+			overflow: auto;
+			float: none;
+			width: 100%;
+			padding: 0;
+			margin-bottom: 10%;
+			
+			&:last-child {
+				margin-bottom: 0;
+			}
+			
+			img {
+				width: 50%;
+				/*padding-bottom: 35%;*/
+				left: 25%;
+			}
+			
+			h4 {
+				margin-top: 55%;
+			}
+			
+			span {
+				display: block;
+				padding: 0 20%;
+			}
+		}
+	}
+}
+
+@media (max-width: 400px) {
+	.features {
+		padding: 60px 40px;
+		
+		.feature {
+			margin-bottom: 15%;
+			
+			img {
+				width: 70%;
+				/*padding-bottom: 70%;*/
+				left: 15%;
+			}
+			
+			h4 {
+				margin-top: 80%;
+			}
+			
+			span {
+				padding: 0 10%;
+			}
+		}
+	} 
+}
+
+  
+/* ===========================================
+   Testimonial Section
+   =========================================== */
+  
+.testimonial {
+  position: relative;
+  z-index: 100;
+  box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.25);
+  background-color: #f2f2f2;
+}
+
+.testimonial h2 {
+  margin-top: 80px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.testimonial h3 {
+  white-space: pre;
+  margin-bottom: 80px;
+  text-align: center;
+}
+
+@media (max-width: 1100px) {
+	.testimonial h3 {
+		white-space: normal;
+	}
+}
+@media (max-width: 1050px) {
+	.testimonial h3 {
+		font-size: 18px;
+		line-height: 1.4;
+	}
+}
+@media (max-width: 700px) {
+	.testimonial h2 {
+		margin-top: 60px;
+	}
+	.testimonial h3 {
+		margin-bottom: 60px;
+	}
+}
+  
+/* ===========================================
+   Get Started Section
+   =========================================== */  
+  
+.get-started {
+  height: 300px;
+  max-height: 300px;
+  overflow: auto;
+}
+
+.get-started .bucket {
+  overflow: visible;
+}
+
+.get-started-background {
+  display: none;
+  background-image: url(/images/textures/Pepsized_Blur/Pepsized_Blur_01.jpg);
+  background-position: center;
+  background-size: cover;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  z-index: 0;
+  height: 1000px;
+  padding: 0 40px;
+  left: -40px;
+}
+
+.get-started .get-started-message {
+  position: absolute;
+  width: 100%;
+  top: 67px;
+}
+
+.get-started .get-started-message h2 {
+  color: #fff;
+  font-size: 33px;
+  text-align: center;
+}
+
+.get-started .hero-action {
+  width: 300px;
+  margin-left: -150px;
+  cursor: pointer;
+}
+
+@media (max-width: 860px) {
+	.get-started-background {
+		height: 780px;
+	}
+}
+
+@media (max-width: 515px) {
+	.get-started .get-started-message {
+		top: 50px;
+	}
+}
+@media (max-width: 340px) {
+	.get-started .get-started-message {
+		position: static;
+		margin-top: 50px;
+	}
+}

@@ -1,0 +1,144 @@
+/* ===========================================
+   General and Typography
+   =========================================== */
+
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 10px 0;
+    font-family: inherit;
+    font-weight: bold;
+    line-height: 20px;
+    color: inherit;
+    text-rendering: optimizelegibility;
+}
+
+h1, h2, h3, h4 {
+    line-height: 1.5;
+}
+
+
+h1 {
+	font-size: 28px;
+	display: block;
+}
+
+h2 {
+  font-size: 36px;
+  line-height: 52px;
+  font-weight: 200;
+  -webkit-font-smoothing: antialiased;
+  // text-align: center;
+  color: #666;
+}
+
+h3 {
+  font-size: 24px;
+  line-height: 36px;
+  font-weight: 200;
+  -webkit-font-smoothing: antialiased;
+  // text-align: center;
+  color: #666;
+}
+
+h4 {
+  font-size: 21px;
+  font-weight: 400;
+  color: #666;
+}
+
+h5 {
+	
+}
+@media (max-width: 1050px) {
+  h2 {
+    font-size: 28px;
+    line-height: 1.4;
+  }
+}
+@media (max-width: 700px) {
+  h2 {
+    font-size: 24px;
+    line-height: 1.4;
+  }
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  position: relative;
+  font-family: 'open sans', 'Myriad Pro', 'Lucida Grande', 'Helvetica', sans-serif;
+  background: #eeeeee url("../../../base/images/bg.png");
+  height: 100%;
+}
+
+section {
+  padding: 0 40px;
+}
+
+.bucket {
+  position: relative;
+  max-width: 1150px;
+  margin: 0 auto;
+  overflow: auto;
+}
+
+a.action {
+  border-radius: 5px;
+} 
+
+a:-webkit-any-link {
+  text-decoration: none;
+  cursor:auto;
+}
+
+#site-wrapper {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -496px; /* Footer height */
+}
+
+// #push, footer.site-footer {
+  // height: @footer-height;
+// }
+
+@media(max-width: 860px) {
+	#site-wrapper {
+		margin: 0 auto -@footer-height;
+	}
+	
+	// #push, footer.site-footer {
+		// height: @footer-height;
+	// }
+}
+
+a {
+	color: @link-color;
+	
+	&:hover {
+		color: @link-hover-color;
+	}
+}
+
+/* This parent can be any width and height */
+.center-parent {
+  text-align: center;
+
+  /* The ghost, nudged to maintain perfect centering */
+  &:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    margin-right: -0.25em; /* Adjusts for spacing */
+  }
+}
+
+/* The element to be centered, can also be of any width and height */
+.centered {
+  display: inline-block;
+  vertical-align: middle;
+  width: 200px;
+}

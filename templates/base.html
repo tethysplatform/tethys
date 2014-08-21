@@ -1,0 +1,112 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+
+{# Allows custom attributes to be added to the html tag #}
+{% block htmltag %}
+<!--[if IE 7]> <html lang="en" class="ie ie7"> <![endif]-->
+<!--[if IE 8]> <html lang="en"  class="ie ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en"  class="ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" > <!--<![endif]-->
+{% endblock %}
+
+  {# Allows custom attributes to be added to the head tag #}
+  <head {% block headtag %}{% endblock %}>
+
+    {% comment "meta explanation" %}
+      Add custom meta tags to the page. Call block.super to get the default tags
+      such as charset, viewport and generator.
+
+      Example:
+
+      {% block meta %}
+        {{ block.super }}
+        <meta name="description" value="My website description" />
+      {% endblock %}
+    {% endcomment %}
+
+    {% block meta %}
+      <meta charset="utf-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="generator" content="Django" />
+    {% endblock %}
+
+    {% comment "title explanation" %}
+      Add a custom title to the page by extending the title block. Call block.super
+      to get the default page title.
+
+      Example:
+
+        {% block title %}My Subtitle - {{ block.super }}{% endblock %}
+    {% endcomment %}
+
+    <title>
+      {% block title %}
+        {% if site_globals.site_title %}{{ site_globals.site_title }}{% else %}Tethys{% endif %}
+      {% endblock %}
+    </title>
+
+    {% comment "links explanation" %}
+      The links block allows you to add additional content before the stylesheets
+      such as rss feeds and favicons in the same way as the meta block.
+    {% endcomment %}
+
+    {% block links %}
+      {% if site_globals.favicon %}<link rel="shortcut icon" href="{{ site_globals.favicon }}" />{% endif %}
+    {% endblock %}
+
+    {% comment "styles explanation" %}
+      The styles block allows you to add additional stylesheets to the page in
+      the same way as the meta block. Use block.super to include the default
+      stylesheets before or after your own.
+
+      Example:
+
+        {% block styles %}
+          {{ block.super }}
+          <link href="{% static 'custom/css/foo.css' %}" rel="stylesheet" />
+        {% endblock %}
+    {% endcomment %}
+
+    {% block styles %}
+      <link href="{% static 'tethys_site/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
+      <link href="{% static 'tethys_site/css/tethys_main.css' %}"  rel="stylesheet" />
+    {% endblock %}
+  </head>
+
+  {# Allows custom attributes to be added to the body tag #}
+  <body {% block bodytag %}{% endblock %}>
+
+    {% comment "page explanation" %}
+      The page block allows you to add content to the page. Most of the time it is
+      recommended that you extend one of the page.html templates in order to get
+      the site header and footer. If you need a clean page then this is the
+      block to use.
+
+      Example:
+
+        {% block page %}
+          <div>Some other page content</div>
+        {% endblock %}
+    {% endcomment %}
+
+    {% block page %}{% endblock %}
+
+    {% comment "scripts explanation" %}
+      Use this block for adding scripts. Call with block.super to include the default
+      scripts.
+
+      Example:
+        {% block scripts %}
+          {{ block.super }}
+          <script type="text/javascript" src="{% static 'custom/js/bar.css' %}"></script>
+        {% endblock %}
+    {% endcomment %}
+
+    {% block scripts %}
+      <script src="{% static 'tethys_site/vendor/jquery/jquery.min.js' %}" type="text/javascript"></script>
+      <script src="{% static 'tethys_site/vendor/bootstrap/js/bootstrap.min.js' %}" type="text/javascript"></script>
+      <script src="{% static 'tethys_site/js/tethys_main.js' %}" type="text/javascript"></script>
+    {% endblock %}
+  </body>
+</html>
