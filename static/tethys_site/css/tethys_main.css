@@ -137,19 +137,6 @@ a:-webkit-any-link {
   text-decoration: none;
   cursor: auto;
 }
-#site-wrapper {
-  min-height: 100%;
-  height: auto !important;
-  height: 100%;
-  margin: 0 auto -496px;
-  /* Footer height */
-
-}
-@media (max-width: 860px) {
-  #site-wrapper {
-    margin: 0 auto -800px;
-  }
-}
 a {
   color: #2ca6ed;
 }
@@ -176,6 +163,34 @@ a:hover {
   display: inline-block;
   vertical-align: middle;
   width: 200px;
+}
+#site-wrapper {
+  /* equal to footer height */
+
+  margin-bottom: -500px;
+  min-height: 100%;
+  padding-top: 80px;
+}
+#site-wrapper:after {
+  content: "";
+  display: block;
+}
+#site-footer,
+#site-wrapper:after {
+  /* .push must be the same height as footer */
+
+  height: 500px;
+}
+@media (max-width: 860px) {
+  #site-wrapper {
+    margin-bottom: -800px;
+  }
+  #site-footer,
+  #site-wrapper:after {
+    /* .push must be the same height as footer */
+  
+    height: 800px;
+  }
 }
 /* ===========================================
    Buttons
