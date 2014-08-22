@@ -1,5 +1,70 @@
 {% extends "page.html" %}
 
-{% block primary_content %}
+{% load staticfiles %}
 
+{% block content %}
+<section class="hero clearfix">
+	<div class="hero-background"></div>
+	<div class="bucket clearfix">
+		<img class="float-image wave" src="{% static 'tethys_site/images/water-curl-wave.png' %}" style="margin-top: 0px;">
+		<img class="float-image drops" src="{% static 'tethys_site/images/water-curl-drops.png' %}" style="margin-top: 0px;">
+		<div class="hero-message" style="margin-top: 0px;">
+			<h2>Water resources modeling
+for the 21st century</h2>
+			{% if not c.userobj %}
+			<a href="/" class="action hero-action">Sign Up</a>
+			{% endif %}
+		</div>
+	</div>
+</section>
+
+<section class="blurb clearfix">
+	<div class="bucket clearfix">
+		<h3>Welcome to Tethys—designed from the ground up to be fast, efficient, and
+easy to use. Data, modeling, and high performance computing that is easy to use.</h3>
+	</div>
+</section>
+
+<section class="features clearfix">
+	<div class="bucket clearfix">
+		<div class="feature one">
+			<img src="http://placehold.it/250x250" alt="">
+			<h4>Data and Model Publishing</h4>
+			<span>Publish your data and models with Tethys to make sharing and collaborating a piece of cake</span>
+		</div>
+		<div class="feature two">
+			<img src="http://placehold.it/250x250" alt="">
+			<h4>Cloud Analysis</h4>
+			<span>Need more coputing power? Use Tethys to run your analysis in the cloud</span>
+		</div>
+		<div class="feature three">
+			<img src="http://placehold.it/250x250" alt="">
+			<h4>Tethys App SDK</h4>
+			<span>Build custom apps for your models and data to provide the analysis that is right for you</span>
+		</div>
+	</div>
+</section>
+
+<section class="testimonial">
+	<div class="bucket">
+		<h2>Simple scenario exploration.</h2>
+		<h3>Water resources models can be very powerful tools to use during critical decision
+making, but it often takes an expert to change a model to a new scenario. The
+Tethys team has worked hard to distill the most common scenario
+exploration exercises into easy-to-use workflows and apps.
+		</div>
+</section>
+
+<section class="get-started clearfix">
+	<div class="get-started-background"></div>
+	<div class="bucket clearfix">
+		<div class="get-started-message">
+			{% if not c.userobj %}
+			<h2>Ready to get started?</h2>
+			<a class="action hero-action" href="">Start Using Tethys!</a>
+			{% endif %}
+		</div>
+	</div>
+</section>
+<div id="home-page" style="display: none;"></div>
 {% endblock %}

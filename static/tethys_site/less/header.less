@@ -22,6 +22,8 @@
 
 .site-header {
     display: block;
+    width: 100%;
+    height: @header-height;
 
     a {
         color: #ffffff;
@@ -270,7 +272,7 @@
 	}
 	
 	&.in {
-		top: 80px;
+		top: @header-height - 1px;
 	}
 }
 
@@ -278,74 +280,62 @@
 	display: none;
 }
 
-@media (max-width: 1250px) {
-	.masthead {
-		padding: 0 5%;
-	}
-}
+@media (max-width: 700px) {
 
-@media (max-width: 1080px) {
-	
-	.masthead {
-		padding: 0 5%;
-		
-		.header-nav {
-			display: none;
-		}
-		
-	}
+  .header-nav {
+      display: none;
+  }
 	
 	
-	.mobile-nav-button {
-		display: block;
-		height: 20px;
-		width: 25px;
-		float: right;
-		padding: 10px;
-		padding-bottom: 6px;
-		margin-top: 20px;
-		margin-left: 10px;
-		border-radius: 5px;
-		
-		&:hover {
-			background-color: @header-color - #333;
-		}
-		
-		div {
-			height: 3px;
-			background-color: #fff;
-			margin-bottom: 4px;
-			border-radius: 4px;
-			
-			&:last-child {
-				margin-bottom: 0;
-			}
-		}
-		
-		
-		
-		&.mobile-user {
-			position:relative;
-			// background-color: black;
-			
-			&:hover {
-				color: white;
-				text-decoration: none;
-			}
-			
-			i {
-				position: absolute;
-				top: 8px;
-				left: 14px;
-				font-size: 22px;
-				
-				&:hover {
-					color: white;
-					text-decoration: none;
-			}
-		}
-		}
-	}
+  .mobile-nav-button {
+      display: block;
+      float: right;
+      height: 40px;
+      width: 45px;
+      padding: 10px;
+      padding-bottom: 6px;
+      margin-top: 20px;
+      margin-left: 10px;
+      margin-right: 20px;
+      border-radius: 5px;
+
+      &:hover {
+          background-color: @header-color - #333;
+      }
+
+      div {
+          height: 3px;
+          background-color: #fff;
+          margin-bottom: 5px;
+          border-radius: 4px;
+
+          &:last-child {
+              margin-bottom: 0;
+          }
+      }
+
+      &.mobile-user {
+          position:relative;
+          margin-right: 10px;
+
+          &:hover {
+              color: white;
+              text-decoration: none;
+          }
+
+          .glyphicon {
+              position: absolute;
+              top: 8px;
+              left: 11px;
+              font-size: 22px;
+
+              &:hover {
+                  color: white;
+                  text-decoration: none;
+              }
+          }
+      }
+  }
 }
 
 
