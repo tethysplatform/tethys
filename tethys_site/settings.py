@@ -36,8 +36,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_gravatar',
     'tethys_apps',
-    'tethys_fragments',
+    'tethys_gizmos',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -85,3 +86,12 @@ STATIC_URL = '/static/'
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates'), ]
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
+
+# Gravatar Settings
+GRAVATAR_URL = 'http://www.gravatar.com/'
+GRAVATAR_SECURE_URL = 'https://secure.gravatar.com/'
+GRAVATAR_DEFAULT_SIZE = '80'
+GRAVATAR_DEFAULT_IMAGE = 'retro'
+GRAVATAR_DEFAULT_RATING = 'g'
+GRAVATAR_DFFAULT_SECURE = True
+
