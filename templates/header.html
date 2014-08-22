@@ -1,3 +1,48 @@
+{% load gravatar %}
+
+{# Mobile site navigation #}
+{% block mobile_nav %}
+  <div class="mobile-nav mobile-nav-links">
+    <ul>
+      {% block mobile_nav_items %}
+        <li><a href="/" title="Apps">Apps</a></li>
+        <li><a href="/" title="Community">Community</a></li>
+      {% endblock %}
+    </ul>
+  </div>
+{% endblock %}
+
+{# Mobile user navigation #}
+{% block mobile_user_nav %}
+  {% if user.is_authenticated and user.is_active %}
+  <div class="mobile-nav mobile-user-links">
+    <ul>
+      {% block mobile_user_nav_items %}
+        <li>
+          <a href="" title="User Settings">
+            <span>Settings</span>
+          </a>
+        </li>
+      {% endblock %}
+
+      {% if user.is_staff %}
+        <li>
+          <a href="" title="System Admin Settings">
+            <span>Admin</span>
+          </a>
+        </li>
+      {% endif %}
+
+      <li>
+        <a href="" title="Log Out">
+          <span>Log Out</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+  {% endif %}
+{% endblock %}
+
 <div class="header-wrapper">
   <header class="site-header">
     <div class="header-logo">
@@ -18,7 +63,7 @@
 
         <li class="user-dropdown">
           <div class="user-profile-nav-item">
-            <a id="user-profile" class="user-profile" href="" class="image" title="User Profile"><span>{{ user.username|default:"Username" }}</span></a>
+            <a id="user-profile" class="user-profile" href="" class="image" title="User Profile"><span>{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}  {% gravatar user.email 25 %}</span></a>
             <a id="user-dropdown-toggle" class="user-dropdown-toggle" title="User Menu" href="javascript:void(0);" onclick="toggle_menu('#user-profile', this, '#user-dropdown-menu');"><span class="glyphicon glyphicon-chevron-down"></span></a>
           </div>
           <ul id="user-dropdown-menu" class="user-dropdown-menu">
@@ -55,47 +100,14 @@
     </ul>
     {% endblock %}
 
-    {# Mobile site navigation #}
-    {% block mobile_nav %}
-      <div class="mobile-nav mobile-nav-links">
-        <ul>
-          {% block mobile_nav_items %}
-            <li><a href="/" title="Apps">Apps</a></li>
-            <li><a href="/" title="Community">Community</a></li>
-          {% endblock %}
-        </ul>
-      </div>
-    {% endblock %}
-
-    {# Mobile user navigation #}
-    {% block mobile_user_nav %}
-      {% if user.is_authenticated and user.is_active %}
-      <div class="mobile-nav mobile-user-links">
-        <ul>
-          {% block mobile_user_nav_items %}
-            <li>
-              <a href="" title="User Settings">
-                <span>Settings</span>
-              </a>
-            </li>
-          {% endblock %}
-
-          {% if user.is_staff %}
-            <li>
-              <a href="" title="System Admin Settings">
-                <span>Admin</span>
-              </a>
-            </li>
-          {% endif %}
-
-          <li>
-            <a href="" title="Log Out">
-              <span>Log Out</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-      {% endif %}
-    {% endblock %}
+    <a class="mobile-nav-button mobile-links">
+        <div></div>
+        <div></div>
+        <div></div>
+    </a>
+    {# If the user is not logged in, set the href to the login link #}
+    <a class="mobile-nav-button mobile-user" {% if not user %} href="" {% endif %}>
+        <span class="glyphicon glyphicon-user icon-white"></span>
+    </a>
   </header>
 </div>
