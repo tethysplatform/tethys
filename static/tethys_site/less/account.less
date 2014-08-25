@@ -1,0 +1,48 @@
+// Styles for the account login and register forms
+
+
+//Colors
+@account-form-header-background: #eeeeee;
+
+// Dimensions
+@account-form-padding-sides: 50px;
+@account-form-border-radius: 5px;
+
+.account-form-wrapper {
+  position: relative;
+  padding: @account-form-padding-sides;
+  margin: 50px 0;
+  background: #ffffff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+  //border-radius: @account-form-border-radius;
+
+  .account-form-header {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 0 @account-form-padding-sides;
+    background: @account-form-header-background;
+    //border-radius: @account-form-border-radius @account-form-border-radius 0 0;
+
+    h1 {
+      color: @default-header-text-color;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+    }
+  }
+
+  .account-form-body {
+    margin-top: 50px;
+  }
+}
+
+// Mobile styles
+@media(max-width: 992px) {
+
+  .account-form-wrapper {
+    margin: 0;
+  }
+
+}

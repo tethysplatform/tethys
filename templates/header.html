@@ -34,7 +34,7 @@
       {% endif %}
 
       <li>
-        <a href="" title="Log Out">
+        <a href="{% url 'logout' %}" title="Log Out">
           <span>Log Out</span>
         </a>
       </li>
@@ -54,9 +54,11 @@
     {% block header_nav %}
     <ul class="header-nav">
       {% block header_nav_items %}
-        <li><a href="/" title="Apps">Favorites</a></li>
-        <li><a href="/" title="Community">Apps</a></li>
-        <li><a href="/" title="Community">Datasets</a></li>
+        {% if user.is_authenticated and user.is_active %}
+          <li><a href="/" title="Apps">Favorites</a></li>
+          <li><a href="/" title="Community">Apps</a></li>
+          <li><a href="/" title="Community">Datasets</a></li>
+        {% endif %}
       {% endblock %}
 
       {% if user.is_authenticated and user.is_active %}
@@ -84,7 +86,7 @@
 
             <li class="separator"></li>
             <li>
-              <a href="" title="Log Out">
+              <a href="{% url 'logout' %}" title="Log Out">
                 <span class="glyphicon glyphicon-log-out"></span><span>   Log Out</span>
               </a>
             </li>
@@ -92,22 +94,24 @@
         </li> {# END user-dropdown #}
 
       {% else %}
-
-        <li class="action header-action"><a href="" title="Log In">Log In</a></li>
-
+        <li class="action header-action"><a href="{% url 'login' %}" title="Log In">Log In</a></li>
       {% endif %}
 
     </ul>
     {% endblock %}
 
-    <a class="mobile-nav-button mobile-links">
-        <div></div>
-        <div></div>
-        <div></div>
-    </a>
-    {# If the user is not logged in, set the href to the login link #}
-    <a class="mobile-nav-button mobile-user" {% if not user %} href="" {% endif %}>
-        <span class="glyphicon glyphicon-user icon-white"></span>
-    </a>
+    {% if user.is_authenticated and user.is_active %}
+      <a class="mobile-nav-button mobile-links">
+          <div></div>
+          <div></div>
+          <div></div>
+      </a>
+      {# If the user is not logged in, set the href to the login link #}
+      <a class="mobile-nav-button mobile-user">
+          <span class="glyphicon glyphicon-user icon-white"></span>
+      </a>
+    {% else %}
+      <a class="mobile-nav-button mobile-login" href="{% url 'login' %}" title="Log In">Log In</a>
+    {% endif %}
   </header>
 </div>

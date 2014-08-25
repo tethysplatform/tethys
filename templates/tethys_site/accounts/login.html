@@ -1,0 +1,23 @@
+{% extends "page.html" %}
+
+{% load bootstrap3 %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <div class="account-form-wrapper">
+        <div class="account-form-header">
+          <h1>Log In</h1>
+        </div>
+        <div class="account-form-body">
+          <form role="form" method="post">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button type="submit" id="login-submit" class="btn btn-default" name="login-submit">Login</button>
+            <span class="help-block">Don't have an account? <a href="{% url 'register' %}">Sign Up</a></span>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
