@@ -11,8 +11,8 @@
 		<div class="hero-message" style="margin-top: 0px;">
 			<h2>Water resources modeling
 for the 21st century</h2>
-			{% if not c.userobj %}
-			<a href="/" class="action hero-action">Sign Up</a>
+			{% if not user.is_authenticated %}
+			  <a href="{% url 'register' %}" class="action hero-action">Sign Up</a>
 			{% endif %}
 		</div>
 	</div>
@@ -59,9 +59,9 @@ exploration exercises into easy-to-use workflows and apps.
 	<div class="get-started-background"></div>
 	<div class="bucket clearfix">
 		<div class="get-started-message">
-			{% if not c.userobj %}
-			<h2>Ready to get started?</h2>
-			<a class="action hero-action" href="">Start Using Tethys!</a>
+			{% if not user.is_authenticated %}
+			  <h2>Ready to get started?</h2>
+			  <a class="action hero-action" href="{% url 'login' %}">Start Using Tethys!</a>
 			{% endif %}
 		</div>
 	</div>

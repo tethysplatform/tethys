@@ -10,6 +10,9 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
+from django.contrib.messages import constants as message_constants
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -37,6 +40,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_gravatar',
+    'social_auth',
+    'bootstrap3',
     'tethys_apps',
     'tethys_gizmos',
 )
@@ -48,6 +53,14 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.facebook.FacebookBackend',
+    'social_auth.backends.google.GoogleOAuthBackend',
+    'social_auth.backends.google.GoogleOAuth2Backend',
+    'social_auth.backends.google.GoogleBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 ROOT_URLCONF = 'tethys_site.urls'
@@ -87,6 +100,13 @@ STATIC_URL = '/static/'
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates'), ]
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 
+# Messaging settings
+MESSAGE_TAGS = {message_constants.DEBUG: 'alert-danger',
+                message_constants.INFO: 'alert-info',
+                message_constants.SUCCESS: 'alert-success',
+                message_constants.WARNING: 'alert-warning',
+                message_constants.ERROR: 'alert-danger',}
+
 # Gravatar Settings
 GRAVATAR_URL = 'http://www.gravatar.com/'
 GRAVATAR_SECURE_URL = 'https://secure.gravatar.com/'
@@ -95,3 +115,10 @@ GRAVATAR_DEFAULT_IMAGE = 'retro'
 GRAVATAR_DEFAULT_RATING = 'g'
 GRAVATAR_DFFAULT_SECURE = True
 
+# OAuth Keys
+FACEBOOK_APP_ID              = ''
+FACEBOOK_API_SECRET          = ''
+GOOGLE_CONSUMER_KEY          = ''
+GOOGLE_CONSUMER_SECRET       = ''
+GOOGLE_OAUTH2_CLIENT_ID      = ''
+GOOGLE_OAUTH2_CLIENT_SECRET  = ''
