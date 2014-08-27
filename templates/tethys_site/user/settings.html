@@ -1,3 +1,69 @@
-{% extends "page.html" %}
+{% extends "tethys_site/user/profile.html" %}
 
-<h1>User Settings</h1>
+{% load bootstrap3 %}
+
+{% block edit_button %}
+{% endblock %}
+
+{% block name_parameters %}
+  <div class="form-group">
+    <label for="id_first_name" class="control-label col-md-3">First Name:</label>
+    <div class="col-md-6">
+      {{ form.first_name }}
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="id_last_name" class="control-label col-md-3">Last Name:</label>
+    <div class="col-md-6">
+      {{ form.last_name }}
+    </div>
+  </div>
+{% endblock %}
+
+{% block credential_parameters %}
+  <div class="form-group">
+    <label class="col-md-3 control-label">Username: </label>
+    <div class="col-md-6">
+      <p class="form-control-static">{{ user.username }}</p>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-md-3 control-label">Password: </label>
+    <div class="col-md-6">
+      <p class="form-control-static"><a class="btn btn-default">Change Password</a></p>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block gravatar_parameters %}
+  <div class="form-group">
+    <label for="id_email" class="control-label col-md-3">Email:</label>
+    <div class="col-md-6">
+      {{ form.email }}
+    </div>
+  </div>
+{% endblock %}
+
+
+{% block profile_sections %}
+  <form role="form" class="form-horizontal" method="post">
+    {% csrf_token %}
+    {{ block.super }}
+    <div class="profile-section last">
+      <div id="settings-buttons" class="row">
+        <div class="col-md-12">
+          <div class="btn-toolbar pull-right" role="toolbar">
+            <div class="btn-group">
+              <a href="{% url 'user:profile' username=user.username %}" class="btn btn-default btn-lg">Cancel</a>
+            </div>
+            <div class="btn-group">
+              <button type="submit" id="user-settings-submit" class="btn btn-success btn-lg" name="user-settings-submit">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endblock %}
+

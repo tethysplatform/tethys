@@ -3,73 +3,93 @@
 {% load gravatar %}
 
 {% block primary_content %}
-  <div class="profile-header">
-    <div class="row">
-      <div class="col-md-3 col-md-offset-2">
-        <div class="profile-image-wrapper">
-          {% gravatar user.email 250 %}
+  {% block profile_header %}
+    <div class="profile-header">
+      <div class="row">
+        <div class="col-md-3 col-md-offset-2">
+          <div class="profile-image-wrapper">
+            {% gravatar user.email 250 %}
+          </div>
+        </div>
+        <div class="col-md-7">
+          <span class="profile-name">{% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}</span>
         </div>
       </div>
-      <div class="col-md-7">
-        <span class="profile-name">{% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}</span>
-      </div>
     </div>
-  </div>
+  {% endblock %}
 
-  <div class="profile-section first">
+  {% block edit_button %}
     <div class="row">
-      <div class="col-md-2 col-md-offset-2 profile-section-header">
-        <h3>Name</h3>
-      </div>
-      <div class="col-md-8 profile-parameters">
-        <ul>
-          <li><span class="parameter">First Name:</span><span class="value">{{ user.first_name|default:"Not Given" }}</span></li>
-          <li><span class="parameter">Last Name:</span><span class="value">{{ user.last_name|default:"Not Given" }}</span></li>
-        </ul>
+      <div class="col-md-12">
+        <div class="profile-edit-button">
+          <a href="{% url 'user:settings' username=user.username %}" class="btn btn-default btn-lg">Edit</a>
+        </div>
       </div>
     </div>
-  </div>
+  {% endblock %}
 
-  <div class="profile-section">
-    <div class="row">
-      <div class="col-md-2 col-md-offset-2 profile-section-header">
-        <h3>Credentials</h3>
-      </div>
-      <div class="col-md-8 profile-parameters">
-        <ul>
-          <li><span class="parameter">Username:</span><span class="value">{{ user.username }}</span></li>
-          <li><span class="parameter">Password:</span><span class="value">********</span></li>
-        </ul>
+  {% block profile_sections %}
+    <div class="profile-section first">
+      <div class="row">
+        <div class="col-md-2 col-md-offset-2 profile-section-header">
+          <h3>Name</h3>
+        </div>
+        <div class="col-md-8 profile-parameters">
+          {% block name_parameters %}
+          <ul>
+            <li><span class="parameter">First Name:</span><span class="value">{{ user.first_name|default:"Not Given" }}</span></li>
+            <li><span class="parameter">Last Name:</span><span class="value">{{ user.last_name|default:"Not Given" }}</span></li>
+          </ul>
+          {% endblock %}
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="profile-section">
-    <div class="row">
-      <div class="col-md-2 col-md-offset-2 profile-section-header">
-        <h3>Gravatar</h3>
-      </div>
-      <div class="col-md-8 profile-parameters">
-        <ul>
-          <li><span class="parameter">Email:</span><span class="value">{{ user.email|default:"Not Given" }}</span></li>
-        </ul>
+    <div class="profile-section">
+      <div class="row">
+        <div class="col-md-2 col-md-offset-2 profile-section-header">
+          <h3>Credentials</h3>
+        </div>
+        <div class="col-md-8 profile-parameters">
+          {% block credential_parameters %}
+          <ul>
+            <li><span class="parameter">Username:</span><span class="value">{{ user.username }}</span></li>
+            <li><span class="parameter">Password:</span><span class="value">********</span></li>
+          </ul>
+          {% endblock %}
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="profile-section last">
-    <div class="row">
-      <div class="col-md-2 col-md-offset-2 profile-section-header">
-        <h3>Account</h3>
-      </div>
-      <div class="col-md-8 profile-parameters">
-        <ul>
-          <li><span class="parameter">Member Since:</span><span class="value">{{ user.date_joined|date:"F j, Y" }}</span></li>
-          <li><span class="parameter">Status:</span><span class="value">{% if user.is_active %}Active{% else %}Inactive{% endif %}</span></li>
-        </ul>
+    <div class="profile-section">
+      <div class="row">
+        <div class="col-md-2 col-md-offset-2 profile-section-header">
+          <h3>Gravatar</h3>
+        </div>
+        <div class="col-md-8 profile-parameters">
+          {% block gravatar_parameters %}
+          <ul>
+            <li><span class="parameter">Email:</span><span class="value">{{ user.email|default:"Not Given" }}</span></li>
+          </ul>
+          {% endblock %}
+        </div>
       </div>
     </div>
-  </div>
+
+    <div class="profile-section last">
+      <div class="row">
+        <div class="col-md-2 col-md-offset-2 profile-section-header">
+          <h3>Account</h3>
+        </div>
+        <div class="col-md-8 profile-parameters">
+          <ul>
+            <li><span class="parameter">Member Since:</span><span class="value">{{ user.date_joined|date:"F j, Y" }}</span></li>
+            <li><span class="parameter">Status:</span><span class="value">{% if user.is_active %}Active{% else %}Inactive{% endif %}</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% endblock %}
 
 {% endblock %}
 
@@ -85,8 +105,6 @@
       profile_name_element = $('.profile-header .profile-name');
       name_height = parseInt(profile_name_element.css('height'));
       header_height = parseInt($('.profile-header').css('height'));
-      console.log('name: ', name_height);
-      console.log('header: ', header_height);
 
       if (name_height > 215 && header_height === 250) {
         profile_name_element.css('padding-top', '46px');

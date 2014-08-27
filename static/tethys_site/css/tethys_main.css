@@ -1744,6 +1744,36 @@ footer.site-footer {
 .profile-section .profile-parameters ul > li:last-of-type {
   margin-bottom: 0;
 }
+.profile-section .profile-parameters label {
+  width: 30%;
+  font-size: 18px;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+.profile-section .profile-parameters .form-control-static {
+  font-size: 18px;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+.profile-section .profile-parameters .form-control-static .btn {
+  margin-top: -4px;
+}
+.profile-section .profile-parameters .form-control {
+  margin-top: 4px;
+}
+#settings-buttons {
+  margin: 20px 0;
+}
+#settings-buttons .btn {
+  width: 150px;
+  margin-left: 10px;
+}
+.profile-edit-button {
+  float: right;
+  padding-top: 20px;
+  padding-right: 10%;
+  margin-bottom: -65px;
+}
 @media (max-width: 992px) {
   .profile-header {
     height: 125px;
@@ -1768,5 +1798,30 @@ footer.site-footer {
   }
   .profile-section .profile-parameters ul li .value {
     float: none;
+  }
+  .profile-section .profile-parameters label {
+    width: 100%;
+    padding-left: 0;
+  }
+  #settings-buttons .btn-toolbar {
+    float: none!important;
+  }
+  #settings-buttons .btn-toolbar .btn-group {
+    float: left;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  #settings-buttons .btn-toolbar .btn-group .btn {
+    width: 100%;
+    margin-left: 0;
+  }
+  .profile-edit-button {
+    float: none;
+    padding-right: 0;
+    margin-bottom: 0;
+  }
+  .profile-edit-button .btn {
+    width: 80%;
+    margin: 0 10%;
   }
 }
