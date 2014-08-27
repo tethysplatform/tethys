@@ -52,7 +52,7 @@
   }
 
   .profile-parameters {
-     margin-top: 8px;
+    margin-top: 8px;
 
     ul {
       padding: 0;
@@ -85,9 +85,44 @@
         margin-bottom: 0;
       }
     }
+
+    label {
+      width: 30%;
+      font-size: 18px;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .form-control-static {
+      font-size: 18px;
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+
+      .btn {
+        margin-top: -4px;
+      }
+    }
+
+    .form-control {
+      margin-top: 4px;
+    }
   }
 }
 
+#settings-buttons {
+  margin: 20px 0;
+  .btn {
+    width: 150px;
+    margin-left: 10px;
+  }
+}
+
+.profile-edit-button {
+  float: right;
+  padding-top: 20px;
+  padding-right: 10%;
+  margin-bottom: -65px;
+}
 
 
 @media (max-width: 992px) {
@@ -133,7 +168,39 @@
 
         }
       }
+
+      label {
+        width: 100%;
+        padding-left: 0;
+      }
     }
   }
 
+  #settings-buttons {
+    .btn-toolbar {
+      float: none!important;
+
+      .btn-group {
+        float: left;
+        width: 100%;
+        margin-bottom: 10px;
+
+        .btn {
+          width: 100%;
+          margin-left: 0;
+        }
+      }
+    }
+  }
+
+  .profile-edit-button {
+    float: none;
+    padding-right: 0;
+    margin-bottom: 0;
+
+    .btn {
+      width: 80%;
+      margin: 0 10%;
+    }
+  }
 }

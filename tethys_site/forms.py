@@ -73,3 +73,39 @@ class RegisterForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class UserSettingsForm(forms.ModelForm):
+    """
+    A form for modifying user settings.
+    """
+    first_name = forms.CharField(max_length=30,
+                                 label='',
+                                 required=False,
+                                 widget=forms.TextInput(
+                                     attrs={'placeholder': '',
+                                            'class': 'form-control'}
+                                 )
+    )
+
+    last_name = forms.CharField(max_length=30,
+                                label='',
+                                required=False,
+                                widget=forms.TextInput(
+                                    attrs={'placeholder': '',
+                                           'class': 'form-control'}
+                                )
+    )
+
+    email = forms.EmailField(max_length=30,
+                             label='Email:',
+                             required=False,
+                             widget=forms.EmailInput(
+                                 attrs={'placeholder': '',
+                                        'class': 'form-control'}
+                             )
+    )
+
+    class Meta:
+        model = User
+        fields = ("first_name", "last_name", "email")
