@@ -118,7 +118,7 @@ html {
 body {
   position: relative;
   font-family: 'open sans', 'Myriad Pro', 'Lucida Grande', 'Helvetica', sans-serif;
-  background: #eeeeee url("../../../base/images/bg.png");
+  background: #ffffff;
   height: 100%;
 }
 section {
@@ -163,6 +163,16 @@ a:hover {
   display: inline-block;
   vertical-align: middle;
   width: 200px;
+}
+.content {
+  position: relative;
+}
+.content .row {
+  margin-right: 0;
+  margin-left: 0;
+}
+.primary {
+  position: relative;
 }
 #site-wrapper {
   /* equal to footer height */
@@ -1665,5 +1675,98 @@ footer.site-footer {
 @media (max-width: 992px) {
   .account-form-wrapper {
     margin: 0;
+  }
+}
+.profile-header {
+  position: relative;
+  height: 250px;
+  background: #e47e2e;
+}
+.profile-header .profile-image-wrapper {
+  position: absolute;
+  top: 50px;
+}
+.profile-header .profile-image-wrapper img {
+  border-radius: 50%;
+}
+.profile-header .profile-name {
+  display: block;
+  color: white;
+  font-size: 60px;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  padding-top: 130px;
+  padding-left: 30px;
+}
+.profile-section {
+  padding: 25px 0;
+  color: #555555;
+  width: 80%;
+  margin: 0 auto;
+  border-bottom: 1px solid #555555;
+}
+.profile-section.first {
+  margin-top: 75px;
+}
+.profile-section.last {
+  border-bottom: none;
+}
+.profile-section .profile-section-header h3 {
+  margin: 0;
+  font-weight: 500;
+}
+.profile-section .profile-parameters {
+  margin-top: 8px;
+}
+.profile-section .profile-parameters ul {
+  padding: 0;
+  margin: 0;
+}
+.profile-section .profile-parameters ul li {
+  display: block;
+  height: 28px;
+  margin-bottom: 10px;
+  list-style: none;
+  font-size: 18px;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+.profile-section .profile-parameters ul li .parameter {
+  float: left;
+  width: 30%;
+  text-align: right;
+  padding-right: 20px;
+  font-weight: 400;
+}
+.profile-section .profile-parameters ul li .value {
+  float: left;
+}
+.profile-section .profile-parameters ul > li:last-of-type {
+  margin-bottom: 0;
+}
+@media (max-width: 992px) {
+  .profile-header {
+    height: 125px;
+  }
+  .profile-header .profile-image-wrapper {
+    top: 25px;
+  }
+  .profile-header .profile-image-wrapper img {
+    height: 75px;
+    width: 75px;
+  }
+  .profile-header .profile-name {
+    font-size: 35px;
+    padding-top: 38px;
+    padding-left: 90px;
+  }
+  .profile-section.first {
+    margin-top: 0;
+  }
+  .profile-section .profile-parameters ul li .parameter {
+    float: none;
+  }
+  .profile-section .profile-parameters ul li .value {
+    float: none;
   }
 }
