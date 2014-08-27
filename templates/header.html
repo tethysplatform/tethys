@@ -19,7 +19,12 @@
     <ul>
       {% block mobile_user_nav_items %}
         <li>
-          <a href="" title="User Settings">
+          <a href="{% url 'user:profile' username=user.username %}" title="User Profile">
+            <span>Profile</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'user:settings' username=user.username %}" title="User Settings">
             <span>Settings</span>
           </a>
         </li>
@@ -34,7 +39,7 @@
       {% endif %}
 
       <li>
-        <a href="{% url 'logout' %}" title="Log Out">
+        <a href="{% url 'accounts:logout' %}" title="Log Out">
           <span>Log Out</span>
         </a>
       </li>
@@ -65,12 +70,12 @@
 
         <li class="user-dropdown">
           <div class="user-profile-nav-item">
-            <a id="user-profile" class="user-profile" href="" class="image" title="User Profile"><span>{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}  {% gravatar user.email 25 %}</span></a>
+            <a id="user-profile" class="user-profile" href="{% url 'user:profile' username=user.username %}" class="image" title="User Profile"><span>{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}  {% gravatar user.email 25 %}</span></a>
             <a id="user-dropdown-toggle" class="user-dropdown-toggle" title="User Menu" href="javascript:void(0);" onclick="toggle_menu('#user-profile', this, '#user-dropdown-menu');"><span class="glyphicon glyphicon-chevron-down"></span></a>
           </div>
           <ul id="user-dropdown-menu" class="user-dropdown-menu">
             <li>
-              <a href="" title="User Settings">
+              <a href="{% url 'user:settings' username=user.username %}" title="User Settings">
                 <span class="glyphicon glyphicon-user"></span><span>    Settings</span>
               </a>
             </li>
@@ -78,7 +83,7 @@
             {% if user.is_staff %}
               <li class="separator"></li>
               <li>
-                <a href="" title="System Admin Settings">
+                <a href="{% url 'admin:index' %}" title="System Admin Settings">
                   <span class="glyphicon glyphicon-cog"></span><span>   Admin</span>
                 </a>
               </li>
@@ -86,7 +91,7 @@
 
             <li class="separator"></li>
             <li>
-              <a href="{% url 'logout' %}" title="Log Out">
+              <a href="{% url 'accounts:logout' %}" title="Log Out">
                 <span class="glyphicon glyphicon-log-out"></span><span>   Log Out</span>
               </a>
             </li>
@@ -94,7 +99,7 @@
         </li> {# END user-dropdown #}
 
       {% else %}
-        <li class="action header-action"><a href="{% url 'login' %}" title="Log In">Log In</a></li>
+        <li class="action header-action"><a href="{% url 'accounts:login' %}" title="Log In">Log In</a></li>
       {% endif %}
 
     </ul>
@@ -111,7 +116,7 @@
           <span class="glyphicon glyphicon-user icon-white"></span>
       </a>
     {% else %}
-      <a class="mobile-nav-button mobile-login" href="{% url 'login' %}" title="Log In">Log In</a>
+      <a class="mobile-nav-button mobile-login" href="{% url 'accounts:login' %}" title="Log In">Log In</a>
     {% endif %}
   </header>
 </div>

@@ -5,10 +5,6 @@ from django.contrib import messages
 from tethys_site.forms import LoginForm, RegisterForm
 
 
-def home(request):
-    return render(request, 'tethys_site/home.html', {})
-
-
 def login_view(request):
     """
     Handle login

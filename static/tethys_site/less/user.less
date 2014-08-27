@@ -1,0 +1,139 @@
+@profile-header-height: 250px;
+@profile-name-font-size: 60px;
+@profile-name-line-height: 100px;
+@profile-mobile-image-size: 75px;
+@profile-mobile-header-height: 125px;
+@profile-default-header-color: #E47E2E;
+
+.profile-header {
+  position: relative;
+  height: @profile-header-height;
+  background: @profile-default-header-color;
+
+  .profile-image-wrapper {
+    position: absolute;
+    top: 50px;
+    img {
+      border-radius: 50%;
+    }
+  }
+
+  .profile-name {
+    display: block;
+    color: white;
+    font-size: @profile-name-font-size;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    padding-top: @profile-header-height - @profile-name-font-size - 60px;
+    padding-left: 30px;
+  }
+}
+
+.profile-section {
+  padding: 25px 0;
+  color: @default-header-text-color;
+  width: 80%;
+  margin: 0 auto;
+  border-bottom: 1px solid @default-header-text-color;
+
+  &.first {
+    margin-top: 75px;
+  }
+
+  &.last {
+    border-bottom: none;
+  }
+
+  .profile-section-header {
+    h3 {
+      margin: 0;
+      font-weight: 500;
+    }
+  }
+
+  .profile-parameters {
+     margin-top: 8px;
+
+    ul {
+      padding: 0;
+      margin: 0;
+
+      li {
+        display: block;
+        height: 28px;
+        margin-bottom: 10px;
+        list-style: none;
+        font-size: 18px;
+        font-weight: 300;
+        -webkit-font-smoothing: antialiased;
+
+        .parameter {
+          float: left;
+          width: 30%;
+          text-align: right;
+          padding-right: 20px;
+          font-weight: 400;
+        }
+
+        .value {
+          float: left;
+        }
+
+      }
+
+      & > li:last-of-type {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+
+
+@media (max-width: 992px) {
+
+  .profile-header {
+    height: @profile-mobile-header-height;
+
+    .profile-image-wrapper {
+      top: 25px;
+
+      img {
+        height: @profile-mobile-image-size;
+        width: @profile-mobile-image-size;
+      }
+    }
+
+    .profile-name {
+      font-size: 35px;
+      padding-top: 38px;
+      padding-left: 90px;
+    }
+  }
+
+  .profile-section {
+
+    &.first {
+      margin-top: 0;
+    }
+
+    .profile-parameters {
+
+      ul {
+
+        li {
+
+          .parameter {
+            float: none;
+          }
+
+          .value {
+            float: none;
+          }
+
+        }
+      }
+    }
+  }
+
+}
