@@ -1,0 +1,49 @@
+{#
+Toggle switches can be used as an alternative to check boxes for boolean or binomial input.
+
+toggle_switch = a dictionary with configuration key-value pairs
+
+Example:
+
+In the controller, create a dictionary with the configuration attributes for the date picker:
+
+c.toggle_switch = {'display_text': 'Toggle',
+				   'name': 'toggle1',
+				   'on_label': 'On',
+				   'off_label': 'Off',
+				   'on_style': 'success',
+				   'off_style': 'danger',
+				   'size': 'large',
+				   'initial': True,
+				   'disabled': False,
+				   'error': 'Here is my error text'}
+			  
+
+{% snippet "snippets/toggle_switch.html", options=c.toggle_switch %}
+
+#}
+
+{% resource 'ckanext_apps/vendor/bootstrap_switch/build/css/bootstrap2/bootstrap_switch_min.css' %}
+{% resource 'ckanext_apps/css/tethys_snippets.css' %}
+
+<div class="control-group {% if options.error %} error {% endif %}">
+	{% if options.display_text %}<label class="control-label" for="{{ options.name }}">{{ options.display_text }}</label>{% endif %}
+	<div class="controls">
+		<input id="{{ options.name }}" 
+				name="{{ options.name }}" 
+				type="checkbox" 
+				class="bootstrap-switch {% if options.size %}switch-{{- options.size -}}{% endif %}"
+				data-on-label="{% if options.on_label %} {{- options.on_label -}} {% else %}ON{% endif %}"
+				data-off-label="{% if options.off_label %} {{- options.off_label -}} {% else %}OFF{% endif %}"
+				data-on="{% if options.on_style %} {{- options.on_style -}} {% else %}primary{% endif %}"
+				data-off="{% if options.off_style %} {{- options.off_style -}} {% else %}defualt{% endif %}"
+				{% if options.disabled %}disabled{% endif %}
+				{% if options.initial %}checked{% endif %}>
+	</div>
+	{% if options.error %}
+	<span class="help-inline">{{ options.error }}</span>
+	{% endif %}
+</div>
+
+{% resource 'ckanext_apps/vendor/bootstrap_switch/build/js/bootstrap_switch_min.js' %}
+{% resource 'ckanext_apps/js/tethys_snippets.js' %}

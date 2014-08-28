@@ -1,0 +1,1837 @@
+{% extends "page.html" %}
+
+{% block styles %}
+  {{ super() }}
+  {% resource 'ckanext_apps/css/tethys_apps.css' %}
+  {% resource 'ckanext_apps/vendor/prism/prism.css' %}
+{% endblock %}
+
+{% block header %}
+  {{ super() }}
+  <div id="snippet-banner">
+    
+  </div>
+{% endblock %}
+
+{% block primary_content %}
+  <div class="module">
+    <div class="module-content" data-spy="scroll" data-target="#showcase_nav_list">
+      <h1>Snippets Showcase</h1>
+      <p>This page showcases all of the snippets available to use as part of the Apps plugin</p>
+      
+      <div id="form_elements_docs">
+        <h2>Form Elements</h2>
+        <p>
+          Snippets for common form elements are provided to aid in rapid development of workflows for apps.
+      </p>
+      
+        <div id="buttons_docs">
+          <h3>Button Group</h3>
+          <p>
+            The buttons snippet can be used to generate a single button or a group of buttons. Groups of
+            buttons can be stacked horizontally or vertically. For a single button, specify a button group
+            with one button. This snippet is a wrapper for Twitter Bootstrap buttons.
+          </p>
+        
+        <div class="example">
+          <div class="demo">
+          {% snippet "snippets/button_group.html", options=c.single_button %}
+          {% snippet "snippets/button_group.html", options=c.horizontal_buttons %}
+          {% snippet "snippets/button_group.html", options=c.vertical_buttons %}
+          </div>
+          <div class="code">
+            <p class="muted">Controller</p>
+            <pre><code class="language-python">
+c.single_button = {'buttons': [
+                               {'display_text': 'Click Me',
+                                'name': 'click_me_name',
+                                'attributes': 'onclick=alert(this.name);',
+                                'type': 'submit'}
+                               ]}
+
+c.horizontal_buttons = {'buttons': [
+                  {'display_text': 'Add',
+                                   'icon': 'icon-plus',
+                                   'style': 'success'},
+                                  {'display_text': 'Delete',
+                                   'icon': 'icon-trash',
+                                   'disabled': True,
+                                   'style': 'danger'}
+                                  ]}
+
+c.vertical_buttons = {'buttons': [
+                                 {'display_text': 'Edit',
+                                  'icon': 'icon-wrench',
+                                  'style': 'warning',
+                                  'attributes':'id=edit_button'},
+                                 {'display_text': 'Info',
+                                  'icon': 'icon-question-sign',
+                                  'style': 'info',
+                                  'attributes': 'name=info'},
+                                 {'display_text': 'Apps',
+                                  'icon': 'icon-home',
+                                  'href': h.url_for('apps'),
+                                  'style': 'primary'}
+                                 ],
+                     'vertical': True}</code></pre>
+            <p class="muted">HTML</p>
+          <pre><code class="language-python">
+&#123;% snippet "snippets/button_group.html", options=c.single_button %&#125;
+...</code></pre>
+          </div>
+        </div>
+        
+          <h4>Button Group Options</h4>
+          <table class="table table-striped table-bordered">
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th colspan="2">Description</th>
+            </tr>
+            <tr>
+              <td>buttons</td>
+              <td>list</td>
+              <td>required</td>
+              <td colspan="2">A list of dictionaries where each dictionary contains the options for a button (see Button Options table below)</td>
+            </tr>
+            <tr>
+              <td>vertical</td>
+              <td>boolean</td>
+              <td>False</td>
+              <td colspan="2">Set to true to have button group stack vertically</td>
+            </tr>
+          </table>
+          
+          <h4>Button Options</h4>
+          <table class="table table-striped table-bordered">
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th colspan="2">Description</th>
+            </tr>
+            <tr>
+              <td>display_text</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Display text that appears on the button</td>
+            </tr>
+            <tr>
+              <td>name</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Name of the input element that will be used for form submission</td>
+            </tr>
+            <tr>
+              <td>style</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Name of the input element that will be used for form submission</td>
+            </tr>
+            <tr>
+              <td>icon</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Name of a valid Twitter Bootstrap icon class (see the Bootstrap <a href="http://getbootstrap.com/2.3.2/base-css.html#icons" target="_blank">glyphicon reference</a>)</td>            
+            </tr>
+            <tr>
+              <td>href</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Link for anchor type buttons</td>
+            </tr>
+            <tr>
+              <td>attributes</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Use this to add any additional attributes to the html element</td>
+            </tr>
+            <tr>
+              <td>submit</td>
+              <td>boolean</td>
+              <td>False</td>
+              <td colspan="2">Set this to true to make the button a submit type button for forms</td>
+            </tr>
+            <tr>
+              <td>disabled</td>
+              <td>boolean</td>
+              <td>False</td>
+              <td colspan="2">Set the disabled state</td>
+            </tr>
+          </table>
+      </div>
+      
+        <div id="date_picker_docs">
+          <h3>Date Picker</h3>
+          <p>
+            Date pickers are used to make the input of dates streamlined and easy. Rather than typing the date, the
+            user is presented with a calendar to select the date. This date picker was implemented using
+            <a href="http://bootstrap-datepicker.readthedocs.org/en/release/index.html"  target="_blank">Bootstrap Datepicker</a>.
+          </p>
+        
+        <div class="example">
+          <div class="demo">
+        {% snippet "snippets/date_picker.html", options=c.date_picker %}
+        {% snippet "snippets/date_picker.html", options=c.date_picker_error %}
+          </div>
+          <div class="code">
+            <p class="muted">Controller</p>
+            <pre><code class="language-python">
+c.date_picker = {'display_text': 'Date',
+                 'name': 'date1',
+                 'autoclose': True,
+                 'format': 'MM d, yyyy',
+                 'start_date': '2/15/2014',
+                 'start_view': 'decade',
+                 'today_button': True,
+                 'initial': 'February 15, 2014'}
+        
+c.date_picker_error = {'display_text': 'Date',
+                       'name': 'date2',
+                       'initial': '10/2/2013',
+                       'disabled': True,
+                       'error': 'Here is my error text'}</code></pre>
+            <p class="muted">HTML</p>
+          <pre><code class="language-python">
+&#123;% snippet "snippets/date_picker.html", options=c.date_picker %&#125;
+...</code></pre>
+          </div>
+        </div>
+        
+          <h4>Date Picker Options</h4>
+          <table class="table table-striped table-bordered">
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th colspan="2">Description</th>
+            </tr>
+            <tr>
+              <td>display_text</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Display text for the label that accompanies date picker</td>
+            </tr>
+            <tr>
+              <td>name</td>
+              <td>string</td>
+              <td>required</td>
+              <td colspan="2">Name of the input element that will be used for form submission</td>
+            </tr>
+            <tr>
+              <td>autoclose</td>
+              <td>boolean</td>
+              <td>False</td>
+              <td colspan="2">Set whether datepicker auto closes when a date is selected</td>
+            </tr>
+            <tr>
+              <td>calendar_weeks</td>
+              <td>boolean</td>
+              <td>False</td>
+              <td colspan="2">Set whether calendar week numbers are shown on the left of the datepicker</td>
+            </tr>
+            <tr>
+              <td>clear_button</td>
+              <td>boolean</td>
+              <td>False</td>
+              <td colspan="2">Set whether the clear button is displayed or not</td>
+            </tr>
+            <tr>
+              <td>days_of_week_disabled</td>
+              <td>string</td>
+              <td>''</td>
+              <td colspan="2">Days of the week that are disabled 0-6 with 0 being Sunday and 6 being Saturday. Multiple days
+                            are comma separated (e.g.: '0,6')</td>
+            </tr>
+            <tr>
+              <td>end_date</td>
+              <td>date string</td>
+              <td>end of time</td>
+              <td colspan="2">Last date that can be selected. All other dates after this date are shown as disabled.</td>
+            </tr>
+            <tr>
+              <td>format</td>
+              <td>string</td>
+              <td>'dd/mm/yy'</td>
+              <td colspan="2">String reprensenting date format. For valid see Bootstrap Datepicker documentation  <a href="http://bootstrap-datepicker.readthedocs.org/en/release/options.html#format" target="_blank">here</a>.</td>
+            </tr>
+            <tr>
+              <td>min_view_mode</td>
+              <td>string, number</td>
+              <td>'days'</td>
+              <td colspan="2">Set the minimum view mode. Possible values are 'days' or 0, 'months' or 1, 'years' or 2</td>
+            </tr>
+            <tr>
+              <td>multidate</td>
+              <td>number</td>
+              <td>1</td>
+              <td colspan="2">Enables multiselection of dates up to the number given</td>
+            </tr>
+            <tr>
+              <td>start_date</td>
+              <td>string</td>
+              <td>beginning of time</td>
+              <td colspan="2">First date that can be selected. All other dates before this date are shown as disabled</td>
+            </tr>
+            <tr>
+              <td>start_view</td>
+              <td>string, number</td>
+              <td>'month'</td>
+              <td colspan="2">View the date picker starts on. Valid vlaues include 'month' or 0, 'year' or 1, and 'decade' or 2</td>
+            </tr>
+            <tr>
+              <td>today_button</td>
+              <td>boolean</td>
+              <td>False</td>
+              <td colspan="2">Set whether a today button is displayed or not</td>
+            </tr>
+            <tr>
+              <td>today_highlight</td>
+              <td>boolean</td>
+              <td>False</td>
+              <td colspan="2">Wet whether to highlight the current date</td>
+            </tr>
+            <tr>
+              <td>week_start</td>
+              <td>number</td>
+              <td>0</td>
+              <td colspan="2">Set the day the week starts on 0-6, where 0 is Sunday and 6 is Saturday.</td>
+            </tr>
+            <tr>
+              <td>initial</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Initial date to appear in date picker</td>
+            </tr>
+            <tr>
+              <td>disabled</td>
+              <td>boolean</td>
+              <td>False</td>
+              <td colspan="2">Disabled state of the date picker</td>
+            </tr>
+            <tr>
+              <td>error</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Error message for form validation</td>
+            </tr>
+          </table>
+      </div>
+      
+        <div id="range_slider_docs">
+          <h3>Range Slider</h3>
+          <p>
+            Sliders can be used to request an input value from a range of possible values.
+            A slider is configured with a dictionary of key-value options.
+            The table below summarizes the options for sliders.
+          </p>
+        
+        <div class="example">
+          <div class="demo">
+        {% snippet "snippets/range_slider.html", options=c.slider1 %}
+        {% snippet "snippets/range_slider.html", options=c.slider2 %}
+          </div>
+          <div class="code">
+            <p class="muted">Controller</p>
+            <pre><code class="language-python">
+c.slider1 = {'display_text': 'Slider 1',
+             'name': 'slider1',
+             'min': 0,
+             'max': 100,
+             'initial': 50,
+             'step': 1}
+c.slider2 = {'display_text': 'Slider 2',
+             'name': 'slider2',
+             'min': 0,
+             'max': 1,
+             'initial': 0.5,
+             'step': 0.1,
+             'disabled': True,
+             'error': 'Incorrect, please choose another value.'}</code></pre>
+            <p class="muted">HTML</p>
+          <pre><code class="language-python">
+&#123;% snippet "snippets/range_slider.html", options=c.sliders %&#125;
+...</code></pre>
+          </div>
+        </div>
+        
+          <h4>Slider Options</h4>
+          <table class="table table-striped table-bordered">
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th colspan="2">Description</th>
+            </tr>
+            <tr>
+              <td>display_text</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Display text for the label that accompanies slider</td>
+            </tr>
+            <tr>
+              <td>name</td>
+              <td>string</td>
+              <td>required</td>
+              <td colspan="2">Name of the input element that will be used on form submission</td>
+            </tr>
+            <tr>
+              <td>min</td>
+              <td>numeric</td>
+              <td>required</td>
+              <td colspan="2">Minimum value of range</td>
+            </tr>
+            <tr>
+              <td>max</td>
+              <td>numeric</td>
+              <td>required</td>
+              <td colspan="2">Maximum value of range</td>
+            </tr>
+            <tr>
+              <td>initial</td>
+              <td>numeric</td>
+              <td>required</td>
+              <td colspan="2">Initial value of slider</td>
+            </tr>
+            <tr>
+              <td>step</td>
+              <td>numeric</td>
+              <td>required</td>
+              <td colspan="2">Increment between values in range</td>
+            </tr>
+            <tr>
+              <td>disabled</td>
+              <td>boolean</td>
+              <td>False</td>
+              <td colspan="2">Disabled state of the slider</td>
+            </tr>
+            <tr>
+              <td>error</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Error message for form validation</td>
+            </tr>
+          </table>
+        </div>
+      
+        <div id="select_input_docs">
+          <h3>Select Input</h3>
+          <p>
+            Select inputs are used to select values from an given set of values. Use this snippet
+            to create select inputs and multi select inputs.
+          </p>
+        
+        <div class="example">
+          <div class="demo">
+        {% snippet "snippets/select_input.html", options=c.select_input %}
+        {% snippet "snippets/select_input.html", options=c.select_input_multiple %}
+        {% snippet "snippets/select_input.html", options=c.select_input_error %}
+          </div>
+          <div class="code">
+            <p class="muted">Controller</p>
+            <pre><code class="language-python">
+c.select_input = {'display_text': 'Select',
+                  'name': 'select1',
+                  'multiple': False,
+                  'options': [('One', '1'), ('Two', '2'), ('Three', '3')],
+                  'initial': ['Two']}
+
+c.select_input_multiple = {'display_text': 'Select Multiple',
+                           'name': 'select2',
+                           'multiple': True,
+                           'options': [('One', '1'), ('Two', '2'), ('Three', '3')]}
+
+c.select_input_error = {'display_text': 'Select Disabled',
+                        'name': 'select3',
+                        'multiple': False,
+                        'options': [('One', '1'), ('Two', '2'), ('Three', '3')],
+                        'disabled': True,
+                        'error': 'Here is my error text'}</code></pre>
+            <p class="muted">HTML</p>
+          <pre><code class="language-python">
+&#123;% snippet "snippets/select_input.html", options=c.select_input %&#125;
+...</code></pre>
+          </div>
+        </div>
+        
+          <h4>Select Input Options</h4>
+          <table class="table table-striped table-bordered">
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th colspan="2">Description</th>
+            </tr>
+            <tr>
+              <td>display_text</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Display text for the label that accompanies select input</td>
+            </tr>
+            <tr>
+              <td>name</td>
+              <td>string</td>
+              <td>required</td>
+              <td colspan="2">Name of the input element that will be used for form submission</td>
+            </tr>
+            <tr>
+              <td>multiple</td>
+              <td>boolean</td>
+              <td>False</td>
+              <td colspan="2">If enabled, select input will be a multi-select.</td>
+            </tr>
+            <tr>
+              <td>options</td>
+              <td>list</td>
+              <td>None</td>
+              <td colspan="2">List of tuples that represent the options and values of the select input</td>
+            </tr>
+            <tr>
+              <td>disabled</td>
+              <td>boolean</td>
+              <td>False</td>
+              <td colspan="2">Disabled state of the select input</td>
+            </tr>
+            <tr>
+              <td>error</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Error message for form validation</td>
+            </tr>
+          </table>
+        </div>
+        
+        <div id="text_input_docs">
+          <h3>Text Input</h3>
+          <p>
+            The text input snippet makes it easy to add text inputs to your app
+           that are styled similarly to the other input snippets.
+          </p>
+        
+        <div class="example">
+          <div class="demo">
+        {% snippet "snippets/text_input.html", options=c.text_input %}
+        {% snippet "snippets/text_input.html", options=c.text_error_input %}
+          </div>
+          <div class="code">
+            <p class="muted">Controller</p>
+            <pre><code class="language-python">
+c.text_input = {'display_text': 'Text',
+                'name': 'inputAmount',
+                'placeholder': 'e.g.: 10.00',
+                'prepend': '$'}
+        
+c.text_error_input = {'display_text': 'Text Error',
+                      'name': 'inputEmail',
+                      'initial': 'bob@example.com',
+                      'disabled': True,
+                      'icon_append':'icon-envelope',
+                      'error': 'Here is my error text'}</code></pre>
+            <p class="muted">HTML</p>
+          <pre><code class="language-python">
+&#123;% snippet "snippets/text_input.html", options=c.text_input %&#125;
+&#123;% snippet "snippets/text_input.html", options=c.text_error_input %&#125;
+</code></pre>
+          </div>
+        </div>
+        
+          <h4>Text Input Options</h4>
+          <table class="table table-striped table-bordered">
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th colspan="2">Description</th>
+            </tr>
+            <tr>
+              <td>display_text</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Display text for the label that accompanies select input</td>
+            </tr>
+            <tr>
+              <td>name</td>
+              <td>string</td>
+              <td>required</td>
+              <td colspan="2">Name of the input element that will be used for form submission</td>
+            </tr>
+            <tr>
+              <td>initial</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">The initial text that that will appear in the text input when it loads</td>
+            </tr>
+            <tr>
+              <td>placeholder</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Placeholder text is static text that displayed in the input when it is empty</td>
+            </tr>
+            <tr>
+              <td>prepend</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Text that is prepended to the text input</td>
+            </tr>
+            <tr>
+              <td>append</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Text that is appended to the text input</td>
+            </tr>
+            <tr>
+              <td>icon_prepend</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">The name of a valid Bootstrap v2.3 icon. The icon will be prepended to the input.</td>
+            </tr>
+            <tr>
+              <td>icon_append</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">The name of a valid Bootstrap v2.3 icon. The icon will be appended to the input.</td>
+            </tr>
+            <tr>
+              <td>disabled</td>
+              <td>boolean</td>
+              <td>False</td>
+              <td colspan="2">Disabled state of the select input</td>
+            </tr>
+            <tr>
+              <td>error</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Error message for form validation</td>
+            </tr>
+          </table>
+        </div>
+        
+        <div id="toggle_switch_docs">
+          <h3>Toggle Switch</h3>
+          <p>
+            Toggle switches can be used as an alternative to check boxes for boolean or binomial input. Toggle
+            switches are implemented using the excellent <a href="http://www.bootstrap-switch.org/">Bootstrap Switch</a> project.
+          </p>
+        
+        <div class="example">
+          <div class="demo">
+        {% snippet "snippets/toggle_switch.html", options=c.toggle_switch %}
+        {% snippet "snippets/toggle_switch.html", options=c.toggle_switch_styled %}
+        {% snippet "snippets/toggle_switch.html", options=c.toggle_switch_disabled %}
+          </div>
+          <div class="code">
+            <p class="muted">Controller</p>
+            <pre><code class="language-python">
+c.toggle_switch = {'display_text': 'Defualt Toggle',
+                   'name': 'toggle1'}
+  
+c.toggle_switch_styled = {'display_text': 'Styled Toggle',
+                          'name': 'toggle2',
+                          'on_label': 'Yes',
+                          'off_label': 'No',
+                          'on_style': 'success',
+                          'off_style': 'danger',
+                          'initial': True,
+                          'size': 'large'}
+        
+c.toggle_switch_disabled = {'display_text': 'Disabled Toggle',
+                            'name': 'toggle3',
+                            'on_label': 'On',
+                            'off_label': 'Off',
+                            'on_style': 'success',
+                            'off_style': 'warning',
+                            'size': 'mini',
+                            'initial': False,
+                            'disabled': True,
+                            'error': 'Here is my error text'}</code></pre>
+            <p class="muted">HTML</p>
+          <pre><code class="language-python">
+&#123;% snippet "snippets/toggle_switch.html", options=c.toggle_switch %&#125;
+...</code></pre>
+          </div>
+        </div>
+        
+          <h4>Toggle Switch Options</h4>
+          <table class="table table-striped table-bordered">
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th colspan="2">Description</th>
+            </tr>
+            <tr>
+              <td>display_text</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Display text for the label that accompanies switch</td>
+            </tr>
+            <tr>
+              <td>name</td>
+              <td>string</td>
+              <td>required</td>
+              <td colspan="2">Name of the input element that will be used for form submission</td>
+            </tr>
+            <tr>
+              <td>on_label</td>
+              <td>string</td>
+              <td>'ON'</td>
+              <td colspan="2">Text that appears in the "on" position of the switch</td>
+            </tr>
+            <tr>
+              <td>off_label</td>
+              <td>string</td>
+              <td>'OFF'</td>
+              <td colspan="2">Text that appears in the "off" position of the switch</td>
+            </tr>
+            <tr>
+              <td>on_style</td>
+              <td>string</td>
+              <td>'primary'</td>
+              <td colspan="2">Color of the "on" position. Either: 'default', 'info', 'primary', 'success', 'warning', or 'danger'</td>
+            </tr>
+            <tr>
+              <td>off_style</td>
+              <td>string</td>
+              <td>'default'</td>
+              <td colspan="2">Color of the "off" position. Either: 'default', 'info', 'primary', 'success', 'warning', or 'danger'</td>
+            </tr>
+            <tr>
+              <td>size</td>
+              <td>string</td>
+              <td>'regular'</td>
+              <td colspan="2">Size of the switch. Either: 'large', 'small', or 'mini'.</td>
+            </tr>
+            <tr>
+              <td>initial</td>
+              <td>boolean</td>
+              <td>False</td>
+              <td colspan="2">The initial position of the switch (True for "on" and False for "off")</td>
+            </tr>
+            <tr>
+              <td>disabled</td>
+              <td>boolean</td>
+              <td>False</td>
+              <td colspan="2">Disabled state of the switch</td>
+            </tr>
+            <tr>
+              <td>error</td>
+              <td>string</td>
+              <td>None</td>
+              <td colspan="2">Error message for form validation</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      
+      <div id="table_view_docs">
+        <h2>Table View</h2>
+        <p>Table views can be used to display tabular data. The table snippet can be configured to have
+          columns that are editable. When used in this capacity, embed the table view in a form.</p>
+        <div class="example">
+        <div class="demo">
+        {% snippet "snippets/table_view.html", options=c.table_view %}
+        {% snippet "snippets/table_view.html", options=c.table_view_edit %}
+        </div>
+        <div class="code">
+          <p class="muted">Controller</p>
+          <pre><code class="language-python">
+c.table_view = {'column_names': ('Name', 'Age', 'Job'), 
+                'rows': [('Bill', 30, 'contractor'),
+                         ('Fred', 18, 'programmer'),
+                         ('Bob', 26, 'boss')],
+                'hover': True,
+                'striped': True,
+                'bordered': False,
+                'condensed': False}
+                
+c.table_view_edit = {'column_names': ('Name', 'Age', 'Job'), 
+                     'rows': [('Bill', 30, 'contractor'),
+                              ('Fred', 18, 'programmer'),
+                              ('Bob', 26, 'boss')],
+                     'hover': True,
+                     'striped': True,
+                     'bordered': False,
+                     'condensed': False,
+                     'editable_columns': (False, 'ageInput', 'jobInput'),
+                     'row_ids': [21, 25, 31]}</code></pre>
+          <p class="muted">HTML</p>
+        <pre><code class="language-python">
+&#123;% snippet "snippets/table_view.html", options=c.table_view %&#125;
+...</code></pre>
+        </div>
+    </div>
+    
+    <h4>Table View Options</h4>
+      <table class="table table-striped table-bordered">
+        <tr>
+          <th colspan="2">Name</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th colspan="2">Description</th>
+        </tr>
+        <tr>
+          <td colspan="2">column names</td>
+          <td>tuple/list</td>
+          <td>None</td>
+          <td colspan="2">A tuple or list of strings that represent the table columns names.</td>
+        </tr>
+        <tr>
+          <td colspan="2">rows</td>
+          <td>tuple/list</td>
+          <td>required</td>
+          <td colspan="2">A list/tuple of lists/tuples representing each row in the table.</td>
+        </tr>
+        <tr>
+          <td colspan="2">hover</td>
+          <td>boolean</td>
+          <td>False</td>
+          <td colspan="2">Illuminate rows on hover (does not work on striped tables)</td>
+        </tr>
+        <tr>
+          <td colspan="2">striped</td>
+          <td>boolean</td>
+          <td>False</td>
+          <td colspan="2">Stripe rows</td>
+        </tr>
+        <tr>
+          <td colspan="2">bordered</td>
+          <td>boolean</td>
+          <td>False</td>
+          <td colspan="2">Add borders and rounded corners</td>
+        </tr>
+        <tr>
+          <td colspan="2">condensed</td>
+          <td>boolean</td>
+          <td>False</td>
+          <td colspan="2">A tigher packed table</td>
+        </tr>
+        <tr>
+          <td colspan="2">editable_columns</td>
+          <td>list/tuple</td>
+          <td>None</td>
+          <td colspan="2">A list or tuple with an entry for each column in the table.
+            The entry is either False for non-editable columns or a string that will
+            be used to create identifiers for the input fields in that column.</td>
+        </tr>
+        <tr>
+          <td colspan="2">row_ids</td>
+          <td>list/tuple</td>
+          <td>None</td>
+          <td colspan="2">A list or tuple of ids for each row in the table. These will be combined with the string
+            in the editable_columns parameter to create unique identifiers for eacy input field in the table. If 
+            not specified, each row will be assigned an integer value.</td>
+        </tr>
+      </table>
+      </div>
+      
+      <div id="plot_view_docs">
+        <h2>Plot View</h2>
+        <p>
+          Plot views can be used to generate interactive plots of tabular data. All of the plots available through this snippet
+          are powered by the <a href="http://www.highcharts.com/" target="_blank">Highcharts</a> JavaScript library.
+        </p>
+        <div class="example">
+        <div class="demo">
+        {% snippet "snippets/highcharts_plot_view.html", options=c.line_plot_view %}
+        </div>
+        <div class="code">
+          <p class="muted">Controller</p>
+          <pre><code class="language-python">
+highcharts_object = {
+    'chart': {
+          'type': 'spline'
+      },
+      'title': {
+          'text': 'Plot Title'
+      },
+      'subtitle': {
+          'text': 'Plot Subtitle'
+      },
+      'legend': {
+          'layout': 'vertical',
+          'align': 'right',
+          'verticalAlign': 'middle',
+          'borderWidth': 0
+      },
+      'xAxis': {
+          'title': {
+              'enabled': True,
+              'text': 'Altitude (km)'
+          },
+          'labels': {
+              'formatter': 'function () { return this.value + " km"; }'
+          }
+      },
+      'yAxis': {
+          'title': {
+              'enabled': True,
+              'text': 'Temperature (*C)'
+          },
+          'labels': {
+              'formatter': 'function () { return this.value + " *C"; }'
+          }
+      },
+      'tooltip': {
+          'headerFormat': '<b>{series.name}</b><br/>',
+          'pointFormat': '{point.x} km: {point.y}*C'
+       },
+      'series': [{
+          'name': 'Air Temp',
+          'color': '#0066ff',
+          'dashStyle': 'ShortDash',
+          'marker' : {'enabled': False},
+          'data': [[0, 5], [10, -70], [20, -86.5], [30, -66.5], [40, -32.1],
+                   [50, -12.5], [60, -47.7], [70, -85.7], [80, -106.5]]
+          },{
+          'name': 'Water Temp',
+          'color': '#ff6600',
+          'data': [[0, 15], [10, -50], [20, -56.5], [30, -46.5], [40, -22.1],
+                   [50, -2.5], [60, -27.7], [70, -55.7], [80, -76.5]]}
+      ]}
+  
+c.line_plot_view = {'highcharts_object': highcharts_object,
+                    'width': '500px',
+                    'height': '500px'}                
+          </code></pre>
+          <p class="muted">HTML</p>
+        <pre><code class="language-python">
+&#123;% snippet "snippets/highcharts_plot_view.html", options=c.line_plot_view %&#125;</code></pre>
+        </div>
+    </div>
+    <div class="example">
+        <div class="demo">
+        {% snippet "snippets/highcharts_plot_view.html", options=c.web_plot %}
+        </div>
+        <div class="code">
+          <p class="muted">Controller</p>
+          <pre><code class="language-python">
+# Web/polar chart example                   
+web_plot_object = {
+      'chart': {
+            'polar': True,
+            'type': 'line'
+        },
+        'title': {
+            'text': 'Polar Chart'
+        },
+        'pane': {
+            'size': '80%'
+        },
+        'xAxis': {
+            'categories': ['Infiltration', 'Soil Moisture', 'Precipitation',
+                     'Evaporation', 'Roughness', 'Runoff',
+                     'Permeability', 'Vegetation'],
+            'tickmarkPlacement': 'on',
+            'lineWidth': 0
+        },
+        'yAxis': {
+            'gridLineInterpolation': 'polygon',
+            'lineWidth': 0,
+            'min': 0
+        },
+        'series': [{
+            'name': 'Park City',
+            'data': [0.2, 0.5, 0.1, 0.8, 0.2, 0.6, 0.8, 0.3],
+            'pointPlacement': 'on'
+        }, {
+            'name': 'Little Dell',
+            'data': [0.8, 0.3, 0.2, 0.5, 0.1, 0.8, 0.2, 0.6],
+            'pointPlacement': 'on'
+        }
+        ]}
+
+c.web_plot = {'highcharts_object': web_plot_object,
+              'width': '500px',
+              'height': '500px'}                  
+          </code></pre>
+          <p class="muted">HTML</p>
+        <pre><code class="language-python">
+&#123;% snippet "snippets/highcharts_plot_view.html", options=c.web_plot %&#125;</pre></code>
+        </div>
+    </div>
+    <div class="example">
+        <div class="demo">
+        {% snippet "snippets/highcharts_plot_view.html", options=c.timeseries_plot %}
+        </div>
+        <div class="code">
+          <p class="muted">Controller</p>
+          <pre><code class="language-python">
+# Timeseries plot example            
+timeseries_plot_object = {
+    'chart': {
+        'type': 'area',
+        'zoomType': 'x'
+    },
+    'title': {
+        'text': 'Irregular Timeseries Plot'
+    },
+    'xAxis': {
+        'maxZoom': 30 * 24 * 3600000, # 30 days in milliseconds
+        'type': 'datetime'
+    },
+    'yAxis': {
+        'title': {
+            'text': 'Snow depth (m)'
+        },
+        'min': 0
+    },
+    'legend': {
+        'layout': 'vertical',
+        'align': 'right',
+        'verticalAlign': 'top',
+        'x': -350,
+        'y': 125,
+        'floating': True,
+        'borderWidth': 1,
+        'backgroundColor': '#FFFFFF'
+    },
+    'series': [{
+        'name': 'Winter 2007-2008',
+        'data': [
+            [datetime(2008, 12,  2), 0.8 ],
+            [datetime(2008, 12,  9), 0.6 ],
+            [datetime(2008, 12, 16), 0.6 ],
+            [datetime(2008, 12, 28), 0.67],
+            [datetime(2009,  1,  1), 0.81],
+            [datetime(2009,  1,  8), 0.78],
+            [datetime(2009,  1, 12), 0.98],
+            [datetime(2009,  1, 27), 1.84],
+            [datetime(2009,  2, 10), 1.80],
+            [datetime(2009,  2, 18), 1.80],
+            [datetime(2009,  2, 24), 1.92],
+            [datetime(2009,  3,  4), 2.49],
+            [datetime(2009,  3, 11), 2.79],
+            [datetime(2009,  3, 15), 2.73],
+            [datetime(2009,  3, 25), 2.61],
+            [datetime(2009,  4,  2), 2.76],
+            [datetime(2009,  4,  6), 2.82],
+            [datetime(2009,  4, 13), 2.8 ],
+            [datetime(2009,  5,  3), 2.1 ],
+            [datetime(2009,  5, 26), 1.1 ],
+            [datetime(2009,  6,  9), 0.25],
+            [datetime(2009,  6, 12), 0   ]
+        ]
+    }]
+}
+
+c.timeseries_plot = {'highcharts_object': timeseries_plot_object,
+                     'width': '500px',
+                     'height': '500px'}                  
+          </code></pre>
+          <p class="muted">HTML</p>
+        <pre><code class="language-python">
+&#123;% snippet "snippets/highcharts_plot_view.html", options=c.timeseries_plot %&#125;</code></pre>
+        </div>
+    </div>
+    <h4>Plot View Options</h4>
+      <table class="table table-striped table-bordered">
+        <tr>
+          <th colspan="2">Name</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th colspan="2">Description</th>
+        </tr>
+        <tr>
+          <td colspan="2">highcharts_object</td>
+          <td>PySON</td>
+          <td>required</td>
+          <td colspan="2">The highcharts_object contains the definition of the chart. The full
+            <a href="http://api.highcharts.com/highcharts" target="_blank">Highcharts API</a> is supported via
+            this object. The object can either be a JavaScript string or a JavaScript-equivilent Python data
+            structure. The latter is recommended.</td>
+        </tr>
+      </table>
+      <h4>Implementation Notes</h4>
+      <p>
+        Plots are configured using the highcharts_object parameter. This parameter allows developers
+        to specify any valid option from the <a href="http://api.highcharts.com/highcharts" target="_blank">Highcharts JavaScript API</a>
+        in equivilent Python data structures. There are a few notable differences:
+      </p>
+      <ul>
+        <li>The Python equivilent of JavaScript objects are dictionaries. However, the keys for Python dictionaries
+          must be strings.</li>
+        <li>Python datetime objects (see the timeseries plot example above).</li>
+        <li>Some Highcharts API parameters require JavaScript functions to be passed in (e.g.: axis scale labels).
+          To accomplish this in Python, pass a string representing the equivilent JavaScript function definition.
+          These function definitions <em>must</em> be anonymous (no name). An example of this is shown in the line
+          plot example above. </li>
+        <li>Be sure to use the Python syntax for Booleans (True instead of true).</li>
+      </ul>
+      <p>
+        The recommended strategy for creating plots using the Highcharts Plot View is to find a similar example
+        from the <a href="http://www.highcharts.com/demo/" target="_blank">Highcharts demos</a> page. Use the 
+        <i>Edit in jsFiddle</i> link to see the source code. Note that the JavaScript and CSS imports are automatically
+        handled by the snippet. Use the JavaScript source of the example to construct the equivilent in Python, following
+        the guidelines discussed in the previous paragraphs.
+      </p>
+      </div>
+      
+      <div id="message_box_docs">
+    <h2>Message Box</h2>
+    
+    <div class="example">
+        <div class="demo">
+          <a href="#{{ c.message_box.name }}" role="button" class="btn btn-success" data-toggle="modal">Show Message Box</a>
+        {% snippet "snippets/message_box.html", options=c.message_box %}
+        </div>
+        <div class="code">
+          <p class="muted">Controller</p>
+          <pre><code class="language-python">
+c.message_box = {'name': 'sampleModal',
+                 'title': 'Message Box Title',
+                 'message': 'Congratulations! This is a message box',
+                 'dismiss_button': 'Nevermind',
+                 'affirmative_button': 'Proceed',
+                 'width': 500,
+                 'affirmative_attributes': 'href=javascript:void(0);'}</code></pre>
+          <p class="muted">HTML</p>
+        <pre><code class="language-python">
+&lt;!-- Trigger Button --&gt;
+&lt;a href="#{{ c.message_box.name }}" class="btn btn-success" data-toggle="modal"&gt;
+  Show Message Box
+&lt;/a&gt;
+
+&lt;!-- Message Box --&gt;
+&#123;% snippet "snippets/message_box.html", options=c.message_box %&#125;</code></pre>
+        </div>
+    </div>
+    
+      <h4>Message Box Options</h4>
+      <table class="table table-striped table-bordered">
+        <tr>
+          <th colspan="2">Name</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th colspan="2">Description</th>
+        </tr>
+        <tr>
+          <td colspan="2">name</td>
+          <td>string</td>
+          <td>required</td>
+          <td colspan="2">Unique name for the message box</td>
+        </tr>
+        <tr>
+          <td colspan="2">title</td>
+          <td>string</td>
+          <td>required</td>
+          <td colspan="2">Title that appears at the top of the message box</td>
+        </tr>
+        <tr>
+          <td colspan="2">message</td>
+          <td>string</td>
+          <td>' '</td>
+          <td colspan="2">Message that will appear in the main body of the message box</td>
+        </tr>
+        <tr>
+          <td colspan="2">dismiss_button</td>
+          <td>string</td>
+          <td>'Cancel'</td>
+          <td colspan="2">Title for the dismiss button (a.k.a.: the "Cancel" button)</td>
+        </tr>
+        <tr>
+          <td colspan="2">affirmative_button</td>
+          <td>string</td>
+          <td>'Ok'</td>
+          <td colspan="2">Title for the affirmative action button (a.k.a.: the "OK" button)</td>
+        </tr>
+        <tr>
+          <td colspan="2">affirmative_attributes</td>
+          <td>string</td>
+          <td>None</td>
+          <td colspan="2">Use this to place any html attributes on the affirmative button. (e.g.: 'href="/action" onclick="doSomething();"')</td>
+        </tr>
+        <tr>
+          <td colspan="2">width</td>
+          <td>numeric</td>
+          <td>560</td>
+          <td colspan="2">The width of the message box in pixels</td>
+        </tr>
+      </table>
+      </div>
+      
+      <div id="google_map_docs">
+        <h2>Google Map</h2>
+        <p>This snippet can be used to generate map views of spatial data. By default the data will be shown using
+          Google Earth (3D globe). However, Google Earth requires a browser plugin that is not supported in all
+          operating systems or browsers. For systems that don't support the Google Earth plugin, a Google Maps map (2D map) will be generated
+          instead. Note that the link to the data must be publicly accessible to be shown on a Google Map</p>
+        <p><strong>NOTE: Do not create more than one map on a page at any given time.</strong></p>
+    <div class="example">
+        <div class="demo">
+          <p> Demo cannot be shown on this page because of the demo for the editable google map.
+          Click on button below for live demo.</p>
+          <a class="btn btn-success" href="{% url_for 'snippet-showcase-action', action='google_map' %}">Live Demo</a>
+        </div>
+        <div class="code">
+          <p class="muted">Controller</p>
+          <pre><code class="language-python">
+c.google_map = {'height': '500px',
+                'width': '100%',
+                'kml_service': '/apps/my-app/get-kml',
+                'maps_api_key':'S0mEaPIk3y'}
+</code></pre>
+        <p class="muted">KML Service Controller</p>
+        <pre><code class="language-python">
+@jsonify
+def get_kml(self):
+    '''
+    This action is used to pass the kml data to the google map. It must
+    return JSON with the key 'kml_link'.
+    '''
+    kml_links = ['http://www.example.com/soil-poly-v3.kml',
+                 'http://www.example.com/ele-poly-terrain.kml']
+    return {'kml_link':kml_links}
+</code></pre>
+          <p class="muted">HTML</p>
+        <pre><code class="language-python">
+&#123;% snippet "snippets/google_map.html", options=c.google_map %&#125;
+</code></pre>
+        </div>
+    </div>
+    
+      <h4>Google Map Options</h4>
+      <table class="table table-striped table-bordered">
+        <tr>
+          <th colspan="2">Name</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th colspan="2">Description</th>
+        </tr>
+        <tr>
+          <td colspan="2">height</td>
+          <td>string</td>
+          <td>'400px'</td>
+          <td colspan="2">Height of the map element. Any valid css unit of length.</td>
+        </tr>
+        <tr>
+          <td colspan="2">width</td>
+          <td>string</td>
+          <td>'400px'</td>
+          <td colspan="2">Width of the map element. Any valid css unit of length.</td>
+        </tr>
+        <tr>
+          <td colspan="2">kml_service</td>
+          <td>string</td>
+          <td>' '</td>
+          <td colspan="2">Url for a web service that will return kml data. Call is made
+                  to this service asyncronously to prevent the UI from locking up
+                  while map data is being retieved. This service must return JSON
+                  object with a 'kml_links' property that contains an array of
+                  urls to publicly accessible kml files.</td>
+        </tr>
+        <tr>
+          <td colspan="2">maps_api_key</td>
+          <td>string</td>
+          <td>' '</td>
+          <td colspan="2">For the Google Maps backup map to be enabled, an API key for Google Maps
+                        must be provided.</td>
+        </tr>
+      </table>
+    </div>
+    
+    <div id="map_view_docs">
+        <h2>Map View</h2>
+        <p>This snippet can be used to generate map views of spatial data. By default the data will be shown using
+          Google Earth (3D globe). However, Google Earth requires a browser plugin that is not supported in all
+          operating systems or browsers. For systems that don't support the Google Earth plugin, a Google Maps map (2D map) will be generated
+          instead. Note that the link to the data must be publicly accessible to be shown on a Google Map</p>
+        <p><strong>NOTE: Do not create more than one map on a page at any given time.</strong></p>
+    <div class="example">
+        <div class="demo">
+          <p> Demo cannot be shown on this page because of the demo for the editable google map.
+          Click on button below for live demo.</p>
+          <a class="btn btn-success" href="{% url_for 'snippet-showcase-action', action='map_view' %}">Live Demo</a>
+        </div>
+        <div class="code">
+          <p class="muted">Controller</p>
+          <pre><code class="language-python">
+c.google_map = {'height': '500px',
+                'width': '100%',
+                'kml_service': '/apps/my-app/get-kml',
+                'maps_api_key':'S0mEaPIk3y'}
+</code></pre>
+        <p class="muted">KML Service Controller</p>
+        <pre><code class="language-python">
+@jsonify
+def get_kml(self):
+    '''
+    This action is used to pass the kml data to the google map. It must
+    return JSON with the key 'kml_link'.
+    '''
+    kml_links = ['http://www.example.com/soil-poly-v3.kml',
+                 'http://www.example.com/ele-poly-terrain.kml']
+    return {'kml_link':kml_links}
+</code></pre>
+          <p class="muted">HTML</p>
+        <pre><code class="language-python">
+&#123;% snippet "snippets/google_map.html", options=c.google_map %&#125;
+</code></pre>
+        </div>
+    </div>
+    
+      <h4>Google Map Options</h4>
+      <table class="table table-striped table-bordered">
+        <tr>
+          <th colspan="2">Name</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th colspan="2">Description</th>
+        </tr>
+        <tr>
+          <td colspan="2">height</td>
+          <td>string</td>
+          <td>'400px'</td>
+          <td colspan="2">Height of the map element. Any valid css unit of length.</td>
+        </tr>
+        <tr>
+          <td colspan="2">width</td>
+          <td>string</td>
+          <td>'400px'</td>
+          <td colspan="2">Width of the map element. Any valid css unit of length.</td>
+        </tr>
+        <tr>
+          <td colspan="2">kml_service</td>
+          <td>string</td>
+          <td>' '</td>
+          <td colspan="2">Url for a web service that will return kml data. Call is made
+                  to this service asyncronously to prevent the UI from locking up
+                  while map data is being retieved. This service must return JSON
+                  object with a 'kml_links' property that contains an array of
+                  urls to publicly accessible kml files.</td>
+        </tr>
+        <tr>
+          <td colspan="2">maps_api_key</td>
+          <td>string</td>
+          <td>' '</td>
+          <td colspan="2">For the Google Maps backup map to be enabled, an API key for Google Maps
+                        must be provided.</td>
+        </tr>
+      </table>
+    </div>
+    
+    <div id="editable_google_map_docs">
+        <h2>Editable Google Map</h2>
+    <p>The editable map snippet uses Google Maps 3 with the drawing library enabled to allow geospatial user input.
+      An optional background dataset can be specified for reference. Only the shapes drawn by the user are returned (see 
+      <a href="#retrieving_shapes">Retrieving Shapes</a> section).</p>
+    <p><strong>NOTE: Do not create more than one map on a page at any given time.</strong></p>
+    <p>Click <a href="{% url_for 'snippet-showcase-action', action='editable_map' %}">here</a> for demo on a separate page.</p>
+    <div class="example">
+        <div class="demo">
+        <!-- Flash Message -->
+          {% if c.flash_message %} 
+          <div class="alert alert-info">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h5>JSON:</h5>
+            <p>{{ c.flash_message }}</p>
+          </div>
+          {% endif %}
+          
+          <form method="post">        
+          {% snippet "snippets/editable_google_map.html", options=c.editable_google_map %}
+            <button class="btn btn-primary" type="submit" name="editable_map_submit">Submit</button>
+          </form>
+      </div>
+        <div class="code">
+          <p class="muted">Controller</p>
+          <pre><code class="language-python">
+c.editable_map = {'height': '600px',
+                  'width': '100%', 
+                 'reference_kml_action': '/apps/my-app/get-kml',
+                  'maps_api_key': 'S0mEaPIk3y',
+                  'drawing_types_enabled': ['POLYGONS', 'POINTS', 'POLYLINES'],
+                  'initial_drawing_mode': 'POINTS',
+                  'output_format': 'WKT'}
+</code></pre>
+        <p class="muted">KML Service Controller</p>
+        <pre><code class="language-python">
+@jsonify
+def get_kml(self):
+    '''
+    This action is used to pass the kml data to the google map. It must
+    return JSON with the key 'kml_link'.
+    '''
+    kml_links = ['http://www.example.com/soil-poly-v3.kml',
+                 'http://www.example.com/ele-poly-terrain.kml']
+    return {'kml_link':kml_links}
+</code></pre>
+          <p class="muted">HTML</p>
+        <pre><code class="language-python">
+&#123;% snippet "snippets/editable_google_map.html", options=c.editable_map %&#125;
+</code></pre>
+        </div>
+    </div>
+    
+      <h4>Google Editable Map Options</h4>
+      <table class="table table-striped table-bordered">
+        <tr>
+          <th colspan="2">Name</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th colspan="2">Description</th>
+        </tr>
+        <tr>
+            <td colspan="2">height</td>
+            <td>string</td>
+            <td>required</td>
+            <td colspan="2">Height of map container in normal css units</td>
+          </tr>
+          <tr>
+            <td colspan="2">width</td>
+            <td>string</td>
+            <td>required</td>
+            <td colspan="2">Width of map container in normal css units</td>
+          </tr>
+          <tr>
+            <td colspan="2">maps_api_key</td>
+            <td>string</td>
+            <td>required</td>
+            <td colspan="2">The Google Maps API key.</td>
+          </tr>
+          <tr>
+            <td colspan="2">reference_kml_action</td>
+            <td>url string</td>
+            <td>" "</td>
+            <td colspan="2">The action that returns the background kml datasets. These datasets are used for reference only.</td>
+          </tr>
+          <tr>
+            <td colspan="2">drawing_types_enabled</td>
+            <td>list of strings</td>
+            <td>[ ]</td>
+            <td colspan="2">A list of the types of geometries the user will be allowed to draw (POLYGONS, POINTS, POLYLINES).</td>
+          </tr>
+          <tr>
+            <td colspan="2">initial_drawing_mode</td>
+            <td>string</td>
+            <td>" "</td>
+            <td colspan="2">A string representing the drawing mode that will be enbabled by default. Valid
+                           modes are: 'POLYGONS', 'POINTS', 'POLYLINES'. The mode used must be one of the
+                             drawing_types_enabled that the user is allowed to draw.</td>
+          </tr>
+          <tr>
+            <td colspan="2">output_format</td>
+            <td>string</td>
+            <td>"GEOJSON"</td>
+            <td colspan="2">A string speicifying the format of the string that is output by the editable map tool.
+                          Valid values are 'GEOJSON' for GeoJSON format or 'WKT' for Well Known Text Format.</td>
+          </tr>
+          <tr>
+            <td colspan="2">input_overlays</td>
+            <td>PySON</td>
+            <td>None</td>
+            <td colspan="2">A JavaScript-equivilent Python data structure representing GeoJSON or WktJSON containing
+                          the geometry and attributes to be added to the map as overlays (see example below).
+                          Only points, lines and polygons are supported.</td>
+          </tr>
+      </table>
+      
+      <div class="example">
+        <div class="code">
+          <p class="muted">Controller</p>
+          <br/>
+          <p class="muted">GeoJSON</p>
+          <pre><code class="language-python">
+geo_json = {'type':'WKTGeometryCollection',
+            'geometries':[
+                          {'type':'Point',
+                           'wkt':'POINT(-111.5123462677002 40.629197012613545)',
+                           'properties':{'id':1,'value':1}
+                           },
+                          {'type':'Polygon',
+                           'wkt':'POLYGON((-111.50153160095215 40.63193284946615, -111.50101661682129 40.617210120505035, -111.48625373840332 40.623594711231775, -111.49123191833496 40.63193284946615, -111.50153160095215 40.63193284946615))',
+                           'properties':{'id':2,'value':2}
+                           },
+                          {'type':'PolyLine',#                                                                    
+                           'wkt':'POLYLINE(-111.49123191833496 40.65003865742191, -111.49088859558105 40.635319920747456, -111.48127555847168 40.64912697157757, -111.48024559020996 40.634668574229735)',
+                           'properties':{'id':3,'value':3}
+                           }
+                          ]
+            }
+
+c.editable_google_map = {'height': '700px',
+                         'width': '100%',
+                         'maps_api_key': 'S0mEaPIk3y',
+                         'drawing_types_enabled': ['POLYGONS', 'POINTS', 'POLYLINES'],
+                         'initial_drawing_mode': 'POINTS',
+                         'input_overlays': geo_json}
+</code></pre>
+        <p class="muted">WktJSON</p>
+        <pre><code class="language-python">
+wkt_json = {"type":"GeometryCollection",
+            "geometries":[
+                          {"type":"Point",
+                           "coordinates":[40.629197012613545,-111.5123462677002],
+                           "properties":{"id":1,"value":1}},
+                          {"type":"Polygon",
+                           "coordinates":[[40.63193284946615,-111.50153160095215],[40.617210120505035,-111.50101661682129],[40.623594711231775,-111.48625373840332],[40.63193284946615,-111.49123191833496]],
+                           "properties":{"id":2,"value":2}},
+                          {"type":"LineString",
+                           "coordinates":[[40.65003865742191,-111.49123191833496],[40.635319920747456,-111.49088859558105],[40.64912697157757,-111.48127555847168],[40.634668574229735,-111.48024559020996]],
+                           "properties":{"id":3,"value":3}}
+                          ]
+            }
+
+c.editable_google_map = {'height': '700px',
+                         'width': '100%',
+                         'maps_api_key': 'S0mEaPIk3y',
+                         'drawing_types_enabled': ['POLYGONS', 'POINTS', 'POLYLINES'],
+                         'initial_drawing_mode': 'POINTS',
+                         'input_overlays': wkt_json}</code></pre>
+        </div>
+    </div>
+      
+      <h4 id="retrieving_shapes">Retrieving Shapes</h4>
+    <p>
+      The shapes can be retrieved from the map in two ways. A hidden text field named 'geometry' is updated 
+      evertime the map is changed. The text in the text field is a string representation of JSON. The geometry
+      can be formatted as either GeoJSON or Well Known Text. This can be configured by setting the output_format
+      parameter. If the editable map is embedded in a form, the geometry that is drawn on the map will automatically
+      be submitted with the rest of the form via the hidden text field.
+    </p>
+    <p>
+      Alternatively, the data can be extracted directly using the JavaScript API (see below).
+    </p>
+    
+    <h4 id="edit_map_javascript_api">Editable Map JavaScript API</h4>
+      <p>
+        For advanced features, the JavaScript API can be used to interact with the editable map.
+        If you need capabilities beyond the scope of this API, we recommend using the Google Maps
+        version 3 API to create your own map.
+      </p>
+      
+      <h5>TETHYS_EDIT_MAP.getGeoJson()</h5>
+      <p>This method returns the GeoJSON object representing all of the overlays on the map.</p>
+      
+      <h5>TETHYS_EDIT_MAP.getGeoJsonString()</h5>
+      <p>This method returns a stringified GeoJSON object representing all of the overlays on the map.</p>
+      
+      <h5>TETHYS_EDIT_MAP.getWktJson()</h5>
+      <p>This method returns a Well Known Text JSON object representing all of the overlays on the map.</p>
+      
+      <h5>TETHYS_EDIT_MAP.getWktJsonString()</h5>
+      <p>This method returns a stringified Well Known Text JSON object representing all of the overlays on the map.</p>
+      
+      <h5>TETHYS_EDIT_MAP.swapKmlService(kml_service)</h5>
+      <p>Use this method to swap out the current reference kml layers for new ones.</p>
+      <ul>
+          <li><b>kml_service</b> <em>(string)</em> = url that returns a JSON object with a property called 'kml_link' that is an array of publicly
+              accessible urls to kml or kmz documents</li>
+      </ul>
+         
+      <h5>TETHYS_EDIT_MAP.swapOverlayService(overlay_service, clear_overlays)</h5>
+      <p>Use this method to add new overlays to the map dynaically without reloading the page.</p>
+      <ul>
+          <li><b>overlay_service</b> <em>(string)</em> = url that returns a JSON object with a property called 'overlay_json' that has a value of a WKT or GeoJSON object in the same
+                                                         format as is used for input_overlays (see above)</li>
+          <li><b>clear_overlays</b> <em>(boolean)</em> = if true, will clear all overlays from the map prior to adding the new overlays. Otherwise all overlays will be retained.</li>
+      </ul>
+    </div>
+      <div id="fetchclimate_docs">
+        <h2>FetchClimate</h2>
+        <p>This snippet can be used to get climate data based off of a bounding box over an area or a point. It is based off of Microsoft Research. See the <a href="http://research.microsoft.com/en-us/projects/fetchclimate/">FetchClimate page</a> for more info.</p>
+        <p><strong>NOTE: Do not create more than one map on a page at any given time.</strong></p>
+    <div class="example">
+        <div class="demo">
+          <h4>Fetchclimate With Map</h4>
+          <p> Demo cannot be shown on this page because of the demo for the editable google map.
+          Click on button below for live demo.</p>
+          <a class="btn btn-success" href="{% url_for 'snippet-showcase-action', action='fetchclimate_map' %}">Live Demo</a>
+        </div>
+        <div class="code">
+          <p class="muted">Controller</p>
+          <pre><code class="language-python">
+c.fetchclimate_with_map_plot = {
+              'serverUrl':'http://fetchclimate2.cloudapp.net',
+              'variables': {
+                'prate':[423,432,426,424],
+                'elev':[]
+              },
+              'map': { 
+                'css' : {'height': '600px',
+                          'width': '100%',},
+                'map_data' : {
+                  'api_key': 'S0mEaPIk3y',
+                  'drawing_types_enabled': ['RECTANGLE', 'POINTS'],
+                  'initial_drawing_mode': 'RECTANGLE',
+                  'max_num_grids': 2
+                }
+              },
+              'plot' : {
+                'css' : {'height': '500px',
+                          'width': '700px'}
+              }
+</code></pre>
+          <p class="muted">HTML</p>
+        <pre><code class="language-python">
+&#123;% snippet "snippets/fetchclimate.html", options=c.fetchclimate_with_map_plot %&#125;
+</code></pre>
+        </div>
+        <div class="demo">
+          <h4>Fetchclimate With Javascript API Output</h4>
+          {% snippet "snippets/fetchclimate.html", options=c.fetchclimate_array %}
+        </div>
+        <div class="code">
+          <p class="muted">Controller</p>
+          <pre><code class="language-python">
+c.fetchclimate_array = {
+                'serverUrl':'http://fetchclimate2.cloudapp.net',
+                'variables': {
+                  'prate':[423,432,426,424],
+                  'elev':[]
+                },
+                'grid' : {
+                  'name' : 'Provo Canyon Watershed',
+                  'boundingBox' : [40.308836,40.381579,-111.654462,-111.550778],
+                  'gridResolution':[25,25]
+                },
+                'point' : {
+                  'name' : 'Clyde Building'
+                  'location':[40.246942,-111.647971]
+                }
+              }
+</code></pre>
+          <p class="muted">HTML</p>
+        <pre><code class="language-python">
+&#123;% snippet "snippets/fetchclimate.html", options=c.fetchclimate_array %&#125;
+</code></pre>
+        </div>
+    </div>
+  
+      <h4>FetchClimate Options</h4>
+      <h5>URL Parameter</h5>
+      <table class="table table-striped table-bordered">
+        <tr>
+          <th colspan="2">Name</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th colspan="2">Description</th>
+        </tr>
+        <tr>
+          <td colspan="2">serverUrl</td>
+          <td>string</td>
+          <td>'http://fetchclimate2.cloudapp.net'</td>
+          <td colspan="2">The URL to the FetchClimate server (e.g 'serverUrl':'http://fetchclimate2.cloudapp.net')</td>
+        </tr>
+      </table>
+      <h5>Map Parameters</h5>
+      <p><em>Optional if grid or point included. Otherwise, required!</em></p>
+      <table class="table table-striped table-bordered">
+        <tr>
+          <th colspan="2">Name</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th colspan="2">Description</th>
+        </tr>
+        <tr>
+          <td colspan="2">css</td>
+          <td>dictionary</td>
+          <td>{}</td>
+          <td colspan="2">Custom css elements. FORMAT:{'css-element-name': 'css-value'}. If no width or height included, 500px X 500px assumed.</td>
+        </tr>
+        <tr>
+          <td colspan="2">map_data</td>
+          <td>dictionary</td>
+          <td>{}</td>
+          <td colspan="2">Data needed to create the map.</td>
+        </tr>
+      </table>
+
+      <h6>Map Parameters - map_data</h6>
+      <table class="table table-striped table-bordered">
+        <tr>
+          <th colspan="2">Name</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th colspan="2">Description</th>
+        </tr>
+        <tr>
+          <td colspan="2">api_key</td>
+          <td>string</td>
+          <td>''</td>
+          <td colspan="2">API key for Google maps.</td>
+        </tr>
+        <tr>
+          <td colspan="2">drawing_types_enabled</td>
+          <td>string array</td>
+          <td>['RECTANGLE']</td>
+          <td colspan="2">A list of the types of geometries the user will be allowed to draw. 
+             Valid types are: RECTANGLE, and POINTS. (e.g.: drawing_types_enabled=['RECTANGLE', 'POINTS'])</td>
+        </tr>
+        <tr>
+          <td colspan="2">initial_drawing_mode</td>
+          <td>string array</td>
+          <td>'RECTANGLE'</td>
+          <td colspan="2">A string representing the drawing mode that will be enbabled by default. Valid
+                       modes are: 'RECTANGLE', 'POINTS'. The mode used must be one of the
+                       drawing_types_enabled that the user is allowed to draw.</td>
+        </tr>
+        <tr>
+          <td colspan="2">max_num_grids</td>
+          <td>integer</td>
+          <td>unlimited</td>
+          <td colspan="2">The maximum number of grids allowed for the user. Default is unlimited. (e.g 'max_num_grids':0).</td>
+        </tr>
+        <tr>
+          <td colspan="2">max_num_points</td>
+          <td>integer</td>
+          <td>unlimited</td>
+          <td colspan="2">The maximum number of points allowed for the user. Default is unlimited. (e.g 'max_num_points':0).</td>
+        </tr>
+      </table>
+
+      <h5>Variable Parameters</h5>
+      <p>To find out which variables you can use and their parameters, go to your service url with '/api/configuration' 
+          at the end. (e.g. <a href="http://fetchclimate2.cloudapp.net/api/configuration">http://fetchclimate2.cloudapp.net/api/configuration</a>).
+          Look in "EnvironmentalVariables" for the variable names. Then, to find the data source ID's of sources available, go to "DataSources".</p>
+      <table class="table table-striped table-bordered">
+        <tr>
+          <th colspan="2">Name</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th colspan="2">Description</th>
+        </tr>
+        <tr>
+          <td colspan="2">variables</td>
+          <td>dictionary -> 'string': [integer, integer, etc..]</td>
+          <td>'precip': [] </td>
+          <td colspan="2">Must have variable defined. It is in the fomat {'variable_name' : [variable_id,variable_id,variable_id]}.</td>
+        </tr>
+      </table>
+      <h5>Grid Parameters</h5>
+      <p><em>Optional if there is a map or point included. Otherwise, it is required! No map needed. If map included, it will intitialize with input grid.</em></p>
+      <table class="table table-striped table-bordered">
+        <tr>
+          <th colspan="2">Name</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th colspan="2">Description</th>
+        </tr>
+        <tr>
+          <td colspan="2">title</td>
+          <td>string</td>
+          <td>'' </td>
+          <td colspan="2">The name of the grid area.</td>
+        </tr>
+        <tr>
+          <td colspan="2">boundingBox</td>
+          <td>array</td>
+          <td>[] </td>
+          <td colspan="2">An array of length 4 with bounding lat and lons. e.g. [min lat, max lat, min lon, max lon].</td>
+        </tr>
+        <tr>
+          <td colspan="2">gridResolution</td>
+          <td>array</td>
+          <td>[] </td>
+          <td colspan="2">An array of length 2. Number of grid cells in lat and lon directions. e.g.[lat resolution,lon resolution].</td>
+        </tr>
+      </table>
+      <h5>Point Parameters</h5>
+      <p><em>Optional if there is a map or grid included. Otherwise, it is required! No map needed. If map included, it will intitialize with input point.</em></p>
+      <table class="table table-striped table-bordered">
+        <tr>
+          <th colspan="2">Name</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th colspan="2">Description</th>
+        </tr>
+        <tr>
+          <td colspan="2">title</td>
+          <td>string</td>
+          <td>'' </td>
+          <td colspan="2">The name of the point location.</td>
+        </tr>
+        <tr>
+          <td colspan="2">location</td>
+          <td>array</td>
+          <td>[] </td>
+          <td colspan="2">An array of length 2 with lat and lon of point. e.g. [lat, lon].</td>
+        </tr>
+      </table>
+    </div>
+
+    <h4 id="edit_map_javascript_api">Fetchclimate JavaScript API</h4>
+      <p><em>This is available if you use the plot feature. To use it, 
+        replace all 'date' or 'DATE' in the names with 'plot' or 'PLOT' (except for 'fcDataRequestComplete' or 'fcOneDataRequestComplete').</em></p>
+      <p>
+        For advanced features, the JavaScript API can be used to get the data once the request is complete.
+      </p>
+      <h5>FETCHCLIMATE_DATA.getAllData()</h5>
+      <p>ONCE THE AJAX CALLS ARE COMPLETE - This method returns an object with the initial key level as the variable names and the next level as the grid/point names with the data inside of the grid name key. However, if the AJAX calls are not complete, it returns -1.</p>
+
+      <h5>How to know when the AJAX calls are complete? - The Event Listener</h5>
+        <p>When <em>ALL</em> requests are complete - 'e.detail' contains all of the data returned from the AJAX calls (see below).</p>
+        <div class="code">
+          <p class="muted">The Entire Request Complete Event Listener</p>
+          <pre><code class="language-javascript">
+jQuery('#fetchclimate_data')[0].addEventListener('fcDataRequestComplete', function(e) { 
+    console.log(e.detail);
+});
+        </code></pre>
+        </div>
+        <p>When <em>ONE</em> of the requests is complete - 'e.detail' contains all of the data returned from the AJAX calls (see below).</p>
+        <div class="code">
+          <p class="muted">The Single Request Complete Event Listener</p>
+          <pre><code class="language-javascript">
+jQuery('#fetchclimate_data')[0].addEventListener('fcOneDataRequestComplete', function(e) { 
+    console.log(e.detail);
+});
+        </code></pre>
+        </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block secondary_content %}
+<ul id="showcase_nav_list" class="nav nav-list fixed-top" data-offset="90" data-start-offset="0">
+  <li>
+    <a href="#form_elements_docs" >Form Elements</a>
+  </li>
+  <li>
+    <a href="#buttons_docs"class="nav-list-sub">Button Groups</a>
+  </li>
+  <li>
+    <a href="#date_picker_docs"class="nav-list-sub">Date Picker</a>
+  </li>
+  <li>
+    <a href="#range_slider_docs" class="nav-list-sub">Range Slider</a>
+  </li>
+  <li>
+    <a href="#select_input_docs"class="nav-list-sub">Select Input</a>
+  </li>
+  <li>
+    <a href="#text_input_docs"class="nav-list-sub">Text Input</a>
+  </li>
+  <li>
+    <a href="#toggle_switch_docs"class="nav-list-sub">Toggle Switch</a>
+  </li>
+  <li>
+    <a href="#table_view_docs">Table View</a>
+  </li>
+  <li>
+    <a href="#plot_view_docs">Plot View</a>
+  </li>
+  <li>
+    <a href="#message_box_docs">Message Box</a>
+  </li>
+  <li>
+    <a href="#google_map_docs">Google Map</a>
+  </li>
+  <li>
+    <a href="#map_view_docs">Map View</a>
+  </li>
+  <li>
+    <a href="#editable_google_map_docs">Editable Google Map</a>
+  </li>
+  <li>
+    <a href="#fetchclimate_docs">FetchClimate</a>
+  </li>
+</ul>
+
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  {% resource 'ckanext_apps/vendor/prism/prism.js' %}
+  {% resource 'ckanext_apps/js/tethys_apps.js' %}
+{% endblock %}

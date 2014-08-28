@@ -1,0 +1,42 @@
+{#
+Creates a group of horizontal button links.
+
+buttons = list of dictionaries with following keys: display_text, icon_class, href, button_class, data_toggle.
+
+Example:
+
+In the controller, pass the following variables to the template using c:
+
+c.buttons = [{'display_text': 'Add Card',
+			  'icon_class': 'icon-plus',
+			  'href': None,
+			  'button_class': None,
+			  'attributes': 'data-toggle=modal',
+			  'type': 'submit'},
+			  {'display_text': 'Edit',
+			  'icon_class': 'icon-wrench',
+			  'href': h.url_for('project-file', name=c.name, action='edit'),
+			  'button_class': 'btn btn-primary',
+			  'atrributes': None,
+			  'type': None}]
+
+{% snippet "snippets/horz_button_group.html", options=c.buttons %}
+
+#}
+<div class="btn-group {% if options.vertical %}btn-group-vertical{% endif %}">
+{% for button in options.buttons %}
+  {% if button.submit %}
+  
+  <button {% if button.name %}name="{{ button.name }}"{% endif %} class="btn{% if button.style %} btn-{{ button.style }} {% endif %}" type='submit' {% if button.attributes %} {{ button.attributes }} {% endif %} {% if button.disabled%}disabled{% endif %}>
+  	{% if button.icon %}<i class="{{ button.icon }}" ></i> {% endif %}{{ button.display_text }}
+  </button>
+  
+  {% else %}
+  
+  <a {% if button.name %}name="{{ button.name }}"{% endif %} class="btn{% if button.style %} btn-{{ button.style }} {% endif %}" {% if button.href %} href="{{ button.href }}" {% endif %} role="button" {% if button.attributes %} {{ button.attributes }} {% endif %} {% if button.disabled%}disabled{% endif %}>
+    {% if button.icon %}<i class="{{ button.icon }}" ></i> {% endif %}{{ button.display_text }}
+  </a>
+  
+  {% endif %}
+{% endfor %}
+</div>
