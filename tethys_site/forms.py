@@ -109,3 +109,58 @@ class UserSettingsForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ("first_name", "last_name", "email")
+
+
+class UserPasswordChangeForm(forms.Form):
+    """
+    A form that lets a user change their password by entering their old one.
+    """
+
+    current_password = forms.CharField(required=False,
+                                       label='',
+                                       widget=forms.PasswordInput(
+                                           attrs={'placeholder': 'Old Password'}
+                                       ))
+
+    password = forms.CharField(required=False,
+                               label='',
+                               widget=forms.PasswordInput(
+                                   attrs={'placeholder': 'New Password'}
+                               ))
+
+    confirm_password = forms.CharField(required=False,
+                                       label='',
+                                       widget=forms.PasswordInput(
+                                           attrs={'placeholder': 'Confirm New Password'}
+                                       ))
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(UserPasswordChangeForm, self).__init__(*args, **kwargs)
+
+    def clean_current_password(self):
+        # If the user entered the current password, make sure it's right
+        if self.cleaned_data['current_password'] and not self.user.check_password(self.cleaned_data['current_password']):
+            raise forms.ValidationError('This is not your current password. Please try again.')
+
+        # If the user entered the current password, make sure they entered the new passwords as well
+        if self.cleaned_data['current_password'] and not (self.cleaned_data['password'] or self.cleaned_data['confirm_password']):
+            raise forms.ValidationError('Please enter a new password and a confirmation to update.')
+
+        return self.cleaned_data['current_password']
+
+    def clean_confirm_password(self):
+        # Make sure the new password and confirmation match
+        password1 = self.cleaned_data.get('password')
+        password2 = self.cleaned_data.get('confirm_password')
+
+        if password1 != password2:
+            raise forms.ValidationError("Your passwords didn't match. Please try again.")
+
+        return self.cleaned_data.get('confirm_password')
+
+    def save(self, commit=True):
+        self.user.set_password(self.cleaned_data['password'])
+        if commit:
+            self.user.save()
+        return self.user
