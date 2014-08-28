@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+
 from django.contrib import messages
 
 from tethys_site.forms import LoginForm, RegisterForm
@@ -63,7 +64,8 @@ def register(request):
             username = form.clean_username()
             password = form.clean_password2()
 
-            # If you got here, then the username is unique and the passwords match, commit the new user to database
+            # If no exceptions raised to here, then the username is unique and the passwords match.
+            # Commit the new user to database
             form.save()
 
             # Authenticate the new user
