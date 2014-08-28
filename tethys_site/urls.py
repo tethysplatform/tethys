@@ -12,6 +12,7 @@ account_urls = [
 user_urls = [
     url(r'^$', 'tethys_site.views.user.profile', name='profile'),
     url(r'^settings/$', 'tethys_site.views.user.settings', name='settings'),
+    url(r'^change-password/$', 'tethys_site.views.user.change_password', name='change_password'),
 ]
 
 urlpatterns = patterns('',
