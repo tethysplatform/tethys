@@ -1,0 +1,95 @@
+{#
+Inserts a generic stepped progress indicators or stages. Each stage can
+have one of three states, "uncomplete", "complete" and "active". Elements
+that are complete become a submit button (wrap this in your form) with name
+save and value that the user set. This can be used to save data in one form
+and jump to another step. This is a modified version of the ckan snippet:
+package/snippets/stages.html
+
+stages - A list of stage attribute dictionaries
+states - A list of states for each of the stages. Missing stages default
+         to "uncomplete". See examples below.
+
+Example:
+
+    {% snippet 'package/snippets/stages.html', states=['active'] %}
+    {% snippet 'package/snippets/stages.html', states=['complete', 'active'] %}
+    {% snippet 'package/snippets/stages.html', states=['active', 'complete', 'complete'] %}
+    
+In controller define each state using dictionaries with the following keys:
+
+c.stages = [{'title': 'General',
+			 'go-to': 'general'},
+			{'title': 'Inflow Rates',
+			 'go-to': 'inflow'},
+			{'title': 'Demand Rates',
+			 'go-to': 'demand'},
+			{'title': 'Scenario',
+			 'go-to': 'scenario'}]
+#}
+
+{% set state1 = states[0] or 'active' %}
+{% set state2 = states[1] or 'uncomplete' %}
+{% set state3 = states[2] or 'uncomplete' %}
+{% set state4 = states[3] or 'uncomplete' %}
+
+{% set stage1 = stages[0] or 'active' %}
+{% set stage2 = stages[1] or 'uncomplete' %}
+{% set stage3 = stages[2] or 'uncomplete' %}
+{% set stage4 = stages[3] or 'uncomplete' %}
+
+{% if state1 != 'uncomplete' %}{% set class = 'stage-1' %}{% endif %}
+{% if state2 != 'uncomplete' %}{% set class = 'stage-2' %}{% endif %}
+{% if state3 != 'uncomplete' %}{% set class = 'stage-3' %}{% endif %}
+{% if state4 != 'uncomplete' %}{% set class = 'stage-4' %}{% endif %}
+
+<ol class="stages {{ class }}">
+  
+  {# STAGE 1 #}
+  <li class="first {{ state1 }}" style="width:25%">
+    {% if state1 != 'complete' %}
+      <span class="highlight">{{ _(stage1.title) }}</span>
+    {% else %}
+      <button class="highlight" name="go-to" value="{{ stage1['go-to'] }}" type="submit">{{ _(stage1.title) }}</button>
+    {% endif %}
+  </li>
+  
+  {# STAGE 2 #} 
+  <li class="middle {{ state2 }}" style="width:25%">
+    {% if state2 != 'complete' %}
+      <span class="highlight">{{ _(stage2.title) }}</span>
+    {% else %}
+      {% if state1 == 'active' or state3 == 'active' or state4 == 'active' %}
+        <button class="highlight" name="go-to" value="{{ stage2['go-to'] }}" type="submit">{{ _(stage2.title) }}</button>
+      {% else %}
+      	<span class="highlight">{{ _(stage2.title) }}</span>
+      {% endif %}
+    {% endif %}
+  </li>
+  
+  {# STAGE 3 #}
+  <li class="middle {{ state3 }}" style="width:25%">
+    {% if state3 != 'complete' %}
+      <span class="highlight">{{ _(stage3.title) }}</span>
+    {% else %}
+      {% if state1 == 'active' or state2 == 'active' or state4 == 'active'%}
+        <button class="highlight" name="go-to" value="{{ stage3['go-to'] }}" type="submit">{{ _(stage3.title) }}</button>
+      {% else %}
+        <span class="highlight">{{ _(stage3.title) }}</span>
+      {% endif %}
+    {% endif %}
+  </li>
+  
+  {# STAGE 4 #}
+  <li class="last {{ state4 }}" style="width:25%">
+    {% if state4 != 'complete' %}
+      <span class="highlight">{{ _(stage4.title) }}</span>
+    {% else %}
+      {% if state1 == 'active' or state2 == 'active' or state3 == 'active' %}
+        <button class="highlight" name="go-to" value="{{ stage4['go-to'] }}" type="submit">{{ _(stage4.title) }}</button>
+      {% else %}
+        <span class="highlight">{{ _(stage4.title) }}</span>
+      {% endif %}
+    {% endif %}
+  </li>
+</ol>

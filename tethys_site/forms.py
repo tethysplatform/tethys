@@ -25,6 +25,7 @@ class RegisterForm(forms.ModelForm):
     error_messages = {
         'duplicate_username': "A user with that username already exists.",
         'password_mismatch': "The two password fields didn't match.",
+        'duplicate_email': "A user with this email already exists."
     }
 
     username = forms.RegexField(label='', max_length=30,
@@ -64,6 +65,19 @@ class RegisterForm(forms.ModelForm):
         raise forms.ValidationError(
             self.error_messages['duplicate_username'],
             code='duplicate_username',
+        )
+
+    def clean_email(self):
+        # Enforce unique email addresses for password recovery.
+        email = self.cleaned_data["email"]
+
+        try:
+            User._default_manager.get(email=email)
+        except User.DoesNotExist:
+            return email
+        raise forms.ValidationError(
+            self.error_messages['duplicate_email'],
+            code='duplicate_email',
         )
 
     def clean_password2(self):

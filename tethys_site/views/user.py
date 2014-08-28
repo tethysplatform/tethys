@@ -8,12 +8,28 @@ from tethys_site.forms import UserSettingsForm, UserPasswordChangeForm
 
 @login_required()
 def profile(request, username=None):
-    return render(request, 'tethys_site/user/profile.html', {})
+    """
+    Handle the profile view. Profiles could potentially be publicly accessible.
+    """
+    # The profile should display information about the user that is given in the url.
+    # However, the template will hide certain information if the username is not the same
+    # as the username of the user that is accessing the page.
+    context_user = User.objects.get(username=username)
+    context = {'context_user': context_user}
+    return render(request, 'tethys_site/user/profile.html', context)
 
 @login_required()
 def settings(request, username=None):
+    """
+    Handle the settings view. Access to change settings are not publicly accessible
+    """
     # Get the user object from model
-    user = User.objects.get(username=username)
+    request_user = request.user
+
+    # Users are not allowed to make changes to other users settings
+    if request_user.username != username:
+        messages.warning(request, "You are not allowed to change other users' settings.")
+        return redirect('user:profile', username=request_user.username)
 
     if request.method == 'POST' and 'user-settings-submit' in request.POST:
         # Create a form populated with request data
@@ -25,26 +41,36 @@ def settings(request, username=None):
             email = form.cleaned_data['email']
 
             # Update the User Model
-            user.first_name = first_name
-            user.last_name = last_name
-            user.email = email
+            request_user.first_name = first_name
+            request_user.last_name = last_name
+            request_user.email = email
 
             # Save changes
-            user.save()
+            request_user.save()
 
             # Redirect
             return redirect('user:profile', username=username)
     else:
         # Create a form populated with data from the instance user
-        form = UserSettingsForm(instance=user)
+        form = UserSettingsForm(instance=request_user)
 
     # Create template context object
-    context = {'form': form}
+    context = {'form': form,
+               'context_user': request.user}
 
     return render(request, 'tethys_site/user/settings.html', context)
 
 @login_required()
 def change_password(request, username=None):
+    # Get the user object from model
+    request_user = request.user
+
+    # Users are not allowed to make changes to other users settings
+    if request_user.username != username:
+        messages.warning(request, "You are not allowed to change other users' settings.")
+        return redirect('user:profile', username=request_user.username)
+
+    # Handle form
     if request.method == 'POST' and 'change-password-submit' in request.POST:
         # Create a form populated with request data
         form = UserPasswordChangeForm(user=request.user, data=request.POST)
@@ -66,7 +92,7 @@ def change_password(request, username=None):
 
     else:
         # Create a form populated with data from the instance user
-        form = UserPasswordChangeForm(user=request.user)
+        form = UserPasswordChangeForm(user=request_user)
 
     # Create template context object
     context = {'form': form}

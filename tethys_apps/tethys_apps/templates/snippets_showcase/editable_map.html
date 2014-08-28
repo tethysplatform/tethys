@@ -1,0 +1,59 @@
+{% extends "page.html" %}
+
+{% block styles %}
+	{{ super() }}
+	{% resource 'ckanext_apps/css/tethys_apps.css' %}
+	{% resource 'ckanext_apps/vendor/prism/prism.css' %}
+{% endblock %}
+
+{% block primary_content %}
+  <div class="module">
+    <div class="module-content">
+      <h1>Editable Google Map</h1>
+      
+      <!-- Flash Message -->
+      {% if c.flash_message %} 
+      <div class="alert alert-info">
+      	<button type="button" class="close" data-dismiss="alert">&times;</button>
+      	<h5>JSON:</h5>
+      	<p>{{ c.flash_message }}</p>
+      </div>
+      {% endif %}
+      
+      <form method="post">			  
+      {% snippet "snippets/editable_google_map.html", options=c.editable_google_map %}
+      	<button class="btn btn-primary" type="submit" name="editable_map_submit">Submit</button>
+      	<a class="btn btn-success" href="javascript:void(0);" data-kml-service="/apps/snippet-showcase/swap_kml" onclick="swap(this);">Swap Map</a>
+        <a class="btn btn-success" href="javascript:void(0);" onclick="swapOverlayService('/apps/snippet-showcase/swap_overlays', true);">Swap Overlays</a>
+      </form>
+      
+    </div>
+  </div>
+  
+  <script>
+	function swap(element) {
+		var kml_service;
+		
+		// Get current service
+		kml_service = $(element).attr('data-kml-service');
+		
+		// Switch service (to allow map swapping)
+		if (kml_service === '/apps/snippet-showcase/swap_kml') {
+			$(element).attr('data-kml-service', '/apps/snippet-showcase/get_kml');
+		} else {
+			$(element).attr('data-kml-service', '/apps/snippet-showcase/swap_kml');
+		}
+				
+		// Swap out map using a method from the TETHYS_EDIT_MAP library
+		TETHYS_EDIT_MAP.swapKmlService(kml_service);
+	}
+  </script>
+{% endblock %}
+
+{% block secondary_content %}
+
+{% endblock %}
+
+{% block scripts %}
+	{{ super() }}
+{% endblock %}

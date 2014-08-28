@@ -1,0 +1,56 @@
+
+/* Slider Styles */
+.slider-input {
+	-webkit-appearance: none;
+	height: 15px;
+	padding: 6.5px;
+	border:solid;
+	border-width:thin;
+	border-color:#CCCCCC;
+	background-color: #EEEEEE;
+	background-image: -webkit-linear-gradient(#EEEEEE, #DDDDDD, #EEEEEE);
+	background-image: 	 -moz-linear-gradient(#EEEEEE, #DDDDDD, #EEEEEE);
+	background-image:     -ms-linear-gradient(#EEEEEE, #DDDDDD, #EEEEEE);
+	background-image:      -o-linear-gradient(#EEEEEE, #DDDDDD, #EEEEEE);
+	background-image:         linear-gradient(#EEEEEE, #DDDDDD, #EEEEEE);
+}
+
+/* Get rid of colon after labels */
+label:after {
+	content: none;
+}
+
+/* Google Maps Snippet */
+
+/* fix for scale bar distortion */
+#google_map img {
+	max-width: none;
+}
+
+/* This parent can be any width and height */
+.center-parent {
+  text-align: center;
+}
+ 
+/* The ghost, nudged to maintain perfect centering */
+.center-parent:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -0.25em; /* Adjusts for spacing */
+}
+
+/* The element to be centered, can
+   also be of any width and height */ 
+.centered {
+  display: inline-block;
+  vertical-align: middle;
+  width: 300px;
+}
+
+/* Styles for inline help */
+.form-horizontal .control-group.error .help-inline {
+	padding-left: 130px;
+	padding-top: 5px;
+}

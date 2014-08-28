@@ -1,0 +1,230 @@
+.wrapper{
+	background: #FFFFFF;
+}
+
+#map-view-container{
+  border:1px solid #808080;
+  height:800px;
+}
+
+#map-view{
+  height:100%;
+  width:100%;
+  overflow: hidden;
+  position: relative;
+  -webkit-user-select: none;
+          user-select: none; 
+}
+
+#map-view-fullscreen{
+  z-index: 1;
+  position:absolute;
+  top: 2px;
+  right: 2px;
+  opacity: .25;
+  transition: opacity 1s ease;
+}
+#map-view-fullscreen:hover{
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity .5s ease;
+}
+
+
+
+#map-view-loading{
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  z-index:2;
+  width: 20%;
+  margin-bottom:0;
+  border: 1px solid #808080;
+  display:none;
+}
+
+#map-view-legend{
+  display: inline-block;
+  width:25%;
+  height:100%;
+  margin-left:-25%;
+  vertical-align:top;
+  background-color: #FFFFFF;
+  /*overflow-y: auto; /*This breaks the options menu, due to a bug in the w3 spec*/
+}
+
+#map-view-legend-header{
+  display: inline-block;
+  position:relative;
+  z-index: 1;
+  border-bottom:1px solid #808080;
+  background-color:white;
+  padding: 5px 0;
+  width:100%;
+}
+
+#map-view-title{
+  display: inline-block;
+  margin:5px;
+}
+#map-view-add-button{
+  float:right;
+  margin-right:10px;
+}
+
+#map-view-tree{
+  width:100%;
+  margin-left:5px;
+  margin-top: 0px;
+  padding-bottom:25px;
+}
+
+.map-view-legend-elem-container{
+  padding:0;
+}
+
+.map-view-legend-elem-container input[type=button]{
+  float: right;
+  height: 5px;
+  width: 5px;
+  margin-right:5px;
+  display:none;
+}
+
+.map-view-legend-elem-container:hover input[type=button]{
+  display:block;
+}
+
+
+.map-view-legend-elem-header,.map-view-legend-elem-placemark{
+  margin-top:5px;
+  height:22px;
+  width:100%;
+  display:inline-block;
+  position:relative;
+}
+
+.map-view-legend-elem-header input[type="checkbox"],.map-view-legend-elem-placemark input[type="checkbox"]{
+  top: 0;
+}
+
+.map-view-legend-elem-header:hover,.map-view-legend-elem-placemark:hover{
+  background-color:#F0F0F0;
+  background: linear-gradient(to right, white, #F0F0F0, #F0F0F0);
+}
+
+.map-view.btn-group{
+  margin-right:10px;
+  visibility:hidden;
+  position:absolute;
+  right:1px;
+  top:0;
+}
+
+.map-view.btn-group.open{
+  visibility:visible;
+}
+
+.map-view-options-btn{
+  width: 12px;
+}
+
+.map-view-legend-elem-header:hover .btn-group,.map-view-legend-elem-placemark:hover .btn-group{
+  visibility:visible;
+}
+
+.map-view.dropdown-menu{
+  visibility: visible;
+}
+
+
+.map-view-legend-elem-content{
+  margin-left:40px;
+}
+
+.map-view-expanded{
+  -webkit-transform:rotate(90deg);
+  transition: -webkit-transform .5s;
+}
+
+.map-view-collapsed{
+  -webkit-transform:rotate(0deg);
+  transition: -webkit-transform .5s;
+}
+
+.icon-chevron-right:hover{
+  cursor: pointer;
+}
+
+.icon-chevron-right{
+  margin-right:5px;
+}
+
+.map-view-style{
+  border:1px solid gray;
+  vertical-align: middle;
+  padding: 0 5px;
+  width:30px;
+  height:20px;
+  margin-left:5px;
+  display:inline-block;
+  border-top-left-radius:1em;
+  border-bottom-right-radius:1em;
+}
+
+.map-view-name{
+  overflow:hidden;
+  margin-left:5px;
+}
+
+#map-view-divider{
+  height:100%;
+  width:3px;
+  display: inline-block;
+  position:absolute;
+  left: -1px;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #808080;
+  background-color:#F0F0F0;
+  cursor:col-resize;
+  z-index:1;
+  /*background: url(bootstrap/img/handle-v.png) 3px 50% no-repeat;*/
+}
+
+#map-view-handle{
+  height:10%;
+  width:100%;
+  position:absolute;
+  left: -1px;
+  top:45%;
+  z-index:1;
+  /*border-top:1px solid #808080;
+  border-bottom:1px solid #808080;
+  background-color:#808080;*/
+  border: 1px solid #808080;
+  background-color:#F0F0F0;
+  cursor:pointer;
+}
+
+#map-view-divider:hover #map-view-handle , .map-view-handle-visible{
+  width:16px;
+  left:-8px;
+}
+
+#map-view-handle span{
+  visibility: hidden;
+  position:absolute;
+  top:45%;
+}
+
+#map-view-handle:hover span{
+  visibility: visible;
+}
+
+#map-view-map{
+  display: inline-block;
+  vertical-align: top;
+  width:100%;
+  height:100%;
+  position:absolute;
+}

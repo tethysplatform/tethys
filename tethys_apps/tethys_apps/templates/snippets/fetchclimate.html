@@ -1,0 +1,204 @@
+{#
+Display an editable google map widget
+
+SERVER URL
+server_url - The URL to the FetchClimate server (e.g 'serverUrl':'http://fetchclimate2.cloudapp.net')
+
+VARIABLES PARAMETERS
+variables - a dictionary of 'data name' : [data source id] pairs
+ 
+MAP PARAMETERS
+height - height of map container (normal css units)
+width - width of map container (normal css units)
+reference_kml_action - must be a url to a web service that returns a json object with key 'kml_url'
+              and a value that is a publicly accessible link to kml file
+              that is to be loaded into the map. e.g.: {'kml_url': '/apps/my-app/my-action'}.
+              This serves as a reference for the editing session (e.g.: a land use map to show
+              during editing land use). This parameter is optional.
+maps_api_key - A valid Google Maps API key for systems that do not support the google earth plugin
+output_format - The format of the output text. Either GEOJSON or WKT. Default is GEOJSON.
+max_num_grids - The maximum number of grids allowed for the user. Default is unlimited. (e.g 'max_num_grids':0).
+max_num_points - The maximum number of points allowed for the user. Default is unlimited. (e.g 'max_num_points':0).
+
+GRID PARAMETERS 
+(No map needed. If map included, it will intitialize with input grid)
+name - the name of the area.
+bounding-box - an array of length 4 with bounding lat and lons. (e.g. [min lat, max lat, min lon, max lon]).
+grid-resolution - an array of how many grid cells in lat and lon directions. (e.g.[lat resolution,lon resolution]).
+
+POINT PARAMETERS 
+(No map needed. If map included, it will intitialize with input point)
+name - the name of the location.
+location - an array of length 2 with lat and lon of point. (e.g. [lat, lon]).
+
+EDIT PARAMETERS
+drawing_types_enabled - A list of the types of geometries the user will be allowed to draw. 
+             Valid types are: RECTANGLE, and POINTS. (e.g.: drawing_types_enabled=['RECTANGLE', 'POINTS'])
+initial_drawing_mode - A string representing the drawing mode that will be enbabled by default. Valid
+                       modes are: 'RECTANGLE', 'POINTS'. The mode used must be one of the
+                       drawing_types_enabled that the user is allowed to draw.
+PLOT PARAMETERS
+height - height of plot container (normal css units)
+width - width of plot container (normal css units)
+
+DATA EVENT PARAMETER
+Note: This value only works if you are NOT using PLOTS.
+dataEvent - True if you want the user to trigger the data event, false if you don't. (Default is False).
+
+
+Example:
+
+Controller
+
+
+c.fetchclimate_with_map_plot = {
+              'serverUrl':'http://fetchclimate2.cloudapp.net',
+              'variables': {
+                'precip':[423,432,426,424],
+                'elev':[]
+              },
+              'map': { 
+                'css' : {'height': '600px',
+                          'width': '100%',},
+                'map_data' : {
+                  'api_key': 'S0mEaPIk3y',
+                  'drawing_types_enabled': ['RECTANGLE', 'POINTS'],
+                  'initial_drawing_mode': 'RECTANGLE',
+                  'max_num_grids': 2
+                }
+              },
+              'plot' : {
+                'css' : {'height': '500px',
+                          'width': '700px'}
+              }
+                  
+c.fetchclimate_array = {
+                'serverUrl':'http://fetchclimate2.cloudapp.net',
+                'variables': {
+                  'precip':[423,432,426,424],
+                  'elev':[]
+                },
+                'grid' : {
+                  'name' : 'Provo Canyon Watershed',
+                  'boundingBox' : [40.308836,40.381579,-111.654462,-111.550778],
+                  'gridResolution':[25,25]
+                },
+                'point' : {
+                  'name' : 'Clyde Building'
+                  'location':[40.246942,-111.647971]
+                }
+              }
+Template
+
+    {% snippet "snippets/fetchclimate.html", options=c.fetchclimate %}
+#}
+<!-- FetchClimate CSS -->
+<link rel="stylesheet" href="/vendor/farbtastic/farbtastic.css" type="text/css" />
+{% resource 'ckanext_apps/vendor/bootstrap_datepicker/css/datepicker.css' %}
+{% resource 'ckanext_apps/css/tethys_snippets.css' %}
+{% resource 'ckanext_apps/css/snippet_fetchclimate/fetchclimate.css' %}
+{% if 'map' in options %}
+  {% resource 'ckanext_apps/css/snippet_fetchclimate/fetchclimate_map.css' %}
+{% endif %}
+{% if 'plot' in options %}
+  {% resource 'ckanext_apps/css/snippet_fetchclimate/fetchclimate_plot.css' %}
+{% endif %}
+<!-- FC outerContainer -->
+<div id="fc_outer_container" class="parent-container" data-date=""
+{% if options is string %}
+  {% if 'map' in options %}
+    data-map={{ options.map }}
+  {% endif %}
+  data-variables = {{ options.variables }}
+{% else %}
+  {% if 'map' in options %}
+    data-map="{{ h.jsonify(options.map) }}"
+  {% endif %}
+  data-variables = "{{ h.jsonify(options.variables) }}"
+{% endif %}
+  data-server-url= {{ options.serverUrl }}
+{% if 'grid' in options %}
+  data-grids="{{ h.jsonify([options.grid]) }}"
+{% else %}
+  data-grids=""
+{% endif %}
+{% if 'point' in options %}
+  data-points="{{ h.jsonify([options.point]) }}"
+{% else %}
+  data-points=""
+{% endif %}
+>
+
+{% if 'map' in options %}
+  <!-- FC Map -->
+  <div id="fetchclimate_map" class="center-parent" style="height: {{ options.map.css.height }}; width: {{ options.map.css.width }}; background-color:#efefef;">
+  </div>
+  <!-- FC Date -->
+  <div id="fetchclimate_date" class="center-parent hidden">
+{% else %}
+  <div id="fetchclimate_date" class="center-parent">
+{% endif %}
+    <div class="input-daterange" id="fc_datepicker">
+      <label class="control-label" for="start">Start Date (mm/dd/yyyy)</label>
+      <input id="fc_start_date" value="01/01/1989" name="start" />
+      <span class="add-on">to</span>
+      <label class="control-label" for="end">End Date (mm/dd/yyyy)</label>
+      <input id="fc_end_date" value="01/01/1990" name="end" />
+    </div>
+    <div>
+      <label class="control-label" for="fc_year_mode">Year Mode</label>
+      <select class="time-control-select" id="fc_year_mode">
+        <option value="individual">Individual years</option>
+        <option value="avg" selected="selected">Average over the years</option>
+      </select>                      
+      <label class="control-label" for="fc_day_mode">Day Mode</label>
+      <select class="time-control-select" id="fc_day_mode">
+        <option value="individual">Individual days</option>
+        <option value="avg" selected="selected">Average over the whole year</option>
+      </select>                      
+      <label class="control-label" for="fc_hour_mode">Hour Mode</label>
+      <select class="time-control-select" id="fc_hour_mode">
+        <option value="individual">Individual hours</option>
+        <option value="avg" selected="selected">Average over the whole day</option>
+      </select>                    
+    </div>
+  </div>
+{% if 'plot' in options %}
+  <!-- FC Plot -->
+  <div id="fetchclimate_plot" class="center-parent hidden">
+{% else %}
+  <!-- FC Data -->
+  <div id="fetchclimate_data" class="center-parent hidden">
+{% endif %}
+</div>
+</div> <!-- end FC outerContainer -->
+<div id="fc_control-buttons" class="stay-bottom">
+  <div class="btn-group">
+    <a name="prev_step_button" class="btn hidden" role="button" id="fc_prev_step_button">
+      Prev Step</a>    
+    <a name="next_step_button" class="btn btn-success " role="button" id="fc_next_step_button">
+      <i class="icon-play"></i>Next Step</a>
+  </div>
+</div>
+<!-- FetchClimate Script -->
+{% if 'map' in options %}
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  {% if options.map.map_data.api_key != '' %}
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=drawing&key={{ options.map.map_data.api_key }}&sensor=false"></script>
+  {% endif %}
+{% endif %}
+
+{% resource 'ckanext_apps/vendor/bootstrap_datepicker/js/bootstrap_datepicker.js' %}
+{% resource 'ckanext_apps/js/snippet_fetchclimate/fetchclimate_main.js' %}
+{% resource 'ckanext_apps/js/snippet_fetchclimate/fetchclimate_date.js' %}
+{% if 'map' in options %}
+  {% resource 'ckanext_apps/js/snippet_fetchclimate/fetchclimate_map.js' %}
+{% endif %}
+{% if 'plot' in options %}
+  {% resource 'ckanext_apps/vendor/highcharts/js/highcharts.js' %}
+  {% resource 'ckanext_apps/vendor/highcharts/js/highcharts-more.js' %}
+  {% resource 'ckanext_apps/js/snippet_fetchclimate/fetchclimate_plot.js' %}
+{% else %}
+  {% resource 'ckanext_apps/js/snippet_fetchclimate/fetchclimate_data.js' %}
+{% endif %}
+

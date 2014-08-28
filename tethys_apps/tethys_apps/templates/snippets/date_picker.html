@@ -1,0 +1,55 @@
+{#
+Use date picker to make provide an input field with pop-up calendar
+to select date from.
+
+options = a dictionary with configuration key-value pairs
+
+Example:
+
+In the controller, create a dictionary with the configuration attributes for the date picker:
+
+c.date_picker = {'display_text': 'Date',
+				 'name': 'date1',
+				 'initial': '10/2/2013',
+				 'format': 'MM d yy',
+				 'disabled': False,
+				 'error': 'Here is my error text'}
+			  
+
+{% snippet "snippets/date_picker.html", options=c.date_picker %}
+
+#}
+
+{% resource 'ckanext_apps/vendor/bootstrap_datepicker/css/datepicker.css' %}
+{% resource 'ckanext_apps/css/tethys_snippets.css' %}
+
+<div class="control-group {% if options.error %} error {% endif %}">
+	{% if options.display_text %}<label class="control-label" for="{{ options.name }}">{{ options.display_text }}</label>{% endif %}
+	<div class="controls">
+		<input id="{{ options.name }}"
+			   name="{{ options.name }}"
+			   type="text"
+			   data-provide="datepicker"
+			   value="{{ options.initial }}"
+			   {% if options.autoclose %}data-date-autoclose="true"{% endif %}
+			   {% if options.calendar_weeks %}data-date-calendar-weeks="true"{% endif %}
+			   {% if options.clear_button %}data-date-clear-btn="true"{% endif %}
+			   {% if options.days_of_week_disabled %}data-date-days-of-week-disabled="{{ options.days_of_week_disabled }}"{% endif %}
+			   {% if options.end_date %}data-date-end-date="{{ options.end_date }}"{% endif %}
+			   {% if options.format %}data-date-format="{{ options.format }}"{% endif %}
+			   {% if options.min_view_mode %}data-date-min-view-mode="{{ options.min_view_mode }}"{% endif %}
+			   {% if options.multidate %}data-date-multidate="{{ options.multidate }}"{% endif %}
+			   {% if options.start_date %}data-date-start-date="{{ options.start_date }}"{% endif %}
+			   {% if options.start_view %}data-date-start-view="{{ options.start_view }}"{% endif %}
+			   {% if options.today_button %}data-date-today-btn="true"{% endif %}
+			   {% if options.today_highlight %}data-date-today-highlight="true"{% endif %}
+			   {% if options.week_start %}data-date-week-start="{{ options.week_start }}"{% endif %}
+			   {% if options.disabled %}disabled{% endif %}>
+	</div>
+	{% if options.error %}
+	<span class="help-inline">{{ options.error }}</span>
+	{% endif %}
+</div>
+
+{% resource 'ckanext_apps/vendor/bootstrap_datepicker/js/bootstrap_datepicker.js' %}
+{% resource 'ckanext_apps/js/tethys_snippets.js' %}

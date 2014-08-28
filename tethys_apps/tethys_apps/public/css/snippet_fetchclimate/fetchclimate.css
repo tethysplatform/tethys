@@ -1,0 +1,44 @@
+.stay-bottom {
+  position: absolute;
+  bottom: 10px;
+}
+
+.float-parent{
+  overflow: hidden;
+  width:200px;
+}
+.float-left {
+  float: left;
+  width: 50%;
+}
+.float-right {
+  float: right;
+  width: 50%;
+}
+.half-width {
+  width: 60%;
+}
+#fc_outer_container {
+  min-height: 400px;
+}
+.hidden {
+  display: none;
+}
+
+.parent-containter {
+  position: relative;
+  overflow: hidden;
+}
+
+#fetchclimate_data {
+  margin: auto;
+  width: 50%;
+}
+
+.data-loading {
+  -moz-box-shadow: 0px 0px 10px #000000;
+  -webkit-box-shadow: 0px 0px 10px #000000;
+  box-shadow: 0px 0px 10px #000000;
+  /*IE 7 AND 8 DO NOT SUPPORT BLUR PROPERTY OF SHADOWS*/
+}
+
