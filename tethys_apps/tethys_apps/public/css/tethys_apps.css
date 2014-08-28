@@ -1,0 +1,158 @@
+/*****************************************************************************
+ * FILE:    tethys_apps.css
+ * DATE:    30 January 2014
+ * AUTHOR: Nathan R. Swain
+ * COPYRIGHT: (c) 2014 Brigham Young University
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
+/* Snippet Showcase Nav List */
+#showcase_nav_list {
+	width: 192px;
+	margin: 0 -1px 0 -1px;
+}
+
+@media(max-width:1250px) {
+	#showcase_nav_list {
+		width: 90%;
+	}
+}
+
+#showcase_nav_list a {
+	font-size: 14pt;
+	padding: 10px 15px;
+	border: solid 1px #dddddd;
+	margin-top: -1px;
+}
+
+#showcase_nav_list a.nav-list-sub {
+	font-size: 12pt;
+	padding: 10px 25px;
+}
+
+/* Demo and Code Example Styles */
+.example {
+	max-width: 750px;
+	margin: 0 50px;
+}
+.demo, .code {
+	position: relative;
+	padding: 40px 20px 20px 20px;
+	margin: 20px 0;
+	border: 1px solid #dddddd;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	background-color: #fcfcfc;
+}
+
+.demo:after, .code:after {
+	position: absolute;
+	top: -1px;
+	left: -1px;
+	padding: 3px 7px;
+	font-size: 10pt;
+	font-weight: bold;
+	background-color: #efedea;
+	border: 1px solid #dddddd;
+	-webkit-border-radius: 5px 0 5px 0;
+	-moz-border-radius: 5px 0 5px 0;
+	border-radius: 5px 0 5px 0;
+}
+.code:after {
+	content: "Code";
+}
+.demo:after {
+	content: "Demo";
+}
+
+.example .demo {
+	-webkit-border-radius: 5px 5px 0 0;
+	-moz-border-radius: 5px 5px 0 0;
+	border-radius: 5px 5px 0 0;
+	margin-bottom: 0;
+}
+
+.example .code {
+	-webkit-border-radius: 0 0 5px 5px;
+	-moz-border-radius: 0 0 5px 5px;
+	border-radius: 0 0 5px 5px;
+	margin-top: -1px;
+	background-color: #f5f2f0;
+}
+
+.example .code:after {
+	-webkit-border-radius: 0 0 5px 0;
+	-moz-border-radius: 0 0 5px 0;
+	border-radius: 0 0 5px 0;
+}
+
+/* Customize Headings */
+
+h2, h3, h4 {
+	margin-top: 30px;
+}
+
+/* App Library */
+.app-library.media-grid {
+	background: none;
+	border: none;
+	margin-left: -1px;
+}
+
+.app-library .app-item {
+	width: 33.33%;
+	margin: 0;
+	padding-left: 20px;
+	padding-bottom: 25px;
+	float: left;
+	box-sizing: border-box;
+}
+
+.app-library .app-item-wrapper {
+	display: block;
+	width: 80%;
+	padding: 1%;
+	margin: 5px;
+	border-radius: 5px;
+}
+
+.app-library .app-item-wrapper:hover {
+	box-shadow: 0 0 20px 0 rgba(0,0,0,0.15);
+	/*border: 1px #aaa solid;
+	margin: 4px;*/
+	/*background-color: #f5f5f5;*/
+}
+
+.app-library .app-item .app-icon {
+	display: block;
+	max-height: none;
+	margin: 5px;
+	width: 95%;
+}
+
+.app-library .app-item .app-icon:hover {
+	/*box-shadow: 5px 5px 20px 1px rgba(0,0,0,0.35);*/
+}
+
+.app-library .app-item .app-icon .bg-image {
+	height:180px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
+}
+
+.app-library .app-item .app-title a {
+	color: #444444;
+	display: inline-block;
+	margin: 5px 0;
+	text-align: center;
+	width: 95%;
+}
+
+.app-library .app-item .app-title a:hover {
+	color: #444444;
+}
+
+
+
+

@@ -1,0 +1,109 @@
+{#
+Display a google map widget
+
+height - height of map container (normal css units)
+width - width of map container (normal css units)
+kml_service - a web service/link that returns a json object with key 'kml_url'
+			  and a value that is a publicly accessible link to a kml/kmz file
+			  that is to be loaded into the map. e.g.: '/apps/my-app/kml-service'
+map_api_key - A valid Google Maps API key for systems that do not support he google earth plugin
+
+Example:
+
+Controller
+
+	c.google_map = {'height': '500px',
+	                'width': '100%',
+	                'kml_service': '/apps/my-app/get-kml',
+	                'maps_api_key':'S0mEaPIk3y'}
+
+Template
+
+    {% snippet "snippets/google_map.html", options=c.google_map %}
+#}
+
+{% resource 'ckanext_apps/css/tethys_snippets.css' %}
+{% resource 'ckanext_apps/css/tethys_map_view.css' %}
+
+ <div id='map-view-container'
+   style="
+     {% if options.height %} height:{{ options.height }} {% endif %};
+     {% if options.width %} width:{{ options.width }} {% endif %};"
+     data-map-type={% if options.map_type %} "{{ options.map_type }}" {% else %} {{'google-earth'}} {% endif %}
+     data-legend={% if options.legend %} "{{ h.jsonify(options.legend) }}" {% else %} {{'false'}} {% endif %}
+     data-legend-options={% if options.legend_options %} "{{ h.jsonify(options.legend_options) }}" {% else %} {{'{}'}} {% endif %}
+     data-layer-data={% if options.layer_data %} "{{ h.jsonify(options.layer_data) }}" {% else %} {{'[]'}} {% endif %}
+     data-kml-service={% if options.kml_service %} "{{ options.kml_service }}" {% else %} {{' '}} {% endif %}
+  >
+    	<div id="map-view">
+    	  <img id='map-view-fullscreen' src='http://earth-api-samples.googlecode.com/svn/trunk/external/dinther_fullscreen_tofull.png'>
+    		<div id='map-view-legend'>
+    		  <div id='map-view-legend-header'>
+      		  <div id='map-view-title' style="float:left;">Legend</div>
+            <!-- Button trigger modal -->
+            <button id='map-view-add-button' class='btn btn-default' data-toggle='modal' data-target='#map-view-add-modal'>
+              <span><i class="icon-plus"></i></span>
+            </button>
+          </div>
+    		  <div id='map-view-tree'></div>
+          
+        </div>
+        
+        <div id='map-view-divider' title='drage to resize legend'>
+          <div id='map-view-handle' class='center-parent' title='double click to hide legend'>
+            <span class='center'><i class='icon-chevron-right'></i></span>
+          </div>
+        </div>
+        
+    		<div id="map-view-map"></div>
+    		
+    		<div id='map-view-loading' class="progress progress-striped active">
+          <div class="bar" style="width: 100%;">Loading Data . . . </div>
+        </div>
+    		
+    	</div>
+  	</div>
+  	
+  	
+    <!-- Add Layer Modal -->
+    <div class="modal fade" id='map-view-add-modal' tabindex="-1" role="dialog" aria-labelledby='map-view-add-modal-Label' aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="map-view-add-modal-label">Add Layer</h4>
+          </div>
+          <div id='map-view-add-modal-content' class="modal-body">
+            <p>Enter a link to a KMZ or select from the list below.</p>
+            <input id="map-view-url-field" type="text" size="70">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button id='map-view-add-layer-btn' type="button" class="btn btn-primary">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Layer Properties Modal -->
+    <div class="modal fade bs-example-modal-lg" id="map-view-layer-properties-modal" tabindex="-1" role="dialog" aria-labelledby='map-view-layer-properties-modal-label' aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id='map-view-layer-properties-modal-label'>Layer Properties</h4>
+          </div>
+          <div id="map-view-layer-properties-modal-content" class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+{% if maps_api_key != '' %}
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ options.maps_api_key }}&sensor=false"></script>
+{% endif %}
+
+<!-- <script>var workerTest= new Worker('http://192.168.249.211:5000/fanstatic/ckanext_apps/:version:2014-04-23T14:32:59.79/js/workerTest.js');</script> -->
+{% resource 'ckanext_apps/js/tethys_map_view.js' %}

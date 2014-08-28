@@ -1,0 +1,201 @@
+{#
+Display an editable google map widget
+
+MAP PARAMETERS
+height - height of map container (normal css units)
+width - width of map container (normal css units)
+reference_kml_action - must be a url to a web service that returns a json object with key 'kml_url'
+			 		   and a value that is a publicly accessible link to kml file
+			 		   that is to be loaded into the map. e.g.: {'kml_url': '/apps/my-app/my-action'}.
+			 		   This serves as a reference for the editing session (e.g.: a land use map to show
+			 		   during editing land use). This parameter is optional.
+maps_api_key - A valid Google Maps API key for systems that do not support the google earth plugin
+output_format - The format of the output text. Either GEOJSON or WKT. Default is GEOJSON.
+
+EDIT PARAMETERS
+drawing_types_enabled - A list of the types of geometries the user will be allowed to draw. 
+			 			Valid types are: POLYGONS, POINTS, and POLYLINES. (e.g.: drawing_types_enabled=['POLYGON', 'POINT'])
+initial_drawing_mode - A string representing the drawing mode that will be enbabled by default. Valid
+                       modes are: 'POLYGONS', 'POINTS', 'POLYLINES'. The mode used must be one of the
+                       drawing_types_enabled that the user is allowed to draw.
+
+Example:
+
+Controller
+
+c.editable_map = {'height': '600px',
+                  'width': '100%', 
+             	  'reference_kml_action': '/apps/my-app/get-kml',
+                  'maps_api_key': 'S0mEaPIk3y',
+                  'drawing_types_enabled': ['POLYGONS', 'POINTS', 'POLYLINES'],
+                  'initial_drawing_mode': 'POINTS',
+                  'output_format': 'WKT'}
+                  
+Template
+
+    {% snippet "snippets/editable_google_map.html", options=c.editable_map %}
+#}
+<!-- Editable Google Maps CSS -->
+<link rel="stylesheet" href="/vendor/farbtastic/farbtastic.css" type="text/css" />
+<style>
+	/* fix for scale bar distortion */
+	#editable_google_map img {
+		max-width: none;
+	}
+	
+	/* This parent can be any width and height */
+	.center-parent {
+	  text-align: center;
+	}
+	 
+	/* The ghost, nudged to maintain perfect centering */
+	.center-parent:before {
+	  content: '';
+	  display: inline-block;
+	  height: 100%;
+	  vertical-align: middle;
+	  margin-right: -0.25em; /* Adjusts for spacing */
+	}
+	
+	/* The element to be centered, can
+	   also be of any width and height */ 
+	.centered {
+	  display: inline-block;
+	  vertical-align: middle;
+	  width: 300px;
+	}
+	
+	#outer_container {
+		position: relative;
+		margin-bottom: 20px;
+	}
+	
+	#editable_map_legend {
+	    background-color: white;
+	    background-color: rgba(255, 255, 255, 0.8);
+	    padding: 10px;
+	    margin: 10px;
+	}
+	
+	.legend-color {
+		height: 15px;
+		width: 25px;
+	}
+	
+	.legend-value {
+		padding-left: 20px;
+		font-size: 12pt;
+	}
+	
+	#colorPickerModal {
+		width: 230px;
+	}
+	
+	.popover {
+		width:auto;
+		border-radius: 50%;
+		background-color: rgba(255, 255, 255, 1.0);
+	}
+	
+	.popover .arrow {
+		border-width: 20px;
+	}
+	
+	.popover.left .arrow {
+		border-left-color: rgba(255, 255, 255, 1.0);
+		margin-top: -20px;
+	}
+	
+	.popover.left .arrow:after {
+		border-left-color: #FFFFFF;
+		border-left-color: rgba(255, 255, 255, 0.0);
+	}
+	
+	#google_maps_async_loading {
+		display: none;
+		position: absolute;
+		top: 0;
+		left: 0;
+		background-color: rgba(255, 255, 255, 0.8);
+	}
+</style>
+
+<div id="outer_container">
+	<div id="editable_google_map_loading" class="center-parent" style="height: {{ options.height }}; width: {{ options.width }}; background-color:#efefef;">
+		<div class="centered" on>
+			<img src="/images/ajax-loader.gif" />
+			<h5>Loading...</h5>
+		</div>
+	</div>
+	<textarea id="geometry" name="geometry" rows="4" cols="300" hidden></textarea>
+</div> <!-- end outerContainer -->
+
+<div id="editable_map_legend" hidden></div>
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+{% if options.maps_api_key != '' %}
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=drawing&key={{ options.maps_api_key }}&sensor=false"></script>
+{% endif %}
+{% resource 'ckanext_apps/vendor/farbtastic/farbtastic.js' %}
+<script type="text/javascript">
+	// Pass action to JavaScript
+	var kml_action = '';
+	
+	// Pass draw types to JavaScript
+	var draw_polygons = false;
+	var draw_points = false;
+	var draw_polylines = false;
+	
+	// Set the output format
+	var output_format = 'GEOJSON';
+	
+	// Set the input overlay defaults
+	var initial_overlays_string = '';
+	
+	// Legend items
+	var initial_color_ramp_string = '';
+	
+	// Pass in initial drawing mode
+	var initial_drawing_mode = '';
+	
+	{% if options.reference_kml_action %}
+	// Pass in kml action url
+	kml_action = "{{ options.reference_kml_action }}";
+	{% endif %}
+	
+	{% if 'POLYGONS' in options.drawing_types_enabled %}
+	// Enable polygon drawing capabilities
+	draw_polygons = true;
+	{% endif %}
+	
+	{% if 'POINTS' in options.drawing_types_enabled %}
+	// Enable point drawing capabilities
+	draw_points = true;
+	{% endif %}
+	
+	{% if 'POLYLINES' in options.drawing_types_enabled %}
+	// Enable polyline drawing capabilities
+	draw_polylines = true;
+	{% endif %}
+	
+	{% if options.initial_drawing_mode in options.drawing_types_enabled %}
+	// Set initial drawing mode
+	initial_drawing_mode = "{{ options.initial_drawing_mode }}";	
+	{% endif %}
+	
+	{% if options.output_format == 'WKT' %}
+	output_format = 'WKT';
+	{% endif %}
+	
+	{% if options.input_overlays %}
+	initial_overlays_string = '{{ h.jsonify(options.input_overlays)|safe }}';
+	{% endif %}
+	
+	{% if options.color_ramp %}
+	initial_color_ramp_string = '{{ h.jsonify(options.color_ramp)|safe }}';
+	{% endif %}
+
+</script>
+{% resource 'ckanext_apps/js/tethys_editable_map.js' %}
+
+

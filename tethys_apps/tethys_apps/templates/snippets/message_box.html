@@ -1,0 +1,54 @@
+{#
+Display a message for user with feedback. This message box is a TwitterBootstrap modal.
+
+name - unique name for message box.
+title - title for message box header.
+message -  message to display.
+dismiss_button - text for dismiss button. Set to None for no button.
+affirmative_button - text for affirmative button. Set to None for no button.
+affirmative_attributes - attributes for the affirmative button.
+width - width of message box. 
+
+Example:
+
+In the controller create the message box attributes dictionary:
+
+c.message_box = {'name': 'exitModal',
+				 'title': 'Discard Changes',
+				 'message': 'Are you sure you want to dischard your changes?',
+				 'dismiss_button': 'No',
+				 'affirmative_button': 'Yes',
+				 'width': '500px',
+				 'affirmative_attributes': 'href="javascript:void(0);" onclick="doSomething();"'}
+
+{% snippet "snippets/message_box.html", options=c.message_box %}
+
+To trigger message box, create a button in the following manner:
+
+<a href="#exitModal" role="button" class="btn" data-toggle="modal">Exit</a>
+
+This button would trigger a modal with the name "exitModal".
+
+For more explanation on TwitterBootstrap modals, see: http://getbootstrap.com/2.3.2/javascript.html#modals
+#}
+{% resource 'ckanext_apps/css/tethys_snippets.css' %}
+
+{% if options.width %}
+{% set margin_left = options.width / -2.0 %}
+{% endif %}
+
+<div id="{{ options.name }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="{{ options.name + 'Label' }}" aria-hidden="true" {% if options.width %} style="width: {{ options.width }}px; margin-left: {{ margin_left }}px;"{% endif %}>
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="{{ options.name + 'Label' }}">{% if options.title %} {{ _(options.title) }} {% else %} {{ _(Title) }}{% endif %}</h3>
+  </div>
+  <div class="modal-body">
+	<p class="lead">
+		{{ _(options.message) }}
+	</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">{% if options.dismiss_button %} {{ _(options.dismiss_button) }} {% else %} Cancel {% endif %}</button>
+    <a class="btn btn-primary" {% if options.affirmative_attributes %} {{ options.affirmative_attributes }} {% endif %}>{% if options.affirmative_button %} {{ _(options.affirmative_button) }} {% else %} Ok {% endif %}</a>
+  </div>
+</div>

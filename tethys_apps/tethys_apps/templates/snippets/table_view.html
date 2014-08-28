@@ -1,0 +1,60 @@
+{#
+Display tabular data in a table view.
+
+title = title to appear at the top of the table view. Enter as None for no title.
+column_names = tuple of strings for column names.
+rows = list of tuples where each tuple contains the values to populate each row.
+table_class = string of space delimited classes for the table (optional). See
+			  Twitter Bootstrap documentation on tables for possibilities.
+
+Note: Make sure the number of values in each row tuple is the same as the number of
+	  values in the column_names tuple. Also make sure the values in the row tuples
+	  are aligned with the appropriate column_names (same order as column_names).
+
+Example:
+
+In the controller, pass the following variables to the template using c:
+
+c.table_view_edit = {'column_names': ('Name', 'Age', 'Job'), 
+                     'rows': [('Bill', 30, 'contractor'),
+                              ('Fred', 18, 'programmer'),
+                              ('Bob', 26, 'boss')],
+                     'hover': True,
+                     'striped': True,
+                     'bordered': False,
+                     'condensed': False,
+                     'editable_columns': (False, 'ageInput', 'jobInput'),
+                     'row_ids': [21, 25, 31]}
+
+
+{% snippet "snippets/table_view.html", options=c.table_view %}
+
+#}
+
+<table class="table {% if options.bordered %}table-bordered{% endif %} {% if options.hover %}table-hover{% endif %} {% if options.striped %}table-striped{% endif %} {% if options.condensed %}table-condensed{% endif %}">
+    {% if options.column_names %}
+    <tr>
+      {% for column_name in options.column_names %}
+      <th>{{ column_name }}</th>      
+      {% endfor %}  
+    </tr>
+    {% endif %}
+    {% for row in options.rows %}
+    {% set row_index = loop.index - 1 %}
+    <tr>
+      {% for column_value in row %}
+      	{% set column_index = loop.index - 1 %}
+      	{% if options.editable_columns and options.editable_columns[column_index] %}
+      		{% if options.row_ids %}
+      			{% set identifier = options.editable_columns[column_index] + options.row_ids[row_index]|string %}
+      		{% else %}
+      			{% set identifier = options.editable_columns[column_index] + row_index|string %}
+      		{% endif %}
+      		<td><input id="{{ identifier }}" name="{{ identifier }}" type="text" class="span2" value="{{ column_value }}" style="margin-bottom: 0;"></td>
+      	{% else %}
+      	<td>{{ column_value }}</td>
+      	{% endif %}
+      {% endfor %}
+    </tr>        
+    {% endfor %}
+</table>

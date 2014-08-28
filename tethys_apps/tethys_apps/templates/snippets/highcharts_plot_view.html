@@ -1,0 +1,84 @@
+{#
+This widget gives apps developers access to the extensive highcharts library 
+
+color_picker = a dictionary with configuration key-value pairs
+
+Example:
+
+In the controller, create a list of dictionaries where the dictionaries represent
+the attributes of each slider:
+
+highcharts_object = {
+		'chart': {
+	        'type': 'spline'
+	    },
+	    'title': {
+	        'text': 'Plot Title'
+	    },
+	    'subtitle': {
+	        'text': 'Plot Subtitle'
+	    },
+	    'legend': {
+	        'layout': 'vertical',
+	        'align': 'right',
+	        'verticalAlign': 'middle',
+	        'borderWidth': 0
+	    },
+	    'xAxis': {
+	        'title': {
+	            'enabled': True,
+	            'text': 'Altitude (km)'
+	        },
+	        'labels': {
+	            'formatter': 'function () { return this.value + " km"; }'
+	        }
+	    },
+	    'yAxis': {
+	        'title': {
+	            'enabled': True,
+	            'text': 'Temperature (*C)'
+	        },
+	        'labels': {
+	            'formatter': 'function () { return this.value + " *C"; }'
+	        }
+	    },
+	    'tooltip': {
+	        'headerFormat': '<b>{series.name}</b><br/>',
+	        'pointFormat': '{point.x} km: {point.y}*C'
+	     },
+	    'series': [{
+	        'name': 'Air Temp',
+	        'color': '#0066ff',
+	        'dashStyle': 'ShortDash',
+	        'marker' : {'enabled': False},
+	        'data': [[0, 5], [10, -70], [20, -86.5], [30, -66.5], [40, -32.1],
+	                 [50, -12.5], [60, -47.7], [70, -85.7], [80, -106.5]]
+	        },{
+	        'name': 'Water Temp',
+	        'color': '#ff6600',
+	        'data': [[0, 15], [10, -50], [20, -56.5], [30, -46.5], [40, -22.1],
+	                 [50, -2.5], [60, -27.7], [70, -55.7], [80, -76.5]]}
+	    ]}
+	
+c.line_plot_view = {'highcharts_object': highcharts_object,
+                    'width': '500px',
+                    'height': '500px'}
+		  
+			  
+
+{% snippet "snippets/highcharts_plot_view.html", options=c.plot %}
+
+#}
+{% resource 'ckanext_apps/css/tethys_snippets.css' %}
+
+<div class="highcharts-plot" {% if options.highcharts_object is string %}
+								data-json="{{ options.highcharts_object }}"
+							 {% else %}
+							 	data-json="{{ h.jsonify(options.highcharts_object) }}"
+							 {% endif %}
+	                         style="min-width: {{ options.width }}; height: {{ options.height }}; margin: 0 auto;"></div>
+	                         
+{% resource 'ckanext_apps/vendor/highcharts/js/highcharts.js' %}
+{% resource 'ckanext_apps/vendor/highcharts/js/highcharts-more.js' %}
+{% resource 'ckanext_apps/vendor/highcharts/js/modules/exporting.js' %}
+{% resource 'ckanext_apps/js/tethys_snippets.js' %}

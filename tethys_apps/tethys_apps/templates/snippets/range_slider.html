@@ -1,0 +1,50 @@
+{#
+Sliders are used to select values within a range of possible ranges.
+
+sliders = list of dictionaries with slider properties
+tooltip = Boolean for whether to show or hide the tool tips
+
+
+Example:
+
+In the controller, create a dictionary with the configuration parameters for the slider:
+
+c.slider = {'display_text': 'January',
+			'name': 'mdJanInflow',
+		  	'min': 0,
+		  	'max': 3,
+		  	'initial': 1,
+		  	'step': 0.1,
+		  	'disabled': False,
+		  	'error': 'invalid value'}
+			  
+
+{% snippet "snippets/range_slider.html", options=c.slider %}
+
+#}
+{% resource 'ckanext_apps/css/tethys_snippets.css' %}
+
+<div class="control-group {% if options.error %} error {% endif %}">
+	{% if options.display_text %}<label class="control-label" for="{{ options.name }}">{{ options.display_text }}</label>{% endif %}
+	<div class="controls">
+	  <div class="input-prepend input-append">
+		<span class="add-on slider-before">{{ options.min }}</span>
+		<input id="{{ options.name }}"
+			   class="slider-input"
+			   name="{{ options.name }}"
+			   type="range" min="{{ options.min }}"
+			   max="{{ options.max }}"
+			   step="{{ options.step }}"
+			   value="{{ options.initial }}"
+			   oninput="updateSliderDisplayValue('{{ options.name }}', this);"
+			   {% if options.disabled %}disabled{% endif %}>
+		<span class="add-on slider-after">{{ options.max }}</span>
+      </div>
+    <span class="slider-value" for="{{ options.name }}" style="padding-left:50px;">{{ options.initial }}</span>
+	</div>
+	{% if options.error %}
+	<span class="help-inline">{{ options.error }}</span>
+	{% endif %}
+</div>
+
+{% resource 'ckanext_apps/js/tethys_snippets.js' %}

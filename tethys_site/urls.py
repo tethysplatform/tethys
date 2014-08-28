@@ -7,6 +7,9 @@ account_urls = [
     url(r'^login/$', 'tethys_site.views.accounts.login_view', name='login'),
     url(r'^logout/$', 'tethys_site.views.accounts.logout_view', name='logout'),
     url(r'^register/$', 'tethys_site.views.accounts.register', name='register'),
+    url(r'^reset/confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', 'tethys_site.views.accounts.reset_confirm',
+        name='password_reset_confirm'),
+    url(r'^reset/$', 'tethys_site.views.accounts.reset', name='password_reset'),
 ]
 
 user_urls = [

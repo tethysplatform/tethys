@@ -1,0 +1,53 @@
+{#
+Text inputs are used to request text input from the user.
+
+options = a dictionary with configuration key-value pairs
+
+Example:
+
+In the controller, create a dictionary with the configuration attributes for the date picker:
+
+c.text_input = {'display_text': 'Select',
+				'name': 'select1',
+				'placeholder': 'email',
+				'initial': 'bob@example.com',
+				'prepend': '$',
+				'append': '.00',
+				'icon_prepend': 'icon-envelope',
+				'icon_append': 'icon-download',
+				'disabled': False,
+				'error': 'Here is my error text'}
+			  
+
+{% snippet "snippets/text_input.html", options=c.text_input %}
+
+#}
+
+{% resource 'ckanext_apps/css/tethys_snippets.css' %}
+
+<div class="control-group {% if options.error %} error {% endif %}">
+	{% if options.display_text %}<label class="control-label" for="{{ options.name }}">{{ options.display_text }}</label>{% endif %}
+	<div class="controls">
+		<div class="{% if options.prepend or options.icon_prepend %}input-prepend{% endif %} {% if options.append or options.icon_append %}input-append{% endif %}">
+		  {% if options.prepend %}
+		  	<span class="add-on">{{ options.prepend }}</span>
+		  {% elif options.icon_prepend %}
+		  	<span class="add-on"><i class="{{ options.icon_prepend }}"></i></span>
+		  {% endif %}
+		  <input id="{{ options.name }}"
+	  			 name="{{ options.name }}"
+	  			 type="text"
+	  			 {% if options.placeholder %}placeholder="{{ options.placeholder }}"{% endif %}
+	  			 {% if options.initial %}value="{{ options.initial }}"{% endif %}
+	  			 {% if options.disabled %}disabled{% endif %} >
+		  {% if options.append %}
+		  	<span class="add-on">{{ options.append }}</span>
+		  {% elif options.icon_append %}
+		  	<span class="add-on"><i class="{{ options.icon_append }}"></i></span>
+		  {% endif %}
+		</div>
+	</div>
+	{% if options.error %}
+	<span class="help-inline">{{ options.error }}</span>
+	{% endif %}
+</div>

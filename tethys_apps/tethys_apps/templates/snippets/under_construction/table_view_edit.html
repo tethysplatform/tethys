@@ -1,0 +1,69 @@
+{#
+Display tabular data in a table view.
+
+title = title to appear at the top of the table view. Enter as None for no title.
+form = dictionary with form attributes.
+column_names = tuple of strings for column names.
+rows = list of tuples where each tuple contains the input objects that will be used 
+	   to populate the columns of each row.
+table_class = string of space delimited classes for the table (optional). See
+			  Twitter Bootstrap documentation on tables for possibilities.
+
+Note: Make sure the number of values in each row tuple is the same as the number of
+	  values in the column_names tuple. Also make sure the values in the row tuples
+	  are aligned with the appropriate column_names (same order as column_names).
+
+Example:
+
+In the controller, pass the following variables to the template using c:
+
+c.table_view_edit = {'column_names': ('Name', 'Age', 'Job'), 
+                             'rows': [('Bill', 30, 'contractor'),
+                                      ('Fred', 18, 'programmer'),
+                                      ('Bob', 26, 'boss')],
+                             'hover': True,
+                             'striped': True,
+                             'bordered': False,
+                             'condensed': False,
+                             'editable_columns': (False, 'ageInput', 'jobInput'),
+                             'row_ids': [21, 25, 31]}
+
+
+{% snippet "snippets/table_view_edit.html", title=c.title, form=c.form, column_names=c.column_names, rows=c.rows, table_class=None %}
+
+#}
+
+{% if title %}<h2>{{ _(title) }}</h2>{% endif %}
+<form id="{{ form['id'] }}" method="{{ form['method'] }}" action="{{ form['action'] }}">
+  <table {% if table_class %} class="{{ table_class }}" {% else %} class="table table-bordered table-hover" {% endif %}>
+    <thead>
+      <tr>
+      {% for column_name in column_names %}
+        <th>{{ column_name }}</th>    
+      {% endfor %} 
+      	<th class="delete-column">Delete</th> <!--Delete column header (empty)-->
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+      {% for column in row.columns %}
+          <td>
+          {% if  column['type'] != 'static' %}
+            <input class="tabular-input" group="{{ 'remove_group_' + row['id']|string }}" type="{{ column['type'] }}" name="{{ column['name'] }}" style="margin-bottom: 0px" 
+                   value="{{ column['value'] }}" />
+          {% else %}
+          	  {{ column['value'] }} 
+          {% endif %}
+          </td>
+      {% endfor %}
+      	  <td class="delete-column">
+      	  	<label class="tabular-delete checkbox btn btn-danger icon-remove" for="{{ 'remove_check_' + row['id']|string }}" >
+              <input class="tabular-delete-box" for="{{ 'remove_group_' + row['id']|string }}" type="checkbox" id="{{ 'remove_check_' + row['id']|string }}" name="{{ 'delete_' + row['id']|string }}" style="visibility: hidden;">
+            </label>
+      	  </td>
+      </tr>      
+      {% endfor %}
+    </tbody>
+  </table>
+</form>

@@ -1,0 +1,24 @@
+{% extends "page.html" %}
+
+{% block styles %}
+	{{ super() }}
+	{% resource 'ckanext_apps/css/tethys_apps.css' %}
+	{% resource 'ckanext_apps/vendor/prism/prism.css' %}
+{% endblock %}
+
+{% block primary_content %}
+  <div class="module">
+    <div class="module-content">
+      <h1>FetchClimate</h1>
+      {% snippet "snippets/fetchclimate.html", options=c.fetchclimate_map %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block secondary_content %}
+
+{% endblock %}
+
+{% block scripts %}
+	{{ super() }}	
+{% endblock %}

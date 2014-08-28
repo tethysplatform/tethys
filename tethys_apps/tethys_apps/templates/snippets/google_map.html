@@ -1,0 +1,45 @@
+{#
+Display a google map widget
+
+height - height of map container (normal css units)
+width - width of map container (normal css units)
+kml_service - a web service/link that returns a json object with key 'kml_url'
+			  and a value that is a publicly accessible link to a kml/kmz file
+			  that is to be loaded into the map. e.g.: '/apps/my-app/kml-service'
+map_api_key - A valid Google Maps API key for systems that do not support he google earth plugin
+
+Example:
+
+Controller
+
+	c.google_map = {'height': '500px',
+	                'width': '100%',
+	                'kml_service': '/apps/my-app/get-kml',
+	                'maps_api_key':'S0mEaPIk3y'}
+
+Template
+
+    {% snippet "snippets/google_map.html", options=c.google_map %}
+#}
+
+{% resource 'ckanext_apps/css/tethys_snippets.css' %}
+
+<div id="outerContainer">
+	<!--  -->
+	<div id="google_map_loading" class="center-parent google_map_loading"
+		 style="height: {% if options.height %} {{ options.height }} {% else %} 400px {% endif %};
+		 width: {% if options.width %} {{ options.width }} {% else %} 400px {% endif %};
+		 background-color:#efefef;" {% if options.kml_service %} data-kml-service="{{ options.kml_service }}" {% endif %}>
+		<div class="centered" on>
+			<img src="/images/ajax-loader.gif" />
+			<h5>Retrieving Data...</h5>
+		</div>
+	</div>
+</div> <!-- end outerContainer -->
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+{% if maps_api_key != '' %}
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ options.maps_api_key }}&sensor=false"></script>
+{% endif %}
+
+{% resource 'ckanext_apps/js/tethys_map.js' %}

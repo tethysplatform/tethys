@@ -1,0 +1,44 @@
+{#
+Toggle switches can be used as an alternative to check boxes for boolean or binomial input.
+
+select_input = a dictionary with configuration key-value pairs
+
+Example:
+
+In the controller, create a dictionary with the configuration attributes for the date picker:
+
+c.select_input = {'display_text': 'Select',
+				  'name': 'select1',
+				  'multiple': False,
+				  'options': [('One', '1'), ('Two', '2'), ('Three', '3')],
+				  'initial': ['2'],
+				  'disabled': False,
+				  'error': 'Here is my error text'}
+			  
+
+{% snippet "snippets/select_input.html", options=c.select_input %}
+
+#}
+
+{% resource 'ckanext_apps/css/tethys_snippets.css' %}
+
+<div class="control-group {% if options.error %} error {% endif %}">
+	{% if options.display_text %}<label class="control-label" for="{{ options.name }}">{{ options.display_text }}</label>{% endif %}
+	<div class="controls">
+		<select id="{{ options.name }}" 
+				name="{{ options.name }}" 
+				{% if options.multiple %}multiple{% endif %}
+				{% if options.disabled %}disabled{% endif %}>
+			{% for option, value in options.options %}
+				{% if options.initial and option in options.initial %}
+				<option value="{{value}}" selected>{{- option -}}</option>
+				{% else %}
+				<option value="{{value}}">{{- option -}}</option>
+				{% endif %}
+			{% endfor %}
+		</select>
+	</div>
+	{% if options.error %}
+	<span class="help-inline">{{ options.error }}</span>
+	{% endif %}
+</div>

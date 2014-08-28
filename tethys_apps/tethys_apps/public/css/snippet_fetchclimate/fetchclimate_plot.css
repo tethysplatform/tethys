@@ -1,0 +1,32 @@
+.plot-parent {
+    position: relative;
+}
+.plot-overlay {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+
+.plot-loading {
+  position: absolute;
+  top: 50%;
+  left: 25%;
+  z-index:99;
+	width:25%;
+	-moz-box-shadow: 0px 0px 10px #000000;
+	-webkit-box-shadow: 0px 0px 10px #000000;
+	box-shadow: 0px 0px 10px #000000;
+	/*IE 7 AND 8 DO NOT SUPPORT BLUR PROPERTY OF SHADOWS*/
+}
+
+.plot-error {
+    width: 50px;
+    height: 57px;
+    position: absolute;
+		background: red;
+    top: 50%;
+    left: 50%;
+    margin: -28px 0 0 -25px;
+}
+#fetchclimate_plot {
+  margin-bottom: 40px;
+}

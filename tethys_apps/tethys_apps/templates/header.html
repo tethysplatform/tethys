@@ -1,0 +1,18 @@
+{% ckan_extends %}
+
+{# Add custom nave to mobile button nav #}
+{% block mobile_site_navigation %}
+	{{ h.build_nav_main(
+		('apps', _('Apps'))
+	)}}
+	{{ super() }}
+{% endblock %}
+
+{# Add custom nav button to nav #}
+
+{% block header_site_navigation_tabs %}
+	{{ h.build_nav_main(
+		('apps', _('Apps'))
+	)}}
+	{{ super() }}
+{% endblock %}
