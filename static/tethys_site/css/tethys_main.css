@@ -1750,6 +1750,12 @@ footer.site-footer {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
+.profile-section .profile-parameters label.error-label {
+  text-align: left;
+  margin-left: 30%;
+  padding-left: 15px;
+  width: 50%;
+}
 .profile-section .profile-parameters .form-control-static {
   font-size: 18px;
   font-weight: 300;
@@ -1802,6 +1808,11 @@ footer.site-footer {
   .profile-section .profile-parameters label {
     width: 100%;
     padding-left: 0;
+  }
+  .profile-section .profile-parameters label.error-label {
+    margin-left: 0;
+    padding-left: 15px;
+    width: 100%;
   }
   #settings-buttons .btn-toolbar {
     float: none!important;

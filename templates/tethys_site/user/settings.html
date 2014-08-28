@@ -37,11 +37,16 @@
 {% endblock %}
 
 {% block gravatar_parameters %}
-  <div class="form-group">
+  <div class="form-group {% if form.email.errors %}has-error{% endif %}">
     <label for="id_email" class="control-label col-md-3">Email:</label>
     <div class="col-md-6">
       {{ form.email }}
     </div>
+    {% if form.email.errors %}
+      {% for error in form.email.errors %}
+        <label for="id_email" class="control-label error-label">{{ error }}</label>
+      {% endfor %}
+    {% endif %}
   </div>
 {% endblock %}
 
