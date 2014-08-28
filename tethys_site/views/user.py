@@ -51,8 +51,8 @@ def change_password(request, username=None):
 
         if form.is_valid():
             # Validate the old and new passwords
-            form.clean_current_password()
-            form.clean_confirm_password()
+            form.clean_old_password()
+            form.clean_new_password2()
 
             # If no exceptions raised to here, then the old password is valid and the new passwords match.
             # Save the new passwords to the database.

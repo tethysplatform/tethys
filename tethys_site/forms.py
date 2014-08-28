@@ -6,7 +6,8 @@ class LoginForm(forms.Form):
     username = forms.CharField(max_length=30,
                                label='',
                                widget=forms.TextInput(
-                                   attrs={'placeholder': 'Username'}
+                                   attrs={'placeholder': 'Username',
+                                          'autofocus': 'autofocus'}
                                )
     )
     password = forms.CharField(label='',
@@ -29,7 +30,15 @@ class RegisterForm(forms.ModelForm):
     username = forms.RegexField(label='', max_length=30,
         regex=r'^[\w.@+-]+$',
         error_messages={'invalid': "This value may contain only letters, numbers and @/./+/-/_ characters."},
-        widget=forms.TextInput(attrs={'placeholder': 'Username'}),
+        widget=forms.TextInput(attrs={'placeholder': 'Username',
+                                      'autofocus': 'autofocus'}
+        )
+    )
+
+    email = forms.CharField(label='',
+                            max_length=30,
+                            widget=forms.EmailInput(attrs={'placeholder': 'Email'}
+                            )
     )
 
     password1 = forms.CharField(label='',
@@ -42,7 +51,7 @@ class RegisterForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ("username",)
+        fields = ("username", "email")
 
     def clean_username(self):
         # Since User.username is unique, this check is redundant,
@@ -84,7 +93,8 @@ class UserSettingsForm(forms.ModelForm):
                                  required=False,
                                  widget=forms.TextInput(
                                      attrs={'placeholder': '',
-                                            'class': 'form-control'}
+                                            'class': 'form-control',
+                                            'autofocus': 'autofocus'}
                                  )
     )
 
@@ -99,7 +109,6 @@ class UserSettingsForm(forms.ModelForm):
 
     email = forms.EmailField(max_length=30,
                              label='Email:',
-                             required=False,
                              widget=forms.EmailInput(
                                  attrs={'placeholder': '',
                                         'class': 'form-control'}
@@ -115,52 +124,59 @@ class UserPasswordChangeForm(forms.Form):
     """
     A form that lets a user change their password by entering their old one.
     """
+    error_messages = {
+        'password_mismatch': "The two password fields didn't match.",
+        'password_incorrect': "Your old password was entered incorrectly. Please enter it again.",
+    }
 
-    current_password = forms.CharField(required=False,
-                                       label='',
-                                       widget=forms.PasswordInput(
-                                           attrs={'placeholder': 'Old Password'}
-                                       ))
+    old_password = forms.CharField(label="",
+                                   widget=forms.PasswordInput(
+                                       attrs={'placeholder': 'Old Password',
+                                              'autofocus': 'autofocus'}
+                                   )
+    )
 
-    password = forms.CharField(required=False,
-                               label='',
-                               widget=forms.PasswordInput(
-                                   attrs={'placeholder': 'New Password'}
-                               ))
+    new_password1 = forms.CharField(label="",
+                                    widget=forms.PasswordInput(
+                                       attrs={'placeholder': 'New Password'}
+                                   )
+    )
 
-    confirm_password = forms.CharField(required=False,
-                                       label='',
-                                       widget=forms.PasswordInput(
-                                           attrs={'placeholder': 'Confirm New Password'}
-                                       ))
+    new_password2 = forms.CharField(label="",
+                                    widget=forms.PasswordInput(
+                                       attrs={'placeholder': 'Confirm New Password'}
+                                   )
+    )
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
         super(UserPasswordChangeForm, self).__init__(*args, **kwargs)
 
-    def clean_current_password(self):
-        # If the user entered the current password, make sure it's right
-        if self.cleaned_data['current_password'] and not self.user.check_password(self.cleaned_data['current_password']):
-            raise forms.ValidationError('This is not your current password. Please try again.')
+    def clean_old_password(self):
+        """
+        Validates that the old_password field is correct.
+        """
+        old_password = self.cleaned_data["old_password"]
+        if not self.user.check_password(old_password):
+            raise forms.ValidationError(
+                self.error_messages['password_incorrect'],
+                code='password_incorrect',
+            )
+        return old_password
 
-        # If the user entered the current password, make sure they entered the new passwords as well
-        if self.cleaned_data['current_password'] and not (self.cleaned_data['password'] or self.cleaned_data['confirm_password']):
-            raise forms.ValidationError('Please enter a new password and a confirmation to update.')
-
-        return self.cleaned_data['current_password']
-
-    def clean_confirm_password(self):
-        # Make sure the new password and confirmation match
-        password1 = self.cleaned_data.get('password')
-        password2 = self.cleaned_data.get('confirm_password')
-
-        if password1 != password2:
-            raise forms.ValidationError("Your passwords didn't match. Please try again.")
-
-        return self.cleaned_data.get('confirm_password')
+    def clean_new_password2(self):
+        password1 = self.cleaned_data.get('new_password1')
+        password2 = self.cleaned_data.get('new_password2')
+        if password1 and password2:
+            if password1 != password2:
+                raise forms.ValidationError(
+                    self.error_messages['password_mismatch'],
+                    code='password_mismatch',
+                )
+        return password2
 
     def save(self, commit=True):
-        self.user.set_password(self.cleaned_data['password'])
+        self.user.set_password(self.cleaned_data['new_password1'])
         if commit:
             self.user.save()
         return self.user
