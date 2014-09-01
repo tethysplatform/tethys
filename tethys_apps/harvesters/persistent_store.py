@@ -1,8 +1,9 @@
-import os, sys, ConfigParser
+import os
+import sys
+import ConfigParser
 
 from sqlalchemy import create_engine
-
-from .persistent_store_harvester import PersistentStoreHarvester
+from .tethys_apps.harvesters.persistent_store_harvester import PersistentStoreHarvester
 from .app_base import AppBase
 
 def provision_persistent_stores(app_module_path):
