@@ -1,0 +1,27 @@
+{% extends "my_first_app/app_base.html" %}
+
+{% block breadcrumb_content %}
+  <li><a href="{% url_for 'apps' %}">Apps</a></li>
+  <li><a href="/apps/my-first-app">My First App</a></li>
+  <li class="active"><a href="#">New Page</a></li>
+{% endblock %}
+
+{% block primary_content %}
+  <div class="module">
+    <div class="module-content">
+      <h1>Hello World!</h1>
+    </div>
+  </div>
+{% endblock %}
+
+{% block secondary_content %}
+  <div class="module module-narrow module-shallow">
+    <h2 class="module-heading">
+      <i class="icon-info-sign"></i>
+      Welcome
+    </h2>
+    <div class="module-content">
+            <p>Welcome to my new page!</p>
+    </div>
+  </div>
+{% endblock %}
