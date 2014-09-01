@@ -7,12 +7,16 @@
 ********************************************************************************
 '''
 
-import json, time, os, ConfigParser
+import json
+import time
+import os
+import ConfigParser
 from datetime import datetime
-from pylons import session
 
-from app_harvester import SingletonAppHarvester
+from pylons import session
+from tethys_apps.harvesters.app_harvester import SingletonAppHarvester
 from app_global_store import SingletonAppGlobalStore
+
 
 def set_session_global(key, value):
     '''

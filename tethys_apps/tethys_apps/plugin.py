@@ -25,7 +25,7 @@ class AppsExtension(p.SingletonPlugin):
     
     #: Instantiate SingletonAppHarvester
     harvester = SingletonAppHarvester()
-    harvester.harvestApps()
+    harvester.harvest_apps()
     
     def after_map(self, map):        
         # Controller for the apps plugin
