@@ -97,15 +97,26 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates'), ]
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
+TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'), )
+
+TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader',
+                    'tethys_apps.utilities.tethys_apps_template_loader')
+
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
+
+STATICFILES_FINDERS = ('django.contrib.staticfiles.finders.FileSystemFinder',
+                       'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+                       'tethys_apps.utilities.TethysAppsStaticFinder')
+
+
 
 # Messaging settings
 MESSAGE_TAGS = {message_constants.DEBUG: 'alert-danger',
                 message_constants.INFO: 'alert-info',
                 message_constants.SUCCESS: 'alert-success',
                 message_constants.WARNING: 'alert-warning',
-                message_constants.ERROR: 'alert-danger',}
+                message_constants.ERROR: 'alert-danger'}
 
 # Gravatar Settings
 GRAVATAR_URL = 'http://www.gravatar.com/'
