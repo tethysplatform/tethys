@@ -1,0 +1,57 @@
+@secondary-header-background: #1b95dc;
+
+
+.tethys-secondary-header {
+  position: relative;
+  height: 120px;
+  background: @secondary-header-background;
+  margin-bottom: 70px;
+
+  .image-wrapper {
+    position: relative;
+    float: left;
+    padding: 20px;
+
+    img {
+      border-radius: 50%;
+      height: 150px;
+      background: @secondary-header-background;
+      box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .secondary-title-wrapper {
+    float: left;
+
+    .secondary-title {
+      display: block;
+      color: white;
+      font-size: 60px;
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+      padding: 17px 0;
+    }
+  }
+}
+
+@media (max-width: 700px) {
+
+  .tethys-secondary-header {
+
+    .image-wrapper {
+      padding: 20px 20px;
+
+      img {
+        height: 80px;
+        box-shadow: none;
+      }
+    }
+
+    .secondary-title-wrapper {
+      .secondary-title {
+        font-size: 40px;
+        padding: 31px 0;
+      }
+    }
+  }
+}
