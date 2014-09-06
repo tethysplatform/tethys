@@ -23,5 +23,5 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include(account_urls, namespace='accounts')),
     url(r'^user/(?P<username>\w+)/', include(user_urls, namespace='user')),
-    url(r'^apps/', include('tethys_apps.urls', namespace='apps'))
+    url(r'^apps/', include('tethys_apps.urls'))
 )
