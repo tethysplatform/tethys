@@ -99,17 +99,7 @@ STATIC_URL = '/static/'
 
 TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'), )
 
-TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',
-                    'django.template.loaders.app_directories.Loader',
-                    'tethys_apps.utilities.tethys_apps_template_loader')
-
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
-
-STATICFILES_FINDERS = ('django.contrib.staticfiles.finders.FileSystemFinder',
-                       'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-                       'tethys_apps.utilities.TethysAppsStaticFinder')
-
-
 
 # Messaging settings
 MESSAGE_TAGS = {message_constants.DEBUG: 'alert-danger',
@@ -145,3 +135,20 @@ SERVER_EMAIL = EMAIL_HOST_USER
 
 # Tethys apps settings
 TETHYS_APPS_DIRECTORY = os.path.join(BASE_DIR, '')
+
+STATICFILES_FINDERS = ('django.contrib.staticfiles.finders.FileSystemFinder',
+                       'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+                       'tethys_apps.utilities.TethysAppsStaticFinder')
+
+TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',
+                    'django.template.loaders.app_directories.Loader',
+                    'tethys_apps.utilities.tethys_apps_template_loader')
+
+TEMPLATE_CONTEXT_PROCESSORS = ('django.contrib.auth.context_processors.auth',
+                               'django.core.context_processors.debug',
+                               'django.core.context_processors.i18n',
+                               'django.core.context_processors.media',
+                               'django.core.context_processors.static',
+                               'django.core.context_processors.tz',
+                               'django.contrib.messages.context_processors.messages',
+                               'tethys_apps.context_processors.tethys_apps_context',)

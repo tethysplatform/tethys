@@ -12,49 +12,40 @@
     {% include "header.html" %}
   {% endblock %}
 
-  {# Use wrapper_class to add classes to the content wrapper element #}
-  <div id="site-wrapper" class="wrapper{% block wrapper_class %}{% endblock %}">
-    {% block flash %}
-      {% if messages %}
-        <div class="flash-messages">
-          {% comment "flash_messages explanation" %}
-            Use the flash messages block to display temporary feedback to the user. Pass
-            a list of dictionaries called "flash_messages". Each dictionary should have the
-            keys "category" and "text". The category can be any of: "success", "info",
-            "warning", and "danger". The category is used to style the message. The text is
-            the text of the message to be displayed. The alerts that will be displayed are
-            dismissible. To create custom alerts, override the "flash" block.
-          {% endcomment %}
+  {# Use wrapper class to add classes to the content wrapper element #}
+  {% block site_wrapper_override %}
+    <div id="site-wrapper" class="wrapper{% block wrapper_class %}{% endblock %}">
+      {% block flash %}
+        {% if messages %}
+          <div class="flash-messages">
+            {% comment "flash_messages explanation" %}
+              Use the flash messages block to display temporary feedback to the user. Pass
+              a list of dictionaries called "flash_messages". Each dictionary should have the
+              keys "category" and "text". The category can be any of: "success", "info",
+              "warning", and "danger". The category is used to style the message. The text is
+              the text of the message to be displayed. The alerts that will be displayed are
+              dismissible. To create custom alerts, override the "flash" block.
+            {% endcomment %}
 
-          {% for message in messages %}
-            <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible" role="alert">
-              <button type="button" class="close" data-dismiss="alert">
-                <span aria-hidden="true">&times;</span>
-                <span class="sr-only">Close</span>
-              </button>
-              {{ message }}
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endblock %}
-
-    <div class="content">
+            {% for message in messages %}
+              <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert">
+                  <span aria-hidden="true">&times;</span>
+                  <span class="sr-only">Close</span>
+                </button>
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endblock %}
       {% block content %}
-        {% block primary %}
-          <div class="primary">
-            {% block primary_content %}{% endblock %}
-          </div>
-        {% endblock %}
-
-        {% block secondary %}
-          <div class="secondary">
-            {% block secondary_content %}{% endblock %}
-          </div>
-        {% endblock %}
+        <div id="content">
+          {% block primary_content %}{% endblock %}
+        </div>
       {% endblock %}
     </div>
-  </div>
+  {% endblock %}
 
   {% comment "footer explanation"  %}
     Override the footer on a page by page basis by extending this block. If
