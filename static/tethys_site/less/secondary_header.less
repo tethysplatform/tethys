@@ -8,13 +8,15 @@
   margin-bottom: 70px;
 
   .image-wrapper {
-    position: relative;
-    float: left;
+    position: absolute;
+    top: 0;
+    left: 0;
     padding: 20px;
+    z-index: 100;
 
     img {
       border-radius: 50%;
-      height: 150px;
+      width: 150px;
       background: @secondary-header-background;
       box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
     }
@@ -30,6 +32,7 @@
       font-weight: 300;
       -webkit-font-smoothing: antialiased;
       padding: 17px 0;
+      padding-left: 200px;
     }
   }
 }

@@ -164,10 +164,11 @@ a:hover {
   vertical-align: middle;
   width: 200px;
 }
-.content {
+#content {
   position: relative;
+  min-height: 100%;
 }
-.content .row {
+#content .row {
   margin-right: 0;
   margin-left: 0;
 }
@@ -180,6 +181,7 @@ a:hover {
   margin-bottom: -500px;
   min-height: 100%;
   padding-top: 80px;
+  position: relative;
 }
 #site-wrapper:after {
   content: "";
@@ -1843,13 +1845,15 @@ footer.site-footer {
   margin-bottom: 70px;
 }
 .tethys-secondary-header .image-wrapper {
-  position: relative;
-  float: left;
+  position: absolute;
+  top: 0;
+  left: 0;
   padding: 20px;
+  z-index: 100;
 }
 .tethys-secondary-header .image-wrapper img {
   border-radius: 50%;
-  height: 150px;
+  width: 150px;
   background: #1b95dc;
   box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
 }
@@ -1863,6 +1867,7 @@ footer.site-footer {
   font-weight: 300;
   -webkit-font-smoothing: antialiased;
   padding: 17px 0;
+  padding-left: 200px;
 }
 @media (max-width: 700px) {
   .tethys-secondary-header .image-wrapper {
