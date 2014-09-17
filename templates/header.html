@@ -5,8 +5,7 @@
   <div class="mobile-nav mobile-nav-links">
     <ul>
       {% block mobile_nav_items %}
-        <li><a href="/" title="Apps">Apps</a></li>
-        <li><a href="/" title="Community">Community</a></li>
+        <li><a href="{% url 'app_library' %}" title="Apps">Apps</a></li>
       {% endblock %}
     </ul>
   </div>
@@ -60,9 +59,7 @@
     <ul class="header-nav">
       {% block header_nav_items %}
         {% if user.is_authenticated and user.is_active %}
-          <li><a href="/" title="Apps">Favorites</a></li>
-          <li><a href="/" title="Community">Apps</a></li>
-          <li><a href="/" title="Community">Datasets</a></li>
+          <li><a href="{% url 'app_library' %}" title="Apps">Apps</a></li>
         {% endif %}
       {% endblock %}
 
