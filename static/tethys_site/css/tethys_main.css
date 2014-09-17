@@ -86,6 +86,7 @@ h2 {
   line-height: 52px;
   font-weight: 200;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   color: #666;
 }
 h3 {
@@ -93,6 +94,7 @@ h3 {
   line-height: 36px;
   font-weight: 200;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   color: #666;
 }
 h4 {
@@ -257,7 +259,7 @@ a:hover {
 	padding: 9px 14px;
 	color: #505050;
 	font-weight: bold;
-	-webkit-font-smoothing: antialiased;
+	.font-smoothing();
 	border-radius: 5px;
 	text-shadow: none;
 	box-shadow: none;
@@ -596,9 +598,11 @@ a:hover {
   font-size: 36px;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .site-header .header-logo a:hover {
   color: #eaeaea;
+  text-decoration: none;
 }
 .site-header .header-nav {
   position: relative;
@@ -616,6 +620,7 @@ a:hover {
   color: #dddddd;
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   font-size: 18px;
   line-height: 40px;
   cursor: pointer;
@@ -846,6 +851,7 @@ a:hover {
     font-size: 20px;
     font-weight: 600;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     padding: 6px 10px;
   }
 }
@@ -867,8 +873,6 @@ a:hover {
   position: fixed;
   width: 100%;
   height: 500px;
-  /*background-image: url(images/textures/water-paint-2.jpg);*/
-
   background: white;
   background-position: center;
   background-size: 100%;
@@ -903,6 +907,7 @@ a:hover {
 .hero-message a:hover {
   background-color: #2ca6ed;
   color: white;
+  text-decoration: none;
 }
 @media (max-width: 1050px) {
   .float-image {
@@ -1018,6 +1023,7 @@ a:hover {
   margin-top: 1em;
   line-height: 1.4;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 @media (max-width: 1050px) {
   .features .feature span {
@@ -1148,6 +1154,9 @@ a:hover {
   width: 300px;
   margin-left: -150px;
   cursor: pointer;
+}
+.get-started .hero-action:hover {
+  text-decoration: none;
 }
 @media (max-width: 515px) {
   .get-started .get-started-message {
@@ -1445,10 +1454,12 @@ li.dataset-item .dataset-content h3.dataset-heading a:hover {
 li.dataset-item .dataset-content div {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 li.dataset-item .dataset-content p {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .toolbar {
   margin-top: 5px;
@@ -1468,6 +1479,7 @@ li.dataset-item .dataset-content p {
 .media-grid .media-item .media-content p {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .module-content.page-header {
   height: 40px;
@@ -1493,6 +1505,7 @@ li.dataset-item .dataset-content p {
 .notes.embedded-content p {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .module-content h3 {
   font-weight: normal;
@@ -1553,6 +1566,7 @@ footer.site-footer {
   min-height: 50px;
   width: 30%;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-align: center;
 }
 .footer-col:nth-child(3) {
@@ -1670,6 +1684,7 @@ footer.site-footer {
   color: #555555;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .account-form-wrapper .account-form-body {
   margin-top: 50px;
@@ -1697,6 +1712,7 @@ footer.site-footer {
   font-size: 60px;
   font-weight: 300;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   padding-top: 130px;
   padding-left: 30px;
 }
@@ -1732,6 +1748,7 @@ footer.site-footer {
   font-size: 18px;
   font-weight: 300;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .profile-section .profile-parameters ul li .parameter {
   float: left;
@@ -1751,6 +1768,7 @@ footer.site-footer {
   font-size: 18px;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .profile-section .profile-parameters label.error-label {
   text-align: left;
@@ -1762,6 +1780,7 @@ footer.site-footer {
   font-size: 18px;
   font-weight: 300;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .profile-section .profile-parameters .form-control-static .btn {
   margin-top: -4px;
@@ -1866,6 +1885,7 @@ footer.site-footer {
   font-size: 60px;
   font-weight: 300;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   padding: 17px 0;
   padding-left: 200px;
 }
