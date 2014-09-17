@@ -38,10 +38,11 @@
         a {
             font-size: 36px;
             font-weight: 400;
-            -webkit-font-smoothing: antialiased;
+            .font-smoothing();
 
             &:hover {
                 color: #eaeaea;
+                text-decoration: none;
             }
         }
 	}
@@ -61,7 +62,7 @@
 				  display: block;
 				  color: #dddddd;
 				  font-weight: 500;
-				  -webkit-font-smoothing: antialiased;
+				  .font-smoothing();
 				  font-size: 18px;
 				  line-height: 40px;
 				  cursor: pointer;
@@ -340,7 +341,7 @@
           width: auto;
           font-size: 20px;
           font-weight: 600;
-          -webkit-font-smoothing: antialiased;
+          .font-smoothing();
           padding: 6px 10px;
       }
   }
