@@ -2,3 +2,4 @@ django-gravatar2
 django-social-auth
 django-bootstrap3
 paste
+psycopg2
