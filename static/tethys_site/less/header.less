@@ -22,8 +22,8 @@
 
 .site-header {
     display: block;
-    width: 100%;
     height: @header-height;
+    margin: 0 50px;
 
     a {
         color: #ffffff;
@@ -32,7 +32,6 @@
 	.header-logo {
 		float: left;
 		margin: 2px 0;
-		margin-left: 20px;
         min-height: 55px;
 
         a {
@@ -52,7 +51,6 @@
 	 	list-style: none;
 	  	float: right;
 	  	margin: 20px 0;
-	  	margin-right: 20px;
 	  
 		  li {
 			  float: left;
@@ -283,6 +281,10 @@
 
 @media (max-width: 700px) {
 
+  .site-header {
+      margin: 0 20px;
+  }
+
   .header-nav {
       display: none;
   }
@@ -297,7 +299,6 @@
       padding-bottom: 6px;
       margin-top: 20px;
       margin-left: 10px;
-      margin-right: 20px;
       border-radius: 5px;
 
       &:hover {
