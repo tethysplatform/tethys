@@ -582,8 +582,8 @@ a:hover {
 }
 .site-header {
   display: block;
-  width: 100%;
   height: 80px;
+  margin: 0 50px;
 }
 .site-header a {
   color: #ffffff;
@@ -591,7 +591,6 @@ a:hover {
 .site-header .header-logo {
   float: left;
   margin: 2px 0;
-  margin-left: 20px;
   min-height: 55px;
 }
 .site-header .header-logo a {
@@ -609,7 +608,6 @@ a:hover {
   list-style: none;
   float: right;
   margin: 20px 0;
-  margin-right: 20px;
 }
 .site-header .header-nav li {
   float: left;
@@ -801,6 +799,9 @@ a:hover {
   display: none;
 }
 @media (max-width: 700px) {
+  .site-header {
+    margin: 0 20px;
+  }
   .header-nav {
     display: none;
   }
@@ -813,7 +814,6 @@ a:hover {
     padding-bottom: 6px;
     margin-top: 20px;
     margin-left: 10px;
-    margin-right: 20px;
     border-radius: 5px;
   }
   .mobile-nav-button:hover {
