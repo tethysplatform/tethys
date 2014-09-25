@@ -156,3 +156,7 @@ TEMPLATE_CONTEXT_PROCESSORS = ('django.contrib.auth.context_processors.auth',
                                'django.core.context_processors.tz',
                                'django.contrib.messages.context_processors.messages',
                                'tethys_apps.context_processors.tethys_apps_context',)
+
+# Tethys App Persistent Stores
+TETHYS_APPS_DATABASE_MANAGER_URL = 'postgresql://tethys_db_manager:tethyspass@localhost:5432/tethys_db_manager'
+TETHYS_APPS_SUPERUSER = 'postgresql://tethys_super:tethyspass@localhost:5432/tethys_super'
