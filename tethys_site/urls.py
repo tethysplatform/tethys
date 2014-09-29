@@ -18,10 +18,16 @@ user_urls = [
     url(r'^change-password/$', 'tethys_site.views.user.change_password', name='change_password'),
 ]
 
+developer_urls = [
+    url(r'^$', 'tethys_site.views.developer.home', name='developer_home'),
+    url(r'^gizmos/', include('tethys_gizmos.urls', namespace='gizmos')),
+]
+
 urlpatterns = patterns('',
     url(r'^$', 'tethys_site.views.home.home', name='home'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include(account_urls, namespace='accounts')),
     url(r'^user/(?P<username>\w+)/', include(user_urls, namespace='user')),
-    url(r'^apps/', include('tethys_apps.urls'))
+    url(r'^apps/', include('tethys_apps.urls')),
+    url(r'^developer/', include(developer_urls))
 )
