@@ -102,6 +102,54 @@ h4 {
   font-weight: 400;
   color: #666;
 }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 10px 0;
+  color: #666666;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+h1 {
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 60px;
+  color: #666666;
+}
+h2 {
+  font-size: 36px;
+  font-weight: 300;
+  line-height: 40px;
+}
+h3 {
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 36px;
+}
+h4 {
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 36px;
+}
+h5 {
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 28px;
+}
+h6 {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+}
+p {
+  font-size: 15px;
+  color: #666666;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 @media (max-width: 1050px) {
   h2 {
     font-size: 28px;
@@ -1859,7 +1907,7 @@ footer.site-footer {
 }
 .tethys-secondary-header {
   position: relative;
-  height: 120px;
+  height: 100px;
   background: #1b95dc;
   margin-bottom: 70px;
 }
@@ -1872,7 +1920,7 @@ footer.site-footer {
 }
 .tethys-secondary-header .image-wrapper img {
   border-radius: 50%;
-  width: 150px;
+  width: 120px;
   background: #1b95dc;
   box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
 }
@@ -1882,11 +1930,11 @@ footer.site-footer {
 .tethys-secondary-header .secondary-title-wrapper .secondary-title {
   display: block;
   color: white;
-  font-size: 60px;
+  font-size: 40px;
   font-weight: 300;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding: 17px 0;
+  padding: 21px 0;
   padding-left: 200px;
 }
 @media (max-width: 700px) {

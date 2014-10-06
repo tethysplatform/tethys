@@ -1,6 +1,7 @@
-from django.shortcuts import HttpResponse
+from django.shortcuts import HttpResponse, render
 
 
 def home(request):
 
-    return HttpResponse('Hello')
+    context = {}
+    return render(request, 'tethys_site/developer/home.html', context)
