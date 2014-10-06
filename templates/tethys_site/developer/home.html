@@ -1,0 +1,93 @@
+{% extends "page.html" %}
+
+{% load staticfiles %}
+
+{% block styles %}
+  {{ block.super }}
+  <link href="{% static 'tethys_site/css/developer.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block primary_content %}
+  <div class="tethys-secondary-header narrow clearfix">
+    <div class="image-wrapper">
+      <img src="{% static 'tethys_apps/images/apps_library_icon.gif' %}" />
+    </div>
+    <div class="secondary-title-wrapper">
+      <span class="secondary-title">Developer Tools</span>
+    </div>
+  </div>
+  <div id="developer-content-wrapper">
+    <!--<div class="row">-->
+      <!--<div class="col-md-12">-->
+        <!--<p>This is my introductory comment about the developer tools web page.</p>-->
+      <!--</div>-->
+    <!--</div>-->
+    <div class="row">
+      <div class="col-md-6">
+        {# Gizmo Docs ------------------------------------------------------------------------------------------------#}
+        <div class="media">
+          <a class="pull-left" href="{% url 'gizmos:showcase' %}">
+            <img class="media-object" src="http://placehold.it/200x200" alt="Gizmo Documentation">
+          </a>
+          <div class="media-body">
+            <a href="{% url 'gizmos:showcase' %}"><h3 class="media-heading">Gizmos</h3></a>
+            <p>
+              Gizmos are building blocks that can be used to create beautiful interactive controls in Tethys Apps.
+              Using gizmos, developers can add date-pickers, plots, and maps to their templates with minimal coding.
+              Follow this link to learn more about how to use Gizmos in your app.
+            </p>
+            <a href="{% url 'gizmos:showcase' %}">See docs.</a>
+          </div>
+        </div>
+        {# Other Docs ------------------------------------------------------------------------------------------------#}
+        <div class="media">
+          <a class="pull-left" href="{% url 'gizmos:showcase' %}">
+            <img class="media-object" src="http://placehold.it/200x200" alt="Gizmo Documentation">
+          </a>
+          <div class="media-body">
+            <a href="{% url 'gizmos:showcase' %}"><h3 class="media-heading">Other Docs</h3></a>
+            <p>
+              Gizmos are building blocks that can be used to create beautiful interactive controls in Tethys Apps.
+              Using gizmos, developers can add date-pickers, plots, and maps to their templates with minimal coding.
+              Follow this link to learn more about how to use Gizmos in your app.
+            </p>
+            <a href="{% url 'gizmos:showcase' %}">See docs.</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        {# More Docs -------------------------------------------------------------------------------------------------#}
+        <div class="media">
+          <a class="pull-left" href="{% url 'gizmos:showcase' %}">
+            <img class="media-object" src="http://placehold.it/200x200" alt="Gizmo Documentation">
+          </a>
+          <div class="media-body">
+            <a href="{% url 'gizmos:showcase' %}"><h3 class="media-heading">More Docs</h3></a>
+            <p>
+              Gizmos are building blocks that can be used to create beautiful interactive controls in Tethys Apps.
+              Using gizmos, developers can add date-pickers, plots, and maps to their templates with minimal coding.
+              Follow this link to learn more about how to use Gizmos in your app.
+            </p>
+            <a href="{% url 'gizmos:showcase' %}">See docs.</a>
+          </div>
+        </div>
+
+        {# These Docs ------------------------------------------------------------------------------------------------#}
+        <div class="media">
+          <a class="pull-left" href="{% url 'gizmos:showcase' %}">
+            <img class="media-object" src="http://placehold.it/200x200" alt="Gizmo Documentation">
+          </a>
+          <div class="media-body">
+            <a href="{% url 'gizmos:showcase' %}"><h3 class="media-heading">These Docs</h3></a>
+            <p>
+              Gizmos are building blocks that can be used to create beautiful interactive controls in Tethys Apps.
+              Using gizmos, developers can add date-pickers, plots, and maps to their templates with minimal coding.
+              Follow this link to learn more about how to use Gizmos in your app.
+            </p>
+            <a href="{% url 'gizmos:showcase' %}">See docs.</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

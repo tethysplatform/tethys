@@ -6,6 +6,7 @@
     <ul>
       {% block mobile_nav_items %}
         <li><a href="{% url 'app_library' %}" title="Apps">Apps</a></li>
+        <li><a href="{% url 'developer_home' %}" title="Developer">Developer</a></li>
       {% endblock %}
     </ul>
   </div>
@@ -60,6 +61,7 @@
       {% block header_nav_items %}
         {% if user.is_authenticated and user.is_active %}
           <li><a href="{% url 'app_library' %}" title="Apps">Apps</a></li>
+          <li><a href="{% url 'developer_home' %}" title="Developer">Developer</a></li>
         {% endif %}
       {% endblock %}
 

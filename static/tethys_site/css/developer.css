@@ -1,0 +1,14 @@
+#developer-content-wrapper {
+  margin: 0 100px;
+}
+#developer-content-wrapper .media {
+  max-height: 200px;
+}
+#developer-content-wrapper .media img.media-object {
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  background-clip: padding-box;
+}
+#developer-content-wrapper .media .media-body p {
+  text-align: justify;
+}
