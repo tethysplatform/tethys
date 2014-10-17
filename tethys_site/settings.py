@@ -138,8 +138,6 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
 
 # Tethys apps settings
-TETHYS_APPS_DIRECTORY = os.path.join(BASE_DIR, '')
-
 STATICFILES_FINDERS = ('django.contrib.staticfiles.finders.FileSystemFinder',
                        'django.contrib.staticfiles.finders.AppDirectoriesFinder',
                        'tethys_apps.utilities.TethysAppsStaticFinder')
@@ -161,3 +159,7 @@ TEMPLATE_CONTEXT_PROCESSORS = ('django.contrib.auth.context_processors.auth',
 # Tethys App Persistent Stores
 TETHYS_APPS_DATABASE_MANAGER_URL = 'postgresql://tethys_db_manager:tethyspass@localhost:5432/tethys_db_manager'
 TETHYS_APPS_SUPERUSER = 'postgresql://tethys_super:tethyspass@localhost:5432/tethys_super'
+
+# Gizmos globals
+TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY = 'AIzaSyB-0nvmHhbOaaiYx6UN36145lWjUq5c2tg'
+
