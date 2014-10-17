@@ -6,3 +6,4 @@
 *.idea
 *.sqlite3
 *.db
+settings.py
