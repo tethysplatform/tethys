@@ -128,15 +128,6 @@ GOOGLE_CONSUMER_SECRET       = ''
 GOOGLE_OAUTH2_CLIENT_ID      = ''
 GOOGLE_OAUTH2_CLIENT_SECRET  = ''
 
-# Email setup
-EMAIL_USER_TLS = True
-EMAIL_HOST = 'smtp.sendgrid.com'
-EMAIL_PORT = 465
-EMAIL_HOST_USER = 'ciwater'
-EMAIL_HOST_PASSWORD = '8yu(|w@ter'
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-SERVER_EMAIL = EMAIL_HOST_USER
-
 # Tethys apps settings
 STATICFILES_FINDERS = ('django.contrib.staticfiles.finders.FileSystemFinder',
                        'django.contrib.staticfiles.finders.AppDirectoriesFinder',
