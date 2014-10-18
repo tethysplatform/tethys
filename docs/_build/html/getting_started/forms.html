@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Working with Form Data &mdash; Tethys Platform 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html" />
+    <link rel="up" title="Getting Started" href="../getting_started.html" />
+    <link rel="next" title="Configuring Apps" href="configuration.html" />
+    <link rel="prev" title="URL Mapping" href="url_mapping.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuring Apps"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="url_mapping.html" title="URL Mapping"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../getting_started.html" accesskey="U">Getting Started</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="working-with-form-data">
+<h1>Working with Form Data<a class="headerlink" href="#working-with-form-data" title="Permalink to this headline">¶</a></h1>
+<p><strong>Last Updated:</strong> May 27, 2013</p>
+<p>Most apps will use HTML forms to recieve input from the user. In this part of the tutorial, you&#8217;ll learn how to create forms in your template and process the data submitted through the form in your controller.</p>
+<div class="section" id="create-template-with-a-form">
+<h2>Create Template with a Form<a class="headerlink" href="#create-template-with-a-form" title="Permalink to this headline">¶</a></h2>
+<p>An HTML form in the simplest form consists of a set of <tt class="docutils literal"><span class="pre">input</span></tt> element wrapped in a <tt class="docutils literal"><span class="pre">form</span></tt> element. Each <tt class="docutils literal"><span class="pre">input</span></tt> element must have a unique name attribute to be submitted. Several complex input elements are available through <a class="reference internal" href="../glossary.html#term-snippets"><em class="xref std std-term">snippets</em></a>, but this tutorial, we will use a very simple form.</p>
+<ol class="arabic simple">
+<li>Create a new template called <tt class="file docutils literal"><span class="pre">form.html</span></tt> in your templates directory (<tt class="file docutils literal"><span class="pre">~tethysdev/ckanapp-my_first_app/ckanapp/my_first_app/templates/my_first_app/form.html</span></tt>). Copy and paste the following lines into <tt class="file docutils literal"><span class="pre">form.html</span></tt>:</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;my_first_app/app_base.html&quot; %}
+
+{% block breadcrumb_content %}
+  &lt;li&gt;&lt;a href=&quot;{% url_for &#39;apps&#39; %}&quot;&gt;Apps&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/apps/my-first-app&quot;&gt;My First App&lt;/a&gt;&lt;/li&gt;
+  &lt;li class=&quot;active&quot;&gt;&lt;a href=&quot;#&quot;&gt;Username Form&lt;/a&gt;&lt;/li&gt;
+{% endblock %}
+
+{% block primary_content %}
+  &lt;div class=&quot;module&quot;&gt;
+    &lt;div class=&quot;module-content&quot;&gt;
+      &lt;h5&gt;Please enter your name:&lt;/h5&gt;
+      &lt;form method=&quot;post&quot; class=&quot;form-horizontal&quot;&gt;
+        &lt;input type=&quot;text&quot; name=&quot;username-input&quot;&gt;
+        &lt;input type=&quot;submit&quot; name=&quot;username-submit&quot;&gt;
+      &lt;/form&gt;
+      {% if c.username %}
+      &lt;h1&gt;Hello, {{ c.username }}!&lt;/h1&gt;
+      {% endif %}
+    &lt;/div&gt;
+  &lt;/div&gt;
+{% endblock %}
+
+{% block secondary_content %}
+  &lt;div class=&quot;module module-narrow module-shallow&quot;&gt;
+    &lt;h2 class=&quot;module-heading&quot;&gt;
+      &lt;i class=&quot;icon-info-sign&quot;&gt;&lt;/i&gt;
+      Welcome
+    &lt;/h2&gt;
+    &lt;div class=&quot;module-content&quot;&gt;
+            &lt;p&gt;Welcome to my new page!&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+{% endblock %}
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li>Open <tt class="file docutils literal"><span class="pre">index.py</span></tt> in your app <tt class="docutils literal"><span class="pre">controllers</span></tt> package (<tt class="file docutils literal"><span class="pre">~tethysdev/ckanapp-my_first_app/ckanapp/my_first_app/controllers/index.py</span></tt>) and add the following method to your <tt class="docutils literal"><span class="pre">MyFirstAppController</span></tt> class:</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">form</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c"># Tools</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">toolkit</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">c</span>
+
+    <span class="c"># Set default value for username</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+    <span class="c"># Evaluate form if submitted</span>
+    <span class="k">if</span> <span class="s">&#39;username-submit&#39;</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">&#39;username-input&#39;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s">&#39;my_first_app/form.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The form data is made available in the form of a dictionary in the <tt class="docutils literal"><span class="pre">t.request.params</span></tt> object. The values of the fields in your form can be accessed by using the names of the input fields as keys in this dictionary (e.g.: <tt class="docutils literal"><span class="pre">t.request.params['input-name'].</span> <span class="pre">The</span> <span class="pre">``t.request.params</span></tt> object aggregates data submitted through all request types. Alternatively, the data submitted using a POST request can be accessed using <tt class="docutils literal"><span class="pre">t.request.POST</span></tt> and the data submitted through GET request can be accessed using <tt class="docutils literal"><span class="pre">t.request.GET</span></tt>.</p>
+<ol class="arabic simple" start="3">
+<li>Add this controller mapping to the <tt class="docutils literal"><span class="pre">registerControllers</span></tt> method of your <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a> in your <tt class="file docutils literal"><span class="pre">app</span> <span class="pre">configuration</span> <span class="pre">file</span></tt> (<tt class="file docutils literal"><span class="pre">app.py</span></tt>):</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">controllers</span><span class="o">.</span><span class="n">addController</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;my_first_app_action&#39;</span><span class="p">,</span>
+                          <span class="n">url</span><span class="o">=</span><span class="s">&#39;my-first-app/{action}&#39;</span><span class="p">,</span>
+                          <span class="n">controller</span><span class="o">=</span><span class="s">&#39;my_first_app.controllers.index:MyFirstAppController&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li>Navigate to: <a class="reference external" href="http://localhost:5000/apps/my-first-app/form">http://localhost:5000/apps/my-first-app/form</a> . Enter your name in the text field and submit it. Your name is submitted via a POST request to your controller. The controller passes the name back to the template in the <tt class="docutils literal"><span class="pre">c.username</span></tt> template variable, resulting in a warm greeting to yourself.</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Working with Form Data</a><ul>
+<li><a class="reference internal" href="#create-template-with-a-form">Create Template with a Form</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="url_mapping.html"
+                        title="previous chapter">URL Mapping</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="configuration.html"
+                        title="next chapter">Configuring Apps</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/getting_started/forms.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="configuration.html" title="Configuring Apps"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="url_mapping.html" title="URL Mapping"
+             >previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../getting_started.html" >Getting Started</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Nathan Swain.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

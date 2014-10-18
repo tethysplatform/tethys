@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Working with Apps &mdash; Tethys Platform 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="Key Concepts" href="key_concepts.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="key_concepts.html" title="Key Concepts"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="working-with-apps">
+<h1>Working with Apps<a class="headerlink" href="#working-with-apps" title="Permalink to this headline">¶</a></h1>
+<p><strong>Last Updated:</strong> May 21, 2014</p>
+<div class="section" id="apps-project-scaffold">
+<h2>Apps Project Scaffold<a class="headerlink" href="#apps-project-scaffold" title="Permalink to this headline">¶</a></h2>
+<p>CKAN apps are developed as Python packages. The package includes the <tt class="file docutils literal"><span class="pre">apps.py</span></tt> configuration file, Python scripts for the model, views, and controllers of the app, dynamic HTML templates, static resources such as images, and JavaScript and CSS libraries for style and app functionality. The structure and organization of all these parts of an app is very important. Failure to follow the guidelines outlined in <a class="reference internal" href="app_project.html"><em>App Project Structure</em></a> page could result in an app that does not work properly. Conveniently, the Tethys Apps plugin includes a command-line tool for generating the scaffolding of an app package. We strongly encourage developers to use the scaffold every time they start a new app. To create a new app using the scaffold, open a terminal and change to the directory where you would like to create the app package. Execute the following commands:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ mkdir ~/tethysdev
+$ cd ~/tethysdev
+$ paster create -t ckanapp ckanapp-example
+</pre></div>
+</div>
+<p>Replace ckanapp-example with the name of your app. Tethys Apps projects must begin with the &#8216;ckanapp-&#8216; prefix followed by a <em>unique</em> name. Follow the interactive prompts to fill in the metadata about your app. The only required field is the <em>proper_name</em> field.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Only alphanumeric characters and underscores are allowed for app names. The name may not have spaces.</p>
+</div>
+</div>
+<div class="section" id="installing-apps-in-production">
+<h2>Installing Apps in Production<a class="headerlink" href="#installing-apps-in-production" title="Permalink to this headline">¶</a></h2>
+<p>Tethys App projects are structured similarly to ckan plugin projects. In fact, it is useful to think of a Tethys App as a plugin for the Tethys Apps plugin. Always refer to the documentation for an app for specific installation requirments. Generally, installation will include the following steps:</p>
+<div class="section" id="run-the-setup-script-with-install-command">
+<h3>1. Run the Setup Script with Install Command<a class="headerlink" href="#run-the-setup-script-with-install-command" title="Permalink to this headline">¶</a></h3>
+<p>Run the setup script (<tt class="file docutils literal"><span class="pre">setup.py</span></tt>) using your CKAN Python environment. The setup script will automatically install any dependencies the app may have and copy the app source to the Python path (<tt class="file docutils literal"><span class="pre">site-packages</span></tt>). Continuing the example above:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/ckan/default/bin/activate
+$ cd ~/tethysdev/ckanapp-example
+$ python setup.py install
+</pre></div>
+</div>
+</div>
+<div class="section" id="restart-ckan-server-to-load-apps">
+<h3>2. Restart CKAN Server to Load Apps<a class="headerlink" href="#restart-ckan-server-to-load-apps" title="Permalink to this headline">¶</a></h3>
+<p>Apps are loaded into CKAN on startup, so the CKAN server must be restarted whenever apps are added or removed.</p>
+</div>
+</div>
+<div class="section" id="linking-apps-during-development">
+<h2>Linking Apps during Development<a class="headerlink" href="#linking-apps-during-development" title="Permalink to this headline">¶</a></h2>
+<p>During development of an app, you will make frequent changes to source. If you used the directions from the previous section for installation, you would need to reinstall the app everytime you made a change to see the updated app. This is not very practical for development. Instead, use the following steps to install a Tethys App during the development phase:</p>
+<div class="section" id="run-the-setup-script-with-develop-command">
+<h3>1. Run the Setup Script with Develop Command<a class="headerlink" href="#run-the-setup-script-with-develop-command" title="Permalink to this headline">¶</a></h3>
+<p>Rather than using the <strong class="command">install</strong> command on the setup script, use the <strong class="command">develop</strong> command. This will install any dependencies for the app and link to your working copy of the source to the Python path, rather than hard copying your source to the Python <tt class="file docutils literal"><span class="pre">site-packages</span></tt> directory. Thus, as you make changes to your source, they will automatically be updated for Python without the need to rerun the setup script.</p>
+<div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/ckan/default/bin/activate
+$ cd ~/tethysdev/ckanapp-example
+$ python setup.py develop
+</pre></div>
+</div>
+</div>
+<div class="section" id="restart-the-ckan-server-to-load-apps">
+<h3>2. Restart the CKAN Server to Load Apps<a class="headerlink" href="#restart-the-ckan-server-to-load-apps" title="Permalink to this headline">¶</a></h3>
+<p>Just as before, the CKAN server must be restarted to load the apps the first time.</p>
+</div>
+<div class="section" id="use-paster-server-for-development">
+<h3>3. Use Paster Server for Development<a class="headerlink" href="#use-paster-server-for-development" title="Permalink to this headline">¶</a></h3>
+<p>We recommend using the Paster server for during app development. When you start the Paster server, start it using <em class="xref std std-option">--reload</em> option. This will cause the server to reload automatically anytime one of your files is saved/changed.</p>
+<div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/ckan/default/bin/activate
+$ paster serve --reload /etc/ckan/default/development.ini
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="additional-steps-for-installing-legacy-apps">
+<h2>Additional Steps for Installing Legacy Apps<a class="headerlink" href="#additional-steps-for-installing-legacy-apps" title="Permalink to this headline">¶</a></h2>
+<p>Prior to version 0.3 of Tethys Apps it was necessary to also copy or symbolically link the your <a class="reference internal" href="glossary.html#term-app-package"><em class="xref std std-term">app package</em></a> into the <tt class="file docutils literal"><span class="pre">ckanapp</span></tt> directory of the Tethys Apps source. This process is automatically performed for apps created with the scaffold after version 0.3. If you generated a new app project using the scaffold from an early version of the Tethys Apps plugin, the following steps may be necessary.</p>
+<div class="section" id="production">
+<h3>Production<a class="headerlink" href="#production" title="Permalink to this headline">¶</a></h3>
+<p>For production installations, it will be necessary to copy the <a class="reference internal" href="glossary.html#term-app-package"><em class="xref std std-term">app package</em></a> of your app into the <tt class="file docutils literal"><span class="pre">ckanapp</span></tt> directory. This can be done like so:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ cp ~/tethysdev/ckanapp-example/ckanapp/example /usr/lib/ckan/default/src/ckan/ckanext/tethys_app/ckanapp/
+</pre></div>
+</div>
+</div>
+<div class="section" id="development">
+<h3>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h3>
+<p>For installing your app during installation, it is preferrable to symbolically link your <a class="reference internal" href="glossary.html#term-app-package"><em class="xref std std-term">app package</em></a> into the <tt class="file docutils literal"><span class="pre">ckanapp</span></tt> directory:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ ln -s ~/tethysdev/ckanapp-example/ckanapp/example /usr/lib/ckan/default/src/ckan/ckanext/apps/ckanapp/example
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="uninstalling-apps">
+<h2>Uninstalling Apps<a class="headerlink" href="#uninstalling-apps" title="Permalink to this headline">¶</a></h2>
+<p>Use the following steps to uninstall an app.</p>
+<div class="section" id="remove-source-package-or-symbolic-link-from-ckanapp-directory">
+<h3>1. Remove Source Package or Symbolic Link from <tt class="file docutils literal"><span class="pre">ckanapp</span></tt> Directory<a class="headerlink" href="#remove-source-package-or-symbolic-link-from-ckanapp-directory" title="Permalink to this headline">¶</a></h3>
+<p>You may not have been aware of it, but when you install an app, the source code is automatically copied or symbolically linked into the <tt class="file docutils literal"><span class="pre">ckanapp</span></tt> directory. If all you want is to remove the app from CKAN, the only necessary step is to remove the source package for the app from this directory. This can be done like so:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ rm -rf /usr/lib/ckan/default/src/ckan/ckanext/tethys_apps/ckanapp/example
+</pre></div>
+</div>
+</div>
+<div class="section" id="uninstall-python-installation-using-pip">
+<h3>2. Uninstall Python Installation using PIP<a class="headerlink" href="#uninstall-python-installation-using-pip" title="Permalink to this headline">¶</a></h3>
+<p>If you want to remove the Python installation of an app, use <strong class="command">pip</strong> to uninstall it.</p>
+<div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/ckan/default/bin/activate
+$ pip uninstall ckanapp-example
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Working with Apps</a><ul>
+<li><a class="reference internal" href="#apps-project-scaffold">Apps Project Scaffold</a></li>
+<li><a class="reference internal" href="#installing-apps-in-production">Installing Apps in Production</a><ul>
+<li><a class="reference internal" href="#run-the-setup-script-with-install-command">1. Run the Setup Script with Install Command</a></li>
+<li><a class="reference internal" href="#restart-ckan-server-to-load-apps">2. Restart CKAN Server to Load Apps</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#linking-apps-during-development">Linking Apps during Development</a><ul>
+<li><a class="reference internal" href="#run-the-setup-script-with-develop-command">1. Run the Setup Script with Develop Command</a></li>
+<li><a class="reference internal" href="#restart-the-ckan-server-to-load-apps">2. Restart the CKAN Server to Load Apps</a></li>
+<li><a class="reference internal" href="#use-paster-server-for-development">3. Use Paster Server for Development</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#additional-steps-for-installing-legacy-apps">Additional Steps for Installing Legacy Apps</a><ul>
+<li><a class="reference internal" href="#production">Production</a></li>
+<li><a class="reference internal" href="#development">Development</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#uninstalling-apps">Uninstalling Apps</a><ul>
+<li><a class="reference internal" href="#remove-source-package-or-symbolic-link-from-ckanapp-directory">1. Remove Source Package or Symbolic Link from <tt class="file docutils literal"><span class="pre">ckanapp</span></tt> Directory</a></li>
+<li><a class="reference internal" href="#uninstall-python-installation-using-pip">2. Uninstall Python Installation using PIP</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="key_concepts.html"
+                        title="next chapter">Key Concepts</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/working_with_apps.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="key_concepts.html" title="Key Concepts"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+        <li><a href="index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Nathan Swain.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tethys Apps Plugin for CKAN &mdash; Tethys Platform 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="#" />
+    <link rel="next" title="Features" href="features.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="features.html" title="Features"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tethys-apps-plugin-for-ckan">
+<h1>Tethys Apps Plugin for CKAN<a class="headerlink" href="#tethys-apps-plugin-for-ckan" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="features.html#app-dashboard">App Dashboard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html#app-icon">App Icon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html#software-development-kit">Software Development Kit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html#cloud-computing">Cloud Computing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html#geoprocessing">Geoprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html#visualization">Visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#assumptions">Assumptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#download-source">1. Download Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#install-into-python">2. Install into Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#modify-ckan-configuration">3. Modify CKAN Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#copy-the-source-directory">4. Copy the Source Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#create-database-users">5. Create Database Users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#modify-the-tethys-apps-config">6. Modify the Tethys Apps Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#start-ckan">7. Start CKAN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#working-with-tethys-under-development">Working With Tethys Under Development</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="working_with_apps.html">Working with Apps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="working_with_apps.html#apps-project-scaffold">Apps Project Scaffold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="working_with_apps.html#installing-apps-in-production">Installing Apps in Production</a></li>
+<li class="toctree-l2"><a class="reference internal" href="working_with_apps.html#linking-apps-during-development">Linking Apps during Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="working_with_apps.html#additional-steps-for-installing-legacy-apps">Additional Steps for Installing Legacy Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="working_with_apps.html#uninstalling-apps">Uninstalling Apps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="key_concepts.html">Key Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="key_concepts.html#what-is-an-app">What is an App?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="key_concepts.html#ckan-plugin">CKAN Plugin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="key_concepts.html#web-frameworks">Web Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="key_concepts.html#url-design-and-rest-paradigm">URL Design and REST Paradigm</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app_harvesting.html">App Harvesting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app_harvesting.html#appbase-class">AppBase Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="app_project.html">App Project Structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="app_project.html#release-package">Release Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="app_project.html#the-app-package">The App Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="app_project.html#naming-conventions">Naming Conventions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev_environment.html">Setup Development Environment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="development/manual_install.html">Setup from Source Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development/ubuntu_vm.html">Setup with VMWare Image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development/docker_env.html">Docker Development Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development/working_ckan.html">Working with CKAN in Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development/setup_aptana.html">Using Aptana Studio 3 IDE</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/scaffold.html">Generate New App with Scaffold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/persistent_stores.html">The Model and Persistent Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/view.html">The View and Templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/controller.html">Working with the Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/url_mapping.html">URL Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/forms.html">Working with Form Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html">Configuring Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/distribution.html">Distributing Apps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="production_deployment.html">Deploy Apps in Production</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="production_deployment.html#production-docker-containers">Production Docker Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="production_deployment.html#install-apps">Install Apps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tethys_api.html">Tethys Software Framework APIs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/spatial_database.html">Spatial Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/geoprocessing.html">Geoprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/visualizing.html">Data Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/cloud_computing.html">High Performance Computing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Summary of References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Tethys Apps Plugin for CKAN</a><ul>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="features.html"
+                        title="next chapter">Features</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="features.html" title="Features"
+             >next</a> |</li>
+        <li><a href="#">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Nathan Swain.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

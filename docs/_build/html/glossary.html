@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Glossary &mdash; Tethys Platform 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="index.html" />
+    <link rel="prev" title="Summary of References" href="reference.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="reference.html" title="Summary of References"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="glossary">
+<h1>Glossary<a class="headerlink" href="#glossary" title="Permalink to this headline">¶</a></h1>
+<dl class="glossary docutils">
+<dt id="term-app-class">app class</dt>
+<dd>A class defined in the <a class="reference internal" href="#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a> that inherits from the <tt class="docutils literal"><span class="pre">AppBase</span></tt> class provided by the Tethys Apps plugin. This class implements several methods that are used to link apps with CKAN.</dd>
+<dt id="term-app-configuration-file">app configuration file</dt>
+<dd>A file located in the <a class="reference internal" href="#term-app-package"><em class="xref std std-term">app package</em></a> and called <tt class="file docutils literal"><span class="pre">app.py</span></tt> by convention. This file contains the <a class="reference internal" href="#term-app-class"><em class="xref std std-term">app class</em></a> that is used to configure apps. For more details on the app configuration file, see <a class="reference internal" href="getting_started/configuration.html"><em>Configuring Apps</em></a>.</dd>
+<dt id="term-app-harvester">app harvester</dt>
+<dd>An instance of the <tt class="docutils literal"><span class="pre">SingletonAppHarvester</span></tt> class. The app harvester collects information about each app and uses it to connect the apps to CKAN. Refer to <a class="reference internal" href="app_harvesting.html"><em>App Harvesting</em></a>.</dd>
+<dt id="term-app-instance"><span id="term-app-instances"></span>app instance<br />app instances</dt>
+<dd>An instance of an <a class="reference internal" href="#term-app-class"><em class="xref std std-term">app class</em></a>.</dd>
+<dt id="term-app-package"><span id="term-app-packages"></span>app package<br />app packages</dt>
+<dd>A Python namespace package of an <a class="reference internal" href="#term-app-project"><em class="xref std std-term">app project</em></a> that contains all of the source code for an app. The app package is named the same as the app by convention. Refer to Figure 1 of <a class="reference internal" href="app_project.html"><em>App Project Structure</em></a> for more information.</dd>
+<dt id="term-app-project">app project</dt>
+<dd>All of the source code for a Tethys Apps app including the <a class="reference internal" href="#term-release-package"><em class="xref std std-term">release package</em></a> and the <a class="reference internal" href="#term-app-package"><em class="xref std std-term">app package</em></a>.</dd>
+<dt id="term-persistent-store"><span id="term-persistent-stores"></span>persistent store<br />persistent stores</dt>
+<dd>A persistent store is a database that can be automatically created for an app. See <a class="reference internal" href="getting_started/persistent_stores.html"><em>The Model and Persistent Stores</em></a> for more information about persistent stores.</dd>
+<dt id="term-release-package">release package</dt>
+<dd>The top level Python namespace package of an <a class="reference internal" href="#term-app-project"><em class="xref std std-term">app project</em></a>. The release package contains the <a class="reference internal" href="#term-setup-script"><em class="xref std std-term">setup script</em></a> and all the source for an app including the <a class="reference internal" href="#term-app-package"><em class="xref std std-term">app package</em></a>. Refer to Figure 1 of <a class="reference internal" href="app_project.html"><em>App Project Structure</em></a> for more information.</dd>
+<dt id="term-setup-script">setup script</dt>
+<dd>A file located in the <a class="reference internal" href="#term-release-package"><em class="xref std std-term">release package</em></a> and called <tt class="file docutils literal"><span class="pre">setup.py</span></tt> by convention. The setup script is used to automate the installation of apps. For more details see <a class="reference internal" href="getting_started/distribution.html"><em>Distributing Apps</em></a>.</dd>
+<dt id="term-snippet"><span id="term-snippets"></span>snippet<br />snippets</dt>
+<dd>Reusable view elements that can be inserted into a template using a single line of code. Examples include common GUI elements like buttons, toggle switches, and input fields as well as more complex elements like maps and plots.</dd>
+</dl>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="reference.html"
+                        title="previous chapter">Summary of References</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/glossary.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="reference.html" title="Summary of References"
+             >previous</a> |</li>
+        <li><a href="index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Nathan Swain.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

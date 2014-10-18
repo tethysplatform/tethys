@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Getting Started &mdash; Tethys Platform 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="Generate New App with Scaffold" href="getting_started/scaffold.html" />
+    <link rel="prev" title="Using Aptana Studio 3 IDE" href="development/setup_aptana.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="getting_started/scaffold.html" title="Generate New App with Scaffold"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="development/setup_aptana.html" title="Using Aptana Studio 3 IDE"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p><strong>Last Updated:</strong> May 27, 2014</p>
+<p>The best way to learn how to use Tethys is to jump in and start developing an app. A tutorial is provided to demonstrate how to start a new Tethys App project and explain how to work with the SDK during development.</p>
+<p>Outline:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/scaffold.html">Generate New App with Scaffold</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/scaffold.html#generate-scaffold">Generate Scaffold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/scaffold.html#development-installation">Development Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/persistent_stores.html">The Model and Persistent Stores</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/persistent_stores.html#register-a-persistent-store">Register a Persistent Store</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/persistent_stores.html#create-sqlalchemy-model">Create SQLAlchemy Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/persistent_stores.html#create-an-initialization-script">Create an Initialization Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/persistent_stores.html#register-initialization-script">Register Initialization Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/persistent_stores.html#reinstall-app">Reinstall App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/persistent_stores.html#data-model-under-development">Data Model Under Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/persistent_stores.html#enabling-persistent-store-for-legacy-apps">Enabling Persistent Store for Legacy Apps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/view.html">The View and Templating</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/view.html#templating">Templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/view.html#add-map-to-template">Add Map to Template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/view.html#add-table-to-template">Add Table to Template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/view.html#snippets">Snippets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/view.html#public-files-and-resources">Public Files and Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/view.html#view-configuration">View Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/controller.html">Working with the Controller</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/controller.html#query-persitent-store">Query Persitent Store</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/controller.html#controller-tools-reference">Controller Tools Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/url_mapping.html">URL Mapping</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/url_mapping.html#create-a-new-contoller">Create a New Contoller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/url_mapping.html#create-a-new-template">Create a New Template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/url_mapping.html#map-controller-to-url">Map Controller to URL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/url_mapping.html#url-variables">URL Variables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/forms.html">Working with Form Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/forms.html#create-template-with-a-form">Create Template with a Form</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/configuration.html">Configuring Apps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#registerapp">registerApp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#registercontrollers">registerControllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#registertemplatedirectories">registerTemplateDirectories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#registerpublicdirectories">registerPublicDirectories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#registerresources">registerResources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#registerpersistentstores">registerPersistentStores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#example-file">Example File</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/distribution.html">Distributing Apps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/distribution.html#setup-script">Setup Script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/distribution.html#production-installation">Production Installation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="development/setup_aptana.html"
+                        title="previous chapter">Using Aptana Studio 3 IDE</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="getting_started/scaffold.html"
+                        title="next chapter">Generate New App with Scaffold</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/getting_started.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="getting_started/scaffold.html" title="Generate New App with Scaffold"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="development/setup_aptana.html" title="Using Aptana Studio 3 IDE"
+             >previous</a> |</li>
+        <li><a href="index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Nathan Swain.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

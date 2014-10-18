@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Generate New App with Scaffold &mdash; Tethys Platform 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html" />
+    <link rel="up" title="Getting Started" href="../getting_started.html" />
+    <link rel="next" title="The Model and Persistent Stores" href="persistent_stores.html" />
+    <link rel="prev" title="Getting Started" href="../getting_started.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="persistent_stores.html" title="The Model and Persistent Stores"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../getting_started.html" title="Getting Started"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../getting_started.html" accesskey="U">Getting Started</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="generate-new-app-with-scaffold">
+<h1>Generate New App with Scaffold<a class="headerlink" href="#generate-new-app-with-scaffold" title="Permalink to this headline">¶</a></h1>
+<p><strong>Last Updated:</strong> May 20, 2014</p>
+<p>The Tethys Apps plugin provides a scaffold for generating new apps projects. The scaffold generates a very simple app project with all of the major components and the structure discussed in <a class="reference internal" href="../app_project.html"><em>App Project Structure</em></a>. This portion of the tutorial will describe how to start a new app project using the scaffold and configure it to run as a Tethys App in CKAN.</p>
+<div class="section" id="generate-scaffold">
+<h2>Generate Scaffold<a class="headerlink" href="#generate-scaffold" title="Permalink to this headline">¶</a></h2>
+<p>To generate a new app scaffold, open a terminal and activate your CKAN virtual environment. Create a new directory in your home directory called <tt class="file docutils literal"><span class="pre">tethysdev</span></tt> and path into this directory. Finally, execute the <strong class="command">paster create</strong> command:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/ckan/default/bin/activate
+$ mkdir ~/tethysdev
+$ cd ~/tethysdev
+$ paster create -t ckanapp ckanapp-my_first_app
+</pre></div>
+</div>
+<p>Follow the interactive prompts to create metadata for you new app (the only required parameter is the proper name). The <strong class="command">paster create</strong> command generates a new Tethys App project using a template called <em>ckanapp</em> that ships with the Tethys Apps plugin. In a file browser open the <tt class="file docutils literal"><span class="pre">ckanapp-my_first_app</span></tt> directory and familiarize yourself with its contents. Notice that the files are organized in the same manner as described in <a class="reference internal" href="../app_project.html"><em>App Project Structure</em></a>.</p>
+</div>
+<div class="section" id="development-installation">
+<h2>Development Installation<a class="headerlink" href="#development-installation" title="Permalink to this headline">¶</a></h2>
+<p>Next, install the app into the CKAN Python environment. This will also install any dependencies of your app listed in the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> (<tt class="file docutils literal"><span class="pre">setup.py</span></tt>). Rather than running the <strong class="command">install</strong> command on the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a>, run the <strong class="command">develop</strong> command instead. This makes it so you don&#8217;t have to reinstall the app everytime you make a change to the source code. Be sure to activate the CKAN Python virtual environment if it is not already activated. In a terminal run:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/ckan/default/bin/activate
+$ cd ~/tethysdev/ckanapp-my_first_app
+$ python setup.py develop
+</pre></div>
+</div>
+<p>Start up the Paste server and browse to your local CKAN site. If all has gone well, you should see your app listed on the app library page. Exploring your new app doesn&#8217;t take long, because there is only one page and it will be empty. In the next few tutorials, we&#8217;ll introduce how the Model View Controller (MVC) development paradigm is used to develop apps.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If the Paste server is running when you create the app, you will need to restart it. Stop the server by pressing <tt class="kbd docutils literal"><span class="pre">CTRL-C</span></tt> and start the server again by executing the <strong class="command">paster serve</strong> command. A shortcut to finding this command is to press the up arrow.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Generate New App with Scaffold</a><ul>
+<li><a class="reference internal" href="#generate-scaffold">Generate Scaffold</a></li>
+<li><a class="reference internal" href="#development-installation">Development Installation</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../getting_started.html"
+                        title="previous chapter">Getting Started</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="persistent_stores.html"
+                        title="next chapter">The Model and Persistent Stores</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/getting_started/scaffold.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="persistent_stores.html" title="The Model and Persistent Stores"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../getting_started.html" title="Getting Started"
+             >previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../getting_started.html" >Getting Started</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Nathan Swain.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

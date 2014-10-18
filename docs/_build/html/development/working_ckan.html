@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Working with CKAN in Development &mdash; Tethys Platform 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html" />
+    <link rel="up" title="Setup Development Environment" href="../dev_environment.html" />
+    <link rel="next" title="Using Aptana Studio 3 IDE" href="setup_aptana.html" />
+    <link rel="prev" title="Docker Development Environment" href="docker_env.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="setup_aptana.html" title="Using Aptana Studio 3 IDE"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="docker_env.html" title="Docker Development Environment"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../dev_environment.html" accesskey="U">Setup Development Environment</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="working-with-ckan-in-development">
+<h1>Working with CKAN in Development<a class="headerlink" href="#working-with-ckan-in-development" title="Permalink to this headline">¶</a></h1>
+<p><strong>Last Updated:</strong> May 29, 2014</p>
+<div class="section" id="running-ckan">
+<h2>Running CKAN<a class="headerlink" href="#running-ckan" title="Permalink to this headline">¶</a></h2>
+<p>While you are developing apps, you will use the Paste server to run CKAN. Before you start up the server, make sure that Jetty and PostgreSQL servers are running:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo service postgresql start
+$ sudo service jetty start
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you installed Solr using Tomcat instead of Jetty, change the second <strong class="command">start</strong> command to <strong class="command">tomcat6</strong> instead of <strong class="command">jetty</strong>.</p>
+</div>
+<p>Next, activate your CKAN Python virtual environment and execute the <strong class="command">paster serve</strong> command. You will know that your virtual environment is activated, beacuse the name of it will appear in parenthesis next to your terminal cursor. We recommned using the option <strong class="command">&#8211;reload</strong> when you are developing. This will cause the server to restart anytime you save changes in a file while developing your app. In a terminal:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/ckan/default/bin/activate
+$  paster serve --reload /etc/ckan/default/development.ini
+</pre></div>
+</div>
+<p>Open a web browser enter the following URL to see CKAN:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost:5000
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">You can stop the paster server using the keyboard shortcut <tt class="kbd docutils literal"><span class="pre">ctrl-C</span></tt> in the terminal. Then run the <tt class="docutils literal"><span class="pre">paster</span> <span class="pre">serve</span></tt> command from above to start it up again.</p>
+</div>
+</div>
+<div class="section" id="debugging-in-ckan">
+<h2>Debugging in CKAN<a class="headerlink" href="#debugging-in-ckan" title="Permalink to this headline">¶</a></h2>
+<p>To enable debugging in CKAN, open the configuration file (<tt class="file docutils literal"><span class="pre">/etc/ckan/default/development.ini</span></tt>) and change the <strong>debug</strong> parameter to <em>true</em> and restart the paster server.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">debug</span> <span class="o">=</span> <span class="n">true</span>
+</pre></div>
+</div>
+<p>If you get an error that says something to the effect of &#8220;cannot find main.debug.css&#8221; then do the following:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ cp /usr/lib/ckan/default/src/ckan/ckan/public/base/css/main.debug.min.css /usr/lib/ckan/default/src/ckan/ckan/public/base/css/main.debug.css
+</pre></div>
+</div>
+<p>Restart the paster server and the problem should be resolved.</p>
+<div class="admonition caution">
+<p class="first admonition-title">Caution</p>
+<p class="last">These instructions do not apply when using the Docker development method.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Working with CKAN in Development</a><ul>
+<li><a class="reference internal" href="#running-ckan">Running CKAN</a></li>
+<li><a class="reference internal" href="#debugging-in-ckan">Debugging in CKAN</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="docker_env.html"
+                        title="previous chapter">Docker Development Environment</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="setup_aptana.html"
+                        title="next chapter">Using Aptana Studio 3 IDE</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/development/working_ckan.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="setup_aptana.html" title="Using Aptana Studio 3 IDE"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="docker_env.html" title="Docker Development Environment"
+             >previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../dev_environment.html" >Setup Development Environment</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Nathan Swain.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

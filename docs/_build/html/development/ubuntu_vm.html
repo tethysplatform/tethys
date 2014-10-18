@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Setup with VMWare Image &mdash; Tethys Platform 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html" />
+    <link rel="up" title="Setup Development Environment" href="../dev_environment.html" />
+    <link rel="next" title="Docker Development Environment" href="docker_env.html" />
+    <link rel="prev" title="Setup from Source Installation" href="manual_install.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="docker_env.html" title="Docker Development Environment"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="manual_install.html" title="Setup from Source Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../dev_environment.html" accesskey="U">Setup Development Environment</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="setup-with-vmware-image">
+<h1>Setup with VMWare Image<a class="headerlink" href="#setup-with-vmware-image" title="Permalink to this headline">¶</a></h1>
+<p><strong>Last Updated:</strong> May 30, 2014</p>
+<p>If you have VMWare installed on your computer, you can make use of the VMWare image to have an instantly configured development environment. This image comes with a full Ubuntu installation with CKAN and Tethys Apps installed. This method is quick and painless. It will take some time to download the image, but then there is only minimal setup required after that.</p>
+<ol class="arabic simple">
+<li>Download the image <a class="reference external" href="https://drive.google.com/file/d/0B6apBoh0rF2Ra0JSZEZ5NnJkem8/edit?usp=sharing">here</a>.</li>
+<li>Extract the file from the zip archive to a safe location and double-click to run it. If prompted whether you moved or copied the VM, select the <strong>copied</strong> option.</li>
+<li>Login using the following credentials:</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre>diplay name: Tethys User
+username: user
+password: tethyspass
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li>Pull the latest version of the Tethys Apps plugin:</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre>cd ~/tethysdev/ckanext-tethys_apps
+git pull
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li>Customize Ubuntu to your liking. You are welcome to change the username, password, and any settings you would like after you start the VM.</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The contained in the zip archive is the virtual machine. DO NOT DELETE THIS FILE. We recommend that you move the file to a safe location.</p>
+</div>
+<div class="section" id="useful-accounts">
+<h2>Useful Accounts<a class="headerlink" href="#useful-accounts" title="Permalink to this headline">¶</a></h2>
+<p>There are several usernames and passwords that may be useful when using the VMWare image for developing Tethys apps. The image provides a system admin for the CKAN web site. The system admin can be used to manage users and datasets in CKAN. See the <a class="reference external" href="http://docs.ckan.org/en/ckan-2.2/sysadmin-guide.html">Sysadmin Guide</a> for more details. The credentials for the system admin are:</p>
+<div class="highlight-python"><div class="highlight"><pre>username: tethysadmin
+password: tethyspass
+</pre></div>
+</div>
+</div>
+<div class="section" id="start-developing">
+<h2>Start Developing<a class="headerlink" href="#start-developing" title="Permalink to this headline">¶</a></h2>
+<p>Refer to the <a class="reference internal" href="working_ckan.html"><em>Working with CKAN in Development</em></a> to learn how to start up CKAN and start developing.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Setup with VMWare Image</a><ul>
+<li><a class="reference internal" href="#useful-accounts">Useful Accounts</a></li>
+<li><a class="reference internal" href="#start-developing">Start Developing</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="manual_install.html"
+                        title="previous chapter">Setup from Source Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="docker_env.html"
+                        title="next chapter">Docker Development Environment</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/development/ubuntu_vm.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="docker_env.html" title="Docker Development Environment"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="manual_install.html" title="Setup from Source Installation"
+             >previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../dev_environment.html" >Setup Development Environment</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Nathan Swain.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

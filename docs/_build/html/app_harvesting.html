@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>App Harvesting &mdash; Tethys Platform 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="App Project Structure" href="app_project.html" />
+    <link rel="prev" title="Key Concepts" href="key_concepts.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="app_project.html" title="App Project Structure"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="key_concepts.html" title="Key Concepts"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="app-harvesting">
+<h1>App Harvesting<a class="headerlink" href="#app-harvesting" title="Permalink to this headline">¶</a></h1>
+<p><strong>Last Updated:</strong> May 20, 2014</p>
+<p>The Tethys Apps plugin requires app projects to conform to a specific file structure. To understand why the structure of an apps project is important, it is useful to know how apps are loaded into CKAN by the Tethys Apps plugin.</p>
+<p>Apps are loaded when the CKAN server starts up by a process called App Harvesting (see <a class="reference internal" href="#harvest-figure-1"><em>Figure 1. The app harvesting process.</em></a>). This task is performed by an instance of the <tt class="docutils literal"><span class="pre">SingletonAppHarvester</span></tt> class called the <a class="reference internal" href="glossary.html#term-app-harvester"><em class="xref std std-term">app harvester</em></a>. When CKAN loads, the Tethys Apps plugin creates a new <a class="reference internal" href="glossary.html#term-app-harvester"><em class="xref std std-term">app harvester</em></a>. The <a class="reference internal" href="glossary.html#term-app-harvester"><em class="xref std std-term">app harvester</em></a> walks through each of the <a class="reference internal" href="glossary.html#term-app-packages"><em class="xref std std-term">app packages</em></a> in the <tt class="file docutils literal"><span class="pre">ckanapp</span></tt> directory and locates the app configuration file (<tt class="file docutils literal"><span class="pre">app.py</span></tt>). This file contains the information that CKAN needs to load the app.</p>
+<p>After the <a class="reference internal" href="glossary.html#term-app-harvester"><em class="xref std std-term">app harvester</em></a> has located all of the app configuration files, it creates an instance each class, which will be referred to as <a class="reference internal" href="glossary.html#term-app-instances"><em class="xref std std-term">app instances</em></a>, hereafter. The <a class="reference internal" href="glossary.html#term-app-harvester"><em class="xref std std-term">app harvester</em></a> calls all of the methods of each <a class="reference internal" href="glossary.html#term-app-instance"><em class="xref std std-term">app instance</em></a> and passes itself as the only argument. These methods pass information about the app to the <a class="reference internal" href="glossary.html#term-app-harvester"><em class="xref std std-term">app harvester</em></a>. Finally, the Tethys Apps plugin uses the information the <a class="reference internal" href="glossary.html#term-app-harvester"><em class="xref std std-term">app harvester</em></a> has collected from the apps to load the apps into CKAN.</p>
+<div class="figure" id="harvest-figure-1">
+<img alt="diagram of app harvesting process" src="_images/app_harvest.png" />
+<p class="caption"><strong>Figure 1. The app harvesting process.</strong></p>
+</div>
+<div class="section" id="appbase-class">
+<h2>AppBase Class<a class="headerlink" href="#appbase-class" title="Permalink to this headline">¶</a></h2>
+<p>The app harvesting process is made to mimic the process by which plugins for CKAN are written. The <a class="reference internal" href="glossary.html#term-app-class"><em class="xref std std-term">app class</em></a> is implemented in <tt class="file docutils literal"><span class="pre">app.py</span></tt> is an instance of the <tt class="docutils literal"><span class="pre">AppBase</span></tt> class that is provided by the Tethys Apps plugin. The data that is declared in this the <a class="reference internal" href="glossary.html#term-app-class"><em class="xref std std-term">app class</em></a> and collected by the <a class="reference internal" href="glossary.html#term-app-harvester"><em class="xref std std-term">app harvester</em></a> is eventually passed as parameters to the CKAN plugin interface methods of the Tethys Apps plugin. <a class="reference internal" href="#harvest-figure-2"><em>Figure 2. Comparison of a CKAN Plugin class and a Tethys App class.</em></a> shows how app classes and CKAN classes mirror each other.</p>
+<div class="figure" id="harvest-figure-2">
+<img alt="comparison of the CKAN plugin class and a Tethys Apps class" src="_images/mirror_comparison.png" />
+<p class="caption"><strong>Figure 2. Comparison of a CKAN Plugin class and a Tethys App class.</strong></p>
+</div>
+<p>As an example, compare the <tt class="docutils literal"><span class="pre">after_map</span></tt> plugin method and the <tt class="docutils literal"><span class="pre">registerController</span></tt> app method. The <tt class="docutils literal"><span class="pre">registerController</span></tt> method receives the <a class="reference internal" href="glossary.html#term-app-harvester"><em class="xref std std-term">app harvester</em></a> and calls <tt class="docutils literal"><span class="pre">addControllers</span></tt> on it to add the appropriate parameters to map a controller in Pylons. The Tethys Apps plugin <tt class="docutils literal"><span class="pre">after_map</span></tt> class is given the <tt class="docutils literal"><span class="pre">map</span></tt> object that is used to map all of the controllers for the CKAN site. The plugin class retrieves the controller information collected by the harvester and passes it as parameters to the <tt class="docutils literal"><span class="pre">connect</span></tt> method of <tt class="docutils literal"><span class="pre">map</span></tt>.</p>
+<p>In summary, the purpose these mirror methods of the <a class="reference internal" href="glossary.html#term-app-class"><em class="xref std std-term">app class</em></a> in <tt class="file docutils literal"><span class="pre">app.py</span></tt> is to collect the data that the Tethys Apps plugin needs to connect the app to CKAN. The <a class="reference internal" href="glossary.html#term-app-harvester"><em class="xref std std-term">app harvester</em></a> aggregates all of this information from all of the <a class="reference internal" href="glossary.html#term-app-instances"><em class="xref std std-term">app instances</em></a> and passes it along to the Tethys Apps plugin. More detail will be given about the structure of app projects and the <tt class="file docutils literal"><span class="pre">app.py</span></tt> class in a later section.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Only the methods that are mirrored between a plugin class and an app class are shown in <a class="reference internal" href="#harvest-figure-2"><em>Figure 2. Comparison of a CKAN Plugin class and a Tethys App class.</em></a>. Both classes have other methods that are not related that are not shown.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">App Harvesting</a><ul>
+<li><a class="reference internal" href="#appbase-class">AppBase Class</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="key_concepts.html"
+                        title="previous chapter">Key Concepts</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="app_project.html"
+                        title="next chapter">App Project Structure</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/app_harvesting.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="app_project.html" title="App Project Structure"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="key_concepts.html" title="Key Concepts"
+             >previous</a> |</li>
+        <li><a href="index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Nathan Swain.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Configuring Apps &mdash; Tethys Platform 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html" />
+    <link rel="up" title="Getting Started" href="../getting_started.html" />
+    <link rel="next" title="Distributing Apps" href="distribution.html" />
+    <link rel="prev" title="Working with Form Data" href="forms.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="distribution.html" title="Distributing Apps"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="forms.html" title="Working with Form Data"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../getting_started.html" accesskey="U">Getting Started</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="configuring-apps">
+<h1>Configuring Apps<a class="headerlink" href="#configuring-apps" title="Permalink to this headline">¶</a></h1>
+<p><strong>Last Updated:</strong> May 21, 2014</p>
+<p>A Tethys App is an extension of the CKAN webpage. The Tethys Apps plugin uses the <a class="reference internal" href="../glossary.html#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a> (<tt class="file docutils literal"><span class="pre">app.py</span></tt>) file to configure your app and link it to CKAN. Within the <a class="reference internal" href="../glossary.html#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a> you will find an <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a>. The <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a> inherits from the <tt class="docutils literal"><span class="pre">AppBase</span></tt> class that is provided by the Tethys Apps plugin. If you have generated your <a class="reference internal" href="../glossary.html#term-app-package"><em class="xref std std-term">app package</em></a> from the scaffold, your app class name will reflect the name of your app. The <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a> implements methods from <tt class="docutils literal"><span class="pre">AppBase</span></tt> that are used to make CKAN aware of the controllers, templates, resources, and other identifying characteristics that your app needs to run. There are six methods that you need to implement in your App class:</p>
+<ul class="simple">
+<li>registerApp()</li>
+<li>registerControllers()</li>
+<li>registerTemplateDirectories()</li>
+<li>registerPublicDirectories()</li>
+<li>registerResources()</li>
+<li>registerPersistentStores()</li>
+</ul>
+<p>Each of these methods accept one argument. During app harvesting, the <tt class="docutils literal"><span class="pre">SingletonAppHarvester</span></tt> object will call each of these methods and and passes <strong>itself</strong> in as the argument. Your method should call the appropriate <tt class="docutils literal"><span class="pre">SingletonAppHarvester</span></tt> method on the instance that is passed into the method. A short description of each method and an example is provided with our app called &#8220;my_first_app&#8221;.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It is required that your <a class="reference internal" href="../glossary.html#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a> is located in the <a class="reference internal" href="../glossary.html#term-app-package"><em class="xref std std-term">app package</em></a> directory as depicted in Figure 1 on the <a class="reference internal" href="../app_project.html"><em>App Project Structure</em></a> page. It is also required that the name of the file is &#8220;app.py&#8221;.</p>
+</div>
+<div class="section" id="registerapp">
+<h2>registerApp<a class="headerlink" href="#registerapp" title="Permalink to this headline">¶</a></h2>
+<p>This method is used to provide identifying information about your app to CKAN. The appropriate <tt class="docutils literal"><span class="pre">SingletonAppHarvester</span></tt> method to call is <tt class="docutils literal"><span class="pre">addApp()</span></tt>. This method should be called only once.</p>
+<p><em>addApp(name, index, icon)</em></p>
+<ul class="simple">
+<li><em>name</em> = the name displayed on the app icon on the <em class="guilabel">Apps</em> library page of CKAN.</li>
+<li><em>index</em> = the name of the app index controller for your app (as defined by the <tt class="docutils literal"><span class="pre">registerControllers()</span></tt> method).</li>
+<li><em>icon</em> = the path to the image that will be used as your app icon.</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">registerApp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Register the app</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">app</span><span class="o">.</span><span class="n">addApp</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;My First App&#39;</span><span class="p">,</span>
+               <span class="n">index</span><span class="o">=</span><span class="s">&#39;my-first-app&#39;</span><span class="p">,</span>
+               <span class="n">icon</span><span class="o">=</span><span class="s">&#39;my_first_app/images/icon.png&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Notice that the path to the image is relative to a directory with the same name as your app inside the <tt class="file docutils literal"><span class="pre">public</span></tt> directory. This convention is used to prevent conflicts with other apps. Also notice that <tt class="docutils literal"><span class="pre">registerApp()</span></tt> takes one argument called &#8220;app&#8221;. The name of the argument is more of a reminder of what needs to be done. In reality, an instance of the <tt class="docutils literal"><span class="pre">SingletonAppHarvester</span></tt> is passed into <strong>every</strong> method as the argument. Thus, <tt class="docutils literal"><span class="pre">addApp()</span></tt> is method of the <tt class="docutils literal"><span class="pre">SingeltonAppHarvester</span></tt> instance, as are all of the methods that are called on the arguments of the register methods.</p>
+</div>
+</div>
+<div class="section" id="registercontrollers">
+<h2>registerControllers<a class="headerlink" href="#registercontrollers" title="Permalink to this headline">¶</a></h2>
+<p>This method is used to register the controllers of an app. The appropriate <tt class="docutils literal"><span class="pre">SingletonAppHarvester</span></tt> method to call on the argument is <tt class="docutils literal"><span class="pre">addController()</span></tt>. This method may be called multiple times, once for each controller that is being registered.</p>
+<p><em>addController(name, url, controller, action)</em></p>
+<ul class="simple">
+<li><em>name</em> = the name of the controller</li>
+<li><em>url</em> = the url pattern that is mapped to the controller</li>
+<li><em>controller</em> = path to the controller class (use dot notation)</li>
+<li><em>action</em> = the action to call on the controller for this url pattern</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">registerControllers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controllers</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Add controllers</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">controllers</span><span class="o">.</span><span class="n">addController</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;my-first-app-index&#39;</span><span class="p">,</span>
+                              <span class="n">url</span><span class="o">=</span><span class="s">&#39;my-first-app&#39;</span><span class="p">,</span>
+                              <span class="n">controller</span><span class="o">=</span><span class="s">&#39;my_first_app.controllers.index:RootController&#39;</span><span class="p">,</span>
+                              <span class="n">action</span><span class="o">=</span><span class="s">&#39;index&#39;</span><span class="p">)</span>
+
+    <span class="n">controllers</span><span class="o">.</span><span class="n">addController</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;my-first-app-action&#39;</span><span class="p">,</span>
+                              <span class="n">url</span><span class="o">=</span><span class="s">&#39;my-first-app/{action}&#39;</span><span class="p">,</span>
+                              <span class="n">controller</span><span class="o">=</span><span class="s">&#39;my_first_app.controllers.index:RootController&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the example above, two contollers are being registered: one named &#8220;my-first-app-index&#8221; and another named &#8220;my-first-app-action&#8221;. In the first controller, the action is specified while in the second controller the action is part of the url (denoted by the <tt class="docutils literal"><span class="pre">{action}</span></tt> variable).</p>
+</div>
+<div class="section" id="registertemplatedirectories">
+<h2>registerTemplateDirectories<a class="headerlink" href="#registertemplatedirectories" title="Permalink to this headline">¶</a></h2>
+<p>This method is used to tell the Tethys Apps plugin where your templates will be located. The appropriate <tt class="docutils literal"><span class="pre">SingletonAppHarvester</span></tt> method to call is <tt class="docutils literal"><span class="pre">addTemplateDirectory()</span></tt>. Call this method only once.</p>
+<p><em>addTemplateDirectory(directory)</em></p>
+<ul class="simple">
+<li><em>directory</em> = path to the directory where your templates are located.</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">registerTemplateDirectories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">templateDirs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Add template directories</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">templateDirs</span><span class="o">.</span><span class="n">addTemplateDirectory</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s">&#39;my_first_app/templates&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="registerpublicdirectories">
+<h2>registerPublicDirectories<a class="headerlink" href="#registerpublicdirectories" title="Permalink to this headline">¶</a></h2>
+<p>This method is used to tell the Tethys Apps plugin where your publicly accessible resources will be stored. These include resources such as images or static documents that need to be accessible to the user. The appropriate <tt class="docutils literal"><span class="pre">SingletonAppHarvester</span></tt> method to call is <tt class="docutils literal"><span class="pre">addPublicDirectory()</span></tt>. This method can be called multiple times to register multiple public directories.</p>
+<p><em>addPublicDirectory(directory)</em></p>
+<ul class="simple">
+<li><em>directory</em> = path to the directory where your public resources are located.</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">registerPublicDirectories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publicDirs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Add public directories</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">publicDirs</span><span class="o">.</span><span class="n">addPublicDirectory</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s">&#39;my_first_app/public&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition caution">
+<p class="first admonition-title">Caution</p>
+<p class="last">Resources that are located in any of the public directories are made publicly accessible. Take care what you store in your public directories.</p>
+</div>
+</div>
+<div class="section" id="registerresources">
+<h2>registerResources<a class="headerlink" href="#registerresources" title="Permalink to this headline">¶</a></h2>
+<p>This method is used to tell the Tethys Apps plugin where your resources will be stored. Resources are served by Fanstatic. Resources that need to be registered are JavaScript and CSS files. The directories that contain these files also need to be registered as public directories (see <em>addPublicDirectories()</em> method). The appropriate <tt class="docutils literal"><span class="pre">SingletonAppHarvester</span></tt> method to call is <tt class="docutils literal"><span class="pre">addResource()</span></tt>:</p>
+<p><em>addResource(directory, name)</em></p>
+<ul class="simple">
+<li><em>directory</em> = path to the directory where your resources are located.</li>
+<li><em>name</em> = name of resource that is used when accessing resources</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">registerResources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">staticDirs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Add static directories</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">staticDirs</span><span class="o">.</span><span class="n">addResource</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s">&#39;myapp/public/myapp&#39;</span><span class="p">,</span>
+                           <span class="n">name</span><span class="o">=</span><span class="s">&#39;ckanapp_my_first_app&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="registerpersistentstores">
+<h2>registerPersistentStores<a class="headerlink" href="#registerpersistentstores" title="Permalink to this headline">¶</a></h2>
+<p>This method is used to request persistent stores (databases) for your app. These databases are created automatically when the app is installed. In addition, you can have Tethys Apps automatically run an database initialization script to create the tables for your database when the app is installed. You may request as many of these databases as you need. Unlike the other register methods, the argument that is passed to this method is not an instance of the <tt class="docutils literal"><span class="pre">SingletonAppHarvester</span></tt> class. Instead, an instance of the <tt class="docutils literal"><span class="pre">PersistentStoreHarvester</span></tt> is given. There are two <tt class="docutils literal"><span class="pre">PersistentStoreHarvester</span></tt> methods that can be called in this method: <tt class="docutils literal"><span class="pre">addPersistentStore()</span></tt> and <tt class="docutils literal"><span class="pre">addInitializationScript</span></tt>.</p>
+<p><em>addPersistentStore(store_name)</em></p>
+<ul class="simple">
+<li><em>store_name</em> =  a unique name for your persisent store. This name is used to connect to the store later.</li>
+</ul>
+<p><em>addInitializationScript(script_path)</em></p>
+<ul class="simple">
+<li><em>script_path</em> = the path to your database initialization script (use dot notation)</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">registerPersistentStores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">persistentStores</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Add one or more persistent stores</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">persistentStores</span><span class="o">.</span><span class="n">addPersistentStore</span><span class="p">(</span><span class="s">&#39;demo_store&#39;</span><span class="p">)</span>
+    <span class="n">persistentStores</span><span class="o">.</span><span class="n">addInitializationScript</span><span class="p">(</span><span class="s">&#39;my_first_app.lib.init_db&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more information about working with persistent stores, see the <a class="reference internal" href="persistent_stores.html"><em>The Model and Persistent Stores</em></a> section.</p>
+</div>
+<div class="section" id="example-file">
+<h2>Example File<a class="headerlink" href="#example-file" title="Permalink to this headline">¶</a></h2>
+<p>If you open the <a class="reference internal" href="../glossary.html#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a> for your app project, you will find a file similar to this one:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">ckanext.tethys_apps.lib.app_base</span> <span class="kn">import</span> <span class="n">AppBase</span>
+
+<span class="k">class</span> <span class="nc">MyFirstAppApp</span><span class="p">(</span><span class="n">AppBase</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Example implementation of an app (this is the initializer for the app)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">registerApp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Register the app</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">app</span><span class="o">.</span><span class="n">addApp</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;My First App&#39;</span><span class="p">,</span>
+                   <span class="n">index</span><span class="o">=</span><span class="s">&#39;my_first_app&#39;</span><span class="p">,</span>
+                   <span class="n">icon</span><span class="o">=</span><span class="s">&#39;my_first_app/images/icon.gif&#39;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">registerControllers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controllers</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add controllers</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">controllers</span><span class="o">.</span><span class="n">addController</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;my_first_app&#39;</span><span class="p">,</span>
+                                  <span class="n">url</span><span class="o">=</span><span class="s">&#39;my-first-app&#39;</span><span class="p">,</span>
+                                  <span class="n">controller</span><span class="o">=</span><span class="s">&#39;my_first_app.controllers.index:MyFirstAppController&#39;</span><span class="p">,</span>
+                                  <span class="n">action</span><span class="o">=</span><span class="s">&#39;index&#39;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">registerTemplateDirectories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">templateDirs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add template directories</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">templateDirs</span><span class="o">.</span><span class="n">addTemplateDirectory</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s">&#39;my_first_app/templates&#39;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">registerPublicDirectories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publicDirs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add public directories</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">publicDirs</span><span class="o">.</span><span class="n">addPublicDirectory</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s">&#39;my_first_app/public&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">registerResources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">staticDirs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add static directories</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">staticDirs</span><span class="o">.</span><span class="n">addResource</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s">&#39;my_first_app/public/my_first_app&#39;</span><span class="p">,</span>
+                               <span class="n">name</span><span class="o">=</span><span class="s">&#39;ckanapp_my_first_app&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">registerPersistentStores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">persistentStores</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add one or more persistent stores</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">persistentStores</span><span class="o">.</span><span class="n">addPersistentStore</span><span class="p">(</span><span class="s">&#39;demo_store&#39;</span><span class="p">)</span>
+        <span class="n">persistentStores</span><span class="o">.</span><span class="n">addInitializationScript</span><span class="p">(</span><span class="s">&#39;my_first_app.lib.init_db&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuring Apps</a><ul>
+<li><a class="reference internal" href="#registerapp">registerApp</a></li>
+<li><a class="reference internal" href="#registercontrollers">registerControllers</a></li>
+<li><a class="reference internal" href="#registertemplatedirectories">registerTemplateDirectories</a></li>
+<li><a class="reference internal" href="#registerpublicdirectories">registerPublicDirectories</a></li>
+<li><a class="reference internal" href="#registerresources">registerResources</a></li>
+<li><a class="reference internal" href="#registerpersistentstores">registerPersistentStores</a></li>
+<li><a class="reference internal" href="#example-file">Example File</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="forms.html"
+                        title="previous chapter">Working with Form Data</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="distribution.html"
+                        title="next chapter">Distributing Apps</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/getting_started/configuration.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="distribution.html" title="Distributing Apps"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="forms.html" title="Working with Form Data"
+             >previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../getting_started.html" >Getting Started</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Nathan Swain.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

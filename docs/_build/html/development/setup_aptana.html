@@ -1,0 +1,330 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using Aptana Studio 3 IDE &mdash; Tethys Platform 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html" />
+    <link rel="up" title="Setup Development Environment" href="../dev_environment.html" />
+    <link rel="next" title="Getting Started" href="../getting_started.html" />
+    <link rel="prev" title="Working with CKAN in Development" href="working_ckan.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../getting_started.html" title="Getting Started"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="working_ckan.html" title="Working with CKAN in Development"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../dev_environment.html" accesskey="U">Setup Development Environment</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="using-aptana-studio-3-ide">
+<h1>Using Aptana Studio 3 IDE<a class="headerlink" href="#using-aptana-studio-3-ide" title="Permalink to this headline">¶</a></h1>
+<p><strong>Last Updated:</strong> May 22, 2014</p>
+<p>You are welcome to use any IDE or text editor that you are comfortable with for developing. One IDE that we have found works well for Tethys App development is called Aptana. It is based on Eclipse, but it is optimized for web development and it comes with the excellent PyDev plugin installed out of the box for developing in Python web applications. There are a few steps that need to be followed to import a new app project into Aptana and set it up for Python development. These steps will be outlined here for convenience. In this tutorial, we will assume that we have created a new app called &#8220;my_first_app&#8221; located in the <tt class="file docutils literal"><span class="pre">~/tethysdev/ckanapp-my_first_app</span></tt> directory.</p>
+<div class="section" id="install-aptana-studio">
+<h2>Install Aptana Studio<a class="headerlink" href="#install-aptana-studio" title="Permalink to this headline">¶</a></h2>
+<p>Use <a class="reference external" href="http://www.samclarke.com/2012/04/how-to-install-aptana-studio-3-on-ubuntu-12-04-lts-precise-pangolin/">these</a>. instructions for installing Aptana Studio in Ubuntu 12.04.</p>
+</div>
+<div class="section" id="setup-python-interpreter">
+<span id="aptana-setup-interpreter"></span><h2>Setup Python Interpreter<a class="headerlink" href="#setup-python-interpreter" title="Permalink to this headline">¶</a></h2>
+<p>If you have a fresh installation of Aptana Studio, you will need to create a new Python Interpreter Configuration that uses your CKAN Python virtual environment. All of your apps will use the CKAN Python interpreter for intellisense and running scripts.This will only need to be done once for new workspaces.</p>
+<ol class="arabic simple">
+<li>Open Aptana Studio and select/create a workspace if prompted.</li>
+<li>From the menu, select <strong>window</strong> | <strong>preferences</strong>.</li>
+<li>Expand the <strong>PyDev</strong> menu and select <strong>Interpreter-Python</strong> from the list on the left-hand side of the window that appears. It should look similar to <a class="reference internal" href="#aptana-figure-1"><em>Figure 1. Screenshot of Aptana Studio preferences with PyDev interpreter selected</em></a>.</li>
+</ol>
+<div class="figure align-center" id="aptana-figure-1" style="width: 80%">
+<img alt="screenshot of Aptana Studio preferences with PyDev interpreter selected" src="../_images/aptana-configure-python.png" />
+<p class="caption">Figure 1. Screenshot of Aptana Studio preferences with PyDev interpreter selected</p>
+</div>
+<ol class="arabic simple" start="4">
+<li>If now interpreter is configured for your CKAN Python, select the <strong>New</strong> button.</li>
+<li>In the dialog window that appears set the <em>Interpreter Name</em> to &#8220;CKAN&#8221;, <strong>Browse</strong> to the location of your CKAN Python executable (<tt class="file docutils literal"><span class="pre">/usr/lib/ckan/default/bin/python</span></tt>, and press <strong>OK</strong> (see <a class="reference internal" href="#aptana-figure-2"><em>Figure 2. Screenshot of the select interpreter dialog.</em></a>).</li>
+</ol>
+<div class="figure align-center" id="aptana-figure-2" style="width: 80%">
+<img alt="screenshot of the select interpreter dialog" src="../_images/aptana-select-interpreter.png" />
+<p class="caption">Figure 2. Screenshot of the select interpreter dialog.</p>
+</div>
+<ol class="arabic simple" start="6">
+<li>The &#8220;Selection needed&#8221; dialog should appear. Press the <strong>Select All</strong> button and then <strong>OK</strong>.</li>
+<li>You should now see a Python interpreter listed for CKAN in the Python Interpreters window. Press <strong>Apply</strong> and then <strong>OK</strong> to exit the dialog.</li>
+</ol>
+</div>
+<div class="section" id="import-app-project">
+<h2>Import App Project<a class="headerlink" href="#import-app-project" title="Permalink to this headline">¶</a></h2>
+<p>After you have generated a new app using the scaffold (see <a class="reference internal" href="../working_with_apps.html"><em>Working with Apps</em></a>), you will need to <strong>import</strong> the <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> into Aptana to start working with it.This process will need to be done for every app that you develop.</p>
+<ol class="arabic simple">
+<li>Select <strong>File</strong> | <strong>Import...</strong> from the dropdown menu.</li>
+<li>Exand the <strong>General</strong> menu and select the <strong>Existing Folder as New Project</strong> option from the <em>Import</em> wizard that appears (see <a class="reference internal" href="#aptana-figure-3"><em>Figure 3. Screenshot of Import wizard select source step.</em></a>. Press the <strong>Next</strong> button to continue.</li>
+</ol>
+<div class="figure align-center" id="aptana-figure-3" style="width: 80%">
+<img alt="screenshot of the import wizard select source step" src="../_images/import-wizard-select-source.png" />
+<p class="caption">Figure 3. Screenshot of Import wizard select source step.</p>
+</div>
+<ol class="arabic simple" start="3">
+<li>Press the <strong>Browse</strong> button in the <em>Promote to Project</em> dialog that appears and browse to your app project (e.g.: <tt class="file docutils literal"><span class="pre">~/tethysdev/ckanapp-my_first_app</span></tt>). Select the <tt class="file docutils literal"><span class="pre">ckanapp-my_first_app</span></tt> directory and press <strong>OK</strong>. The dialog should look similar to <a class="reference internal" href="#aptana-figure-4"><em>Figure 4. Screenshot of Import wizard promote to project step</em></a> when you are done.</li>
+</ol>
+<div class="figure align-center" id="aptana-figure-4" style="width: 80%">
+<img alt="screenshot of the import wizard promote to project step" src="../_images/import-wizard-promote-project.png" />
+<p class="caption">Figure 4. Screenshot of Import wizard promote to project step</p>
+</div>
+<ol class="arabic simple" start="4">
+<li>Press the <strong>Finish</strong> button to exit the dialog.</li>
+</ol>
+<p>Your <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> should now be imported, however, there are a few more steps that need to be done to set it up as a Python project. Examine the left hand side of the Aptana window. You should see two tabs: <strong>App Explorer</strong> and <strong>Project Explorer</strong>. Select the <strong>Project Explorer</strong> tab. You should see your <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> listed in the <strong>Project Explorer</strong> tab if it has been imported correctly. You can expand your project to see the files it contains (see <a class="reference internal" href="#aptana-figure-5"><em>Figure 5. Screenshot of Project Explorer</em></a>).</p>
+<div class="figure align-center" id="aptana-figure-5" style="width: 50%">
+<img alt="screenshot of the project explorer" src="../_images/aptana-project-explorer.png" />
+<p class="caption">Figure 5. Screenshot of Project Explorer</p>
+</div>
+</div>
+<div class="section" id="setup-pydev-project">
+<h2>Setup PyDev Project<a class="headerlink" href="#setup-pydev-project" title="Permalink to this headline">¶</a></h2>
+<p>In this step we configure the project we have imported as a PyDev project to enable the Python IDE functionality of Aptana Studio.</p>
+<ol class="arabic simple">
+<li>Select the <strong>Project Explorer</strong> tab in the window on the left hand side of the Aptana window.</li>
+<li>Right-click on the top directory of your <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> (e.g.: <tt class="file docutils literal"><span class="pre">ckanapp-my_first_app</span></tt>). In the context menu that appears, point to <strong>PyDev</strong> and select <strong>Set as PyDev Project</strong>.</li>
+<li>Right-click on your <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> directory again and select <strong>Properties</strong> from the context menu.</li>
+</ol>
+<div class="section" id="configure-python-interpreter">
+<h3>Configure Python Interpreter<a class="headerlink" href="#configure-python-interpreter" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple" start="4">
+<li>Select <strong>PyDev-Interpreter/Grammar</strong> from the list on the left-hand side of the <em>Properties</em> window.</li>
+<li>Select <strong>Python</strong> as the <em>project type</em>, <strong>2.7</strong> as the <em>Grammar Version</em>, and <strong>CKAN</strong> as the <em>Interpreter</em> (see <a class="reference internal" href="#aptana-figure-6"><em>Figure 6. Screenshot of the PyDev interpreter and grammar dialog</em></a>). If <strong>CKAN</strong> is not listed as an option in the <em>Interpreter</em> select box, exit the dialog and perform the steps in the <a class="reference internal" href="#aptana-setup-interpreter"><em>Setup Python Interpreter</em></a> of this document.</li>
+<li>Press the <strong>Apply</strong> button.</li>
+</ol>
+<div class="figure align-center" id="aptana-figure-6" style="width: 80%">
+<img alt="screenshot of the PyDev interpreter and grammar dialog" src="../_images/aptana-pydev-interpreter.png" />
+<p class="caption">Figure 6. Screenshot of the PyDev interpreter and grammar dialog</p>
+</div>
+</div>
+<div class="section" id="configure-python-path">
+<h3>Configure Python Path<a class="headerlink" href="#configure-python-path" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple" start="7">
+<li>With the <em>Properties</em> window still open, select <strong>PyDev-PYTHONPATH</strong> from the list on the left-hand side.</li>
+<li>In the <strong>Source Folders</strong> tab, select the <strong>Add source folder</strong> button.</li>
+<li>Select your <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> directory (e.g.: <tt class="file docutils literal"><span class="pre">ckanapp-my_first_app</span></tt>) and press <strong>OK</strong> (see <a class="reference internal" href="#aptana-figure-7"><em>Figure 7. Screenshot of the select source folder dialogs</em></a>).</li>
+</ol>
+<div class="figure align-center" id="aptana-figure-7" style="width: 80%">
+<img alt="screenshot of select source folder dialogs" src="../_images/aptana-select-source-folder.png" />
+<p class="caption">Figure 7. Screenshot of the select source folder dialogs</p>
+</div>
+<ol class="arabic simple" start="10">
+<li>Select the <strong>External Libraries</strong> tab. This dialog is used to referece external projects for the current project. The intellisense for Aptana will work a lot better if you set up external libraries. For an <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a>, you will want to reference the Tethys Apps source and the CKAN source.</li>
+<li>Select the <strong>Add source folder</strong> button.</li>
+<li>Browse to the CKAN source directory (<tt class="file docutils literal"><span class="pre">/usr/lib/ckan/default/src/ckan</span></tt>). Select the <tt class="file docutils literal"><span class="pre">ckan</span></tt> directory and press <strong>OK</strong>.</li>
+<li>Repeat steps 11 and 12 for the Tethys Apps source directory (<tt class="file docutils literal"><span class="pre">/usr/lib/ckan/default/src/ckan/ckanext/tethys_apps</span></tt>).</li>
+<li>Your dialog should look similar to <a class="reference internal" href="#aptana-figure-8"><em>Figure 8. Screenshot of the external libraries dialog</em></a>. Press the <strong>Apply</strong> button and then <strong>OK</strong> to exit the dialog.</li>
+</ol>
+<div class="figure align-center" id="aptana-figure-8" style="width: 80%">
+<img alt="screenshot of the external libraries dialog" src="../_images/aptana-external-libraries.png" />
+<p class="caption">Figure 8. Screenshot of the external libraries dialog</p>
+</div>
+<p>Your <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> is now configured to work with Python in Aptana Studio.</p>
+</div>
+</div>
+<div class="section" id="setup-a-git-repository">
+<h2>Setup a Git Repository<a class="headerlink" href="#setup-a-git-repository" title="Permalink to this headline">¶</a></h2>
+<p>You can use Aptana to manage a Git versioning reposistory for your project. To create a new Git repository:</p>
+<ol class="arabic simple">
+<li>Right-click on your <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> in the <strong>Project Explorer</strong> tab of Aptana.</li>
+<li>Point to <strong>Team</strong> and select <strong>Share Project...</strong> from the context menu that appears.</li>
+<li>In the <em>Configure Git Repository</em> dialog that appears, select the path to your project from the list box.</li>
+<li>Press the <strong>Create...</strong> button. This will create a new Git repository in you <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> directory.</li>
+<li>Press the <strong>Finish</strong> button.</li>
+</ol>
+<p>In the <strong>Project Explorer</strong>, your <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> should now have a star next to it and the word &#8220;master&#8221; in brackets. The &#8220;master&#8221; in brackets next to your <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> directory indicates the current branch that you are working on (master is the default branch). If you expand your project you will see that many of the files and directories have stars on them and some of the file are highlighted red (see <a class="reference internal" href="#aptana-figure-9"><em>Figure 9. Screenshot of the Project Explorer with uncommitted changes</em></a>). This indicates which files and directores have <em>untracked</em> changes in them. To track the changes, we need to <em>commit</em> them to your local repository.</p>
+<div class="figure align-center" id="aptana-figure-9" style="width: 60%">
+<img alt="screenshot of the Project Explorer with uncommitted changes" src="../_images/aptana-pre-commit.png" />
+<p class="caption">Figure 9. Screenshot of the Project Explorer with uncommitted changes</p>
+</div>
+<div class="section" id="commit-changes">
+<h3>Commit Changes<a class="headerlink" href="#commit-changes" title="Permalink to this headline">¶</a></h3>
+<p>You can commit changes using Aptana Studio like so:</p>
+<ol class="arabic simple">
+<li>Right-click on your <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> in the <strong>Project Explorer</strong> tab of Aptana.</li>
+<li>Point to <strong>Team</strong> and select <strong>Commit...</strong> from the context menu that appears.</li>
+<li>Press the <strong>&gt;&gt;</strong> button to stage all files that have changed.</li>
+<li>Write a brief commit message to describe the changes in this commit (e.g.: First commit).</li>
+<li>Press the <strong>Commit</strong> button.</li>
+</ol>
+<p>All of the stars and red highlights should disappear after the commit.</p>
+</div>
+<div class="section" id="remote-repository">
+<h3>Remote Repository<a class="headerlink" href="#remote-repository" title="Permalink to this headline">¶</a></h3>
+<p>If you have setup a remote repository, you can link your repository to it and push and pull changes using Aptana. First setup the remote repository like so:</p>
+<ol class="arabic simple">
+<li>Right-click on your <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> in the <strong>Project Explorer</strong> tab of Aptana.</li>
+<li>Point to <strong>Team</strong> | <strong>Remotes</strong> and select <strong>Add...</strong> from the context menu that appears.</li>
+<li>Give the remote a name (e.g.: origin) and enter the remote URI (e.g.: <a class="reference external" href="mailto:git&#37;&#52;&#48;github&#46;com">git<span>&#64;</span>github<span>&#46;</span>com</a>:user/ckanapp-my_first_app.git). Press <strong>OK</strong>.</li>
+</ol>
+<p>Push your code to the repository for the first time:</p>
+<ol class="arabic simple">
+<li>Right-click on your <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> in the <strong>Project Explorer</strong> tab of Aptana.</li>
+<li>Point to <strong>Team</strong> | <strong>Remotes</strong> | <strong>Push current branch to</strong> and select the remote to push to (e.g.: origin) from the context menu that appears.</li>
+</ol>
+</div>
+<div class="section" id="push-and-pull">
+<h3>Push and Pull<a class="headerlink" href="#push-and-pull" title="Permalink to this headline">¶</a></h3>
+<p>After you have setup your remote, you can push and pull changes. Prior to a push or pull, you are required to commit your changes to your local repository. After committing:</p>
+<ol class="arabic simple">
+<li>Right-click on your <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> in the <strong>Project Explorer</strong> tab of Aptana.</li>
+<li>Point to <strong>Team</strong> and select either <strong>Push</strong> or <strong>Pull</strong>.</li>
+</ol>
+<p>There are many other features of Aptana for working with Git that will not be covered here such as managing branches and adding files to the <tt class="file docutils literal"><span class="pre">.gitignore</span></tt>.</p>
+</div>
+</div>
+<div class="section" id="perspectives-and-views">
+<span id="perspective-views"></span><h2>Perspectives and Views<a class="headerlink" href="#perspectives-and-views" title="Permalink to this headline">¶</a></h2>
+<p>Like Eclipse, the Aptana workspace is organized into views and perspectives. Views are different windows in Aptana. For example, the Project Explorer is a view. Other examples of views include the Console, Terminal, and various Editor views. There are many more view that you can add to your workspace. To add a view:</p>
+<ol class="arabic simple">
+<li>Select <strong>Window</strong> | <strong>Show View</strong> | <strong>Other...</strong>.</li>
+<li>Select the desired view (e.g.: Terminal) and press <strong>OK</strong>.</li>
+</ol>
+<p>You can select and drag views and dock them to different areas of the workspace.</p>
+<p>A perspective is a predefined collection of views. Usually, provides the views that are needed for a particular type of development or task. The defaul perspective of Aptana is the <strong>Web</strong> perspective. There are also perspectives for PyDev and Debugging that come with Aptana. To switch the perspective:</p>
+<ol class="arabic simple">
+<li>Select <strong>Window</strong> | <strong>Open Perspective</strong> | <strong>Other...</strong>.</li>
+<li>Select the desired perspective (e.g.: PyDev) and press <strong>OK</strong>.</li>
+</ol>
+<p>You&#8217;ll notice that the views in your workspace rearrange for the perspective. For developing apps in Aptana, we recommend using the <strong>PyDev</strong> perspective.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">Use the <strong>PyDev</strong> perspective when working with a Tethys Apps project in Aptana Studio.</p>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">Use a <strong>Terminal</strong> view in Aptana to start the Paster server during development. The you can see the output from your server in the same window that you are editing your code.</p>
+</div>
+<div class="section" id="running-python-scripts">
+<h3>Running Python Scripts<a class="headerlink" href="#running-python-scripts" title="Permalink to this headline">¶</a></h3>
+<p>If you have any stand alone scripts (like a database initialization script), you can run and debug them in Aptana.</p>
+<ol class="arabic simple">
+<li>Open a stand alone Python script (e.g.: <tt class="file docutils literal"><span class="pre">ckanapp-my_first_app/ckanapp/my_first_app/lib/init_db.py</span></tt>) using the <strong>Project Explorer</strong>.</li>
+<li>Follow the steps for enabling a perspective in the <a class="reference internal" href="#perspective-views"><em>Perspectives and Views</em></a> section to switch to the <strong>Debug</strong> perspective.</li>
+<li>Select <strong>Run</strong> | <strong>Run</strong> from the dropdown menu.</li>
+<li>Select <strong>Python Run</strong> and press <strong>OK</strong> if prompted.</li>
+</ol>
+<p>Alternatively, you can select <strong>Run</strong> | <strong>Debug</strong> to enable the debugging Run mode. The <strong>Debug</strong> perspective is configured with views that will aid you in debugging your scripts.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">You can also run and debug scripts using the buttons with the <em>play</em> symbol and <em>bug</em> symbols, respectively.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Using Aptana Studio 3 IDE</a><ul>
+<li><a class="reference internal" href="#install-aptana-studio">Install Aptana Studio</a></li>
+<li><a class="reference internal" href="#setup-python-interpreter">Setup Python Interpreter</a></li>
+<li><a class="reference internal" href="#import-app-project">Import App Project</a></li>
+<li><a class="reference internal" href="#setup-pydev-project">Setup PyDev Project</a><ul>
+<li><a class="reference internal" href="#configure-python-interpreter">Configure Python Interpreter</a></li>
+<li><a class="reference internal" href="#configure-python-path">Configure Python Path</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#setup-a-git-repository">Setup a Git Repository</a><ul>
+<li><a class="reference internal" href="#commit-changes">Commit Changes</a></li>
+<li><a class="reference internal" href="#remote-repository">Remote Repository</a></li>
+<li><a class="reference internal" href="#push-and-pull">Push and Pull</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#perspectives-and-views">Perspectives and Views</a><ul>
+<li><a class="reference internal" href="#running-python-scripts">Running Python Scripts</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="working_ckan.html"
+                        title="previous chapter">Working with CKAN in Development</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../getting_started.html"
+                        title="next chapter">Getting Started</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/development/setup_aptana.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../getting_started.html" title="Getting Started"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="working_ckan.html" title="Working with CKAN in Development"
+             >previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../dev_environment.html" >Setup Development Environment</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Nathan Swain.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>URL Mapping &mdash; Tethys Platform 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html" />
+    <link rel="up" title="Getting Started" href="../getting_started.html" />
+    <link rel="next" title="Working with Form Data" href="forms.html" />
+    <link rel="prev" title="Working with the Controller" href="controller.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="forms.html" title="Working with Form Data"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="controller.html" title="Working with the Controller"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../getting_started.html" accesskey="U">Getting Started</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="url-mapping">
+<h1>URL Mapping<a class="headerlink" href="#url-mapping" title="Permalink to this headline">¶</a></h1>
+<p><strong>Last Updated:</strong> May 27, 2014</p>
+<p>In this part of the tutorial, URL mapping will be introduced. It is likely that your app will have more than one controller. Everytime that you create a new controller you will need to map it to a URL. When this url is called, that controller will be executed. We&#8217;ll illustrate the process of creating a new controller and mapping it to a URL for this first app.</p>
+<div class="section" id="create-a-new-contoller">
+<h2>Create a New Contoller<a class="headerlink" href="#create-a-new-contoller" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Create a new file called <tt class="file docutils literal"><span class="pre">new_controller.py</span></tt> in your <tt class="docutils literal"><span class="pre">controllers</span></tt> package (<tt class="file docutils literal"><span class="pre">~tethysdev/ckanapp-my_first_app/ckanapp/my_first_app/controllers/new_controller.py</span></tt>).</li>
+<li>Copy and paste the following code into <cite>:file:`new_controller.py</cite>:</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">ckan.lib.base</span> <span class="kn">import</span> <span class="n">BaseController</span>
+<span class="kn">import</span> <span class="nn">ckan.plugins</span> <span class="kn">as</span> <span class="nn">p</span>
+
+<span class="k">class</span> <span class="nc">NewController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Tools</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">toolkit</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">c</span>
+
+        <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s">&#39;my_first_app/new_template.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>First, we import the <tt class="docutils literal"><span class="pre">BaseController</span></tt> from the CKAN source. All new controller classes must inherit from <tt class="docutils literal"><span class="pre">BaseController</span></tt>. We also import the <tt class="docutils literal"><span class="pre">plugins</span></tt> library from the CKAN source and alias it as <tt class="docutils literal"><span class="pre">p</span></tt>. The <tt class="docutils literal"><span class="pre">plugins</span></tt> library contains the plugins toolkit that was discussed in the previous tutorial. We also define a method/action for our new contrller called <tt class="docutils literal"><span class="pre">index()</span></tt>. All action does at this point is render the <tt class="file docutils literal"><span class="pre">new_template.html</span></tt>. template.</p>
+</div>
+<div class="section" id="create-a-new-template">
+<h2>Create a New Template<a class="headerlink" href="#create-a-new-template" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="file docutils literal"><span class="pre">new_template.html</span></tt> template doesn&#8217;t exist yet, so we&#8217;ll make it now:</p>
+<ol class="arabic simple">
+<li>Create a new file called <tt class="file docutils literal"><span class="pre">new_template.html</span></tt> in your <tt class="file docutils literal"><span class="pre">templates</span></tt> directory (<tt class="file docutils literal"><span class="pre">~tethysdev/ckanapp-my_first_app/ckanapp/my_first_app/templates/my_first_app/new_template.html</span></tt>).</li>
+<li>Copy and paste the following lines into <tt class="file docutils literal"><span class="pre">new_template.html</span></tt>:</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;my_first_app/app_base.html&quot; %}
+
+{% block breadcrumb_content %}
+  &lt;li&gt;&lt;a href=&quot;{% url_for &#39;apps&#39; %}&quot;&gt;Apps&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/apps/my-first-app&quot;&gt;My First App&lt;/a&gt;&lt;/li&gt;
+  &lt;li class=&quot;active&quot;&gt;&lt;a href=&quot;#&quot;&gt;New Page&lt;/a&gt;&lt;/li&gt;
+{% endblock %}
+
+{% block primary_content %}
+  &lt;div class=&quot;module&quot;&gt;
+    &lt;div class=&quot;module-content&quot;&gt;
+      &lt;h1&gt;Hello World!&lt;/h1&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+{% endblock %}
+
+{% block secondary_content %}
+  &lt;div class=&quot;module module-narrow module-shallow&quot;&gt;
+    &lt;h2 class=&quot;module-heading&quot;&gt;
+      &lt;i class=&quot;icon-info-sign&quot;&gt;&lt;/i&gt;
+      Welcome
+    &lt;/h2&gt;
+    &lt;div class=&quot;module-content&quot;&gt;
+            &lt;p&gt;Welcome to my new page!&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+{% endblock %}
+</pre></div>
+</div>
+</div>
+<div class="section" id="map-controller-to-url">
+<h2>Map Controller to URL<a class="headerlink" href="#map-controller-to-url" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have a new controller that renders a new template, we need to map the controller to a URL. This is done in the <a class="reference internal" href="../glossary.html#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a> (<tt class="file docutils literal"><span class="pre">app.py</span></tt>).</p>
+<ol class="arabic simple">
+<li>Open the <em class="xref std std-term">app configuration file: for your app (:file:`~/tethysdev/ckanapp-my_first_app/ckanapp/my_first_app/app.py</em>) and locate the <tt class="docutils literal"><span class="pre">registerControllers()</span></tt> method of your <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a>.</li>
+<li>Add the following lines to the end of the <tt class="docutils literal"><span class="pre">registerControllers()</span></tt> method:</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">controllers</span><span class="o">.</span><span class="n">addController</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;new_controller&#39;</span><span class="p">,</span>
+                          <span class="n">url</span><span class="o">=</span><span class="s">&#39;my-first-app/new-controller&#39;</span><span class="p">,</span>
+                          <span class="n">controller</span><span class="o">=</span><span class="s">&#39;my_first_app.controllers.new_controller:NewController&#39;</span><span class="p">,</span>
+                          <span class="n">action</span><span class="o">=</span><span class="s">&#39;index&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To register the new controller, we use the <tt class="docutils literal"><span class="pre">addController()</span></tt> method to:</p>
+<ol class="arabic simple">
+<li>give the new mapping a name (&#8220;new_controller&#8221;),</li>
+<li>define the url pattern that will execute the controller (&#8220;my-first-app/new-controller&#8221;),</li>
+<li>specify where the controller is located using dot notation path (&#8220;my_first_app.controllers.new_controller:NewController&#8221;),</li>
+<li>and define the action (method) that will be called (&#8220;index&#8221;)</li>
+</ol>
+<p>That&#8217;s all it takes to map the URL. Start/Restart the paster server and navigate to: <a class="reference external" href="http://localhost:5000/apps/my-first-app/new-controller">http://localhost:5000/apps/my-first-app/new-controller</a> .</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The URLs that you use to map your controllers are relative to the &#8220;/apps&#8221; base URL. Also, all of your URL patterns should begin with your app&#8217;s index (e.g.: &#8216;my-first-app&#8217;) to prevent conflicts with other apps.</p>
+</div>
+</div>
+<div class="section" id="url-variables">
+<h2>URL Variables<a class="headerlink" href="#url-variables" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to embed variables in the URL. The next part of the tutorial will demonstrate how this is done.</p>
+<ol class="arabic simple">
+<li>Add the following lines to the end of the <tt class="docutils literal"><span class="pre">registerControllers()</span></tt> method in your <a class="reference internal" href="../glossary.html#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a>:</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">controllers</span><span class="o">.</span><span class="n">addController</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;new_controller_action&#39;</span><span class="p">,</span>
+                          <span class="n">url</span><span class="o">=</span><span class="s">&#39;my-first-app/new-controller/{action}&#39;</span><span class="p">,</span>
+                          <span class="n">controller</span><span class="o">=</span><span class="s">&#39;my_first_app.controllers.new_controller:NewController&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Compare this new controller mapping with the one we added in the previous section. This controller mapping points to the same controller class as the other one, but the URL contains a variable, <tt class="docutils literal"><span class="pre">action</span></tt>, denoted by the curly braces. The <tt class="docutils literal"><span class="pre">action</span></tt> variable is a special variable, because it maps to the action/method that will be executed when the URL is requested. The new mapping definition omits the fourth argument (the <tt class="docutils literal"><span class="pre">action</span></tt> argument), because the action will be defined by the URL variable.</p>
+<ol class="arabic simple" start="2">
+<li>Copy and paste the following method definition to the end of the <tt class="docutils literal"><span class="pre">NewController</span></tt> class in the <tt class="file docutils literal"><span class="pre">new_controller.py</span></tt> file:</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c"># Tools</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">toolkit</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">c</span>
+
+    <span class="n">c</span><span class="o">.</span><span class="n">hello_name</span> <span class="o">=</span> <span class="s">&#39;Cosmo&#39;</span>
+
+    <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s">&#39;my_first_app/hello.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li>Create a new file in your templates directory called <tt class="file docutils literal"><span class="pre">hello.html</span></tt> and add the following contents:</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;my_first_app/app_base.html&quot; %}
+
+{% block breadcrumb_content %}
+  &lt;li&gt;&lt;a href=&quot;{% url_for &#39;apps&#39; %}&quot;&gt;Apps&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;/apps/my-first-app&quot;&gt;My First App&lt;/a&gt;&lt;/li&gt;
+  &lt;li class=&quot;active&quot;&gt;&lt;a href=&quot;#&quot;&gt;Hello {{ c.hello_name }}&lt;/a&gt;&lt;/li&gt;
+{% endblock %}
+
+{% block primary_content %}
+  &lt;div class=&quot;module&quot;&gt;
+    &lt;div class=&quot;module-content&quot;&gt;
+      &lt;h1&gt;Hello, {{ c.hello_name }}!&lt;/h1&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+{% endblock %}
+
+{% block secondary_content %}
+  &lt;div class=&quot;module module-narrow module-shallow&quot;&gt;
+    &lt;h2 class=&quot;module-heading&quot;&gt;
+      &lt;i class=&quot;icon-info-sign&quot;&gt;&lt;/i&gt;
+      Welcome
+    &lt;/h2&gt;
+    &lt;div class=&quot;module-content&quot;&gt;
+            &lt;p&gt;Welcome to my new page!&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+{% endblock %}
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li>Navigate to the following URL in an internet browser: <a class="reference external" href="http://localhost:5000/apps/my-first-app/new-controller/hello">http://localhost:5000/apps/my-first-app/new-controller/hello</a></li>
+</ol>
+<p>The last element of the URL, &#8220;hello&#8221;, is mapped to the <tt class="docutils literal"><span class="pre">hello</span></tt> action and the <tt class="file docutils literal"><span class="pre">hello.html</span></tt> template is rendered. Similarly, <a class="reference external" href="http://localhost:5000/apps/my-first-app/new-controller/index">http://localhost:5000/apps/my-first-app/new-controller/index</a> will map to the original <tt class="docutils literal"><span class="pre">index</span></tt> action of the <tt class="docutils literal"><span class="pre">NewController</span></tt>. You can add whatever variables you deem necessary, so long as the URL pattern is unique.</p>
+<ol class="arabic simple" start="5">
+<li>Add a new variable to the URL pattern by modifying the controller mapping in your <tt class="file docutils literal"><span class="pre">app</span> <span class="pre">configuration</span> <span class="pre">file</span></tt> from step 1 to look like this:</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">controllers</span><span class="o">.</span><span class="n">addController</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;new_controller_action&#39;</span><span class="p">,</span>
+                          <span class="n">url</span><span class="o">=</span><span class="s">&#39;my-first-app/new-controller/{action}/{name}&#39;</span><span class="p">,</span>
+                          <span class="n">controller</span><span class="o">=</span><span class="s">&#39;my_first_app.controllers.new_controller:NewController&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="6">
+<li>The URL variables automatically passed to the template through the the template context object (<tt class="docutils literal"><span class="pre">c</span></tt>). In this case, the URL <tt class="docutils literal"><span class="pre">name</span></tt> variable will be accessible at <tt class="docutils literal"><span class="pre">c.name</span></tt>. Modify the <tt class="docutils literal"><span class="pre">hello</span></tt> action in your <tt class="docutils literal"><span class="pre">NewController</span></tt> class to look like this:</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c"># Tools</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">toolkit</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">c</span>
+
+    <span class="n">c</span><span class="o">.</span><span class="n">hello_name</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s">&#39;my_first_app/hello.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="7">
+<li>Now, name used in the URL <tt class="docutils literal"><span class="pre">name</span></tt> space will be passed to the template through the template context object (<tt class="docutils literal"><span class="pre">c</span></tt>). Navigate to <a class="reference external" href="http://localhost:5000/apps/my-first-app/new-controller/hello/Pete">http://localhost:5000/apps/my-first-app/new-controller/hello/Pete</a> . The page should now render with a nice greeting for Pete: &#8220;Hello, Pete!&#8221; Replace Pete with your own name if you&#8217;d like.</li>
+</ol>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p>URL patterns need to be unique. For example, consider the following URL patterns:</p>
+<div class="highlight-python"><div class="highlight"><pre># Set 1
+url = &#39;my-first-app/{action}/{name}
+url = &#39;my-first-app/{id}/{property}
+
+# Set 2
+url = &#39;my-first-app/cats/{action}/{id}
+url = &#39;my-first-app/dogs/{action}/{id}
+</pre></div>
+</div>
+<p class="last">The two URLs shown in Set 1, have variables with different names, but the URL pattern is the same. These URLs would not work because they are not unique. Pylons would not be able to accurately map the pattern to the appropriate controller. The URLs in Set 2, however, have unique patterns even though the varaibles are the same. Set 2 would be a valid set of URLs because the pattern is unique.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">URL Mapping</a><ul>
+<li><a class="reference internal" href="#create-a-new-contoller">Create a New Contoller</a></li>
+<li><a class="reference internal" href="#create-a-new-template">Create a New Template</a></li>
+<li><a class="reference internal" href="#map-controller-to-url">Map Controller to URL</a></li>
+<li><a class="reference internal" href="#url-variables">URL Variables</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="controller.html"
+                        title="previous chapter">Working with the Controller</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="forms.html"
+                        title="next chapter">Working with Form Data</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/getting_started/url_mapping.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="forms.html" title="Working with Form Data"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="controller.html" title="Working with the Controller"
+             >previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../getting_started.html" >Getting Started</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Nathan Swain.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

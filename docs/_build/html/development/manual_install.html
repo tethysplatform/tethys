@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Setup from Source Installation &mdash; Tethys Platform 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html" />
+    <link rel="up" title="Setup Development Environment" href="../dev_environment.html" />
+    <link rel="next" title="Setup with VMWare Image" href="ubuntu_vm.html" />
+    <link rel="prev" title="Setup Development Environment" href="../dev_environment.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ubuntu_vm.html" title="Setup with VMWare Image"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../dev_environment.html" title="Setup Development Environment"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../dev_environment.html" accesskey="U">Setup Development Environment</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="setup-from-source-installation">
+<h1>Setup from Source Installation<a class="headerlink" href="#setup-from-source-installation" title="Permalink to this headline">¶</a></h1>
+<p><strong>Last Updated:</strong> May 30, 2014</p>
+<p>This method of setting up the development environment for Tethys Apps involves setting up a computer with the Ubuntu (Linux) operating system and installing CKAN and the Tethys Apps plugin from the source code. This is the most difficult method and can be time intensive if you are not familiar with Linux. That said, the installation instructions provided are very well written fairly staight forward. Plan on spending at least 2-3 hours to get setup using this method.</p>
+<div class="section" id="install-ubuntu">
+<span id="id1"></span><h2>Install Ubuntu<a class="headerlink" href="#install-ubuntu" title="Permalink to this headline">¶</a></h2>
+<p>Ubuntu Desktop can be downloaded at the <a class="reference external" href="http://www.ubuntu.com/desktop">Download Ubuntu</a> page. There are three ways you can install Ubuntu on your computer. The first option is to overwrite whatever operating system you are running with Ubuntu.This can be done using either a USB or DVD. Use the <a class="reference external" href="http://www.ubuntu.com/download/desktop/install-ubuntu-desktop">Install Ubuntu</a> instructions to do so (Note: these instructions are for Ubuntu 14.04, but they should work for Ubuntu 12.04 as well). This method is not usually preferable or recommended, because most users still want to retain use of their Windows or Mac operating systems. The next two options accomodate this need.</p>
+<p>The second options is to install Ubuntu in a dual boot configuration. This will let you choose to either run Ubuntu or Windows/Mac OSX when you start your computer. Follow the instructions provided by Ubuntu for <a class="reference external" href="https://help.ubuntu.com/community/WindowsDualBoot">Windows Dual Boot</a> if on a Windows computer or the <a class="reference external" href="https://help.ubuntu.com/community/MactelSupportTeam/AppleIntelInstallation">Intel Mac Dual Boot</a> if on a Mac computer.</p>
+<p>The third option is to install Ubuntu as a virtual machine using virtualization software such as <a class="reference external" href="https://www.virtualbox.org/">VirtualBox</a>. If you are running Mac OSX you can also use <a class="reference external" href="https://www.vmware.com/">VMWare</a> or <a class="reference external" href="http://www.parallels.com/">Parallels</a>. Follow the instructions for creating a new Ubuntu virtual machine for the software you are running.</p>
+<p>After installing Ubuntu, be sure to install any updates using the Update Manager and restart.</p>
+</div>
+<div class="section" id="install-ckan-from-source">
+<h2>Install CKAN from Source<a class="headerlink" href="#install-ckan-from-source" title="Permalink to this headline">¶</a></h2>
+<p>When Ubuntu is up and running, the next step is to install CKAN. CKAN runs on top of the Pylons Python web framework, thus CKAN will use Python to run. We recommend using Python 2.7.3. Please note that Python 3.x will not work. You can check the version of Python running on your Ubuntu machine by executing the following command on the terminal:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python -V
+</pre></div>
+</div>
+<p>To install CKAN, follow the excellent source installation instructions found <a class="reference external" href="http://docs.ckan.org/en/ckan-2.2/install-from-source.html">here</a>. Use all of the default directories and names specified in the instructions for your development environment.</p>
+<p>Next, configure your CKAN installation with FileStore enabled. You will not be able to upload or store files in your CKAN installation without enabling FileStore. Follow <a class="reference external" href="http://docs.ckan.org/en/ckan-2.2/filestore.html?highlight=filestore">these</a> instructions to setup FileStore. Optinally, you may also enable the DataStore using <a class="reference external" href="http://docs.ckan.org/en/ckan-2.2/datastore.html">these</a> instructions.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you decide you would like to install CKAN on another Linux operating system, <a class="reference external" href="https://github.com/ckan/ckan/wiki/How-to-Install-CKAN">this</a> link may be helpful. It provides intructions for several other operating systems. However, all the instructions for setting up the development environment are written for Ubuntu.</p>
+</div>
+<div class="admonition caution">
+<p class="first admonition-title">Caution</p>
+<p class="last">Some of the instructions for installing CKAN require you to change a few lines in various configuration files. Some of these lines are commented out by default. <strong>Make sure all these lines are uncommented.</strong></p>
+</div>
+<div class="section" id="ckan-installation-troubleshooting">
+<h3>CKAN Installation Troubleshooting<a class="headerlink" href="#ckan-installation-troubleshooting" title="Permalink to this headline">¶</a></h3>
+<p>A recent change to the <tt class="docutils literal"><span class="pre">libtomcat6-java</span></tt> library has caused some issues with Solr running through Jetty. If you encounter these issues (i.e.: some error about a tomcat library), Solr can be configured to run through Tomcat instead. To use Tomcat instead of Jetty, execute the following commands:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo apt-get remove solr-jetty
+$ sudo apt-get install solr-tomcat
+</pre></div>
+</div>
+<p>Next, open the tomcat configuration file (/etc/tomcat6) and change the port attribute of the Connector to <strong>8983</strong>. Start tomcat like so:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo service tomcat6 start
+</pre></div>
+</div>
+<p>If you get an error like <em>Permission denied:&#8217;/var/lib/ckan/default/storage&#8217;</em> run the following commands:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo chown -R `whoami` /var/lib/ckan/default
+$ sudo chmod -R u+rwx /var/lib/ckan/default
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="tethys-apps">
+<h2>Tethys Apps<a class="headerlink" href="#tethys-apps" title="Permalink to this headline">¶</a></h2>
+<p>Follow the instructions for installing the Tethys Apps plugin found <a class="reference internal" href="../installation.html"><em>Installation</em></a>. Be sure to use the modified instructions for installing during development.</p>
+</div>
+<div class="section" id="ci-water-theme">
+<h2>CI-Water Theme<a class="headerlink" href="#ci-water-theme" title="Permalink to this headline">¶</a></h2>
+<p>Optionally, you may wish to install the CI-Water Theme to give your CKAN installation a different look. This can be done by installing the <tt class="docutils literal"><span class="pre">ci-water_theme</span></tt> plugin:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ cd ~/tethysdev
+$ git clone https://swainn@bitbucket.org/swainn/ckanext-ciwater_theme.git
+</pre></div>
+</div>
+<p>After downloading the source code, change into the <tt class="file docutils literal"><span class="pre">ckanext-ciwater_theme</span></tt> directory and perform the installation. Be sure your CKAN python environment is activated before running the install command. Finally, copy the <tt class="file docutils literal"><span class="pre">ciwater_theme</span></tt> source into the <tt class="file docutils literal"><span class="pre">ckanext</span></tt> directory.</p>
+<div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/ckan/default/bin/activate
+$ cd ~/tethysdev/ckanext-ciwater_theme
+$ python setup.py install
+$ cp ~/tethysdev/ckanext-ciwater_theme/ckanext/ciwater_theme /usr/lib/ckan/default/src/ckan/ckanext/
+</pre></div>
+</div>
+<p>Add <em>&#8220;ciwater_theme&#8221;</em> to the <strong>ckan.plugins</strong> parameter of CKAN configuration file (e.g.: <tt class="file docutils literal"><span class="pre">development.ini</span></tt>). Be sure the <em>&#8220;ciwater_theme&#8221;</em> plugin is listed <strong>after</strong> the <em>&#8220;tethys_apps&#8221;</em> plugin.</p>
+<div class="highlight-python"><div class="highlight"><pre>ckan.plugins = tethys_apps ciwater_theme
+</pre></div>
+</div>
+<p>Just like the Tethys Apps plugin, the CI-Water Theme plugin is under heavy development. You may wish to modify your installation to use links instead of hard copying. To do so, execute the following commands instead of the above:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/ckan/default/bin/activate
+$ cd ~/tethysdev/ckanext-ciwater_theme
+$ python setup.py develop
+$ ln -s ~/tethysdev/ckanext-ciwater_theme/ckanext/ciwater_theme /usr/lib/ckan/default/src/ckan/ckanext/ciwater_theme
+</pre></div>
+</div>
+</div>
+<div class="section" id="start-developing">
+<h2>Start Developing<a class="headerlink" href="#start-developing" title="Permalink to this headline">¶</a></h2>
+<p>Refer to the <a class="reference internal" href="working_ckan.html"><em>Working with CKAN in Development</em></a> to learn how to start up CKAN and start developing.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Setup from Source Installation</a><ul>
+<li><a class="reference internal" href="#install-ubuntu">Install Ubuntu</a></li>
+<li><a class="reference internal" href="#install-ckan-from-source">Install CKAN from Source</a><ul>
+<li><a class="reference internal" href="#ckan-installation-troubleshooting">CKAN Installation Troubleshooting</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tethys-apps">Tethys Apps</a></li>
+<li><a class="reference internal" href="#ci-water-theme">CI-Water Theme</a></li>
+<li><a class="reference internal" href="#start-developing">Start Developing</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../dev_environment.html"
+                        title="previous chapter">Setup Development Environment</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ubuntu_vm.html"
+                        title="next chapter">Setup with VMWare Image</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/development/manual_install.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ubuntu_vm.html" title="Setup with VMWare Image"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../dev_environment.html" title="Setup Development Environment"
+             >previous</a> |</li>
+        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../dev_environment.html" >Setup Development Environment</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Nathan Swain.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
