@@ -2,5 +2,7 @@ django-gravatar2
 django-social-auth
 django-bootstrap3
 django-tethys_apps
+django-tethys_gizmos
 paste
 psycopg2
+sphinx
