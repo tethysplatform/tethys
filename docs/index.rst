@@ -1,14 +1,13 @@
-***************************
-Tethys Apps Plugin for CKAN
-***************************
-
-Contents:
+***************
+Tethys Platform
+***************
 
 .. toctree::
    :maxdepth: 2
    
    features
    installation
+   getting_started
    working_with_apps
    key_concepts
    app_harvesting
