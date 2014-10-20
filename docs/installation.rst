@@ -71,12 +71,8 @@ a. Create a Python virtual environment and activate it::
 
 b. Install Tethys Platform into the virtual environment with the following commands::
 
-    sudo mkdir -p /usr/lib/tethys/src
-    sudo chown `whoami` /usr/lib/tethys/src
-    cd /usr/lib/tethys/src
-    git clone https://github.com/swainn/tethys
-
-
+    cd /usr/lib/tethys
+    git clone https://github.com/swainn/tethys src
 
 
 c. Install the Python modules that Tethys requires::
@@ -114,5 +110,5 @@ passwords, because you will need to use them in the next step.To do so, run the 
 
 Create a new settings file for your Tethys Platform installation. In the Terminal::
 
-    cd /usr/lib/tethys/src/tethys/tethys_portal
+    cd /usr/lib/tethys/src/tethys_portal
 

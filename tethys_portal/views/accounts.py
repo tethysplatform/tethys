@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import password_reset, password_reset_confirm
 from django.contrib import messages
 
-from tethys_site.forms import LoginForm, RegisterForm
+from tethys_portal.forms import LoginForm, RegisterForm
 
 
 def login_view(request):
