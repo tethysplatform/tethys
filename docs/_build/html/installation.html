@@ -58,7 +58,7 @@ types of Linux with some adaptation.</p>
 <div class="section" id="install-the-dependencies">
 <h2>1. Install the Dependencies<a class="headerlink" href="#install-the-dependencies" title="Permalink to this headline">¶</a></h2>
 <p>If you are using a Debian-based operating system (like Ubuntu), you can install the dependencies as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install postgresql-9.3 postgresql-9.3-postgis-2.1 python-pip python-virtualenv git-core
+<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install python-dev postgresql-9.3 libpq-dev postgresql-9.3-postgis-2.1 python-pip python-virtualenv git-core
 </pre></div>
 </div>
 <p>If you not using a Debian-based operating system find the best way to install the following dependencies for your
@@ -158,7 +158,7 @@ git clone https://github.com/swainn/tethys
 </div>
 </li>
 <li><p class="first">Install the Python modules that Tethys requires:</p>
-<div class="highlight-python"><div class="highlight"><pre>pip install -r /usr/lib/tethys/src/requirements.txt
+<div class="highlight-python"><div class="highlight"><pre>pip install -r /usr/lib/tethys/src/tethys/requirements.txt
 </pre></div>
 </div>
 </li>
@@ -169,119 +169,28 @@ git clone https://github.com/swainn/tethys
 </div>
 </li>
 </ol>
-<div class="section" id="download-source">
-<h3>1. Download Source<a class="headerlink" href="#download-source" title="Permalink to this headline">¶</a></h3>
-<p>Download the source for the CKAN Apps plugin using git. In a terminal execute the following commands:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ mkdir ~/tethysdev
-$ cd ~/tethysdev
-$ git clone https://swainn@bitbucket.org/swainn/ckanext-tethys_apps.git
-</pre></div>
 </div>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p class="last">The &#8220;~&#8221; (tilde) character is a shortcut to the home directory in a unix terminal. Thus, <tt class="file docutils literal"><span class="pre">~/tethysdev</span></tt> refers to a directory called &#8220;tethysdev&#8221; in the home directory.</p>
-</div>
-</div>
-<div class="section" id="install-into-python">
-<h3>2. Install into Python<a class="headerlink" href="#install-into-python" title="Permalink to this headline">¶</a></h3>
-<p>Activate your CKAN Python virtual environment, change into the <tt class="file docutils literal"><span class="pre">ckanext-tethys_apps</span></tt> directory, and run the setup script. If you have used the defaults for installing CKAN, this can be done like so:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/ckan/default/bin/activate
-$ cd ~/tethysdev/ckanext-tethys_apps
-$ python setup.py install
-</pre></div>
-</div>
-<div class="admonition caution">
-<p class="first admonition-title">Caution</p>
-<p class="last">Don&#8217;t forget the &#8221;.&#8221; operator when activating your Python environment. This is needed to execute the <tt class="file docutils literal"><span class="pre">activate</span></tt> script.</p>
-</div>
-</div>
-<div class="section" id="modify-ckan-configuration">
-<h3>3. Modify CKAN Configuration<a class="headerlink" href="#modify-ckan-configuration" title="Permalink to this headline">¶</a></h3>
-<p>Add the term &#8220;tethys_apps&#8221; to the <strong>ckan.plugins</strong> parameter of your CKAN configuration (e.g.: <tt class="file docutils literal"><span class="pre">/etc/ckan/default/development.ini</span></tt>). The parameter should look similar to this when your done:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">ckan</span><span class="o">.</span><span class="n">plugins</span> <span class="o">=</span> <span class="n">tethys_apps</span>
+<div class="section" id="create-database-and-database-users">
+<h2>4. Create Database and Database Users<a class="headerlink" href="#create-database-and-database-users" title="Permalink to this headline">¶</a></h2>
+<p>Create three database users with databases. To do so, run the following commands in a Terminal:</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo -u postgres createuser -S -D -R -P tethys_default
+sudo -u postgres createdb -O tethys_default tethys_default -E utf-8
+
+sudo -u postgres createuser -S -d -R -P tethys_db_manager
+sudo -u postgres createdb -O tethys_db_manager tethys_db_manager -E utf-8
+
+sudo -u postgres createuser --superuser -d -R -P tethys_super
+sudo -u postgres createdb -O tethys_super tethys_super -E utf-8
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Depending on the different plugins that are enabled for your CKAN installation, the <strong>ckan.plugins</strong> parameters may have several other plugin names listed with &#8220;tethys_apps&#8221;. This is ok.</p>
+<p class="last">You will be prompted to create passwords for each user. Take note of the passwords, because you will need to use
+them in the next step.</p>
 </div>
 </div>
-<div class="section" id="copy-the-source-directory">
-<h3>4. Copy the Source Directory<a class="headerlink" href="#copy-the-source-directory" title="Permalink to this headline">¶</a></h3>
-<p>Copy the <tt class="file docutils literal"><span class="pre">tethys_apps</span></tt> directory from the source into the <tt class="file docutils literal"><span class="pre">ckanext</span></tt> directory of the CKAN source. This can be done like so:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ cp ~/tethysdev/ckanext-tethys_apps/ckanext/tethys_apps /usr/lib/ckan/src/ckan/ckanext/
-</pre></div>
-</div>
-</div>
-<div class="section" id="create-database-users">
-<h3>5. Create Database Users<a class="headerlink" href="#create-database-users" title="Permalink to this headline">¶</a></h3>
-<p>Create a database user and database for Tethys Apps. The plugin needs it&#8217;s own database user to assist with the automatic database provisioning feature. Create the user and give it a password using hte interactive prompt. You will need to remember this password for the next step.</p>
-<div class="highlight-python"><div class="highlight"><pre>$ sudo -u postgres createuser -S -d -R -P tethys_db_manager
-$ sudo -u postgres createdb -O tethys_db_manager tethys_db_manager -E utf-8
-</pre></div>
-</div>
-<p>Next, create a database superuser for Tethys and it&#8217;s associtated database. Remember the password that you assign to this user for the next step.</p>
-<div class="highlight-python"><div class="highlight"><pre>$ sudo -u postgres createuser --superuser -d -R -P tethys_super
-$ sudo -u postgres createdb -O tethys_super tethys_super -E utf-8
-</pre></div>
-</div>
-</div>
-<div class="section" id="modify-the-tethys-apps-config">
-<h3>6. Modify the Tethys Apps Config<a class="headerlink" href="#modify-the-tethys-apps-config" title="Permalink to this headline">¶</a></h3>
-<p>Open the Tethys Apps configuration file (<tt class="file docutils literal"><span class="pre">/usr/lib/ckan/default/src/ckan/ckanext/tethys_apps/tethys_apps.ini</span></tt>) and edit the <tt class="docutils literal"><span class="pre">tethys.database_manager_url</span></tt> and <tt class="docutils literal"><span class="pre">tethys.superuser_url</span></tt> parameters so that the username, password, host, port, and database match the databases and users that you created in the last step. The url uses the following pattern:</p>
-<div class="highlight-python"><div class="highlight"><pre>postgresql://&lt;username&gt;:&lt;password&gt;@&lt;host&gt;:&lt;port&gt;/&lt;database&gt;
-</pre></div>
-</div>
-<p>The <tt class="docutils literal"><span class="pre">tethys.database_manager_url</span></tt>  and <tt class="docutils literal"><span class="pre">tethys.superuser_url</span></tt> parameters should look something like this when you are done:</p>
-<div class="highlight-python"><div class="highlight"><pre>tethys.database_manager_url = postgresql://tethys_db_manager:pass@localhost:5432/tethys_db_manager
-tethys.superuser_url = postgresql://tethys_super:pass@localhost:5432/tethys_super
-</pre></div>
-</div>
-<p>Next, make sure the <tt class="docutils literal"><span class="pre">tethys.ckanapp_directory</span></tt> parameter is set to the path to your <tt class="file docutils literal"><span class="pre">ckanapp</span></tt> directory. For a default installation of CKAN and Tethys Apps, this will be at <tt class="file docutils literal"><span class="pre">/usr/lib/ckan/default/src/ckan/ckanext/tethys_apps/ckanapp</span></tt>. This parameter should look similar to this when you are done:</p>
-<div class="highlight-python"><div class="highlight"><pre>tethys.ckanapp_directory = /usr/lib/ckan/default/src/ckan/ckanext/tethys_apps/ckanapp
-</pre></div>
-</div>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p class="last">Do <strong>NOT</strong> use double or single quotes for the url or directory parameters in the Tethys configuration file.</p>
-</div>
-</div>
-<div class="section" id="start-ckan">
-<h3>7. Start CKAN<a class="headerlink" href="#start-ckan" title="Permalink to this headline">¶</a></h3>
-<p>Deactivate and reactivate your CKAN Python virtual environment and start up the Paster server:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ deactivate
-$ . /usr/lib/ckan/default/bin/activate
-$ paster serve /etc/ckan/default/development.ini
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If your virtual environment was already deactivated the <strong class="command">deactivate</strong> command will fail. This is ok. Just activate your virtual environment and start paster server.</p>
-</div>
-<p>Navigate to your CKAN page in a web browser (likely at <a class="reference external" href="http://localhost:5000">http://localhost:5000</a>). Installation has been successful if the <em class="guilabel">Apps</em> link appears in the header of your CKAN page.</p>
-</div>
-<div class="section" id="working-with-tethys-under-development">
-<h3>Working With Tethys Under Development<a class="headerlink" href="#working-with-tethys-under-development" title="Permalink to this headline">¶</a></h3>
-<p>The Tethys Apps plugin is currently under heavy development. It is likely that you will want to pull the latest changes frequently until a stable version is released. To prevent the need to reinstall the app everytime you pull changes, you will need to use the following modifications when installing the Tethys Apps plugin:</p>
-<p>Use the <strong class="command">develop</strong> command instead of the <strong class="command">install</strong> command  when running the setup script. This creates a link between the Tethys Apps source and Python instead of hard copying it. This will allow any changes you pull to be propegated without reinstalling the plugin.</p>
-<div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/ckan/default/bin/activate
-$ cd ~/tethysdev/ckanext-tethys_apps
-$ python setup.py develop
-</pre></div>
-</div>
-<p>Create a symbolic link between <tt class="file docutils literal"><span class="pre">tethys_apps</span></tt> and <tt class="file docutils literal"><span class="pre">ckanext</span></tt>, rather than copying for the same reasons as above:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ ln -s ~/tethysdev/ckanext-tethys_apps/ckanext/tethys_apps /usr/lib/ckan/default/src/ckan/ckanext/tethys_apps
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="pull-latest-changes">
-<h2>Pull Latest Changes<a class="headerlink" href="#pull-latest-changes" title="Permalink to this headline">¶</a></h2>
-<p>Changes can be pulled from the git repository like so:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ cd ~/tethysdev/ckanext-tethys_apps
-$ git pull
-</pre></div>
-</div>
+<div class="section" id="create-settings-file-and-configure-settings">
+<h2>5. Create Settings File and Configure Settings<a class="headerlink" href="#create-settings-file-and-configure-settings" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -296,18 +205,9 @@ $ git pull
 <li><a class="reference internal" href="#">Installation</a><ul>
 <li><a class="reference internal" href="#install-the-dependencies">1. Install the Dependencies</a></li>
 <li><a class="reference internal" href="#configure-dependencies">2. Configure Dependencies</a></li>
-<li><a class="reference internal" href="#install-tethys-platform-into-a-python-virtual-environment">3. Install Tethys Platform into a Python Virtual Environment</a><ul>
-<li><a class="reference internal" href="#download-source">1. Download Source</a></li>
-<li><a class="reference internal" href="#install-into-python">2. Install into Python</a></li>
-<li><a class="reference internal" href="#modify-ckan-configuration">3. Modify CKAN Configuration</a></li>
-<li><a class="reference internal" href="#copy-the-source-directory">4. Copy the Source Directory</a></li>
-<li><a class="reference internal" href="#create-database-users">5. Create Database Users</a></li>
-<li><a class="reference internal" href="#modify-the-tethys-apps-config">6. Modify the Tethys Apps Config</a></li>
-<li><a class="reference internal" href="#start-ckan">7. Start CKAN</a></li>
-<li><a class="reference internal" href="#working-with-tethys-under-development">Working With Tethys Under Development</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#pull-latest-changes">Pull Latest Changes</a></li>
+<li><a class="reference internal" href="#install-tethys-platform-into-a-python-virtual-environment">3. Install Tethys Platform into a Python Virtual Environment</a></li>
+<li><a class="reference internal" href="#create-database-and-database-users">4. Create Database and Database Users</a></li>
+<li><a class="reference internal" href="#create-settings-file-and-configure-settings">5. Create Settings File and Configure Settings</a></li>
 </ul>
 </li>
 </ul>

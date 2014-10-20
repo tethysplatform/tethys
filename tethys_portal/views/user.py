@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 from django.contrib import messages
 
-from tethys_site.forms import UserSettingsForm, UserPasswordChangeForm
+from tethys_portal.forms import UserSettingsForm, UserPasswordChangeForm
 
 @login_required()
 def profile(request, username=None):
