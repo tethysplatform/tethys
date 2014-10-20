@@ -16,7 +16,7 @@ def profile(request, username=None):
     # as the username of the user that is accessing the page.
     context_user = User.objects.get(username=username)
     context = {'context_user': context_user}
-    return render(request, 'tethys_site/user/profile.html', context)
+    return render(request, 'tethys_portal/user/profile.html', context)
 
 @login_required()
 def settings(request, username=None):
@@ -58,7 +58,7 @@ def settings(request, username=None):
     context = {'form': form,
                'context_user': request.user}
 
-    return render(request, 'tethys_site/user/settings.html', context)
+    return render(request, 'tethys_portal/user/settings.html', context)
 
 @login_required()
 def change_password(request, username=None):
@@ -97,4 +97,4 @@ def change_password(request, username=None):
     # Create template context object
     context = {'form': form}
 
-    return render(request, 'tethys_site/user/change_password.html', context)
+    return render(request, 'tethys_portal/user/change_password.html', context)
