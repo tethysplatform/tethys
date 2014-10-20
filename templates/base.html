@@ -69,13 +69,13 @@
     {% endcomment %}
 
     {% block styles %}
-      <link href="{% static 'tethys_site/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
-      <link href="{% static 'tethys_site/css/tethys_main.css' %}"  rel="stylesheet" />
+      <link href="{% static 'tethys_portal/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
+      <link href="{% static 'tethys_portal/css/tethys_main.css' %}"  rel="stylesheet" />
     {% endblock %}
 
     {% block global_scripts %}
-      <script src="{% static 'tethys_site/vendor/jquery/jquery.min.js' %}" type="text/javascript"></script>
-      <script src="{% static 'tethys_site/vendor/bootstrap/js/bootstrap.min.js' %}" type="text/javascript"></script>
+      <script src="{% static 'tethys_portal/vendor/jquery/jquery.min.js' %}" type="text/javascript"></script>
+      <script src="{% static 'tethys_portal/vendor/bootstrap/js/bootstrap.min.js' %}" type="text/javascript"></script>
     {% endblock %}
   </head>
 
@@ -109,7 +109,7 @@
     {% endcomment %}
 
     {% block scripts %}
-      <script src="{% static 'tethys_site/js/tethys_main.js' %}" type="text/javascript"></script>
+      <script src="{% static 'tethys_portal/js/tethys_main.js' %}" type="text/javascript"></script>
     {% endblock %}
   </body>
 </html>

@@ -1178,7 +1178,7 @@ a:hover {
 }
 .get-started-background {
   display: none;
-  background-image: url(/static/tethys_site/images/textures/Pepsized_Blur/Pepsized_Blur_01.jpg);
+  background-image: url(/static/tethys_portal/images/textures/Pepsized_Blur/Pepsized_Blur_01.jpg);
   background-position: center;
   background-size: cover;
   position: fixed;
