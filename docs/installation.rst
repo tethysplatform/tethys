@@ -38,15 +38,13 @@ git                 `Git open source distributed version control system. <http:/
 2. Configure Dependencies
 -------------------------
 
-TODO: Add stuff here.
-
 * PostGIS environmental variables to enable GDAL drivers
 
 3. Install Tethys Platform into a Python Virtual Environment
 ------------------------------------------------------------
 
 Python virtual environments are used to create isolated Python installations to avoid conflicts with dependencies of
-other Python applications on the same system. The following commands should be executed in a the Terminal.
+other Python applications on the same system. The following commands should be executed in a a terminal.
 
 a. Create a Python virtual environment and activate it::
 
@@ -64,7 +62,7 @@ a. Create a Python virtual environment and activate it::
         (tethys) $ _
 
     The Tethys virtual environment must remain active for the entire installation. If you need to logout or close the
-    Terminal in the middle of the installation, you will need to reactivate the virtual environment. This can be done
+    terminal in the middle of the installation, you will need to reactivate the virtual environment. This can be done
     at anytime by executing the following command (don't forget the dot)::
 
         . /usr/lib/tethys/bin/activate
@@ -88,7 +86,7 @@ d. Restart the Python virtual environment::
 -------------------------------------
 
 Create three database users with databases. You will be prompted to create passwords for each user. Take note of the
-passwords, because you will need to use them in the next step.To do so, run the following commands in a Terminal::
+passwords, because you will need to use them in the next step.To do so, run the following commands in the terminal::
 
     sudo -u postgres createuser -S -D -R -P tethys_default
     sudo -u postgres createdb -O tethys_default tethys_default -E utf-8
@@ -108,7 +106,41 @@ passwords, because you will need to use them in the next step.To do so, run the 
 5. Create Settings File and Configure Settings
 ----------------------------------------------
 
-Create a new settings file for your Tethys Platform installation. In the Terminal::
+Create a new settings file for your Tethys Platform installation using the **tethys** commandline utility. In the
+terminal::
 
     cd /usr/lib/tethys/src/tethys_portal
+    tethys gen settings
+
+This will create a file called :file:`settings.py` in the directory :file:`/usr/lib/tethys/src/tethys_portal`. As the
+name suggests, the :file:`settings.py` file contains all of the settings for the Tethys Platform Django project. There
+are a few settings that need to be configured in this file.
+
+Open the :file:`settings.py` file (:file:`/usr/lib/tethys/src/tethys_portal/settings.py`) that you just created and modify the
+following settings appropriately.
+
+a. Replace the password for the main Tethys Portal database, **tethys_default**, with the password you created
+in the previous step. This is done by changing the value of the PASSWORD parameter of the DATABASES setting::
+
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'tethys_default',
+        'USER': 'tethys_default',
+        'PASSWORD': 'pass',
+        'HOST': 'localhost',
+        'PORT': '5432'
+        }
+    }
+
+b. Find the TETHYS_APPS_DATABASE_MANAGER_URL and TETHYS_APPS_SUPERUSER_URL settings and replace "pass" with the appropriate
+password that you created in the previous step::
+
+    TETHYS_APPS_DATABASE_MANAGER_URL = 'postgresql://tethys_db_manager:pass@localhost:5432/tethys_db_manager'
+    TETHYS_APPS_SUPERUSER_URL = 'postgresql://tethys_super:pass@localhost:5432/tethys_super'
+
+c.
+
+
+
 
