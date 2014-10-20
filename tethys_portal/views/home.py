@@ -1,4 +1,5 @@
 from django.shortcuts import render
 
+
 def home(request):
-    return render(request, 'tethys_site/home.html', {})
+    return render(request, 'tethys_portal/home.html', {})
