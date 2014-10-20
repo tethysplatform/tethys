@@ -58,7 +58,7 @@ def login_view(request):
 
     context = {'form': form}
 
-    return render(request, 'tethys_site/accounts/login.html', context)
+    return render(request, 'tethys_portal/accounts/login.html', context)
 
 
 def register(request):
@@ -116,7 +116,7 @@ def register(request):
         form = RegisterForm()
 
     context = {'form': form}
-    return render(request, 'tethys_site/accounts/register.html', context)
+    return render(request, 'tethys_portal/accounts/register.html', context)
 
 
 def logout_view(request):
@@ -135,7 +135,7 @@ def logout_view(request):
 
 def reset_confirm(request, uidb64=None, token=None):
     return password_reset_confirm(request,
-                                  template_name='tethys_site/accounts/password_reset/reset_confirm.html',
+                                  template_name='tethys_portal/accounts/password_reset/reset_confirm.html',
                                   uidb64=uidb64,
                                   token=token,
                                   post_reset_redirect=reverse('accounts:login')
@@ -144,8 +144,8 @@ def reset_confirm(request, uidb64=None, token=None):
 
 def reset(request):
     return password_reset(request,
-                          template_name='tethys_site/accounts/password_reset/reset_request.html',
-                          email_template_name='tethys_site/accounts/password_reset/reset_email.html',
-                          subject_template_name='tethys_site/accounts/password_reset/reset_subject.txt',
+                          template_name='tethys_portal/accounts/password_reset/reset_request.html',
+                          email_template_name='tethys_portal/accounts/password_reset/reset_email.html',
+                          subject_template_name='tethys_portal/accounts/password_reset/reset_subject.txt',
                           post_reset_redirect=reverse('accounts:login')
     )
