@@ -150,10 +150,8 @@ at anytime by executing the following command (don&#8217;t forget the dot):</p>
 </div>
 <ol class="loweralpha" start="2">
 <li><p class="first">Install Tethys Platform into the virtual environment with the following commands:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo mkdir -p /usr/lib/tethys/src
-sudo chown `whoami` /usr/lib/tethys/src
-cd /usr/lib/tethys/src
-git clone https://github.com/swainn/tethys
+<div class="highlight-python"><div class="highlight"><pre>cd /usr/lib/tethys
+git clone https://github.com/swainn/tethys src
 </pre></div>
 </div>
 </li>
@@ -172,7 +170,8 @@ git clone https://github.com/swainn/tethys
 </div>
 <div class="section" id="create-database-and-database-users">
 <h2>4. Create Database and Database Users<a class="headerlink" href="#create-database-and-database-users" title="Permalink to this headline">¶</a></h2>
-<p>Create three database users with databases. To do so, run the following commands in a Terminal:</p>
+<p>Create three database users with databases. You will be prompted to create passwords for each user. Take note of the
+passwords, because you will need to use them in the next step.To do so, run the following commands in a Terminal:</p>
 <div class="highlight-python"><div class="highlight"><pre>sudo -u postgres createuser -S -D -R -P tethys_default
 sudo -u postgres createdb -O tethys_default tethys_default -E utf-8
 
@@ -183,14 +182,18 @@ sudo -u postgres createuser --superuser -d -R -P tethys_super
 sudo -u postgres createdb -O tethys_super tethys_super -E utf-8
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">You will be prompted to create passwords for each user. Take note of the passwords, because you will need to use
-them in the next step.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">If you would like to have access to the Tethys databases through a graphical user interface such as PgAdminIII, use
+the <strong>tethys_super</strong> database user and password as credentials for the connection.</p>
 </div>
 </div>
 <div class="section" id="create-settings-file-and-configure-settings">
 <h2>5. Create Settings File and Configure Settings<a class="headerlink" href="#create-settings-file-and-configure-settings" title="Permalink to this headline">¶</a></h2>
+<p>Create a new settings file for your Tethys Platform installation. In the Terminal:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cd</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">tethys</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">tethys_portal</span>
+</pre></div>
+</div>
 </div>
 </div>
 
