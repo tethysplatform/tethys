@@ -115,7 +115,6 @@ operating system:</p>
 </div>
 <div class="section" id="configure-dependencies">
 <h2>2. Configure Dependencies<a class="headerlink" href="#configure-dependencies" title="Permalink to this headline">¶</a></h2>
-<p>TODO: Add stuff here.</p>
 <ul class="simple">
 <li>PostGIS environmental variables to enable GDAL drivers</li>
 </ul>
@@ -123,7 +122,7 @@ operating system:</p>
 <div class="section" id="install-tethys-platform-into-a-python-virtual-environment">
 <h2>3. Install Tethys Platform into a Python Virtual Environment<a class="headerlink" href="#install-tethys-platform-into-a-python-virtual-environment" title="Permalink to this headline">¶</a></h2>
 <p>Python virtual environments are used to create isolated Python installations to avoid conflicts with dependencies of
-other Python applications on the same system. The following commands should be executed in a the Terminal.</p>
+other Python applications on the same system. The following commands should be executed in a a terminal.</p>
 <ol class="loweralpha">
 <li><p class="first">Create a Python virtual environment and activate it:</p>
 <div class="highlight-python"><div class="highlight"><pre>sudo mkdir -p /usr/lib/tethys
@@ -142,7 +141,7 @@ is active, because the name of it will appear in parenthesis in front of your te
 </pre></div>
 </div>
 <p>The Tethys virtual environment must remain active for the entire installation. If you need to logout or close the
-Terminal in the middle of the installation, you will need to reactivate the virtual environment. This can be done
+terminal in the middle of the installation, you will need to reactivate the virtual environment. This can be done
 at anytime by executing the following command (don&#8217;t forget the dot):</p>
 <div class="last highlight-python"><div class="highlight"><pre>. /usr/lib/tethys/bin/activate
 </pre></div>
@@ -150,13 +149,12 @@ at anytime by executing the following command (don&#8217;t forget the dot):</p>
 </div>
 <ol class="loweralpha" start="2">
 <li><p class="first">Install Tethys Platform into the virtual environment with the following commands:</p>
-<div class="highlight-python"><div class="highlight"><pre>cd /usr/lib/tethys
-git clone https://github.com/swainn/tethys src
+<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/swainn/tethys /usr/lib/tethys/src
 </pre></div>
 </div>
 </li>
 <li><p class="first">Install the Python modules that Tethys requires:</p>
-<div class="highlight-python"><div class="highlight"><pre>pip install -r /usr/lib/tethys/src/tethys/requirements.txt
+<div class="highlight-python"><div class="highlight"><pre>pip install -r /usr/lib/tethys/src/requirements.txt
 </pre></div>
 </div>
 </li>
@@ -171,7 +169,7 @@ git clone https://github.com/swainn/tethys src
 <div class="section" id="create-database-and-database-users">
 <h2>4. Create Database and Database Users<a class="headerlink" href="#create-database-and-database-users" title="Permalink to this headline">¶</a></h2>
 <p>Create three database users with databases. You will be prompted to create passwords for each user. Take note of the
-passwords, because you will need to use them in the next step.To do so, run the following commands in a Terminal:</p>
+passwords, because you will need to use them in the next step.To do so, run the following commands in the terminal:</p>
 <div class="highlight-python"><div class="highlight"><pre>sudo -u postgres createuser -S -D -R -P tethys_default
 sudo -u postgres createdb -O tethys_default tethys_default -E utf-8
 
@@ -184,16 +182,72 @@ sudo -u postgres createdb -O tethys_super tethys_super -E utf-8
 </div>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p class="last">If you would like to have access to the Tethys databases through a graphical user interface such as PgAdminIII, use
-the <strong>tethys_super</strong> database user and password as credentials for the connection.</p>
+<p class="last">If you would like to have access to the Tethys databases through a graphical user interface such as
+<a class="reference external" href="http://www.pgadmin.org/">pgAdmin III</a>, use the <strong>tethys_super</strong> database user and password as credentials
+for the connection.</p>
 </div>
 </div>
 <div class="section" id="create-settings-file-and-configure-settings">
 <h2>5. Create Settings File and Configure Settings<a class="headerlink" href="#create-settings-file-and-configure-settings" title="Permalink to this headline">¶</a></h2>
-<p>Create a new settings file for your Tethys Platform installation. In the Terminal:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">cd</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">tethys</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">tethys_portal</span>
+<p>Create a new settings file for your Tethys Platform installation using the <strong class="command">tethys</strong> commandline utility. In the
+terminal:</p>
+<div class="highlight-python"><div class="highlight"><pre>tethys gen settings -d /usr/lib/tethys/src/tethys_portal
 </pre></div>
 </div>
+<p>This will create a file called <tt class="file docutils literal"><span class="pre">settings.py</span></tt> in the directory <tt class="file docutils literal"><span class="pre">/usr/lib/tethys/src/tethys_portal</span></tt>. As the
+name suggests, the <tt class="file docutils literal"><span class="pre">settings.py</span></tt> file contains all of the settings for the Tethys Platform Django project. There
+are a few settings that need to be configured in this file.</p>
+<p>Open the <tt class="file docutils literal"><span class="pre">settings.py</span></tt> file (<tt class="file docutils literal"><span class="pre">/usr/lib/tethys/src/tethys_portal/settings.py</span></tt>) that you just created and modify the
+following settings appropriately.</p>
+<p>a. Replace the password for the main Tethys Portal database, <strong>tethys_default</strong>, with the password you created
+in the previous step. This is done by changing the value of the PASSWORD parameter of the DATABASES setting:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+<span class="s">&#39;default&#39;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">&#39;ENGINE&#39;</span><span class="p">:</span> <span class="s">&#39;django.db.backends.postgresql_psycopg2&#39;</span><span class="p">,</span>
+    <span class="s">&#39;NAME&#39;</span><span class="p">:</span> <span class="s">&#39;tethys_default&#39;</span><span class="p">,</span>
+    <span class="s">&#39;USER&#39;</span><span class="p">:</span> <span class="s">&#39;tethys_default&#39;</span><span class="p">,</span>
+    <span class="s">&#39;PASSWORD&#39;</span><span class="p">:</span> <span class="s">&#39;pass&#39;</span><span class="p">,</span>
+    <span class="s">&#39;HOST&#39;</span><span class="p">:</span> <span class="s">&#39;localhost&#39;</span><span class="p">,</span>
+    <span class="s">&#39;PORT&#39;</span><span class="p">:</span> <span class="s">&#39;5432&#39;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>b. Find the TETHYS_APPS_DATABASE_MANAGER_URL and TETHYS_APPS_SUPERUSER_URL settings and replace &#8220;pass&#8221; with the appropriate
+passwords that you created in the previous step:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">TETHYS_APPS_DATABASE_MANAGER_URL</span> <span class="o">=</span> <span class="s">&#39;postgresql://tethys_db_manager:pass@localhost:5432/tethys_db_manager&#39;</span>
+<span class="n">TETHYS_APPS_SUPERUSER_URL</span> <span class="o">=</span> <span class="s">&#39;postgresql://tethys_super:pass@localhost:5432/tethys_super&#39;</span>
+</pre></div>
+</div>
+<p>c. Set the TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY with an appropriate Google Maps v3 API key. If you do not have a Google
+Maps API key, use the <a class="reference external" href="https://developers.google.com/maps/documentation/javascript/tutorial#api_key">Obtaining an API Key</a>
+instructions:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY</span> <span class="o">=</span> <span class="s">&#39;Th|$I$@neXAmpL3aPik3Y&#39;</span>
+</pre></div>
+</div>
+<ol class="loweralpha simple" start="4">
+<li>Save your changes and close the <tt class="file docutils literal"><span class="pre">settings.py</span></tt> file.</li>
+</ol>
+</div>
+<div class="section" id="create-database-tables">
+<h2>6. Create Database Tables<a class="headerlink" href="#create-database-tables" title="Permalink to this headline">¶</a></h2>
+<p>Execute the Django <strong class="command">syncdb</strong> command to create the database tables. You will be prompted to create a system
+administrator for your Tethys Portal. Remember the username and password that you give it. In the terminal:</p>
+<div class="highlight-python"><div class="highlight"><pre>python /usr/lib/tethys/src/manage.py syncdb
+</pre></div>
+</div>
+</div>
+<div class="section" id="start-up-the-django-development-server">
+<h2>7. Start up the Django Development Server<a class="headerlink" href="#start-up-the-django-development-server" title="Permalink to this headline">¶</a></h2>
+<p>You are now ready to start the Django development server and view your instance of Tethys Portal. In the terminal:</p>
+<div class="highlight-python"><div class="highlight"><pre>python /usr/lib/tethys/src/manage.py runserver
+</pre></div>
+</div>
+<p>Open <a href="#id1"><span class="problematic" id="id2">`http://127.0.0.1:8000/`_</span></a> in a web browser and you should see the default Tethys Portal landing page. Feel free to
+login using the system administrator username and password and take a look around.</p>
+</div>
+<div class="section" id="what-s-next">
+<h2>What&#8217;s Next?<a class="headerlink" href="#what-s-next" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -211,6 +265,9 @@ the <strong>tethys_super</strong> database user and password as credentials for 
 <li><a class="reference internal" href="#install-tethys-platform-into-a-python-virtual-environment">3. Install Tethys Platform into a Python Virtual Environment</a></li>
 <li><a class="reference internal" href="#create-database-and-database-users">4. Create Database and Database Users</a></li>
 <li><a class="reference internal" href="#create-settings-file-and-configure-settings">5. Create Settings File and Configure Settings</a></li>
+<li><a class="reference internal" href="#create-database-tables">6. Create Database Tables</a></li>
+<li><a class="reference internal" href="#start-up-the-django-development-server">7. Start up the Django Development Server</a></li>
+<li><a class="reference internal" href="#what-s-next">What&#8217;s Next?</a></li>
 </ul>
 </li>
 </ul>
