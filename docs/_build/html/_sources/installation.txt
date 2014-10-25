@@ -161,7 +161,7 @@ You are now ready to start the Django development server and view your instance 
 
     python /usr/lib/tethys/src/manage.py runserver
 
-Open `http://127.0.0.1:8000/`_ in a web browser and you should see the default Tethys Portal landing page. Feel free to
+Open `<http://127.0.0.1:8000/>`_ in a web browser and you should see the default Tethys Portal landing page. Feel free to
 login using the system administrator username and password and take a look around.
 
 
