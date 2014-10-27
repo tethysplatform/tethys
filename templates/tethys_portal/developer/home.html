@@ -14,17 +14,12 @@
     </div>
   </div>
   <div id="developer-content-wrapper">
-    <!--<div class="row">-->
-      <!--<div class="col-md-12">-->
-        <!--<p>This is my introductory comment about the developer tools web page.</p>-->
-      <!--</div>-->
-    <!--</div>-->
     <div class="row">
       <div class="col-lg-6">
         {# Gizmo Docs ------------------------------------------------------------------------------------------------#}
         <div class="media">
           <a class="pull-left" href="{% url 'gizmos:showcase' %}">
-            <img class="media-object" src="http://placehold.it/200x200" alt="Gizmo Documentation">
+            <img class="media-object" src="{% static '/static/tethys_portal/images/gizmos.png' %}" alt="Gizmo Documentation">
           </a>
           <div class="media-body">
             <a href="{% url 'gizmos:showcase' %}"><h3 class="media-heading truncate">Gizmos</h3></a>
@@ -39,7 +34,7 @@
         {# Data Stores -----------------------------------------------------------------------------------------------#}
         <div class="media">
           <a class="pull-left" href="">
-            <img class="media-object" src="http://placehold.it/200x200" alt="Data store docs">
+            <img class="media-object" src="{% static '/static/tethys_portal/images/datastore.png' %}" alt="Data store docs">
           </a>
           <div class="media-body">
             <a href=""><h3 class="media-heading truncate">Data Store Viewer</h3></a>
@@ -56,10 +51,10 @@
         {# Geoprocess formulator -------------------------------------------------------------------------------------#}
         <div class="media">
           <a class="pull-left" href="">
-            <img class="media-object" src="http://placehold.it/200x200" alt="Geoprocess formulator tool">
+            <img class="media-object" src="{% static '/static/tethys_portal/images/geoprocessing.png' %}" alt="Geoprocessing tool">
           </a>
           <div class="media-body">
-            <a href=""><h3 class="media-heading truncate">Geoprocess Formulator</h3></a>
+            <a href=""><h3 class="media-heading truncate">Geoprocessing</h3></a>
             <p class="multiline-truncate">
               Geoprocessing in Tethys apps can be accomplished using the built-in 52 North WPS service. The Geoprocess
               Formulator tool can be used to view available 52 North processes and formulate the WPS request.
@@ -71,10 +66,10 @@
         {# These Docs ------------------------------------------------------------------------------------------------#}
         <div class="media">
           <a class="pull-left" href="">
-            <img class="media-object" src="http://placehold.it/200x200" alt="Gizmo Documentation">
+            <img class="media-object" src="{% static '/static/tethys_portal/images/computing.png' %}" alt="Gizmo Documentation">
           </a>
           <div class="media-body">
-            <a href=""><h3 class="media-heading truncate">These Docs</h3></a>
+            <a href=""><h3 class="media-heading truncate">Cloud Computing</h3></a>
             <p class="multiline-truncate">
               Hac semper conubia tellus porttitor vestibulum blandit aenean a parturient id ultricies platea vulputate
               vestibulum euismod sapien ut a nisi scelerisque per adipiscing dui condimentum volutpat nec mi at. Rhoncus
