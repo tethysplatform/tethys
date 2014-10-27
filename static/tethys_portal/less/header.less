@@ -26,7 +26,7 @@
     margin: 0 50px;
 
     a {
-        color: #ffffff;
+      color: #ffffff;
     }
 
 	.header-logo {
@@ -34,14 +34,31 @@
 		margin: 2px 0;
         min-height: 55px;
 
-        a {
-            font-size: 36px;
-            font-weight: 400;
-            .font-smoothing();
+        .logo-image {
+            display: inline-block;
+            float: left;
+            padding: 10px 0;
 
-            &:hover {
-                color: #eaeaea;
-                text-decoration: none;
+            img {
+                height: 60px;
+                margin-right: 20px;
+
+            }
+        }
+
+        .logo-title {
+            display: inline-block;
+            float: left;
+            a {
+                font-size: 36px;
+                font-weight: 400;
+                .font-smoothing();
+                color: #ffffff;
+
+                &:hover {
+                    color: #eaeaea;
+                    text-decoration: none;
+                }
             }
         }
 	}

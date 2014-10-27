@@ -1,4 +1,4 @@
-{% load gravatar %}
+{% load gravatar staticfiles %}
 
 {# Mobile site navigation #}
 {% block mobile_nav %}
@@ -51,7 +51,8 @@
 <div class="header-wrapper">
   <header class="site-header">
     <div class="header-logo">
-      <h1>
+        <a class="logo-image" href="/"><img  src="{% static '/static/tethys_portal/images/tethys-logo-75.png' %}"></a>
+      <h1 class="logo-title">
         <a href="/">{{ site_globals.logo|default:"Tethys" }}</a>
       </h1>
     </div>
