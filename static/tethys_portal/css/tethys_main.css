@@ -641,13 +641,27 @@ a:hover {
   margin: 2px 0;
   min-height: 55px;
 }
-.site-header .header-logo a {
+.site-header .header-logo .logo-image {
+  display: inline-block;
+  float: left;
+  padding: 10px 0;
+}
+.site-header .header-logo .logo-image img {
+  height: 60px;
+  margin-right: 20px;
+}
+.site-header .header-logo .logo-title {
+  display: inline-block;
+  float: left;
+}
+.site-header .header-logo .logo-title a {
   font-size: 36px;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: #ffffff;
 }
-.site-header .header-logo a:hover {
+.site-header .header-logo .logo-title a:hover {
   color: #eaeaea;
   text-decoration: none;
 }
@@ -1935,7 +1949,7 @@ footer.site-footer {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding: 21px 0;
-  padding-left: 200px;
+  padding-left: 130px;
 }
 @media (max-width: 700px) {
   .tethys-secondary-header {
@@ -1953,6 +1967,6 @@ footer.site-footer {
   .tethys-secondary-header .secondary-title-wrapper .secondary-title {
     font-size: 40px;
     padding: 21px 0;
-    padding-left: 120px;
+    padding-left: 50px;
   }
 }
