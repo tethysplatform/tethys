@@ -1,0 +1,54 @@
+{% extends "page.html" %}
+
+{% load admin_static %}{% load firstof from future %}
+
+{% block title %}{% endblock %}
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
+  {% block extrastyle %}{% endblock %}
+  <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "admin/css/ie.css" %}{% endblock %}" /><![endif]-->
+  {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static '/static/tethys_portal/css/admin_tweaks.css' %}" />
+{% endblock %}
+
+{% block global_scripts %}
+  {{ block.super }}
+  <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
+  <script type="text/javascript">window.__admin_utc_offset__ = "{% filter escapejs %}{% now "Z" %}{% endfilter %}";</script>
+{% endblock %}
+
+{% load i18n %}
+
+{% block bodytag %}class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"{% endblock %}
+
+{% block admin_content %}
+
+<!-- Container -->
+<div id="container">
+    {% if not is_popup %}
+      {% block breadcrumbs %}
+        <div class="breadcrumbs">
+          <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+          {% if title %} &rsaquo; {{ title }}{% endif %}
+        </div>
+      {% endblock %}
+    {% endif %}
+
+    <!-- Content -->
+    <div id="content" class="{% block coltype %}colM{% endblock %}">
+      {% block pretitle %}{% endblock %}
+      {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+      {% block content %}
+      {% block object-tools %}{% endblock %}
+      {{ content }}
+      {% endblock %}
+      {% block sidebar %}{% endblock %}
+      <br class="clear" />
+    </div>
+    <!-- END Content -->
+</div>
+<!-- END Container -->
+
+{% endblock %}
+
