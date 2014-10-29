@@ -92,6 +92,12 @@ a:hover {
   }
 }
 
+thead {
+  th {
+    background: #efefef;
+  }
+}
+
 #content-related {
 
   .module {
@@ -104,6 +110,39 @@ a:hover {
       line-height: 1.5;
       padding: 8px;
       font-weight: 500;
+    }
+  }
+}
+
+.inline-group {
+  h2 {
+    background: @primary-color;
+    color: white;
+    .font-smoothing();
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 8px;
+    font-weight: 500;
+  }
+
+  .inline-related {
+    h3 {
+      color: #666666;
+      background: #efefef;
+      font-size: 12px;
+      line-height: 1.5;
+      padding: 8px;
+      font-weight: 500;
+      .font-smoothing();
+    }
+  }
+
+  .tabular {
+    tr.add-row {
+      td {
+        background: #ffffff;
+        padding: 8px;
+      }
     }
   }
 }
@@ -223,6 +262,23 @@ input[type=submit] {
 
     &:hover {
       background: @success-color - #111111;
+    }
+  }
+}
+
+.dynamic-setting_set {
+  .original {
+    p {
+      display: none;
+    }
+  }
+
+  td:nth-of-type(2) {
+    padding-top: 8px;
+
+    p {
+      margin-top: -0.5em;
+      font-size: 14px;
     }
   }
 }
