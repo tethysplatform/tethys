@@ -1,0 +1,179 @@
+/* =========
+   Variables
+   ========= */
+.dashboard #content {
+  width: auto;
+}
+#content h1 {
+  font-size: 30px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-transform: capitalize;
+}
+#container {
+  width: auto;
+  margin: 0 50px;
+  margin-top: 20px;
+}
+div.breadcrumbs {
+  background: none;
+  border: none;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a:link,
+a:visited {
+  color: #2ca6ed;
+}
+a:hover {
+  color: #0a84cb;
+}
+.object-tools a:link {
+  background: #0a62a9;
+  font-weight: 500;
+  font-size: 12px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.object-tools a:link:hover {
+  background-color: #1b73ba;
+}
+.object-tools a.addlink {
+  background: #0a62a9 url(/static/admin/img/tooltag-add.png) 95% center no-repeat;
+  font-weight: 500;
+  font-size: 12px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.object-tools a.addlink:hover {
+  background: #1b73ba url(/static/admin/img/tooltag-add.png) 95% center no-repeat;
+}
+.module caption {
+  font-size: 16px;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #0a62a9;
+  padding: 10px;
+  padding-left: 8px;
+}
+.module tr th,
+.module tr td {
+  padding: 8px;
+}
+.module tr th {
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+}
+.module h2 {
+  background: #0a62a9;
+  color: white;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 8px;
+  font-weight: 500;
+}
+#content-related .module h2 {
+  background: #2ca6ed;
+  color: white;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 8px;
+  font-weight: 500;
+}
+#changelist #toolbar {
+  background: #efefef;
+  padding: 5px;
+}
+#changelist #toolbar form input[type=submit] {
+  padding: 4px 6px;
+  background: #0a62a9;
+  color: #ffffff;
+}
+#changelist #toolbar form input[type=submit]:hover {
+  background: #1b73ba;
+}
+#changelist #changelist-filter {
+  z-index: 995;
+}
+#changelist #changelist-filter h2 {
+  background: #0a62a9;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 2;
+  padding: 8px;
+  font-weight: 500;
+  margin-left: -2px;
+}
+#changelist #changelist-filter h3 {
+  color: #666666;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+}
+#changelist #changelist-filter li.selected a {
+  color: #2ca6ed !important;
+}
+#changelist #changelist-form .actions {
+  background: #ffffff;
+  border-top: none;
+  padding: 5px;
+}
+#changelist #changelist-form .actions .button {
+  padding: 4px 6px;
+  background: #0a62a9;
+  color: white;
+}
+#changelist #changelist-form .actions .button:hover {
+  background: #1b73ba;
+}
+#changelist #changelist-form .paginator {
+  background: #ffffff;
+}
+#changelist #changelist-form #result_list thead th {
+  background: #efefef;
+  padding: 5px;
+}
+#changelist #changelist-form #result_list thead th.sorted {
+  background: #dedede;
+}
+#changelist #changelist-form #result_list tbody td {
+  padding: 5px;
+}
+.submit-row {
+  background: #ffffff;
+  padding: 4px 6px;
+  padding: 10px;
+}
+[type=submit],
+[type=button],
+.button,
+.submit-row,
+input {
+  border-radius: 5px;
+}
+input[type=submit] {
+  background: #ffffff;
+  border: 1px #888888 solid;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 500;
+}
+input[type=submit]:hover {
+  background: #dedede;
+}
+input[type=submit][name=_save] {
+  background: #1da456;
+  border: 1px #0c9345 solid;
+}
+input[type=submit][name=_save]:hover {
+  background: #0c9345;
+}
