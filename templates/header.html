@@ -25,7 +25,7 @@
         </li>
         <li>
           <a href="{% url 'user:settings' username=user.username %}" title="User Settings">
-            <span>Settings</span>
+            <span>User Settings</span>
           </a>
         </li>
       {% endblock %}
@@ -33,7 +33,7 @@
       {% if user.is_staff %}
         <li>
           <a href="" title="System Admin Settings">
-            <span>Admin</span>
+            <span>Site Admin</span>
           </a>
         </li>
       {% endif %}
@@ -87,7 +87,7 @@
           <ul id="user-dropdown-menu" class="user-dropdown-menu">
             <li>
               <a href="{% url 'user:settings' username=user.username %}" title="User Settings">
-                <span class="glyphicon glyphicon-user"></span><span>    Settings</span>
+                <span class="glyphicon glyphicon-user"></span><span>    User Settings</span>
               </a>
             </li>
 
@@ -95,7 +95,7 @@
               <li class="separator"></li>
               <li>
                 <a href="{% url 'admin:index' %}" title="System Admin Settings">
-                  <span class="glyphicon glyphicon-cog"></span><span>   Admin</span>
+                  <span class="glyphicon glyphicon-cog"></span><span>   Site Admin</span>
                 </a>
               </li>
             {% endif %}
