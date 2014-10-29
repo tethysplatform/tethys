@@ -51,10 +51,21 @@
 <div class="header-wrapper">
   <header class="site-header">
     <div class="header-logo">
-        <a class="logo-image" href="/"><img  src="{% static '/static/tethys_portal/images/tethys-logo-75.png' %}"></a>
-      <h1 class="logo-title">
-        <a href="/">{{ site_globals.logo|default:"Tethys" }}</a>
-      </h1>
+      {% if site_globals.brand_image %}
+        <a class="logo-image" href="/"><img  src="{% static site_globals.brand_image %}"></a>
+      {% endif %}
+
+      {% if site_globals.brand_text %}
+        <h1 class="logo-title">
+          <a href="/">{{ site_globals.brand_text }}</a>
+        </h1>
+      {% endif %}
+
+      {% if not site_globals.brand_text and not site_globals.brand_image %}
+        <h1 class="logo-title">
+          <a href="/">Tethys</a>
+        </h1>
+      {% endif %}
     </div>
 
     {% block header_nav %}
