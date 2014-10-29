@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-from ..init import initial_settings
+from ..init import initial_settings, reverse_init
 
 
 class Migration(migrations.Migration):
@@ -12,5 +12,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(initial_settings),
+        migrations.RunPython(initial_settings, reverse_init),
     ]

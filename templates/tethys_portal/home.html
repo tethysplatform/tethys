@@ -2,6 +2,8 @@
 
 {% load staticfiles %}
 
+{% block title %}- Welcome!{% endblock %}
+
 {% block content %}
 <section class="hero clearfix">
 	<div class="hero-background"></div>
@@ -9,8 +11,8 @@
 		<img class="float-image wave" src="{% static 'tethys_portal/images/water-curl-wave.png' %}" style="margin-top: 0px;">
 		<img class="float-image drops" src="{% static 'tethys_portal/images/water-curl-drops.png' %}" style="margin-top: 0px;">
 		<div class="hero-message" style="margin-top: 0px;">
-			<h2>Water resources modeling
-for the 21st century</h2>
+			<h2>{% if site_globals.hero_text %}{{ site_globals.hero_text }}{% else %}Water resources modeling
+for the 21st century{% endif %}</h2>
 			{% if not user.is_authenticated %}
 			  <a href="{% url 'accounts:register' %}" class="action hero-action">Sign Up</a>
 			{% endif %}
@@ -20,39 +22,38 @@ for the 21st century</h2>
 
 <section class="blurb clearfix">
 	<div class="bucket clearfix">
-		<h3>Welcome to Tethys—designed from the ground up to be fast, efficient, and
-easy to use. Data, modeling, and high performance computing that is easy to use.</h3>
+		<h3>{% if site_globals.blurb_text %}{{ site_globals.blurb_text }}{% else %}Welcome to Tethys—designed from the ground up to be fast, efficient, and
+easy to use. Data, modeling, and high performance computing that is easy to use.{% endif %}</h3>
 	</div>
 </section>
 
 <section class="features clearfix">
 	<div class="bucket clearfix">
 		<div class="feature one">
-			<img src="{% static '/static/tethys_portal/images/data.png' %}" alt="">
-			<h4>Data and Model Publishing</h4>
-			<span>Publish your data and models with Tethys to make sharing and collaborating a piece of cake</span>
+			<img src="{% static site_globals.feature_1_image|default:'/static/tethys_portal/images/data.png' %}" alt="">
+			<h4>{{ site_globals.feature_1_heading|default:"Data and Model Publishing" }}</h4>
+			<span>{{ site_globals.feature_1_body|default:"Publish your data and models with Tethys to make sharing and collaborating a piece of cake." }}</span>
 		</div>
 		<div class="feature two">
-			<img src="{% static '/static/tethys_portal/images/computing.png' %}" alt="">
-			<h4>Cloud Analysis</h4>
-			<span>Need more coputing power? Use Tethys to run your analysis in the cloud</span>
+			<img src="{% static site_globals.feature_2_image|default:'/static/tethys_portal/images/computing.png' %}" alt="">
+			<h4>{{ site_globals.feature_2_heading|default:"Cloud Analysis" }}</h4>
+			<span>{{ site_globals.feature_2_body|default:"Need more computing power? Use Tethys to run your analysis in the cloud." }}</span>
 		</div>
 		<div class="feature three">
-			<img src="{% static '/static/tethys_portal/images/sdk.png' %}" alt="">
-			<h4>Tethys App SDK</h4>
-			<span>Build custom apps for your models and data to provide the analysis that is right for you</span>
+			<img src="{% static site_globals.feature_3_image|default:'/static/tethys_portal/images/sdk.png' %}" alt="">
+			<h4>{{ site_globals.feature_3_heading|default:"Tethys SDK" }}</h4>
+			<span>{{ site_globals.feature_3_body|default:"Build custom apps for your models and data to provide the analysis that is right for you." }}</span>
 		</div>
 	</div>
 </section>
 
 <section class="testimonial">
 	<div class="bucket">
-		<h2>Simple scenario exploration.</h2>
-		<h3>Water resources models can be very powerful tools to use during critical decision
+		<h2>{{ site_globals.testimonial_heading|default:"Simple scenario exploration." }}</h2>
+		<h3>{% if site_globals.testimonial_body %}{{ site_globals.testimonial_body }}{% else %}Water resources models can be very powerful tools to use during critical decision
 making, but it often takes an expert to change a model to a new scenario. The
 Tethys team has worked hard to distill the most common scenario
-exploration exercises into easy-to-use workflows and apps.
-		</div>
+exploration exercises into easy-to-use workflows and apps.{% endif %}</div>
 </section>
 
 <section class="get-started clearfix">
