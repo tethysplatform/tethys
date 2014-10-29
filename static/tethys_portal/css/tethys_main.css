@@ -674,6 +674,7 @@ a:hover {
 .site-header .header-nav li {
   float: left;
   margin-left: 25px;
+  list-style: none;
 }
 .site-header .header-nav li a {
   display: block;
@@ -1647,6 +1648,7 @@ footer.site-footer {
   font-weight: 300;
   line-height: 2;
   color: #efefef;
+  list-style: none;
 }
 .footer-col ul li a {
   color: #CCDEE3;
@@ -1661,6 +1663,8 @@ footer.site-footer {
   color: #fff;
   font-size: 18px;
   font-weight: bold;
+  text-transform: none;
+  letter-spacing: 0;
 }
 .copyright-wrapper {
   margin-top: 40px;
