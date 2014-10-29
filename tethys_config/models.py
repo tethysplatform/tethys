@@ -6,17 +6,29 @@ class SettingsCategory(models.Model):
 
     class Meta:
         verbose_name = 'Settings Category'
-        verbose_name_plural = 'Settings'
+        verbose_name_plural = 'Site Settings'
 
     def __unicode__(self):
         return self.name
 
 
 class Setting(models.Model):
-    name = models.CharField(max_length=30)
-    content = models.CharField(max_length=500)
+    name = models.TextField(max_length=30)
+    content = models.TextField(max_length=500, blank=True)
     date_modified = models.DateTimeField('date modified', auto_now=True)
     category = models.ForeignKey(SettingsCategory)
 
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    def as_dict(cls):
+        all_settings = cls.objects.all()
+
+        settings_dict = dict()
+
+        for setting in all_settings:
+            code_name = setting.name.lower().replace(' ', '_')
+            settings_dict[code_name] = setting.content
+
+        return settings_dict

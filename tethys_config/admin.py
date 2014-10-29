@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.forms import Textarea
+from django.db import models
 from tethys_config.models import SettingsCategory, Setting
 
 
@@ -7,6 +9,10 @@ class SettingInline(admin.TabularInline):
     readonly_fields = ('name','date_modified')
     model = Setting
     extra = 0
+
+    formfield_overrides = {
+        models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 65})},
+    }
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -27,9 +33,4 @@ class SettingCategoryAdmin(admin.ModelAdmin):
         return False
 
 
-# class SettingAdmin(admin.ModelAdmin):
-#     fields = ('name', 'content', 'date_modified')
-
-
 admin.site.register(SettingsCategory, SettingCategoryAdmin)
-# admin.site.register(Setting, SettingAdmin)
