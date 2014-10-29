@@ -1,9 +1,6 @@
 @import "mixins.less";
 @import "variables.less";
 
-@highlight-color: #2ca6ed;
-@hover-link-color: @highlight-color - #222222;
-
 .dashboard #content {
   width: auto;
 }
@@ -30,11 +27,11 @@ div.breadcrumbs {
 }
 
 a:link, a:visited {
-  color: @highlight-color;
+  color: @link-color;
 }
 
 a:hover {
-  color: @hover-link-color;
+  color: @link-hover-color;
 }
 
 .object-tools {
@@ -100,7 +97,7 @@ a:hover {
   .module {
 
     h2 {
-      background: @highlight-color;
+      background: @link-color;
       color: white;
       .font-smoothing();
       font-size: 14px;
@@ -151,7 +148,7 @@ a:hover {
     li {
       &.selected {
         a {
-          color: @highlight-color !important;
+          color: @link-color !important;
         }
       }
     }
