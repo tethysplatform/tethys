@@ -1,12 +1,7 @@
-************
-Installation
-************
+Tethys Platform
+===============
 
-**Last Updated:** October 30, 2014
-
-This section describes how to install Tethys Platform. These installation instructions are optimized for Ubuntu 14.04,
-which is the recommended platform for running Tethys Platform. However, these instructions should work with other
-types of Linux with some adaptation.
+Tethys Platform provides both a development environment and a hosting environment for water resources web apps.
 
 1. Install the Dependencies
 ---------------------------
@@ -164,16 +159,3 @@ You are now ready to start the Django development server and view your instance 
 
 Open `<http://127.0.0.1:8000/>`_ in a web browser and you should see the default Tethys Portal landing page. Feel free to
 login using the system administrator username and password and take a look around.
-
-
-What's Next?
-------------
-
-
-
-
-
-
-
-
-
