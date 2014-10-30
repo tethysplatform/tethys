@@ -1,0 +1,41 @@
+{% extends "page.html" %}
+
+{% load staticfiles %}
+
+{% block title %}{% endblock %}
+
+{% block styles %}
+  {{ block.super }}
+  <link href="{% static '/static/tethys_portal/css/error.css' %}" type="text/css" rel="stylesheet" />
+{% endblock %}
+
+{% block primary_content %}
+  <div class="error-container">
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="error-image-container center-parent">
+          {% block error_image %}
+            <img class="centered" src="{{ error_image }}">
+          {% endblock %}
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="error-code-container">
+              <h1>{{ error_code }}</h1>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="error-message-container">
+              <h2>{{ error_title }}</h2>
+              <p>{{ error_message }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
