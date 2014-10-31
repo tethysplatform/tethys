@@ -34,10 +34,12 @@ pip                 `Python package management and installation tool. <http://pi
 virtualenv          `virtualenv isolated Python environment creator. <http://virtualenv.readthedocs.org/en/latest/virtualenv.html#installation>`_
 git                 `Git open source distributed version control system. <http://git-scm.com/downloads>`_
 ==================  ====================================================================================================
-* Note: The feature requiring this software is not fully implemented at this time and installation of this software is optional.
+\* Note: The feature requiring this software is not fully implemented at this time and installation of this software is optional.
 
 2. Configure Dependencies
 -------------------------
+
+Skip this step for now.
 
 * PostGIS environmental variables to enable GDAL drivers
 
@@ -89,14 +91,20 @@ Create three database users with databases. You will be prompted to create passw
 passwords, because you will need to use them in the next step.To do so, run the following commands in the terminal::
 
     sudo -u postgres createuser -S -D -R -P tethys_default
+
     sudo -u postgres createdb -O tethys_default tethys_default -E utf-8
 
     sudo -u postgres createuser -S -d -R -P tethys_db_manager
+
     sudo -u postgres createdb -O tethys_db_manager tethys_db_manager -E utf-8
 
     sudo -u postgres createuser --superuser -d -R -P tethys_super
+
     sudo -u postgres createdb -O tethys_super tethys_super -E utf-8
 
+
+.. important::
+    Run each line above one at a time to avoid errors.
 
 .. tip::
 
@@ -150,8 +158,9 @@ d. Save your changes and close the :file:`settings.py` file.
 6. Create Database Tables
 -------------------------
 
-Execute the Django :command:`syncdb` command to create the database tables. You will be prompted to create a system
-administrator for your Tethys Portal. Remember the username and password that you give it. In the terminal::
+Execute the Django :command:`syncdb` command to create the database tables. When prompted to create a system
+administrator select yes. Take note of the username and password, as this will be the user you use to manage your
+Tethys installation. In the terminal::
 
     python /usr/lib/tethys/src/manage.py syncdb
 
@@ -163,7 +172,7 @@ You are now ready to start the Django development server and view your instance 
     python /usr/lib/tethys/src/manage.py runserver
 
 Open `<http://127.0.0.1:8000/>`_ in a web browser and you should see the default Tethys Portal landing page. Feel free to
-login using the system administrator username and password and take a look around.
+login using the system administrator username and password that you created in the previous step and take a look around.
 
 
 What's Next?
