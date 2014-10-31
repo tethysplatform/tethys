@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Tethys Platform 0.1.0 documentation" href="index.html" />
     <link rel="next" title="Getting Started" href="getting_started.html" />
-    <link rel="prev" title="Features" href="features.html" /> 
+    <link rel="prev" title="Tethys Platform" href="features.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,7 +38,7 @@
           <a href="getting_started.html" title="Getting Started"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="features.html" title="Features"
+          <a href="features.html" title="Tethys Platform"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
       </ul>
@@ -51,7 +51,7 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> October 18, 2014</p>
+<p><strong>Last Updated:</strong> October 30, 2014</p>
 <p>This section describes how to install Tethys Platform. These installation instructions are optimized for Ubuntu 14.04,
 which is the recommended platform for running Tethys Platform. However, these instructions should work with other
 types of Linux with some adaptation.</p>
@@ -83,22 +83,22 @@ operating system:</p>
 <tr class="row-even"><td>PostGIS 2.1</td>
 <td><a class="reference external" href="http://postgis.net/install">PostGIS spatial extension for PostgreSQL, version 2.1 or higher.</a></td>
 </tr>
-<tr class="row-odd"><td>GeoServer</td>
+<tr class="row-odd"><td>GeoServer*</td>
 <td><a class="reference external" href="http://docs.geoserver.org/stable/en/user/installation/index.html">GeoServer server for sharing geospatial data.</a></td>
 </tr>
-<tr class="row-even"><td>Tomcat</td>
+<tr class="row-even"><td>Tomcat*</td>
 <td><a class="reference external" href="http://tomcat.apache.org/download-70.cgi">Tomcat open source Java Servlet, version 7.0.</a></td>
 </tr>
-<tr class="row-odd"><td>52°North WPS</td>
+<tr class="row-odd"><td>52°North WPS*</td>
 <td><a class="reference external" href="http://52north.org/communities/geoprocessing/wps/installation.html">52°North open source web processing service for geoprocessing.</a></td>
 </tr>
-<tr class="row-even"><td>GRASS GIS</td>
+<tr class="row-even"><td>GRASS GIS*</td>
 <td><a class="reference external" href="http://grass.osgeo.org/download/">GRASS GIS open source geospatial data management and analysis system, version 7.</a></td>
 </tr>
-<tr class="row-odd"><td>CKAN</td>
+<tr class="row-odd"><td>CKAN*</td>
 <td><a class="reference external" href="http://docs.ckan.org/en/latest/maintaining/installing/index.html">CKAN open source data management system.</a></td>
 </tr>
-<tr class="row-even"><td>wps-grass-bridge</td>
+<tr class="row-even"><td>wps-grass-bridge*</td>
 <td><a class="reference external" href="https://code.google.com/p/wps-grass-bridge/">Libraries and applications for easy and convenient GRASS7 GIS WPS integration.</a></td>
 </tr>
 <tr class="row-odd"><td>pip</td>
@@ -112,9 +112,11 @@ operating system:</p>
 </tr>
 </tbody>
 </table>
+<p>* Note: The feature requiring this software is not fully implemented at this time and installation of this software is optional.</p>
 </div>
 <div class="section" id="configure-dependencies">
 <h2>2. Configure Dependencies<a class="headerlink" href="#configure-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>Skip this step for now.</p>
 <ul class="simple">
 <li>PostGIS environmental variables to enable GDAL drivers</li>
 </ul>
@@ -149,7 +151,7 @@ at anytime by executing the following command (don&#8217;t forget the dot):</p>
 </div>
 <ol class="loweralpha" start="2">
 <li><p class="first">Install Tethys Platform into the virtual environment with the following commands:</p>
-<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/swainn/tethys /usr/lib/tethys/src
+<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/CI-WATER/tethys /usr/lib/tethys/src
 </pre></div>
 </div>
 </li>
@@ -171,14 +173,21 @@ at anytime by executing the following command (don&#8217;t forget the dot):</p>
 <p>Create three database users with databases. You will be prompted to create passwords for each user. Take note of the
 passwords, because you will need to use them in the next step.To do so, run the following commands in the terminal:</p>
 <div class="highlight-python"><div class="highlight"><pre>sudo -u postgres createuser -S -D -R -P tethys_default
+
 sudo -u postgres createdb -O tethys_default tethys_default -E utf-8
 
 sudo -u postgres createuser -S -d -R -P tethys_db_manager
+
 sudo -u postgres createdb -O tethys_db_manager tethys_db_manager -E utf-8
 
 sudo -u postgres createuser --superuser -d -R -P tethys_super
+
 sudo -u postgres createdb -O tethys_super tethys_super -E utf-8
 </pre></div>
+</div>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">Run each line above one at a time to avoid errors.</p>
 </div>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
@@ -231,8 +240,9 @@ instructions:</p>
 </div>
 <div class="section" id="create-database-tables">
 <h2>6. Create Database Tables<a class="headerlink" href="#create-database-tables" title="Permalink to this headline">¶</a></h2>
-<p>Execute the Django <strong class="command">syncdb</strong> command to create the database tables. You will be prompted to create a system
-administrator for your Tethys Portal. Remember the username and password that you give it. In the terminal:</p>
+<p>Execute the Django <strong class="command">syncdb</strong> command to create the database tables. When prompted to create a system
+administrator select yes. Take note of the username and password, as this will be the user you use to manage your
+Tethys installation. In the terminal:</p>
 <div class="highlight-python"><div class="highlight"><pre>python /usr/lib/tethys/src/manage.py syncdb
 </pre></div>
 </div>
@@ -244,7 +254,7 @@ administrator for your Tethys Portal. Remember the username and password that yo
 </pre></div>
 </div>
 <p>Open <a class="reference external" href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a> in a web browser and you should see the default Tethys Portal landing page. Feel free to
-login using the system administrator username and password and take a look around.</p>
+login using the system administrator username and password that you created in the previous step and take a look around.</p>
 </div>
 <div class="section" id="what-s-next">
 <h2>What&#8217;s Next?<a class="headerlink" href="#what-s-next" title="Permalink to this headline">¶</a></h2>
@@ -274,7 +284,7 @@ login using the system administrator username and password and take a look aroun
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="features.html"
-                        title="previous chapter">Features</a></p>
+                        title="previous chapter">Tethys Platform</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="getting_started.html"
                         title="next chapter">Getting Started</a></p>
@@ -310,7 +320,7 @@ login using the system administrator username and password and take a look aroun
           <a href="getting_started.html" title="Getting Started"
              >next</a> |</li>
         <li class="right" >
-          <a href="features.html" title="Features"
+          <a href="features.html" title="Tethys Platform"
              >previous</a> |</li>
         <li><a href="index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
       </ul>

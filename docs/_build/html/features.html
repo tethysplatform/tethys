@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Features &mdash; Tethys Platform 0.1.0 documentation</title>
+    <title>Tethys Platform &mdash; Tethys Platform 0.1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Tethys Platform 0.1.0 documentation" href="index.html" />
     <link rel="next" title="Installation" href="installation.html" />
-    <link rel="prev" title="Tethys Apps Plugin for CKAN" href="index.html" /> 
+    <link rel="prev" title="Tethys Platform" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,7 +38,7 @@
           <a href="installation.html" title="Installation"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Tethys Apps Plugin for CKAN"
+          <a href="index.html" title="Tethys Platform"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
       </ul>
@@ -49,46 +49,83 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="features">
-<h1>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> May 19, 2014</p>
+  <a class="reference internal image-reference" href="_images/tethys_logo_inverse.png"><img alt="_images/tethys_logo_inverse.png" class="align-left" src="_images/tethys_logo_inverse.png" style="width: 40px; height: 40px;" /></a>
+<div class="section" id="tethys-platform">
+<h1>Tethys Platform<a class="headerlink" href="#tethys-platform" title="Permalink to this headline">¶</a></h1>
+<p><strong>Last Updated:</strong> October 30, 2014</p>
+<p>Welcome to Tethys Platform! Tethys provides a platform for developing and hosting water resources web applications or
+web apps. Tethys provides a suite of software to addresses the unique development needs of water resources web
+apps and a Python software development kit (SDK) to interact with each software component in code. The functionality provided in
+Tethys includes file and model storage, spatial database storage, spatial data publishing, geoprocessing, spatial and
+tabular data visualizations, and access to cloud computing resources.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/tethys_platform_diagram.jpg"><img alt="_images/tethys_platform_diagram.jpg" src="_images/tethys_platform_diagram.jpg" style="height: 350px;" /></a>
+<p class="caption">Tethys Platform Software Components</p>
+</div>
+<div class="section" id="develop-web-apps">
+<h2>Develop Web Apps<a class="headerlink" href="#develop-web-apps" title="Permalink to this headline">¶</a></h2>
+<p>Tethys Platform is focused on making development of engaging, interactive web apps for water resources as easy as possible.
+It is backed by free and open source software to address the data, visualization, and computational needs of water
+resources and it is powered by the popular Python web framework, Django.</p>
+</div>
+<div class="section" id="python-software-development-kit">
+<h2>Python Software Development Kit<a class="headerlink" href="#python-software-development-kit" title="Permalink to this headline">¶</a></h2>
+<p>Tethys Apps are developed with the Python programming language using the Tethys Software Development Kit (SDK). Tethys
+apps projects are organized using a Model View Controller (MVC) approach. The SDK provides Python module links to each
+software component of the Tethys Platform, making it easy to incorporate each in your apps. In addition, you can use
+all of the Python modules that you are accustomed to using in your scientific Python scripts to power your apps. Tethys
+also includes a Command Line Interface that can be used to create new app projects from a scaffold and manage the
+development server.</p>
+<a class="reference internal image-reference" href="_images/app_code.png"><img alt="_images/app_code.png" class="align-center" src="_images/app_code.png" style="height: 350px;" /></a>
+</div>
+<div class="section" id="templating-and-gizmos">
+<h2>Templating and Gizmos<a class="headerlink" href="#templating-and-gizmos" title="Permalink to this headline">¶</a></h2>
+<p>The SDK takes advantage of the Django templating system so you can build dynamic pages for your app. It also provides
+a series of modular user interface elements called Gizmos. With only a few lines of Python code and a single line in your
+template, you can add range sliders, toggle switches, auto completes, interactive maps, and dynamic plots to your app.</p>
+<a class="reference internal image-reference" href="_images/example_gizmo.png"><img alt="_images/example_gizmo.png" class="align-center" src="_images/example_gizmo.png" style="height: 400px;" /></a>
+</div>
+<div class="section" id="spatial-data">
+<h2>Spatial Data<a class="headerlink" href="#spatial-data" title="Permalink to this headline">¶</a></h2>
+<p>Tethys Platform is especially equipped to handle the spatial data needs of your water resources web apps. Included in
+the software backing Tethys is PostgreSQL with the PostGIS extension for spatial database storage, GeoServer for spatial
+data publishing, and 52 North web processing service for geoprocessing. Tethys also provides a Google Maps, Google Earth,
+and OpenLayers for interactive spatial data visualizations in your apps.</p>
+</div>
+<div class="section" id="data-store">
+<h2>Data Store<a class="headerlink" href="#data-store" title="Permalink to this headline">¶</a></h2>
+<p>Tethys provides mechanisms for linking to CKAN and HydroShare as a means of data and file storage.</p>
+</div>
+<div class="section" id="computing">
+<h2>Computing<a class="headerlink" href="#computing" title="Permalink to this headline">¶</a></h2>
+<p>Tethys provides Python modules that will allow you to provision and run jobs in a distributed computing environment.</p>
+</div>
+<div class="section" id="developer-tools">
+<h2>Developer Tools<a class="headerlink" href="#developer-tools" title="Permalink to this headline">¶</a></h2>
+<p>Tethys provides a set of developer tools that are accessible when you run Tethys in developer mode. They contain
+documentation, code examples, and live demos of the features of various components of Tethys. Use the developer tools
+to learn how to add a map or a plot to your app using Gizmos, browse the available geoprocessing capabilities and formulate
+geoprocessing requests interactively, and browse the data that is available to apps via the Data Store connections.</p>
+<a class="reference internal image-reference" href="_images/developer_tools.png"><img alt="_images/developer_tools.png" class="align-center" src="_images/developer_tools.png" style="height: 350px;" /></a>
+</div>
+<div class="section" id="tethys-portal">
+<h2>Tethys Portal<a class="headerlink" href="#tethys-portal" title="Permalink to this headline">¶</a></h2>
+<p>After you have a working app, Tethys Platform can be used to host your apps. It can be configured to</p>
 <div class="section" id="app-dashboard">
-<h2>App Dashboard<a class="headerlink" href="#app-dashboard" title="Permalink to this headline">¶</a></h2>
+<h3>App Dashboard<a class="headerlink" href="#app-dashboard" title="Permalink to this headline">¶</a></h3>
 <p>The Tethys Apps plugin adds an apps dashboard page to CKAN. All of the apps that are loaded via the plugin will
 be accessible here.</p>
 <img alt="_images/apps_dashboard_narrow.png" src="_images/apps_dashboard_narrow.png" />
 </div>
-<div class="section" id="app-icon">
-<h2>App Icon<a class="headerlink" href="#app-icon" title="Permalink to this headline">¶</a></h2>
-<p>Assign custom icons to your apps to make them easily identifiable.</p>
-<img alt="_images/app_icon.png" src="_images/app_icon.png" />
+<div class="section" id="user-management">
+<h3>User Management<a class="headerlink" href="#user-management" title="Permalink to this headline">¶</a></h3>
+<p>Something about users</p>
+<p>(Screenshot of User profile)</p>
 </div>
-<div class="section" id="software-development-kit">
-<h2>Software Development Kit<a class="headerlink" href="#software-development-kit" title="Permalink to this headline">¶</a></h2>
-<p>Tethys Apps are developed in Python using a Model View Controller (MVC) strategy. The Tethys Apps plugin includes
-the Tethys Software Development Kit (SDK) that provides many tools to aid in the rapid development of the apps. The
-SDK also provides Python modules for working with all of the software that is included in the Tethys Software
-Framework.</p>
-<div class="section" id="scaffolding">
-<h3>Scaffolding<a class="headerlink" href="#scaffolding" title="Permalink to this headline">¶</a></h3>
-<p>A new app project can be started with a single command. The Tethys SDK provides a scaffold that will setup a simple
-app project shell for you to build on.</p>
+<div class="section" id="customizable">
+<h3>Customizable<a class="headerlink" href="#customizable" title="Permalink to this headline">¶</a></h3>
+<p>(Screenshot of admin settings)</p>
 </div>
-<div class="section" id="snippets">
-<h3>Snippets<a class="headerlink" href="#snippets" title="Permalink to this headline">¶</a></h3>
-<p>The SDK takes advantage of the CKAN templating construct called &#8220;snippets.&#8221; Snippets allow developers to insert common
-user interface elements with a single line of code in the template. Examples of snippets that are included are range sliders,
-toggle switches, buttons, interactive maps, and dynamic plots. All of the snippets are configured through Python.</p>
-</div>
-</div>
-<div class="section" id="cloud-computing">
-<h2>Cloud Computing<a class="headerlink" href="#cloud-computing" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="geoprocessing">
-<h2>Geoprocessing<a class="headerlink" href="#geoprocessing" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="visualization">
-<h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -100,24 +137,27 @@ toggle switches, buttons, interactive maps, and dynamic plots. All of the snippe
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Features</a><ul>
+<li><a class="reference internal" href="#">Tethys Platform</a><ul>
+<li><a class="reference internal" href="#develop-web-apps">Develop Web Apps</a></li>
+<li><a class="reference internal" href="#python-software-development-kit">Python Software Development Kit</a></li>
+<li><a class="reference internal" href="#templating-and-gizmos">Templating and Gizmos</a></li>
+<li><a class="reference internal" href="#spatial-data">Spatial Data</a></li>
+<li><a class="reference internal" href="#data-store">Data Store</a></li>
+<li><a class="reference internal" href="#computing">Computing</a></li>
+<li><a class="reference internal" href="#developer-tools">Developer Tools</a></li>
+<li><a class="reference internal" href="#tethys-portal">Tethys Portal</a><ul>
 <li><a class="reference internal" href="#app-dashboard">App Dashboard</a></li>
-<li><a class="reference internal" href="#app-icon">App Icon</a></li>
-<li><a class="reference internal" href="#software-development-kit">Software Development Kit</a><ul>
-<li><a class="reference internal" href="#scaffolding">Scaffolding</a></li>
-<li><a class="reference internal" href="#snippets">Snippets</a></li>
+<li><a class="reference internal" href="#user-management">User Management</a></li>
+<li><a class="reference internal" href="#customizable">Customizable</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#cloud-computing">Cloud Computing</a></li>
-<li><a class="reference internal" href="#geoprocessing">Geoprocessing</a></li>
-<li><a class="reference internal" href="#visualization">Visualization</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">Tethys Apps Plugin for CKAN</a></p>
+                        title="previous chapter">Tethys Platform</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="installation.html"
                         title="next chapter">Installation</a></p>
@@ -153,7 +193,7 @@ toggle switches, buttons, interactive maps, and dynamic plots. All of the snippe
           <a href="installation.html" title="Installation"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Tethys Apps Plugin for CKAN"
+          <a href="index.html" title="Tethys Platform"
              >previous</a> |</li>
         <li><a href="index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
       </ul>
