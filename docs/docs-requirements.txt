@@ -1,0 +1,2 @@
+django-tethys_datasets
+sphinxcontrib-napoleon

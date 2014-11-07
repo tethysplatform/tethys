@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Tethys Software Framework APIs &mdash; Tethys Platform 0.1.0 documentation</title>
+    <title>Tethys Software Development Kit &mdash; Tethys Platform 0.1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Tethys Platform 0.1.0 documentation" href="index.html" />
-    <link rel="next" title="Spatial Database" href="tethys_api/spatial_database.html" />
+    <link rel="next" title="Dataset Services API" href="tethys_api/dataset_services.html" />
     <link rel="prev" title="Deploy Apps in Production" href="production_deployment.html" /> 
   </head>
   <body>
@@ -35,7 +35,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="tethys_api/spatial_database.html" title="Spatial Database"
+          <a href="tethys_api/dataset_services.html" title="Dataset Services API"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="production_deployment.html" title="Deploy Apps in Production"
@@ -49,13 +49,26 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="tethys-software-framework-apis">
-<h1>Tethys Software Framework APIs<a class="headerlink" href="#tethys-software-framework-apis" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> May 28, 2014</p>
-<p>Outline:</p>
+  <div class="section" id="tethys-software-development-kit">
+<h1>Tethys Software Development Kit<a class="headerlink" href="#tethys-software-development-kit" title="Permalink to this headline">¶</a></h1>
+<p><strong>Last Updated:</strong> November 7, 2014</p>
+<p>The Tethys Platform provides a Python Software Development Kit (SDK) to make it easier to incorporate the functionality
+of the various supporting software packages into apps. The SDK is includes an Application Programming Interface (API)
+for each of the major software components of Tethys Platform. This section contains the documentation for each API that
+is included in the SDK:</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tethys_api/spatial_database.html">Spatial Database</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="tethys_api/dataset_services.html">Dataset Services API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/dataset_services.html#supported-dataset-services">Supported Dataset Services</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/dataset_services.html#key-concepts">Key Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/dataset_services.html#sitewide-configuration">Sitewide Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/dataset_services.html#app-specific-configuration">App Specific Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/dataset_services.html#get-a-dataset-engine">Get a Dataset Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/dataset_services.html#using-the-dataset-engine">Using the Dataset Engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/dataset_services.html#dataset-engine-references">Dataset Engine References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tethys_api/spatial_database.html">Persistent Stores</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tethys_api/spatial_database.html#postgis">PostGIS</a></li>
 </ul>
 </li>
@@ -94,8 +107,8 @@
   <p class="topless"><a href="production_deployment.html"
                         title="previous chapter">Deploy Apps in Production</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="tethys_api/spatial_database.html"
-                        title="next chapter">Spatial Database</a></p>
+  <p class="topless"><a href="tethys_api/dataset_services.html"
+                        title="next chapter">Dataset Services API</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/tethys_api.txt"
@@ -125,7 +138,7 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="tethys_api/spatial_database.html" title="Spatial Database"
+          <a href="tethys_api/dataset_services.html" title="Dataset Services API"
              >next</a> |</li>
         <li class="right" >
           <a href="production_deployment.html" title="Deploy Apps in Production"

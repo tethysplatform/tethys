@@ -91,7 +91,7 @@ to learn how to add a map or a plot to your app using Gizmos, browse the availab
 geoprocessing requests interactively, and browse the data that is available to apps via the Data Store connections.
 
 .. image:: images/features/developer_tools.png
-    :height: 350px
+    :width: 400px
     :align: center
 
 
@@ -107,6 +107,7 @@ App Dashboard
 The Tethys Apps plugin adds an apps dashboard page to CKAN. All of the apps that are loaded via the plugin will
 be accessible here.
 
+(New App Dashboard Image)
 
 
 User Management
@@ -114,9 +115,15 @@ User Management
 
 Something about users
 
-(Screenshot of User profile)
+.. image:: images/features/user_profile.png
+    :width: 400px
+    :align: center
 
 Customizable
 ------------
 
 (Screenshot of admin settings)
+
+.. image:: images/features/customize_homepage.png
+    :width: 400px
+    :align: center

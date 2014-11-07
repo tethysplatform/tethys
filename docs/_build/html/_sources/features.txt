@@ -13,7 +13,8 @@ Welcome to Tethys Platform! Tethys provides a platform for developing and hostin
 web apps. Tethys provides a suite of software to addresses the unique development needs of water resources web
 apps and a Python software development kit (SDK) to interact with each software component in code. The functionality provided in
 Tethys includes file and model storage, spatial database storage, spatial data publishing, geoprocessing, spatial and
-tabular data visualizations, and access to cloud computing resources.
+tabular data visualizations, and access to cloud computing resources. Tethys Platform is powered by the Django Python
+web framework giving it a solid web foundation with excellent performance.
 
 .. figure:: images/features/tethys_platform_diagram.jpg
     :height: 350px
@@ -27,7 +28,9 @@ Develop Web Apps
 
 Tethys Platform is focused on making development of engaging, interactive web apps for water resources as easy as possible.
 It is backed by free and open source software to address the data, visualization, and computational needs of water
-resources and it is powered by the popular Python web framework, Django.
+resources.
+
+(Screen shot of an app)
 
 
 Python Software Development Kit
@@ -63,15 +66,21 @@ the software backing Tethys is PostgreSQL with the PostGIS extension for spatial
 data publishing, and 52 North web processing service for geoprocessing. Tethys also provides a Google Maps, Google Earth,
 and OpenLayers for interactive spatial data visualizations in your apps.
 
+(Screenshot of the Google Map)
+
 Data Store
 ==========
 
 Tethys provides mechanisms for linking to CKAN and HydroShare as a means of data and file storage.
 
+(Data Store Icon)
+
 Computing
 =========
 
 Tethys provides Python modules that will allow you to provision and run jobs in a distributed computing environment.
+
+(Computing Icon)
 
 Developer Tools
 ===============
@@ -82,16 +91,15 @@ to learn how to add a map or a plot to your app using Gizmos, browse the availab
 geoprocessing requests interactively, and browse the data that is available to apps via the Data Store connections.
 
 .. image:: images/features/developer_tools.png
-    :height: 350px
+    :width: 400px
     :align: center
 
 
+Production Ready
+================
 
-
-Tethys Portal
-=============
-
-After you have a working app, Tethys Platform can be used to host your apps. It can be configured to
+After you have a working app, Tethys Platform can be configured so that it can serve as a safe environment to host your
+apps.
 
 App Dashboard
 -------------
@@ -99,7 +107,7 @@ App Dashboard
 The Tethys Apps plugin adds an apps dashboard page to CKAN. All of the apps that are loaded via the plugin will
 be accessible here.
 
-.. image:: images/features/apps_dashboard_narrow.png
+(New App Dashboard Image)
 
 
 User Management
@@ -107,9 +115,15 @@ User Management
 
 Something about users
 
-(Screenshot of User profile)
+.. image:: images/features/user_profile.png
+    :width: 400px
+    :align: center
 
 Customizable
 ------------
 
 (Screenshot of admin settings)
+
+.. image:: images/features/customize_homepage.png
+    :width: 400px
+    :align: center
