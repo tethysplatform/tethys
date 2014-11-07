@@ -8,6 +8,7 @@ Tethys Platform
    features
    installation
    getting_started
+   tethys_api
    working_with_apps
    key_concepts
    app_harvesting

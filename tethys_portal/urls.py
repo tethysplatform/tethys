@@ -21,6 +21,7 @@ user_urls = [
 developer_urls = [
     url(r'^$', 'tethys_portal.views.developer.home', name='developer_home'),
     url(r'^gizmos/', include('tethys_gizmos.urls', namespace='gizmos')),
+    url(r'^datasets/', include('tethys_datasets.urls', namespace='datasets')),
 ]
 
 # development_error_urls = [

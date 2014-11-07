@@ -39,13 +39,13 @@
             <img class="media-object" src="{% static '/static/tethys_portal/images/datastore.png' %}" alt="Data store docs">
           </a>
           <div class="media-body">
-            <a href=""><h3 class="media-heading truncate">Data Store Viewer</h3></a>
+            <a href="{% url 'datasets:home' %}"><h3 class="media-heading truncate">Dataset Services</h3></a>
             <p class="multiline-truncate">
-              The Data Store Viewer provides a summary of the the data stores that are connected to Tethys. Use this tool
-              to find data that is available for use by your app. Some data stores can be used to store data for your app
-              as well.
+              Use this tool to browse the dataset services that are available for use in app development. Depending on
+              what level of access you have to the dataset service, you may be able to view, update, create, and delete
+              datasets.
             </p>
-            <a href="">Go to tool.</a>
+            <a href="{% url 'datasets:home' %}">Go to tool.</a>
           </div>
         </div>
       </div>
