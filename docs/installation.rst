@@ -178,6 +178,8 @@ login using the system administrator username and password that you created in t
 What's Next?
 ------------
 
+If you are new to Tethys Platform, head on over to :doc:`./getting_started` and walk through the tutorial.
+
 
 
 

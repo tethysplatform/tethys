@@ -39,4 +39,16 @@ Glossary
     persistent stores
         A persistent store is a database that can be automatically created for an app. See :doc:`./getting_started/persistent_stores` for more information about persistent stores.
 
+    resource
+    resources
+        A resource is a file or other object and the associated metadata that is stored in a :term:`dataset service`.
+
+    dataset
+    datasets
+        A dataset is a container for one or more resources that are stored in a :term:`dataset service`.
+
+    dataset service
+    dataset services
+        A dataset service is a web service external to Tethys Platform that can be used to store and publish file-based datasets (e.g.: text files, Excel files, zip archives, other model files).
+
     
