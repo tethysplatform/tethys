@@ -2,11 +2,10 @@
 Getting Started
 ***************
 
-**Last Updated:** May 27, 2014
+**Last Updated:** November 11, 2014
 
-The best way to learn how to use Tethys is to jump in and start developing an app. A tutorial is provided to demonstrate how to start a new Tethys App project and explain how to work with the SDK during development.
-
-Outline:
+The getting started tutorial will walk you through the steps of setting up a new Tethys App project using Tethys Platform.
+If you have not already installed Tethys Platform, follow the :doc:`./installation` documentation and then return.
 
 .. toctree::
    :maxdepth: 2

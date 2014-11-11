@@ -9,14 +9,6 @@ Tethys Platform
    installation
    getting_started
    tethys_api
-   working_with_apps
-   key_concepts
-   app_harvesting
-   app_project
-   dev_environment
-   getting_started
-   production_deployment
-   tethys_api
    reference
    glossary
 
