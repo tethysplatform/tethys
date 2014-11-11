@@ -1,39 +1,71 @@
-******************************
-Generate New App with Scaffold
-******************************
+*******************************
+Create a New Tethys App Project
+*******************************
 
-**Last Updated:** May 20, 2014
+**Last Updated:** November 11, 2014
 
-The Tethys Apps plugin provides a scaffold for generating new apps projects. The scaffold generates a very simple app project with all of the major components and the structure discussed in :doc:`../app_project`. This portion of the tutorial will describe how to start a new app project using the scaffold and configure it to run as a Tethys App in CKAN.
+Tethys Platform provides a scaffold for generating new app projects. The scaffold generates a Tethys app project with
+the minimum files and the file structure that is required (see :doc:`../app_project`). This section of the tutorial will
+describe how to start a new Tethys app project using the scaffold and it will describe how to install the app into your
+Tethys platform for development.
 
 Generate Scaffold
 =================
 
-To generate a new app scaffold, open a terminal and activate your CKAN virtual environment. Create a new directory in your home directory called :file:`tethysdev` and path into this directory. Finally, execute the :command:`paster create` command:
+To generate a new app scaffold, open a terminal and activate the Tethys virtual environment. Create a new directory in
+your home directory called :file:`tethysdev` and change into this directory. Finally, execute the
+:command:`tethys scaffold` command, giving it the name of the new app project. App project names must contain only
+letters, numbers, and underscores (_). Follow the interactive prompts to create
+metadata for you new app.:
 
 ::
 
-    $ . /usr/lib/ckan/default/bin/activate
+    $ . /usr/lib/tethys/bin/activate
     $ mkdir ~/tethysdev
     $ cd ~/tethysdev
-    $ paster create -t ckanapp ckanapp-my_first_app
+    $ tethys scaffold my_first_app
 
-Follow the interactive prompts to create metadata for you new app (the only required parameter is the proper name). The :command:`paster create` command generates a new Tethys App project using a template called *ckanapp* that ships with the Tethys Apps plugin. In a file browser open the :file:`ckanapp-my_first_app` directory and familiarize yourself with its contents. Notice that the files are organized in the same manner as described in :doc:`../app_project`.
+In a file browser open the :file:`tethysapp-my_first_app` directory and familiarize yourself with its contents. The
+scaffold automatically prefixes your app project directory name with "tethysapp-". The main package of your app project,
+"my_first_app", is located within a namespace package called "tethysapp". For more information about the app project
+structure, see :doc:`../app_project`.
 
 Development Installation
 ========================
 
-Next, install the app into the CKAN Python environment. This will also install any dependencies of your app listed in the :term:`setup script` (:file:`setup.py`). Rather than running the :command:`install` command on the :term:`setup script`, run the :command:`develop` command instead. This makes it so you don't have to reinstall the app everytime you make a change to the source code. Be sure to activate the CKAN Python virtual environment if it is not already activated. In a terminal run:
+Next you will use the :term:`setup script` (:file:`setup.py`) to install the app into Tethys Platform. This will also
+install any Python dependencies of your app. In a terminal, change into the :file:`tethysapp-my_first_app` and execute
+the :command:`python setup.py develop` command. Be sure to activate the Tethys :term:`Python virtual environment` if
+it is not already activated:
 
 ::
 
-    $ . /usr/lib/ckan/default/bin/activate
-    $ cd ~/tethysdev/ckanapp-my_first_app
+    $ . /usr/lib/tethys/bin/activate
+    $ cd ~/tethysdev/tethysapp-my_first_app
     $ python setup.py develop
 
 
-Start up the Paste server and browse to your local CKAN site. If all has gone well, you should see your app listed on the app library page. Exploring your new app doesn't take long, because there is only one page and it will be empty. In the next few tutorials, we'll introduce how the Model View Controller (MVC) development paradigm is used to develop apps.
+View Your New App
+=================
 
-.. note::
+Use the :command:`tethys manage start` command to start up the development server and browse to
+`<http://127.0.0.1:8000/apps>`_.
 
-    If the Paste server is running when you create the app, you will need to restart it. Stop the server by pressing :kbd:`CTRL-C` and start the server again by executing the :command:`paster serve` command. A shortcut to finding this command is to press the up arrow.
+::
+
+    $ tethys manage start
+
+If all has gone well, you should see your app listed on the app library page. Exploring your new app won't take long,
+because there is only one page. Familiarize yourself with different parts of the app interface (see Figure 1).
+
+.. figure:: ../images/app_controls.png
+    :width: 650px
+
+    **Figure 1.** Tethys app interface: (1) app navigation toggle, (2) exit button, (3) app navigation, (4) actions, and (5) app content.
+
+In the next few tutorials, we'll introduce how the Model View Controller (MVC) development paradigm that is used to
+develop Tethys apps.
+
+.. tip::
+
+    To stop the development server press :kbd:`CTRL-C`.

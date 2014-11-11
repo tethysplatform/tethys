@@ -3,6 +3,7 @@ django-social-auth
 django-bootstrap3
 django-tethys_apps
 django-tethys_gizmos
+django-tethys_datasets
 sphinxcontrib-napoleon
 paste
 psycopg2
