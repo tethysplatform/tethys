@@ -1,57 +1,146 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Installation &mdash; Tethys Platform 0.1.0 documentation</title>
-    
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.1.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="index.html" />
-    <link rel="next" title="Getting Started" href="getting_started.html" />
-    <link rel="prev" title="Tethys Platform" href="features.html" /> 
-  </head>
-  <body>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="getting_started.html" title="Getting Started"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="features.html" title="Tethys Platform"
-             accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
-      </ul>
-    </div>  
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installation &mdash; Tethys Platform 0.1.0 documentation</title>
+  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body">
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="index.html"/>
+        <link rel="next" title="Getting Started" href="getting_started.html"/>
+        <link rel="prev" title="Tethys Platform" href="features.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> Tethys Platform</a>
+        
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="features.html">Tethys Platform</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="features.html#develop-web-apps">Develop Web Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html#python-software-development-kit">Python Software Development Kit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html#templating-and-gizmos">Templating and Gizmos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html#spatial-data">Spatial Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html#data-store">Data Store</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html#computing">Computing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html#production-ready">Production Ready</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#install-the-dependencies">1. Install the Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-advanced-dependencies">2. Install Advanced Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-virtual-environment-and-install-tethys-platform">3. Create Virtual Environment and Install Tethys Platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-database-and-database-users">4. Create Database and Database Users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-settings-file-and-configure-settings">5. Create Settings File and Configure Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-database-tables">6. Create Database Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#start-up-the-django-development-server">7. Start up the Django Development Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-s-next">What&#8217;s Next?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/scaffold.html">Create a New Tethys App Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/persistent_stores.html">The Model and Persistent Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/view.html">The View and Templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/controller.html">Working with the Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/url_mapping.html">URL Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/forms.html">Working with Form Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html">Configuring Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/distribution.html">Distributing Apps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tethys_api.html">Tethys Software Development Kit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/dataset_services.html">Dataset Services API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/spatial_database.html">Persistent Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/geoprocessing.html">Geoprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/visualizing.html">Data Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/cloud_computing.html">High Performance Computing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Summary of References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Tethys Platform</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Installation</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/installation.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> October 30, 2014</p>
+<p><strong>Last Updated:</strong> November 11, 2014</p>
 <p>This section describes how to install Tethys Platform. These installation instructions are optimized for Ubuntu 14.04,
 which is the recommended platform for running Tethys Platform. However, these instructions should work with other
 types of Linux with some adaptation.</p>
@@ -95,34 +184,37 @@ operating system:</p>
 <tr class="row-even"><td>GRASS GIS*</td>
 <td><a class="reference external" href="http://grass.osgeo.org/download/">GRASS GIS open source geospatial data management and analysis system, version 7.</a></td>
 </tr>
-<tr class="row-odd"><td>CKAN*</td>
-<td><a class="reference external" href="http://docs.ckan.org/en/latest/maintaining/installing/index.html">CKAN open source data management system.</a></td>
-</tr>
-<tr class="row-even"><td>wps-grass-bridge*</td>
+<tr class="row-odd"><td>wps-grass-bridge*</td>
 <td><a class="reference external" href="https://code.google.com/p/wps-grass-bridge/">Libraries and applications for easy and convenient GRASS7 GIS WPS integration.</a></td>
 </tr>
-<tr class="row-odd"><td>pip</td>
+<tr class="row-even"><td>pip</td>
 <td><a class="reference external" href="http://pip.readthedocs.org/en/latest/installing.html">Python package management and installation tool.</a></td>
 </tr>
-<tr class="row-even"><td>virtualenv</td>
+<tr class="row-odd"><td>virtualenv</td>
 <td><a class="reference external" href="http://virtualenv.readthedocs.org/en/latest/virtualenv.html#installation">virtualenv isolated Python environment creator.</a></td>
 </tr>
-<tr class="row-odd"><td>git</td>
+<tr class="row-even"><td>git</td>
 <td><a class="reference external" href="http://git-scm.com/downloads">Git open source distributed version control system.</a></td>
 </tr>
 </tbody>
 </table>
 <p>* Note: The feature requiring this software is not fully implemented at this time and installation of this software is optional.</p>
 </div>
-<div class="section" id="configure-dependencies">
-<h2>2. Configure Dependencies<a class="headerlink" href="#configure-dependencies" title="Permalink to this headline">¶</a></h2>
-<p>Skip this step for now.</p>
-<ul class="simple">
-<li>PostGIS environmental variables to enable GDAL drivers</li>
-</ul>
+<div class="section" id="install-advanced-dependencies">
+<h2>2. Install Advanced Dependencies<a class="headerlink" href="#install-advanced-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>Installing some of the software dependencies is more involved. This section provides a more detailed explanation for
+these dependencies.</p>
+<div class="section" id="ckan-optional">
+<h3>CKAN (optional)<a class="headerlink" href="#ckan-optional" title="Permalink to this headline">¶</a></h3>
+<p>Apps developed with Tethys Platform may use CKAN for dataset storage. This is done using the REST API of CKAN, which
+means that the CKAN instance can be external to your Tethys Platform installation. For example, you may wish to configure
+your Tethys Platform to use <a class="reference external" href="http://www.data.gov/">data.gov</a> or some other CKAN installation (see
+<a class="reference external" href="http://ckan.org/instances/#">CKAN instances around the world</a>).</p>
+<p>If you wish to install your own instance of CKAN, refer to <a class="reference external" href="http://docs.ckan.org/en/latest/maintaining/installing/index.html">Installing CKAN</a>.</p>
 </div>
-<div class="section" id="install-tethys-platform-into-a-python-virtual-environment">
-<h2>3. Install Tethys Platform into a Python Virtual Environment<a class="headerlink" href="#install-tethys-platform-into-a-python-virtual-environment" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="create-virtual-environment-and-install-tethys-platform">
+<h2>3. Create Virtual Environment and Install Tethys Platform<a class="headerlink" href="#create-virtual-environment-and-install-tethys-platform" title="Permalink to this headline">¶</a></h2>
 <p>Python virtual environments are used to create isolated Python installations to avoid conflicts with dependencies of
 other Python applications on the same system. The following commands should be executed in a a terminal.</p>
 <ol class="loweralpha">
@@ -211,14 +303,14 @@ following settings appropriately.</p>
 <p>a. Replace the password for the main Tethys Portal database, <strong>tethys_default</strong>, with the password you created
 in the previous step. This is done by changing the value of the PASSWORD parameter of the DATABASES setting:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
-<span class="s">&#39;default&#39;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s">&#39;ENGINE&#39;</span><span class="p">:</span> <span class="s">&#39;django.db.backends.postgresql_psycopg2&#39;</span><span class="p">,</span>
-    <span class="s">&#39;NAME&#39;</span><span class="p">:</span> <span class="s">&#39;tethys_default&#39;</span><span class="p">,</span>
-    <span class="s">&#39;USER&#39;</span><span class="p">:</span> <span class="s">&#39;tethys_default&#39;</span><span class="p">,</span>
-    <span class="s">&#39;PASSWORD&#39;</span><span class="p">:</span> <span class="s">&#39;pass&#39;</span><span class="p">,</span>
-    <span class="s">&#39;HOST&#39;</span><span class="p">:</span> <span class="s">&#39;localhost&#39;</span><span class="p">,</span>
-    <span class="s">&#39;PORT&#39;</span><span class="p">:</span> <span class="s">&#39;5432&#39;</span>
-    <span class="p">}</span>
+  <span class="s">&#39;default&#39;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s">&#39;ENGINE&#39;</span><span class="p">:</span> <span class="s">&#39;django.db.backends.postgresql_psycopg2&#39;</span><span class="p">,</span>
+      <span class="s">&#39;NAME&#39;</span><span class="p">:</span> <span class="s">&#39;tethys_default&#39;</span><span class="p">,</span>
+      <span class="s">&#39;USER&#39;</span><span class="p">:</span> <span class="s">&#39;tethys_default&#39;</span><span class="p">,</span>
+      <span class="s">&#39;PASSWORD&#39;</span><span class="p">:</span> <span class="s">&#39;pass&#39;</span><span class="p">,</span>
+      <span class="s">&#39;HOST&#39;</span><span class="p">:</span> <span class="s">&#39;localhost&#39;</span><span class="p">,</span>
+      <span class="s">&#39;PORT&#39;</span><span class="p">:</span> <span class="s">&#39;5432&#39;</span>
+      <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -234,23 +326,43 @@ instructions:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY</span> <span class="o">=</span> <span class="s">&#39;Th|$I$@neXAmpL3aPik3Y&#39;</span>
 </pre></div>
 </div>
-<ol class="loweralpha simple" start="4">
+<p>d. If you wish to configure a sitewide dataset service (CKAN or HydroShare), add the TETHYS_DATASET_SERVICES dictionary
+with the appropriate parameters. See the <a class="reference internal" href="tethys_api/dataset_services.html"><em>Dataset Services API</em></a> documentation for more details. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">TETHYS_DATASET_SERVICES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;ckan_example&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;ENGINE&#39;</span><span class="p">:</span> <span class="s">&#39;tethys_datasets.engines.CkanDatasetEngine&#39;</span><span class="p">,</span>
+        <span class="s">&#39;ENDPOINT&#39;</span><span class="p">:</span> <span class="s">&#39;http:/www.exampleckan.org/api/3/action&#39;</span><span class="p">,</span>
+        <span class="s">&#39;APIKEY&#39;</span><span class="p">:</span> <span class="s">&#39;putYOURapiKEYhere&#39;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s">&#39;example_hydroshare&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;ENGINE&#39;</span><span class="p">:</span> <span class="s">&#39;tethys_datasets.engines.HydroShareDatasetEngine&#39;</span><span class="p">,</span>
+        <span class="s">&#39;ENDPOINT&#39;</span><span class="p">:</span> <span class="s">&#39;http://www.hydroshare.org/api&#39;</span><span class="p">,</span>
+        <span class="s">&#39;USERNAME&#39;</span><span class="p">:</span> <span class="s">&#39;someuser&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PASSWORD&#39;</span><span class="p">:</span> <span class="s">&#39;password&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="loweralpha simple" start="5">
 <li>Save your changes and close the <tt class="file docutils literal"><span class="pre">settings.py</span></tt> file.</li>
 </ol>
 </div>
 <div class="section" id="create-database-tables">
 <h2>6. Create Database Tables<a class="headerlink" href="#create-database-tables" title="Permalink to this headline">¶</a></h2>
-<p>Execute the Django <strong class="command">syncdb</strong> command to create the database tables. When prompted to create a system
-administrator select yes. Take note of the username and password, as this will be the user you use to manage your
-Tethys installation. In the terminal:</p>
-<div class="highlight-python"><div class="highlight"><pre>python /usr/lib/tethys/src/manage.py syncdb
+<p>Execute the Django <strong class="command">syncdb</strong> command to create the database tables. In the terminal:</p>
+<div class="highlight-python"><div class="highlight"><pre>tethys manage syncdb
 </pre></div>
+</div>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">When prompted to create a system administrator enter &#8216;yes&#8217;. Take note of the username and password, as this will be
+the user you use to manage your Tethys Portal.</p>
 </div>
 </div>
 <div class="section" id="start-up-the-django-development-server">
 <h2>7. Start up the Django Development Server<a class="headerlink" href="#start-up-the-django-development-server" title="Permalink to this headline">¶</a></h2>
 <p>You are now ready to start the Django development server and view your instance of Tethys Portal. In the terminal:</p>
-<div class="highlight-python"><div class="highlight"><pre>python /usr/lib/tethys/src/manage.py runserver
+<div class="highlight-python"><div class="highlight"><pre>tethys manage start
 </pre></div>
 </div>
 <p>Open <a class="reference external" href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a> in a web browser and you should see the default Tethys Portal landing page. Feel free to
@@ -258,77 +370,75 @@ login using the system administrator username and password that you created in t
 </div>
 <div class="section" id="what-s-next">
 <h2>What&#8217;s Next?<a class="headerlink" href="#what-s-next" title="Permalink to this headline">¶</a></h2>
-<p>If you are new to Tethys Platform, head on over to <a class="reference internal" href="getting_started.html"><em>Getting Started</em></a> and walk through the tutorial.</p>
+<p>Head over to <a class="reference internal" href="getting_started.html"><em>Getting Started</em></a> and create your first app. You can also check out the <a class="reference internal" href="tethys_api.html"><em>Tethys Software Development Kit</em></a>
+documentation to familiarize yourself with all the features available.</p>
 </div>
 </div>
 
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Installation</a><ul>
-<li><a class="reference internal" href="#install-the-dependencies">1. Install the Dependencies</a></li>
-<li><a class="reference internal" href="#configure-dependencies">2. Configure Dependencies</a></li>
-<li><a class="reference internal" href="#install-tethys-platform-into-a-python-virtual-environment">3. Install Tethys Platform into a Python Virtual Environment</a></li>
-<li><a class="reference internal" href="#create-database-and-database-users">4. Create Database and Database Users</a></li>
-<li><a class="reference internal" href="#create-settings-file-and-configure-settings">5. Create Settings File and Configure Settings</a></li>
-<li><a class="reference internal" href="#create-database-tables">6. Create Database Tables</a></li>
-<li><a class="reference internal" href="#start-up-the-django-development-server">7. Start up the Django Development Server</a></li>
-<li><a class="reference internal" href="#what-s-next">What&#8217;s Next?</a></li>
-</ul>
-</li>
-</ul>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="features.html" class="btn btn-neutral" title="Tethys Platform"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="features.html"
-                        title="previous chapter">Tethys Platform</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="getting_started.html"
-                        title="next chapter">Getting Started</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/installation.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Nathan Swain.
     </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="getting_started.html" title="Getting Started"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="features.html" title="Tethys Platform"
-             >previous</a> |</li>
-        <li><a href="index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li> 
-      </ul>
-    </div>
-    <div class="footer">
-        &copy; Copyright 2014, Nathan Swain.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>

@@ -1,55 +1,145 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Persistent Stores &mdash; Tethys Platform 0.1.0 documentation</title>
-    
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.1.0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html" />
-    <link rel="up" title="Tethys Software Development Kit" href="../tethys_api.html" />
-    <link rel="next" title="Spatial Data Publishing" href="spatial_publishing.html" />
-    <link rel="prev" title="Dataset Services API" href="dataset_services.html" /> 
-  </head>
-  <body>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="spatial_publishing.html" title="Spatial Data Publishing"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="dataset_services.html" title="Dataset Services API"
-             accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
-          <li><a href="../tethys_api.html" accesskey="U">Tethys Software Development Kit</a> &raquo;</li> 
-      </ul>
-    </div>  
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Persistent Stores &mdash; Tethys Platform 0.1.0 documentation</title>
+  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body">
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html"/>
+        <link rel="up" title="Tethys Software Development Kit" href="../tethys_api.html"/>
+        <link rel="next" title="Spatial Data Publishing" href="spatial_publishing.html"/>
+        <link rel="prev" title="HydroShare Dataset Engine Reference" href="dataset_service/hydroshare_reference.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="../index.html" class="fa fa-home"> Tethys Platform</a>
+        
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../features.html">Tethys Platform</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../features.html#develop-web-apps">Develop Web Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features.html#python-software-development-kit">Python Software Development Kit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features.html#templating-and-gizmos">Templating and Gizmos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features.html#spatial-data">Spatial Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features.html#data-store">Data Store</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features.html#computing">Computing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features.html#production-ready">Production Ready</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#install-the-dependencies">1. Install the Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#install-advanced-dependencies">2. Install Advanced Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#create-virtual-environment-and-install-tethys-platform">3. Create Virtual Environment and Install Tethys Platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#create-database-and-database-users">4. Create Database and Database Users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#create-settings-file-and-configure-settings">5. Create Settings File and Configure Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#create-database-tables">6. Create Database Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#start-up-the-django-development-server">7. Start up the Django Development Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation.html#what-s-next">What&#8217;s Next?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/scaffold.html">Generate New App with Scaffold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/persistent_stores.html">The Model and Persistent Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/view.html">The View and Templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/controller.html">Working with the Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/url_mapping.html">URL Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/forms.html">Working with Form Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/configuration.html">Configuring Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/distribution.html">Distributing Apps</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tethys_api.html">Tethys Software Development Kit</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dataset_services.html">Dataset Services API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Persistent Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spatial_publishing.html">Spatial Data Publishing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geoprocessing.html">Geoprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualizing.html">Data Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cloud_computing.html">High Performance Computing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Summary of References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Tethys Platform</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../tethys_api.html">Tethys Software Development Kit</a> &raquo;</li>
+      
+    <li>Persistent Stores</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../_sources/tethys_api/spatial_database.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
             
   <div class="section" id="persistent-stores">
 <h1>Persistent Stores<a class="headerlink" href="#persistent-stores" title="Permalink to this headline">¶</a></h1>
@@ -65,65 +155,68 @@
 
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Persistent Stores</a><ul>
-<li><a class="reference internal" href="#postgis">PostGIS</a></li>
-</ul>
-</li>
-</ul>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="spatial_publishing.html" class="btn btn-neutral float-right" title="Spatial Data Publishing">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dataset_service/hydroshare_reference.html" class="btn btn-neutral" title="HydroShare Dataset Engine Reference"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="dataset_services.html"
-                        title="previous chapter">Dataset Services API</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="spatial_publishing.html"
-                        title="next chapter">Spatial Data Publishing</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="../_sources/tethys_api/spatial_database.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Nathan Swain.
     </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="spatial_publishing.html" title="Spatial Data Publishing"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="dataset_services.html" title="Dataset Services API"
-             >previous</a> |</li>
-        <li><a href="../index.html">Tethys Platform 0.1.0 documentation</a> &raquo;</li>
-          <li><a href="../tethys_api.html" >Tethys Software Development Kit</a> &raquo;</li> 
-      </ul>
-    </div>
-    <div class="footer">
-        &copy; Copyright 2014, Nathan Swain.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>

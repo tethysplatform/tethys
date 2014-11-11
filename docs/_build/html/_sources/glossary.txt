@@ -51,4 +51,6 @@ Glossary
     dataset services
         A dataset service is a web service external to Tethys Platform that can be used to store and publish file-based datasets (e.g.: text files, Excel files, zip archives, other model files).
 
-    
+    virtual environment
+    Python virtual environment
+        An isolated Python installation. Many operating systems use the system Python installation to perform maintenance operations. Installing Tethys Platform in a virtual environment prevents potential dependency conflicts.

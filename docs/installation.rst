@@ -2,7 +2,7 @@
 Installation
 ************
 
-**Last Updated:** October 30, 2014
+**Last Updated:** November 11, 2014
 
 This section describes how to install Tethys Platform. These installation instructions are optimized for Ubuntu 14.04,
 which is the recommended platform for running Tethys Platform. However, these instructions should work with other
@@ -28,7 +28,6 @@ GeoServer*          `GeoServer server for sharing geospatial data. <http://docs.
 Tomcat*             `Tomcat open source Java Servlet, version 7.0. <http://tomcat.apache.org/download-70.cgi>`_
 52°North WPS*       `52°North open source web processing service for geoprocessing. <http://52north.org/communities/geoprocessing/wps/installation.html>`_
 GRASS GIS*          `GRASS GIS open source geospatial data management and analysis system, version 7. <http://grass.osgeo.org/download/>`_
-CKAN*               `CKAN open source data management system. <http://docs.ckan.org/en/latest/maintaining/installing/index.html>`_
 wps-grass-bridge*   `Libraries and applications for easy and convenient GRASS7 GIS WPS integration. <https://code.google.com/p/wps-grass-bridge/>`_
 pip                 `Python package management and installation tool. <http://pip.readthedocs.org/en/latest/installing.html>`_
 virtualenv          `virtualenv isolated Python environment creator. <http://virtualenv.readthedocs.org/en/latest/virtualenv.html#installation>`_
@@ -36,15 +35,24 @@ git                 `Git open source distributed version control system. <http:/
 ==================  ====================================================================================================
 \* Note: The feature requiring this software is not fully implemented at this time and installation of this software is optional.
 
-2. Configure Dependencies
--------------------------
+2. Install Advanced Dependencies
+--------------------------------
 
-Skip this step for now.
+Installing some of the software dependencies is more involved. This section provides a more detailed explanation for
+these dependencies.
 
-* PostGIS environmental variables to enable GDAL drivers
+CKAN (optional)
+===============
 
-3. Install Tethys Platform into a Python Virtual Environment
-------------------------------------------------------------
+Apps developed with Tethys Platform may use CKAN for dataset storage. This is done using the REST API of CKAN, which
+means that the CKAN instance can be external to your Tethys Platform installation. For example, you may wish to configure
+your Tethys Platform to use `data.gov <http://www.data.gov/>`_ or some other CKAN installation (see
+`CKAN instances around the world <http://ckan.org/instances/#>`_).
+
+If you wish to install your own instance of CKAN, refer to `Installing CKAN <http://docs.ckan.org/en/latest/maintaining/installing/index.html>`_.
+
+3. Create Virtual Environment and Install Tethys Platform
+---------------------------------------------------------
 
 Python virtual environments are used to create isolated Python installations to avoid conflicts with dependencies of
 other Python applications on the same system. The following commands should be executed in a a terminal.
@@ -131,14 +139,14 @@ a. Replace the password for the main Tethys Portal database, **tethys_default**,
 in the previous step. This is done by changing the value of the PASSWORD parameter of the DATABASES setting::
 
     DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'tethys_default',
-        'USER': 'tethys_default',
-        'PASSWORD': 'pass',
-        'HOST': 'localhost',
-        'PORT': '5432'
-        }
+      'default': {
+          'ENGINE': 'django.db.backends.postgresql_psycopg2',
+          'NAME': 'tethys_default',
+          'USER': 'tethys_default',
+          'PASSWORD': 'pass',
+          'HOST': 'localhost',
+          'PORT': '5432'
+          }
     }
 
 b. Find the TETHYS_APPS_DATABASE_MANAGER_URL and TETHYS_APPS_SUPERUSER_URL settings and replace "pass" with the appropriate
@@ -153,23 +161,43 @@ instructions::
 
     TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY = 'Th|$I$@neXAmpL3aPik3Y'
 
-d. Save your changes and close the :file:`settings.py` file.
+d. If you wish to configure a sitewide dataset service (CKAN or HydroShare), add the TETHYS_DATASET_SERVICES dictionary
+with the appropriate parameters. See the :doc:`./tethys_api/dataset_services` documentation for more details. For example::
+
+  TETHYS_DATASET_SERVICES = {
+      'ckan_example': {
+          'ENGINE': 'tethys_datasets.engines.CkanDatasetEngine',
+          'ENDPOINT': 'http:/www.exampleckan.org/api/3/action',
+          'APIKEY': 'putYOURapiKEYhere',
+      },
+      'example_hydroshare': {
+          'ENGINE': 'tethys_datasets.engines.HydroShareDatasetEngine',
+          'ENDPOINT': 'http://www.hydroshare.org/api',
+          'USERNAME': 'someuser',
+          'PASSWORD': 'password',
+      }
+  }
+
+e. Save your changes and close the :file:`settings.py` file.
 
 6. Create Database Tables
 -------------------------
 
-Execute the Django :command:`syncdb` command to create the database tables. When prompted to create a system
-administrator select yes. Take note of the username and password, as this will be the user you use to manage your
-Tethys installation. In the terminal::
+Execute the Django :command:`syncdb` command to create the database tables. In the terminal::
 
-    python /usr/lib/tethys/src/manage.py syncdb
+    tethys manage syncdb
+
+.. important::
+
+  When prompted to create a system administrator enter 'yes'. Take note of the username and password, as this will be
+  the user you use to manage your Tethys Portal.
 
 7. Start up the Django Development Server
 -----------------------------------------
 
 You are now ready to start the Django development server and view your instance of Tethys Portal. In the terminal::
 
-    python /usr/lib/tethys/src/manage.py runserver
+    tethys manage start
 
 Open `<http://127.0.0.1:8000/>`_ in a web browser and you should see the default Tethys Portal landing page. Feel free to
 login using the system administrator username and password that you created in the previous step and take a look around.
@@ -178,7 +206,8 @@ login using the system administrator username and password that you created in t
 What's Next?
 ------------
 
-If you are new to Tethys Platform, head on over to :doc:`./getting_started` and walk through the tutorial.
+Head over to :doc:`./getting_started` and create your first app. You can also check out the :doc:`./tethys_api`
+documentation to familiarize yourself with all the features available.
 
 
 
