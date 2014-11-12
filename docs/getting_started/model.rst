@@ -15,11 +15,10 @@ In this tutorial you will learn how to use the `SQLAlchemy <http://www.sqlalchem
 Register a Persistent Store
 ===========================
 
-To register a new persistent store add the ``persistent_stores()`` method of your :term:`app class`, which is located
-in your :term:`app configuration file`. Open the app configuration file for your app
-(located at :file:`~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/app.py`). The ``persistent_stores()`` method
-must return a list or tuple of ``PersistentStore`` objects. Import the ``PersistentStore`` objects and add the
-``persistent_stores()`` method to your app class as follows:
+To register a new persistent store database add the ``persistent_stores()`` method of your :term:`app class`, which is
+located in your :term:`app configuration file`. This method must return a list or tuple of ``PersistentStore`` objects.
+Open the app configuration file for your app located at :file:`~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/app.py`.
+Import the ``PersistentStore`` objects and add the ``persistent_stores()`` method to your app class as follows:
 
 ::
 
@@ -48,45 +47,39 @@ must return a list or tuple of ``PersistentStore`` objects. Import the ``Persist
 
 
 
-A persistent store will be created for each ``PersistentStore`` object that is returned by the ``persistent_stores()``
+A persistent store database will be created for each ``PersistentStore`` object that is returned by the ``persistent_stores()``
 method. In this case, your app will have a persistent store named "stream_gage_db". The ``initializer`` argument
-refers to a function that will be called to initialize the persistent store. This will be discussed after the data model
-has been created. The ``spatial`` argument can be used to add spatial capabilities to your persistent store. All
-persistent stores are PostgreSQL databases and the spatial functionality is provided by the PostGIS extension.
+points to a function that you define that will be called to initialize the persistent store database. This will be
+discussed in more detail after the data model has been created. The ``spatial`` argument can be used to add spatial
+capabilities to your persistent store. Tethys Platform provides PostgreSQL databases for persistent stores and PostGIS
+for the spatial database capabilities.
 
 .. note::
 
     Read more about persistent stores in the :doc:`../tethys_api/persistent_store` documentation.
 
-Create SQLAlchemy Model
-=======================
+Create an SQLAlchemy Data Model
+===============================
 
-SQLAlchemy allows developers to interact with SQL databases using an object oriented approach and it is capable
-of interfacing with all of the major SQL databases. To learn more about SQLAlchemy ORM, we recommend
-`this <http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html>`_ tutorial to get a good overview.
+SQLAlchemy provides an Object Relational Mapper (ORM) that allows you to create data models using Python code and issue
+queries using an object-oriented approach. In other words, you are able to harness the power of SQL databases without
+writing SQL. As a primer to SQLAlchemy ORM, we highly recommend you complete the `Object Relational Tutorial <http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html>`_.
 
- The Tethys SDK provides SQLAlchemy as a means
-of data models for your apps. SQLAlchemy provide an Object Relational Mapper (ORM) that allows you to create data models
-using Python code and issue queries using an object-oriented approach. In other words, you are able to harness the power
-of SQL databases without writing SQL (although, if you really want to use straight SQL, you are able to do that as well).
+You will use SQLAlchemy to create a data model for the tables that will be store the data for your app. Open the
+:file:`model.py` file located at :file:`~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/model.py`.
 
-After we have registered our persistent store, we need to create a data model for the tables that will be store our data. For this tutorial we will do this using SQLAlchemy.
-
-1. Create a new file called :file:`stream_gage_model.py` located in your :term:`app package` (:file:`~/tethysdev/ckanapp-my_first_app/ckanapp/my_first_app`).
-
-2. Copy and paste the following contents into the file:
+First, add the following import statements to your :file:`model.py` file:
 
 ::
 
     from sqlalchemy.ext.declarative import declarative_base
-    from sqlalchemy import Column, Float, Integer
+    from sqlalchemy import Column, Integer, String
     from sqlalchemy.orm import sessionmaker
 
-    from ckanapp.my_first_app.lib import get_persistent_store_engine
+    from .utilities import get_persistent_store_engine
 
-These lines import all of the necessary modules from SQLAlchemy that the stream gages data model will need. There is also a method imported from your app's library (``ckanapp.my_first_app.lib``) called ``get_persistent_store_engine()``. This method is used to retrieve a connection to the persisent store and it is generated by the app scaffold.
 
-3. Next add these lines to :file:`stream_gages_model.py`:
+Next, add these lines to your :file:`model.py` file:
 
 ::
 
@@ -95,17 +88,19 @@ These lines import all of the necessary modules from SQLAlchemy that the stream 
     SessionMaker = sessionmaker(bind=engine)
     Base = declarative_base()
 
-These lines are very important. You will use some of the elements defined here whenever you need to interact with your persistent store. First, the ``get_persistent_store_engine()`` method is used to retrieve an SQLAlchemy ``engine`` object. This object contains the information needed to connect to the persistent store. The ``get_persistent_store_engine()`` method accepts the name of a persistent store as an argument and returns the engine with connection information for that store.
+The ``get_persistent_store_engine()`` method accepts the name of a persistent store as an argument and returns and
+SQLAlchemy engine object. The engine object contains all the connection information need to connect to the persistent
+store database. Anytime you want to query or modify your persistent store data, you will do so with an SQLAlchemy
+``session`` object. As the name implies, the ``SessionMaker`` can be used to create new ``session`` objects. The
+``Base`` object is used in the next step when we define our data model.
 
-Next, we create an SQLAlchemy session maker, ``SessionMaker`` and bind it to the engine. Anytime you want to query or modify your persistent store data, you will do so with an SQLAlchemy ``session`` object. You obtain a ``session`` object by importing the session maker and intantiating it. Finally, we create an instance of an SQLAlchemy ``declarative_base`` and call it ``Base``. The declarative base is also very important, but it will be discussed in more detail later on.
-
-4. Finally, add these lines to :file:`stream_gages_model.py`:
+Finally, add these lines to your :file:`model.py` file:
 
 ::
 
     class StreamGage (Base):
         '''
-        Example SQLAlchemy DB
+        Example SQLAlchemy DB Model
         '''
         __tablename__ = 'stream_gages'
         
@@ -149,22 +144,36 @@ Next, we create an SQLAlchemy session maker, ``SessionMaker`` and bind it to the
             geojson_gages['geometries'] = geometries
             return geojson_gages
 
-This class, ``StreamGage`` contains the definition for a table called "stream_gages". Notice that the class inherits from the ``Base`` class that we created in the previous lines. The class also has a private property, ``__tablename__`` that defines the name of the table that will be created in the database. The class also has four other properties that are SQLAlchemy ``Column`` objects: *id*, *latitude*, *longitude*, and *value*. These properties define the columns of the "stream_gages" table. The column type and options are defined by the arguments passed to the ``Column`` constructor. For example, the *latitude* column is of type ``Float`` while the *id* column is of type ``Integer`` and also flagged as the primary key for the table. The ``StreamGage`` class also has a simple constructor method called ``__init__()`` and a class method called ``get_gages_as_geojson()``.
+The database model is defined by the ``StreamGage`` class. Each class of an SQLAlchemy data model defines a table in
+the database. Currently the model consists of a single table called "stream_gages", as denoted by the ``__tablename__``
+property.
 
-This class is not only used to define the tables for your persistent store, it will also be used to create objects for interacting with your data. Each instance of the ``StreamGage`` class will reperesent one row or record in the "stream_gages" table and the properties of the instance will have as values the values of the columns in that record. We'll illustrate how to use these objects for interacting the database in  the next section.
+Notice that the ``StreamGage`` class inherits from the ``Base`` class that we created in the previous lines. The class
+also has four other properties that are SQLAlchemy ``Column`` objects: *id*, *latitude*, *longitude*, and *value*.
+These properties define the columns of the "stream_gages" table. The column type and options are defined by the
+arguments passed to the ``Column`` constructor. For example, the *latitude* column is of type ``Float`` while the *id*
+column is of type ``Integer`` and is also flagged as the primary key for the table. The ``StreamGage`` class also has a
+simple constructor method called ``__init__()`` and a class method called ``get_gages_as_geojson()``.
 
-Create an Initialization Script
-===============================
+This class is not only used to define the tables for your persistent store, it will also be used to create objects for
+interacting with your data. Each instance of the ``StreamGage`` class will represent one row or record in the
+"stream_gages" table and the properties of the instance be populated with the values of the columns in that record.
+You will learn how to use these objects for interacting the database in the next section.
 
-Now that you have created a data model, the next step is to write a database initialization script. This script will use your database model and SQLAlchemy to create all the tables. We'll also use this script to add some dummy data for testing.
+Create an Initialization Function
+=================================
 
-1. Create a new file called     :file:`init_stream_gages_db.py` in your :term:`app package` :file:`lib` directory (:file:`~/tethysdev/ckanapp-my_first_app/ckanapp/my_first_app/lib`).
+Now that you have created a data model, the next step is to write a database initialization function. This function will
+use the database model from the previous section to create all the tables. We'll also use this function to add some
+dummy data for testing.
+
+1. Create a new file called     :file:`init_stream_gages_db.py` in your :term:`app package` :file:`lib` directory (:file:`~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/lib`).
 
 2. Add the following lines to your     :file:`init_stream_gages_db.py` script:
 
 ::
 
-    from ckanapp.my_first_app.stream_gage_model import Base, engine, StreamGage, SessionMaker
+    from tethysapp.my_first_app.stream_gage_model import Base, engine, StreamGage, SessionMaker
 
     Base.metadata.create_all(engine)
 
@@ -238,7 +247,7 @@ Everytime you add a new persistent store to your app, you will need to reinstall
 ::
 
     $ . /usr/lib/ckan/default/bin/activate
-    $ cd ~/tethydev/ckanapp-my_first_app
+    $ cd ~/tethydev/tethysapp-my_first_app
     $ python setup.py develop
 
 .. note::
@@ -273,7 +282,7 @@ Modify the Setup Script
 ::
 
     from ckanext.tethys_apps.lib.persistent_store import provision_persistent_stores
-    from ckanext.tethys_apps.lib import get_ckanapp_directory
+    from ckanext.tethys_apps.lib import get_tethysapp_directory
 
 
 2. Add these lines to the **bottom** of your app's :term:`setup script` (:file:`setup.py`):
