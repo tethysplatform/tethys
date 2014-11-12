@@ -97,6 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../tethys_api.html">Tethys Software Development Kit</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/dataset_services.html">Dataset Services API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/persistent_store.html">Persistent Stores API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_api/gizmos.html">Template Gizmos API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/geoprocessing.html">Geoprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/visualizing.html">Data Visualization</a></li>
@@ -143,203 +144,54 @@
             
   <div class="section" id="working-with-the-controller">
 <h1>Working with the Controller<a class="headerlink" href="#working-with-the-controller" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> May 27, 2014</p>
-<p>The Controller component of MVC will be discussed in this part of the tutorial. The job of the controller is to coordinate between the View and the Model. Often this means querying a database and transforming the data to a format that the view expects it to be in. The Controller also handles most of the application logic such as processing and validating form data or launching model runs. In Tethys Apps, controllers are created as Python classes using the Pylons web framework. In this tutorial we will retrive the data from our stream gage model and then pass it to the template for visualizing.</p>
-<div class="section" id="query-persitent-store">
-<h2>Query Persitent Store<a class="headerlink" href="#query-persitent-store" title="Permalink to this headline">¶</a></h2>
-<p>If you recall, in the <tt class="xref doc docutils literal"><span class="pre">./persistent_stores</span></tt> tutorial we created an SQLAlchemy data model to store information about our stream gages. We also created an initialization script that loaded some dummy data into our database. We will now add some logic to our controller to retrive this data:</p>
-<ol class="arabic simple">
-<li>Open your <tt class="file docutils literal"><span class="pre">index.py</span></tt> controller (<tt class="file docutils literal"><span class="pre">~/tethysdev/ckanapp-my_first_app/ckanapp/my_first_app/controllers/index.py</span></tt>).</li>
-</ol>
-<p>There should be a class called <tt class="docutils literal"><span class="pre">MyFirstAppController</span></tt> that has one method called <tt class="docutils literal"><span class="pre">index()</span></tt>. Notice that <tt class="docutils literal"><span class="pre">MyFirstAppController</span></tt> inherits from the <tt class="docutils literal"><span class="pre">BaseController</span></tt> class. This is what makes this class a controller. The <tt class="docutils literal"><span class="pre">index()</span></tt> method is the controller that renders the <tt class="file docutils literal"><span class="pre">index.html</span></tt> template that we worked on in the <a class="reference internal" href="view.html"><em>The View and Templating</em></a> tutorial.</p>
-<ol class="arabic simple" start="2">
-<li>To retrieve the data from our data model, we need to import the <tt class="docutils literal"><span class="pre">StreamGage</span></tt> class from the <tt class="file docutils literal"><span class="pre">stream_gage_model.py</span></tt> file that we created in the <tt class="xref doc docutils literal"><span class="pre">./persistent_stores</span></tt> tutorial. Add the following line at the end of your import statements, just before the class definition:</li>
-</ol>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">ckanapp.my_first_app.stream_gage_model</span> <span class="kn">import</span> <span class="n">StreamGage</span><span class="p">,</span> <span class="n">SessionMaker</span>
+<p><strong>Last Updated:</strong> November 12, 2014</p>
+<p>The Controller component of MVC will be discussed in this part of the tutorial. The job of the controller is to coordinate between the View and the Model. Often this means querying a database and transforming the data to a format that the view expects it to be in. The Controller also handles most of the application logic such as processing and validating form data or launching model runs. In a Tethys app, controllers are simple Python functions. In this tutorial you will retrieve the data from your stream gage model and then pass it to the template that you created in the previous step.</p>
+<div class="section" id="make-a-new-controller">
+<h2>Make a New Controller<a class="headerlink" href="#make-a-new-controller" title="Permalink to this headline">¶</a></h2>
+<p>Recall that in the <tt class="xref doc docutils literal"><span class="pre">./persistent_stores</span></tt> tutorial you created an SQLAlchemy data model to store information about stream gages. You also created an initialization function that loaded some dummy data into your database. You will now add some logic to your controller to retrieve this data and pass it to the template.</p>
+<p>Open your <tt class="file docutils literal"><span class="pre">controllers.py</span></tt> file located at <tt class="file docutils literal"><span class="pre">~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/controllers/controllers.py</span></tt>. This file should contain a function called <tt class="docutils literal"><span class="pre">home</span></tt>. This function is the controller for the home page of your app. All controller functions must accept a request object and they must return a response object. The request object contains information about the HTTP request, including any form data that is submitted (more on this later). There are several ways to return a response object, but the most common way is to use the <tt class="docutils literal"><span class="pre">render()</span></tt> function provided by Django. This function requires three arguments: the request object, the template to be rendered, and the context dictionary.</p>
+<p>Add the following imports to the top of the file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="n">SessionMaker</span><span class="p">,</span> <span class="n">StreamGage</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="3">
-<li>Recall that in the <a class="reference internal" href="view.html"><em>The View and Templating</em></a> tutorial, we added a map <a class="reference internal" href="../glossary.html#term-snippet"><em class="xref std std-term">snippet</em></a> that required <tt class="docutils literal"><span class="pre">c.map_options</span></tt> as input. We&#8217;ll define that variable now. Add the following lines to the <tt class="docutils literal"><span class="pre">index()</span></tt> method of the controller, just before the <tt class="docutils literal"><span class="pre">return</span></tt> statement:</li>
-</ol>
-<div class="highlight-python"><div class="highlight"><pre># Get data for Map
-geojson_gages = StreamGage.get_gages_as_geojson()
+<p>Then add a new controller function called <tt class="docutils literal"><span class="pre">map</span></tt> after the <tt class="docutils literal"><span class="pre">home</span></tt> function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Controller for map page.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Create a session</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">SessionMaker</span><span class="p">()</span>
 
-# Define map options
-c.map_options = {&#39;height&#39;: &#39;500px&#39;,
-                 &#39;width&#39;: &#39;100%&#39;,
-                 &#39;maps_api_key&#39;: &lt;google_maps_api_key&gt;,
-                 &#39;drawing_types_enabled&#39;: [&#39;POLYGONS&#39;, &#39;POINTS&#39;, &#39;POLYLINES&#39;],
-                 &#39;initial_drawing_mode&#39;: &#39;POLYGONS&#39;,
-                 &#39;input_overlays&#39;: geojson_gages}
+    <span class="c"># Query DB for gage objects</span>
+    <span class="n">gages</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">StreamGage</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="c"># Transform into GeoJSON format</span>
+    <span class="n">geometries</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">gage</span> <span class="ow">in</span> <span class="n">gages</span><span class="p">:</span>
+        <span class="n">gage_geometry</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&quot;Point&quot;</span><span class="p">,</span>
+        <span class="n">coordinates</span><span class="o">=</span><span class="p">[</span><span class="n">gage</span><span class="o">.</span><span class="n">latitude</span><span class="p">,</span> <span class="n">gage</span><span class="o">.</span><span class="n">longitude</span><span class="p">],</span>
+                             <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;value&quot;</span><span class="p">:</span> <span class="n">gage</span><span class="o">.</span><span class="n">value</span><span class="p">})</span>
+        <span class="n">geometries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gage_geometry</span><span class="p">)</span>
+
+    <span class="n">geojson_gages</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;GeometryCollection&quot;</span><span class="p">,</span>
+                     <span class="s">&quot;geometries&quot;</span><span class="p">:</span> <span class="n">geometries</span><span class="p">}</span>
+
+    <span class="c"># Configure the map</span>
+    <span class="n">map_options</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;height&#39;</span><span class="p">:</span> <span class="s">&#39;500px&#39;</span><span class="p">,</span>
+                   <span class="s">&#39;width&#39;</span><span class="p">:</span> <span class="s">&#39;100%&#39;</span><span class="p">,</span>
+                   <span class="s">&#39;input_overlays&#39;</span><span class="p">:</span> <span class="n">geojson_gages</span><span class="p">}</span>
+
+    <span class="c"># Pass variables to the template via the context dicitonary</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;map_options&#39;</span><span class="p">:</span> <span class="n">map_options</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">&#39;my_first_app/map.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>First we use the <tt class="docutils literal"><span class="pre">StreamGage.get_gages_as_geojson()</span></tt> class method to retrieve our gage information in GeoJSON format and store it in the <tt class="docutils literal"><span class="pre">geojson_gages</span></tt> variable. Next we define <tt class="docutils literal"><span class="pre">c.map_options</span></tt> to be a dictionary with all the configuration options we wish to use on our map. The <tt class="docutils literal"><span class="pre">geojson_gages</span></tt> variable is given to the map using the <em>input_overlays</em> option.</p>
-<ol class="arabic simple" start="4">
-<li>Finally, replace the <strong>&lt;google_maps_api_key&gt;</strong> with a string of your own Google Maps API key (e.g.: <a class="reference external" href="mailto:'tH1$is&#37;&#52;&#48;fAK3KeY">'tH1$is<span>&#64;</span>fAK3KeY</a>&#8216;). To get a Google Maps API key, follow <a class="reference external" href="https://developers.google.com/maps/documentation/javascript/tutorial#api_key">these</a> instructions. <strong>Please, do not use our API key</strong>.</li>
-<li>Now we need to define the <tt class="docutils literal"><span class="pre">c.stream_gages</span></tt> variable for the table in our template. Add the following lines to the <tt class="docutils literal"><span class="pre">index()</span></tt> method of your controller, just before the <tt class="docutils literal"><span class="pre">return</span></tt> statement:</li>
-</ol>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># Create a session</span>
-<span class="n">session</span> <span class="o">=</span> <span class="n">SessionMaker</span><span class="p">()</span>
-
-<span class="c"># Get data for table</span>
-<span class="n">c</span><span class="o">.</span><span class="n">stream_gages</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">StreamGage</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>First, a <tt class="docutils literal"><span class="pre">session</span></tt> object is created using the <tt class="docutils literal"><span class="pre">SessionMaker</span></tt> from the <tt class="file docutils literal"><span class="pre">stream_gage_model.py</span></tt> file we created in the <tt class="xref doc docutils literal"><span class="pre">./persistent_stores</span></tt> tutorial. Next, we use the SQLAlchemy query language to query our table for all the records. They are returned as a list of <tt class="docutils literal"><span class="pre">StreamGage</span></tt> objects. Our template processes loops through each of the objects and populates the table values with properties of the objects.</p>
-<p>Your <tt class="file docutils literal"><span class="pre">index.py</span></tt> controller should look like this when you are finished:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">ckan.lib.base</span> <span class="kn">import</span> <span class="n">BaseController</span><span class="p">,</span> <span class="n">abort</span>
-<span class="kn">import</span> <span class="nn">ckan.plugins</span> <span class="kn">as</span> <span class="nn">p</span>
-
-<span class="kn">from</span> <span class="nn">ckanext.tethys_apps.lib</span> <span class="kn">import</span> <span class="n">get_app_definition</span>
-
-<span class="kn">from</span> <span class="nn">ckanapp.my_first_app.stream_gage_model</span> <span class="kn">import</span> <span class="n">StreamGage</span><span class="p">,</span> <span class="n">SessionMaker</span>
-
-<span class="k">class</span> <span class="nc">MyFirstAppController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c"># Tools</span>
-        <span class="n">t</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">toolkit</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">c</span>
-        <span class="n">_</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">_</span>
-
-        <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">user</span> <span class="ow">or</span> <span class="n">c</span><span class="o">.</span><span class="n">author</span><span class="p">}</span>
-
-        <span class="c"># Check permissions</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">t</span><span class="o">.</span><span class="n">check_access</span><span class="p">(</span><span class="s">&#39;apps_read&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">t</span><span class="o">.</span><span class="n">NotAuthorized</span><span class="p">:</span>
-            <span class="n">abort</span><span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&#39;Not authorized to see this page&#39;</span><span class="p">))</span>
-
-        <span class="c"># Get App Definition</span>
-        <span class="n">app_definition</span> <span class="o">=</span> <span class="n">get_app_definition</span><span class="p">(</span><span class="s">&#39;my_first_app&#39;</span><span class="p">)</span>
-
-        <span class="n">c</span><span class="o">.</span><span class="n">app_name</span> <span class="o">=</span> <span class="n">app_definition</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">app_index</span> <span class="o">=</span> <span class="n">app_definition</span><span class="p">[</span><span class="s">&#39;index&#39;</span><span class="p">]</span>
-
-        <span class="c"># Get data for Map</span>
-        <span class="n">geojson_gages</span> <span class="o">=</span> <span class="n">StreamGage</span><span class="o">.</span><span class="n">get_gages_as_geojson</span><span class="p">()</span>
-
-        <span class="c"># Define map options</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">map_options</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;height&#39;</span><span class="p">:</span> <span class="s">&#39;500px&#39;</span><span class="p">,</span>
-                         <span class="s">&#39;width&#39;</span><span class="p">:</span> <span class="s">&#39;100%&#39;</span><span class="p">,</span>
-                         <span class="s">&#39;maps_api_key&#39;</span><span class="p">:</span> <span class="s">&#39;AIzaSyB-0nvmHhbOaaiYx6UN36145lWjUq5c2tg&#39;</span><span class="p">,</span>
-                         <span class="s">&#39;drawing_types_enabled&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;POLYGONS&#39;</span><span class="p">,</span> <span class="s">&#39;POINTS&#39;</span><span class="p">,</span> <span class="s">&#39;POLYLINES&#39;</span><span class="p">],</span>
-                         <span class="s">&#39;initial_drawing_mode&#39;</span><span class="p">:</span> <span class="s">&#39;POLYGONS&#39;</span><span class="p">,</span>
-                         <span class="s">&#39;input_overlays&#39;</span><span class="p">:</span> <span class="n">geojson_gages</span><span class="p">}</span>
-
-        <span class="c"># Create a session</span>
-        <span class="n">session</span> <span class="o">=</span> <span class="n">SessionMaker</span><span class="p">()</span>
-
-        <span class="c"># Get data for table</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">stream_gages</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">StreamGage</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-
-        <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s">&#39;my_first_app/index.html&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<ol class="arabic simple" start="6">
-<li>Activate the CKAN Python virtual environment and start the paster server:</li>
-</ol>
-<div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/ckan/default/bin/activate
-$ paster serve --reload /etc/ckan/default/development.ini
-</pre></div>
-</div>
-<ol class="arabic simple" start="7">
-<li>Navigate to <a class="reference external" href="http://localhost:5000/apps">http://localhost:5000/apps</a> Login/create a user if necessary to view the apps library.</li>
-</ol>
-<p>Your app should appear in the Apps library complete with a default image. Click on the app icon to start up the app. Your app has only one page, but you should have a map and a table of values. You can pan and zoom the map and even draw different shapes.</p>
-</div>
-<div class="section" id="controller-tools-reference">
-<h2>Controller Tools Reference<a class="headerlink" href="#controller-tools-reference" title="Permalink to this headline">¶</a></h2>
-<p>There are many tools available to work with in controllers. Some of the most commonly used tools will be summarized here as a reference.</p>
-<div class="section" id="plugins-toolkit">
-<h3>Plugins Toolkit<a class="headerlink" href="#plugins-toolkit" title="Permalink to this headline">¶</a></h3>
-<p>CKAN provides a toolkit for developers who are building extensions for CKAN. This toolkit is also needed to build apps. The toolkit provides safe access to controller utilities like the Pylons <tt class="docutils literal"><span class="pre">request</span></tt> object, the <tt class="docutils literal"><span class="pre">template</span> <span class="pre">context</span></tt> object (c), the <tt class="docutils literal"><span class="pre">render()</span></tt> method, the <tt class="docutils literal"><span class="pre">redirect_to()</span></tt> method, and the <tt class="docutils literal"><span class="pre">get_action()</span></tt> method. The most commonly used tools will be discussed as part of this tutorial. Visit the <a class="reference external" href="http://docs.ckan.org/en/ckan-2.2/extensions/plugins-toolkit.html">Plugins Toolkit</a> docs in the CKAN documentation for more information.</p>
-</div>
-<div class="section" id="template-context">
-<h3>Template Context<a class="headerlink" href="#template-context" title="Permalink to this headline">¶</a></h3>
-<p>The <a class="reference external" href="http://ckan.readthedocs.org/en/ckan-2.2/extensions/plugins-toolkit.html#ckan.plugins.toolkit.c">template context</a> often called <tt class="docutils literal"><span class="pre">c</span></tt> is used to pass variables from the controller to the template. All templates are automatically given access to the <tt class="docutils literal"><span class="pre">c</span></tt> object. Any data that your template needs to render will need to be passed through the template context object. New variables can be assigned to the template context object using dot notation. The template context can be accessed through the toolkit. The following example illustrates how simple variables can be passed to the template:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">ckan.plugins.toolkit</span> <span class="kn">as</span> <span class="nn">t</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">c</span>
-
-<span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;Bill&#39;</span>
-<span class="n">c</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">25</span>
-<span class="n">c</span><span class="o">.</span><span class="n">email_addresses</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;bill@example.com&#39;</span><span class="p">,</span> <span class="s">&#39;b25@email.org&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="request">
-<h3>Request<a class="headerlink" href="#request" title="Permalink to this headline">¶</a></h3>
-<p>The Pylons <a class="reference external" href="http://ckan.readthedocs.org/en/ckan-2.2/extensions/plugins-toolkit.html#ckan.plugins.toolkit.request">request</a> object contains all of the information that is submitted as part of the request including the HTML headers and GET and POST parameters. You will most often use this object to access the information submitted with a form. To access only parameters from a POST request use the <tt class="docutils literal"><span class="pre">request.POST</span></tt> property or for only GET request parameters use the <tt class="docutils literal"><span class="pre">request.GET</span></tt>. If you want all parameters use the <tt class="docutils literal"><span class="pre">request.params</span></tt> property. The parameters are stored in a dictionary, where the keys will match the names of the input elements. Here is a simple example of how that can be done:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">ckan.plugins.toolkit</span> <span class="kn">as</span> <span class="nn">t</span>
-
-<span class="n">params</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">params</span>
-
-<span class="n">name</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s">&#39;name-input&#39;</span><span class="p">]</span>
-<span class="n">age</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s">&#39;age-input&#39;</span><span class="p">]</span>
-<span class="n">email</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s">&#39;email-input&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>The <tt class="docutils literal"><span class="pre">request</span></tt> object also has a property called <tt class="docutils literal"><span class="pre">matchdict</span></tt>. As the name suggests, <tt class="docutils literal"><span class="pre">matchdict</span></tt> is a dictionary and it contains all of the variables derived from the URL. A better explanation of this will be provided in the URL Mapping section.</p>
-</div>
-<div class="section" id="render">
-<h3>Render<a class="headerlink" href="#render" title="Permalink to this headline">¶</a></h3>
-<p>The <a class="reference external" href="http://ckan.readthedocs.org/en/ckan-2.2/extensions/plugins-toolkit.html#ckan.plugins.toolkit.render">render</a> method of the toolkit is used to render the Jinja2 templates. This is most often used as the return value of a controller action. Consider the following example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">ckan.lib.base</span> <span class="kn">import</span> <span class="n">BaseController</span>
-<span class="kn">import</span> <span class="nn">ckan.plugins.toolkit</span> <span class="kn">as</span> <span class="nn">t</span>
-
-<span class="k">class</span> <span class="nc">ExampleController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Example controller</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-
-    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c"># Template Context</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">c</span>
-
-        <span class="c"># Template variables</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;Bill&#39;</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">25</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">email_addresses</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;bill@example.com&#39;</span><span class="p">,</span> <span class="s">&#39;b25@email.org&#39;</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s">&#39;my_first_app/index.html&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This is the class for a controller called &#8220;ExampleController&#8221; with one method called &#8220;index&#8221;. What makes this class a controller is that it inherits from the <tt class="docutils literal"><span class="pre">BaseController</span></tt> class provided by CKAN. The methods of controllers are called actions. Most actions will result in some template being rendered. This is done by using the <tt class="docutils literal"><span class="pre">render()</span></tt> method of the toolkit. The method accepts the path to the template that is to be rendered (relative to your app&#8217;s templates directory).</p>
-</div>
-<div class="section" id="redirect">
-<h3>Redirect<a class="headerlink" href="#redirect" title="Permalink to this headline">¶</a></h3>
-<p>In some cases, you will need to redirect an action to another controller or action. This can be done by using the <tt class="docutils literal"><span class="pre">redirect_to()</span></tt> method as the return value of the action. Pass the name of the controller and any URL variables to the <a class="reference external" href="http://ckan.readthedocs.org/en/ckan-2.2/extensions/plugins-toolkit.html#ckan.plugins.toolkit.redirect_to">redirect_to</a> method. For example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">ckan.lib.base</span> <span class="kn">import</span> <span class="n">BaseController</span>
-<span class="kn">import</span> <span class="nn">ckan.plugins.toolkit</span> <span class="kn">as</span> <span class="nn">t</span>
-
-<span class="k">class</span> <span class="nc">ExampleController</span><span class="p">(</span><span class="n">BaseController</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Example controller</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-
-    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c"># Template Context</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">c</span>
-
-        <span class="c"># Template variables</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;Bill&#39;</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">25</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">email_addresses</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;bill@example.com&#39;</span><span class="p">,</span> <span class="s">&#39;b25@email.org&#39;</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">redirect_to</span><span class="p">(</span><span class="n">controller</span><span class="o">=</span><span class="s">&#39;other_controller&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;view&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="get-action">
-<h3>Get Action<a class="headerlink" href="#get-action" title="Permalink to this headline">¶</a></h3>
-<p>CKAN provides programming API that can be used to interact with datasets and resources called the Actions API. It is divided into four categories based on the type of operation being performed including get, create, update, and delete. For a complete reference refer to the CKAN <a class="reference external" href="http://ckan.readthedocs.org/en/ckan-2.2/api.html#action-api-reference">Actions API reference</a>. Use the <a class="reference external" href="http://ckan.readthedocs.org/en/ckan-2.2/extensions/plugins-toolkit.html#ckan.plugins.toolkit.get_action">get_action</a> method of the toolkit to access these actions like so:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">ckan.plugins.toolkit</span> <span class="kn">as</span> <span class="nn">t</span>
-
-<span class="n">t</span><span class="o">.</span><span class="n">get_action</span><span class="p">(</span><span class="s">&#39;package_create&#39;</span><span class="p">)(</span><span class="n">context</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Most Action API methods accept two parameters: <tt class="docutils literal"><span class="pre">context</span></tt> and <tt class="docutils literal"><span class="pre">data_dict</span></tt>. The <tt class="docutils literal"><span class="pre">context</span></tt> accepts the template context object (<tt class="docutils literal"><span class="pre">c</span></tt>). The <tt class="docutils literal"><span class="pre">data_dict</span></tt> argument accepts a dictionary containing the key-value arguments for the action as specified in the Action API documentation.</p>
-</div>
+<p>The new <tt class="docutils literal"><span class="pre">map</span></tt> controller queries the persistent store for the stream gages, converts the data into a format the map can use (GeoJSON), and configures the map options. Querying is accomplished by creating a session object using the <tt class="docutils literal"><span class="pre">SessionMaker</span></tt> from the <tt class="file docutils literal"><span class="pre">model.py</span></tt> file and using the <cite>query()</cite> method. The result is a list of <tt class="docutils literal"><span class="pre">StreamGage</span></tt> objects representing the records in the database.</p>
+<p>The map is capable of consuming spatial data in a few formats including GeoJSON, so the <tt class="docutils literal"><span class="pre">map</span></tt> controller handles the job of converting the data from the query into GeoJSON format. The result is passed to the <tt class="docutils literal"><span class="pre">map_options</span></tt> dictionary, which provides all the configuration and data for the Gizmo map in the template we created in the last step.</p>
+<p>Next, a context dictionary is defined with all of the variables that you wish to be available for use in the template.</p>
+<p>Finally, the <tt class="docutils literal"><span class="pre">render()</span></tt> function is used to create the response object. It is in the <tt class="docutils literal"><span class="pre">render()</span></tt> function that you specify the template that is to be rendered by the controller. In this case, the <tt class="file docutils literal"><span class="pre">map.html</span></tt> that you created in the last tutorial.</p>
 </div>
 </div>
 

@@ -173,7 +173,7 @@ Now that you know the basics of Django templating, create a new template in your
 
 The :file:`map.html` template inherits from the :file:`base.html` in your templates directory. It also overrides the ``app_content``, `app_actions``, and ``scripts`` blocks. The ``url`` tag is used to provide a link back to the home page of the app in the ``app_actions`` block.
 
-The map is inserted into the ``app_content`` block using one of the Tethys Gizmos called ``editable_google_map``. Gizmos are an easy way to insert common user interface elements in to your templates with minimal code. The map is configured via a dictionary called ``map_options``, which will be discussed more in the :doc:`./controller` tutorial. For more information on Gizmos, refer to the :doc:`../tethys_api/gizmos` documentation.
+The map is inserted into the ``app_content`` block using one of the Tethys Gizmos called ``editable_google_map``. Gizmos are an easy way to insert common user interface elements in to your templates with minimal code. The map is configured via a dictionary called ``map_options``, which is defined in the controller. This will be discussed in the next tutorial. For more information on Gizmos, refer to the :doc:`../tethys_api/gizmos` documentation.
 
 Public Files and Resources
 ==========================
