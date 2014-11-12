@@ -83,7 +83,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="getting_started/scaffold.html">Create a New Tethys App Project</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/persistent_stores.html">The Model and Persistent Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/model.html">The Model and Persistent Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting_started/view.html">The View and Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting_started/controller.html">Working with the Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting_started/url_mapping.html">URL Mapping</a></li>
@@ -94,7 +94,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tethys_api.html">Tethys Software Development Kit</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tethys_api/dataset_services.html">Dataset Services API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/spatial_database.html">Persistent Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_api/persistent_store.html">Persistent Stores API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_api/geoprocessing.html">Geoprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_api/visualizing.html">Data Visualization</a></li>
@@ -156,8 +156,10 @@
 <dd>A dataset is a container for one or more resources that are stored in a <a class="reference internal" href="#term-dataset-service"><em class="xref std std-term">dataset service</em></a>.</dd>
 <dt id="term-dataset-service"><span id="term-dataset-services"></span>dataset service<br />dataset services</dt>
 <dd>A dataset service is a web service external to Tethys Platform that can be used to store and publish file-based datasets (e.g.: text files, Excel files, zip archives, other model files).</dd>
+<dt id="term-model-view-controller">Model View Controller</dt>
+<dd>The development pattern used to develop Tethys apps. The Model represents the data of the app, the View is composed of the representation of the data, and the Controller consists of the logic needed to prepare the data from the Model for the View and any other logic your app needs.</dd>
 <dt id="term-persistent-store"><span id="term-persistent-stores"></span>persistent store<br />persistent stores</dt>
-<dd>A persistent store is a database that can be automatically created for an app. See <a class="reference internal" href="getting_started/persistent_stores.html"><em>The Model and Persistent Stores</em></a> for more information about persistent stores.</dd>
+<dd>A persistent store is a database that can be automatically created for an app. See <a class="reference internal" href="getting_started/model.html"><em>The Model and Persistent Stores</em></a> for more information about persistent stores.</dd>
 <dt id="term-release-package">release package</dt>
 <dd>The top level Python namespace package of an <a class="reference internal" href="#term-app-project"><em class="xref std std-term">app project</em></a>. The release package contains the <a class="reference internal" href="#term-setup-script"><em class="xref std std-term">setup script</em></a> and all the source for an app including the <a class="reference internal" href="#term-app-package"><em class="xref std std-term">app package</em></a>. Refer to Figure 1 of <a class="reference internal" href="app_project.html"><em>App Project Structure</em></a> for more information.</dd>
 <dt id="term-resource"><span id="term-resources"></span>resource<br />resources</dt>

@@ -30,7 +30,7 @@
   
     <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html"/>
         <link rel="up" title="Getting Started" href="../getting_started.html"/>
-        <link rel="next" title="The Model and Persistent Stores" href="persistent_stores.html"/>
+        <link rel="next" title="The Model and Persistent Stores" href="model.html"/>
         <link rel="prev" title="Getting Started" href="../getting_started.html"/> 
 
   
@@ -85,7 +85,7 @@
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../getting_started.html">Getting Started</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="">Create a New Tethys App Project</a></li>
-<li class="toctree-l2"><a class="reference internal" href="persistent_stores.html">The Model and Persistent Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html">The Model and Persistent Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="view.html">The View and Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="controller.html">Working with the Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="url_mapping.html">URL Mapping</a></li>
@@ -96,7 +96,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tethys_api.html">Tethys Software Development Kit</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/dataset_services.html">Dataset Services API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/spatial_database.html">Persistent Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_api/persistent_store.html">Persistent Stores API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/geoprocessing.html">Geoprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/visualizing.html">Data Visualization</a></li>
@@ -191,8 +191,14 @@ because there is only one page. Familiarize yourself with different parts of the
 <a class="reference internal image-reference" href="../_images/app_controls.png"><img alt="../_images/app_controls.png" src="../_images/app_controls.png" style="width: 650px;" /></a>
 <p class="caption"><strong>Figure 1.</strong> Tethys app interface: (1) app navigation toggle, (2) exit button, (3) app navigation, (4) actions, and (5) app content.</p>
 </div>
-<p>In the next few tutorials, we&#8217;ll introduce how the Model View Controller (MVC) development paradigm that is used to
-develop Tethys apps.</p>
+</div>
+<div class="section" id="model-view-controller">
+<h2>Model View Controller<a class="headerlink" href="#model-view-controller" title="Permalink to this headline">¶</a></h2>
+<p>Tethys apps are developed using the <a class="reference internal" href="../glossary.html#term-model-view-controller"><em class="xref std std-term">Model View Controller</em></a> (MVC) development pattern. Following the MVC pattern will make
+your app project easier to develop and manage in the future. Most of the code in your app will fall into one of the
+three MVC categories. The Model represents the data of your app, the View is composed of the representation of the data,
+and the Controller consists of the logic to prepare the data for the view and any other logic your app needs. In the next
+few tutorials, we&#8217;ll introduce how the MVC development paradigm is used to develop Tethys apps.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
 <p class="last">To stop the development server press <tt class="kbd docutils literal"><span class="pre">CTRL-C</span></tt>.</p>
@@ -206,7 +212,7 @@ develop Tethys apps.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="persistent_stores.html" class="btn btn-neutral float-right" title="The Model and Persistent Stores">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="model.html" class="btn btn-neutral float-right" title="The Model and Persistent Stores">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../getting_started.html" class="btn btn-neutral" title="Getting Started"><span class="fa fa-arrow-circle-left"></span> Previous</a>

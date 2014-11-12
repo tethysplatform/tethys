@@ -37,7 +37,7 @@ Glossary
 
     persistent store
     persistent stores
-        A persistent store is a database that can be automatically created for an app. See :doc:`./getting_started/persistent_stores` for more information about persistent stores.
+        A persistent store is a database that can be automatically created for an app. See :doc:`./getting_started/model` for more information about persistent stores.
 
     resource
     resources
@@ -54,3 +54,6 @@ Glossary
     virtual environment
     Python virtual environment
         An isolated Python installation. Many operating systems use the system Python installation to perform maintenance operations. Installing Tethys Platform in a virtual environment prevents potential dependency conflicts.
+
+    Model View Controller
+        The development pattern used to develop Tethys apps. The Model represents the data of the app, the View is composed of the representation of the data, and the Controller consists of the logic needed to prepare the data from the Model for the View and any other logic your app needs.

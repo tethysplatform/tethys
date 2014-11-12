@@ -84,8 +84,8 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../getting_started.html">Getting Started</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="scaffold.html">Generate New App with Scaffold</a></li>
-<li class="toctree-l2"><a class="reference internal" href="persistent_stores.html">The Model and Persistent Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scaffold.html">Create a New Tethys App Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html">The Model and Persistent Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="view.html">The View and Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="controller.html">Working with the Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="url_mapping.html">URL Mapping</a></li>
@@ -96,7 +96,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tethys_api.html">Tethys Software Development Kit</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/dataset_services.html">Dataset Services API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/spatial_database.html">Persistent Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_api/persistent_store.html">Persistent Stores API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/geoprocessing.html">Geoprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/visualizing.html">Data Visualization</a></li>
@@ -285,7 +285,7 @@
 </div>
 <div class="section" id="database-provisioning-function-section">
 <h3>Database Provisioning Function Section<a class="headerlink" href="#database-provisioning-function-section" title="Permalink to this headline">¶</a></h3>
-<p>The final section of the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> is a call to the <tt class="docutils literal"><span class="pre">provision_persisnent_stores()</span></tt> function. This function automatically creates any databases that you have requeseted in the <a class="reference internal" href="../glossary.html#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a> (<tt class="file docutils literal"><span class="pre">app.py</span></tt>) using the <tt class="docutils literal"><span class="pre">registerPersistentStores()</span></tt> method. There should be no need to modify this section of the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a>, but it could be helpful to know that this exists. For more information on automatic database provisioning, see <a class="reference internal" href="persistent_stores.html"><em>The Model and Persistent Stores</em></a>.</p>
+<p>The final section of the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> is a call to the <tt class="docutils literal"><span class="pre">provision_persisnent_stores()</span></tt> function. This function automatically creates any databases that you have requeseted in the <a class="reference internal" href="../glossary.html#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a> (<tt class="file docutils literal"><span class="pre">app.py</span></tt>) using the <tt class="docutils literal"><span class="pre">registerPersistentStores()</span></tt> method. There should be no need to modify this section of the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a>, but it could be helpful to know that this exists. For more information on automatic database provisioning, see <tt class="xref doc docutils literal"><span class="pre">persistent_stores</span></tt>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># Provision tethys databases for app</span>
 <span class="n">provision_persistent_stores</span><span class="p">(</span><span class="n">app_class</span><span class="p">)</span>
 </pre></div>

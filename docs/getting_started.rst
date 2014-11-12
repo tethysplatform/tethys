@@ -11,7 +11,7 @@ If you have not already installed Tethys Platform, follow the :doc:`./installati
    :maxdepth: 2
    
    getting_started/scaffold
-   getting_started/persistent_stores
+   getting_started/model
    getting_started/view
    getting_started/controller
    getting_started/url_mapping

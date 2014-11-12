@@ -63,8 +63,14 @@ because there is only one page. Familiarize yourself with different parts of the
 
     **Figure 1.** Tethys app interface: (1) app navigation toggle, (2) exit button, (3) app navigation, (4) actions, and (5) app content.
 
-In the next few tutorials, we'll introduce how the Model View Controller (MVC) development paradigm that is used to
-develop Tethys apps.
+Model View Controller
+=====================
+
+Tethys apps are developed using the :term:`Model View Controller` (MVC) development pattern. Following the MVC pattern will make
+your app project easier to develop and manage in the future. Most of the code in your app will fall into one of the
+three MVC categories. The Model represents the data of your app, the View is composed of the representation of the data,
+and the Controller consists of the logic to prepare the data for the view and any other logic your app needs. In the next
+few tutorials, we'll introduce how the MVC development paradigm is used to develop Tethys apps.
 
 .. tip::
 

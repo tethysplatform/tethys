@@ -84,8 +84,8 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../getting_started.html">Getting Started</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="scaffold.html">Generate New App with Scaffold</a></li>
-<li class="toctree-l2"><a class="reference internal" href="persistent_stores.html">The Model and Persistent Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scaffold.html">Create a New Tethys App Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html">The Model and Persistent Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="view.html">The View and Templating</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">Working with the Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="url_mapping.html">URL Mapping</a></li>
@@ -96,7 +96,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tethys_api.html">Tethys Software Development Kit</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/dataset_services.html">Dataset Services API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/spatial_database.html">Persistent Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_api/persistent_store.html">Persistent Stores API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/geoprocessing.html">Geoprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/visualizing.html">Data Visualization</a></li>
@@ -147,13 +147,13 @@
 <p>The Controller component of MVC will be discussed in this part of the tutorial. The job of the controller is to coordinate between the View and the Model. Often this means querying a database and transforming the data to a format that the view expects it to be in. The Controller also handles most of the application logic such as processing and validating form data or launching model runs. In Tethys Apps, controllers are created as Python classes using the Pylons web framework. In this tutorial we will retrive the data from our stream gage model and then pass it to the template for visualizing.</p>
 <div class="section" id="query-persitent-store">
 <h2>Query Persitent Store<a class="headerlink" href="#query-persitent-store" title="Permalink to this headline">¶</a></h2>
-<p>If you recall, in the <a class="reference internal" href="persistent_stores.html"><em>The Model and Persistent Stores</em></a> tutorial we created an SQLAlchemy data model to store information about our stream gages. We also created an initialization script that loaded some dummy data into our database. We will now add some logic to our controller to retrive this data:</p>
+<p>If you recall, in the <tt class="xref doc docutils literal"><span class="pre">./persistent_stores</span></tt> tutorial we created an SQLAlchemy data model to store information about our stream gages. We also created an initialization script that loaded some dummy data into our database. We will now add some logic to our controller to retrive this data:</p>
 <ol class="arabic simple">
 <li>Open your <tt class="file docutils literal"><span class="pre">index.py</span></tt> controller (<tt class="file docutils literal"><span class="pre">~/tethysdev/ckanapp-my_first_app/ckanapp/my_first_app/controllers/index.py</span></tt>).</li>
 </ol>
 <p>There should be a class called <tt class="docutils literal"><span class="pre">MyFirstAppController</span></tt> that has one method called <tt class="docutils literal"><span class="pre">index()</span></tt>. Notice that <tt class="docutils literal"><span class="pre">MyFirstAppController</span></tt> inherits from the <tt class="docutils literal"><span class="pre">BaseController</span></tt> class. This is what makes this class a controller. The <tt class="docutils literal"><span class="pre">index()</span></tt> method is the controller that renders the <tt class="file docutils literal"><span class="pre">index.html</span></tt> template that we worked on in the <a class="reference internal" href="view.html"><em>The View and Templating</em></a> tutorial.</p>
 <ol class="arabic simple" start="2">
-<li>To retrieve the data from our data model, we need to import the <tt class="docutils literal"><span class="pre">StreamGage</span></tt> class from the <tt class="file docutils literal"><span class="pre">stream_gage_model.py</span></tt> file that we created in the <a class="reference internal" href="persistent_stores.html"><em>The Model and Persistent Stores</em></a> tutorial. Add the following line at the end of your import statements, just before the class definition:</li>
+<li>To retrieve the data from our data model, we need to import the <tt class="docutils literal"><span class="pre">StreamGage</span></tt> class from the <tt class="file docutils literal"><span class="pre">stream_gage_model.py</span></tt> file that we created in the <tt class="xref doc docutils literal"><span class="pre">./persistent_stores</span></tt> tutorial. Add the following line at the end of your import statements, just before the class definition:</li>
 </ol>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">ckanapp.my_first_app.stream_gage_model</span> <span class="kn">import</span> <span class="n">StreamGage</span><span class="p">,</span> <span class="n">SessionMaker</span>
 </pre></div>
@@ -185,7 +185,7 @@ c.map_options = {&#39;height&#39;: &#39;500px&#39;,
 <span class="n">c</span><span class="o">.</span><span class="n">stream_gages</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">StreamGage</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>First, a <tt class="docutils literal"><span class="pre">session</span></tt> object is created using the <tt class="docutils literal"><span class="pre">SessionMaker</span></tt> from the <tt class="file docutils literal"><span class="pre">stream_gage_model.py</span></tt> file we created in the <a class="reference internal" href="persistent_stores.html"><em>The Model and Persistent Stores</em></a> tutorial. Next, we use the SQLAlchemy query language to query our table for all the records. They are returned as a list of <tt class="docutils literal"><span class="pre">StreamGage</span></tt> objects. Our template processes loops through each of the objects and populates the table values with properties of the objects.</p>
+<p>First, a <tt class="docutils literal"><span class="pre">session</span></tt> object is created using the <tt class="docutils literal"><span class="pre">SessionMaker</span></tt> from the <tt class="file docutils literal"><span class="pre">stream_gage_model.py</span></tt> file we created in the <tt class="xref doc docutils literal"><span class="pre">./persistent_stores</span></tt> tutorial. Next, we use the SQLAlchemy query language to query our table for all the records. They are returned as a list of <tt class="docutils literal"><span class="pre">StreamGage</span></tt> objects. Our template processes loops through each of the objects and populates the table values with properties of the objects.</p>
 <p>Your <tt class="file docutils literal"><span class="pre">index.py</span></tt> controller should look like this when you are finished:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">ckan.lib.base</span> <span class="kn">import</span> <span class="n">BaseController</span><span class="p">,</span> <span class="n">abort</span>
 <span class="kn">import</span> <span class="nn">ckan.plugins</span> <span class="kn">as</span> <span class="nn">p</span>
