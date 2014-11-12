@@ -2,35 +2,73 @@
 The Model and Persistent Stores
 *******************************
 
-**Last Updated:** June 4, 2014
+**Last Updated:** November 11, 2014
 
-In the last step, you generated a new Tethys App using the scaffold template. In this part of the tutorial we'll explore the Model aspect of MVC. We'll show you how to use SQLAlchemy to create a simple database model, initialize the database, and run simple queries.
+In this part of the tutorial you'll learn about the Model component of MVC. The Model represents the data of your app
+and the code used to manage it. The data of your app can take many forms. It can be generated on-the-fly and stored in
+Python data structures (e.g.: lists, dictionaries, and NumPy arrays), stored in databases, or contained in files via
+a dataset service.
 
-The Model component of MVC represents the data management of your app. Data for your app can be stored in Python data structures (e.g.: lists, dictionaries, and NumPy arrays), databases, CKAN datasets, or in files (e.g. plain text or csv). There are many Python libraries available for interacting with databases and the built in Python IO modules can be used to work with files.
-
-In this tutorial we will work with an SQL database object relational mapper (ORM) called `SQLAlchemy <http://www.sqlalchemy.org/>`_. SQLAlchemy allows developers to interface with SQL databases using an object oriented approach. It can interface with nearly any SQL database. To learn more about SQLAlchemy, we recommend `this <http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html>`_ tutorial to get a good overview.
-
-As of version 0.3 of the Tethys Apps plugin, developers are now able to request :term:`persistent stores` (databases) that are automatically created and initialized during the app installation process.In this tutorial, you'll use one of these persistent stores as the database for your app.
-
-If your app was generated using the app scaffold prior to version 0.3 of the Tethys Apps plugin, you may need to add a few lines of code to your :term:`app configuration file` (:file:`app.py`). and your :term:`setup script` (:file:`setup.py`) to enable the automatic :term:`persistent store` provisioning feature. See :ref:`enable-persistent-store-legacy-apps` on how to do this. The following tutorial will walk you through the steps of creating a new persistent store, creating an SQLAlchemy data model, and intializing the persistent store.
+In this tutorial you will learn how to use the `SQLAlchemy <http://www.sqlalchemy.org/>`_ object relational mapper
+(ORM). You will also use the :doc:`../tethys_api/persistent_store` to create a spatially enabled database for your app.
 
 Register a Persistent Store
 ===========================
 
-The first step in working with persistent stores is to register a new persistent store. This is done in the :term:`app configuration file`. Open the :term:`app configuration file` for your app (:file:`~/tethysdev/ckanapp-my_first_app/ckanapp/my_first_app/app.py`). To register a new persistent store we need to add an entry to the ``registerPersistentStores()`` method of your :term:`app class`. Lets create a persistent store for storing information about stream gages. Modify the ``registerPersistentStores()`` method so it looks like this:
+To register a new persistent store add the ``persistent_stores()`` method of your :term:`app class`, which is located
+in your :term:`app configuration file`. Open the app configuration file for your app
+(located at :file:`~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/app.py`). The ``persistent_stores()`` method
+must return a list or tuple of ``PersistentStore`` objects. Import the ``PersistentStore`` objects and add the
+``persistent_stores()`` method to your app class as follows:
 
 ::
 
-    def registerPersistentStores(self, persistentStores):
-        '''
-        Add one or more persistent stores
-        '''
-        persistentStores.addPersistentStore('stream_gage_db')
+    from tethys_apps.base import TethysAppBase, app_controller_maker
+    from tethys_apps.base import PersistentStore
 
-The ``addPersistentStore()`` method accepts the name of the persistent store as the only argument. In this case we will call our persistent store "stream_gage_db".
+
+    class MyFirstApp(TethysAppBase):
+        """
+        Tethys App Class for My First App.
+        """
+
+        ...
+
+        def persistent_stores(self):
+            """
+            Add one or more persistent stores
+            """
+            stores = (PersistentStore(name='stream_gage_db',
+                                      initializer='init_stores:init_stream_gage_db',
+                                      spatial=True
+                    ),
+            )
+
+            return stores
+
+
+
+A persistent store will be created for each ``PersistentStore`` object that is returned by the ``persistent_stores()``
+method. In this case, your app will have a persistent store named "stream_gage_db". The ``initializer`` argument
+refers to a function that will be called to initialize the persistent store. This will be discussed after the data model
+has been created. The ``spatial`` argument can be used to add spatial capabilities to your persistent store. All
+persistent stores are PostgreSQL databases and the spatial functionality is provided by the PostGIS extension.
+
+.. note::
+
+    Read more about persistent stores in the :doc:`../tethys_api/persistent_store` documentation.
 
 Create SQLAlchemy Model
 =======================
+
+SQLAlchemy allows developers to interact with SQL databases using an object oriented approach and it is capable
+of interfacing with all of the major SQL databases. To learn more about SQLAlchemy ORM, we recommend
+`this <http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html>`_ tutorial to get a good overview.
+
+ The Tethys SDK provides SQLAlchemy as a means
+of data models for your apps. SQLAlchemy provide an Object Relational Mapper (ORM) that allows you to create data models
+using Python code and issue queries using an object-oriented approach. In other words, you are able to harness the power
+of SQL databases without writing SQL (although, if you really want to use straight SQL, you are able to do that as well).
 
 After we have registered our persistent store, we need to create a data model for the tables that will be store our data. For this tutorial we will do this using SQLAlchemy.
 
