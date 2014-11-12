@@ -2,7 +2,7 @@
 The Model and Persistent Stores
 *******************************
 
-**Last Updated:** November 11, 2014
+**Last Updated:** November 12, 2014
 
 In this part of the tutorial you'll learn about the Model component of MVC development for Tethys apps. The Model represents the data of your app and the code used to manage it. The data of your app can take many forms. It can be generated on-the-fly and stored in Python data structures (e.g.: lists, dictionaries, and NumPy arrays), stored in databases, or contained in files via a :term:`dataset service`.
 

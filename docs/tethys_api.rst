@@ -14,6 +14,7 @@ is included in the SDK:
    
    tethys_api/dataset_services
    tethys_api/persistent_store
+   tethys_api/gizmos
    tethys_api/spatial_publishing
    tethys_api/geoprocessing
    tethys_api/visualizing
