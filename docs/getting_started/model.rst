@@ -2,7 +2,7 @@
 The Model and Persistent Stores
 *******************************
 
-**Last Updated:** November 12, 2014
+**Last Updated:** November 13, 2014
 
 In this part of the tutorial you'll learn about the Model component of MVC development for Tethys apps. The Model represents the data of your app and the code used to manage it. The data of your app can take many forms. It can be generated on-the-fly and stored in Python data structures (e.g.: lists, dictionaries, and NumPy arrays), stored in databases, or contained in files via a :term:`dataset service`.
 
@@ -13,7 +13,7 @@ Register a Persistent Store
 
 To register a new :term:`persistent store` database add the ``persistent_stores()`` method to your :term:`app class`, which is located in your :term:`app configuration file`. This method must return a list or tuple of ``PersistentStore`` objects.
 
-Open the app configuration file for your app located at :file:`~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/app.py`. Import the ``PersistentStore`` object at the top and add the ``persistent_stores()`` method to your app class as follows:
+Open the app configuration file for your app located at :file:`my_first_app/app.py` in your favorite text editor. Import the ``PersistentStore`` object at the top and add the ``persistent_stores()`` method to your app class as follows:
 
 ::
 
@@ -53,7 +53,7 @@ Create an SQLAlchemy Data Model
 
 SQLAlchemy provides an Object Relational Mapper (ORM) that allows you to create data models using Python code and issue queries using an object-oriented approach. In other words, you are able to harness the power of SQL databases without writing SQL. As a primer to SQLAlchemy ORM, we highly recommend you complete the `Object Relational Tutorial <http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html>`_.
 
-You will use SQLAlchemy to create a data model for the tables that will store the data for your app. Open the :file:`model.py` file located at :file:`~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/model.py`.
+You will use SQLAlchemy to create a data model for the tables that will store the data for your app. Open the :file:`model.py` file located at :file:`my_first_app/model.py` in a text editor.
 
 First, add the following import statements to your :file:`model.py` file:
 
@@ -110,7 +110,7 @@ Create an Initialization Function
 
 Now that you have created a data model, the next step is to write a database initialization function. This function will be called during the initialization phase of your persistent store database and will be used to create the tables in your database and add any initial data that you may need in the database for your app to work.
 
-Open the :file:`init_stores.py` file located at :file:`~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/init_stores.py`. Import the ``engine``, ``SessionMaker``, ``Base``, and ``StreamGage`` from your data model::
+Open the :file:`my_first_app/init_stores.py` in a text editor. Import the ``engine``, ``SessionMaker``, ``Base``, and ``StreamGage`` from your data model::
 
     from .model import engine, SessionMaker, Base, StreamGage
 

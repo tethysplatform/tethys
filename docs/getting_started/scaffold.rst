@@ -2,7 +2,7 @@
 Create a New Tethys App Project
 *******************************
 
-**Last Updated:** November 11, 2014
+**Last Updated:** November 13, 2014
 
 Tethys Platform provides a scaffold for generating new app projects. The scaffold generates a Tethys app project with
 the minimum files and the file structure that is required (see :doc:`../app_project`). This section of the tutorial will
@@ -75,3 +75,24 @@ few tutorials, we'll introduce how the MVC development paradigm is used to devel
 .. tip::
 
     To stop the development server press :kbd:`CTRL-C`.
+
+App Project Paths
+=================
+
+Throughout the tutorial, you will be asked to open various files. All of the files will be located in your :term:`app package` directory which shares the name of your app: "my_first_app". If you generated your scaffold exactly as above, this directory would be located at the following path:
+
+::
+
+    # Absolute Path to App Package Directory
+    ~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/
+
+For convenience, all paths in the following tutorials will be given as relative to the :term:`app package` directory. For example:
+
+::
+
+    # Relative App Package Directory Notation
+    my_first_app/controllers.py
+
+.. tip::
+
+    The tilde (~) in unix/linux style paths is shorthand for your :file:`Home` directory. The shorthand is used because the path to the home directory varies depending on your user name (e.g.: if your user name was "john", then the absolute path to your home directory would be :file:`/home/john`).
