@@ -11,12 +11,12 @@ Templating
 
 The Django template language is a simple, but powerful templating language. This section will provide a crash course in Django template language basics, but we highly recommend a review of the `Django Template Language <https://docs.djangoproject.com/en/1.7/topics/templates/>`_ documentation.
 
-Browse to the your templates directory located at :file:`~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/templates/my_first_app`. By convention, all the templates for your app should be stored in a directory with the same name of your :term:`app package` inside the templates directory (e.g.: :file:`templates/my_first_app`). This will prevent potential conflicts with the templates of other apps. You will find two templates in this directory: :file:`base.html` and :file:`home.html`. Refer to these templates as different the Django template concepts are introduced.
+Browse to the your templates directory located at :file:`my_first_app/templates/my_first_app/`. By convention, all the templates for your app should be stored in a directory with the same name of your :term:`app package` inside the templates directory (e.g.: :file:`templates/my_first_app`). This will prevent potential conflicts with the templates of other apps. You will find two templates in this directory: :file:`base.html` and :file:`home.html`. Refer to these templates as different the Django template concepts are introduced.
 
 Variables
 ---------
 
-In Django templates, variables are denoted by double curly brace syntax: ``{{ variable }}``. The variable expression will be replaced by the value of the variable. Dot notation can be used access attributes of a variable: ``{{ variable.attribute }}. For a more detailed explanation of variables, see `Django template Variables <https://docs.djangoproject.com/en/1.7/topics/templates/#variables>`_ documentation.
+In Django templates, variables are denoted by double curly brace syntax: ``{{ variable }}``. The variable expression will be replaced by the value of the variable. Dot notation can be used access attributes of a variable: ``{{ variable.attribute }}``. For a more detailed explanation of variables, see `Django template Variables <https://docs.djangoproject.com/en/1.7/topics/templates/#variables>`_ documentation.
 
 ::
 
@@ -35,7 +35,7 @@ In Django templates, variables are denoted by double curly brace syntax: ``{{ va
 Filters
 -------
 
-Variables can be modified by filters which look like this: ``{{ variable|filter:argument1 }}``. Refer to the `Django Filter Reference <https://docs.djangoproject.com/en/1.7/ref/templates/builtins/#ref-templates-builtins-filters>`_ for a full list of the filters available.
+Variables can be modified by filters which look like this: ``{{ variable|filter:argument }}``. Refer to the `Django Filter Reference <https://docs.djangoproject.com/en/1.7/ref/templates/builtins/#ref-templates-builtins-filters>`_ for a full list of the filters available.
 
 Tags
 ----
@@ -149,7 +149,7 @@ Use the ``app_content`` block to add content to your template.
 Make a New Template
 ===================
 
-Now that you know the basics of Django templating, create a new template in your templates directory (:file:`~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/templates/my_first_app/) and name it :file:`map.html`. Open this file and copy and paste the following code into it:
+Now that you know the basics of Django templating, create a new template in your templates directory (:file:`my_first_app/templates/my_first_app/`) and name it :file:`map.html`. Open this file and copy and paste the following code into it:
 
 ::
 
