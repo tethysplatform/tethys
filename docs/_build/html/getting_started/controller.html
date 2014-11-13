@@ -89,6 +89,7 @@
 <li class="toctree-l2"><a class="reference internal" href="view.html">The View and Templating</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">Working with the Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="url_mapping.html">URL Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mvc_review.html">MVC Review</a></li>
 <li class="toctree-l2"><a class="reference internal" href="forms.html">Working with Form Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuring Apps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="distribution.html">Distributing Apps</a></li>
@@ -144,12 +145,12 @@
             
   <div class="section" id="working-with-the-controller">
 <h1>Working with the Controller<a class="headerlink" href="#working-with-the-controller" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> November 12, 2014</p>
+<p><strong>Last Updated:</strong> November 13, 2014</p>
 <p>The Controller component of MVC will be discussed in this part of the tutorial. The job of the controller is to coordinate between the View and the Model. Often this means querying a database and transforming the data to a format that the view expects it to be in. The Controller also handles most of the application logic such as processing and validating form data or launching model runs. In a Tethys app, controllers are simple Python functions. In this tutorial you will retrieve the data from your stream gage model and then pass it to the template that you created in the previous step.</p>
 <div class="section" id="make-a-new-controller">
 <h2>Make a New Controller<a class="headerlink" href="#make-a-new-controller" title="Permalink to this headline">¶</a></h2>
-<p>Recall that in the <tt class="xref doc docutils literal"><span class="pre">./persistent_stores</span></tt> tutorial you created an SQLAlchemy data model to store information about stream gages. You also created an initialization function that loaded some dummy data into your database. You will now add some logic to your controller to retrieve this data and pass it to the template.</p>
-<p>Open your <tt class="file docutils literal"><span class="pre">controllers.py</span></tt> file located at <tt class="file docutils literal"><span class="pre">~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/controllers/controllers.py</span></tt>. This file should contain a function called <tt class="docutils literal"><span class="pre">home</span></tt>. This function is the controller for the home page of your app. All controller functions must accept a request object and they must return a response object. The request object contains information about the HTTP request, including any form data that is submitted (more on this later). There are several ways to return a response object, but the most common way is to use the <tt class="docutils literal"><span class="pre">render()</span></tt> function provided by Django. This function requires three arguments: the request object, the template to be rendered, and the context dictionary.</p>
+<p>Recall that in the :doc:`` tutorial you created an SQLAlchemy data model to store information about stream gages. You also created an initialization function that loaded some dummy data into your database. You will now add some logic to your controller to retrieve this data and pass it to the template.</p>
+<p>Open your <tt class="file docutils literal"><span class="pre">controllers.py</span></tt> file located at <tt class="file docutils literal"><span class="pre">my_first_app/controllers.py</span></tt>. This file should contain a function called <tt class="docutils literal"><span class="pre">home</span></tt>. This function is the controller for the home page of your app. All controller functions must accept a request object and they must return a response object. The request object contains information about the HTTP request, including any form data that is submitted (more on this later). There are several ways to return a response object, but the most common way is to use the <tt class="docutils literal"><span class="pre">render()</span></tt> function provided by Django. This function requires three arguments: the request object, the template to be rendered, and the context dictionary.</p>
 <p>Add the following imports to the top of the file:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="n">SessionMaker</span><span class="p">,</span> <span class="n">StreamGage</span>
 </pre></div>

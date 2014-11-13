@@ -89,6 +89,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="">The View and Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="controller.html">Working with the Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="url_mapping.html">URL Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mvc_review.html">MVC Review</a></li>
 <li class="toctree-l2"><a class="reference internal" href="forms.html">Working with Form Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuring Apps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="distribution.html">Distributing Apps</a></li>
@@ -149,10 +150,10 @@
 <div class="section" id="templating">
 <h2>Templating<a class="headerlink" href="#templating" title="Permalink to this headline">¶</a></h2>
 <p>The Django template language is a simple, but powerful templating language. This section will provide a crash course in Django template language basics, but we highly recommend a review of the <a class="reference external" href="https://docs.djangoproject.com/en/1.7/topics/templates/">Django Template Language</a> documentation.</p>
-<p>Browse to the your templates directory located at <tt class="file docutils literal"><span class="pre">~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/templates/my_first_app</span></tt>. By convention, all the templates for your app should be stored in a directory with the same name of your <a class="reference internal" href="../glossary.html#term-app-package"><em class="xref std std-term">app package</em></a> inside the templates directory (e.g.: <tt class="file docutils literal"><span class="pre">templates/my_first_app</span></tt>). This will prevent potential conflicts with the templates of other apps. You will find two templates in this directory: <tt class="file docutils literal"><span class="pre">base.html</span></tt> and <tt class="file docutils literal"><span class="pre">home.html</span></tt>. Refer to these templates as different the Django template concepts are introduced.</p>
+<p>Browse to the your templates directory located at <tt class="file docutils literal"><span class="pre">my_first_app/templates/my_first_app/</span></tt>. By convention, all the templates for your app should be stored in a directory with the same name of your <a class="reference internal" href="../glossary.html#term-app-package"><em class="xref std std-term">app package</em></a> inside the templates directory (e.g.: <tt class="file docutils literal"><span class="pre">templates/my_first_app</span></tt>). This will prevent potential conflicts with the templates of other apps. You will find two templates in this directory: <tt class="file docutils literal"><span class="pre">base.html</span></tt> and <tt class="file docutils literal"><span class="pre">home.html</span></tt>. Refer to these templates as different the Django template concepts are introduced.</p>
 <div class="section" id="variables">
 <h3>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h3>
-<p>In Django templates, variables are denoted by double curly brace syntax: <tt class="docutils literal"><span class="pre">{{</span> <span class="pre">variable</span> <span class="pre">}}</span></tt>. The variable expression will be replaced by the value of the variable. Dot notation can be used access attributes of a variable: <a href="#id1"><span class="problematic" id="id2">``</span></a>{{ variable.attribute }}. For a more detailed explanation of variables, see <a class="reference external" href="https://docs.djangoproject.com/en/1.7/topics/templates/#variables">Django template Variables</a> documentation.</p>
+<p>In Django templates, variables are denoted by double curly brace syntax: <tt class="docutils literal"><span class="pre">{{</span> <span class="pre">variable</span> <span class="pre">}}</span></tt>. The variable expression will be replaced by the value of the variable. Dot notation can be used access attributes of a variable: <tt class="docutils literal"><span class="pre">{{</span> <span class="pre">variable.attribute</span> <span class="pre">}}</span></tt>. For a more detailed explanation of variables, see <a class="reference external" href="https://docs.djangoproject.com/en/1.7/topics/templates/#variables">Django template Variables</a> documentation.</p>
 <div class="highlight-python"><div class="highlight"><pre># Examples of Django template variable syntax
 {{ variable }}
 
@@ -169,7 +170,7 @@
 </div>
 <div class="section" id="filters">
 <h3>Filters<a class="headerlink" href="#filters" title="Permalink to this headline">¶</a></h3>
-<p>Variables can be modified by filters which look like this: <tt class="docutils literal"><span class="pre">{{</span> <span class="pre">variable|filter:argument1</span> <span class="pre">}}</span></tt>. Refer to the <a class="reference external" href="https://docs.djangoproject.com/en/1.7/ref/templates/builtins/#ref-templates-builtins-filters">Django Filter Reference</a> for a full list of the filters available.</p>
+<p>Variables can be modified by filters which look like this: <tt class="docutils literal"><span class="pre">{{</span> <span class="pre">variable|filter:argument</span> <span class="pre">}}</span></tt>. Refer to the <a class="reference external" href="https://docs.djangoproject.com/en/1.7/ref/templates/builtins/#ref-templates-builtins-filters">Django Filter Reference</a> for a full list of the filters available.</p>
 </div>
 <div class="section" id="tags">
 <h3>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h3>
@@ -269,7 +270,7 @@
 </div>
 <div class="section" id="make-a-new-template">
 <h2>Make a New Template<a class="headerlink" href="#make-a-new-template" title="Permalink to this headline">¶</a></h2>
-<p>Now that you know the basics of Django templating, create a new template in your templates directory (<tt class="file docutils literal"><span class="pre">~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/templates/my_first_app/)</span> <span class="pre">and</span> <span class="pre">name</span> <span class="pre">it</span> <span class="pre">:file:`map.html</span></tt>. Open this file and copy and paste the following code into it:</p>
+<p>Now that you know the basics of Django templating, create a new template in your templates directory (<tt class="file docutils literal"><span class="pre">my_first_app/templates/my_first_app/</span></tt>) and name it <tt class="file docutils literal"><span class="pre">map.html</span></tt>. Open this file and copy and paste the following code into it:</p>
 <div class="highlight-python"><div class="highlight"><pre>{% extends &quot;my_first_app/base.html&quot; %}
 
 {% load tethys_gizmos %}

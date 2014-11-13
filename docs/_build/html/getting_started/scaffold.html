@@ -89,6 +89,7 @@
 <li class="toctree-l2"><a class="reference internal" href="view.html">The View and Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="controller.html">Working with the Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="url_mapping.html">URL Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mvc_review.html">MVC Review</a></li>
 <li class="toctree-l2"><a class="reference internal" href="forms.html">Working with Form Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuring Apps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="distribution.html">Distributing Apps</a></li>
@@ -97,6 +98,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../tethys_api.html">Tethys Software Development Kit</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/dataset_services.html">Dataset Services API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/persistent_store.html">Persistent Stores API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_api/gizmos.html">Template Gizmos API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/geoprocessing.html">Geoprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_api/visualizing.html">Data Visualization</a></li>
@@ -143,7 +145,7 @@
             
   <div class="section" id="create-a-new-tethys-app-project">
 <h1>Create a New Tethys App Project<a class="headerlink" href="#create-a-new-tethys-app-project" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> November 11, 2014</p>
+<p><strong>Last Updated:</strong> November 13, 2014</p>
 <p>Tethys Platform provides a scaffold for generating new app projects. The scaffold generates a Tethys app project with
 the minimum files and the file structure that is required (see <a class="reference internal" href="../app_project.html"><em>App Project Structure</em></a>). This section of the tutorial will
 describe how to start a new Tethys app project using the scaffold and it will describe how to install the app into your
@@ -202,6 +204,23 @@ few tutorials, we&#8217;ll introduce how the MVC development paradigm is used to
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
 <p class="last">To stop the development server press <tt class="kbd docutils literal"><span class="pre">CTRL-C</span></tt>.</p>
+</div>
+</div>
+<div class="section" id="app-project-paths">
+<h2>App Project Paths<a class="headerlink" href="#app-project-paths" title="Permalink to this headline">¶</a></h2>
+<p>Throughout the tutorial, you will be asked to open various files. All of the files will be located in your <a class="reference internal" href="../glossary.html#term-app-package"><em class="xref std std-term">app package</em></a> directory which shares the name of your app: &#8220;my_first_app&#8221;. If you generated your scaffold exactly as above, this directory would be located at the following path:</p>
+<div class="highlight-python"><div class="highlight"><pre># Absolute Path to App Package Directory
+~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/
+</pre></div>
+</div>
+<p>For convenience, all paths in the following tutorials will be given as relative to the <a class="reference internal" href="../glossary.html#term-app-package"><em class="xref std std-term">app package</em></a> directory. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Relative App Package Directory Notation</span>
+<span class="n">my_first_app</span><span class="o">/</span><span class="n">controllers</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">The tilde (~) in unix/linux style paths is shorthand for your <tt class="file docutils literal"><span class="pre">Home</span></tt> directory. The shorthand is used because the path to the home directory varies depending on your user name (e.g.: if your user name was &#8220;john&#8221;, then the absolute path to your home directory would be <tt class="file docutils literal"><span class="pre">/home/john</span></tt>).</p>
 </div>
 </div>
 </div>

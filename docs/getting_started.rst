@@ -15,6 +15,7 @@ If you have not already installed Tethys Platform, follow the :doc:`./installati
    getting_started/view
    getting_started/controller
    getting_started/url_mapping
+   getting_started/mvc_review
    getting_started/forms
    getting_started/configuration
    getting_started/distribution
