@@ -89,23 +89,22 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="">The View and Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="controller.html">Working with the Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="url_mapping.html">URL Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mvc_review.html">MVC Review</a></li>
-<li class="toctree-l2"><a class="reference internal" href="forms.html">Working with Form Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuring Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="url_variables.html">URL Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="forms.html">User Input and Forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="distribution.html">Distributing Apps</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../tethys_api.html">Tethys Software Development Kit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/dataset_services.html">Dataset Services API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/persistent_store.html">Persistent Stores API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/gizmos.html">Template Gizmos API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/geoprocessing.html">Geoprocessing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/visualizing.html">Data Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/cloud_computing.html">High Performance Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../supplementary.html">Supplementary Docs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/key_concepts.html">Key Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_project.html">App Project Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/working_with_apps.html">Working with Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_harvesting.html">App Harvesting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_class.html">App Base Class API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/dev_environment.html">Setup Development Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/production_deployment.html">Deploy Apps in Production</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/summary.html">Summary of References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../reference.html">Summary of References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
 
@@ -217,10 +216,10 @@
 {% endblock %}
 </pre></div>
 </div>
-<p>The <tt class="file docutils literal"><span class="pre">base.html</span></tt> contains several blocks that your app templates can override or extend. The Blocks you will use most often are``app_navigation_items``, <tt class="docutils literal"><span class="pre">app_content</span></tt>, and, <tt class="docutils literal"><span class="pre">app_actions</span></tt>. These blocks correspond with different parts of the app interface (shown in Figure 1). All of your app templates should extend the <tt class="file docutils literal"><span class="pre">base.html</span></tt> file. As a rule, content that you would like to be present in all your templates should be included in the <tt class="file docutils literal"><span class="pre">base.html</span></tt> and content that is specific to a certain template should be included in that template. A brief explanation of each block is provided.</p>
+<p>The <tt class="file docutils literal"><span class="pre">base.html</span></tt> contains several blocks that your app templates can override or extend. The Blocks you will use most often are <tt class="docutils literal"><span class="pre">app_navigation_items</span></tt>, <tt class="docutils literal"><span class="pre">app_content</span></tt>, and, <tt class="docutils literal"><span class="pre">app_actions</span></tt>. These blocks correspond with different parts of the app interface (shown in the figure below). All of your app templates should extend the <tt class="file docutils literal"><span class="pre">base.html</span></tt> file. As a rule, content that you would like to be present in all your templates should be included in the <tt class="file docutils literal"><span class="pre">base.html</span></tt> and content that is specific to a certain template should be included in that template. A brief explanation of each block is provided.</p>
 <div class="figure">
 <a class="reference internal image-reference" href="../_images/template_blocks.png"><img alt="../_images/template_blocks.png" src="../_images/template_blocks.png" style="width: 650px;" /></a>
-<p class="caption"><strong>Figure 1.</strong> The blocks of the <tt class="file docutils literal"><span class="pre">base.html</span></tt> template correspond with different parts of the interface: (1) app_navigation_items, (2) app_content, and (3) app_actions.</p>
+<p class="caption">The blocks of the <tt class="file docutils literal"><span class="pre">base.html</span></tt> template correspond with different parts of the interface: (1) app_navigation_items, (2) app_content, and (3) app_actions.</p>
 </div>
 </div>
 <div class="section" id="title">
@@ -291,7 +290,7 @@
 </pre></div>
 </div>
 <p>The <tt class="file docutils literal"><span class="pre">map.html</span></tt> template inherits from the <tt class="file docutils literal"><span class="pre">base.html</span></tt> in your templates directory. It also overrides the <tt class="docutils literal"><span class="pre">app_content</span></tt>, <cite>app_actions`</cite>, and <tt class="docutils literal"><span class="pre">scripts</span></tt> blocks. The <tt class="docutils literal"><span class="pre">url</span></tt> tag is used to provide a link back to the home page of the app in the <tt class="docutils literal"><span class="pre">app_actions</span></tt> block.</p>
-<p>The map is inserted into the <tt class="docutils literal"><span class="pre">app_content</span></tt> block using one of the Tethys Gizmos called <tt class="docutils literal"><span class="pre">editable_google_map</span></tt>. Gizmos are an easy way to insert common user interface elements in to your templates with minimal code. The map is configured via a dictionary called <tt class="docutils literal"><span class="pre">map_options</span></tt>, which is defined in the controller. This will be discussed in the next tutorial. For more information on Gizmos, refer to the <a class="reference internal" href="../tethys_api/gizmos.html"><em>Template Gizmos API</em></a> documentation.</p>
+<p>The map is inserted into the <tt class="docutils literal"><span class="pre">app_content</span></tt> block using one of the Tethys Gizmos called <tt class="docutils literal"><span class="pre">editable_google_map</span></tt>. Gizmos are an easy way to insert common user interface elements in to your templates with minimal code. The map is configured via a dictionary called <tt class="docutils literal"><span class="pre">map_options</span></tt>, which is defined in the controller. This will be discussed in the next tutorial. For more information on Gizmos, refer to the <a class="reference internal" href="../tethys_sdk/gizmos.html"><em>Template Gizmos API</em></a> documentation.</p>
 </div>
 <div class="section" id="public-files-and-resources">
 <h2>Public Files and Resources<a class="headerlink" href="#public-files-and-resources" title="Permalink to this headline">¶</a></h2>

@@ -9,7 +9,7 @@ The source code for a Tethys App project is contained in a series of Python pack
 
 .. _app-figure-1:
 
-.. figure:: images/app_package.png
+.. figure:: ../images/app_package.png
 	:alt: diagram of a Tethys App project for an app named myapp
 
 	**Figure 1. An example of a Tethys App project for an app named "myapp".**  

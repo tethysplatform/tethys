@@ -1,10 +1,10 @@
-**********
-MVC Review
-**********
+*************
+URL Variables
+*************
 
 **Last Updated:** November 13, 2014
 
-Up to this point, you have learned about each component of MVC development in detail to add a new map page to your app. The purpose of this tutorial will be to provide a review of these concepts and to introduce some advanced concepts. In the map page you created in the previous tutorials, you are able to view all of the stream gages on a map concurrently. In this tutorial you will add the ability to see individual stream gages on the map page. This will involve creating a new controller, url map, and some modifications to the map template.
+The purpose of this tutorial will be to introduce URL variables. In the map page you created in the previous tutorials, you are able to view all of the stream gages on a map concurrently. In this tutorial you will add the ability to see individual stream gages on the map page. This will involve creating a url map, new controller, and some modifications to the map template. This exercise will also serve as a good review of MVC development.
 
 New URL Map and URL Variables
 =============================
@@ -36,7 +36,7 @@ You can add variables to your URLs to make your controllers and web pages more d
                         UrlMap(name='map_single',
                                url='my-first-app/map/{id}',
                                controller='my_first_app.controllers.map_single'
-                               )
+                               ),
             )
 
             return url_maps
@@ -140,12 +140,10 @@ The other change to the template is the heading of the page (``<h1>``) is wrappe
 View Updated Map Page
 =====================
 
-Just like that, you added a new view of your data. Start up the development server using the ``tethys manage start`` command and browse to your app. Use the "Go To Map" action on the home page to browse to your new map page and use the options in the navigation pane to view the different gages (see Figure 1).
+Just like that, you added a new view of your data. Start up the development server using the ``tethys manage start`` command and browse to your app. Use the "Go To Map" action on the home page to browse to your new map page and use the options in the navigation pane to view the different gages. It should look like this:
 
 .. figure:: ../images/map_single_page.png
     :width: 650px
-
-    **Figure 1:** Map page displaying a single stream gage.
 
 Variable URLs
 =============

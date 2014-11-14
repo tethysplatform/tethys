@@ -89,23 +89,22 @@
 <li class="toctree-l2"><a class="reference internal" href="view.html">The View and Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="controller.html">Working with the Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="url_mapping.html">URL Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mvc_review.html">MVC Review</a></li>
-<li class="toctree-l2"><a class="reference internal" href="forms.html">Working with Form Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuring Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="url_variables.html">URL Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="forms.html">User Input and Forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="distribution.html">Distributing Apps</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../tethys_api.html">Tethys Software Development Kit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/dataset_services.html">Dataset Services API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/persistent_store.html">Persistent Stores API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/gizmos.html">Template Gizmos API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/geoprocessing.html">Geoprocessing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/visualizing.html">Data Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/cloud_computing.html">High Performance Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../supplementary.html">Supplementary Docs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/key_concepts.html">Key Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_project.html">App Project Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/working_with_apps.html">Working with Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_harvesting.html">App Harvesting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_class.html">App Base Class API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/dev_environment.html">Setup Development Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/production_deployment.html">Deploy Apps in Production</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/summary.html">Summary of References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../reference.html">Summary of References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
 
@@ -147,7 +146,7 @@
 <h1>Create a New Tethys App Project<a class="headerlink" href="#create-a-new-tethys-app-project" title="Permalink to this headline">¶</a></h1>
 <p><strong>Last Updated:</strong> November 13, 2014</p>
 <p>Tethys Platform provides a scaffold for generating new app projects. The scaffold generates a Tethys app project with
-the minimum files and the file structure that is required (see <a class="reference internal" href="../app_project.html"><em>App Project Structure</em></a>). This section of the tutorial will
+the minimum files and the file structure that is required (see <a class="reference internal" href="../supplementary/app_project.html"><em>App Project Structure</em></a>). This section of the tutorial will
 describe how to start a new Tethys app project using the scaffold and it will describe how to install the app into your
 Tethys platform for development.</p>
 <div class="section" id="generate-scaffold">
@@ -166,7 +165,7 @@ $ tethys scaffold my_first_app
 <p>In a file browser open the <tt class="file docutils literal"><span class="pre">tethysapp-my_first_app</span></tt> directory and familiarize yourself with its contents. The
 scaffold automatically prefixes your app project directory name with &#8220;tethysapp-&#8221;. The main package of your app project,
 &#8220;my_first_app&#8221;, is located within a namespace package called &#8220;tethysapp&#8221;. For more information about the app project
-structure, see <a class="reference internal" href="../app_project.html"><em>App Project Structure</em></a>.</p>
+structure, see <a class="reference internal" href="../supplementary/app_project.html"><em>App Project Structure</em></a>.</p>
 </div>
 <div class="section" id="development-installation">
 <h2>Development Installation<a class="headerlink" href="#development-installation" title="Permalink to this headline">¶</a></h2>
@@ -188,10 +187,10 @@ $ python setup.py develop
 </pre></div>
 </div>
 <p>If all has gone well, you should see your app listed on the app library page. Exploring your new app won&#8217;t take long,
-because there is only one page. Familiarize yourself with different parts of the app interface (see Figure 1).</p>
+because there is only one page. Familiarize yourself with different parts of the app interface (see below).</p>
 <div class="figure">
 <a class="reference internal image-reference" href="../_images/app_controls.png"><img alt="../_images/app_controls.png" src="../_images/app_controls.png" style="width: 650px;" /></a>
-<p class="caption"><strong>Figure 1.</strong> Tethys app interface: (1) app navigation toggle, (2) exit button, (3) app navigation, (4) actions, and (5) app content.</p>
+<p class="caption">Parts of a Tethys app interface: (1) app navigation toggle, (2) exit button, (3) app navigation, (4) actions, and (5) app content.</p>
 </div>
 </div>
 <div class="section" id="model-view-controller">

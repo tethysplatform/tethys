@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Working with Form Data &mdash; Tethys Platform 0.1.0 documentation</title>
+  <title>User Input and Forms &mdash; Tethys Platform 0.1.0 documentation</title>
   
 
   
@@ -30,8 +30,8 @@
   
     <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html"/>
         <link rel="up" title="Getting Started" href="../getting_started.html"/>
-        <link rel="next" title="Configuring Apps" href="configuration.html"/>
-        <link rel="prev" title="MVC Review" href="mvc_review.html"/> 
+        <link rel="next" title="Distributing Apps" href="distribution.html"/>
+        <link rel="prev" title="URL Variables" href="url_variables.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -89,23 +89,22 @@
 <li class="toctree-l2"><a class="reference internal" href="view.html">The View and Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="controller.html">Working with the Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="url_mapping.html">URL Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mvc_review.html">MVC Review</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Working with Form Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuring Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="url_variables.html">URL Variables</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">User Input and Forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="distribution.html">Distributing Apps</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../tethys_api.html">Tethys Software Development Kit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/dataset_services.html">Dataset Services API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/persistent_store.html">Persistent Stores API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/gizmos.html">Template Gizmos API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/geoprocessing.html">Geoprocessing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/visualizing.html">Data Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/cloud_computing.html">High Performance Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../supplementary.html">Supplementary Docs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/key_concepts.html">Key Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_project.html">App Project Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/working_with_apps.html">Working with Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_harvesting.html">App Harvesting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_class.html">App Base Class API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/dev_environment.html">Setup Development Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/production_deployment.html">Deploy Apps in Production</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/summary.html">Summary of References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../reference.html">Summary of References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
 
@@ -132,7 +131,7 @@
       
           <li><a href="../getting_started.html">Getting Started</a> &raquo;</li>
       
-    <li>Working with Form Data</li>
+    <li>User Input and Forms</li>
       <li class="wy-breadcrumbs-aside">
         
           <a href="../_sources/getting_started/forms.txt" rel="nofollow"> View page source</a>
@@ -143,82 +142,140 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="working-with-form-data">
-<h1>Working with Form Data<a class="headerlink" href="#working-with-form-data" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> May 27, 2013</p>
-<p>Most apps will use HTML forms to recieve input from the user. In this part of the tutorial, you&#8217;ll learn how to create forms in your template and process the data submitted through the form in your controller.</p>
-<div class="section" id="create-template-with-a-form">
-<h2>Create Template with a Form<a class="headerlink" href="#create-template-with-a-form" title="Permalink to this headline">¶</a></h2>
-<p>An HTML form in the simplest form consists of a set of <tt class="docutils literal"><span class="pre">input</span></tt> element wrapped in a <tt class="docutils literal"><span class="pre">form</span></tt> element. Each <tt class="docutils literal"><span class="pre">input</span></tt> element must have a unique name attribute to be submitted. Several complex input elements are available through <a class="reference internal" href="../glossary.html#term-snippets"><em class="xref std std-term">snippets</em></a>, but this tutorial, we will use a very simple form.</p>
-<ol class="arabic simple">
-<li>Create a new template called <tt class="file docutils literal"><span class="pre">form.html</span></tt> in your templates directory (<tt class="file docutils literal"><span class="pre">~tethysdev/ckanapp-my_first_app/ckanapp/my_first_app/templates/my_first_app/form.html</span></tt>). Copy and paste the following lines into <tt class="file docutils literal"><span class="pre">form.html</span></tt>:</li>
-</ol>
-<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;my_first_app/app_base.html&quot; %}
+  <div class="section" id="user-input-and-forms">
+<h1>User Input and Forms<a class="headerlink" href="#user-input-and-forms" title="Permalink to this headline">¶</a></h1>
+<p><strong>Last Updated:</strong> November 13, 2013</p>
+<p>Eventually you will need to request input from the user, which will involve working with HTML forms. In this tutorial, you&#8217;ll learn how to create forms in your template and process the data submitted through the form in your controller.</p>
+<div class="section" id="new-url-map">
+<h2>New URL Map<a class="headerlink" href="#new-url-map" title="Permalink to this headline">¶</a></h2>
+<p>The form will be created on a new page, which means you will need to create a new URL map and controller. Open your <tt class="file docutils literal"><span class="pre">my_first_app/app.py</span></tt> and add a new <tt class="docutils literal"><span class="pre">UrlMap</span></tt> object called &#8220;echo_name&#8221; to the <tt class="docutils literal"><span class="pre">url_maps()</span></tt> method of your <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a>. The <tt class="docutils literal"><span class="pre">url_maps()</span></tt> method of your app class should look like this now:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyFirstApp</span><span class="p">(</span><span class="n">TethysAppBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tethys App Class for My First App.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="o">...</span>
 
-{% block breadcrumb_content %}
-  &lt;li&gt;&lt;a href=&quot;{% url_for &#39;apps&#39; %}&quot;&gt;Apps&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;/apps/my-first-app&quot;&gt;My First App&lt;/a&gt;&lt;/li&gt;
-  &lt;li class=&quot;active&quot;&gt;&lt;a href=&quot;#&quot;&gt;Username Form&lt;/a&gt;&lt;/li&gt;
+    <span class="k">def</span> <span class="nf">url_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add controllers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">UrlMap</span> <span class="o">=</span> <span class="n">url_map_maker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_url</span><span class="p">)</span>
+
+        <span class="n">url_maps</span> <span class="o">=</span> <span class="p">(</span><span class="n">UrlMap</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;home&#39;</span><span class="p">,</span>
+                           <span class="n">url</span><span class="o">=</span><span class="s">&#39;my-first-app&#39;</span><span class="p">,</span>
+                           <span class="n">controller</span><span class="o">=</span><span class="s">&#39;my_first_app.controllers.home&#39;</span>
+                           <span class="p">),</span>
+                    <span class="n">UrlMap</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;map&#39;</span><span class="p">,</span>
+                           <span class="n">url</span><span class="o">=</span><span class="s">&#39;my-first-app/map&#39;</span><span class="p">,</span>
+                           <span class="n">controller</span><span class="o">=</span><span class="s">&#39;my_first_app.controllers.map&#39;</span>
+                           <span class="p">),</span>
+                    <span class="n">UrlMap</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;map_single&#39;</span><span class="p">,</span>
+                           <span class="n">url</span><span class="o">=</span><span class="s">&#39;my-first-app/map/{id}&#39;</span><span class="p">,</span>
+                           <span class="n">controller</span><span class="o">=</span><span class="s">&#39;my_first_app.controllers.map_single&#39;</span>
+                           <span class="p">),</span>
+                    <span class="n">UrlMap</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;echo_name&#39;</span><span class="p">,</span>
+                           <span class="n">url</span><span class="o">=</span><span class="s">&#39;my-first-app/echo-name&#39;</span><span class="p">,</span>
+                           <span class="n">controller</span><span class="o">=</span><span class="s">&#39;my_first_app.controllers.echo_name&#39;</span>
+                           <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">url_maps</span>
+
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="new-template">
+<h2>New Template<a class="headerlink" href="#new-template" title="Permalink to this headline">¶</a></h2>
+<p>Create a new template called &#8220;echo_name.html&#8221; in your templates directory (<tt class="file docutils literal"><span class="pre">my_first_app/templates/my_first_app/echo_name.html</span></tt>). Open the file and add the following contents:</p>
+<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;my_first_app/base.html&quot; %}
+
+{% load tethys_gizmos %}
+
+{% block app_navigation_items %}
+  &lt;li class=&quot;active&quot;&gt;&lt;a href=&quot;{% url &#39;my_first_app:echo_name&#39; %}&quot;&gt;Name Echoer&lt;/a&gt;&lt;/li&gt;
 {% endblock %}
 
-{% block primary_content %}
-  &lt;div class=&quot;module&quot;&gt;
-    &lt;div class=&quot;module-content&quot;&gt;
-      &lt;h5&gt;Please enter your name:&lt;/h5&gt;
-      &lt;form method=&quot;post&quot; class=&quot;form-horizontal&quot;&gt;
-        &lt;input type=&quot;text&quot; name=&quot;username-input&quot;&gt;
-        &lt;input type=&quot;submit&quot; name=&quot;username-submit&quot;&gt;
-      &lt;/form&gt;
-      {% if c.username %}
-      &lt;h1&gt;Hello, {{ c.username }}!&lt;/h1&gt;
-      {% endif %}
-    &lt;/div&gt;
-  &lt;/div&gt;
+{% block app_content %}
+  &lt;form method=&quot;post&quot;&gt;
+      {% csrf_token %}
+      {% gizmo text_input text_input_options %}
+      &lt;input type=&quot;submit&quot; name=&quot;name-form-submit&quot; class=&quot;btn btn-default&quot;&gt;
+  &lt;/form&gt;
+
+  {% if name %}
+    &lt;h1&gt;Hello, {{ name }}!&lt;/h1&gt;
+  {% endif %}
 {% endblock %}
 
-{% block secondary_content %}
-  &lt;div class=&quot;module module-narrow module-shallow&quot;&gt;
-    &lt;h2 class=&quot;module-heading&quot;&gt;
-      &lt;i class=&quot;icon-info-sign&quot;&gt;&lt;/i&gt;
-      Welcome
-    &lt;/h2&gt;
-    &lt;div class=&quot;module-content&quot;&gt;
-            &lt;p&gt;Welcome to my new page!&lt;/p&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
+{% block app_actions %}
+  &lt;a href=&quot;{% url &#39;my_first_app:home&#39; %}&quot; class=&quot;btn btn-default&quot;&gt;Back&lt;/a&gt;
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  {% gizmo_dependencies %}
 {% endblock %}
 </pre></div>
 </div>
-<ol class="arabic simple" start="2">
-<li>Open <tt class="file docutils literal"><span class="pre">index.py</span></tt> in your app <tt class="docutils literal"><span class="pre">controllers</span></tt> package (<tt class="file docutils literal"><span class="pre">~tethysdev/ckanapp-my_first_app/ckanapp/my_first_app/controllers/index.py</span></tt>) and add the following method to your <tt class="docutils literal"><span class="pre">MyFirstAppController</span></tt> class:</li>
-</ol>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">form</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="c"># Tools</span>
-    <span class="n">t</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">toolkit</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">c</span>
+<p>The form is denoted by the HTML <tt class="docutils literal"><span class="pre">&lt;form&gt;</span></tt> tag and it contains a text input (created by a Tethys Gizmo) and a submit button. Also note the use of the <tt class="docutils literal"><span class="pre">csrf_token</span></tt> tag. This is a security precaution that is required to be included in all the forms of your app (see the <a class="reference external" href="https://docs.djangoproject.com/en/1.7/ref/contrib/csrf/">Cross Site Forgery protection</a> article in the Django documentation for more details.</p>
+<p>Also note that the method attribute of the <tt class="docutils literal"><span class="pre">&lt;form&gt;</span></tt> element is set to <tt class="docutils literal"><span class="pre">post</span></tt>. For an introduction to HTTP methods, see <a class="reference external" href="http://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post">The Definitive Guide to GET vs POST</a>.</p>
+</div>
+<div class="section" id="new-controller">
+<h2>New Controller<a class="headerlink" href="#new-controller" title="Permalink to this headline">¶</a></h2>
+<p>Now you need to create the <tt class="docutils literal"><span class="pre">echo_name</span></tt> controller function. Add the following function to your <tt class="file docutils literal"><span class="pre">my_first_app/controllers.py</span></tt> file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">echo_name</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Controller that will echo the name provided by the user via a form.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Default value for name</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
 
-    <span class="c"># Set default value for username</span>
-    <span class="n">c</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="c"># Define Gizmo Options</span>
+    <span class="n">text_input_options</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;display_text&#39;</span><span class="p">:</span> <span class="s">&#39;Enter Name&#39;</span><span class="p">,</span>
+                          <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;name-input&#39;</span><span class="p">}</span>
 
-    <span class="c"># Evaluate form if submitted</span>
-    <span class="k">if</span> <span class="s">&#39;username-submit&#39;</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">&#39;username-input&#39;</span><span class="p">]</span>
+    <span class="c"># Check form data</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span> <span class="ow">and</span> <span class="s">&#39;name-input&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">:</span>
+       <span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s">&#39;name-input&#39;</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s">&#39;my_first_app/form.html&#39;</span><span class="p">)</span>
+    <span class="c"># Create template context dictionary</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+               <span class="s">&#39;text_input_options&#39;</span><span class="p">:</span> <span class="n">text_input_options</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">&#39;my_first_app/echo_name.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The form data is made available in the form of a dictionary in the <tt class="docutils literal"><span class="pre">t.request.params</span></tt> object. The values of the fields in your form can be accessed by using the names of the input fields as keys in this dictionary (e.g.: <tt class="docutils literal"><span class="pre">t.request.params['input-name'].</span> <span class="pre">The</span> <span class="pre">``t.request.params</span></tt> object aggregates data submitted through all request types. Alternatively, the data submitted using a POST request can be accessed using <tt class="docutils literal"><span class="pre">t.request.POST</span></tt> and the data submitted through GET request can be accessed using <tt class="docutils literal"><span class="pre">t.request.GET</span></tt>.</p>
-<ol class="arabic simple" start="3">
-<li>Add this controller mapping to the <tt class="docutils literal"><span class="pre">registerControllers</span></tt> method of your <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a> in your <tt class="file docutils literal"><span class="pre">app</span> <span class="pre">configuration</span> <span class="pre">file</span></tt> (<tt class="file docutils literal"><span class="pre">app.py</span></tt>):</li>
-</ol>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">controllers</span><span class="o">.</span><span class="n">addController</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;my_first_app_action&#39;</span><span class="p">,</span>
-                          <span class="n">url</span><span class="o">=</span><span class="s">&#39;my-first-app/{action}&#39;</span><span class="p">,</span>
-                          <span class="n">controller</span><span class="o">=</span><span class="s">&#39;my_first_app.controllers.index:MyFirstAppController&#39;</span><span class="p">)</span>
+<p>There are a few features to point out in this controller. First, the Gizmo options for the text input are defined in this controller via the <tt class="docutils literal"><span class="pre">test_input_options</span></tt> dictionary. The text input must have a name assigned to it for its value to be returned. In this case the name of the text input is &#8220;name-input&#8221;.</p>
+<p>Next, the data that is submitted with HTML forms is returned through the <tt class="docutils literal"><span class="pre">request</span></tt> object. For forms submitted using the &#8220;post&#8221; method, the data will be accessible in the <tt class="docutils literal"><span class="pre">request.POST</span></tt> attribute. Similarly, form data submitted using the &#8220;get&#8221; method will be available via the <tt class="docutils literal"><span class="pre">request.GET</span></tt> attribute. Both <tt class="docutils literal"><span class="pre">request.GET</span></tt> and <tt class="docutils literal"><span class="pre">request.POST</span></tt> are dictionary like objects where the keys are the names of the fields from the form.</p>
+<p>The controller contains logic that checks the <tt class="docutils literal"><span class="pre">request.POST</span></tt> for data with the name of the text input field, &#8220;name-input&#8221;. If it exists (which it will after the user submits the form), the <tt class="docutils literal"><span class="pre">name</span></tt> variable is replaced with the value of the text input. The <tt class="docutils literal"><span class="pre">name</span></tt> variable is passed to template where it renders a nice greeting.</p>
+</div>
+<div class="section" id="link-to-new-page">
+<h2>Link to New Page<a class="headerlink" href="#link-to-new-page" title="Permalink to this headline">¶</a></h2>
+<p>Create a link to the new page from the home page using the <tt class="docutils literal"><span class="pre">url</span></tt> tag. Open the <tt class="file docutils literal"><span class="pre">my_first_app/templates/my_first_app/home.html</span></tt> file and replace the contents with this:</p>
+<div class="highlight-python"><div class="highlight"><pre>{% extends &quot;my_first_app/base.html&quot; %}
+
+{% block app_navigation_items %}
+  &lt;li&gt;&lt;a href=&quot;{% url &#39;my_first_app:echo_name&#39; %}&quot;&gt;Name Echoer&lt;/a&gt;&lt;/li&gt;
+{% endblock %}
+
+{% block app_content %}
+  &lt;h1&gt;Welcome!&lt;/h1&gt;
+  &lt;p&gt;Congratulations on creating a new Tethys app!&lt;/p&gt;
+{% endblock %}
+
+{% block app_actions %}
+  &lt;a href=&quot;{% url &#39;my_first_app:map&#39; %}&quot; class=&quot;btn btn-default&quot;&gt;Go To Map&lt;/a&gt;
+{% endblock %}
 </pre></div>
 </div>
-<ol class="arabic simple" start="4">
-<li>Navigate to: <a class="reference external" href="http://localhost:5000/apps/my-first-app/form">http://localhost:5000/apps/my-first-app/form</a> . Enter your name in the text field and submit it. Your name is submitted via a POST request to your controller. The controller passes the name back to the template in the <tt class="docutils literal"><span class="pre">c.username</span></tt> template variable, resulting in a warm greeting to yourself.</li>
-</ol>
+</div>
+<div class="section" id="view-new-page">
+<h2>View New Page<a class="headerlink" href="#view-new-page" title="Permalink to this headline">¶</a></h2>
+<p>The app is ready to be tested. Run the <strong class="command">tethys manage start</strong> command in the terminal and browse to your app. Use the &#8220;Name Echoer&#8221; link in the navigation to access the new page. Enter your name, press submit, and enjoy the greeting. Your new page should look something like this:</p>
+<div class="figure">
+<a class="reference internal image-reference" href="../_images/echo_name_page.png"><img alt="../_images/echo_name_page.png" src="../_images/echo_name_page.png" style="width: 650px;" /></a>
+</div>
 </div>
 </div>
 
@@ -228,10 +285,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="configuration.html" class="btn btn-neutral float-right" title="Configuring Apps">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="distribution.html" class="btn btn-neutral float-right" title="Distributing Apps">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="mvc_review.html" class="btn btn-neutral" title="MVC Review"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="url_variables.html" class="btn btn-neutral" title="URL Variables"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

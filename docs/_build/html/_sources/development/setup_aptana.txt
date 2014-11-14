@@ -54,7 +54,7 @@ If you have a fresh installation of Aptana Studio, you will need to create a new
 Import App Project
 ==================
 
-After you have generated a new app using the scaffold (see :doc:`../working_with_apps`), you will need to **import** the :term:`app project` into Aptana to start working with it.This process will need to be done for every app that you develop.
+After you have generated a new app using the scaffold (see :doc:`../supplementary/working_with_apps`), you will need to **import** the :term:`app project` into Aptana to start working with it.This process will need to be done for every app that you develop.
 
 1. Select **File** | **Import...** from the dropdown menu.
 

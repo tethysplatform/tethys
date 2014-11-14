@@ -30,7 +30,7 @@
   
     <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html"/>
         <link rel="up" title="Getting Started" href="../getting_started.html"/>
-        <link rel="next" title="MVC Review" href="mvc_review.html"/>
+        <link rel="next" title="URL Variables" href="url_variables.html"/>
         <link rel="prev" title="Working with the Controller" href="controller.html"/> 
 
   
@@ -89,23 +89,22 @@
 <li class="toctree-l2"><a class="reference internal" href="view.html">The View and Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="controller.html">Working with the Controller</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">URL Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mvc_review.html">MVC Review</a></li>
-<li class="toctree-l2"><a class="reference internal" href="forms.html">Working with Form Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuring Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="url_variables.html">URL Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="forms.html">User Input and Forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="distribution.html">Distributing Apps</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../tethys_api.html">Tethys Software Development Kit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/dataset_services.html">Dataset Services API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/persistent_store.html">Persistent Stores API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/gizmos.html">Template Gizmos API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/geoprocessing.html">Geoprocessing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/visualizing.html">Data Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/cloud_computing.html">High Performance Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../supplementary.html">Supplementary Docs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/key_concepts.html">Key Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_project.html">App Project Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/working_with_apps.html">Working with Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_harvesting.html">App Harvesting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_class.html">App Base Class API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/dev_environment.html">Setup Development Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/production_deployment.html">Deploy Apps in Production</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/summary.html">Summary of References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../reference.html">Summary of References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
 
@@ -149,7 +148,7 @@
 <p>Whenever you create a new controller, you will also need to associate it with a URL by creating URL map for it. When a URL is requested, Tethys (via Django) will execute the controller to which it is mapped. In this tutorial you will create a new URL map for the new <tt class="docutils literal"><span class="pre">map</span></tt> controller you created in the previous tutorial.</p>
 <div class="section" id="map-controller-to-url">
 <h2>Map Controller to URL<a class="headerlink" href="#map-controller-to-url" title="Permalink to this headline">¶</a></h2>
-<p>Mapping a controller to a URL is performed in the <em class="xref std std-term">app configuration file`(:file:`app.py</em>). Open your app configuration file located at <tt class="file docutils literal"><span class="pre">my_first_app/app.py</span></tt>. Your <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a> contains a method called <tt class="docutils literal"><span class="pre">url_maps()</span></tt>. This method must return a list or tuple of <tt class="docutils literal"><span class="pre">UrlMap</span></tt> objects. <tt class="docutils literal"><span class="pre">UrlMap</span></tt> are given three parameters: <tt class="docutils literal"><span class="pre">name</span></tt>, <tt class="docutils literal"><span class="pre">url</span></tt>, and <tt class="docutils literal"><span class="pre">controller</span></tt>.</p>
+<p>Mapping a controller to a URL is performed in the <a class="reference internal" href="../glossary.html#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a> (<tt class="file docutils literal"><span class="pre">app.py</span></tt>). Open your app configuration file located at <tt class="file docutils literal"><span class="pre">my_first_app/app.py</span></tt>. Your <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a> contains a method called <tt class="docutils literal"><span class="pre">url_maps()</span></tt>. This method must return a list or tuple of <tt class="docutils literal"><span class="pre">UrlMap</span></tt> objects. <tt class="docutils literal"><span class="pre">UrlMap</span></tt> are given three parameters: <tt class="docutils literal"><span class="pre">name</span></tt>, <tt class="docutils literal"><span class="pre">url</span></tt>, and <tt class="docutils literal"><span class="pre">controller</span></tt>.</p>
 <p>Your <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a> will already have one <tt class="docutils literal"><span class="pre">UrlMap</span></tt> for the home page. Add a new <tt class="docutils literal"><span class="pre">UrlMap</span></tt> object for the <tt class="docutils literal"><span class="pre">map</span></tt> controller that you created in the previous step. Give it the name &#8220;map&#8221;, url of &#8220;my-first-app/map&#8221;, and the path to the controller &#8220;my_first_app.controllers.map&#8221;. The <tt class="docutils literal"><span class="pre">url_maps()</span></tt> method for your app should look something like this when you are done:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyFirstApp</span><span class="p">(</span><span class="n">TethysAppBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -192,10 +191,9 @@
 </div>
 <div class="section" id="view-new-map-page">
 <h2>View New Map Page<a class="headerlink" href="#view-new-map-page" title="Permalink to this headline">¶</a></h2>
-<p>At this point, your app should be ready to run again. Start up the development server using the <tt class="docutils literal"><span class="pre">tethys</span> <span class="pre">manage</span> <span class="pre">start</span></tt> command and browse to your app. Use the &#8220;Go To Map&#8221; action on the home page to browse to your new map page. It should look similar to Figure 1.</p>
+<p>At this point, your app should be ready to run again. Start up the development server using the <tt class="docutils literal"><span class="pre">tethys</span> <span class="pre">manage</span> <span class="pre">start</span></tt> command and browse to your app. Use the &#8220;Go To Map&#8221; action on the home page to browse to your new map page. It should look similar to this:</p>
 <div class="figure">
 <a class="reference internal image-reference" href="../_images/new_map_page.png"><img alt="../_images/new_map_page.png" src="../_images/new_map_page.png" style="width: 650px;" /></a>
-<p class="caption"><strong>Figure 1:</strong> New map page.</p>
 </div>
 </div>
 </div>
@@ -206,7 +204,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mvc_review.html" class="btn btn-neutral float-right" title="MVC Review">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="url_variables.html" class="btn btn-neutral float-right" title="URL Variables">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="controller.html" class="btn btn-neutral" title="Working with the Controller"><span class="fa fa-arrow-circle-left"></span> Previous</a>

@@ -2,169 +2,85 @@
 Distributing Apps
 *****************
 
-**Last Updated:** June 4, 2014
+**Last Updated:** November 14, 2014
 
-Once your app is complete, you will likely want to distribute it for others to use or at the very least install it in a production Tethys Apps environment. When you share your app with others, give them the entire :term:` release package` The :term:`release package` directory is also a great place to include a README with any instructions specific installing your app. If there are no special instructions, you can refer them to the installation instructions for apps found in the :doc:`../working_with_apps` section. It is also a good idea to include a copy of the license you are releasing the app under in the :term:`release package` directory.  Be sure to use the :term:`setup script` to make installation of your app and all the dependencies as easy as possible. An explanation of the :term:`setup script` is provided in the next section of this article.
+Once your app is complete, you will likely want to distribute it for others to use or at the very least install it in a production Tethys Apps environment. When you share your app with others, you will share the entire :term:`release package`, which is the outermost directory of your :term:`app project`. For this tutorial, your release package is called "tethysapp-my_first_app".
+
+The release package contains the source code for your app and a :term:`setup script` (:file:`setup.py`). You may also wish to include a README file and a LICENSE file in this directory. The :term:`setup script` can be used to streamline installation of your app and any Python dependencies it may have. You already used the :term:`setup script` without realizing it in the :doc:`./scaffold` tutorial when you installed your app for the first time (this command: ``python setup.py develop``). A brief introduction to the :term:`setup script` will be provided in this tutorial.
 
 Setup Script
 ============
 
-When you generate your app using the scaffold, it will automatically come with a :term:`setup script` (:file:`setup.py`), located in the top level directory of the :term:`release package`. The :term:`setup script` is used to store metadata about your app, install your app into Python, and install any dependencies it may have. We have added some additinal functionality specific to Tethys Apps to make the app installation process streamlined and easy. Open the setup script for your app (:file:`~/tethysdev/ckanapp-my_first_app/setup.py`).
-
-Variables Section
------------------
-
-The setup script is divided into several parts. The top of the script includes Python module imports followed by several variables similar to this example:
+When you generate your app using the scaffold, it will automatically generate a :term:`setup script` (:file:`setup.py`). Open the :term:`setup script` for your app located at :file:`~/tethysdev/ckanapp-my_first_app/setup.py`. It should look something like this:
 
 ::
 
-    import sys, os, shutil, subprocess
-
+    import os
+    import sys
     from setuptools import setup, find_packages
-    from setuptools.command.develop import develop
-    from setuptools.command.install import install
+    from tethys_apps.app_installation import custom_develop_command, custom_install_command
 
-    from ckanext.tethys_apps.lib.persistent_store import provision_persistent_stores
-    from ckanext.tethys_apps.lib import get_ckanapp_directory
-
-    ### App Packages ###
-    # Don't change these
-    app_package = 'my_frist_app'
-    release_package = 'ckanapp-' + app_package
-    app_class = 'my_frist_app.app:MyFirstAppApp'
-
-    ### App Metadata ###
-    # Change whatever you'd like here
-    version = '1.0'
-    author = 'Tethys User'
-    author_email = ''
-    short_description = 'This is my very first app.'
-    long_description = ''
-    url = ''
-    license = ''
-    keywords = ''
+    ### Apps Definition ###
+    app_package = 'my_first_app'
+    release_package = 'tethysapp-' + app_package
+    app_class = 'my_first_app.app:MyFirstApp'
+    app_package_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tethysapp', app_package)
 
     ### Python Dependencies ###
-    # List external Python dependencies here by name
-    dependencies = [
-        # -*- Add names of external Python dependencies here -*-
-    ]
+    dependencies = []
 
-The variables section is where you will make most, if any, changes to the setup script. The variables under "App Packages" heading store information about the packages in your app including the :term:`app package` name, :term:`release package` name, and the path to the :term:`app class`. These variables should generally not be changed. The "App Metadata" section contains variables that store metadata about your app such as the version, author, and license of your app. Feel free to modify the variables in this section to meet your needs. The final variable section, "Python Dependencies" contains one variable: ``dependencies``. This variable is a list of Python package names that your app is dependent on. When they :term:`setup script` is run, it will also install any dependencies listed in this variable.
-
-Custom Installation Classes Section
------------------------------------
-
-The next section of the :term:`setup script` includes two class definitions: `CustomInstallCommand` and `CustomDevelopCommand`. These classes are used by the :term:`setup script` to perform additional steps during installation that are required to fully install an app. Typically, this portion of the :term:`setup script` should not need to be modified. An example of what this section of the :term:`setup script` looks like is shown below: 
-
-::
-
-    class CustomInstallCommand(install):
-        """
-        When install command is used on setup.py, will copy app package to ckanapp directory.
-        """
-        def run(self):
-            # Get paths
-            ckanapp_dir = get_ckanapp_directory()
-            app_package_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ckanapp', app_package)
-            destination_dir = os.path.join(ckanapp_dir, app_package)
-            
-            # Notify user
-            print 'Copying App Package: {0} to {1}'.format(app_package_dir, destination_dir)
-            
-            # Copy files
-            try: 
-                shutil.copytree(app_package_dir, destination_dir)
-            except:
-                try:
-                    shutil.rmtree(destination_dir)
-                except:
-                    os.remove(destination_dir)
-                    
-                shutil.copytree(app_package_dir, destination_dir)
-        
-            # Install dependencies
-            for dependency in dependencies:
-                subprocess.call(['pip', 'install', dependency])
-            
-            # Run the original install command
-            install.run(self)
-
-    class CustomDevelopCommand(develop):
-        """
-        When develop command is used on setup.py, will create symbolic link from app package to ckanapp directory.
-        """
-        def run(self):
-            # Get paths
-            ckanapp_dir = get_ckanapp_directory()
-            app_package_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ckanapp', app_package)
-            destination_dir = os.path.join(ckanapp_dir, app_package)
-            
-            # Notify user
-            print 'Creating Symbolic Link to App Package: {0} to {1}'.format(app_package_dir, destination_dir)
-            
-            # Create symbolic link
-            try:
-                os.symlink(app_package_dir, destination_dir)
-            except:
-                try:
-                    shutil.rmtree(destination_dir)
-                except:
-                    os.remove(destination_dir)
-                
-                os.symlink(app_package_dir, destination_dir)
-        
-            # Install dependencies
-            for dependency in dependencies:
-                subprocess.call(['pip', 'install', dependency])
-                
-            # Run the original develop command
-            develop.run(self)
-
-Setup Function Section
-----------------------
-
-The next section of the setup script contains the actual call to the ``setup()`` function. This function takes all the variables from the section above as arguments with a few others that won't be discussed in detail here. It is this function that actually runs the installation of your app. There are many other options that can be specified in the ``setup()`` function. Review the `setuptools <https://pythonhosted.org/setuptools/setuptools.html#installing-setuptools>`_ documentation for more information if you wish to take advatage of these options.
-
-::
-           
     setup(
         name=release_package,
-        version=version,
-        description=short_description,
-        long_description=long_description,
-        classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
-        keywords=keywords,
-        author=author,
-        author_email=author_email,
-        url=url,
-        license=license,
+        version='0.0',
+        description='',
+        long_description='',
+        keywords='',
+        author='',
+        author_email='',
+        url='',
+        license='',
         packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
-        namespace_packages=['ckanapp', 'ckanapp.' + app_package],
+        namespace_packages=['tethysapp', 'tethysapp.' + app_package],
         include_package_data=True,
         zip_safe=False,
         install_requires=dependencies,
-        entry_points=\
-        """
-        """,
         cmdclass={
-            'install': CustomInstallCommand,
-            'develop': CustomDevelopCommand
+            'install': custom_install_command(app_package, app_package_dir, dependencies),
+            'develop': custom_develop_command(app_package, app_package_dir, dependencies)
         }
     )
 
-Database Provisioning Function Section
---------------------------------------
+As a general rule, you should never modify the parameters under the "Apps Definition" heading. These parameters are used by the :term:`setup script` to find the source code for your app and changing their values could result in your app not working properly. If you use Python libraries that are external to your app or Tethys Platform, you will need add the library name to the ``dependencies`` list in the :term:`setup script`. These libraries will automatically be installed when your app is installed.
 
-The final section of the :term:`setup script` is a call to the ``provision_persisnent_stores()`` function. This function automatically creates any databases that you have requeseted in the :term:`app configuration file` (:file:`app.py`) using the ``registerPersistentStores()`` method. There should be no need to modify this section of the :term:`setup script`, but it could be helpful to know that this exists. For more information on automatic database provisioning, see :doc:`persistent_stores`.
+The final part of the setup script makes a call to the ``setup()`` function that is provided by the ``setuptools`` library. You will see the metadata that you defined during the scaffold process listed here. As you release subsequent versions of your app, you may wish to increment the ``version`` parameter of this function.
+
+Setup Script Installation
+=========================
+
+The setup script is used to install your app and there are two types of installation that can be performed: ``install`` and ``develop``. The ``install`` type of installation hard copies the source code of your app into the :file:`site-packages` directory of your Python installation. The :file:`site-packages` directory is where Python keeps all of the code for external modules and libraries that have been installed.
+
+This is the type of installation you would use for a completed app that is being installed in a production environment. To perform this type of installation, open a terminal, change into the :term:`release package` directory of your app, and run the ``install`` command on the :term:`setup script` as follows:
 
 ::
 
-    # Provision tethys databases for app
-    provision_persistent_stores(app_class)
+    cd ~/tethysdev/tethysapp-my_first_app
+    python setup.py install
 
-Production Installation
-=======================
+The ``install`` type of installation is not well suited for working with your app during development, because you would need to reinstall it (i.e.: run the commands above) every time you made a change to the app source code. This is why the ``develop`` type of installation exists. When an app is installed with the ``develop`` command, the source codes is only linked to the :file:`site-packages` directory. This allows you to change your code and test the changes without reinstall the app.
 
-Follow the instructions found in the :doc:`../working_with_apps` section to install apps in production.
+You already performed this type of installation on your app during the :doc:`./scaffold` tutorial. To perform this type of installation, open a terminal, change into the :term:`release package` directory, and run the ``develop`` command on the :term:`setup script` like so:
+
+::
+
+    cd ~/tethysdev/tethysapp-my_first_app
+    python setup.py develop
+
+
+.. tip::
+
+  For more information about ``setuptools`` and the :term:`setup script`, see the `Setuptools Documentation <https://pythonhosted.org/setuptools/setuptools.html>`_.
+
+
+
+
 

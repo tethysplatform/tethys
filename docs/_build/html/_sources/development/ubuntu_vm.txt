@@ -31,9 +31,9 @@ If you have VMWare installed on your computer, you can make use of the VMWare im
     The contained in the zip archive is the virtual machine. DO NOT DELETE THIS FILE. We recommend that you move the file to a safe location.
 
 Useful Accounts
-=============
+===============
 
-There are several usernames and passwords that may be useful when using the VMWare image for developing Tethys apps. The image provides a system admin for the CKAN web site. The system admin can be used to manage users and datasets in CKAN. See the `Sysadmin Guide <http://docs.ckan.org/en/ckan-2.2/sysadmin-guide.html>`_ for more details. The credentials for the system admin are:
+There are several user names and passwords that may be useful when using the VMWare image for developing Tethys apps. The image provides a system admin for the CKAN web site. The system admin can be used to manage users and datasets in CKAN. See the `Sysadmin Guide <http://docs.ckan.org/en/ckan-2.2/sysadmin-guide.html>`_ for more details. The credentials for the system admin are:
 
 ::
 

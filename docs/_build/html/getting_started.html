@@ -88,23 +88,22 @@
 <li class="toctree-l2"><a class="reference internal" href="getting_started/view.html">The View and Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting_started/controller.html">Working with the Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting_started/url_mapping.html">URL Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/mvc_review.html">MVC Review</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/forms.html">Working with Form Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html">Configuring Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/url_variables.html">URL Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/forms.html">User Input and Forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting_started/distribution.html">Distributing Apps</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="tethys_api.html">Tethys Software Development Kit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/dataset_services.html">Dataset Services API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/persistent_store.html">Persistent Stores API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/gizmos.html">Template Gizmos API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/geoprocessing.html">Geoprocessing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/visualizing.html">Data Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/cloud_computing.html">High Performance Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="supplementary.html">Supplementary Docs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/key_concepts.html">Key Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/app_project.html">App Project Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/working_with_apps.html">Working with Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/app_harvesting.html">App Harvesting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/app_class.html">App Base Class API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/dev_environment.html">Setup Development Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/production_deployment.html">Deploy Apps in Production</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/summary.html">Summary of References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Summary of References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
 </ul>
 
@@ -142,69 +141,19 @@
             
   <div class="section" id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> November 11, 2014</p>
+<p><strong>Last Updated:</strong> November 14, 2014</p>
 <p>The getting started tutorial will walk you through the steps of setting up a new Tethys App project using Tethys Platform.
 If you have not already installed Tethys Platform, follow the <a class="reference internal" href="installation.html"><em>Installation</em></a> documentation and then return.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/scaffold.html">Create a New Tethys App Project</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/scaffold.html#generate-scaffold">Generate Scaffold</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/scaffold.html#development-installation">Development Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/scaffold.html#view-your-new-app">View Your New App</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/scaffold.html#model-view-controller">Model View Controller</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/scaffold.html#app-project-paths">App Project Paths</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/model.html">The Model and Persistent Stores</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/model.html#register-a-persistent-store">Register a Persistent Store</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/model.html#create-an-sqlalchemy-data-model">Create an SQLAlchemy Data Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/model.html#create-an-initialization-function">Create an Initialization Function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/model.html#register-initialization-function">Register Initialization Function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/model.html#persistent-store-initialization">Persistent Store Initialization</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/view.html">The View and Templating</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/view.html#templating">Templating</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/view.html#make-a-new-template">Make a New Template</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/view.html#public-files-and-resources">Public Files and Resources</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/controller.html">Working with the Controller</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/controller.html#make-a-new-controller">Make a New Controller</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/url_mapping.html">URL Mapping</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/url_mapping.html#map-controller-to-url">Map Controller to URL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/url_mapping.html#view-new-map-page">View New Map Page</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/mvc_review.html">MVC Review</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/mvc_review.html#new-url-map-and-url-variables">New URL Map and URL Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/mvc_review.html#new-controller">New Controller</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/mvc_review.html#modify-the-template">Modify the Template</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/mvc_review.html#view-updated-map-page">View Updated Map Page</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/mvc_review.html#variable-urls">Variable URLs</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/forms.html">Working with Form Data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/forms.html#create-template-with-a-form">Create Template with a Form</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/configuration.html">Configuring Apps</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#registerapp">registerApp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#registercontrollers">registerControllers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#registertemplatedirectories">registerTemplateDirectories</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#registerpublicdirectories">registerPublicDirectories</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#registerresources">registerResources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#registerpersistentstores">registerPersistentStores</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html#example-file">Example File</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/distribution.html">Distributing Apps</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/distribution.html#setup-script">Setup Script</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/distribution.html#production-installation">Production Installation</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/scaffold.html">Create a New Tethys App Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/model.html">The Model and Persistent Stores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/view.html">The View and Templating</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/controller.html">Working with the Controller</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/url_mapping.html">URL Mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/url_variables.html">URL Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/forms.html">User Input and Forms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/distribution.html">Distributing Apps</a></li>
 </ul>
 </div>
 </div>

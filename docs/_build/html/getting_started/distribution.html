@@ -30,8 +30,8 @@
   
     <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html"/>
         <link rel="up" title="Getting Started" href="../getting_started.html"/>
-        <link rel="next" title="Tethys Software Development Kit" href="../tethys_api.html"/>
-        <link rel="prev" title="Configuring Apps" href="configuration.html"/> 
+        <link rel="next" title="Supplementary Docs" href="../supplementary.html"/>
+        <link rel="prev" title="User Input and Forms" href="forms.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -89,23 +89,22 @@
 <li class="toctree-l2"><a class="reference internal" href="view.html">The View and Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="controller.html">Working with the Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="url_mapping.html">URL Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mvc_review.html">MVC Review</a></li>
-<li class="toctree-l2"><a class="reference internal" href="forms.html">Working with Form Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuring Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="url_variables.html">URL Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="forms.html">User Input and Forms</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">Distributing Apps</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../tethys_api.html">Tethys Software Development Kit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/dataset_services.html">Dataset Services API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/persistent_store.html">Persistent Stores API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/gizmos.html">Template Gizmos API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/geoprocessing.html">Geoprocessing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/visualizing.html">Data Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/cloud_computing.html">High Performance Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../supplementary.html">Supplementary Docs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/key_concepts.html">Key Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_project.html">App Project Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/working_with_apps.html">Working with Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_harvesting.html">App Harvesting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_class.html">App Base Class API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/dev_environment.html">Setup Development Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/production_deployment.html">Deploy Apps in Production</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/summary.html">Summary of References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../reference.html">Summary of References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
 
@@ -145,158 +144,69 @@
             
   <div class="section" id="distributing-apps">
 <h1>Distributing Apps<a class="headerlink" href="#distributing-apps" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> June 4, 2014</p>
-<p>Once your app is complete, you will likely want to distribute it for others to use or at the very least install it in a production Tethys Apps environment. When you share your app with others, give them the entire :term:` release package` The <a class="reference internal" href="../glossary.html#term-release-package"><em class="xref std std-term">release package</em></a> directory is also a great place to include a README with any instructions specific installing your app. If there are no special instructions, you can refer them to the installation instructions for apps found in the <a class="reference internal" href="../working_with_apps.html"><em>Working with Apps</em></a> section. It is also a good idea to include a copy of the license you are releasing the app under in the <a class="reference internal" href="../glossary.html#term-release-package"><em class="xref std std-term">release package</em></a> directory.  Be sure to use the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> to make installation of your app and all the dependencies as easy as possible. An explanation of the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> is provided in the next section of this article.</p>
+<p><strong>Last Updated:</strong> November 14, 2014</p>
+<p>Once your app is complete, you will likely want to distribute it for others to use or at the very least install it in a production Tethys Apps environment. When you share your app with others, you will share the entire <a class="reference internal" href="../glossary.html#term-release-package"><em class="xref std std-term">release package</em></a>, which is the outermost directory of your <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a>. For this tutorial, your release package is called &#8220;tethysapp-my_first_app&#8221;.</p>
+<p>The release package contains the source code for your app and a <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> (<tt class="file docutils literal"><span class="pre">setup.py</span></tt>). You may also wish to include a README file and a LICENSE file in this directory. The <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> can be used to streamline installation of your app and any Python dependencies it may have. You already used the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> without realizing it in the <a class="reference internal" href="scaffold.html"><em>Create a New Tethys App Project</em></a> tutorial when you installed your app for the first time (this command: <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">develop</span></tt>). A brief introduction to the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> will be provided in this tutorial.</p>
 <div class="section" id="setup-script">
 <h2>Setup Script<a class="headerlink" href="#setup-script" title="Permalink to this headline">¶</a></h2>
-<p>When you generate your app using the scaffold, it will automatically come with a <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> (<tt class="file docutils literal"><span class="pre">setup.py</span></tt>), located in the top level directory of the <a class="reference internal" href="../glossary.html#term-release-package"><em class="xref std std-term">release package</em></a>. The <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> is used to store metadata about your app, install your app into Python, and install any dependencies it may have. We have added some additinal functionality specific to Tethys Apps to make the app installation process streamlined and easy. Open the setup script for your app (<tt class="file docutils literal"><span class="pre">~/tethysdev/ckanapp-my_first_app/setup.py</span></tt>).</p>
-<div class="section" id="variables-section">
-<h3>Variables Section<a class="headerlink" href="#variables-section" title="Permalink to this headline">¶</a></h3>
-<p>The setup script is divided into several parts. The top of the script includes Python module imports followed by several variables similar to this example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">subprocess</span>
-
+<p>When you generate your app using the scaffold, it will automatically generate a <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> (<tt class="file docutils literal"><span class="pre">setup.py</span></tt>). Open the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> for your app located at <tt class="file docutils literal"><span class="pre">~/tethysdev/ckanapp-my_first_app/setup.py</span></tt>. It should look something like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">setuptools</span> <span class="kn">import</span> <span class="n">setup</span><span class="p">,</span> <span class="n">find_packages</span>
-<span class="kn">from</span> <span class="nn">setuptools.command.develop</span> <span class="kn">import</span> <span class="n">develop</span>
-<span class="kn">from</span> <span class="nn">setuptools.command.install</span> <span class="kn">import</span> <span class="n">install</span>
+<span class="kn">from</span> <span class="nn">tethys_apps.app_installation</span> <span class="kn">import</span> <span class="n">custom_develop_command</span><span class="p">,</span> <span class="n">custom_install_command</span>
 
-<span class="kn">from</span> <span class="nn">ckanext.tethys_apps.lib.persistent_store</span> <span class="kn">import</span> <span class="n">provision_persistent_stores</span>
-<span class="kn">from</span> <span class="nn">ckanext.tethys_apps.lib</span> <span class="kn">import</span> <span class="n">get_ckanapp_directory</span>
-
-<span class="c">### App Packages ###</span>
-<span class="c"># Don&#39;t change these</span>
-<span class="n">app_package</span> <span class="o">=</span> <span class="s">&#39;my_frist_app&#39;</span>
-<span class="n">release_package</span> <span class="o">=</span> <span class="s">&#39;ckanapp-&#39;</span> <span class="o">+</span> <span class="n">app_package</span>
-<span class="n">app_class</span> <span class="o">=</span> <span class="s">&#39;my_frist_app.app:MyFirstAppApp&#39;</span>
-
-<span class="c">### App Metadata ###</span>
-<span class="c"># Change whatever you&#39;d like here</span>
-<span class="n">version</span> <span class="o">=</span> <span class="s">&#39;1.0&#39;</span>
-<span class="n">author</span> <span class="o">=</span> <span class="s">&#39;Tethys User&#39;</span>
-<span class="n">author_email</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
-<span class="n">short_description</span> <span class="o">=</span> <span class="s">&#39;This is my very first app.&#39;</span>
-<span class="n">long_description</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
-<span class="n">url</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
-<span class="n">license</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
-<span class="n">keywords</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+<span class="c">### Apps Definition ###</span>
+<span class="n">app_package</span> <span class="o">=</span> <span class="s">&#39;my_first_app&#39;</span>
+<span class="n">release_package</span> <span class="o">=</span> <span class="s">&#39;tethysapp-&#39;</span> <span class="o">+</span> <span class="n">app_package</span>
+<span class="n">app_class</span> <span class="o">=</span> <span class="s">&#39;my_first_app.app:MyFirstApp&#39;</span>
+<span class="n">app_package_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">__file__</span><span class="p">)),</span> <span class="s">&#39;tethysapp&#39;</span><span class="p">,</span> <span class="n">app_package</span><span class="p">)</span>
 
 <span class="c">### Python Dependencies ###</span>
-<span class="c"># List external Python dependencies here by name</span>
-<span class="n">dependencies</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="c"># -*- Add names of external Python dependencies here -*-</span>
-<span class="p">]</span>
-</pre></div>
-</div>
-<p>The variables section is where you will make most, if any, changes to the setup script. The variables under &#8220;App Packages&#8221; heading store information about the packages in your app including the <a class="reference internal" href="../glossary.html#term-app-package"><em class="xref std std-term">app package</em></a> name, <a class="reference internal" href="../glossary.html#term-release-package"><em class="xref std std-term">release package</em></a> name, and the path to the <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a>. These variables should generally not be changed. The &#8220;App Metadata&#8221; section contains variables that store metadata about your app such as the version, author, and license of your app. Feel free to modify the variables in this section to meet your needs. The final variable section, &#8220;Python Dependencies&#8221; contains one variable: <tt class="docutils literal"><span class="pre">dependencies</span></tt>. This variable is a list of Python package names that your app is dependent on. When they <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> is run, it will also install any dependencies listed in this variable.</p>
-</div>
-<div class="section" id="custom-installation-classes-section">
-<h3>Custom Installation Classes Section<a class="headerlink" href="#custom-installation-classes-section" title="Permalink to this headline">¶</a></h3>
-<p>The next section of the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> includes two class definitions: <cite>CustomInstallCommand</cite> and <cite>CustomDevelopCommand</cite>. These classes are used by the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> to perform additional steps during installation that are required to fully install an app. Typically, this portion of the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> should not need to be modified. An example of what this section of the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> looks like is shown below:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CustomInstallCommand</span><span class="p">(</span><span class="n">install</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    When install command is used on setup.py, will copy app package to ckanapp directory.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c"># Get paths</span>
-        <span class="n">ckanapp_dir</span> <span class="o">=</span> <span class="n">get_ckanapp_directory</span><span class="p">()</span>
-        <span class="n">app_package_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">__file__</span><span class="p">)),</span> <span class="s">&#39;ckanapp&#39;</span><span class="p">,</span> <span class="n">app_package</span><span class="p">)</span>
-        <span class="n">destination_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ckanapp_dir</span><span class="p">,</span> <span class="n">app_package</span><span class="p">)</span>
+<span class="n">dependencies</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="c"># Notify user</span>
-        <span class="k">print</span> <span class="s">&#39;Copying App Package: {0} to {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">app_package_dir</span><span class="p">,</span> <span class="n">destination_dir</span><span class="p">)</span>
-
-        <span class="c"># Copy files</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">app_package_dir</span><span class="p">,</span> <span class="n">destination_dir</span><span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">destination_dir</span><span class="p">)</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">destination_dir</span><span class="p">)</span>
-
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">app_package_dir</span><span class="p">,</span> <span class="n">destination_dir</span><span class="p">)</span>
-
-        <span class="c"># Install dependencies</span>
-        <span class="k">for</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="n">dependencies</span><span class="p">:</span>
-            <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s">&#39;pip&#39;</span><span class="p">,</span> <span class="s">&#39;install&#39;</span><span class="p">,</span> <span class="n">dependency</span><span class="p">])</span>
-
-        <span class="c"># Run the original install command</span>
-        <span class="n">install</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
-<span class="k">class</span> <span class="nc">CustomDevelopCommand</span><span class="p">(</span><span class="n">develop</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    When develop command is used on setup.py, will create symbolic link from app package to ckanapp directory.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c"># Get paths</span>
-        <span class="n">ckanapp_dir</span> <span class="o">=</span> <span class="n">get_ckanapp_directory</span><span class="p">()</span>
-        <span class="n">app_package_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">__file__</span><span class="p">)),</span> <span class="s">&#39;ckanapp&#39;</span><span class="p">,</span> <span class="n">app_package</span><span class="p">)</span>
-        <span class="n">destination_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ckanapp_dir</span><span class="p">,</span> <span class="n">app_package</span><span class="p">)</span>
-
-        <span class="c"># Notify user</span>
-        <span class="k">print</span> <span class="s">&#39;Creating Symbolic Link to App Package: {0} to {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">app_package_dir</span><span class="p">,</span> <span class="n">destination_dir</span><span class="p">)</span>
-
-        <span class="c"># Create symbolic link</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">app_package_dir</span><span class="p">,</span> <span class="n">destination_dir</span><span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">destination_dir</span><span class="p">)</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">destination_dir</span><span class="p">)</span>
-
-            <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">app_package_dir</span><span class="p">,</span> <span class="n">destination_dir</span><span class="p">)</span>
-
-        <span class="c"># Install dependencies</span>
-        <span class="k">for</span> <span class="n">dependency</span> <span class="ow">in</span> <span class="n">dependencies</span><span class="p">:</span>
-            <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s">&#39;pip&#39;</span><span class="p">,</span> <span class="s">&#39;install&#39;</span><span class="p">,</span> <span class="n">dependency</span><span class="p">])</span>
-
-        <span class="c"># Run the original develop command</span>
-        <span class="n">develop</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="setup-function-section">
-<h3>Setup Function Section<a class="headerlink" href="#setup-function-section" title="Permalink to this headline">¶</a></h3>
-<p>The next section of the setup script contains the actual call to the <tt class="docutils literal"><span class="pre">setup()</span></tt> function. This function takes all the variables from the section above as arguments with a few others that won&#8217;t be discussed in detail here. It is this function that actually runs the installation of your app. There are many other options that can be specified in the <tt class="docutils literal"><span class="pre">setup()</span></tt> function. Review the <a class="reference external" href="https://pythonhosted.org/setuptools/setuptools.html#installing-setuptools">setuptools</a> documentation for more information if you wish to take advatage of these options.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">setup</span><span class="p">(</span>
+<span class="n">setup</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="n">release_package</span><span class="p">,</span>
-    <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span>
-    <span class="n">description</span><span class="o">=</span><span class="n">short_description</span><span class="p">,</span>
-    <span class="n">long_description</span><span class="o">=</span><span class="n">long_description</span><span class="p">,</span>
-    <span class="n">classifiers</span><span class="o">=</span><span class="p">[],</span> <span class="c"># Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers</span>
-    <span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">,</span>
-    <span class="n">author</span><span class="o">=</span><span class="n">author</span><span class="p">,</span>
-    <span class="n">author_email</span><span class="o">=</span><span class="n">author_email</span><span class="p">,</span>
-    <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
-    <span class="n">license</span><span class="o">=</span><span class="n">license</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s">&#39;0.0&#39;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="n">long_description</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="n">author</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="n">author_email</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="n">license</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
     <span class="n">packages</span><span class="o">=</span><span class="n">find_packages</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;ez_setup&#39;</span><span class="p">,</span> <span class="s">&#39;examples&#39;</span><span class="p">,</span> <span class="s">&#39;tests&#39;</span><span class="p">]),</span>
-    <span class="n">namespace_packages</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;ckanapp&#39;</span><span class="p">,</span> <span class="s">&#39;ckanapp.&#39;</span> <span class="o">+</span> <span class="n">app_package</span><span class="p">],</span>
+    <span class="n">namespace_packages</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;tethysapp&#39;</span><span class="p">,</span> <span class="s">&#39;tethysapp.&#39;</span> <span class="o">+</span> <span class="n">app_package</span><span class="p">],</span>
     <span class="n">include_package_data</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
     <span class="n">zip_safe</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
     <span class="n">install_requires</span><span class="o">=</span><span class="n">dependencies</span><span class="p">,</span>
-    <span class="n">entry_points</span><span class="o">=</span>\
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span><span class="p">,</span>
     <span class="n">cmdclass</span><span class="o">=</span><span class="p">{</span>
-        <span class="s">&#39;install&#39;</span><span class="p">:</span> <span class="n">CustomInstallCommand</span><span class="p">,</span>
-        <span class="s">&#39;develop&#39;</span><span class="p">:</span> <span class="n">CustomDevelopCommand</span>
+        <span class="s">&#39;install&#39;</span><span class="p">:</span> <span class="n">custom_install_command</span><span class="p">(</span><span class="n">app_package</span><span class="p">,</span> <span class="n">app_package_dir</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">),</span>
+        <span class="s">&#39;develop&#39;</span><span class="p">:</span> <span class="n">custom_develop_command</span><span class="p">(</span><span class="n">app_package</span><span class="p">,</span> <span class="n">app_package_dir</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">)</span>
 </pre></div>
 </div>
+<p>As a general rule, you should never modify the parameters under the &#8220;Apps Definition&#8221; heading. These parameters are used by the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> to find the source code for your app and changing their values could result in your app not working properly. If you use Python libraries that are external to your app or Tethys Platform, you will need add the library name to the <tt class="docutils literal"><span class="pre">dependencies</span></tt> list in the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a>. These libraries will automatically be installed when your app is installed.</p>
+<p>The final part of the setup script makes a call to the <tt class="docutils literal"><span class="pre">setup()</span></tt> function that is provided by the <tt class="docutils literal"><span class="pre">setuptools</span></tt> library. You will see the metadata that you defined during the scaffold process listed here. As you release subsequent versions of your app, you may wish to increment the <tt class="docutils literal"><span class="pre">version</span></tt> parameter of this function.</p>
 </div>
-<div class="section" id="database-provisioning-function-section">
-<h3>Database Provisioning Function Section<a class="headerlink" href="#database-provisioning-function-section" title="Permalink to this headline">¶</a></h3>
-<p>The final section of the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> is a call to the <tt class="docutils literal"><span class="pre">provision_persisnent_stores()</span></tt> function. This function automatically creates any databases that you have requeseted in the <a class="reference internal" href="../glossary.html#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a> (<tt class="file docutils literal"><span class="pre">app.py</span></tt>) using the <tt class="docutils literal"><span class="pre">registerPersistentStores()</span></tt> method. There should be no need to modify this section of the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a>, but it could be helpful to know that this exists. For more information on automatic database provisioning, see <tt class="xref doc docutils literal"><span class="pre">persistent_stores</span></tt>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># Provision tethys databases for app</span>
-<span class="n">provision_persistent_stores</span><span class="p">(</span><span class="n">app_class</span><span class="p">)</span>
+<div class="section" id="setup-script-installation">
+<h2>Setup Script Installation<a class="headerlink" href="#setup-script-installation" title="Permalink to this headline">¶</a></h2>
+<p>The setup script is used to install your app and there are two types of installation that can be performed: <tt class="docutils literal"><span class="pre">install</span></tt> and <tt class="docutils literal"><span class="pre">develop</span></tt>. The <tt class="docutils literal"><span class="pre">install</span></tt> type of installation hard copies the source code of your app into the <tt class="file docutils literal"><span class="pre">site-packages</span></tt> directory of your Python installation. The <tt class="file docutils literal"><span class="pre">site-packages</span></tt> directory is where Python keeps all of the code for external modules and libraries that have been installed.</p>
+<p>This is the type of installation you would use for a completed app that is being installed in a production environment. To perform this type of installation, open a terminal, change into the <a class="reference internal" href="../glossary.html#term-release-package"><em class="xref std std-term">release package</em></a> directory of your app, and run the <tt class="docutils literal"><span class="pre">install</span></tt> command on the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd ~/tethysdev/tethysapp-my_first_app
+python setup.py install
 </pre></div>
 </div>
+<p>The <tt class="docutils literal"><span class="pre">install</span></tt> type of installation is not well suited for working with your app during development, because you would need to reinstall it (i.e.: run the commands above) every time you made a change to the app source code. This is why the <tt class="docutils literal"><span class="pre">develop</span></tt> type of installation exists. When an app is installed with the <tt class="docutils literal"><span class="pre">develop</span></tt> command, the source codes is only linked to the <tt class="file docutils literal"><span class="pre">site-packages</span></tt> directory. This allows you to change your code and test the changes without reinstall the app.</p>
+<p>You already performed this type of installation on your app during the <a class="reference internal" href="scaffold.html"><em>Create a New Tethys App Project</em></a> tutorial. To perform this type of installation, open a terminal, change into the <a class="reference internal" href="../glossary.html#term-release-package"><em class="xref std std-term">release package</em></a> directory, and run the <tt class="docutils literal"><span class="pre">develop</span></tt> command on the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> like so:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd ~/tethysdev/tethysapp-my_first_app
+python setup.py develop
+</pre></div>
 </div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">For more information about <tt class="docutils literal"><span class="pre">setuptools</span></tt> and the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a>, see the <a class="reference external" href="https://pythonhosted.org/setuptools/setuptools.html">Setuptools Documentation</a>.</p>
 </div>
-<div class="section" id="production-installation">
-<h2>Production Installation<a class="headerlink" href="#production-installation" title="Permalink to this headline">¶</a></h2>
-<p>Follow the instructions found in the <a class="reference internal" href="../working_with_apps.html"><em>Working with Apps</em></a> section to install apps in production.</p>
 </div>
 </div>
 
@@ -306,10 +216,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../tethys_api.html" class="btn btn-neutral float-right" title="Tethys Software Development Kit">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../supplementary.html" class="btn btn-neutral float-right" title="Supplementary Docs">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="configuration.html" class="btn btn-neutral" title="Configuring Apps"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="forms.html" class="btn btn-neutral" title="User Input and Forms"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

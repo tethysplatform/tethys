@@ -28,7 +28,10 @@
   
 
   
-    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html"/> 
+    <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html"/>
+        <link rel="up" title="Setup Development Environment" href="../supplementary/dev_environment.html"/>
+        <link rel="next" title="Using Aptana Studio 3 IDE" href="setup_aptana.html"/>
+        <link rel="prev" title="Docker Development Environment" href="docker_env.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -57,7 +60,7 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
         
-            <ul>
+            <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../features.html">Tethys Platform</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../features.html#develop-web-apps">Develop Web Apps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../features.html#python-software-development-kit">Python Software Development Kit</a></li>
@@ -86,23 +89,22 @@
 <li class="toctree-l2"><a class="reference internal" href="../getting_started/view.html">The View and Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../getting_started/controller.html">Working with the Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../getting_started/url_mapping.html">URL Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../getting_started/mvc_review.html">MVC Review</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../getting_started/forms.html">Working with Form Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../getting_started/configuration.html">Configuring Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/url_variables.html">URL Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/forms.html">User Input and Forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../getting_started/distribution.html">Distributing Apps</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../tethys_api.html">Tethys Software Development Kit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/dataset_services.html">Dataset Services API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/persistent_store.html">Persistent Stores API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/gizmos.html">Template Gizmos API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/geoprocessing.html">Geoprocessing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/visualizing.html">Data Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_api/cloud_computing.html">High Performance Computing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../supplementary.html">Supplementary Docs</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/key_concepts.html">Key Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_project.html">App Project Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/working_with_apps.html">Working with Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_harvesting.html">App Harvesting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_class.html">App Base Class API</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../supplementary/dev_environment.html">Setup Development Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/production_deployment.html">Deploy Apps in Production</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/summary.html">Summary of References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../reference.html">Summary of References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
 
@@ -126,6 +128,10 @@
           <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../supplementary.html">Supplementary Docs</a> &raquo;</li>
+      
+          <li><a href="../supplementary/dev_environment.html">Setup Development Environment</a> &raquo;</li>
       
     <li>Working with CKAN in Development</li>
       <li class="wy-breadcrumbs-aside">
@@ -187,6 +193,15 @@ $  paster serve --reload /etc/ckan/default/development.ini
 
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="setup_aptana.html" class="btn btn-neutral float-right" title="Using Aptana Studio 3 IDE">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="docker_env.html" class="btn btn-neutral" title="Docker Development Environment"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

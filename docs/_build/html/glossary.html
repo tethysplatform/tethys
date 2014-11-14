@@ -29,7 +29,7 @@
 
   
     <link rel="top" title="Tethys Platform 0.1.0 documentation" href="index.html"/>
-        <link rel="prev" title="Summary of References" href="reference.html"/> 
+        <link rel="prev" title="Summary of References" href="supplementary/summary.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -87,23 +87,22 @@
 <li class="toctree-l2"><a class="reference internal" href="getting_started/view.html">The View and Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting_started/controller.html">Working with the Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting_started/url_mapping.html">URL Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/mvc_review.html">MVC Review</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/forms.html">Working with Form Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html">Configuring Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/url_variables.html">URL Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/forms.html">User Input and Forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting_started/distribution.html">Distributing Apps</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="tethys_api.html">Tethys Software Development Kit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/dataset_services.html">Dataset Services API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/persistent_store.html">Persistent Stores API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/gizmos.html">Template Gizmos API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/geoprocessing.html">Geoprocessing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/visualizing.html">Data Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/cloud_computing.html">High Performance Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="supplementary.html">Supplementary Docs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/key_concepts.html">Key Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/app_project.html">App Project Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/working_with_apps.html">Working with Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/app_harvesting.html">App Harvesting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/app_class.html">App Base Class API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/dev_environment.html">Setup Development Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/production_deployment.html">Deploy Apps in Production</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/summary.html">Summary of References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Summary of References</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Glossary</a></li>
 </ul>
 
@@ -145,25 +144,25 @@
 <dt id="term-app-class">app class</dt>
 <dd>A class defined in the <a class="reference internal" href="#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a> that inherits from the <tt class="docutils literal"><span class="pre">AppBase</span></tt> class provided by the Tethys Apps plugin. This class implements several methods that are used to link apps with CKAN.</dd>
 <dt id="term-app-configuration-file">app configuration file</dt>
-<dd>A file located in the <a class="reference internal" href="#term-app-package"><em class="xref std std-term">app package</em></a> and called <tt class="file docutils literal"><span class="pre">app.py</span></tt> by convention. This file contains the <a class="reference internal" href="#term-app-class"><em class="xref std std-term">app class</em></a> that is used to configure apps. For more details on the app configuration file, see <a class="reference internal" href="getting_started/configuration.html"><em>Configuring Apps</em></a>.</dd>
+<dd>A file located in the <a class="reference internal" href="#term-app-package"><em class="xref std std-term">app package</em></a> and called <tt class="file docutils literal"><span class="pre">app.py</span></tt> by convention. This file contains the <a class="reference internal" href="#term-app-class"><em class="xref std std-term">app class</em></a> that is used to configure apps. For more details on the app configuration file, see <a class="reference internal" href="supplementary/app_class.html"><em>App Base Class API</em></a>.</dd>
 <dt id="term-app-harvester">app harvester</dt>
-<dd>An instance of the <tt class="docutils literal"><span class="pre">SingletonAppHarvester</span></tt> class. The app harvester collects information about each app and uses it to connect the apps to CKAN. Refer to <a class="reference internal" href="app_harvesting.html"><em>App Harvesting</em></a>.</dd>
+<dd>An instance of the <tt class="docutils literal"><span class="pre">SingletonAppHarvester</span></tt> class. The app harvester collects information about each app and uses it to connect the apps to CKAN. Refer to <a class="reference internal" href="supplementary/app_harvesting.html"><em>App Harvesting</em></a>.</dd>
 <dt id="term-app-instance"><span id="term-app-instances"></span>app instance<br />app instances</dt>
 <dd>An instance of an <a class="reference internal" href="#term-app-class"><em class="xref std std-term">app class</em></a>.</dd>
 <dt id="term-app-package"><span id="term-app-packages"></span>app package<br />app packages</dt>
-<dd>A Python namespace package of an <a class="reference internal" href="#term-app-project"><em class="xref std std-term">app project</em></a> that contains all of the source code for an app. The app package is named the same as the app by convention. Refer to Figure 1 of <a class="reference internal" href="app_project.html"><em>App Project Structure</em></a> for more information.</dd>
+<dd>A Python namespace package of an <a class="reference internal" href="#term-app-project"><em class="xref std std-term">app project</em></a> that contains all of the source code for an app. The app package is named the same as the app by convention. Refer to Figure 1 of <a class="reference internal" href="supplementary/app_project.html"><em>App Project Structure</em></a> for more information.</dd>
 <dt id="term-app-project">app project</dt>
 <dd>All of the source code for a Tethys Apps app including the <a class="reference internal" href="#term-release-package"><em class="xref std std-term">release package</em></a> and the <a class="reference internal" href="#term-app-package"><em class="xref std std-term">app package</em></a>.</dd>
 <dt id="term-dataset"><span id="term-datasets"></span>dataset<br />datasets</dt>
 <dd>A dataset is a container for one or more resources that are stored in a <a class="reference internal" href="#term-dataset-service"><em class="xref std std-term">dataset service</em></a>.</dd>
 <dt id="term-dataset-service"><span id="term-dataset-services"></span>dataset service<br />dataset services</dt>
-<dd>A dataset service is a web service external to Tethys Platform that can be used to store and publish file-based datasets (e.g.: text files, Excel files, zip archives, other model files). See the <a class="reference internal" href="tethys_api/dataset_services.html"><em>Dataset Services API</em></a> for more information.</dd>
+<dd>A dataset service is a web service external to Tethys Platform that can be used to store and publish file-based datasets (e.g.: text files, Excel files, zip archives, other model files). See the <a class="reference internal" href="tethys_sdk/dataset_services.html"><em>Dataset Services API</em></a> for more information.</dd>
 <dt id="term-model-view-controller">Model View Controller</dt>
 <dd>The development pattern used to develop Tethys apps. The Model represents the data of the app, the View is composed of the representation of the data, and the Controller consists of the logic needed to prepare the data from the Model for the View and any other logic your app needs.</dd>
 <dt id="term-persistent-store"><span id="term-persistent-stores"></span>persistent store<br />persistent stores</dt>
 <dd>A persistent store is a database that can be automatically created for an app. See <a class="reference internal" href="getting_started/model.html"><em>The Model and Persistent Stores</em></a> for more information about persistent stores.</dd>
 <dt id="term-release-package">release package</dt>
-<dd>The top level Python namespace package of an <a class="reference internal" href="#term-app-project"><em class="xref std std-term">app project</em></a>. The release package contains the <a class="reference internal" href="#term-setup-script"><em class="xref std std-term">setup script</em></a> and all the source for an app including the <a class="reference internal" href="#term-app-package"><em class="xref std std-term">app package</em></a>. Refer to Figure 1 of <a class="reference internal" href="app_project.html"><em>App Project Structure</em></a> for more information.</dd>
+<dd>The top level Python namespace package of an <a class="reference internal" href="#term-app-project"><em class="xref std std-term">app project</em></a>. The release package contains the <a class="reference internal" href="#term-setup-script"><em class="xref std std-term">setup script</em></a> and all the source for an app including the <a class="reference internal" href="#term-app-package"><em class="xref std std-term">app package</em></a>. Refer to Figure 1 of <a class="reference internal" href="supplementary/app_project.html"><em>App Project Structure</em></a> for more information.</dd>
 <dt id="term-resource"><span id="term-resources"></span>resource<br />resources</dt>
 <dd>A resource is a file or other object and the associated metadata that is stored in a <a class="reference internal" href="#term-dataset-service"><em class="xref std std-term">dataset service</em></a>.</dd>
 <dt id="term-setup-script">setup script</dt>
@@ -182,7 +181,7 @@
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="reference.html" class="btn btn-neutral" title="Summary of References"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="supplementary/summary.html" class="btn btn-neutral" title="Summary of References"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -88,23 +88,22 @@
 <li class="toctree-l2"><a class="reference internal" href="getting_started/view.html">The View and Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting_started/controller.html">Working with the Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting_started/url_mapping.html">URL Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/mvc_review.html">MVC Review</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/forms.html">Working with Form Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started/configuration.html">Configuring Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/url_variables.html">URL Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/forms.html">User Input and Forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting_started/distribution.html">Distributing Apps</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="tethys_api.html">Tethys Software Development Kit</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/dataset_services.html">Dataset Services API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/persistent_store.html">Persistent Stores API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/gizmos.html">Template Gizmos API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/spatial_publishing.html">Spatial Data Publishing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/geoprocessing.html">Geoprocessing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/visualizing.html">Data Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_api/cloud_computing.html">High Performance Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="supplementary.html">Supplementary Docs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/key_concepts.html">Key Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/app_project.html">App Project Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/working_with_apps.html">Working with Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/app_harvesting.html">App Harvesting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/app_class.html">App Base Class API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/dev_environment.html">Setup Development Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/production_deployment.html">Deploy Apps in Production</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/summary.html">Summary of References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Summary of References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
 </ul>
 
@@ -329,7 +328,7 @@ instructions:</p>
 </pre></div>
 </div>
 <p>d. If you wish to configure a sitewide dataset service (CKAN or HydroShare), add the TETHYS_DATASET_SERVICES dictionary
-with the appropriate parameters. See the <a class="reference internal" href="tethys_api/dataset_services.html"><em>Dataset Services API</em></a> documentation for more details. For example:</p>
+with the appropriate parameters. See the <a class="reference internal" href="tethys_sdk/dataset_services.html"><em>Dataset Services API</em></a> documentation for more details. For example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">TETHYS_DATASET_SERVICES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s">&#39;ckan_example&#39;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s">&#39;ENGINE&#39;</span><span class="p">:</span> <span class="s">&#39;tethys_datasets.engines.CkanDatasetEngine&#39;</span><span class="p">,</span>
@@ -372,7 +371,7 @@ login using the system administrator username and password that you created in t
 </div>
 <div class="section" id="what-s-next">
 <h2>What&#8217;s Next?<a class="headerlink" href="#what-s-next" title="Permalink to this headline">¶</a></h2>
-<p>Head over to <a class="reference internal" href="getting_started.html"><em>Getting Started</em></a> and create your first app. You can also check out the <a class="reference internal" href="tethys_api.html"><em>Tethys Software Development Kit</em></a>
+<p>Head over to <a class="reference internal" href="getting_started.html"><em>Getting Started</em></a> and create your first app. You can also check out the <a class="reference internal" href="tethys_sdk.html"><em>Software Development Kit</em></a>
 documentation to familiarize yourself with all the features available.</p>
 </div>
 </div>
