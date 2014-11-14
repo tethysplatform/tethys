@@ -33,6 +33,7 @@ pip                 `Python package management and installation tool. <http://pi
 virtualenv          `virtualenv isolated Python environment creator. <http://virtualenv.readthedocs.org/en/latest/virtualenv.html#installation>`_
 git                 `Git open source distributed version control system. <http://git-scm.com/downloads>`_
 ==================  ====================================================================================================
+
 \* Note: The feature requiring this software is not fully implemented at this time and installation of this software is optional.
 
 2. Install Advanced Dependencies
@@ -162,7 +163,7 @@ instructions::
     TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY = 'Th|$I$@neXAmpL3aPik3Y'
 
 d. If you wish to configure a sitewide dataset service (CKAN or HydroShare), add the TETHYS_DATASET_SERVICES dictionary
-with the appropriate parameters. See the :doc:`./tethys_api/dataset_services` documentation for more details. For example::
+with the appropriate parameters. See the :doc:`./tethys_sdk/dataset_services` documentation for more details. For example::
 
   TETHYS_DATASET_SERVICES = {
       'ckan_example': {
@@ -206,7 +207,7 @@ login using the system administrator username and password that you created in t
 What's Next?
 ------------
 
-Head over to :doc:`./getting_started` and create your first app. You can also check out the :doc:`./tethys_api`
+Head over to :doc:`./getting_started` and create your first app. You can also check out the :doc:`./tethys_sdk`
 documentation to familiarize yourself with all the features available.
 
 

@@ -86,12 +86,12 @@ Tethys apps generated from the scaffold come with a :file:`base.html` template w
       <script src="{% static 'my_first_app/js/main.js' %}" type="text/javascript"></script>
     {% endblock %}
 
-The :file:`base.html` contains several blocks that your app templates can override or extend. The Blocks you will use most often are``app_navigation_items``, ``app_content``, and, ``app_actions``. These blocks correspond with different parts of the app interface (shown in Figure 1). All of your app templates should extend the :file:`base.html` file. As a rule, content that you would like to be present in all your templates should be included in the :file:`base.html` and content that is specific to a certain template should be included in that template. A brief explanation of each block is provided.
+The :file:`base.html` contains several blocks that your app templates can override or extend. The Blocks you will use most often are ``app_navigation_items``, ``app_content``, and, ``app_actions``. These blocks correspond with different parts of the app interface (shown in the figure below). All of your app templates should extend the :file:`base.html` file. As a rule, content that you would like to be present in all your templates should be included in the :file:`base.html` and content that is specific to a certain template should be included in that template. A brief explanation of each block is provided.
 
 .. figure:: ../images/template_blocks.png
     :width: 650px
 
-    **Figure 1.** The blocks of the :file:`base.html` template correspond with different parts of the interface: (1) app_navigation_items, (2) app_content, and (3) app_actions.
+    The blocks of the :file:`base.html` template correspond with different parts of the interface: (1) app_navigation_items, (2) app_content, and (3) app_actions.
 
 title
 -----
@@ -173,7 +173,7 @@ Now that you know the basics of Django templating, create a new template in your
 
 The :file:`map.html` template inherits from the :file:`base.html` in your templates directory. It also overrides the ``app_content``, `app_actions``, and ``scripts`` blocks. The ``url`` tag is used to provide a link back to the home page of the app in the ``app_actions`` block.
 
-The map is inserted into the ``app_content`` block using one of the Tethys Gizmos called ``editable_google_map``. Gizmos are an easy way to insert common user interface elements in to your templates with minimal code. The map is configured via a dictionary called ``map_options``, which is defined in the controller. This will be discussed in the next tutorial. For more information on Gizmos, refer to the :doc:`../tethys_api/gizmos` documentation.
+The map is inserted into the ``app_content`` block using one of the Tethys Gizmos called ``editable_google_map``. Gizmos are an easy way to insert common user interface elements in to your templates with minimal code. The map is configured via a dictionary called ``map_options``, which is defined in the controller. This will be discussed in the next tutorial. For more information on Gizmos, refer to the :doc:`../tethys_sdk/gizmos` documentation.
 
 Public Files and Resources
 ==========================

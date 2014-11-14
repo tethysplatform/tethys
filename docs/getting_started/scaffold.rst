@@ -5,7 +5,7 @@ Create a New Tethys App Project
 **Last Updated:** November 13, 2014
 
 Tethys Platform provides a scaffold for generating new app projects. The scaffold generates a Tethys app project with
-the minimum files and the file structure that is required (see :doc:`../app_project`). This section of the tutorial will
+the minimum files and the file structure that is required (see :doc:`../supplementary/app_project`). This section of the tutorial will
 describe how to start a new Tethys app project using the scaffold and it will describe how to install the app into your
 Tethys platform for development.
 
@@ -28,7 +28,7 @@ metadata for you new app.:
 In a file browser open the :file:`tethysapp-my_first_app` directory and familiarize yourself with its contents. The
 scaffold automatically prefixes your app project directory name with "tethysapp-". The main package of your app project,
 "my_first_app", is located within a namespace package called "tethysapp". For more information about the app project
-structure, see :doc:`../app_project`.
+structure, see :doc:`../supplementary/app_project`.
 
 Development Installation
 ========================
@@ -56,12 +56,12 @@ Use the :command:`tethys manage start` command to start up the development serve
     $ tethys manage start
 
 If all has gone well, you should see your app listed on the app library page. Exploring your new app won't take long,
-because there is only one page. Familiarize yourself with different parts of the app interface (see Figure 1).
+because there is only one page. Familiarize yourself with different parts of the app interface (see below).
 
 .. figure:: ../images/app_controls.png
     :width: 650px
 
-    **Figure 1.** Tethys app interface: (1) app navigation toggle, (2) exit button, (3) app navigation, (4) actions, and (5) app content.
+    Parts of a Tethys app interface: (1) app navigation toggle, (2) exit button, (3) app navigation, (4) actions, and (5) app content.
 
 Model View Controller
 =====================

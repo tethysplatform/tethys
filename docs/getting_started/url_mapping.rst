@@ -9,7 +9,7 @@ Whenever you create a new controller, you will also need to associate it with a 
 Map Controller to URL
 =====================
 
-Mapping a controller to a URL is performed in the :term:`app configuration file`(:file:`app.py`). Open your app configuration file located at :file:`my_first_app/app.py`. Your :term:`app class` contains a method called ``url_maps()``. This method must return a list or tuple of ``UrlMap`` objects. ``UrlMap`` are given three parameters: ``name``, ``url``, and ``controller``.
+Mapping a controller to a URL is performed in the :term:`app configuration file` (:file:`app.py`). Open your app configuration file located at :file:`my_first_app/app.py`. Your :term:`app class` contains a method called ``url_maps()``. This method must return a list or tuple of ``UrlMap`` objects. ``UrlMap`` are given three parameters: ``name``, ``url``, and ``controller``.
 
 Your :term:`app class` will already have one ``UrlMap`` for the home page. Add a new ``UrlMap`` object for the ``map`` controller that you created in the previous step. Give it the name "map", url of "my-first-app/map", and the path to the controller "my_first_app.controllers.map". The ``url_maps()`` method for your app should look something like this when you are done:
 
@@ -58,9 +58,7 @@ In this code, the ``url`` template tag is used to provide the url to the map pag
 View New Map Page
 =================
 
-At this point, your app should be ready to run again. Start up the development server using the ``tethys manage start`` command and browse to your app. Use the "Go To Map" action on the home page to browse to your new map page. It should look similar to Figure 1.
+At this point, your app should be ready to run again. Start up the development server using the ``tethys manage start`` command and browse to your app. Use the "Go To Map" action on the home page to browse to your new map page. It should look similar to this:
 
 .. figure:: ../images/new_map_page.png
     :width: 650px
-
-    **Figure 1:** New map page.

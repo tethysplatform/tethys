@@ -1,6 +1,6 @@
-****************
-Configuring Apps
-****************
+******************
+App Base Class API
+******************
 
 **Last Updated:** May 21, 2014
 
@@ -17,7 +17,7 @@ Each of these methods accept one argument. During app harvesting, the ``Singleto
 
 .. note::
     
-    It is required that your :term:`app configuration file` is located in the :term:`app package` directory as depicted in Figure 1 on the :doc:`../app_project` page. It is also required that the name of the file is "app.py".
+    It is required that your :term:`app configuration file` is located in the :term:`app package` directory as depicted in Figure 1 on the :doc:`./app_project` page. It is also required that the name of the file is "app.py".
 
 registerApp
 ===========
@@ -157,7 +157,7 @@ This method is used to request persistent stores (databases) for your app. These
         persistentStores.addPersistentStore('demo_store')
         persistentStores.addInitializationScript('my_first_app.lib.init_db')
 
-For more information about working with persistent stores, see the :doc:`./persistent_stores` section.
+For more information about working with persistent stores, see the :doc:`../tethys_sdk/persistent_store` section.
 
 Example File
 ============

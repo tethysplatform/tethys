@@ -9,7 +9,7 @@ Tethys Platform
    installation
    getting_started
    tethys_api
-   reference
+   supplementary
    glossary
 
 

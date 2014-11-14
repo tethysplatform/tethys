@@ -7,16 +7,16 @@ Glossary
 
     app package
     app packages
-        A Python namespace package of an :term:`app project` that contains all of the source code for an app. The app package is named the same as the app by convention. Refer to Figure 1 of :doc:`./app_project` for more information.
+        A Python namespace package of an :term:`app project` that contains all of the source code for an app. The app package is named the same as the app by convention. Refer to Figure 1 of :doc:`./supplementary/app_project` for more information.
 
     app project
         All of the source code for a Tethys Apps app including the :term:`release package` and the :term:`app package`.
 
     release package
-        The top level Python namespace package of an :term:`app project`. The release package contains the :term:`setup script` and all the source for an app including the :term:`app package`. Refer to Figure 1 of :doc:`./app_project` for more information.
+        The top level Python namespace package of an :term:`app project`. The release package contains the :term:`setup script` and all the source for an app including the :term:`app package`. Refer to Figure 1 of :doc:`./supplementary/app_project` for more information.
 
     app harvester
-        An instance of the ``SingletonAppHarvester`` class. The app harvester collects information about each app and uses it to connect the apps to CKAN. Refer to :doc:`app_harvesting`.
+        An instance of the ``SingletonAppHarvester`` class. The app harvester collects information about each app and uses it to connect the apps to CKAN. Refer to :doc:`./supplementary/app_harvesting`.
 
     app instance    
     app instances
@@ -30,7 +30,7 @@ Glossary
         Reusable view elements that can be inserted into a template using a single line of code. Examples include common GUI elements like buttons, toggle switches, and input fields as well as more complex elements like maps and plots.
 
     app configuration file
-        A file located in the :term:`app package` and called :file:`app.py` by convention. This file contains the :term:`app class` that is used to configure apps. For more details on the app configuration file, see :doc:`./getting_started/configuration`.
+        A file located in the :term:`app package` and called :file:`app.py` by convention. This file contains the :term:`app class` that is used to configure apps. For more details on the app configuration file, see :doc:`./supplementary/app_class`.
 
     setup script
         A file located in the :term:`release package` and called :file:`setup.py` by convention. The setup script is used to automate the installation of apps. For more details see :doc:`./getting_started/distribution`.
@@ -49,7 +49,7 @@ Glossary
 
     dataset service
     dataset services
-        A dataset service is a web service external to Tethys Platform that can be used to store and publish file-based datasets (e.g.: text files, Excel files, zip archives, other model files). See the :doc:`./tethys_api/dataset_services` for more information.
+        A dataset service is a web service external to Tethys Platform that can be used to store and publish file-based datasets (e.g.: text files, Excel files, zip archives, other model files). See the :doc:`./tethys_sdk/dataset_services` for more information.
 
     virtual environment
     Python virtual environment

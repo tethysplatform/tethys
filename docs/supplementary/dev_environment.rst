@@ -13,9 +13,9 @@ Contents:
 .. toctree::
     :maxdepth: 1
     
-    development/manual_install
-    development/ubuntu_vm
-    development/docker_env
-    development/working_ckan
-    development/setup_aptana
+    ../development/manual_install
+    ../development/ubuntu_vm
+    ../development/docker_env
+    ../development/working_ckan
+    ../development/setup_aptana
 

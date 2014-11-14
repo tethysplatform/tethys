@@ -6,7 +6,7 @@ The Model and Persistent Stores
 
 In this part of the tutorial you'll learn about the Model component of MVC development for Tethys apps. The Model represents the data of your app and the code used to manage it. The data of your app can take many forms. It can be generated on-the-fly and stored in Python data structures (e.g.: lists, dictionaries, and NumPy arrays), stored in databases, or contained in files via a :term:`dataset service`.
 
-In this tutorial you will use the :doc:`../tethys_api/persistent_store` to create a spatially enabled database for your app and you will learn how to use the `SQLAlchemy <http://www.sqlalchemy.org/>`_ object relational mapper (ORM) to create a data model for your app.
+In this tutorial you will use the :doc:`../tethys_sdk/persistent_store` to create a spatially enabled database for your app and you will learn how to use the `SQLAlchemy <http://www.sqlalchemy.org/>`_ object relational mapper (ORM) to create a data model for your app.
 
 Register a Persistent Store
 ===========================
@@ -46,7 +46,7 @@ A persistent store database will be created for each ``PersistentStore`` object 
 
 .. note::
 
-    Read more about persistent stores in the :doc:`../tethys_api/persistent_store` documentation.
+    Read more about persistent stores in the :doc:`../tethys_sdk/persistent_store` documentation.
 
 Create an SQLAlchemy Data Model
 ===============================
