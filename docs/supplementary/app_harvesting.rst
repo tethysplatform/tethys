@@ -12,7 +12,7 @@ After the :term:`app harvester` has located all of the app configuration files, 
 
 .. _harvest-figure-1:
 
-.. figure:: images/app_harvest.png
+.. figure:: ../images/app_harvest.png
 	:alt: diagram of app harvesting process
 
 	**Figure 1. The app harvesting process.**
@@ -24,7 +24,7 @@ The app harvesting process is made to mimic the process by which plugins for CKA
 
 .. _harvest-figure-2:
 
-.. figure:: images/mirror_comparison.png
+.. figure:: ../images/mirror_comparison.png
 	:alt: comparison of the CKAN plugin class and a Tethys Apps class
 
 	**Figure 2. Comparison of a CKAN Plugin class and a Tethys App class.**
