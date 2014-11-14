@@ -1,6 +1,6 @@
-*******************************
-Tethys Software Development Kit
-*******************************
+************************
+Software Development Kit
+************************
 
 **Last Updated:** November 11, 2014
 
@@ -12,10 +12,10 @@ is included in the SDK:
 .. toctree::
    :maxdepth: 2
    
-   tethys_api/dataset_services
-   tethys_api/persistent_store
-   tethys_api/gizmos
-   tethys_api/spatial_publishing
-   tethys_api/geoprocessing
-   tethys_api/visualizing
-   tethys_api/cloud_computing
+   tethys_sdk/dataset_services
+   tethys_sdk/persistent_store
+   tethys_sdk/gizmos
+   tethys_sdk/spatial_publishing
+   tethys_sdk/geoprocessing
+   tethys_sdk/visualizing
+   tethys_sdk/cloud_computing
