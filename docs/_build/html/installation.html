@@ -151,16 +151,13 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> November 11, 2014</p>
-<p>This section describes how to install Tethys Platform. These installation instructions are optimized for Ubuntu 14.04,
-which is the recommended platform for running Tethys Platform. However, these instructions should work with other
-types of Linux with some adaptation.</p>
+<p><strong>Last Updated:</strong> November 17, 2014</p>
+<p>This section describes how to install Tethys Platform. These installation instructions are optimized for Ubuntu 14.04, which is the recommended platform for running Tethys Platform. However, Tethys Platform is cross platform and could be installed on other platforms with some adaptation.</p>
 <div class="section" id="install-the-dependencies">
 <h2>1. Install the Dependencies<a class="headerlink" href="#install-the-dependencies" title="Permalink to this headline">¶</a></h2>
-<p>If you are using a Debian-based operating system (like Ubuntu), you can install the dependencies as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install python-dev postgresql-9.3 libpq-dev postgresql-9.3-postgis-2.1 python-pip python-virtualenv git-core
-</pre></div>
-</div>
+<p>If you are using a Debian-based operating system (like Ubuntu), you can install most of the dependencies via <strong class="command">apt-get</strong>. Open a terminal and execute the following command:</p>
+<blockquote>
+<div>$ sudo apt-get install python-dev postgresql-9.3 libpq-dev postgresql-9.3-postgis-2.1 python-pip python-virtualenv git-core</div></blockquote>
 <p>If you not using a Debian-based operating system find the best way to install the following dependencies for your
 operating system:</p>
 <table border="1" class="docutils">
@@ -209,12 +206,11 @@ operating system:</p>
 </tr>
 </tbody>
 </table>
-<p>* Note: The feature requiring this software is not fully implemented at this time and installation of this software is optional.</p>
+<p>* Note: The feature requiring this software is not fully implemented at this time, so installation of this dependency is optional.</p>
 </div>
 <div class="section" id="install-advanced-dependencies">
 <h2>2. Install Advanced Dependencies<a class="headerlink" href="#install-advanced-dependencies" title="Permalink to this headline">¶</a></h2>
-<p>Installing some of the software dependencies is more involved. This section provides a more detailed explanation for
-these dependencies.</p>
+<p>Installing some of the software dependencies is more involved. This section provides a more detailed explanation for these dependencies.</p>
 <div class="section" id="ckan-optional">
 <h3>CKAN (optional)<a class="headerlink" href="#ckan-optional" title="Permalink to this headline">¶</a></h3>
 <p>Apps developed with Tethys Platform may use CKAN for dataset storage. This is done using the REST API of CKAN, which
@@ -230,10 +226,10 @@ your Tethys Platform to use <a class="reference external" href="http://www.data.
 other Python applications on the same system. The following commands should be executed in a a terminal.</p>
 <ol class="loweralpha">
 <li><p class="first">Create a Python virtual environment and activate it:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo mkdir -p /usr/lib/tethys
-sudo chown `whoami` /usr/lib/tethys
-virtualenv --no-site-packages /usr/lib/tethys
-. /usr/lib/tethys/bin/activate
+<div class="highlight-python"><div class="highlight"><pre>$ sudo mkdir -p /usr/lib/tethys
+$ sudo chown `whoami` /usr/lib/tethys
+$ virtualenv --no-site-packages /usr/lib/tethys
+$ . /usr/lib/tethys/bin/activate
 </pre></div>
 </div>
 </li>
@@ -248,24 +244,24 @@ is active, because the name of it will appear in parenthesis in front of your te
 <p>The Tethys virtual environment must remain active for the entire installation. If you need to logout or close the
 terminal in the middle of the installation, you will need to reactivate the virtual environment. This can be done
 at anytime by executing the following command (don&#8217;t forget the dot):</p>
-<div class="last highlight-python"><div class="highlight"><pre>. /usr/lib/tethys/bin/activate
+<div class="last highlight-python"><div class="highlight"><pre>$ . /usr/lib/tethys/bin/activate
 </pre></div>
 </div>
 </div>
 <ol class="loweralpha" start="2">
 <li><p class="first">Install Tethys Platform into the virtual environment with the following commands:</p>
-<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/CI-WATER/tethys /usr/lib/tethys/src
+<div class="highlight-python"><div class="highlight"><pre>$ git clone https://github.com/CI-WATER/tethys /usr/lib/tethys/src
 </pre></div>
 </div>
 </li>
 <li><p class="first">Install the Python modules that Tethys requires:</p>
-<div class="highlight-python"><div class="highlight"><pre>pip install -r /usr/lib/tethys/src/requirements.txt
+<div class="highlight-python"><div class="highlight"><pre>$ pip install -r /usr/lib/tethys/src/requirements.txt
 </pre></div>
 </div>
 </li>
 <li><p class="first">Restart the Python virtual environment:</p>
-<div class="highlight-python"><div class="highlight"><pre>deactivate
-. /usr/lib/tethys/bin/activate
+<div class="highlight-python"><div class="highlight"><pre>$ deactivate
+$ . /usr/lib/tethys/bin/activate
 </pre></div>
 </div>
 </li>
@@ -273,19 +269,16 @@ at anytime by executing the following command (don&#8217;t forget the dot):</p>
 </div>
 <div class="section" id="create-database-and-database-users">
 <h2>4. Create Database and Database Users<a class="headerlink" href="#create-database-and-database-users" title="Permalink to this headline">¶</a></h2>
-<p>Create three database users with databases. You will be prompted to create passwords for each user. Take note of the
+<p>Create three database users and databases. You will be prompted to create passwords for each user. Take note of the
 passwords, because you will need to use them in the next step.To do so, run the following commands in the terminal:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo -u postgres createuser -S -D -R -P tethys_default
+<div class="highlight-python"><div class="highlight"><pre>$ sudo -u postgres createuser -S -D -R -P tethys_default
+$ sudo -u postgres createdb -O tethys_default tethys_default -E utf-8
 
-sudo -u postgres createdb -O tethys_default tethys_default -E utf-8
+$ sudo -u postgres createuser -S -d -R -P tethys_db_manager
+$ sudo -u postgres createdb -O tethys_db_manager tethys_db_manager -E utf-8
 
-sudo -u postgres createuser -S -d -R -P tethys_db_manager
-
-sudo -u postgres createdb -O tethys_db_manager tethys_db_manager -E utf-8
-
-sudo -u postgres createuser --superuser -d -R -P tethys_super
-
-sudo -u postgres createdb -O tethys_super tethys_super -E utf-8
+$ sudo -u postgres createuser --superuser -d -R -P tethys_super
+$ sudo -u postgres createdb -O tethys_super tethys_super -E utf-8
 </pre></div>
 </div>
 <div class="admonition important">
@@ -303,14 +296,14 @@ for the connection.</p>
 <h2>5. Create Settings File and Configure Settings<a class="headerlink" href="#create-settings-file-and-configure-settings" title="Permalink to this headline">¶</a></h2>
 <p>Create a new settings file for your Tethys Platform installation using the <strong class="command">tethys</strong> commandline utility. In the
 terminal:</p>
-<div class="highlight-python"><div class="highlight"><pre>tethys gen settings -d /usr/lib/tethys/src/tethys_portal
+<div class="highlight-python"><div class="highlight"><pre>$ tethys gen settings -d /usr/lib/tethys/src/tethys_portal
 </pre></div>
 </div>
 <p>This will create a file called <tt class="file docutils literal"><span class="pre">settings.py</span></tt> in the directory <tt class="file docutils literal"><span class="pre">/usr/lib/tethys/src/tethys_portal</span></tt>. As the
 name suggests, the <tt class="file docutils literal"><span class="pre">settings.py</span></tt> file contains all of the settings for the Tethys Platform Django project. There
 are a few settings that need to be configured in this file.</p>
 <p>Open the <tt class="file docutils literal"><span class="pre">settings.py</span></tt> file (<tt class="file docutils literal"><span class="pre">/usr/lib/tethys/src/tethys_portal/settings.py</span></tt>) that you just created and modify the
-following settings appropriately.</p>
+following settings appropriately. Note that the <tt class="file docutils literal"><span class="pre">usr</span></tt> directory in in the root directory which can be accessed using a file browser and selecting <tt class="file docutils literal"><span class="pre">Computer</span></tt> from the menu on the left.</p>
 <p>a. Replace the password for the main Tethys Portal database, <strong>tethys_default</strong>, with the password you created
 in the previous step. This is done by changing the value of the PASSWORD parameter of the DATABASES setting:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
@@ -361,7 +354,7 @@ with the appropriate parameters. See the <a class="reference internal" href="tet
 <div class="section" id="create-database-tables">
 <h2>6. Create Database Tables<a class="headerlink" href="#create-database-tables" title="Permalink to this headline">¶</a></h2>
 <p>Execute the Django <strong class="command">syncdb</strong> command to create the database tables. In the terminal:</p>
-<div class="highlight-python"><div class="highlight"><pre>tethys manage syncdb
+<div class="highlight-python"><div class="highlight"><pre>$ tethys manage syncdb
 </pre></div>
 </div>
 <div class="admonition important">
@@ -373,7 +366,7 @@ the user you use to manage your Tethys Portal.</p>
 <div class="section" id="start-up-the-django-development-server">
 <h2>7. Start up the Django Development Server<a class="headerlink" href="#start-up-the-django-development-server" title="Permalink to this headline">¶</a></h2>
 <p>You are now ready to start the Django development server and view your instance of Tethys Portal. In the terminal:</p>
-<div class="highlight-python"><div class="highlight"><pre>tethys manage start
+<div class="highlight-python"><div class="highlight"><pre>$ tethys manage start
 </pre></div>
 </div>
 <p>Open <a class="reference external" href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a> in a web browser and you should see the default Tethys Portal landing page. Feel free to
