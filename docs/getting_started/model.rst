@@ -2,16 +2,16 @@
 The Model and Persistent Stores
 *******************************
 
-**Last Updated:** November 13, 2014
+**Last Updated:** November 17, 2014
 
-In this part of the tutorial you'll learn about the Model component of MVC development for Tethys apps. The Model represents the data of your app and the code used to manage it. The data of your app can take many forms. It can be generated on-the-fly and stored in Python data structures (e.g.: lists, dictionaries, and NumPy arrays), stored in databases, or contained in files via a :term:`dataset service`.
+In this part of the tutorial you'll learn about the Model component of MVC development for Tethys apps. The Model represents the data of your app and the code used to manage it. The data of your app can take many forms. It can be generated on-the-fly and stored in Python data structures (e.g.: lists, dictionaries, and NumPy arrays), stored in databases, or contained in files via the :doc:`../tethys_sdk/dataset_services`.
 
 In this tutorial you will use the :doc:`../tethys_sdk/persistent_store` to create a spatially enabled database for your app and you will learn how to use the `SQLAlchemy <http://www.sqlalchemy.org/>`_ object relational mapper (ORM) to create a data model for your app.
 
 Register a Persistent Store
 ===========================
 
-To register a new :term:`persistent store` database add the ``persistent_stores()`` method to your :term:`app class`, which is located in your :term:`app configuration file`. This method must return a list or tuple of ``PersistentStore`` objects.
+The Tethys Portal provides the :doc:`../tethys_sdk/persistent_store` to streamline the use of SQL databases in apps. To register a new :term:`persistent store` database add the ``persistent_stores()`` method to your :term:`app class`, which is located in your :term:`app configuration file`. This method must return a list or tuple of ``PersistentStore`` objects.
 
 Open the app configuration file for your app located at :file:`my_first_app/app.py` in your favorite text editor. Import the ``PersistentStore`` object at the top and add the ``persistent_stores()`` method to your app class as follows:
 
@@ -40,9 +40,11 @@ Open the app configuration file for your app located at :file:`my_first_app/app.
 
             return stores
 
+.. tip::
 
+    Ellipses ( . . . ) in code blocks like the one above indicate there is code that is not being shown for brevity.
 
-A persistent store database will be created for each ``PersistentStore`` object that is returned by the ``persistent_stores()`` method. In this case, your app will have a persistent store named "stream_gage_db". The ``initializer`` argument points to a function that you will define in a later step. The ``spatial`` argument can be used to add spatial capabilities to your persistent store. Tethys Platform provides PostgreSQL databases for persistent stores and PostGIS for the spatial database capabilities.
+A persistent store database will be created for each ``PersistentStore`` object that is returned by the ``persistent_stores()`` method of your :term:`app class`. In this case, your app will have a persistent store named "stream_gage_db". The ``initializer`` argument points to a function that you will define in a later step. The ``spatial`` argument can be used to add spatial capabilities to your persistent store. Tethys Platform provides PostgreSQL databases for persistent stores and PostGIS for the spatial database capabilities.
 
 .. note::
 
@@ -51,9 +53,9 @@ A persistent store database will be created for each ``PersistentStore`` object 
 Create an SQLAlchemy Data Model
 ===============================
 
-SQLAlchemy provides an Object Relational Mapper (ORM) that allows you to create data models using Python code and issue queries using an object-oriented approach. In other words, you are able to harness the power of SQL databases without writing SQL. As a primer to SQLAlchemy ORM, we highly recommend you complete the `Object Relational Tutorial <http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html>`_.
+After your database is created, you will need to create the tables that will store the data for your app. The plan for your database tables or schema is called a data model. SQLAlchemy provides an Object Relational Mapper (ORM) that allows you to create data models using Python code and issue queries using an object-oriented approach. In other words, you are able to harness the power of SQL databases without writing SQL. As a primer to SQLAlchemy ORM, we highly recommend you complete the `Object Relational Tutorial <http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html>`_.
 
-You will use SQLAlchemy to create a data model for the tables that will store the data for your app. Open the :file:`model.py` file located at :file:`my_first_app/model.py` in a text editor.
+In this step, you will use SQLAlchemy to create a data model for the tables that will store the data for your app. Open the :file:`model.py` file located at :file:`my_first_app/model.py` in a text editor.
 
 First, add the following import statements to your :file:`model.py` file:
 
@@ -75,10 +77,11 @@ Next, add these lines to your :file:`model.py` file:
     SessionMaker = sessionmaker(bind=engine)
     Base = declarative_base()
 
-The ``get_persistent_store_engine()`` method accepts the name of a persistent store as an argument and returns and SQLAlchemy engine object. The engine object contains the connection information needed to connect to the persistent store database. Anytime you want to query or modify your persistent store data, you will do so with an SQLAlchemy ``session`` object. As the name implies, the ``SessionMaker`` can be used to create new ``session`` objects. The ``Base`` object is used in the next step when we define our data model. Add these lines to your :file:`model.py` file:
+The ``get_persistent_store_engine()`` method that is used here accepts the name of a persistent store as an argument and returns an SQLAlchemy engine object. The engine object contains the connection information needed to connect to the persistent store database. Anytime you want to query or modify your persistent store data, you will do so with an SQLAlchemy ``session`` object. As the name implies, the ``SessionMaker`` can be used to create new ``session`` objects. The ``Base`` object is used in the next step when we define our data model. Add these lines to your :file:`model.py` file:
 
 ::
 
+    # SQLAlchemy ORM definition for the stream_gages table
     class StreamGage (Base):
         '''
         Example SQLAlchemy DB Model
@@ -99,7 +102,7 @@ The ``get_persistent_store_engine()`` method accepts the name of a persistent st
             self.longitude = longitude
             self.value = value
 
-Each class of an SQLAlchemy data model defines a table in the database. Currently the model consists of a single table called "stream_gages", as denoted by the ``__tablename__`` property of the ``StreamGage`` class. The ``StreamGage`` class inherits from the ``Base`` class that we created in the previous lines.
+Each class in an SQLAlchemy data model defines a table in the database. The model you defined above consists of a single table called "stream_gages", as denoted by the ``__tablename__`` property of the ``StreamGage`` class. The ``StreamGage`` class inherits from the ``Base`` class that we created in the previous lines. This inheritance notifies SQLAlchemy that the ``StreamGage`` class is part of the data model.
 
 The class defines four other properties that are SQLAlchemy ``Column`` objects: *id*, *latitude*, *longitude*, and *value*. These properties define the columns of the "stream_gages" table. The column type and options are defined by the arguments passed to the ``Column`` constructor. For example, the *latitude* column is of type ``Float`` while the *id* column is of type ``Integer`` and is also flagged as the primary key for the table. The ``StreamGage`` class also has a simple constructor method called ``__init__()``.
 
@@ -110,7 +113,7 @@ Create an Initialization Function
 
 Now that you have created a data model, the next step is to write a database initialization function. This function will be called during the initialization phase of your persistent store database and will be used to create the tables in your database and add any initial data that you may need in the database for your app to work.
 
-Open the :file:`my_first_app/init_stores.py` in a text editor. Import the ``engine``, ``SessionMaker``, ``Base``, and ``StreamGage`` from your data model::
+Open the :file:`my_first_app/init_stores.py` in a text editor. At the top of this file, import the ``engine``, ``SessionMaker``, ``Base``, and ``StreamGage`` from your data model::
 
     from .model import engine, SessionMaker, Base, StreamGage
 
@@ -160,9 +163,9 @@ following code::
 
             session.commit()
 
-The ``Base.metedata.create_all(engine)`` line is all that is needed to create the tables in your persistent store database. Every class that inherits from the ``Base`` class is tracked by the ``metadata`` object. The ``metadata.create_all()`` method issues the SQL that is needed to create the tables associated with the ``Base`` class. Notice that you must give it the ``engine`` object for connection information.
+The ``Base.metedata.create_all(engine)`` line is all that is needed to create the tables in your persistent store database. Every class that inherits from the ``Base`` class is tracked by a ``metadata`` object. The ``metadata.create_all()`` method issues the SQL that is needed to create the tables associated with the ``Base`` class. Notice that you must give it the ``engine`` object for connection information.
 
-The ``first_time`` parameter that is passed to all persistent store initialization functions is a boolean that is ``True`` if the function is being called after freshly minted tables have been created for the first time. This is provided as a mechanism for adding initial data only once. Notice the code that adds initial data to your persistent store database is wrapped in a conditional statement that uses the ``first_time`` parameter.
+The ``first_time`` parameter that is passed to all persistent store initialization functions is a boolean that is ``True`` if the function is being called after the tables have been created for the first time. This is provided as a mechanism for adding initial data only the first time. Notice the code that adds initial data to your persistent store database is wrapped in a conditional statement that uses the ``first_time`` parameter.
 
 This initial data code adds four stream gages to your persistent store database. Creating a new record in the database using SQLAlchemy is achieved by creating a new ``StreamGage`` object and adding it to the ``session`` object using the ``session.add()`` method. To persist the new records to the persistent store database, the ``session.commit()`` method is called. You will learn how to query the persistent store database using SQLAlchemy in the :doc:`./controller` tutorial.
 
@@ -193,12 +196,18 @@ This initial data code adds four stream gages to your persistent store database.
 Register Initialization Function
 ================================
 
-Recall that when you registered the persistent store in your app configuration file, you specified the ``initializer`` function for the persistent store. This argument accepts a string representing the path to the function using dot notation and a colon to delineate the function (e.g.: "foo.bar:function"). Check your app configuration file to ensure the path to the initializer function is correct: ``'init_stores:init_stream_gage_db'``.
+Recall that when you registered the persistent store in your app configuration file, you specified the ``initializer`` function for the persistent store. This argument accepts a string representing the path to the function using dot notation and a colon to delineate the function (e.g.: "foo.bar:function"). Check your :term:`app configuration file` to ensure the path to the initializer function is correct: ``'init_stores:init_stream_gage_db'``.
 
 Persistent Store Initialization
 ===============================
 
-If you have not done so already, start your development server again using the ``tethys manage start`` command. The database will be initialized on start up. The information printed to the console will indicate this::
+Save all changes to the files you edited and start your development server again using the ``tethys manage start`` command in the terminal. It is possible that your server may have crashed during editing and is displaying errors; ignore these errors. If the server is still running, stop it by pressing :kbd:`CTRL-C` and then start it again.
+
+::
+
+    $ tethys manage start
+
+The database will be initialized on start up. The information printed to the console will indicate this::
 
     Harvesting Apps:
     my_first_app
@@ -208,4 +217,9 @@ If you have not done so already, start your development server again using the `
     Enabling PostGIS on database "stream_gage_db" for app "my_first_app"...
     Initializing database "stream_gage_db" for app "my_first_app"
 
-If you have a graphical database client, you may wish to connect to your PostgreSQL database server and confirm that the database was created. You can use the credentials for ``tethys_super`` database user that you defined during installation to connect to the database. The name of the database will be a combination of the name of your app and the name of the persistent store: (i.e.: my_first_app_stream_gage_db).
+If you have a graphical database client like `PGAdmin III <http://www.pgadmin.org>`_, you may wish to connect to your PostgreSQL database server and confirm that the database was created. You can use the credentials for ``tethys_super`` database user that you defined during installation to connect to the database. The name of the database will be a combination of the name of your app and the name of the persistent store: (e.g.: my_first_app_stream_gage_db).
+
+.. figure:: ../images/pgAdmin_III_db_confirmation.png
+    :width: 650px
+
+    Example of graphical database client PGAdmin III.

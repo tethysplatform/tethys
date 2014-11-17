@@ -2,9 +2,9 @@
 Distributing Apps
 *****************
 
-**Last Updated:** November 14, 2014
+**Last Updated:** November 17, 2014
 
-Once your app is complete, you will likely want to distribute it for others to use or at the very least install it in a production Tethys Apps environment. When you share your app with others, you will share the entire :term:`release package`, which is the outermost directory of your :term:`app project`. For this tutorial, your release package is called "tethysapp-my_first_app".
+Once your app is complete, you will likely want to distribute it for others to use or at the very least install it in a production Tethys Platform environment. When you share your app with others, you will share the entire :term:`release package`, which is the outermost directory of your :term:`app project`. For these tutorials, your release package is called "tethysapp-my_first_app".
 
 The release package contains the source code for your app and a :term:`setup script` (:file:`setup.py`). You may also wish to include a README file and a LICENSE file in this directory. The :term:`setup script` can be used to streamline installation of your app and any Python dependencies it may have. You already used the :term:`setup script` without realizing it in the :doc:`./scaffold` tutorial when you installed your app for the first time (this command: ``python setup.py develop``). A brief introduction to the :term:`setup script` will be provided in this tutorial.
 
@@ -66,7 +66,7 @@ This is the type of installation you would use for a completed app that is being
     cd ~/tethysdev/tethysapp-my_first_app
     python setup.py install
 
-The ``install`` type of installation is not well suited for working with your app during development, because you would need to reinstall it (i.e.: run the commands above) every time you made a change to the app source code. This is why the ``develop`` type of installation exists. When an app is installed with the ``develop`` command, the source codes is only linked to the :file:`site-packages` directory. This allows you to change your code and test the changes without reinstall the app.
+The ``install`` type of installation is not well suited for working with your app during development, because you would need to reinstall it (i.e.: run the commands above) every time you made a change to the app source code. This is why the ``develop`` type of installation exists. When an app is installed with the ``develop`` command, the source code for your app is only linked to the :file:`site-packages` directory. This allows you to change your code and test the changes without reinstalling the app.
 
 You already performed this type of installation on your app during the :doc:`./scaffold` tutorial. To perform this type of installation, open a terminal, change into the :term:`release package` directory, and run the ``develop`` command on the :term:`setup script` like so:
 

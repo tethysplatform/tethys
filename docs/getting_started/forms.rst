@@ -2,7 +2,7 @@
 User Input and Forms
 ********************
 
-**Last Updated:** November 13, 2013
+**Last Updated:** November 17, 2013
 
 Eventually you will need to request input from the user, which will involve working with HTML forms. In this tutorial, you'll learn how to create forms in your template and process the data submitted through the form in your controller.
 
@@ -83,9 +83,9 @@ Create a new template called "echo_name.html" in your templates directory (:file
       {% gizmo_dependencies %}
     {% endblock %}
 
-The form is denoted by the HTML ``<form>`` tag and it contains a text input (created by a Tethys Gizmo) and a submit button. Also note the use of the ``csrf_token`` tag. This is a security precaution that is required to be included in all the forms of your app (see the `Cross Site Forgery protection <https://docs.djangoproject.com/en/1.7/ref/contrib/csrf/>`_ article in the Django documentation for more details.
+The form is denoted by the HTML ``<form>`` tag and it contains a text input (created by a template Gizmo) and a submit button. Also note the use of the ``csrf_token`` tag. This is a security precaution that is required to be included in all the forms of your app (see the `Cross Site Forgery protection <https://docs.djangoproject.com/en/1.7/ref/contrib/csrf/>`_ article in the Django documentation for more details).
 
-Also note that the method attribute of the ``<form>`` element is set to ``post``. For an introduction to HTTP methods, see `The Definitive Guide to GET vs POST <http://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post>`_.
+Also note that the method attribute of the ``<form>`` element is set to ``post``. This means the form will use the HTTP method called POST to submit the data to the server. For an introduction to HTTP methods, see `The Definitive Guide to GET vs POST <http://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post>`_.
 
 New Controller
 ==============
@@ -115,7 +115,7 @@ Now you need to create the ``echo_name`` controller function. Add the following 
 
         return render(request, 'my_first_app/echo_name.html', context)
 
-There are a few features to point out in this controller. First, the Gizmo options for the text input are defined in this controller via the ``test_input_options`` dictionary. The text input must have a name assigned to it for its value to be returned. In this case the name of the text input is "name-input".
+There are a few features to point out in this controller. First, the Gizmo options for the text input are defined in this controller via the ``test_input_options`` dictionary. The text input must have a name assigned to it for its value to be sent with the form data. In this case the name of the text input is "name-input". See the :doc:`../tethys_sdk/gizmos`.
 
 Next, the data that is submitted with HTML forms is returned through the ``request`` object. For forms submitted using the "post" method, the data will be accessible in the ``request.POST`` attribute. Similarly, form data submitted using the "get" method will be available via the ``request.GET`` attribute. Both ``request.GET`` and ``request.POST`` are dictionary like objects where the keys are the names of the fields from the form.
 
