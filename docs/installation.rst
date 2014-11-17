@@ -2,18 +2,16 @@
 Installation
 ************
 
-**Last Updated:** November 11, 2014
+**Last Updated:** November 17, 2014
 
-This section describes how to install Tethys Platform. These installation instructions are optimized for Ubuntu 14.04,
-which is the recommended platform for running Tethys Platform. However, these instructions should work with other
-types of Linux with some adaptation.
+This section describes how to install Tethys Platform. These installation instructions are optimized for Ubuntu 14.04, which is the recommended platform for running Tethys Platform. However, Tethys Platform is cross platform and could be installed on other platforms with some adaptation.
 
 1. Install the Dependencies
 ---------------------------
 
-If you are using a Debian-based operating system (like Ubuntu), you can install the dependencies as follows::
+If you are using a Debian-based operating system (like Ubuntu), you can install most of the dependencies via :command:`apt-get`. Open a terminal and execute the following command:
 
-    sudo apt-get install python-dev postgresql-9.3 libpq-dev postgresql-9.3-postgis-2.1 python-pip python-virtualenv git-core
+    $ sudo apt-get install python-dev postgresql-9.3 libpq-dev postgresql-9.3-postgis-2.1 python-pip python-virtualenv git-core
 
 If you not using a Debian-based operating system find the best way to install the following dependencies for your
 operating system:
@@ -34,13 +32,12 @@ virtualenv          `virtualenv isolated Python environment creator. <http://vir
 git                 `Git open source distributed version control system. <http://git-scm.com/downloads>`_
 ==================  ====================================================================================================
 
-\* Note: The feature requiring this software is not fully implemented at this time and installation of this software is optional.
+\* Note: The feature requiring this software is not fully implemented at this time, so installation of this dependency is optional.
 
 2. Install Advanced Dependencies
 --------------------------------
 
-Installing some of the software dependencies is more involved. This section provides a more detailed explanation for
-these dependencies.
+Installing some of the software dependencies is more involved. This section provides a more detailed explanation for these dependencies.
 
 CKAN (optional)
 ===============
@@ -60,10 +57,10 @@ other Python applications on the same system. The following commands should be e
 
 a. Create a Python virtual environment and activate it::
 
-    sudo mkdir -p /usr/lib/tethys
-    sudo chown `whoami` /usr/lib/tethys
-    virtualenv --no-site-packages /usr/lib/tethys
-    . /usr/lib/tethys/bin/activate
+    $ sudo mkdir -p /usr/lib/tethys
+    $ sudo chown `whoami` /usr/lib/tethys
+    $ virtualenv --no-site-packages /usr/lib/tethys
+    $ . /usr/lib/tethys/bin/activate
 
 
 .. important::
@@ -77,39 +74,36 @@ a. Create a Python virtual environment and activate it::
     terminal in the middle of the installation, you will need to reactivate the virtual environment. This can be done
     at anytime by executing the following command (don't forget the dot)::
 
-        . /usr/lib/tethys/bin/activate
+        $ . /usr/lib/tethys/bin/activate
 
 b. Install Tethys Platform into the virtual environment with the following commands::
 
-    git clone https://github.com/CI-WATER/tethys /usr/lib/tethys/src
+    $ git clone https://github.com/CI-WATER/tethys /usr/lib/tethys/src
 
 
 c. Install the Python modules that Tethys requires::
 
-    pip install -r /usr/lib/tethys/src/requirements.txt
+    $ pip install -r /usr/lib/tethys/src/requirements.txt
 
 d. Restart the Python virtual environment::
 
-    deactivate
-    . /usr/lib/tethys/bin/activate
+    $ deactivate
+    $ . /usr/lib/tethys/bin/activate
 
 4. Create Database and Database Users
 -------------------------------------
 
-Create three database users with databases. You will be prompted to create passwords for each user. Take note of the
+Create three database users and databases. You will be prompted to create passwords for each user. Take note of the
 passwords, because you will need to use them in the next step.To do so, run the following commands in the terminal::
 
-    sudo -u postgres createuser -S -D -R -P tethys_default
+    $ sudo -u postgres createuser -S -D -R -P tethys_default
+    $ sudo -u postgres createdb -O tethys_default tethys_default -E utf-8
 
-    sudo -u postgres createdb -O tethys_default tethys_default -E utf-8
+    $ sudo -u postgres createuser -S -d -R -P tethys_db_manager
+    $ sudo -u postgres createdb -O tethys_db_manager tethys_db_manager -E utf-8
 
-    sudo -u postgres createuser -S -d -R -P tethys_db_manager
-
-    sudo -u postgres createdb -O tethys_db_manager tethys_db_manager -E utf-8
-
-    sudo -u postgres createuser --superuser -d -R -P tethys_super
-
-    sudo -u postgres createdb -O tethys_super tethys_super -E utf-8
+    $ sudo -u postgres createuser --superuser -d -R -P tethys_super
+    $ sudo -u postgres createdb -O tethys_super tethys_super -E utf-8
 
 
 .. important::
@@ -127,14 +121,14 @@ passwords, because you will need to use them in the next step.To do so, run the 
 Create a new settings file for your Tethys Platform installation using the :command:`tethys` commandline utility. In the
 terminal::
 
-    tethys gen settings -d /usr/lib/tethys/src/tethys_portal
+    $ tethys gen settings -d /usr/lib/tethys/src/tethys_portal
 
 This will create a file called :file:`settings.py` in the directory :file:`/usr/lib/tethys/src/tethys_portal`. As the
 name suggests, the :file:`settings.py` file contains all of the settings for the Tethys Platform Django project. There
 are a few settings that need to be configured in this file.
 
 Open the :file:`settings.py` file (:file:`/usr/lib/tethys/src/tethys_portal/settings.py`) that you just created and modify the
-following settings appropriately.
+following settings appropriately. Note that the :file:`usr` directory in in the root directory which can be accessed using a file browser and selecting :file:`Computer` from the menu on the left.
 
 a. Replace the password for the main Tethys Portal database, **tethys_default**, with the password you created
 in the previous step. This is done by changing the value of the PASSWORD parameter of the DATABASES setting::
@@ -186,7 +180,7 @@ e. Save your changes and close the :file:`settings.py` file.
 
 Execute the Django :command:`syncdb` command to create the database tables. In the terminal::
 
-    tethys manage syncdb
+    $ tethys manage syncdb
 
 .. important::
 
@@ -198,7 +192,7 @@ Execute the Django :command:`syncdb` command to create the database tables. In t
 
 You are now ready to start the Django development server and view your instance of Tethys Portal. In the terminal::
 
-    tethys manage start
+    $ tethys manage start
 
 Open `<http://127.0.0.1:8000/>`_ in a web browser and you should see the default Tethys Portal landing page. Feel free to
 login using the system administrator username and password that you created in the previous step and take a look around.
