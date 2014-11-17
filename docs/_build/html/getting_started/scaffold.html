@@ -87,11 +87,21 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="">Create a New Tethys App Project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model.html">The Model and Persistent Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="view.html">The View and Templating</a></li>
-<li class="toctree-l2"><a class="reference internal" href="controller.html">Working with the Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="controller.html">The Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="url_mapping.html">URL Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="url_variables.html">URL Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="url_variables.html">Advanced Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="forms.html">User Input and Forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="distribution.html">Distributing Apps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tethys_sdk.html">Software Development Kit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/dataset_services.html">Dataset Services API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/persistent_store.html">Persistent Stores API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/gizmos.html">Template Gizmos API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/spatial_publishing.html">Spatial Data Publishing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/geoprocessing.html">Geoprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/visualizing.html">Data Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/cloud_computing.html">High Performance Computing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../supplementary.html">Supplementary Docs</a><ul>
@@ -144,83 +154,77 @@
             
   <div class="section" id="create-a-new-tethys-app-project">
 <h1>Create a New Tethys App Project<a class="headerlink" href="#create-a-new-tethys-app-project" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> November 13, 2014</p>
-<p>Tethys Platform provides a scaffold for generating new app projects. The scaffold generates a Tethys app project with
-the minimum files and the file structure that is required (see <a class="reference internal" href="../supplementary/app_project.html"><em>App Project Structure</em></a>). This section of the tutorial will
-describe how to start a new Tethys app project using the scaffold and it will describe how to install the app into your
-Tethys platform for development.</p>
+<p><strong>Last Updated:</strong> November 17, 2014</p>
+<p>Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see <a class="reference internal" href="../supplementary/app_project.html"><em>App Project Structure</em></a>). In this tutorial you start a new Tethys app project using the scaffold and you will install the app into your Tethys Platform ready for development.</p>
 <div class="section" id="generate-scaffold">
 <h2>Generate Scaffold<a class="headerlink" href="#generate-scaffold" title="Permalink to this headline">¶</a></h2>
-<p>To generate a new app scaffold, open a terminal and activate the Tethys virtual environment. Create a new directory in
-your home directory called <tt class="file docutils literal"><span class="pre">tethysdev</span></tt> and change into this directory. Finally, execute the
-<strong class="command">tethys scaffold</strong> command, giving it the name of the new app project. App project names must contain only
-letters, numbers, and underscores (_). Follow the interactive prompts to create
-metadata for you new app.:</p>
+<p>To generate a new app using the scaffold, open a terminal and execute the following commands and follow the interactive prompts to create the metadata for your app:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/tethys/bin/activate
 $ mkdir ~/tethysdev
 $ cd ~/tethysdev
 $ tethys scaffold my_first_app
 </pre></div>
 </div>
-<p>In a file browser open the <tt class="file docutils literal"><span class="pre">tethysapp-my_first_app</span></tt> directory and familiarize yourself with its contents. The
-scaffold automatically prefixes your app project directory name with &#8220;tethysapp-&#8221;. The main package of your app project,
-&#8220;my_first_app&#8221;, is located within a namespace package called &#8220;tethysapp&#8221;. For more information about the app project
-structure, see <a class="reference internal" href="../supplementary/app_project.html"><em>App Project Structure</em></a>.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p>Terminal Tips:</p>
+<ul class="last simple">
+<li>The &#8220;$&#8221; in code blocks like the one above means &#8220;run this in the terminal&#8221;. This is usually done by typing the command or copying and pasting it. When copying, don&#8217;t copy the &#8220;$&#8221;.</li>
+<li>Copy lines one at a time and press <tt class="kbd docutils literal"><span class="pre">enter</span></tt> after each one to execute it.</li>
+<li>The &#8220;~&#8221; is short hand for your <tt class="file docutils literal"><span class="pre">Home</span></tt> directory. The shorthand is used because the path to the <tt class="file docutils literal"><span class="pre">Home</span></tt> directory varies depending on your user name (e.g.: if your user name was &#8220;john&#8221;, then the absolute path to your home directory would be <tt class="file docutils literal"><span class="pre">/home/john</span></tt>).</li>
+<li>The keyboard shortcuts <tt class="kbd docutils literal"><span class="pre">CTRL-C</span></tt> and <tt class="kbd docutils literal"><span class="pre">CTRL-V</span></tt> do not do preform copy and paste in the terminal. Instead, use the shortcuts <tt class="kbd docutils literal"><span class="pre">CTRL-SHIFT-C</span></tt> and <tt class="kbd docutils literal"><span class="pre">CTRL-SHIFT-V</span></tt> to copy and paste.</li>
+</ul>
+</div>
+<p>The commands you entered did the following tasks:</p>
+<ol class="arabic simple">
+<li>activated the Tethys <a class="reference internal" href="../glossary.html#term-python-virtual-environment"><em class="xref std std-term">Python virtual environment</em></a>,</li>
+<li>created a new directory called &#8220;tethysdev&#8221; in your home directory,</li>
+<li>changed your working directory into the <tt class="file docutils literal"><span class="pre">tethysdev</span></tt> directory, and</li>
+<li>executed the <strong class="command">tethys scaffold</strong> command to create the new app.</li>
+</ol>
+<p>In a file browser change into your <tt class="file docutils literal"><span class="pre">Home</span></tt> directory and open the <tt class="file docutils literal"><span class="pre">tethysdev</span></tt> directory. If the scaffolding worked, you should see a directory called <tt class="file docutils literal"><span class="pre">tethysapp-my_first_app</span></tt>. All of the source code for your app will be stored in this directory. Open the <tt class="file docutils literal"><span class="pre">tethysapp-my_first_app</span></tt> and explore the contents. The main directory of your app project, <tt class="file docutils literal"><span class="pre">my_first_app</span></tt>, is located within a namespace directory called <tt class="file docutils literal"><span class="pre">tethysapp</span></tt>. Each part of the app project will be explained throughout these tutorials. For more information about the app project structure, see <a class="reference internal" href="../supplementary/app_project.html"><em>App Project Structure</em></a>.</p>
 </div>
 <div class="section" id="development-installation">
 <h2>Development Installation<a class="headerlink" href="#development-installation" title="Permalink to this headline">¶</a></h2>
-<p>Next you will use the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> (<tt class="file docutils literal"><span class="pre">setup.py</span></tt>) to install the app into Tethys Platform. This will also
-install any Python dependencies of your app. In a terminal, change into the <tt class="file docutils literal"><span class="pre">tethysapp-my_first_app</span></tt> and execute
-the <strong class="command">python setup.py develop</strong> command. Be sure to activate the Tethys <a class="reference internal" href="../glossary.html#term-python-virtual-environment"><em class="xref std std-term">Python virtual environment</em></a> if
-it is not already activated:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/tethys/bin/activate
-$ cd ~/tethysdev/tethysapp-my_first_app
+<p>Now that you have a new Tethys app project, you need to install the app into Tethys Platform. In a terminal, change into the <tt class="file docutils literal"><span class="pre">tethysapp-my_first_app</span></tt> directory and execute the <strong class="command">python setup.py develop</strong> command. Be sure to activate the Tethys <a class="reference internal" href="../glossary.html#term-python-virtual-environment"><em class="xref std std-term">Python virtual environment</em></a> if it is not already activated (see line 1 of the first code block):</p>
+<div class="highlight-python"><div class="highlight"><pre>$ cd ~/tethysdev/tethysapp-my_first_app
 $ python setup.py develop
 </pre></div>
 </div>
 </div>
 <div class="section" id="view-your-new-app">
 <h2>View Your New App<a class="headerlink" href="#view-your-new-app" title="Permalink to this headline">¶</a></h2>
-<p>Use the <strong class="command">tethys manage start</strong> command to start up the development server and browse to
-<a class="reference external" href="http://127.0.0.1:8000/apps">http://127.0.0.1:8000/apps</a>.</p>
+<p>Use the <strong class="command">tethys manage start</strong> command to start up the development server:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ tethys manage start
 </pre></div>
 </div>
-<p>If all has gone well, you should see your app listed on the app library page. Exploring your new app won&#8217;t take long,
-because there is only one page. Familiarize yourself with different parts of the app interface (see below).</p>
+<p>Browse to <a class="reference external" href="http://127.0.0.1:8000/apps">http://127.0.0.1:8000/apps</a>. If all has gone well, you should see your app listed on the app library page. Exploring your new app won&#8217;t take long, because there is only one page. Familiarize yourself with different parts of the app interface (see below).</p>
 <div class="figure">
 <a class="reference internal image-reference" href="../_images/app_controls.png"><img alt="../_images/app_controls.png" src="../_images/app_controls.png" style="width: 650px;" /></a>
 <p class="caption">Parts of a Tethys app interface: (1) app navigation toggle, (2) exit button, (3) app navigation, (4) actions, and (5) app content.</p>
 </div>
-</div>
-<div class="section" id="model-view-controller">
-<h2>Model View Controller<a class="headerlink" href="#model-view-controller" title="Permalink to this headline">¶</a></h2>
-<p>Tethys apps are developed using the <a class="reference internal" href="../glossary.html#term-model-view-controller"><em class="xref std std-term">Model View Controller</em></a> (MVC) development pattern. Following the MVC pattern will make
-your app project easier to develop and manage in the future. Most of the code in your app will fall into one of the
-three MVC categories. The Model represents the data of your app, the View is composed of the representation of the data,
-and the Controller consists of the logic to prepare the data for the view and any other logic your app needs. In the next
-few tutorials, we&#8217;ll introduce how the MVC development paradigm is used to develop Tethys apps.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
 <p class="last">To stop the development server press <tt class="kbd docutils literal"><span class="pre">CTRL-C</span></tt>.</p>
 </div>
 </div>
+<div class="section" id="model-view-controller">
+<h2>Model View Controller<a class="headerlink" href="#model-view-controller" title="Permalink to this headline">¶</a></h2>
+<p>Tethys apps are developed using the <a class="reference internal" href="../glossary.html#term-model-view-controller"><em class="xref std std-term">Model View Controller</em></a> (MVC) development pattern. Following the MVC pattern will make your app project easier to develop and manage in the future. Most of the code in your app will fall into one of the three MVC categories. The Model represents the data of your app, the View is composed of the representation of the data, and the Controller consists of the logic to prepare the data for the view and any other logic your app needs. In the next few tutorials, you will be introduced to how the MVC development paradigm is used to develop Tethys apps.</p>
+</div>
 <div class="section" id="app-project-paths">
 <h2>App Project Paths<a class="headerlink" href="#app-project-paths" title="Permalink to this headline">¶</a></h2>
-<p>Throughout the tutorial, you will be asked to open various files. All of the files will be located in your <a class="reference internal" href="../glossary.html#term-app-package"><em class="xref std std-term">app package</em></a> directory which shares the name of your app: &#8220;my_first_app&#8221;. If you generated your scaffold exactly as above, this directory would be located at the following path:</p>
-<div class="highlight-python"><div class="highlight"><pre># Absolute Path to App Package Directory
+<p>Throughout the tutorial, you will be asked to open various files. Most of the files will be located in your <a class="reference internal" href="../glossary.html#term-app-package"><em class="xref std std-term">app package</em></a> directory which shares the name of your app: &#8220;my_first_app&#8221;. If you generated your scaffold exactly as above, this directory will be located at the following path:</p>
+<div class="highlight-python"><div class="highlight"><pre># Path to App Package Directory
 ~/tethysdev/tethysapp-my_first_app/tethysapp/my_first_app/
 </pre></div>
 </div>
-<p>For convenience, all paths in the following tutorials will be given as relative to the <a class="reference internal" href="../glossary.html#term-app-package"><em class="xref std std-term">app package</em></a> directory. For example:</p>
+<p>For convenience, all paths in the following tutorials will be given relative to the <a class="reference internal" href="../glossary.html#term-app-package"><em class="xref std std-term">app package</em></a> directory. For example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># Relative App Package Directory Notation</span>
 <span class="n">my_first_app</span><span class="o">/</span><span class="n">controllers</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
-<div class="admonition tip">
-<p class="first admonition-title">Tip</p>
-<p class="last">The tilde (~) in unix/linux style paths is shorthand for your <tt class="file docutils literal"><span class="pre">Home</span></tt> directory. The shorthand is used because the path to the home directory varies depending on your user name (e.g.: if your user name was &#8220;john&#8221;, then the absolute path to your home directory would be <tt class="file docutils literal"><span class="pre">/home/john</span></tt>).</p>
-</div>
+<p>As you explore the contents of your app project, you will notice that many of the directories have filed named &#8220;__init__.py&#8221;. Though many of these files are empty, they are important and should not be deleted. They tell Python that this directory is a Python package. Python packages and their contents can be imported in Python scripts. Removing the :file:<tt class="docutils literal"><span class="pre">__init__.py</span></tt> files could result in breaking import statements and it could make some of your code inaccessible. Similarly, if you add a directory to your project that contains Python modules you would like to be made available to your code, add a :file:<tt class="docutils literal"><span class="pre">__init__.py</span></tt> file to the directory to make it a package.</p>
 </div>
 </div>
 

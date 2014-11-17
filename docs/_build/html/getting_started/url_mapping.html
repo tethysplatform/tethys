@@ -30,8 +30,8 @@
   
     <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html"/>
         <link rel="up" title="Getting Started" href="../getting_started.html"/>
-        <link rel="next" title="URL Variables" href="url_variables.html"/>
-        <link rel="prev" title="Working with the Controller" href="controller.html"/> 
+        <link rel="next" title="Advanced Concepts" href="url_variables.html"/>
+        <link rel="prev" title="The Controller" href="controller.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -87,11 +87,21 @@
 <li class="toctree-l2"><a class="reference internal" href="scaffold.html">Create a New Tethys App Project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model.html">The Model and Persistent Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="view.html">The View and Templating</a></li>
-<li class="toctree-l2"><a class="reference internal" href="controller.html">Working with the Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="controller.html">The Controller</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">URL Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="url_variables.html">URL Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="url_variables.html">Advanced Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="forms.html">User Input and Forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="distribution.html">Distributing Apps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tethys_sdk.html">Software Development Kit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/dataset_services.html">Dataset Services API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/persistent_store.html">Persistent Stores API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/gizmos.html">Template Gizmos API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/spatial_publishing.html">Spatial Data Publishing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/geoprocessing.html">Geoprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/visualizing.html">Data Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/cloud_computing.html">High Performance Computing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../supplementary.html">Supplementary Docs</a><ul>
@@ -145,11 +155,12 @@
   <div class="section" id="url-mapping">
 <h1>URL Mapping<a class="headerlink" href="#url-mapping" title="Permalink to this headline">¶</a></h1>
 <p><strong>Last Updated:</strong> November 13, 2014</p>
-<p>Whenever you create a new controller, you will also need to associate it with a URL by creating URL map for it. When a URL is requested, Tethys (via Django) will execute the controller to which it is mapped. In this tutorial you will create a new URL map for the new <tt class="docutils literal"><span class="pre">map</span></tt> controller you created in the previous tutorial.</p>
+<p>Whenever you create a new controller, you will also need to associate it with a URL by creating URL map for it. When a URL is requested, the controller that it is mapped to will be executed.</p>
+<p>In this tutorial you will create a new URL map for the new <tt class="docutils literal"><span class="pre">map</span></tt> controller you created in the previous tutorial.</p>
 <div class="section" id="map-controller-to-url">
 <h2>Map Controller to URL<a class="headerlink" href="#map-controller-to-url" title="Permalink to this headline">¶</a></h2>
-<p>Mapping a controller to a URL is performed in the <a class="reference internal" href="../glossary.html#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a> (<tt class="file docutils literal"><span class="pre">app.py</span></tt>). Open your app configuration file located at <tt class="file docutils literal"><span class="pre">my_first_app/app.py</span></tt>. Your <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a> contains a method called <tt class="docutils literal"><span class="pre">url_maps()</span></tt>. This method must return a list or tuple of <tt class="docutils literal"><span class="pre">UrlMap</span></tt> objects. <tt class="docutils literal"><span class="pre">UrlMap</span></tt> are given three parameters: <tt class="docutils literal"><span class="pre">name</span></tt>, <tt class="docutils literal"><span class="pre">url</span></tt>, and <tt class="docutils literal"><span class="pre">controller</span></tt>.</p>
-<p>Your <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a> will already have one <tt class="docutils literal"><span class="pre">UrlMap</span></tt> for the home page. Add a new <tt class="docutils literal"><span class="pre">UrlMap</span></tt> object for the <tt class="docutils literal"><span class="pre">map</span></tt> controller that you created in the previous step. Give it the name &#8220;map&#8221;, url of &#8220;my-first-app/map&#8221;, and the path to the controller &#8220;my_first_app.controllers.map&#8221;. The <tt class="docutils literal"><span class="pre">url_maps()</span></tt> method for your app should look something like this when you are done:</p>
+<p>Mapping a controller to a URL is performed in the <a class="reference internal" href="../glossary.html#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a> (<tt class="file docutils literal"><span class="pre">app.py</span></tt>). Open your app configuration file located at <tt class="file docutils literal"><span class="pre">my_first_app/app.py</span></tt>. Your <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a> will already have a method called <tt class="docutils literal"><span class="pre">url_maps()</span></tt>. This method must return a list or tuple of <tt class="docutils literal"><span class="pre">UrlMap</span></tt> objects. <tt class="docutils literal"><span class="pre">UrlMap</span></tt> objects require three attributes: <tt class="docutils literal"><span class="pre">name</span></tt>, <tt class="docutils literal"><span class="pre">url</span></tt>, and <tt class="docutils literal"><span class="pre">controller</span></tt>.</p>
+<p>Your <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a> will already have one <tt class="docutils literal"><span class="pre">UrlMap</span></tt> for the home page called &#8220;home&#8221;. Add a new <tt class="docutils literal"><span class="pre">UrlMap</span></tt> object for the <tt class="docutils literal"><span class="pre">map</span></tt> controller that you created in the previous step. Give it a name of &#8220;map&#8221;, a url of &#8220;my-first-app/map&#8221;, and a path to the controller of &#8220;my_first_app.controllers.map&#8221;. The <tt class="docutils literal"><span class="pre">url_maps()</span></tt> method for your app should look something like this when you are done:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyFirstApp</span><span class="p">(</span><span class="n">TethysAppBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tethys App Class for My First App.</span>
@@ -179,7 +190,7 @@
 </div>
 <div class="admonition important">
 <p class="first admonition-title">Important</p>
-<p class="last">The URLs that you use to map your controllers are relative to the &#8220;/apps&#8221; base URL. Also, all of your URL patterns should begin with your app&#8217;s index (e.g.: &#8216;my-first-app&#8217;) to prevent conflicts with other apps.</p>
+<p class="last">All of the URL patterns for your app should begin with the base URL of your app (e.g.: &#8216;my-first-app&#8217;) to prevent conflicts with other apps.</p>
 </div>
 <p>Now that you have created the URL map for your new map page, you can create a link to it from the home page. Open the <tt class="file docutils literal"><span class="pre">home.html</span></tt> template located at <tt class="file docutils literal"><span class="pre">my_first_app/templates/my_first_app/home.html</span></tt>. Replace the <tt class="docutils literal"><span class="pre">app_actions</span></tt> template block with the following:</p>
 <div class="highlight-python"><div class="highlight"><pre>{% block app_actions %}
@@ -191,7 +202,7 @@
 </div>
 <div class="section" id="view-new-map-page">
 <h2>View New Map Page<a class="headerlink" href="#view-new-map-page" title="Permalink to this headline">¶</a></h2>
-<p>At this point, your app should be ready to run again. Start up the development server using the <tt class="docutils literal"><span class="pre">tethys</span> <span class="pre">manage</span> <span class="pre">start</span></tt> command and browse to your app. Use the &#8220;Go To Map&#8221; action on the home page to browse to your new map page. It should look similar to this:</p>
+<p>At this point, your app should be ready to run again. Save all changes in the files you edited and restart the development server using the <tt class="docutils literal"><span class="pre">tethys</span> <span class="pre">manage</span> <span class="pre">start</span></tt> command in the terminal (stop it using <tt class="kbd docutils literal"><span class="pre">CTRL-C</span></tt> if necessary). Browse to your app home page at <a class="reference external" href="http://127.0.0.1:8000/apps/my-first-app">http://127.0.0.1:8000/apps/my-first-app</a>. Use the &#8220;Go To Map&#8221; action to browse to your new map page. It should look similar to this:</p>
 <div class="figure">
 <a class="reference internal image-reference" href="../_images/new_map_page.png"><img alt="../_images/new_map_page.png" src="../_images/new_map_page.png" style="width: 650px;" /></a>
 </div>
@@ -204,10 +215,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="url_variables.html" class="btn btn-neutral float-right" title="URL Variables">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="url_variables.html" class="btn btn-neutral float-right" title="Advanced Concepts">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="controller.html" class="btn btn-neutral" title="Working with the Controller"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="controller.html" class="btn btn-neutral" title="The Controller"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -31,7 +31,7 @@
     <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html"/>
         <link rel="up" title="Getting Started" href="../getting_started.html"/>
         <link rel="next" title="Distributing Apps" href="distribution.html"/>
-        <link rel="prev" title="URL Variables" href="url_variables.html"/> 
+        <link rel="prev" title="Advanced Concepts" href="url_variables.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -87,11 +87,21 @@
 <li class="toctree-l2"><a class="reference internal" href="scaffold.html">Create a New Tethys App Project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model.html">The Model and Persistent Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="view.html">The View and Templating</a></li>
-<li class="toctree-l2"><a class="reference internal" href="controller.html">Working with the Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="controller.html">The Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="url_mapping.html">URL Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="url_variables.html">URL Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="url_variables.html">Advanced Concepts</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">User Input and Forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="distribution.html">Distributing Apps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tethys_sdk.html">Software Development Kit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/dataset_services.html">Dataset Services API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/persistent_store.html">Persistent Stores API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/gizmos.html">Template Gizmos API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/spatial_publishing.html">Spatial Data Publishing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/geoprocessing.html">Geoprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/visualizing.html">Data Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/cloud_computing.html">High Performance Computing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../supplementary.html">Supplementary Docs</a><ul>
@@ -144,7 +154,7 @@
             
   <div class="section" id="user-input-and-forms">
 <h1>User Input and Forms<a class="headerlink" href="#user-input-and-forms" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> November 13, 2013</p>
+<p><strong>Last Updated:</strong> November 17, 2013</p>
 <p>Eventually you will need to request input from the user, which will involve working with HTML forms. In this tutorial, you&#8217;ll learn how to create forms in your template and process the data submitted through the form in your controller.</p>
 <div class="section" id="new-url-map">
 <h2>New URL Map<a class="headerlink" href="#new-url-map" title="Permalink to this headline">¶</a></h2>
@@ -218,8 +228,8 @@
 {% endblock %}
 </pre></div>
 </div>
-<p>The form is denoted by the HTML <tt class="docutils literal"><span class="pre">&lt;form&gt;</span></tt> tag and it contains a text input (created by a Tethys Gizmo) and a submit button. Also note the use of the <tt class="docutils literal"><span class="pre">csrf_token</span></tt> tag. This is a security precaution that is required to be included in all the forms of your app (see the <a class="reference external" href="https://docs.djangoproject.com/en/1.7/ref/contrib/csrf/">Cross Site Forgery protection</a> article in the Django documentation for more details.</p>
-<p>Also note that the method attribute of the <tt class="docutils literal"><span class="pre">&lt;form&gt;</span></tt> element is set to <tt class="docutils literal"><span class="pre">post</span></tt>. For an introduction to HTTP methods, see <a class="reference external" href="http://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post">The Definitive Guide to GET vs POST</a>.</p>
+<p>The form is denoted by the HTML <tt class="docutils literal"><span class="pre">&lt;form&gt;</span></tt> tag and it contains a text input (created by a template Gizmo) and a submit button. Also note the use of the <tt class="docutils literal"><span class="pre">csrf_token</span></tt> tag. This is a security precaution that is required to be included in all the forms of your app (see the <a class="reference external" href="https://docs.djangoproject.com/en/1.7/ref/contrib/csrf/">Cross Site Forgery protection</a> article in the Django documentation for more details).</p>
+<p>Also note that the method attribute of the <tt class="docutils literal"><span class="pre">&lt;form&gt;</span></tt> element is set to <tt class="docutils literal"><span class="pre">post</span></tt>. This means the form will use the HTTP method called POST to submit the data to the server. For an introduction to HTTP methods, see <a class="reference external" href="http://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post">The Definitive Guide to GET vs POST</a>.</p>
 </div>
 <div class="section" id="new-controller">
 <h2>New Controller<a class="headerlink" href="#new-controller" title="Permalink to this headline">¶</a></h2>
@@ -246,7 +256,7 @@
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">&#39;my_first_app/echo_name.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>There are a few features to point out in this controller. First, the Gizmo options for the text input are defined in this controller via the <tt class="docutils literal"><span class="pre">test_input_options</span></tt> dictionary. The text input must have a name assigned to it for its value to be returned. In this case the name of the text input is &#8220;name-input&#8221;.</p>
+<p>There are a few features to point out in this controller. First, the Gizmo options for the text input are defined in this controller via the <tt class="docutils literal"><span class="pre">test_input_options</span></tt> dictionary. The text input must have a name assigned to it for its value to be sent with the form data. In this case the name of the text input is &#8220;name-input&#8221;. See the <a class="reference internal" href="../tethys_sdk/gizmos.html"><em>Template Gizmos API</em></a>.</p>
 <p>Next, the data that is submitted with HTML forms is returned through the <tt class="docutils literal"><span class="pre">request</span></tt> object. For forms submitted using the &#8220;post&#8221; method, the data will be accessible in the <tt class="docutils literal"><span class="pre">request.POST</span></tt> attribute. Similarly, form data submitted using the &#8220;get&#8221; method will be available via the <tt class="docutils literal"><span class="pre">request.GET</span></tt> attribute. Both <tt class="docutils literal"><span class="pre">request.GET</span></tt> and <tt class="docutils literal"><span class="pre">request.POST</span></tt> are dictionary like objects where the keys are the names of the fields from the form.</p>
 <p>The controller contains logic that checks the <tt class="docutils literal"><span class="pre">request.POST</span></tt> for data with the name of the text input field, &#8220;name-input&#8221;. If it exists (which it will after the user submits the form), the <tt class="docutils literal"><span class="pre">name</span></tt> variable is replaced with the value of the text input. The <tt class="docutils literal"><span class="pre">name</span></tt> variable is passed to template where it renders a nice greeting.</p>
 </div>
@@ -288,7 +298,7 @@
         <a href="distribution.html" class="btn btn-neutral float-right" title="Distributing Apps">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="url_variables.html" class="btn btn-neutral" title="URL Variables"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="url_variables.html" class="btn btn-neutral" title="Advanced Concepts"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

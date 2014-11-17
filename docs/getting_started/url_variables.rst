@@ -1,10 +1,10 @@
-*************
-URL Variables
-*************
+*****************
+Advanced Concepts
+*****************
 
-**Last Updated:** November 13, 2014
+**Last Updated:** November 17, 2014
 
-The purpose of this tutorial will be to introduce URL variables. In the map page you created in the previous tutorials, you are able to view all of the stream gages on a map concurrently. In this tutorial you will add the ability to see individual stream gages on the map page. This will involve creating a url map, new controller, and some modifications to the map template. This exercise will also serve as a good review of MVC development.
+The purpose of this tutorial will be to introduce some advanced concepts in Tethys app development. In the map page you created in the previous tutorials, you are able to view all of the stream gages on a map concurrently. In this tutorial you will add the ability to view individual stream gages on the map page. This will involve creating a new url map, new controller, and some modifications to the map template. This exercise will also serve as a good review of MVC development in Tethys Platform.
 
 New URL Map and URL Variables
 =============================
@@ -48,7 +48,7 @@ You can add variables to your URLs to make your controllers and web pages more d
 New Controller
 ==============
 
-Notice that the map_single ``UrlMap`` object points to a controller named "map_single". This controller doesn't exist yet, so we will need to create it. Open the :file:`my_first_app/controllers.py` in a text editor and add the ``map_single`` controller function to it:
+Notice that the ``map_single`` ``UrlMap`` object points to a controller named "map_single". This controller doesn't exist yet, so we will need to create it. Open the :file:`my_first_app/controllers.py` in a text editor and add the ``map_single`` controller function to it:
 
 ::
 
@@ -80,9 +80,13 @@ Notice that the map_single ``UrlMap`` object points to a controller named "map_s
 
         return render(request, 'my_first_app/map.html', context)
 
-The ``map_single`` controller function is slightly different than the ``map`` controller you created earlier. It accepts and additional argument called "id". The ``id`` URL variable value will be passed to the ``map_single`` controller making the ``id`` variable available for use in the controller logic. Anytime you create a URL with variables in it, the variables need to be added to the arguments of the controller function it maps to.
+The ``map_single`` controller function is slightly different than the ``map`` controller you created earlier. It accepts an additional argument called "id". The ``id`` URL variable value will be passed to the ``map_single`` controller making the ``id`` variable available for use in the controller logic.
 
-The ``map_single`` controller is similar but different from the ``map`` controller you created earlier. Searches for a single stream gage record using the ``id`` variable and the SQLAlchemy ``filter()`` method. The gage is reformatted into GeoJSON format as before and the ``map_options`` for the Gizmo are defined. The context is expanded to include the ``id`` variable, so that it will be available for use in the template. The same :file:`map.html` template is being used by this controller as was used by the ``map`` controller. We will need to modify it slightly to make use of the new ``gage_id`` context variable.
+Anytime you create a URL with variables in it, the variables need to be added to the arguments of the controller function it maps to.
+
+The ``map_single`` controller is similar but different from the ``map`` controller you created earlier. The SQLAlchemy query searches for a single stream gage record using the ``id`` variable via the``filter()`` method. The stream gage data returned by the query is reformatted into GeoJSON format as before and the ``map_options`` for the Gizmo are defined.
+
+The context is expanded to include the ``id`` variable, so that it will be available for use in the template. The same :file:`map.html` template is being used by this controller as was used by the ``map`` controller. However, it will need to be modified slightly to make use of the new ``gage_id`` context variable.
 
 Modify the Template
 ===================
@@ -133,14 +137,14 @@ Open the :file:`map.html` template located at :file:`my_first_app/templates/my_f
       {% gizmo_dependencies %}
     {% endblock %}
 
-There are two changes to the :file:`map.html` template that are worth noting. First, the template now overrides the ``app_navigation_block`` to provide links for each of the stream gages in the navigation. The ``if`` template tag is used in each of the nav items to highlight the appropriate link based on the ``gage_id``. Notice that all ``if`` tags must also end with a ``endif`` tag. The text between the two tags is displayed only if the conditional statement evaluates to ``True``. The ``href`` for each link is provided using the ``url`` tag as before, but this time, the ``id`` variable is also provided.
+There are two changes to the :file:`map.html` template that are worth noting. First, the template now overrides the ``app_navigation_block`` to provide links for each of the stream gages in the navigation. The ``if`` template tag is used in each of the nav items to highlight the appropriate link based on the ``gage_id``. Notice that all ``if`` tags must also end with a ``endif`` tag. The text between the two tags is displayed only if the conditional statement evaluates to ``True``. The ``href`` for each link is provided using the ``url``, but this time the ``id`` variable is also provided as an argument.
 
 The other change to the template is the heading of the page (``<h1>``) is wrapped by ``if``, ``else``, and ``endif`` tags. The effect is to display "Stream Gage id#" when viewing only one stream gage and "Stream Gages" when viewing all of them.
 
 View Updated Map Page
 =====================
 
-Just like that, you added a new view of your data. Start up the development server using the ``tethys manage start`` command and browse to your app. Use the "Go To Map" action on the home page to browse to your new map page and use the options in the navigation pane to view the different gages. It should look like this:
+Just like that, you added a new page to your app using MVC. Start up the development server using the ``tethys manage start`` command and browse to your app. Use the "Go To Map" action on the home page to browse to your new map page and use the options in the navigation pane to view the different gages. It should look like this:
 
 .. figure:: ../images/map_single_page.png
     :width: 650px
@@ -148,6 +152,8 @@ Just like that, you added a new view of your data. Start up the development serv
 Variable URLs
 =============
 
-Take note of the URL as you are viewing the different gages. You should see the ID of the current gage. For example, the URL for the gage with an ID of 1 would be `<http://127.0.0.1/apps/my-first-app/map/1/>`_. You can manually change the ID to request the gage with that ID. Visit this URL `<http://127.0.0.1/apps/my-first-app/map/3/>`_ and it will map the gage with ID 3.
+Take note of the URL as you are viewing the different gages. You should see the ID of the current gage. For example, the URL for the gage with an ID of 1 would be `<http://127.0.0.1:8000/apps/my-first-app/map/1/>`_. You can manually change the ID in the URL to request the gage with that ID. Visit this URL `<http://127.0.0.1:8000/apps/my-first-app/map/3/>`_ and it will map the gage with ID 3.
 
-Try this URL: `<http://127.0.0.1/apps/my-first-app/map/100>`_. You should see a lovely error message, because you don't have a gage with ID 100 in the database. This uncovers a bug in your code that we won't take the time to fix in this tutorial. You would need to handle the case when the ID doesn't match anything in the database. This also exposes a vulnerability with using integer IDs in the URL--they can be guessed easily. It would be a much better practice to use a UUID (see `Universally unique identifier <http://en.wikipedia.org/wiki/Universally_unique_identifier>`_) or something similar for IDs.
+Try this URL: `<http://127.0.0.1:8000/apps/my-first-app/map/100>`_. You should see a lovely error message, because you don't have a gage with ID 100 in the database. This uncovers a bug in your code that we won't take the time to fix in this tutorial. If this were a real app, you would need to handle the case when the ID doesn't match anything in the database so that it doesn't give you an error.
+
+This exercise also exposes a vulnerability with using integer IDs in the URL--they can be guessed easily. For example if your app had a delete method, it would be very easy for an attacker to write a script that would increment through integers and call the delete method--effectively clearing your database. It would be a much better practice to use a UUID (see `Universally unique identifier <http://en.wikipedia.org/wiki/Universally_unique_identifier>`_) or something similar for IDs.

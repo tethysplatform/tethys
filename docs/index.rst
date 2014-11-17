@@ -8,7 +8,7 @@ Tethys Platform
    features
    installation
    getting_started
-   tethys_api
+   tethys_sdk
    supplementary
    glossary
 

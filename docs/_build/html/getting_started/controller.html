@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Working with the Controller &mdash; Tethys Platform 0.1.0 documentation</title>
+  <title>The Controller &mdash; Tethys Platform 0.1.0 documentation</title>
   
 
   
@@ -87,11 +87,21 @@
 <li class="toctree-l2"><a class="reference internal" href="scaffold.html">Create a New Tethys App Project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model.html">The Model and Persistent Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="view.html">The View and Templating</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Working with the Controller</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">The Controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="url_mapping.html">URL Mapping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="url_variables.html">URL Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="url_variables.html">Advanced Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="forms.html">User Input and Forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="distribution.html">Distributing Apps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tethys_sdk.html">Software Development Kit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/dataset_services.html">Dataset Services API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/persistent_store.html">Persistent Stores API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/gizmos.html">Template Gizmos API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/spatial_publishing.html">Spatial Data Publishing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/geoprocessing.html">Geoprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/visualizing.html">Data Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/cloud_computing.html">High Performance Computing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../supplementary.html">Supplementary Docs</a><ul>
@@ -131,7 +141,7 @@
       
           <li><a href="../getting_started.html">Getting Started</a> &raquo;</li>
       
-    <li>Working with the Controller</li>
+    <li>The Controller</li>
       <li class="wy-breadcrumbs-aside">
         
           <a href="../_sources/getting_started/controller.txt" rel="nofollow"> View page source</a>
@@ -142,13 +152,15 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="working-with-the-controller">
-<h1>Working with the Controller<a class="headerlink" href="#working-with-the-controller" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> November 13, 2014</p>
-<p>The Controller component of MVC will be discussed in this part of the tutorial. The job of the controller is to coordinate between the View and the Model. Often this means querying a database and transforming the data to a format that the view expects it to be in. The Controller also handles most of the application logic such as processing and validating form data or launching model runs. In a Tethys app, controllers are simple Python functions. In this tutorial you will retrieve the data from your stream gage model and then pass it to the template that you created in the previous step.</p>
+  <div class="section" id="the-controller">
+<h1>The Controller<a class="headerlink" href="#the-controller" title="Permalink to this headline">¶</a></h1>
+<p><strong>Last Updated:</strong> November 17, 2014</p>
+<p>The Controller component of MVC will be discussed in this part of the tutorial. The job of the controller is to coordinate between the View and the Model. Often this means querying a database and transforming the data to a format that the view expects it to be in. The Controller also handles most of the application logic such as processing and validating form data or launching model runs. In a Tethys app, controllers are simple Python functions.</p>
+<p>Django is used to implement Tethys controllers but they are called &#8220;views&#8221; in Django. The <a class="reference external" href="https://docs.djangoproject.com/en/1.7/topics/http/views/">Writing Views</a> documentation for Django is a good reference for Tethys controllers. Note that URL mapping is handled differently in Tethys app development than in Django development and will be discussed in the <a class="reference internal" href="url_mapping.html"><em>URL Mapping</em></a> tutorial.</p>
+<p>In this tutorial you will write a controller that will retrieve the data from your stream gage model and then pass it to the template that you created in the previous tutorial.</p>
 <div class="section" id="make-a-new-controller">
 <h2>Make a New Controller<a class="headerlink" href="#make-a-new-controller" title="Permalink to this headline">¶</a></h2>
-<p>Recall that in the :doc:`` tutorial you created an SQLAlchemy data model to store information about stream gages. You also created an initialization function that loaded some dummy data into your database. You will now add some logic to your controller to retrieve this data and pass it to the template.</p>
+<p>Recall that in <a class="reference internal" href="model.html"><em>The Model and Persistent Stores</em></a> tutorial you created an SQLAlchemy data model to store information about stream gages. You also created an initialization function that loaded some dummy data into your database. You will now add some logic to your controller to retrieve this data and pass it to the template.</p>
 <p>Open your <tt class="file docutils literal"><span class="pre">controllers.py</span></tt> file located at <tt class="file docutils literal"><span class="pre">my_first_app/controllers.py</span></tt>. This file should contain a function called <tt class="docutils literal"><span class="pre">home</span></tt>. This function is the controller for the home page of your app. All controller functions must accept a request object and they must return a response object. The request object contains information about the HTTP request, including any form data that is submitted (more on this later). There are several ways to return a response object, but the most common way is to use the <tt class="docutils literal"><span class="pre">render()</span></tt> function provided by Django. This function requires three arguments: the request object, the template to be rendered, and the context dictionary.</p>
 <p>Add the following imports to the top of the file:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="n">SessionMaker</span><span class="p">,</span> <span class="n">StreamGage</span>
@@ -188,10 +200,12 @@
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">&#39;my_first_app/map.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The new <tt class="docutils literal"><span class="pre">map</span></tt> controller queries the persistent store for the stream gages, converts the data into a format the map can use (GeoJSON), and configures the map options. Querying is accomplished by creating a session object using the <tt class="docutils literal"><span class="pre">SessionMaker</span></tt> from the <tt class="file docutils literal"><span class="pre">model.py</span></tt> file and using the <cite>query()</cite> method. The result is a list of <tt class="docutils literal"><span class="pre">StreamGage</span></tt> objects representing the records in the database.</p>
-<p>The map is capable of consuming spatial data in a few formats including GeoJSON, so the <tt class="docutils literal"><span class="pre">map</span></tt> controller handles the job of converting the data from the query into GeoJSON format. The result is passed to the <tt class="docutils literal"><span class="pre">map_options</span></tt> dictionary, which provides all the configuration and data for the Gizmo map in the template we created in the last step.</p>
-<p>Next, a context dictionary is defined with all of the variables that you wish to be available for use in the template.</p>
-<p>Finally, the <tt class="docutils literal"><span class="pre">render()</span></tt> function is used to create the response object. It is in the <tt class="docutils literal"><span class="pre">render()</span></tt> function that you specify the template that is to be rendered by the controller. In this case, the <tt class="file docutils literal"><span class="pre">map.html</span></tt> that you created in the last tutorial.</p>
+<p>The new <tt class="docutils literal"><span class="pre">map</span></tt> controller queries the persistent store for the stream gages, converts the data into GeoJson format for the map, and configures the map options for the map Gizmo that is used in the template.</p>
+<p>To query the database, an SQLAlchemy <tt class="docutils literal"><span class="pre">session</span></tt> object is needed. It is created using the <tt class="docutils literal"><span class="pre">SessionMaker</span></tt> object imported from the <tt class="file docutils literal"><span class="pre">model.py</span></tt> file. Querying is accomplished by using the <tt class="docutils literal"><span class="pre">query()</span></tt> method on the <tt class="docutils literal"><span class="pre">session</span></tt> object. The result is a list of <tt class="docutils literal"><span class="pre">StreamGage</span></tt> objects representing the records in the database.</p>
+<p>The map is capable of consuming spatial data in a few formats including GeoJSON, so the <tt class="docutils literal"><span class="pre">map</span></tt> controller handles the job of converting the data from the list of <tt class="docutils literal"><span class="pre">StreamGage</span></tt> objects to GeoJSON format.</p>
+<p>The map Gizmo that is used in the <tt class="file docutils literal"><span class="pre">map.html</span></tt> template requires a dictionary of configuration options called &#8220;map_options&#8221;. This is created in the controller and the <tt class="docutils literal"><span class="pre">input_overlays</span></tt> option is used to give the GeoJSON formatted stream gage data to the map.</p>
+<p>Next, a template context dictionary is defined that contains all of the variables that you wish to be available for use in the template.</p>
+<p>Finally, the <tt class="docutils literal"><span class="pre">render()</span></tt> function is used to create the response object. It is in the <tt class="docutils literal"><span class="pre">render()</span></tt> function that you specify the template that is to be rendered by the controller. In this case, the <tt class="file docutils literal"><span class="pre">map.html</span></tt> that you created in the last tutorial. Note that the path you provide to the template is relative to the template directory of your app: <tt class="docutils literal"><span class="pre">my_first_app/map.html</span></tt>.</p>
 </div>
 </div>
 
