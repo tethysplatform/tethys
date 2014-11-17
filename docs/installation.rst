@@ -6,6 +6,10 @@ Installation
 
 This section describes how to install Tethys Platform. These installation instructions are optimized for Ubuntu 14.04, which is the recommended platform for running Tethys Platform. However, Tethys Platform is cross platform and could be installed on other platforms with some adaptation.
 
+.. Note::
+
+    To install and use Tethys Platform, you will need to be familiar with using the command line/terminal. If you don't feel comfortable with the command line, you can review this tutorial: `Learn the Bash Command Line <http://ryanstutorials.net/linuxtutorial/>`_.
+
 1. Install the Dependencies
 ---------------------------
 
