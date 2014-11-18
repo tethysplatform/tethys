@@ -70,7 +70,7 @@ Browse to `<http://127.0.0.1:8000/apps>`_. If all has gone well, you should see 
 Model View Controller
 =====================
 
-Tethys apps are developed using the :term:`Model View Controller` (MVC) development pattern. Following the MVC pattern will make your app project easier to develop and manage in the future. Most of the code in your app will fall into one of the three MVC categories. The Model represents the data of your app, the View is composed of the representation of the data, and the Controller consists of the logic to prepare the data for the view and any other logic your app needs. In the next few tutorials, you will be introduced to how the MVC development paradigm is used to develop Tethys apps.
+Tethys apps are developed using the :term:`Model View Controller` (MVC) development pattern. Following the MVC pattern will make your app project easier to develop and manage in the future. Most of the code in your app will fall into one of the three MVC categories. The Model represents the data of your app, the View is composed of the representation of the data, and the Controller consists of the logic to prepare the data for the view and any other logic your app needs. In the next few tutorials, you will be introduced to how the MVC development paradigm is used to develop Tethys apps. For more information about MVC, see :doc:`../supplementary/key_concepts`.
 
 App Project Paths
 =================
@@ -89,4 +89,4 @@ For convenience, all paths in the following tutorials will be given relative to 
     # Relative App Package Directory Notation
     my_first_app/controllers.py
 
-As you explore the contents of your app project, you will notice that many of the directories have filed named "__init__.py". Though many of these files are empty, they are important and should not be deleted. They tell Python that this directory is a Python package. Python packages and their contents can be imported in Python scripts. Removing the :file:``__init__.py`` files could result in breaking import statements and it could make some of your code inaccessible. Similarly, if you add a directory to your project that contains Python modules you would like to be made available to your code, add a :file:``__init__.py`` file to the directory to make it a package.
+As you explore the contents of your app project, you will notice that many of the directories have filed named "__init__.py". Though many of these files are empty, they are important and should not be deleted. They tell Python that this directory is a Python package. Python packages and their contents can be imported in Python scripts. Removing the :file:`\_\_init\_\_.py` files could result in breaking import statements and it could make some of your code inaccessible. Similarly, if you add a directory to your project that contains Python modules you would like to be made available to your code, add a :file:`\_\_init\_\_.py` file to the directory to make it a package.
