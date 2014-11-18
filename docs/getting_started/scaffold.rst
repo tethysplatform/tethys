@@ -20,12 +20,7 @@ To generate a new app using the scaffold, open a terminal and execute the follow
 
 .. tip::
 
-   Terminal Tips:
-
-   * The "$" in code blocks like the one above means "run this in the terminal". This is usually done by typing the command or copying and pasting it. When copying, don't copy the "$".
-   * Copy lines one at a time and press :kbd:`enter` after each one to execute it.
-   * The "~" is short hand for your :file:`Home` directory. The shorthand is used because the path to the :file:`Home` directory varies depending on your user name (e.g.: if your user name was "john", then the absolute path to your home directory would be :file:`/home/john`).
-   * The keyboard shortcuts :kbd:`CTRL-C` and :kbd:`CTRL-V` do not do preform copy and paste in the terminal. Instead, use the shortcuts :kbd:`CTRL-SHIFT-C` and :kbd:`CTRL-SHIFT-V` to copy and paste.
+   You will need to use the command line/terminal to manage your app and run the development server. See the :doc:`../supplementary/terminal_quick_guide` article for some tips if you are new to command line.
 
 The commands you entered did the following tasks:
 

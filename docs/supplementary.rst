@@ -12,7 +12,9 @@ This section provides a list of miscellaneous reference material that can be use
    supplementary/key_concepts
    supplementary/app_project
    supplementary/app_class
+   supplementary/terminal_quick_guide
    supplementary/install_ubuntu
    supplementary/ckan_troubleshooting
    supplementary/dev_environment
    supplementary/production_deployment
+
