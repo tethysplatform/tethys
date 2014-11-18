@@ -2,6 +2,8 @@
 Glossary
 ********
 
+**Last Updated:** November 18, 2014
+
 .. glossary::
     :sorted:
 
