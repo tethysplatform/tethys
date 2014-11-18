@@ -10,6 +10,7 @@ Tethys Platform
    getting_started
    tethys_sdk
    supplementary
+   summary
    glossary
 
 
