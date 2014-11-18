@@ -16,7 +16,7 @@ Glossary
         The top level Python namespace package of an :term:`app project`. The release package contains the :term:`setup script` and all the source for an app including the :term:`app package`. Refer to Figure 1 of :doc:`./supplementary/app_project` for more information.
 
     app harvester
-        An instance of the ``SingletonAppHarvester`` class. The app harvester collects information about each app and uses it to connect the apps to CKAN. Refer to :doc:`./supplementary/app_harvesting`.
+        An instance of the ``SingletonAppHarvester`` class. The app harvester collects information about each app and uses it to load Tethys apps.
 
     app instance    
     app instances

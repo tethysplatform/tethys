@@ -30,8 +30,8 @@
   
     <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html"/>
         <link rel="up" title="Setup Development Environment" href="../supplementary/dev_environment.html"/>
-        <link rel="next" title="Working with CKAN in Development" href="working_ckan.html"/>
-        <link rel="prev" title="Setup with VMWare Image" href="ubuntu_vm.html"/> 
+        <link rel="next" title="Using Aptana Studio 3 IDE" href="setup_aptana.html"/>
+        <link rel="prev" title="Setup Development Environment" href="../supplementary/dev_environment.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -104,17 +104,17 @@
 <li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/cloud_computing.html">High Performance Computing</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="../supplementary.html">Supplementary Docs</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../supplementary.html">Supplementary</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../supplementary/key_concepts.html">Key Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../supplementary/app_project.html">App Project Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../supplementary/working_with_apps.html">Working with Apps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_harvesting.html">App Harvesting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../supplementary/app_class.html">App Base Class API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/install_ubuntu.html">Ubuntu Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/ckan_troubleshooting.html">CKAN Installation Troubleshooting</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../supplementary/dev_environment.html">Setup Development Environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../supplementary/production_deployment.html">Deploy Apps in Production</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../supplementary/summary.html">Summary of References</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../summary.html">Summary of References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
 
@@ -139,7 +139,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-          <li><a href="../supplementary.html">Supplementary Docs</a> &raquo;</li>
+          <li><a href="../supplementary.html">Supplementary</a> &raquo;</li>
       
           <li><a href="../supplementary/dev_environment.html">Setup Development Environment</a> &raquo;</li>
       
@@ -157,7 +157,8 @@
   <div class="section" id="docker-development-environment">
 <h1>Docker Development Environment<a class="headerlink" href="#docker-development-environment" title="Permalink to this headline">¶</a></h1>
 <p><strong>Last Updated:</strong> May 30, 2014</p>
-<p>This method make use of the <a class="reference external" href="https://www.docker.io/">Docker virtualization container</a> system. A pair of Docker container images have been prepared with a full installation of the Tethys Apps development environment. At this time, an Ubuntu installation is still required to use this method. Follow the <a class="reference internal" href="manual_install.html#install-ubuntu"><em>Install Ubuntu</em></a> instructions to setup Ubuntu. Then follow the instructions below to install Docker and the Tethys development environment containers. After Ubuntu is installed, plan on about 10-15 minutes to get the development environment setup. This method is the next fastest way to get setup if you do not have VMWare.</p>
+<p><strong>UNDER CONSTRUCTION</strong></p>
+<p>This method make use of the <a class="reference external" href="https://www.docker.io/">Docker virtualization container</a> system. A pair of Docker container images have been prepared with a full installation of the Tethys Apps development environment. At this time, an Ubuntu installation is still required to use this method. Follow the <a class="reference internal" href="../supplementary/install_ubuntu.html"><em>Ubuntu Installation</em></a> instructions to setup Ubuntu. Then follow the instructions below to install Docker and the Tethys development environment containers. After Ubuntu is installed, plan on about 10-15 minutes to get the development environment setup. This method is the next fastest way to get setup if you do not have VMWare.</p>
 <p>There are two Docker containers that are needed to deploy the Tethys development environment: <tt class="docutils literal"><span class="pre">tethys_dev</span></tt> and <tt class="docutils literal"><span class="pre">tethys_dev_data</span></tt>. The <tt class="docutils literal"><span class="pre">tethys_dev</span></tt> container is comprised of CKAN with all the plugins for Tethys Apps installed to provide a development environment for Tethys app development. The <tt class="docutils literal"><span class="pre">tethys_dev_data</span></tt> container houses all of the data dependencies for the Tethys Apps development environment (postgresql, filestore, datastore, solr, and tethys apps databases). This allows user data, app data, and datasets to be persisted when the <tt class="docutils literal"><span class="pre">tethys_dev</span></tt> container is updated.</p>
 <div class="section" id="install-docker">
 <h2>Install Docker<a class="headerlink" href="#install-docker" title="Permalink to this headline">¶</a></h2>
@@ -312,10 +313,10 @@ $ sudo docker build -t ciwater/tethys_dev .
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="working_ckan.html" class="btn btn-neutral float-right" title="Working with CKAN in Development">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="setup_aptana.html" class="btn btn-neutral float-right" title="Using Aptana Studio 3 IDE">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="ubuntu_vm.html" class="btn btn-neutral" title="Setup with VMWare Image"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../supplementary/dev_environment.html" class="btn btn-neutral" title="Setup Development Environment"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

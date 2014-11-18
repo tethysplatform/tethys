@@ -31,7 +31,7 @@
     <link rel="top" title="Tethys Platform 0.1.0 documentation" href="../index.html"/>
         <link rel="up" title="Setup Development Environment" href="../supplementary/dev_environment.html"/>
         <link rel="next" title="Deploy Apps in Production" href="../supplementary/production_deployment.html"/>
-        <link rel="prev" title="Working with CKAN in Development" href="working_ckan.html"/> 
+        <link rel="prev" title="Docker Development Environment" href="docker_env.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -104,17 +104,17 @@
 <li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/cloud_computing.html">High Performance Computing</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="../supplementary.html">Supplementary Docs</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../supplementary.html">Supplementary</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../supplementary/key_concepts.html">Key Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../supplementary/app_project.html">App Project Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../supplementary/working_with_apps.html">Working with Apps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../supplementary/app_harvesting.html">App Harvesting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../supplementary/app_class.html">App Base Class API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/install_ubuntu.html">Ubuntu Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/ckan_troubleshooting.html">CKAN Installation Troubleshooting</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../supplementary/dev_environment.html">Setup Development Environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../supplementary/production_deployment.html">Deploy Apps in Production</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../supplementary/summary.html">Summary of References</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../summary.html">Summary of References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
 </ul>
 
@@ -139,7 +139,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-          <li><a href="../supplementary.html">Supplementary Docs</a> &raquo;</li>
+          <li><a href="../supplementary.html">Supplementary</a> &raquo;</li>
       
           <li><a href="../supplementary/dev_environment.html">Setup Development Environment</a> &raquo;</li>
       
@@ -157,6 +157,7 @@
   <div class="section" id="using-aptana-studio-3-ide">
 <h1>Using Aptana Studio 3 IDE<a class="headerlink" href="#using-aptana-studio-3-ide" title="Permalink to this headline">¶</a></h1>
 <p><strong>Last Updated:</strong> May 22, 2014</p>
+<p><strong>UNDER CONSTRUCTION</strong></p>
 <p>You are welcome to use any IDE or text editor that you are comfortable with for developing. One IDE that we have found works well for Tethys App development is called Aptana. It is based on Eclipse, but it is optimized for web development and it comes with the excellent PyDev plugin installed out of the box for developing in Python web applications. There are a few steps that need to be followed to import a new app project into Aptana and set it up for Python development. These steps will be outlined here for convenience. In this tutorial, we will assume that we have created a new app called &#8220;my_first_app&#8221; located in the <tt class="file docutils literal"><span class="pre">~/tethysdev/ckanapp-my_first_app</span></tt> directory.</p>
 <div class="section" id="install-aptana-studio">
 <h2>Install Aptana Studio<a class="headerlink" href="#install-aptana-studio" title="Permalink to this headline">¶</a></h2>
@@ -189,7 +190,7 @@
 </div>
 <div class="section" id="import-app-project">
 <h2>Import App Project<a class="headerlink" href="#import-app-project" title="Permalink to this headline">¶</a></h2>
-<p>After you have generated a new app using the scaffold (see <a class="reference internal" href="../supplementary/working_with_apps.html"><em>Working with Apps</em></a>), you will need to <strong>import</strong> the <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> into Aptana to start working with it.This process will need to be done for every app that you develop.</p>
+<p>After you have generated a new app using the scaffold (see <a class="reference internal" href="../getting_started/scaffold.html"><em>Create a New Tethys App Project</em></a>), you will need to <strong>import</strong> the <a class="reference internal" href="../glossary.html#term-app-project"><em class="xref std std-term">app project</em></a> into Aptana to start working with it.This process will need to be done for every app that you develop.</p>
 <ol class="arabic simple">
 <li>Select <strong>File</strong> | <strong>Import...</strong> from the dropdown menu.</li>
 <li>Exand the <strong>General</strong> menu and select the <strong>Existing Folder as New Project</strong> option from the <em>Import</em> wizard that appears (see <a class="reference internal" href="#aptana-figure-3"><em>Figure 3. Screenshot of Import wizard select source step.</em></a>. Press the <strong>Next</strong> button to continue.</li>
@@ -359,7 +360,7 @@
         <a href="../supplementary/production_deployment.html" class="btn btn-neutral float-right" title="Deploy Apps in Production">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="working_ckan.html" class="btn btn-neutral" title="Working with CKAN in Development"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="docker_env.html" class="btn btn-neutral" title="Docker Development Environment"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
