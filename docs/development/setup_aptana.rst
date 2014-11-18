@@ -4,6 +4,8 @@ Using Aptana Studio 3 IDE
 
 **Last Updated:** May 22, 2014
 
+**UNDER CONSTRUCTION**
+
 You are welcome to use any IDE or text editor that you are comfortable with for developing. One IDE that we have found works well for Tethys App development is called Aptana. It is based on Eclipse, but it is optimized for web development and it comes with the excellent PyDev plugin installed out of the box for developing in Python web applications. There are a few steps that need to be followed to import a new app project into Aptana and set it up for Python development. These steps will be outlined here for convenience. In this tutorial, we will assume that we have created a new app called "my_first_app" located in the :file:`~/tethysdev/ckanapp-my_first_app` directory.
 
 Install Aptana Studio
@@ -54,7 +56,7 @@ If you have a fresh installation of Aptana Studio, you will need to create a new
 Import App Project
 ==================
 
-After you have generated a new app using the scaffold (see :doc:`../supplementary/working_with_apps`), you will need to **import** the :term:`app project` into Aptana to start working with it.This process will need to be done for every app that you develop.
+After you have generated a new app using the scaffold (see :doc:`../getting_started/scaffold`), you will need to **import** the :term:`app project` into Aptana to start working with it.This process will need to be done for every app that you develop.
 
 1. Select **File** | **Import...** from the dropdown menu.
 
