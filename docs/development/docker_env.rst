@@ -4,7 +4,9 @@ Docker Development Environment
 
 **Last Updated:** May 30, 2014
 
-This method make use of the `Docker virtualization container <https://www.docker.io/>`_ system. A pair of Docker container images have been prepared with a full installation of the Tethys Apps development environment. At this time, an Ubuntu installation is still required to use this method. Follow the :ref:`install_ubuntu` instructions to setup Ubuntu. Then follow the instructions below to install Docker and the Tethys development environment containers. After Ubuntu is installed, plan on about 10-15 minutes to get the development environment setup. This method is the next fastest way to get setup if you do not have VMWare.
+**UNDER CONSTRUCTION**
+
+This method make use of the `Docker virtualization container <https://www.docker.io/>`_ system. A pair of Docker container images have been prepared with a full installation of the Tethys Apps development environment. At this time, an Ubuntu installation is still required to use this method. Follow the :doc:`../supplementary/install_ubuntu` instructions to setup Ubuntu. Then follow the instructions below to install Docker and the Tethys development environment containers. After Ubuntu is installed, plan on about 10-15 minutes to get the development environment setup. This method is the next fastest way to get setup if you do not have VMWare.
 
 There are two Docker containers that are needed to deploy the Tethys development environment: ``tethys_dev`` and ``tethys_dev_data``. The ``tethys_dev`` container is comprised of CKAN with all the plugins for Tethys Apps installed to provide a development environment for Tethys app development. The ``tethys_dev_data`` container houses all of the data dependencies for the Tethys Apps development environment (postgresql, filestore, datastore, solr, and tethys apps databases). This allows user data, app data, and datasets to be persisted when the ``tethys_dev`` container is updated.
 

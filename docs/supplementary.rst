@@ -1,6 +1,6 @@
-******************
-Supplementary Docs
-******************
+*************
+Supplementary
+*************
 
 **Last Updated:** November 14, 2014
 
@@ -11,9 +11,8 @@ This section provides a list of miscellaneous reference material that can be use
 
    supplementary/key_concepts
    supplementary/app_project
-   supplementary/working_with_apps
-   supplementary/app_harvesting
    supplementary/app_class
+   supplementary/install_ubuntu
+   supplementary/ckan_troubleshooting
    supplementary/dev_environment
    supplementary/production_deployment
-   supplementary/summary
