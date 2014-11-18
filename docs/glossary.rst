@@ -7,10 +7,10 @@ Glossary
 
     app package
     app packages
-        A Python namespace package of an :term:`app project` that contains all of the source code for an app. The app package is named the same as the app by convention. Refer to Figure 1 of :doc:`./supplementary/app_project` for more information.
+        A Python namespace package of a Tethys :term:`app project` that contains all of the source code for an app. The app package is named the same as the app by convention. Refer to Figure 1 of :doc:`./supplementary/app_project` for more information.
 
     app project
-        All of the source code for a Tethys Apps app including the :term:`release package` and the :term:`app package`.
+        All of the source code for a Tethys app including the :term:`release package` and the :term:`app package`.
 
     release package
         The top level Python namespace package of an :term:`app project`. The release package contains the :term:`setup script` and all the source for an app including the :term:`app package`. Refer to Figure 1 of :doc:`./supplementary/app_project` for more information.
@@ -23,11 +23,11 @@ Glossary
         An instance of an :term:`app class`.
 
     app class
-        A class defined in the :term:`app configuration file` that inherits from the ``AppBase`` class provided by the Tethys Apps plugin. This class implements several methods that are used to link apps with CKAN.
+        A class defined in the :term:`app configuration file` that inherits from the ``TethysAppBase`` class provided by the Tethys Platform. For more details on the app class, see :doc:`./supplementary/app_class`.
 
-    snippet
-    snippets
-        Reusable view elements that can be inserted into a template using a single line of code. Examples include common GUI elements like buttons, toggle switches, and input fields as well as more complex elements like maps and plots.
+    Gizmo
+    Gizmos
+        Reusable view elements that can be inserted into a template using a single line of code. Examples include common GUI elements like buttons, toggle switches, and input fields as well as more complex elements like maps and plots. For more information on Gizmos, see :doc:`tethys_sdk/gizmos`.
 
     app configuration file
         A file located in the :term:`app package` and called :file:`app.py` by convention. This file contains the :term:`app class` that is used to configure apps. For more details on the app configuration file, see :doc:`./supplementary/app_class`.
@@ -37,7 +37,7 @@ Glossary
 
     persistent store
     persistent stores
-        A persistent store is a database that can be automatically created for an app. See :doc:`./getting_started/model` for more information about persistent stores.
+        A persistent store is a database that can be automatically created for an app. See :doc:`./getting_started/model` tutorial and the :doc:`./tethys_sdk/persistent_store` for more information about persistent stores.
 
     resource
     resources
