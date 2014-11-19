@@ -5,18 +5,16 @@ Persistent Stores API
 **Last Updated:** November 12, 2014
 
 
-The Persistent Store API streamlines the use of SQL databases in Tethys apps. Using a few configuration options, you can provision up to 5 SQL databases for your app. Currently, only PostgreSQL databases can be created using the Persistent Store API.
+The Persistent Store API streamlines the use of SQL databases in Tethys apps. Using this API, you can provision up to 5 SQL databases for your app. The databases that will be created are `PostgreSQL <http://www.postgresql.org/>`_ databases. Currently, no other databases are supported.
 
-Overview
-========
+The process of creating a new persistent database can be summed up in the following steps:
 
-There are several steps required to create a new persistent store. First, you must register a new persistent store. This is done with a method in :term:`app configuration` file. The registration notifies Tethys Platform to create the database for your app and tells it how to initialize the database.
+1. register a new persistent store in the :term:`app configuration file`,
+2. create a data model to define the table structure of the database,
+3. write a persistent store initialization function, and
+4. use the Tethys command line interface to create the persistent store.
 
-The next step is to define the tables for your persistent store database with a data model. Tethys Platform provides SQLAlchemy Object Relational Mapper (ORM) as an object oriented approach for defining the data model.
-
-The final step is to create a persistent store initialization function. This function will be called when the persistent store is initialized and it should create all of the tables in the database and add any initial data that is necessary for your app to run.
-
-
+More detailed descriptions of each step of the persistent store process will be discussed in this article.
 
 Persistent Store Registration
 =============================
@@ -40,8 +38,7 @@ To register a new :term:`persistent store` database add the ``persistent_stores(
             Add one or more persistent stores
             """
             stores = (PersistentStore(name='example_db',
-                                      initializer='init_stores:init_example_db',
-                                      spatial=True
+                                      initializer='init_stores:init_example_db'
                     ),
             )
 
@@ -51,7 +48,7 @@ To register a new :term:`persistent store` database add the ``persistent_stores(
 
     The ellipsis in the code block above indicates code that is not shown for brevity. **DO NOT COPY VERBATIM**.
 
-In this example, a database called "example_db" would be created for this app. It would be initialized by a function called "init_example_db", which is located in a Python module called :file:`init_stores.py`. Notice that the path to the initializer function is given using dot notation with a colon delineating the function (e.g.: ``'foo.bar:function'``). The database will also have spatial features enabled (see `Spatial Database Features`_ below).
+In this example, a database called "example_db" would be created for this app. It would be initialized by a function called "init_example_db", which is located in a Python module called :file:`init_stores.py`. Notice that the path to the initializer function is given using dot notation with a colon delineating the function (e.g.: ``'foo.bar:function'``).
 
 Up to 5 databases can be created for an app using the Persistent Store API. To add another database, add another ``Persistent Store`` object to the tuple that is returned by the ``persistent_stores()`` method.
 
@@ -148,12 +145,19 @@ The ``first_time`` parameter that is passed to all persistent store initializati
 
 This initial data code adds four stream gages to your persistent store database. Creating a new record in the database using SQLAlchemy is achieved by creating a new ``StreamGage`` object and adding it to the ``session`` object using the ``session.add()`` method. To persist the new records to the persistent store database, the ``session.commit()`` method is called.
 
-.. warning::
+Spatial Database Features
+=========================
+
+Persistent store databases can support spatial data types. The spatial capabilities are provided by the `PostGIS <http://postgis.net/>`_ extension for `PostgreSQL <http://www.postgresql.org/>`_. PostGIS extends the column types of PostgreSQL databases by adding ``geometry``, ``geography``, and ``raster`` types. PostGIS also provides hundreds of database functions that can be used to perform spatial operations on data stored in spatial columns. For more information on PostGIS, see `<http://www.postgis.net>`_.
+
+The following documentation will provide detailed documentation of the spatial capabilities of persistent stores.
+
+..warning::
 
     UNDER CONSTRUCTION
 
-Spatial Database Features
-=========================
+Register Spatial Persistent Store
+---------------------------------
 
 Adding Spatial Columns to Model
 -------------------------------
