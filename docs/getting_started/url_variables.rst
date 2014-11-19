@@ -17,7 +17,13 @@ You can add variables to your URLs to make your controllers and web pages more d
         """
         Tethys App Class for My First App.
         """
-        ...
+
+        name = 'My First App'
+        index = 'my_first_app:home'
+        icon = 'my_first_app/images/icon.gif'
+        package = 'my_first_app'
+        root_url = 'my-first-app'
+        color = '#3498db'
 
         def url_maps(self):
             """
@@ -40,6 +46,18 @@ You can add variables to your URLs to make your controllers and web pages more d
             )
 
             return url_maps
+
+        def persistent_stores(self):
+            """
+            Add one or more persistent stores
+            """
+            stores = (PersistentStore(name='stream_gage_db',
+                                      initializer='init_stores:init_stream_gage_db',
+                                      spatial=True
+                    ),
+            )
+
+            return stores
 
 .. note::
 
@@ -144,7 +162,7 @@ The other change to the template is the heading of the page (``<h1>``) is wrappe
 View Updated Map Page
 =====================
 
-Just like that, you added a new page to your app using MVC. Start up the development server using the ``tethys manage start`` command and browse to your app. Use the "Go To Map" action on the home page to browse to your new map page and use the options in the navigation pane to view the different gages. It should look like this:
+Just like that, you added a new page to your app using MVC. Save the changes to any files you edited and start up the development server using the ``tethys manage start`` command and browse to your app. Use the "Go To Map" action on the home page to browse to your new map page and use the options in the navigation pane to view the different gages. It should look like this (although you may need to pan and zoom some):
 
 .. figure:: ../images/map_single_page.png
     :width: 650px
