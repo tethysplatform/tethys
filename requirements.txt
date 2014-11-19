@@ -11,3 +11,4 @@ sphinx
 sqlalchemy
 mapkit>=1.1.0
 gsshapy>=2.0.0
+geoalchemy2
