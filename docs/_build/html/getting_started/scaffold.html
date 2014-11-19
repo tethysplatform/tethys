@@ -103,6 +103,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/geoprocessing.html">Geoprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/visualizing.html">Data Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/cloud_computing.html">High Performance Computing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/tethys_cli.html">Command Line Interface</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../supplementary.html">Supplementary</a><ul>
@@ -158,19 +159,20 @@
 <h1>Create a New Tethys App Project<a class="headerlink" href="#create-a-new-tethys-app-project" title="Permalink to this headline">¶</a></h1>
 <p><strong>Last Updated:</strong> November 17, 2014</p>
 <p>Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see <a class="reference internal" href="../supplementary/app_project.html"><em>App Project Structure</em></a>). In this tutorial you start a new Tethys app project using the scaffold and you will install the app into your Tethys Platform ready for development.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">You will need to use the command line/terminal to manage your app and run the development server. See the <a class="reference internal" href="../supplementary/terminal_quick_guide.html"><em>Terminal Quick Guide</em></a> article for some tips if you are new to command line.</p>
+</div>
 <div class="section" id="generate-scaffold">
 <h2>Generate Scaffold<a class="headerlink" href="#generate-scaffold" title="Permalink to this headline">¶</a></h2>
-<p>To generate a new app using the scaffold, open a terminal and execute the following commands and follow the interactive prompts to create the metadata for your app:</p>
+<p>To generate a new app using the scaffold, open a terminal, press <tt class="kbd docutils literal"><span class="pre">CTRL-C</span></tt> to stop the development server if it is still running, and execute the following commands:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/tethys/bin/activate
 $ mkdir ~/tethysdev
 $ cd ~/tethysdev
 $ tethys scaffold my_first_app
 </pre></div>
 </div>
-<div class="admonition tip">
-<p class="first admonition-title">Tip</p>
-<p class="last">You will need to use the command line/terminal to manage your app and run the development server. See the <a class="reference internal" href="../supplementary/terminal_quick_guide.html"><em>Terminal Quick Guide</em></a> article for some tips if you are new to command line.</p>
-</div>
+<p>You will be prompted to enter metadata about your app such as, proper name, version, author, and description. All of these are optional and you can skip an item by pressing enter.</p>
 <p>The commands you entered did the following tasks:</p>
 <ol class="arabic simple">
 <li>activated the Tethys <a class="reference internal" href="../glossary.html#term-python-virtual-environment"><em class="xref std std-term">Python virtual environment</em></a>,</li>

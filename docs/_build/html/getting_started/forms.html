@@ -109,6 +109,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../supplementary/key_concepts.html">Key Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../supplementary/app_project.html">App Project Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../supplementary/app_class.html">App Base Class API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supplementary/terminal_quick_guide.html">Terminal Quick Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../supplementary/install_ubuntu.html">Ubuntu Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../supplementary/ckan_troubleshooting.html">CKAN Installation Troubleshooting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../supplementary/dev_environment.html">Setup Development Environment</a></li>
@@ -164,7 +165,13 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tethys App Class for My First App.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="o">...</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;My First App&#39;</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="s">&#39;my_first_app:home&#39;</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="s">&#39;my_first_app/images/icon.gif&#39;</span>
+    <span class="n">package</span> <span class="o">=</span> <span class="s">&#39;my_first_app&#39;</span>
+    <span class="n">root_url</span> <span class="o">=</span> <span class="s">&#39;my-first-app&#39;</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="s">&#39;#3498db&#39;</span>
 
     <span class="k">def</span> <span class="nf">url_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -192,7 +199,17 @@
 
         <span class="k">return</span> <span class="n">url_maps</span>
 
-    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">persistent_stores</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add one or more persistent stores</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stores</span> <span class="o">=</span> <span class="p">(</span><span class="n">PersistentStore</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;stream_gage_db&#39;</span><span class="p">,</span>
+                                  <span class="n">initializer</span><span class="o">=</span><span class="s">&#39;init_stores:init_stream_gage_db&#39;</span><span class="p">,</span>
+                                  <span class="n">spatial</span><span class="o">=</span><span class="bp">True</span>
+                <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">stores</span>
 </pre></div>
 </div>
 </div>

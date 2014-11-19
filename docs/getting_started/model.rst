@@ -13,11 +13,11 @@ Register a Persistent Store
 
 The Tethys Portal provides the :doc:`../tethys_sdk/persistent_store` to streamline the use of SQL databases in apps. To register a new :term:`persistent store` database add the ``persistent_stores()`` method to your :term:`app class`, which is located in your :term:`app configuration file`. This method must return a list or tuple of ``PersistentStore`` objects.
 
-Open the app configuration file for your app located at :file:`my_first_app/app.py` in your favorite text editor. Import the ``PersistentStore`` object at the top and add the ``persistent_stores()`` method to your app class as follows:
+Open the app configuration file for your app located at :file:`my_first_app/app.py` in your favorite text editor. Import the ``PersistentStore`` object at the top of the file, add the ``persistent_stores()`` method to your app class, and save the changes:
 
 ::
 
-    from tethys_apps.base import TethysAppBase, app_controller_maker
+    from tethys_apps.base import TethysAppBase, url_map_maker
     from tethys_apps.base import PersistentStore
 
 
@@ -26,7 +26,26 @@ Open the app configuration file for your app located at :file:`my_first_app/app.
         Tethys App Class for My First App.
         """
 
-        ...
+        name = 'My First App'
+        index = 'my_first_app:home'
+        icon = 'my_first_app/images/icon.gif'
+        package = 'my_first_app'
+        root_url = 'my-first-app'
+        color = '#3498db'
+
+        def url_maps(self):
+            """
+            Add controllers
+            """
+            UrlMap = url_map_maker(self.root_url)
+
+            url_maps = (UrlMap(name='home',
+                               url='my-first-app',
+                               controller='my_first_app.controllers.home'
+                               ),
+            )
+
+            return url_maps
 
         def persistent_stores(self):
             """
@@ -39,10 +58,6 @@ Open the app configuration file for your app located at :file:`my_first_app/app.
             )
 
             return stores
-
-.. tip::
-
-    Ellipses ( . . . ) in code blocks like the one above indicate there is code that is not being shown for brevity.
 
 A persistent store database will be created for each ``PersistentStore`` object that is returned by the ``persistent_stores()`` method of your :term:`app class`. In this case, your app will have a persistent store named "stream_gage_db". The ``initializer`` argument points to a function that you will define in a later step. The ``spatial`` argument can be used to add spatial capabilities to your persistent store. Tethys Platform provides PostgreSQL databases for persistent stores and PostGIS for the spatial database capabilities.
 
@@ -108,6 +123,8 @@ The class defines four other properties that are SQLAlchemy ``Column`` objects: 
 
 This class is not only used to define the tables for your persistent store, it will also be used to create objects for interacting with your data.
 
+Be sure to save the changes to :file:`model.py` and close before proceeding.
+
 Create an Initialization Function
 =================================
 
@@ -169,6 +186,8 @@ The ``first_time`` parameter that is passed to all persistent store initializati
 
 This initial data code adds four stream gages to your persistent store database. Creating a new record in the database using SQLAlchemy is achieved by creating a new ``StreamGage`` object and adding it to the ``session`` object using the ``session.add()`` method. To persist the new records to the persistent store database, the ``session.commit()`` method is called. You will learn how to query the persistent store database using SQLAlchemy in the :doc:`./controller` tutorial.
 
+Save your changes to :file:`init_stores.py` and close before moving on.
+
 .. tip::
 
     While you are developing your database model, you will likely make changes to the tables and columns frequently. To create updated tables and columns, you will first need to drop the old tables. Modify your database initialization function by adding the ``Base.metadata.drop_all(engine)`` line as follows:
@@ -196,7 +215,7 @@ This initial data code adds four stream gages to your persistent store database.
 Register Initialization Function
 ================================
 
-Recall that when you registered the persistent store in your app configuration file, you specified the ``initializer`` function for the persistent store. This argument accepts a string representing the path to the function using dot notation and a colon to delineate the function (e.g.: "foo.bar:function"). Check your :term:`app configuration file` to ensure the path to the initializer function is correct: ``'init_stores:init_stream_gage_db'``.
+Recall that when you registered the persistent store in your app configuration file, you specified the ``initializer`` function for the persistent store. This argument accepts a string representing the path to the function using dot notation and a colon to delineate the function (e.g.: "foo.bar:function"). Check your :term:`app configuration file` (:file:`app.py`) to ensure the path to the initializer function is correct: ``'init_stores:init_stream_gage_db'``.
 
 Persistent Store Initialization
 ===============================

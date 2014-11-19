@@ -8,7 +8,7 @@ This section describes how to install Tethys Platform. These installation instru
 
 .. tip::
 
-    To install and use Tethys Platform, you will need to be familiar with using the command line/terminal. For a quick introduction to the commands line, see the :doc:`../supplementary/terminal_quick_guide` article.
+    To install and use Tethys Platform, you will need to be familiar with using the command line/terminal. For a quick introduction to the command line, see the :doc:`../supplementary/terminal_quick_guide` article.
 
 1. Install the Dependencies
 ---------------------------
@@ -60,7 +60,7 @@ If you wish to install your own instance of CKAN, refer to `Installing CKAN <htt
 
 Python virtual environments are used to create isolated Python installations to avoid conflicts with dependencies of other Python applications on the same system. The following commands should be executed in a a terminal.
 
-a. Create a Python virtual environment and activate it::
+a. Create a :term:`Python virtual environment` and activate it::
 
     $ sudo mkdir -p /usr/lib/tethys
     $ sudo chown `whoami` /usr/lib/tethys
@@ -70,7 +70,7 @@ a. Create a Python virtual environment and activate it::
 
 .. important::
 
-    The final command above activates the Python virtual environment for Tethys. You can tell if a virtual environment is active, because the name of it will appear in parenthesis in front of your terminal cursor::
+    The final command above activates the Python virtual environment for Tethys. You will know the virtual environment is active, because the name of it will appear in parenthesis in front of your terminal cursor::
 
         (tethys) $ _
 

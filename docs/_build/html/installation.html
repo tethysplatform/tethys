@@ -157,7 +157,7 @@
 <p>This section describes how to install Tethys Platform. These installation instructions are optimized for Ubuntu 14.04, which is the recommended platform for running Tethys Platform. However, Tethys Platform is cross platform and could be installed on other platforms with some adaptation.</p>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p class="last">To install and use Tethys Platform, you will need to be familiar with using the command line/terminal. For a quick introduction to the commands line, see the <a class="reference internal" href="supplementary/terminal_quick_guide.html"><em>Terminal Quick Guide</em></a> article.</p>
+<p class="last">To install and use Tethys Platform, you will need to be familiar with using the command line/terminal. For a quick introduction to the command line, see the <a class="reference internal" href="supplementary/terminal_quick_guide.html"><em>Terminal Quick Guide</em></a> article.</p>
 </div>
 <div class="section" id="install-the-dependencies">
 <h2>1. Install the Dependencies<a class="headerlink" href="#install-the-dependencies" title="Permalink to this headline">¶</a></h2>
@@ -237,7 +237,7 @@
 <h2>3. Create Virtual Environment and Install Tethys Platform<a class="headerlink" href="#create-virtual-environment-and-install-tethys-platform" title="Permalink to this headline">¶</a></h2>
 <p>Python virtual environments are used to create isolated Python installations to avoid conflicts with dependencies of other Python applications on the same system. The following commands should be executed in a a terminal.</p>
 <ol class="loweralpha">
-<li><p class="first">Create a Python virtual environment and activate it:</p>
+<li><p class="first">Create a <a class="reference internal" href="glossary.html#term-python-virtual-environment"><em class="xref std std-term">Python virtual environment</em></a> and activate it:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ sudo mkdir -p /usr/lib/tethys
 $ sudo chown `whoami` /usr/lib/tethys
 $ virtualenv --no-site-packages /usr/lib/tethys
@@ -248,7 +248,7 @@ $ . /usr/lib/tethys/bin/activate
 </ol>
 <div class="admonition important">
 <p class="first admonition-title">Important</p>
-<p>The final command above activates the Python virtual environment for Tethys. You can tell if a virtual environment is active, because the name of it will appear in parenthesis in front of your terminal cursor:</p>
+<p>The final command above activates the Python virtual environment for Tethys. You will know the virtual environment is active, because the name of it will appear in parenthesis in front of your terminal cursor:</p>
 <div class="highlight-python"><div class="highlight"><pre>(tethys) $ _
 </pre></div>
 </div>
