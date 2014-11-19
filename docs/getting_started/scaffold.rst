@@ -6,10 +6,14 @@ Create a New Tethys App Project
 
 Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../supplementary/app_project`). In this tutorial you start a new Tethys app project using the scaffold and you will install the app into your Tethys Platform ready for development.
 
+.. tip::
+
+   You will need to use the command line/terminal to manage your app and run the development server. See the :doc:`../supplementary/terminal_quick_guide` article for some tips if you are new to command line.
+
 Generate Scaffold
 =================
 
-To generate a new app using the scaffold, open a terminal and execute the following commands and follow the interactive prompts to create the metadata for your app:
+To generate a new app using the scaffold, open a terminal, press :kbd:`CTRL-C` to stop the development server if it is still running, and execute the following commands:
 
 ::
 
@@ -18,9 +22,7 @@ To generate a new app using the scaffold, open a terminal and execute the follow
     $ cd ~/tethysdev
     $ tethys scaffold my_first_app
 
-.. tip::
-
-   You will need to use the command line/terminal to manage your app and run the development server. See the :doc:`../supplementary/terminal_quick_guide` article for some tips if you are new to command line.
+You will be prompted to enter metadata about your app such as, proper name, version, author, and description. All of these are optional and you can skip an item by pressing enter.
 
 The commands you entered did the following tasks:
 

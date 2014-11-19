@@ -73,3 +73,5 @@ Next, a template context dictionary is defined that contains all of the variable
 
 Finally, the ``render()`` function is used to create the response object. It is in the ``render()`` function that you specify the template that is to be rendered by the controller. In this case, the :file:`map.html` that you created in the last tutorial. Note that the path you provide to the template is relative to the template directory of your app: ``my_first_app/map.html``.
 
+Save :file:`controllers.py` before going on.
+

@@ -17,7 +17,13 @@ The form will be created on a new page, which means you will need to create a ne
         """
         Tethys App Class for My First App.
         """
-        ...
+
+        name = 'My First App'
+        index = 'my_first_app:home'
+        icon = 'my_first_app/images/icon.gif'
+        package = 'my_first_app'
+        root_url = 'my-first-app'
+        color = '#3498db'
 
         def url_maps(self):
             """
@@ -45,7 +51,17 @@ The form will be created on a new page, which means you will need to create a ne
 
             return url_maps
 
-        ...
+        def persistent_stores(self):
+            """
+            Add one or more persistent stores
+            """
+            stores = (PersistentStore(name='stream_gage_db',
+                                      initializer='init_stores:init_stream_gage_db',
+                                      spatial=True
+                    ),
+            )
+
+            return stores
 
 New Template
 ============
