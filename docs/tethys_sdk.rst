@@ -20,3 +20,4 @@ is included in the SDK:
    tethys_sdk/geoprocessing
    tethys_sdk/visualizing
    tethys_sdk/cloud_computing
+   tethys_sdk/tethys_cli
