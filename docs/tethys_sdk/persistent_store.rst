@@ -148,6 +148,10 @@ The ``first_time`` parameter that is passed to all persistent store initializati
 
 This initial data code adds four stream gages to your persistent store database. Creating a new record in the database using SQLAlchemy is achieved by creating a new ``StreamGage`` object and adding it to the ``session`` object using the ``session.add()`` method. To persist the new records to the persistent store database, the ``session.commit()`` method is called.
 
+.. warning::
+
+    UNDER CONSTRUCTION
+
 Spatial Database Features
 =========================
 
