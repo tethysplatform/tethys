@@ -12,10 +12,10 @@ is included in the SDK:
 .. toctree::
    :maxdepth: 2
    
-   tethys_sdk/dataset_services
-   tethys_sdk/persistent_store
    tethys_sdk/templating
    tethys_sdk/gizmos
+   tethys_sdk/dataset_services
+   tethys_sdk/persistent_store
    tethys_sdk/spatial_publishing
    tethys_sdk/geoprocessing
    tethys_sdk/visualizing
