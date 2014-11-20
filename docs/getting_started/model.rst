@@ -188,29 +188,6 @@ This initial data code adds four stream gages to your persistent store database.
 
 Save your changes to :file:`init_stores.py` and close before moving on.
 
-.. tip::
-
-    While you are developing your database model, you will likely make changes to the tables and columns frequently. To create updated tables and columns, you will first need to drop the old tables. Modify your database initialization function by adding the ``Base.metadata.drop_all(engine)`` line as follows:
-
-    ::
-
-        def init_function(first_time):
-            """
-            Persistent store initializer function
-            """
-            # Drop tables
-            Base.metadata.drop_all(engine) # TODO: TAKE OUT BEFORE RELEASE
-
-            # Create tables
-            Base.metadata.create_all(engine)
-
-            # Initial data
-            if first_time:
-                ...
-
-    This will have the effect of dropping all the tables and then creating them again everytime the initialization script is executed. **Don't forget to take this line out when your distribute your app**. Leaving it in could have confusing consequences and lead to loss of data.
-
-
 
 Register Initialization Function
 ================================
@@ -220,23 +197,26 @@ Recall that when you registered the persistent store in your app configuration f
 Persistent Store Initialization
 ===============================
 
-Save all changes to the files you edited and start your development server again using the ``tethys manage start`` command in the terminal. It is possible that your server may have crashed during editing and is displaying errors; ignore these errors. If the server is still running, stop it by pressing :kbd:`CTRL-C` and then start it again.
+The Tethys command line utility provides a command for initializing persistent stores. Save all changes to the files you edited and stop your development server using :kbd:`CTRL-C` if it is still running. It is possible that your server may have crashed during editing and is displaying errors; ignore these errors. Execute the following command in the terminal:
 
 ::
 
-    $ tethys manage start
+    $ tethys syncstores my_first_app
 
-The database will be initialized on start up. The information printed to the console will indicate this::
+The database will be initialized and you will see text printed to the terminal that will indicate this:
 
-    Harvesting Apps:
-    my_first_app
+::
 
-    Provisioning Persistent Stores:
+    Loading Tethys Apps...
+    Tethys Apps Loaded: my_first_app
+
+    Provisioning Persistent Stores...
     Creating database "stream_gage_db" for app "my_first_app"...
     Enabling PostGIS on database "stream_gage_db" for app "my_first_app"...
-    Initializing database "stream_gage_db" for app "my_first_app"
+    Initializing database "stream_gage_db" for app "my_first_app" using initializer "init_stream_gage_db"...
 
-If you have a graphical database client like `PGAdmin III <http://www.pgadmin.org>`_, you may wish to connect to your PostgreSQL database server and confirm that the database was created. You can use the credentials for ``tethys_super`` database user that you defined during installation to connect to the database. The name of the database will be a combination of the name of your app and the name of the persistent store: (e.g.: my_first_app_stream_gage_db).
+
+If you have a graphical database client like `PGAdmin III <http://www.pgadmin.org>`_, you may wish to connect to your PostgreSQL database server and confirm that the database was created. You can use the credentials for ``tethys_super`` database user that you defined during installation to connect to the database. The name of the database will be a combination of the name of your app and the name of the persistent store: (e.g.: my_first_app_stream_gage_db). For a more detailed explanation of connecting to your database using PGAdmin III, see the :doc:`../supplementary/pgadmin`.
 
 .. figure:: ../images/pgAdmin_III_db_confirmation.png
     :width: 650px

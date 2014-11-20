@@ -152,7 +152,7 @@ Persistent store databases can support spatial data types. The spatial capabilit
 
 The following documentation will provide detailed documentation of the spatial capabilities of persistent stores.
 
-..warning::
+.. warning::
 
     UNDER CONSTRUCTION
 
