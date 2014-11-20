@@ -15,6 +15,7 @@ This section provides a list of miscellaneous reference material that can be use
    supplementary/terminal_quick_guide
    supplementary/install_ubuntu
    supplementary/ckan_troubleshooting
+   supplementary/pgadmin
    supplementary/dev_environment
    supplementary/production_deployment
 
