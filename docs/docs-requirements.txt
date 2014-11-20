@@ -1,2 +1,3 @@
 django-tethys_datasets
+django-tethys_apps
 sphinxcontrib-napoleon
