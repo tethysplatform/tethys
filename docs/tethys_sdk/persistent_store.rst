@@ -194,11 +194,9 @@ API Documentation
 
 .. autoclass:: tethys_apps.base.persistent_store.PersistentStore
 
-.. automethod:: tethys_apps.base.app_base.TethysAppBase.persistent_stores
-
-  See :doc:`../supplementary/app_class` for an explanation of the TethysAppBase class.
-
 .. automethod:: tethys_apps.base.persistent_store.get_persistent_store_engine
+
+See :doc:`./app_class` for an explanation of the ``TethysAppBase.persistent_stores()`` method.
 
 
 .. note::

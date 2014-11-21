@@ -93,6 +93,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tethys_sdk.html">Software Development Kit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tethys_sdk/app_class.html">App Base Class API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/templating.html">App Templating API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/gizmos.html">Template Gizmos API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/dataset_services.html">Dataset Services API</a></li>
@@ -102,13 +103,12 @@
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/geoprocessing.html">Geoprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/visualizing.html">Data Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/cloud_computing.html">High Performance Computing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_sdk/tethys_cli.html">Tethys Command Line Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_sdk/tethys_cli.html">Command Line Interface</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="supplementary.html">Supplementary</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="supplementary/key_concepts.html">Key Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supplementary/app_project.html">App Project Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="supplementary/app_class.html">App Base Class API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supplementary/terminal_quick_guide.html">Terminal Quick Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supplementary/install_ubuntu.html">Ubuntu Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supplementary/ckan_troubleshooting.html">CKAN Installation Troubleshooting</a></li>
@@ -160,8 +160,10 @@
  | <a href="#D"><strong>D</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
+ | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
@@ -218,6 +220,12 @@
   </dt>
 
       
+  <dt><a href="tethys_sdk/app_class.html#TethysAppBase.color">color (TethysAppBase attribute)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
   <dt><a href="tethys_sdk/dataset_service/base_reference.html#tethys_datasets.base.DatasetEngine.create_dataset">create_dataset() (tethys_datasets.base.DatasetEngine method)</a>
   </dt>
 
@@ -231,8 +239,6 @@
   </dt>
 
       </dl></dd>
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="tethys_sdk/dataset_service/base_reference.html#tethys_datasets.base.DatasetEngine.create_resource">create_resource() (tethys_datasets.base.DatasetEngine method)</a>
   </dt>
@@ -266,11 +272,15 @@
   </dt>
 
       
-  <dt><a href="glossary.html#term-datasets"><strong>datasets</strong></a>
+  <dt><a href="tethys_sdk/app_class.html#tethys_apps.base.app_base.TethysAppBase.dataset_services">dataset_services() (tethys_apps.base.app_base.TethysAppBase method)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="glossary.html#term-datasets"><strong>datasets</strong></a>
+  </dt>
+
       
   <dt><a href="glossary.html#term-debian"><strong>Debian</strong></a>
   </dt>
@@ -364,6 +374,22 @@
   </dl></td>
 </tr></table>
 
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="tethys_sdk/app_class.html#TethysAppBase.icon">icon (TethysAppBase attribute)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="tethys_sdk/app_class.html#TethysAppBase.index">index (TethysAppBase attribute)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
@@ -394,9 +420,23 @@
   </dl></td>
 </tr></table>
 
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="tethys_sdk/app_class.html#TethysAppBase.name">name (TethysAppBase attribute)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="tethys_sdk/app_class.html#TethysAppBase.package">package (TethysAppBase attribute)</a>
+  </dt>
+
       
   <dt><a href="glossary.html#term-persistent-store"><strong>persistent store</strong></a>
   </dt>
@@ -405,12 +445,12 @@
   <dt><a href="glossary.html#term-persistent-stores"><strong>persistent stores</strong></a>
   </dt>
 
-      
-  <dt><a href="tethys_sdk/persistent_store.html#tethys_apps.base.app_base.TethysAppBase.persistent_stores">persistent_stores() (tethys_apps.base.app_base.TethysAppBase method)</a>
-  </dt>
-
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="tethys_sdk/app_class.html#tethys_apps.base.app_base.TethysAppBase.persistent_stores">persistent_stores() (tethys_apps.base.app_base.TethysAppBase method)</a>
+  </dt>
+
       
   <dt><a href="tethys_sdk/persistent_store.html#tethys_apps.base.persistent_store.PersistentStore">PersistentStore (class in tethys_apps.base.persistent_store)</a>
   </dt>
@@ -437,6 +477,10 @@
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="glossary.html#term-resources"><strong>resources</strong></a>
+  </dt>
+
+      
+  <dt><a href="tethys_sdk/app_class.html#TethysAppBase.root_url">root_url (TethysAppBase attribute)</a>
   </dt>
 
   </dl></td>
@@ -486,6 +530,12 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="tethys_sdk/app_class.html#tethys_apps.base.app_base.TethysAppBase">TethysAppBase (class in tethys_apps.base.app_base)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
   <dt><a href="tethys_sdk/dataset_service/ckan_reference.html#tethys_datasets.engines.CkanDatasetEngine.type">type (tethys_datasets.engines.CkanDatasetEngine attribute)</a>
   </dt>
 
@@ -515,8 +565,6 @@
   </dt>
 
       </dl></dd>
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="tethys_sdk/dataset_service/base_reference.html#tethys_datasets.base.DatasetEngine.update_resource">update_resource() (tethys_datasets.base.DatasetEngine method)</a>
   </dt>
@@ -531,6 +579,12 @@
   </dt>
 
       </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="tethys_sdk/app_class.html#tethys_apps.base.app_base.TethysAppBase.url_map">url_map() (tethys_apps.base.app_base.TethysAppBase method)</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 

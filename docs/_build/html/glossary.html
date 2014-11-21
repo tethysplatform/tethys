@@ -93,6 +93,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tethys_sdk.html">Software Development Kit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tethys_sdk/app_class.html">App Base Class API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/templating.html">App Templating API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/gizmos.html">Template Gizmos API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/dataset_services.html">Dataset Services API</a></li>
@@ -102,13 +103,12 @@
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/geoprocessing.html">Geoprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/visualizing.html">Data Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/cloud_computing.html">High Performance Computing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_sdk/tethys_cli.html">Tethys Command Line Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_sdk/tethys_cli.html">Command Line Interface</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="supplementary.html">Supplementary</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="supplementary/key_concepts.html">Key Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supplementary/app_project.html">App Project Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="supplementary/app_class.html">App Base Class API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supplementary/terminal_quick_guide.html">Terminal Quick Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supplementary/install_ubuntu.html">Ubuntu Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supplementary/ckan_troubleshooting.html">CKAN Installation Troubleshooting</a></li>
@@ -158,9 +158,9 @@
 <p><strong>Last Updated:</strong> November 18, 2014</p>
 <dl class="glossary docutils">
 <dt id="term-app-class">app class</dt>
-<dd>A class defined in the <a class="reference internal" href="#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a> that inherits from the <tt class="docutils literal"><span class="pre">TethysAppBase</span></tt> class provided by the Tethys Platform. For more details on the app class, see <a class="reference internal" href="supplementary/app_class.html"><em>App Base Class API</em></a>.</dd>
+<dd>A class defined in the <a class="reference internal" href="#term-app-configuration-file"><em class="xref std std-term">app configuration file</em></a> that inherits from the <tt class="docutils literal"><span class="pre">TethysAppBase</span></tt> class provided by the Tethys Platform. For more details on the app class, see <a class="reference internal" href="tethys_sdk/app_class.html"><em>App Base Class API</em></a>.</dd>
 <dt id="term-app-configuration-file">app configuration file</dt>
-<dd>A file located in the <a class="reference internal" href="#term-app-package"><em class="xref std std-term">app package</em></a> and called <tt class="file docutils literal"><span class="pre">app.py</span></tt> by convention. This file contains the <a class="reference internal" href="#term-app-class"><em class="xref std std-term">app class</em></a> that is used to configure apps. For more details on the app configuration file, see <a class="reference internal" href="supplementary/app_class.html"><em>App Base Class API</em></a>.</dd>
+<dd>A file located in the <a class="reference internal" href="#term-app-package"><em class="xref std std-term">app package</em></a> and called <tt class="file docutils literal"><span class="pre">app.py</span></tt> by convention. This file contains the <a class="reference internal" href="#term-app-class"><em class="xref std std-term">app class</em></a> that is used to configure apps. For more details on the app configuration file, see <a class="reference internal" href="tethys_sdk/app_class.html"><em>App Base Class API</em></a>.</dd>
 <dt id="term-app-harvester">app harvester</dt>
 <dd>An instance of the <tt class="docutils literal"><span class="pre">SingletonAppHarvester</span></tt> class. The app harvester collects information about each app and uses it to load Tethys apps.</dd>
 <dt id="term-app-instance"><span id="term-app-instances"></span>app instance<br />app instances</dt>
