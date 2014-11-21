@@ -4,7 +4,9 @@ Setup Development Environment
 
 **Last Updated:** May 30, 2014
 
-**UNDER CONSTRUCTION**
+.. warning::
+
+    **UNDER CONSTRUCTION**
 
 To develop apps using the Tethys Apps SDK, you will need a full installation of CKAN with the Tethys Apps plugin enabled. Although CKAN is cross platform, we highly recommend using Ubuntu Desktop 12.04 64-bit platform with a CKAN 2.2 installation as the development environment. 
 
