@@ -4,6 +4,28 @@ PGAdmin III Tutorial
 
 **Last Updated:** November 20, 2014
 
-.. warning::
+All of the SQL databases used in Tethys Platform are `PostregSQL <http://www.postgresql.org/>`_ databases. An excellent graphical client for PostgreSQL. It is available for Windows, OSX, and many Linux distributions. Please visit the `Download <http://www.pgadmin.org/download/index.php>`_ page to learn how to install it for your particular operating system. After it is installed, you can connect to your Tethys Platform databases by using the credentials for the ``tethys_super`` database user you defined during installation.
 
-    UNDER CONSTRUCTION
+To create a new connection to your PostgreSQL database using PGAdmin:
+
+1. Open PGAdmin III and click on the ``Add New Connection`` button.
+
+  .. figure:: ../images/pgadmin_tutorial_1.png
+      :width: 550px
+
+      **Figure 1.** Click the ``Add New Connection`` button.
+
+2. In the New Server Registration form that appears, fill out the form with the appropriate credentials. Provide a meaningful name for the connection like "tethys". If you have installed PostgreSQL with the default configuration, the host will be ``localhost`` and the port will be ``5432``. Fill in the username as ``tethys_super`` and enter the password you gave the user during installation. Click ``OK`` to close the window.
+
+  .. figure:: ../images/pgadmin_tutorial_2.png
+      :width: 550px
+
+      **Figure 2.** Fill out the New Server Registration dialog.
+
+3. To connect to the PostgreSQL database server, double-click on the "tethys" connection listed under the ``Servers`` dropdown menu. You will see a list of the databases on the server. Expand the menus to view each database. The tables will be located under ``Schemas > public > Tables``.
+
+  .. figure:: ../images/pgadmin_tutorial_3.png
+      :width: 550px
+
+      **Figure 3.** Browse the databases using the graphical interface.
+
