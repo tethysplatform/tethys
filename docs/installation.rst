@@ -112,7 +112,7 @@ Create three database users and databases. You will be prompted to create passwo
 
 .. tip::
 
-    If you would like to have access to the Tethys databases through a graphical user interface such as `PGAdmin III <http://www.pgadmin.org/>`_, use the **tethys_super** database user and password as credentials for the connection.
+    If you would like to have access to the Tethys databases through a graphical user interface such as `PGAdmin III <http://www.pgadmin.org/>`_, use the **tethys_super** database user and password as credentials for the connection. See the :doc:`./supplementary/pgadmin` article for more information.
 
 5. Create Settings File and Configure Settings
 ----------------------------------------------
