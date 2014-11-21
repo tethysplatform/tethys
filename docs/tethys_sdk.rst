@@ -12,6 +12,7 @@ is included in the SDK:
 .. toctree::
    :maxdepth: 2
    
+   tethys_sdk/app_class
    tethys_sdk/templating
    tethys_sdk/gizmos
    tethys_sdk/dataset_services
