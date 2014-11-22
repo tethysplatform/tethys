@@ -1,6 +1,6 @@
 .. image:: images/features/tethys_logo_inverse.png
-   :height: 40px
-   :width: 40px
+   :height: 35px
+   :width: 35px
    :align: left
 
 ***************
@@ -17,7 +17,7 @@ tabular data visualizations, and access to cloud computing resources. Tethys Pla
 web framework giving it a solid web foundation with excellent performance.
 
 .. figure:: images/features/tethys_platform_diagram.jpg
-    :height: 350px
+    :width: 500px
     :align: center
 
     Tethys Platform Software Components

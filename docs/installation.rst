@@ -117,7 +117,7 @@ Create three database users and databases. You will be prompted to create passwo
 5. Create Settings File and Configure Settings
 ----------------------------------------------
 
-Create a new settings file for your Tethys Platform installation using the :command:`tethys` commandline utility. Execute the following command in the terminal::
+Create a new settings file for your Tethys Platform installation using the :command:`tethys` :doc:`./tethys_sdk/tethys_cli`. Execute the following command in the terminal::
 
     $ tethys gen settings -d /usr/lib/tethys/src/tethys_portal
 
@@ -172,7 +172,7 @@ e. Save your changes and close the :file:`settings.py` file.
 6. Create Database Tables
 -------------------------
 
-Execute the Django :command:`syncdb` command to create the database tables. In the terminal::
+Execute the :command:`tethys manage syncdb` command from the Tethys :doc:`./tethys_sdk/tethys_cli` to create the database tables. In the terminal::
 
     $ tethys manage syncdb
 
@@ -183,7 +183,7 @@ Execute the Django :command:`syncdb` command to create the database tables. In t
 7. Start up the Django Development Server
 -----------------------------------------
 
-You are now ready to start the Django development server and view your instance of Tethys Portal. In the terminal, execute the following command::
+You are now ready to start the development server and view your instance of Tethys Portal. In the terminal, execute the following command from the Tethys :doc:`./tethys_sdk/tethys_cli`::
 
     $ tethys manage start
 

@@ -303,7 +303,7 @@ $ sudo -u postgres createdb -O tethys_super tethys_super -E utf-8
 </div>
 <div class="section" id="create-settings-file-and-configure-settings">
 <h2>5. Create Settings File and Configure Settings<a class="headerlink" href="#create-settings-file-and-configure-settings" title="Permalink to this headline">¶</a></h2>
-<p>Create a new settings file for your Tethys Platform installation using the <strong class="command">tethys</strong> commandline utility. Execute the following command in the terminal:</p>
+<p>Create a new settings file for your Tethys Platform installation using the <strong class="command">tethys</strong> <a class="reference internal" href="tethys_sdk/tethys_cli.html"><em>Command Line Interface</em></a>. Execute the following command in the terminal:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ tethys gen settings -d /usr/lib/tethys/src/tethys_portal
 </pre></div>
 </div>
@@ -362,7 +362,7 @@ $ sudo -u postgres createdb -O tethys_super tethys_super -E utf-8
 </div>
 <div class="section" id="create-database-tables">
 <h2>6. Create Database Tables<a class="headerlink" href="#create-database-tables" title="Permalink to this headline">¶</a></h2>
-<p>Execute the Django <strong class="command">syncdb</strong> command to create the database tables. In the terminal:</p>
+<p>Execute the <strong class="command">tethys manage syncdb</strong> command from the Tethys <a class="reference internal" href="tethys_sdk/tethys_cli.html"><em>Command Line Interface</em></a> to create the database tables. In the terminal:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ tethys manage syncdb
 </pre></div>
 </div>
@@ -373,7 +373,7 @@ $ sudo -u postgres createdb -O tethys_super tethys_super -E utf-8
 </div>
 <div class="section" id="start-up-the-django-development-server">
 <h2>7. Start up the Django Development Server<a class="headerlink" href="#start-up-the-django-development-server" title="Permalink to this headline">¶</a></h2>
-<p>You are now ready to start the Django development server and view your instance of Tethys Portal. In the terminal, execute the following command:</p>
+<p>You are now ready to start the development server and view your instance of Tethys Portal. In the terminal, execute the following command from the Tethys <a class="reference internal" href="tethys_sdk/tethys_cli.html"><em>Command Line Interface</em></a>:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ tethys manage start
 </pre></div>
 </div>

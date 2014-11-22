@@ -22,7 +22,7 @@ To generate a new app using the scaffold, open a terminal, press :kbd:`CTRL-C` t
     $ cd ~/tethysdev
     $ tethys scaffold my_first_app
 
-You will be prompted to enter metadata about your app such as, proper name, version, author, and description. All of these are optional and you can skip an item by pressing enter.
+The final command from the code block above is provided by the Tethys :doc:`../tethys_sdk/tethys_cli`. It will be prompt you to enter metadata about your app such as, proper name, version, author, and description. All of these metadata are optional and you can skip each item by pressing enter.
 
 The commands you entered did the following tasks:
 
