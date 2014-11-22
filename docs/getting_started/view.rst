@@ -41,6 +41,7 @@ Variables can be modified by filters which look like this: ``{{ variable|filter:
 
 Tags
 ----
+
 Tags use curly brace percent sign syntax like this: ``{% tag %}``. Tags perform many different functions including creating text, controlling flow, or loading external information to be used in the app. Some commonly used tags include ``for``, ``if``, ``block``, and ``extends``. See the `Django Tag Reference <https://docs.djangoproject.com/en/1.7/ref/templates/builtins/#ref-templates-builtins-tags>`_ for a complete list of tags that Django provides.
 
 Template Inheritance
