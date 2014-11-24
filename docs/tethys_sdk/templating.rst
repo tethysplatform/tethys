@@ -2,25 +2,25 @@
 App Templating API
 ******************
 
-**Last Updated:** November 21, 2014
+**Last Updated:** November 24, 2014
 
-.. warning::
-
-    **UNDER CONSTRUCTION**
-
-The templates for apps developed in Tethys Platform are created using the Django template language. This article discusses pertinent Django templating concepts and the base templates that are provided by Tethys Platform..
+The pages of a Tethys app are created using the Django template language. This provides an overview of important Django templating concepts and introduces the base templates that are provided to make templating easier.
 
 Django Templating Concepts
 ==========================
 
-The Django template language allows you to create dynamic HTML templates and will minimize the amount of HTML you need to write. This section will provide a crash course in Django template language basics, but we highly recommend a review of the `Django Template Language <https://docs.djangoproject.com/en/1.7/topics/templates/>`_ documentation.
+The Django template language allows you to create dynamic HTML templates and minmizes the amount of HTML you need to write for your app pages. This section will provide a crash course in Django template language basics, but we highly recommend a review of the `Django Template Language <https://docs.djangoproject.com/en/1.7/topics/templates/>`_ documentation.
+
+.. tip::
+
+    Review the `Django Template Language <https://docs.djangoproject.com/en/1.7/topics/templates/>`_ to get a better grasp on templating in Tethys.
 
 Variables
 ---------
 
 In Django templates, variables are denoted by double curly brace syntax: ``{{ variable }}``. The variable expression will be replaced by the value of the variable. Dot notation can be used access attributes of a variable: ``{{ variable.attribute }}``.
 
-See `Django template Variables <https://docs.djangoproject.com/en/1.7/topics/templates/#variables>`_ documentation.
+Examples:
 
 ::
 
@@ -36,46 +36,102 @@ See `Django template Variables <https://docs.djangoproject.com/en/1.7/topics/tem
   # Access attributes of objects using dot notation
   {{ object.attribute }}
 
+.. hint::
+
+    See `Django template Variables <https://docs.djangoproject.com/en/1.7/topics/templates/#variables>`_ documentation for more information.
+
 Filters
 -------
 
 Variables can be modified by filters which look like this: ``{{ variable|filter:argument }}``. Filters perform modifying functions on variable output such as formatting dates, formatting numbers, changing the letter case, and concatenating multiple variables.
 
-Refer to the `Django Filter Reference <https://docs.djangoproject.com/en/1.7/ref/templates/builtins/#ref-templates-builtins-filters>`_ for a full list of the filters available.
+Examples:
+
+::
+
+    # The default filter can be used to print a default value when the variable is falsy
+    {{ variable|default:"nothing" }}
+
+    # The join filter can be used to join a list with a the separator given
+    {{ list|join:", " }}
+
+.. hint::
+
+    Refer to the `Django Filter Reference <https://docs.djangoproject.com/en/1.7/ref/templates/builtins/#ref-templates-builtins-filters>`_ for a full list of the filters available.
 
 Tags
 ----
 
 Tags use curly brace percent sign syntax like this: ``{% tag %}``. Tags perform many different functions including creating text, controlling flow, or loading external information to be used in the app. Some commonly used tags include ``for``, ``if``, ``block``, and ``extends``.
 
-See the `Django Tag Reference <https://docs.djangoproject.com/en/1.7/ref/templates/builtins/#ref-templates-builtins-tags>`_ for a complete list of tags that Django provides.
+Examples:
+
+::
+
+    # The if tag only prints its contents when the condition evaluates to True
+    {% if name %}
+        <h1>Hello, {{ name }}!</h1>
+    {% else %}
+        <h1>Welcome!</h1>
+    {% endif %}
+
+    #  The for tag can be used to loop through iterables printing its contents on each iteration
+    <ul>
+      {% for item in item_list %}
+        <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+
+    # The block tag is used to override the contents of the block of a parent template
+    {% block example %}
+      <p>I just overrode the contents of the "example" block with this paragraph.</p>
+    {% endblock %}
+
+.. hint::
+
+    See the `Django Tag Reference <https://docs.djangoproject.com/en/1.7/ref/templates/builtins/#ref-templates-builtins-tags>`_ for a complete list of tags that Django provides.
 
 Template Inheritance
 --------------------
 
-One of the advantages of using the Django template language is that it provides a way for child templates to extend parent templates, which can reduce the amount of HTML you need to write. Template inheritance is accomplished using two tags, ``extends`` and ``block``. Parent templates provide ``blocks`` of content that can be overridden by child templates. Child templates can extend parent templates by using the ``extends`` tag. Calling the ``block`` tag of a parent template in a child template will override any content in that ``block`` tag with the content in the child template.
+One of the advantages of using the Django template language is that it provides a method for child templates to extend parent templates, which can reduce the amount of HTML you need to write. Template inheritance is accomplished using two tags, ``extends`` and ``block``. Parent templates provide ``blocks`` of content that can be overridden by child templates. Child templates can extend parent templates by using the ``extends`` tag. Calling the ``block`` tag of a parent template in a child template will override any content in that ``block`` tag with the content in the child template.
 
-If you are unfamiliar with Django template inheritance, please review the `Django Template Inheritance <https://docs.djangoproject.com/en/1.7/topics/templates/#template-inheritance>`_ documentation.
+.. hint::
+
+    The `Django Template Inheritance <https://docs.djangoproject.com/en/1.7/topics/templates/#template-inheritance>`_ documentation provides an excellent example that illustrates how inheritance works.
 
 
 Base Templates
 ==============
 
-There are two layers of templates provided for Tethys app development. The :file:`app_base.html` template provides the HTML skeleton for all Tethys app templates. All Tethys app projects also include a :file:`base.html` template that inherits from the :file:`app_base.html` template.
+There are two layers of templates provided for Tethys app development. The :file:`app_base.html` template provides the HTML skeleton for all Tethys app templates, which includes the base HTML structural elements (e.g.: ``<html>``, ``<head>``, and ``<body>`` elements), the base style sheets and JavaScript libraries, and many blocks for customization. All Tethys app projects also include a :file:`base.html` template that inherits from the :file:`app_base.html` template.
 
-App developers are encouraged to use the :file:`base.html` file as the base template for all of their templates, rather than extending the :file:`app_base.html` file directly. The :file:`base.html` template is easier to work with, because it includes only the blocks that will be used most often from the :file:`app_base.html` template. However, all of the blocks that are available from :file:`app_base.html` template will also be available for use in the :file:`base.html` template and any templates that extend from it.
+App developers are encouraged to use the :file:`base.html` file as the base template for all of their templates, rather than extending the :file:`app_base.html` file directly. The :file:`base.html` template is easier to work with, because it includes only the blocks that will be used most often from the :file:`app_base.html` template. However, all of the blocks that are available from :file:`app_base.html` template will also be available for use in the :file:`base.html` template and any templates that extend it.
 
-Many of the blocks in these template correspond with different portions of the app interface. Figure 1 provides a graphical representation of these blocks.
+Many of the blocks in the template correspond with different portions of the app interface. Figure 1 provides a graphical explanation of these blocks. An explanation of all the blocks provided in the :file:`app_base.html` and :file:`base.html` templates can be found in the section that follows.
 
 .. figure:: ../images/detailed_template_blocks.png
-    :width: 650px
+    :width: 700px
 
-    **Figure 1.** Blocks that correspond with app interface elements.
+    **Figure 1.** Illustration of the blocks that correspond with app interface elements as follows:
 
-This section provides an explanation of the blocks that can be used in child templates of either :file:`app_base.html` template or the :file:`base.html` template.
+    1. app_header_override
+    2. app_navigation_toggle_override
+    3. app_icon_override, app_icon
+    4. app_title_override, app_title
+    5. exit_button_override
+    6. app_content_override
+    7. app_navigation_override
+    8. app_navigation, app_navigation_items
+    9. flash
+    10. app_content
+    11. app_actions_override
+    12. app_actions
 
 Blocks
 ======
+
+This section provides an explanation of the blocks are available for use in child templates of either the :file:`app_base.html` or the :file:`base.html` templates.
 
 htmltag
 -------
@@ -347,7 +403,7 @@ Add additional JavaScripts to the page. Use ``block.super`` to preserve the exis
 app_base.html
 =============
 
-This section provides the complete contents of the :file:`app_base.html` template, so app developers can be aware of the template structure underlying their app templates.
+This section provides the complete contents of the :file:`app_base.html` template. It is meant to be used as a reference for app developers, so they can be aware of the HTML structure underlying their app templates.
 
 ::
 
@@ -493,7 +549,11 @@ This section provides the complete contents of the :file:`app_base.html` templat
 base.html
 =========
 
-The :file:`base.html` is the base template that is used directly by app templates. This file is generated in all new Tethys app projects that are created using the scaffold.
+The :file:`base.html` is the base template that is used directly by app templates. This file is generated in all new Tethys app projects that are created using the scaffold. The contents are provided here for reference.
+
+All of the blocks provided by the :file:`base.html` template are inherited from the :file:`app_base.html` template. The :file:`base.html` template is intended to be a simplified version of the :file:`app_base.html` template, providing only the the blocks that should be used in a default app configuration. However, the blocks that are excluded from the :file:`base.html` template can be used by advanced Tethys app developers who wish customize parts or all of the app template structure.
+
+See the `Blocks`_ section for an explanation of each block.
 
 ::
 
