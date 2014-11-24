@@ -9,6 +9,7 @@ Tethys Platform
    installation
    getting_started
    tethys_sdk
+   tethys_portal
    supplementary
    summary
    glossary
