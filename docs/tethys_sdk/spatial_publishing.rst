@@ -1,12 +1,12 @@
-***********************
-Spatial Data Publishing
-***********************
+***************************
+Spatial Data Publishing API
+***************************
 
-**Last Updated:** May 28, 2014
+**Last Updated:** November 24, 2014
 
 GeoServer
 =========
 
 .. warning::
 
-    UNDER CONSTRUCTION
+    We apologize, but this feature has not been implemented yet. Check back frequently, as we are working hard to get everything up and running as quickly as possible.
