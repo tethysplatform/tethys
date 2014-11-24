@@ -159,41 +159,30 @@
             
   <div class="section" id="the-view-and-templating">
 <h1>The View and Templating<a class="headerlink" href="#the-view-and-templating" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> November 17, 2014</p>
+<p><strong>Last Updated:</strong> November 24, 2014</p>
 <p>In this section the View aspect of MVC will be introduced. The View consists of the representation or visualizations of your app&#8217;s data and the user interface. Views for Tethys apps are constructed using the standard web programming tools: HTML, JavaScript, and CSS. Additionally, Tethys Platform provides the Django Python templating language allowing you to insert Python code into your HTML documents, similar to how PHP is used. The result is dynamic, reusable templates for the web pages of your app.</p>
 <p>In this tutorial you will add a view to your app for displaying the stream gages that are in your database on a Google Map.</p>
 <div class="section" id="templating">
 <h2>Templating<a class="headerlink" href="#templating" title="Permalink to this headline">¶</a></h2>
 <p>The Django template language is a simple, but powerful templating language. This section will provide a crash course in Django template language basics, but we highly recommend a review of the <a class="reference external" href="https://docs.djangoproject.com/en/1.7/topics/templates/">Django Template Language</a> documentation.</p>
 <p>Browse to the your templates directory located at <tt class="file docutils literal"><span class="pre">my_first_app/templates/</span></tt>. By convention, all the templates for your app are stored in a directory with the same name of your <a class="reference internal" href="../glossary.html#term-app-package"><em class="xref std std-term">app package</em></a> inside the templates directory (e.g.: <tt class="file docutils literal"><span class="pre">templates/my_first_app</span></tt>). This will prevent potential conflicts with the templates of other apps. You will find two templates in this directory: <tt class="file docutils literal"><span class="pre">base.html</span></tt> and <tt class="file docutils literal"><span class="pre">home.html</span></tt>. Refer to these templates as the Django template concepts are introduced.</p>
-<div class="section" id="variables">
-<h3>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h3>
-<p>In Django templates, variables are denoted by double curly brace syntax: <tt class="docutils literal"><span class="pre">{{</span> <span class="pre">variable</span> <span class="pre">}}</span></tt>. The variable expression will be replaced by the value of the variable. Dot notation can be used access attributes of a variable: <tt class="docutils literal"><span class="pre">{{</span> <span class="pre">variable.attribute</span> <span class="pre">}}</span></tt>. For a more detailed explanation of variables, see <a class="reference external" href="https://docs.djangoproject.com/en/1.7/topics/templates/#variables">Django template Variables</a> documentation.</p>
-<div class="highlight-python"><div class="highlight"><pre># Examples of Django template variable syntax
-{{ variable }}
-
-# Access items in a list or tuple using dot notation
-{{ list.0 }}
-
-# Access items in a dictionary using dot notation
-{{ dict.key }}
-
-# Access attributes of objects using dot notation
-{{ object.attribute }}
-</pre></div>
+<div class="section" id="variables-filters-and-tags">
+<h3>Variables, Filters, and Tags<a class="headerlink" href="#variables-filters-and-tags" title="Permalink to this headline">¶</a></h3>
+<p>Django templates can contain variables, filters, and tags. Variables are denoted by double curly brace syntax like this: <tt class="docutils literal"><span class="pre">{{</span> <span class="pre">variable</span> <span class="pre">}}</span></tt>. Template variables are replaced by the value of the variable. Dot notation can be used access attributes of a variable: <tt class="docutils literal"><span class="pre">{{</span> <span class="pre">variable.attribute</span> <span class="pre">}}</span></tt>.</p>
+<p>Variables can be modified by filters which look like this: <tt class="docutils literal"><span class="pre">{{</span> <span class="pre">variable|filter:argument</span> <span class="pre">}}</span></tt>. Filters perform modifying functions on variable output such as formatting dates, formatting numbers, changing the letter case, and concatenating multiple variables.</p>
+<p>Tags use curly-brace-percent-sign syntax like this: <tt class="docutils literal"><span class="pre">{%</span> <span class="pre">tag</span> <span class="pre">%}</span></tt>. Tags perform many different functions including creating text, controlling flow, or loading external information to be used in the app. Some commonly used tags include <tt class="docutils literal"><span class="pre">for</span></tt>, <tt class="docutils literal"><span class="pre">if</span></tt>, <tt class="docutils literal"><span class="pre">block</span></tt>, and <tt class="docutils literal"><span class="pre">extends</span></tt>.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">For a better explanation of variables, filters and tags, see the <a class="reference internal" href="../tethys_sdk/templating.html"><em>App Templating API</em></a>.</p>
 </div>
-</div>
-<div class="section" id="filters">
-<h3>Filters<a class="headerlink" href="#filters" title="Permalink to this headline">¶</a></h3>
-<p>Variables can be modified by filters which look like this: <tt class="docutils literal"><span class="pre">{{</span> <span class="pre">variable|filter:argument</span> <span class="pre">}}</span></tt>. Refer to the <a class="reference external" href="https://docs.djangoproject.com/en/1.7/ref/templates/builtins/#ref-templates-builtins-filters">Django Filter Reference</a> for a full list of the filters available. Filters perform modifying functions on variable output such as formatting dates, formatting numbers, changing the letter case, and concatenating multiple variables.</p>
-</div>
-<div class="section" id="tags">
-<h3>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h3>
-<p>Tags use curly brace percent sign syntax like this: <tt class="docutils literal"><span class="pre">{%</span> <span class="pre">tag</span> <span class="pre">%}</span></tt>. Tags perform many different functions including creating text, controlling flow, or loading external information to be used in the app. Some commonly used tags include <tt class="docutils literal"><span class="pre">for</span></tt>, <tt class="docutils literal"><span class="pre">if</span></tt>, <tt class="docutils literal"><span class="pre">block</span></tt>, and <tt class="docutils literal"><span class="pre">extends</span></tt>. See the <a class="reference external" href="https://docs.djangoproject.com/en/1.7/ref/templates/builtins/#ref-templates-builtins-tags">Django Tag Reference</a> for a complete list of tags that Django provides.</p>
 </div>
 <div class="section" id="template-inheritance">
 <h3>Template Inheritance<a class="headerlink" href="#template-inheritance" title="Permalink to this headline">¶</a></h3>
-<p>One of the advantages of using the Django template language is that it provides a way for child templates to extend parent templates, which reduces the amount of HTML you need to write. Template inheritance is accomplished using two tags, <tt class="docutils literal"><span class="pre">extends</span></tt> and <tt class="docutils literal"><span class="pre">block</span></tt>. Parent templates provide <tt class="docutils literal"><span class="pre">blocks</span></tt> of content that can be overridden by child templates. Child templates can extend parent templates by using the <tt class="docutils literal"><span class="pre">extends</span></tt> tag and specifying the template they which to inherit from. Calling the <tt class="docutils literal"><span class="pre">block</span></tt> tag of a parent template in a child template will override any content in that <tt class="docutils literal"><span class="pre">block</span></tt> tag with the content in the child template. If you are unfamiliar with Django template inheritance, please review the <a class="reference external" href="https://docs.djangoproject.com/en/1.7/topics/templates/#template-inheritance">Django Template Inheritance</a> documentation before proceeding.</p>
+<p>One of the advantages of using the Django template language is that it provides a way for child templates to extend parent templates, which reduces the amount of HTML you need to write. Template inheritance is accomplished using two tags: <tt class="docutils literal"><span class="pre">extends</span></tt> and <tt class="docutils literal"><span class="pre">block</span></tt>. Parent templates provide <tt class="docutils literal"><span class="pre">blocks</span></tt> of content that can be overridden by child templates. Child templates can extend parent templates by using the <tt class="docutils literal"><span class="pre">extends</span></tt> tag and specifying the template they which to inherit from. Calling the <tt class="docutils literal"><span class="pre">block</span></tt> tag of a parent template in a child template will override any content in that <tt class="docutils literal"><span class="pre">block</span></tt> tag with the content in the child template.</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">If you are unfamiliar with Django template inheritance, please review the <a class="reference external" href="https://docs.djangoproject.com/en/1.7/topics/templates/#template-inheritance">Django Template Inheritance</a> documentation before proceeding.</p>
+</div>
 </div>
 <div class="section" id="base-template">
 <h3>Base Template<a class="headerlink" href="#base-template" title="Permalink to this headline">¶</a></h3>
@@ -233,76 +222,20 @@
 {% endblock %}
 </pre></div>
 </div>
-<p>The <tt class="file docutils literal"><span class="pre">base.html</span></tt> is intended to be used as the parent template for all your app templates via the <tt class="docutils literal"><span class="pre">extends</span></tt> tag. It contains several <tt class="docutils literal"><span class="pre">block</span></tt> tags that your app templates can override or extend. The <tt class="docutils literal"><span class="pre">block</span></tt> tags you will use most often are <tt class="docutils literal"><span class="pre">app_navigation_items</span></tt>, <tt class="docutils literal"><span class="pre">app_content</span></tt>, and, <tt class="docutils literal"><span class="pre">app_actions</span></tt>. These blocks correspond with different parts of the app interface (shown in the figure below). As a rule, content that you would like to be present in all your templates should be included in the <tt class="file docutils literal"><span class="pre">base.html</span></tt> and content that is specific to a certain template should be included in that template. A brief explanation of each <tt class="docutils literal"><span class="pre">block</span></tt> tag of <tt class="file docutils literal"><span class="pre">base.html</span></tt> is provided.</p>
+<p>The <tt class="file docutils literal"><span class="pre">base.html</span></tt> template is intended to be used as the parent template for all your app templates via the <tt class="docutils literal"><span class="pre">extends</span></tt> tag. It contains several <tt class="docutils literal"><span class="pre">block</span></tt> tags that your app templates can override or extend. The <tt class="docutils literal"><span class="pre">block</span></tt> tags you will use most often are <tt class="docutils literal"><span class="pre">app_navigation_items</span></tt>, <tt class="docutils literal"><span class="pre">app_content</span></tt>, and, <tt class="docutils literal"><span class="pre">app_actions</span></tt>. These blocks correspond with different parts of the app interface (shown in the figure below). As a rule, content that you would like to be present in all your templates should be included in the <tt class="file docutils literal"><span class="pre">base.html</span></tt> template and content that is specific to a certain template should be included in that template.</p>
 <div class="figure">
 <a class="reference internal image-reference" href="../_images/template_blocks.png"><img alt="../_images/template_blocks.png" src="../_images/template_blocks.png" style="width: 650px;" /></a>
 <p class="caption">The <tt class="docutils literal"><span class="pre">block</span></tt> tags of the <tt class="file docutils literal"><span class="pre">base.html</span></tt> template correspond with different parts of the interface: (1) <tt class="docutils literal"><span class="pre">app_navigation_items</span></tt>, (2) <tt class="docutils literal"><span class="pre">app_content</span></tt>, and (3) <tt class="docutils literal"><span class="pre">app_actions</span></tt>.</p>
 </div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">For an explanation of the blocks in the <tt class="file docutils literal"><span class="pre">base.html</span></tt> template see the <a class="reference internal" href="../tethys_sdk/templating.html"><em>App Templating API</em></a>.</p>
 </div>
-<div class="section" id="title">
-<h3>title<a class="headerlink" href="#title" title="Permalink to this headline">¶</a></h3>
-<p>The <tt class="docutils literal"><span class="pre">title</span></tt> block is used to override the title of the current page (not to be confused with the <tt class="docutils literal"><span class="pre">app_title</span></tt>). This usually shows up as the title of the tab in the web browser or as the default name of a bookmark. By default, this is set to the name of your app.</p>
-</div>
-<div class="section" id="styles-and-scripts">
-<h3>styles and scripts<a class="headerlink" href="#styles-and-scripts" title="Permalink to this headline">¶</a></h3>
-<p>The <tt class="docutils literal"><span class="pre">styles</span></tt> and <tt class="docutils literal"><span class="pre">scripts</span></tt> blocks should be used to import new CSS and JavaScript files, respectively. All apps include an empty CSS and JavaScript file located in the <tt class="file docutils literal"><span class="pre">public</span></tt> directory of your app. Invoking the <tt class="docutils literal"><span class="pre">block.super</span></tt> variable within a block will retain the content of the block from the parent template. You should always use the <tt class="docutils literal"><span class="pre">block.super</span></tt> construct when overriding the <tt class="docutils literal"><span class="pre">styles</span></tt> and <tt class="docutils literal"><span class="pre">scripts</span></tt> blocks.</p>
-</div>
-<div class="section" id="app-icon">
-<h3>app_icon<a class="headerlink" href="#app-icon" title="Permalink to this headline">¶</a></h3>
-<p>The <tt class="docutils literal"><span class="pre">app_icon</span></tt> block is used to load the app icon into your app. If you would like to change the app icon image, do so via the <tt class="docutils literal"><span class="pre">icon</span></tt> property of your <a class="reference internal" href="../glossary.html#term-app-class"><em class="xref std std-term">app class</em></a>.</p>
-</div>
-<div class="section" id="app-title">
-<h3>app_title<a class="headerlink" href="#app-title" title="Permalink to this headline">¶</a></h3>
-<p>The <tt class="docutils literal"><span class="pre">app_title</span></tt> block can be used to change the title that is displayed prominently in the header of your app.</p>
-</div>
-<div class="section" id="app-navigation-items">
-<h3>app_navigation_items<a class="headerlink" href="#app-navigation-items" title="Permalink to this headline">¶</a></h3>
-<p>Use the <tt class="docutils literal"><span class="pre">app_navigation_items</span></tt> block to define the navigation section for your app. Add new items as list elements. There are three types of navigation item: link, title, and separator. Link items are displayed a links in the navigation and are the default item&#8211;no special class needed:</p>
-<div class="highlight-python"><div class="highlight"><pre>&lt;li&gt;&lt;a href=&quot;&quot;&gt;Link&lt;/a&gt;&lt;/li&gt;
-</pre></div>
-</div>
-<p>The active link items are be highlighted in the navigation list. You can make a link item active by adding the &#8220;active&#8221; class to the list element:</p>
-<div class="highlight-python"><div class="highlight"><pre>&lt;li class=&quot;active&quot;&gt;&lt;a href=&quot;&quot;&gt;Active Link&lt;/a&gt;&lt;/li&gt;
-</pre></div>
-</div>
-<p>Title items show up as section titles in the navigation and they are specified by adding the &#8220;title&#8221; class to the list element:</p>
-<div class="highlight-python"><div class="highlight"><pre>&lt;li class=&quot;title&quot;&gt;Title&lt;/li&gt;
-</pre></div>
-</div>
-<p>Separator items can be used to separate groups of navigation links with some empty space. These are created using the &#8220;separator&#8221; class:</p>
-<div class="highlight-python"><div class="highlight"><pre>&lt;li class=&quot;separator&quot;&gt;&lt;/li&gt;
-</pre></div>
-</div>
-<p>Here is an example of appropriate content for the <tt class="docutils literal"><span class="pre">app_navigation_items</span></tt> block:</p>
-<div class="highlight-python"><div class="highlight"><pre>&lt;li class=&quot;title&quot;&gt;App Navigation&lt;/li&gt;
-&lt;li class=&quot;active&quot;&gt;&lt;a href=&quot;&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;&quot;&gt;Jobs&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;&quot;&gt;Results&lt;/a&gt;&lt;/li&gt;
-&lt;li class=&quot;title&quot;&gt;Steps&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;&quot;&gt;1. The First Step&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;&quot;&gt;2. The Second Step&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;&quot;&gt;3. The Third Step&lt;/a&gt;&lt;/li&gt;
-&lt;li class=&quot;separator&quot;&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;&quot;&gt;Get Started&lt;/a&gt;&lt;/li&gt;
-</pre></div>
-</div>
-</div>
-<div class="section" id="app-actions">
-<h3>app_actions<a class="headerlink" href="#app-actions" title="Permalink to this headline">¶</a></h3>
-<p>Use the <tt class="docutils literal"><span class="pre">app_actions</span></tt> block to add actions to your template. The app actions are the buttons that appear in the strip at the bottom of your app. The actions are right aligned, so they must be listed in right-to-left order. For example:</p>
-<div class="highlight-python"><div class="highlight"><pre>&lt;a href=&quot;&quot; class=&quot;btn btn-default&quot;&gt;Next&lt;/a&gt;
-&lt;a href=&quot;&quot; class=&quot;btn btn-default&quot;&gt;Back&lt;/a&gt;
-</pre></div>
-</div>
-</div>
-<div class="section" id="app-content">
-<h3>app_content<a class="headerlink" href="#app-content" title="Permalink to this headline">¶</a></h3>
-<p>Use the <tt class="docutils literal"><span class="pre">app_content</span></tt> block to fill the main content area of the app template.</p>
 </div>
 </div>
 <div class="section" id="public-files-and-resources">
 <h2>Public Files and Resources<a class="headerlink" href="#public-files-and-resources" title="Permalink to this headline">¶</a></h2>
-<p>Most apps will use files and resources that are static&#8211;meaning they do not need to be preprocessed before being served like templates do. Examples of these files include images, CSS files, and JavaScript files. Tethys Platform will automatically register static files that are located in the <tt class="file docutils literal"><span class="pre">public</span></tt> directory of your app project. Use the <tt class="docutils literal"><span class="pre">static</span></tt> tag in templates to load the resource URLs. The <tt class="file docutils literal"><span class="pre">base.html</span></tt> provides examples of how to use the <tt class="docutils literal"><span class="pre">static</span></tt> tag. See the Django documentation for the <a class="reference external" href="https://docs.djangoproject.com/en/1.7/ref/contrib/staticfiles/#static">static</a> tag for more details.</p>
+<p>Most apps will use files and resources that are static&#8211;meaning they do not need to be preprocessed before being served like templates do. Examples of these files include images, CSS files, and JavaScript files. Tethys Platform will automatically register static files that are located in the <tt class="file docutils literal"><span class="pre">public</span></tt> directory of your app project. Use the <tt class="docutils literal"><span class="pre">static</span></tt> tag in templates to load the resource URLs. The <tt class="file docutils literal"><span class="pre">base.html</span></tt> template provides examples of how to use the <tt class="docutils literal"><span class="pre">static</span></tt> tag. See the Django documentation for the <a class="reference external" href="https://docs.djangoproject.com/en/1.7/ref/contrib/staticfiles/#static">static</a> tag for more details.</p>
 <div class="admonition caution">
 <p class="first admonition-title">Caution</p>
 <p class="last">Any file stored in the public directory will be accesible to anyone. Be careful not to expose sensitive information.</p>
@@ -330,7 +263,7 @@
 {% endblock %}
 </pre></div>
 </div>
-<p>The <tt class="file docutils literal"><span class="pre">map.html</span></tt> template that you created extends the <tt class="file docutils literal"><span class="pre">base.html</span></tt>. It also overrides the <tt class="docutils literal"><span class="pre">app_content</span></tt>, <cite>app_actions`</cite>, and <tt class="docutils literal"><span class="pre">scripts</span></tt> blocks. An action called &#8220;Back&#8221; is added to the <tt class="docutils literal"><span class="pre">app_actions</span></tt> block. It uses a new tag, the <tt class="docutils literal"><span class="pre">url</span></tt> tag, to provide a link back to the home page of the app. The <tt class="docutils literal"><span class="pre">url</span></tt> tag will be discussed in more detail in the <a class="reference internal" href="url_mapping.html"><em>URL Mapping</em></a> tutorial.</p>
+<p>The <tt class="file docutils literal"><span class="pre">map.html</span></tt> template that you created extends the <tt class="file docutils literal"><span class="pre">base.html</span></tt> template. It also overrides the <tt class="docutils literal"><span class="pre">app_content</span></tt>, <cite>app_actions`</cite>, and <tt class="docutils literal"><span class="pre">scripts</span></tt> blocks. An action called &#8220;Back&#8221; is added to the <tt class="docutils literal"><span class="pre">app_actions</span></tt> block. It uses a new tag, the <tt class="docutils literal"><span class="pre">url</span></tt> tag, to provide a link back to the home page of the app. The <tt class="docutils literal"><span class="pre">url</span></tt> tag will be discussed in more detail in the <a class="reference internal" href="url_mapping.html"><em>URL Mapping</em></a> tutorial.</p>
 <p>The map is inserted into the <tt class="docutils literal"><span class="pre">app_content</span></tt> block using one of the Tethys Gizmos called <tt class="docutils literal"><span class="pre">editable_google_map</span></tt>. Gizmos are an easy way to insert common user interface elements in to your templates with minimal code. The map is configured via a dictionary called <tt class="docutils literal"><span class="pre">map_options</span></tt>, which is defined in the controller. This will be discussed in the next tutorial. For more information on Gizmos, refer to the <a class="reference internal" href="../tethys_sdk/gizmos.html"><em>Template Gizmos API</em></a> documentation.</p>
 </div>
 </div>
