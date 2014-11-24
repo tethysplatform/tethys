@@ -1,31 +1,10 @@
-**************************
-High Performance Computing
-**************************
+*************************
+Distributed Computing API
+*************************
 
-**Last Updated:** May 28, 2014
-
-Cloud Computing
-===============
-
-Microsoft Azure
----------------
-
-Amazon Web Services
--------------------
-
-Super Computing
-===============
-
-HydroGate
----------
-
-
-Distributed Computing
-=====================
-
-HTCondor
---------
+**Last Updated:** November 24, 2014
 
 .. warning::
 
-    UNDER CONSTRUCTION
+    We apologize, but this feature has not been implemented yet. Check back frequently, as we are working hard to get everything up and running as quickly as possible.
+
