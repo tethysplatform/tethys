@@ -51,9 +51,21 @@ This page is provides a list of all the external resources referred too during t
 * `SQLAlchemy <http://www.sqlalchemy.org/>`_
 * `Object Relational Tutorial <http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html>`_
 
+**GeoAlchemy**
+
+* `GeoAlchemy2 <https://geoalchemy-2.readthedocs.org/en/latest/index.html>`_
+* `GeoAlchemy ORM <https://geoalchemy-2.readthedocs.org/en/latest/orm_tutorial.html>`_
+* `Well Known Text <http://en.wikipedia.org/wiki/Well-known_text>`_
+
 **Database Clients**
 
 * `PGAdmin III <http://www.pgadmin.org>`_
+
+**PostGIS**
+
+* `PostGIS <http://postgis.net/>`_
+* `Geometry Function Reference <http://postgis.net/docs/reference.html>`_
+* `Raster Function Reference <http://postgis.net/docs/RT_reference.html>`_
 
 **Google**
 
