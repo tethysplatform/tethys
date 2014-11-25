@@ -10,6 +10,7 @@ Tethys Platform
    getting_started
    tethys_sdk
    tethys_portal
+   production
    supplementary
    summary
    glossary
