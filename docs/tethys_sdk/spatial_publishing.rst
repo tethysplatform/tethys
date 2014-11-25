@@ -1,6 +1,6 @@
-***************************
-Spatial Data Publishing API
-***************************
+*****************************
+Spatial Data Publishing API !
+*****************************
 
 **Last Updated:** November 24, 2014
 
