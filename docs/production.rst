@@ -144,10 +144,12 @@ Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` 
 8. Create Apache Site Configuration File
 ========================================
 
-Create an Apache configuration for your Tethys Platform:
+Create an Apache configuration for your Tethys Platform using the :command:`gen` command and open the :file:`tethys-default.conf` file that was generated using ``vim``:
 
 ::
 
+    $ . /usr/lib/tethys/bin/activate
+    $ sudo tethys gen apache -d /etc/apache2/site-available/tethys-default.conf
     $ sudo vim /etc/apache2/sites-available/tethys-default.conf
 
 Press :kbd:`i` to enter ``INSERT`` mode and edit the file. Copy and paste the following changing the ``ServerName`` and ``ServerAlias`` appropriately. The :file:`tethys-default.conf` will look similar to this when you are done:
