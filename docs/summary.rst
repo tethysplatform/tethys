@@ -78,6 +78,18 @@ This page is provides a list of all the external resources referred too during t
 * `Writing Setup Script <http://docs.python.org/2/distutils/setupscript.html>`_
 * `Namespace <http://docs.python.org/2/tutorial/classes.html#python-scopes-and-namespaces>`_
 
+**Production Installation**
+
+* `WSGI <http://www.wsgi.org/>`_
+* `modwsgi <https://code.google.com/p/modwsgi/>`_
+* `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_
+* `Deployment Checklist: STATIC_ROOT <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#static-root-and-static-url>`_
+* `Deployment Checklist: SECRET_KEY <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#secret-key>`_
+* `Deployment Checklist: ALLOWED_HOSTS <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#allowed-hosts>`_
+* `Deployment Checklist: STATIC_ROOT <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#static-root-and-static-url>`_
+* `How to deploy with WSGI <https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/>`_
+*
+
 **Miscellaneous**
 
 * `Universally unique identifier <http://en.wikipedia.org/wiki/Universally_unique_identifier>`_
