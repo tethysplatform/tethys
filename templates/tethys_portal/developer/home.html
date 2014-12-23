@@ -56,12 +56,13 @@
             <img class="media-object" src="{% static '/static/tethys_portal/images/geoprocessing.png' %}" alt="Geoprocessing tool">
           </a>
           <div class="media-body">
-            <a href=""><h3 class="media-heading truncate">Geoprocessing</h3></a>
+            <a href="{% url 'wps:home' %}"><h3 class="media-heading truncate">Web Processing Services</h3></a>
             <p class="multiline-truncate">
-              Geoprocessing in Tethys apps can be accomplished using the built-in 52 North WPS service. The Geoprocess
-              Formulator tool can be used to view available 52 North processes and formulate the WPS request.
+              Geoprocessing in Tethys apps can be accomplished using any web processing service (WPS). For convenience, Tethys
+              provides the 52 North WPS service built in. Use this tool to explore the processes that are available and how to
+              parameterize them.
             </p>
-            <a href="">Go to tool.</a>
+            <a href="{% url 'wps:home' %}">Go to tool.</a>
           </div>
         </div>
 
