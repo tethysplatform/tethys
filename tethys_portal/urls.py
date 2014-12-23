@@ -22,6 +22,7 @@ developer_urls = [
     url(r'^$', 'tethys_portal.views.developer.home', name='developer_home'),
     url(r'^gizmos/', include('tethys_gizmos.urls', namespace='gizmos')),
     url(r'^datasets/', include('tethys_datasets.urls', namespace='datasets')),
+    url(r'^wps/', include('tethys_wps.urls', namespace='wps')),
 ]
 
 # development_error_urls = [

@@ -6,7 +6,7 @@ from tethys_config.models import SettingsCategory, Setting
 
 class SettingInline(admin.TabularInline):
     fields = ('name', 'content', 'date_modified')
-    readonly_fields = ('name','date_modified')
+    readonly_fields = ('name', 'date_modified')
     model = Setting
     extra = 0
 
