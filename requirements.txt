@@ -4,6 +4,7 @@ django-bootstrap3
 django-tethys_apps
 django-tethys_gizmos
 django-tethys_datasets
+django-tethys_wps
 sphinxcontrib-napoleon
 paste
 psycopg2
