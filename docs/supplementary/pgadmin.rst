@@ -15,7 +15,7 @@ To create a new connection to your PostgreSQL database using PGAdmin:
 
       **Figure 1.** Click the ``Add New Connection`` button.
 
-2. In the New Server Registration form that appears, fill out the form with the appropriate credentials. Provide a meaningful name for the connection like "tethys". If you have installed PostgreSQL with the default configuration, the host will be ``localhost`` and the port will be ``5432``. Fill in the username as ``tethys_super`` and enter the password you gave the user during installation. Click ``OK`` to close the window.
+2. In the New Server Registration dialog that appears, fill out the form with the appropriate credentials. Provide a meaningful name for the connection like "tethys". If you have installed PostgreSQL with the Docker containers, the host will be either ``localhost`` if you are on Linux or ``192.168.59.103`` if you are on Mac or Windows. Use the ``tethys docker ip`` command to get the port for PostgreSQL (PostGIS). Fill in the username as ``tethys_super`` and enter the password you gave the user during installation. Click ``OK`` to close the window.
 
   .. figure:: ../images/pgadmin_tutorial_2.png
       :width: 550px

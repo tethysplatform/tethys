@@ -31,7 +31,7 @@
 
   
     <link rel="top" title="Tethys Platform 0.1.0 documentation" href="index.html"/>
-        <link rel="next" title="Getting Started" href="getting_started.html"/>
+        <link rel="next" title="Installation on Ubuntu Linux" href="installation/linux.html"/>
         <link rel="prev" title="Features" href="features.html"/> 
 
   
@@ -75,14 +75,9 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#install-the-dependencies">1. Install the Dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#install-advanced-dependencies">2. Install Advanced Dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#create-virtual-environment-and-install-tethys-platform">3. Create Virtual Environment and Install Tethys Platform</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#create-database-and-database-users">4. Create Database and Database Users</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#create-settings-file-and-configure-settings">5. Create Settings File and Configure Settings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#create-database-tables">6. Create Database Tables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#start-up-the-django-development-server">7. Start up the Django Development Server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#what-s-next">What&#8217;s Next?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation/linux.html">Installation on Ubuntu Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation/mac.html">Installation on Mac OSX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation/windows.html">Installation on Windows !</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
@@ -104,7 +99,7 @@
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/persistent_store.html">Persistent Stores API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/spatial_persistent_store.html">Spatial Persistent Stores API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/spatial_publishing.html">Spatial Data Publishing API !</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_sdk/geoprocessing.html">Geoprocessing API !</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_sdk/geoprocessing.html">Web Processing Services API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/visualizing.html">Data Visualization API !</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/cloud_computing.html">Distributed Computing API !</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/tethys_cli.html">Command Line Interface</a></li>
@@ -138,6 +133,7 @@
 <li class="toctree-l2"><a class="reference internal" href="supplementary/terminal_quick_guide.html">Terminal Quick Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supplementary/install_ubuntu.html">Ubuntu Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supplementary/ckan_troubleshooting.html">CKAN Installation Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplementary/docker_testing.html">Test Docker Containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supplementary/pgadmin.html">PGAdmin III Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="supplementary/dev_environment.html">Setup Development Environment !</a></li>
 </ul>
@@ -180,235 +176,14 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p><strong>Last Updated:</strong> November 17, 2014</p>
-<p>This section describes how to install Tethys Platform. These installation instructions are optimized for Ubuntu 14.04, which is the recommended platform for running Tethys Platform. However, Tethys Platform is cross platform and could be installed on other platforms with some adaptation.</p>
-<div class="admonition tip">
-<p class="first admonition-title">Tip</p>
-<p class="last">To install and use Tethys Platform, you will need to be familiar with using the command line/terminal. For a quick introduction to the command line, see the <a class="reference internal" href="supplementary/terminal_quick_guide.html"><em>Terminal Quick Guide</em></a> article.</p>
-</div>
-<div class="section" id="install-the-dependencies">
-<h2>1. Install the Dependencies<a class="headerlink" href="#install-the-dependencies" title="Permalink to this headline">¶</a></h2>
-<ol class="loweralpha simple">
-<li>If you are using a <a class="reference internal" href="glossary.html#term-debian"><em class="xref std std-term">Debian</em></a> based Linux operating system (like Ubuntu), you can install most of the dependencies via <strong class="command">apt-get</strong>. Open a terminal and execute the following command:</li>
-</ol>
-<blockquote>
-<div><div class="highlight-python"><div class="highlight"><pre>$ sudo apt-get install python-dev postgresql-9.3 libpq-dev postgresql-9.3-postgis-2.1 python-pip python-virtualenv git-core
-</pre></div>
-</div>
-<p>You may be prompted to enter your password to authorize the installation of these packages. If you are prompted about the disk space that will be used to install the dependencies, enter <tt class="kbd docutils literal"><span class="pre">Y</span></tt> and press <tt class="kbd docutils literal"><span class="pre">Enter</span></tt> to continue.</p>
-<p>There will be a lot of text printed to the terminal as the dependencies are installed and it may take several minutes to complete. When it is finished you will see a normal terminal cursor again.</p>
-</div></blockquote>
-<ol class="loweralpha simple" start="2">
-<li>If you not using a <a class="reference internal" href="glossary.html#term-debian"><em class="xref std std-term">Debian</em></a> based Linux operating system find the best way to install the following dependencies for your operating system:</li>
-</ol>
-<blockquote>
-<div><table border="1" class="docutils">
-<colgroup>
-<col width="12%" />
-<col width="88%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Dependency</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>Python</td>
-<td><a class="reference external" href="https://www.python.org/download/releases/2.7/">Python Programming Language, version 2.7.</a></td>
-</tr>
-<tr class="row-odd"><td>PostgreSQL</td>
-<td><a class="reference external" href="http://www.postgresql.org/download/">PostgreSQL database system, version 9.0 or higher (9.3 recommended).</a></td>
-</tr>
-<tr class="row-even"><td>PostGIS 2.1</td>
-<td><a class="reference external" href="http://postgis.net/install">PostGIS spatial extension for PostgreSQL, version 2.1 or higher.</a></td>
-</tr>
-<tr class="row-odd"><td>GeoServer*</td>
-<td><a class="reference external" href="http://docs.geoserver.org/stable/en/user/installation/index.html">GeoServer server for sharing geospatial data.</a></td>
-</tr>
-<tr class="row-even"><td>Tomcat*</td>
-<td><a class="reference external" href="http://tomcat.apache.org/download-70.cgi">Tomcat open source Java Servlet, version 7.0.</a></td>
-</tr>
-<tr class="row-odd"><td>52°North WPS*</td>
-<td><a class="reference external" href="http://52north.org/communities/geoprocessing/wps/installation.html">52°North open source web processing service for geoprocessing.</a></td>
-</tr>
-<tr class="row-even"><td>GRASS GIS*</td>
-<td><a class="reference external" href="http://grass.osgeo.org/download/">GRASS GIS, version 7.</a></td>
-</tr>
-<tr class="row-odd"><td>wps-grass-bridge*</td>
-<td><a class="reference external" href="https://code.google.com/p/wps-grass-bridge/">Libraries and applications for easy and convenient GRASS7 GIS WPS integration.</a></td>
-</tr>
-<tr class="row-even"><td>pip</td>
-<td><a class="reference external" href="http://pip.readthedocs.org/en/latest/installing.html">Python package management and installation tool.</a></td>
-</tr>
-<tr class="row-odd"><td>virtualenv</td>
-<td><a class="reference external" href="http://virtualenv.readthedocs.org/en/latest/virtualenv.html#installation">virtualenv isolated Python environment creator.</a></td>
-</tr>
-<tr class="row-even"><td>git</td>
-<td><a class="reference external" href="http://git-scm.com/downloads">Git open source distributed version control system.</a></td>
-</tr>
-</tbody>
-</table>
-<p>* Note: The feature requiring this software is not fully implemented at this time, so installation of this dependency is optional.</p>
-</div></blockquote>
-</div>
-<div class="section" id="install-advanced-dependencies">
-<h2>2. Install Advanced Dependencies<a class="headerlink" href="#install-advanced-dependencies" title="Permalink to this headline">¶</a></h2>
-<p>Installing some of the software dependencies is more involved. This section provides a more detailed explanation for these dependencies.</p>
-<div class="section" id="ckan-optional">
-<h3>CKAN (optional)<a class="headerlink" href="#ckan-optional" title="Permalink to this headline">¶</a></h3>
-<p>Apps developed with Tethys Platform may use CKAN for dataset storage. This is done using the REST API of CKAN, which means that the CKAN instance can be external to your Tethys Platform installation. For example, you may wish to configure your Tethys Platform to use <a class="reference external" href="http://www.data.gov/">data.gov</a> or some other CKAN installation (see <a class="reference external" href="http://ckan.org/instances/#">CKAN instances around the world</a>).</p>
-<p>If you wish to install your own instance of CKAN, refer to <a class="reference external" href="http://docs.ckan.org/en/latest/maintaining/installing/index.html">Installing CKAN</a>.</p>
-</div>
-</div>
-<div class="section" id="create-virtual-environment-and-install-tethys-platform">
-<h2>3. Create Virtual Environment and Install Tethys Platform<a class="headerlink" href="#create-virtual-environment-and-install-tethys-platform" title="Permalink to this headline">¶</a></h2>
-<p>Python virtual environments are used to create isolated Python installations to avoid conflicts with dependencies of other Python applications on the same system. The following commands should be executed in a a terminal.</p>
-<ol class="loweralpha">
-<li><p class="first">Create a <a class="reference internal" href="glossary.html#term-python-virtual-environment"><em class="xref std std-term">Python virtual environment</em></a> and activate it:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ sudo mkdir -p /usr/lib/tethys
-$ sudo chown `whoami` /usr/lib/tethys
-$ virtualenv --no-site-packages /usr/lib/tethys
-$ . /usr/lib/tethys/bin/activate
-</pre></div>
-</div>
-</li>
-</ol>
-<div class="admonition important">
-<p class="first admonition-title">Important</p>
-<p>The final command above activates the Python virtual environment for Tethys. You will know the virtual environment is active, because the name of it will appear in parenthesis in front of your terminal cursor:</p>
-<div class="highlight-python"><div class="highlight"><pre>(tethys) $ _
-</pre></div>
-</div>
-<p>The Tethys virtual environment must remain active for the entire installation. If you need to logout or close the terminal in the middle of the installation, you will need to reactivate the virtual environment. This can be done at anytime by executing the following command (don&#8217;t forget the dot):</p>
-<div class="last highlight-python"><div class="highlight"><pre>$ . /usr/lib/tethys/bin/activate
-</pre></div>
-</div>
-</div>
-<ol class="loweralpha" start="2">
-<li><p class="first">Install Tethys Platform into the virtual environment with the following commands:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ git clone https://github.com/CI-WATER/tethys /usr/lib/tethys/src
-</pre></div>
-</div>
-</li>
-<li><p class="first">Install the Python modules that Tethys requires:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ pip install -r /usr/lib/tethys/src/requirements.txt
-</pre></div>
-</div>
-</li>
-<li><p class="first">Restart the Python virtual environment:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ deactivate
-$ . /usr/lib/tethys/bin/activate
-</pre></div>
-</div>
-</li>
-</ol>
-</div>
-<div class="section" id="create-database-and-database-users">
-<h2>4. Create Database and Database Users<a class="headerlink" href="#create-database-and-database-users" title="Permalink to this headline">¶</a></h2>
-<p>Create three database users and databases. You will be prompted to create passwords for each user. Take note of the passwords, because you will need to use them in the next step. To do so, run the following commands in the terminal:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ sudo -u postgres createuser -S -D -R -P tethys_default
-$ sudo -u postgres createdb -O tethys_default tethys_default -E utf-8
-
-$ sudo -u postgres createuser -S -d -R -P tethys_db_manager
-$ sudo -u postgres createdb -O tethys_db_manager tethys_db_manager -E utf-8
-
-$ sudo -u postgres createuser --superuser -d -R -P tethys_super
-$ sudo -u postgres createdb -O tethys_super tethys_super -E utf-8
-</pre></div>
-</div>
-<div class="admonition important">
-<p class="first admonition-title">Important</p>
-<p class="last">Run each line above one at a time to avoid errors.</p>
-</div>
-<div class="admonition tip">
-<p class="first admonition-title">Tip</p>
-<p class="last">If you would like to have access to the Tethys databases through a graphical user interface such as <a class="reference external" href="http://www.pgadmin.org/">PGAdmin III</a>, use the <strong>tethys_super</strong> database user and password as credentials for the connection. See the <a class="reference internal" href="supplementary/pgadmin.html"><em>PGAdmin III Tutorial</em></a> article for more information.</p>
-</div>
-</div>
-<div class="section" id="create-settings-file-and-configure-settings">
-<h2>5. Create Settings File and Configure Settings<a class="headerlink" href="#create-settings-file-and-configure-settings" title="Permalink to this headline">¶</a></h2>
-<p>Create a new settings file for your Tethys Platform installation using the <strong class="command">tethys</strong> <a class="reference internal" href="tethys_sdk/tethys_cli.html"><em>Command Line Interface</em></a>. Execute the following command in the terminal:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ tethys gen settings -d /usr/lib/tethys/src/tethys_portal
-</pre></div>
-</div>
-<p>This will create a file called <tt class="file docutils literal"><span class="pre">settings.py</span></tt> in the directory <tt class="file docutils literal"><span class="pre">/usr/lib/tethys/src/tethys_portal</span></tt>. As the name suggests, the <tt class="file docutils literal"><span class="pre">settings.py</span></tt> file contains all of the settings for the Tethys Platform Django project. There are a few settings that need to be configured in this file.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The <tt class="file docutils literal"><span class="pre">usr</span></tt> directory is located in the root directory which can be accessed using a file browser and selecting <tt class="file docutils literal"><span class="pre">Computer</span></tt> from the menu on the left.</p>
-</div>
-<p>Open the <tt class="file docutils literal"><span class="pre">settings.py</span></tt> file that you just created (<tt class="file docutils literal"><span class="pre">/usr/lib/tethys/src/tethys_portal/settings.py</span></tt>) in a text editor and modify the following settings appropriately.</p>
-<ol class="loweralpha">
-<li><p class="first">Replace the password for the main Tethys Portal database, <strong>tethys_default</strong>, with the password you created in the previous step. This is done by changing the value of the PASSWORD parameter of the DATABASES setting:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s">&#39;default&#39;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s">&#39;ENGINE&#39;</span><span class="p">:</span> <span class="s">&#39;django.db.backends.postgresql_psycopg2&#39;</span><span class="p">,</span>
-      <span class="s">&#39;NAME&#39;</span><span class="p">:</span> <span class="s">&#39;tethys_default&#39;</span><span class="p">,</span>
-      <span class="s">&#39;USER&#39;</span><span class="p">:</span> <span class="s">&#39;tethys_default&#39;</span><span class="p">,</span>
-      <span class="s">&#39;PASSWORD&#39;</span><span class="p">:</span> <span class="s">&#39;pass&#39;</span><span class="p">,</span>
-      <span class="s">&#39;HOST&#39;</span><span class="p">:</span> <span class="s">&#39;localhost&#39;</span><span class="p">,</span>
-      <span class="s">&#39;PORT&#39;</span><span class="p">:</span> <span class="s">&#39;5432&#39;</span>
-      <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</li>
-<li><p class="first">Find the TETHYS_APPS_DATABASE_MANAGER_URL and TETHYS_APPS_SUPERUSER_URL settings near the bottom of the file and replace &#8220;pass&#8221; with the appropriate passwords that you created in the previous step:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">TETHYS_APPS_DATABASE_MANAGER_URL</span> <span class="o">=</span> <span class="s">&#39;postgresql://tethys_db_manager:pass@localhost:5432/tethys_db_manager&#39;</span>
-<span class="n">TETHYS_APPS_SUPERUSER_URL</span> <span class="o">=</span> <span class="s">&#39;postgresql://tethys_super:pass@localhost:5432/tethys_super&#39;</span>
-</pre></div>
-</div>
-</li>
-<li><p class="first">Set the TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY with an appropriate Google Maps v3 API key. If you do not have a Google Maps API key, use the <a class="reference external" href="https://developers.google.com/maps/documentation/javascript/tutorial#api_key">Obtaining an API Key</a> instructions:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY</span> <span class="o">=</span> <span class="s">&#39;Th|$I$@neXAmpL3aPik3Y&#39;</span>
-</pre></div>
-</div>
-</li>
-<li><p class="first">If you wish to configure a sitewide dataset service (CKAN or HydroShare), add the TETHYS_DATASET_SERVICES dictionary with the appropriate parameters. See the <a class="reference internal" href="tethys_sdk/dataset_services.html"><em>Dataset Services API</em></a> documentation for more details. For example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">TETHYS_DATASET_SERVICES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s">&#39;ckan_example&#39;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s">&#39;ENGINE&#39;</span><span class="p">:</span> <span class="s">&#39;tethys_datasets.engines.CkanDatasetEngine&#39;</span><span class="p">,</span>
-        <span class="s">&#39;ENDPOINT&#39;</span><span class="p">:</span> <span class="s">&#39;http:/www.exampleckan.org/api/3/action&#39;</span><span class="p">,</span>
-        <span class="s">&#39;APIKEY&#39;</span><span class="p">:</span> <span class="s">&#39;putYOURapiKEYhere&#39;</span><span class="p">,</span>
-    <span class="p">},</span>
-    <span class="s">&#39;example_hydroshare&#39;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s">&#39;ENGINE&#39;</span><span class="p">:</span> <span class="s">&#39;tethys_datasets.engines.HydroShareDatasetEngine&#39;</span><span class="p">,</span>
-        <span class="s">&#39;ENDPOINT&#39;</span><span class="p">:</span> <span class="s">&#39;http://www.hydroshare.org/api&#39;</span><span class="p">,</span>
-        <span class="s">&#39;USERNAME&#39;</span><span class="p">:</span> <span class="s">&#39;someuser&#39;</span><span class="p">,</span>
-        <span class="s">&#39;PASSWORD&#39;</span><span class="p">:</span> <span class="s">&#39;password&#39;</span><span class="p">,</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</li>
-<li><p class="first">Save your changes and close the <tt class="file docutils literal"><span class="pre">settings.py</span></tt> file.</p>
-</li>
-</ol>
-</div>
-<div class="section" id="create-database-tables">
-<h2>6. Create Database Tables<a class="headerlink" href="#create-database-tables" title="Permalink to this headline">¶</a></h2>
-<p>Execute the <strong class="command">tethys manage syncdb</strong> command from the Tethys <a class="reference internal" href="tethys_sdk/tethys_cli.html"><em>Command Line Interface</em></a> to create the database tables. In the terminal:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ tethys manage syncdb
-</pre></div>
-</div>
-<div class="admonition important">
-<p class="first admonition-title">Important</p>
-<p class="last">When prompted to create a system administrator enter &#8216;yes&#8217;. Take note of the username and password, as this will be the user you use to manage your Tethys Portal.</p>
-</div>
-</div>
-<div class="section" id="start-up-the-django-development-server">
-<h2>7. Start up the Django Development Server<a class="headerlink" href="#start-up-the-django-development-server" title="Permalink to this headline">¶</a></h2>
-<p>You are now ready to start the development server and view your instance of Tethys Portal. In the terminal, execute the following command from the Tethys <a class="reference internal" href="tethys_sdk/tethys_cli.html"><em>Command Line Interface</em></a>:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ tethys manage start
-</pre></div>
-</div>
-<p>Open <a class="reference external" href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a> in a new tab in your web browser and you should see the default Tethys Portal landing page. Feel free to log in using the system administrator username and password that you created in the previous step and take a look around.</p>
-<div class="figure">
-<a class="reference internal image-reference" href="_images/tethys_portal_landing.png"><img alt="_images/tethys_portal_landing.png" src="_images/tethys_portal_landing.png" style="width: 650px;" /></a>
-</div>
-</div>
-<div class="section" id="what-s-next">
-<h2>What&#8217;s Next?<a class="headerlink" href="#what-s-next" title="Permalink to this headline">¶</a></h2>
-<p>Head over to <a class="reference internal" href="getting_started.html"><em>Getting Started</em></a> and create your first app. You can also check out the <a class="reference internal" href="tethys_sdk.html"><em>Software Development Kit</em></a> documentation to familiarize yourself with all the features that are available.</p>
+<p><strong>Last Updated:</strong> January 3, 2015</p>
+<p>This section describes how to install Tethys Platform. Installation instructions are provided for Linux (Ubuntu), Mac OSX, and Windows.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation/linux.html">Installation on Ubuntu Linux</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation/mac.html">Installation on Mac OSX</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation/windows.html">Installation on Windows !</a></li>
+</ul>
 </div>
 </div>
 
@@ -418,7 +193,7 @@ $ sudo -u postgres createdb -O tethys_super tethys_super -E utf-8
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="installation/linux.html" class="btn btn-neutral float-right" title="Installation on Ubuntu Linux">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="features.html" class="btn btn-neutral" title="Features"><span class="fa fa-arrow-circle-left"></span> Previous</a>
