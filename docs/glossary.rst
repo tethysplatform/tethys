@@ -60,5 +60,9 @@ Glossary
     Model View Controller
         The development pattern used to develop Tethys apps. The Model represents the data of the app, the View is composed of the representation of the data, and the Controller consists of the logic needed to prepare the data from the Model for the View and any other logic your app needs.
 
+    wps service
+    wps services
+        A WPS Service provides processes/geoprocesses as web services using the Open Geospatial Consortium Web Processing Service (WPS) standard.
+
     Debian
         Debian is a type of Linux operating system and many Linux distributions are based on it including Ubuntu. See `Linux Distributions <http://en.wikipedia.org/wiki/Linux_distribution#Examples>`_ for more information.
