@@ -128,11 +128,25 @@ in the previous step. This is done by changing the value of the PASSWORD paramet
         }
     }
 
-b. Find the TETHYS_APPS_DATABASE_MANAGER_URL and TETHYS_APPS_SUPERUSER_URL settings and replace "pass" with the appropriate
-passwords that you created in the previous step::
+b. Find the TETHYS_DATABASES setting and set with the appropriate passwords that you created in the previous step. Also set
+the HOST and PORT if necessary::
 
-    TETHYS_APPS_DATABASE_MANAGER_URL = 'postgresql://tethys_db_manager:pass@localhost:5432/tethys_db_manager'
-    TETHYS_APPS_SUPERUSER_URL = 'postgresql://tethys_super:pass@localhost:5432/tethys_super'
+    TETHYS_DATABASES = {
+        'tethys_db_manager': {
+            'NAME': 'tethys_db_manager',
+            'USER': 'tethys_db_manager',
+            'PASSWORD': 'pass',
+            'HOST': '127.0.0.1',
+            'PORT': '5435'
+        },
+        'tethys_super': {
+            'NAME': 'tethys_super',
+            'USER': 'tethys_super',
+            'PASSWORD': 'pass',
+            'HOST': '127.0.0.1',
+            'PORT': '5435'
+        }
+    }
 
 c. Set the TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY with an appropriate Google Maps v3 API key. If you do not have a Google
 Maps API key, use the `Obtaining an API Key <https://developers.google.com/maps/documentation/javascript/tutorial#api_key>`_
