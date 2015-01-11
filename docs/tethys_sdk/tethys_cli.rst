@@ -81,7 +81,7 @@ This command contains several subcommands that are used to help manage Tethys Pl
 **Optional Arguments:**
 
 * **-p PORT, --port PORT**: Port on which to start the development server. Default port is 8000.
-* **-m MANAGE, --manage** MANAGE: Absolute path to :file:`manage.py` file for Tethys Platform installation if different than default.
+* **-m MANAGE, --manage MANAGE**: Absolute path to :file:`manage.py` file for Tethys Platform installation if different than default.
 
 **Examples:**
 
@@ -107,8 +107,8 @@ Management command for Persistent Stores. To learn more about persistent stores 
 
 * **-r, --refresh**: Drop databases prior to performing persistent store sync resulting in a refreshed database.
 * **-f, --firsttime**: All initialization functions will be executed with the ``first_time`` parameter set to ``True``.
-* **-d, DATABASE, --database** DATABASE: Name of the persistent store database to target.
-* **-m MANAGE, --manage** MANAGE: Absolute path to :file:`manage.py` file for Tethys Platform installation if different than default.
+* **-d, DATABASE, --database DATABASE**: Name of the persistent store database to target.
+* **-m MANAGE, --manage MANAGE**: Absolute path to :file:`manage.py` file for Tethys Platform installation if different than default.
 
 **Examples:**
 
@@ -135,5 +135,59 @@ Management command for Persistent Stores. To learn more about persistent stores 
     # Refresh all persistent store databases for an app
     $ tethys syncstores my_first_app -r
 
+docker <subcommand> [options]
+-----------------------------
 
+Management commands for the Tethys Docker containers. To learn more about Docker, see `What is Docker? <https://www.docker.com/whatisdocker/>`_.
 
+**Arguments:**
+
+* **subcommand**: The docker command to run. One of the following:
+
+    * *init*: Initialize the Tethys Dockers including, starting Boot2Docker if applicable, pulling the Docker images, and installing/creating the Docker containers.
+    * *start*: Start the Docker containers.
+    * *stop*: Stop the Docker containers.
+    * *status*: Display status of each Docker container.
+    * *update*: Pull the latest version of the Docker images.
+    * *remove*: Remove a Docker images.
+    * *ip*: Display host, port, and endpoint of each Docker container.
+
+**Optional Arguments:**
+
+* **-d, --defaults**: Install Docker containers with default values (will not prompt for input). Only applicable to *init* subcommand.
+* **-c {postgis, geoserver, wps}, --container {postgis, geoserver, wps}**: Execute subcommand only on the container specified.
+* **-b, --boot2docker**: Also stop Boot2Docker when *stop* subcommand is called with this option.
+
+**Examples:**
+
+::
+
+    # Initialize Tethys Dockers
+    $ tethys docker init
+
+    # Initialize with Default Parameters
+    $ tethys docker init -d
+
+    # Start all Tethys Dockers
+    $ tethys docker start
+
+    # Start only PostGIS Docker
+    $ tethys docker start -c postgis
+
+    # Stop Tethys Dockers
+    $ tethys docker stop
+
+    # Stop Tethys Dockers and Boot2Docker if applicable
+    $ tethys docker stop -b
+
+    # Update Tethys Docker Images
+    $ tethys docker update
+
+    # Remove Tethys Docker Images
+    $ tethys docker remove
+
+    # View Status of Tethys Dockers
+    $ tethys docker status
+
+    # View Host and Port Info
+    $ tethys docker ip

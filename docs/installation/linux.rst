@@ -1,14 +1,8 @@
-****************************
-Installation on Ubuntu Linux
-****************************
+*********************
+Installation on Linux
+*********************
 
-**Last Updated:** January 3, 2015
-
-.. warning::
-
-   UNDER CONSTRUCTION
-
-This section describes how to install Tethys Platform on Ubuntu Linux. These installation instructions are optimized for Ubuntu 14.04, which is the recommended platform for running Tethys Platform. However, Tethys Platform could be installed on other distributions of Linux with some adaptation.
+**Last Updated:** January 10, 2015
 
 .. tip::
 
@@ -45,24 +39,23 @@ b. If you are not using a :term:`Debian` based Linux operating system find the b
 2. Finish the Docker Installation
 ---------------------------------
 
-Execute the following command to finish the installation of Docker:
+There are a few additional steps that need to be completed to finish the installation of Docker.
 
-::
+a. Execute the following command to finish the installation of Docker:
 
-  $ source /etc/bash_completion.d/docker.io
+  ::
 
-Add User to the Docker Group
-============================
+    $ source /etc/bash_completion.d/docker.io
 
-Add your user to the Docker group. This is necessary to use the Tethys Docker commandline tools. In a command prompt execute:
+b. Add your user to the Docker group. This is necessary to use the Tethys Docker commandline tools. In a command prompt execute:
 
-::
+  ::
 
-  $ sudo groupadd docker
-  $ sudo gpasswd -a ${USER} docker
-  $ sudo service docker.io restart
+    $ sudo groupadd docker
+    $ sudo gpasswd -a ${USER} docker
+    $ sudo service docker.io restart
 
-Finally, log out and log back in to make the changes take effect.
+c. Log out and log back in to make the changes take effect.
 
 .. warning::
 
@@ -122,14 +115,13 @@ Installing some of these dependencies can be VERY difficult, so they have been p
 Initialize the Docker Containers
 ================================
 
-Tethys provides set of commandline tools to help you manage the Docker containers. You must activate your Python environment to use the commandline tools. Execute the following Tethys commands in a terminal to initialize the Docker containers:
+Tethys provides set of commandline tools to help you manage the Docker containers. You must activate your Python environment to use the commandline tools. Execute the following Tethys commands using the :command:`tethys` :doc:`../tethys_sdk/tethys_cli` to initialize the Docker containers:
 
 ::
 
-  $ . /usr/lib/tethys/bin/activate
   $ tethys docker init
 
-The first time you initialize the Docker containers, the images for each container will be downloaded. These images are large and it will take some time to download them.
+The first time you initialize the Docker containers, the images for each container will be downloaded. These images are large and it may take a long time for them to download.
 
 After the images have been downloaded, the containers will automatically be installed. During installation, you will be prompted to enter various parameters needed to customize your instance of the software. Some of the parameters are usernames and passwords. **Take note of the usernames and passwords that you specify**. The important ones to remember are listed here:
 
@@ -157,7 +149,7 @@ Use the following Tethys command to start the Docker containers:
 
 .. note::
 
-  Although each Docker container seem to start instantaneously, it may take several minutes for the started containers to be fully up and running.
+  Although each Docker container appears to start instantaneously, it may take several minutes for the started containers to be fully up and running.
 
 
 What is Running
@@ -186,7 +178,15 @@ This will create a file called :file:`settings.py` in the directory :file:`/usr/
 
 Open the :file:`settings.py` file that you just created (:file:`/usr/lib/tethys/src/tethys_portal/settings.py`) in a text editor and modify the following settings appropriately.
 
-a. Replace the password for the main Tethys Portal database, **tethys_default**, with the password you created in the previous step. Also make sure that he host and port match those given from the ``tethys docker ip`` command (PostGIS). This is done by changing the values of the PASSWORD, HOST, and PORT parameters of the DATABASES setting::
+a. Run the following command to obtain the host and port for Docker running the database (PostGIS). You will need these in the following steps:
+
+  ::
+
+    $ tethys docker ip
+
+b. Replace the password for the main Tethys Portal database, **tethys_default**, with the password you created in the previous step. Also make sure that the host and port match those given from the ``tethys docker ip`` command (PostGIS). This is done by changing the values of the PASSWORD, HOST, and PORT parameters of the DATABASES setting:
+
+  ::
 
     DATABASES = {
       'default': {
@@ -199,16 +199,30 @@ a. Replace the password for the main Tethys Portal database, **tethys_default**,
           }
     }
 
-b. Find the TETHYS_APPS_DATABASE_MANAGER_URL and TETHYS_APPS_SUPERUSER_URL settings near the bottom of the file and replace "pass" with the appropriate passwords that you created in the previous step. Also make sure the host and port are set correctly::
+c. Find the TETHYS_DATABASES setting near the bottom of the file and set the PASSWORD parameters with the passwords that you created in the previous step. If necessary, also change the HOST and PORT to match the host and port given by the ``tethys docker ip`` command for the database (PostGIS)::
 
-    TETHYS_APPS_DATABASE_MANAGER_URL = 'postgresql://tethys_db_manager:pass@localhost:5432/tethys_db_manager'
-    TETHYS_APPS_SUPERUSER_URL = 'postgresql://tethys_super:pass@localhost:5432/tethys_super'
+    TETHYS_DATABASES = {
+        'tethys_db_manager': {
+            'NAME': 'tethys_db_manager',
+            'USER': 'tethys_db_manager',
+            'PASSWORD': 'pass',
+            'HOST': '127.0.0.1',
+            'PORT': '5435'
+        },
+        'tethys_super': {
+            'NAME': 'tethys_super',
+            'USER': 'tethys_super',
+            'PASSWORD': 'pass',
+            'HOST': '127.0.0.1',
+            'PORT': '5435'
+        }
+    }
 
-c. Set the TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY with an appropriate Google Maps v3 API key. If you do not have a Google Maps API key, use the `Obtaining an API Key <https://developers.google.com/maps/documentation/javascript/tutorial#api_key>`_ instructions::
+d. Set the TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY with an appropriate Google Maps v3 API key. If you do not have a Google Maps API key, use the `Obtaining an API Key <https://developers.google.com/maps/documentation/javascript/tutorial#api_key>`_ instructions::
 
     TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY = 'Th|$I$@neXAmpL3aPik3Y'
 
-d. If you wish to configure a sitewide dataset service (CKAN or HydroShare), add the TETHYS_DATASET_SERVICES dictionary with the appropriate parameters. See the :doc:`../tethys_sdk/dataset_services` documentation for more details. For example::
+e. If you wish to configure a sitewide dataset service (CKAN or HydroShare), add the TETHYS_DATASET_SERVICES dictionary with the appropriate parameters. See the :doc:`../tethys_sdk/dataset_services` documentation for more details. For example::
 
     TETHYS_DATASET_SERVICES = {
         'ckan_example': {
@@ -235,12 +249,12 @@ Execute the :command:`tethys manage syncdb` command from the Tethys :doc:`../tet
 
 .. important::
 
-  When prompted to create a system administrator enter 'yes'. Take note of the username and password, as this will be the user you use to manage your Tethys Portal.
+  When prompted to create a system administrator enter 'yes'. Take note of the username and password, as this will be the user you use to manage your Tethys Platform installation.
 
 7. Start up the Django Development Server
 -----------------------------------------
 
-You are now ready to start the development server and view your instance of Tethys Portal. In the terminal, execute the following command from the Tethys :doc:`../tethys_sdk/tethys_cli`::
+You are now ready to start the development server and view your instance of Tethys Platform. The website that comes with Tethys Platform is called Tethys Portal. In the terminal, execute the following command from the Tethys :doc:`../tethys_sdk/tethys_cli`::
 
     $ tethys manage start
 
@@ -252,13 +266,7 @@ Open `<http://localhost:8000/>`_ in a new tab in your web browser and you should
 8. Web Admin Setup
 ------------------
 
-Login using the administrator username and password that you created in step 5...
-
-
-What's Next?
-------------
-
-Head over to :doc:`../getting_started` and create your first app. You can also check out the :doc:`../tethys_sdk` documentation to familiarize yourself with all the features that are available.
+You are now ready to configure your Tethys Platform installation using the web admin interface. Follow the :doc:`./web_admin_setup` tutorial to finish setting up your Tethys Platform.
 
 
 

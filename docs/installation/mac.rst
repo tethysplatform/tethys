@@ -1,6 +1,6 @@
-***********************
-Installation on Mac OSX
-***********************
+*************************
+Installation on Mac OSX !
+*************************
 
 **Last Updated:** January 3, 2015
 
