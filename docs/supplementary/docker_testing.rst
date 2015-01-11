@@ -4,10 +4,11 @@ Test Docker Containers
 If you would like, you may perform the following tests to ensure the containers are working properly.
 
 
-Use the following Tethys command to start the Docker containers:
+Activate the virtual environment if you have not done so already and use the following Tethys command to start the Docker containers:
 
 ::
 
+  $ . /usr/lib/tethys/bin/activate
   $ tethys docker start
 
 .. note::
