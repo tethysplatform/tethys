@@ -15,7 +15,13 @@ Installation on Mac OSX
 1. Install the Dependencies
 ---------------------------
 
-a. Open a terminal and execute the following command to install the `Homebrew <http://brew.sh/>`_ package manager:
+a. Update/install Xcode commandline tools
+
+  ::
+
+      $ xcode-select --install
+
+b. `Homebrew <http://brew.sh/>`_ is an excellent package manager for Mac OSX. You will use it to install the Tethys dependencies, but first you will need to install `Homebrew <http://brew.sh/>`_. Open a terminal and execute the following command:
 
   ::
 
@@ -27,6 +33,8 @@ a. Open a terminal and execute the following command to install the `Homebrew <h
 
       $ open ~/.bash_profile
 
+  ***** Or create it if it doesn't exist
+
   Add the following lines to the bottom of the file:
 
   ::
@@ -36,11 +44,15 @@ a. Open a terminal and execute the following command to install the `Homebrew <h
 
   Save your changes and close the file.
 
+  **** Don't use text edit use vim
+
+  ***** Close Terminal and open again
+
   .. note::
 
       You may need to close the terminal and open it again for these changes to take effect.
 
-b. Use Homebrew to install the dependencies:
+c. Use Homebrew to install the dependencies:
 
   ::
 
@@ -49,7 +61,11 @@ b. Use Homebrew to install the dependencies:
 
   Homebrew will automatically install pip and virtualenv with the Python installation.
 
-c. Install *git* and other dependencies with Homebrew:
+  .. note::
+
+      Install Python using home brew even if you already have Python installed. Homebrew installs a lot of additional Python packages that are needed for developing in Python like virtualenv and pip.
+
+d. Install *git* and other dependencies with Homebrew:
 
   ::
 
@@ -243,9 +259,9 @@ Execute the :command:`tethys manage syncdb` command from the Tethys :doc:`../tet
 
     $ tethys manage syncdb
 
-.. important::
+  .. important::
 
-  When prompted to create a system administrator enter 'yes'. Take note of the username and password, as this will be the user you use to manage your Tethys Platform installation.
+    When prompted to create a system administrator enter 'yes'. Take note of the username and password, as this will be the user you use to manage your Tethys Platform installation.
 
 7. Start up the Django Development Server
 -----------------------------------------
