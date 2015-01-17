@@ -201,7 +201,7 @@ The Tethys command line utility provides a command for initializing persistent s
 
 ::
 
-    $ tethys syncstores my_first_app
+    (tethys) $ tethys syncstores my_first_app
 
 The database will be initialized and you will see text printed to the terminal that will indicate this:
 
