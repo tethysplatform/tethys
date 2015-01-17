@@ -2,11 +2,7 @@
 Installation on Mac OSX
 ***********************
 
-**Last Updated:** January 12, 2015
-
-.. warning::
-
-   UNDER CONSTRUCTION
+**Last Updated:** January 17, 2015
 
 .. tip::
 
@@ -15,69 +11,67 @@ Installation on Mac OSX
 1. Install the Dependencies
 ---------------------------
 
-a. Update/install Xcode commandline tools
+a. Many of the commandline tools for the Mac are provided through Xcode. You will need to install or update the Xcode commandline tools by opening a Terminal and executing the following command:
 
   ::
 
       $ xcode-select --install
 
-b. `Homebrew <http://brew.sh/>`_ is an excellent package manager for Mac OSX. You will use it to install the Tethys dependencies, but first you will need to install `Homebrew <http://brew.sh/>`_. Open a terminal and execute the following command:
+  .. note::
+
+      If you do not have Xcode installed, you may need to install it before running this command. You can install it using the Mac App Store.
+
+b. One feature that Mac OSX lacks that many Linux distributions provide is a package manager on the commandline. `Homebrew <http://brew.sh/>`_ is an excellent package manager for Mac OSX and you will use it to install the Tethys dependencies. Install `Homebrew <http://brew.sh/>`_ by  executing the following command in a Terminal:
 
   ::
 
       $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-  Open your .bash_profile file:
+  After `Homebrew <http://brew.sh/>`_ is installed, you will need to add a few entries to the PATH variable. In a terminal, execute the following command:
 
   ::
 
-      $ open ~/.bash_profile
+      $ sudo nano /etc/paths
 
-  ***** Or create it if it doesn't exist
+  * Enter your password if prompted.
+  * Add the following two paths at the **top of the file** if they are not already present
 
-  Add the following lines to the bottom of the file:
+    ::
 
-  ::
+        /usr/local/bin
+        /usr/local/sbin
 
-      # Homebrew Path
-      export PATH=/usr/local/bin:/usr/local/sbin:$PATH
-
-  Save your changes and close the file.
-
-  **** Don't use text edit use vim
-
-  ***** Close Terminal and open again
+  * Press ``control-x`` to quit and enter ``Y`` to save the changes.
 
   .. note::
 
-      You may need to close the terminal and open it again for these changes to take effect.
+      You may need to close Terminal and open it again for these changes to take effect.
 
-c. Use Homebrew to install the dependencies:
+c. You will need a fresh installation of ``Python`` with the ``pip`` and ``virtualenv`` installed. Fortunately, `Homebrew <http://brew.sh/>`_ automatically installs ``pip`` and ``virtualenv`` with its ``Python`` package. Install Python and other dependencies using `Homebrew <http://brew.sh/>`_ as follows:
 
   ::
 
-      $ brew install python
+      $ brew install python git libpqxx libxml2 libxslt
       $ brew link --overwrite python
 
-  Homebrew will automatically install pip and virtualenv with the Python installation.
+  .. tip::
 
-  .. note::
+      If you encounter trouble using `Homebrew <http://brew.sh/>`_ to install these dependencies, run the following command in the Terminal:
 
-      Install Python using home brew even if you already have Python installed. Homebrew installs a lot of additional Python packages that are needed for developing in Python like virtualenv and pip.
+      ::
 
-d. Install *git* and other dependencies with Homebrew:
+          $ brew doctor
 
-  ::
+      This will generate a list of suggestions for remedying your `Homebrew <http://brew.sh/>`_ installation.
 
-      $ brew install git libpqxx libxml2 libxslt
 
-d. Install Docker using the `Installing Docker on Mac OSX <https://docs.docker.com/installation/mac/#installation>`_ instructions.
+d. Finally, install Docker using the `Installing Docker on Mac OSX <https://docs.docker.com/installation/mac/#installation>`_ instructions.
 
 
 3. Create Virtual Environment and Install Tethys Platform
 ---------------------------------------------------------
 
-Python virtual environments are used to create isolated Python installations to avoid conflicts with dependencies of other Python applications on the same system. The following commands should be executed in a a terminal.
+Python virtual environments are used to create isolated Python installations to avoid conflicts with dependencies of other Python applications on the same system. Execute the following commands in Terminal.
 
 a. Create a :term:`Python virtual environment` and activate it::
 
@@ -93,110 +87,88 @@ a. Create a :term:`Python virtual environment` and activate it::
 
         (tethys) $ _
 
-    The Tethys virtual environment must remain active for the entire installation. If you need to logout or close the terminal in the middle of the installation, you will need to reactivate the virtual environment. This can be done at anytime by executing the following command (don't forget the dot)::
+    The Tethys virtual environment must remain active for most of the installation. If you need to logout or close the terminal in the middle of the installation, you will need to reactivate the virtual environment. This can be done at anytime by executing the following command (don't forget the dot)::
 
         $ . /usr/lib/tethys/bin/activate
 
+    As a reminder, the commands requiring your Tethys virtual environment be active will show the cursor with "(tethys)" next to it.
+
 b. Install Tethys Platform into the virtual environment with the following command::
 
-    $ git clone https://github.com/CI-WATER/tethys /usr/lib/tethys/src
+    (tethys) $ git clone https://github.com/CI-WATER/tethys /usr/lib/tethys/src
 
 
 c. Install the Python modules that Tethys requires::
 
-    $ pip install -r /usr/lib/tethys/src/requirements.txt
+    (tethys) $ pip install -r /usr/lib/tethys/src/requirements.txt
 
 d. Restart the Python virtual environment::
 
-    $ deactivate
-    $ . /usr/lib/tethys/bin/activate
+    (tethys) $ deactivate
+             $ . /usr/lib/tethys/bin/activate
 
 
 4. Install Tethys Software Suite Using Docker
 ---------------------------------------------
 
-Tethys Platform provides a software suite that addresses the unique needs of water resources web app development including:
+Tethys Platform provides a software suite that addresses the unique needs of water resources web app development (see :doc:`../features` for more details). To make installation of the software easy, each software has been provided as Docker container. The following instructions will walk you through installation of these software using Docker. See the `Docker Documentation <https://docs.docker.com/>`_ for more information about Docker.
 
-* PostgreSQL with PostGIS enabled for spatial database storage,
-* 52 North WPS with GRASS and Sextante enabled for geoprocessing services, and
-* GeoServer for spatial dataset publishing.
+a. Initialize the Docker containers with the following command:
 
-Installing some of these dependencies can be VERY difficult, so they have been provided as Docker containers to make installation easier. The following instructions will walk you through installation of these software using Docker. See the `Docker Documentation <https://docs.docker.com/>`_ for more information about Docker.
+  ::
 
+    (tethys) $ tethys docker init
 
-Initialize the Docker Containers
-================================
+  Follow the interactive prompts to customize your Docker installations. To accept the default value shown in square brackets, simply press ``enter``. **Take note of any passwords you are prompted to create.**
 
-Tethys provides set of commandline tools to help you manage the Docker containers. You must activate your Python environment to use the commandline tools. Execute the following Tethys commands using the :command:`tethys` :doc:`../tethys_sdk/tethys_cli` to initialize the Docker containers:
+  .. note::
 
-::
+      The first time you initialize the Docker containers, the images for each container will need to be downloaded. These images are large and it may take a long time for them to download.
 
-  $ tethys docker init
+b. Start the docker containers with the following command:
 
-The first time you initialize the Docker containers, the images for each container will be downloaded. These images are large and it may take a long time for them to download.
+  ::
 
-After the images have been downloaded, the containers will automatically be installed. During installation, you will be prompted to enter various parameters needed to customize your instance of the software. Some of the parameters are usernames and passwords. **Take note of the usernames and passwords that you specify**. The important ones to remember are listed here:
+    (tethys) $ tethys docker start
 
-Database Users for PostGIS Container:
+  After running the `tethys docker start` command, you will have the following software running:
 
-* **tethys_default** database user password
-* **tethys_db_manager** database user password
-* **tethys_super** database user password
+    * PostgreSQL with PostGIS
+    * 52 North WPS
+    * GeoServer
 
-52 North WPS Admin:
+  If you would like to test the Docker containers, see the :doc:`../supplementary/docker_testing` article.
 
-* Admin username
-* Admin password
+  .. note::
 
-You will need these to complete the installation.
+      Although each Docker container appears to start instantaneously, it may take several minutes for the started containers to be fully up and running.
 
-Start the Docker Containers
-===========================
-
-Use the following Tethys command to start the Docker containers:
-
-::
-
-  $ tethys docker start
-
-.. note::
-
-  Although each Docker container appears to start instantaneously, it may take several minutes for the started containers to be fully up and running.
-
-
-What is Running
-===============
-
-After you run the `tethys docker start` command, you will have running instances of the following software:
-
-* PostgreSQL with PostGIS
-* 52 North WPS
-* GeoServer
-
-If you would like to test the Docker containers, see :doc:`../supplementary/docker_testing`.
 
 5. Create Settings File and Configure Settings
 ----------------------------------------------
 
-In the next steps you will configure your Tethys Platform and link it to each of the software in the software suite. Create a new settings file for your Tethys Platform installation using the :command:`tethys` :doc:`../tethys_sdk/tethys_cli`. Execute the following command in the terminal::
+Create a settings file for your Tethys Platform installation using the :command:`tethys` :doc:`../tethys_sdk/tethys_cli`. Execute the following command in the terminal::
 
-    $ tethys gen settings -d /usr/lib/tethys/src/tethys_portal
+    (tethys) $ tethys gen settings -d /usr/lib/tethys/src/tethys_portal
 
-This will create a file called :file:`settings.py` in the directory :file:`/usr/lib/tethys/src/tethys_portal`. As the name suggests, the :file:`settings.py` file contains all of the settings for the Tethys Platform. There are a few settings that need to be configured in this file.
+This will create a file called :file:`settings.py` in the directory :file:`/usr/lib/tethys/src/tethys_portal`. Open the :file:`settings.py` file and make the following modifications.
 
 .. note::
 
-    The :file:`usr` directory is located in the root directory which can be accessed using a file browser and selecting :file:`Computer` from the menu on the left.
+    Accessing the :file:`settings.py` file can be done by opening a new Finder Window and selecting ``Go > Go to Folder...`` from the menu. Enter :file:`/usr/lib/tethys/src/tethys_portal` in the text box and press ``Go`` to browse to directory. From here you can open the :file:`settings.py` file using your favorite text editor.
 
-Open the :file:`settings.py` file that you just created (:file:`/usr/lib/tethys/src/tethys_portal/settings.py`) in a text editor and modify the following settings appropriately.
-
-a. Run the following command to obtain the host and port for Docker running the database (PostGIS). You will need these in the following steps:
+a. Run the following command to obtain the host and port for the Docker running the database:
 
   ::
 
-    $ tethys docker ip
+    (tethys) $ tethys docker ip
 
-b. Replace the password for the main Tethys Portal database, **tethys_default**, with the password you created in the previous step. Also make sure that the host and port match those given from the ``tethys docker ip`` command (PostGIS). This is done by changing the values of the PASSWORD, HOST, and PORT parameters of the DATABASES setting:
+    PostGIS/Database:
+      Host: 192.168.59.103
+      Port: 5435
+    ...
+
+b. Open the :file:`settings.py` and locate the ``DATABASES`` setting. Replace the password for **tethys_default**, with the password you created when initializing the Docker containers. Also set the host and port to match those given from the ``tethys docker ip`` command:
 
   ::
 
@@ -206,26 +178,26 @@ b. Replace the password for the main Tethys Portal database, **tethys_default**,
           'NAME': 'tethys_default',
           'USER': 'tethys_default',
           'PASSWORD': 'pass',
-          'HOST': 'localhost',
-          'PORT': '5432'
+          'HOST': '192.168.59.103',
+          'PORT': '5435'
           }
     }
 
-c. Find the TETHYS_DATABASES setting near the bottom of the file and set the PASSWORD parameters with the passwords that you created in the previous step. If necessary, also change the HOST and PORT to match the host and port given by the ``tethys docker ip`` command for the database (PostGIS)::
+c. Find the TETHYS_DATABASES setting near the bottom of the :file:`settings.py` file and set the passwords for the **tethys_db_manager** and **tethys_super** database users. If necessary, also change the HOST and PORT to match the host and port given by the ``tethys docker ip`` command::
 
     TETHYS_DATABASES = {
         'tethys_db_manager': {
             'NAME': 'tethys_db_manager',
             'USER': 'tethys_db_manager',
             'PASSWORD': 'pass',
-            'HOST': '127.0.0.1',
+            'HOST': '192.168.59.103',
             'PORT': '5435'
         },
         'tethys_super': {
             'NAME': 'tethys_super',
             'USER': 'tethys_super',
             'PASSWORD': 'pass',
-            'HOST': '127.0.0.1',
+            'HOST': '192.168.59.103',
             'PORT': '5435'
         }
     }
@@ -257,20 +229,20 @@ e. Save your changes and close the :file:`settings.py` file.
 
 Execute the :command:`tethys manage syncdb` command from the Tethys :doc:`../tethys_sdk/tethys_cli` to create the database tables. In the terminal::
 
-    $ tethys manage syncdb
+    (tethys) $ tethys manage syncdb
 
   .. important::
 
-    When prompted to create a system administrator enter 'yes'. Take note of the username and password, as this will be the user you use to manage your Tethys Platform installation.
+    When prompted to create a system administrator enter 'yes'. Take note of the username and password, as this will be the administrator user you will use to manage your Tethys Platform installation.
 
 7. Start up the Django Development Server
 -----------------------------------------
 
-You are now ready to start the development server and view your instance of Tethys Platform. The website that comes with Tethys Platform is called Tethys Portal. In the terminal, execute the following command from the Tethys :doc:`../tethys_sdk/tethys_cli`::
+You are now ready to start the development server and view your instance of Tethys Platform. In the terminal, execute the following command from the Tethys :doc:`../tethys_sdk/tethys_cli`::
 
     $ tethys manage start
 
-Open `<http://localhost:8000/>`_ in a new tab in your web browser and you should see the default Tethys Portal landing page.
+ Tethys Platform provides a web interface that is called the Tethys Portal. You can access your Tethys Portal by opening `<http://localhost:8000/>`_ in a new tab in your web browser.
 
 .. figure:: ../images/tethys_portal_landing.png
     :width: 650px
