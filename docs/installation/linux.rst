@@ -65,7 +65,7 @@ c. Log out and log back in to make the changes take effect.
 3. Create Virtual Environment and Install Tethys Platform
 ---------------------------------------------------------
 
-Python virtual environments are used to create isolated Python installations to avoid conflicts with dependencies of other Python applications on the same system. The following commands should be executed in a a terminal.
+Python virtual environments are used to create isolated Python installations to avoid conflicts with dependencies of other Python applications on the same system. The following commands should be executed in a terminal.
 
 a. Create a :term:`Python virtual environment` and activate it::
 
