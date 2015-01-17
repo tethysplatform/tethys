@@ -227,11 +227,14 @@ e. Save your changes and close the :file:`settings.py` file.
 6. Create Database Tables
 -------------------------
 
-Execute the :command:`tethys manage syncdb` command from the Tethys :doc:`../tethys_sdk/tethys_cli` to create the database tables. In the terminal::
+Execute the :command:`tethys manage syncdb` command from the Tethys :doc:`../tethys_sdk/tethys_cli` to create the database tables. In the terminal:
+
+::
 
     (tethys) $ tethys manage syncdb
 
-  .. important::
+
+.. important::
 
     When prompted to create a system administrator enter 'yes'. Take note of the username and password, as this will be the administrator user you will use to manage your Tethys Platform installation.
 
@@ -240,9 +243,10 @@ Execute the :command:`tethys manage syncdb` command from the Tethys :doc:`../tet
 
 You are now ready to start the development server and view your instance of Tethys Platform. In the terminal, execute the following command from the Tethys :doc:`../tethys_sdk/tethys_cli`::
 
-    $ tethys manage start
+    (tethys) $ tethys manage start
 
- Tethys Platform provides a web interface that is called the Tethys Portal. You can access your Tethys Portal by opening `<http://localhost:8000/>`_ in a new tab in your web browser.
+
+Tethys Platform provides a web interface that is called the Tethys Portal. You can access your Tethys Portal by opening `<http://localhost:8000/>`_ in a new tab in your web browser.
 
 .. figure:: ../images/tethys_portal_landing.png
     :width: 650px
