@@ -24,7 +24,7 @@ Sitewide configuration is performed using the System Admin Settings.
       :align: center
 
 
-3. Select "Web Processing Services" from the "Tethys_Wps" section.
+3. Select "Web Processing Services" from the "Tethys WPS" section.
 
 
   .. figure:: ../images/site_admin/home.png

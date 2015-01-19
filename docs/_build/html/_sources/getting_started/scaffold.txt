@@ -17,10 +17,10 @@ To generate a new app using the scaffold, open a terminal, press :kbd:`CTRL-C` t
 
 ::
 
-    $ . /usr/lib/tethys/bin/activate
-    $ mkdir ~/tethysdev
-    $ cd ~/tethysdev
-    $ tethys scaffold my_first_app
+             $ . /usr/lib/tethys/bin/activate
+    (tethys) $ mkdir ~/tethysdev
+    (tethys) $ cd ~/tethysdev
+    (tethys) $ tethys scaffold my_first_app
 
 The final command from the code block above is provided by the Tethys :doc:`../tethys_sdk/tethys_cli`. It will be prompt you to enter metadata about your app such as, proper name, version, author, and description. All of these metadata are optional and you can skip each item by pressing enter.
 
@@ -40,18 +40,19 @@ Now that you have a new Tethys app project, you need to install the app into Tet
 
 ::
 
-    $ cd ~/tethysdev/tethysapp-my_first_app
-    $ python setup.py develop
+    (tethys) $ cd ~/tethysdev/tethysapp-my_first_app
+    (tethys) $ python setup.py develop
 
 
 View Your New App
 =================
 
-Use the :command:`tethys manage start` command to start up the development server:
+Use start up the Tethys dockers and then the development server:
 
 ::
 
-    $ tethys manage start
+    (tethys) $ tethys docker start
+    (tethys) $ tethys manage start
 
 Browse to `<http://127.0.0.1:8000/apps>`_. If all has gone well, you should see your app listed on the app library page. Exploring your new app won't take long, because there is only one page. Familiarize yourself with different parts of the app interface (see below).
 
@@ -62,7 +63,11 @@ Browse to `<http://127.0.0.1:8000/apps>`_. If all has gone well, you should see 
 
 .. tip::
 
-    To stop the development server press :kbd:`CTRL-C`.
+    To stop the development server press :kbd:`CTRL-C`. To stop the dockers run:
+
+    ::
+
+        (tethys) $ tethys docker stop
 
 Model View Controller
 =====================

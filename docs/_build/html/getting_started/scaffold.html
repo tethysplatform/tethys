@@ -77,7 +77,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../installation/linux.html">Installation on Linux</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../installation/mac.html">Installation on Mac OSX !</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/mac.html">Installation on Mac OSX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../installation/windows.html">Installation on Windows !</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../installation/web_admin_setup.html">Web Admin Setup</a></li>
 </ul>
@@ -189,10 +189,10 @@
 <div class="section" id="generate-scaffold">
 <h2>Generate Scaffold<a class="headerlink" href="#generate-scaffold" title="Permalink to this headline">¶</a></h2>
 <p>To generate a new app using the scaffold, open a terminal, press <tt class="kbd docutils literal"><span class="pre">CTRL-C</span></tt> to stop the development server if it is still running, and execute the following commands:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ . /usr/lib/tethys/bin/activate
-$ mkdir ~/tethysdev
-$ cd ~/tethysdev
-$ tethys scaffold my_first_app
+<div class="highlight-python"><div class="highlight"><pre>         $ . /usr/lib/tethys/bin/activate
+(tethys) $ mkdir ~/tethysdev
+(tethys) $ cd ~/tethysdev
+(tethys) $ tethys scaffold my_first_app
 </pre></div>
 </div>
 <p>The final command from the code block above is provided by the Tethys <a class="reference internal" href="../tethys_sdk/tethys_cli.html"><em>Command Line Interface</em></a>. It will be prompt you to enter metadata about your app such as, proper name, version, author, and description. All of these metadata are optional and you can skip each item by pressing enter.</p>
@@ -208,15 +208,16 @@ $ tethys scaffold my_first_app
 <div class="section" id="development-installation">
 <h2>Development Installation<a class="headerlink" href="#development-installation" title="Permalink to this headline">¶</a></h2>
 <p>Now that you have a new Tethys app project, you need to install the app into Tethys Platform. In a terminal, change into the <tt class="file docutils literal"><span class="pre">tethysapp-my_first_app</span></tt> directory and execute the <strong class="command">python setup.py develop</strong> command. Be sure to activate the Tethys <a class="reference internal" href="../glossary.html#term-python-virtual-environment"><em class="xref std std-term">Python virtual environment</em></a> if it is not already activated (see line 1 of the first code block):</p>
-<div class="highlight-python"><div class="highlight"><pre>$ cd ~/tethysdev/tethysapp-my_first_app
-$ python setup.py develop
+<div class="highlight-python"><div class="highlight"><pre>(tethys) $ cd ~/tethysdev/tethysapp-my_first_app
+(tethys) $ python setup.py develop
 </pre></div>
 </div>
 </div>
 <div class="section" id="view-your-new-app">
 <h2>View Your New App<a class="headerlink" href="#view-your-new-app" title="Permalink to this headline">¶</a></h2>
-<p>Use the <strong class="command">tethys manage start</strong> command to start up the development server:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ tethys manage start
+<p>Use start up the Tethys dockers and then the development server:</p>
+<div class="highlight-python"><div class="highlight"><pre>(tethys) $ tethys docker start
+(tethys) $ tethys manage start
 </pre></div>
 </div>
 <p>Browse to <a class="reference external" href="http://127.0.0.1:8000/apps">http://127.0.0.1:8000/apps</a>. If all has gone well, you should see your app listed on the app library page. Exploring your new app won&#8217;t take long, because there is only one page. Familiarize yourself with different parts of the app interface (see below).</p>
@@ -226,7 +227,10 @@ $ python setup.py develop
 </div>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p class="last">To stop the development server press <tt class="kbd docutils literal"><span class="pre">CTRL-C</span></tt>.</p>
+<p>To stop the development server press <tt class="kbd docutils literal"><span class="pre">CTRL-C</span></tt>. To stop the dockers run:</p>
+<div class="last highlight-python"><div class="highlight"><pre>(tethys) $ tethys docker stop
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="model-view-controller">
