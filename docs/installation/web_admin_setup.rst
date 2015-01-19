@@ -76,6 +76,40 @@ d. Provide an endpoint to the 52 North WPS that is running in Docker. The endpoi
 
 e. Press "Save" to save the WPS configuration.
 
+3. Link to Dataset Services
+---------------------------
+
+Optionally, you may wish to link to external Dataset Services such as CKAN and HydroShare. Dataset Services can be used by apps a data stores and data sources. See :doc:`../tethys_sdk/dataset_services` documentation for how to use Dataset Services in apps. Complete the following steps for each dataset service you wish to link to:
+
+a. Select "Dataset Services" from the options listed on the Tethys Portal Admin Console.
+
+b. Click on the "Add Dataset Service" button to create a new link to the web processing service.
+
+  .. figure:: ../images/site_admin/dataset_services.png
+      :width: 600px
+      :align: center
+
+      **Figure 4.** Select the "Add Web Dataset Service" button.
+
+c. Provide a unique name for the dataset service.
+
+d. Select the appropriate engine and provide an endpoint to the Dataset Service. The endpoint is a URL pointing to the dataset serivce API. For example, the endpoint for a CKAN dataset service would be similar to this:
+
+  ::
+
+    # CKAN Endpoint URL
+    http://www.example.com/api/3/action
+
+  If authentication is required, specify either the API Key or username or password as well. When you are done you will have something similar to this:
+
+  .. figure:: ../images/site_admin/dataset_service_edit.png
+    :width: 600px
+    :align: center
+
+    **Figure 5.** Fill out the form to register a new Dataset Service.
+
+e. Press "Save" to save the Dataset Service configuration.
+
 
 What's Next?
 ------------
