@@ -2,7 +2,7 @@
 Web Admin Setup
 ***************
 
-**Last Updated:** January 10, 2015
+**Last Updated:** January 19, 2015
 
 The final step required to setup your Tethys Platform is to link it to the software that is running in the Docker containers. This is done using the Tethys Portal Admin console.
 
