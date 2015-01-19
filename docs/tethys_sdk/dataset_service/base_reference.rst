@@ -33,35 +33,35 @@ Properties
 Create Methods
 ==============
 
-.. automethod:: tethys_datasets.base.DatasetEngine.create_dataset
+.. automethod:: tethys_dataset_services.base.DatasetEngine.create_dataset
 
-.. automethod:: tethys_datasets.base.DatasetEngine.create_resource
+.. automethod:: tethys_dataset_services.base.DatasetEngine.create_resource
 
 Read Methods
 ============
 
-.. automethod:: tethys_datasets.base.DatasetEngine.get_dataset
+.. automethod:: tethys_dataset_services.base.DatasetEngine.get_dataset
 
-.. automethod:: tethys_datasets.base.DatasetEngine.get_resource
+.. automethod:: tethys_dataset_services.base.DatasetEngine.get_resource
 
-.. automethod:: tethys_datasets.base.DatasetEngine.search_datasets
+.. automethod:: tethys_dataset_services.base.DatasetEngine.search_datasets
 
-.. automethod:: tethys_datasets.base.DatasetEngine.search_resources
+.. automethod:: tethys_dataset_services.base.DatasetEngine.search_resources
 
-.. automethod:: tethys_datasets.base.DatasetEngine.list_datasets
+.. automethod:: tethys_dataset_services.base.DatasetEngine.list_datasets
 
 
 Update Methods
 ==============
 
-.. automethod:: tethys_datasets.base.DatasetEngine.update_dataset
+.. automethod:: tethys_dataset_services.base.DatasetEngine.update_dataset
 
-.. automethod:: tethys_datasets.base.DatasetEngine.update_resource
+.. automethod:: tethys_dataset_services.base.DatasetEngine.update_resource
 
 
 Delete Methods
 ==============
 
-.. automethod:: tethys_datasets.base.DatasetEngine.delete_dataset
+.. automethod:: tethys_dataset_services.base.DatasetEngine.delete_dataset
 
-.. automethod:: tethys_datasets.base.DatasetEngine.delete_resource
+.. automethod:: tethys_dataset_services.base.DatasetEngine.delete_resource

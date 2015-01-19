@@ -10,5 +10,5 @@ HydroShare Dataset Engine Reference !
 
 The following reference provides a summary the class used to define the ``HydroShareDatasetEngine`` objects.
 
-.. autoclass:: tethys_datasets.engines.HydroShareDatasetEngine
+.. autoclass:: tethys_dataset_services.engines.HydroShareDatasetEngine
     :members:
