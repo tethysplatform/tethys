@@ -2,7 +2,7 @@
 Base Dataset Engine Reference
 *****************************
 
-**Last Updated**: November 7, 2014
+**Last Updated**: January 19, 2015
 
 All ``DatasetEngine`` object provide a minimum set of methods for interacting with :term:`datasets` and :term:`resources`.
 Specifically, the methods allow the standard CRUD operations (Create, Read, Update, Delete) for both :term:`datasets` and

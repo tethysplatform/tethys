@@ -2,7 +2,7 @@
 Dataset Services API
 ********************
 
-**Last Updated**: November 7, 2014
+**Last Updated**: January 19, 2015
 
 :term:`Dataset services` are web services external to Tethys Platform that can be used to store and publish file-based
 :term:`datasets` (e.g.: text files, Excel files, zip archives, other model files). Tethys app developers can use the
