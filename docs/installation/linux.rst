@@ -55,7 +55,7 @@ b. Add your user to the Docker group. This is necessary to use the Tethys Docker
     $ sudo gpasswd -a ${USER} docker
     $ sudo service docker.io restart
 
-c. Log out and log back in to make the changes take effect.
+c. Close the terminal, then log out and log back in to make the changes take effect.
 
 .. warning::
 
@@ -218,25 +218,9 @@ c. Find the TETHYS_DATABASES setting near the bottom of the file and set the PAS
         }
     }
 
-d. Set the TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY with an appropriate Google Maps v3 API key. If you do not have a Google Maps API key, use the `Obtaining an API Key <https://developers.google.com/maps/documentation/javascript/tutorial#api_key>`_ instructions::
+d. Add the TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY with an appropriate Google Maps v3 API key. If you do not have a Google Maps API key, use the `Obtaining an API Key <https://developers.google.com/maps/documentation/javascript/tutorial#api_key>`_ instructions::
 
     TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY = 'Th|$I$@neXAmpL3aPik3Y'
-
-e. If you wish to configure a sitewide dataset service (CKAN or HydroShare), add the TETHYS_DATASET_SERVICES dictionary with the appropriate parameters. See the :doc:`../tethys_sdk/dataset_services` documentation for more details. For example::
-
-    TETHYS_DATASET_SERVICES = {
-        'ckan_example': {
-            'ENGINE': 'tethys_datasets.engines.CkanDatasetEngine',
-            'ENDPOINT': 'http:/www.exampleckan.org/api/3/action',
-            'APIKEY': 'putYOURapiKEYhere',
-        },
-        'example_hydroshare': {
-            'ENGINE': 'tethys_datasets.engines.HydroShareDatasetEngine',
-            'ENDPOINT': 'http://www.hydroshare.org/api',
-            'USERNAME': 'someuser',
-            'PASSWORD': 'password',
-        }
-    }
 
 e. Save your changes and close the :file:`settings.py` file.
 
