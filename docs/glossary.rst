@@ -49,6 +49,10 @@ Glossary
     datasets
         A dataset is a container for one or more resources that are stored in a :term:`dataset service`.
 
+    spatial dataset
+    spatial datasets
+        A spatial dataset is a file-based dataset that stores spatial data (e.g.: shapefiles, GeoTiff, ArcGrid, GRASS ASCII Grid).
+
     dataset service
     dataset services
         A dataset service is a web service external to Tethys Platform that can be used to store and publish file-based datasets (e.g.: text files, Excel files, zip archives, other model files). See the :doc:`./tethys_sdk/dataset_services` for more information.
