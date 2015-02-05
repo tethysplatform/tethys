@@ -77,7 +77,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../installation/linux.html">Installation on Linux</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../installation/mac.html">Installation on Mac OSX !</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/mac.html">Installation on Mac OSX</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../installation/windows.html">Installation on Windows !</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../installation/web_admin_setup.html">Web Admin Setup</a></li>
 </ul>
@@ -98,9 +98,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/templating.html">App Templating API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/gizmos.html">Template Gizmos API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/dataset_services.html">Dataset Services API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/spatial_publishing.html">Spatial Dataset Services API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/persistent_store.html">Persistent Stores API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/spatial_persistent_store.html">Spatial Persistent Stores API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/spatial_publishing.html">Spatial Data Publishing API !</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/geoprocessing.html">Web Processing Services API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/visualizing.html">Data Visualization API !</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tethys_sdk/cloud_computing.html">Distributed Computing API !</a></li>
@@ -185,7 +185,7 @@
 <p>The release package contains the source code for your app and a <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> (<tt class="file docutils literal"><span class="pre">setup.py</span></tt>). You may also wish to include a README file and a LICENSE file in this directory. The <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> can be used to streamline installation of your app and any Python dependencies it may have. You already used the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> without realizing it in the <a class="reference internal" href="scaffold.html"><em>Create a New Tethys App Project</em></a> tutorial when you installed your app for the first time (this command: <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">develop</span></tt>). A brief introduction to the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> will be provided in this tutorial.</p>
 <div class="section" id="setup-script">
 <h2>Setup Script<a class="headerlink" href="#setup-script" title="Permalink to this headline">¶</a></h2>
-<p>When you generate your app using the scaffold, it will automatically generate a <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> (<tt class="file docutils literal"><span class="pre">setup.py</span></tt>). Open the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> for your app located at <tt class="file docutils literal"><span class="pre">~/tethysdev/ckanapp-my_first_app/setup.py</span></tt>. It should look something like this:</p>
+<p>When you generate your app using the scaffold, it will automatically generate a <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> (<tt class="file docutils literal"><span class="pre">setup.py</span></tt>). Open the <a class="reference internal" href="../glossary.html#term-setup-script"><em class="xref std std-term">setup script</em></a> for your app located at <tt class="file docutils literal"><span class="pre">~/tethysdev/tethysapp-my_first_app/setup.py</span></tt>. It should look something like this:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">setuptools</span> <span class="kn">import</span> <span class="n">setup</span><span class="p">,</span> <span class="n">find_packages</span>

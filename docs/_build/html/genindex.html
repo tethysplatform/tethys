@@ -96,9 +96,9 @@
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/templating.html">App Templating API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/gizmos.html">Template Gizmos API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/dataset_services.html">Dataset Services API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tethys_sdk/spatial_publishing.html">Spatial Dataset Services API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/persistent_store.html">Persistent Stores API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/spatial_persistent_store.html">Spatial Persistent Stores API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tethys_sdk/spatial_publishing.html">Spatial Data Publishing API !</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/geoprocessing.html">Web Processing Services API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/visualizing.html">Data Visualization API !</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tethys_sdk/cloud_computing.html">Distributed Computing API !</a></li>
@@ -198,6 +198,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.add_table_to_postgis_store">add_table_to_postgis_store() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      
   <dt><a href="glossary.html#term-app-class"><strong>app class</strong></a>
   </dt>
 
@@ -245,8 +249,10 @@
   <dt><a href="tethys_sdk/app_class.html#TethysAppBase.color">color (TethysAppBase attribute)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.create_coverage_resource">create_coverage_resource() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
       
   <dt><a href="tethys_sdk/dataset_service/base_reference.html#tethys_dataset_services.base.DatasetEngine.create_dataset">create_dataset() (tethys_dataset_services.base.DatasetEngine method)</a>
   </dt>
@@ -262,10 +268,28 @@
 
       </dl></dd>
       
+  <dt><a href="tethys_sdk/spatial_dataset_service/base_reference.html#tethys_dataset_services.base.SpatialDatasetEngine.create_layer">create_layer() (tethys_dataset_services.base.SpatialDatasetEngine method)</a>
+  </dt>
+
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.create_layer_group">create_layer_group() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.create_postgis_feature_resource">create_postgis_feature_resource() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      
   <dt><a href="tethys_sdk/dataset_service/base_reference.html#tethys_dataset_services.base.DatasetEngine.create_resource">create_resource() (tethys_dataset_services.base.DatasetEngine method)</a>
   </dt>
 
       <dd><dl>
+        
+  <dt><a href="tethys_sdk/spatial_dataset_service/base_reference.html#tethys_dataset_services.base.SpatialDatasetEngine.create_resource">(tethys_dataset_services.base.SpatialDatasetEngine method)</a>
+  </dt>
+
         
   <dt><a href="tethys_sdk/dataset_service/ckan_reference.html#tethys_dataset_services.engines.CkanDatasetEngine.create_resource">(tethys_dataset_services.engines.CkanDatasetEngine method)</a>
   </dt>
@@ -275,6 +299,18 @@
   </dt>
 
       </dl></dd>
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.create_shapefile_resource">create_shapefile_resource() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.create_style">create_style() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.create_workspace">create_workspace() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 
@@ -297,8 +333,6 @@
   <dt><a href="tethys_sdk/app_class.html#tethys_apps.base.app_base.TethysAppBase.dataset_services">dataset_services() (tethys_apps.base.app_base.TethysAppBase method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="glossary.html#term-datasets"><strong>datasets</strong></a>
   </dt>
@@ -321,13 +355,37 @@
   </dt>
 
       </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/base_reference.html#tethys_dataset_services.base.SpatialDatasetEngine.delete_layer">delete_layer() (tethys_dataset_services.base.SpatialDatasetEngine method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.delete_layer">(tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.delete_layer_group">delete_layer_group() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
       
   <dt><a href="tethys_sdk/dataset_service/base_reference.html#tethys_dataset_services.base.DatasetEngine.delete_resource">delete_resource() (tethys_dataset_services.base.DatasetEngine method)</a>
   </dt>
 
       <dd><dl>
         
+  <dt><a href="tethys_sdk/spatial_dataset_service/base_reference.html#tethys_dataset_services.base.SpatialDatasetEngine.delete_resource">(tethys_dataset_services.base.SpatialDatasetEngine method)</a>
+  </dt>
+
+        
   <dt><a href="tethys_sdk/dataset_service/ckan_reference.html#tethys_dataset_services.engines.CkanDatasetEngine.delete_resource">(tethys_dataset_services.engines.CkanDatasetEngine method)</a>
+  </dt>
+
+        
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.delete_resource">(tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
   </dt>
 
         
@@ -335,12 +393,28 @@
   </dt>
 
       </dl></dd>
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.delete_store">delete_store() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.delete_style">delete_style() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.delete_workspace">delete_workspace() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine">GeoServerSpatialDatasetEngine (class in tethys_dataset_services.engines)</a>
+  </dt>
+
       
   <dt><a href="tethys_sdk/dataset_service/base_reference.html#tethys_dataset_services.base.DatasetEngine.get_dataset">get_dataset() (tethys_dataset_services.base.DatasetEngine method)</a>
   </dt>
@@ -356,6 +430,20 @@
 
       </dl></dd>
       
+  <dt><a href="tethys_sdk/spatial_dataset_service/base_reference.html#tethys_dataset_services.base.SpatialDatasetEngine.get_layer">get_layer() (tethys_dataset_services.base.SpatialDatasetEngine method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.get_layer">(tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.get_layer_group">get_layer_group() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      
   <dt><a href="tethys_sdk/persistent_store.html#tethys_apps.base.persistent_store.get_persistent_store_engine">get_persistent_store_engine() (tethys_apps.base.persistent_store static method)</a>
   </dt>
 
@@ -365,7 +453,15 @@
 
       <dd><dl>
         
+  <dt><a href="tethys_sdk/spatial_dataset_service/base_reference.html#tethys_dataset_services.base.SpatialDatasetEngine.get_resource">(tethys_dataset_services.base.SpatialDatasetEngine method)</a>
+  </dt>
+
+        
   <dt><a href="tethys_sdk/dataset_service/ckan_reference.html#tethys_dataset_services.engines.CkanDatasetEngine.get_resource">(tethys_dataset_services.engines.CkanDatasetEngine method)</a>
+  </dt>
+
+        
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.get_resource">(tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
   </dt>
 
         
@@ -375,6 +471,18 @@
       </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.get_store">get_store() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.get_style">get_style() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.get_workspace">get_workspace() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
       
   <dt><a href="glossary.html#term-gizmo"><strong>Gizmo</strong></a>
   </dt>
@@ -429,6 +537,44 @@
   </dt>
 
       </dl></dd>
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.list_layer_groups">list_layer_groups() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/base_reference.html#tethys_dataset_services.base.SpatialDatasetEngine.list_layers">list_layers() (tethys_dataset_services.base.SpatialDatasetEngine method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.list_layers">(tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/base_reference.html#tethys_dataset_services.base.SpatialDatasetEngine.list_resources">list_resources() (tethys_dataset_services.base.SpatialDatasetEngine method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.list_resources">(tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.list_stores">list_stores() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.list_styles">list_styles() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.list_workspaces">list_workspaces() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 
@@ -539,10 +685,18 @@
   </dt>
 
       </dl></dd>
+      
+  <dt><a href="glossary.html#term-setup-script"><strong>setup script</strong></a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="glossary.html#term-setup-script"><strong>setup script</strong></a>
+  <dt><a href="glossary.html#term-spatial-dataset"><strong>spatial dataset</strong></a>
+  </dt>
+
+      
+  <dt><a href="glossary.html#term-spatial-datasets"><strong>spatial datasets</strong></a>
   </dt>
 
   </dl></td>
@@ -562,6 +716,10 @@
   </dt>
 
       <dd><dl>
+        
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.type">(tethys_dataset_services.engines.GeoServerSpatialDatasetEngine attribute)</a>
+  </dt>
+
         
   <dt><a href="tethys_sdk/dataset_service/hydroshare_reference.html#tethys_dataset_services.engines.HydroShareDatasetEngine.type">(tethys_dataset_services.engines.HydroShareDatasetEngine attribute)</a>
   </dt>
@@ -588,12 +746,36 @@
 
       </dl></dd>
       
+  <dt><a href="tethys_sdk/spatial_dataset_service/base_reference.html#tethys_dataset_services.base.SpatialDatasetEngine.update_layer">update_layer() (tethys_dataset_services.base.SpatialDatasetEngine method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.update_layer">(tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.update_layer_group">update_layer_group() (tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
   <dt><a href="tethys_sdk/dataset_service/base_reference.html#tethys_dataset_services.base.DatasetEngine.update_resource">update_resource() (tethys_dataset_services.base.DatasetEngine method)</a>
   </dt>
 
       <dd><dl>
         
+  <dt><a href="tethys_sdk/spatial_dataset_service/base_reference.html#tethys_dataset_services.base.SpatialDatasetEngine.update_resource">(tethys_dataset_services.base.SpatialDatasetEngine method)</a>
+  </dt>
+
+        
   <dt><a href="tethys_sdk/dataset_service/ckan_reference.html#tethys_dataset_services.engines.CkanDatasetEngine.update_resource">(tethys_dataset_services.engines.CkanDatasetEngine method)</a>
+  </dt>
+
+        
+  <dt><a href="tethys_sdk/spatial_dataset_service/geoserver_reference.html#tethys_dataset_services.engines.GeoServerSpatialDatasetEngine.update_resource">(tethys_dataset_services.engines.GeoServerSpatialDatasetEngine method)</a>
   </dt>
 
         
@@ -601,8 +783,6 @@
   </dt>
 
       </dl></dd>
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="tethys_sdk/app_class.html#tethys_apps.base.app_base.TethysAppBase.url_map">url_map() (tethys_apps.base.app_base.TethysAppBase method)</a>
   </dt>
