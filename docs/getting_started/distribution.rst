@@ -11,7 +11,7 @@ The release package contains the source code for your app and a :term:`setup scr
 Setup Script
 ============
 
-When you generate your app using the scaffold, it will automatically generate a :term:`setup script` (:file:`setup.py`). Open the :term:`setup script` for your app located at :file:`~/tethysdev/ckanapp-my_first_app/setup.py`. It should look something like this:
+When you generate your app using the scaffold, it will automatically generate a :term:`setup script` (:file:`setup.py`). Open the :term:`setup script` for your app located at :file:`~/tethysdev/tethysapp-my_first_app/setup.py`. It should look something like this:
 
 ::
 

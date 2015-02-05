@@ -46,14 +46,15 @@ This command is used to create new Tethys app projects via the scaffold provided
 gen <type>
 ----------
 
-Aids the installation of Tethys by automating the creation of supporting files. Currently, the :command:`gen` command is only capable of creating settings files.
+Aids the installation of Tethys by automating the creation of supporting files.
 
 
 **Arguments:**
 
-* **type**: The type of object to generate. The only valid value for type is "settings".
+* **type**: The type of object to generate. Either "settings" or "apache".
 
     * *settings*: When this type of object is specified, :command:`gen` will generate a new :file:`settings.py` file. It generates the :file:`settings.py` with a new ``SECRET_KEY`` each time it is run.
+    * *apache*: When this type of object is specified :command:`gen` will generate a new :file:`apache.conf` file. This file is used to configure Tethys Platform in a production environment.
 
 **Optional Arguments:**
 
@@ -65,6 +66,8 @@ Aids the installation of Tethys by automating the creation of supporting files. 
 
     $ tethys gen settings
     $ tethys gen settings -d /path/to/destination
+    $ tethys gen apache
+    $ tethys gen apache -d /path/to/destination
 
 manage <subcommand> [options]
 -----------------------------
@@ -135,6 +138,21 @@ Management command for Persistent Stores. To learn more about persistent stores 
     # Refresh all persistent store databases for an app
     $ tethys syncstores my_first_app -r
 
+uninstall <app>
+--------------------------------------------
+
+Use this command to uninstall apps.
+
+**Arguments:**
+
+* **app**: Name the app to uninstall.
+
+**Examples:**
+
+::
+
+    $ tethys uninstall my_first_app
+
 docker <subcommand> [options]
 -----------------------------
 
@@ -147,6 +165,7 @@ Management commands for the Tethys Docker containers. To learn more about Docker
     * *init*: Initialize the Tethys Dockers including, starting Boot2Docker if applicable, pulling the Docker images, and installing/creating the Docker containers.
     * *start*: Start the Docker containers.
     * *stop*: Stop the Docker containers.
+    * *restart*: Restart the Docker containers.
     * *status*: Display status of each Docker container.
     * *update*: Pull the latest version of the Docker images.
     * *remove*: Remove a Docker images.
