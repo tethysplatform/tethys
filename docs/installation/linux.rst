@@ -218,11 +218,8 @@ c. Find the TETHYS_DATABASES setting near the bottom of the file and set the PAS
         }
     }
 
-d. Add the TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY with an appropriate Google Maps v3 API key. If you do not have a Google Maps API key, use the `Obtaining an API Key <https://developers.google.com/maps/documentation/javascript/tutorial#api_key>`_ instructions::
 
-    TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY = 'Th|$I$@neXAmpL3aPik3Y'
-
-e. Save your changes and close the :file:`settings.py` file.
+d. Save your changes and close the :file:`settings.py` file.
 
 6. Create Database Tables
 -------------------------

@@ -63,6 +63,12 @@ Sitewide configuration is performed using the System Admin Settings.
 
   If authentication is required, specify either the API key or the username and password.
 
+  .. note::
+
+      When linking Tethys to a CKAN dataset service, an API Key is required. All user accounts are issued an API key. To access the API Key log into the CKAN on which you have an account and browse to your user profile page. The API key will be listed there. Depending on the CKAN instance and the dataset, you may have full read-write access or you may have read-only access.
+
+  When you are done, the form should look similar to this:
+
   .. figure:: ../images/site_admin/dataset_service_edit.png
       :width: 600px
       :align: center
@@ -131,7 +137,7 @@ When used with the ``app_class`` parameter, the ``get_dataset_engine`` function 
 
 Alternatively, you can create a ``DatasetEngine`` object directly without using the convenience function. This can be useful if you want to vary the credentials for dataset access frequently (e.g.: using user specific credentials). Simply import it and instantiate it with valid credentials::
 
-  from tethys_datasets.engines import CkanDatasetEngine
+  from tethys_dataset_services.engines import CkanDatasetEngine
 
   dataset_engine = CkanDatasetEngine(endpoint='http://www.example.com/api/3/action', apikey='a-R3llY-n1Ce-@Pi-keY')
 
@@ -141,7 +147,7 @@ Alternatively, you can create a ``DatasetEngine`` object directly without using 
 
 After you have a ``DatasetEngine``, simply call the desired method on it. All ``DatasetEngine`` methods return a dictionary with an item named 'success' that contains a boolean. If the operation was successful, 'success' will be true, otherwise it will be false. If 'success' is true, the dictionary will have an item named 'result' that will contain the results. If it is false, the dictionary will have an item named 'error' that will contain information about the error that occurred. This can be very useful for debugging purposes as illustrated in the following example::
 
-  from tethys_apps.utilities import get_dataset_engine
+  from tethys_apps.sdk import get_dataset_engine
   from ..app import ExampleApp
 
   dataset_engine = get_dataset_engine(name='example', app_class=ExampleApp)

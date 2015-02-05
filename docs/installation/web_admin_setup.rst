@@ -2,7 +2,7 @@
 Web Admin Setup
 ***************
 
-**Last Updated:** January 19, 2015
+**Last Updated:** February 2, 2015
 
 The final step required to setup your Tethys Platform is to link it to the software that is running in the Docker containers. This is done using the Tethys Portal Admin console.
 
@@ -54,17 +54,18 @@ b. Click on the "Add Web Processing Service" button to create a new link to the 
 
 c. Provide a unique name for the web processing service.
 
-d. Provide an endpoint to the 52 North WPS that is running in Docker. The endpoint is a URL pointing to the WPS. The endpoint will be similar to this:
+d. Provide an endpoint to the 52 North WPS that is running in Docker. The endpoint is a URL pointing to the WPS API. The endpoint will be of the form: ``http://<host>:<port>/wps/WebProcessingService``.
+
+  Execute the following command in the terminal to determine the endpoint for the built-in GeoServer:
 
   ::
 
-    http://<host>:<port>/wps/WebProcessingService
-
-  To determine the endpoint host and port for your docker, use the :doc:`../tethys_sdk/tethys_cli`:
-
-  ::
-
-    $ tethys docker ip
+    (tethys)$ tethys docker ip
+    ...
+    52 North WPS:
+      Host: 192.168.59.103
+      Port: 8282
+      Endpoint: http://192.168.59.103:8282/wps/WebProcessingService
 
   When you are done you will have something similar to this:
 
@@ -76,29 +77,66 @@ d. Provide an endpoint to the 52 North WPS that is running in Docker. The endpoi
 
 e. Press "Save" to save the WPS configuration.
 
-3. Link to Dataset Services
+3.  Link to GeoServer
+---------------------
+
+Tethys Platform provides GeoServer as a built-in Spatial Dataset Service. Spatial Dataset Services can be used by apps to publish Shapefiles and other spatial files as web resources. See :doc:`../tethys_sdk/spatial_publishing` documentation for how to use Spatial Dataset Services in apps. To link your Tethys Platform to the built-in GeoServer or an external Spatial Dataset Service, complete the following steps.
+
+a. Select "Spatial Dataset Services" from the options listed on the Tethys Portal Admin Console.
+
+b. Click on the "Add Spatial Dataset Service" button to create a new spatial dataset service.
+
+  .. figure:: ../images/site_admin/spatial_dataset_services.png
+      :width: 600px
+      :align: center
+
+      **Figure 4.** Select the "Add Spatial Dataset Service" button.
+
+c. Provide a unique name for the spatial dataset service.
+
+d. Select *"GeoServer"* as the engine and provide an endpoint to the Spatial Dataset Service. The endpoint is a URL pointing to the API of the Spatial Dataset Service. For GeoServers, this endpoint is of the form: ``http://<host>:<port>/geoserver/rest``.
+
+  Execute the following command in the terminal to determine the endpoint for the built-in GeoServer:
+
+  ::
+
+    (tethys)$ tethys docker ip
+    ...
+    GeoServer:
+      Host: 127.0.0.1
+      Port: 8181
+      Endpoint: http://127.0.0.1:8181/geoserver/rest
+    ...
+
+
+e. Specify either the username or password of your GeoServer as well. The default GeoServer username and password are *"admin"* and *"geoserver"*, respectively. When you are done you will have something similar to this:
+
+  .. figure:: ../images/site_admin/spatial_dataset_service_edit.png
+    :width: 600px
+    :align: center
+
+    **Figure 5.** Fill out the form to register a new Spatial Dataset Service.
+
+f. Press "Save" to save the Spatial Dataset Service configuration.
+
+4. Link to Dataset Services
 ---------------------------
 
-Optionally, you may wish to link to external Dataset Services such as CKAN and HydroShare. Dataset Services can be used by apps a data stores and data sources. See :doc:`../tethys_sdk/dataset_services` documentation for how to use Dataset Services in apps. Complete the following steps for each dataset service you wish to link to:
+Optionally, you may wish to link to external Dataset Services such as CKAN and HydroShare. Dataset Services can be used by apps as data stores and data sources. See :doc:`../tethys_sdk/dataset_services` documentation for how to use Dataset Services in apps. Complete the following steps for each dataset service you wish to link to:
 
 a. Select "Dataset Services" from the options listed on the Tethys Portal Admin Console.
 
-b. Click on the "Add Dataset Service" button to create a new link to the web processing service.
+b. Click on the "Add Dataset Service" button to create a new link to the dataset service.
 
   .. figure:: ../images/site_admin/dataset_services.png
       :width: 600px
       :align: center
 
-      **Figure 4.** Select the "Add Web Dataset Service" button.
+      **Figure 4.** Select the "Add Dataset Service" button.
 
 c. Provide a unique name for the dataset service.
 
-d. Select the appropriate engine and provide an endpoint to the Dataset Service. The endpoint is a URL pointing to the dataset serivce API. For example, the endpoint for a CKAN dataset service would be similar to this:
-
-  ::
-
-    # CKAN Endpoint URL
-    http://www.example.com/api/3/action
+d. Select the appropriate engine and provide an endpoint to the Dataset Service. The endpoint is a URL pointing to the dataset service API. For example, the endpoint for a CKAN dataset service would be of the form ``http://<host>/api/3/action``.
 
   If authentication is required, specify either the API Key or username or password as well. When you are done you will have something similar to this:
 
@@ -108,7 +146,13 @@ d. Select the appropriate engine and provide an endpoint to the Dataset Service.
 
     **Figure 5.** Fill out the form to register a new Dataset Service.
 
+  .. tip::
+
+      When linking Tethys to a CKAN dataset service, an API Key is required. All user accounts are issued an API key. To access the API Key log into the CKAN site where you have an account and browse to your user profiles. The API key will be listed as a private attribute of your user profile.
+
 e. Press "Save" to save the Dataset Service configuration.
+
+
 
 
 What's Next?
