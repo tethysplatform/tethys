@@ -10,6 +10,38 @@
   {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
   {{ block.super }}
   <link rel="stylesheet" type="text/css" href="{% static '/static/tethys_portal/css/admin_tweaks.css' %}" />
+  <style>
+    .module caption {
+      background-color: {{ site_globals.primary_color|default:'#0a62a9' }};
+    }
+    #content-related .module h2 {
+      background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
+    }
+    #changelist #changelist-filter h2 {
+      background-color: {{ site_globals.primary_color|default:'#0a62a9' }};
+    }
+    .object-tools a.addlink {
+      background-color: {{ site_globals.primary_color|default:'#0a62a9' }};
+    }
+    .object-tools a.addlink:hover {
+      background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
+    }
+    #changelist #toolbar form input[type=submit] {
+      background: {{ site_globals.primary_color|default:'#0a62a9' }};
+    }
+    #changelist #toolbar form input[type=submit]:hover {
+      background: {{ site_globals.secondary_color|default:'#1b95dc' }};
+    }
+    #changelist #changelist-form .actions .button {
+      background: {{ site_globals.primary_color|default:'#0a62a9' }};
+    }
+    #changelist #changelist-form .actions .button:hover {
+      background: {{ site_globals.secondary_color|default:'#1b95dc' }};
+    }
+    .object-tools a:link {
+      background: {{ site_globals.primary_color|default:'#0a62a9' }};
+    }
+  </style>
 {% endblock %}
 
 {% block global_scripts %}

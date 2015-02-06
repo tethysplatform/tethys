@@ -11,7 +11,6 @@ This section describes how to install Tethys Platform. Installation instructions
 
     installation/linux
     installation/mac
-    installation/windows
     installation/web_admin_setup
 
 
