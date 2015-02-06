@@ -1,0 +1,45 @@
+{% extends "page.html" %}
+
+{% load staticfiles %}
+
+{% block title %}- Apps Library{% endblock %}
+
+{% block styles %}
+  {{ block.super }}
+  <link href="{% static 'tethys_apps/css/app_library.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block primary_content %}
+  <div class="tethys-secondary-header narrow clearfix">
+    <div class="secondary-title-wrapper">
+      <span class="secondary-title">Apps Library</span>
+    </div>
+  </div>
+  <div class="app-library-wrapper clearfix">
+    {% if apps %}
+      <div id="app-list">
+        {% for app in apps %}
+          <a class="app-container" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '{% url app.index %}');" data-app-theme-color="{{ app.color }}">
+            <div class="app-icon">
+              <img {% if app.icon %}src="{% static app.icon %}"{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} />
+            </div>
+            <div class="app-title" data-app-theme-color="{{ app.color }}">
+              <span>{{ app.name }}</span>
+            </div>
+            <div class="color-effect" data-app-theme-color="{{ app.color }}"></div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <h2 class="no-apps-loaded-message">There are no apps loaded.</h2>
+    {% endif %}
+  </div>
+  <div id="app-library-curtain"></div>
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static 'tethys_apps/vendor/imagesloaded.min.js' %}" type="text/javascript"></script>
+  <script src="{% static 'tethys_apps/vendor/masonry.min.js' %}" type="text/javascript"></script>
+  <script src="{% static 'tethys_apps/js/app_library.js' %}" type="text/javascript"></script>
+{% endblock %}

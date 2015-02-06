@@ -1,0 +1,414 @@
+@import "vendor/prefixer";
+@import "mixins";
+@import "app_base_typography";
+
+// Characteristic Variables
+@app-nav-width: 300px;
+@app-content-padding: 50px;
+@app-primary-color: #1b95dc;
+@app-header-height: 100px;
+
+// Transition Variables
+@header-transition-duration: 0.4s;
+@app-content-transition-duration: 0.2s;
+@app-content-transition-delay: @header-transition-duration + 0.1s;
+@app-nav-transition-duration: 0.2s;
+
+@header-transition-type: ease;
+@app-content-transition-type: ease;
+@app-nav-transition-type: ease-in-out;
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+}
+
+#app-header {
+  .tethys-app-header {
+    position: fixed;
+    background: @app-primary-color;
+    height: @app-header-height;
+    width: 100%;
+    z-index: 100;
+    margin-top: -@app-header-height;
+
+    &.show-header {
+      margin-top: 0;
+    }
+
+    &.with-transition {
+      .transition(margin @header-transition-duration @header-transition-type);
+    }
+
+    .icon-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 20px;
+      z-index: 100;
+      margin-left: 30px;
+      padding: 10px;
+
+      img {
+        height: 80px;
+        border-radius: 50%;
+        background: @app-primary-color;
+      }
+    }
+
+    .app-title-wrapper {
+      float: left;
+
+      .app-title {
+        display: block;
+        padding: 20px 0;
+        padding-left: 130px;
+        font-size: 40px;
+        color: white;
+        font-weight: 300;
+        .font-smoothing();
+
+        width: 1700px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .exit-button {
+      float: right;
+      margin-right: 50px;
+      margin-top: 26px;
+
+      a {
+        display: block;
+        padding: 10px 20px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        font-size: 20px;
+        font-weight: 400;
+        .font-smoothing();
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.1);
+          text-decoration: none;
+        }
+      }
+    }
+
+    .toggle-nav {
+      display: block;
+      height: 40px;
+      width: 15px;
+      float: left;
+      padding: 10px;
+      padding-left: 0;
+      margin: 30px 0;
+      margin-right: 5px;
+      border-radius: 0 5px 5px 0;
+
+      div {
+        height: 3px;
+        background-color: #ffffff;
+        margin-bottom: 5px;
+        border-radius: 5px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      &:hover {
+        background: rgba(0,0,0,0.3);
+      }
+    }
+  }
+}
+
+#app-content-wrapper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: 100%;
+
+  #app-content {
+    position: relative;
+    width: 100%;
+    padding: @app-content-padding;
+    padding-top: 120px;
+    padding-bottom: 90px;
+    min-height: 100%;
+    .transform(translateX(0));
+    .transform(translate3d(0, 0, 0));
+
+
+    visibility: hidden;
+    opacity: 0;
+
+    &.show-app-content {
+      visibility: visible;
+      opacity: 1;
+    }
+
+
+    &.with-transition {
+      .transition(visibility @app-content-transition-duration @app-content-transition-type @app-content-transition-delay);
+      .transition(opacity @app-content-transition-duration @app-content-transition-type @app-content-transition-delay);
+    }
+
+    #app-navigation {
+      position: absolute;
+      top: 0;
+      left: -@app-nav-width;
+      width: @app-nav-width;
+      height: 100%;
+      background: #efefef;
+      padding: 0 15px;
+      padding-top: 100px;
+
+      .nav {
+        padding: 20px 0;
+        padding-bottom: 40px;
+        height: 100%;
+        overflow: auto;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
+        li {
+          a {
+            color: @app-primary-color;
+
+            &:hover {;
+              background: #ffffff;
+              text-decoration: none;
+            }
+          }
+
+          &.title {
+            padding: 10px 15px;
+            padding-top: 15px;
+            font-size: 20px;
+            font-weight: 500;
+            color: #444444;
+            -webkit-font-smoothing: antialiasing;
+          }
+
+          &.separator {
+            margin: 20px 15px;
+            //border-top: 1px solid #888888;
+          }
+
+          &.active {
+            a {
+              color: white;
+              background: @app-primary-color;
+            }
+          }
+        }
+      }
+    }
+
+    #app-actions {
+      position: absolute;
+      width: 100%;
+      bottom: 0;
+      right: 0;
+      padding: 20px 50px;
+
+      .separator {
+        border-top: 1px solid #DDDDDD;
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        float: right;
+        margin-left: 10px;
+        padding: 10px 20px;
+      }
+    }
+  }
+
+  &.show-nav {
+    #app-content {
+      padding-right: @app-nav-width + @app-content-padding;
+      .transform(translateX(-@app-nav-width));
+      .transform(translate3d(@app-nav-width, 0, 0));
+
+      #app-actions {
+        padding-right: @app-nav-width + @app-content-padding;
+      }
+    }
+  }
+
+  &.with-transition {
+      #app-content {
+        .transition(@app-nav-transition-duration @app-nav-transition-type all);
+
+        #app-actions {
+          .transition(@app-nav-transition-duration @app-nav-transition-type padding);
+        }
+      }
+  }
+}
+
+@media (max-width: 1900px) {
+  #app-header {
+    .tethys-app-header {
+      .app-title-wrapper {
+        .app-title {
+          width: 1500px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1700px) {
+  #app-header {
+    .tethys-app-header {
+      .app-title-wrapper {
+        .app-title {
+          width: 1300px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1500px) {
+  #app-header {
+    .tethys-app-header {
+      .app-title-wrapper {
+        .app-title {
+          width: 1100px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1300px) {
+  #app-header {
+    .tethys-app-header {
+      .app-title-wrapper {
+        .app-title {
+          width: 900px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1100px) {
+  #app-header {
+    .tethys-app-header {
+      .app-title-wrapper {
+        .app-title {
+          width: 700px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  #app-header {
+    .tethys-app-header {
+      .app-title-wrapper {
+        .app-title {
+          width: 500px;
+        }
+      }
+    }
+  }
+
+  #app-content-wrapper {
+    &.show-nav {
+      #app-content {
+        padding-right: @app-content-padding;
+
+        #app-actions {
+          padding-right: @app-content-padding;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  #app-header {
+    .tethys-app-header {
+      .icon-wrapper {
+        padding: 20px;
+        padding-left: 0px;
+
+        img {
+          height: 60px;
+        }
+      }
+
+      .app-title-wrapper {
+        .app-title {
+          padding: 29px 0;
+          padding-left: 100px;
+          font-size: 30px;
+          width: 350px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  #app-header {
+    .tethys-app-header {
+      height: 60px;
+
+      .toggle-nav {
+        margin: 10px;
+        margin-left: 0;
+      }
+
+      .icon-wrapper {
+        padding: 10px;
+        padding-left: 0;
+
+        img {
+          height:40px;
+        }
+      }
+
+      .app-title-wrapper {
+        .app-title {
+          padding: 13px 0;
+          padding-left: 65px;
+          font-size: 24px;
+          width: 230px;
+        }
+      }
+
+      .exit-button {
+        margin-right: 20px;
+        margin-top: 10px;
+
+        a {
+          padding: 6px 15px;
+        }
+      }
+    }
+  }
+  #app-content-wrapper {
+    #app-content {
+      padding-top: 80px;
+    }
+  }
+}
+
+
+
