@@ -2,18 +2,18 @@
 Tethys Portal
 *************
 
-**Last Updated:** November 24, 2014
+**Last Updated:** February 6, 2015
 
-Tethys Portal is the is the web site provided by Tethys Platform that you use to access tethys apps. In development the Tethys Portal includes the Developer Tools page and provides debugging information. In a app-hosting or production mode, Tethys Portal is used to manage users and can be customized to reflect your organization.
+Tethys Portal is the is the web site provided by Tethys Platform that you use to host and access Tethys apps. In development the Tethys Portal includes the Developer Tools page and provides debugging information. In an app-hosting or production mode, Tethys Portal is used to manage users and can be customized to reflect your organization.
 
 The following article provides an overview of the features of Tethys Portal.
 
 Administrator
 =============
 
-Tethys Portal provides a set of administration pages that can be used to manage the website (see Figure 1). The administration dashboard is only available to administrator users. You should have created a default administrator user when you installed Tethys Platform. If you are logged in as an administrator, you will be able to access the administrator dashboard by selecting the "Site Admin" option from the user drop down menu in the top right-hand corner of the screen.
+Tethys Portal provides a set of administration pages that can be used to manage the website (see Figure 1). The administration dashboard is only available to administrator users. You should have created a default administrator user when you installed Tethys Platform. If you are logged in as an administrator, you will be able to access the administrator dashboard by selecting the "Site Admin" option from the user drop down menu in the top right-hand corner of the page.
 
-.. figure:: images/tethys_portal/tethys_portal_admin.png
+.. figure:: images/site_admin/home.png
     :width: 650px
 
     **Figure 1.** Administrator dashboard for Tethys Portal.
@@ -26,15 +26,12 @@ Tethys Portal provides a set of administration pages that can be used to manage 
 
         $ python /usr/lib/tethys/src/manage.py createsuperuser
 
-    Follow the interactive prompts to create the user.
 
 
 Customize
 =========
 
-The content of Tethys Portal can be customized to reflect the needs of your organization. To access these settings, login to Tethys Portal using and administrator account and select the  ``Site Settings`` link under the ``Tethys_Config`` heading. Sitewide settings can be changed by following the ``General Settings`` link and the content on the home page can be modified by following the ``Home Page`` link.
-
-Figure 2 shows a screenshot of the general settings available.
+The content of Tethys Portal can be customized or rebranded to reflect your organization. To access these settings, login to Tethys Portal using an administrator account and select the  ``Site Settings`` link under the ``Tethys Portal`` heading. Sitewide settings can be changed by following the ``General Settings`` link and the content on the home page can be modified by following the ``Home Page`` link. Figure 2 shows a screenshot of the general settings available.
 
 .. figure:: images/tethys_portal/tethys_portal_general_settings.png
     :width: 650px
@@ -47,6 +44,8 @@ The general settings that are available include the following:
 * Favicon
 * Brand Text
 * Brand Image
+* Primary Color
+* Secondary Color
 
 Figure 3 shows a screenshot of the home page settings that are available.
 
@@ -68,10 +67,8 @@ The settings that can be modified on the home page include:
 * Feature 3 Heading
 * Feature 3 Body
 * Feature 3 Image
-* Testimonial Heading
-* Testimonial Body
-
-Feel free to
+* Call to Action
+* Call to Action Button
 
 Manage Users and Permissions
 ============================
