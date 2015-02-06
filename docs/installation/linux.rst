@@ -2,7 +2,7 @@
 Installation on Linux
 *********************
 
-**Last Updated:** January 10, 2015
+**Last Updated:** February 6, 2015
 
 .. tip::
 
