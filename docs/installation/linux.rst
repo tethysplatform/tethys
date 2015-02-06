@@ -92,7 +92,8 @@ b. Install Tethys Platform into the virtual environment with the following comma
 
 c. Install the Python modules that Tethys requires::
 
-    $ pip install -r /usr/lib/tethys/src/requirements.txt
+    $ pip install --upgrade -r /usr/lib/tethys/src/requirements.txt
+    $ python /usr/lib/tethys/src/setup.py develop
 
 d. Restart the Python virtual environment::
 
@@ -168,15 +169,15 @@ If you would like to test the Docker containers, see :doc:`../supplementary/dock
 
 In the next steps you will configure your Tethys Platform and link it to each of the software in the software suite. Create a new settings file for your Tethys Platform installation using the :command:`tethys` :doc:`../tethys_sdk/tethys_cli`. Execute the following command in the terminal::
 
-    $ tethys gen settings -d /usr/lib/tethys/src/tethys_portal
+    $ tethys gen settings -d /usr/lib/tethys/src/tethys_apps
 
-This will create a file called :file:`settings.py` in the directory :file:`/usr/lib/tethys/src/tethys_portal`. As the name suggests, the :file:`settings.py` file contains all of the settings for the Tethys Platform. There are a few settings that need to be configured in this file.
+This will create a file called :file:`settings.py` in the directory :file:`/usr/lib/tethys/src/tethys_apps`. As the name suggests, the :file:`settings.py` file contains all of the settings for the Tethys Platform. There are a few settings that need to be configured in this file.
 
 .. note::
 
     The :file:`usr` directory is located in the root directory which can be accessed using a file browser and selecting :file:`Computer` from the menu on the left.
 
-Open the :file:`settings.py` file that you just created (:file:`/usr/lib/tethys/src/tethys_portal/settings.py`) in a text editor and modify the following settings appropriately.
+Open the :file:`settings.py` file that you just created (:file:`/usr/lib/tethys/src/tethys_apps/settings.py`) in a text editor and modify the following settings appropriately.
 
 a. Run the following command to obtain the host and port for Docker running the database (PostGIS). You will need these in the following steps:
 

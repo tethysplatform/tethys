@@ -100,7 +100,8 @@ b. Install Tethys Platform into the virtual environment with the following comma
 
 c. Install the Python modules that Tethys requires::
 
-    (tethys) $ pip install -r /usr/lib/tethys/src/requirements.txt
+    (tethys) $ pip install --upgrade -r /usr/lib/tethys/src/requirements.txt
+    (tethys) $ python /usr/lib/tethys/src/setup.py develop
 
 d. Restart the Python virtual environment::
 
@@ -149,13 +150,13 @@ b. Start the docker containers with the following command:
 
 Create a settings file for your Tethys Platform installation using the :command:`tethys` :doc:`../tethys_sdk/tethys_cli`. Execute the following command in the terminal::
 
-    (tethys) $ tethys gen settings -d /usr/lib/tethys/src/tethys_portal
+    (tethys) $ tethys gen settings -d /usr/lib/tethys/src/tethys_apps
 
-This will create a file called :file:`settings.py` in the directory :file:`/usr/lib/tethys/src/tethys_portal`. Open the :file:`settings.py` file and make the following modifications.
+This will create a file called :file:`settings.py` in the directory :file:`/usr/lib/tethys/src/tethys_apps`. Open the :file:`settings.py` file and make the following modifications.
 
 .. note::
 
-    Accessing the :file:`settings.py` file can be done by opening a new Finder Window and selecting ``Go > Go to Folder...`` from the menu. Enter :file:`/usr/lib/tethys/src/tethys_portal` in the text box and press ``Go`` to browse to directory. From here you can open the :file:`settings.py` file using your favorite text editor.
+    Accessing the :file:`settings.py` file can be done by opening a new Finder Window and selecting ``Go > Go to Folder...`` from the menu. Enter :file:`/usr/lib/tethys/src/tethys_apps` in the text box and press ``Go`` to browse to directory. From here you can open the :file:`settings.py` file using your favorite text editor.
 
 a. Run the following command to obtain the host and port for the Docker running the database:
 
