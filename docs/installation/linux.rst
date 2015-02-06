@@ -61,8 +61,16 @@ c. Close the terminal, then log out and log back in to make the changes take eff
 
     Adding a user to the Docker group is the equivalent of declaring a user as root. See `Giving non-root access <https://docs.docker.com/installation/ubuntulinux/#giving-non-root-access>`_ for more details.
 
+3. Install HTCondor (Optional)
+---------------------------------------------------------
 
-3. Create Virtual Environment and Install Tethys Platform
+HTCondor is a job scheduling and resource management system. It is used by the Tethys Compute module and is required for the module to have full functionality.  Use one of the following links for instructions on how to install HTCondor through the package manager:
+
+    Enterprise Linux: `HTCondor YUM Repository <http://research.cs.wisc.edu/htcondor/yum/>`_
+
+    Debian Linux: `HTCondor Debian Repository <http://research.cs.wisc.edu/htcondor/debian/>`_
+
+4. Create Virtual Environment and Install Tethys Platform
 ---------------------------------------------------------
 
 Python virtual environments are used to create isolated Python installations to avoid conflicts with dependencies of other Python applications on the same system. The following commands should be executed in a terminal.
@@ -100,7 +108,7 @@ d. Restart the Python virtual environment::
     $ . /usr/lib/tethys/bin/activate
 
 
-4. Install Tethys Software Suite Using Docker
+5. Install Tethys Software Suite Using Docker
 ---------------------------------------------
 
 Tethys Platform provides a software suite that addresses the unique needs of water resources web app development including:
@@ -163,7 +171,7 @@ After you run the `tethys docker start` command, you will have running instances
 
 If you would like to test the Docker containers, see :doc:`../supplementary/docker_testing`.
 
-5. Create Settings File and Configure Settings
+6. Create Settings File and Configure Settings
 ----------------------------------------------
 
 In the next steps you will configure your Tethys Platform and link it to each of the software in the software suite. Create a new settings file for your Tethys Platform installation using the :command:`tethys` :doc:`../tethys_sdk/tethys_cli`. Execute the following command in the terminal::
@@ -224,7 +232,7 @@ d. Add the TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY with an appropriate Google Maps v3 
 
 e. Save your changes and close the :file:`settings.py` file.
 
-6. Create Database Tables
+7. Create Database Tables
 -------------------------
 
 Execute the :command:`tethys manage syncdb` command from the Tethys :doc:`../tethys_sdk/tethys_cli` to create the database tables. In the terminal::
@@ -235,7 +243,7 @@ Execute the :command:`tethys manage syncdb` command from the Tethys :doc:`../tet
 
   When prompted to create a system administrator enter 'yes'. Take note of the username and password, as this will be the user you use to manage your Tethys Platform installation.
 
-7. Start up the Django Development Server
+8. Start up the Django Development Server
 -----------------------------------------
 
 You are now ready to start the development server and view your instance of Tethys Platform. The website that comes with Tethys Platform is called Tethys Portal. In the terminal, execute the following command from the Tethys :doc:`../tethys_sdk/tethys_cli`::
@@ -247,7 +255,7 @@ Open `<http://localhost:8000/>`_ in a new tab in your web browser and you should
 .. figure:: ../images/tethys_portal_landing.png
     :width: 650px
 
-8. Web Admin Setup
+9. Web Admin Setup
 ------------------
 
 You are now ready to configure your Tethys Platform installation using the web admin interface. Follow the :doc:`./web_admin_setup` tutorial to finish setting up your Tethys Platform.
