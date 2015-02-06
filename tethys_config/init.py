@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.utils import timezone
 from .models import SettingsCategory
 
@@ -35,6 +36,10 @@ def initial_settings(apps, schema_editor):
 
     general_category.setting_set.create(name="Secondary Color",
                                         content="#1b95dc",
+                                        date_modified=now)
+
+    general_category.setting_set.create(name="Footer Copyright",
+                                        content="Copyright © 2015 Your Organization",
                                         date_modified=now)
 
     general_category.save()

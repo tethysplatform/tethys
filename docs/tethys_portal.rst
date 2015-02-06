@@ -46,6 +46,7 @@ The general settings that are available include the following:
 * Brand Image
 * Primary Color
 * Secondary Color
+* Footer Copyright
 
 Figure 3 shows a screenshot of the home page settings that are available.
 
