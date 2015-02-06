@@ -56,30 +56,7 @@ To edit the file using ``vim``, you need to be in ``INSERT`` mode. Press :kbd:`i
 
 Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` to save changes and exit.
 
-5. Modify :file:`wsgi.py` Script
-================================
-
-The path to the Tethys Platform source code needs to be added to the system path. This can be done by modifying the :file:`wsgi.py` script. Open the :file:`wsgi.py` script using ``vim``:
-
-::
-
-    $ sudo vim /usr/lib/tethys/src/tethys_portal/wsgi.py
-
-Press :kbd:`i` to edit and modify the script so that it looks similar to this:
-
-::
-
-    import os
-    import sys
-    sys.path.append('/usr/lib/tethys/src')
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
-
-    from django.core.wsgi import get_wsgi_application
-    application = get_wsgi_application()
-
-Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` to save changes and exit.
-
-6. Make Directory for Static Files
+5. Make Directory for Static Files
 ==================================
 
 When running Tethys Platform in development mode, the static files are automatically served by the development server. In a production environment the static files will need to be collected into one location and Apache or another server will need to be configured to serve these files (see `Deployment Checklist: STATIC_ROOT <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#static-root-and-static-url>`_).
@@ -91,7 +68,7 @@ In these instructions, Apache will be used to serve the static files. Create a d
     $ sudo mkdir -p /var/www/tethys/static
     $ sudo chown `whoami` /var/www/tethys/static
 
-7. Set Secure Settings
+6. Set Secure Settings
 ======================
 
 Several settings need to be modified in the :file:`settings.py` module to make the installation ready for a production environment. The internet is a hostile environment and you need to take every precaution to make sure your Tethys Platform installation is secure. Django provides a `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ that points out critical settings. You should review this checklist carefully before launching your site. As a minimum do the following:
@@ -100,7 +77,7 @@ Open the :file:`settings.py` module for editing using ``vim`` or another text ed
 
 ::
 
-    $ sudo vim /usr/lib/tethys/src/tethys_portal/settings.py
+    $ sudo vim /usr/lib/tethys/src/tethys_apps/settings.py
 
 Press :kbd:`i` to start editing and change the following settings:
 
@@ -141,16 +118,16 @@ Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` 
 
 
 
-8. Create Apache Site Configuration File
+7. Create Apache Site Configuration File
 ========================================
 
 Create an Apache configuration for your Tethys Platform using the :command:`gen` command and open the :file:`tethys-default.conf` file that was generated using ``vim``:
 
 ::
 
-    $ . /usr/lib/tethys/bin/activate
-    $ tethys gen apache -d /etc/apache2/site-available/tethys-default.conf
-    $ sudo vim /etc/apache2/sites-available/tethys-default.conf
+             $ . /usr/lib/tethys/bin/activate
+    (tethys) $ tethys gen apache -d /etc/apache2/site-available/tethys-default.conf
+    (tethys) $ sudo vim /etc/apache2/sites-available/tethys-default.conf
 
 Press :kbd:`i` to enter ``INSERT`` mode and edit the file. Copy and paste the following changing the ``ServerName`` and ``ServerAlias`` appropriately. The :file:`tethys-default.conf` will look similar to this when you are done:
 
@@ -187,40 +164,41 @@ Press :kbd:`i` to enter ``INSERT`` mode and edit the file. Copy and paste the fo
 
 There is a lot going on in this file, for more information about Django and WSGI review Django's `How to deploy with WSGI <https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/>`_ documentation.
 
-11. Install Apps
+8. Install Apps
 ================
 
 Download and install any apps that you want to host using this installation of Tethys Platform. It is recommended that you create a directory to store the source code for all of the apps that you install. The installation of each app may vary, but generally, an app can be installed as follows:
 
 ::
 
-    . /usr/lib/tethys/bin/activate
-    cd /path/to/tethysapp-my_first_app
-    python setup.py install
+    (tethys) $ cd /path/to/tethysapp-my_first_app
+    (tethys) $ python setup.py install
 
-12. Setup the Persistent Stores for Apps
+9. Setup the Persistent Stores for Apps
 ========================================
 
 After all the apps have been successfully installed, you will need to initialize the persistent stores for the apps:
 
 ::
 
-    $ . /usr/lib/tethys/bin/activate
-    $ tethys syncstores all
+    (tethys) $ tethys syncstores all
 
-13. Run Collect Static
+10. Run Collect Static
 ======================
 
 The static files need to be collected into the directory that you created. Enter the following commands and enter "yes" if prompted:
 
 ::
 
-    $ . /usr/lib/tethys/bin/activate
-    $ cd /usr/lib/tethys/src
-    $ python manage.py collectstatic
+             $ sudo su
+             $ . /usr/lib/tethys/bin/activate
+    (tethys) $ cd /usr/lib/tethys/src
+    (tethys) $ python manage.py collectstatic
+    (tethys) $ chown -R www-data:www-data /var/www/tethys
+    (tethys) $ exit
 
 
-14. Enable Site and Restart Apache
+11. Enable Site and Restart Apache
 ==================================
 
 Finally, you need to disable the default apache site, enable the Tethys Portal site, and reload Apache:
