@@ -2,7 +2,7 @@
 Installation on Mac OSX
 ***********************
 
-**Last Updated:** January 17, 2015
+**Last Updated:** February 6, 2015
 
 .. tip::
 

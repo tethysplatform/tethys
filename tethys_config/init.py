@@ -14,7 +14,7 @@ def initial_settings(apps, schema_editor):
     general_category.save()
 
     general_category.setting_set.create(name="Site Title",
-                                        content="Tethys",
+                                        content="Tethys Portal",
                                         date_modified=now)
 
     general_category.setting_set.create(name="Favicon",
@@ -22,11 +22,19 @@ def initial_settings(apps, schema_editor):
                                         date_modified=now)
 
     general_category.setting_set.create(name="Brand Text",
-                                        content="Tethys",
+                                        content="Tethys Portal",
                                         date_modified=now)
 
     general_category.setting_set.create(name="Brand Image",
                                         content="/static/tethys_portal/images/tethys-logo-75.png",
+                                        date_modified=now)
+
+    general_category.setting_set.create(name="Primary Color",
+                                        content="#0a62a9",
+                                        date_modified=now)
+
+    general_category.setting_set.create(name="Secondary Color",
+                                        content="#1b95dc",
                                         date_modified=now)
 
     general_category.save()
@@ -36,62 +44,61 @@ def initial_settings(apps, schema_editor):
     home_category.save()
 
     home_category.setting_set.create(name="Hero Text",
-                                     content="Water resources modeling\nfor the 21st century.",
+                                     content="Welcome to Tethys Portal,\nthe hub for your apps.",
                                      date_modified=now)
 
     home_category.setting_set.create(name="Blurb Text",
-                                     content="Welcome to Tethys-designed from the ground up to be fast, efficient, and"
-                                             "\neasy to use. Data, modeling, and high performance computing that is "
-                                             "easy to use.",
+                                     content="Tethys Portal is designed to be customizable, so that you can host "
+                                             "apps for your\norganization. You can change everything on this page "
+                                             "from the Home Page settings.",
                                      date_modified=now)
 
     home_category.setting_set.create(name="Feature 1 Heading",
-                                     content="Data and Models",
+                                     content="Feature 1",
                                      date_modified=now)
 
     home_category.setting_set.create(name="Feature 1 Body",
-                                     content="Publish your data and models with Tethys to make sharing and collaborating"
-                                             "a piece of cake.",
+                                     content="Use these features to brag about all of the things users can do with "
+                                             "your instance of Tethys Portal.",
                                      date_modified=now)
 
     home_category.setting_set.create(name="Feature 1 Image",
-                                     content="/static/tethys_portal/images/data.png",
+                                     content="/static/tethys_portal/images/placeholder.gif",
                                      date_modified=now)
 
     home_category.setting_set.create(name="Feature 2 Heading",
-                                     content="Cloud Analysis",
+                                     content="Feature 2",
                                      date_modified=now)
 
     home_category.setting_set.create(name="Feature 2 Body",
-                                     content="Need more computing power? Use Tethys to run your analysis in the cloud.",
+                                     content="Describe the apps and tools that your Tethys Portal provides and add"
+                                             "custom pictures to each feature as a finishing touch.",
                                      date_modified=now)
 
     home_category.setting_set.create(name="Feature 2 Image",
-                                     content="/static/tethys_portal/images/computing.png",
+                                     content="/static/tethys_portal/images/placeholder.gif",
                                      date_modified=now)
 
     home_category.setting_set.create(name="Feature 3 Heading",
-                                     content="Tethys App SDK",
+                                     content="Feature 3",
                                      date_modified=now)
 
     home_category.setting_set.create(name="Feature 3 Body",
-                                     content="Build custom apps for your models and data to provide easy-to-use"
-                                             "workflows for clients, demonstrations, or to use in the classroom.",
+                                     content="You can change the color theme and branding of your Tethys Portal in a "
+                                             "jiffy. Visit the Site Admin settings from the user menu and select "
+                                             "General Settings.",
                                      date_modified=now)
 
     home_category.setting_set.create(name="Feature 3 Image",
-                                     content="/static/tethys_portal/images/sdk.png",
+                                     content="/static/tethys_portal/images/placeholder.gif",
                                      date_modified=now)
 
-    home_category.setting_set.create(name="Testimonial Heading",
-                                     content="Simple scenario exploration.",
+    home_category.setting_set.create(name="Call to Action",
+                                     content="Ready to get started?",
                                      date_modified=now)
 
-    home_category.setting_set.create(name="Testimonial Body",
-                                     content="Water resources models can provide powerful insight during critical "
-                                             "decision\nmaking, but it often takes an expert to equip a model for a new"
-                                             " scenario. The\nTethys team has worked hard to distill the most common"
-                                             "scenario\nexploration exercises into easy-to-use workflows and apps.",
+    home_category.setting_set.create(name="Call to Action Button",
+                                     content="Start Using Tethys!",
                                      date_modified=now)
 
     home_category.save()

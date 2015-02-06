@@ -1,6 +1,6 @@
 {% load staticfiles %}
 
-<footer id="site-footer" class="site-footer">
+<footer id="site-footer" class="site-footer" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
     {% block footer_content %}
         <div class="footer-col one">
             <div class="copyright-wrapper">

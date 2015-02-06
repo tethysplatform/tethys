@@ -1,5 +1,19 @@
 {% load gravatar staticfiles %}
 
+<style>
+  .user-dropdown .user-profile-nav-item a.lit {
+    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
+  }
+
+  .user-dropdown .user-profile-nav-item a:hover {
+    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
+  }
+
+  .user-dropdown .user-dropdown-menu li a:hover {
+    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
+  }
+</style>
+
 {# Mobile site navigation #}
 {% block mobile_nav %}
   <div class="mobile-nav mobile-nav-links">
@@ -50,7 +64,7 @@
   {% endif %}
 {% endblock %}
 
-<div class="header-wrapper">
+<div class="header-wrapper" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
   <header class="site-header">
     <div class="header-logo">
       {% if site_globals.brand_image %}
