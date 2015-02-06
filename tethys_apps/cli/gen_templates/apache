@@ -1,0 +1,27 @@
+<VirtualHost 0.0.0.0:80>
+    ServerName example.com
+    ServerAlias www.example.com
+
+    Alias /static/ /var/www/tethys/static/
+
+    <Directory /var/www/tethys/static/>
+        Require all granted
+    </Directory>
+
+    WSGIScriptAlias / /usr/lib/tethys/src/tethys_portal/wsgi.py
+
+    <Directory /usr/lib/tethys/src/tethys_portal>
+        <Files wsgi.py>
+            Require all granted
+        </Files>
+    </Directory>
+
+    # Daemon config
+    WSGIDaemonProcess tethys_default \
+     python-path=/usr/lib/tethys/src/tethys_portal:/usr/lib/tethys/lib/python2.7/site-packages
+    WSGIProcessGroup tethys_default
+
+    # Logs
+    ErrorLog /var/log/apache2/tethys_default.error.log
+    CustomLog /var/log/apache2/tethys_default.custom.log combined
+</VirtualHost>
