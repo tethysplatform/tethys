@@ -218,7 +218,7 @@ body {
   font-size: 20px;
   font-weight: 500;
   color: #444444;
-  -webkit-font-smoothing: antialiasing;
+  -webkit-font-smoothing: antialiased;
 }
 #app-content-wrapper #app-content #app-navigation .nav li.separator {
   margin: 20px 15px;
@@ -242,6 +242,10 @@ body {
   float: right;
   margin-left: 10px;
   padding: 10px 20px;
+}
+#app-content-wrapper #app-content #app-actions .btn-group {
+  float: right;
+  margin-left: 10px;
 }
 #app-content-wrapper.show-nav #app-content {
   padding-right: 350px;
