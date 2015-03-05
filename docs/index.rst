@@ -26,6 +26,7 @@ Contents
    tethys_portal
    production
    repos
+   tethys_development
    supplementary
    summary
    glossary

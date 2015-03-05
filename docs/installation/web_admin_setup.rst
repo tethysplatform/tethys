@@ -136,7 +136,7 @@ b. Click on the "Add Dataset Service" button to create a new link to the dataset
 
 c. Provide a unique name for the dataset service.
 
-d. Select the appropriate engine and provide an endpoint to the Dataset Service. The endpoint is a URL pointing to the dataset service API. For example, the endpoint for a CKAN dataset service would be of the form ``http://<host>/api/3/action``.
+d. Select the appropriate engine and provide an endpoint to the Dataset Service. The endpoint is a URL pointing to the dataset service API. For example, the endpoint for a CKAN dataset service would be of the form ``http://<host>:<port>/api/3/action``.
 
   If authentication is required, specify either the API Key or username or password as well. When you are done you will have something similar to this:
 
