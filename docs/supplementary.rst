@@ -16,5 +16,4 @@ This section provides a list of miscellaneous reference material that can be use
    supplementary/ckan_troubleshooting
    supplementary/docker_testing
    supplementary/pgadmin
-   supplementary/dev_environment
 
