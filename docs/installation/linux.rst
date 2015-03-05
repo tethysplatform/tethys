@@ -82,6 +82,9 @@ a. Create a :term:`Python virtual environment` and activate it::
     $ virtualenv --no-site-packages /usr/lib/tethys
     $ . /usr/lib/tethys/bin/activate
 
+.. hint::
+
+    You may be tempted to enter single quotes around the *whoami* directive above, but those characters are actually `grave accent <http://www.wikiwand.com/en/Grave_accent>`_ characters: :kbd:`\``. This key is usually located to the left of the :kbd:`1` key or in that vicinity.
 
 .. important::
 
@@ -204,7 +207,7 @@ b. Replace the password for the main Tethys Portal database, **tethys_default**,
           'USER': 'tethys_default',
           'PASSWORD': 'pass',
           'HOST': 'localhost',
-          'PORT': '5432'
+          'PORT': '5435'
           }
     }
 
