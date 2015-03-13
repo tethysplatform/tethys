@@ -9,3 +9,4 @@
 *.db
 settings.py
 docs/_build
+docs/_static
