@@ -127,7 +127,7 @@ def generate_command(args):
         if os.path.isdir(args.directory):
             destination_dir = args.directory
         else:
-            print('ERROR: "{0}" is not a valid directory.')
+            print('ERROR: "{0}" is not a valid directory.'.format(destination_dir))
             exit(1)
 
     destination_path = os.path.join(destination_dir, destination_file)
