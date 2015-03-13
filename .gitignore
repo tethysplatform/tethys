@@ -8,3 +8,5 @@
 *.sqlite3
 *.db
 settings.py
+docs/_build
+docs/_static
