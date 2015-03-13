@@ -33,6 +33,7 @@
 		float: left;
 		margin: 2px 0;
         min-height: 55px;
+        width: 60%;
 
         .logo-image {
             display: inline-block;
@@ -49,11 +50,19 @@
         .logo-title {
             display: inline-block;
             float: left;
+            width: 85%;
+            line-height: 50px;
+
             a {
+                display: inline-block;
                 font-size: 36px;
                 font-weight: 400;
                 .font-smoothing();
                 color: #ffffff;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                width: 100%;
 
                 &:hover {
                     color: #eaeaea;
@@ -68,6 +77,7 @@
 	 	list-style: none;
 	  	float: right;
 	  	margin: 20px 0;
+        padding-left: 10px;
 	  
 		  li {
 			  float: left;
@@ -297,10 +307,100 @@
 	display: none;
 }
 
-@media (max-width: 700px) {
+
+@media (max-width: 1080px) {
+
+  .site-header {
+    margin: 0 20px;
+
+    .header-logo {
+      margin: 10px 0;
+      width: 55%;
+
+      .logo-image {
+        img {
+          height: 40px;
+        }
+      }
+
+      .logo-title {
+        line-height: 40px;
+        max-width: 85%;
+
+        a {
+          display: inline-block;
+          font-size: 32px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 900px) {
+
+  .site-header {
+    margin: 0 20px;
+
+    .header-logo {
+      margin: 10px 0;
+      width: 48%;
+
+      .logo-image {
+        img {
+          height: 40px;
+        }
+      }
+
+      .logo-title {
+        line-height: 35px;
+        width: 79%;
+
+        a {
+          display: inline-block;
+          font-size: 28px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 750px) {
 
   .site-header {
       margin: 0 20px;
+
+      .header-logo {
+        margin: 10px 0;
+        width: 65%;
+
+        .logo-image {
+          img {
+            height: 40px;
+          }
+        }
+
+        .logo-title {
+          line-height: 40px;
+          width: 60%;
+
+          a {
+            display: inline-block;
+            font-size: 22px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+          }
+        }
+      }
   }
 
   .header-nav {
