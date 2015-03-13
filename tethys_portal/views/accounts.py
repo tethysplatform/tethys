@@ -39,7 +39,7 @@ def login_view(request):
                     if 'next' in request.GET:
                         return redirect(request.GET['next'])
                     else:
-                        return redirect('user:profile', username=user.username)
+                        return redirect('app_library')
                 else:
                     # The password is valid, but the user account has been disabled
                     # Return a disabled account 'error' message
