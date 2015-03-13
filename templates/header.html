@@ -48,7 +48,7 @@
 
       {% if user.is_staff %}
         <li>
-          <a href="" title="System Admin Settings">
+          <a href="{% url 'admin:index' %}" title="System Admin Settings">
             <span>Site Admin</span>
           </a>
         </li>

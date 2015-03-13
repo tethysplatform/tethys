@@ -640,6 +640,7 @@ a:hover {
   float: left;
   margin: 2px 0;
   min-height: 55px;
+  width: 60%;
 }
 .site-header .header-logo .logo-image {
   display: inline-block;
@@ -653,13 +654,20 @@ a:hover {
 .site-header .header-logo .logo-title {
   display: inline-block;
   float: left;
+  width: 85%;
+  line-height: 50px;
 }
 .site-header .header-logo .logo-title a {
+  display: inline-block;
   font-size: 36px;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #ffffff;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
 }
 .site-header .header-logo .logo-title a:hover {
   color: #eaeaea;
@@ -670,6 +678,7 @@ a:hover {
   list-style: none;
   float: right;
   margin: 20px 0;
+  padding-left: 10px;
 }
 .site-header .header-nav li {
   float: left;
@@ -861,9 +870,76 @@ a:hover {
 .mobile-nav-button {
   display: none;
 }
-@media (max-width: 700px) {
+@media (max-width: 1080px) {
   .site-header {
     margin: 0 20px;
+  }
+  .site-header .header-logo {
+    margin: 10px 0;
+    width: 55%;
+  }
+  .site-header .header-logo .logo-image img {
+    height: 40px;
+  }
+  .site-header .header-logo .logo-title {
+    line-height: 40px;
+    max-width: 85%;
+  }
+  .site-header .header-logo .logo-title a {
+    display: inline-block;
+    font-size: 32px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+  }
+}
+@media (max-width: 900px) {
+  .site-header {
+    margin: 0 20px;
+  }
+  .site-header .header-logo {
+    margin: 10px 0;
+    width: 48%;
+  }
+  .site-header .header-logo .logo-image img {
+    height: 40px;
+  }
+  .site-header .header-logo .logo-title {
+    line-height: 35px;
+    width: 79%;
+  }
+  .site-header .header-logo .logo-title a {
+    display: inline-block;
+    font-size: 28px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+  }
+}
+@media (max-width: 750px) {
+  .site-header {
+    margin: 0 20px;
+  }
+  .site-header .header-logo {
+    margin: 10px 0;
+    width: 65%;
+  }
+  .site-header .header-logo .logo-image img {
+    height: 40px;
+  }
+  .site-header .header-logo .logo-title {
+    line-height: 40px;
+    width: 60%;
+  }
+  .site-header .header-logo .logo-title a {
+    display: inline-block;
+    font-size: 22px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
   }
   .header-nav {
     display: none;
