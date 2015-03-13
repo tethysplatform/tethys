@@ -568,6 +568,7 @@ def start_docker_containers(docker_client, container=None):
         if not container_status[POSTGIS_CONTAINER] and (not container or container == POSTGIS_INPUT):
             print('Starting PostGIS container...')
             docker_client.start(container=POSTGIS_CONTAINER,
+                                restart_policy='always',
                                 port_bindings={5432: DEFAULT_POSTGIS_PORT})
         elif not container or container == POSTGIS_INPUT:
             print('PostGIS container already running...')
@@ -582,6 +583,7 @@ def start_docker_containers(docker_client, container=None):
             # Start GeoServer
             print('Starting GeoServer container...')
             docker_client.start(container=GEOSERVER_CONTAINER,
+                                restart_policy='always',
                                 port_bindings={8080: DEFAULT_GEOSERVER_PORT})
         elif not container or container == GEOSERVER_INPUT:
             print('GeoServer container already running...')
@@ -596,6 +598,7 @@ def start_docker_containers(docker_client, container=None):
             # Start 52 North WPS
             print('Starting 52 North WPS container...')
             docker_client.start(container=N52WPS_CONTAINER,
+                                restart_policy='always',
                                 port_bindings={8080: DEFAULT_N52WPS_PORT})
         elif not container or container == N52WPS_INPUT:
             print('52 North WPS container already running...')
