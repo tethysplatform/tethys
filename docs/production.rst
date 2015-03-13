@@ -126,7 +126,7 @@ Create an Apache configuration for your Tethys Platform using the :command:`gen`
 ::
 
              $ . /usr/lib/tethys/bin/activate
-    (tethys) $ tethys gen apache -d /etc/apache2/site-available/tethys-default.conf
+    (tethys) $ tethys gen apache -d /etc/apache2/sites-available
     (tethys) $ sudo vim /etc/apache2/sites-available/tethys-default.conf
 
 Press :kbd:`i` to enter ``INSERT`` mode and edit the file. Copy and paste the following changing the ``ServerName`` and ``ServerAlias`` appropriately. The :file:`tethys-default.conf` will look similar to this when you are done:
