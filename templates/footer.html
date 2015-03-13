@@ -2,8 +2,12 @@
 
 <footer id="site-footer" class="site-footer" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
   {% block footer_content %}
+
     <div class="copyright-wrapper">
-        <span class="copyright">{{ site_globals.footer_copyright|default:"Copyright © 2015 Your Organization"}}</span>
+      <span class="copyright">{{ site_globals.footer_copyright|default:"Copyright © 2015 Your Organization"}}</span>
+    </div>
+    <div class="tethys-attribution">
+      <span class="powered-by-tethys">Powered by <a href="http://tethys.ci-water.org"><img src="/static/tethys_portal/images/tethys-logo-25.png"> Tethys Platform</a></span>
     </div>
   {% endblock %}
 </footer>
