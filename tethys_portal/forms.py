@@ -3,13 +3,15 @@ from django.contrib.auth.models import User
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(max_length=30,
-                               label='',
-                               widget=forms.TextInput(
-                                   attrs={'placeholder': 'Username',
-                                          'autofocus': 'autofocus'}
-                               )
+    username = forms.RegexField(label='', max_length=30,
+                                regex=r'^[\w.@+-]+$',
+                                error_messages={
+                                    'invalid': "This value may contain only letters, numbers and @/./+/-/_ characters."},
+                                widget=forms.TextInput(attrs={'placeholder': 'Username',
+                                                              'autofocus': 'autofocus'}
+                                )
     )
+
     password = forms.CharField(label='',
                                widget=forms.PasswordInput(
                                    attrs={'placeholder': 'Password'}
@@ -29,11 +31,12 @@ class RegisterForm(forms.ModelForm):
     }
 
     username = forms.RegexField(label='', max_length=30,
-        regex=r'^[\w.@+-]+$',
-        error_messages={'invalid': "This value may contain only letters, numbers and @/./+/-/_ characters."},
-        widget=forms.TextInput(attrs={'placeholder': 'Username',
-                                      'autofocus': 'autofocus'}
-        )
+                                regex=r'^[\w.@+-]+$',
+                                error_messages={
+                                    'invalid': "This value may contain only letters, numbers and @/./+/-/_ characters."},
+                                widget=forms.TextInput(attrs={'placeholder': 'Username',
+                                                              'autofocus': 'autofocus'}
+                                )
     )
 
     email = forms.CharField(label='',
@@ -43,11 +46,11 @@ class RegisterForm(forms.ModelForm):
     )
 
     password1 = forms.CharField(label='',
-        widget=forms.PasswordInput(attrs={'placeholder': 'Password'}),
+                                widget=forms.PasswordInput(attrs={'placeholder': 'Password'}),
     )
 
     password2 = forms.CharField(label='',
-        widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password'}),
+                                widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password'}),
     )
 
     class Meta:
@@ -152,14 +155,14 @@ class UserPasswordChangeForm(forms.Form):
 
     new_password1 = forms.CharField(label="",
                                     widget=forms.PasswordInput(
-                                       attrs={'placeholder': 'New Password'}
-                                   )
+                                        attrs={'placeholder': 'New Password'}
+                                    )
     )
 
     new_password2 = forms.CharField(label="",
                                     widget=forms.PasswordInput(
-                                       attrs={'placeholder': 'Confirm New Password'}
-                                   )
+                                        attrs={'placeholder': 'Confirm New Password'}
+                                    )
     )
 
     def __init__(self, user, *args, **kwargs):
