@@ -6,8 +6,8 @@ Template Gizmos API
 
 Template Gizmos are building blocks that can be used to create beautiful interactive controls for web apps. Using the Template Gizmos API, developers can add date-pickers, plots, and maps to their app templates with minimal coding. This article provides an overview of how to use Gizmos. If you are not familiar with templating in Tethys apps, please review :doc:`../getting_started/view` tutorial before proceeding.
 
-Define Options Dictionary
-=========================
+Define Options Object
+=====================
 
 The best way to illustrate how to use Template Gizmos is to look at an example. The following example illustrates how to add a date picker using Gizmos. The first step is to define a dictionary with all the configuration options for the Gizmo. This should be done in the controller of the template where the Gizmo will be used.
 
@@ -31,6 +31,8 @@ In this case, the Gizmo options dictionary is called "date_picker_options" and i
         context = {'date_picker_options': date_picker_options}
 
         return render(request, 'path/to/my/template.html', context)
+
+See the :doc:`./gizmos_api` for a detailed description of the options object for each gizmo.
 
 Load Gizmo Library
 ==================
