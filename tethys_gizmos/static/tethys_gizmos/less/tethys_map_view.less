@@ -1,0 +1,83 @@
+// Styles for the Tethys Map View
+#map_view_outer_container {
+  position: relative;
+  margin: 20px;
+}
+
+.tethys-map-view-draw-control {
+  top: 7px;
+
+  .tethys-map-view-draw-icon {
+    display: inline-block;
+    background: url('/static/tethys_gizmos/images/map-view-drawing-icons.gif') no-repeat;
+    background-size: cover;
+    height: 16px;
+    width: 16px;
+    margin: 2px;
+
+
+    &.circle {
+      background-position: 0 0;
+
+      &.active {
+        background-position: 0 -16px;
+      }
+    }
+
+    &.box {
+      background-position: 0 -32px;
+
+      &.active {
+        background-position: 0 -48px;
+      }
+    }
+
+    &.linestring {
+      background-position: 0 -64px;
+
+      &.active {
+        background-position: 0 -80px;
+      }
+    }
+
+    &.line {
+      background-position: 0 -64px;
+
+      &.active {
+        background-position: 0 -80px;
+      }
+    }
+
+    &.polygon {
+      background-position: 0 -97px;
+
+      &.active {
+        background-position: 0 -113px;
+      }
+    }
+
+    &.point {
+      background-position: 0 -128px;
+
+      &.active {
+        background-position: 0 -144px;
+      }
+    }
+
+    &.modify {
+      background-position: 0 -160px;
+
+      &.active {
+        background-position: 0 -176px;
+      }
+    }
+
+    &.drag {
+      background-position: 0 -192px;
+
+      &.active {
+        background-position: 0 -208px;
+      }
+    }
+  }
+}

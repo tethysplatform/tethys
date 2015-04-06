@@ -1,0 +1,20 @@
+{% if not original %}
+  {% load staticfiles tethys_gizmos %}
+{% endif %}
+<div class="form-group {% if error %} has-error {% endif %}">
+  {% if display_text %}<label class="control-label" for="{{ name }}">{{ display_text }}</label>{% endif %}
+  <select id="{{ name }}" class="{% if not original %}select2{% else %}form-control{% endif %}" 
+    name="{{ name }}" {% if not original %}style="width:100%;"{% endif %}
+    {% if multiple %}multiple{% endif %} {% if disabled %}disabled{% endif %}>
+    {% for option, value in options %}
+      {% if initial and option in initial %}
+      <option value="{{value}}" selected>{{ option }}</option>
+      {% else %}
+      <option value="{{value}}">{{ option }}</option>
+      {% endif %}
+    {% endfor %}
+  </select>
+  {% if error %}
+  <p class="help-block">{{ error }}</p>
+  {% endif %}
+</div>

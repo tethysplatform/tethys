@@ -1,0 +1,138 @@
+{% extends "tethys_services/tethys_wps/base.html" %}
+
+{% block title %}- Tethys WPS{% endblock %}
+
+{% block primary_content %}
+  <!-- Process Overview -->
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <h1>{{ process.identifier }}</h1>
+      <p>{{ process.title }}</p>
+      {% if is_link %}
+        <p><a href="{{ process.abstract }}">{{ process.abstract }}</a></p>
+      {% else %}
+        <p>{{ process.abstract }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- INPUT DATA DESCRIPTION -->
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <h2>Input</h2>
+      <div class="list-group">
+        {% for input in process.dataInputs %}
+          <a class="list-group-item input">
+            <h6 class="list-group-item-heading identifier"><b>{{ input.identifier }}</b> ({{ input.dataType }}): {{ input.title }}</h6>
+            {% if input.minOccurs > 0 %}
+              <span class="label label-danger input-required">REQUIRED</span>
+            {% else %}
+              <span class="label label-info input-required">OPTIONAL</span>
+            {% endif %}
+
+            {% if input.maxOccurs > 1 %}
+              <span class="label label-success input-multiple">MULTIPLE <span class="badge">{{ input.maxOccurs }}</span></span>
+            {% endif %}
+            <p class="list-group-item-text abstract">{{ input.abstract }}<p>
+            <p class="list-group-item-text attribute">Min. Occurrences: {{ input.minOccurs }}</p>
+            <p class="list-group-item-text attribute">Max. Occurrences: {{ input.maxOccurs }}</p>
+
+            {% if input.dataType == 'ComplexData' %}
+              <p>Default Value:</p>
+              <div class="complex-data">
+                <span class="title">Complex Data</span>
+                {% if input.defaultValue.schema %}<span class="label label-primary">Schema: {{ input.defaultValue.schema }}</span>{% endif %}
+                {% if input.defaultValue.mimeType %}<span class="label label-success">MIME Type: {{ input.defaultValue.mimeType }}</span>{% endif %}
+                {% if input.defaultValue.encoding %}<span class="label label-warning">Encoding: {{ input.defaultValue.encoding }}</span>{% endif %}
+              </div>
+              {% if input.allowedValues %}
+                <p>Allowed Values:</p>
+                {% for allowed_value in input.allowedValues %}
+                  <div class="complex-data">
+                    <span class="title">Complex Data</span>
+                    {% if allowed_value.schema %}<span class="label label-primary">Schema: {{ allowed_value.schema }}</span>{% endif %}
+                    {% if allowed_value.mimeType %}<span class="label label-success">MIME Type: {{ allowed_value.mimeType }}</span>{% endif %}
+                    {% if allowed_value.encoding %}<span class="label label-warning">Encoding: {{ allowed_value.encoding }}</span>{% endif %}
+                  </div>
+                {% endfor %}
+              {% endif %}
+              {% if input.supportedValues %}
+                <p>Supported Values:</p>
+                {% for supported_value in input.supportedValues %}
+                  <div class="complex-data">
+                    <span class="title">Complex Data</span>
+                    {% if supported_value.schema %}<span class="label label-primary">Schema: {{ supported_value.schema }}</span>{% endif %}
+                    {% if supported_value.mimeType %}<span class="label label-success">MIME Type: {{ supported_value.mimeType }}</span>{% endif %}
+                    {% if supported_value.encoding %}<span class="label label-warning">Encoding: {{ supported_value.encoding }}</span>{% endif %}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% else %}
+              <p class="list-group-item-text default">Default: {{ input.defaultValue }}</p>
+              {% if input.allowedValues %}
+                <p class="list-group-item-text attribute">Allowed Values: {{ input.allowedValues|join:', ' }}</p>
+              {% endif %}
+              {% if input.supportedValues %}
+                <p class="list-group-item-text attribute">Supported Values: {{ input.supportedValues|join:', ' }}</p>
+              {% endif %}
+            {% endif %}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTPUT DATA DESCRIPTION -->
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <h2>Output</h2>
+      <div class="list-group output">
+        {% for output in process.processOutputs %}
+          <a class="list-group-item input">
+            <h6 class="list-group-item-heading identifier"><b>{{ output.identifier }}</b> ({{ output.dataType }}): {{ output.title }}</h6>
+            <p class="list-group-item-text abstract">{{ output.abstract }}<p>
+            {% if output.dataType == 'ComplexData' %}
+              <p>Default Value:</p>
+              <div class="complex-data">
+                <span class="title">Complex Data</span>
+                {% if output.defaultValue.schema %}<span class="label label-primary">Schema: {{ output.defaultValue.schema }}</span>{% endif %}
+                {% if output.defaultValue.mimeType %}<span class="label label-success">MIME Type: {{ output.defaultValue.mimeType }}</span>{% endif %}
+                {% if output.defaultValue.encoding %}<span class="label label-warning">Encoding: {{ output.defaultValue.encoding }}</span>{% endif %}
+              </div>
+              {% if output.allowedValues %}
+                <p>Allowed Values:</p>
+                {% for allowed_value in output.allowedValues %}
+                  <div class="complex-data">
+                    <span class="title">Complex Data</span>
+                    {% if allowed_value.schema %}<span class="label label-primary">Schema: {{ allowed_value.schema }}</span>{% endif %}
+                    {% if allowed_value.mimeType %}<span class="label label-success">MIME Type: {{ allowed_value.mimeType }}</span>{% endif %}
+                    {% if allowed_value.encoding %}<span class="label label-warning">Encoding: {{ allowed_value.encoding }}</span>{% endif %}
+                  </div>
+                {% endfor %}
+              {% endif %}
+              {% if output.supportedValues %}
+                <p>Supported Values:</p>
+                {% for supported_value in output.supportedValues %}
+                  <div class="complex-data">
+                    <span class="title">Complex Data</span>
+                    {% if supported_value.schema %}<span class="label label-primary">Schema: {{ supported_value.schema }}</span>{% endif %}
+                    {% if supported_value.mimeType %}<span class="label label-success">MIME Type: {{ supported_value.mimeType }}</span>{% endif %}
+                    {% if supported_value.encoding %}<span class="label label-warning">Encoding: {{ supported_value.encoding }}</span>{% endif %}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% else %}
+              <p class="list-group-item-text default">Default: {{ output.defaultValue }}</p>
+              {% if output.allowedValues %}
+                <p class="list-group-item-text attribute">Allowed Values: {{ output.allowedValues|join:', ' }}</p>
+              {% endif %}
+              {% if output.supportedValues %}
+                <p class="list-group-item-text attribute">Supported Values: {{ output.supportedValues|join:', ' }}</p>
+              {% endif %}
+            {% endif %}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

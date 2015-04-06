@@ -39,13 +39,13 @@
             <!--<img class="media-object" src="{% static '/static/tethys_portal/images/datastore.png' %}" alt="Data store docs">-->
           <!--</a>-->
           <!--<div class="media-body">-->
-            <!--<a href="{% url 'datasets:home' %}"><h3 class="media-heading truncate">Dataset Services</h3></a>-->
+            <!--<a href="{% url 'services:datasets_home' %}"><h3 class="media-heading truncate">Dataset Services</h3></a>-->
             <!--<p class="multiline-truncate">-->
               <!--Use this tool to browse the dataset services that are available for use in app development. Depending on-->
               <!--what level of access you have to the dataset service, you may be able to view, update, create, and delete-->
               <!--datasets.-->
             <!--</p>-->
-            <!--<a href="{% url 'datasets:home' %}">Go to tool.</a>-->
+            <!--<a href="{% url 'services:datasets_home' %}">Go to tool.</a>-->
           <!--</div>-->
         <!--</div>-->
 
@@ -57,13 +57,13 @@
             <img class="media-object" src="{% static '/static/tethys_portal/images/geoprocessing.png' %}" alt="Geoprocessing tool">
           </a>
           <div class="media-body">
-            <a href="{% url 'wps:home' %}"><h3 class="media-heading truncate">Web Processing Services</h3></a>
+            <a href="{% url 'services:wps_home' %}"><h3 class="media-heading truncate">Web Processing Services</h3></a>
             <p class="multiline-truncate">
               Geoprocessing in Tethys apps can be accomplished using any web processing service (WPS). For convenience, Tethys
               provides the 52 North WPS service built in. Use this tool to explore the processes that are available and how to
               parameterize them.
             </p>
-            <a href="{% url 'wps:home' %}">Go to tool.</a>
+            <a href="{% url 'services:wps_home' %}">Go to tool.</a>
           </div>
         </div>
 
