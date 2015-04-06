@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.utils import timezone
-from .models import SettingsCategory
+from .models import SettingsCategory, Setting
 
 
 def initial_settings(apps, schema_editor):
@@ -28,6 +28,10 @@ def initial_settings(apps, schema_editor):
 
     general_category.setting_set.create(name="Brand Image",
                                         content="/static/tethys_portal/images/tethys-logo-75.png",
+                                        date_modified=now)
+
+    general_category.setting_set.create(name="Apps Library Title",
+                                        content="Apps Library",
                                         date_modified=now)
 
     general_category.setting_set.create(name="Primary Color",
@@ -113,6 +117,15 @@ def reverse_init(apps, schema_editor):
     """
     Reverse the initial settings
     """
-    pass
+
+    categories = SettingsCategory.objects.all()
+    settings = Setting.objects.all()
+
+    for setting in settings:
+        setting.delete()
+
+    for category in categories:
+        category.delete()
+
 
 
