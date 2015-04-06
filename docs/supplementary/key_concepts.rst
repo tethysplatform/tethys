@@ -2,7 +2,7 @@
 Key Concepts
 ************
 
-**Last Updated:** November 14, 2014
+**Last Updated:** April 6, 2015
 
 The purpose of this page is to provide an explanation of some of the key concepts of Tethys Platform. The concepts are only discussed briefly here to provide a basic overview. It is highly recommended that you visit the suggested resources to have a better understanding of these concepts, as developing apps in Tethys Platform relies heavily on them.
 
@@ -12,16 +12,6 @@ What is an App?
 In the most basic sense, an app is a workflow. The purpose of an app is not provide an all-in-one solution, but rather to perform a narrowly focused task or set of tasks. For example, an app that works with hydrologic models might be focused on guiding the user to change the land use layer of a model, run the modified model, and compare the result with the original model results.
 
 In terms of implementation, an app built with Tethys Platform or a Tethys app is a web app( as opposed to a mobile app). A Tethys Platform installation provides a website called the Tethys Portal that can be used to organize and access your apps. Tethys apps are technically extensions of the Tethys Portal web page, because when you create a Tethys app you will be adding additional web pages to the Tethys Portal web site. Tethys Platform is built on the Django Python web framework, so Tethys apps are also Django web apps--though Tethys Platform streamlines many aspects of Django web development. This is why the Django documentation is referred to often in the documentation for Tethys Platform.
-
-Modular Design
-==============
-
-Tethys Platform is implemented as several modular Django extensions (Django refers to these extensions as "apps" but, this term is avoided here to prevent confusion). This allows Tethys functionality to be incorporated in other Django website projects. The source code for the different Django extensions is available on several GitHub repositories:
-
-* `Tethys Portal <https://github.com/CI-WATER/tethys>`_: The core Django website project for Tethys Platform that ties all the modules together.
-* `Tethys Apps <https://github.com/CI-WATER/django-tethys_apps>`_: Django extension for Tethys Platform that adds the core app development and hosting functionality including the App Library page.
-* `Tethys Gizmos <https://github.com/CI-WATER/django-tethys_gizmos>`_: Django extension for Tethys Platform that adds the Template Gizmos API.
-* `Tethys Datasets <https://github.com/CI-WATER/django-tethys_datasets>`_: Django extension for Tethys Platform that adds the Dataset Services API.
 
 Web Frameworks
 ==============
