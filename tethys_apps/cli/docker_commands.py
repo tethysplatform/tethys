@@ -22,9 +22,9 @@ OSX = 1
 WINDOWS = 2
 LINUX = 3
 
-POSTGIS_IMAGE = 'ciwater/postgis:latest'
-GEOSERVER_IMAGE = 'ciwater/geoserver:latest'
-N52WPS_IMAGE = 'ciwater/n52wps:latest'
+POSTGIS_IMAGE = 'ciwater/postgis:2.1.2'
+GEOSERVER_IMAGE = 'ciwater/geoserver:2.7.0'
+N52WPS_IMAGE = 'ciwater/n52wps:3.3.1'
 
 REQUIRED_DOCKER_IMAGES = [POSTGIS_IMAGE,
                           GEOSERVER_IMAGE,
