@@ -1,0 +1,27 @@
+{% extends "tethys_services/tethys_wps/base.html" %}
+
+{% block title %}- Tethys WPS{% endblock %}
+
+{% block primary_content %}
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <h1>{{ wps.identification.title }}</h1>
+    <p>{{ wps.identification.abstract }}</p>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <h4>Processes</h4>
+    <input class="form-control input-lg process-search" type="text" placeholder="Search" oninput="dynamic_search(this.value);">
+    <div class="list-group">
+      {% for process in wps.processes %}
+        <a href="{% url 'services:wps_process' service=service identifier=process.identifier %}" class="list-group-item process">
+          <h5 class="list-group-item-heading title">{{ process.identifier }}</h5>
+          <p class="list-group-item-text abstract">{{ process.title }}</p>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% load staticfiles tethys_gizmos %}
+
+<div class="form-group {% if error %} has-error {% endif %}">
+	{% if display_text %}<label class="control-label" for="{{ name }}">{{ display_text }}</label>{% endif %}
+		<input class = "form-control" id="{{ name }}"
+			   name="{{ name }}"
+			   type="text"
+			   data-provide="datepicker"
+			   value="{{ initial }}"
+			   {% if autoclose %}data-date-autoclose="true"{% endif %}
+			   {% if calendar_weeks %}data-date-calendar-weeks="true"{% endif %}
+			   {% if clear_button %}data-date-clear-btn="true"{% endif %}
+			   {% if days_of_week_disabled %}data-date-days-of-week-disabled="{{ days_of_week_disabled }}"{% endif %}
+			   {% if end_date %}data-date-end-date="{{ end_date }}"{% endif %}
+			   {% if format %}data-date-format="{{ format }}"{% endif %}
+			   {% if min_view_mode %}data-date-min-view-mode="{{ min_view_mode }}"{% endif %}
+			   {% if multidate %}data-date-multidate="{{ multidate }}"{% endif %}
+			   {% if start_date %}data-date-start-date="{{ start_date }}"{% endif %}
+			   {% if start_view %}data-date-start-view="{{ start_view }}"{% endif %}
+			   {% if today_button %}data-date-today-btn="true"{% endif %}
+			   {% if today_highlight %}data-date-today-highlight="true"{% endif %}
+			   {% if week_start %}data-date-week-start="{{ week_start }}"{% endif %}
+			   {% if disabled %}disabled{% endif %}>
+	{% if error %}
+	<p class="help-block">{{ error }}</p>
+	{% endif %}
+</div>

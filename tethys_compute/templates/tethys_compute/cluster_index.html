@@ -1,0 +1,81 @@
+{% extends "admin/base.html" %}
+{% load staticfiles %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block styles %}
+    {{ block.super }}
+    <link href="{% static 'tethys_compute/css/table.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block object-tools %}
+    <ul class="object-tools">
+            <li>
+              <a id='add_link' href class="addlink">
+                Add Cluster
+              </a>
+            </li>
+    </ul>
+{% endblock %}
+{% block content %}
+    {{ block.super }}
+<table>
+    <thead>
+        <tr>
+            <th>Cluster Name</th>
+            <th colspan="2">Size</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    {% if clusters %}
+    {% for cluster in clusters %}
+        <tr>
+        <form action='{% url 'update_cluster' cluster.id %}' method='post' >
+        {% csrf_token %}
+            <td>{{ cluster.name }}</td>
+            <td><output name='size_output' id="size_output_{{ cluster.id }}" for='size_{{ cluster.id }}' btn_id='update_{{ cluster.id }}'>{{ cluster.size }}</output></td>
+            <td>
+                <span>
+                    1 <input type='range' name='size' id='size_{{ cluster.id }}' min='1', max='20', value='{{ cluster.size }}' /> 20
+                </span>
+            </td>
+            <td>
+{#                {{ cluster.status }}#}
+                {% if cluster.status ==  'STR'  or cluster.status == 'DEL' or cluster.status == 'UPD' %}
+                    <img id='loader' src="{% static 'tethys_compute/img/loader.gif' %}" />
+                {%  else %}
+                    <input type='submit' id='update_{{ cluster.id }}' disabled='true' class='btn btn-primary' value='Update'/>
+                    <input  type='submit' id='delete_{{ cluster.id }}' formaction='{% url 'delete_cluster' cluster.id %}' class='btn btn-danger' value='Delete' />
+{#                  <a href="{% url 'delete_cluster' cluster.id %}">Delete</a>#}
+                {% endif %}
+            </td>
+        </form>
+        </tr>
+    {% endfor %}
+    {% endif %}
+        <tr id='create_row'>
+            <form id='create_form' action='{% url 'create_cluster'  %}' method='post'>
+                {% csrf_token %}
+                <td><input type='text' name='name' id='name' placeholder='New Cluster'/>
+                <output id="name_output" for="name"></output></td>
+                <td><output name='size_output' id="size_output" for="size">2</output></td>
+                <td>
+                    <span>1</span>
+                    <input type='range' name='size' id='size' min='1', max='20', value='2' />
+                    <span>20</span>
+                </td>
+                <td>
+                    <input id='create_submit' type='submit' value='Create' class='btn'/>
+                    <img id='loader' src="{% static 'tethys_compute/img/loader.gif' %}" hidden='true'/>
+                </td>
+            </form>
+        </tr>
+    </tbody>
+</table>
+{% endblock  %}
+
+{% block scripts %}
+{{ block.super }}
+<script src="{% static 'tethys_compute/js/cluster_index.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,51 @@
+body {
+  font-family: Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.title {
+  font-size: 5em;
+  letter-spacing: -2px;
+}
+
+.page-header {
+  text-align: left;
+}
+
+.header {
+  text-align: center;
+}
+
+.old-version {
+  color: #ccc;
+  text-decoration: line-through;
+}
+
+#github {
+  display: none;
+  position: fixed;
+  width: 150px;
+  height: 150px;
+  top: 0;
+  right: 0;
+  z-index: 2000;
+}
+
+.bottom {
+  border-top: 1px solid #eee;
+  margin-top: 40px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  text-align: center;
+}
+
+.hljs {
+  background-color: transparent;
+}
+
+@media (min-width: 768px) {
+  #github {
+    display: block;
+  }
+}
