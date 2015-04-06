@@ -1,0 +1,90 @@
+{% load staticfiles tethys_gizmos %}
+
+<link rel="stylesheet" href="{% static 'tethys_gizmos/css/tethys_map_view.css' %}" type="text/css" />
+
+ <div id='map-view-container'
+   style="
+     {% if height %} height:{{ height }} {% endif %};
+     {% if width %} width:{{ width }} {% endif %};"
+     data-map-type={% if map_type %} "{{ map_type }}" {% else %} {{'google-earth'}} {% endif %}
+     data-legend={% if legend %} "{{ legend|jsonify }}" {% else %} {{'false'}} {% endif %}
+     data-legend-options={% if legend_options %} "{{ legend_options|jsonify }}" {% else %} {{'{}'}} {% endif %}
+     data-layer-data={% if layer_data %} "{{ layer_data|jsonify }}" {% else %} {{'[]'}} {% endif %}
+     data-kml-service={% if kml_service %} "{{ kml_service }}" {% else %} {{' '}} {% endif %}
+  >
+    	<div id="map-view">
+    	  <img id='map-view-fullscreen' src='http://earth-api-samples.googlecode.com/svn/trunk/external/dinther_fullscreen_tofull.png'>
+    		<div id='map-view-legend'>
+    		  <div id='map-view-legend-header'>
+      		  <div id='map-view-title' style="float:left;">Legend</div>
+            <!-- Button trigger modal -->
+            <button id='map-view-add-button' class='btn btn-default' data-toggle='modal' data-target='#map-view-add-modal'>
+              <span><i class="icon-plus"></i></span>
+            </button>
+          </div>
+    		  <div id='map-view-tree'></div>
+          
+        </div>
+        
+        <div id='map-view-divider' title='drag to resize legend'>
+          <div id='map-view-handle' class='center-parent' title='double click to hide legend'>
+            <span class='center'><i class='icon-chevron-right'></i></span>
+          </div>
+        </div>
+        
+    		<div id="map-view-map"></div>
+    		
+    		<div id='map-view-loading' class="progress progress-striped active">
+          <div class="bar" style="width: 100%;">Loading Data . . . </div>
+        </div>
+    		
+    	</div>
+  	</div>
+  	
+  	
+    <!-- Add Layer Modal -->
+    <div class="modal fade" id='map-view-add-modal' tabindex="-1" role="dialog" aria-labelledby='map-view-add-modal-Label' aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="map-view-add-modal-label">Add Layer</h4>
+          </div>
+          <div id='map-view-add-modal-content' class="modal-body">
+            <p>Enter a link to a KMZ or select from the list below.</p>
+            <input id="map-view-url-field" type="text" size="70">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button id='map-view-add-layer-btn' type="button" class="btn btn-primary">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Layer Properties Modal -->
+    <div class="modal fade bs-example-modal-lg" id="map-view-layer-properties-modal" tabindex="-1" role="dialog" aria-labelledby='map-view-layer-properties-modal-label' aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id='map-view-layer-properties-modal-label'>Layer Properties</h4>
+          </div>
+          <div id="map-view-layer-properties-modal-content" class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+{% if maps_api_key %}
+  <!-- App Developer API Key -->
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ maps_api_key }}&sensor=false"></script>
+{% elif gizmos_google_maps_key %}
+  <!-- Global API Key -->
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ gizmos_google_maps_key }}&sensor=false"></script>
+{% endif %}
+
+<!-- <script>var workerTest= new Worker('http://192.168.249.211:5000/fanstatic/ckanext_apps/:version:2014-04-23T14:32:59.79/js/workerTest.js');</script> -->
+<script type="text/javascript" src="{% static 'tethys_gizmos/js/tethys_map_view.js' %}"></script>

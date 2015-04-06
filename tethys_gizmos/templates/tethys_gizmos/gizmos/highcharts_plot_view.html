@@ -1,0 +1,11 @@
+{% load tethys_gizmos %}
+
+<div class="highcharts-plot"
+  {% if highcharts_object|isstring %}
+    data-json="{{ highcharts_object }}"
+  {% else %}
+    data-json="{{ highcharts_object|jsonify }}"
+  {% endif %}
+  style="{% if width %}min-width: {{ width }};{% endif %} {% if height %}height: {{ height }};{% endif %} margin: 0 auto;"
+  {% if attributes %} {{ attributes }} {% endif %}>
+</div>

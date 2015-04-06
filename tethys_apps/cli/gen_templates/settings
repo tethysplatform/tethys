@@ -47,8 +47,7 @@ INSTALLED_APPS = (
     'tethys_config',
     'tethys_apps',
     'tethys_gizmos',
-    'tethys_datasets',
-    'tethys_wps',
+    'tethys_services',
     'tethys_compute'
 )
 

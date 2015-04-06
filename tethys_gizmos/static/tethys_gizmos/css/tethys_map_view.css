@@ -1,0 +1,57 @@
+#map_view_outer_container {
+  position: relative;
+  margin: 20px;
+}
+.tethys-map-view-draw-control {
+  top: 7px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon {
+  display: inline-block;
+  background: url('/static/tethys_gizmos/images/map-view-drawing-icons.gif') no-repeat;
+  background-size: cover;
+  height: 16px;
+  width: 16px;
+  margin: 2px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.circle {
+  background-position: 0 0;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.circle.active {
+  background-position: 0 -16px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.box {
+  background-position: 0 -32px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.box.active {
+  background-position: 0 -48px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.linestring {
+  background-position: 0 -64px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.linestring.active {
+  background-position: 0 -80px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.polygon {
+  background-position: 0 -97px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.polygon.active {
+  background-position: 0 -113px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.point {
+  background-position: 0 -128px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.point.active {
+  background-position: 0 -144px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.modify {
+  background-position: 0 -160px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.modify.active {
+  background-position: 0 -176px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.drag {
+  background-position: 0 -192px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.drag.active {
+  background-position: 0 -208px;
+}

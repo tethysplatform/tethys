@@ -1,0 +1,24 @@
+{% extends "page.html" %}
+{% load staticfiles tethys_gizmos %}
+
+{% block title %}- Gizmos - Fetch Climate Map{% endblock %}
+
+{% block styles %}
+  {{ block.super }}
+  <link href="{% static 'tethys_gizmos/vendor/prism/prism.css' %}" rel="stylesheet" />
+  <link href="{% static 'tethys_gizmos/css/gizmo_showcase.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block primary_content %}
+  <div class="gizmo-page-wrapper">
+    <h2>FetchClimate</h2>
+    {% gizmo fetchclimate fetchclimate_map %}
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  {% gizmo_dependencies "css" %}
+  <script src="{% static 'tethys_gizmos/vendor/prism/prism.js' %}" type="text/javascript"></script>
+  {% gizmo_dependencies "js" %}
+{% endblock %}

@@ -1,3 +1,2 @@
 # DO NOT ERASE
-from tethys_datasets.utilities import get_dataset_engine, get_spatial_dataset_engine
-from tethys_wps.utilities import get_wps_service_engine, list_wps_service_engines
+from tethys_services.utilities import get_dataset_engine, get_spatial_dataset_engine, get_wps_service_engine, list_wps_service_engines
