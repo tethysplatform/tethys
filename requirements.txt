@@ -1,4 +1,4 @@
-django>=1.7
+django>=1.7,<1.8
 django-gravatar2
 django-social-auth
 django-bootstrap3
