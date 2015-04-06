@@ -1,0 +1,38 @@
+{% load tethys_gizmos %}
+
+<table class="table {% if bordered %}table-bordered{% endif %} {% if hover %}table-hover{% endif %} {% if striped %}table-striped{% endif %} {% if condensed %}table-condensed{% endif %}">
+    {% if column_names %}
+    <tr>
+      {% for column_name in column_names %}
+      <th>{{ column_name }}</th>
+      {% endfor %}
+    </tr>
+    {% endif %}
+    {% for row in rows %}
+      {% with row_idx=forloop.counter0 %}
+      <tr>
+        {% for column_value in row %}
+          {% with col_idx=forloop.counter0 %}
+            {% if editable_columns and editable_columns|return_item:col_idx %}
+              {% if row_ids %}
+                {% with col_id=editable_columns|return_item:col_idx row_id=row_ids|return_item:row_idx %}
+                  <td>
+                    <input id="{{ col_id }}{{ row_id }}" name="{{ col_id }}{{ row_id }}" type="text" class="form-control input-sm" value="{{ column_value }}" style="margin-bottom: 0;">
+                  </td>
+                {% endwith %}
+              {% else %}
+                {% with col_id=editable_columns|return_item:col_idx %}
+                  <td>
+                    <input id="{{ col_id }}{{ row_idx }}" name="{{ col_id }}{{ row_idx }}" type="text" class="form-control input-sm" value="{{ column_value }}" style="margin-bottom: 0;">
+                  </td>
+                {% endwith %}
+              {% endif %}
+            {% else %}
+              <td>{{ column_value }}</td>
+            {% endif %}
+          {% endwith %}
+        {% endfor %}
+      </tr>
+      {% endwith %}
+    {% endfor %}
+</table>

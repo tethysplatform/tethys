@@ -1,0 +1,16 @@
+<div class="form-group {% if error %} has-error {% endif %}">
+  {% if display_text %}<label class="control-label" for="{{ name }}">{{ display_text }}</label>{% endif %}
+    <input class="form-control bootstrap-switch" id="{{ name }}"
+        name="{{ name }}"
+        type="checkbox"
+        {% if size %}data-size="{{ size }}"{% endif %}
+        data-on-text="{% if on_label %}{{ on_label }}{% else %}ON{% endif %}"
+        data-off-text="{% if off_label %}{{ off_label }}{% else %}OFF{% endif %}"
+        data-on-color="{% if on_style %}{{ on_style }}{% else %}primary{% endif %}"
+        data-off-color="{% if off_style %}{{ off_style }}{% else %}default{% endif %}"
+        {% if disabled %}disabled{% endif %}
+        {% if initial %}checked{% endif %}>
+  {% if error %}
+  <p class="help-block">{{ error }}</p>
+  {% endif %}
+</div>
