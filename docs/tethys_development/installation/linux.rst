@@ -32,10 +32,6 @@ Tethys Platform is versioned with Git and hosted on GitHub. Change into the proj
 ::
 
     $ git pull https://github.com/CI-WATER/tethys.git
-    $ git pull https://github.com/CI-WATER/django-tethys_gizmos.git
-    $ git pull https://github.com/CI-WATER/django-tethys_compute
-    $ git pull https://github.com/CI-WATER/django-tethys_datasets.git
-    $ git pull https://github.com/CI-WATER/django-tethys_wps.git
     $ git pull https://github.com/CI-WATER/tethys_dataset_services.git
     $ git pull https://github.com/CI-WATER/tethys_docker.git
 
@@ -45,23 +41,16 @@ When you are done, your project directory should have the following contents:
 
   tethysdev/
     |-- apps/
-    |-- django-tethys_datasets/
-    |-- django-tethys_gizmos/
-    |-- django-tethys_wps/
     |-- tethys/
     |-- tethys_dataset_services/
     |-- tethys_docker/
 
 A brief explanation of each directory is provided below. For more details about the organization of Tethys Platform source code, see :doc:`../overview`.
 
+* **apps**: a directory to that will contain Tethys app projects used for development purposes.
 * **tethys**: The main Django site project for Tethys. Most of the logic for tethys is contained in this project.
-* **django-tethys_datasets**: A generic Django app project that adds connections for CKAN, HydroShare, and GeoServer dataset services.
-* **django-tethys_gizmos**: A generic Django app project that adds Gizmos.
-* **django-tethys_wps**: A generic Django app project that adds the ability to work with Web Processing Services.
 * **tethys_dataset_services**: A Python module providing an interface with CKAN, HydroShare, and GeoServer.
 * **tethys_docker**: The Dockerfiles for the Tethys Docker images.
-* **apps**: a directory to that will contain Tethys app projects used for development purposes.
-
 
 4. Create Virtual Environment and Install Tethys Platform
 ---------------------------------------------------------
@@ -85,9 +74,6 @@ c. Create a symbolic link from the :file:`tethys` source code you downloaded to 
 
 d. Install each of the projects that you downloaded in development mode. Development mode any changes you make to the source code to take effect immediately without requiring you to reinstall the project::
 
-    $ cd ~/tethysdev/django-tethys_datasets && python setup.py develop
-    $ cd ~/tethysdev/django-tethys_wps && python setup.py develop
-    $ cd ~/tethysdev/django-tethys_gizmos && python setup.py develop
     $ cd ~/tethysdev/tethys_dataset_services && python setup.py develop
 
 e. Install the Python modules that Tethys requires::
