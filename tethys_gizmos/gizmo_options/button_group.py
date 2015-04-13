@@ -25,11 +25,11 @@ class ButtonGroupOptions(TethysGizmoOptions):
                                     name='click_me_name',
                                     attributes='onclick=alert(this.name);',
                                     submit=True)
-        single_button_group = ButtonGroupOptions(buttons=[button_options])
+        single_button = ButtonGroupOptions(buttons=[button_options])
 
         # TEMPLATE
 
-        {% gizmo button_group single_button_group %}
+        {% gizmo button_group single_button %}
 
     """
 
