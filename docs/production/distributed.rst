@@ -4,21 +4,12 @@ Distributed Configuration
 
 **Last Updated:** April 18, 2015
 
-Tethys Platform is composed of several software components, each of which draw on quite a bit of computing resources. We strongly recommend distributing the software components across several servers to optimize the use of computing resources and improve performance. Specifically, we recommend having a separate server for each of the following components:
-
-* Tethys Portal
-* PostgreSQL with PostGIS
-* GeoServer
-* 52 North WPS
-
-**INSERT FIGURE HERE SHOWING A TETHYS STACK**
-
-Fortunately, the Tethys Docker images make installing the software components on separate machines fairly straight forward. However, you will not be able to use the Tethys commandline tools to install the Dockers as you did during development. The following article describes how to deploy each software component using the native Docker API.
+The Tethys Docker images can be used to easily install each of the software components of Tethys Platform on separate servers. However, you will not be able to use the Tethys commandline tools to install the Dockers as you do during development. The following article describes how to deploy each software component using the native Docker API.
 
 Install Docker on Each Server
 =============================
 
-The first step is to provision a server for the PostgreSQL, GeoServer, and 52 North WPS components and install Docker on each using the appropriate `Docker installation instructions <http://docs.docker.com/installation/>`_. Docker provides installation instructions for most major types of servers.
+After you have provisioned servers for each of the Tethys software components, install Docker on each using the appropriate `Docker installation instructions <http://docs.docker.com/installation/>`_. Docker provides installation instructions for most major types of servers.
 
 GeoServer Docker Deployment
 ===========================
