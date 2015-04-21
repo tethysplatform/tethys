@@ -165,7 +165,14 @@ Press :kbd:`i` to enter ``INSERT`` mode and edit the file. Copy and paste the fo
 
 There is a lot going on in this file, for more information about Django and WSGI review Django's `How to deploy with WSGI <https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/>`_ documentation.
 
-8. Install Apps
+8. Setup Email Capabilities
+===========================
+
+.. caution::
+
+    THIS IS NOT DONE YET
+
+9. Install Apps
 ================
 
 Download and install any apps that you want to host using this installation of Tethys Platform. It is recommended that you create a directory to store the source code for all of the apps that you install. The installation of each app may vary, but generally, an app can be installed as follows:
@@ -175,7 +182,7 @@ Download and install any apps that you want to host using this installation of T
     (tethys) $ cd /path/to/tethysapp-my_first_app
     (tethys) $ python setup.py install
 
-9. Setup the Persistent Stores for Apps
+10. Setup the Persistent Stores for Apps
 ========================================
 
 After all the apps have been successfully installed, you will need to initialize the persistent stores for the apps:
@@ -184,7 +191,7 @@ After all the apps have been successfully installed, you will need to initialize
 
     (tethys) $ tethys syncstores all
 
-10. Run Collect Static
+11. Run Collect Static
 ======================
 
 The static files need to be collected into the directory that you created. Enter the following commands and enter "yes" if prompted:
@@ -199,7 +206,7 @@ The static files need to be collected into the directory that you created. Enter
     (tethys) $ exit
 
 
-11. Enable Site and Restart Apache
+12. Enable Site and Restart Apache
 ==================================
 
 Finally, you need to disable the default apache site, enable the Tethys Portal site, and reload Apache:

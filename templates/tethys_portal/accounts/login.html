@@ -17,6 +17,7 @@
             {% bootstrap_form form %}
             <button type="submit" id="login-submit" class="btn btn-default" name="login-submit">Login</button>
             <span class="help-block">Don't have an account? <a href="{% url 'accounts:register' %}">Sign Up</a></span>
+            <span class="help-block">Forget your password? <a href="{% url 'accounts:password_reset' %}">Password Reset</a></span>
           </form>
         </div>
       </div>
