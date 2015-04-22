@@ -72,10 +72,43 @@ In these instructions, Apache will be used to serve the static files. Create a d
 6. Setup Email Capabilities
 ===========================
 
-.. caution::
+Tethys Platform provides a mechanism for resetting forgotten passwords that requires email capabilities, for which we recommend using Postfix. Install Postfix as follows:
 
-    THIS IS NOT DONE YET
-    THIS SECTION SHOULD DESCRIBE HOW TO CONFIGURE POSTFIX
+::
+
+    sudo apt-get install postfix
+
+When prompted select "Internet Site". You will then be prompted to enter you Fully Qualified Domain Name (FQDN) for your server. This is the domain name of the server you are installing Tethys Platform on. For example:
+
+::
+
+    foo.example.org
+
+Next, configure Postfix by opening its configuration file:
+
+::
+
+    sudo vim /etc/postfix/main.cf
+
+Press :kbd:`i` to start editing, find the `myhostname` parameter, and change it to point at your FQDN:
+
+::
+
+    myhostname = foo.example.org
+
+Find the `mynetworks` parameter and verify that it is set as follows:
+
+::
+
+    mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+
+Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` to save changes and exit. Finally, restart the Postfix service to apply the changes:
+
+::
+
+    sudo service postfix restart
+
+Django must be configured to use the postfix server. The next section will describe the Django settings that must be configured for the email server to work. For an excellent guide on setting up Postfix on Ubuntu, refer to `How To Install and Setup Postfix on Ubuntu 14.04 <https://www.digitalocean.com/community/tutorials/how-to-install-and-setup-postfix-on-ubuntu-14-04>`_.
 
 7. Set Secure Settings
 ======================
@@ -121,10 +154,19 @@ d. Set the static root directory
 
 e. Set email settings
 
-  .. caution::
+  Several email settings need to be configured for the forget password functionality to work properly. The following exampled illustrates how to setup email using the Postfix installation from above:
 
-      THIS IS NOT DONE YET
-      THIS SECTION SHOULD DESCRIBE THE SETTINGS FOR EMAIL CAPABILITIES
+  ::
+
+      EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+      EMAIL_HOST = 'localhost'
+      EMAIL_PORT = 25
+      EMAIL_HOST_USER = ''
+      EMAIL_HOST_PASSWORD = ''
+      EMAIL_USE_TLS = False
+      DEFAULT_FROM_EMAIL = 'Example <noreply@exmaple.com>'
+
+For more information about setting up email capabilities for Tethys Platform, refer to the `Sending email <https://docs.djangoproject.com/en/1.8/topics/email/>`_ documentation.
 
 
 Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` to save changes and exit.
