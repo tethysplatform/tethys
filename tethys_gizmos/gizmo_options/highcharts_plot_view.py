@@ -12,9 +12,9 @@ class PlotView(TethysGizmoOptions):
 
     Attributes
     highcharts_object(PySON, required): The highcharts_object contains the definition of the chart. The full `Highcharts API reference <http://api.highcharts.com/highcharts>`_ is supported via this object. The object can either be a JavaScript string or a JavaScript-equivalent Python data structure. The latter is recommended.
-    height(string): Height of the plot element. Any valid css unit of length.
-    width(string): Width of the plot element. Any valid css unit of length.
-    attributes(string): Any HTML attributes to add to the plot element (e.g.: "id=foo name=bar value=hello-world")
+    height(str): Height of the plot element. Any valid css unit of length.
+    width(str): Width of the plot element. Any valid css unit of length.
+    attributes(str): Any HTML attributes to add to the plot element (e.g.: "id=foo name=bar value=hello-world")
     """
 
     def __init__(self, highcharts_object, height='520px', width='100%', attributes=""):
@@ -67,6 +67,7 @@ class HighChartsLinePlot(HighChartsObjectBase):
 
         Args:
         """
+        chart['type'] = 'spline'
 
         # Initialize super class
         super(HighChartsLinePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, **kwargs)
