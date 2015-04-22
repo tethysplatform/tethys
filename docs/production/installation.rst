@@ -69,7 +69,15 @@ In these instructions, Apache will be used to serve the static files. Create a d
     $ sudo mkdir -p /var/www/tethys/static
     $ sudo chown `whoami` /var/www/tethys/static
 
-6. Set Secure Settings
+6. Setup Email Capabilities
+===========================
+
+.. caution::
+
+    THIS IS NOT DONE YET
+    THIS SECTION SHOULD DESCRIBE HOW TO CONFIGURE POSTFIX
+
+7. Set Secure Settings
 ======================
 
 Several settings need to be modified in the :file:`settings.py` module to make the installation ready for a production environment. The internet is a hostile environment and you need to take every precaution to make sure your Tethys Platform installation is secure. Django provides a `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ that points out critical settings. You should review this checklist carefully before launching your site. As a minimum do the following:
@@ -111,6 +119,14 @@ d. Set the static root directory
 
       STATIC_ROOT = '/var/www/tethys/static'
 
+e. Set email settings
+
+  .. caution::
+
+      THIS IS NOT DONE YET
+      THIS SECTION SHOULD DESCRIBE THE SETTINGS FOR EMAIL CAPABILITIES
+
+
 Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` to save changes and exit.
 
 .. important::
@@ -119,7 +135,7 @@ Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` 
 
 
 
-7. Create Apache Site Configuration File
+8. Create Apache Site Configuration File
 ========================================
 
 Create an Apache configuration for your Tethys Platform using the :command:`gen` command and open the :file:`tethys-default.conf` file that was generated using ``vim``:
@@ -164,13 +180,6 @@ Press :kbd:`i` to enter ``INSERT`` mode and edit the file. Copy and paste the fo
 
 
 There is a lot going on in this file, for more information about Django and WSGI review Django's `How to deploy with WSGI <https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/>`_ documentation.
-
-8. Setup Email Capabilities
-===========================
-
-.. caution::
-
-    THIS IS NOT DONE YET
 
 9. Install Apps
 ================
