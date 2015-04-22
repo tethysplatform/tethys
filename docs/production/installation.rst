@@ -49,7 +49,7 @@ Edit the Apache configuration to use the ``BASELINE`` environment as the home py
 
     $ sudo vim /etc/apache2/apache2.conf
 
-To edit the file using ``vim``, you need to be in ``INSERT`` mode. Press :kbd:`i` to enter ``INSERT`` mode and addd this line to the bottom of the :file:`apache2.conf` file:
+To edit the file using ``vim``, you need to be in ``INSERT`` mode. Press :kbd:`i` to enter ``INSERT`` mode and add this line to the bottom of the :file:`apache2.conf` file:
 
 ::
 
@@ -126,9 +126,11 @@ Create an Apache configuration for your Tethys Platform using the :command:`gen`
 
 ::
 
+             $ sudo su
              $ . /usr/lib/tethys/bin/activate
     (tethys) $ tethys gen apache -d /etc/apache2/sites-available
-    (tethys) $ sudo vim /etc/apache2/sites-available/tethys-default.conf
+    (tethys) $ vim /etc/apache2/sites-available/tethys-default.conf
+    (tethys) $ exit
 
 Press :kbd:`i` to enter ``INSERT`` mode and edit the file. Copy and paste the following changing the ``ServerName`` and ``ServerAlias`` appropriately. The :file:`tethys-default.conf` will look similar to this when you are done:
 
