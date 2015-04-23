@@ -11,7 +11,11 @@ from django.conf import settings
 
 from tethys_apps.terminal_colors import TerminalColors
 from .docker_commands import *
+from .manage_commands import pre_collectstatic
 from tethys_apps.helpers import get_tethysapp_dir, get_installed_tethys_apps
+
+# Setup Django settings
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_apps.settings")
 
 # Module level variables
 GEN_SETTINGS_OPTION = 'settings'
@@ -20,9 +24,9 @@ VALID_GEN_OBJECTS = (GEN_SETTINGS_OPTION, GEN_APACHE_OPTION)
 DEFAULT_INSTALLATION_DIRECTORY = '/usr/lib/tethys/src'
 DEVELOPMENT_DIRECTORY = '/usr/lib/tethys/tethys'
 PREFIX = 'tethysapp'
-
-# Setup Django settings
-settings.configure()
+MANAGE_START = 'start'
+MANAGE_SYNCDB = 'syncdb'
+MANAGE_COLLECTSTATIC = 'collectstatic'
 
 
 def get_manage_path(args):
@@ -163,13 +167,23 @@ def manage_command(args):
     # Define the process to be run
     process = None
 
-    if args.command == 'start':
+    if args.command == MANAGE_START:
         if args.port:
             process = ['python', manage_path, 'runserver', str(args.port)]
         else:
             process = ['python', manage_path, 'runserver']
-    elif args.command == 'syncdb':
+    elif args.command == MANAGE_SYNCDB:
         process = ['python', manage_path, 'syncdb']
+
+    elif args.command == MANAGE_COLLECTSTATIC:
+        if settings.STATIC_ROOT:
+            installed_apps = get_installed_tethys_apps()
+            pre_collectstatic(installed_apps, settings.STATIC_ROOT)
+            process = ['python', manage_path, 'collectstatic']
+        else:
+            print('WARNING: Cannot find the STATIC_ROOT setting in the settings.py file. '
+                  'Please provide the path to the static directory using the STATIC_ROOT setting and try again.')
+            exit(1)
 
     # Call the process with a little trick to ignore the keyboard interrupt error when it happens
     if process:
@@ -332,7 +346,7 @@ def tethys_command():
     # Setup start server command
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
     manage_parser.add_argument('command', help='Management command to run.',
-                               choices=['start', 'syncdb'])
+                               choices=[MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC])
     manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
     manage_parser.add_argument('-p', '--port', type=int, help='Port on which to start the development server.')
     manage_parser.set_defaults(func=manage_command)
