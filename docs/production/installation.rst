@@ -2,7 +2,7 @@
 Production Installation
 ***********************
 
-**Last Updated:** November 25, 2014
+**Last Updated:** April 22, 2015
 
 This article will provide an overview of how to install Tethys Portal in a production setup ready to host apps. The recommended deployment platform for Python web projects is to use `WSGI <http://www.wsgi.org/>`_. The easiest and most stable way to deploy a WSGI application is with the `modwsgi <https://code.google.com/p/modwsgi/>`_ extension for the `Apache Server <http://httpd.apache.org/>`_. These instructions are optimized for Ubuntu 14.04 using Apache and modwsgi, though installation on other Linux distributions will be similar.
 
@@ -69,7 +69,48 @@ In these instructions, Apache will be used to serve the static files. Create a d
     $ sudo mkdir -p /var/www/tethys/static
     $ sudo chown `whoami` /var/www/tethys/static
 
-6. Set Secure Settings
+6. Setup Email Capabilities
+===========================
+
+Tethys Platform provides a mechanism for resetting forgotten passwords that requires email capabilities, for which we recommend using Postfix. Install Postfix as follows:
+
+::
+
+    $ sudo apt-get install postfix
+
+When prompted select "Internet Site". You will then be prompted to enter you Fully Qualified Domain Name (FQDN) for your server. This is the domain name of the server you are installing Tethys Platform on. For example:
+
+::
+
+    foo.example.org
+
+Next, configure Postfix by opening its configuration file:
+
+::
+
+    $ sudo vim /etc/postfix/main.cf
+
+Press :kbd:`i` to start editing, find the `myhostname` parameter, and change it to point at your FQDN:
+
+::
+
+    myhostname = foo.example.org
+
+Find the `mynetworks` parameter and verify that it is set as follows:
+
+::
+
+    mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+
+Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` to save changes and exit. Finally, restart the Postfix service to apply the changes:
+
+::
+
+    $ sudo service postfix restart
+
+Django must be configured to use the postfix server. The next section will describe the Django settings that must be configured for the email server to work. For an excellent guide on setting up Postfix on Ubuntu, refer to `How To Install and Setup Postfix on Ubuntu 14.04 <https://www.digitalocean.com/community/tutorials/how-to-install-and-setup-postfix-on-ubuntu-14-04>`_.
+
+7. Set Secure Settings
 ======================
 
 Several settings need to be modified in the :file:`settings.py` module to make the installation ready for a production environment. The internet is a hostile environment and you need to take every precaution to make sure your Tethys Platform installation is secure. Django provides a `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ that points out critical settings. You should review this checklist carefully before launching your site. As a minimum do the following:
@@ -111,6 +152,23 @@ d. Set the static root directory
 
       STATIC_ROOT = '/var/www/tethys/static'
 
+e. Set email settings
+
+  Several email settings need to be configured for the forget password functionality to work properly. The following exampled illustrates how to setup email using the Postfix installation from above:
+
+  ::
+
+      EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+      EMAIL_HOST = 'localhost'
+      EMAIL_PORT = 25
+      EMAIL_HOST_USER = ''
+      EMAIL_HOST_PASSWORD = ''
+      EMAIL_USE_TLS = False
+      DEFAULT_FROM_EMAIL = 'Example <noreply@exmaple.com>'
+
+For more information about setting up email capabilities for Tethys Platform, refer to the `Sending email <https://docs.djangoproject.com/en/1.8/topics/email/>`_ documentation.
+
+
 Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` to save changes and exit.
 
 .. important::
@@ -119,7 +177,7 @@ Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` 
 
 
 
-7. Create Apache Site Configuration File
+8. Create Apache Site Configuration File
 ========================================
 
 Create an Apache configuration for your Tethys Platform using the :command:`gen` command and open the :file:`tethys-default.conf` file that was generated using ``vim``:
@@ -167,17 +225,18 @@ Press :kbd:`i` to enter ``INSERT`` mode and edit the file. Copy and paste the fo
 
 There is a lot going on in this file, for more information about Django and WSGI review Django's `How to deploy with WSGI <https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/>`_ documentation.
 
-8. Install Apps
+9. Install Apps
 ================
 
 Download and install any apps that you want to host using this installation of Tethys Platform. It is recommended that you create a directory to store the source code for all of the apps that you install. The installation of each app may vary, but generally, an app can be installed as follows:
 
 ::
 
+             $ . /usr/lib/tethys/bin/activate
     (tethys) $ cd /path/to/tethysapp-my_first_app
     (tethys) $ python setup.py install
 
-9. Setup the Persistent Stores for Apps
+10. Setup the Persistent Stores for Apps
 ========================================
 
 After all the apps have been successfully installed, you will need to initialize the persistent stores for the apps:
@@ -186,7 +245,7 @@ After all the apps have been successfully installed, you will need to initialize
 
     (tethys) $ tethys syncstores all
 
-10. Run Collect Static
+11. Run Collect Static
 ======================
 
 The static files need to be collected into the directory that you created. Enter the following commands and enter "yes" if prompted:
@@ -201,7 +260,7 @@ The static files need to be collected into the directory that you created. Enter
     (tethys) $ exit
 
 
-11. Enable Site and Restart Apache
+12. Enable Site and Restart Apache
 ==================================
 
 Finally, you need to disable the default apache site, enable the Tethys Portal site, and reload Apache:
@@ -214,5 +273,5 @@ Finally, you need to disable the default apache site, enable the Tethys Portal s
 
 .. note::
 
-    Whenever you install new apps you will need to run through steps 11-14 again.
+    Whenever you install new apps you will need to run through steps 9-11 again.
 
