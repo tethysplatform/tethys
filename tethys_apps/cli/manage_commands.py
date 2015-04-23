@@ -7,7 +7,7 @@ def pre_collectstatic(installed_apps, static_root):
     parameter of the settings.py. Do this prior to running Django's collectstatic method.
     """
     # Provide feedback to user
-    print('INFO: Linking static and public directories of apps to STATIC_ROOT directory.')
+    print('INFO: Linking static and public directories of apps to "{0}".'.format(static_root))
 
     for app, path in installed_apps.iteritems():
         # Check for both variants of the static directory (public and static)
