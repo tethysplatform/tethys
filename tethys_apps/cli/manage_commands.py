@@ -1,4 +1,5 @@
 import os
+import shutil
 
 
 def pre_collectstatic(installed_apps, static_root):
@@ -19,7 +20,8 @@ def pre_collectstatic(installed_apps, static_root):
         try:
             os.remove(static_root_path)
         except OSError:
-            pass
+            # Remove directory
+            shutil.rmtree(static_root_path)
 
         # Create appropriate symbolic link
         if os.path.isdir(public_path):
