@@ -16,7 +16,7 @@ def pre_collectstatic(installed_apps, static_root):
         static_path = os.path.join(path, 'static')
         static_root_path = os.path.join(static_root, app)
 
-        # Clear out old symbolic links if necessary
+        # Clear out old symbolic links/directories if necessary
         try:
             os.remove(static_root_path)
         except OSError:
@@ -25,9 +25,9 @@ def pre_collectstatic(installed_apps, static_root):
 
         # Create appropriate symbolic link
         if os.path.isdir(public_path):
-            print('INFO: Successfully linked directory "{0}" to STATIC_ROOT for app "{1}".'.format(public_path, app))
             os.symlink(public_path, static_root_path)
+            print('INFO: Successfully linked public directory to STATIC_ROOT for app "{1}".'.format(app))
 
         elif os.path.isdir(static_path):
-            print('INFO: Successfully linked directory "{0}" to STATIC_ROOT for app "{1}".'.format(static_path, app))
             os.symlink(static_path, static_root_path)
+            print('INFO: Successfully linked static directory to STATIC_ROOT for app "{1}".'.format(app))
