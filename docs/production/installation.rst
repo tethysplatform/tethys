@@ -245,7 +245,7 @@ After all the apps have been successfully installed, you will need to initialize
 
     (tethys) $ tethys syncstores all
 
-11. Run Collect Static
+11. Run Collectstatic
 ======================
 
 The static files need to be collected into the directory that you created. Enter the following commands and enter "yes" if prompted:
@@ -254,8 +254,7 @@ The static files need to be collected into the directory that you created. Enter
 
              $ sudo su
              $ . /usr/lib/tethys/bin/activate
-    (tethys) $ cd /usr/lib/tethys/src
-    (tethys) $ python manage.py collectstatic
+    (tethys) $ tethys manage collectstatic
     (tethys) $ chown -R www-data:www-data /var/www/tethys
     (tethys) $ exit
 
