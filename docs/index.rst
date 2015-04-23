@@ -25,8 +25,8 @@ Contents
    tethys_sdk
    tethys_portal
    production
-   repos
    tethys_development
+   repos
    supplementary
    summary
    glossary
