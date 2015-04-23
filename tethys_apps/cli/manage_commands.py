@@ -26,8 +26,8 @@ def pre_collectstatic(installed_apps, static_root):
         # Create appropriate symbolic link
         if os.path.isdir(public_path):
             os.symlink(public_path, static_root_path)
-            print('INFO: Successfully linked public directory to STATIC_ROOT for app "{1}".'.format(app))
+            print('INFO: Successfully linked public directory to STATIC_ROOT for app "{0}".'.format(app))
 
         elif os.path.isdir(static_path):
             os.symlink(static_path, static_root_path)
-            print('INFO: Successfully linked static directory to STATIC_ROOT for app "{1}".'.format(app))
+            print('INFO: Successfully linked static directory to STATIC_ROOT for app "{0}".'.format(app))
