@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from itertools import izip
 
 from django.db import models, migrations, connection
 from django.db.utils import ProgrammingError
@@ -58,6 +59,7 @@ def migrate_to_services(apps, schema_editor):
         SpatialDatasetService = apps.get_model('tethys_services', 'SpatialDatasetService')
 
         for row in results:
+            print row
             d = SpatialDatasetService(name=row['name'],
                                       engine=row['engine'],
                                       endpoint=row['endpoint'],
@@ -65,7 +67,6 @@ def migrate_to_services(apps, schema_editor):
                                       username=row['username'],
                                       password=row['password'])
             d.save()
-            print row
 
     except ProgrammingError:
         pass
@@ -77,15 +78,16 @@ def migrate_to_services(apps, schema_editor):
         WebProcessingService = apps.get_model('tethys_services', 'WebProcessingService')
 
         for row in results:
+            print row
             w = WebProcessingService(name=row['name'],
                                      endpoint=row['endpoint'],
                                      username=row['username'],
                                      password=row['password'])
             w.save()
-            print row
 
     except ProgrammingError:
         pass
+
 
 class Migration(migrations.Migration):
 
@@ -94,4 +96,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(migrate_to_services),
     ]
