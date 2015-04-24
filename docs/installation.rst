@@ -7,12 +7,13 @@ Installation
 This section describes how to install Tethys Platform. Installation instructions are provided for Linux (Ubuntu), Mac OSX, and Windows.
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     installation/system_requirements
     installation/linux
     installation/mac
     installation/web_admin_setup
+    installation/update
 
 
 
