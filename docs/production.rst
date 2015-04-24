@@ -7,9 +7,10 @@ Deploy Tethys
 The following instructions can be used to deploy Tethys Platform.
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     production/system_requirements
     production/installation
     production/distributed
+    production/update
 
