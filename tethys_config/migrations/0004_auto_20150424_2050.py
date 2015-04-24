@@ -41,11 +41,6 @@ def settings10to11(apps, schema_editor):
     general_category.save()
 
 
-
-
-
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
