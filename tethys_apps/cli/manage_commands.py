@@ -1,6 +1,9 @@
 import os
 import shutil
 
+# Setup Django settings
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_apps.settings")
+
 
 def pre_collectstatic(installed_apps, static_root):
     """
