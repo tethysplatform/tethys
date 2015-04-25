@@ -167,13 +167,6 @@ def uninstall_command(args):
     print('App "{0}" successfully uninstalled.'.format(app_with_prefix))
 
 
-def update_command(args):
-    """
-    Update Tethys Platform command.
-    """
-    print('update')
-
-
 def docker_command(args):
     """
     Docker management commands.
@@ -280,10 +273,6 @@ def tethys_command():
     uninstall_parser = subparsers.add_parser('uninstall', help='Uninstall an app.')
     uninstall_parser.add_argument('app', help='Name of the app to uninstall.')
     uninstall_parser.set_defaults(func=uninstall_command)
-
-    # Setup update command
-    update_parser = subparsers.add_parser('update', help='Update Tethys Platform.')
-    update_parser.set_defaults(func=update_command)
 
     # Sync stores command
     syncstores_parser = subparsers.add_parser('syncstores', help='Management command for App Persistent Stores.')
