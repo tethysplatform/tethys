@@ -206,7 +206,7 @@ b. Replace the password for the main Tethys Portal database, **tethys_default**,
           'NAME': 'tethys_default',
           'USER': 'tethys_default',
           'PASSWORD': 'pass',
-          'HOST': 'localhost',
+          'HOST': '127.0.0.1',
           'PORT': '5435'
           }
     }
