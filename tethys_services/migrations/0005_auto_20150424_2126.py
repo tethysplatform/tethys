@@ -2,11 +2,14 @@
 from __future__ import unicode_literals
 from itertools import izip
 
-from django.db import models, migrations, connection
+from django.db import migrations, connection
 from django.db.utils import ProgrammingError
 
 
 def query_to_dicts(query_string, *query_args):
+    """
+    Utility that converts raw Django query to dictionary.
+    """
     cursor = connection.cursor()
     cursor.execute(query_string, query_args)
     col_names = [desc[0] for desc in cursor.description]
@@ -28,7 +31,7 @@ def migrate_to_services(apps, schema_editor):
     SPATIAL_DATASET_SERVICE_TABLE = 'tethys_datasets_spatialdatasetservice'
     WPS_TABLE = 'tethys_wps_webprocessingservice'
 
-    # Check for the existence of the legacy tables
+    # Use SQL literal to query legacy tables
     generic_statement = 'SELECT * FROM {0}'
 
     # For dataset services
