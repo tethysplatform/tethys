@@ -5,6 +5,7 @@ import random
 from django.template import Template, Context
 from django.conf import settings
 
+__all__ = ['GEN_APACHE_OPTION', 'GEN_APACHE_OPTION', 'generate_command']
 
 # Initialize settings
 settings.configure()
