@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from itertools import izip
 
 from django.db import migrations, connection
-from django.db.utils import ProgrammingError
+from django.db.utils import ProgrammingError, InternalError
 
 
 def query_to_dicts(query_string, *query_args):
@@ -52,6 +52,8 @@ def migrate_to_services(apps, schema_editor):
 
     except ProgrammingError:
         pass
+    except InternalError:
+        pass
 
     # For spatial dataset services
     spatial_dataset_service_statement = generic_statement.format(SPATIAL_DATASET_SERVICE_TABLE)
@@ -71,6 +73,8 @@ def migrate_to_services(apps, schema_editor):
 
     except ProgrammingError:
         pass
+    except InternalError:
+        pass
 
     # For web processing services
     web_processing_service_statement = generic_statement.format(WPS_TABLE)
@@ -87,6 +91,8 @@ def migrate_to_services(apps, schema_editor):
             w.save()
 
     except ProgrammingError:
+        pass
+    except InternalError:
         pass
 
 
