@@ -19,7 +19,6 @@ def query_to_dicts(query_string, *query_args):
     return
 
 
-
 def migrate_to_services(apps, schema_editor):
     """
     Move data from old tethys_datasets and tethys_wps tables to the new unified tethys_services tables if they exist.
@@ -28,7 +27,6 @@ def migrate_to_services(apps, schema_editor):
     DATASET_SERVICE_TABLE = 'tethys_datasets_datasetservice'
     SPATIAL_DATASET_SERVICE_TABLE = 'tethys_datasets_spatialdatasetservice'
     WPS_TABLE = 'tethys_wps_webprocessingservice'
-
 
     # Check for the existence of the legacy tables
     generic_statement = 'SELECT * FROM {0}'
@@ -39,8 +37,8 @@ def migrate_to_services(apps, schema_editor):
         results = query_to_dicts(dataset_service_statement)
         DatasetService = apps.get_model('tethys_services', 'DatasetService')
 
+        # Copy contents of old table to new table
         for row in results:
-            print row
             d = DatasetService(name=row['name'],
                                engine=row['engine'],
                                endpoint=row['endpoint'],
@@ -58,8 +56,8 @@ def migrate_to_services(apps, schema_editor):
         results = query_to_dicts(spatial_dataset_service_statement)
         SpatialDatasetService = apps.get_model('tethys_services', 'SpatialDatasetService')
 
+        # Copy contents of old table to new table
         for row in results:
-            print row
             d = SpatialDatasetService(name=row['name'],
                                       engine=row['engine'],
                                       endpoint=row['endpoint'],
@@ -77,8 +75,8 @@ def migrate_to_services(apps, schema_editor):
         results = query_to_dicts(web_processing_service_statement)
         WebProcessingService = apps.get_model('tethys_services', 'WebProcessingService')
 
+        # Copy contents of old table to new table
         for row in results:
-            print row
             w = WebProcessingService(name=row['name'],
                                      endpoint=row['endpoint'],
                                      username=row['username'],
