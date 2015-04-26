@@ -22,11 +22,16 @@ def settings10to11(apps, schema_editor):
     SettingsCategory = apps.get_model('tethys_config', 'SettingsCategory')
     general_category = SettingsCategory.objects.get(name="General Settings")
 
+    app_library_title = False
+
     for setting in all_settings:
         if setting == 'Apps Library Title':
-            general_category.setting_set.create(name='Apps Library Title',
-                                                content='Apps Library',
-                                                date_modified=now)
+            app_library_title = True
+
+    if not app_library_title:
+        general_category.setting_set.create(name='Apps Library Title',
+                                            content='Apps Library',
+                                            date_modified=now)
 
     general_category.save()
 
