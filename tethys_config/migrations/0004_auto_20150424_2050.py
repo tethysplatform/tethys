@@ -25,7 +25,7 @@ def settings10to11(apps, schema_editor):
     app_library_title = False
 
     for setting in all_settings:
-        if setting == 'Apps Library Title':
+        if setting.name == 'Apps Library Title':
             app_library_title = True
 
     if not app_library_title:
