@@ -567,19 +567,20 @@ def map_view(request):
     )
 
     map_view = MapViewOptions(
-        height='500px',
+        height='600px',
         width='100%',
         controls=['ZoomSlider',
                   'Rotate',
                   'FullScreen',
-                  {'MousePosition': {'projection': 'EPSG:4326'}}],
+                  {'MousePosition': {'projection': 'EPSG:4326'}},
+                  {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
         layers=[{'WMS': {'url': 'http://demo.opengeo.org/geoserver/wms',
                          'params': {'LAYERS': 'topp:states'},
                          'serverType': 'geoserver'}}],
         view=view_options,
         basemap='OpenStreetMap',
         draw=drawing_options,
-        legend=False
+        legend=True
     )
 
     context = {'map_view': map_view}
