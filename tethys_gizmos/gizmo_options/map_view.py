@@ -60,7 +60,7 @@ class MapViewOptions(TethysGizmoOptions):
 
     """
 
-    def __init__(self, height='520px', width='100%', basemap='OpenStreetMap', view={'center': [-100, 40], 'zoom': 2},
+    def __init__(self, height='100%', width='100%', basemap='OpenStreetMap', view={'center': [-100, 40], 'zoom': 2},
                  controls=[], layers=[], draw=None, legend=False):
         """
         Constructor

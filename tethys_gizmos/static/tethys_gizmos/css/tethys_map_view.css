@@ -31,6 +31,12 @@
 .tethys-map-view-draw-control .tethys-map-view-draw-icon.linestring.active {
   background-position: 0 -80px;
 }
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.line {
+  background-position: 0 -64px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.line.active {
+  background-position: 0 -80px;
+}
 .tethys-map-view-draw-control .tethys-map-view-draw-icon.polygon {
   background-position: 0 -97px;
 }
@@ -54,4 +60,40 @@
 }
 .tethys-map-view-draw-control .tethys-map-view-draw-icon.drag.active {
   background-position: 0 -208px;
+}
+.ol-mouse-position {
+  top: auto;
+  bottom: 10px;
+  left: 10px;
+}
+.ol-attribution {
+  top: 0.5em;
+  right: 2.75em;
+  bottom: auto;
+}
+.ol-control:hover {
+  opacity: 1.0;
+}
+.tethys-map-view-legend {
+  bottom: 10px;
+  right: 10px;
+  width: 200px;
+  opacity: 0.5;
+}
+.tethys-map-view-legend .legend-header {
+  padding: 0px 10px;
+}
+.tethys-map-view-legend .legend-content {
+  padding: 0 5px;
+}
+.tethys-map-view-legend .legend-content .legend-items {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.tethys-map-view-legend .legend-content .legend-items .legend-item {
+  padding: 5px;
+}
+.tethys-map-view-legend:hover {
+  backround: white;
 }

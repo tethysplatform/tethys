@@ -40,6 +40,9 @@ var TETHYS_MAP_VIEW = (function() {
       m_drag_feature_interaction,                           // Drag feature interaction
       m_modify_interaction,                                 // Modify interaction used for modifying features
       m_select_interaction,                                 // Select interaction for modify action
+      m_legend_element,                                     // Stores the document element for the legend
+      m_legend_items,                                       // Stores the legend items
+      m_legend_control,                                     // OpenLayers map control
       m_map;					                                      // The map
 
   // Selectors
@@ -62,7 +65,8 @@ var TETHYS_MAP_VIEW = (function() {
  	*                       PRIVATE METHOD DECLARATIONS
  	*************************************************************************/
   // Initialization Methods
- 	var ol_base_map_init, ol_controls_init, ol_drawing_init, ol_layers_init, ol_map_init, ol_view_init, parse_options;
+ 	var ol_base_map_init, ol_controls_init, ol_drawing_init, ol_layers_init, ol_legend_init, ol_map_init, ol_view_init,
+      parse_options;
 
   // Drawing Methods
   var add_drawing_interaction, add_drag_box_interaction, add_drag_feature_interaction, add_modify_interaction,
@@ -74,7 +78,8 @@ var TETHYS_MAP_VIEW = (function() {
   // Attribute Table Methods
   var initialize_feature_properties, generate_feature_id, get_feature_properties;
 
-  // Layer Manipulation Methods
+  // Legend Methods
+  var new_legend_item, update_legend;
 
   // UI Management Methods
   var update_field;
@@ -412,6 +417,42 @@ var TETHYS_MAP_VIEW = (function() {
     //m_map.addLayer(layer);
 
   };
+
+  // Initialize the legend
+  ol_legend_init = function()
+  {
+    if (is_defined(m_legend_options) && m_legend_options) {
+      var legend_content, legend_header, legend_items, legend_title;
+
+      // Create the legend element
+      legend_title = document.createElement('h6');
+      legend_title.innerHTML = 'Legend';
+
+      legend_header = document.createElement('div');
+      legend_header.className = 'legend-header';
+      legend_header.appendChild(legend_title);
+
+      m_legend_items = document.createElement('ul');
+      m_legend_items.className = 'legend-items';
+
+      legend_content = document.createElement('div');
+      legend_content.className = 'legend-content';
+      legend_content.appendChild(m_legend_items);
+
+      m_legend_element = document.createElement('div');
+      m_legend_element.className = 'tethys-map-view-legend ol-unselectable ol-control';
+      m_legend_element.appendChild(legend_header);
+      m_legend_element.appendChild(legend_content);
+
+      // Add legend element as a control on open layers map
+      m_legend_control = new ol.control.Control({element: m_legend_element});
+      m_legend_control.setMap(m_map);
+
+      // Populate Legend
+      update_legend();
+    }
+  };
+
 
   // Initialize the map
  	ol_map_init = function()
@@ -789,8 +830,27 @@ var TETHYS_MAP_VIEW = (function() {
   };
 
   /***********************************
-   * Layer Manipulation Methods
+   * Legend Methods
    ***********************************/
+  new_legend_item = function() {
+    var legend_item;
+
+    legend_item = document.createElement('li');
+    legend_item.className = 'legend-item';
+    legend_item.innerHTML = 'Legend Item';
+
+    return legend_item;
+  };
+
+  update_legend = function() {
+    // Loop through layers in map and create new legend items for each layer
+    for (var i = 0; i < 10; i++)
+    {
+      m_legend_items.appendChild(new_legend_item());
+    }
+
+  };
+
 
   /***********************************
    * Initialization Methods
@@ -1013,13 +1073,13 @@ var TETHYS_MAP_VIEW = (function() {
     // Initialize the map
     ol_map_init();
 
-    // Initialize controls
+    // Initialize Controls
     ol_controls_init();
 
-    // Initialize base map
+    // Initialize Base Map
     ol_base_map_init();
 
-    // Initialize layers
+    // Initialize Layers
     ol_layers_init();
 
     // Initialize View
@@ -1027,6 +1087,9 @@ var TETHYS_MAP_VIEW = (function() {
 
     // Initialize Drawing
     ol_drawing_init();
+
+    // Initialize Legend
+    ol_legend_init();
 
 	});
 
