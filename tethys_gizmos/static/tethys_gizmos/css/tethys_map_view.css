@@ -79,6 +79,8 @@
   right: 10px;
   width: 200px;
   opacity: 0.5;
+  max-height: 80%;
+  overflow-y: auto;
 }
 .tethys-map-view-legend .legend-header {
   padding: 0px 10px;
