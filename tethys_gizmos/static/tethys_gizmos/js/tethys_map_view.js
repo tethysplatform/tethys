@@ -79,13 +79,13 @@ var TETHYS_MAP_VIEW = (function() {
   var initialize_feature_properties, generate_feature_id, get_feature_properties;
 
   // Legend Methods
-  var new_legend_item, update_legend;
+  var clear_legend, new_legend_item, update_legend;
 
   // UI Management Methods
   var update_field;
 
   // Utility Methods
-  var is_defined, in_array;
+  var is_defined, in_array, string_to_function;
 
   // Class Declarations
   var DrawingControl, DragFeatureInteraction;
@@ -366,71 +366,89 @@ var TETHYS_MAP_VIEW = (function() {
         VECTOR = 'Vector',
         TILED_WMS = 'TiledWMS';
 
+    var TILE_SOURCES = ['TileDebug',
+                        'TileImage',
+                        'TileUTFGrid'];
+
+    var IMAGE_SOURCES = ['ImageCanvas',
+                         'ImageMapGuide',
+                         'ImageStatic',
+                         'ImageWMS'];
+
+    var VECTOR_SOURCES = ['GeoJSON',
+                          'KML'];
+
     if (is_defined(m_layers_options)) {
+      console.log(m_layers_options);
       for (var i = 0; i < m_layers_options.length; i++) {
         var current_layer,
-            layer;
+            layer,
+            Source;
 
         current_layer = m_layers_options[i];
+        Source = string_to_function('ol.source.' + current_layer.source);
 
-        if (GEOJSON in current_layer) {
-          layer = new ol.layer.Vector({
-            source: ol.source.GeoJSON(current_layer[GEOJSON])
-          });
-
-        }
-        else if (IMAGE_WMS in current_layer) {
-          layer = new ol.layer.Image({
-            source: new ol.source.ImageWMS(current_layer[IMAGE_WMS])
-          });
-
-        }
-        else if (KML in current_layer) {
-          layer = new ol.layer.Vector({
-            source: new ol.source.KML(current_layer[KML])
-          });
-
-        }
-        else if (VECTOR in current_layer) {
-
-        }
-        else if (TILED_WMS in current_layer) {
+        if (in_array(current_layer.source, TILE_SOURCES)) {
           layer = new ol.layer.Tile({
-            source: new ol.source.TileWMS(current_layer[TILED_WMS])
+            source: new Source(current_layer.openlayers_object)
           });
         }
+
+        else if (in_array(current_layer.source, IMAGE_SOURCES)) {
+          layer = new ol.layer.Image({
+            source: new Source(current_layer.openlayers_object)
+          });
+        }
+
+        else if (in_array(current_layer.source, VECTOR_SOURCES)) {
+          layer = new ol.layer.Vector({
+            source: new Source(current_layer.openlayers_object)
+          });
+        }
+
+        //if (current_layer.source == GEOJSON) {
+        //  layer = new ol.layer.Vector({
+        //    source: ol.source.GeoJSON(current_layer.openlayers_object)
+        //  });
+        //
+        //}
+        //else if (current_layer.source == IMAGE_WMS) {
+        //  layer = new ol.layer.Image({
+        //    source: new ol.source.ImageWMS(current_layer.openlayers_object)
+        //  });
+        //
+        //}
+        //else if (current_layer.source == KML) {
+        //  layer = new ol.layer.Vector({
+        //    source: new ol.source.KML(current_layer.openlayers_object)
+        //  });
+        //
+        //}
+        //else if (current_layer.source == VECTOR) {
+        //
+        //}
+        //else if (current_layer.source == TILED_WMS) {
+        //  layer = new ol.layer.Tile({
+        //    source: new ol.source.TileWMS(current_layer.openlayers_object)
+        //  });
+        //}
 
         if (typeof layer !== typeof undefined) {
           m_map.addLayer(layer);
         }
       }
     }
-
-    //layer = new ol.layer.Image({
-    //  source: new ol.source.ImageWMS({
-    //    url: 'http://192.168.59.103:8181/geoserver/wms',
-    //    params: {'LAYERS': 'topp:states'},
-    //    serverType: 'geoserver'
-    //  })
-    //});
-
-    //m_map.addLayer(layer);
-
   };
 
   // Initialize the legend
   ol_legend_init = function()
   {
     if (is_defined(m_legend_options) && m_legend_options) {
-      var legend_content, legend_header, legend_items, legend_title;
+      var legend_content, legend_title;
 
       // Create the legend element
       legend_title = document.createElement('h6');
       legend_title.innerHTML = 'Legend';
-
-      legend_header = document.createElement('div');
-      legend_header.className = 'legend-header';
-      legend_header.appendChild(legend_title);
 
       m_legend_items = document.createElement('ul');
       m_legend_items.className = 'legend-items';
@@ -441,7 +459,6 @@ var TETHYS_MAP_VIEW = (function() {
 
       m_legend_element = document.createElement('div');
       m_legend_element.className = 'tethys-map-view-legend ol-unselectable ol-control';
-      m_legend_element.appendChild(legend_header);
       m_legend_element.appendChild(legend_content);
 
       // Add legend element as a control on open layers map
@@ -629,6 +646,7 @@ var TETHYS_MAP_VIEW = (function() {
 
     // Update the field
     update_field();
+    update_legend();
   };
 
   draw_change_callback = function(event) {
@@ -832,9 +850,17 @@ var TETHYS_MAP_VIEW = (function() {
   /***********************************
    * Legend Methods
    ***********************************/
-  new_legend_item = function() {
-    var legend_item;
+  clear_legend = function() {
+    while (m_legend_items.firstChild) {
+      m_legend_items.removeChild(m_legend_items.firstChild);
+    }
+  };
 
+  new_legend_item = function(layer) {
+    var legend_item, legend_title;
+
+    console.log(layer);
+    console.log(layer.name);
     legend_item = document.createElement('li');
     legend_item.className = 'legend-item';
     legend_item.innerHTML = 'Legend Item';
@@ -843,12 +869,22 @@ var TETHYS_MAP_VIEW = (function() {
   };
 
   update_legend = function() {
-    // Loop through layers in map and create new legend items for each layer
-    for (var i = 0; i < 10; i++)
-    {
-      m_legend_items.appendChild(new_legend_item());
-    }
+    var layers;
 
+    // Clear the legend items
+    clear_legend();
+
+    // Get current layers from the map
+    layers = m_map.getLayers();
+
+    // Determine source type
+
+
+    for (var i = 0; i < layers.getLength(); i++)
+    {
+      var layer = layers.item(i);
+      m_legend_items.appendChild(new_legend_item(layer));
+    }
   };
 
 
@@ -888,6 +924,23 @@ var TETHYS_MAP_VIEW = (function() {
   is_defined = function(variable)
   {
     return !!(typeof variable !== typeof undefined && variable !== false);
+  };
+
+  // Instantiate a function from a string
+  // credits: http://stackoverflow.com/questions/1366127/instantiate-a-javascript-object-using-a-string-to-define-the-class-name
+  string_to_function = function(str) {
+    var arr = str.split(".");
+    var fn = (window || this);
+
+    for (var i = 0, len = arr.length; i < len; i++) {
+      fn = fn[arr[i]];
+    }
+
+    if (typeof fn !== "function") {
+      throw new Error("function not found");
+    }
+
+    return  fn;
   };
 
   /***********************************
