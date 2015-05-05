@@ -21,7 +21,7 @@ class RangeSlider(TethysGizmoOptions):
 
     ::
 
-        # CONSTRUCTOR
+        # CONTROLLER
 
         slider1 = RangeSlider(display_text='Slider 1',
                               name='slider1',

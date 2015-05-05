@@ -82,9 +82,7 @@ class FetchClimatePlotParameters(TethysGizmoOptions):
     Plot Parameters
 
     Attributes:
-        dimensions(dict): The integer is in pixels for width (`Highcharts width reference
-        <http://api.highcharts.com/highcharts#chart.width>`_) or height (`Highcharts height reference
-        <http://api.highcharts.com/highcharts#chart.height>`_). Not required to be defined.
+        dimensions(dict): The integer is in pixels for width (`Highcharts width reference <http://api.highcharts.com/highcharts#chart.width>`_) or height (`Highcharts height reference <http://api.highcharts.com/highcharts#chart.height>`_). Not required to be defined.
     """
 
     def __init__(self, dimensions={'width': 100, 'height': 500}):
@@ -101,10 +99,7 @@ class FetchClimateVariableParameters(TethysGizmoOptions):
     """
     Variable Parameters
 
-    To find out which variables you can use and their parameters, go to your service url
-    with '/api/configuration' at the end. (e.g. `http://fetchclimate2.cloudapp.net/api/configuration
-    <http://fetchclimate2.cloudapp.net/api/configuration>`_). Look in "EnvironmentalVariables" for the
-    variable names. Then, to find the data source ID's of sources available, go to "DataSources".
+    To find out which variables you can use and their parameters, go to your service url with '/api/configuration' at the end. (e.g. `http://fetchclimate2.cloudapp.net/api/configuration <http://fetchclimate2.cloudapp.net/api/configuration>`_). Look in "EnvironmentalVariables" for the variable names. Then, to find the data source ID's of sources available, go to "DataSources".
 
     Attributes:
         variables(dict): Must have variable defined. It is in the format {'variable_name':[variable_id,variable_id,variable_id]}.
@@ -148,8 +143,7 @@ class FetchClimatePointParameters(TethysGizmoOptions):
     """
     Point Parameters
 
-    Optional if there is a map or grid included. Otherwise, it is required! No map needed.
-    If map included, it will initialize with input point.
+    Optional if there is a map or grid included. Otherwise, it is required! No map needed. If map included, it will initialize with input point.
 
     Attributes:
         title(str): The name of the point location.
@@ -172,15 +166,13 @@ class FetchClimateMap(TethysGizmoOptions):
     Plot Parameters
 
     Attributes:
-        dimensions(dict): The integer is in pixels for width (`Highcharts width reference
-        <http://api.highcharts.com/highcharts#chart.width>`_) or height (`Highcharts height reference
-        <http://api.highcharts.com/highcharts#chart.height>`_). Not required to be defined.
+        dimensions(dict): The integer is in pixels for width (`Highcharts width reference <http://api.highcharts.com/highcharts#chart.width>`_) or height (`Highcharts height reference <http://api.highcharts.com/highcharts#chart.height>`_). Not required to be defined.
 
     Example
 
     ::
 
-        # CONSTRUCTOR
+        # CONTROLLER
 
         fetchclimate_map = FetchClimateMap(
                     url_parameter=FetchClimateURLParameter(serverUrl='http://fetchclimate2.cloudapp.net'),
@@ -212,6 +204,7 @@ class FetchClimateMap(TethysGizmoOptions):
         # TEMPLATE
 
         {% gizmo fetchclimate fetchclimate_with_map_plot %}
+
     """
 
     def __init__(self, url_parameter=FetchClimateURLParameter(), map_parameters=FetchClimateMapParameters(),
