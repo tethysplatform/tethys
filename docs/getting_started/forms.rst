@@ -131,7 +131,7 @@ Now you need to create the ``echo_name`` controller function. Add the following 
 
         return render(request, 'my_first_app/echo_name.html', context)
 
-There are a few features to point out in this controller. First, the Gizmo options for the text input are defined in this controller via the ``test_input_options`` dictionary. The text input must have a name assigned to it for its value to be sent with the form data. In this case the name of the text input is "name-input". See the :doc:`../tethys_sdk/gizmos`.
+There are a few features to point out in this controller. First, the Gizmo options for the text input are defined in this controller via the ``text_input_options`` dictionary. The text input must have a name assigned to it for its value to be sent with the form data. In this case the name of the text input is "name-input". See the :doc:`../tethys_sdk/gizmos`.
 
 Next, the data that is submitted with HTML forms is returned through the ``request`` object. For forms submitted using the "post" method, the data will be accessible in the ``request.POST`` attribute. Similarly, form data submitted using the "get" method will be available via the ``request.GET`` attribute. Both ``request.GET`` and ``request.POST`` are dictionary like objects where the keys are the names of the fields from the form.
 
