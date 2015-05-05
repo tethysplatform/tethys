@@ -104,7 +104,7 @@ class HighChartsObjectBase(TethysGizmoOptions):
     Attributes
     """
 
-    def __init__(self, chart={}, title='', subtitle='', **kwargs):
+    def __init__(self, chart={}, title='', subtitle='', legend=True, **kwargs):
         """
         Constructor
         """
@@ -114,6 +114,15 @@ class HighChartsObjectBase(TethysGizmoOptions):
         self.chart = chart
         self.title = title
         self.subtitle = subtitle
+
+        if legend:
+            self.legend = {
+                'layout': 'vertical',
+                'align': 'right',
+                'verticalAlign': 'middle',
+                'borderWidth': 0
+            }
+
         # add any other attributes the user wants
         for key, value in kwargs.iteritems():
             setattr(self, key, value)
@@ -128,13 +137,17 @@ class HighChartsLinePlot(HighChartsObjectBase):
     Attributes
     """
 
-    def __init__(self, chart={'type': 'spline'}, series=[], title='', subtitle='',  **kwargs):
+    def __init__(self, series, title='', subtitle='', spline=False,  **kwargs):
         """
         Constructor
 
         Args:
         """
-        chart['type'] = 'spline'
+
+        if spline:
+            chart = {'type': 'spline'}
+        else:
+            chart = {'type': 'line'}
 
         # Initialize super class
         super(HighChartsLinePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, **kwargs)
