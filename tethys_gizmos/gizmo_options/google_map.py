@@ -23,7 +23,7 @@ class GoogleMapView(TethysGizmoOptions):
 
     ::
 
-        # CONSTRUCTOR
+        # CONTROLLER
 
         google_map_view = GoogleMapView(height='600px',
                                         width='100%',

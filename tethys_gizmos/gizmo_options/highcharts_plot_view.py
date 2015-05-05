@@ -18,7 +18,9 @@ class PlotView(TethysGizmoOptions):
 
     ::
 
-        # CONSTRUCTOR
+        # CONTROLLER
+
+        from tethys_gizmos.gizmo_options import PlotView, HighChartsLinePlot, HighChartsObjectBase, HighChartsPolarPlot, HighChartsScatterPlot, HighChartsPiePlot
 
         highcharts_object = HighChartsLinePlot(title={'text': 'Plot Title'},
                                                subtitle={'text': 'Plot Subtitle'},
