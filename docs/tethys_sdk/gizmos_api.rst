@@ -59,6 +59,7 @@ Table View
 
 Plot View
 =========
+.. autoclass:: tethys_gizmos.gizmo_options.PlotView
 
 
 Secondary
@@ -68,7 +69,7 @@ Secondary
 Map View
 ========
 
-.. autoclass:: tethys_gizmos.gizmo_options.MapView
+.. autoclass:: tethys_gizmos.gizmo_options.MapViewOptions
 
 Secondary
 ---------

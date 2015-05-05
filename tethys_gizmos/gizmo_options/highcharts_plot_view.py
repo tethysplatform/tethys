@@ -6,15 +6,82 @@ __all__ = ['PlotView', 'HighChartsObjectBase', 'HighChartsLinePlot', 'HighCharts
 
 class PlotView(TethysGizmoOptions):
     """
-    Highcharts Plot View
-
     Plot views can be used to generate interactive plots of tabular data. All of the plots available through this gizmo are powered by the Highcharts JavaScript library.
 
     Attributes
-    highcharts_object(PySON, required): The highcharts_object contains the definition of the chart. The full `Highcharts API reference <http://api.highcharts.com/highcharts>`_ is supported via this object. The object can either be a JavaScript string or a JavaScript-equivalent Python data structure. The latter is recommended.
-    height(string): Height of the plot element. Any valid css unit of length.
-    width(string): Width of the plot element. Any valid css unit of length.
-    attributes(string): Any HTML attributes to add to the plot element (e.g.: "id=foo name=bar value=hello-world")
+        highcharts_object(PySON, required): The highcharts_object contains the definition of the chart. The full `Highcharts API reference <http://api.highcharts.com/highcharts>`_ is supported via this object. The object can either be a JavaScript string or a JavaScript-equivalent Python data structure. The latter is recommended.
+        height(str): Height of the plot element. Any valid css unit of length.
+        width(str): Width of the plot element. Any valid css unit of length.
+        attributes(str): Any HTML attributes to add to the plot element (e.g.: "id=foo name=bar value=hello-world")
+
+    Example
+
+    ::
+
+        # CONTROLLER
+
+        from tethys_gizmos.gizmo_options import PlotView, HighChartsLinePlot, HighChartsObjectBase, HighChartsPolarPlot, HighChartsScatterPlot, HighChartsPiePlot
+
+        highcharts_object = HighChartsLinePlot(title={'text': 'Plot Title'},
+                                               subtitle={'text': 'Plot Subtitle'},
+                                               legend={
+                                                   'layout': 'vertical',
+                                                   'align': 'right',
+                                                   'verticalAlign': 'middle',
+                                                   'borderWidth': 0
+                                               },
+                                               xAxis={
+                                                   'title': {'enabled': True,
+                                                             'text': 'Altitude (km)'
+                                                   },
+                                                   'labels': {
+                                                       'formatter': 'function () { return this.value + " km"; }'
+                                                   }
+                                               },
+                                               yAxis={
+                                                   'title': {
+                                                       'enabled': True,
+                                                       'text': 'Temperature (*C)'
+                                                   },
+                                                   'labels': {'formatter': 'function () { return this.value + " *C"; }'}
+                                               },
+                                               tooltip={'headerFormat': '<b>{series.name}</b><br/>',
+                                                        'pointFormat': '{point.x} km: {point.y}*C'
+                                               },
+                                               series=[
+                                                   {
+                                                       'name': 'Air Temp',
+                                                       'color': '#0066ff',
+                                                       'marker': {'enabled': False},
+                                                       'data': [
+                                                           [0, 5], [10, -70],
+                                                           [20, -86.5], [30, -66.5],
+                                                           [40, -32.1],
+                                                           [50, -12.5], [60, -47.7],
+                                                           [70, -85.7], [80, -106.5]
+                                                       ]
+                                                   },
+                                                   {
+                                                       'name': 'Water Temp',
+                                                       'color': '#ff6600',
+                                                       'data': [[0, 15], [10, -50],
+                                                                [20, -56.5], [30, -46.5],
+                                                                [40, -22.1],
+                                                                [50, -2.5], [60, -27.7],
+                                                                [70, -55.7], [80, -76.5]
+                                                       ]
+                                                   }
+                                               ]
+        )
+
+        line_plot_view = PlotView(highcharts_object=highcharts_object,
+                                  width='500px',
+                                  height='500px')
+
+        # TEMPLATE
+
+        {% gizmo highcharts_plot_view line_plot_view %}
+
     """
 
     def __init__(self, highcharts_object, height='520px', width='100%', attributes=""):
@@ -67,6 +134,7 @@ class HighChartsLinePlot(HighChartsObjectBase):
 
         Args:
         """
+        chart['type'] = 'spline'
 
         # Initialize super class
         super(HighChartsLinePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, **kwargs)
