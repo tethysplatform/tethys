@@ -368,15 +368,28 @@ var TETHYS_MAP_VIEW = (function() {
 
     var TILE_SOURCES = ['TileDebug',
                         'TileImage',
-                        'TileUTFGrid'];
+                        'TileUTFGrid',
+                        'Stamen',
+                        'TileArcGISRest',
+                        'Zoomify',
+                        'XYZ',
+                        'WMTS',
+                        'TileWMS'];
 
     var IMAGE_SOURCES = ['ImageCanvas',
                          'ImageMapGuide',
                          'ImageStatic',
+                         'ImageVector',
                          'ImageWMS'];
 
     var VECTOR_SOURCES = ['GeoJSON',
-                          'KML'];
+                          'KML',
+                          'GPX',
+                          'IGC',
+                          'OSMXML',
+                          'TopoJSON',
+                          'ServerVector',
+                          'TileVector'];
 
     if (is_defined(m_layers_options)) {
       console.log(m_layers_options);
@@ -405,33 +418,6 @@ var TETHYS_MAP_VIEW = (function() {
             source: new Source(current_layer.openlayers_object)
           });
         }
-
-        //if (current_layer.source == GEOJSON) {
-        //  layer = new ol.layer.Vector({
-        //    source: ol.source.GeoJSON(current_layer.openlayers_object)
-        //  });
-        //
-        //}
-        //else if (current_layer.source == IMAGE_WMS) {
-        //  layer = new ol.layer.Image({
-        //    source: new ol.source.ImageWMS(current_layer.openlayers_object)
-        //  });
-        //
-        //}
-        //else if (current_layer.source == KML) {
-        //  layer = new ol.layer.Vector({
-        //    source: new ol.source.KML(current_layer.openlayers_object)
-        //  });
-        //
-        //}
-        //else if (current_layer.source == VECTOR) {
-        //
-        //}
-        //else if (current_layer.source == TILED_WMS) {
-        //  layer = new ol.layer.Tile({
-        //    source: new ol.source.TileWMS(current_layer.openlayers_object)
-        //  });
-        //}
 
         if (typeof layer !== typeof undefined) {
           m_map.addLayer(layer);
