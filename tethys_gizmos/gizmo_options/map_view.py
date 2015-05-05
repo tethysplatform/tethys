@@ -22,7 +22,7 @@ class MapViewOptions(TethysGizmoOptions):
 
         # CONTROLLER
 
-        from tethys_gizmos.gizmo_options import MapView, MapViewDrawOptions, MapViewViewOptions
+        from tethys_gizmos.gizmo_options import MapViewOptions, MapViewDrawOptions, MapViewViewOptions
 
         view_options = MapViewViewOptions(
             projection='EPSG:4326',
@@ -88,18 +88,6 @@ class MapViewViewOptions(SecondaryGizmoOptions):
         zoom(int or float): The zoom level for the initial view.
         maxZoom(int or float): The maximum zoom level allowed. Defaults to 28.
         minZoom(int or float): The minimum zoom level allowed. Defaults to 0.
-
-    Example
-
-    ::
-
-        view_options = MapViewViewOptions(
-            projection='EPSG:4326',
-            center=[-100, 40],
-            zoom=3.5,
-            maxZoom=18,
-            minZoom=3
-        )
     """
 
     def __init__(self, projection, center, zoom, maxZoom=28, minZoom=0):
@@ -124,17 +112,6 @@ class MapViewDrawOptions(SecondaryGizmoOptions):
         controls(list, required): List of drawing controls to add to the map. Valid options are 'Modify', 'Move', 'Point', 'LineString', 'Polygon' and 'Box'.
         initial(str, required): Drawing control to be enabled initially. Must be included in the controls list.
         output_format(str): Format to output to the hidden text area. Either 'WKT' (for Well Known Text format) or 'GeoJSON'. Defaults to 'GeoJSON'
-
-    Example
-
-    ::
-
-        drawing_options = MapViewDrawOptions(
-            controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
-            initial='Point',
-            output_format='WKT'
-        )
-
     """
 
     def __init__(self, controls, initial, output_format='GeoJSON'):
