@@ -104,7 +104,7 @@ class HighChartsObjectBase(TethysGizmoOptions):
     Attributes
     """
 
-    def __init__(self, chart={}, title='', subtitle='', legend=True, **kwargs):
+    def __init__(self, chart={}, title='', subtitle='', legend=True, xAxis={}, **kwargs):
         """
         Constructor
         """
@@ -112,8 +112,12 @@ class HighChartsObjectBase(TethysGizmoOptions):
         super(HighChartsObjectBase, self).__init__()
 
         self.chart = chart
-        self.title = title
-        self.subtitle = subtitle
+        self.xAxis = xAxis
+        if title != '':
+            self.title = {'text': title}
+
+        if subtitle != '':
+            self.subtitle = {'text': subtitle}
 
         if legend:
             self.legend = {
@@ -137,7 +141,7 @@ class HighChartsLinePlot(HighChartsObjectBase):
     Attributes
     """
 
-    def __init__(self, series, title='', subtitle='', spline=False,  **kwargs):
+    def __init__(self, series, title='', subtitle='', spline=False, x_axis_title='', x_axis_units='', **kwargs):
         """
         Constructor
 
@@ -149,8 +153,15 @@ class HighChartsLinePlot(HighChartsObjectBase):
         else:
             chart = {'type': 'line'}
 
+        if x_axis_title != '':
+            xAxis = {
+                'title': {'enabled': True,
+                          'text': x_axis_title + ' (' + x_axis_units + ')'},
+                'labels': {'formatter': 'function () { return this.value + " "' + x_axis_units + ' ; }'}
+            }
+
         # Initialize super class
-        super(HighChartsLinePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, **kwargs)
+        super(HighChartsLinePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, xAxis=xAxis, **kwargs)
 
 
 class HighChartsPolarPlot(HighChartsObjectBase):
@@ -188,7 +199,8 @@ class HighChartsScatterPlot(HighChartsObjectBase):
         Args:
         """
         # Initialize super class
-        super(HighChartsScatterPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, **kwargs)
+        super(HighChartsScatterPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
+                                                    **kwargs)
 
 
 class HighChartsPiePlot(HighChartsObjectBase):
