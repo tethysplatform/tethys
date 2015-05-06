@@ -141,22 +141,11 @@ def index(request):
                                           error='Here is my error text')
 
     # Plot Views
-    highcharts_object = HighChartsLinePlot(title={'text': 'Plot Title'},
-                                           subtitle={'text': 'Plot Subtitle'},
-                                           legend={
-                                               'layout': 'vertical',
-                                               'align': 'right',
-                                               'verticalAlign': 'middle',
-                                               'borderWidth': 0
-                                           },
-                                           xAxis={
-                                               'title': {'enabled': True,
-                                                         'text': 'Altitude (km)'
-                                               },
-                                               'labels': {
-                                                   'formatter': 'function () { return this.value + " km"; }'
-                                               }
-                                           },
+    highcharts_object = HighChartsLinePlot(title='Plot Title test',
+                                           subtitle='Plot Subtitle test',
+                                           spline=True,
+                                           x_axis_title='Altitude Test',
+                                           x_axis_units='km test',
                                            yAxis={
                                                'title': {
                                                    'enabled': True,
