@@ -104,7 +104,7 @@ class HighChartsObjectBase(TethysGizmoOptions):
     Attributes
     """
 
-    def __init__(self, chart={}, title='', subtitle='', legend=True, xAxis={}, **kwargs):
+    def __init__(self, chart={}, title='', subtitle='', legend=True, tooltip=True, x_axis={}, **kwargs):
         """
         Constructor
         """
@@ -112,7 +112,7 @@ class HighChartsObjectBase(TethysGizmoOptions):
         super(HighChartsObjectBase, self).__init__()
 
         self.chart = chart
-        self.xAxis = xAxis
+        self.xAxis = x_axis
         if title != '':
             self.title = {'text': title}
 
@@ -125,6 +125,12 @@ class HighChartsObjectBase(TethysGizmoOptions):
                 'align': 'right',
                 'verticalAlign': 'middle',
                 'borderWidth': 0
+            }
+
+        if tooltip:
+            self.tooltip = {
+                'headerFormat': '<b>{series.name}</b><br/>',
+                'pointFormat': '{point.x} km: {point.y}*C'
             }
 
         # add any other attributes the user wants
@@ -147,21 +153,25 @@ class HighChartsLinePlot(HighChartsObjectBase):
 
         Args:
         """
-
         if spline:
             chart = {'type': 'spline'}
         else:
             chart = {'type': 'line'}
 
-        if x_axis_title != '':
-            xAxis = {
+        if x_axis_title:
+            x_axis = {
                 'title': {'enabled': True,
-                          'text': x_axis_title + ' (' + x_axis_units + ')'},
-                'labels': {'formatter': 'function () { return this.value + " "' + x_axis_units + ' ; }'}
+                          'text': '{0} ({1})'.format(x_axis_title, x_axis_units)
+                },
+                'labels': {'formatter': 'function () { return this.value + " %s"; }' % x_axis_units}
+            }
+        else:
+            x_axis = {
+                'labels': {'formatter': 'function () { return this.value + " %s"; }' % x_axis_units}
             }
 
         # Initialize super class
-        super(HighChartsLinePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, xAxis=xAxis, **kwargs)
+        super(HighChartsLinePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis, **kwargs)
 
 
 class HighChartsPolarPlot(HighChartsObjectBase):

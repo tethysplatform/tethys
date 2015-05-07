@@ -146,15 +146,19 @@ def index(request):
                                            spline=True,
                                            x_axis_title='Altitude Test',
                                            x_axis_units='km test',
-                                           yAxis={
+                                           xAxis={
                                                'title': {
                                                    'enabled': True,
                                                    'text': 'Temperature (*C)'
                                                },
                                                'labels': {'formatter': 'function () { return this.value + " *C"; }'}
                                            },
-                                           tooltip={'headerFormat': '<b>{series.name}</b><br/>',
-                                                    'pointFormat': '{point.x} km: {point.y}*C'
+                                           yAxis={
+                                               'title': {
+                                                   'enabled': True,
+                                                   'text': 'Temperature (*C)'
+                                               },
+                                               'labels': {'formatter': 'function () { return this.value + " *C"; }'}
                                            },
                                            series=[
                                                {
@@ -172,11 +176,12 @@ def index(request):
                                                {
                                                    'name': 'Water Temp',
                                                    'color': '#ff6600',
-                                                   'data': [[0, 15], [10, -50],
-                                                            [20, -56.5], [30, -46.5],
-                                                            [40, -22.1],
-                                                            [50, -2.5], [60, -27.7],
-                                                            [70, -55.7], [80, -76.5]
+                                                   'data': [
+                                                       [0, 15], [10, -50],
+                                                       [20, -56.5], [30, -46.5],
+                                                       [40, -22.1],
+                                                       [50, -2.5], [60, -27.7],
+                                                       [70, -55.7], [80, -76.5]
                                                    ]
                                                }
                                            ]
@@ -187,7 +192,7 @@ def index(request):
                               height='500px')
 
     # Web Plot
-    web_plot_object = HighChartsPolarPlot(title={'text': 'Polar Chart'},
+    web_plot_object = HighChartsPolarPlot(title='Polar Chart',
                                           pane={
                                               'size': '80%'
                                           },
