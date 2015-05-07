@@ -96,6 +96,10 @@
 .tethys-map-view-legend .legend-content .legend-items .legend-item {
   padding: 5px;
 }
+.tethys-map-view-legend .legend-content .legend-items .legend-item .btn-legend-action {
+  width: 150px;
+  text-align: left;
+}
 .tethys-map-view-legend:hover {
   backround: white;
 }

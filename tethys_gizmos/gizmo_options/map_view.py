@@ -204,11 +204,11 @@ class MapViewLayer(SecondaryGizmoOptions):
     Attributes:
         source (str): The source or data type of the layer (e.g.: ImageWMS)
         title (str): The human readable name of the layer.
-        openlayers_object (dict): A dictionary representation of the OpenLayers layer options object.
+        options (dict): A dictionary representation of the OpenLayers layer options object for the source.
         legend (tuple): A tuple or list of MapViewLegendItems.
     """
 
-    def __init__(self, source, title, openlayers_object, legend=None):
+    def __init__(self, source, title, options, legend=None):
         """
         Constructor
         """
@@ -216,7 +216,7 @@ class MapViewLayer(SecondaryGizmoOptions):
 
         self.source = source
         self.title = title
-        self.openlayers_object = openlayers_object
+        self.options = options
         self.legend = legend
 
 
@@ -236,9 +236,9 @@ class MapViewWmsLayer(MapViewLayer):
         Constructor
         """
         # Construct the open layers object
-        openlayers_object = {'url': wms_url,
-                             'params': params,
-                             'serverType': server_type}
+        options = {'url': wms_url,
+                   'params': params,
+                   'serverType': server_type}
 
-        super(MapViewWmsLayer, self).__init__(source='WMS', title=title, openlayers_object=openlayers_object,
+        super(MapViewWmsLayer, self).__init__(source='WMS', title=title, options=options,
                                               legend=legend)
