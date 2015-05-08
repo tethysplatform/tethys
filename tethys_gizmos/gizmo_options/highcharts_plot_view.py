@@ -22,32 +22,13 @@ class PlotView(TethysGizmoOptions):
 
         from tethys_gizmos.gizmo_options import PlotView, HighChartsLinePlot, HighChartsObjectBase, HighChartsPolarPlot, HighChartsScatterPlot, HighChartsPiePlot
 
-        highcharts_object = HighChartsLinePlot(title={'text': 'Plot Title'},
-                                               subtitle={'text': 'Plot Subtitle'},
-                                               legend={
-                                                   'layout': 'vertical',
-                                                   'align': 'right',
-                                                   'verticalAlign': 'middle',
-                                                   'borderWidth': 0
-                                               },
-                                               xAxis={
-                                                   'title': {'enabled': True,
-                                                             'text': 'Altitude (km)'
-                                                   },
-                                                   'labels': {
-                                                       'formatter': 'function () { return this.value + " km"; }'
-                                                   }
-                                               },
-                                               yAxis={
-                                                   'title': {
-                                                       'enabled': True,
-                                                       'text': 'Temperature (*C)'
-                                                   },
-                                                   'labels': {'formatter': 'function () { return this.value + " *C"; }'}
-                                               },
-                                               tooltip={'headerFormat': '<b>{series.name}</b><br/>',
-                                                        'pointFormat': '{point.x} km: {point.y}*C'
-                                               },
+        highcharts_object = HighChartsLinePlot(title='Plot Title',
+                                               subtitle='Plot Subtitle',
+                                               spline=True,
+                                               x_axis_title='Altitude',
+                                               x_axis_units='km',
+                                               y_axis_title='Temperature',
+                                               y_axis_units='*C',
                                                series=[
                                                    {
                                                        'name': 'Air Temp',
@@ -64,11 +45,12 @@ class PlotView(TethysGizmoOptions):
                                                    {
                                                        'name': 'Water Temp',
                                                        'color': '#ff6600',
-                                                       'data': [[0, 15], [10, -50],
-                                                                [20, -56.5], [30, -46.5],
-                                                                [40, -22.1],
-                                                                [50, -2.5], [60, -27.7],
-                                                                [70, -55.7], [80, -76.5]
+                                                       'data': [
+                                                           [0, 15], [10, -50],
+                                                           [20, -56.5], [30, -46.5],
+                                                           [40, -22.1],
+                                                           [50, -2.5], [60, -27.7],
+                                                           [70, -55.7], [80, -76.5]
                                                        ]
                                                    }
                                                ]
@@ -104,7 +86,7 @@ class HighChartsObjectBase(TethysGizmoOptions):
     Attributes
     """
 
-    def __init__(self, chart={}, title='', subtitle='', legend=True, tooltip=True, x_axis={}, **kwargs):
+    def __init__(self, chart={}, title='', subtitle='', legend=True, tooltip=True, x_axis={}, y_axis={},  tooltip_format={}, **kwargs):
         """
         Constructor
         """
@@ -113,6 +95,7 @@ class HighChartsObjectBase(TethysGizmoOptions):
 
         self.chart = chart
         self.xAxis = x_axis
+        self.yAxis = y_axis
         if title != '':
             self.title = {'text': title}
 
@@ -128,10 +111,7 @@ class HighChartsObjectBase(TethysGizmoOptions):
             }
 
         if tooltip:
-            self.tooltip = {
-                'headerFormat': '<b>{series.name}</b><br/>',
-                'pointFormat': '{point.x} km: {point.y}*C'
-            }
+            self.tooltip = tooltip_format
 
         # add any other attributes the user wants
         for key, value in kwargs.iteritems():
@@ -147,7 +127,7 @@ class HighChartsLinePlot(HighChartsObjectBase):
     Attributes
     """
 
-    def __init__(self, series, title='', subtitle='', spline=False, x_axis_title='', x_axis_units='', **kwargs):
+    def __init__(self, series, title='', subtitle='', spline=False, x_axis_title='', x_axis_units='', y_axis_title='', y_axis_units='', **kwargs):
         """
         Constructor
 
@@ -160,8 +140,9 @@ class HighChartsLinePlot(HighChartsObjectBase):
 
         if x_axis_title:
             x_axis = {
-                'title': {'enabled': True,
-                          'text': '{0} ({1})'.format(x_axis_title, x_axis_units)
+                'title': {
+                    'enabled': True,
+                    'text': '{0} ({1})'.format(x_axis_title, x_axis_units)
                 },
                 'labels': {'formatter': 'function () { return this.value + " %s"; }' % x_axis_units}
             }
@@ -170,8 +151,26 @@ class HighChartsLinePlot(HighChartsObjectBase):
                 'labels': {'formatter': 'function () { return this.value + " %s"; }' % x_axis_units}
             }
 
+        if y_axis_title:
+            y_axis = {
+                'title': {
+                    'enabled': True,
+                    'text': '{0} ({1})'.format(y_axis_title, y_axis_units)
+                },
+                'labels': {'formatter': 'function () { return this.value + " %s"; }' % y_axis_units}
+            }
+        else:
+            y_axis = {
+                'labels': {'formatter': 'function () { return this.value + " %s"; }' % y_axis_units}
+            }
+
+        tooltip_format = {
+            'headerFormat': '<b>{series.name}</b><br/>',
+            'pointFormat': '{point.x} %s: {point.y} %s' % (x_axis_units, y_axis_units)
+        }
+
         # Initialize super class
-        super(HighChartsLinePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis, **kwargs)
+        super(HighChartsLinePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
 
 
 class HighChartsPolarPlot(HighChartsObjectBase):
@@ -202,15 +201,40 @@ class HighChartsScatterPlot(HighChartsObjectBase):
     Attributes
     """
 
-    def __init__(self, chart={'scatter': True, 'type': 'line'}, series=[], title='', subtitle='', **kwargs):
+    def __init__(self, series=[], title='', subtitle='', x_axis_title='', x_axis_units='', y_axis_title='', y_axis_units='', **kwargs):
         """
         Constructor
 
         Args:
         """
+        chart = {
+            'type': 'scatter',
+            'zoomType': 'xy'
+        }
+
+        if x_axis_title:
+            x_axis = {
+                'title': {
+                    'enabled': True,
+                    'text': '{0} ({1})'.format(x_axis_title, x_axis_units)
+                }
+            }
+
+        if y_axis_title:
+            y_axis = {
+                'title': {
+                    'enabled': True,
+                    'text': '{0} ({1})'.format(y_axis_title, y_axis_units)
+                }
+            }
+
+        tooltip_format = {
+            'headerFormat': '<b>{series.name}</b><br/>',
+            'pointFormat': '{point.x} %s: {point.y} %s' % (x_axis_units, y_axis_units)
+        }
+
         # Initialize super class
-        super(HighChartsScatterPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
-                                                    **kwargs)
+        super(HighChartsScatterPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
 
 
 class HighChartsPiePlot(HighChartsObjectBase):

@@ -141,25 +141,13 @@ def index(request):
                                           error='Here is my error text')
 
     # Plot Views
-    highcharts_object = HighChartsLinePlot(title='Plot Title test',
-                                           subtitle='Plot Subtitle test',
+    highcharts_object = HighChartsLinePlot(title='Plot Title',
+                                           subtitle='Plot Subtitle',
                                            spline=True,
-                                           x_axis_title='Altitude Test',
-                                           x_axis_units='km test',
-                                           xAxis={
-                                               'title': {
-                                                   'enabled': True,
-                                                   'text': 'Temperature (*C)'
-                                               },
-                                               'labels': {'formatter': 'function () { return this.value + " *C"; }'}
-                                           },
-                                           yAxis={
-                                               'title': {
-                                                   'enabled': True,
-                                                   'text': 'Temperature (*C)'
-                                               },
-                                               'labels': {'formatter': 'function () { return this.value + " *C"; }'}
-                                           },
+                                           x_axis_title='Altitude',
+                                           x_axis_units='km',
+                                           y_axis_title='Temperature',
+                                           y_axis_units='*C',
                                            series=[
                                                {
                                                    'name': 'Air Temp',
@@ -191,6 +179,65 @@ def index(request):
                               width='500px',
                               height='500px')
 
+    # Plot Views
+    male_dataset = {
+                      'name': 'Male',
+                      'color': '#0066ff',
+                      'data': [
+                          [174.0, 65.6], [175.3, 71.8], [193.5, 80.7], [186.5, 72.6],
+                          [187.2, 78.8], [181.5, 74.8], [184.0, 86.4], [184.5, 78.4],
+                          [175.0, 62.0], [184.0, 81.6], [180.0, 76.6], [177.8, 83.6],
+                          [192.0, 90.0], [176.0, 74.6], [174.0, 71.0], [184.0, 79.6],
+                          [192.7, 93.8], [171.5, 70.0], [173.0, 72.4], [176.0, 85.9],
+                          [176.0, 78.8], [180.5, 77.8], [172.7, 66.2], [176.0, 86.4],
+                          [173.5, 81.8], [178.0, 89.6], [180.3, 82.8], [180.3, 76.4],
+                          [164.5, 63.2], [173.0, 60.9], [183.5, 74.8], [175.5, 70.0],
+                          [188.0, 72.4], [189.2, 84.1], [172.8, 69.1], [170.0, 59.5],
+                          [182.0, 67.2], [170.0, 61.3], [177.8, 68.6], [184.2, 80.1],
+                          [186.7, 87.8], [171.4, 84.7], [172.7, 73.4], [175.3, 72.1],
+                          [180.3, 82.6], [182.9, 88.7], [188.0, 84.1], [177.2, 94.1],
+                          [172.1, 74.9], [167.0, 59.1], [169.5, 75.6], [174.0, 86.2],
+                          [172.7, 75.3], [182.2, 87.1], [164.1, 55.2], [163.0, 57.0],
+                          [171.5, 61.4], [184.2, 76.8], [174.0, 86.8], [174.0, 72.2],
+                          [177.0, 71.6], [186.0, 84.8], [167.0, 68.2], [171.8, 66.1]
+                      ]
+                  }
+
+    female_dataset = {
+                          'name': 'Female',
+                          'color': '#ff6600',
+                          'data': [
+                              [161.2, 51.6], [167.5, 59.0], [159.5, 49.2], [157.0, 63.0],
+                              [155.8, 53.6], [170.0, 59.0], [159.1, 47.6], [166.0, 69.8],
+                              [176.2, 66.8], [160.2, 75.2], [172.5, 55.2], [170.9, 54.2],
+                              [172.9, 62.5], [153.4, 42.0], [160.0, 50.0], [147.2, 49.8],
+                              [168.2, 49.2], [175.0, 73.2], [157.0, 47.8], [167.6, 68.8],
+                              [159.5, 50.6], [175.0, 82.5], [166.8, 57.2], [176.5, 87.8],
+                              [170.2, 72.8], [174.0, 54.5], [173.0, 59.8], [179.9, 67.3],
+                              [170.5, 67.8], [160.0, 47.0], [154.4, 46.2], [162.0, 55.0],
+                              [176.5, 83.0], [160.0, 54.4], [152.0, 45.8], [162.1, 53.6],
+                              [170.0, 73.2], [160.2, 52.1], [161.3, 67.9], [166.4, 56.6],
+                              [168.9, 62.3], [163.8, 58.5], [167.6, 54.5], [160.0, 50.2],
+                              [161.3, 60.3], [167.6, 58.3], [165.1, 56.2], [160.0, 50.2],
+                              [170.0, 72.9], [157.5, 59.8], [167.6, 61.0], [160.7, 69.1],
+                              [163.2, 55.9], [152.4, 46.5], [157.5, 54.3], [168.3, 54.8],
+                              [180.3, 60.7], [165.5, 60.0], [165.0, 62.0], [164.5, 60.3]
+                          ]
+                      }
+
+    highcharts_object = HighChartsScatterPlot(title='Scatter Plot',
+                                              subtitle='Scatter Plot',
+                                              x_axis_title='Height',
+                                              x_axis_units='cm',
+                                              y_axis_title='Weight',
+                                              y_axis_units='kg',
+                                              series=[male_dataset, female_dataset]
+    )
+
+    scatter_plot_view = PlotView(highcharts_object=highcharts_object,
+                                 width='500px',
+                                 height='500px')
+
     # Web Plot
     web_plot_object = HighChartsPolarPlot(title='Polar Chart',
                                           pane={
@@ -208,15 +255,17 @@ def index(request):
                                               'lineWidth': 0,
                                               'min': 0
                                           },
-                                          series=[{
-                                                      'name': 'Park City',
-                                                      'data': [0.2, 0.5, 0.1, 0.8, 0.2, 0.6, 0.8, 0.3],
-                                                      'pointPlacement': 'on'
-                                                  }, {
-                                                      'name': 'Little Dell',
-                                                      'data': [0.8, 0.3, 0.2, 0.5, 0.1, 0.8, 0.2, 0.6],
-                                                      'pointPlacement': 'on'
-                                                  }
+                                          series=[
+                                              {
+                                                  'name': 'Park City',
+                                                  'data': [0.2, 0.5, 0.1, 0.8, 0.2, 0.6, 0.8, 0.3],
+                                                  'pointPlacement': 'on'
+                                              },
+                                              {
+                                                  'name': 'Little Dell',
+                                                  'data': [0.8, 0.3, 0.2, 0.5, 0.1, 0.8, 0.2, 0.6],
+                                                  'pointPlacement': 'on'
+                                              }
                                           ]
     )
 
@@ -410,6 +459,7 @@ def index(request):
                'flash_message': flash_message,
                'fetchclimate_array': fetchclimate_array,
                'map_view_options': map_view_options,
+               'scatter_plot_view': scatter_plot_view,
     }
 
     return render(request, 'tethys_gizmos/gizmo_showcase/index.html', context)
