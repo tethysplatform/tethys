@@ -86,7 +86,7 @@ class HighChartsObjectBase(TethysGizmoOptions):
     Attributes
     """
 
-    def __init__(self, chart={}, title='', subtitle='', legend=True, tooltip=True, x_axis={}, y_axis={},  tooltip_format={}, **kwargs):
+    def __init__(self, chart={}, title='', subtitle='', legend=True, tooltip=True, x_axis={}, y_axis={},  tooltip_format={}, plotOptions={}, **kwargs):
         """
         Constructor
         """
@@ -96,6 +96,7 @@ class HighChartsObjectBase(TethysGizmoOptions):
         self.chart = chart
         self.xAxis = x_axis
         self.yAxis = y_axis
+        self.plotOptions = plotOptions
         if title != '':
             self.title = {'text': title}
 
@@ -182,14 +183,31 @@ class HighChartsPolarPlot(HighChartsObjectBase):
     Attributes
     """
 
-    def __init__(self, chart={'polar': True, 'type': 'line'}, series=[], title='', subtitle='', **kwargs):
+    def __init__(self, series=[], title='', subtitle='', categories=[], **kwargs):
         """
         Constructor
 
         Args:
         """
+        chart = {
+            'polar': True,
+            'type': 'line'
+        }
+
+        x_axis = {
+            'categories': categories,
+            'tickmarkPlacement': 'on',
+            'lineWidth': 0
+        }
+
+        y_axis = {
+            'gridLineInterpolation': 'polygon',
+            'lineWidth': 0,
+            'min': 0
+        }
+
         # Initialize super class
-        super(HighChartsPolarPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, **kwargs)
+        super(HighChartsPolarPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis, y_axis=y_axis, **kwargs)
 
 
 class HighChartsScatterPlot(HighChartsObjectBase):
@@ -246,11 +264,58 @@ class HighChartsPiePlot(HighChartsObjectBase):
     Attributes
     """
 
-    def __init__(self, chart={'polar': True, 'type': 'pie'}, series=[], title='', subtitle='', **kwargs):
+    def __init__(self, series=[], title='', subtitle='', **kwargs):
         """
         Constructor
 
         Args:
         """
+        chart = {
+            'plotShadow': False
+        }
+        plotOptions = {
+            'pie': {
+                'allowPointSelect': True,
+                'cursor': 'pointer',
+                'dataLabels': {
+                    'enabled': False
+                },
+                'showInLegend': True
+            }
+        }
+        tooltip_format = {
+            'pointFormat': '{series.name}: <b>{point.percentage:.1f}%</b>'
+        }
         # Initialize super class
-        super(HighChartsPiePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, **kwargs)
+        super(HighChartsPiePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, plotOptions=plotOptions, tooltip_format=tooltip_format, **kwargs)
+
+class HighChartsBarPlot(HighChartsObjectBase):
+    """
+    Bar Plot
+
+    Displays as either a bar or column chart.
+
+    Attributes
+    """
+
+    def __init__(self, series=[], title='', subtitle='', vertical=True, **kwargs):
+        """
+        Constructor
+
+        Args:
+        """
+        if vertical:
+            chart = {
+                'type': 'column'
+            }
+        else:
+            chart = {
+                'type': 'bar'
+            }
+
+        plotOptions = {
+
+        }
+        
+        # Initialize super class
+        super(HighChartsBarPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, plotOptions=plotOptions, **kwargs)
