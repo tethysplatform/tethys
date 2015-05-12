@@ -377,7 +377,6 @@ var TETHYS_MAP_VIEW = (function() {
     var VECTOR_SOURCES = ['GeoJSON', 'KML', 'GPX', 'IGC', 'OSMXML', 'TopoJSON', 'ServerVector', 'TileVector'];
 
     if (is_defined(m_layers_options)) {
-      console.log(m_layers_options);
       for (var i = 0; i < m_layers_options.length; i++) {
         var current_layer,
             layer,
@@ -421,16 +420,16 @@ var TETHYS_MAP_VIEW = (function() {
             // From URL case
             if (current_layer.options.hasOwnProperty('url')) {
               layer = new ol.layer.Vector({
-                source: new ol.source.Vector({
-                  url: current_layer.options.url,
-                  format: new ol.format.KML(),
-                  projection: new ol.proj.get('EPSG:4236')
+                source: new ol.source.KML({
+                  projection: new ol.proj.get(DEFAULT_PROJECTION),
+                  url: current_layer.options.url
                 })
               });
             }
 
             // From string case
             else if (current_layer.options.hasOwnProperty('kml')) {
+
               var kml_source;
 
               kml_source = new ol.source.Vector({
@@ -438,7 +437,8 @@ var TETHYS_MAP_VIEW = (function() {
               });
 
               layer = new ol.layer.Vector({
-                source: kml_source
+                source: kml_source,
+                projection: new ol.proj.get(DEFAULT_PROJECTION)
               });
             }
           }
@@ -452,7 +452,13 @@ var TETHYS_MAP_VIEW = (function() {
         }
 
         if (typeof layer !== typeof undefined) {
-          layer.tethys_legend_title = current_layer.title;
+          // Set legend properties
+          layer.tethys_legend_title = current_layer.legend_title;
+          layer.tethys_legend_classes = current_layer.legend_classes;
+          layer.tethys_legend_extent = current_layer.legend_extent;
+          layer.tethys_legend_extent_projection = current_layer.legend_extent_projection;
+
+          // Add layer to the map
           m_map.addLayer(layer);
         }
       }
@@ -873,8 +879,13 @@ var TETHYS_MAP_VIEW = (function() {
   };
 
   new_legend_item = function(layer) {
+    // Constants
+
+
+    // Declare Vars
     var html, last_item, title,
-        opacity_control, display_control, zoom_control;
+        opacity_control, display_control, zoom_control,
+        legend_classes;
 
     if (layer.hasOwnProperty('tethys_legend_title')) {
       title = layer.tethys_legend_title;
@@ -885,7 +896,7 @@ var TETHYS_MAP_VIEW = (function() {
     html =  '<li class="legend-item">' +
               '<div class="btn-group">' +
                 '<a class="btn btn-default btn-legend-action zoom-control">' + title + '</a>' +
-                '<a class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">' +
+                '<a class="btn btn-default dropdown-toggle btn-legend-dropdown" data-toggle="dropdown" aria-expanded="false">' +
                   '<span class="caret"></span>' +
                   '<span class="sr-only">Toggle Dropdown</span>' +
                 '</a>' +
@@ -894,12 +905,49 @@ var TETHYS_MAP_VIEW = (function() {
                     '<span>Opacity</span> ' +
                     '<input type="range" min="0.0" max="1.0" step="0.01" value="' + layer.getOpacity() + '">' +
                   '</a></li>' +
-                  '<li><a class="display-control" href="javascript:void(0);">Toggle Display</a></li>' +
+                  '<li><a class="display-control" href="javascript:void(0);">Hide</a></li>' +
                 '</ul>' +
-              '</div>' +
-            '</li>';
+              '</div>';
 
-    // Append
+    // Append the legend classes if applicable
+    legend_classes = layer.tethys_legend_classes;
+
+    if (legend_classes) {
+      html += '<div class="legend-item-classes"><ul>';
+
+      for (var i = 0; i < legend_classes.length; i++) {
+        var legend_class;
+
+        legend_class = legend_classes[i];
+
+        html += '<li class="legend-class ' + legend_class.type + '"><span class="legend-class-symbol"><svg>';
+
+        if (legend_class.type === legend_class.POINT_TYPE) {
+          html += '<circle cx="10" cy="10" r="25%" fill="' + legend_class.fill + '"/>';
+        }
+
+        else if (legend_class.type === legend_class.LINE_TYPE) {
+          html += '<polyline points="19 1, 1 6, 19 14, 1 19" stroke="' + legend_class.stroke + '" fill="transparent" stroke-width="2"/>';
+        }
+
+        else if (legend_class.type === legend_class.POLYGON_TYPE) {
+          html += '<polygon points="1 10, 5 3, 13 1, 19 9, 14 19, 9 13" stroke="' + legend_class.stroke + '" fill="' + legend_class.fill + '" stroke-width="2"/>';
+        }
+
+        else if (legend_class.type === legend_class.RASTER_TYPE) {
+
+        }
+
+        html += '</svg></span><span class="legend-class-value">' + legend_class.value + '</span></li>';
+      }
+
+      html += '</ul></div>';
+    }
+
+    // Close li.legend-item
+    html += '</li>';
+
+    // Append to the legend items
     $(m_legend_items).append(html);
 
     // Bind events for actions
@@ -917,8 +965,10 @@ var TETHYS_MAP_VIEW = (function() {
     display_control.on('click', function() {
       if (layer.getVisible()){
         layer.setVisible(false);
+        $(this).html('Show');
       } else {
         layer.setVisible(true);
+        $(this).html('Hide');
       }
     });
 
@@ -926,13 +976,11 @@ var TETHYS_MAP_VIEW = (function() {
     zoom_control.on('click', function() {
       var extent;
 
-      extent = layer.getExtent();
+      extent = layer.tethys_legend_extent;
 
       if (is_defined(extent)) {
-        m_map.getView().fitExtent(extent, m_map.getSize());
-      }
-      else {
-        console.log(extent);
+        var lat_lon_extent = ol.proj.transformExtent(extent, layer.tethys_legend_extent_projection, DEFAULT_PROJECTION);
+        m_map.getView().fitExtent(lat_lon_extent, m_map.getSize());
       }
     });
   };
@@ -1106,10 +1154,9 @@ var TETHYS_MAP_VIEW = (function() {
   DragFeatureInteraction.prototype.handleDragEvent = function(event) {
     var map = event.map;
 
-    var feature = map.forEachFeatureAtPixel(event.pixel,
-        function(feature, layer) {
-          return feature;
-        });
+    var feature = map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
+      return feature;
+    });
 
     var deltaX = event.coordinate[0] - this.coordinate_[0];
     var deltaY = event.coordinate[1] - this.coordinate_[1];
