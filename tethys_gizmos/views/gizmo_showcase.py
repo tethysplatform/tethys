@@ -291,64 +291,66 @@ def index(request):
                              width='500px',
                              height='500px')
 
+    # Bar Plot
+    bar_plot_view = HighChartsBarPlot(
+        title='Bar Chart',
+        subtitle='Bar Chart',
+        vertical=False,
+        categories=[
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ],
+        y_axis_units='millions',
+        y_axis_title='Population',
+        series=[{
+                    'name': 'Year 1800',
+                    'data': [107, 31, 635, 203, 2]
+                }, {
+                    'name': 'Year 1900',
+                    'data': [133, 156, 947, 408, 6]
+                }, {
+                    'name': 'Year 2008',
+                    'data': [973, 914, 4054, 732, 34]}
+        ]
+    )
+
+    bar_plot_view = PlotView(highcharts_object=bar_plot_view,
+                             width='500px',
+                             height='500px')
+
 
     # Time series plot
-    timeseries_plot_object = {
-        'chart': {
-            'type': 'area',
-            'zoomType': 'x'
-        },
-        'title': {
-            'text': 'Irregular Timeseries Plot'
-        },
-        'xAxis': {
-            'maxZoom': 30 * 24 * 3600000,  # 30 days in milliseconds
-            'type': 'datetime'
-        },
-        'yAxis': {
-            'title': {
-                'text': 'Snow depth (m)'
-            },
-            'min': 0
-        },
-        'legend': {
-            'layout': 'vertical',
-            'align': 'right',
-            'verticalAlign': 'top',
-            'x': -350,
-            'y': 125,
-            'floating': True,
-            'borderWidth': 1,
-            'backgroundColor': '#FFFFFF'
-        },
-        'series': [{
-                       'name': 'Winter 2007-2008',
-                       'data': [
-                           [datetime(2008, 12, 2), 0.8],
-                           [datetime(2008, 12, 9), 0.6],
-                           [datetime(2008, 12, 16), 0.6],
-                           [datetime(2008, 12, 28), 0.67],
-                           [datetime(2009, 1, 1), 0.81],
-                           [datetime(2009, 1, 8), 0.78],
-                           [datetime(2009, 1, 12), 0.98],
-                           [datetime(2009, 1, 27), 1.84],
-                           [datetime(2009, 2, 10), 1.80],
-                           [datetime(2009, 2, 18), 1.80],
-                           [datetime(2009, 2, 24), 1.92],
-                           [datetime(2009, 3, 4), 2.49],
-                           [datetime(2009, 3, 11), 2.79],
-                           [datetime(2009, 3, 15), 2.73],
-                           [datetime(2009, 3, 25), 2.61],
-                           [datetime(2009, 4, 2), 2.76],
-                           [datetime(2009, 4, 6), 2.82],
-                           [datetime(2009, 4, 13), 2.8],
-                           [datetime(2009, 5, 3), 2.1],
-                           [datetime(2009, 5, 26), 1.1],
-                           [datetime(2009, 6, 9), 0.25],
-                           [datetime(2009, 6, 12), 0]
-                       ]
-                   }]
-    }
+    timeseries_plot_object = HighChartsTimeSeries(
+        title='Irregular Timeseries Plot',
+        y_axis_title='Snow depth',
+        y_axis_units='m',
+        series=[{
+                    'name': 'Winter 2007-2008',
+                    'data': [
+                        [datetime(2008, 12, 2), 0.8],
+                        [datetime(2008, 12, 9), 0.6],
+                        [datetime(2008, 12, 16), 0.6],
+                        [datetime(2008, 12, 28), 0.67],
+                        [datetime(2009, 1, 1), 0.81],
+                        [datetime(2009, 1, 8), 0.78],
+                        [datetime(2009, 1, 12), 0.98],
+                        [datetime(2009, 1, 27), 1.84],
+                        [datetime(2009, 2, 10), 1.80],
+                        [datetime(2009, 2, 18), 1.80],
+                        [datetime(2009, 2, 24), 1.92],
+                        [datetime(2009, 3, 4), 2.49],
+                        [datetime(2009, 3, 11), 2.79],
+                        [datetime(2009, 3, 15), 2.73],
+                        [datetime(2009, 3, 25), 2.61],
+                        [datetime(2009, 4, 2), 2.76],
+                        [datetime(2009, 4, 6), 2.82],
+                        [datetime(2009, 4, 13), 2.8],
+                        [datetime(2009, 5, 3), 2.1],
+                        [datetime(2009, 5, 26), 1.1],
+                        [datetime(2009, 6, 9), 0.25],
+                        [datetime(2009, 6, 12), 0]
+                    ]
+                }]
+    )
 
     timeseries_plot = PlotView(highcharts_object=timeseries_plot_object,
                                width='500px',
@@ -480,6 +482,7 @@ def index(request):
                'map_view_options': map_view_options,
                'scatter_plot_view': scatter_plot_view,
                'pie_plot_view': pie_plot_view,
+               'bar_plot_view': bar_plot_view,
     }
 
     return render(request, 'tethys_gizmos/gizmo_showcase/index.html', context)

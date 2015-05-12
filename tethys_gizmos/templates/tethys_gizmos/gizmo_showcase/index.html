@@ -1114,61 +1114,6 @@ table_view_edit = TableView(column_names=('Name', 'Age', 'Job'),
         <div class="code">
           <p class="muted">Controller</p>
           <pre><code class="language-python">
-highcharts_object = HighChartsLinePlot(title={'text': 'Plot Title'},
-                                       subtitle={'text': 'Plot Subtitle'},
-                                       legend={
-                                               'layout': 'vertical',
-                                               'align': 'right',
-                                               'verticalAlign': 'middle',
-                                               'borderWidth': 0
-                                       },
-                                       xAxis={
-                                              'title': {'enabled': True,
-                                              'text': 'Altitude (km)'
-                                              },
-                                              'labels': {
-                                                         'formatter': 'function () { return this.value + " km"; }'
-                                              }
-                                       },
-                                       yAxis={
-                                              'title': {
-                                                        'enabled': True,
-                                                        'text': 'Temperature (*C)'
-                                              },
-                                              'labels': {'formatter': 'function () { return this.value + " *C"; }'}
-                                       },
-                                       tooltip={'headerFormat': '<b>{series.name}</b><br/>',
-                                                'pointFormat': '{point.x} km: {point.y}*C'
-                                       },
-                                       series=[
-                                       {
-                                           'name': 'Air Temp',
-                                           'color': '#0066ff',
-                                           'marker': {'enabled': False},
-                                           'data': [
-                                               [0, 5], [10, -70],
-                                               [20, -86.5], [30, -66.5],
-                                               [40, -32.1],
-                                               [50, -12.5], [60, -47.7],
-                                               [70, -85.7], [80, -106.5]
-                                           ]
-                                       },
-                                       {
-                                           'name': 'Water Temp',
-                                           'color': '#ff6600',
-                                           'data': [[0, 15], [10, -50],
-                                                    [20, -56.5], [30, -46.5],
-                                                    [40, -22.1],
-                                                    [50, -2.5], [60, -27.7],
-                                                    [70, -55.7], [80, -76.5]
-                                           ]
-                                       }
-                                   ]
-    )
-
-    line_plot_view = PlotView(highcharts_object=highcharts_object,
-                              width='500px',
-                              height='500px')
           </code></pre>
           <p class="muted">HTML</p>
         <pre><code class="language-python">
@@ -1196,38 +1141,6 @@ highcharts_object = HighChartsLinePlot(title={'text': 'Plot Title'},
         <div class="code">
           <p class="muted">Controller</p>
           <pre><code class="language-python">
-# Web/polar chart example                   
-web_plot_object = HighChartsPolarPlot(title={'text': 'Polar Chart'},
-                                      pane={
-                                          'size': '80%'
-                                      },
-                                      xAxis={
-                                          'categories': ['Infiltration', 'Soil Moisture', 'Precipitation',
-                                                         'Evaporation',
-                                                         'Roughness', 'Runoff', 'Permeability', 'Vegetation'],
-                                          'tickmarkPlacement': 'on',
-                                          'lineWidth': 0
-                                      },
-                                      yAxis={
-                                          'gridLineInterpolation': 'polygon',
-                                          'lineWidth': 0,
-                                          'min': 0
-                                      },
-                                      series=[{
-                                                  'name': 'Park City',
-                                                  'data': [0.2, 0.5, 0.1, 0.8, 0.2, 0.6, 0.8, 0.3],
-                                                  'pointPlacement': 'on'
-                                              }, {
-                                                  'name': 'Little Dell',
-                                                  'data': [0.8, 0.3, 0.2, 0.5, 0.1, 0.8, 0.2, 0.6],
-                                                  'pointPlacement': 'on'
-                                              }
-                                      ]
-)
-
-    web_plot = PlotView(highcharts_object=web_plot_object,
-                        width='500px',
-                        height='500px')
           </code></pre>
           <p class="muted">HTML</p>
         <pre><code class="language-python">
@@ -1249,72 +1162,24 @@ web_plot_object = HighChartsPolarPlot(title={'text': 'Polar Chart'},
     </div>
     <div class="example">
         <div class="demo">
+        {% gizmo highcharts_plot_view bar_plot_view %}
+        </div>
+        <div class="code">
+          <p class="muted">Controller</p>
+          <pre><code class="language-python">
+          </code></pre>
+          <p class="muted">HTML</p>
+        <pre><code class="language-python">
+&#123;% gizmo highcharts_plot_view bar_plot_view %&#125;</pre></code>
+        </div>
+    </div>
+    <div class="example">
+        <div class="demo">
         {% gizmo highcharts_plot_view timeseries_plot %}
         </div>
         <div class="code">
           <p class="muted">Controller</p>
           <pre><code class="language-python">
-# Timeseries plot example            
-timeseries_plot_object = {
-    'chart': {
-        'type': 'area',
-        'zoomType': 'x'
-    },
-    'title': {
-        'text': 'Irregular Timeseries Plot'
-    },
-    'xAxis': {
-        'maxZoom': 30 * 24 * 3600000, # 30 days in milliseconds
-        'type': 'datetime'
-    },
-    'yAxis': {
-        'title': {
-            'text': 'Snow depth (m)'
-        },
-        'min': 0
-    },
-    'legend': {
-        'layout': 'vertical',
-        'align': 'right',
-        'verticalAlign': 'top',
-        'x': -350,
-        'y': 125,
-        'floating': True,
-        'borderWidth': 1,
-        'backgroundColor': '#FFFFFF'
-    },
-    'series': [{
-        'name': 'Winter 2007-2008',
-        'data': [
-            [datetime(2008, 12,  2), 0.8 ],
-            [datetime(2008, 12,  9), 0.6 ],
-            [datetime(2008, 12, 16), 0.6 ],
-            [datetime(2008, 12, 28), 0.67],
-            [datetime(2009,  1,  1), 0.81],
-            [datetime(2009,  1,  8), 0.78],
-            [datetime(2009,  1, 12), 0.98],
-            [datetime(2009,  1, 27), 1.84],
-            [datetime(2009,  2, 10), 1.80],
-            [datetime(2009,  2, 18), 1.80],
-            [datetime(2009,  2, 24), 1.92],
-            [datetime(2009,  3,  4), 2.49],
-            [datetime(2009,  3, 11), 2.79],
-            [datetime(2009,  3, 15), 2.73],
-            [datetime(2009,  3, 25), 2.61],
-            [datetime(2009,  4,  2), 2.76],
-            [datetime(2009,  4,  6), 2.82],
-            [datetime(2009,  4, 13), 2.8 ],
-            [datetime(2009,  5,  3), 2.1 ],
-            [datetime(2009,  5, 26), 1.1 ],
-            [datetime(2009,  6,  9), 0.25],
-            [datetime(2009,  6, 12), 0   ]
-        ]
-    }]
-}
-
-timeseries_plot = PlotView(highcharts_object=timeseries_plot_object,
-                           width='500px',
-                           height='500px')
           </code></pre>
           <p class="muted">HTML</p>
         <pre><code class="language-python">
