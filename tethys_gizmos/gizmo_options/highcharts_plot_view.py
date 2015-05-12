@@ -1,7 +1,7 @@
 from .base import TethysGizmoOptions
 
 __all__ = ['PlotView', 'HighChartsObjectBase', 'HighChartsLinePlot', 'HighChartsPolarPlot', 'HighChartsScatterPlot',
-           'HighChartsPiePlot']
+           'HighChartsPiePlot', 'HighChartsBarPlot', 'HighChartsTimeSeries']
 
 
 class PlotView(TethysGizmoOptions):
@@ -289,6 +289,7 @@ class HighChartsPiePlot(HighChartsObjectBase):
         # Initialize super class
         super(HighChartsPiePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, plotOptions=plotOptions, tooltip_format=tooltip_format, **kwargs)
 
+
 class HighChartsBarPlot(HighChartsObjectBase):
     """
     Bar Plot
@@ -298,24 +299,95 @@ class HighChartsBarPlot(HighChartsObjectBase):
     Attributes
     """
 
-    def __init__(self, series=[], title='', subtitle='', vertical=True, **kwargs):
+    def __init__(self, series=[], title='', subtitle='', horizontal=False, categories=[], y_axis_title='', y_axis_units='', group_tools=True, **kwargs):
         """
         Constructor
 
         Args:
         """
-        if vertical:
+        if not horizontal:
             chart = {
                 'type': 'column'
+            }
+            plotOptions = {
+                'column': {
+                    'pointPadding': 0.2,
+                    'borderWidth': 0
+                }
             }
         else:
             chart = {
                 'type': 'bar'
             }
+            plotOptions = {
+                'bar': {
+                    'dataLabels': {
+                        'enabled': True
+                    }
+                }
+            }
 
-        plotOptions = {
-
+        x_axis = {
+            'categories': categories,
+            'crosshair': True
         }
-        
+
+        y_axis = {
+            'min': 0,
+            'title': {
+                'text': '{0} ({1})'.format(y_axis_title, y_axis_units)
+            }
+        }
+
+        if group_tools:
+            tooltip_format = {
+                'headerFormat': '<span style="font-size:10px">{point.key}</span><table>',
+                'pointFormat': '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' + '<td style="padding:0"><b>{point.y:.1f} %s </b></td></tr>' % (y_axis_units),
+                'footerFormat': '</table>',
+                'shared': True,
+                'useHTML': True
+            }
+
         # Initialize super class
-        super(HighChartsBarPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, plotOptions=plotOptions, **kwargs)
+        super(HighChartsBarPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, plotOptions=plotOptions, tooltip_format=tooltip_format, x_axis=x_axis, y_axis=y_axis, **kwargs)
+
+
+class HighChartsTimeSeries(HighChartsObjectBase):
+    """
+    Time Series Plot
+
+    Displays data as a timeseries plot
+
+    Attributes
+    """
+
+    def __init__(self, series=[], title='', subtitle='', y_axis_title='', y_axis_units='', **kwargs):
+        """
+        Constructor
+
+        Args:
+        """
+
+        chart = {
+            'type': 'area',
+            'zoomType': 'x'
+        }
+
+        x_axis = {
+            'maxZoom': 30 * 24 * 3600000,
+            'type': 'datetime'
+        }
+
+        y_axis = {
+            'title': {
+                'text': '{0} ({1})'.format(y_axis_title, y_axis_units)
+            },
+            'min': 0
+        }
+
+        tooltip_format = {
+            'pointFormat': '{point.y} %s' % (y_axis_units)
+        }
+
+        # Initialize super class
+        super(HighChartsTimeSeries, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
