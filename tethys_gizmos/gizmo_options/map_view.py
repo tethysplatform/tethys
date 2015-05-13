@@ -154,6 +154,19 @@ class MapViewViewOptions(SecondaryGizmoOptions):
         zoom(int or float): The zoom level for the initial view.
         maxZoom(int or float): The maximum zoom level allowed. Defaults to 28.
         minZoom(int or float): The minimum zoom level allowed. Defaults to 0.
+
+    Example
+
+    ::
+
+        view_options = MapViewViewOptions(
+            projection='EPSG:4326',
+            center=[-100, 40],
+            zoom=3.5,
+            maxZoom=18,
+            minZoom=2
+        )
+
     """
 
     def __init__(self, projection, center, zoom, maxZoom=28, minZoom=0):
@@ -178,6 +191,17 @@ class MapViewDrawOptions(SecondaryGizmoOptions):
         controls(list, required): List of drawing controls to add to the map. Valid options are 'Modify', 'Move', 'Point', 'LineString', 'Polygon' and 'Box'.
         initial(str, required): Drawing control to be enabled initially. Must be included in the controls list.
         output_format(str): Format to output to the hidden text area. Either 'WKT' (for Well Known Text format) or 'GeoJSON'. Defaults to 'GeoJSON'
+
+    Example
+
+    ::
+
+        drawing_options = MapViewDrawOptions(
+            controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
+            initial='Point',
+            output_format='WKT'
+        )
+
     """
 
     def __init__(self, controls, initial, output_format='GeoJSON'):
@@ -191,8 +215,7 @@ class MapViewDrawOptions(SecondaryGizmoOptions):
 
         # Validate initial
         if initial not in self.controls:
-            raise ValueError('Va'
-                             'lue of "initial" must be contained in the "controls" list.')
+            raise ValueError('Value of "initial" must be contained in the "controls" list.')
         self.initial = initial
         self.output_format = output_format
 
@@ -208,6 +231,76 @@ class MapViewLayer(SecondaryGizmoOptions):
         legend_classes (list): A list of MapViewLegendClass objects.
         legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
+
+    Example
+
+    ::
+
+        # Define GeoJSON layer
+        geojson_object = {
+          'type': 'FeatureCollection',
+          'crs': {
+            'type': 'name',
+            'properties': {
+              'name': 'EPSG:3857'
+            }
+          },
+          'features': [
+            {
+              'type': 'Feature',
+              'geometry': {
+                'type': 'Point',
+                'coordinates': [0, 0]
+              }
+            },
+            {
+              'type': 'Feature',
+              'geometry': {
+                'type': 'LineString',
+                'coordinates': [[4e6, -2e6], [8e6, 2e6]]
+              }
+            },
+            {
+              'type': 'Feature',
+              'geometry': {
+                'type': 'Polygon',
+                'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
+              }
+            }
+          ]
+        }
+
+        geojson_layer = MapViewLayer(source='GeoJSON',
+                                     options=geojson_object,
+                                     legend_title='Test GeoJSON',
+                                     legend_extent=[-46.7, -48.5, 74, 59],
+                                     legend_classes=[
+                                         MapViewLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
+                                         MapViewLegendClass('line', 'Lines', stroke='#3d9dcd')
+                                     ])
+
+        # Define GeoServer Layer
+        geoserver_layer = MapViewLayer(source='ImageWMS',
+                                       options={'url': 'http://192.168.59.103:8181/geoserver/wms',
+                                                'params': {'LAYERS': 'topp:states'},
+                                                'serverType': 'geoserver'},
+                                       legend_title='USA Population',
+                                       legend_extent=[-126, 24.5, -66.2, 49],
+                                       legend_classes=[
+                                           MapViewLegendClass('polygon', 'Low Density', fill='#00ff00', stroke='#000000'),
+                                           MapViewLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
+                                           MapViewLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
+                                       ])
+
+        # Define KML Layer
+        kml_layer = MapViewLayer(source='KML',
+                                 options={'url': '/static/tethys_gizmos/data/model.kml'},
+                                 legend_title='Park City Watershed',
+                                 legend_extent=[-111.60, 40.57, -111.43, 40.70],
+                                 legend_classes=[
+                                     MapViewLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
+                                     MapViewLegendClass('line', 'Stream Network', stroke='#0000ff'),
+                                 ])
     """
 
     def __init__(self, source, options, legend_title, legend_classes=None, legend_extent=None, legend_extent_projection='EPSG:4326'):
