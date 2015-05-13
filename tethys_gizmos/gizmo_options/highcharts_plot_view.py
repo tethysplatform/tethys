@@ -1,7 +1,7 @@
 from .base import TethysGizmoOptions
 
 __all__ = ['PlotView', 'HighChartsObjectBase', 'HighChartsLinePlot', 'HighChartsPolarPlot', 'HighChartsScatterPlot',
-           'HighChartsPiePlot', 'HighChartsBarPlot', 'HighChartsTimeSeries']
+           'HighChartsPiePlot', 'HighChartsBarPlot', 'HighChartsTimeSeries', 'HighChartsAreaRange', 'HighChartsHeatMap']
 
 
 class PlotView(TethysGizmoOptions):
@@ -86,7 +86,8 @@ class HighChartsObjectBase(TethysGizmoOptions):
     Attributes
     """
 
-    def __init__(self, chart={}, title='', subtitle='', legend=True, tooltip=True, x_axis={}, y_axis={},  tooltip_format={}, plotOptions={}, **kwargs):
+    def __init__(self, chart={}, title='', subtitle='', legend=True, tooltip=True, x_axis={}, y_axis={},
+                 tooltip_format={}, plotOptions={}, **kwargs):
         """
         Constructor
         """
@@ -128,7 +129,8 @@ class HighChartsLinePlot(HighChartsObjectBase):
     Attributes
     """
 
-    def __init__(self, series, title='', subtitle='', spline=False, x_axis_title='', x_axis_units='', y_axis_title='', y_axis_units='', **kwargs):
+    def __init__(self, series, title='', subtitle='', spline=False, x_axis_title='', x_axis_units='', y_axis_title='',
+                 y_axis_units='', **kwargs):
         """
         Constructor
 
@@ -171,7 +173,8 @@ class HighChartsLinePlot(HighChartsObjectBase):
         }
 
         # Initialize super class
-        super(HighChartsLinePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        super(HighChartsLinePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
+                                                 x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
 
 
 class HighChartsPolarPlot(HighChartsObjectBase):
@@ -207,7 +210,8 @@ class HighChartsPolarPlot(HighChartsObjectBase):
         }
 
         # Initialize super class
-        super(HighChartsPolarPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis, y_axis=y_axis, **kwargs)
+        super(HighChartsPolarPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
+                                                  x_axis=x_axis, y_axis=y_axis, **kwargs)
 
 
 class HighChartsScatterPlot(HighChartsObjectBase):
@@ -219,7 +223,8 @@ class HighChartsScatterPlot(HighChartsObjectBase):
     Attributes
     """
 
-    def __init__(self, series=[], title='', subtitle='', x_axis_title='', x_axis_units='', y_axis_title='', y_axis_units='', **kwargs):
+    def __init__(self, series=[], title='', subtitle='', x_axis_title='', x_axis_units='', y_axis_title='',
+                 y_axis_units='', **kwargs):
         """
         Constructor
 
@@ -252,7 +257,9 @@ class HighChartsScatterPlot(HighChartsObjectBase):
         }
 
         # Initialize super class
-        super(HighChartsScatterPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        super(HighChartsScatterPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
+                                                    x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format,
+                                                    **kwargs)
 
 
 class HighChartsPiePlot(HighChartsObjectBase):
@@ -287,7 +294,8 @@ class HighChartsPiePlot(HighChartsObjectBase):
             'pointFormat': '{series.name}: <b>{point.percentage:.1f}%</b>'
         }
         # Initialize super class
-        super(HighChartsPiePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, plotOptions=plotOptions, tooltip_format=tooltip_format, **kwargs)
+        super(HighChartsPiePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
+                                                plotOptions=plotOptions, tooltip_format=tooltip_format, **kwargs)
 
 
 class HighChartsBarPlot(HighChartsObjectBase):
@@ -299,7 +307,8 @@ class HighChartsBarPlot(HighChartsObjectBase):
     Attributes
     """
 
-    def __init__(self, series=[], title='', subtitle='', horizontal=False, categories=[], y_axis_title='', y_axis_units='', group_tools=True, **kwargs):
+    def __init__(self, series=[], title='', subtitle='', horizontal=False, categories=[], y_axis_title='',
+                 y_axis_units='', group_tools=True, **kwargs):
         """
         Constructor
 
@@ -342,14 +351,17 @@ class HighChartsBarPlot(HighChartsObjectBase):
         if group_tools:
             tooltip_format = {
                 'headerFormat': '<span style="font-size:10px">{point.key}</span><table>',
-                'pointFormat': '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' + '<td style="padding:0"><b>{point.y:.1f} %s </b></td></tr>' % (y_axis_units),
+                'pointFormat': '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' + '<td style="padding:0"><b>{point.y:.1f} %s </b></td></tr>' % (
+                    y_axis_units),
                 'footerFormat': '</table>',
                 'shared': True,
                 'useHTML': True
             }
 
         # Initialize super class
-        super(HighChartsBarPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, plotOptions=plotOptions, tooltip_format=tooltip_format, x_axis=x_axis, y_axis=y_axis, **kwargs)
+        super(HighChartsBarPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
+                                                plotOptions=plotOptions, tooltip_format=tooltip_format, x_axis=x_axis,
+                                                y_axis=y_axis, **kwargs)
 
 
 class HighChartsTimeSeries(HighChartsObjectBase):
@@ -390,4 +402,87 @@ class HighChartsTimeSeries(HighChartsObjectBase):
         }
 
         # Initialize super class
-        super(HighChartsTimeSeries, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        super(HighChartsTimeSeries, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
+                                                   x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format,
+                                                   **kwargs)
+
+
+class HighChartsAreaRange(HighChartsObjectBase):
+    """
+    Area Range Plot
+
+    Displays data as an area range plot
+
+    Attributes
+    """
+
+    def __init__(self, series=[], title='', subtitle='', y_axis_title='', y_axis_units='', **kwargs):
+        """
+        Constructor
+
+        Args:
+        """
+
+        chart = {
+        }
+
+        x_axis = {
+            'type': 'datetime'
+        }
+
+        y_axis = {
+            'title': {
+                'text': '{0} ({1})'.format(y_axis_title, y_axis_units)
+            }
+        }
+
+        tooltip_format = {
+            'crosshairs': True,
+            'shared': True,
+            'valueSuffix': y_axis_units
+        }
+
+        # Initialize super class
+        super(HighChartsAreaRange, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
+                                                  x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+
+
+class HighChartsHeatMap(HighChartsObjectBase):
+    """
+    Heat Map
+
+    Displays as a heat map.
+
+    Attributes
+    """
+
+    def __init__(self, series=[], title='', subtitle='', x_categories=[], y_categories=[], tooltip_phrase_one='',
+                 tooltip_phrase_two='', **kwargs):
+        """
+        Constructor
+
+        Args:
+        """
+        chart = {
+            'type': 'heatmap',
+            'marginTop': 40,
+            'marginBottom': 80
+        }
+
+        x_axis = {
+            'categories': x_categories
+        }
+
+        y_axis = {
+            'categories': y_categories,
+            'title': 'null'
+        }
+
+        tooltip_format = {
+            'formatter': 'function() {return "<b>" + this.series.xAxis.categories[this.point.x] + "</b> %s <br><b>" + this.point.value + "</b> %s <br><b>" + this.series.yAxis.categories[this.point.y] + "</b>";' % (
+                tooltip_phrase_one, tooltip_phrase_two)
+        }
+
+        # Initialize super class
+        super(HighChartsHeatMap, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
+                                                x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
