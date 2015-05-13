@@ -356,6 +356,107 @@ def index(request):
                                width='500px',
                                height='500px')
 
+    averages = [
+        [datetime(2009, 7, 1), 21.5], [datetime(2009, 7, 2), 22.1], [datetime(2009, 7, 3), 23],
+        [datetime(2009, 7, 4), 23.8], [datetime(2009, 7, 5), 21.4], [datetime(2009, 7, 6), 21.3],
+        [datetime(2009, 7, 7), 18.3], [datetime(2009, 7, 8), 15.4], [datetime(2009, 7, 9), 16.4],
+        [datetime(2009, 7, 10), 17.7], [datetime(2009, 7, 11), 17.5], [datetime(2009, 7, 12), 17.6],
+        [datetime(2009, 7, 13), 17.7], [datetime(2009, 7, 14), 16.8], [datetime(2009, 7, 15), 17.7],
+        [datetime(2009, 7, 16), 16.3], [datetime(2009, 7, 17), 17.8], [datetime(2009, 7, 18), 18.1],
+        [datetime(2009, 7, 19), 17.2], [datetime(2009, 7, 20), 14.4],
+        [datetime(2009, 7, 21), 13.7], [datetime(2009, 7, 22), 15.7], [datetime(2009, 7, 23), 14.6],
+        [datetime(2009, 7, 24), 15.3], [datetime(2009, 7, 25), 15.3], [datetime(2009, 7, 26), 15.8],
+        [datetime(2009, 7, 27), 15.2], [datetime(2009, 7, 28), 14.8], [datetime(2009, 7, 29), 14.4],
+        [datetime(2009, 7, 30), 15], [datetime(2009, 7, 31), 13.6]
+    ]
+
+    ranges = [
+        [datetime(2009, 7, 1), 14.3, 27.7], [datetime(2009, 7, 2), 14.5, 27.8], [datetime(2009, 7, 3), 15.5, 29.6],
+        [datetime(2009, 7, 4), 16.7, 30.7], [datetime(2009, 7, 5), 16.5, 25.0], [datetime(2009, 7, 6), 17.8, 25.7],
+        [datetime(2009, 7, 7), 13.5, 24.8], [datetime(2009, 7, 8), 10.5, 21.4], [datetime(2009, 7, 9), 9.2, 23.8],
+        [datetime(2009, 7, 10), 11.6, 21.8], [datetime(2009, 7, 11), 10.7, 23.7], [datetime(2009, 7, 12), 11.0, 23.3],
+        [datetime(2009, 7, 13), 11.6, 23.7], [datetime(2009, 7, 14), 11.8, 20.7], [datetime(2009, 7, 15), 12.6, 22.4],
+        [datetime(2009, 7, 16), 13.6, 19.6], [datetime(2009, 7, 17), 11.4, 22.6], [datetime(2009, 7, 18), 13.2, 25.0],
+        [datetime(2009, 7, 19), 14.2, 21.6], [datetime(2009, 7, 20), 13.1, 17.1], [datetime(2009, 7, 21), 12.2, 15.5],
+        [datetime(2009, 7, 22), 12.0, 20.8], [datetime(2009, 7, 23), 12.0, 17.1], [datetime(2009, 7, 24), 12.7, 18.3],
+        [datetime(2009, 7, 25), 12.4, 19.4], [datetime(2009, 7, 26), 12.6, 19.9], [datetime(2009, 7, 27), 11.9, 20.2],
+        [datetime(2009, 7, 28), 11.0, 19.3], [datetime(2009, 7, 29), 10.8, 17.8], [datetime(2009, 7, 30), 11.8, 18.5],
+        [datetime(2009, 7, 31), 10.8, 16.1]
+    ]
+    # Area Range plot
+    area_range_plot_object = HighChartsAreaRange(
+        title='July Temperatures',
+        y_axis_title='Temperature',
+        y_axis_units='*C',
+        series=[{
+            'name': 'Temperature',
+            'data': averages,
+            'zIndex': 1,
+            'marker': {
+                'lineWidth': 2,
+            }
+        }, {
+            'name': 'Range',
+            'data': ranges,
+            'type': 'arearange',
+            'lineWidth': 0,
+            'linkedTo': ':previous',
+            'fillOpacity': 0.3,
+            'zIndex': 0
+        }]
+    )
+
+    area_range_plot = PlotView(highcharts_object=area_range_plot_object,
+                               width='500px',
+                               height='500px')
+
+    sales_data = [
+        [0, 0, 10], [0, 1, 19], [0, 2, 8], [0, 3, 24], [0, 4, 67], [1, 0, 92],
+        [1, 1, 58], [1, 2, 78], [1, 3, 117], [1, 4, 48], [2, 0, 35], [2, 1, 15],
+        [2, 2, 123], [2, 3, 64], [2, 4, 52], [3, 0, 72], [3, 1, 132], [3, 2, 114],
+        [3, 3, 19], [3, 4, 16], [4, 0, 38], [4, 1, 5], [4, 2, 8], [4, 3, 117],
+        [4, 4, 115], [5, 0, 88], [5, 1, 32], [5, 2, 12], [5, 3, 6], [5, 4, 120],
+        [6, 0, 13], [6, 1, 44], [6, 2, 88], [6, 3, 98], [6, 4, 96], [7, 0, 31],
+        [7, 1, 1], [7, 2, 82], [7, 3, 32], [7, 4, 30], [8, 0, 85], [8, 1, 97],
+        [8, 2, 123], [8, 3, 64], [8, 4, 84], [9, 0, 47], [9, 1, 114], [9, 2, 31],
+        [9, 3, 48], [9, 4, 91]
+    ]
+
+    # Heat Map
+    heat_map_object = HighChartsHeatMap(
+        title='Sales per employee per weekday',
+        x_categories=['Alexander', 'Marie', 'Maximilian', 'Sophia', 'Lukas', 'Maria', 'Leon', 'Anna', 'Tim', 'Laura'],
+        y_categories=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        tooltip_phrase_one='sold',
+        tooltip_phrase_two='items on',
+        colorAxis={
+            'min': 0,
+            'minColor': '#FFFFFF',
+            'maxColor': 'Highcharts.getOptions().colors[0]'
+        },
+        legend={
+            'align': 'right',
+            'layout': 'vertical',
+            'margin': 0,
+            'verticalAlign': 'top',
+            'y': 25,
+            'symbolHeight': 280
+        },
+        series=[{
+            'name': 'Sales per employee',
+            'borderWidth': 1,
+            'data': sales_data,
+            'dataLabels': {
+                'enabled': True,
+                'color': '#000000'
+            }
+        }]
+    )
+
+    heat_map_plot = PlotView(highcharts_object=heat_map_object,
+                             width='500px',
+                             height='500px')
+
     # Table View
     table_view = TableView(column_names=('Name', 'Age', 'Job'),
                            rows=[('Bill', 30, 'contractor'),
@@ -483,6 +584,8 @@ def index(request):
                'scatter_plot_view': scatter_plot_view,
                'pie_plot_view': pie_plot_view,
                'bar_plot_view': bar_plot_view,
+               'area_range_plot': area_range_plot,
+               'heat_map_plot': heat_map_plot,
     }
 
     return render(request, 'tethys_gizmos/gizmo_showcase/index.html', context)
