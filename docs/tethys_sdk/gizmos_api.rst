@@ -74,6 +74,8 @@ Map View
 Secondary
 ---------
 
+.. autoclass:: tethys_gizmos.gizmo_options.MapViewLayer
+.. autoclass:: tethys_gizmos.gizmo_options.MapViewLegendClass
 .. autoclass:: tethys_gizmos.gizmo_options.MapViewDrawOptions
 .. autoclass:: tethys_gizmos.gizmo_options.MapViewViewOptions
 
