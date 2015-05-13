@@ -47,7 +47,7 @@ var TETHYS_MAP_VIEW = (function() {
 
   // Selectors
   var m_map_target,                                         // Selector for the map container
-      m_textarea_target;                                   // Selector for the textarea target
+      m_textarea_target;                                    // Selector for the textarea target
 
   // Options
   var m_attribute_table_options,                            // Attribute table options json
@@ -873,19 +873,33 @@ var TETHYS_MAP_VIEW = (function() {
    * Legend Methods
    ***********************************/
   clear_legend = function() {
+    // Clear legend elements
     while (m_legend_items.firstChild) {
       m_legend_items.removeChild(m_legend_items.firstChild);
     }
+
+    // Clear menu items
+    $('.tethys-map-view-dropdown').each(function() {
+      $(this).remove();
+    });
   };
 
   new_legend_item = function(layer) {
     // Constants
+    var DROPDOWN_MENU_HEIGHT = 160;
 
+    // Unaccounted for legend formatting constants
+    var MAGIC_NUMBER_1 = 35;
+    var MAGIC_NUMBER_2 = -115;
+    var MAGIC_NUMBER_3 = 75;
+    var MAGIC_NUMBER_4 = -75;
+    var MAGIC_NUMBER_5 = -75;
+    var MAGIC_NUMBER_6 = -75;
 
     // Declare Vars
-    var html, last_item, title,
-        opacity_control, display_control, zoom_control,
-        legend_classes;
+    var html, last_item, title, dif,
+        opacity_control, display_control, zoom_control, dropdown_control,
+        legend_classes, dropdown_html, last_dropdown, dropdown_target, max_height;
 
     if (layer.hasOwnProperty('tethys_legend_title')) {
       title = layer.tethys_legend_title;
@@ -900,13 +914,6 @@ var TETHYS_MAP_VIEW = (function() {
                   '<span class="caret"></span>' +
                   '<span class="sr-only">Toggle Dropdown</span>' +
                 '</a>' +
-                '<ul class="dropdown-menu dropdown-menu-right" role="menu">' +
-                  '<li><a class="opacity-control">' +
-                    '<span>Opacity</span> ' +
-                    '<input type="range" min="0.0" max="1.0" step="0.01" value="' + layer.getOpacity() + '">' +
-                  '</a></li>' +
-                  '<li><a class="display-control" href="javascript:void(0);">Hide</a></li>' +
-                '</ul>' +
               '</div>';
 
     // Append the legend classes if applicable
@@ -915,6 +922,7 @@ var TETHYS_MAP_VIEW = (function() {
     if (legend_classes) {
       html += '<div class="legend-item-classes"><ul>';
 
+      // Create SVG symbols for legend
       for (var i = 0; i < legend_classes.length; i++) {
         var legend_class;
 
@@ -950,11 +958,71 @@ var TETHYS_MAP_VIEW = (function() {
     // Append to the legend items
     $(m_legend_items).append(html);
 
+    // Append dropdown element to map container
+    dropdown_html = '<div class="tethys-map-view-dropdown ol-control">' +
+                      '<ul class="dropdown-menu dropdown-menu-right" role="menu">' +
+                        '<li><a class="opacity-control">' +
+                          '<span>Opacity</span> ' +
+                          '<input type="range" min="0.0" max="1.0" step="0.01" value="' + layer.getOpacity() + '">' +
+                        '</a></li>' +
+                        '<li><a class="display-control" href="javascript:void(0);">Hide</a></li>' +
+                      '</ul>' +
+                    '</div>';
+
+    $('.ol-overlaycontainer-stopevent').append(dropdown_html);
+
     // Bind events for actions
     last_item = $(m_legend_items).children(':last-child');
-    opacity_control = $(last_item).find('.opacity-control input[type=range]');
-    display_control = $(last_item).find('.display-control');
+    dropdown_control = $(last_item).find('.btn-legend-dropdown');
+    dropdown_target = $(dropdown_control).parent('.btn-group');
+    last_dropdown = $('.ol-overlaycontainer-stopevent').children('.tethys-map-view-dropdown:last-child');
+    opacity_control = $(last_dropdown).find('.opacity-control input[type=range]');
+    display_control = $(last_dropdown).find('.display-control');
     zoom_control = $(last_item).find('.zoom-control');
+
+    // Dropdown
+    dropdown_control.on('click', function() {
+      var top, height, bottom, menu_offset;
+
+      // Get position of button
+      top = $(this).offset().top;
+      height = $(this).height();
+      bottom = top - height;
+
+
+
+      // Calculate offset
+      if ($('.ol-full-screen-true')[0]) {
+        menu_offset = bottom + MAGIC_NUMBER_1;
+      } else {
+        menu_offset = bottom + MAGIC_NUMBER_2;
+      }
+
+      // Calculate bottom position
+      max_height = $('.ol-viewport').height();
+      dif = max_height - menu_offset - DROPDOWN_MENU_HEIGHT;
+
+      // Adjust for bottom
+      if (dif <= MAGIC_NUMBER_5 && $('.ol-full-screen-true')[0]) {
+        menu_offset = top - DROPDOWN_MENU_HEIGHT + MAGIC_NUMBER_3;
+      }
+      else if (dif <= MAGIC_NUMBER_6) {
+        menu_offset = top - DROPDOWN_MENU_HEIGHT + MAGIC_NUMBER_4;
+      }
+
+      // Set vertical position of menu
+      $(last_dropdown).css('top', menu_offset);
+    });
+
+    // Show menu
+    dropdown_target.on('show.bs.dropdown', function() {
+      $(last_dropdown).addClass('open');
+    });
+
+    // Hide menu
+    dropdown_target.on('hide.bs.dropdown', function() {
+      $(last_dropdown).removeClass('open');
+    });
 
     // Opacity
     opacity_control.on('input', function() {

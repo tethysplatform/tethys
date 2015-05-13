@@ -681,7 +681,7 @@ def map_view(request):
                              legend_title='Park City Watershed',
                              legend_extent=[-111.60, 40.57, -111.43, 40.70],
                              legend_classes=[
-                                 MapViewLegendClass('polygon', 'Boundary', fill='#ff8000'),
+                                 MapViewLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
                                  MapViewLegendClass('line', 'Stream Network', stroke='#0000ff'),
                              ]),
                 ],
