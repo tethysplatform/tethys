@@ -886,20 +886,11 @@ var TETHYS_MAP_VIEW = (function() {
 
   new_legend_item = function(layer) {
     // Constants
-    var DROPDOWN_MENU_HEIGHT = 160;
-
-    // Unaccounted for legend formatting constants
-    var MAGIC_NUMBER_1 = 35;
-    var MAGIC_NUMBER_2 = -115;
-    var MAGIC_NUMBER_3 = 75;
-    var MAGIC_NUMBER_4 = -75;
-    var MAGIC_NUMBER_5 = -75;
-    var MAGIC_NUMBER_6 = -75;
 
     // Declare Vars
-    var html, last_item, title, dif,
-        opacity_control, display_control, zoom_control, dropdown_control,
-        legend_classes, dropdown_html, last_dropdown, dropdown_target, max_height;
+    var html, last_item, title,
+        opacity_control, display_control, zoom_control, menu_toggle_control,
+        legend_classes;
 
     if (layer.hasOwnProperty('tethys_legend_title')) {
       title = layer.tethys_legend_title;
@@ -908,12 +899,21 @@ var TETHYS_MAP_VIEW = (function() {
     }
 
     html =  '<li class="legend-item">' +
-              '<div class="btn-group">' +
+              '<div class="legend-buttons">' +
                 '<a class="btn btn-default btn-legend-action zoom-control">' + title + '</a>' +
-                '<a class="btn btn-default dropdown-toggle btn-legend-dropdown" data-toggle="dropdown" aria-expanded="false">' +
+                '<a class="btn btn-default legend-dropdown-toggle">' +
                   '<span class="caret"></span>' +
                   '<span class="sr-only">Toggle Dropdown</span>' +
                 '</a>' +
+                '<div class="tethys-legend-dropdown">' +
+                  '<ul>' +
+                    '<li><a class="opacity-control">' +
+                      '<span>Opacity</span> ' +
+                      '<input type="range" min="0.0" max="1.0" step="0.01" value="' + layer.getOpacity() + '">' +
+                    '</a></li>' +
+                    '<li><a class="display-control" href="javascript:void(0);">Hide Layer</a></li>' +
+                  '</ul>' +
+                '</div>' +
               '</div>';
 
     // Append the legend classes if applicable
@@ -958,89 +958,36 @@ var TETHYS_MAP_VIEW = (function() {
     // Append to the legend items
     $(m_legend_items).append(html);
 
-    // Append dropdown element to map container
-    dropdown_html = '<div class="tethys-map-view-dropdown ol-control">' +
-                      '<ul class="dropdown-menu dropdown-menu-right" role="menu">' +
-                        '<li><a class="opacity-control">' +
-                          '<span>Opacity</span> ' +
-                          '<input type="range" min="0.0" max="1.0" step="0.01" value="' + layer.getOpacity() + '">' +
-                        '</a></li>' +
-                        '<li><a class="display-control" href="javascript:void(0);">Hide</a></li>' +
-                      '</ul>' +
-                    '</div>';
-
-    $('.ol-overlaycontainer-stopevent').append(dropdown_html);
-
-    // Bind events for actions
+    // Bind events for controls
     last_item = $(m_legend_items).children(':last-child');
-    dropdown_control = $(last_item).find('.btn-legend-dropdown');
-    dropdown_target = $(dropdown_control).parent('.btn-group');
-    last_dropdown = $('.ol-overlaycontainer-stopevent').children('.tethys-map-view-dropdown:last-child');
-    opacity_control = $(last_dropdown).find('.opacity-control input[type=range]');
-    display_control = $(last_dropdown).find('.display-control');
+    menu_toggle_control = $(last_item).find('.legend-dropdown-toggle');
+    opacity_control = $(last_item).find('.opacity-control input[type=range]');
+    display_control = $(last_item).find('.display-control');
     zoom_control = $(last_item).find('.zoom-control');
 
-    // Dropdown
-    dropdown_control.on('click', function() {
-      var top, height, bottom, menu_offset;
-
-      // Get position of button
-      top = $(this).offset().top;
-      height = $(this).height();
-      bottom = top - height;
-
-
-
-      // Calculate offset
-      if ($('.ol-full-screen-true')[0]) {
-        menu_offset = bottom + MAGIC_NUMBER_1;
-      } else {
-        menu_offset = bottom + MAGIC_NUMBER_2;
-      }
-
-      // Calculate bottom position
-      max_height = $('.ol-viewport').height();
-      dif = max_height - menu_offset - DROPDOWN_MENU_HEIGHT;
-
-      // Adjust for bottom
-      if (dif <= MAGIC_NUMBER_5 && $('.ol-full-screen-true')[0]) {
-        menu_offset = top - DROPDOWN_MENU_HEIGHT + MAGIC_NUMBER_3;
-      }
-      else if (dif <= MAGIC_NUMBER_6) {
-        menu_offset = top - DROPDOWN_MENU_HEIGHT + MAGIC_NUMBER_4;
-      }
-
-      // Set vertical position of menu
-      $(last_dropdown).css('top', menu_offset);
+    // Bind toggle control
+    menu_toggle_control.on('click', function(){
+      var dropdown_menu = $(last_item).find('.tethys-legend-dropdown');
+      dropdown_menu.toggleClass('open');
     });
 
-    // Show menu
-    dropdown_target.on('show.bs.dropdown', function() {
-      $(last_dropdown).addClass('open');
-    });
-
-    // Hide menu
-    dropdown_target.on('hide.bs.dropdown', function() {
-      $(last_dropdown).removeClass('open');
-    });
-
-    // Opacity
+    // Bind Opacity Control
     opacity_control.on('input', function() {
       layer.setOpacity(this.value);
     });
 
-    // Display
+    // Bind Display Control
     display_control.on('click', function() {
       if (layer.getVisible()){
         layer.setVisible(false);
-        $(this).html('Show');
+        $(this).html('Show Layer');
       } else {
         layer.setVisible(true);
-        $(this).html('Hide');
+        $(this).html('Hide Layer');
       }
     });
 
-    // Zoom to Layer
+    // Bind Zoom to Layer Control
     zoom_control.on('click', function() {
       var extent;
 
@@ -1054,21 +1001,22 @@ var TETHYS_MAP_VIEW = (function() {
   };
 
   update_legend = function() {
-    var layers;
+    if (is_defined(m_legend_options) && m_legend_options) {
+      var layers;
 
-    // Clear the legend items
-    clear_legend();
+      // Clear the legend items
+      clear_legend();
 
-    // Get current layers from the map
-    layers = m_map.getLayers();
+      // Get current layers from the map
+      layers = m_map.getLayers();
 
-    for (var i = 0; i < layers.getLength(); i++)
-    {
-      new_legend_item(layers.item(i));
+      for (var i = 0; i < layers.getLength(); i++) {
+        new_legend_item(layers.item(i));
+      }
+
+      // Activate the drop down menus
+      $('.dropdown-toggle').dropdown();
     }
-
-    // Activate the drop down menus
-    $('.dropdown-toggle').dropdown();
   };
 
 
