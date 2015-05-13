@@ -71,16 +71,13 @@
   right: 2.75em;
   bottom: auto;
 }
-.ol-control:hover {
-  opacity: 1.0;
-}
 .tethys-map-view-legend {
   bottom: 10px;
   right: 10px;
   width: 225px;
-  opacity: 0.8;
   max-height: 90%;
   overflow-y: auto;
+  background: rgba(255, 255, 255, 0.8);
 }
 .tethys-map-view-legend .legend-header {
   padding: 0px 10px;
