@@ -102,12 +102,12 @@
 .tethys-map-view-legend {
   bottom: 10px;
   right: 10px;
-  width: 200px;
-  opacity: 0.5;
+  width: 225px;
+//  opacity: 0.5;
   max-height: 80%;  // TODO: SET THE MAX HEIGHT OF LEGEND
   overflow-y: auto;
 
-  //background: rgba(255,255,255,.6);
+  background: rgba(255,255,255,.6);
 
   .legend-header {
     padding: 0px 10px;
@@ -125,7 +125,7 @@
         padding: 5px;
 
         .btn-legend-action {
-          width: 153px;
+          width: 180px;
           text-align: left;
           padding: 0;
           margin: 0;
@@ -143,6 +143,7 @@
           padding: 0 6px;
           border: none;
           background: none;
+          border-radius: 4px;
 
           &:active {
             box-shadow: none;
@@ -186,7 +187,18 @@
   }
 }
 
-.btn-group.open .dropdown-toggle.btn-legend-dropdown {
+.tethys-map-view-legend .legend-content .legend-items .legend-item .open .btn-legend-dropdown {
   box-shadow: none;
   background: #eeeeee;
 }
+
+.tethys-map-view-dropdown {
+  position: absolute;
+  right: 23px;
+  top: 0;
+
+  .dropdown-menu {
+    min-width: 200px;
+  }
+}
+
