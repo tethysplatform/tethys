@@ -34,17 +34,20 @@ var TETHYS_MAP_VIEW = (function() {
 
   // Objects
   var public_interface,				                              // Object returned by the module
-      m_drawing_layer,                                      // Layer for drawing overlays
+      m_drawing_overlay,                                    // Overlay for drawing overlays
       m_drawing_interaction,                                // Drawing interaction used for drawing
       m_drag_box_interaction,                               // Drag box interaction used for drawing rectangles
       m_drag_feature_interaction,                           // Drag feature interaction
       m_modify_interaction,                                 // Modify interaction used for modifying features
       m_select_interaction,                                 // Select interaction for modify action
+      m_legend_element,                                     // Stores the document element for the legend
+      m_legend_items,                                       // Stores the legend items
+      m_legend_control,                                     // OpenLayers map control
       m_map;					                                      // The map
 
   // Selectors
   var m_map_target,                                         // Selector for the map container
-      m_textarea_target;                                   // Selector for the textarea target
+      m_textarea_target;                                    // Selector for the textarea target
 
   // Options
   var m_attribute_table_options,                            // Attribute table options json
@@ -62,7 +65,8 @@ var TETHYS_MAP_VIEW = (function() {
  	*                       PRIVATE METHOD DECLARATIONS
  	*************************************************************************/
   // Initialization Methods
- 	var ol_base_map_init, ol_controls_init, ol_drawing_init, ol_layers_init, ol_map_init, ol_view_init, parse_options;
+ 	var ol_base_map_init, ol_controls_init, ol_drawing_init, ol_layers_init, ol_legend_init, ol_map_init, ol_view_init,
+      parse_options;
 
   // Drawing Methods
   var add_drawing_interaction, add_drag_box_interaction, add_drag_feature_interaction, add_modify_interaction,
@@ -74,13 +78,14 @@ var TETHYS_MAP_VIEW = (function() {
   // Attribute Table Methods
   var initialize_feature_properties, generate_feature_id, get_feature_properties;
 
-  // Layer Manipulation Methods
+  // Legend Methods
+  var clear_legend, new_legend_item, update_legend;
 
   // UI Management Methods
   var update_field;
 
   // Utility Methods
-  var is_defined, in_array;
+  var is_defined, in_array, string_to_function;
 
   // Class Declarations
   var DrawingControl, DragFeatureInteraction;
@@ -151,6 +156,9 @@ var TETHYS_MAP_VIEW = (function() {
         }
       }
     }
+
+    // Add legend attributes
+    base_map_layer.tethys_legend_title = 'Basemap';
 
     // Add the base map to layers
     m_map.addLayer(base_map_layer);
@@ -251,7 +259,7 @@ var TETHYS_MAP_VIEW = (function() {
 
     if (is_defined(m_draw_options)) {
       // Initialize the overlay layer
-      m_drawing_layer = new ol.FeatureOverlay({
+      m_drawing_overlay = new ol.FeatureOverlay({
         style: new ol.style.Style({
           fill: new ol.style.Fill({
             color: INITIAL_FILL_COLOR
@@ -269,8 +277,11 @@ var TETHYS_MAP_VIEW = (function() {
         })
       });
 
+      // Initialize Legend Properties
+      m_drawing_overlay.tethys_legend_title = 'Drawing Layer';
+
       // Add layer to the map
-      m_drawing_layer.setMap(m_map);
+      m_drawing_overlay.setMap(m_map);
 
       // Set initial drawing interaction
       if (is_defined(m_draw_options.initial) &&
@@ -356,62 +367,131 @@ var TETHYS_MAP_VIEW = (function() {
   {
     // Constants
     var GEOJSON = 'GeoJSON',
-        IMAGE_WMS = 'WMS',
-        KML = 'KML',
-        VECTOR = 'Vector',
-        TILED_WMS = 'TiledWMS';
+        KML = 'KML';
+
+    var TILE_SOURCES = ['TileDebug', 'TileImage', 'TileUTFGrid', 'Stamen', 'TileArcGISRest', 'Zoomify', 'XYZ', 'WMTS',
+                        'TileWMS'];
+
+    var IMAGE_SOURCES = ['ImageCanvas', 'ImageMapGuide', 'ImageStatic', 'ImageVector', 'ImageWMS'];
+
+    var VECTOR_SOURCES = ['GeoJSON', 'KML', 'GPX', 'IGC', 'OSMXML', 'TopoJSON', 'ServerVector', 'TileVector'];
 
     if (is_defined(m_layers_options)) {
       for (var i = 0; i < m_layers_options.length; i++) {
         var current_layer,
-            layer;
+            layer,
+            Source;
 
         current_layer = m_layers_options[i];
+        Source = string_to_function('ol.source.' + current_layer.source);
 
-        if (GEOJSON in current_layer) {
-          layer = new ol.layer.Vector({
-            source: ol.source.GeoJSON(current_layer[GEOJSON])
-          });
-
-        }
-        else if (IMAGE_WMS in current_layer) {
-          layer = new ol.layer.Image({
-            source: new ol.source.ImageWMS(current_layer[IMAGE_WMS])
-          });
-
-        }
-        else if (KML in current_layer) {
-          layer = new ol.layer.Vector({
-            source: new ol.source.KML(current_layer[KML])
-          });
-
-        }
-        else if (VECTOR in current_layer) {
-
-        }
-        else if (TILED_WMS in current_layer) {
+        // Tile layer case
+        if (in_array(current_layer.source, TILE_SOURCES)) {
           layer = new ol.layer.Tile({
-            source: new ol.source.TileWMS(current_layer[TILED_WMS])
+            source: new Source(current_layer.options)
           });
+        }
+
+        // Image layer case
+        else if (in_array(current_layer.source, IMAGE_SOURCES)) {
+          layer = new ol.layer.Image({
+            source: new Source(current_layer.options)
+          });
+        }
+
+        // Vector layer case
+        else if (in_array(current_layer.source, VECTOR_SOURCES)) {
+
+          // GeoJSON case
+          if (current_layer.source === GEOJSON){
+            var geojson_source;
+
+            geojson_source = new ol.source.Vector({
+              features: (new ol.format.GeoJSON()).readFeatures(current_layer.options)
+            });
+
+            layer = new ol.layer.Vector({
+              source: geojson_source
+            })
+          }
+
+          // KML case
+          else if (current_layer.source === KML){
+            // From URL case
+            if (current_layer.options.hasOwnProperty('url')) {
+              layer = new ol.layer.Vector({
+                source: new ol.source.KML({
+                  projection: new ol.proj.get(DEFAULT_PROJECTION),
+                  url: current_layer.options.url
+                })
+              });
+            }
+
+            // From string case
+            else if (current_layer.options.hasOwnProperty('kml')) {
+
+              var kml_source;
+
+              kml_source = new ol.source.Vector({
+                features: (new ol.format.KML()).readFeatures(current_layer.options.kml)
+              });
+
+              layer = new ol.layer.Vector({
+                source: kml_source,
+                projection: new ol.proj.get(DEFAULT_PROJECTION)
+              });
+            }
+          }
+
+          // Generic case
+          else {
+            layer = new ol.layer.Vector({
+              source: new Source(current_layer.options)
+            });
+          }
         }
 
         if (typeof layer !== typeof undefined) {
+          // Set legend properties
+          layer.tethys_legend_title = current_layer.legend_title;
+          layer.tethys_legend_classes = current_layer.legend_classes;
+          layer.tethys_legend_extent = current_layer.legend_extent;
+          layer.tethys_legend_extent_projection = current_layer.legend_extent_projection;
+
+          // Add layer to the map
           m_map.addLayer(layer);
         }
       }
     }
-
-    //layer = new ol.layer.Image({
-    //  source: new ol.source.ImageWMS({
-    //    url: 'http://192.168.59.103:8181/geoserver/wms',
-    //    params: {'LAYERS': 'topp:states'},
-    //    serverType: 'geoserver'
-    //  })
-    //});
-
-    //m_map.addLayer(layer);
-
   };
+
+  // Initialize the legend
+  ol_legend_init = function()
+  {
+    if (is_defined(m_legend_options) && m_legend_options) {
+      var legend_content;
+
+      // Create the legend element
+      m_legend_items = document.createElement('ul');
+      m_legend_items.className = 'legend-items';
+
+      legend_content = document.createElement('div');
+      legend_content.className = 'legend-content';
+      legend_content.appendChild(m_legend_items);
+
+      m_legend_element = document.createElement('div');
+      m_legend_element.className = 'tethys-map-view-legend ol-unselectable ol-control';
+      m_legend_element.appendChild(legend_content);
+
+      // Add legend element as a control on open layers map
+      m_legend_control = new ol.control.Control({element: m_legend_element});
+      m_legend_control.setMap(m_map);
+
+      // Populate Legend
+      update_legend();
+    }
+  };
+
 
   // Initialize the map
  	ol_map_init = function()
@@ -502,7 +582,7 @@ var TETHYS_MAP_VIEW = (function() {
   add_drawing_interaction = function(geometry_type) {
     // Create new drawing interaction
     m_drawing_interaction = new ol.interaction.Draw({
-      features: m_drawing_layer.getFeatures(),
+      features: m_drawing_overlay.getFeatures(),
       type: geometry_type
     });
 
@@ -540,7 +620,7 @@ var TETHYS_MAP_VIEW = (function() {
       });
 
       // Add feature to drawing layer
-      m_drawing_layer.addFeature(feature);
+      m_drawing_overlay.addFeature(feature);
 
       // Call draw end callback
       draw_end_callback(feature);
@@ -588,6 +668,7 @@ var TETHYS_MAP_VIEW = (function() {
 
     // Update the field
     update_field();
+    update_legend();
   };
 
   draw_change_callback = function(event) {
@@ -623,7 +704,7 @@ var TETHYS_MAP_VIEW = (function() {
     var features, geometry_collection;
 
     // Get the features
-    features = m_drawing_layer.getFeatures();
+    features = m_drawing_overlay.getFeatures();
 
     // Setup geometry collection
     geometry_collection = {'type': 'GeometryCollection',
@@ -675,7 +756,7 @@ var TETHYS_MAP_VIEW = (function() {
     var features, geometry_collection;
 
     // Get the features
-    features = m_drawing_layer.getFeatures();
+    features = m_drawing_overlay.getFeatures();
 
     // Setup geometry collection
     geometry_collection = {'type': 'GeometryCollection',
@@ -789,8 +870,153 @@ var TETHYS_MAP_VIEW = (function() {
   };
 
   /***********************************
-   * Layer Manipulation Methods
+   * Legend Methods
    ***********************************/
+  clear_legend = function() {
+    // Clear legend elements
+    while (m_legend_items.firstChild) {
+      m_legend_items.removeChild(m_legend_items.firstChild);
+    }
+
+    // Clear menu items
+    $('.tethys-map-view-dropdown').each(function() {
+      $(this).remove();
+    });
+  };
+
+  new_legend_item = function(layer) {
+    // Declare Vars
+    var html, last_item, title,
+        opacity_control, display_control, zoom_control, menu_toggle_control,
+        legend_classes;
+
+    if (layer.hasOwnProperty('tethys_legend_title')) {
+      title = layer.tethys_legend_title;
+    } else {
+      title = 'Untitled';
+    }
+
+    html =  '<li class="legend-item">' +
+              '<div class="legend-buttons">' +
+                '<a class="btn btn-default btn-legend-action zoom-control">' + title + '</a>' +
+                '<a class="btn btn-default legend-dropdown-toggle">' +
+                  '<span class="caret"></span>' +
+                  '<span class="sr-only">Toggle Dropdown</span>' +
+                '</a>' +
+                '<div class="tethys-legend-dropdown">' +
+                  '<ul>' +
+                    '<li><a class="opacity-control">' +
+                      '<span>Opacity</span> ' +
+                      '<input type="range" min="0.0" max="1.0" step="0.01" value="' + layer.getOpacity() + '">' +
+                    '</a></li>' +
+                    '<li><a class="display-control" href="javascript:void(0);">Hide Layer</a></li>' +
+                  '</ul>' +
+                '</div>' +
+              '</div>';
+
+    // Append the legend classes if applicable
+    legend_classes = layer.tethys_legend_classes;
+
+    if (legend_classes) {
+      html += '<div class="legend-item-classes"><ul>';
+
+      // Create SVG symbols for legend
+      for (var i = 0; i < legend_classes.length; i++) {
+        var legend_class;
+
+        legend_class = legend_classes[i];
+
+        html += '<li class="legend-class ' + legend_class.type + '"><span class="legend-class-symbol"><svg>';
+
+        if (legend_class.type === legend_class.POINT_TYPE) {
+          html += '<circle cx="10" cy="10" r="25%" fill="' + legend_class.fill + '"/>';
+        }
+
+        else if (legend_class.type === legend_class.LINE_TYPE) {
+          html += '<polyline points="19 1, 1 6, 19 14, 1 19" stroke="' + legend_class.stroke + '" fill="transparent" stroke-width="2"/>';
+        }
+
+        else if (legend_class.type === legend_class.POLYGON_TYPE) {
+          html += '<polygon points="1 10, 5 3, 13 1, 19 9, 14 19, 9 13" stroke="' + legend_class.stroke + '" fill="' + legend_class.fill + '" stroke-width="2"/>';
+        }
+
+        else if (legend_class.type === legend_class.RASTER_TYPE) {
+
+        }
+
+        html += '</svg></span><span class="legend-class-value">' + legend_class.value + '</span></li>';
+      }
+
+      html += '</ul></div>';
+    }
+
+    // Close li.legend-item
+    html += '</li>';
+
+    // Append to the legend items
+    $(m_legend_items).append(html);
+
+    // Bind events for controls
+    last_item = $(m_legend_items).children(':last-child');
+    menu_toggle_control = $(last_item).find('.legend-dropdown-toggle');
+    opacity_control = $(last_item).find('.opacity-control input[type=range]');
+    display_control = $(last_item).find('.display-control');
+    zoom_control = $(last_item).find('.zoom-control');
+
+    // Bind toggle control
+    menu_toggle_control.on('click', function(){
+      var dropdown_menu = $(last_item).find('.tethys-legend-dropdown');
+      dropdown_menu.toggleClass('open');
+    });
+
+    // Bind Opacity Control
+    opacity_control.on('input', function() {
+      layer.setOpacity(this.value);
+    });
+
+    // Bind Display Control
+    display_control.on('click', function() {
+      if (layer.getVisible()){
+        layer.setVisible(false);
+        $(this).html('Show Layer');
+      } else {
+        layer.setVisible(true);
+        $(this).html('Hide Layer');
+      }
+    });
+
+    // Bind Zoom to Layer Control
+    zoom_control.on('click', function() {
+      var extent;
+
+      extent = layer.tethys_legend_extent;
+
+      if (is_defined(extent)) {
+        var lat_lon_extent = ol.proj.transformExtent(extent, layer.tethys_legend_extent_projection, DEFAULT_PROJECTION);
+        m_map.getView().fitExtent(lat_lon_extent, m_map.getSize());
+      }
+    });
+  };
+
+  update_legend = function() {
+    if (is_defined(m_legend_options) && m_legend_options) {
+      var layers;
+
+      // Clear the legend items
+      clear_legend();
+
+      // Get current layers from the map
+      layers = m_map.getLayers();
+
+      for (var i = 0; i < layers.getLength(); i++) {
+        new_legend_item(layers.item(i));
+      }
+
+      // Activate the drop down menus
+      $('.dropdown-toggle').dropdown();
+    }
+  };
+
 
   /***********************************
    * Initialization Methods
@@ -828,6 +1054,23 @@ var TETHYS_MAP_VIEW = (function() {
   is_defined = function(variable)
   {
     return !!(typeof variable !== typeof undefined && variable !== false);
+  };
+
+  // Instantiate a function from a string
+  // credits: http://stackoverflow.com/questions/1366127/instantiate-a-javascript-object-using-a-string-to-define-the-class-name
+  string_to_function = function(str) {
+    var arr = str.split(".");
+    var fn = (window || this);
+
+    for (var i = 0, len = arr.length; i < len; i++) {
+      fn = fn[arr[i]];
+    }
+
+    if (typeof fn !== "function") {
+      throw new Error("function not found");
+    }
+
+    return  fn;
   };
 
   /***********************************
@@ -925,10 +1168,9 @@ var TETHYS_MAP_VIEW = (function() {
   DragFeatureInteraction.prototype.handleDragEvent = function(event) {
     var map = event.map;
 
-    var feature = map.forEachFeatureAtPixel(event.pixel,
-        function(feature, layer) {
-          return feature;
-        });
+    var feature = map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
+      return feature;
+    });
 
     var deltaX = event.coordinate[0] - this.coordinate_[0];
     var deltaY = event.coordinate[1] - this.coordinate_[1];
@@ -1013,13 +1255,13 @@ var TETHYS_MAP_VIEW = (function() {
     // Initialize the map
     ol_map_init();
 
-    // Initialize controls
+    // Initialize Controls
     ol_controls_init();
 
-    // Initialize base map
+    // Initialize Base Map
     ol_base_map_init();
 
-    // Initialize layers
+    // Initialize Layers
     ol_layers_init();
 
     // Initialize View
@@ -1027,6 +1269,9 @@ var TETHYS_MAP_VIEW = (function() {
 
     // Initialize Drawing
     ol_drawing_init();
+
+    // Initialize Legend
+    ol_legend_init();
 
 	});
 
