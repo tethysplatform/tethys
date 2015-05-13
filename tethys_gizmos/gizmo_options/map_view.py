@@ -22,36 +22,102 @@ class MapViewOptions(TethysGizmoOptions):
 
         # CONTROLLER
 
-        from tethys_gizmos.gizmo_options import MapView, MapViewDrawOptions, MapViewViewOptions
+        from tethys_gizmos.gizmo_options import MapViewOptions, MapViewDrawOptions, MapViewViewOptions, MapViewLayer, MapViewLegendClass
 
+        # Define view options
         view_options = MapViewViewOptions(
             projection='EPSG:4326',
             center=[-100, 40],
             zoom=3.5,
             maxZoom=18,
-            minZoom=3
+            minZoom=2
         )
 
+        # Define drawing options
         drawing_options = MapViewDrawOptions(
             controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
             initial='Point',
             output_format='WKT'
         )
 
+        # Define GeoJSON layer
+        geojson_object = {
+          'type': 'FeatureCollection',
+          'crs': {
+            'type': 'name',
+            'properties': {
+              'name': 'EPSG:3857'
+            }
+          },
+          'features': [
+            {
+              'type': 'Feature',
+              'geometry': {
+                'type': 'Point',
+                'coordinates': [0, 0]
+              }
+            },
+            {
+              'type': 'Feature',
+              'geometry': {
+                'type': 'LineString',
+                'coordinates': [[4e6, -2e6], [8e6, 2e6]]
+              }
+            },
+            {
+              'type': 'Feature',
+              'geometry': {
+                'type': 'Polygon',
+                'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
+              }
+            }
+          ]
+        }
+
+        geojson_layer = MapViewLayer(source='GeoJSON',
+                                     options=geojson_object,
+                                     legend_title='Test GeoJSON',
+                                     legend_extent=[-46.7, -48.5, 74, 59],
+                                     legend_classes=[
+                                         MapViewLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
+                                         MapViewLegendClass('line', 'Lines', stroke='#3d9dcd')
+                                     ])
+
+        # Define GeoServer Layer
+        geoserver_layer = MapViewLayer(source='ImageWMS',
+                                       options={'url': 'http://192.168.59.103:8181/geoserver/wms',
+                                                'params': {'LAYERS': 'topp:states'},
+                                                'serverType': 'geoserver'},
+                                       legend_title='USA Population',
+                                       legend_extent=[-126, 24.5, -66.2, 49],
+                                       legend_classes=[
+                                           MapViewLegendClass('polygon', 'Low Density', fill='#00ff00', stroke='#000000'),
+                                           MapViewLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
+                                           MapViewLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
+                                       ])
+
+        # Define KML Layer
+        kml_layer = MapViewLayer(source='KML',
+                                 options={'url': '/static/tethys_gizmos/data/model.kml'},
+                                 legend_title='Park City Watershed',
+                                 legend_extent=[-111.60, 40.57, -111.43, 40.70],
+                                 legend_classes=[
+                                     MapViewLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
+                                     MapViewLegendClass('line', 'Stream Network', stroke='#0000ff'),
+                                 ])
+
+        # Define map view options
         map_view_options = MapViewOptions(
-            height='500px',
-            width='100%',
-            controls=['ZoomSlider',
-                     'Rotate',
-                     'FullScreen',
-                     {'MousePosition': {'projection': 'EPSG:4326'}}],
-            layers=[{'WMS': {'url': 'http://demo.opengeo.org/geoserver/wms',
-                            'params': {'LAYERS': 'topp:states'},
-                            'serverType': 'geoserver'}}],
-            view=view_options,
-            basemap='OpenStreetMap',
-            draw=drawing_options,
-            legend=False
+                                height='600px',
+                                width='100%',
+                                controls=['ZoomSlider', 'Rotate', 'FullScreen',
+                                          {'MousePosition': {'projection': 'EPSG:4326'}},
+                                          {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
+                                layers=[geojson_layer, geoserver_layer, kml_layer],
+                                view=view_options,
+                                basemap='OpenStreetMap',
+                                draw=drawing_options,
+                                legend=True
         )
 
         # TEMPLATE
@@ -154,6 +220,33 @@ class MapViewDrawOptions(SecondaryGizmoOptions):
         self.output_format = output_format
 
 
+class MapViewLayer(SecondaryGizmoOptions):
+    """
+    MapViewLayer objects are used to define map layers for the Map View Gizmo
+
+    Attributes:
+        source (str, required): The source or data type of the layer (e.g.: ImageWMS)
+        options (dict, required): A dictionary representation of the OpenLayers layer options object for the source.
+        legend_title (str, required): The human readable name of the layer that will be displayed in the legend.
+        legend_classes (list): A list of MapViewLegendClass objects.
+        legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
+        legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
+    """
+
+    def __init__(self, source, options, legend_title, legend_classes=None, legend_extent=None, legend_extent_projection='EPSG:4326'):
+        """
+        Constructor
+        """
+        super(MapViewLayer, self).__init__()
+
+        self.source = source
+        self.legend_title = legend_title
+        self.options = options
+        self.legend_classes = legend_classes
+        self.legend_extent = legend_extent
+        self.legend_extent_projection = legend_extent_projection
+
+
 class MapViewLegendClass(SecondaryGizmoOptions):
     """
     MapViewLegendClasses are used to define the classes listed in the legend.
@@ -170,6 +263,8 @@ class MapViewLegendClass(SecondaryGizmoOptions):
     ::
 
         point_class = MapViewLegendClass(type='point', value='Cities', fill='#00ff00')
+        line_class = MapViewLegendClass(type='line', value='Roads', stroke='rbga(0,0,0,0.7)')
+        polygon_class = MapViewLegendClass(type='polygon', value='Lakes', stroke='#0000aa', fill='#0000ff')
 
     """
 
@@ -223,51 +318,3 @@ class MapViewLegendClass(SecondaryGizmoOptions):
                 raise ValueError('Argument "ramp" must be specified for MapViewLegendClass of type "raster".')
 
 
-class MapViewLayer(SecondaryGizmoOptions):
-    """
-    MapViewLayer objects are used to define map layers for the Map View Gizmo
-
-    Attributes:
-        source (str): The source or data type of the layer (e.g.: ImageWMS)
-        options (dict): A dictionary representation of the OpenLayers layer options object for the source.
-        legend_title (str): The human readable name of the layer that will be displayed in the legend.
-        legend_classes (list): A list of MapViewLegendClass objects.
-        legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer".
-    """
-
-    def __init__(self, source, options, legend_title, legend_classes=None, legend_extent=None, legend_extent_projection='EPSG:4326'):
-        """
-        Constructor
-        """
-        super(MapViewLayer, self).__init__()
-
-        self.source = source
-        self.legend_title = legend_title
-        self.options = options
-        self.legend_classes = legend_classes
-        self.legend_extent = legend_extent
-        self.legend_extent_projection = legend_extent_projection
-
-
-class MapViewWmsLayer(MapViewLayer):
-    """
-    MapViewWmsLayer objects are used to define Web Mapping Service (WMS) layers for the Map View Gizmo
-
-    Attributes:
-        title (str): The human readable name of the layer.
-        wms_url (str): URL of the WMS server
-        params (dict): Parameters of the WMS call. The LAYERS parameter
-        server_type (str): The type of the WMS server (e.g.: 'geoserver')
-    """
-
-    def __init__(self, legend_title, wms_url, params, server_type, legend=None):
-        """
-        Constructor
-        """
-        # Construct the open layers object
-        options = {'url': wms_url,
-                   'params': params,
-                   'serverType': server_type}
-
-        super(MapViewWmsLayer, self).__init__(source='WMS', legend_title=legend_title, options=options,
-                                              legend=legend)

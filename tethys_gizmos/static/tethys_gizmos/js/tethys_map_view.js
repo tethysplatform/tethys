@@ -885,8 +885,6 @@ var TETHYS_MAP_VIEW = (function() {
   };
 
   new_legend_item = function(layer) {
-    // Constants
-
     // Declare Vars
     var html, last_item, title,
         opacity_control, display_control, zoom_control, menu_toggle_control,

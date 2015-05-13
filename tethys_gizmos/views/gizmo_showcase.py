@@ -359,6 +359,7 @@ def index(request):
     )
 
     # Map View
+    # Define view options
     view_options = MapViewViewOptions(
         projection='EPSG:4326',
         center=[-100, 40],
@@ -367,12 +368,14 @@ def index(request):
         minZoom=2
     )
 
+    # Define drawing options
     drawing_options = MapViewDrawOptions(
         controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
         initial='Point',
         output_format='WKT'
     )
 
+    # Define GeoJSON layer
     geojson_object = {
       'type': 'FeatureCollection',
       'crs': {
@@ -399,103 +402,58 @@ def index(request):
         {
           'type': 'Feature',
           'geometry': {
-            'type': 'LineString',
-            'coordinates': [[4e6, 2e6], [8e6, -2e6]]
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
             'type': 'Polygon',
             'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'MultiLineString',
-            'coordinates': [
-              [[-1e6, -7.5e5], [-1e6, 7.5e5]],
-              [[1e6, -7.5e5], [1e6, 7.5e5]],
-              [[-7.5e5, -1e6], [7.5e5, -1e6]],
-              [[-7.5e5, 1e6], [7.5e5, 1e6]]
-            ]
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'MultiPolygon',
-            'coordinates': [
-              [[[-5e6, 6e6], [-5e6, 8e6], [-3e6, 8e6], [-3e6, 6e6]]],
-              [[[-2e6, 6e6], [-2e6, 8e6], [0, 8e6], [0, 6e6]]],
-              [[[1e6, 6e6], [1e6, 8e6], [3e6, 8e6], [3e6, 6e6]]]
-            ]
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'GeometryCollection',
-            'geometries': [
-              {
-                'type': 'LineString',
-                'coordinates': [[-5e6, -5e6], [0, -5e6]]
-              },
-              {
-                'type': 'Point',
-                'coordinates': [4e6, -5e6]
-              },
-              {
-                'type': 'Polygon',
-                'coordinates': [[[1e6, -6e6], [2e6, -4e6], [3e6, -6e6]]]
-              }
-            ]
           }
         }
       ]
     }
 
-    kml_url = '/static/tethys_gizmos/data/model.kml'
+    geojson_layer = MapViewLayer(source='GeoJSON',
+                                 options=geojson_object,
+                                 legend_title='Test GeoJSON',
+                                 legend_extent=[-46.7, -48.5, 74, 59],
+                                 legend_classes=[
+                                     MapViewLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
+                                     MapViewLegendClass('line', 'Lines', stroke='#3d9dcd')
+                                 ])
 
-    map_view_options = MapViewOptions(
-        height='600px',
-        width='100%',
-        controls=['ZoomSlider', 'Rotate', 'FullScreen', {'MousePosition': {'projection': 'EPSG:4326'}},
-                  {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
-        layers=[MapViewLayer(source='ImageWMS',
-                             options={'url': 'http://192.168.59.103:8181/geoserver/wms',
-                                      'params': {'LAYERS': 'topp:states'},
-                                      'serverType': 'geoserver'},
-                             legend_title='USA Population',
-                             legend_extent=[-126, 24.5, -66.2, 49],
-                             legend_classes=[
-                                 MapViewLegendClass('polygon', 'Low Density', fill='#00ff00', stroke='#000000'),
-                                 MapViewLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
-                                 MapViewLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
-                             ]),
-                MapViewLayer(source='GeoJSON',
-                             options=geojson_object,
-                             legend_title='Test GeoJSON',
-                             legend_extent=[-46.7, -48.5, 74, 59],
-                             legend_classes=[
-                                 MapViewLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
-                                 MapViewLegendClass('line', 'Lines', stroke='#3d9dcd')
-                             ]),
-                MapViewLayer(source='KML',
-                             options={'url': kml_url},
+    # Define GeoServer Layer
+    geoserver_layer = MapViewLayer(source='ImageWMS',
+                                   options={'url': 'http://192.168.59.103:8181/geoserver/wms',
+                                            'params': {'LAYERS': 'topp:states'},
+                                            'serverType': 'geoserver'},
+                                   legend_title='USA Population',
+                                   legend_extent=[-126, 24.5, -66.2, 49],
+                                   legend_classes=[
+                                       MapViewLegendClass('polygon', 'Low Density', fill='#00ff00', stroke='#000000'),
+                                       MapViewLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
+                                       MapViewLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
+                                   ])
+
+    # Define KML Layer
+    kml_layer = MapViewLayer(source='KML',
+                             options={'url': '/static/tethys_gizmos/data/model.kml'},
                              legend_title='Park City Watershed',
                              legend_extent=[-111.60, 40.57, -111.43, 40.70],
                              legend_classes=[
                                  MapViewLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
                                  MapViewLegendClass('line', 'Stream Network', stroke='#0000ff'),
-                             ]),
-                ],
-        view=view_options,
-        basemap='OpenStreetMap',
-        draw=drawing_options,
-        legend=True
-    )
+                             ])
+
+    # Define map view options
+    map_view_options = MapViewOptions(height='600px',
+                                      width='100%',
+                                      controls=['ZoomSlider', 'Rotate', 'FullScreen',
+                                                {'MousePosition': {'projection': 'EPSG:4326'}},
+                                                {'ZoomToExtent': {'projection': 'EPSG:4326',
+                                                                  'extent': [-130, 22, -65, 54]}
+                                                 }],
+                                      layers=[geoserver_layer, geojson_layer, kml_layer],
+                                      view=view_options,
+                                      basemap='OpenStreetMap',
+                                      draw=drawing_options,
+                                      legend=True)
 
     # Define the context object
     context = {'single_button': single_button,
