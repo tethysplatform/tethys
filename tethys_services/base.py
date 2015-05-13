@@ -34,6 +34,8 @@ class DatasetService:
         self.username = username
         self.password = password
 
+        print('DEPRECATION WARNING: Storing connection credentials for Dataset Services in the app.py is a security leak. App configuration for Dataset Services will be deprecated in version 1.2.')
+
     def __repr__(self):
         """
         String representation
@@ -74,6 +76,8 @@ class SpatialDatasetService:
         self.username = username
         self.password = password
 
+        print('DEPRECATION WARNING: Storing connection credentials for Spatial Dataset Services in the app.py is a security leak. App configuration for Spatial Dataset Services will be deprecated in version 1.2.')
+
     def __repr__(self):
         """
         String representation
@@ -94,6 +98,8 @@ class WpsService:
         self.endpoint = endpoint
         self.username = username
         self.password = password
+
+        print('DEPRECATION WARNING: Storing connection credentials for WPS Services in the app.py is a security leak. App configuration for WPS Services will be deprecated in version 1.2.')
 
     def __repr__(self):
         """
