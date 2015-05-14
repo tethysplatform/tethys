@@ -479,10 +479,8 @@ class HighChartsHeatMap(HighChartsObjectBase):
         }
 
         tooltip_format = {
-            'formatter': 'function() {return "<b>" + this.series.xAxis.categories[this.point.x] + "</b> %s <br><b>" + this.point.value + "</b> %s <br><b>" + this.series.yAxis.categories[this.point.y] + "</b>";' % (
-                tooltip_phrase_one, tooltip_phrase_two)
+            'formatter': 'function() {return "<b>" + this.series.xAxis.categories[this.point.x] + "</b> %s <br><b>" + this.point.value + "</b> %s <br><b>" + this.series.yAxis.categories[this.point.y] + "</b>";' % (tooltip_phrase_one, tooltip_phrase_two)
         }
 
         # Initialize super class
-        super(HighChartsHeatMap, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
-                                                x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        super(HighChartsHeatMap, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
