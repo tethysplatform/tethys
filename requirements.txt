@@ -11,7 +11,7 @@ mapkit>=1.1.0,<1.2.0
 gsshapy>=2.0.0,<2.1.0
 requests>=2.4,<2.5
 docker-py>=1.0.0,<1.1.0
-tethys_dataset_services
+tethys_dataset_services>=1.1.0,<1.2.0
 owslib
 condorpy
 TethysCluster
