@@ -755,9 +755,6 @@ def map_view(request):
                                  MapViewLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
                                  MapViewLegendClass('line', 'Lines', stroke='#3d9dcd')
                              ]),
-                # MapViewLayer(source='XYZ',
-                #              options={'url': arc_rest_url},
-                #              legend_title='Soil Moisture'),
                 ],
         view=view_options,
         basemap='OpenStreetMap',

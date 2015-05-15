@@ -106,6 +106,12 @@ class MapViewOptions(TethysGizmoOptions):
                                      MapViewLegendClass('line', 'Stream Network', stroke='#0000ff'),
                                  ])
 
+        # Tiled ArcGIS REST Layer
+        arc_gis_layer = MapViewLayer(source='TileArcGISRest',
+                                     options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' + 'Specialty/ESRI_StateCityHighway_USA/MapServer'},
+                                     legend_title='ESRI USA Highway',
+                                     legend_extent=[-173, 17, -65, 72]),
+
         # Define map view options
         map_view_options = MapViewOptions(
                                 height='600px',
@@ -113,7 +119,7 @@ class MapViewOptions(TethysGizmoOptions):
                                 controls=['ZoomSlider', 'Rotate', 'FullScreen',
                                           {'MousePosition': {'projection': 'EPSG:4326'}},
                                           {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
-                                layers=[geojson_layer, geoserver_layer, kml_layer],
+                                layers=[geojson_layer, geoserver_layer, kml_layer, arc_gis_layer],
                                 view=view_options,
                                 basemap='OpenStreetMap',
                                 draw=drawing_options,
