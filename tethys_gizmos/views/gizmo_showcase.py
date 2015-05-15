@@ -717,13 +717,22 @@ def map_view(request):
 
     # kml_url = 'http://ciwckan.chpc.utah.edu/dataset/00d54047-8581-4dc2-bdc2-b96f5a635455/resource/e833d531-8b7e-4d35-8ce9-4fe98c5d082a/download/model.kml'
     kml_url = '/static/tethys_gizmos/data/model.kml'
+    arc_rest_url = 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' + 'Specialty/ESRI_StateCityHighway_USA/MapServer';
 
     map_view = MapViewOptions(
         height='600px',
         width='100%',
         controls=['ZoomSlider', 'Rotate', 'FullScreen', {'MousePosition': {'projection': 'EPSG:4326'}},
                   {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
-        layers=[MapViewLayer(source='ImageWMS',
+        layers=[MapViewLayer(source='KML',
+                             options={'url': kml_url},
+                             legend_title='Park City Watershed',
+                             legend_extent=[-111.60, 40.57, -111.43, 40.70],
+                             legend_classes=[
+                                 MapViewLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
+                                 MapViewLegendClass('line', 'Stream Network', stroke='#0000ff'),
+                             ]),
+                MapViewLayer(source='ImageWMS',
                              options={'url': 'http://192.168.59.103:8181/geoserver/wms',
                                       'params': {'LAYERS': 'topp:states'},
                                       'serverType': 'geoserver'},
@@ -734,6 +743,10 @@ def map_view(request):
                                  MapViewLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
                                  MapViewLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
                              ]),
+                MapViewLayer(source='TileArcGISRest',
+                             options={'url': arc_rest_url},
+                             legend_title='ESRI USA Highway',
+                             legend_extent=[-173, 17, -65, 72]),
                 MapViewLayer(source='GeoJSON',
                              options=geojson_object,
                              legend_title='Test GeoJSON',
@@ -742,14 +755,9 @@ def map_view(request):
                                  MapViewLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
                                  MapViewLegendClass('line', 'Lines', stroke='#3d9dcd')
                              ]),
-                MapViewLayer(source='KML',
-                             options={'url': kml_url},
-                             legend_title='Park City Watershed',
-                             legend_extent=[-111.60, 40.57, -111.43, 40.70],
-                             legend_classes=[
-                                 MapViewLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
-                                 MapViewLegendClass('line', 'Stream Network', stroke='#0000ff'),
-                             ]),
+                # MapViewLayer(source='XYZ',
+                #              options={'url': arc_rest_url},
+                #              legend_title='Soil Moisture'),
                 ],
         view=view_options,
         basemap='OpenStreetMap',
