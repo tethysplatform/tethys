@@ -34,8 +34,9 @@ var TETHYS_MAP_VIEW = (function() {
 
   // Objects
   var public_interface,				                              // Object returned by the module
-      m_drawing_overlay,                                    // Overlay for drawing overlays
       m_drawing_interaction,                                // Drawing interaction used for drawing
+      m_drawing_source,                                     // Drawing sources for drawing feature
+      m_drawing_layer,                                      // Drawing layer for drawing feature
       m_drag_box_interaction,                               // Drag box interaction used for drawing rectangles
       m_drag_feature_interaction,                           // Drag feature interaction
       m_modify_interaction,                                 // Modify interaction used for modifying features
@@ -70,7 +71,7 @@ var TETHYS_MAP_VIEW = (function() {
 
   // Drawing Methods
   var add_drawing_interaction, add_drag_box_interaction, add_drag_feature_interaction, add_modify_interaction,
-      draw_end_callback, draw_change_callback, switch_interaction;
+      add_feature_callback, draw_end_callback, draw_change_callback, switch_interaction;
 
   // Feature Parser Methods
   var geojsonify, wellknowtextify;
@@ -258,8 +259,11 @@ var TETHYS_MAP_VIEW = (function() {
         initial_drawing_mode = 'Point';
 
     if (is_defined(m_draw_options)) {
-      // Initialize the overlay layer
-      m_drawing_overlay = new ol.FeatureOverlay({
+      // Initialize the drawing layer
+      m_drawing_source = new ol.source.Vector({wrapX: false});
+
+      m_drawing_layer = new ol.layer.Vector({
+        source: m_drawing_source,
         style: new ol.style.Style({
           fill: new ol.style.Fill({
             color: INITIAL_FILL_COLOR
@@ -277,11 +281,14 @@ var TETHYS_MAP_VIEW = (function() {
         })
       });
 
-      // Initialize Legend Properties
-      m_drawing_overlay.tethys_legend_title = 'Drawing Layer';
+      // Add drawing layer legend properites
+      m_drawing_layer.tethys_legend_title = 'Drawing Layer';
 
-      // Add layer to the map
-      m_drawing_overlay.setMap(m_map);
+      // Add drawing layer to the map
+      m_map.addLayer(m_drawing_layer);
+
+      // Bind event
+      m_drawing_source.on('addfeature', add_feature_callback);
 
       // Set initial drawing interaction
       if (is_defined(m_draw_options.initial) &&
@@ -377,16 +384,17 @@ var TETHYS_MAP_VIEW = (function() {
     var VECTOR_SOURCES = ['GeoJSON', 'KML', 'GPX', 'IGC', 'OSMXML', 'TopoJSON', 'ServerVector', 'TileVector'];
 
     if (is_defined(m_layers_options)) {
-      for (var i = 0; i < m_layers_options.length; i++) {
+      for (var i = m_layers_options.length; i--; ) {
         var current_layer,
-            layer,
-            Source;
+            layer, Source;
 
         current_layer = m_layers_options[i];
-        Source = string_to_function('ol.source.' + current_layer.source);
+
 
         // Tile layer case
         if (in_array(current_layer.source, TILE_SOURCES)) {
+          Source = string_to_function('ol.source.' + current_layer.source);
+
           layer = new ol.layer.Tile({
             source: new Source(current_layer.options)
           });
@@ -394,6 +402,8 @@ var TETHYS_MAP_VIEW = (function() {
 
         // Image layer case
         else if (in_array(current_layer.source, IMAGE_SOURCES)) {
+          Source = string_to_function('ol.source.' + current_layer.source);
+
           layer = new ol.layer.Image({
             source: new Source(current_layer.options)
           });
@@ -420,31 +430,33 @@ var TETHYS_MAP_VIEW = (function() {
             // From URL case
             if (current_layer.options.hasOwnProperty('url')) {
               layer = new ol.layer.Vector({
-                source: new ol.source.KML({
-                  projection: new ol.proj.get(DEFAULT_PROJECTION),
-                  url: current_layer.options.url
+                source: new ol.source.Vector({
+                  url: current_layer.options.url,
+                  format: new ol.format.KML(),
+                  projection: new ol.proj.get(DEFAULT_PROJECTION)
                 })
               });
             }
 
             // From string case
             else if (current_layer.options.hasOwnProperty('kml')) {
-
               var kml_source;
 
               kml_source = new ol.source.Vector({
-                features: (new ol.format.KML()).readFeatures(current_layer.options.kml)
+                features: (new ol.format.KML()).readFeatures(current_layer.options.kml),
+                projection: new ol.proj.get(DEFAULT_PROJECTION)
               });
 
               layer = new ol.layer.Vector({
-                source: kml_source,
-                projection: new ol.proj.get(DEFAULT_PROJECTION)
+                source: kml_source
               });
             }
           }
 
-          // Generic case
+          // Generic vector case
           else {
+            Source = string_to_function('ol.source.' + current_layer.source);
+
             layer = new ol.layer.Vector({
               source: new Source(current_layer.options)
             });
@@ -582,7 +594,7 @@ var TETHYS_MAP_VIEW = (function() {
   add_drawing_interaction = function(geometry_type) {
     // Create new drawing interaction
     m_drawing_interaction = new ol.interaction.Draw({
-      features: m_drawing_overlay.getFeatures(),
+      source: m_drawing_source,
       type: geometry_type
     });
 
@@ -620,7 +632,7 @@ var TETHYS_MAP_VIEW = (function() {
       });
 
       // Add feature to drawing layer
-      m_drawing_overlay.addFeature(feature);
+      m_drawing_source.addFeature(feature);
 
       // Call draw end callback
       draw_end_callback(feature);
@@ -657,6 +669,11 @@ var TETHYS_MAP_VIEW = (function() {
       }
     });
     m_map.addInteraction(m_modify_interaction);
+  };
+
+  add_feature_callback = function(feature) {
+    // Update the field
+    update_field();
   };
 
   draw_end_callback = function(feature) {
@@ -704,7 +721,7 @@ var TETHYS_MAP_VIEW = (function() {
     var features, geometry_collection;
 
     // Get the features
-    features = m_drawing_overlay.getFeatures();
+    features = m_drawing_source.getFeatures();
 
     // Setup geometry collection
     geometry_collection = {'type': 'GeometryCollection',
@@ -756,7 +773,7 @@ var TETHYS_MAP_VIEW = (function() {
     var features, geometry_collection;
 
     // Get the features
-    features = m_drawing_overlay.getFeatures();
+    features = m_drawing_source.getFeatures();
 
     // Setup geometry collection
     geometry_collection = {'type': 'GeometryCollection',
@@ -1008,7 +1025,7 @@ var TETHYS_MAP_VIEW = (function() {
       // Get current layers from the map
       layers = m_map.getLayers();
 
-      for (var i = 0; i < layers.getLength(); i++) {
+      for (var i = layers.getLength(); i--; ) {
         new_legend_item(layers.item(i));
       }
 
@@ -1067,7 +1084,7 @@ var TETHYS_MAP_VIEW = (function() {
     }
 
     if (typeof fn !== "function") {
-      throw new Error("function not found");
+      throw new Error("function not found: " + str);
     }
 
     return  fn;
@@ -1264,11 +1281,11 @@ var TETHYS_MAP_VIEW = (function() {
     // Initialize Layers
     ol_layers_init();
 
-    // Initialize View
-    ol_view_init();
-
     // Initialize Drawing
     ol_drawing_init();
+
+    // Initialize View
+    ol_view_init();
 
     // Initialize Legend
     ol_legend_init();
