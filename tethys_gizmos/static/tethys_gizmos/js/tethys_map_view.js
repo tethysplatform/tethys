@@ -303,7 +303,18 @@ var TETHYS_MAP_VIEW = (function() {
       
       // Add drawing controls to the map
       if (is_defined(m_draw_options.controls)) {
+        var pan_control;
         var draw_controls = m_draw_options.controls;
+
+        // Always add the pan_control
+        pan_control = new DrawingControl({
+          control_type: 'pan',
+          left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
+          active: false
+        });
+
+        button_left_offset += BUTTON_SPACING;
+        m_map.addControl(pan_control);
 
         // Add modify control first
         if (in_array('Modify', draw_controls)) {
@@ -702,7 +713,9 @@ var TETHYS_MAP_VIEW = (function() {
     m_map.removeInteraction(m_drag_box_interaction);
 
     // Set appropriate drawing interaction
-    if (interaction_type === 'modify') {
+    if (interaction_type === 'pan') {
+      // Do nothing
+    } else if (interaction_type === 'modify') {
       add_modify_interaction();
     } else if (interaction_type === 'drag') {
       add_drag_feature_interaction();
