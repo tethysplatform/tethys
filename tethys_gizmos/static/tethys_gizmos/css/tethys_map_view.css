@@ -50,9 +50,15 @@
   background-position: 0 -144px;
 }
 .tethys-map-view-draw-control .tethys-map-view-draw-icon.modify {
-  background-position: 0 -160px;
+  background-position: 0 -224px;
 }
 .tethys-map-view-draw-control .tethys-map-view-draw-icon.modify.active {
+  background-position: 0 -241px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.pan {
+  background-position: 0 -160px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.pan.active {
   background-position: 0 -176px;
 }
 .tethys-map-view-draw-control .tethys-map-view-draw-icon.drag {
