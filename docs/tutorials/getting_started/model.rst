@@ -4,14 +4,14 @@ The Model and Persistent Stores
 
 **Last Updated:** November 17, 2014
 
-In this part of the tutorial you'll learn about the Model component of MVC development for Tethys apps. The Model represents the data of your app and the code used to manage it. The data of your app can take many forms. It can be generated on-the-fly and stored in Python data structures (e.g.: lists, dictionaries, and NumPy arrays), stored in databases, or contained in files via the :doc:`../tethys_sdk/dataset_services`.
+In this part of the tutorial you'll learn about the Model component of MVC development for Tethys apps. The Model represents the data of your app and the code used to manage it. The data of your app can take many forms. It can be generated on-the-fly and stored in Python data structures (e.g.: lists, dictionaries, and NumPy arrays), stored in databases, or contained in files via the :doc:`../../tethys_sdk/dataset_services`.
 
-In this tutorial you will use the :doc:`../tethys_sdk/persistent_store` to create a spatially enabled database for your app and you will learn how to use the `SQLAlchemy <http://www.sqlalchemy.org/>`_ object relational mapper (ORM) to create a data model for your app.
+In this tutorial you will use the :doc:`../../tethys_sdk/persistent_store` to create a spatially enabled database for your app and you will learn how to use the `SQLAlchemy <http://www.sqlalchemy.org/>`_ object relational mapper (ORM) to create a data model for your app.
 
 Register a Persistent Store
 ===========================
 
-The Tethys Portal provides the :doc:`../tethys_sdk/persistent_store` to streamline the use of SQL databases in apps. To register a new :term:`persistent store` database add the ``persistent_stores()`` method to your :term:`app class`, which is located in your :term:`app configuration file`. This method must return a list or tuple of ``PersistentStore`` objects.
+The Tethys Portal provides the :doc:`../../tethys_sdk/persistent_store` to streamline the use of SQL databases in apps. To register a new :term:`persistent store` database add the ``persistent_stores()`` method to your :term:`app class`, which is located in your :term:`app configuration file`. This method must return a list or tuple of ``PersistentStore`` objects.
 
 Open the app configuration file for your app located at :file:`my_first_app/app.py` in your favorite text editor. Import the ``PersistentStore`` object at the top of the file, add the ``persistent_stores()`` method to your app class, and save the changes:
 
@@ -63,7 +63,7 @@ A persistent store database will be created for each ``PersistentStore`` object 
 
 .. note::
 
-    Read more about persistent stores in the :doc:`../tethys_sdk/persistent_store` documentation.
+    Read more about persistent stores in the :doc:`../../tethys_sdk/persistent_store` documentation.
 
 Create an SQLAlchemy Data Model
 ===============================
@@ -216,9 +216,9 @@ The database will be initialized and you will see text printed to the terminal t
     Initializing database "stream_gage_db" for app "my_first_app" using initializer "init_stream_gage_db"...
 
 
-If you have a graphical database client like `PGAdmin III <http://www.pgadmin.org>`_, you may wish to connect to your PostgreSQL database server and confirm that the database was created. You can use the credentials for ``tethys_super`` database user that you defined during installation to connect to the database. The name of the database will be a combination of the name of your app and the name of the persistent store: (e.g.: my_first_app_stream_gage_db). For a more detailed explanation of connecting to your database using PGAdmin III, see the :doc:`../supplementary/pgadmin`.
+If you have a graphical database client like `PGAdmin III <http://www.pgadmin.org>`_, you may wish to connect to your PostgreSQL database server and confirm that the database was created. You can use the credentials for ``tethys_super`` database user that you defined during installation to connect to the database. The name of the database will be a combination of the name of your app and the name of the persistent store: (e.g.: my_first_app_stream_gage_db). For a more detailed explanation of connecting to your database using PGAdmin III, see the :doc:`../../supplementary/pgadmin`.
 
-.. figure:: ../images/pgAdmin_III_db_confirmation.png
+.. figure:: ../../images/pgAdmin_III_db_confirmation.png
     :width: 650px
 
     Example of graphical database client PGAdmin III.

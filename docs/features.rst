@@ -6,7 +6,7 @@ Features
 
 Tethys is a platform that can be used to develop and host water resources web applications or web apps. It includes a suite of free and open source software (FOSS) that has been carefully selected to address the unique development needs of water resources web apps. Tethys web apps are developed using a Python software development kit (SDK) which includes programmatic links to each software component. Tethys Platform is powered by the `Django <https://www.djangoproject.com/>`_ Python web framework giving it a solid web foundation with excellent security and performance.
 
-.. figure:: images/features/tethys_platform_diagram.jpg
+.. figure:: images/features/tethys_platform_diagram.png
     :width: 600px
     :align: center
 
@@ -79,7 +79,7 @@ Tethys Platform is especially equipped to handle the spatial data needs of your 
 
 .. note::
 
-    Refer to the following documentation for more information about the spatial functionality of Tethys: :doc:`./tethys_sdk/persistent_store`,  :doc:`./tethys_sdk/spatial_persistent_store`, :doc:`./tethys_sdk/spatial_publishing`, :doc:`./tethys_sdk/geoprocessing`, and :doc:`./tethys_sdk/visualizing`.
+    Refer to the following documentation for more information about the spatial functionality of Tethys: :doc:`./tethys_sdk/persistent_store`,  :doc:`./tethys_sdk/spatial_persistent_store`, :doc:`./tethys_sdk/spatial_publishing`, :doc:`./tethys_sdk/geoprocessing`, and :doc:`./tethys_sdk/gizmos`.
 
 Data Store
 ==========
