@@ -4,7 +4,7 @@ Template Gizmos API
 
 **Last Updated:** November 18, 2014
 
-Template Gizmos are building blocks that can be used to create beautiful interactive controls for web apps. Using the Template Gizmos API, developers can add date-pickers, plots, and maps to their app templates with minimal coding. This article provides an overview of how to use Gizmos. If you are not familiar with templating in Tethys apps, please review :doc:`../getting_started/view` tutorial before proceeding.
+Template Gizmos are building blocks that can be used to create beautiful interactive controls for web apps. Using the Template Gizmos API, developers can add date-pickers, plots, and maps to their app templates with minimal coding. This article provides an overview of how to use Gizmos. If you are not familiar with templating in Tethys apps, please review :doc:`../tutorials/getting_started/view` tutorial before proceeding.
 
 Define Options Object
 =====================
