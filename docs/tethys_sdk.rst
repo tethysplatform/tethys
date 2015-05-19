@@ -15,6 +15,7 @@ is included in the SDK:
    tethys_sdk/app_class
    tethys_sdk/templating
    tethys_sdk/gizmos
+   tethys_sdk/gizmos_api
    tethys_sdk/persistent_store
    tethys_sdk/spatial_persistent_store
    tethys_sdk/dataset_services
