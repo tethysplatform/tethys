@@ -77,5 +77,5 @@ View New Map Page
 
 At this point, your app should be ready to run again. Save all changes in the files you edited and restart the development server using the ``tethys manage start`` command in the terminal (stop it using :kbd:`CTRL-C` if necessary). Browse to your app home page at `<http://127.0.0.1:8000/apps/my-first-app>`_. Use the "Go To Map" action to browse to your new map page. It should look similar to this:
 
-.. figure:: ../images/new_map_page.png
+.. figure:: ../../images/new_map_page.png
     :width: 650px

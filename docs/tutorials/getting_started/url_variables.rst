@@ -164,7 +164,7 @@ View Updated Map Page
 
 Just like that, you added a new page to your app using MVC. Save the changes to any files you edited and start up the development server using the ``tethys manage start`` command and browse to your app. Use the "Go To Map" action on the home page to browse to your new map page and use the options in the navigation pane to view the different gages. It should look like this (although you may need to pan and zoom some):
 
-.. figure:: ../images/map_single_page.png
+.. figure:: ../../images/map_single_page.png
     :width: 650px
 
 Variable URLs

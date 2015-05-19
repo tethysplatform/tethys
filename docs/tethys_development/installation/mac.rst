@@ -293,7 +293,7 @@ Tethys Platform provides a web interface that is called the Tethys Portal. You c
 8. Web Admin Setup
 ------------------
 
-You are now ready to configure your Tethys Platform installation using the web admin interface. Follow the :doc:`./web_admin_setup` tutorial to finish setting up your Tethys Platform.
+You are now ready to configure your Tethys Platform installation using the web admin interface. Follow the :doc:`../../installation/web_admin_setup` tutorial to finish setting up your Tethys Platform.
 
 
 

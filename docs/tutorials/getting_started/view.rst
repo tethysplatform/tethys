@@ -26,7 +26,7 @@ Tags use curly-brace-percent-sign syntax like this: ``{% tag %}``. Tags perform 
 
 .. tip::
 
-    For a better explanation of variables, filters and tags, see the :doc:`../tethys_sdk/templating`.
+    For a better explanation of variables, filters and tags, see the :doc:`../../tethys_sdk/templating`.
 
 Template Inheritance
 --------------------
@@ -80,14 +80,14 @@ Tethys apps generated from the scaffold come with a :file:`base.html` template w
 
 The :file:`base.html` template is intended to be used as the parent template for all your app templates via the ``extends`` tag. It contains several ``block`` tags that your app templates can override or extend. The ``block`` tags you will use most often are ``app_navigation_items``, ``app_content``, and, ``app_actions``. These blocks correspond with different parts of the app interface (shown in the figure below). As a rule, content that you would like to be present in all your templates should be included in the :file:`base.html` template and content that is specific to a certain template should be included in that template.
 
-.. figure:: ../images/template_blocks.png
+.. figure:: ../../images/template_blocks.png
     :width: 650px
 
     The ``block`` tags of the :file:`base.html` template correspond with different parts of the interface: (1) ``app_navigation_items``, (2) ``app_content``, and (3) ``app_actions``.
 
 .. tip::
 
-    For an explanation of the blocks in the :file:`base.html` template see the :doc:`../tethys_sdk/templating`.
+    For an explanation of the blocks in the :file:`base.html` template see the :doc:`../../tethys_sdk/templating`.
 
 Public Files and Resources
 ==========================
@@ -125,4 +125,4 @@ Now that you know the basics of templating, you will learn how to create new tem
 
 The :file:`map.html` template that you created extends the :file:`base.html` template. It also overrides the ``app_content``, `app_actions``, and ``scripts`` blocks. An action called "Back" is added to the ``app_actions`` block. It uses a new tag, the ``url`` tag, to provide a link back to the home page of the app. The ``url`` tag will be discussed in more detail in the :doc:`url_mapping` tutorial.
 
-The map is inserted into the ``app_content`` block using one of the Tethys Gizmos called ``editable_google_map``. Gizmos are an easy way to insert common user interface elements in to your templates with minimal code. The map is configured via a dictionary called ``map_options``, which is defined in the controller. This will be discussed in the next tutorial. For more information on Gizmos, refer to the :doc:`../tethys_sdk/gizmos` documentation.
+The map is inserted into the ``app_content`` block using one of the Tethys Gizmos called ``editable_google_map``. Gizmos are an easy way to insert common user interface elements in to your templates with minimal code. The map is configured via a dictionary called ``map_options``, which is defined in the controller. This will be discussed in the next tutorial. For more information on Gizmos, refer to the :doc:`../../tethys_sdk/gizmos` documentation.
