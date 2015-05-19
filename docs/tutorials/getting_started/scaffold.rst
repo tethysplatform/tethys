@@ -4,11 +4,11 @@ Create a New Tethys App Project
 
 **Last Updated:** November 17, 2014
 
-Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../supplementary/app_project`). In this tutorial you start a new Tethys app project using the scaffold and you will install the app into your Tethys Platform ready for development.
+Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../../supplementary/app_project`). In this tutorial you start a new Tethys app project using the scaffold and you will install the app into your Tethys Platform ready for development.
 
 .. tip::
 
-   You will need to use the command line/terminal to manage your app and run the development server. See the :doc:`../supplementary/terminal_quick_guide` article for some tips if you are new to command line.
+   You will need to use the command line/terminal to manage your app and run the development server. See the :doc:`../../supplementary/terminal_quick_guide` article for some tips if you are new to command line.
 
 Generate Scaffold
 =================
@@ -22,7 +22,7 @@ To generate a new app using the scaffold, open a terminal, press :kbd:`CTRL-C` t
     (tethys) $ cd ~/tethysdev
     (tethys) $ tethys scaffold my_first_app
 
-The final command from the code block above is provided by the Tethys :doc:`../tethys_sdk/tethys_cli`. It will be prompt you to enter metadata about your app such as, proper name, version, author, and description. All of these metadata are optional and you can skip each item by pressing enter.
+The final command from the code block above is provided by the Tethys :doc:`../../tethys_sdk/tethys_cli`. It will be prompt you to enter metadata about your app such as, proper name, version, author, and description. All of these metadata are optional and you can skip each item by pressing enter.
 
 The commands you entered did the following tasks:
 
@@ -31,7 +31,7 @@ The commands you entered did the following tasks:
 3. changed your working directory into the :file:`tethysdev` directory, and
 4. executed the :command:`tethys scaffold` command to create the new app.
 
-In a file browser change into your :file:`Home` directory and open the :file:`tethysdev` directory. If the scaffolding worked, you should see a directory called :file:`tethysapp-my_first_app`. All of the source code for your app will be stored in this directory. Open the :file:`tethysapp-my_first_app` and explore the contents. The main directory of your app project, :file:`my_first_app`, is located within a namespace directory called :file:`tethysapp`. Each part of the app project will be explained throughout these tutorials. For more information about the app project structure, see :doc:`../supplementary/app_project`.
+In a file browser change into your :file:`Home` directory and open the :file:`tethysdev` directory. If the scaffolding worked, you should see a directory called :file:`tethysapp-my_first_app`. All of the source code for your app will be stored in this directory. Open the :file:`tethysapp-my_first_app` and explore the contents. The main directory of your app project, :file:`my_first_app`, is located within a namespace directory called :file:`tethysapp`. Each part of the app project will be explained throughout these tutorials. For more information about the app project structure, see :doc:`../../supplementary/app_project`.
 
 Development Installation
 ========================
@@ -56,7 +56,7 @@ Use start up the Tethys dockers and then the development server:
 
 Browse to `<http://127.0.0.1:8000/apps>`_. If all has gone well, you should see your app listed on the app library page. Exploring your new app won't take long, because there is only one page. Familiarize yourself with different parts of the app interface (see below).
 
-.. figure:: ../images/app_controls.png
+.. figure:: ../../images/app_controls.png
     :width: 650px
 
     Parts of a Tethys app interface: (1) app navigation toggle, (2) exit button, (3) app navigation, (4) actions, and (5) app content.
@@ -72,7 +72,7 @@ Browse to `<http://127.0.0.1:8000/apps>`_. If all has gone well, you should see 
 Model View Controller
 =====================
 
-Tethys apps are developed using the :term:`Model View Controller` (MVC) development pattern. Following the MVC pattern will make your app project easier to develop and manage in the future. Most of the code in your app will fall into one of the three MVC categories. The Model represents the data of your app, the View is composed of the representation of the data, and the Controller consists of the logic to prepare the data for the view and any other logic your app needs. In the next few tutorials, you will be introduced to how the MVC development paradigm is used to develop Tethys apps. For more information about MVC, see :doc:`../supplementary/key_concepts`.
+Tethys apps are developed using the :term:`Model View Controller` (MVC) development pattern. Following the MVC pattern will make your app project easier to develop and manage in the future. Most of the code in your app will fall into one of the three MVC categories. The Model represents the data of your app, the View is composed of the representation of the data, and the Controller consists of the logic to prepare the data for the view and any other logic your app needs. In the next few tutorials, you will be introduced to how the MVC development paradigm is used to develop Tethys apps. For more information about MVC, see :doc:`../../supplementary/key_concepts`.
 
 App Project Paths
 =================

@@ -21,7 +21,8 @@ Contents
    
    features
    installation
-   getting_started
+   tutorials
+   software_suite
    tethys_sdk
    tethys_portal
    production
