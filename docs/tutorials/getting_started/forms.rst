@@ -2,7 +2,7 @@
 User Input and Forms
 ********************
 
-**Last Updated:** November 17, 2013
+**Last Updated:** May 20, 2015
 
 Eventually you will need to request input from the user, which will involve working with HTML forms. In this tutorial, you'll learn how to create forms in your template and process the data submitted through the form in your controller.
 
@@ -33,20 +33,16 @@ The form will be created on a new page, which means you will need to create a ne
 
             url_maps = (UrlMap(name='home',
                                url='my-first-app',
-                               controller='my_first_app.controllers.home'
-                               ),
+                               controller='my_first_app.controllers.home'),
                         UrlMap(name='map',
                                url='my-first-app/map',
-                               controller='my_first_app.controllers.map'
-                               ),
+                               controller='my_first_app.controllers.map'),
                         UrlMap(name='map_single',
                                url='my-first-app/map/{id}',
-                               controller='my_first_app.controllers.map_single'
-                               ),
+                               controller='my_first_app.controllers.map_single'),
                         UrlMap(name='echo_name',
                                url='my-first-app/echo-name',
-                               controller='my_first_app.controllers.echo_name'
-                               ),
+                               controller='my_first_app.controllers.echo_name'),
             )
 
             return url_maps
@@ -94,11 +90,6 @@ Create a new template called "echo_name.html" in your templates directory (:file
       <a href="{% url 'my_first_app:home' %}" class="btn btn-default">Back</a>
     {% endblock %}
 
-    {% block scripts %}
-      {{ block.super }}
-      {% gizmo_dependencies %}
-    {% endblock %}
-
 The form is denoted by the HTML ``<form>`` tag and it contains a text input (created by a template Gizmo) and a submit button. Also note the use of the ``csrf_token`` tag. This is a security precaution that is required to be included in all the forms of your app (see the `Cross Site Forgery protection <https://docs.djangoproject.com/en/1.7/ref/contrib/csrf/>`_ article in the Django documentation for more details).
 
 Also note that the method attribute of the ``<form>`` element is set to ``post``. This means the form will use the HTTP method called POST to submit the data to the server. For an introduction to HTTP methods, see `The Definitive Guide to GET vs POST <http://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post>`_.
@@ -106,7 +97,13 @@ Also note that the method attribute of the ``<form>`` element is set to ``post``
 New Controller
 ==============
 
-Now you need to create the ``echo_name`` controller function. Add the following function to your :file:`my_first_app/controllers.py` file:
+Now you need to create the ``echo_name`` controller function. First, add the following import statement to the top of :file:`my_first_app/controllers.py`` file:
+
+::
+
+  ﻿from tethys_gizmos.gizmo_options import TextInput
+
+Then add the following function to your :file:`my_first_app/controllers.py` file:
 
 ::
 
@@ -118,8 +115,8 @@ Now you need to create the ``echo_name`` controller function. Add the following 
         name = ''
 
         # Define Gizmo Options
-        text_input_options = {'display_text': 'Enter Name',
-                              'name': 'name-input'}
+        text_input_options = TextInput(display_text='Enter Name',
+                                       name='name-input')
 
         # Check form data
         if request.POST and 'name-input' in request.POST:
