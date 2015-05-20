@@ -2,11 +2,11 @@
 The Model and Persistent Stores
 *******************************
 
-**Last Updated:** November 17, 2014
+**Last Updated:** May 20, 2015
 
 In this part of the tutorial you'll learn about the Model component of MVC development for Tethys apps. The Model represents the data of your app and the code used to manage it. The data of your app can take many forms. It can be generated on-the-fly and stored in Python data structures (e.g.: lists, dictionaries, and NumPy arrays), stored in databases, or contained in files via the :doc:`../../tethys_sdk/dataset_services`.
 
-In this tutorial you will use the :doc:`../../tethys_sdk/persistent_store` to create a spatially enabled database for your app and you will learn how to use the `SQLAlchemy <http://www.sqlalchemy.org/>`_ object relational mapper (ORM) to create a data model for your app.
+In this tutorial you will define your model using the :doc:`../../tethys_sdk/persistent_store` to create a spatially enabled database for your app and you will learn how to use the `SQLAlchemy <http://www.sqlalchemy.org/>`_ object relational mapper (ORM) to create a data model for your app.
 
 Register a Persistent Store
 ===========================
@@ -97,7 +97,7 @@ The ``get_persistent_store_engine()`` method that is used here accepts the name 
 ::
 
     # SQLAlchemy ORM definition for the stream_gages table
-    class StreamGage (Base):
+    class StreamGage(Base):
         '''
         Example SQLAlchemy DB Model
         '''
@@ -221,4 +221,4 @@ If you have a graphical database client like `PGAdmin III <http://www.pgadmin.or
 .. figure:: ../../images/pgAdmin_III_db_confirmation.png
     :width: 650px
 
-    Example of graphical database client PGAdmin III.
+**Example of graphical database client PGAdmin III.**
