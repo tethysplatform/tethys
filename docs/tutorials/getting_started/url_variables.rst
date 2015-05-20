@@ -2,7 +2,7 @@
 Advanced Concepts
 *****************
 
-**Last Updated:** November 17, 2014
+**Last Updated:** May 20, 2015
 
 The purpose of this tutorial will be to introduce some advanced concepts in Tethys app development. In the map page you created in the previous tutorials, you are able to view all of the stream gages on a map concurrently. In this tutorial you will add the ability to view individual stream gages on the map page. This will involve creating a new url map, new controller, and some modifications to the map template. This exercise will also serve as a good review of MVC development in Tethys Platform.
 
@@ -33,16 +33,13 @@ You can add variables to your URLs to make your controllers and web pages more d
 
             url_maps = (UrlMap(name='home',
                                url='my-first-app',
-                               controller='my_first_app.controllers.home'
-                               ),
+                               controller='my_first_app.controllers.home'),
                         UrlMap(name='map',
                                url='my-first-app/map',
-                               controller='my_first_app.controllers.map'
-                               ),
+                               controller='my_first_app.controllers.map'),
                         UrlMap(name='map_single',
                                url='my-first-app/map/{id}',
-                               controller='my_first_app.controllers.map_single'
-                               ),
+                               controller='my_first_app.controllers.map_single'),
             )
 
             return url_maps
@@ -80,18 +77,48 @@ Notice that the ``map_single`` ``UrlMap`` object points to a controller named "m
         # Query DB for gage objects
         gage = session.query(StreamGage).filter(StreamGage.id==id).one()
 
-        # Create geometry objects for the gage
-        gage_geometry = dict(type="Point",
-                             coordinates=[gage.latitude, gage.longitude],
-                             properties={"value": gage.value})
+        # Transform into GeoJSON format
+        gage_feature = {
+          'type': 'Feature',
+          'geometry': {
+            'type': 'Point',
+            'coordinates': [gage.latitude, gage.longitude]
+          }
+        }
 
-        # Create geojson object
-        geojson_gages = dict(type="GeometryCollection",
-                             geometries=[gage_geometry])
+        geojson_gages = {
+          'type': 'FeatureCollection',
+          'crs': {
+            'type': 'name',
+            'properties': {
+              'name': 'EPSG:4326'
+            }
+          },
+          'features': [gage_feature]
+        }
 
-        map_options = {'height': '600px',
-                       'width': '100%',
-                       'input_overlays': geojson_gages}
+        # Define layer for Map View
+        geojson_layer = MapViewLayer(source='GeoJSON',
+                                     options=geojson_gages,
+                                     legend_title='Provo Stream Gages',
+                                     legend_extent=[-111.74, 40.22, -111.67, 40.25])
+
+        # Define initial view for Map View
+        view_options = MapViewViewOptions(
+            projection='EPSG:4326',
+            center=[-111.70, 40.24],
+            zoom=13,
+            maxZoom=18,
+            minZoom=2
+        )
+
+        # Configure the map
+        map_options = MapViewOptions(height='500px',
+                                     width='100%',
+                                     layers=[geojson_layer],
+                                     view=view_options,
+                                     basemap='OpenStreetMap',
+                                     legend=True)
 
         context = {'map_options': map_options,
                    'gage_id': id}
@@ -138,21 +165,16 @@ Open the :file:`map.html` template located at :file:`my_first_app/templates/my_f
 
     {% block app_content %}
       {% if gage_id %}
-        <h1>Stream Gage {{gage_id}} </h1>
+        <h1>Stream Gage {{gage_id}}</h1>
       {% else %}
         <h1>Stream Gages</h1>
       {% endif %}
 
-      {% gizmo editable_google_map map_options %}
+      {% gizmo map_view map_options %}
     {% endblock %}
 
     {% block app_actions %}
       <a href="{% url 'my_first_app:home' %}" class="btn btn-default">Back</a>
-    {% endblock %}
-
-    {% block scripts %}
-      {{ block.super }}
-      {% gizmo_dependencies %}
     {% endblock %}
 
 There are two changes to the :file:`map.html` template that are worth noting. First, the template now overrides the ``app_navigation_block`` to provide links for each of the stream gages in the navigation. The ``if`` template tag is used in each of the nav items to highlight the appropriate link based on the ``gage_id``. Notice that all ``if`` tags must also end with a ``endif`` tag. The text between the two tags is displayed only if the conditional statement evaluates to ``True``. The ``href`` for each link is provided using the ``url``, but this time the ``id`` variable is also provided as an argument.
@@ -172,6 +194,6 @@ Variable URLs
 
 Take note of the URL as you are viewing the different gages. You should see the ID of the current gage. For example, the URL for the gage with an ID of 1 would be `<http://127.0.0.1:8000/apps/my-first-app/map/1/>`_. You can manually change the ID in the URL to request the gage with that ID. Visit this URL `<http://127.0.0.1:8000/apps/my-first-app/map/3/>`_ and it will map the gage with ID 3.
 
-Try this URL: `<http://127.0.0.1:8000/apps/my-first-app/map/100>`_. You should see a lovely error message, because you don't have a gage with ID 100 in the database. This uncovers a bug in your code that we won't take the time to fix in this tutorial. If this were a real app, you would need to handle the case when the ID doesn't match anything in the database so that it doesn't give you an error.
+Try this URL: `<http://127.0.0.1:8000/apps/my-first-app/map/100/>`_. You should see a lovely error message, because you don't have a gage with ID 100 in the database. This uncovers a bug in your code that we won't take the time to fix in this tutorial. If this were a real app, you would need to handle the case when the ID doesn't match anything in the database so that it doesn't give you an error.
 
 This exercise also exposes a vulnerability with using integer IDs in the URL--they can be guessed easily. For example if your app had a delete method, it would be very easy for an attacker to write a script that would increment through integers and call the delete method--effectively clearing your database. It would be a much better practice to use a UUID (see `Universally unique identifier <http://en.wikipedia.org/wiki/Universally_unique_identifier>`_) or something similar for IDs.

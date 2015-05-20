@@ -2,7 +2,7 @@
 URL Mapping
 ***********
 
-**Last Updated:** November 13, 2014
+**Last Updated:** May 20, 2015
 
 Whenever you create a new controller, you will also need to associate it with a URL by creating URL map for it. When a URL is requested, the controller that it is mapped to will be executed.
 
@@ -36,12 +36,10 @@ Your :term:`app class` will already have one ``UrlMap`` for the home page called
 
             url_maps = (UrlMap(name='home',
                                url='my-first-app',
-                               controller='my_first_app.controllers.home'
-                               ),
+                               controller='my_first_app.controllers.home'),
                         UrlMap(name='map',
                                url='my-first-app/map',
-                               controller='my_first_app.controllers.map'
-                               ),
+                               controller='my_first_app.controllers.map'),
             )
 
             return url_maps

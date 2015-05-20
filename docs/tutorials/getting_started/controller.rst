@@ -2,7 +2,7 @@
 The Controller
 **************
 
-**Last Updated:** November 17, 2014
+**Last Updated:** May 20, 2015
 
 The Controller component of MVC will be discussed in this part of the tutorial. The job of the controller is to coordinate between the View and the Model. Often this means querying a database and transforming the data to a format that the view expects it to be in. The Controller also handles most of the application logic such as processing and validating form data or launching model runs. In a Tethys app, controllers are simple Python functions.
 
@@ -22,6 +22,7 @@ Add the following imports to the top of the file:
 ::
 
     from .model import SessionMaker, StreamGage
+    from tethys_gizmos.gizmo_options import MapViewOptions, MapViewLayer, MapViewViewOptions
 
 Then add a new controller function called ``map`` after the ``home`` function:
 
@@ -38,30 +39,61 @@ Then add a new controller function called ``map`` after the ``home`` function:
         gages = session.query(StreamGage).all()
 
         # Transform into GeoJSON format
-        geometries = []
+        features = []
 
         for gage in gages:
-            gage_geometry = dict(type="Point",
-            coordinates=[gage.latitude, gage.longitude],
-                                 properties={"value": gage.value})
-            geometries.append(gage_geometry)
+            gage_feature = {
+              'type': 'Feature',
+              'geometry': {
+                'type': 'Point',
+                'coordinates': [gage.latitude, gage.longitude]
+              }
+            }
 
-        geojson_gages = {"type": "GeometryCollection",
-                         "geometries": geometries}
+            features.append(gage_feature)
+
+        geojson_gages = {
+          'type': 'FeatureCollection',
+          'crs': {
+            'type': 'name',
+            'properties': {
+              'name': 'EPSG:4326'
+            }
+          },
+          'features': features
+        }
+
+        # Define layer for Map View
+        geojson_layer = MapViewLayer(source='GeoJSON',
+                                     options=geojson_gages,
+                                     legend_title='Provo Stream Gages',
+                                     legend_extent=[-111.74, 40.22, -111.67, 40.25])
+
+        # Define initial view for Map View
+        view_options = MapViewViewOptions(
+            projection='EPSG:4326',
+            center=[-100, 40],
+            zoom=3.5,
+            maxZoom=18,
+            minZoom=2
+        )
 
         # Configure the map
-        map_options = {'height': '500px',
-                       'width': '100%',
-                       'input_overlays': geojson_gages}
+        map_options = MapViewOptions(height='500px',
+                                     width='100%',
+                                     layers=[geojson_layer],
+                                     view=view_options,
+                                     basemap='OpenStreetMap',
+                                     legend=True)
 
-        # Pass variables to the template via the context dicitonary
+        # Pass variables to the template via the context dictionary
         context = {'map_options': map_options}
 
         return render(request, 'my_first_app/map.html', context)
 
 
 
-The new ``map`` controller queries the persistent store for the stream gages, converts the data into GeoJson format for the map, and configures the map options for the map Gizmo that is used in the template.
+The new ``map`` controller queries the persistent store for the stream gages, converts the data into `GeoJSON <http://geojson.org/>`_ format for the map, and configures the map options for the Map View Gizmo that is used in the template.
 
 To query the database, an SQLAlchemy ``session`` object is needed. It is created using the ``SessionMaker`` object imported from the :file:`model.py` file. Querying is accomplished by using the ``query()`` method on the ``session`` object. The result is a list of ``StreamGage`` objects representing the records in the database.
 

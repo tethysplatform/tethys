@@ -2,7 +2,7 @@
 The View and Templating
 ***********************
 
-**Last Updated:** November 24, 2014
+**Last Updated:** May 20, 2015
 
 In this section the View aspect of MVC will be introduced. The View consists of the representation or visualizations of your app's data and the user interface. Views for Tethys apps are constructed using the standard web programming tools: HTML, JavaScript, and CSS. Additionally, Tethys Platform provides the Django Python templating language allowing you to insert Python code into your HTML documents, similar to how PHP is used. The result is dynamic, reusable templates for the web pages of your app.
 
@@ -64,7 +64,16 @@ Tethys apps generated from the scaffold come with a :file:`base.html` template w
     {% block app_title %}{{ tethys_app.name }}{% endblock %}
 
     {% block app_navigation_items %}
-      . . .
+      <li class="title">App Navigation</li>
+      <li class="active"><a href="">Home</a></li>
+      <li><a href="">Jobs</a></li>
+      <li><a href="">Results</a></li>
+      <li class="title">Steps</li>
+      <li><a href="">1. The First Step</a></li>
+      <li><a href="">2. The Second Step</a></li>
+      <li><a href="">3. The Third Step</a></li>
+      <li class="separator"></li>
+      <li><a href="">Get Started</a></li>
     {% endblock %}
 
     {% block app_content %}
@@ -83,7 +92,7 @@ The :file:`base.html` template is intended to be used as the parent template for
 .. figure:: ../../images/template_blocks.png
     :width: 650px
 
-    The ``block`` tags of the :file:`base.html` template correspond with different parts of the interface: (1) ``app_navigation_items``, (2) ``app_content``, and (3) ``app_actions``.
+The ``block`` tags of the :file:`base.html` template correspond with different parts of the interface: (1) ``app_navigation_items``, (2) ``app_content``, and (3) ``app_actions``.
 
 .. tip::
 
@@ -111,18 +120,13 @@ Now that you know the basics of templating, you will learn how to create new tem
 
     {% block app_content %}
       <h1>Stream Gages</h1>
-      {% gizmo editable_google_map map_options %}
+      {% gizmo map_view map_options %}
     {% endblock %}
 
     {% block app_actions %}
       <a href="{% url 'my_first_app:home' %}" class="btn btn-default">Back</a>
     {% endblock %}
 
-    {% block scripts %}
-      {{ block.super }}
-      {% gizmo_dependencies %}
-    {% endblock %}
-
 The :file:`map.html` template that you created extends the :file:`base.html` template. It also overrides the ``app_content``, `app_actions``, and ``scripts`` blocks. An action called "Back" is added to the ``app_actions`` block. It uses a new tag, the ``url`` tag, to provide a link back to the home page of the app. The ``url`` tag will be discussed in more detail in the :doc:`url_mapping` tutorial.
 
-The map is inserted into the ``app_content`` block using one of the Tethys Gizmos called ``editable_google_map``. Gizmos are an easy way to insert common user interface elements in to your templates with minimal code. The map is configured via a dictionary called ``map_options``, which is defined in the controller. This will be discussed in the next tutorial. For more information on Gizmos, refer to the :doc:`../../tethys_sdk/gizmos` documentation.
+The map is inserted into the ``app_content`` block using one of the Tethys Gizmos called ``map_view``. Gizmos are an easy way to insert common user interface elements in to your templates with minimal code. The map is configured via a dictionary called ``map_options``, which is defined in the controller. This will be discussed in the next tutorial. For more information on Gizmos, refer to the :doc:`../../tethys_sdk/gizmos` documentation.
