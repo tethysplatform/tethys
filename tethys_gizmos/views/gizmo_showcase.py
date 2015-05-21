@@ -1,3 +1,4 @@
+# coding=utf-8
 import json
 from datetime import datetime
 from django.shortcuts import render
@@ -12,6 +13,13 @@ def index(request):
     """
     Django view for the gizmo showcase page
     """
+    # Docs version
+    docs_version = '1.1.0'
+    docs_endpoint = 'http://docs.tethys.ci-water.org/en/' + docs_version
+
+    # Uncomment this line for debugging on the localhost
+    # docs_endpoint = 'http://localhost:63342/tethys/docs/_build/html'
+
     # Button Group Options
     # Click me button
     button_options = ButtonOptions(display_text='Click Me',
@@ -147,7 +155,7 @@ def index(request):
                                            x_axis_title='Altitude',
                                            x_axis_units='km',
                                            y_axis_title='Temperature',
-                                           y_axis_units='*C',
+                                           y_axis_units='°C',
                                            series=[
                                                {
                                                    'name': 'Air Temp',
@@ -457,6 +465,63 @@ def index(request):
                              width='500px',
                              height='500px')
 
+    # Custom Plot
+    custom_plot_dictionary = {
+        'chart': {
+            'type': 'columnrange',
+            'inverted': True
+        },
+        'title': {
+            'text': 'Temperature variation by month'
+        },
+        'subtitle': {
+            'text': 'Observed in Vik i Sogn, Norway, 2009'
+        },
+        'xAxis': {
+            'categories': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        },
+        'yAxis': {
+            'title': {
+                'text': 'Temperature ( °C )'
+            }
+        },
+        'tooltip': {
+            'valueSuffix': '°C'
+        },
+        'plotOptions': {
+            'columnrange': {
+                'dataLabels': {
+                    'enabled': True,
+                    'formatter': "function () {return this.y + '°C';}"
+                }
+            }
+        },
+        'legend': {
+            'enabled': False
+        },
+        'series': [{
+            'name': 'Temperatures',
+            'data': [
+                [-9.7, 9.4],
+                [-8.7, 6.5],
+                [-3.5, 9.4],
+                [-1.4, 19.9],
+                [0.0, 22.6],
+                [2.9, 29.5],
+                [9.2, 30.7],
+                [7.3, 26.5],
+                [4.4, 18.0],
+                [-3.1, 11.4],
+                [-5.2, 10.4],
+                [-13.5, 9.8]
+            ]
+        }]
+    }
+
+    custom_plot = PlotView(highcharts_object=custom_plot_dictionary,
+                           width='500px',
+                           height='500px')
+
     # Table View
     table_view = TableView(column_names=('Name', 'Age', 'Job'),
                            rows=[('Bill', 30, 'contractor'),
@@ -621,7 +686,9 @@ def index(request):
                                       legend=True)
 
     # Define the context object
-    context = {'single_button': single_button,
+    context = {'docs_version': docs_version,
+               'docs_endpoint': docs_endpoint,
+               'single_button': single_button,
                'horizontal_buttons': horizontal_buttons,
                'vertical_buttons': vertical_buttons,
                'date_picker': date_picker,
@@ -652,6 +719,7 @@ def index(request):
                'bar_plot_view': bar_plot_view,
                'area_range_plot': area_range_plot,
                'heat_map_plot': heat_map_plot,
+               'custom_plot': custom_plot,
     }
 
     return render(request, 'tethys_gizmos/gizmo_showcase/index.html', context)
