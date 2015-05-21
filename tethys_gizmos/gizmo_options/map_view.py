@@ -7,6 +7,8 @@ class MapViewOptions(TethysGizmoOptions):
     """
     The Map View gizmo can be used to visualize maps of spatial data. Map View is powered by OpenLayers 3, an open source pure javascript mapping library.
 
+    Shapes that are drawn on the map by users can be retrieved from the map via a hidden text field named 'geometry', which is updated every time the map is changed. The text in the text field is a string representation of JSON. The geometry contained in this JSON can be formatted as either GeoJSON or Well Known Text. This can be configured by via the output_format option of the MapViewDrawOptions object. If the Map View is embedded in a form, the geometry that is drawn on the map will automatically be submitted with the rest of the form via the hidden text field.
+
     Attributes:
         height(str): Height of the map element. Any valid css unit of length (e.g.: '500px'). Defaults to '520px'.
         width(str): Width of the map element. Any valid css unit of length (e.g.: '100%'). Defaults to '100%'.
