@@ -9,12 +9,18 @@ def initialize_settings(apps, schema_editor):
 
     category = SettingsCategory(name='Cluster Management')
     category.save()
-    for setting in ['SCHEDULER_IP']:
+    for setting in ['SCHEDULER_IP', 'SCHEDULER_KEY_LOCATION', 'DEFAULT_CLUSTER']:
         s = Setting(name=setting, category=category)
         s.save()
 
     category = SettingsCategory(name='Amazon Credentials')
     category.save()
     for setting in ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_USER_ID', 'KEY_NAME', 'KEY_LOCATION']:
+        s = Setting(name=setting, category=category)
+        s.save()
+
+    category = SettingsCategory(name='Azure Credentials')
+    category.save()
+    for setting in['SUBSCRIPTION_ID', 'CERTIFICATE_PATH']:
         s = Setting(name=setting, category=category)
         s.save()
