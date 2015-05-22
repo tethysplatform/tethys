@@ -8,7 +8,7 @@ TETHYSCLUSTER_CFG_FILE = os.path.join(TETHYSCLUSTER_CFG_DIR, 'config')
 TETHYSCLUSTER_TETHYS_CFG_FILE = os.path.join(TETHYSCLUSTER_CFG_DIR, 'tethys_config')
 
 TETHYSCLUSTER_CFG_TEMPLATE = """[global]
-DEFAULT_TEMPLATE=default_cluster
+DEFAULT_TEMPLATE=%(default_cluster)s
 INCLUDE=~/.tethyscluster/tethys_config
 
 [aws info]
@@ -16,15 +16,32 @@ AWS_ACCESS_KEY_ID=%(aws_access_key_id)s
 AWS_SECRET_ACCESS_KEY=%(aws_secret_access_key)s
 AWS_USER_ID=%(aws_user_id)s
 
+[azure info]
+SUBSCRIPTION_ID = %(subscription_id)s
+CERTIFICATE_PATH = %(certificate_path)s
+
+[key %(certificate_fingerprint)s]
+KEY_LOCATION=%(certificate_path)s
+
 [key %(key_name)s]
 KEY_LOCATION=%(key_location)s
 
-[cluster default_cluster]
+[cluster aws_default_cluster]
+CLOUD_PROVIDER = AWS
 KEYNAME = %(key_name)s
 CLUSTER_SIZE = 1
 CLUSTER_SHELL = bash
 NODE_IMAGE_ID = ami-3393a45a
 NODE_INSTANCE_TYPE = t2.micro
+PLUGINS = condor
+
+[cluster azure_default_cluster]
+CLOUD_PROVIDER = Azure
+KEYNAME = %(certificate_fingerprint)s
+CLUSTER_SIZE = 1
+CLUSTER_SHELL = bash
+NODE_IMAGE_ID = tc-linux12-2
+NODE_INSTANCE_TYPE = Small
 PLUGINS = condor
 
 [plugin condor]
