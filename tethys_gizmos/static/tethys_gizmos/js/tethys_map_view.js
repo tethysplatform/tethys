@@ -425,10 +425,23 @@ var TETHYS_MAP_VIEW = (function() {
 
           // GeoJSON case
           if (current_layer.source === GEOJSON){
-            var geojson_source;
+            var geojson_source, json, projection, format, features;
+
+            json = current_layer.options;
+
+            // Determine projection
+            format = new ol.format.GeoJSON();
+            projection = format.readProjection(json);
+
+            // Read the features
+            if (is_defined(projection)) {
+              features = format.readFeatures(json, {'dataProjection': projection, 'featureProjection': DEFAULT_PROJECTION});
+            } else {
+              features = format.readFeatures(json);
+            }
 
             geojson_source = new ol.source.Vector({
-              features: (new ol.format.GeoJSON()).readFeatures(current_layer.options)
+              features: features
             });
 
             layer = new ol.layer.Vector({
