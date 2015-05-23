@@ -5,8 +5,6 @@ __all__ = ['ButtonGroupOptions', 'ButtonOptions']
 
 class ButtonGroupOptions(TethysGizmoOptions):
     """
-    Button Group Gizmo Options
-
     The button group gizmo can be used to generate a single button or a group of buttons. Groups of buttons can be stacked horizontally or vertically. For a single button, specify a button group with one button. This gizmo is a wrapper for Twitter Bootstrap buttons.
 
     Attributes:
@@ -21,15 +19,44 @@ class ButtonGroupOptions(TethysGizmoOptions):
 
         from tethys_gizmos.gizmo_options import ButtonOptions, ButtonGroupOptions
 
+        # Single Button
         button_options = ButtonOptions(display_text='Click Me',
-                                    name='click_me_name',
-                                    attributes='onclick=alert(this.name);',
-                                    submit=True)
-        single_button_group = ButtonGroupOptions(buttons=[button_options])
+                                       name='click_me_name',
+                                       attributes='onclick=alert(this.name);',
+                                       submit=True)
+        single_button = ButtonGroupOptions(buttons=[button_options])
+
+        # Horizontal Buttons
+        add_button = ButtonOptions(display_text='Add',
+                                   icon='glyphicon glyphicon-plus',
+                                   style='success')
+        delete_button = ButtonOptions(display_text='Delete',
+                                      icon='glyphicon glyphicon-trash',
+                                      disabled=True,
+                                      style='danger')
+        horizontal_buttons = ButtonGroupOptions(buttons=[add_button, delete_button])
+
+        # Vertical Buttons
+        edit_button = ButtonOptions(display_text='Edit',
+                                    icon='glyphicon glyphicon-wrench',
+                                    style='warning',
+                                    attributes='id=edit_button')
+        info_button = ButtonOptions(display_text='Info',
+                                    icon='glyphicon glyphicon-question-sign',
+                                    style='info',
+                                    attributes='name=info')
+        apps_button = ButtonOptions(display_text='Apps',
+                                    icon='glyphicon glyphicon-home',
+                                    href='/apps',
+                                    style='primary')
+        vertical_buttons = ButtonGroupOptions(buttons=[edit_button, info_button, apps_button],
+                                              vertical=True)
 
         # TEMPLATE
 
-        {% gizmo button_group single_button_group %}
+        {% gizmo button_group single_button %}
+        {% gizmo button_group.html horizontal_buttons %}
+        {% gizmo button_group.html vertical_buttons %}
 
     """
 
@@ -46,8 +73,6 @@ class ButtonGroupOptions(TethysGizmoOptions):
 
 class ButtonOptions(SecondaryGizmoOptions):
     """
-    Button Gizmo Options
-
     Attributes:
       display_text(str): Display text that appears on the button.
       name(str): Name of the input element that will be used for form submission

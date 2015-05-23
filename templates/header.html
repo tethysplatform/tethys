@@ -12,6 +12,18 @@
   .user-dropdown .user-dropdown-menu li a:hover {
     background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
   }
+
+  .site-header .header-nav li.header-action a:hover {
+    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
+  }
+
+  .site-header .header-nav li.header-action.lit a {
+    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
+  }
+
+  .mobile-nav-button:hover {
+    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
+  }
 </style>
 
 {# Mobile site navigation #}
@@ -23,45 +35,29 @@
         {% if user.is_staff or user.is_superuser %}
         <li><a href="{% url 'developer_home' %}" title="Developer">Developer</a></li>
         {% endif %}
+        {% if user.is_authenticated and user.is_active %}
+          <li>
+            <a href="{% url 'user:profile' username=user.username %}" title="User Profile">
+              <span>Profile</span>
+            </a>
+          </li>
+          {% if user.is_staff %}
+            <li>
+              <a href="{% url 'admin:index' %}" title="System Admin Settings">
+                <span>Site Admin</span>
+              </a>
+            </li>
+          {% endif %}
+
+          <li>
+            <a href="{% url 'accounts:logout' %}" title="Log Out">
+              <span>Log Out</span>
+            </a>
+          </li>
+        {% endif %}
       {% endblock %}
     </ul>
   </div>
-{% endblock %}
-
-{# Mobile user navigation #}
-{% block mobile_user_nav %}
-  {% if user.is_authenticated and user.is_active %}
-  <div class="mobile-nav mobile-user-links">
-    <ul>
-      {% block mobile_user_nav_items %}
-        <li>
-          <a href="{% url 'user:profile' username=user.username %}" title="User Profile">
-            <span>Profile</span>
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'user:settings' username=user.username %}" title="User Settings">
-            <span>User Settings</span>
-          </a>
-        </li>
-      {% endblock %}
-
-      {% if user.is_staff %}
-        <li>
-          <a href="{% url 'admin:index' %}" title="System Admin Settings">
-            <span>Site Admin</span>
-          </a>
-        </li>
-      {% endif %}
-
-      <li>
-        <a href="{% url 'accounts:logout' %}" title="Log Out">
-          <span>Log Out</span>
-        </a>
-      </li>
-    </ul>
-  </div>
-  {% endif %}
 {% endblock %}
 
 <div class="header-wrapper" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
@@ -139,10 +135,6 @@
           <div></div>
           <div></div>
           <div></div>
-      </a>
-      {# If the user is not logged in, set the href to the login link #}
-      <a class="mobile-nav-button mobile-user">
-          <span class="glyphicon glyphicon-user icon-white"></span>
       </a>
     {% else %}
       <a class="mobile-nav-button mobile-login" href="{% url 'accounts:login' %}" title="Log In">Log In</a>

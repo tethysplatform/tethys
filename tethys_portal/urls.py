@@ -7,9 +7,14 @@ account_urls = [
     url(r'^login/$', 'tethys_portal.views.accounts.login_view', name='login'),
     url(r'^logout/$', 'tethys_portal.views.accounts.logout_view', name='logout'),
     url(r'^register/$', 'tethys_portal.views.accounts.register', name='register'),
-    url(r'^reset/confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', 'tethys_portal.views.accounts.reset_confirm',
-        name='password_reset_confirm'),
-    url(r'^reset/$', 'tethys_portal.views.accounts.reset', name='password_reset'),
+    url(r'^password/reset/$', 'django.contrib.auth.views.password_reset',
+        {'post_reset_redirect': '/accounts/password/reset/done/'},
+        name='password_reset'),
+    url(r'^password/reset/done/$', 'django.contrib.auth.views.password_reset_done'),
+    url(r'^password/reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm',
+        {'post_reset_redirect': '/accounts/password/done/'},
+        name='password_confirm'),
+    url(r'^password/done/$', 'django.contrib.auth.views.password_reset_complete'),
 ]
 
 user_urls = [

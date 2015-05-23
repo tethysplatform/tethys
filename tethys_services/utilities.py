@@ -27,6 +27,28 @@ def initialize_engine_object(engine, endpoint, apikey=None, username=None, passw
     return engine_instance
 
 
+def list_dataset_engines():
+    """
+    Returns a list of the available dataset engines.
+    """
+    dataset_service_engines = []
+
+    site_dataset_services = DsModel.objects.all()
+
+    if site_dataset_services:
+        # Search for match
+        for site_dataset_service in site_dataset_services:
+            dataset_service_object = initialize_engine_object(engine=site_dataset_service.engine.encode('utf-8'),
+                                                              endpoint=site_dataset_service.endpoint,
+                                                              apikey=site_dataset_service.apikey,
+                                                              username=site_dataset_service.username,
+                                                              password=site_dataset_service.password)
+
+            dataset_service_engines.append(dataset_service_object)
+
+    return dataset_service_engines
+
+
 def get_dataset_engine(name, app_class=None):
     """
     Get a dataset engine with the given name.
@@ -79,6 +101,27 @@ def get_dataset_engine(name, app_class=None):
                     'exists in settings.py or in your app.py.'.format(name))
 
 
+def list_spatial_dataset_engines():
+    """
+    Returns a list of available spatial dataset engines
+    """
+    spatial_dataset_service_engines = []
+    # If the dataset engine cannot be found in the app_class, check database for site-wide dataset engines
+    site_spatial_dataset_services = SdsModel.objects.all()
+
+    if site_spatial_dataset_services:
+        # Search for match
+        for site_spatial_dataset_service in site_spatial_dataset_services:
+            spatial_dataset_object =  initialize_engine_object(engine=site_spatial_dataset_service.engine.encode('utf-8'),
+                                                               endpoint=site_spatial_dataset_service.endpoint,
+                                                               apikey=site_spatial_dataset_service.apikey,
+                                                               username=site_spatial_dataset_service.username,
+                                                               password=site_spatial_dataset_service.password)
+            spatial_dataset_service_engines.append(spatial_dataset_object)
+
+    return spatial_dataset_service_engines
+
+
 def get_spatial_dataset_engine(name, app_class=None):
     """
     Get a spatial dataset engine with the given name.
@@ -124,7 +167,6 @@ def get_spatial_dataset_engine(name, app_class=None):
                                                 apikey=site_spatial_dataset_service.apikey,
                                                 username=site_spatial_dataset_service.username,
                                                 password=site_spatial_dataset_service.password)
-
 
     raise NameError('Could not find spatial dataset service with name "{0}". Please check that dataset service with that name '
                     'exists in either the Admin Settings or in your app.py.'.format(name))

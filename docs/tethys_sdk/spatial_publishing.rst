@@ -2,9 +2,9 @@
 Spatial Dataset Services API
 ****************************
 
-**Last Updated:** January 31, 2015
+**Last Updated:** May 13, 2015
 
-Spatial dataset services are web services that can be used to store and publish file-based :term:`spatial datasets` (e.g.: Shapefile and GeoTiff). The spatial datasets published using spatial dataset services are made available in a variety of formats, many of which or more web friendly than the native format. Tethys app developers can use this Spatial Dataset Services API to store and access :term:` spatial datasets` for use in their apps and publish any resulting :term:`datasets` their apps may produce.
+Spatial dataset services are web services that can be used to store and publish file-based :term:`spatial datasets` (e.g.: Shapefile and GeoTiff). The spatial datasets published using spatial dataset services are made available in a variety of formats, many of which or more web friendly than the native format (e.g.: PNG, JPEG, GeoJSON, and KML). Tethys app developers can use this Spatial Dataset Services API to store and access :term:` spatial datasets` for use in their apps and publish any resulting :term:`datasets` their apps may produce.
 
 Powered by GeoServer
 ====================
@@ -40,10 +40,21 @@ There are quite a few concepts that you should understand before working with Ge
 
 **Web Mapping Service (WMS)**: An OGC standard for generating and exchanging maps of spatial data over the internet. WMS can be used to compose maps of several different spatial dataset sources and formats.
 
-Site Wide Configuration
-=======================
+Spatial Dataset Engine References
+=================================
 
-Sitewide configuration is performed using the System Admin Settings.
+All ``SpatialDatasetEngine`` objects implement a minimum set of base methods. However, some ``SpatialDatasetEngine`` objects may include additional methods that are unique to that ``SpatialDatasetEngine`` implementation and the arguments that each method accepts may vary slightly. Refer to the following references for the methods that are offered by each ``SpatailDatasetEngine``.
+
+.. toctree::
+    :maxdepth: 1
+
+    spatial_dataset_service/base_reference
+    spatial_dataset_service/geoserver_reference
+
+Register New Spatial Dataset Services
+=====================================
+
+Registering new spatial dataset services is performed using the System Admin Settings.
 
 1. Login to your Tethys Platform instance as an administrator.
 2. Select "Site Admin" from the user drop down menu.
@@ -53,7 +64,7 @@ Sitewide configuration is performed using the System Admin Settings.
       :align: center
 
 
-3. Select "Spatial Dataset Services" from the "Dataset Services" section.
+3. Select "Spatial Dataset Services" from the "Tethys Services" section.
 
   .. figure:: ../images/site_admin/home.png
       :width: 600px
@@ -90,43 +101,9 @@ Sitewide configuration is performed using the System Admin Settings.
 6. Press "Save" to save the Dataset Service configuration.
 
 
-App Specific Configuration
-==========================
+.. note::
 
-Alternatively,  you may also configure app specific :term:`spatial dataset` service that will only be available to your app. This is done by adding another method to the :file:`app.py` file for your app. Import ``SpatialDatasetService`` from ``tethys_apps.base`` and the create a method called ``spatial_dataset_services`` in your app class. This method must return a ``list`` or ``tuple`` of ``SpatialDatasetService`` objects. For example::
-
-  from tethys_apps.base import TethysAppBase, SpatialDatasetService
-
-  class ExampleApp(TethysAppBase):
-      """
-      Tethys App Class
-      """
-      ...
-
-      def spatial_dataset_services(self):
-          """
-          Add one or more spatial dataset services
-          """
-          spatial_dataset_services = (SpatialDatasetService(name='example',
-                                                            type='geoserver',
-                                                            endpoint='http://www.example.com/geoserver/rest',
-                                                            username='admin',
-                                                            password='geoserver'
-                                                           ),
-          )
-
-          return spatial_dataset_services
-
-The ``SpatialDatasetService`` object can be initialized with the following options: ``name``, ``type``, ``endpoint``, ``apikey``, ``username``, and ``password``. The ``name``, ``type``, ``endpoint``, ``username``, and ``password`` parameters are required for a GeoServer configuration. ``apikey`` is reserved for future use. A summary of the parameters is provided:
-
-**SpatialDatasetService(name, type, endpoint, apikey, username, password)**
-
-* name (string): Name of the spatial dataset service.
-* type (string): Type of the spatial dataset service, either 'ckan' or 'hydroshare'.
-* endpoint (string): The URL of the spatial dataset services API endpoint (currently only GeoServer supported).
-* username (string): Username that will be used for authorization.
-* password (string): Password that will be used for authorization.
-* apikey (string, optional): API key that will be used for authorization.
+  Prior to version Tethys Platform 1.1.0, it was possible to register spatial dataset services using a mechanism in the :term:`app configuration file`. This mechanism has been deprecated due to security concerns.
 
 Working with Spatial Dataset Services
 =====================================
@@ -139,24 +116,27 @@ After spatial dataset services have been properly configured, you can use the se
 
 The Spatial Dataset Services API provides a convenience function called ``get_spatial_dataset_engine``. To retrieve and engine for a sitewide configuration, call ``get_spatial_dataset_engine`` with the name of the configuration::
 
-  from tethys_apps.utilities import get_spatial_dataset_engine
+  from tethys_apps.sdk import get_spatial_dataset_engine
 
   dataset_engine = get_dataset_engine(name='example')
 
-To use an app specific spatial dataset service, call the ``get_spatial_dataset_engine`` function with the name of the configuration and your app class as follows::
+It will return the first service with a matching name or raise an exception if the service cannot be found with the given name. Alternatively, you may retrieve a list of all the spatial dataset engine objects that are registered using the ``list_spatial_dataset_engines`` function:
 
-  from tethys_apps.utilities import get_spatial_dataset_engine
-  from ..app import ExampleApp
+::
 
-  dataset_engine = get_dataset_engine(name='example', app_class=ExampleApp)
+  from tethys_apps.sdk import list_spatial_dataset_engines
 
-When used with the ``app_class`` parameter, the ``get_spatial_dataset_engine`` function will search through any app specific services first and then it will search for sitewide services. It will return the first service with a matching name or raise an exception if the service cannot be found with the given name.
+  dataset_engines = list_spatial_dataset_engines()
 
-Alternatively, you can create a ``SpatialDatasetEngine`` object directly without using the convenience function. This can be useful if you want to vary the credentials for dataset access frequently (e.g.: using user specific credentials). Simply import it and instantiate it with valid credentials::
+You can also create a ``SpatialDatasetEngine`` object directly without using the convenience function. This can be useful if you want to vary the credentials for dataset access frequently (e.g.: using user specific credentials). Simply import it and instantiate it with valid credentials::
 
   from tethys_dataset_services.engines import GeoServerSpatialDatasetEngine
 
   spatial_dataset_engine = GeoServerSpatialDatasetEngine(endpoint='http://www.example.com/api/3/action', username='admin', password='geoserver')
+
+.. caution::
+
+  Take care not to store API keys, usernames, or passwords in the source files of your app--especially if the source is made public. This could compromise the security of the spatial dataset service.
 
 2. Use the Spatial Dataset Engine
 ---------------------------------
@@ -243,16 +223,6 @@ These links could be passed on to a web mapping client like OpenLayers or Google
 * `GeoServer Web Coverage Service Overview <http://docs.geoserver.org/stable/en/user/services/wcs/index.html>`_
 * `GeoServer Web Map Service Overview <http://docs.geoserver.org/stable/en/user/services/wms/index.html>`_
 
-API Reference
-=============
-
-All ``SpatialDatasetEngine`` objects implement a minimum set of base methods. However, some ``SpatialDatasetEngine`` objects may include additional methods that are unique to that ``SpatialDatasetEngine`` implementation and the arguments that each method accepts may vary slightly. Refer to the following references for the methods that are offered by each ``SpatailDatasetEngine``.
-
-.. toctree::
-    :maxdepth: 1
-
-    spatial_dataset_service/base_reference
-    spatial_dataset_service/geoserver_reference
 
 
 

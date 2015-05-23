@@ -1,8 +1,46 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from tethys_dataset_services.valid_engines import VALID_ENGINES, VALID_SPATIAL_ENGINES
 
 
-# Create your models here.
+def validate_url(value):
+    """
+    Validate URLs
+    """
+    if 'http://' not in value:
+        raise ValidationError('Invalid URL: Must be prefixed with "http://".')
+
+
+def validate_dataset_service_endpoint(value):
+    """
+    Validator for dataset service endpoints
+    """
+    validate_url(value)
+
+    if '/api/3/action' not in value:
+        raise ValidationError('Invalid Endpoint: CKAN endpoints follow the pattern "http://example.com/api/3/action".')
+
+
+def validate_spatial_dataset_service_endpoint(value):
+    """
+    Validator for spatial dataset service endpoints
+    """
+    validate_url(value)
+
+    if '/geoserver/rest' not in value:
+        raise ValidationError('Invalid Endpoint: GeoServer endpoints follow the pattern "http://example.com/geoserver/rest".')
+
+
+def validate_wps_service_endpoint(value):
+    """
+    Validator for spatial dataset service endpoints
+    """
+    validate_url(value)
+
+    if '/wps/WebProcessingService' not in value:
+        raise ValidationError('Invalid Endpoint: 52 North WPS endpoints follow the pattern "http://example.com/wps/WebProcessingService".')
+
+
 class DatasetService(models.Model):
     """
     ORM for Dataset Service settings.
@@ -19,7 +57,7 @@ class DatasetService(models.Model):
 
     name = models.CharField(max_length=30, unique=True)
     engine = models.CharField(max_length=200, choices=ENGINE_CHOICES, default=CKAN)
-    endpoint = models.CharField(max_length=1024)
+    endpoint = models.CharField(max_length=1024, validators=[validate_dataset_service_endpoint])
     apikey = models.CharField(max_length=100, blank=True)
     username = models.CharField(max_length=100, blank=True)
     password = models.CharField(max_length=100, blank=True)
@@ -44,7 +82,7 @@ class SpatialDatasetService(models.Model):
 
     name = models.CharField(max_length=30, unique=True)
     engine = models.CharField(max_length=200, choices=ENGINE_CHOICES, default=GEOSERVER)
-    endpoint = models.CharField(max_length=1024)
+    endpoint = models.CharField(max_length=1024, validators=[validate_spatial_dataset_service_endpoint])
     apikey = models.CharField(max_length=100, blank=True)
     username = models.CharField(max_length=100, blank=True)
     password = models.CharField(max_length=100, blank=True)
@@ -62,7 +100,7 @@ class WebProcessingService(models.Model):
     ORM for Web Processing Services settings.
     """
     name = models.CharField(max_length=30, unique=True)
-    endpoint = models.CharField(max_length=1024)
+    endpoint = models.CharField(max_length=1024, validators=[validate_wps_service_endpoint])
     username = models.CharField(max_length=100, blank=True)
     password = models.CharField(max_length=100, blank=True)
 
