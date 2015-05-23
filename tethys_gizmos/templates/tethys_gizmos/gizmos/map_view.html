@@ -1,6 +1,6 @@
 {% load staticfiles tethys_gizmos %}
-<link rel="stylesheet" href="http://openlayers.org/en/v3.1.1/css/ol.css" type="text/css">
-<script src="http://openlayers.org/en/v3.1.1/build/ol.js" type="text/javascript"></script>
+<link rel="stylesheet" href="http://openlayers.org/en/v3.5.0/css/ol.css" type="text/css">
+<script src="http://openlayers.org/en/v3.5.0/build/ol.js" type="text/javascript"></script>
 
 <style>
   .ol-mouse-position {
@@ -26,30 +26,15 @@
 </style>
 
 <div id="map_view_outer_container">
-  <div class="row">
-    <div class="{% if legend %}col-md-9{% else %}col-md-12{% endif %}">
-      <div id="map_wrapper">
-        <div id="map_view" style="width: 100%; position: relative;"
-             {% if controls %}data-controls="{{ controls|jsonify }}"{% endif %}
-             {% if interactions %}data-interactions="{{ interactions|jsonify }}"{% endif %}
-             {% if layers %}data-layers="{{ layers|jsonify }}"{% endif %}
-             {% if draw %}data-draw="{{ draw|jsonify }}"{% endif %}
-             {% if view %}data-view="{{ view|jsonify }}"{% endif %}
-             {% if base_map %}data-base-map="{{ base_map|jsonify }}"{% endif %}></div>
-        <textarea id="map_view_geometry" name="geometry" rows="4" cols="180" hidden></textarea>
-      </div>
-    </div>
-    {% if legend %}
-      <div class="col-md-3">
-        <div id="map_view_legend_wrapper">
-          <h4>Legend</h4>
-          <ul class="map_view_legend">
-            <li>Legend Item</li>
-            <li>Legend Item</li>
-            <li>Legend Item</li>
-          </ul>
-        </div>
-      </div>
-    {% endif %}
+  <div id="map_wrapper" style="height: {{ height|default:'100%' }}; width:{{ width|default:'100%'}};">
+    <div id="map_view" style="width: 100%; height:100%; position: relative;"
+         {% if controls %}data-controls="{{ controls|jsonify }}"{% endif %}
+         {% if interactions %}data-interactions="{{ interactions|jsonify }}"{% endif %}
+         {% if layers %}data-layers="{{ layers|jsonify }}"{% endif %}
+         {% if draw %}data-draw="{{ draw|jsonify }}"{% endif %}
+         {% if view %}data-view="{{ view|jsonify }}"{% endif %}
+         {% if basemap %}data-base-map="{{ basemap|jsonify }}"{% endif %}
+         {% if legend %}data-legend="{{ legend|jsonify }}"{% endif %}></div>
+    <textarea id="map_view_geometry" name="geometry" rows="4" cols="180" hidden></textarea>
   </div>
 </div> <!-- end outerContainer -->

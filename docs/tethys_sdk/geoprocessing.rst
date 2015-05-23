@@ -2,7 +2,7 @@
 Web Processing Services API
 ***************************
 
-**Last Updated:** January 19, 2015
+**Last Updated:** May 13, 2015
 
 Web Processing Services (WPS) are web services that can be used perform geoprocessing and other processing activities for apps. The Open Geospatial Consortium (OGC) has created the `WPS interface standard <http://www.opengeospatial.org/standards/wps>`_ that provides rules for how inputs and outputs for processing services should be handled. Using the Web Processing Services API, you will be able to provide processing capabilities for your apps using any service that conforms to the OGC WPS standard. For convenience, the 52 North WPS is provided as part of the Tethys Platform software suite. Refer to the :doc:`../installation` documentation to learn how to install Tethys Platform with 52 North WPS enabled.
 
@@ -11,8 +11,8 @@ Configuring WPS Services
 
 Before you can start using WPS services in your apps, you will need link your Tethys Platform to a valid WPS. This can be done either at a sitewide level or at an app specific level. When a WPS is configured at the sitewide level, all apps that are installed on that Tethys Platform instance will be able to access the WPS. When installed at an app specific level, the WPS will only be accessible to the app that it is linked to. The following sections will describe how to configure a WPS to be used at both of these levels.
 
-Sitewide Configuration
-----------------------
+Register New WPS Service
+------------------------
 
 Sitewide configuration is performed using the System Admin Settings.
 
@@ -24,7 +24,7 @@ Sitewide configuration is performed using the System Admin Settings.
       :align: center
 
 
-3. Select "Web Processing Services" from the "Tethys WPS" section.
+3. Select "Web Processing Services" from the "Tethys Services" section.
 
 
   .. figure:: ../images/site_admin/home.png
@@ -53,40 +53,9 @@ If authentication is required, specify the username and password.
 6. Press "Save" to save the WPS configuration.
 
 
-App Specific Configuration
---------------------------
+.. note::
 
-Configuring a WPS services to be specific to a certain app is done in the :file:`app.py` file of the app. Import ``WpsService`` from ``tethys_apps.base`` and add a new method method called ``wps_services`` to your app class. This method must return a ``list`` or ``tuple`` of ``WpsService`` objects. For example, your :file:`app.py` may look like this:
-
-::
-
-  from tethys_apps.base import TethysAppBase, WpsService
-
-  class ExampleApp(TethysAppBase):
-      """
-      Tethys App Class
-      """
-      ...
-
-      def wps_services(self):
-          """
-          Add one or more wps services
-          """
-          wps_services = (WpsService(name='example',
-                                     endpoint='http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService',
-                                     ),
-          )
-
-          return wps_services
-
-The ``WpsService`` object can be initialized with the following options: ``name``, ``endpoint``, ``username``, and ``password``. The ``name`` and ``endpoint`` parameters are required. These are the same parameters used in sitewide configuration.
-
-**WpsService(name, endpoint, username, password)**
-
-* name (string): Name of the :term:`wps service`.
-* endpoint (string): The URL of the :term:`wps services` endpoint.
-* username (string, optional): Username that will be used for authorization.
-* password (string, optional): Password that will be used for authorization.
+  Prior to version Tethys Platform 1.1.0, it was possible to register WPS services using a mechanism in the :term:`app configuration file`. This mechanism has been deprecated due to security concerns.
 
 Working with WPS Services in Apps
 =================================
@@ -104,18 +73,15 @@ Anytime you wish to use a WPS service in an app, you will need to obtain an ``ow
 
   wps_engine = get_wps_service_engine(name='example')
 
-To use an app specific WPS service, call the ``get_wps_service_engine`` with the name of the configuration and the app class as follows:
+Alternatively, you may retrieve a list of all the dataset engine objects that are registered using the ``list_wps_service_engines`` function:
 
 ::
 
-  from tethys_apps.sdk import get_wps_service_engine
-  from ..app import ExampleApp
+  from tethys_apps.sdk import list_wps_service_engines
 
-  wps_engine = get_wps_service_engine(name='example', app_class=ExampleApp)
+  wps_engines = list_wps_service_engines()
 
-When using ``get_wps_service_engine`` with the ``app_class`` parameter, it will search through all app specific WPS services and then the sitewide WPS services, returning the first engine with matching name. If an app specific WPS service and a sitewide WPS service share the same name, the engine corresponding to the app specific WPS service with be returned.
-
-Alternatively, you can create an ``owslib.wps.WebProcessingService`` engine object directly without using the convenience function. This can be useful if you want to vary the credentials for WPS service access frequently (e.g.: using user specific credentials).
+You can also create an ``owslib.wps.WebProcessingService`` engine object directly without using the convenience function. This can be useful if you want to vary the credentials for WPS service access frequently (e.g.: using user specific credentials).
 
 ::
 
@@ -144,7 +110,7 @@ After you have retrieved a valid ``owslib.wps.WebProcessingService`` engine obje
   monitorExecution(execution)
 
 
-It is also possible to perform requests using data that are hosted on WFS servers, such as the GoeServer that is provided as part of the Tethys Platform software stack. See the `OWSLib WPS Documentation <http://geopython.github.io/OWSLib/#wps>`_ for more details on how this is to be done.
+It is also possible to perform requests using data that are hosted on WFS servers, such as the GeoServer that is provided as part of the Tethys Platform software suite. See the `OWSLib WPS Documentation <http://geopython.github.io/OWSLib/#wps>`_ for more details on how this is to be done.
 
 Web Processing Service Developer Tool
 =====================================
