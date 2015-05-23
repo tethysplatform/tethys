@@ -254,7 +254,7 @@ seriesTypes.funnel = Highcharts.extendClass(seriesTypes.pie, {
 			x,
 			y;
 		
-		// In the original pie label anticollision logic, the slots are distributed
+		// In the original pie label anticollision logic, the slots are distributed.rst
 		// from one labelDistance above to one labelDistance below the pie. In funnels
 		// we don't want this.
 		this.center[2] -= 2 * labelDistance;
