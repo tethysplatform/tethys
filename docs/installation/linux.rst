@@ -16,7 +16,7 @@ a. If you are using a :term:`Debian` based Linux operating system (like Ubuntu),
   ::
 
       $ sudo apt-get update
-      $ sudo apt-get install python-dev python-pip python-virtualenv libpq-dev libxml2-dev libxslt1-dev libffi-dev libffi-dev git-core docker.io
+      $ sudo apt-get install python-dev python-pip python-virtualenv libpq-dev libxml2-dev libxslt1-dev libffi-dev git-core docker.io
 
   You may be prompted to enter your password to authorize the installation of these packages. If you are prompted about the disk space that will be used to install the dependencies, enter :kbd:`Y` and press :kbd:`Enter` to continue.
 
