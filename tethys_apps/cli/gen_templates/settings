@@ -42,7 +42,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_gravatar',
-    'social_auth',
     'bootstrap3',
     'tethys_config',
     'tethys_apps',
@@ -170,3 +169,6 @@ TEMPLATE_CONTEXT_PROCESSORS = ('django.contrib.auth.context_processors.auth',
                                'tethys_config.context_processors.tethys_global_settings_context',
                                'tethys_apps.context_processors.tethys_apps_context',
                                'tethys_gizmos.context_processors.tethys_gizmos_context')
+
+# Use this setting to bypass the home page
+BYPASS_TETHYS_HOME_PAGE = False
