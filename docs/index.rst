@@ -20,14 +20,15 @@ Contents
    :maxdepth: 1
    
    features
+   whats_new
    installation
    tutorials
    software_suite
    tethys_sdk
    tethys_portal
    production
-   tethys_development
    repos
+   tethys_development
    supplementary
    summary
    glossary

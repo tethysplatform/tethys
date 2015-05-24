@@ -1,8 +1,8 @@
-**************
-Develop Tethys
-**************
+***********************
+Develop Tethys Platform
+***********************
 
-**Last Updated:** March 3, 2015
+**Last Updated:** May 23, 2015
 
 This section provides instructions for those wishing to contribute to Tethys Platform development.
 
