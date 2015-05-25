@@ -5,9 +5,12 @@
 		<title>Highcharts Example</title>
 
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<style type="text/css">
+${demo.css}
+		</style>
 		<script type="text/javascript">
 $(function () {
-    
+
     $('#container').highcharts({
         chart: {
             type: 'funnel',
@@ -22,12 +25,12 @@ $(function () {
                 dataLabels: {
                     enabled: true,
                     format: '<b>{point.name}</b> ({point.y:,.0f})',
-                    color: 'black',
+                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black',
                     softConnector: true
                 },
                 neckWidth: '30%',
                 neckHeight: '25%'
-                
+
                 //-- Other available options
                 // height: pixels or percent
                 // width: pixels or percent

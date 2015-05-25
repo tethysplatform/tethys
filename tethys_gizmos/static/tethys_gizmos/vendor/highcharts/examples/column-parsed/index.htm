@@ -5,11 +5,14 @@
 		<title>Highcharts Example</title>
 
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<style type="text/css">
+${demo.css}
+		</style>
 		<script type="text/javascript">
 $(function () {
     $('#container').highcharts({
         data: {
-            table: document.getElementById('datatable')
+            table: 'datatable'
         },
         chart: {
             type: 'column'
@@ -24,9 +27,9 @@ $(function () {
             }
         },
         tooltip: {
-            formatter: function() {
-                return '<b>'+ this.series.name +'</b><br/>'+
-                    this.y +' '+ this.x.toLowerCase();
+            formatter: function () {
+                return '<b>' + this.series.name + '</b><br/>' +
+                    this.point.y + ' ' + this.point.name.toLowerCase();
             }
         }
     });
