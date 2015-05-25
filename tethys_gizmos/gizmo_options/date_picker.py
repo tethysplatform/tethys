@@ -1,9 +1,9 @@
 from .base import TethysGizmoOptions
 
-__all__ = ['DatePickerOptions']
+__all__ = ['DatePicker']
 
 
-class DatePickerOptions(TethysGizmoOptions):
+class DatePicker(TethysGizmoOptions):
     """
     Date pickers are used to make the input of dates streamlined and easy. Rather than typing the date, the user is presented with a calendar to select the date. This date picker was implemented using `Bootstrap Datepicker <http://bootstrap-datepicker.readthedocs.org/en/release/index.html>`_.
 
@@ -38,20 +38,20 @@ class DatePickerOptions(TethysGizmoOptions):
         from tethys_apps.sdk.gizmos import DatePickerOptions
 
         # Date Picker Options
-        date_picker = DatePickerOptions(name='date1',
-                                        display_text='Date',
-                                        autoclose=True,
-                                        format='MM d, yyyy',
-                                        start_date='2/15/2014',
-                                        start_view='decade',
-                                        today_button=True,
-                                        initial='February 15, 2014')
+        date_picker = DatePicker(name='date1',
+                                 display_text='Date',
+                                 autoclose=True,
+                                 format='MM d, yyyy',
+                                 start_date='2/15/2014',
+                                 start_view='decade',
+                                 today_button=True,
+                                 initial='February 15, 2014')
 
-        date_picker_error = DatePickerOptions(name='data2',
-                                              display_text='Date',
-                                              initial='10/2/2013',
-                                              disabled=True,
-                                              error='Here is my error text.')
+        date_picker_error = DatePicker(name='data2',
+                                       display_text='Date',
+                                       initial='10/2/2013',
+                                       disabled=True,
+                                       error='Here is my error text.')
 
         # TEMPLATE
 
@@ -68,7 +68,7 @@ class DatePickerOptions(TethysGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(DatePickerOptions, self).__init__(attributes=attributes, classes=classes)
+        super(DatePicker, self).__init__(attributes=attributes, classes=classes)
 
         self.name = name
         self.display_text = display_text
