@@ -1,6 +1,6 @@
 {% load tethys_gizmos %}
 
-<div class="highcharts-plot"
+<div class="highcharts-plot{% if classes %} {{ classes }}{% endif %}"
   {% if highcharts_object|isstring %}
     data-json="{{ highcharts_object }}"
   {% else %}
