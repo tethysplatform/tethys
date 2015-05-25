@@ -17,6 +17,8 @@ class MapViewOptions(TethysGizmoOptions):
         controls(list): A list of controls to add to the map. The list can be a list of strings or a list of dictionaries. Valid strings are 'ZoomSlider', 'Rotate', 'FullScreen', 'ScaleLine', 'ZoomToExtent', and 'MousePosition'.
         layers(list): A list of layer dictionaries where the singular key of each dictionary specifies the type of layer and the value is another dictionary with the options for that layer. Supported layer types are 'WMS', 'TiledWMS', 'GeoJSON', and 'KML'. See notes below details.
         draw(MapViewDrawOptions): A MapViewDrawOptions object.
+        attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
+        classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Example
 
@@ -135,12 +137,12 @@ class MapViewOptions(TethysGizmoOptions):
     """
 
     def __init__(self, height='100%', width='100%', basemap='OpenStreetMap', view={'center': [-100, 40], 'zoom': 2},
-                 controls=[], layers=[], draw=None, legend=False):
+                 controls=[], layers=[], draw=None, legend=False, attributes='', classes=''):
         """
         Constructor
         """
         # Initialize super class
-        super(MapViewOptions, self).__init__()
+        super(MapViewOptions, self).__init__(attributes=attributes, classes=classes)
 
         self.height = height
         self.width = width

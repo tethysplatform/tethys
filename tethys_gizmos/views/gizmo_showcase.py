@@ -551,7 +551,7 @@ def index(request):
                              width=400,
                              affirmative_attributes='href=javascript:void(0);')
 
-    # Editable Google Map
+    # Google Map View
     google_map_view = GoogleMapView(height='600px',
                                     width='100%',
                                     reference_kml_action=reverse('gizmos:get_kml'),
