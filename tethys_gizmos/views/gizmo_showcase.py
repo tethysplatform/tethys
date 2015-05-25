@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 
-from tethys_gizmos.gizmo_options import *
+from tethys_apps.sdk.gizmos import *
 
 
 def index(request):
@@ -18,41 +18,39 @@ def index(request):
     docs_endpoint = 'http://docs.tethys.ci-water.org/en/' + docs_version
 
     # Uncomment this line for debugging on the localhost
-    # docs_endpoint = 'http://localhost:63342/tethys/docs/_build/html'
+    docs_endpoint = 'http://localhost:63342/tethys/docs/_build/html'
 
-    # Button Group Options
-    # Click me button
-    button_options = ButtonOptions(display_text='Click Me',
-                                   name='click_me_name',
-                                   attributes='onclick=alert(this.name);',
-                                   submit=True)
-    single_button = ButtonGroupOptions(buttons=[button_options])
+    # Button and Button Group
+    # Single button
+    single_button = Button(display_text='Click Me',
+                           name='click_me_name',
+                           attributes='onclick=alert(this.name);',
+                           submit=True)
 
-    # Horizontal Buttons
-    add_button = ButtonOptions(display_text='Add',
-                               icon='glyphicon glyphicon-plus',
-                               style='success')
-    delete_button = ButtonOptions(display_text='Delete',
-                                  icon='glyphicon glyphicon-trash',
-                                  disabled=True,
-                                  style='danger')
-    horizontal_buttons = ButtonGroupOptions(buttons=[add_button, delete_button])
+    # Horizontal Button Group
+    add_button = Button(display_text='Add',
+                        icon='glyphicon glyphicon-plus',
+                        style='success')
+    delete_button = Button(display_text='Delete',
+                           icon='glyphicon glyphicon-trash',
+                           disabled=True,
+                           style='danger')
+    horizontal_buttons = ButtonGroup(buttons=[add_button, delete_button])
 
-    # Vertical Buttons
-    edit_button = ButtonOptions(display_text='Edit',
-                                icon='glyphicon glyphicon-wrench',
-                                style='warning',
-                                attributes='id=edit_button')
-    info_button = ButtonOptions(display_text='Info',
-                                icon='glyphicon glyphicon-question-sign',
-                                style='info',
-                                attributes='name=info')
-    apps_button = ButtonOptions(display_text='Apps',
-                                icon='glyphicon glyphicon-home',
-                                href='/apps',
-                                style='primary')
-    vertical_buttons = ButtonGroupOptions(buttons=[edit_button, info_button, apps_button],
-                                          vertical=True)
+    # Vertical Button Group
+    edit_button = Button(display_text='Edit',
+                         icon='glyphicon glyphicon-wrench',
+                         style='warning',
+                         attributes='id=edit_button')
+    info_button = Button(display_text='Info',
+                         icon='glyphicon glyphicon-question-sign',
+                         style='info',
+                         attributes='name=info')
+    apps_button = Button(display_text='Apps',
+                         icon='glyphicon glyphicon-home',
+                         href='/apps',
+                         style='primary')
+    vertical_buttons = ButtonGroup(buttons=[edit_button, info_button, apps_button], vertical=True)
 
     # Date Picker Options
     date_picker = DatePickerOptions(name='date1',
@@ -181,7 +179,7 @@ def index(request):
                                                    ]
                                                }
                                            ]
-    )
+                                           )
 
     line_plot_view = PlotView(highcharts_object=highcharts_object,
                               width='500px',
@@ -240,7 +238,7 @@ def index(request):
                                               y_axis_title='Weight',
                                               y_axis_units='kg',
                                               series=[male_dataset, female_dataset]
-    )
+                                              )
 
     scatter_plot_view = PlotView(highcharts_object=highcharts_object,
                                  width='500px',
@@ -267,7 +265,7 @@ def index(request):
                                                   'pointPlacement': 'on'
                                               }
                                           ]
-    )
+                                          )
 
     web_plot = PlotView(highcharts_object=web_plot_object,
                         width='500px',
@@ -293,7 +291,7 @@ def index(request):
                                                         ['Others', 0.7]
                                                     ]
                                                 }]
-    )
+                                        )
 
     pie_plot_view = PlotView(highcharts_object=pie_plot_object,
                              width='500px',
@@ -397,21 +395,21 @@ def index(request):
         y_axis_title='Temperature',
         y_axis_units='*C',
         series=[{
-            'name': 'Temperature',
-            'data': averages,
-            'zIndex': 1,
-            'marker': {
-                'lineWidth': 2,
-            }
-        }, {
-            'name': 'Range',
-            'data': ranges,
-            'type': 'arearange',
-            'lineWidth': 0,
-            'linkedTo': ':previous',
-            'fillOpacity': 0.3,
-            'zIndex': 0
-        }]
+                    'name': 'Temperature',
+                    'data': averages,
+                    'zIndex': 1,
+                    'marker': {
+                        'lineWidth': 2,
+                    }
+                }, {
+                    'name': 'Range',
+                    'data': ranges,
+                    'type': 'arearange',
+                    'lineWidth': 0,
+                    'linkedTo': ':previous',
+                    'fillOpacity': 0.3,
+                    'zIndex': 0
+                }]
     )
 
     area_range_plot = PlotView(highcharts_object=area_range_plot_object,
@@ -451,14 +449,14 @@ def index(request):
             'symbolHeight': 280
         },
         series=[{
-            'name': 'Sales per employee',
-            'borderWidth': 1,
-            'data': sales_data,
-            'dataLabels': {
-                'enabled': True,
-                'color': '#000000'
-            }
-        }]
+                    'name': 'Sales per employee',
+                    'borderWidth': 1,
+                    'data': sales_data,
+                    'dataLabels': {
+                        'enabled': True,
+                        'color': '#000000'
+                    }
+                }]
     )
 
     heat_map_plot = PlotView(highcharts_object=heat_map_object,
@@ -500,22 +498,22 @@ def index(request):
             'enabled': False
         },
         'series': [{
-            'name': 'Temperatures',
-            'data': [
-                [-9.7, 9.4],
-                [-8.7, 6.5],
-                [-3.5, 9.4],
-                [-1.4, 19.9],
-                [0.0, 22.6],
-                [2.9, 29.5],
-                [9.2, 30.7],
-                [7.3, 26.5],
-                [4.4, 18.0],
-                [-3.1, 11.4],
-                [-5.2, 10.4],
-                [-13.5, 9.8]
-            ]
-        }]
+                       'name': 'Temperatures',
+                       'data': [
+                           [-9.7, 9.4],
+                           [-8.7, 6.5],
+                           [-3.5, 9.4],
+                           [-1.4, 19.9],
+                           [0.0, 22.6],
+                           [2.9, 29.5],
+                           [9.2, 30.7],
+                           [7.3, 26.5],
+                           [4.4, 18.0],
+                           [-3.1, 11.4],
+                           [-5.2, 10.4],
+                           [-13.5, 9.8]
+                       ]
+                   }]
     }
 
     custom_plot = PlotView(highcharts_object=custom_plot_dictionary,
@@ -607,36 +605,36 @@ def index(request):
 
     # Define GeoJSON layer
     geojson_object = {
-      'type': 'FeatureCollection',
-      'crs': {
-        'type': 'name',
-        'properties': {
-          'name': 'EPSG:3857'
-        }
-      },
-      'features': [
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'Point',
-            'coordinates': [0, 0]
-          }
+        'type': 'FeatureCollection',
+        'crs': {
+            'type': 'name',
+            'properties': {
+                'name': 'EPSG:3857'
+            }
         },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'coordinates': [[4e6, -2e6], [8e6, 2e6]]
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'Polygon',
-            'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
-          }
-        }
-      ]
+        'features': [
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'Point',
+                    'coordinates': [0, 0]
+                }
+            },
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'LineString',
+                    'coordinates': [[4e6, -2e6], [8e6, 2e6]]
+                }
+            },
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'Polygon',
+                    'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
+                }
+            }
+        ]
     }
 
     geojson_layer = MapViewLayer(source='GeoJSON',
@@ -644,7 +642,8 @@ def index(request):
                                  legend_title='Test GeoJSON',
                                  legend_extent=[-46.7, -48.5, 74, 59],
                                  legend_classes=[
-                                     MapViewLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
+                                     MapViewLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)',
+                                                        stroke='#3d9dcd'),
                                      MapViewLegendClass('line', 'Lines', stroke='#3d9dcd')
                                  ])
 
@@ -657,7 +656,8 @@ def index(request):
                                    legend_extent=[-126, 24.5, -66.2, 49],
                                    legend_classes=[
                                        MapViewLegendClass('polygon', 'Low Density', fill='#00ff00', stroke='#000000'),
-                                       MapViewLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
+                                       MapViewLegendClass('polygon', 'Medium Density', fill='#ff0000',
+                                                          stroke='#000000'),
                                        MapViewLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
                                    ])
 
@@ -720,7 +720,7 @@ def index(request):
                'area_range_plot': area_range_plot,
                'heat_map_plot': heat_map_plot,
                'custom_plot': custom_plot,
-    }
+               }
 
     return render(request, 'tethys_gizmos/gizmo_showcase/index.html', context)
 
@@ -762,12 +762,12 @@ def swap_overlays(request):
                                                     [40.6413120105605, -111.48539543151855]],
                                     "properties": {"id": 4, "value": 5}, "crs": {"type": "link", "properties": {
                         "href": "http://spatialreference.org/ref/epsg/4326/proj4/", "type": "proj4"}}
-                                   },
+                                    },
                                    {"type": "Point",
                                     "coordinates": [40.629587853312174, -111.50959968566895],
                                     "properties": {"id": 5, "value": 6}, "crs": {"type": "link", "properties": {
                                        "href": "http://spatialreference.org/ref/epsg/4326/proj4/", "type": "proj4"}}
-                                   },
+                                    },
                                    {"type": "LineString",
                                     "coordinates": [[40.62737305910759, -111.50118827819824],
                                                     [40.61564645424611, -111.5071964263916],
@@ -775,9 +775,9 @@ def swap_overlays(request):
                                                     [40.62802447679272, -111.49157524108887]],
                                     "properties": {"id": 6, "value": 7}, "crs": {"type": "link", "properties": {
                                        "href": "http://spatialreference.org/ref/epsg/4326/proj4/", "type": "proj4"}}
-                                   }
-                    ]
-    }
+                                    }
+                                   ]
+                    }
 
     return HttpResponse(json.dumps(overlay_json), content_type='application/json')
 
@@ -814,10 +814,10 @@ def editable_map(request):
                                                "bounds": [-111.54521942138672, 40.597792003905454, -111.46625518798828,
                                                           40.66449372533465],
                                                "properties": {"id": 4, "value": 4}
-                                              }
+                                               }
                                           ]},
                        'output_format': 'WKT'
-    }
+                       }
 
     if ('editable_map_submit' in request.POST) and (request.POST['geometry']):
         # Some example code showing how you can decode the JSON into python
@@ -871,86 +871,86 @@ def map_view(request):
     )
 
     geojson_object = {
-      'type': 'FeatureCollection',
-      'crs': {
-        'type': 'name',
-        'properties': {
-          'name': 'EPSG:3857'
-        }
-      },
-      'features': [
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'Point',
-            'coordinates': [0, 0]
-          }
+        'type': 'FeatureCollection',
+        'crs': {
+            'type': 'name',
+            'properties': {
+                'name': 'EPSG:3857'
+            }
         },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'coordinates': [[4e6, -2e6], [8e6, 2e6]]
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'coordinates': [[4e6, 2e6], [8e6, -2e6]]
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'Polygon',
-            'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'MultiLineString',
-            'coordinates': [
-              [[-1e6, -7.5e5], [-1e6, 7.5e5]],
-              [[1e6, -7.5e5], [1e6, 7.5e5]],
-              [[-7.5e5, -1e6], [7.5e5, -1e6]],
-              [[-7.5e5, 1e6], [7.5e5, 1e6]]
-            ]
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'MultiPolygon',
-            'coordinates': [
-              [[[-5e6, 6e6], [-5e6, 8e6], [-3e6, 8e6], [-3e6, 6e6]]],
-              [[[-2e6, 6e6], [-2e6, 8e6], [0, 8e6], [0, 6e6]]],
-              [[[1e6, 6e6], [1e6, 8e6], [3e6, 8e6], [3e6, 6e6]]]
-            ]
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'GeometryCollection',
-            'geometries': [
-              {
-                'type': 'LineString',
-                'coordinates': [[-5e6, -5e6], [0, -5e6]]
-              },
-              {
-                'type': 'Point',
-                'coordinates': [4e6, -5e6]
-              },
-              {
-                'type': 'Polygon',
-                'coordinates': [[[1e6, -6e6], [2e6, -4e6], [3e6, -6e6]]]
-              }
-            ]
-          }
-        }
-      ]
+        'features': [
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'Point',
+                    'coordinates': [0, 0]
+                }
+            },
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'LineString',
+                    'coordinates': [[4e6, -2e6], [8e6, 2e6]]
+                }
+            },
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'LineString',
+                    'coordinates': [[4e6, 2e6], [8e6, -2e6]]
+                }
+            },
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'Polygon',
+                    'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
+                }
+            },
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'MultiLineString',
+                    'coordinates': [
+                        [[-1e6, -7.5e5], [-1e6, 7.5e5]],
+                        [[1e6, -7.5e5], [1e6, 7.5e5]],
+                        [[-7.5e5, -1e6], [7.5e5, -1e6]],
+                        [[-7.5e5, 1e6], [7.5e5, 1e6]]
+                    ]
+                }
+            },
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'MultiPolygon',
+                    'coordinates': [
+                        [[[-5e6, 6e6], [-5e6, 8e6], [-3e6, 8e6], [-3e6, 6e6]]],
+                        [[[-2e6, 6e6], [-2e6, 8e6], [0, 8e6], [0, 6e6]]],
+                        [[[1e6, 6e6], [1e6, 8e6], [3e6, 8e6], [3e6, 6e6]]]
+                    ]
+                }
+            },
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'GeometryCollection',
+                    'geometries': [
+                        {
+                            'type': 'LineString',
+                            'coordinates': [[-5e6, -5e6], [0, -5e6]]
+                        },
+                        {
+                            'type': 'Point',
+                            'coordinates': [4e6, -5e6]
+                        },
+                        {
+                            'type': 'Polygon',
+                            'coordinates': [[[1e6, -6e6], [2e6, -4e6], [3e6, -6e6]]]
+                        }
+                    ]
+                }
+            }
+        ]
     }
 
     # kml_url = 'http://ciwckan.chpc.utah.edu/dataset/00d54047-8581-4dc2-bdc2-b96f5a635455/resource/e833d531-8b7e-4d35-8ce9-4fe98c5d082a/download/model.kml'
@@ -990,7 +990,8 @@ def map_view(request):
                              legend_title='Test GeoJSON',
                              legend_extent=[-46.7, -48.5, 74, 59],
                              legend_classes=[
-                                 MapViewLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
+                                 MapViewLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)',
+                                                    stroke='#3d9dcd'),
                                  MapViewLegendClass('line', 'Lines', stroke='#3d9dcd')
                              ]),
                 ],

@@ -22,6 +22,7 @@ class TableView(TethysGizmoOptions):
     ::
 
         # CONTROLLER
+        from tethys_apps.sdk.gizmos import TableView
 
         table_view = TableView(column_names=('Name', 'Age', 'Job'),
                                rows=[('Bill', 30, 'contractor'),

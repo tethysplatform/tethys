@@ -33,7 +33,7 @@ class PlotView(TethysGizmoOptions):
         # CONTROLLER
 
         # coding=utf-8
-        from tethys_gizmos.gizmo_options import *
+        from tethys_apps.sdk.gizmos import *
 
         ### Line Plot
 

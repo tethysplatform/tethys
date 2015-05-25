@@ -21,6 +21,7 @@ class SelectInput(TethysGizmoOptions):
     ::
 
         # CONTROLLER
+        from tethys_apps.sdk.gizmos import SelectInput
 
         select_input2 = SelectInput(display_text='Select2',
                                     name='select1',
