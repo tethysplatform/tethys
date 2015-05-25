@@ -24,7 +24,7 @@ class MapViewOptions(TethysGizmoOptions):
 
         # CONTROLLER
 
-        from tethys_gizmos.gizmo_options import MapView, MapViewDrawOptions, MapViewViewOptions
+        from tethys_apps.sdk.gizmos import MapView, MapViewDrawOptions, MapViewViewOptions
 
         # Define view options
         view_options = MapViewViewOptions(

@@ -24,6 +24,7 @@ class ToggleSwitch(TethysGizmoOptions):
     ::
 
         # CONTROLLER
+        from tethys_apps.sdk.gizmos import ToggleSwitch
 
         toggle_switch = ToggleSwitch(display_text='Defualt Toggle',
                                      name='toggle1')
