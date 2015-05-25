@@ -29,6 +29,7 @@ class GoogleMapView(TethysGizmoOptions):
     ::
 
         # CONTROLLER
+        from tethys_apps.sdk.gizmos import GoogleMapView
 
         google_map_view = GoogleMapView(height='600px',
                                         width='100%',

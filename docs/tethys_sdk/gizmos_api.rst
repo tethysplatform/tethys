@@ -2,20 +2,16 @@
 Gizmo Options Object API
 ************************
 
-**Last Updated:** May 21, 2015
+**Last Updated:** May 25, 2015
 
 This article provides explanations of each of the Gizmo Options Objects available for configuring Gizmos. It also provide code and usage examples for each object. For more explanation of Gizmos, see the :doc:`./gizmos` documentation.
 
-Button Group
-============
+Button and Button Group
+=======================
 
-.. autoclass:: tethys_gizmos.gizmo_options.ButtonGroupOptions
+.. autoclass:: tethys_gizmos.gizmo_options.Button
 
-Secondary
----------
-
-.. autoclass:: tethys_gizmos.gizmo_options.ButtonOptions
-
+.. autoclass:: tethys_gizmos.gizmo_options.ButtonGroup
 
 Date Picker
 ===========
