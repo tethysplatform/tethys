@@ -1,35 +1,68 @@
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 
-__all__ = ['MapViewOptions', 'MapViewDrawOptions', 'MapViewViewOptions', 'MapViewLayer', 'MapViewLegendClass']
+__all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer', 'MVLegendClass']
 
 
-class MapViewOptions(TethysGizmoOptions):
+class MapView(TethysGizmoOptions):
     """
-    The Map View gizmo can be used to visualize maps of spatial data. Map View is powered by OpenLayers 3, an open source pure javascript mapping library.
+    The Map View gizmo can be used to produce interactive maps of spatial data. It is powered by OpenLayers 3, a free and open source pure javascript mapping library. It supports layers in a variety of different formats including WMS, Tiled WMS, GeoJSON, KML, and ArcGIS REST. It includes drawing capabilities and the ability to create a legend for the layers included in the map.
 
-    Shapes that are drawn on the map by users can be retrieved from the map via a hidden text field named 'geometry', which is updated every time the map is changed. The text in the text field is a string representation of JSON. The geometry contained in this JSON can be formatted as either GeoJSON or Well Known Text. This can be configured by via the output_format option of the MapViewDrawOptions object. If the Map View is embedded in a form, the geometry that is drawn on the map will automatically be submitted with the rest of the form via the hidden text field.
+    Shapes that are drawn on the map by users can be retrieved from the map via a hidden text field named 'geometry' and it is updated every time the map is changed. The text in the text field is a string representation of JSON. The geometry definition contained in this JSON can be formatted as either GeoJSON or Well Known Text. This can be configured via the output_format option of the MVDraw object. If the Map View is embedded in a form, the geometry that is drawn on the map will automatically be submitted with the rest of the form via the hidden text field.
 
     Attributes:
         height(str): Height of the map element. Any valid css unit of length (e.g.: '500px'). Defaults to '520px'.
         width(str): Width of the map element. Any valid css unit of length (e.g.: '100%'). Defaults to '100%'.
-        basemap(str or dict): The base map to show on the map which can be either OpenStreetMap, MapQuest, or a Bing map. Valid values for the string option are: 'OpenStreetMap' and 'MapQuest'. If you wish to configure the base map with options, you must use the dictionary form. The dictionary form is required to use a Bing map, because an API key must be passed as an option. See details below.
-        view(MapViewViewOptions): The initial view or extent for the map.
-        controls(list): A list of controls to add to the map. The list can be a list of strings or a list of dictionaries. Valid strings are 'ZoomSlider', 'Rotate', 'FullScreen', 'ScaleLine', 'ZoomToExtent', and 'MousePosition'.
-        layers(list): A list of layer dictionaries where the singular key of each dictionary specifies the type of layer and the value is another dictionary with the options for that layer. Supported layer types are 'WMS', 'TiledWMS', 'GeoJSON', and 'KML'. See notes below details.
-        draw(MapViewDrawOptions): A MapViewDrawOptions object.
+        basemap(str or dict): The base map to dispaly: either OpenStreetMap, MapQuest, or a Bing map. Valid values for the string option are: 'OpenStreetMap' and 'MapQuest'. If you wish to configure the base map with options, you must use the dictionary form. The dictionary form is required to use a Bing map, because an API key must be passed as an option. See below for more detail.
+        view(MVView): An MVView object specifying the initial view or extent for the map.
+        controls(list): A list of controls to add to the map. The list can be a list of strings or a list of dictionaries. Valid controls are ZoomSlider, Rotate, FullScreen, ScaleLine, ZoomToExtent, and 'MousePosition'. See below for more detail.
+        layers(list): A list of MVLayer objects.
+        draw(MVDraw): An MVDraw object specifying the drawing options.
         attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
+
+    **Options Dictionaries**
+
+    Many of the options above will accept dictionaries with additional options. These dictionaries should be structured with a single key that is the name of the original option with a value of another dictionary containing the additional options. For example, to provide additional options for the 'ZoomToExtent' control, you would create a dictionary with key 'ZoomToExtent' and value of a dictionary with the additional options like this:
+
+    ::
+
+        {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-135, 22, -55, 54]}}
+
+    Most of the additional options correspond with the options objects in the OpenLayers API. The following sections provide links to the OpenLayers objects that you can refer to when selecting the options.
+
+    **Base Maps**
+
+    There are three base maps supported by the Map View gizmo: OpenStreetMap, Bing, and MapQuest. Use the following links to learn about the additional options you can configure the base maps with:
+
+    * Bing: `ol.source.BingMaps <http://openlayers.org/en/v3.5.0/apidoc/ol.source.BingMaps.html>`_
+    * MapQuest: `ol.source.MapQuest <http://openlayers.org/en/v3.5.0/apidoc/ol.source.MapQuest.html>`_
+    * OpenStreetMap: `ol.source.OSM <http://openlayers.org/en/v3.5.0/apidoc/ol.source.OSM.html>`_
+
+    ::
+
+        {'Bing': {'key': 'Ap|k3yheRE', 'imagerySet': 'Aerial'}}
+
+    **Controls**
+
+    Use the following links to learn about options for the different controls:
+
+    * FullScreen: `ol.control.FullScreen <http://openlayers.org/en/v3.5.0/apidoc/ol.control.FullScreen.html>`_
+    * MousePosition: `ol.control.MousePosition <http://openlayers.org/en/v3.5.0/apidoc/ol.control.MousePosition.html>`_
+    * Rotate: `ol.control.Rotate <http://openlayers.org/en/v3.5.0/apidoc/ol.control.Rotate.html>`_
+    * ScaleLine: `ol.control.ScaleLine <http://openlayers.org/en/v3.5.0/apidoc/ol.control.ScaleLine.html>`_
+    * ZoomSlider: `ol.control.ZoomSlider <http://openlayers.org/en/v3.5.0/apidoc/ol.control.ZoomSlider.html>`_
+    * ZoomToExtent: `ol.control.ZoomToExtent <http://openlayers.org/en/v3.5.0/apidoc/ol.control.ZoomToExtent.html>`_
+
 
     Example
 
     ::
 
         # CONTROLLER
-
-        from tethys_apps.sdk.gizmos import MapView, MapViewDrawOptions, MapViewViewOptions
+        from tethys_apps.sdk.gizmos import MapView, MVDraw, MVView, MVLayer, MVLegendClass
 
         # Define view options
-        view_options = MapViewViewOptions(
+        view_options = MVView(
             projection='EPSG:4326',
             center=[-100, 40],
             zoom=3.5,
@@ -38,7 +71,7 @@ class MapViewOptions(TethysGizmoOptions):
         )
 
         # Define drawing options
-        drawing_options = MapViewDrawOptions(
+        drawing_options = MVDraw(
             controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
             initial='Point',
             output_format='WKT'
@@ -78,56 +111,56 @@ class MapViewOptions(TethysGizmoOptions):
           ]
         }
 
-        geojson_layer = MapViewLayer(source='GeoJSON',
-                                     options=geojson_object,
-                                     legend_title='Test GeoJSON',
-                                     legend_extent=[-46.7, -48.5, 74, 59],
-                                     legend_classes=[
-                                         MapViewLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
-                                         MapViewLegendClass('line', 'Lines', stroke='#3d9dcd')
-                                     ])
+        geojson_layer = MVLayer(source='GeoJSON',
+                                options=geojson_object,
+                                legend_title='Test GeoJSON',
+                                legend_extent=[-46.7, -48.5, 74, 59],
+                                legend_classes=[
+                                    MVLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
+                                    MVLegendClass('line', 'Lines', stroke='#3d9dcd')
+                                ])
 
         # Define GeoServer Layer
-        geoserver_layer = MapViewLayer(source='ImageWMS',
-                                       options={'url': 'http://192.168.59.103:8181/geoserver/wms',
-                                                'params': {'LAYERS': 'topp:states'},
-                                                'serverType': 'geoserver'},
-                                       legend_title='USA Population',
-                                       legend_extent=[-126, 24.5, -66.2, 49],
-                                       legend_classes=[
-                                           MapViewLegendClass('polygon', 'Low Density', fill='#00ff00', stroke='#000000'),
-                                           MapViewLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
-                                           MapViewLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
-                                       ])
+        geoserver_layer = MVLayer(source='ImageWMS',
+                                  options={'url': 'http://192.168.59.103:8181/geoserver/wms',
+                                           'params': {'LAYERS': 'topp:states'},
+                                           'serverType': 'geoserver'},
+                                  legend_title='USA Population',
+                                  legend_extent=[-126, 24.5, -66.2, 49],
+                                  legend_classes=[
+                                      MVLegendClass('polygon', 'Low Density', fill='#00ff00', stroke='#000000'),
+                                      MVLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
+                                      MVLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
+                                  ])
 
         # Define KML Layer
-        kml_layer = MapViewLayer(source='KML',
-                                 options={'url': '/static/tethys_gizmos/data/model.kml'},
-                                 legend_title='Park City Watershed',
-                                 legend_extent=[-111.60, 40.57, -111.43, 40.70],
-                                 legend_classes=[
-                                     MapViewLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
-                                     MapViewLegendClass('line', 'Stream Network', stroke='#0000ff'),
-                                 ])
+        kml_layer = MVLayer(source='KML',
+                            options={'url': '/static/tethys_gizmos/data/model.kml'},
+                            legend_title='Park City Watershed',
+                            legend_extent=[-111.60, 40.57, -111.43, 40.70],
+                            legend_classes=[
+                                MVLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
+                                MVLegendClass('line', 'Stream Network', stroke='#0000ff'),
+                            ])
 
         # Tiled ArcGIS REST Layer
-        arc_gis_layer = MapViewLayer(source='TileArcGISRest',
-                                     options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' + 'Specialty/ESRI_StateCityHighway_USA/MapServer'},
-                                     legend_title='ESRI USA Highway',
-                                     legend_extent=[-173, 17, -65, 72]),
+        arc_gis_layer = MVLayer(source='TileArcGISRest',
+                                options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' + 'Specialty/ESRI_StateCityHighway_USA/MapServer'},
+                                legend_title='ESRI USA Highway',
+                                legend_extent=[-173, 17, -65, 72])
 
         # Define map view options
-        map_view_options = MapViewOptions(
-                                height='600px',
-                                width='100%',
-                                controls=['ZoomSlider', 'Rotate', 'FullScreen',
-                                          {'MousePosition': {'projection': 'EPSG:4326'}},
-                                          {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
-                                layers=[geojson_layer, geoserver_layer, kml_layer, arc_gis_layer],
-                                view=view_options,
-                                basemap='OpenStreetMap',
-                                draw=drawing_options,
-                                legend=True
+        map_view_options = MapView(
+                height='600px',
+                width='100%',
+                controls=['ZoomSlider', 'Rotate', 'FullScreen',
+                          {'MousePosition': {'projection': 'EPSG:4326'}},
+                          {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
+                layers=[geojson_layer, geoserver_layer, kml_layer, arc_gis_layer],
+                view=view_options,
+                basemap='OpenStreetMap',
+                draw=drawing_options,
+                legend=True
         )
 
         # TEMPLATE
@@ -142,7 +175,7 @@ class MapViewOptions(TethysGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(MapViewOptions, self).__init__(attributes=attributes, classes=classes)
+        super(MapView, self).__init__(attributes=attributes, classes=classes)
 
         self.height = height
         self.width = width
@@ -154,9 +187,9 @@ class MapViewOptions(TethysGizmoOptions):
         self.legend = legend
 
 
-class MapViewViewOptions(SecondaryGizmoOptions):
+class MVView(SecondaryGizmoOptions):
     """
-    MapViewViewOptions objects are used to define the initial view of the Map View. The initial view is set by specifying a center and a zoom level.
+    MVView objects are used to define the initial view of the Map View. The initial view is set by specifying a center and a zoom level.
 
     Attributes:
         projection(str): Projection of the center coordinates given. This projection will be used to transform the coordinates into the default map projection (EPSG:3857).
@@ -169,7 +202,7 @@ class MapViewViewOptions(SecondaryGizmoOptions):
 
     ::
 
-        view_options = MapViewViewOptions(
+        view_options = MVView(
             projection='EPSG:4326',
             center=[-100, 40],
             zoom=3.5,
@@ -184,7 +217,7 @@ class MapViewViewOptions(SecondaryGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(MapViewViewOptions, self).__init__()
+        super(MVView, self).__init__()
 
         self.projection = projection
         self.center = center
@@ -193,9 +226,9 @@ class MapViewViewOptions(SecondaryGizmoOptions):
         self.minZoom = minZoom
 
 
-class MapViewDrawOptions(SecondaryGizmoOptions):
+class MVDraw(SecondaryGizmoOptions):
     """
-    MapViewDrawOptions objects are used to define the drawing options for Map View.
+    MVDraw objects are used to define the drawing options for Map View.
 
     Attributes:
         controls(list, required): List of drawing controls to add to the map. Valid options are 'Modify', 'Move', 'Point', 'LineString', 'Polygon' and 'Box'.
@@ -206,7 +239,7 @@ class MapViewDrawOptions(SecondaryGizmoOptions):
 
     ::
 
-        drawing_options = MapViewDrawOptions(
+        drawing_options = MVDraw(
             controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
             initial='Point',
             output_format='WKT'
@@ -219,7 +252,7 @@ class MapViewDrawOptions(SecondaryGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(MapViewDrawOptions, self).__init__()
+        super(MVDraw, self).__init__()
 
         self.controls = controls
 
@@ -230,15 +263,15 @@ class MapViewDrawOptions(SecondaryGizmoOptions):
         self.output_format = output_format
 
 
-class MapViewLayer(SecondaryGizmoOptions):
+class MVLayer(SecondaryGizmoOptions):
     """
-    MapViewLayer objects are used to define map layers for the Map View Gizmo
+    MVLayer objects are used to define map layers for the Map View Gizmo.
 
     Attributes:
         source (str, required): The source or data type of the layer (e.g.: ImageWMS)
         options (dict, required): A dictionary representation of the OpenLayers layer options object for the source.
         legend_title (str, required): The human readable name of the layer that will be displayed in the legend.
-        legend_classes (list): A list of MapViewLegendClass objects.
+        legend_classes (list): A list of MVLegendClass objects.
         legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
 
@@ -280,44 +313,50 @@ class MapViewLayer(SecondaryGizmoOptions):
           ]
         }
 
-        geojson_layer = MapViewLayer(source='GeoJSON',
-                                     options=geojson_object,
-                                     legend_title='Test GeoJSON',
-                                     legend_extent=[-46.7, -48.5, 74, 59],
-                                     legend_classes=[
-                                         MapViewLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
-                                         MapViewLegendClass('line', 'Lines', stroke='#3d9dcd')
-                                     ])
+        geojson_layer = MVLayer(source='GeoJSON',
+                                options=geojson_object,
+                                legend_title='Test GeoJSON',
+                                legend_extent=[-46.7, -48.5, 74, 59],
+                                legend_classes=[
+                                    MVLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
+                                    MVLegendClass('line', 'Lines', stroke='#3d9dcd')
+                                ])
 
         # Define GeoServer Layer
-        geoserver_layer = MapViewLayer(source='ImageWMS',
-                                       options={'url': 'http://192.168.59.103:8181/geoserver/wms',
-                                                'params': {'LAYERS': 'topp:states'},
-                                                'serverType': 'geoserver'},
-                                       legend_title='USA Population',
-                                       legend_extent=[-126, 24.5, -66.2, 49],
-                                       legend_classes=[
-                                           MapViewLegendClass('polygon', 'Low Density', fill='#00ff00', stroke='#000000'),
-                                           MapViewLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
-                                           MapViewLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
-                                       ])
+        geoserver_layer = MVLayer(source='ImageWMS',
+                                  options={'url': 'http://192.168.59.103:8181/geoserver/wms',
+                                           'params': {'LAYERS': 'topp:states'},
+                                           'serverType': 'geoserver'},
+                                  legend_title='USA Population',
+                                  legend_extent=[-126, 24.5, -66.2, 49],
+                                  legend_classes=[
+                                      MVLegendClass('polygon', 'Low Density', fill='#00ff00', stroke='#000000'),
+                                      MVLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
+                                      MVLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
+                                  ])
 
         # Define KML Layer
-        kml_layer = MapViewLayer(source='KML',
-                                 options={'url': '/static/tethys_gizmos/data/model.kml'},
-                                 legend_title='Park City Watershed',
-                                 legend_extent=[-111.60, 40.57, -111.43, 40.70],
-                                 legend_classes=[
-                                     MapViewLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
-                                     MapViewLegendClass('line', 'Stream Network', stroke='#0000ff'),
-                                 ])
+        kml_layer = MVLayer(source='KML',
+                            options={'url': '/static/tethys_gizmos/data/model.kml'},
+                            legend_title='Park City Watershed',
+                            legend_extent=[-111.60, 40.57, -111.43, 40.70],
+                            legend_classes=[
+                                MVLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
+                                MVLegendClass('line', 'Stream Network', stroke='#0000ff'),
+                            ])
+
+        # Tiled ArcGIS REST Layer
+        arc_gis_layer = MVLayer(source='TileArcGISRest',
+                                options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' + 'Specialty/ESRI_StateCityHighway_USA/MapServer'},
+                                legend_title='ESRI USA Highway',
+                                legend_extent=[-173, 17, -65, 72]),
     """
 
     def __init__(self, source, options, legend_title, legend_classes=None, legend_extent=None, legend_extent_projection='EPSG:4326'):
         """
         Constructor
         """
-        super(MapViewLayer, self).__init__()
+        super(MVLayer, self).__init__()
 
         self.source = source
         self.legend_title = legend_title
@@ -327,9 +366,9 @@ class MapViewLayer(SecondaryGizmoOptions):
         self.legend_extent_projection = legend_extent_projection
 
 
-class MapViewLegendClass(SecondaryGizmoOptions):
+class MVLegendClass(SecondaryGizmoOptions):
     """
-    MapViewLegendClasses are used to define the classes listed in the legend.
+    MVLegendClasses are used to define the classes listed in the legend.
 
     Attributes:
         type (str, required): The type of feature to be represented by the legend class. Either 'point', 'line', 'polygon', or 'raster'.
@@ -342,9 +381,9 @@ class MapViewLegendClass(SecondaryGizmoOptions):
 
     ::
 
-        point_class = MapViewLegendClass(type='point', value='Cities', fill='#00ff00')
-        line_class = MapViewLegendClass(type='line', value='Roads', stroke='rbga(0,0,0,0.7)')
-        polygon_class = MapViewLegendClass(type='polygon', value='Lakes', stroke='#0000aa', fill='#0000ff')
+        point_class = MVLegendClass(type='point', value='Cities', fill='#00ff00')
+        line_class = MVLegendClass(type='line', value='Roads', stroke='rbga(0,0,0,0.7)')
+        polygon_class = MVLegendClass(type='polygon', value='Lakes', stroke='#0000aa', fill='#0000ff')
 
     """
 
@@ -354,7 +393,7 @@ class MapViewLegendClass(SecondaryGizmoOptions):
         """
 
         # Initialize super class
-        super(MapViewLegendClass, self).__init__()
+        super(MVLegendClass, self).__init__()
 
         self.POINT_TYPE = 'point'
         self.LINE_TYPE = 'line'
@@ -363,7 +402,7 @@ class MapViewLegendClass(SecondaryGizmoOptions):
         self.VALID_TYPES = [self.POINT_TYPE, self.LINE_TYPE, self.POLYGON_TYPE, self.RASTER_TYPE]
 
         if type not in self.VALID_TYPES:
-            raise ValueError('"{0}" is not a valid MapViewLegendClass type. Use either '
+            raise ValueError('"{0}" is not a valid MVLegendClass type. Use either '
                              '"point", "line", "polygon", or "raster".'.format(type))
 
         self.type = type
@@ -373,13 +412,13 @@ class MapViewLegendClass(SecondaryGizmoOptions):
             if fill:
                 self.fill = fill
             else:
-                raise ValueError('Argument "fill" must be specified for MapViewLegendClass of type "point".')
+                raise ValueError('Argument "fill" must be specified for MVLegendClass of type "point".')
 
         elif type == self.LINE_TYPE:
             if stroke:
                 self.stroke = stroke
             else:
-                raise ValueError('Argument "line" must be specified for MapViewLegendClass of type "line".')
+                raise ValueError('Argument "line" must be specified for MVLegendClass of type "line".')
 
         elif type == self.POLYGON_TYPE:
             if fill and stroke:
@@ -389,12 +428,12 @@ class MapViewLegendClass(SecondaryGizmoOptions):
                 self.line = fill
                 self.fill = fill
             else:
-                raise ValueError('Argument "fill" must be specified for MapViewLegendClass of type "polygon".')
+                raise ValueError('Argument "fill" must be specified for MVLegendClass of type "polygon".')
 
         elif type == self.RASTER_TYPE:
             if ramp:
                 self.ramp = ramp
             else:
-                raise ValueError('Argument "ramp" must be specified for MapViewLegendClass of type "raster".')
+                raise ValueError('Argument "ramp" must be specified for MVLegendClass of type "raster".')
 
 
