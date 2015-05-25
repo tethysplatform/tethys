@@ -18,7 +18,7 @@ def index(request):
     docs_endpoint = 'http://docs.tethys.ci-water.org/en/' + docs_version
 
     # Uncomment this line for debugging on the localhost
-    docs_endpoint = 'http://localhost:63342/tethys/docs/_build/html'
+    # docs_endpoint = 'http://localhost:63342/tethys/docs/_build/html'
 
     # Button and Button Group
     # Single button
@@ -305,8 +305,8 @@ def index(request):
         categories=[
             'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
         ],
-        y_axis_units='millions',
-        y_axis_title='Population',
+        axis_units='millions',
+        axis_title='Population',
         series=[{
                     'name': 'Year 1800',
                     'data': [107, 31, 635, 203, 2]
@@ -415,7 +415,7 @@ def index(request):
     area_range_plot = PlotView(highcharts_object=area_range_plot_object,
                                width='500px',
                                height='500px')
-
+    # Heat Map
     sales_data = [
         [0, 0, 10], [0, 1, 19], [0, 2, 8], [0, 3, 24], [0, 4, 67], [1, 0, 92],
         [1, 1, 58], [1, 2, 78], [1, 3, 117], [1, 4, 48], [2, 0, 35], [2, 1, 15],
@@ -428,7 +428,6 @@ def index(request):
         [9, 3, 48], [9, 4, 91]
     ]
 
-    # Heat Map
     heat_map_object = HighChartsHeatMap(
         title='Sales per employee per weekday',
         x_categories=['Alexander', 'Marie', 'Maximilian', 'Sophia', 'Lukas', 'Maria', 'Leon', 'Anna', 'Tim', 'Laura'],

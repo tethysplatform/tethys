@@ -60,10 +60,11 @@ Plot View
 .. autoclass:: tethys_gizmos.gizmo_options.PlotView
 
 
-Secondary
----------
+High Charts Objects
+-------------------
 
-.. autoclass:: tethys_gizmos.gizmo_options.HighChartsObjectBase
+Use one of these predefined objects to simplify creation of Highcharts plot objects for the highcharts_plot parameter of Plot View.
+
 .. autoclass:: tethys_gizmos.gizmo_options.HighChartsLinePlot
 .. autoclass:: tethys_gizmos.gizmo_options.HighChartsScatterPlot
 .. autoclass:: tethys_gizmos.gizmo_options.HighChartsPolarPlot
@@ -71,11 +72,15 @@ Secondary
 .. autoclass:: tethys_gizmos.gizmo_options.HighChartsBarPlot
 .. autoclass:: tethys_gizmos.gizmo_options.HighChartsTimeSeries
 .. autoclass:: tethys_gizmos.gizmo_options.HighChartsAreaRange
-.. autoclass:: tethys_gizmos.gizmo_options.HighChartsHeatMap
 
 JavaScript API
 --------------
 
+The Highcharts plots can be modified via JavaScript by using jQuery to select the Highcharts div and calling the ``highcharts()`` method on it. This will return the JavaScript object that represents the plot, which can be modified using the `Highcharts API <http://api.highcharts.com/highcharts>`_.
+
+::
+
+    var plot = $('#my-plot').highcharts();
 
 
 
