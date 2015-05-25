@@ -13,7 +13,8 @@ class PlotView(TethysGizmoOptions):
         highcharts_object(HighChartsObject, required): The highcharts_object contains the definition of the plot. The full `Highcharts API reference <http://api.highcharts.com/highcharts>`_ is supported via this object. The object can either be a JavaScript string, a JavaScript-equivalent Python data structure, or one of the supported options objects. The latter is recommended.
         height(str): Height of the plot element. Any valid css unit of length.
         width(str): Width of the plot element. Any valid css unit of length.
-        attributes(str): Any HTML attributes to add to the plot element (e.g.: "id=foo name=bar value=hello-world")
+        attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
+        classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Plots are configured using the highcharts_object parameter, which accepts either one of the Options objects or a dictionary equivalent of a HighCharts JavaScript object. The Options objects provide the easiest option for creating Plot Views (see the examples below).
 
@@ -384,17 +385,16 @@ class PlotView(TethysGizmoOptions):
 
     """
 
-    def __init__(self, highcharts_object, height='520px', width='100%', attributes=""):
+    def __init__(self, highcharts_object, height='520px', width='100%', attributes='', classes=''):
         """
         Constructor
         """
         # Initialize super class
-        super(PlotView, self).__init__()
+        super(PlotView, self).__init__(attributes=attributes, classes=classes)
 
         self.highcharts_object = highcharts_object
         self.height = height
         self.width = width
-        self.attributes = attributes
 
 
 class HighChartsObjectBase(TethysGizmoOptions):

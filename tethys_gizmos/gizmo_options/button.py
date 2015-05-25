@@ -10,8 +10,8 @@ class ButtonGroup(TethysGizmoOptions):
     Attributes:
         buttons(list, required): A list of dictionaries where each dictionary contains the options for a button.
         vertical(bool): Set to true to have button group stack vertically.
-        attributes(string): A string representing additional HTML attributes to add to the primary element (e.g. attributes="onclick=run_me();").
-        classes(string): Additional classes to add to the primary HTML element (e.g. classes="example-class another-class").
+        attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
+        classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Example
 
@@ -74,8 +74,8 @@ class Button(TethysGizmoOptions):
         href(str): Link for anchor type buttons.
         submit(bool): Set this to true to make the button a submit type button for forms.
         disabled(bool): Set the disabled state.
-        attributes(string): A string representing additional HTML attributes to add to the primary element (e.g. attributes="onclick=run_me();").
-        classes(string): Additional classes to add to the primary HTML element (e.g. classes="example-class another-class").
+        attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
+        classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Example:
 

@@ -15,6 +15,8 @@ class MessageBox(TethysGizmoOptions):
         affirmative_button(str): Title for the affirmative action button (a.k.a.: the "OK" button)
         affirmative_attributes(str): Use this to place any html attributes on the affirmative button. (e.g.: 'href="/action" onclick="doSomething();"')
         width(int): The width of the message box in pixels
+        attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
+        classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Example
 
@@ -37,12 +39,13 @@ class MessageBox(TethysGizmoOptions):
 
     """
 
-    def __init__(self, name, title, message='', dismiss_button='Cancel', affirmative_button='Ok', affirmative_attributes='', width=560):
+    def __init__(self, name, title, message='', dismiss_button='Cancel', affirmative_button='Ok',
+                 affirmative_attributes='', width=560, attributes='', classes=''):
         """
         Constructor
         """
         # Initialize super class
-        super(MessageBox, self).__init__()
+        super(MessageBox, self).__init__(attributes=attributes, classes=classes)
 
         self.name = name
         self.title = title

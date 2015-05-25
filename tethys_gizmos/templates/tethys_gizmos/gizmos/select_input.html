@@ -3,9 +3,10 @@
 {% endif %}
 <div class="form-group {% if error %} has-error {% endif %}">
   {% if display_text %}<label class="control-label" for="{{ name }}">{{ display_text }}</label>{% endif %}
-  <select id="{{ name }}" class="{% if not original %}select2{% else %}form-control{% endif %}" 
+  <select id="{{ name }}" class="{% if not original %}select2{% else %}form-control{% endif %}{% if classes %} {{ classes }}{% endif %}"
     name="{{ name }}" {% if not original %}style="width:100%;"{% endif %}
-    {% if multiple %}multiple{% endif %} {% if disabled %}disabled{% endif %}>
+    {% if multiple %}multiple{% endif %} {% if disabled %}disabled{% endif %}
+    {% if attributes %} {{ attributes }} {% endif %}>
     {% for option, value in options %}
       {% if initial and option in initial %}
       <option value="{{value}}" selected>{{ option }}</option>
