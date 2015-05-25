@@ -18,6 +18,8 @@ class TextInput(TethysGizmoOptions):
         icon_append(str): The name of a valid Bootstrap v2.3 icon. The icon will be appended to the input.
         disabled(bool): Disabled state of the select input
         error(str): Error message for form validation
+        attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
+        classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Example
 
@@ -45,12 +47,13 @@ class TextInput(TethysGizmoOptions):
 
     """
 
-    def __init__(self, name, display_text='', initial='', placeholder='', prepend='', append='', icon_prepend='', icon_append='', disabled=False, error=''):
+    def __init__(self, name, display_text='', initial='', placeholder='', prepend='', append='', icon_prepend='',
+                 icon_append='', disabled=False, error='', attributes='', classes=''):
         """
         Constructor
         """
         # Initialize super class
-        super(TextInput, self).__init__()
+        super(TextInput, self).__init__(attributes=attributes, classes=classes)
 
         self.name = name
         self.display_text = display_text

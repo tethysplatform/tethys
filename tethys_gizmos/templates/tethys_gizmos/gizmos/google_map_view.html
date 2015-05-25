@@ -82,7 +82,7 @@
 	}
 </style>
 
-<div id="outer_container">
+<div id="outer_container" {% if classes %}class="{{ classes }}"{% endif %} {% if attributes %}{{ attributes }}{% endif %}>
 	<div id="editable_google_map_loading" class="center-parent" style="height: {{ height }}; width: {{ width }}; background-color:#efefef;">
 		<div class="centered" on>
 			<img src="{% static 'tethys_gizmos/images/ajax-loader.gif' %}" />
