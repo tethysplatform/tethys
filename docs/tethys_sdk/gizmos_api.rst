@@ -16,7 +16,7 @@ Button and Button Group
 Date Picker
 ===========
 
-.. autoclass:: tethys_gizmos.gizmo_options.DatePickerOptions
+.. autoclass:: tethys_gizmos.gizmo_options.DatePicker
 
 
 Range Slider
@@ -82,15 +82,15 @@ JavaScript API
 Map View
 ========
 
-.. autoclass:: tethys_gizmos.gizmo_options.MapViewOptions
+.. autoclass:: tethys_gizmos.gizmo_options.MapView
 
 Secondary
 ---------
 
-.. autoclass:: tethys_gizmos.gizmo_options.MapViewLayer
-.. autoclass:: tethys_gizmos.gizmo_options.MapViewLegendClass
-.. autoclass:: tethys_gizmos.gizmo_options.MapViewDrawOptions
-.. autoclass:: tethys_gizmos.gizmo_options.MapViewViewOptions
+.. autoclass:: tethys_gizmos.gizmo_options.MVLayer
+.. autoclass:: tethys_gizmos.gizmo_options.MVLegendClass
+.. autoclass:: tethys_gizmos.gizmo_options.MVDraw
+.. autoclass:: tethys_gizmos.gizmo_options.MVView
 
 JavaScript API
 --------------
