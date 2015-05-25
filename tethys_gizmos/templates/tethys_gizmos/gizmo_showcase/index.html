@@ -22,7 +22,7 @@
             <a href="#gizmos_overview">Quick Start</a>
           </li>
           <li>
-            <a href="#buttons_docs">Button Groups</a>
+            <a href="#buttons_docs">Buttons</a>
           </li>
           <li>
             <a href="#date_picker_docs">Date Picker</a>
@@ -141,23 +141,23 @@ def my_view(request):
         </p>
       </div>
 
-      {# Button Group ------------------------------------------------------------------------------------------------#}
+      {# Buttons and Button Groups -----------------------------------------------------------------------------------#}
       <a id="buttons_docs" class="anchor"></a>
       <div class="docs-section">
-        <h2>Button Group</h2>
+        <h2>Buttons and Button Groups</h2>
         <p>
-          The button group gizmo can be used to generate a single button or a group of buttons. Groups of
-          buttons can be stacked horizontally or vertically. For a single button, specify a button group
-          with one button. This gizmo is a wrapper for <a href="http://getbootstrap.com/">Twitter Bootstrap</a> buttons.
+          The button and button group gizmos can be used to generate a single button or a group of buttons, respectively. Groups of
+          buttons can be stacked horizontally or vertically. This gizmo is a wrapper for <a href="http://getbootstrap.com/">Twitter Bootstrap</a>
+          buttons.
         </p>
 
         <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos_api.html#button-group">Button Group</a>.
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos_api.html#button-and-button-group">Button and Button Group</a>.
         </p>
 
         <div class="example">
           <div class="demo">
-            {% gizmo button_group single_button %}
+            {% gizmo button single_button %}
             {% gizmo button_group horizontal_buttons %}
             {% gizmo button_group vertical_buttons %}
           </div>
