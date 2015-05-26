@@ -51,15 +51,14 @@ To edit the file using ``vim``, you need to be in ``INSERT`` mode. Press :kbd:`i
 
 Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` to save changes and exit.
 
-5. Make Directory for Static Files
-==================================
+5. Make Directories for Static Files and TethysCluster
+======================================================
 
-When running Tethys Platform in development mode, the static files are automatically served by the development server. In a production environment the static files will need to be collected into one location and Apache or another server will need to be configured to serve these files (see `Deployment Checklist: STATIC_ROOT <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#static-root-and-static-url>`_).
-
-In these instructions, Apache will be used to serve the static files. Create a directory for the collected static files:
+When running Tethys Platform in development mode, the static files are automatically served by the development server. In a production environment the static files will need to be collected into one location and Apache or another server will need to be configured to serve these files (see `Deployment Checklist: STATIC_ROOT <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#static-root-and-static-url>`_). Since Apache will be serving Tethys Portal under Apache user (www-data) the TethysCluster home directory also needs to be created:
 
 ::
 
+    $ sudo mkdir /var/www/.tethyscluster
     $ sudo mkdir -p /var/www/tethys/static
     $ sudo chown `whoami` /var/www/tethys/static
 
@@ -260,21 +259,7 @@ When you are finished installing Tethys Portal, change the ownership of the sour
 
 ::
 
-    $ sudo chown -R www-data:www-data /usr/lib/tethys/src
-    $ sudo chown -R www-data:www-data /var/www/tethys/static
-
-
-12. Create TethysCluster Home Directory
-=======================================
-Since Apache will be serving Tethys Portal as the Apache user (www-data) the TethysCluster home directory will need to be created manually:
-
-::
-
-    $ sudo su
-    $ mkdir /var/www/.tethyscluster
-    $ chown -R www-data:www-data /var/www/.tethyscluster
-    $ exit
-
+    $ sudo chown -R www-data:www-data /usr/lib/tethys/src /var/www/tethys/static /var/www/.tethyscluster
 
 13. Enable Site and Restart Apache
 ==================================
