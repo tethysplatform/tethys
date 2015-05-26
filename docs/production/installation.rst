@@ -246,7 +246,7 @@ After all the apps have been successfully installed, you will need to initialize
     (tethys) $ tethys syncstores all
 
 11. Run Collectstatic
-======================
+=====================
 
 The static files need to be collected into the directory that you created. Enter the following commands and enter "yes" if prompted:
 
@@ -259,7 +259,19 @@ The static files need to be collected into the directory that you created. Enter
     (tethys) $ exit
 
 
-12. Enable Site and Restart Apache
+12. Create TethysCluster Home Directory
+=======================================
+Since Apache will be serving Tethys Portal as the Apache user (www-data) the TethysCluster home directory will need to be created manually:
+
+::
+
+    $ sudo su
+    $ mkdir /var/www/.tethyscluster
+    $ chown -R www-data:www-data /var/www/.tethyscluster
+    $ exit
+
+
+13. Enable Site and Restart Apache
 ==================================
 
 Finally, you need to disable the default apache site, enable the Tethys Portal site, and reload Apache:
