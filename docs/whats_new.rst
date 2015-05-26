@@ -34,7 +34,9 @@ Tethys Portal Features
 Job Manager
 -----------
 
-* New Job manager features...
+* Provides a unified interface for all apps to create submit and monitor computing jobs
+* Abstracts the CondorPy module to provide a higher-level interface with computing jobs
+* Allows definition of job templates in the app.py module of apps projects
 
 
 Documentation Updates
