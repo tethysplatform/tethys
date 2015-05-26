@@ -226,7 +226,7 @@ Press :kbd:`i` to enter ``INSERT`` mode and edit the file. Copy and paste the fo
 There is a lot going on in this file, for more information about Django and WSGI review Django's `How to deploy with WSGI <https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/>`_ documentation.
 
 9. Install Apps
-================
+===============
 
 Download and install any apps that you want to host using this installation of Tethys Platform. It is recommended that you create a directory to store the source code for all of the apps that you install. The installation of each app may vary, but generally, an app can be installed as follows:
 
