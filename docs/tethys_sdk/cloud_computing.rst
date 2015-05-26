@@ -2,15 +2,37 @@
 Distributed Computing API
 *************************
 
-**Last Updated:** February 5, 2015
+**Last Updated:** May 26, 2015
 
-Distributed computing in Tethys is made possible with HTCondor (see installation documentation for instructions on installing HTCondor. Access to HTCondor tools is made possible through the condorpy module.  See the following code example for how to use condorpy:
-::
+Distributed computing in Tethys Platform is made possible with HTCondor. HTCondor computing resources are managed through the Tethys Compute settings of the site admin in Tethys Portal. Access to the HTCondor computing environment is made possible through a JobManager object.
 
-    >>> from condorpy import Job, Templates
-    >>> job = Job('job_name', Templates.vanilla_transfer_files)
-    >>> job.executable = 'job_script'
-    >>> jobs.arguments = 'input_1 input_2'
-    >>> job.transfer_input_files = 'input_1 input_2'
-    >>> job.transfer_output_files = 'output'
-    >>> job.submit()
+Tethys Compute
+==============
+The Tethys Compute heading in site admin allows an administrator to configure settings for computing resources and to manage computing clusters.
+
+Settings
+--------
+
+Scheduler IP
+............
+
+
+
+
+Manage Cloud Clusters
+---------------------
+ - uses TethysCluster
+ - able to provision clusters on AWS and Azure
+ - Describe settings
+
+
+Job Manager
+===========
+
+
+Configuring the Job Manager
+---------------------------
+
+
+Using the Job Manager in your App
+---------------------------------
