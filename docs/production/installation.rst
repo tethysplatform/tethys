@@ -15,12 +15,6 @@ Follow the default :doc:`../installation/linux` instructions to install Tethys P
 * Create a new settings file, do not use the same file that you have been using in development.
 * Follow the :doc:`./distributed` instructions to install Docker and the software suite on separate servers.
 
-When you are finished installing Tethys Portal, change the owner of the source code to be the Apache user (``www-data``):
-
-::
-
-    $ sudo chown -R www-data:www-data /usr/lib/tethys/src
-
 2. Install Apache and Dependencies
 ==================================
 
@@ -232,20 +226,13 @@ Download and install any apps that you want to host using this installation of T
 
 ::
 
+             $ sudo su
              $ . /usr/lib/tethys/bin/activate
     (tethys) $ cd /path/to/tethysapp-my_first_app
     (tethys) $ python setup.py install
+    (tethys) $ exit
 
-10. Setup the Persistent Stores for Apps
-========================================
-
-After all the apps have been successfully installed, you will need to initialize the persistent stores for the apps:
-
-::
-
-    (tethys) $ tethys syncstores all
-
-11. Run Collectstatic
+10. Run Collectstatic
 =====================
 
 The static files need to be collected into the directory that you created. Enter the following commands and enter "yes" if prompted:
@@ -255,8 +242,26 @@ The static files need to be collected into the directory that you created. Enter
              $ sudo su
              $ . /usr/lib/tethys/bin/activate
     (tethys) $ tethys manage collectstatic
-    (tethys) $ chown -R www-data:www-data /var/www/tethys
     (tethys) $ exit
+
+11. Setup the Persistent Stores for Apps
+========================================
+
+After all the apps have been successfully installed, you will need to initialize the persistent stores for the apps:
+
+::
+
+    (tethys) $ tethys syncstores all
+
+12. Change Ownership
+====================
+
+When you are finished installing Tethys Portal, change the ownership of the source code and static files to be the Apache user (``www-data``):
+
+::
+
+    $ sudo chown -R www-data:www-data /usr/lib/tethys/src
+    $ sudo chown -R www-data:www-data /var/www/tethys/static
 
 
 12. Create TethysCluster Home Directory
@@ -282,7 +287,12 @@ Finally, you need to disable the default apache site, enable the Tethys Portal s
     $ sudo a2ensite tethys-default.conf
     $ sudo service apache2 reload
 
-.. note::
+.. tip::
 
-    Whenever you install new apps you will need to run through steps 9-11 again.
+    To install additional apps after the initial setup of Tethys, you will follow the following process:
+
+    1. Change ownership of the ``src`` and ``static`` directories to your user using the patter in step 12 OR login as root user using ``sudo su``.
+    2. Install apps, syncstores, and collectstatic as in steps 9-11.
+    3. Set the apache user as owner of ``src`` and ``static`` again as in 12.
+    4. Reload the apache server using ``sudo service apache2 reload``.
 
