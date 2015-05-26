@@ -2,7 +2,7 @@
 Production Installation
 ***********************
 
-**Last Updated:** May 25, 2015
+**Last Updated:** May 26, 2015
 
 This article will provide an overview of how to install Tethys Portal in a production setup ready to host apps. The recommended deployment platform for Python web projects is to use `WSGI <http://www.wsgi.org/>`_. The easiest and most stable way to deploy a WSGI application is with the `modwsgi <https://code.google.com/p/modwsgi/>`_ extension for the `Apache Server <http://httpd.apache.org/>`_. These instructions are optimized for Ubuntu 14.04 using Apache and modwsgi, though installation on other Linux distributions will be similar.
 
@@ -13,12 +13,12 @@ Follow the default :doc:`../installation/linux` instructions to install Tethys P
 
 * Assign strong passwords to the database users.
 * Create a new settings file, do not use the same file that you have been using in development.
-* Follow the :doc:`./distributed` instructions to install Docker and the software suite on separate servers.
+* Optionally, Follow the :doc:`./distributed` instructions to Docker and the components of the software suite on separate servers.
 
 2. Install Apache and Dependencies
 ==================================
 
-Install Apache and the modwsgi module if they are not installed already. In this tutorial, ``vim`` is used to edit file, however, you are welcome to use any text editor you are comfortable with.
+Install Apache and the ``modwsgi`` module if they are not installed already. In this tutorial, ``vim`` is used to edit file, however, you are welcome to use any text editor you are comfortable with.
 
 ::
 
@@ -27,7 +27,7 @@ Install Apache and the modwsgi module if they are not installed already. In this
 3. Make BASELINE Virtual Environment
 ====================================
 
-An additional virtual environment needs to be created to use modwsgi in Apache. This virtual environment needs to be independent of the Tethys virtual environment and the system Python installation.
+An additional virtual environment needs to be created to use ``modwsgi`` in Apache. This virtual environment needs to be independent of the Tethys virtual environment and the system Python installation.
 
 ::
 
@@ -58,8 +58,7 @@ When running Tethys Platform in development mode, the static files are automatic
 
 ::
 
-    $ sudo mkdir /var/www/.tethyscluster
-    $ sudo mkdir -p /var/www/tethys/static
+    $ sudo mkdir /var/www/.tethyscluster && sudo mkdir -p /var/www/tethys/static
     $ sudo chown `whoami` /var/www/tethys/static
 
 6. Setup Email Capabilities
@@ -250,6 +249,7 @@ After all the apps have been successfully installed, you will need to initialize
 
 ::
 
+             $ . /usr/lib/tethys/bin/activate
     (tethys) $ tethys syncstores all
 
 12. Change Ownership
@@ -268,9 +268,7 @@ Finally, you need to disable the default apache site, enable the Tethys Portal s
 
 ::
 
-    $ sudo a2dissite 000-default.conf
-    $ sudo a2ensite tethys-default.conf
-    $ sudo service apache2 reload
+    $ sudo a2dissite 000-default.conf && sudo a2ensite tethys-default.conf && sudo service apache2 reload
 
 .. tip::
 
