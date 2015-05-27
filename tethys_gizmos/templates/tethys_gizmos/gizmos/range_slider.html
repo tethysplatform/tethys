@@ -3,14 +3,15 @@
 	<div class="input-group">
     <span class="input-group-addon slider-before">{{ min }}</span>
     <input id="{{ name }}"
-           class="slider-input form-control"
+           class="slider-input form-control{% if classes %} {{ classes }}{% endif %}"
            name="{{ name }}"
            type="range" min="{{ min }}"
            max="{{ max }}"
            step="{{ step }}"
            value="{{ initial }}"
            oninput="updateSliderDisplayValue('{{ name }}', this);"
-           {% if disabled %}disabled{% endif %}>
+           {% if disabled %}disabled{% endif %}
+           {% if attributes %} {{ attributes }} {% endif %}>
     <span class="input-group-addon slider-after">{{ max }}</span>
 
   </div>

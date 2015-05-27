@@ -150,6 +150,17 @@ b. Install Tethys Platform into the virtual environment with the following comma
 
     (tethys) $ git clone https://github.com/CI-WATER/tethys /usr/lib/tethys/src
 
+.. tip::
+
+    If you would like to install a different version of Tethys Platform, you can use git to checkout the tagged release branch. For example, to checkout version 1.0.0:
+
+    ::
+
+        cd /usr/lib/tethys/src
+        git checkout tags/1.0.0
+
+    For a list of all tagged releases, see `Tethys Platform Releases <https://github.com/CI-WATER/tethys/releases>`_. Depending on the version you intend to install, you may need to delete your entire virtual environment (i.e.: the ``/usr/lib/tethys`` directory) to start fresh.
+
 
 c. Install the Python modules that Tethys requires::
 
