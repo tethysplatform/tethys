@@ -321,8 +321,8 @@ class CondorJob(TethysJob):
     """
 
     """
-    executable = models.CharField(max_length=248)
-    condorpy_template_name = models.CharField(blank=True, null=True)
+    executable = models.CharField(max_length=256)
+    condorpy_template_name = models.CharField(max_length=256, blank=True, null=True)
     attributes = DictionaryField()
     #scheduler_ip = models.CharField(max_length=12, blank=True, null=True) ##TethysCompute only supports one scheduler
     #ami = models.CharField(max_length=9)  ## use documentation to specify this
