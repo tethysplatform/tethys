@@ -1,5 +1,5 @@
-# from . import initialize_settings
 # add the following  to operations in migrations
+# from . import initialize_settings
     # migrations.RunPython(initialize_settings),
 
 
