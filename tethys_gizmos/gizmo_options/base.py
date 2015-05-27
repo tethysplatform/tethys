@@ -5,7 +5,7 @@ class TethysGizmoOptions(dict):
     Base class for Tethys Gizmo Options objects.
     """
 
-    def __init__(self):
+    def __init__(self, attributes='', classes=''):
         """
         Constructor for Tethys Gizmo Options base.
         """
@@ -14,6 +14,9 @@ class TethysGizmoOptions(dict):
 
         # Dictionary magic
         self.__dict__ = self
+
+        self.attributes = attributes
+        self.classes = classes
 
 
 class SecondaryGizmoOptions(dict):

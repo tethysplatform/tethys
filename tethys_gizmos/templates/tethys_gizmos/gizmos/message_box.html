@@ -1,6 +1,6 @@
 {% load tethys_gizmos %}
 
-<div id="{{ name }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="{{ name|add:'Label' }}" aria-hidden="true">
+<div id="{{ name }}" class="modal fade{% if classes %} {{ classes }}{% endif %}" tabindex="-1" role="dialog" aria-labelledby="{{ name|add:'Label' }}" aria-hidden="true" {% if attributes %} {{ attributes }} {% endif %}>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">

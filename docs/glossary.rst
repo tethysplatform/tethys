@@ -35,11 +35,11 @@ Glossary
         A file located in the :term:`app package` and called :file:`app.py` by convention. This file contains the :term:`app class` that is used to configure apps. For more details on the app configuration file, see :doc:`./tethys_sdk/app_class`.
 
     setup script
-        A file located in the :term:`release package` and called :file:`setup.py` by convention. The setup script is used to automate the installation of apps. For more details see :doc:`./getting_started/distribution`.
+        A file located in the :term:`release package` and called :file:`setup.py` by convention. The setup script is used to automate the installation of apps. For more details see :doc:`./tutorials/getting_started/distribution`.
 
     persistent store
     persistent stores
-        A persistent store is a database that can be automatically created for an app. See :doc:`./getting_started/model` tutorial and the :doc:`./tethys_sdk/persistent_store` for more information about persistent stores.
+        A persistent store is a database that can be automatically created for an app. See :doc:`./tutorials/getting_started/model` tutorial and the :doc:`./tethys_sdk/persistent_store` for more information about persistent stores.
 
     resource
     resources

@@ -6,12 +6,13 @@
       {% elif icon_prepend %}
         <div class="input-group-addon"><span class="{{ icon_prepend }}"></span></div>
       {% endif %}
-      <input id="{{ name }}" class="form-control"
+      <input id="{{ name }}" class="form-control{% if classes %} {{ classes }}{% endif %}"
            name="{{ name }}"
            type="text"
            {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
            {% if initial %}value="{{ initial }}"{% endif %}
-           {% if disabled %}disabled{% endif %} >
+           {% if disabled %}disabled{% endif %}
+           {% if attributes %} {{ attributes }} {% endif %}>
       {% if append %}
         <div class="input-group-addon">{{ append }}</div>
       {% elif icon_append %}

@@ -854,6 +854,7 @@ a:hover {
 .mobile-nav ul li {
   padding: 20px 0;
   text-align: center;
+  list-style-type: none;
 }
 .mobile-nav ul li a {
   text-decoration: none;
