@@ -9,12 +9,12 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 requires = []
 
-version = '1.0.2'
+version = '1.1.0dev'
 
 setup(
     name='tethys_platform',
     version=version,
-    packages=[],
+    packages=find_packages(),
     include_package_data=True,
     license='BSD 2-Clause License',
     description='Primary Tethys Platform Django Site Project',

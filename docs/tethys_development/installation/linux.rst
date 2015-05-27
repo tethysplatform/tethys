@@ -31,9 +31,9 @@ Tethys Platform is versioned with Git and hosted on GitHub. Change into the proj
 
 ::
 
-    $ git pull https://github.com/CI-WATER/tethys.git
-    $ git pull https://github.com/CI-WATER/tethys_dataset_services.git
-    $ git pull https://github.com/CI-WATER/tethys_docker.git
+    $ git clone https://github.com/CI-WATER/tethys.git
+    $ git clone https://github.com/CI-WATER/tethys_dataset_services.git
+    $ git clone https://github.com/CI-WATER/tethys_docker.git
 
 When you are done, your project directory should have the following contents:
 
