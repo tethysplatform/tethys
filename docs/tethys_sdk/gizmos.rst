@@ -2,70 +2,87 @@
 Template Gizmos API
 *******************
 
-**Last Updated:** November 18, 2014
+**Last Updated:** May 21, 2015
 
-Template Gizmos are building blocks that can be used to create beautiful interactive controls for web apps. Using the Template Gizmos API, developers can add date-pickers, plots, and maps to their app templates with minimal coding. This article provides an overview of how to use Gizmos. If you are not familiar with templating in Tethys apps, please review :doc:`../getting_started/view` tutorial before proceeding.
+Template Gizmos are building blocks that can be used to create beautiful interactive controls for web apps. Using the Template Gizmos API, developers can add date-pickers, plots, and maps to their app pages with minimal coding. This article provides an overview of how to use Gizmos. If you are not familiar with templating in Tethys apps, please review :doc:`../tutorials/getting_started/view` tutorial before proceeding.
 
-Define Options Object
-=====================
+For a detailed explanation and code examples of each Gizmo, see the :doc:`./gizmos_api` documentation.
 
-The best way to illustrate how to use Template Gizmos is to look at an example. The following example illustrates how to add a date picker using Gizmos. The first step is to define a dictionary with all the configuration options for the Gizmo. This should be done in the controller of the template where the Gizmo will be used.
+Working with Gizmos
+===================
 
-In this case, the Gizmo options dictionary is called "date_picker_options" and it is passed to the template via the ``context``:
+The best way to illustrate how to use Template Gizmos is to look at an example. The following example illustrates how to add a date picker to a page using the Date Picker Gizmo. The basic workflow involves three steps:
+
+1. Define gizmo options in the controller for the template
+2. Load gizmo library in the template
+3. Insert the gizmo tag in the template
+
+A detailed description of each step follows.
+
+
+1. Define Gizmo Options
+-----------------------
+
+The first step is to import the appropriate options object and configure the Gizmo. This is performed in the controller of the template where the Gizmo will be used.
+
+In this case, we import ``DatePickerOptions`` and initialize a new object called ``date_picker_options`` with the appropriate options. Then we pass the object to the template via the ``context`` dictionary:
 
 ::
+
+    from tethys_gizmos.gizmos_options import DatePickerOptions
 
     def example_controller(request):
         """
         Example of a controller that defines options for a Template Gizmo.
         """
-        date_picker_options = {'display_text': 'Date',
-                               'name': 'date1',
-                               'autoclose': True,
-                               'format': 'MM d, yyyy',
-                               'start_date': '2/15/2014',
-                               'start_view': 'decade',
-                               'today_button': True,
-                               'initial': 'February 15, 2014'}
+        date_picker_options = DatePickerOptions(name='data1',
+                                                display_text='Date',
+                                                autoclose=True,
+                                                format='MM d, yyyy',
+                                                start_date='2/15/2014',
+                                                start_view='decade',
+                                                today_button=True,
+                                                initial='February 15, 2014')
 
         context = {'date_picker_options': date_picker_options}
 
         return render(request, 'path/to/my/template.html', context)
 
-See the :doc:`./gizmos_api` for a detailed description of the options object for each gizmo.
+.. note::
 
-Load Gizmo Library
-==================
+    The Gizmo Options objects are new as of version 1.1.0. Prior to this time, Gizmo options were defined using dictionaries. The dictionary parameterization of Gizmos is still supported, but will no longer be referenced in the documentation.
 
-After the Gizmo options have been defined in the controller, the Gizmo can be added to the template. At the top of the template, the ``tethys_gizmos`` library needs to be loaded using the Django ``load`` tag. This will make the Gizmo library accessible to the template and only needs to be done once for each template that uses Gizmos:
+The :doc:`./gizmos_api` provides detailed descriptions of each Gizmo option object, valid parameters, and examples of how to use them.
+
+2. Load Gizmo Library
+---------------------
+
+Now near the top of the template where the Gizmo will be inserted, load the ``tethys_gizmos`` library using the `Django load tag <https://docs.djangoproject.com/en/1.8/ref/templates/builtins/#load>`_. This only needs to be done once per template:
 
 ::
 
     {% load tethys_gizmos %}
 
-Add the Gizmo
-=============
+3. Insert the Gizmo
+-------------------
 
-The ``gizmo`` tag is used to insert the date picker anywhere in the template. The ``gizmo`` tag accepts two arguments: the name of the Gizmo to insert and a dictionary of configuration options for the Gizmo. In the example, the ``date_picker`` Gizmo is inserted and the ``date_picker_options`` dictionary that was defined in the controller is provided:
+The ``gizmo`` tag is used to insert the date picker anywhere in the template. The ``gizmo`` tag accepts two arguments: the name of the Gizmo to insert and a dictionary of configuration options for the Gizmo:
+
+::
+
+    {% gizmo <name> <options> %}
+
+
+For this example, the ``date_picker`` Gizmo is inserted and the ``date_picker_options`` object that was defined in the controller and passed to the template is provided:
 
 ::
 
     {% gizmo date_picker date_picker_options %}
 
-.. note::
-
-    If you are using Gizmos in a Django project outside of Tethys Platform, you will also need to include the ``gizmo_dependencies`` tag. This tag is automatically included in the base template of Tethys app projects.
-
-    Many of the Gizmos require CSS and JavaScript libraries to work properly. These dependencies are loaded using the ``gizmo_dependencies`` tag and it must be included in the template after all occurrences of the ``gizmo`` tag:
-
-    ::
-
-        {% gizmo_dependencies %}
-
 Rendered Gizmo
 ==============
 
-The date picker will be inserted at the location of the ``gizmo`` tag. The template with the rendered date picker would look something like this:
+The Gizmo tag is replaced with the appropriate HTML, JavaScript, and CSS that is needed to render the Gizmo. In the example, the date picker is inserted at the location of the ``gizmo`` tag. The template with the rendered date picker would look something like this:
 
 .. figure:: ../images/gizmo_example.png
     :width: 650px
@@ -73,7 +90,7 @@ The date picker will be inserted at the location of the ``gizmo`` tag. The templ
 Gizmo Showcase
 ==============
 
-Live demos and documentation of the configuration options for each Gizmo is provided as a developer tool called "Gizmo Showcase" in every Tethys Platform installation. To access the Gizmo Showcase, start up the development server and navigate to the home page of your Tethys Portal at `<http://127.0.0.1:8000>`_. Login and select the Developer link from the main navigation. This will bring up the Developer Tools page of your Tethys Portal:
+Live demos of each Gizmo is provided as a developer tool called "Gizmo Showcase". To access the Gizmo Showcase, start up your development server and navigate to the home page of your Tethys Portal at `<http://127.0.0.1:8000>`_. Login and select the ``Developer`` link from the main navigation. This will bring up the Developer Tools page of your Tethys Portal:
 
 .. figure:: ../images/developer_tools_page.png
     :width: 650px
@@ -84,12 +101,12 @@ Select the Gizmos developer tool and you will be brought to the Gizmo Showcase p
 .. figure:: ../images/gizmo_showcase_page.png
     :width: 650px
 
-In addition to the live demos, the Gizmo Showcase also provides code examples and tables detailing the different options that are available for each Gizmo. The Gizmo Showcase is the primary form of documentation on Gizmos for Tethys app developers.
+For explanations the Gizmo Options objects and code examples, refer to the :doc:`./gizmos_api`.
 
-Tag API Reference
-=================
+Django Tag Reference
+====================
 
-This section contains a brief explanation of the template tags provided by the ``tethys_gizmos`` library.
+This section contains a brief explanation of the template tags that power Gizmos. These are provided by the ``tethys_gizmos`` library that you load at the top of templates that use Gizmos.
 
 **gizmo**
 ---------
@@ -115,7 +132,7 @@ Inserts a Gizmo at the location of the tag.
 **gizmo_dependencies**
 ----------------------
 
-Inserts the CSS and JavaScript dependencies at the location of the tag. This tag must appear after all occurrences of the ``gizmo`` tag.
+Inserts the CSS and JavaScript dependencies at the location of the tag. This tag must appear after all occurrences of the ``gizmo`` tag. In Tethys Apps, these depenencies are imported for you, so this tag is not required. For external Django projects that use the tethys_gizmos Django app, this tag is required.
 
 *Parameters*:
 

@@ -1,5 +1,6 @@
 package com.highcharts.export.pool;
 
+import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,19 +11,18 @@ import org.apache.log4j.Logger;
 import com.highcharts.export.server.Server;
 import com.highcharts.export.server.ServerState;
 import com.highcharts.export.util.TempDir;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Enumeration;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.TreeMap;
+
 import org.apache.commons.io.IOUtils;
+import org.springframework.core.io.ClassPathResource;
 
 public class ServerObjectFactory implements ObjectFactory<Server> {
 
@@ -31,9 +31,10 @@ public class ServerObjectFactory implements ObjectFactory<Server> {
 	private String host;
 	private int basePort;
 	private int readTimeout;
+	private int poolSize;
 	private int connectTimeout;
 	private int maxTimeout;
-	private static HashMap<Integer, PortStatus> portUsage = new HashMap<Integer, PortStatus>();
+	private static TreeMap<Integer, PortStatus> portUsage = new TreeMap<>();
 	protected static Logger logger = Logger.getLogger("pool");
 
 	private enum PortStatus {
@@ -45,8 +46,15 @@ public class ServerObjectFactory implements ObjectFactory<Server> {
 	public Server create() {
 		logger.debug("in makeObject, " + exec + ", " +  script + ", " +  host);
 		Integer port = this.getAvailablePort();
+		String separator = FileSystems.getDefault().getSeparator();
+
+        if (script.isEmpty()) {
+            // use the bundled highcharts-convert.js script
+            script = TempDir.getPhantomJsDir().toAbsolutePath().toString() + separator + "highcharts-convert.js";
+        }
+        Server server = new Server(exec, script, host, port, connectTimeout, readTimeout, maxTimeout);
 		portUsage.put(port, PortStatus.BUSY);
-		return new Server(exec, script, host, port, connectTimeout, readTimeout, maxTimeout);
+		return server;
 	}
 
 	@Override
@@ -92,16 +100,27 @@ public class ServerObjectFactory implements ObjectFactory<Server> {
 	}
 
 	public Integer getAvailablePort() {
-		for (Map.Entry<Integer, PortStatus> entry : portUsage.entrySet()) {
-		   if (PortStatus.FREE == entry.getValue()) {
-			   // return available port
-			   logger.debug("Portusage " + portUsage.toString());
-			   return entry.getKey();
-		   }
+
+		/* first we check within the defined port range from baseport
+		* up to baseport + poolsize
+		*/
+		int port = basePort;
+		for (; port < basePort + poolSize; port++) {
+
+			if (portUsage.containsKey(port)) {
+				if (portUsage.get(port) == PortStatus.FREE) {
+					return port;
+				}
+			} else {
+				// doesn't exist any longer, but is within the valid port range
+				return port;
+			}
+
 		}
-		// if no port is free
+
+		// at this point there is no free port, we have to look outside of the valid port range
 		logger.debug("Nothing free in Portusage " + portUsage.toString());
-		return basePort + portUsage.size();
+		return portUsage.lastKey() + 1;
 	}
 
 	/*Getters and Setters*/
@@ -162,38 +181,43 @@ public class ServerObjectFactory implements ObjectFactory<Server> {
 		this.maxTimeout = maxTimeout;
 	}
 
+	public int getPoolSize() {
+		return poolSize;
+	}
+
+	public void setPoolSize(int poolSize) {
+		this.poolSize = poolSize;
+	}
+
 	@PostConstruct
 	public void afterBeanInit() {
-		String jarLocation = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-		try {
-			jarLocation = URLDecoder.decode(jarLocation, "utf-8");
-			// get filesystem depend path
-			jarLocation = new File(jarLocation).getCanonicalPath();
-		} catch (UnsupportedEncodingException ueex) {
-			logger.error(ueex);
-		} catch (IOException ioex) {
-			logger.error(ioex);
-		}
-
-		try {
-			JarFile jar = new JarFile(jarLocation);
-			for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements();) {
-				JarEntry entry = entries.nextElement();
-				String name = entry.getName();
-				if (name.startsWith("phantomjs/")) {
-					Path path = Paths.get(TempDir.getTmpDir().toString(), name);
-					if (name.endsWith("/")) {
-						Files.createDirectories(path);
-					} else {
-						File file = Files.createFile(path).toFile();
-						InputStream in = jar.getInputStream(entry);
-						IOUtils.copy(in, new FileOutputStream(file));
-					}
+		
+		URL u = getClass().getProtectionDomain().getCodeSource().getLocation();
+		URLClassLoader jarLoader = new URLClassLoader(new URL[]{u}, Thread.currentThread().getContextClassLoader());
+		String filenames[] = new String[] {"highcharts-convert.js","highcharts.js","highstock.js","jquery.1.9.1.min.js","map.js","highcharts-more.js", "data.js", "drilldown.js", "funnel.js", "heatmap.js", "highcharts-3d.js", "no-data-to-display.js", "solid-gauge.js", "broken-axis.js"};
+		
+		for (String filename : filenames) {
+		
+			ClassPathResource resource = new ClassPathResource("phantomjs/" + filename, jarLoader);
+			if (resource.exists()) {
+				Path path = Paths.get(TempDir.getPhantomJsDir().toString(), filename);
+				File file;
+				try {
+					file = Files.createFile(path).toFile();
+					file.deleteOnExit();
+					try (InputStream in = resource.getInputStream();
+					     OutputStream out=new FileOutputStream(file);)
+			        {
+					    IOUtils.copy(in, out);
+			        }
+				} catch (IOException ioex) {
+					logger.error("Error while setting up phantomjs environment: " + ioex.getMessage());
 				}
+			} else {
+				logger.debug("Copy javascript file to temp folder, resource doesn't exist: " + filename);
 			}
-		} catch (IOException ioex) {
-			logger.error(ioex);
 		}
+		
 	}
 
 

@@ -5,8 +5,11 @@
 		<title>Highcharts Example</title>
 
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<style type="text/css">
+${demo.css}
+		</style>
 		<script type="text/javascript">
-$(function() {
+$(function () {
     $('#container').highcharts({
 
         chart: {
@@ -46,13 +49,13 @@ $(function() {
                 [44, 83, 22]
             ],
             marker: {
-                 fillColor: {
-                     radialGradient: { cx: 0.4, cy: 0.3, r: 0.7 },
-                     stops: [
-                         [0, 'rgba(255,255,255,0.5)'],
-                         [1, 'rgba(69,114,167,0.5)']
-                     ]
-                 }
+                fillColor: {
+                    radialGradient: { cx: 0.4, cy: 0.3, r: 0.7 },
+                    stops: [
+                        [0, 'rgba(255,255,255,0.5)'],
+                        [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0.5).get('rgba')]
+                    ]
+                }
             }
         }, {
             data: [
@@ -72,13 +75,13 @@ $(function() {
                 [45, 15, 98]
             ],
             marker: {
-                 fillColor: {
-                     radialGradient: { cx: 0.4, cy: 0.3, r: 0.7 },
-                     stops: [
-                         [0, 'rgba(255,255,255,0.5)'],
-                         [1, 'rgba(170,70,67,0.5)']
-                     ]
-                 }
+                fillColor: {
+                    radialGradient: { cx: 0.4, cy: 0.3, r: 0.7 },
+                    stops: [
+                        [0, 'rgba(255,255,255,0.5)'],
+                        [1, Highcharts.Color(Highcharts.getOptions().colors[1]).setOpacity(0.5).get('rgba')]
+                    ]
+                }
             }
         }]
 
