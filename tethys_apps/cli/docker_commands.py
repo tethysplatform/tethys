@@ -8,7 +8,9 @@ import inspect, pprint
 from exceptions import OSError
 from functools import cmp_to_key
 from docker.utils import kwargs_from_env, compare_version
-from docker.client import Client as DockerClient, DEFAULT_DOCKER_API_VERSION as MAX_CLIENT_DOCKER_API_VERSION
+from docker.client import Client as DockerClient
+from docker.constants import DEFAULT_DOCKER_API_VERSION as MAX_CLIENT_DOCKER_API_VERSION
+
 
 __all__ = ['docker_init', 'docker_start',
            'docker_stop', 'docker_status',

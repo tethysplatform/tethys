@@ -2,7 +2,9 @@
 Installation on Mac OSX
 ***********************
 
-**Last Updated:** February 6, 2015
+**Last Updated:** May 27, 2015
+
+Use these instructions to install a development environment on OSX. These instructions have been tested with OSX Yosemite.
 
 .. tip::
 
@@ -16,6 +18,8 @@ a. Many of the commandline tools for the Mac are provided through Xcode. You wil
   ::
 
       $ xcode-select --install
+
+Follow the prompts to download and install commandline developer tools.
 
   .. note::
 
@@ -52,7 +56,8 @@ c. You will need a fresh installation of ``Python`` with the ``pip`` and ``virtu
   ::
 
       $ brew install python git libpqxx libxml2 libxslt
-      $ brew link --overwrite python
+      $ brew unlink python && brew link python
+      $ pip install virtualenv
 
   .. tip::
 
@@ -63,9 +68,6 @@ c. You will need a fresh installation of ``Python`` with the ``pip`` and ``virtu
           $ brew doctor
 
       This will generate a list of suggestions for remedying your `Homebrew <http://brew.sh/>`_ installation.
-
-
-d. Finally, install Docker using the `Installing Docker on Mac OSX <https://docs.docker.com/installation/mac/#installation>`_ instructions.
 
 2. Install HTCondor (Optional)
 ---------------------------------------------------------
@@ -178,10 +180,13 @@ d. Restart the Python virtual environment::
 
 Tethys Platform provides a software suite that addresses the unique needs of water resources web app development (see :doc:`../features` for more details). To make installation of the software easy, each software has been provided as Docker container. The following instructions will walk you through installation of these software using Docker. See the `Docker Documentation <https://docs.docker.com/>`_ for more information about Docker.
 
-a. Initialize the Docker containers with the following command:
+a. Install Boot2Docker version 1.6 using the `Install Docker on Mac OSX instructions <https://docs.docker.com/v1.6/installation/mac/>`_. Look for the heading titled *Install Boot2Docker*. Verify the installation using the instructions using the instructions under the *Start the Boot2Docker Application* heading.
+
+b. Close the Boot2Docker terminal and open a new one. Initialize the Tethys Docker containers with the following command:
 
   ::
 
+             $ . /usr/lib/tethys/bin/activate
     (tethys) $ tethys docker init
 
   Follow the interactive prompts to customize your Docker installations. To accept the default value shown in square brackets, simply press ``enter``. **Take note of any passwords you are prompted to create.**
@@ -190,7 +195,17 @@ a. Initialize the Docker containers with the following command:
 
       The first time you initialize the Docker containers, the images for each container will need to be downloaded. These images are large and it may take a long time for them to download.
 
-b. Start the docker containers with the following command:
+  .. tip::
+
+      If you encounter an error related to SSL error while running this command try the following to resolve it:
+
+      ::
+
+          $ brew unlink openssl
+          $ brew install https://raw.githubusercontent.com/Homebrew/homebrew/62fc2a1a65e83ba9dbb30b2e0a2b7355831c714b/Library/Formula/openssl.rb
+          $ brew link --force openssl
+
+c. Start the docker containers with the following command:
 
   ::
 
