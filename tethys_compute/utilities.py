@@ -1,10 +1,10 @@
 # code for DictionaryField was taken from https://djangosnippets.org/snippets/1979/
 
+import json
 from django import forms
 from django.core import exceptions
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
-from django.utils import simplejson
 from django.utils.translation import ugettext_lazy as _
 
 class DictionaryField(models.Field):
@@ -22,7 +22,7 @@ class DictionaryField(models.Field):
             return {}
         elif isinstance(value, basestring):
             try:
-                return dict(simplejson.loads(value))
+                return dict(json.loads(value))
             except (ValueError, TypeError):
                 raise exceptions.ValidationError(self.error_messages['invalid'])
 
@@ -37,7 +37,7 @@ class DictionaryField(models.Field):
         elif isinstance(value, basestring):
             return value
         else:
-            return simplejson.dumps(value)
+            return json.dumps(value)
 
     def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)
