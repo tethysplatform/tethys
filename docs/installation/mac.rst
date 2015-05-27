@@ -55,8 +55,11 @@ c. You will need a fresh installation of ``Python`` with the ``pip`` and ``virtu
 
   ::
 
-      $ brew install python git libpqxx libxml2 libxslt
-      $ brew unlink python && brew link python
+      $ brew install git libpqxx libxml2 libxslt
+      $ brew unlink openssl
+      $ brew install https://raw.githubusercontent.com/Homebrew/homebrew/62fc2a1a65e83ba9dbb30b2e0a2b7355831c714b/Library/Formula/openssl.rb
+      $ brew link --force openssl && brew switch openssl 1.0.1j_1
+      $ brew install python --with-brewed-openssl --build-from-source
       $ pip install virtualenv
 
   .. tip::
@@ -194,16 +197,6 @@ b. Close the Boot2Docker terminal and open a new one. Initialize the Tethys Dock
   .. note::
 
       The first time you initialize the Docker containers, the images for each container will need to be downloaded. These images are large and it may take a long time for them to download.
-
-  .. tip::
-
-      If you encounter an error related to SSL error while running this command try the following to resolve it:
-
-      ::
-
-          $ brew unlink openssl
-          $ brew install https://raw.githubusercontent.com/Homebrew/homebrew/62fc2a1a65e83ba9dbb30b2e0a2b7355831c714b/Library/Formula/openssl.rb
-          $ brew link --force openssl
 
 c. Start the docker containers with the following command:
 
