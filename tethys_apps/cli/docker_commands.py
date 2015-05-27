@@ -4,7 +4,6 @@ import os
 import sys
 import json
 import getpass
-import inspect, pprint
 from exceptions import OSError
 from functools import cmp_to_key
 from docker.utils import kwargs_from_env, compare_version
