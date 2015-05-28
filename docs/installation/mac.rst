@@ -72,61 +72,7 @@ c. You will need a fresh installation of ``Python`` with the ``pip`` and ``virtu
 
       This will generate a list of suggestions for remedying your `Homebrew <http://brew.sh/>`_ installation.
 
-2. Install HTCondor (Optional)
----------------------------------------------------------
-
-HTCondor is a job scheduling and resource management system. It is used by the Tethys Compute module and is required for the module to have full functionality.
-
-a. Use a browser to download the HTCondor tarball from the `HTCondor downloads page. <http://research.cs.wisc.edu/htcondor/downloads/>`_ Click the link next to the version you wish to install. Select condor-X.X.X-x86_64_MacOSX-stripped.tar.gz, complete the rest of the form to submit your download request. This should redirect you to a page with a link to download the tarball.
-
-b. In a terminal change directories to the location of the tarball, untar it, and change into the new directory::
-
-    $ tar xzf condor-X.X.X-x86_64_MacOSX-stripped.tar.gz
-    $ cd condor-X.X.X-x86_64_MacOSX7-stripped
-
-c. Run the perl script condor_install with the following options to install condor
-
-  ::
-
-    $ perl condor_install --install --install-dir /usr/local/condor
-
-d. Add an environmental variable to point to the location of the global condor_config file, and add the condor bin and sbin directories to PATH. This can be done by executing the condor.sh script that was generated when condor was installed::
-
-    . /usr/local/condor/condor.sh
-
-  .. tip::
-
-        To have these environmental variables exported automatically when a terminal is started add the previous command to the .bash_profile.
-
-        ::
-
-            echo '. /usr/local/condor/condor.sh' >> ~/.bash_profile
-
-e. Start condor::
-
-    $ condor_master
-
-f. Check that condor is running::
-
-    $condor_status
-
-    Name               OpSys      Arch   State     Activity LoadAv Mem   ActvtyTime
-
-            slot1@ciwater-1.lo OSX        X86_64 Unclaimed Idle      0.000 1024  0+00:50:05
-            slot2@ciwater-1.lo OSX        X86_64 Unclaimed Idle      0.660 1024  0+00:50:06
-            slot3@ciwater-1.lo OSX        X86_64 Unclaimed Idle      0.000 1024  0+00:50:07
-            slot4@ciwater-1.lo OSX        X86_64 Unclaimed Idle      0.000 1024  0+00:50:08
-            slot5@ciwater-1.lo OSX        X86_64 Unclaimed Idle      0.000 1024  0+00:50:09
-            slot6@ciwater-1.lo OSX        X86_64 Unclaimed Idle      0.000 1024  0+00:50:10
-            slot7@ciwater-1.lo OSX        X86_64 Unclaimed Idle      0.000 1024  0+00:50:11
-            slot8@ciwater-1.lo OSX        X86_64 Unclaimed Idle      1.000 1024  0+00:50:04
-                                 Total Owner Claimed Unclaimed Matched Preempting Backfill
-
-                      X86_64/OSX     8     0       0         8       0          0        0
-
-                           Total     8     0       0         8       0          0        0
-
-3. Create Virtual Environment and Install Tethys Platform
+2. Create Virtual Environment and Install Tethys Platform
 ---------------------------------------------------------
 
 Python virtual environments are used to create isolated Python installations to avoid conflicts with dependencies of other Python applications on the same system. Execute the following commands in Terminal.
@@ -178,7 +124,7 @@ d. Restart the Python virtual environment::
              $ . /usr/lib/tethys/bin/activate
 
 
-4. Install Tethys Software Suite Using Docker
+3. Install Tethys Software Suite Using Docker
 ---------------------------------------------
 
 Tethys Platform provides a software suite that addresses the unique needs of water resources web app development (see :doc:`../features` for more details). To make installation of the software easy, each software has been provided as Docker container. The following instructions will walk you through installation of these software using Docker. See the `Docker Documentation <https://docs.docker.com/>`_ for more information about Docker.
@@ -216,6 +162,59 @@ c. Start the docker containers with the following command:
 
       Although each Docker container appears to start instantaneously, it may take several minutes for the started containers to be fully up and running.
 
+4. Install HTCondor (Optional)
+------------------------------
+
+HTCondor is a job scheduling and resource management system. It is used by the Tethys Compute module and is required for the module to have full functionality.
+
+a. Use a browser to download the HTCondor tarball from the `HTCondor downloads page. <http://research.cs.wisc.edu/htcondor/downloads/>`_ Click the link next to the version you wish to install. Select condor-X.X.X-x86_64_MacOSX-stripped.tar.gz, complete the rest of the form to submit your download request. This should redirect you to a page with a link to download the tarball.
+
+b. In a terminal change directories to the location of the tarball, untar it, and change into the new directory::
+
+    $ tar xzf condor-X.X.X-x86_64_MacOSX-stripped.tar.gz
+    $ cd condor-X.X.X-x86_64_MacOSX7-stripped
+
+c. Run the perl script condor_install with the following options to install condor
+
+  ::
+
+    $ perl condor_install --install --install-dir /usr/local/condor
+
+d. Add an environmental variable to point to the location of the global condor_config file, and add the condor bin and sbin directories to PATH. This can be done by executing the condor.sh script that was generated when condor was installed::
+
+    . /usr/local/condor/condor.sh
+
+  .. tip::
+
+        To have these environmental variables exported automatically when a terminal is started add the previous command to the .bash_profile.
+
+        ::
+
+            echo '. /usr/local/condor/condor.sh' >> ~/.bash_profile
+
+e. Start condor::
+
+    $ condor_master
+
+f. Check that condor is running::
+
+    $condor_status
+
+    Name               OpSys      Arch   State     Activity LoadAv Mem   ActvtyTime
+
+            slot1@ciwater-1.lo OSX        X86_64 Unclaimed Idle      0.000 1024  0+00:50:05
+            slot2@ciwater-1.lo OSX        X86_64 Unclaimed Idle      0.660 1024  0+00:50:06
+            slot3@ciwater-1.lo OSX        X86_64 Unclaimed Idle      0.000 1024  0+00:50:07
+            slot4@ciwater-1.lo OSX        X86_64 Unclaimed Idle      0.000 1024  0+00:50:08
+            slot5@ciwater-1.lo OSX        X86_64 Unclaimed Idle      0.000 1024  0+00:50:09
+            slot6@ciwater-1.lo OSX        X86_64 Unclaimed Idle      0.000 1024  0+00:50:10
+            slot7@ciwater-1.lo OSX        X86_64 Unclaimed Idle      0.000 1024  0+00:50:11
+            slot8@ciwater-1.lo OSX        X86_64 Unclaimed Idle      1.000 1024  0+00:50:04
+                                 Total Owner Claimed Unclaimed Matched Preempting Backfill
+
+                      X86_64/OSX     8     0       0         8       0          0        0
+
+                           Total     8     0       0         8       0          0        0
 
 5. Create Settings File and Configure Settings
 ----------------------------------------------
