@@ -98,13 +98,13 @@ Notice that the ``map_single`` ``UrlMap`` object points to a controller named "m
         }
 
         # Define layer for Map View
-        geojson_layer = MapViewLayer(source='GeoJSON',
-                                     options=geojson_gages,
-                                     legend_title='Provo Stream Gages',
-                                     legend_extent=[-111.74, 40.22, -111.67, 40.25])
+        geojson_layer = MVLayer(source='GeoJSON',
+                                options=geojson_gages,
+                                legend_title='Provo Stream Gages',
+                                legend_extent=[-111.74, 40.22, -111.67, 40.25])
 
         # Define initial view for Map View
-        view_options = MapViewViewOptions(
+        view_options = MVView(
             projection='EPSG:4326',
             center=[-111.70, 40.24],
             zoom=13,
@@ -113,12 +113,12 @@ Notice that the ``map_single`` ``UrlMap`` object points to a controller named "m
         )
 
         # Configure the map
-        map_options = MapViewOptions(height='500px',
-                                     width='100%',
-                                     layers=[geojson_layer],
-                                     view=view_options,
-                                     basemap='OpenStreetMap',
-                                     legend=True)
+        map_options = MapView(height='500px',
+                              width='100%',
+                              layers=[geojson_layer],
+                              view=view_options,
+                              basemap='OpenStreetMap',
+                              legend=True)
 
         context = {'map_options': map_options,
                    'gage_id': id}

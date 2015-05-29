@@ -22,7 +22,7 @@ Add the following imports to the top of the file:
 ::
 
     from .model import SessionMaker, StreamGage
-    from tethys_gizmos.gizmo_options import MapViewOptions, MapViewLayer, MapViewViewOptions
+    from tethys_gizmos.gizmo_options import MapView, MVLayer, MVView
 
 Then add a new controller function called ``map`` after the ``home`` function:
 
@@ -64,13 +64,13 @@ Then add a new controller function called ``map`` after the ``home`` function:
         }
 
         # Define layer for Map View
-        geojson_layer = MapViewLayer(source='GeoJSON',
-                                     options=geojson_gages,
-                                     legend_title='Provo Stream Gages',
-                                     legend_extent=[-111.74, 40.22, -111.67, 40.25])
+        geojson_layer = MVLayer(source='GeoJSON',
+                                options=geojson_gages,
+                                legend_title='Provo Stream Gages',
+                                legend_extent=[-111.74, 40.22, -111.67, 40.25])
 
         # Define initial view for Map View
-        view_options = MapViewViewOptions(
+        view_options = MVView(
             projection='EPSG:4326',
             center=[-100, 40],
             zoom=3.5,
@@ -79,12 +79,12 @@ Then add a new controller function called ``map`` after the ``home`` function:
         )
 
         # Configure the map
-        map_options = MapViewOptions(height='500px',
-                                     width='100%',
-                                     layers=[geojson_layer],
-                                     view=view_options,
-                                     basemap='OpenStreetMap',
-                                     legend=True)
+        map_options = MapView(height='500px',
+                              width='100%',
+                              layers=[geojson_layer],
+                              view=view_options,
+                              basemap='OpenStreetMap',
+                              legend=True)
 
         # Pass variables to the template via the context dictionary
         context = {'map_options': map_options}
