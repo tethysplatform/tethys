@@ -46,7 +46,7 @@ Then add a new controller function called ``map`` after the ``home`` function:
               'type': 'Feature',
               'geometry': {
                 'type': 'Point',
-                'coordinates': [gage.latitude, gage.longitude]
+                'coordinates': [gage.longitude, gage.latitude]
               }
             }
 
