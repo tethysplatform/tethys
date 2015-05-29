@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 
-from tethys_compute.job_manager import JobManager, JobTemplate
+from tethys_compute.job_manager import JobManager
 
 
 class TethysAppBase(object):
@@ -180,19 +180,24 @@ class TethysAppBase(object):
 
         ::
 
+            from tethys_compute.job_manager import JobTemplate, JobManager
+
             @classmethod
             def job_templates(cls):
-            \"""
-            Example job_templates method.
-            \"""
-            job_templates = (JobTemplate(name='example',
-                                         type=JobManager.JOB_TYPES_DICT['CONDOR'],
-                                         parameters={executable: 'my_script',
-                                                     condorpy_template_name: 'vanilla_transfer_files',
-                                                     attributes: {transfer_output_files: 'example_output'}},
-            )
+                \"""
+                Example job_templates method.
+                \"""
+                job_templates = (JobTemplate(name='example',
+                                             type=JobManager.JOB_TYPES_DICT['CONDOR'],
+                                             parameters={'executable': 'my_script.py',
+                                                         'condorpy_template_name': 'vanilla_transfer_files',
+                                                         'attributes': {'transfer_output_files': 'example_output'},
+                                                         'remote_input_files': ['my_script.py','input_1', 'input_2'],
+                                                         'working_directory': os.path.dirname(__file__)}
+                                            ),
+                                )
 
-            return job_templates
+                return job_templates
         """
         return None
 
