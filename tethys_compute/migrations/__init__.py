@@ -24,3 +24,10 @@ def initialize_settings(apps, schema_editor):
     for setting in['Subscription ID', 'Certificate Path']:
         s = Setting(name=setting, category=category)
         s.save()
+
+def clear_settings(apps, schema_edititor):
+    SettingsCategory = apps.get_model('tethys_compute', 'SettingsCategory')
+    Setting = apps.get_model('tethys_compute', 'Setting')
+
+    SettingsCategory.objects.all().delete()
+    Setting.objects.all().delete()
