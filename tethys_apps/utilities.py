@@ -11,7 +11,7 @@ from django.utils.datastructures import SortedDict
 from tethys_apps.app_harvester import SingletonAppHarvester
 
 # Other dependency imports DO NOT ERASE
-from tethys_datasets.utilities import get_dataset_engine
+from tethys_services.utilities import get_dataset_engine
 
 
 def generate_app_url_patterns():

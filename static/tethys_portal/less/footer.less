@@ -9,6 +9,27 @@ footer.site-footer {
   box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.25);
   padding: 0 50px;
   overflow: auto;
+
+  .tethys-attribution {
+    font-size: 16px;
+    float: right;
+    margin-top: 37px;
+    .font-smoothing();
+    color: #ffffff;
+
+    a {
+      font-size: 20px;
+      color: #eeeeff;
+
+      img {
+        padding-left: 5px;
+      }
+
+      &:hover {
+        color: #ffffff;
+      }
+    }
+  }
 }
 
 .footer-col {
@@ -65,6 +86,7 @@ footer.site-footer {
 
 .copyright-wrapper {
   margin-top: 40px;
+  float: left;
 }
 
 .copyright {
@@ -72,7 +94,6 @@ footer.site-footer {
     font-weight: 300;
     font-size: 16px;
     color: #efefef;
-    margin-top: 30px;
     margin-left: 0;
 
     a {
@@ -139,4 +160,20 @@ footer.site-footer {
 			text-align: center;
 		}
 	}
+}
+
+@media (max-width: 800px) {
+  footer.site-footer {
+    .tethys-attribution {
+      float: none;
+      margin-top: 10px;
+      text-align: center;
+    }
+  }
+
+  .copyright-wrapper {
+    float: none;
+    margin-top: 22px;
+    text-align: center;
+  }
 }

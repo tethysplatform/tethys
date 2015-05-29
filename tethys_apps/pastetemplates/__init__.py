@@ -65,6 +65,7 @@ class TethysAppTemplate(Template):
         # Validate project name
         project_error_regex = re.compile(r'^[a-zA-Z0-9_]+$')
         project_warning_regex = re.compile(r'^[a-zA-Z0-9_-]+$')
+
         project = vars['project'][len(PREFIX):]
 
         # Only letters, numbers and underscores allowed in app names
@@ -91,9 +92,34 @@ class TethysAppTemplate(Template):
         # Derive proper_name if not provided by user
         if not vars['proper_name']:
             vars['proper_name'] = project.replace('_', ' ').title()
+        else:
+            # Validate and sanitize user input
+            proper_name_error_regex = re.compile(r'^[a-zA-Z0-9\s]+$')
+            proper_name_warn_regex = re.compile(r'^[a-zA-Z0-9-\s_\"\']+$')
+
+            print vars['proper_name']
+
+            if not proper_name_error_regex.match(vars['proper_name']):
+
+                # If offending characters are dashes, underscores or quotes, replace and notify user
+                if proper_name_warn_regex.match(vars['proper_name']):
+                    before = vars['proper_name']
+                    vars['proper_name'] = vars['proper_name'].replace('_', ' ')
+                    vars['proper_name'] = vars['proper_name'].replace('-', ' ')
+                    vars['proper_name'] = vars['proper_name'].replace('"', '')
+                    vars['proper_name'] = vars['proper_name'].replace("'", "")
+                    print('\nWarning: Illegal characters were detected in proper name "{0}". They have replaced or '
+                          'removed with valid characters: "{1}"'.format(before, vars['proper_name']))
+                # Otherwise, throw error
+                else:
+                    print('\nError: Invalid characters in proper name "{0}". Only letters and numbers and spaces'
+                          'allowed.'.format(vars['proper_name']))
+                    sys.exit(1)
 
         # Derive the proper_no_spaces variable (used for the name of the App class)
-        vars['proper_no_spaces'] = ''.join(vars['proper_name'].split())
+        split_proper_name = vars['proper_name'].split()
+        title_split_proper_name = [x.title() for x in split_proper_name]
+        vars['proper_no_spaces'] = ''.join(title_split_proper_name)
 
         # Add the color variable to vars
         vars['color'] = random.choice(self.default_colors)

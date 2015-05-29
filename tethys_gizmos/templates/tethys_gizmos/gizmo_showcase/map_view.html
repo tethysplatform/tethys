@@ -1,0 +1,29 @@
+{% extends "page.html" %}
+
+{% load staticfiles tethys_gizmos %}
+
+{% block title %}- Gizmos - Map View{% endblock %}
+
+{% block styles %}
+	{{ block.super }}
+	<link rel="stylesheet" href="{% static 'tethys_gizmos/vendor/prism/prism.css' %}" type="text/css" />
+  <link rel="stylesheet" href="{% static 'tethys_gizmos/css/gizmo_showcase.css' %}" type="text/css" />
+  <style>
+    #content {
+      padding-bottom: 50px;
+    }
+  </style>
+{% endblock %}
+
+{% block primary_content %}
+  <div class="gizmo-page-wrapper">
+    <h2>Map View</h2>
+    {% gizmo map_view map_view %}
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {% gizmo_dependencies css %}
+	{{ block.super }}
+  {% gizmo_dependencies js %}
+{% endblock %}
