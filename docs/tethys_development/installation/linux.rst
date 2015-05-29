@@ -2,7 +2,7 @@
 Development Installation on Linux
 *********************************
 
-**Last Updated:** March 4, 2015
+**Last Updated:** May 28, 2015
 
 .. important::
 
@@ -48,9 +48,9 @@ When you are done, your project directory should have the following contents:
 A brief explanation of each directory is provided below. For more details about the organization of Tethys Platform source code, see :doc:`../overview`.
 
 * **apps**: a directory to that will contain Tethys app projects used for development purposes.
-* **tethys**: The main Django site project for Tethys. Most of the logic for tethys is contained in this project.
-* **tethys_dataset_services**: A Python module providing an interface with CKAN, HydroShare, and GeoServer.
-* **tethys_docker**: The Dockerfiles for the Tethys Docker images.
+* **tethys**: The main Django site project for Tethys. Most of the source for tethys platform is contained in this project.
+* **tethys_dataset_services**: A Python module providing an interface with CKAN, HydroShare, and GeoServer that was made a separate Python module to allow it's use by web services external to Tethys Platform installations.
+* **tethys_docker**: The Dockerfiles that can be used to create the Tethys Docker images.
 
 4. Create Virtual Environment and Install Tethys Platform
 ---------------------------------------------------------
