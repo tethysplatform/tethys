@@ -13,14 +13,51 @@ The Tethys Compute heading in site admin allows an administrator to configure se
 Settings
 --------
 
+Cluster Management
+..................
+
+
 Scheduler IP
-............
+''''''''''''
+
+Scheduler Key Location
+''''''''''''''''''''''
+
+Default Cluster
+'''''''''''''''
+
+Amazon Credentials
+..................
+
+AWS Access Key ID
+'''''''''''''''''
+
+AWS Secret Access Key
+'''''''''''''''''''''
+
+AWS User ID
+'''''''''''
+
+Key Name
+''''''''
+
+Key Location
+''''''''''''
+
+Azure Credentials
+.................
+
+Subscription ID
+'''''''''''''''
+
+Certificate Path
+''''''''''''''''
 
 
 
 
-Manage Cloud Clusters
----------------------
+Clusters
+--------
  - uses TethysCluster
  - able to provision clusters on AWS and Azure
  - Describe settings
