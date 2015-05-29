@@ -3,11 +3,21 @@ from django.contrib.auth.models import User
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 from django.utils import timezone
-from tethys_compute import TETHYSCLUSTER_CFG_FILE, TETHYSCLUSTER_CFG_TEMPLATE
+from tethys_compute import (TETHYSCLUSTER_CFG_FILE,
+                            TETHYSCLUSTER_CFG_TEMPLATE,
+                            TETHYSCLUSTER_AWS_CFG_FILE,
+                            TETHYSCLUSTER_AWS_CFG_TEMPLATE,
+                            TETHYSCLUSTER_AZURE_CFG_FILE,
+                            TETHYSCLUSTER_AZURE_CFG_TEMPLATE)
+from tethys_compute.utilities import DictionaryField, ListField
 
 import os, re
 from multiprocessing import Process
+from abc import abstractmethod
+
 from tethyscluster import config as tethyscluster_config
+from tethyscluster.sshutils import get_certificate_fingerprint
+from condorpy import Job, Templates
 
 
 class SettingsCategory(models.Model):
@@ -45,8 +55,24 @@ class Setting(models.Model):
 @receiver(post_save, sender=Setting)
 def setting_post_save(sender, instance, created, raw, using, update_fields, **kwargs):
     settings = Setting.as_dict()
-    with open(TETHYSCLUSTER_CFG_FILE, 'w') as config_file:
-        config_file.write(TETHYSCLUSTER_CFG_TEMPLATE % settings)
+    if settings['default_cluster']:
+        with open(TETHYSCLUSTER_CFG_FILE, 'w') as config_file:
+            config_file.write(TETHYSCLUSTER_CFG_TEMPLATE % settings)
+
+    if settings['aws_access_key_id'] \
+        and settings['aws_secret_access_key'] \
+        and settings['aws_user_id'] \
+        and settings['key_name'] \
+        and settings['key_location']:
+
+        with open(TETHYSCLUSTER_AWS_CFG_FILE, 'w') as config_file:
+            config_file.write(TETHYSCLUSTER_AWS_CFG_TEMPLATE % settings)
+
+    if settings['subscription_id'] and settings['certificate_path']:
+        settings['certificate_fingerprint'] = get_certificate_fingerprint(cert_location=settings['certificate_path'])
+        with open(TETHYSCLUSTER_AZURE_CFG_FILE, 'w') as config_file:
+            config_file.write(TETHYSCLUSTER_AZURE_CFG_TEMPLATE % settings)
+
 
 
 class Cluster(models.Model):
@@ -131,7 +157,8 @@ class Cluster(models.Model):
             try:
                 tc = self.TC_MANAGER.get_default_template_cluster(self.name)
                 tc.update({'cluster_size':self.size})
-                tc.start(validate_only=False)
+                print tc
+                tc.start()
                 self._tethys_cluster = tc
                 self.connect_scheduler_and_master()
                 self.save()
@@ -157,6 +184,10 @@ class Cluster(models.Model):
             config_file.write(new_text)
 
         def get_public_ip():
+            #TODO try this code
+            # import socket
+            # host_ip socket.gethostbyname(socket.gethostname())
+
             import urllib2, json
             json_response = urllib2.urlopen('http://ip.jsontest.com/').read()
             host_ip = json.loads(json_response)['ip']
@@ -248,47 +279,165 @@ def cluster_post_delete(sender, instance, **kwargs):
     process = Process(target=instance.delete_tethys_cluster)
     process.start()
 
+
 class TethysJob(models.Model):
+    """Base class for all job types.
+
+    """
+    class Meta:
+        verbose_name = 'Job'
+
     STATUSES = (
         ('PEN', 'Pending'),
         ('SUB', 'Submitted'),
         ('RUN', 'Running'),
         ('COM', 'Complete'),
         ('ERR', 'Error'),
+        ('ABT', 'Aborted')
     )
+
+    STATUS_DICT = {k: v for v, k in STATUSES}
+
     name = models.CharField(max_length=30)
+    description = models.CharField(max_length=1024, blank=True, default='')
     user = models.ForeignKey(User)
-    group = models.CharField(max_length=30)
-    creation_time = models.DateTimeField(default=timezone.now())
-    submission_time = models.DateTimeField()
-    completion_time = models.DateTimeField()
-    status = models.CharField(max_length=3, choices=STATUSES, default=STATUSES[0][0])
+    label = models.CharField(max_length=30)
+    creation_time = models.DateTimeField(auto_now_add=True)
+    execute_time = models.DateTimeField(blank=True, null=True)
+    completion_time = models.DateTimeField(blank=True, null=True)
+    _status = models.CharField(max_length=3, choices=STATUSES, default=STATUSES[0][0])
+
+    @property
+    def status(self):
+        self.child._update_status()
+        field = self.child._meta.get_field('_status')
+        status = self._get_FIELD_display(field)
+        return status
+
 
     def execute(self):
         """
 
-        :return:
         """
+        self.execute_time = timezone.now()
+        self.save()
+        self.child._execute()
+
+    @abstractmethod
+    def _execute(self):
         pass
 
+    @abstractmethod
+    def _update_status(self):
+        pass
+
+    @abstractmethod
     def stop(self):
         """
 
-        :return:
         """
-        pass
+        raise NotImplementedError()
 
     def pause(self):
         """
 
-        :return:
         """
-        pass
+        raise NotImplementedError()
+
+    def resume(self):
+        """
+        """
+        raise NotImplementedError()
+
 
 class CondorJob(TethysJob):
-    scheduler = models.CharField(max_length=12)
-    ami = models.CharField(max_length=9)
+    """
+
+    """
+    executable = models.CharField(max_length=256)
+    condorpy_template_name = models.CharField(max_length=256, blank=True, null=True)
+    attributes = DictionaryField(default='')
+    remote_input_files = ListField(default='')
+    working_directory = models.CharField(max_length=512, blank=True, null=True)
+    cluster_id = models.IntegerField(blank=True, default=0)
+    num_jobs = models.IntegerField(default=1)
+    remote_id = models.CharField(max_length=32, blank=True, null=True)
+    tethys_job = models.OneToOneField(TethysJob, related_name='child')
+    #scheduler_ip = models.CharField(max_length=12, blank=True, null=True) ##TethysCompute only supports one scheduler
+    #ami = models.CharField(max_length=9)  ## use documentation to specify this
+    STATUS_MAP = {'Unexpanded': 'PEN',
+                  'Idle': 'SUB',
+                  'Running': 'RUN',
+                  'Removed': 'ABT',
+                  'Completed': 'COM',
+                  'Held': 'ERR',
+                  'Submission_err': 'ERR'}
+
+    @property
+    def condorpy_template(self):
+        if self.condorpy_template_name:
+            template = getattr(Templates, self.condorpy_template_name)
+        else:
+            template = Templates.base
+        return template
 
     @property
     def condorpy_job(self):
-        pass
+        if not hasattr(self, '_condorpy_job'):
+            settings = Setting.as_dict()
+            if 'executable' in self.attributes.keys():
+                del self.attributes['executable']
+            job = Job(name=self.name,
+                      attributes=self.condorpy_template,
+                      executable=self.executable,
+                      host=settings['scheduler_ip'],
+                      username='tethysadmin',
+                      private_key=settings['scheduler_key_location'],
+                      remote_input_files=self.remote_input_files,
+                      working_directory=self.working_directory,
+                      **self.attributes)
+            job._cluster_id = self.cluster_id
+            job._num_jobs = self.num_jobs
+            if self.remote_id:
+                job._remote_id = self.remote_id
+            else:
+                self.remote_id = job._remote_id
+            self._condorpy_job = job
+        return self._condorpy_job
+
+    def _update_status(self):
+        if self._status in ['PEN', 'SUB', 'RUN']:
+            try:
+                condor_status = self.condorpy_job.status
+                if condor_status == 'Completed':
+                    self._process_results()
+            except Exception, e:
+                # raise e
+                condor_status = 'Submission_err'
+            self._status = self.STATUS_MAP[condor_status]
+            self.save()
+
+    def _execute(self, queue=1, options=[]):
+        self.num_jobs = queue
+        self.cluster_id = self.condorpy_job.submit(queue, options)
+        self.save()
+
+    def _process_results(self):
+        self.condorpy_job.sync_remote_output()
+        self.condorpy_job.close_remote()
+
+    def stop(self):
+        self.condorpy_job.remove()
+
+    def get_attribute(self, attribute):
+        self.condorpy_job.get(attribute)
+
+    def set_attribute(self, attribute, value):
+        self.condorpy_job.set(attribute, value)
+
+    def _update_attributes(self):
+        self.attributes = self.condorpy_job._attributes
+
+@receiver(pre_save, sender=CondorJob)
+def condor_job_pre_save(sender, instance, raw, using, update_fields, **kwargs):
+    instance._update_attributes()

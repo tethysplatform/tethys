@@ -8,6 +8,8 @@
 ********************************************************************************
 """
 
+from tethys_compute.job_manager import JobManager
+
 
 class TethysAppBase(object):
     """
@@ -160,7 +162,47 @@ class TethysAppBase(object):
                 wps_services = (WpsService(name='example',
                                            endpoint='http://www.example.com/wps/WebProcessingService'
                                            ),
+                )
 
                 return wps_services
         """
         return None
+
+    @classmethod
+    def job_templates(cls):
+        """
+        Use this method to define job templates to easily create and submit jobs in your app.
+
+        Returns:
+            iterable: A list or tuple of ``JobTemplate`` objects.
+
+        Example:
+
+        ::
+
+            from tethys_compute.job_manager import JobTemplate, JobManager
+
+            @classmethod
+            def job_templates(cls):
+                \"""
+                Example job_templates method.
+                \"""
+                job_templates = (JobTemplate(name='example',
+                                             type=JobManager.JOB_TYPES_DICT['CONDOR'],
+                                             parameters={'executable': 'my_script.py',
+                                                         'condorpy_template_name': 'vanilla_transfer_files',
+                                                         'attributes': {'transfer_output_files': 'example_output'},
+                                                         'remote_input_files': ['my_script.py','input_1', 'input_2'],
+                                                         'working_directory': os.path.dirname(__file__)}
+                                            ),
+                                )
+
+                return job_templates
+        """
+        return None
+
+    @classmethod
+    def get_job_manager(cls):
+        templates = cls.job_templates()
+        job_manager = JobManager(label=cls.package, job_templates=templates)
+        return job_manager
