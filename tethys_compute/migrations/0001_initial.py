@@ -5,7 +5,6 @@ from django.db import models, migrations
 import datetime
 from django.conf import settings
 from django.utils.timezone import utc
-from . import initialize_settings
 
 
 class Migration(migrations.Migration):
@@ -94,5 +93,4 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(to='tethys_compute.SettingsCategory'),
             preserve_default=True,
         ),
-        migrations.RunPython(initialize_settings),
     ]
