@@ -2,7 +2,7 @@
 What's New
 **********
 
-**Last Updated:** May 23, 2015
+**Last Updated:** May 28, 2015
 
 Refer to this article for information about each new release of Tethys Platform.
 
@@ -13,12 +13,24 @@ Release 1.1.0
 Gizmos
 ------
 
-* Options Objects
-* Improved layer support for Map View including GeoJSON, KML, WMS services, and ArcGIS REST services
-* Added legend to Map View
-* Added draw shapes on the map capability to Map View
-* Upgraded Map View to use OpenLayers version 3.5.0
-* New objects for simplifying Highcharts plot creation including HighChartsLinePlot, HighChartsScatterPlot, HighChartsPolarPlot, HighChartsPiePlot, HighChartsBarPlot, HighChartsTimeSeries, and HighChartsAreaRange
+* Options objects for configuring gizmos (see :doc:`./tethys_sdk/gizmos` and :doc:`./tethys_sdk/gizmos_api` for more details).
+* Many improvements to Map View (see :ref:`map-view`)
+
+  * Improved layer support including GeoJSON, KML, WMS services, and ArcGIS REST services
+  * Added a mechanism for creating legends
+  * Added drawing capabilities
+  * Upgraded to OpenLayers version 3.5.0
+
+* New objects for simplifying Highcharts plot creation (see :ref:`plot-view`)
+
+  * HighChartsLinePlot
+  * HighChartsScatterPlot
+  * HighChartsPolarPlot
+  * HighChartsPiePlot
+  * HighChartsBarPlot
+  * HighChartsTimeSeries
+  * HighChartsAreaRange
+
 * Added the ability to draw a box on Google Map View
 
 Tethys Portal Features
