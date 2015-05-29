@@ -54,6 +54,7 @@ Table View
 
 .. autoclass:: tethys_gizmos.gizmo_options.TableView
 
+.. _plot-view:
 
 Plot View
 =========
@@ -83,6 +84,7 @@ The Highcharts plots can be modified via JavaScript by using jQuery to select th
     var plot = $('#my-plot').highcharts();
 
 
+.. _map-view:
 
 Map View
 ========
