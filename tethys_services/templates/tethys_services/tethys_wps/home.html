@@ -1,0 +1,36 @@
+{% extends "tethys_services/tethys_wps/base.html" %}
+
+{% block title %}- Tethys WPS{% endblock %}
+
+{% block primary_content %}
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <h1>Web Processing Services</h1>
+    <p>This tool can be used to browse the available processing capabilities of any Web Processing Services (WPS) that are
+      linked with this instance of Tethys Platform.
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <h4>Linked WPS Services</h4>
+    {% if wps_services %}
+    <div class="list-group">
+      {% for wps in wps_services %}
+        <a href="{% url 'services:wps_service' service='default' %}" class="list-group-item wps">
+          <h5 class="list-group-item-heading title">{{ wps.identification.title }}</h5>
+          <p class="list-group-item-text abstract">{{ wps.identification.abstract }}</p>
+          <p class="list-group-item-text attribute">Provider: {{ wps.provider.name }}</p>
+          <p class="list-group-item-text attribute">Type: {{ wps.identification.type }}</p>
+          <p class="list-group-item-text attribute">Version: {{ wps.identification.version }}</p>
+        </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p>There are no WPS services linked to this instance of Tethys Platform. Use the Tethys WPS settings in the web <a href="{% url 'admin:index' %}">Admin Console</a> to modify or add
+      additional WPS services. For more information, see the
+      <a href="http://docs.tethys.ci-water.org/en/latest/tethys_sdk/geoprocessing.html">Web Processing API documentation.</a></p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

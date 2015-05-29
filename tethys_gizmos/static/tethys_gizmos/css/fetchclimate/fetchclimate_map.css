@@ -1,0 +1,8 @@
+#fetchclimate_map {
+  margin-bottom: 40px;
+}
+
+/* fix for scale bar distortion */
+#fetchclimate_map img {
+	max-width: none;
+}

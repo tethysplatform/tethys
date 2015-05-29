@@ -76,10 +76,11 @@ This command contains several subcommands that are used to help manage Tethys Pl
 
 **Arguments:**
 
-* **subcommand**: The management command to run. Either "start" or "syncdb".
+* **subcommand**: The management command to run. Either "start", "syncdb", or "collectstatic".
 
     * *start*: Starts the Django development server. Wrapper for ``manage.py runserver``.
     * *syncdb*: Initialize the database during installation. Wrapper for ``manage.py syncdb``.
+    * *collectstatic*: Link app static/public directories to STATIC_ROOT directory and then run Django's collectstatic command. Preprocessor and wrapper for ``manage.py collectstatic``.
 
 **Optional Arguments:**
 
@@ -96,6 +97,9 @@ This command contains several subcommands that are used to help manage Tethys Pl
 
     # Sync the database
     $ tethys manage syncdb
+
+    # Collect static files
+    $ tethys manage collectstatic
 
 syncstores <app_name, app_name...> [options]
 --------------------------------------------
@@ -151,6 +155,7 @@ Use this command to uninstall apps.
 
 ::
 
+    # Uninstall my_first_app
     $ tethys uninstall my_first_app
 
 docker <subcommand> [options]
