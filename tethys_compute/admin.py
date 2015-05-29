@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.forms import Textarea
 from django.db import models
-from tethys_compute.models import Cluster, SettingsCategory, Setting
+from tethys_compute.models import Cluster, SettingsCategory, Setting, TethysJob
 # Register your models here.
 
 
@@ -63,3 +63,10 @@ class ClusterAdmin(admin.ModelAdmin):
         return super(ClusterAdmin, self).get_form(request, obj, **kwargs)
 
 
+@admin.register(TethysJob)
+class JobAdmin(admin.ModelAdmin):
+    list_display = ['name', 'description', 'label', 'user', 'creation_time', 'execute_time', 'completion_time', 'status']
+    list_display_links = ('name',)
+
+    def has_add_permission(self, request):
+        return False
