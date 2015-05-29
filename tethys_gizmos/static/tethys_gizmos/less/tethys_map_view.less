@@ -1,0 +1,247 @@
+// Styles for the Tethys Map View
+#map_view_outer_container {
+  position: relative;
+  margin: 20px;
+}
+
+.tethys-map-view-draw-control {
+  top: 7px;
+
+  .tethys-map-view-draw-icon {
+    display: inline-block;
+    background: url('/static/tethys_gizmos/images/map-view-drawing-icons.gif') no-repeat;
+    background-size: cover;
+    height: 16px;
+    width: 16px;
+    margin: 2px;
+
+
+    &.circle {
+      background-position: 0 0;
+
+      &.active {
+        background-position: 0 -16px;
+      }
+    }
+
+    &.box {
+      background-position: 0 -32px;
+
+      &.active {
+        background-position: 0 -48px;
+      }
+    }
+
+    &.linestring {
+      background-position: 0 -64px;
+
+      &.active {
+        background-position: 0 -80px;
+      }
+    }
+
+    &.line {
+      background-position: 0 -64px;
+
+      &.active {
+        background-position: 0 -80px;
+      }
+    }
+
+    &.polygon {
+      background-position: 0 -97px;
+
+      &.active {
+        background-position: 0 -113px;
+      }
+    }
+
+    &.point {
+      background-position: 0 -128px;
+
+      &.active {
+        background-position: 0 -144px;
+      }
+    }
+
+    &.modify {
+      background-position: 0 -224px;
+
+      &.active {
+        background-position: 0 -241px;
+      }
+    }
+
+    &.pan {
+      background-position: 0 -160px;
+
+      &.active {
+        background-position: 0 -176px;
+      }
+    }
+
+    &.drag {
+      background-position: 0 -192px;
+
+      &.active {
+        background-position: 0 -208px;
+      }
+    }
+  }
+}
+
+.ol-mouse-position {
+  top: auto;
+  bottom: 10px;
+  left: 10px;
+}
+
+.ol-attribution {
+  top: 0.5em;
+  right: 2.75em;
+  bottom: auto;
+}
+
+.tethys-map-view-legend {
+  bottom: 10px;
+  right: 10px;
+  width: 225px;
+  max-height: 90%;  // TODO: SET THE MAX HEIGHT OF LEGEND
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.8);
+
+  .legend-header {
+    padding: 0px 10px;
+  }
+
+  .legend-content {
+    padding: 0 6px;
+
+    .legend-items {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+
+      .legend-item {
+        padding: 5px;
+
+        .btn-legend-action {
+          width: 160px;
+          text-align: left;
+          padding: 2px 5px;
+          margin: 0;
+          font-weight: 600;
+          border: none;
+          background: none;
+
+          &:active {
+            box-shadow: none;
+            background: #efefef;
+          }
+
+          &:hover {
+            background: #efefef;
+          }
+        }
+
+        .legend-dropdown-toggle {
+          padding: 0 6px;
+          border: none;
+          background: none;
+          border-radius: 4px;
+
+          &:active {
+            box-shadow: none;
+          }
+
+          &:hover {
+            background: #efefef;
+          }
+        }
+
+        .tethys-legend-dropdown {
+          height: 0;
+          overflow: hidden;
+          -webkit-transition: height 0.2s ease-in;
+             -moz-transition: height 0.2s ease-in;
+               -o-transition: height 0.2s ease-in;
+              -ms-transition: height 0.2s ease-in;
+                  transition: height 0.2s ease-in;
+
+          &.open {
+            height: 104px;
+            -webkit-transition: height 0.2s ease-in;
+               -moz-transition: height 0.2s ease-in;
+                 -o-transition: height 0.2s ease-in;
+                -ms-transition: height 0.2s ease-in;
+                    transition: height 0.2s ease-in;
+          }
+
+          ul {
+            list-style: none;
+            border-top: 1px #dddddd solid;
+            border-bottom: 1px #dddddd solid;
+            padding: 5px 0;
+            margin: 5px 0;
+
+            li {
+
+              a {
+                display: block;
+                padding: 5px 10px;
+                text-decoration: none;
+                color: #111111;
+                font-weight: 300;
+                border-radius: 5px;
+
+                &:hover {
+                  background: #efefef;
+                }
+
+                span {
+                  margin-bottom: 2px;
+                  padding-bottom: 5px;
+                  display: block;
+                }
+              }
+            }
+          }
+        }
+
+        .legend-item-classes {
+          padding-left: 5px;
+          margin-top: 5px;
+
+          ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+
+            li {
+              padding: 5px;
+
+              .legend-class-value {
+                display: inline-block;
+                margin-left: 7px;
+              }
+
+              .legend-class-symbol {
+                float: left;
+
+                svg {
+                  height: 20px;
+                  width: 20px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.9);
+  }
+}
+

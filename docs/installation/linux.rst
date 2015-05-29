@@ -2,7 +2,7 @@
 Installation on Linux
 *********************
 
-**Last Updated:** February 6, 2015
+**Last Updated:** May 22, 2015
 
 .. tip::
 
@@ -16,7 +16,7 @@ a. If you are using a :term:`Debian` based Linux operating system (like Ubuntu),
   ::
 
       $ sudo apt-get update
-      $ sudo apt-get install python-dev python-pip python-virtualenv libpq-dev libxml2-dev libxslt1-dev git-core docker.io
+      $ sudo apt-get install python-dev python-pip python-virtualenv libpq-dev libxml2-dev libxslt1-dev libffi-dev git-core docker.io
 
   You may be prompted to enter your password to authorize the installation of these packages. If you are prompted about the disk space that will be used to install the dependencies, enter :kbd:`Y` and press :kbd:`Enter` to continue.
 
@@ -55,7 +55,11 @@ b. Add your user to the Docker group. This is necessary to use the Tethys Docker
     $ sudo gpasswd -a ${USER} docker
     $ sudo service docker.io restart
 
-c. Close the terminal, then log out and log back in to make the changes take effect.
+c. Close the terminal, then **log out** and **log back in** to make the changes take effect.
+
+.. important::
+
+    **DO NOT FORGET PART C!** Be sure to logout of Ubuntu and log back in before you continue. You will not be able to complete the installation without completing this step.
 
 .. warning::
 
@@ -64,7 +68,7 @@ c. Close the terminal, then log out and log back in to make the changes take eff
 3. Install HTCondor (Optional)
 ---------------------------------------------------------
 
-HTCondor is a job scheduling and resource management system. It is used by the Tethys Compute module and is required for the module to have full functionality.  Use one of the following links for instructions on how to install HTCondor through the package manager:
+HTCondor is a job scheduling and resource management system that is used by the Tethys Compute module. Distributed computing can be configured without installing HTCondor. For more information on how HTCondor is used for distributed computing in Tethys and the different configuration options see :doc:`../tethys_sdk/cloud_computing`. Use one of the following links for instructions on how to install HTCondor through the package manager:
 
     Enterprise Linux: `HTCondor YUM Repository <http://research.cs.wisc.edu/htcondor/yum/>`_
 
@@ -82,6 +86,9 @@ a. Create a :term:`Python virtual environment` and activate it::
     $ virtualenv --no-site-packages /usr/lib/tethys
     $ . /usr/lib/tethys/bin/activate
 
+.. hint::
+
+    You may be tempted to enter single quotes around the *whoami* directive above, but those characters are actually `grave accent <http://www.wikiwand.com/en/Grave_accent>`_ characters: :kbd:`\``. This key is usually located to the left of the :kbd:`1` key or in that vicinity.
 
 .. important::
 
@@ -97,6 +104,16 @@ b. Install Tethys Platform into the virtual environment with the following comma
 
     $ git clone https://github.com/CI-WATER/tethys /usr/lib/tethys/src
 
+.. tip::
+
+    If you would like to install a different version of Tethys Platform, you can use git to checkout the tagged release branch. For example, to checkout version 1.0.0:
+
+    ::
+
+        cd /usr/lib/tethys/src
+        git checkout tags/1.0.0
+
+    For a list of all tagged releases, see `Tethys Platform Releases <https://github.com/CI-WATER/tethys/releases>`_. Depending on the version you intend to install, you may need to delete your entire virtual environment (i.e.: the ``/usr/lib/tethys`` directory) to start fresh.
 
 c. Install the Python modules that Tethys requires::
 
@@ -118,7 +135,7 @@ Tethys Platform provides a software suite that addresses the unique needs of wat
 * 52 North WPS with GRASS and Sextante enabled for geoprocessing services, and
 * GeoServer for spatial dataset publishing.
 
-Installing some of these dependencies can be VERY difficult, so they have been provided as Docker containers to make installation easier. The following instructions will walk you through installation of these software using Docker. See the `Docker Documentation <https://docs.docker.com/>`_ for more information about Docker.
+Installing some of these dependencies can be VERY difficult, so they have been provided as Docker containers to make installation EASY. The following instructions will walk you through installation of these software using Docker. See the `Docker Documentation <https://docs.docker.com/>`_ for more information about Docker containers.
 
 
 Initialize the Docker Containers
@@ -130,22 +147,14 @@ Tethys provides set of commandline tools to help you manage the Docker container
 
   $ tethys docker init
 
+
+.. tip::
+
+    Running into errors with this command? Make sure you have completed all of step 2, including part c.
+
 The first time you initialize the Docker containers, the images for each container will be downloaded. These images are large and it may take a long time for them to download.
 
-After the images have been downloaded, the containers will automatically be installed. During installation, you will be prompted to enter various parameters needed to customize your instance of the software. Some of the parameters are usernames and passwords. **Take note of the usernames and passwords that you specify**. The important ones to remember are listed here:
-
-Database Users for PostGIS Container:
-
-* **tethys_default** database user password
-* **tethys_db_manager** database user password
-* **tethys_super** database user password
-
-52 North WPS Admin:
-
-* Admin username
-* Admin password
-
-You will need these to complete the installation.
+After the images have been downloaded, the containers will automatically be installed. During installation, you will be prompted to enter various parameters needed to customize your instance of the software. Some of the parameters are usernames and passwords. **Take note of the usernames and passwords that you specify**. You will need them to complete the installation.
 
 Start the Docker Containers
 ===========================
@@ -156,21 +165,9 @@ Use the following Tethys command to start the Docker containers:
 
   $ tethys docker start
 
-.. note::
-
-  Although each Docker container appears to start instantaneously, it may take several minutes for the started containers to be fully up and running.
-
-
-What is Running
-===============
-
-After you run the `tethys docker start` command, you will have running instances of the following software:
-
-* PostgreSQL with PostGIS
-* 52 North WPS
-* GeoServer
-
 If you would like to test the Docker containers, see :doc:`../supplementary/docker_testing`.
+
+
 
 6. Create Settings File and Configure Settings
 ----------------------------------------------
@@ -203,8 +200,8 @@ b. Replace the password for the main Tethys Portal database, **tethys_default**,
           'NAME': 'tethys_default',
           'USER': 'tethys_default',
           'PASSWORD': 'pass',
-          'HOST': 'localhost',
-          'PORT': '5432'
+          'HOST': '127.0.0.1',
+          'PORT': '5435'
           }
     }
 
