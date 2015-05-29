@@ -55,7 +55,7 @@ c. You will need a fresh installation of ``Python`` with the ``pip`` and ``virtu
 
   ::
 
-      $ brew install git libpqxx libxml2 libxslt
+      $ brew install git libpqxx libxml2 libxslt libffi
       $ brew unlink openssl
       $ brew install https://raw.githubusercontent.com/Homebrew/homebrew/62fc2a1a65e83ba9dbb30b2e0a2b7355831c714b/Library/Formula/openssl.rb
       $ brew link --force openssl && brew switch openssl 1.0.1j_1
