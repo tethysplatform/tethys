@@ -13,7 +13,7 @@ Follow the default :doc:`../installation/linux` instructions to install Tethys P
 
 * Assign strong passwords to the database users.
 * Create a new settings file, do not use the same file that you have been using in development.
-* Optionally, Follow the :doc:`./distributed` instructions to Docker and the components of the software suite on separate servers.
+* Optionally, Follow the :doc:`./distributed` instructions to install Docker and the components of the software suite on separate servers.
 
 2. Install Apache and Dependencies
 ==================================
