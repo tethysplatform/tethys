@@ -68,7 +68,7 @@ c. Close the terminal, then **log out** and **log back in** to make the changes 
 3. Install HTCondor (Optional)
 ---------------------------------------------------------
 
-HTCondor is a job scheduling and resource management system. It is used by the Tethys Compute module and is required for the module to have full functionality.  Use one of the following links for instructions on how to install HTCondor through the package manager:
+HTCondor is a job scheduling and resource management system that is used by the Tethys Compute module. Distributed computing can be configured without installing HTCondor. For more information on how HTCondor is used for distributed computing in Tethys and the different configuration options see :doc:`../tethys_sdk/cloud_computing`. Use one of the following links for instructions on how to install HTCondor through the package manager:
 
     Enterprise Linux: `HTCondor YUM Repository <http://research.cs.wisc.edu/htcondor/yum/>`_
 
