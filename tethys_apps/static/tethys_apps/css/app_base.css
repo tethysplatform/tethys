@@ -247,8 +247,12 @@ body {
   float: right;
   margin-left: 10px;
 }
+#app-content-wrapper #app-content #app-actions .btn-toolbar {
+  float: right;
+}
 #app-content-wrapper #app-content #app-actions #app-actions-spacer {
   height: 42px;
+  float: left;
 }
 #app-content-wrapper.show-nav #app-content {
   padding-right: 350px;
