@@ -82,7 +82,7 @@ Notice that the ``map_single`` ``UrlMap`` object points to a controller named "m
           'type': 'Feature',
           'geometry': {
             'type': 'Point',
-            'coordinates': [gage.latitude, gage.longitude]
+            'coordinates': [gage.longitude, gage.latitude]
           }
         }
 
