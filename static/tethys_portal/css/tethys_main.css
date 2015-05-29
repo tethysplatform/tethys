@@ -854,6 +854,7 @@ a:hover {
 .mobile-nav ul li {
   padding: 20px 0;
   text-align: center;
+  list-style-type: none;
 }
 .mobile-nav ul li a {
   text-decoration: none;
@@ -1697,6 +1698,24 @@ footer.site-footer {
   padding: 0 50px;
   overflow: auto;
 }
+footer.site-footer .tethys-attribution {
+  font-size: 16px;
+  float: right;
+  margin-top: 37px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #ffffff;
+}
+footer.site-footer .tethys-attribution a {
+  font-size: 20px;
+  color: #eeeeff;
+}
+footer.site-footer .tethys-attribution a img {
+  padding-left: 5px;
+}
+footer.site-footer .tethys-attribution a:hover {
+  color: #ffffff;
+}
 .footer-col {
   float: left;
   margin-top: 80px;
@@ -1744,13 +1763,13 @@ footer.site-footer {
 }
 .copyright-wrapper {
   margin-top: 40px;
+  float: left;
 }
 .copyright {
   display: block;
   font-weight: 300;
   font-size: 16px;
   color: #efefef;
-  margin-top: 30px;
   margin-left: 0;
 }
 .copyright a {
@@ -1803,6 +1822,18 @@ footer.site-footer {
   .copyright-bottom .copyright {
     margin-top: 40px;
     font-size: 18px;
+    text-align: center;
+  }
+}
+@media (max-width: 800px) {
+  footer.site-footer .tethys-attribution {
+    float: none;
+    margin-top: 10px;
+    text-align: center;
+  }
+  .copyright-wrapper {
+    float: none;
+    margin-top: 22px;
     text-align: center;
   }
 }

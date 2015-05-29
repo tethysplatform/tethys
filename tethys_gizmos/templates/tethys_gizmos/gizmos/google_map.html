@@ -1,0 +1,22 @@
+{% load staticfiles %}
+<div id="outerContainer">
+	<!--  -->
+	<div id="google_map_loading" class="center-parent google_map_loading"
+		 style="height: {% if height %} {{ height }} {% else %} 400px {% endif %};
+		 width: {% if width %} {{ width }} {% else %} 400px {% endif %};
+		 background-color:#efefef;" {% if kml_service %} data-kml-service="{{ kml_service }}" {% endif %}>
+		<div class="centered" on>
+			<img src="{% static 'tethys_gizmos/images/ajax-loader.gif' %}" />
+			<h5>Retrieving Data...</h5>
+		</div>
+	</div>
+</div> <!-- end outerContainer -->
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+{% if maps_api_key %}
+  <!-- App Developer API Key -->
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ maps_api_key }}&sensor=false"></script>
+{% elif gizmos_google_maps_key %}
+  <!-- Global API Key -->
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ gizmos_google_maps_key }}&sensor=false"></script>
+{% endif %}

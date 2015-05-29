@@ -42,13 +42,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_gravatar',
-    'social_auth',
     'bootstrap3',
     'tethys_config',
     'tethys_apps',
     'tethys_gizmos',
-    'tethys_datasets',
-    'tethys_wps',
+    'tethys_services',
     'tethys_compute'
 )
 
@@ -125,6 +123,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Uncomment the next line for production installation
+#STATIC_ROOT = '/var/www/tethys/static'
+
 TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'), )
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
@@ -171,3 +172,15 @@ TEMPLATE_CONTEXT_PROCESSORS = ('django.contrib.auth.context_processors.auth',
                                'tethys_config.context_processors.tethys_global_settings_context',
                                'tethys_apps.context_processors.tethys_apps_context',
                                'tethys_gizmos.context_processors.tethys_gizmos_context')
+
+# Use this setting to bypass the home page
+BYPASS_TETHYS_HOME_PAGE = False
+
+# Uncomment the following lines and adjust to match your setup to enable emailing capabilities
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_HOST = 'localhost'
+#EMAIL_PORT = 25
+#EMAIL_HOST_USER = ''
+#EMAIL_HOST_PASSWORD = ''
+#EMAIL_USE_TLS = False
+#DEFAULT_FROM_EMAIL = 'Example <noreply@exmaple.com>'

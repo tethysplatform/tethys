@@ -1,0 +1,58 @@
+{#
+Creates a floating form using a Twitter Bootstrap modal.
+
+modal_id = unique id/name for the modal.
+form = dictionary of form attributes.
+submit = dictionary of submit button attributes.
+inputs = list of dictionaries with form input attributes.
+
+Example:
+
+In the controller, pass the following variables to the template using c:
+
+c.modal_id = 'addFormModal'
+c.add_form = {'id': 'addForm',
+	          'title': 'Add Project Card',
+	          'method': 'post',
+	          'action': h.url_for('project-file', name=c.name, action='add')}
+c.add_submit = {'display_text': 'Add',
+                'icon_class':'icon-plus',
+                'attributes': None}
+
+c.add_inputs = ({'type': 'text',
+                 'name': 'name',
+                 'label': 'Card Name',
+                 'placeholder': 'e.g.: CARD_NAME',
+                 'validator': None},
+                {'type': 'text',
+                 'name': 'value',
+                 'label': 'Value',
+                 'placeholder': 'e.g.: 9999',
+                 'validator': None})
+
+{% snippet "snippets/floating_form.html", modal_id=c.modal_id, form=c.add_form, submit=c.add_submit, inputs=c.add_inputs %}
+
+#}
+
+<div id="{{ modal_id }}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="{{ modal_id }}Label" aria-hidden="true" style="width: 450px">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="{{ modal_id }}Label">{{ _(form['title']) }}</h3>
+  </div>
+  <div class="modal-body">
+    <form id="{{ form['id'] }}" class="form-horizontal" method="{{ form['method'] }}" action="{{ form['action'] }}">
+    	{% for input in inputs %}
+    	<div class="control-group">
+    	  <label class="control-label" for="{{ input['type'] + '_' + input['name'] }}">{{ input['label'] }}</label>
+    	  <div class="controls">
+    	    <input type="{{ input['type'] }}" name="{{ input['name'] }}" placeholder="{{ input['placeholder'] }}" id="{{ input['type'] + '_' + input['name'] }}">
+    	  </div>
+    	</div>
+    	{% endfor %}
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    <button class="btn btn-primary" onclick="remoteSubmit('#{{ form['id'] }}');" data-dismiss="modal">{% if submit['icon_class'] %}<i class="{{ submit['icon_class'] }}"></i> {% endif %}{{_(submit['display_text'])}}</button>
+  </div>
+</div>

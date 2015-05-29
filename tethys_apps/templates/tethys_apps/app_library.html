@@ -12,7 +12,7 @@
 {% block primary_content %}
   <div class="tethys-secondary-header narrow clearfix" style="background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};">
     <div class="secondary-title-wrapper">
-      <span class="secondary-title">Apps Library</span>
+      <span class="secondary-title">{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps Library{% endif %}</span>
     </div>
   </div>
   <div class="app-library-wrapper clearfix">

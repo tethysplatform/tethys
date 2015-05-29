@@ -1,0 +1,47 @@
+.complex-data {
+  display: inline-block;
+  padding: 10px 15px;
+  border: #dddddd 1px solid;
+  background: #ffffff;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.complex-data:hover {
+  background: #dddddd;
+}
+
+.complex-data .title {
+  font-size: 14px;
+  font-weight: bold;
+  padding-right: 10px;
+}
+
+.input .identifier {
+  width: 90%;
+}
+
+.input .abstract {
+  width: 90%;
+}
+
+.input-required {
+  font-size: 14px;
+  float: right;
+  margin-top: -20px;
+  clear: both;
+  padding: 7px;
+}
+
+.input-multiple {
+  font-size: 14px;
+  float: right;
+  margin-top: 10px;
+  clear: both;
+}
+
+.input-multiple .badge {
+  font-size: 14px;
+  background: #ffffff;
+  color: #777777;
+}

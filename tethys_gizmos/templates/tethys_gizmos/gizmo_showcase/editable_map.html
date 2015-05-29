@@ -1,0 +1,64 @@
+{% extends "page.html" %}
+
+{% load staticfiles tethys_gizmos %}
+
+{% block title %}- Gizmos - Google Map View{% endblock %}
+
+{% block styles %}
+	{{ block.super }}
+	<link rel="stylesheet" href="{% static 'tethys_gizmos/vendor/prism/prism.css' %}" type="text/css" />
+  <link rel="stylesheet" href="{% static 'tethys_gizmos/css/gizmo_showcase.css' %}" type="text/css" />
+  <style>
+    #content {
+      padding-bottom: 50px;
+    }
+  </style>
+{% endblock %}
+
+{% block primary_content %}
+  <div class="gizmo-page-wrapper">
+    <h2>Google Map View</h2>
+
+    <!-- Flash Message -->
+    {% if flash_message %}
+    <div class="alert alert-info">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <h5>JSON:</h5>
+      <p>{{ flash_message }}</p>
+    </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      {% gizmo "google_map_view" google_map_view %}
+      <button class="btn btn-primary" type="submit" name="editable_map_submit">Submit</button>
+      <a class="btn btn-success" href="javascript:void(0);" data-kml-service="{% url 'gizmos:swap_kml' %}" onclick="swap(this);">Swap Map</a>
+      <a class="btn btn-success" href="javascript:void(0);" onclick="swapOverlayService('{% url "gizmos:swap_overlays" %}', true);">Swap Overlays</a>
+    </form>
+
+    <script>
+    function swap(element) {
+      var kml_service;
+
+      // Get current service
+      kml_service = $(element).attr('data-kml-service');
+
+      // Switch service (to allow map swapping)
+      if (kml_service === '{% url "gizmos:swap_kml" %}') {
+        $(element).attr('data-kml-service', '{% url "gizmos:get_kml" %}');
+      } else {
+        $(element).attr('data-kml-service', '{% url "gizmos:swap_kml" %}');
+      }
+
+      // Swap out map using a method from the TETHYS_EDIT_MAP library
+      TETHYS_GOOGLE_MAP_VIEW.swapKmlService(kml_service);
+    }
+    </script>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {% gizmo_dependencies css %}
+  {{ block.super }}
+  {% gizmo_dependencies js %}
+{% endblock %}

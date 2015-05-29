@@ -1,0 +1,16 @@
+{% extends "page.html" %}
+
+{% load staticfiles %}
+
+{% block styles %}
+  {{ block.super }}
+  <link href="{% static 'tethys_services/css/tethys_wps.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block primary_content %}
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static 'tethys_services/js/tethys_wps.js' %}" type="text/javascript"></script>
+{% endblock %}

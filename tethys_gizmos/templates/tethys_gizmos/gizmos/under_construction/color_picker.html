@@ -1,0 +1,31 @@
+{#
+Need to have the user input a color? Make use of the color picker here. Returns the color
+as a hexidecimal value.
+
+color_picker = a dictionary with configuration key-value pairs
+
+Example:
+
+In the controller, create a list of dictionaries where the dictionaries represent
+the attributes of each slider:
+
+c.color_picker = {'display_text': 'Color',
+				 'name': 'color1',
+				 'initial': '#ff0000',
+				 'format': 'MM d yy',
+				 'error': 'Here is my error text'}
+			  
+
+{% snippet "snippets/color_picker.html", color_picker=c.color_picker %}
+
+#}
+
+<div class="control-group {% if date_picker.error %} error {% endif %}">
+	<label class="control-label" for="{{ date_picker.name }}">{{ date_picker.display_text }}</label>
+	<div class="controls">
+		<input id="{{ date_picker.name }}" name="{{ date_picker.name }}" type="text" class="date_picker" value="{{ date_picker.initial }}" data-format="{{ date_picker.format }}">
+	</div>
+	{% if date_picker.error %}
+	<span class="help-inline">{{ date_picker.error }}</span>
+	{% endif %}
+</div>
