@@ -31,7 +31,8 @@ class JobManager(object):
         """Lists all the jobs from current app for current user
 
         """
-        jobs = TethysJob.objects.all(label=self.label, user=user)
+        jobs = TethysJob.objects.filter(label=self.label, user=user)
+        jobs = [job.child for job in jobs]
         return jobs
 
 
@@ -40,5 +41,5 @@ class JobTemplate(object):
         self.name = name
         self.type = type or JobManager.JOB_TYPES_DICT['CONDOR']
         self.parameters = parameters or dict()
-        assert isinstance(type, TethysJob)
+        assert issubclass(type, TethysJob)
         assert isinstance(parameters, dict)
