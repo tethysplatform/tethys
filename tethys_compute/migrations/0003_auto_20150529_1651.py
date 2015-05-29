@@ -12,6 +12,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AlterModelOptions(
+            name='tethysjob',
+            options={'verbose_name': 'Job'},
+        ),
         migrations.RenameField(
             model_name='tethysjob',
             old_name='group',

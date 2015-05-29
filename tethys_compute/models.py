@@ -284,6 +284,9 @@ class TethysJob(models.Model):
     """Base class for all job types.
 
     """
+    class Meta:
+        verbose_name = 'Job'
+
     STATUSES = (
         ('PEN', 'Pending'),
         ('SUB', 'Submitted'),
