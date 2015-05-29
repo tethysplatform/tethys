@@ -165,7 +165,7 @@ c. Start the docker containers with the following command:
 4. Install HTCondor (Optional)
 ------------------------------
 
-HTCondor is a job scheduling and resource management system. It is used by the Tethys Compute module and is required for the module to have full functionality.
+HTCondor is a job scheduling and resource management system that is used by the Tethys Compute module. Distributed computing can be configured without installing HTCondor. For more information on how HTCondor is used for distributed computing in Tethys and the different configuration options see :doc:`../tethys_sdk/cloud_computing`.
 
 a. Use a browser to download the HTCondor tarball from the `HTCondor downloads page. <http://research.cs.wisc.edu/htcondor/downloads/>`_ Click the link next to the version you wish to install. Select condor-X.X.X-x86_64_MacOSX-stripped.tar.gz, complete the rest of the form to submit your download request. This should redirect you to a page with a link to download the tarball.
 
