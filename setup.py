@@ -9,6 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 requires = []
 
+
 version = '1.1.0'
 
 setup(
