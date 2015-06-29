@@ -25,24 +25,24 @@ A detailed description of each step follows.
 
 The first step is to import the appropriate options object and configure the Gizmo. This is performed in the controller of the template where the Gizmo will be used.
 
-In this case, we import ``DatePickerOptions`` and initialize a new object called ``date_picker_options`` with the appropriate options. Then we pass the object to the template via the ``context`` dictionary:
+In this case, we import ``DatePicker`` and initialize a new object called ``date_picker_options`` with the appropriate options. Then we pass the object to the template via the ``context`` dictionary:
 
 ::
 
-    from tethys_gizmos.gizmos_options import DatePickerOptions
+    from tethys_gizmos.gizmos_options import DatePicker
 
     def example_controller(request):
         """
         Example of a controller that defines options for a Template Gizmo.
         """
-        date_picker_options = DatePickerOptions(name='data1',
-                                                display_text='Date',
-                                                autoclose=True,
-                                                format='MM d, yyyy',
-                                                start_date='2/15/2014',
-                                                start_view='decade',
-                                                today_button=True,
-                                                initial='February 15, 2014')
+        date_picker_options = DatePicker(name='data1',
+                                         display_text='Date',
+                                         autoclose=True,
+                                         format='MM d, yyyy',
+                                         start_date='2/15/2014',
+                                         start_view='decade',
+                                         today_button=True,
+                                         initial='February 15, 2014')
 
         context = {'date_picker_options': date_picker_options}
 
