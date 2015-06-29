@@ -29,7 +29,7 @@ In this case, we import ``DatePicker`` and initialize a new object called ``date
 
 ::
 
-    from tethys_gizmos.gizmos_options import DatePicker
+    from tethys_apps.sdk.gizmos import DatePicker
 
     def example_controller(request):
         """
