@@ -999,7 +999,7 @@ class HighChartsTimeSeries(HighChartsObjectBase):
         }
 
         x_axis = {
-            'maxZoom': 30 * 24 * 3600000,
+            #'maxZoom': 30 * 24 * 3600000,
             'type': 'datetime'
         }
 
