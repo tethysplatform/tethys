@@ -499,7 +499,7 @@ class HighChartsLinePlot(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view line_plot_view %}
+        {% gizmo highcharts_plot_view line_plot_view %}
 
     """
 
@@ -594,7 +594,7 @@ class HighChartsPolarPlot(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view web_plot %}
+        {% gizmo highcharts_plot_view web_plot %}
 
     """
 
@@ -705,7 +705,7 @@ class HighChartsScatterPlot(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view scatter_plot_view %}
+        {% gizmo highcharts_plot_view scatter_plot_view %}
 
     """
 
@@ -789,7 +789,7 @@ class HighChartsPiePlot(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view pie_plot_view %}
+        {% gizmo highcharts_plot_view pie_plot_view %}
 
     """
 
@@ -869,7 +869,7 @@ class HighChartsBarPlot(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view bar_plot_view %}
+        {% gizmo highcharts_plot_view bar_plot_view %}
 
     """
 
@@ -985,7 +985,7 @@ class HighChartsTimeSeries(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view timeseries_plot %}
+        {% gizmo highcharts_plot_view timeseries_plot %}
     """
 
     def __init__(self, series=[], title='', subtitle='', y_axis_title='', y_axis_units='', **kwargs):
@@ -1094,7 +1094,7 @@ class HighChartsAreaRange(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view area_range_plot %}
+        {% gizmo highcharts_plot_view area_range_plot %}
 
     """
 
@@ -1195,7 +1195,7 @@ class HighChartsHeatMap(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view heat_map_plot %}
+        {% gizmo highcharts_plot_view heat_map_plot %}
 
     """
 
