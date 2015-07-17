@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
+from requests.exceptions import ConnectionError
 
 from tethys_apps.sdk.gizmos import *
 from tethys_apps.sdk import list_spatial_dataset_engines
@@ -12,14 +13,20 @@ from tethys_apps.sdk import list_spatial_dataset_engines
 
 spatial_dataset_engines = list_spatial_dataset_engines()
 geoserver_engine = None
-geoserver_wms = ""
+geoserver_wms = "http://ciwmap.chpc.utah.edu:8080/geoserver/wms"
 
-if len(spatial_dataset_engines) > 0:
-    geoserver_engine = spatial_dataset_engines[0]
-    geoserver_endpoint = geoserver_engine.endpoint
-    geoserver_wms = geoserver_endpoint.replace('rest', 'wms')
+for spatial_dataset_engine in spatial_dataset_engines:
+    if spatial_dataset_engine.type == 'GEOSERVER':
+        try:
+            spatial_dataset_engine.validate()
+            geoserver_engine = spatial_dataset_engine
+            geoserver_endpoint = spatial_dataset_engine.endpoint
+            geoserver_wms = geoserver_endpoint.replace('rest', 'wms')
+            break
+        except ConnectionError:
+            pass
 
-print('GEOSERVER: ' + geoserver_wms)
+print(geoserver_wms)
 
 
 def index(request):
