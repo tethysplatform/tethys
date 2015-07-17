@@ -1137,6 +1137,7 @@ var TETHYS_MAP_VIEW = (function() {
     }
 
     button = document.createElement('button');
+    button.setAttribute('type', 'button');
     button_image = document.createElement('div');
     button_image.className = icon_class;
     button.appendChild(button_image);
