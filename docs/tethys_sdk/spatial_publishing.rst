@@ -2,7 +2,7 @@
 Spatial Dataset Services API
 ****************************
 
-**Last Updated:** May 13, 2015
+**Last Updated:** July 17, 2015
 
 Spatial dataset services are web services that can be used to store and publish file-based :term:`spatial datasets` (e.g.: Shapefile and GeoTiff). The spatial datasets published using spatial dataset services are made available in a variety of formats, many of which or more web friendly than the native format (e.g.: PNG, JPEG, GeoJSON, and KML). Tethys app developers can use this Spatial Dataset Services API to store and access :term:` spatial datasets` for use in their apps and publish any resulting :term:`datasets` their apps may produce.
 
@@ -132,11 +132,11 @@ You can also create a ``SpatialDatasetEngine`` object directly without using the
 
   from tethys_dataset_services.engines import GeoServerSpatialDatasetEngine
 
-  spatial_dataset_engine = GeoServerSpatialDatasetEngine(endpoint='http://www.example.com/api/3/action', username='admin', password='geoserver')
+  spatial_dataset_engine = GeoServerSpatialDatasetEngine(endpoint='http://www.example.com/geoserver/rest', username='admin', password='geoserver')
 
 .. caution::
 
-  Take care not to store API keys, usernames, or passwords in the source files of your app--especially if the source is made public. This could compromise the security of the spatial dataset service.
+  Take care not to store API keys, usernames, or passwords in the source files of your app--especially if the source code is made public. This could compromise the security of the spatial dataset service.
 
 2. Use the Spatial Dataset Engine
 ---------------------------------
