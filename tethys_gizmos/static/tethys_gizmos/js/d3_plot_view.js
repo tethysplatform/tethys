@@ -26,7 +26,7 @@ var TETHYS_GIZMOS = (function() {
  	*                    PRIVATE FUNCTION DECLARATIONS
  	*************************************************************************/
  	// Date picker private methods
- 	var functionReviver, initHighChartsPlot, initLinePlot;
+ 	var functionReviver, initHighChartsPlot, initLinePlot, initD3Plot;
 
  	functionReviver = function(k, v) {
  		if (typeof v === 'string' && v.indexOf('function') !== -1) {
@@ -59,6 +59,22 @@ var TETHYS_GIZMOS = (function() {
 		else if (plot_type === 'line' || plot_type === 'spline') {
 			initLinePlot(element, plot_type);
 		}
+	};
+
+	initD3Plot = function(element, plot_type) {
+	    if ($(element).attr('data-json')) {
+	        var json_string, json;
+
+	        // Get string from data-json attribute of element
+	        json_string = $(element).attr('data-json');
+
+	        // Parse the json_string with special reviver
+	        json = JSON.parse(json_string, functionReviver);
+	        $(element).d3(json);
+	    }
+	    else if (plot_type === 'line' || plot_type === 'spline') {
+	        initLinePlot(element, plot_type);
+	    }
 	};
 
 	initLinePlot = function(element, plot_type) {
@@ -147,10 +163,15 @@ var TETHYS_GIZMOS = (function() {
 			$(this).select2();
 		});
 
-		// Initialize any plots
+		// Initialize any highcharts plots
 		$('.highcharts-plot').each(function() {
 			var plot_type = $(this).attr('data-type');
 			initHighChartsPlot(this, plot_type);
+		});
+		// Initialize any d3 plots
+		$('.d3-plot').each(function() {
+		    var plot_type = $(this).attr('data-type');
+		    initHighChartsPlot(this, plot_type);
 		});
 	});
 
