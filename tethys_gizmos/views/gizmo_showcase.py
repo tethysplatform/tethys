@@ -7,9 +7,19 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 
 from tethys_apps.sdk.gizmos import *
+from tethys_apps.sdk import list_spatial_dataset_engines
 
 
-GEOSERVER_WMS = 'http://ciwmap.chpc.utah.edu:8080/geoserver/wms'
+spatial_dataset_engines = list_spatial_dataset_engines()
+geoserver_engine = None
+geoserver_wms = ""
+
+if len(spatial_dataset_engines) > 0:
+    geoserver_engine = spatial_dataset_engines[0]
+    geoserver_endpoint = geoserver_engine.endpoint
+    geoserver_wms = geoserver_endpoint.replace('rest', 'wms')
+
+print('GEOSERVER: ' + geoserver_wms)
 
 
 def index(request):
@@ -605,6 +615,9 @@ def index(request):
         output_format='WKT'
     )
 
+    # Define the layers
+    map_layers = []
+
     # Define GeoJSON layer
     geojson_object = {
         'type': 'FeatureCollection',
@@ -648,18 +661,22 @@ def index(request):
                                 MVLegendClass('line', 'Lines', stroke='#3d9dcd')
                             ])
 
-    # Define GeoServer Layer
-    geoserver_layer = MVLayer(source='ImageWMS',
-                              options={'url': GEOSERVER_WMS,
-                                       'params': {'LAYERS': 'topp:states'},
-                                       'serverType': 'geoserver'},
-                              legend_title='USA Population',
-                              legend_extent=[-126, 24.5, -66.2, 49],
-                              legend_classes=[
-                                  MVLegendClass('polygon', 'Low Density', fill='#00ff00', stroke='#000000'),
-                                  MVLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
-                                  MVLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
-                              ])
+    map_layers.append(geojson_layer)
+
+    if geoserver_wms:
+        # Define GeoServer Layer
+        geoserver_layer = MVLayer(source='ImageWMS',
+                                  options={'url': geoserver_wms,
+                                           'params': {'LAYERS': 'topp:states'},
+                                           'serverType': 'geoserver'},
+                                  legend_title='USA Population',
+                                  legend_extent=[-126, 24.5, -66.2, 49],
+                                  legend_classes=[
+                                      MVLegendClass('polygon', 'Low Density', fill='#00ff00', stroke='#000000'),
+                                      MVLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
+                                      MVLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
+                                  ])
+        map_layers.append(geoserver_layer)
 
     # Define KML Layer
     kml_layer = MVLayer(source='KML',
@@ -671,6 +688,17 @@ def index(request):
                             MVLegendClass('line', 'Stream Network', stroke='#0000ff'),
                         ])
 
+    map_layers.append(kml_layer)
+
+    # Tiled ArcGIS REST Layer
+    arc_gis_layer = MVLayer(source='TileArcGISRest',
+                            options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' +
+                                            'Specialty/ESRI_StateCityHighway_USA/MapServer'},
+                            legend_title='ESRI USA Highway',
+                            legend_extent=[-173, 17, -65, 72])
+
+    map_layers.append(arc_gis_layer)
+
     # Define map view options
     map_view_options = MapView(height='600px',
                                width='100%',
@@ -679,7 +707,7 @@ def index(request):
                                          {'ZoomToExtent': {'projection': 'EPSG:4326',
                                                            'extent': [-130, 22, -65, 54]}
                                           }],
-                               layers=[geoserver_layer, geojson_layer, kml_layer],
+                               layers=map_layers,
                                view=view_options,
                                basemap='OpenStreetMap',
                                draw=drawing_options,
@@ -906,6 +934,9 @@ def map_view(request):
       ]
     }
 
+    # Define layers
+    map_layers = []
+
     geojson_layer = MVLayer(source='GeoJSON',
                             options=geojson_object,
                             legend_title='Test GeoJSON',
@@ -915,18 +946,23 @@ def map_view(request):
                                 MVLegendClass('line', 'Lines', stroke='#3d9dcd')
                             ])
 
-    # Define GeoServer Layer
-    geoserver_layer = MVLayer(source='ImageWMS',
-                              options={'url': GEOSERVER_WMS,
-                                       'params': {'LAYERS': 'topp:states'},
-                                       'serverType': 'geoserver'},
-                              legend_title='USA Population',
-                              legend_extent=[-126, 24.5, -66.2, 49],
-                              legend_classes=[
-                                  MVLegendClass('polygon', 'Low Density', fill='#00ff00', stroke='#000000'),
-                                  MVLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
-                                  MVLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
-                              ])
+    map_layers.append(geojson_layer)
+
+    if geoserver_wms:
+        # Define GeoServer Layer
+        geoserver_layer = MVLayer(source='ImageWMS',
+                                  options={'url': geoserver_wms,
+                                           'params': {'LAYERS': 'topp:states'},
+                                           'serverType': 'geoserver'},
+                                  legend_title='USA Population',
+                                  legend_extent=[-126, 24.5, -66.2, 49],
+                                  legend_classes=[
+                                      MVLegendClass('polygon', 'Low Density', fill='#00ff00', stroke='#000000'),
+                                      MVLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
+                                      MVLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
+                                  ])
+
+        map_layers.append(geoserver_layer)
 
     # Define KML Layer
     kml_layer = MVLayer(source='KML',
@@ -938,24 +974,29 @@ def map_view(request):
                             MVLegendClass('line', 'Stream Network', stroke='#0000ff'),
                         ])
 
+    map_layers.append(kml_layer)
+
     # Tiled ArcGIS REST Layer
     arc_gis_layer = MVLayer(source='TileArcGISRest',
-                            options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' + 'Specialty/ESRI_StateCityHighway_USA/MapServer'},
+                            options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' +
+                                            'Specialty/ESRI_StateCityHighway_USA/MapServer'},
                             legend_title='ESRI USA Highway',
                             legend_extent=[-173, 17, -65, 72])
 
+    map_layers.append(arc_gis_layer)
+
     # Define map view options
     map_view_options = MapView(
-            height='600px',
-            width='100%',
-            controls=['ZoomSlider', 'Rotate', 'FullScreen',
-                      {'MousePosition': {'projection': 'EPSG:4326'}},
-                      {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
-            layers=[geojson_layer, geoserver_layer, kml_layer, arc_gis_layer],
-            view=view_options,
-            basemap='OpenStreetMap',
-            draw=drawing_options,
-            legend=True
+        height='600px',
+        width='100%',
+        controls=['ZoomSlider', 'Rotate', 'FullScreen',
+                  {'MousePosition': {'projection': 'EPSG:4326'}},
+                  {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
+        layers=map_layers,
+        view=view_options,
+        basemap='OpenStreetMap',
+        draw=drawing_options,
+        legend=True
     )
 
     context = {'map_view': map_view_options}
