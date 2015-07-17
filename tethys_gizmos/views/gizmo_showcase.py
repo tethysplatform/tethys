@@ -9,6 +9,9 @@ from django.contrib import messages
 from tethys_apps.sdk.gizmos import *
 
 
+GEOSERVER_WMS = 'http://ciwmap.chpc.utah.edu:8080/geoserver/wms'
+
+
 def index(request):
     """
     Django view for the gizmo showcase page
@@ -647,7 +650,7 @@ def index(request):
 
     # Define GeoServer Layer
     geoserver_layer = MVLayer(source='ImageWMS',
-                              options={'url': 'http://192.168.59.103:8181/geoserver/wms',
+                              options={'url': GEOSERVER_WMS,
                                        'params': {'LAYERS': 'topp:states'},
                                        'serverType': 'geoserver'},
                               legend_title='USA Population',
@@ -914,7 +917,7 @@ def map_view(request):
 
     # Define GeoServer Layer
     geoserver_layer = MVLayer(source='ImageWMS',
-                              options={'url': 'http://192.168.59.103:8181/geoserver/wms',
+                              options={'url': GEOSERVER_WMS,
                                        'params': {'LAYERS': 'topp:states'},
                                        'serverType': 'geoserver'},
                               legend_title='USA Population',
