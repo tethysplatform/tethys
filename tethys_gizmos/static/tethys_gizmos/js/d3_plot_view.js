@@ -129,6 +129,16 @@ var TETHYS_GIZMOS = (function() {
 	    });
 	};
 
+	initD3PiePlot = function(element, plot_type) {
+	    var title = $(element).attr('data-title');
+	    var subtitle = $(element).attr('data-subtitle');
+	    var series = $.parseJSON($(element).attr('data-series'));
+
+	    $(element).D3({
+
+	    })
+	};
+
 	/************************************************************************
  	*                            TOP LEVEL CODE
  	*************************************************************************/
@@ -171,7 +181,7 @@ var TETHYS_GIZMOS = (function() {
 		// Initialize any d3 plots
 		$('.d3-plot').each(function() {
 		    var plot_type = $(this).attr('data-type');
-		    initHighChartsPlot(this, plot_type);
+		    initD3Plot(this, plot_type);
 		});
 	});
 
