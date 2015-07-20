@@ -1,0 +1,44 @@
+{% load staticfiles tethys_gizmos %}
+
+<table class="table{% if bordered %} table-bordered{% endif %}{% if hover %} table-hover{% endif %}{% if striped %} table-striped{% endif %}{% if condensed %} table-condensed{% endif %}{% if classes %} {{ classes }}{% endif %}" {% if attributes %} {{ attributes }} {% endif %}>
+    <tr>
+      {% for column_name in column_names %}
+        <th>{{ column_name }}</th>
+      {% endfor %}
+      {% if status %}
+        <th>Status</th>
+      {% endif %}
+      {% if actions %}
+        <th>Actions</th>
+      {% endif %}
+    </tr>
+    {% for row in rows %}
+      {% with row_idx=forloop.counter0 %}
+      <tr id="row_{{ job.id }}">
+        {% for column_value in row %}
+          {% with col_idx=forloop.counter0 %}
+            <td>{{ column_value }}</td>
+          {% endwith %}
+        {% endfor %}
+        {% with job=jobs|return_item:row_idx %}
+          {% if status %}
+            <td id="status_{{ job.id }}" class="job-status" >
+              Updating
+            </td>
+          {% endif %}
+          {% if actions %}
+            <td>
+              {% if delete %}
+                <a data-job_id="{{ job.id }}" class='btn btn-danger btn-xs btn-job-delete' href="javascript:void(0)">Delete</a>
+              {% endif %}
+            </td>
+          {% endif %}
+        {% endwith %}
+      </tr>
+      {% endwith %}
+    {% empty %}
+      <tr>
+        <td colspan="100" align="center">No Jobs</td>
+      </tr>
+    {% endfor %}
+</table>
