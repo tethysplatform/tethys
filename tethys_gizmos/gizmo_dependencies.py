@@ -92,3 +92,9 @@ def fetchclimate(context):
             'tethys_gizmos/vendor/highcharts/js/highcharts-more.js',
             'tethys_gizmos/js/fetchclimate/fetchclimate_plot.js',
             'tethys_gizmos/js/fetchclimate/fetchclimate_data.js')
+
+def jobs_table(context):
+    """
+    Dependencies for jobs_table gizmo.
+    """
+    return ('tethys_gizmos/js/jobs_table.js',)
