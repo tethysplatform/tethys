@@ -1,12 +1,13 @@
 # coding=utf-8
 import json
 from datetime import datetime
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 
 from tethys_apps.sdk.gizmos import *
+from tethys_compute.models import TethysJob
 
 
 def index(request):
@@ -682,6 +683,19 @@ def index(request):
                                draw=drawing_options,
                                legend=True)
 
+    jobs = TethysJob.objects.filter(label='gizmos_showcase')
+
+    # Table View
+    jobs_table_options = JobsTable(
+                           jobs=jobs,
+                           filters=('id', 'name', 'description', 'creation_time'),
+                           hover=True,
+                           striped=False,
+                           bordered=False,
+                           condensed=False,
+                           results_url='gizmos:results',
+                        )
+
     # Define the context object
     context = {'docs_version': docs_version,
                'docs_endpoint': docs_endpoint,
@@ -710,6 +724,7 @@ def index(request):
                'google_map_view': google_map_view,
                'flash_message': flash_message,
                'fetchclimate_array': fetchclimate_array,
+               'jobs_table_options': jobs_table_options,
                'map_view_options': map_view_options,
                'scatter_plot_view': scatter_plot_view,
                'pie_plot_view': pie_plot_view,
@@ -994,3 +1009,20 @@ def fetchclimate_map(request):
     context = {'fetchclimate_map': fetchclimate_map}
 
     return render(request, 'tethys_gizmos/gizmo_showcase/fetchclimate_map.html', context)
+
+def jobs_table_results(request, job_id):
+    return redirect(reverse('gizmos:showcase') + '#jobs_table_docs')
+
+def create_sample_jobs(request):
+    job1 = TethysJob(name='job_1',
+                     user=request.user,
+                     description='Gizmos Showcase Job 1',
+                     label='gizmos_showcase',
+                     #creation_time=,
+                     #execute_time=,
+                     #completion_time=,
+                     #_status='PEN',
+                    )
+    job1.save()
+
+    return redirect(reverse('gizmos:showcase') + '#jobs_table_docs')
