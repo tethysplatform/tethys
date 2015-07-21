@@ -11,7 +11,7 @@
 from .base import TethysGizmoOptions
 
 __all__ = ['PlotView', 'HighChartsObjectBase', 'HighChartsLinePlot', 'HighChartsPolarPlot', 'HighChartsScatterPlot',
-           'HighChartsPiePlot', 'HighChartsBarPlot', 'HighChartsTimeSeries', 'HighChartsAreaRange', 'HighChartsHeatMap']
+           'HighChartsPiePlot', 'D3PiePlot', 'HighChartsBarPlot', 'HighChartsTimeSeries', 'HighChartsAreaRange', 'HighChartsHeatMap']
 
 
 class PlotView(TethysGizmoOptions):
@@ -394,7 +394,7 @@ class PlotView(TethysGizmoOptions):
 
     """
 
-    def __init__(self, highcharts_object, height='520px', width='100%', attributes='', classes=''):
+    def __init__(self, highcharts_object, d3_object, height='520px', width='100%', attributes='', classes=''):
         """
         Constructor
         """
@@ -402,6 +402,7 @@ class PlotView(TethysGizmoOptions):
         super(PlotView, self).__init__(attributes=attributes, classes=classes)
 
         self.highcharts_object = highcharts_object
+        self.d3_object = d3_object
         self.height = height
         self.width = width
 
@@ -441,6 +442,34 @@ class HighChartsObjectBase(TethysGizmoOptions):
 
         if tooltip:
             self.tooltip = tooltip_format
+
+        # add any other attributes the user wants
+        for key, value in kwargs.iteritems():
+            setattr(self, key, value)
+
+class D3ObjectBase(TethysGizmoOptions):
+    """
+    HighCharts Object
+
+    Attributes
+    """
+
+    def __init__(self, chart={}, title='', subtitle='', x_axis={}, y_axis={}, **kwargs):
+        """
+        Constructor
+        """
+        # Initialize super class
+        super(D3ObjectBase, self).__init__()
+
+        self.chart = chart
+        self.xAxis = x_axis
+        self.yAxis = y_axis
+
+        if title != '':
+            self.title = {'text': title}
+
+        if subtitle != '':
+            self.subtitle = {'text': subtitle}
 
         # add any other attributes the user wants
         for key, value in kwargs.iteritems():
@@ -827,6 +856,24 @@ class HighChartsPiePlot(HighChartsObjectBase):
         # Initialize super class
         super(HighChartsPiePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
                                                 plotOptions=plotOptions, tooltip_format=tooltip_format, **kwargs)
+
+
+class D3PiePlot(D3ObjectBase):
+    """
+
+    """
+
+    def __init__(self, series=[], title='', subtitle='', **kwargs):
+        """
+        Constructor
+
+        Args:
+        """
+        chart = {
+
+        }
+        # Initialize super class
+        super(D3PiePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, **kwargs)
 
 
 class HighChartsBarPlot(HighChartsObjectBase):

@@ -210,6 +210,7 @@ def index(request):
                                            )
 
     line_plot_view = PlotView(highcharts_object=highcharts_object,
+                              d3_object='',
                               width='500px',
                               height='500px')
 
@@ -269,6 +270,7 @@ def index(request):
                                               )
 
     scatter_plot_view = PlotView(highcharts_object=highcharts_object,
+                                 d3_object='',
                                  width='500px',
                                  height='500px')
 
@@ -296,6 +298,7 @@ def index(request):
                                           )
 
     web_plot = PlotView(highcharts_object=web_plot_object,
+                        d3_object='',
                         width='500px',
                         height='500px')
 
@@ -322,8 +325,26 @@ def index(request):
                                         )
 
     pie_plot_view = PlotView(highcharts_object=pie_plot_object,
+                             d3_object='',
                              width='500px',
                              height='500px')
+
+    # D3 Pie Plot
+    d3_pie_plot_object = D3PiePlot(title='Pie Chart',
+                                   subtitle='Pie Chart',
+                                   series=[
+                                          {'name': 'Firefox', 'value': 45.0},
+                                          {'name': 'IE', 'value': 26.8},
+                                          {'name': 'Chrome', 'value': 12.8},
+                                          {'name': 'Safari', 'value': 8.5},
+                                          {'name': 'Opera', 'value': 8.5},
+                                          {'name': 'Others', 'value': 0.7}
+                                   ])
+
+    d3_pie_plot_view = PlotView(highcharts_object='',
+                                d3_object=d3_pie_plot_object,
+                                width='500px',
+                                height='500px')
 
     # Bar Plot
     bar_plot_view = HighChartsBarPlot(
@@ -348,6 +369,7 @@ def index(request):
     )
 
     bar_plot_view = PlotView(highcharts_object=bar_plot_view,
+                             d3_object='',
                              width='500px',
                              height='500px')
 
@@ -387,6 +409,7 @@ def index(request):
     )
 
     timeseries_plot = PlotView(highcharts_object=timeseries_plot_object,
+                               d3_object='',
                                width='500px',
                                height='500px')
 
@@ -441,6 +464,7 @@ def index(request):
     )
 
     area_range_plot = PlotView(highcharts_object=area_range_plot_object,
+                               d3_object='',
                                width='500px',
                                height='500px')
     # Heat Map
@@ -487,6 +511,7 @@ def index(request):
     )
 
     heat_map_plot = PlotView(highcharts_object=heat_map_object,
+                             d3_object='',
                              width='500px',
                              height='500px')
 
@@ -544,6 +569,7 @@ def index(request):
     }
 
     custom_plot = PlotView(highcharts_object=custom_plot_dictionary,
+                           d3_object='',
                            width='500px',
                            height='500px')
 
@@ -758,6 +784,7 @@ def index(request):
                'map_view_options': map_view_options,
                'scatter_plot_view': scatter_plot_view,
                'pie_plot_view': pie_plot_view,
+               'd3_pie_plot_view': d3_pie_plot_view,
                'bar_plot_view': bar_plot_view,
                'area_range_plot': area_range_plot,
                'heat_map_plot': heat_map_plot,
