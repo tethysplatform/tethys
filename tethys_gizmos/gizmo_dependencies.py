@@ -95,9 +95,8 @@ def fetchclimate(context):
 
 def d3_plot_view(context):
     """
-
+    Dependencies for D3 Plots.
     """
     return ('tethys_gizmos/css/d3_plot_view.css',
             'https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js',
-            'tethys_gizmos/js/d3_plot_view.js',
-            )
+            'tethys_gizmos/js/d3_plot_view.js')
