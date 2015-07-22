@@ -49,19 +49,24 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 
 	    chart_type = json.chart_type;
 
+	    console.log(json);
+
 	    if (chart_type === 'line_plot') {
 	        initD3LinePlot(element, json);
 
-	    } else if (chart_type === 'pie_plot') {
-	        initD3PiePlot(element, json);
+	    } else  if ('plotOptions' in json) {
+	        var plot_options = json.plotOptions;
+	        if ('pie' in plot_options) {
+	            initD3PiePlot(element, json);
+	        }
 	    }
 	};
 
 
 	initD3PiePlot = function(element, json) {
-	    var title = $(element).attr('data-title');
-	    var subtitle = $(element).attr('data-subtitle');
-	    var series = $.parseJSON($(element).attr('data-series'));
+	    var title = json.title.text;
+	    var subtitle = json.subtitle.text;
+	    var series = json.series;
 
 //	    $(element).D3({
             series.forEach(function (d) {
@@ -78,7 +83,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 
             var color = d3.scale.category20();
 
-            var svg = d3.select($(element[0]))
+            var svg = d3.select(element)
               .append('svg')
               .attr('width', width)
               .attr('height', height)
@@ -109,7 +114,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 
               //Create the variable and set up changes necessary for the tooltip
 
-            var tooltip = d3.select($(element[0]))
+            var tooltip = d3.select(element)
               .append('div')
               .attr('class', 'tooltip');
 
@@ -233,9 +238,11 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 
                 // Get string from data-json attribute of element
                 json_string = $(this).attr('data-json');
+                console.log(json_string);
 
                 // Parse the json_string with special reviver
                 json = JSON.parse(json_string, functionReviver);
+                console.log(json);
 
 		        initD3Plot(this, json);
 		    }
