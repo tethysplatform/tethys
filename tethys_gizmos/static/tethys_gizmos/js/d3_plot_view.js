@@ -25,7 +25,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
  	*                    PRIVATE FUNCTION DECLARATIONS
  	*************************************************************************/
  	// Date picker private methods
- 	var functionReviver, initD3Plot;
+ 	var functionReviver, initD3Plot, initD3PiePlot;
 
  	functionReviver = function(k, v) {
  		if (typeof v === 'string' && v.indexOf('function') !== -1) {
@@ -63,7 +63,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 	    var subtitle = $(element).attr('data-subtitle');
 	    var series = $.parseJSON($(element).attr('data-series'));
 
-	    $(element).D3({
+//	    $(element).D3({
             series.forEach(function (d) {
               d.value = +d.value;
               d.enabled = true;
@@ -78,7 +78,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 
             var color = d3.scale.category20();
 
-            var svg = d3.select('#chart')
+            var svg = d3.select($(element[0]))
               .append('svg')
               .attr('width', width)
               .attr('height', height)
@@ -109,7 +109,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 
               //Create the variable and set up changes necessary for the tooltip
 
-            var tooltip = d3.select('#chart')
+            var tooltip = d3.select($(element[0]))
               .append('div')
               .attr('class', 'tooltip');
 
@@ -211,7 +211,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
               .text(function(d) { return d; });
 
               //End of creating legend
-	    })
+//	    })
 	};
 
 	/************************************************************************
