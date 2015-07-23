@@ -25,7 +25,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
  	*                    PRIVATE FUNCTION DECLARATIONS
  	*************************************************************************/
  	// Date picker private methods
- 	var functionReviver, initD3Plot, initD3PiePlot;
+ 	var functionReviver, initD3Plot, initD3LinePlot, initD3PiePlot;
 
  	functionReviver = function(k, v) {
  		if (typeof v === 'string' && v.indexOf('function') !== -1) {
@@ -48,12 +48,12 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 	    var chart_type;
 
 	    chart_type = json.chart_type;
+console.log(json.chart.type);
+	    if ('type' in json.chart) {
+	        if (json.chart.type === 'line' || json.chart.type === 'spline') {
 
-	    console.log(json);
-
-	    if (chart_type === 'line_plot') {
-	        initD3LinePlot(element, json);
-
+	            initD3LinePlot(element, json);
+            }
 	    } else  if ('plotOptions' in json) {
 	        var plot_options = json.plotOptions;
 	        if ('pie' in plot_options) {
@@ -62,13 +62,160 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 	    }
 	};
 
+    initD3LinePlot = function(element, json) {
+    console.log(json);
+        var title = json.title.text;
+        var subtitle = json.subtitle.text;
+        var x_axis_title = json.xAxis.title.text;
+        var x_axis_formatter = json.xAxis.labels.formatter;
+        var y_axis_title = json.yAxis.title.text;
+        var y_axis_formatter = json.yAxis.labels.formatter;
+        var series = json.series;
+
+        var number_of_series = d3.max(d3.keys(series));
+        var number_of_points = d3.max(d3.keys(series[0].data));
+
+        var margin = {top: 40, right: 80, bottom: 30, left: 50},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        var x = d3.scale.linear()
+            .range([0, width]);
+
+        var y = d3.scale.linear()
+            .range([height, 0]);
+
+        var color = d3.scale.category10();
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
+        var dataCallback = function (d, i, j) {
+            d[i].x.push(series[i].data[j][0]);
+            d[i].y.push(series[i].data[j][1]);
+        };
+
+        for (var i = 0; i <= number_of_series; i++) {
+
+            series[i].x = [];
+            series[i].y = [];
+
+            for (var j = 0; j <= number_of_points; j++) {
+                dataCallback(series, i, j);
+            }
+        }
+
+        var line = d3.svg.line()
+            .interpolate("linear")
+            .x(function (d) { return x(d[0]); })
+            .y(function (d) { return y(d[1]); });
+
+        var svg = d3.select(element).append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        //Create the chart title and subtitle
+        svg.append("text")
+            .attr("x", (width/2))
+            .attr("y", 0 - (margin.top / 2))
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .text(title);
+        svg.append("text")
+            .attr("x", (width/2))
+            .attr("y", 0 - (margin.top / 8))
+            .attr("text-anchor", "middle")
+            .style("font-size", "14px")
+            .text(subtitle);
+
+        x.domain([
+            d3.min(series, function (d, i) { return d3.min(series[i].x); }) - 5,
+            d3.max(series, function (d, i) { return d3.max(series[i].x); }) + 5
+        ]);
+
+        y.domain([
+            d3.min(series, function (d, i) { return d3.min(series[i].y); }) - 5,
+            d3.max(series, function (d, i) { return d3.max(series[i].y); }) + 5
+        ]);
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .append("text")
+                .attr("x", width)
+                .attr("y", -6)
+                .attr("dx", ".71em")
+                .style("text-anchor", "end")
+                .text(x_axis_title);
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text(y_axis_title);
+
+        var lineNames = svg.selectAll(".line")
+            .data(series)
+            .enter().append("g")
+                .attr("class", "line");
+
+        lineNames.append("path")
+            .attr("class", "line")
+            .attr("d", function (d) { return line(d.data); })
+            .attr("stroke-width", 2)
+            .style("stroke", function (d) { return color(d.name); });
+
+        for (var i = 0; i <= number_of_series; i++) {
+            svg.selectAll("point")
+                .data(series[i].data)
+                .enter().append("path")
+                    .attr("class", "point")
+                    .attr("d", d3.svg.symbol().type("circle"))
+                    .attr("transform", function (d) { return "translate(" + x(d[0]) + "," + y(d[1]) + ")"; })
+                    .style("fill", function (d) {return color(series[i].name); });
+        };
+
+        // draw legend
+        var legend = svg.selectAll(".legend")
+            .data(color.domain())
+            .enter().append("g")
+                .attr("class", "legend")
+                .attr("transform", function (d, i) { return "translate(0," + i * 20 + ")"; });
+
+        // draw legend colored rectangles
+        legend.append("rect")
+            .attr("x", width - 18)
+            .attr("y", 8)
+            .attr("width", 18)
+            .attr("height", 3)
+            .style("fill", color);
+
+        // draw legend text
+        legend.append("text")
+            .attr("x", width - 24)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(function (d) { return d; });
+    };
 
 	initD3PiePlot = function(element, json) {
 	    var title = json.title.text;
 	    var subtitle = json.subtitle.text;
 	    var series = json.series;
 
-//	    $(element).D3({
             series.forEach(function (d) {
               d.value = +d.value;
               d.enabled = true;
@@ -112,11 +259,10 @@ var TETHYS_D3_PLOT_VIEW = (function() {
               .value(function(d) { return d.value; })
               .sort(null);
 
-              //Create the variable and set up changes necessary for the tooltip
-
+            //Create the variable and set up changes necessary for the tooltip
             var tooltip = d3.select(element)
               .append('div')
-              .attr('class', 'tooltip');
+              .attr('class', 'd3-tooltip');
 
             tooltip.append('div')
               .attr('class', 'name');
@@ -126,8 +272,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 
             tooltip.append('div')
               .attr('class', 'percent');
-
-              //End tooltip variable manipulation
+            //End tooltip variable manipulation
 
             var path = svg.selectAll('path')
               .data(pie(series))
@@ -143,7 +288,6 @@ var TETHYS_D3_PLOT_VIEW = (function() {
               This function is what makes the tooltip appear when the mouse
               hovers over the section.
               */
-
               path.on('mouseover', function (d) {
                 var total = d3.sum(series.map(function (d) {
                   return (d.enabled) ? d.value : 0;
@@ -154,11 +298,9 @@ var TETHYS_D3_PLOT_VIEW = (function() {
                 tooltip.select('.percent').html(percent + '%');
                 tooltip.style('display', 'block');
               });
-
               //End tooltip call function
 
               //Create legend
-
               var legend = svg.selectAll('.legend')
               .data(color.domain())
               .enter()
@@ -216,7 +358,6 @@ var TETHYS_D3_PLOT_VIEW = (function() {
               .text(function(d) { return d; });
 
               //End of creating legend
-//	    })
 	};
 
 	/************************************************************************
@@ -238,11 +379,9 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 
                 // Get string from data-json attribute of element
                 json_string = $(this).attr('data-json');
-                console.log(json_string);
 
                 // Parse the json_string with special reviver
                 json = JSON.parse(json_string, functionReviver);
-                console.log(json);
 
 		        initD3Plot(this, json);
 		    }

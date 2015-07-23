@@ -213,6 +213,42 @@ def index(request):
                               width='500px',
                               height='500px')
 
+    # D3 Line Plot View
+    d3_line_plot_object = LinePlot(title='Plot Title',
+                                   subtitle='Plot Subtitle',
+                                   spline=True,
+                                   x_axis_title='Altitude',
+                                   x_axis_units='km',
+                                   y_axis_title='Temperature',
+                                   y_axis_units='°C',
+                                   series=[
+                                       {
+                                           'name': 'Air Temp',
+                                           'data': [
+                                               [0, 5], [10, -70],
+                                               [20, -86.5], [30, -66.5],
+                                               [40, -32.1],
+                                               [50, -12.5], [60, -47.7],
+                                               [70, -85.7], [80, -106.5]
+                                           ]
+                                       },
+                                       {
+                                           'name': 'Water Temp',
+                                           'data': [
+                                               [0, 15], [10, -50],
+                                               [20, -56.5], [30, -46.5],
+                                               [40, -22.1],
+                                               [50, -2.5], [60, -27.7],
+                                               [70, -55.7], [80, -76.5]
+                                           ]
+                                       }
+                                   ]
+                                   )
+
+    d3_line_plot_view = PlotView(plot_object=d3_line_plot_object,
+                              width='500px',
+                              height='500px')
+
     # Plot Views
     male_dataset = {
         'name': 'Male',
@@ -775,6 +811,7 @@ def index(request):
                'scatter_plot_view': scatter_plot_view,
                'pie_plot_view': pie_plot_view,
                'd3_pie_plot_view': d3_pie_plot_view,
+               'd3_line_plot_view': d3_line_plot_view,
                'bar_plot_view': bar_plot_view,
                'area_range_plot': area_range_plot,
                'heat_map_plot': heat_map_plot,
