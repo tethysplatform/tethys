@@ -346,11 +346,6 @@ def my_view(request):
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo d3_plot_view d3_pie_plot_view %}
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
           {% gizmo highcharts_plot_view bar_plot_view %}
           </div>
         </div>
@@ -367,6 +362,16 @@ def my_view(request):
         <div class="example">
           <div class="demo">
           {% gizmo highcharts_plot_view custom_plot %}
+          </div>
+        </div>
+        <div class="example">
+          <div class="demo">
+          {% gizmo d3_plot_view d3_line_plot_view %}
+          </div>
+        </div>
+        <div class="example">
+          <div class="demo">
+          {% gizmo d3_plot_view d3_pie_plot_view %}
           </div>
         </div>
 
