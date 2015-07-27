@@ -300,6 +300,20 @@ def index(request):
                                  width='500px',
                                  height='500px')
 
+    # D3 Scatter Plot
+    d3_scatter_plot_object = ScatterPlot(title='D3 Scatter Plot',
+                                         subtitle='D3 Scatter Plot',
+                                         x_axis_title='Height',
+                                         x_axis_units='cm',
+                                         y_axis_title='Weight',
+                                         y_axis_units='kg',
+                                         series=[male_dataset, female_dataset]
+                                        )
+
+    d3_scatter_plot_view = PlotView(plot_object=d3_scatter_plot_object,
+                                    width='500px',
+                                    height='500px')
+
     # Web Plot
     web_plot_object = HighChartsPolarPlot(title='Polar Chart',
                                           subtitle='Polar Chart',
@@ -805,6 +819,7 @@ def index(request):
                'pie_plot_view': pie_plot_view,
                'd3_pie_plot_view': d3_pie_plot_view,
                'd3_line_plot_view': d3_line_plot_view,
+               'd3_scatter_plot_view': d3_scatter_plot_view,
                'bar_plot_view': bar_plot_view,
                'area_range_plot': area_range_plot,
                'heat_map_plot': heat_map_plot,
