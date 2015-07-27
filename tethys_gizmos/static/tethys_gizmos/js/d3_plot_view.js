@@ -25,7 +25,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
  	*                    PRIVATE FUNCTION DECLARATIONS
  	*************************************************************************/
  	// Date picker private methods
- 	var functionReviver, initD3Plot, initD3LinePlot, initD3PiePlot;
+ 	var functionReviver, initD3Plot, initD3LinePlot, initD3PiePlot, initD3ScatterPlot;
 
  	functionReviver = function(k, v) {
  		if (typeof v === 'string' && v.indexOf('function') !== -1) {
@@ -51,8 +51,9 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 console.log(json.chart.type);
 	    if ('type' in json.chart) {
 	        if (json.chart.type === 'line' || json.chart.type === 'spline') {
-
 	            initD3LinePlot(element, json);
+            } else if (json.chart.type === 'scatter') {
+                initD3ScatterPlot(element, json);
             }
 	    } else  if ('plotOptions' in json) {
 	        var plot_options = json.plotOptions;
@@ -358,6 +359,149 @@ console.log(json.chart.type);
               .text(function(d) { return d; });
 
               //End of creating legend
+	};
+
+	initD3ScatterPlot = function(element, json) {
+	    var title = json.title.text;
+	    var subtitle = json.subtitle.text;
+	    var x_axis_title = json.xAxis.title.text;
+        var y_axis_title = json.yAxis.title.text;
+        var series = json.series;
+
+        var color = d3.scale.category20();
+
+        var margin = {top: 40, right: 20, bottom: 30, left: 40},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        var x = d3.scale.linear()
+            .range([0, width]);
+
+        var y = d3.scale.linear()
+            .range([height, 0]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
+        // add the graph canvas to the body of the webpage
+        var svg = d3.select(element).append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        //Create the chart title and subtitle
+        svg.append("text")
+            .attr("x", (width/2))
+            .attr("y", 0 - (margin.top / 2))
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .text(title);
+        svg.append("text")
+            .attr("x", (width/2))
+            .attr("y", 0 - (margin.top / 8))
+            .attr("text-anchor", "middle")
+            .style("font-size", "14px")
+            .text(subtitle);
+
+        // add the tooltip area to the webpage
+        var tooltip = d3.select(element).append("div")
+            .attr("class", "d3-tooltip")
+            .style("opacity", 0);
+
+        var number_of_series = series.length;
+        var number_of_points = series[0].data.length;
+
+        var dataCallback = function (d, i, j) {
+            d[i].x.push(series[i].data[j][0]);
+            d[i].y.push(series[i].data[j][1]);
+        };
+
+        for (var i = 0; i < number_of_series; i++) {
+
+            series[i].x = [];
+            series[i].y = [];
+
+            for (var j = 0; j < number_of_points; j++) {
+                dataCallback(series, i, j);
+            };
+        };
+
+        // don't want dots overlapping axis, so add in buffer to data domain
+        x.domain([
+            d3.min(series, function (d, i) { return d3.min(series[i].x); }) - 5,
+            d3.max(series, function (d, i) { return d3.max(series[i].x); }) + 5
+        ]);
+
+        y.domain([
+            d3.min(series, function (d, j) { return d3.min(series[j].y); }) - 5,
+            d3.max(series, function (d, j) { return d3.max(series[j].y); }) + 5
+        ]);
+
+        // x-axis
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .append("text")
+                .attr("class", "label")
+                .attr("x", width)
+                .attr("y", -6)
+                .style("text-anchor", "end")
+                .text(x_axis_title + " (" + x_axis_units + ")");
+
+        // y-axis
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+                .attr("class", "label")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text(y_axis_title + " (" + y_axis_units + ")");
+
+        for (var i = 0; i < number_of_series; i++) {
+
+            var seriesData = series[i].data;
+
+            // draw dots
+            svg.selectAll("point")
+                .data(seriesData)
+                .enter().append("path")
+                    .attr("class", "point")
+                    .attr("d", d3.svg.symbol().type("circle"))
+                    .attr("transform", function (d) { return "translate(" + x(d[0]) + "," + y(d[1]) + ")"; })
+                    .style("fill", function (d) { return color(series[i].name); });
+        }
+
+            // draw legend
+            var legend = svg.selectAll(".legend")
+                .data(color.domain())
+                .enter().append("g")
+                    .attr("class", "legend")
+                    .attr("transform", function (d, i) { return "translate(0," + i * 20 + ")"; });
+
+            // draw legend colored rectangles
+            legend.append("rect")
+                .attr("x", width - 18)
+                .attr("width", 18)
+                .attr("height", 18)
+                .style("fill", color);
+
+            // draw legend text
+            legend.append("text")
+                .attr("x", width - 24)
+                .attr("y", 9)
+                .attr("dy", ".35em")
+                .style("text-anchor", "end")
+                .text(function (d) { return d; });
 	};
 
 	/************************************************************************
