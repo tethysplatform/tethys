@@ -32,7 +32,7 @@ h1 {
 }
 
 body {
-  font: 10px sans-serif;
+  font: 11px sans-serif;
 }
 
 .axis path,
@@ -52,4 +52,11 @@ body {
   fill: none;
   stroke: steelblue;
   stroke-width: 1.5px;
+}
+
+.d3-scatter-tooltip {
+    position: absolute;
+    width: 200px;
+    height: 28px;
+    pointer-events: none;
 }
