@@ -1,7 +1,7 @@
 # coding=utf-8
 from .base import TethysGizmoOptions
 
-__all__ = ['PlotView', 'PlotViewObjectBase', 'LinePlot', 'PolarPlot', 'ScatterPlot',
+__all__ = ['PlotView', 'PlotViewObject', 'LinePlot', 'PolarPlot', 'ScatterPlot',
            'PiePlot', 'BarPlot', 'TimeSeries', 'AreaRange', 'HeatMap']
 
 
@@ -403,25 +403,48 @@ class PlotView(TethysGizmoOptions):
         self.width = width
 
 
-class PlotViewObjectBase(TethysGizmoOptions):
+class PlotViewBase(TethysGizmoOptions):
+    """
+    Docs
+    """
+
+    def __init__(self, width='500px', height='500px', engine='d3'):
+        """
+        Constructor
+        """
+        # Initialize the super class
+        super(PlotViewBase, self).__init__()
+
+        self.width = width
+        self.height = height
+
+        if engine not in ('d3', 'highcharts'):
+            raise ValueError('Parameter "engine" must be either "d3" or "highcharts".')
+
+        self.engine = engine
+        self.plot_object = PlotViewObject()
+
+
+class PlotViewObject(TethysGizmoOptions):
     """
      Object
 
     Attributes
     """
 
-    def __init__(self, chart={}, title='', subtitle='', legend=True, tooltip=True, x_axis={}, y_axis={},
+    def __init__(self,  chart={}, title='', subtitle='', legend=True, tooltip=True, x_axis={}, y_axis={},
                  tooltip_format={}, plotOptions={}, **kwargs):
         """
         Constructor
         """
         # Initialize super class
-        super(PlotViewObjectBase, self).__init__()
+        super(PlotViewObject, self).__init__()
 
         self.chart = chart
         self.xAxis = x_axis
         self.yAxis = y_axis
         self.plotOptions = plotOptions
+
         if title != '':
             self.title = {'text': title}
 
@@ -444,7 +467,7 @@ class PlotViewObjectBase(TethysGizmoOptions):
             setattr(self, key, value)
 
 
-class LinePlot(PlotViewObjectBase):
+class LinePlot(PlotViewBase):
     """
     Used to create  line plot visualizations.
 
@@ -509,11 +532,14 @@ class LinePlot(PlotViewObjectBase):
 
     """
 
-    def __init__(self, series, title='', subtitle='', spline=False, x_axis_title='', x_axis_units='', y_axis_title='',
-                 y_axis_units='', **kwargs):
+    def __init__(self, series, height='500px', width='500px', engine='d3', title='', subtitle='', spline=False,
+                 x_axis_title='', x_axis_units='', y_axis_title='', y_axis_units='', **kwargs):
         """
         Constructor
         """
+        # Initialize super class
+        super(LinePlot, self).__init__(height=height, width=width, engine=engine)
+
         if spline:
             chart = {'type': 'spline'}
         else:
@@ -550,12 +576,12 @@ class LinePlot(PlotViewObjectBase):
             'pointFormat': '{point.x} %s: {point.y} %s' % (x_axis_units, y_axis_units)
         }
 
-        # Initialize super class
-        super(LinePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
-                                                 x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        # Initialize the plot view object
+        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series,
+                                              x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
 
 
-class PolarPlot(PlotViewObjectBase):
+class PolarPlot(PlotViewBase):
     """
     Use to create a  polar plot visualization.
 
@@ -604,10 +630,14 @@ class PolarPlot(PlotViewObjectBase):
 
     """
 
-    def __init__(self, series=[], title='', subtitle='', categories=[], **kwargs):
+    def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='', categories=[],
+                 **kwargs):
         """
         Constructor
         """
+        # Initialize super class
+        super(PolarPlot, self).__init__(height=height, width=width, engine=engine)
+
         chart = {
             'polar': True,
             'type': 'line'
@@ -626,11 +656,11 @@ class PolarPlot(PlotViewObjectBase):
         }
 
         # Initialize super class
-        super(PolarPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
-                                                  x_axis=x_axis, y_axis=y_axis, **kwargs)
+        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series,
+                                          x_axis=x_axis, y_axis=y_axis, **kwargs)
 
 
-class ScatterPlot(PlotViewObjectBase):
+class ScatterPlot(PlotViewBase):
     """
     Use to create a  scatter plot visualization.
 
@@ -715,11 +745,14 @@ class ScatterPlot(PlotViewObjectBase):
 
     """
 
-    def __init__(self, series=[], title='', subtitle='', x_axis_title='', x_axis_units='', y_axis_title='',
-                 y_axis_units='', **kwargs):
+    def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='',
+                 x_axis_title='', x_axis_units='', y_axis_title='', y_axis_units='', **kwargs):
         """
         Constructor
         """
+        # Initialize super class
+        super(ScatterPlot, self).__init__(height=height, width=width, engine=engine)
+
         chart = {
             'type': 'scatter',
             'zoomType': 'xy'
@@ -747,12 +780,11 @@ class ScatterPlot(PlotViewObjectBase):
         }
 
         # Initialize super class
-        super(ScatterPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
-                                                    x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format,
-                                                    **kwargs)
+        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series,
+                                          x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
 
 
-class PiePlot(PlotViewObjectBase):
+class PiePlot(PlotViewBase):
     """
     Use to create a  pie plot visualization.
 
@@ -799,12 +831,15 @@ class PiePlot(PlotViewObjectBase):
 
     """
 
-    def __init__(self, series=[], title='', subtitle='', **kwargs):
+    def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='', **kwargs):
         """
         Constructor
 
         Args:
         """
+        # Initialize super class
+        super(PiePlot, self).__init__(height=height, width=width, engine=engine)
+
         chart = {
             'plotShadow': False
         }
@@ -822,11 +857,11 @@ class PiePlot(PlotViewObjectBase):
             'pointFormat': '{series.name}: <b>{point.percentage:.1f}%</b>'
         }
         # Initialize super class
-        super(PiePlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
-                                                plotOptions=plotOptions, tooltip_format=tooltip_format, **kwargs)
+        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series,
+                                          plotOptions=plotOptions, tooltip_format=tooltip_format, **kwargs)
 
 
-class BarPlot(PlotViewObjectBase):
+class BarPlot(PlotViewBase):
     """
     Bar Plot
 
@@ -849,6 +884,9 @@ class BarPlot(PlotViewObjectBase):
         from tethys_apps.sdk.gizmos import BarPlot, PlotView
 
         bar_plot_view = BarPlot(
+            width='500px',
+            height='500px',
+            renderer='d3',
             title='Bar Chart',
             subtitle='Bar Chart',
             vertical=False,
@@ -875,15 +913,18 @@ class BarPlot(PlotViewObjectBase):
 
         # TEMPLATE
 
-        {% gizmo _plot_view bar_plot_view %}
+        {% gizmo plot_view bar_plot_view %}
 
     """
 
-    def __init__(self, series=[], title='', subtitle='', horizontal=False, categories=[], axis_title='',
-                 axis_units='', group_tools=True, **kwargs):
+    def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='',
+                 horizontal=False, categories=[], axis_title='', axis_units='', group_tools=True, **kwargs):
         """
         Constructor
         """
+        # Initialize super class
+        super(BarPlot, self).__init__(height=height, width=width, engine=engine)
+
         if not horizontal:
             chart = {
                 'type': 'column'
@@ -929,12 +970,12 @@ class BarPlot(PlotViewObjectBase):
             }
 
         # Initialize super class
-        super(BarPlot, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
-                                                plotOptions=plotOptions, tooltip_format=tooltip_format, x_axis=x_axis,
-                                                y_axis=y_axis, **kwargs)
+        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series,
+                                          plotOptions=plotOptions, tooltip_format=tooltip_format, x_axis=x_axis,
+                                          y_axis=y_axis, **kwargs)
 
 
-class TimeSeries(PlotViewObjectBase):
+class TimeSeries(PlotViewBase):
     """
     Use to create a  timeseries plot visualization
 
@@ -994,10 +1035,13 @@ class TimeSeries(PlotViewObjectBase):
         {% gizmo _plot_view timeseries_plot %}
     """
 
-    def __init__(self, series=[], title='', subtitle='', y_axis_title='', y_axis_units='', **kwargs):
+    def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='', y_axis_title='',
+                 y_axis_units='', **kwargs):
         """
         Constructor
         """
+        # Initialize super class
+        super(TimeSeries, self).__init__(height=height, width=width, engine=engine)
 
         chart = {
             'type': 'area',
@@ -1021,12 +1065,12 @@ class TimeSeries(PlotViewObjectBase):
         }
 
         # Initialize super class
-        super(TimeSeries, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
-                                                   x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format,
-                                                   **kwargs)
+        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series,
+                                          x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format,
+                                          **kwargs)
 
 
-class AreaRange(PlotViewObjectBase):
+class AreaRange(PlotViewBase):
     """
     Use to create a  area range plot visualization.
 
@@ -1104,10 +1148,13 @@ class AreaRange(PlotViewObjectBase):
 
     """
 
-    def __init__(self, series=[], title='', subtitle='', y_axis_title='', y_axis_units='', **kwargs):
+    def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='',
+                 y_axis_title='', y_axis_units='', **kwargs):
         """
         Constructor
         """
+        # Initialize super class
+        super(AreaRange, self).__init__(height=height, width=width, engine=engine)
 
         chart = {
         }
@@ -1129,11 +1176,11 @@ class AreaRange(PlotViewObjectBase):
         }
 
         # Initialize super class
-        super(AreaRange, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series,
-                                                  x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series,
+                                          x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
 
 
-class HeatMap(PlotViewObjectBase):
+class HeatMap(PlotViewBase):
     """
     Use to create a  heat map visualization.
 
@@ -1205,13 +1252,16 @@ class HeatMap(PlotViewObjectBase):
 
     """
 
-    def __init__(self, series=[], title='', subtitle='', x_categories=[], y_categories=[], tooltip_phrase_one='',
-                 tooltip_phrase_two='', **kwargs):
+    def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='', x_categories=[],
+                 y_categories=[], tooltip_phrase_one='', tooltip_phrase_two='', **kwargs):
         """
         Constructor
 
         Args:
         """
+        # Initialize super class
+        super(HeatMap, self).__init__(height=height, width=width, engine=engine)
+
         chart = {
             'type': 'heatmap',
             'marginTop': 40,
@@ -1232,4 +1282,5 @@ class HeatMap(PlotViewObjectBase):
         }
 
         # Initialize super class
-        super(HeatMap, self).__init__(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis,
+                                          y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
