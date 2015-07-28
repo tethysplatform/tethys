@@ -175,7 +175,10 @@ def index(request):
                                           error='Here is my error text')
 
     # Plot Views
-    highcharts_object = HighChartsLinePlot(title='Plot Title',
+    line_plot_view = LinePlot(height='500px',
+                              width='500px',
+                              engine='highcharts',
+                              title='Plot Title',
                                            subtitle='Plot Subtitle',
                                            spline=True,
                                            x_axis_title='Altitude',
@@ -209,12 +212,15 @@ def index(request):
                                            ]
                                            )
 
-    line_plot_view = PlotView(highcharts_object=highcharts_object,
-                              width='500px',
-                              height='500px')
+    # line_plot_view = PlotView(highcharts_object=highcharts_object,
+    #                           width='500px',
+    #                           height='500px')
 
     # D3 Line Plot View
-    d3_line_plot_object = LinePlot(title='Plot Title',
+    d3_line_plot_view = LinePlot(height='500px',
+                                 width='500px',
+                                 engine='d3',
+                                   title='Plot Title',
                                    subtitle='Plot Subtitle',
                                    spline=True,
                                    x_axis_title='Altitude',
@@ -245,9 +251,9 @@ def index(request):
                                    ]
                                    )
 
-    d3_line_plot_view = PlotView(plot_object=d3_line_plot_object,
-                              width='500px',
-                              height='500px')
+    # d3_line_plot_view = PlotView(plot_object=d3_line_plot_object,
+    #                           width='500px',
+    #                           height='500px')
 
     # Plot Views
     male_dataset = {
@@ -309,7 +315,10 @@ def index(request):
                                  height='500px')
 
     # D3 Scatter Plot
-    d3_scatter_plot_object = ScatterPlot(title='D3 Scatter Plot',
+    d3_scatter_plot_view = ScatterPlot(width='500px',
+                                        height='500px',
+                                        engine='d3',
+                                        title='D3 Scatter Plot',
                                          subtitle='D3 Scatter Plot',
                                          x_axis_title='Height',
                                          x_axis_units='cm',
@@ -318,9 +327,9 @@ def index(request):
                                          series=[male_dataset, female_dataset]
                                         )
 
-    d3_scatter_plot_view = PlotView(plot_object=d3_scatter_plot_object,
-                                    width='500px',
-                                    height='500px')
+    # d3_scatter_plot_view = PlotView(plot_object=d3_scatter_plot_object,
+    #                                 width='500px',
+    #                                 height='500px')
 
     # Web Plot
     web_plot_object = HighChartsPolarPlot(title='Polar Chart',
@@ -376,7 +385,10 @@ def index(request):
                              height='500px')
 
     # D3 Pie Plot
-    d3_pie_plot_object = PiePlot(title='Pie Chart',
+    d3_pie_plot_view = PiePlot(width='500px',
+                               height='500px',
+                               engine='d3',
+                               title='Pie Chart',
                                  subtitle='Pie Chart',
                                  series=[
                                           {'name': 'Firefox', 'value': 45.0},
@@ -387,9 +399,9 @@ def index(request):
                                           {'name': 'Others', 'value': 0.7}
                                  ])
 
-    d3_pie_plot_view = PlotView(plot_object=d3_pie_plot_object,
-                                width='500px',
-                                height='500px')
+    # d3_pie_plot_view = PlotView(plot_object=d3_pie_plot_object,
+    #                             width='500px',
+    #                             height='500px')
 
     # Bar Plot
     bar_plot_view = HighChartsBarPlot(
