@@ -1,4 +1,5 @@
 from django.conf import settings
+from pprint import pprint
 
 
 def global_dependencies(context):
@@ -93,10 +94,14 @@ def fetchclimate(context):
             'tethys_gizmos/js/fetchclimate/fetchclimate_plot.js',
             'tethys_gizmos/js/fetchclimate/fetchclimate_data.js')
 
-def d3_plot_view(context):
+def plot_view(context):
     """
     Dependencies for D3 Plots.
     """
-    return ('tethys_gizmos/css/d3_plot_view.css',
+
+    return ('tethys_gizmos/css/plot_view.css',
+            'tethys_gizmos/vendor/highcharts/js/highcharts.js',
+            'tethys_gizmos/vendor/highcharts/js/highcharts-more.js',
+            'tethys_gizmos/vendor/highcharts/js/modules/exporting.js',
             'https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js',
-            'tethys_gizmos/js/d3_plot_view.js')
+            'tethys_gizmos/js/plot_view.js')
