@@ -25,7 +25,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
  	*                    PRIVATE FUNCTION DECLARATIONS
  	*************************************************************************/
  	// Date picker private methods
- 	var functionReviver, initD3Plot, initD3LinePlot, initD3PiePlot, initD3ScatterPlot;
+ 	var functionReviver, initD3Plot, initD3LinePlot, initD3PiePlot, initD3ScatterPlot, initHighChartsPlot;
 
  	functionReviver = function(k, v) {
  		if (typeof v === 'string' && v.indexOf('function') !== -1) {
@@ -48,12 +48,14 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 	    var chart_type;
 
 	    chart_type = json.chart_type;
-console.log(json.chart.type);
+
 	    if ('type' in json.chart) {
 	        if (json.chart.type === 'line' || json.chart.type === 'spline') {
 	            initD3LinePlot(element, json);
             } else if (json.chart.type === 'scatter') {
                 initD3ScatterPlot(element, json);
+            } else if (json.chart.type === 'column' || json.chart.type === 'bar') {
+                initD3BarPlot(element, json);
             }
 	    } else  if ('plotOptions' in json) {
 	        var plot_options = json.plotOptions;
@@ -64,7 +66,7 @@ console.log(json.chart.type);
 	};
 
     initD3LinePlot = function(element, json) {
-    console.log(json);
+
         var title = json.title.text;
         var subtitle = json.subtitle.text;
         var x_axis_title = json.xAxis.title.text;
@@ -411,24 +413,24 @@ console.log(json.chart.type);
 
         // add the tooltip area to the webpage
         var tooltip = d3.select(element).append("div")
-            .attr("class", "d3-tooltip")
+            .attr("class", "d3-scatter-tooltip")
             .style("opacity", 0);
 
         var number_of_series = series.length;
-        var number_of_points = series[0].data.length;
 
-        var dataCallback = function (d, i, j) {
+
+        var dataPoints = function (d, i, j) {
             d[i].x.push(series[i].data[j][0]);
             d[i].y.push(series[i].data[j][1]);
         };
 
         for (var i = 0; i < number_of_series; i++) {
-
+            var number_of_points = series[i].data.length;
             series[i].x = [];
             series[i].y = [];
 
             for (var j = 0; j < number_of_points; j++) {
-                dataCallback(series, i, j);
+                dataPoints(series, i, j);
             };
         };
 
@@ -453,7 +455,7 @@ console.log(json.chart.type);
                 .attr("x", width)
                 .attr("y", -6)
                 .style("text-anchor", "end")
-                .text(x_axis_title + " (" + x_axis_units + ")");
+                .text(x_axis_title);
 
         // y-axis
         svg.append("g")
@@ -465,7 +467,7 @@ console.log(json.chart.type);
                 .attr("y", 6)
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
-                .text(y_axis_title + " (" + y_axis_units + ")");
+                .text(y_axis_title);
 
         for (var i = 0; i < number_of_series; i++) {
 
@@ -504,6 +506,22 @@ console.log(json.chart.type);
                 .text(function (d) { return d; });
 	};
 
+	initHighChartsPlot = function(element, plot_type) {
+		if ($(element).attr('data-json')) {
+			var json_string, json;
+
+			// Get string from data-json attribute of element
+			json_string = $(element).attr('data-json');
+
+			// Parse the json_string with special reviver
+			json = JSON.parse(json_string, functionReviver);
+			$(element).highcharts(json);
+		}
+		else if (plot_type === 'line' || plot_type === 'spline') {
+			initLinePlot(element, plot_type);
+		}
+	};
+
 	/************************************************************************
  	*                            TOP LEVEL CODE
  	*************************************************************************/
@@ -529,6 +547,12 @@ console.log(json.chart.type);
 
 		        initD3Plot(this, json);
 		    }
+		});
+
+		// Initialize any plots
+		$('.highcharts-plot').each(function() {
+			var plot_type = $(this).attr('data-type');
+			initHighChartsPlot(this, plot_type);
 		});
 	});
 
