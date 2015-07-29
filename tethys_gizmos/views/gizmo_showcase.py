@@ -429,6 +429,31 @@ def index(request):
                              width='500px',
                              height='500px')
 
+    # D3 Bar Plot
+    d3_bar_plot_view = BarPlot(
+        title='Bar Chart',
+        subtitle='Bar Chart',
+        vertical=True,
+        categories=[
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ],
+        axis_units='millions',
+        axis_title='Population',
+        series=[{
+                'name': "Year 1800",
+                'data': [100, 31, 635, 203, 275, 487, 872, 671, 736, 568, 487, 432]
+            }, {
+                'name': "Year 1900",
+                'data': [133, 200, 947, 408, 682, 328, 917, 171, 482, 140, 176, 237]
+            }, {
+                'name': "Year 2000",
+                'data': [764, 628, 300, 134, 678, 200, 781, 571, 773, 192, 836, 172]
+            }, {
+                'name': "Year 2008",
+                'data': [973, 914, 500, 400, 349, 108, 372, 726, 638, 927, 621, 364]
+            }
+        ]
+    )
 
     # Time series plot
     timeseries_plot_object = HighChartsTimeSeries(
@@ -839,6 +864,7 @@ def index(request):
                'd3_pie_plot_view': d3_pie_plot_view,
                'd3_line_plot_view': d3_line_plot_view,
                'd3_scatter_plot_view': d3_scatter_plot_view,
+               'd3_bar_plot_view': d3_bar_plot_view,
                'bar_plot_view': bar_plot_view,
                'area_range_plot': area_range_plot,
                'heat_map_plot': heat_map_plot,
