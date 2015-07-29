@@ -113,4 +113,5 @@ def plot_view(context):
             'tethys_gizmos/vendor/highcharts/js/highcharts-more.js',
             'tethys_gizmos/vendor/highcharts/js/modules/exporting.js',
             'https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js',
+            'http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js',
             'tethys_gizmos/js/plot_view.js')

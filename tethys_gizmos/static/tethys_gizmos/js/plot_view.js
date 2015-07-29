@@ -25,7 +25,8 @@ var TETHYS_D3_PLOT_VIEW = (function() {
  	*                    PRIVATE FUNCTION DECLARATIONS
  	*************************************************************************/
  	// Date picker private methods
- 	var functionReviver, initD3Plot, initD3LinePlot, initD3PiePlot, initD3ScatterPlot, initHighChartsPlot;
+ 	var functionReviver, initD3Plot, initD3LinePlot, initD3PiePlot, initD3ScatterPlot, initHighChartsPlot,
+ 	    initD3BarPlot;
 
  	functionReviver = function(k, v) {
  		if (typeof v === 'string' && v.indexOf('function') !== -1) {
@@ -504,6 +505,125 @@ var TETHYS_D3_PLOT_VIEW = (function() {
                 .attr("dy", ".35em")
                 .style("text-anchor", "end")
                 .text(function (d) { return d; });
+	};
+
+	initD3BarPlot = function(element, json) {
+	    var title = json.title.text;
+	    var subtitle = json.subtitle.text;
+	    var axisTitle = json.yAxis.title.text;
+	    var categories = json.xAxis.categories;
+	    var series = json.series;
+
+	    var margin = {top: 40, right: 20, bottom: 30, left: 40},
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+        var x0 = d3.scale.ordinal()
+            .rangeRoundBands([0, width], .1);
+
+        var x1 = d3.scale.ordinal();
+
+        var y = d3.scale.linear()
+            .range([height, 0]);
+
+        var color = d3.scale.category20();
+
+        var xAxis = d3.svg.axis()
+            .scale(x0)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .tickFormat(d3.format(".2s"));
+
+        var tip = d3.tip()
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function (d, j, m) {
+                return "<strong>" + series[j].name + ":</strong> <span style='color:yellow'>" + series[j].data[m] + "</span>";
+            });
+
+        var svg = d3.select(element).append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        //Create the chart title and subtitle
+        svg.append("text")
+            .attr("x", (width/2))
+            .attr("y", 0 - (margin.top / 2))
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .text(title);
+        svg.append("text")
+            .attr("x", (width/2))
+            .attr("y", 0 - (margin.top / 8))
+            .attr("text-anchor", "middle")
+            .style("font-size", "14px")
+            .text(subtitle);
+
+        svg.call(tip);
+
+        x0.domain(categories);
+        x1.domain(d3.keys(series)).rangeRoundBands([0, x0.rangeBand()]);
+        y.domain([0, d3.max(series, function (d) { return d3.max(d.data); })]);
+
+        svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + height + ")")
+              .call(xAxis);
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text(axisTitle);
+
+        var xPosition = x0.range();
+        var xPosition0 = x1.range();
+
+        var period = svg.selectAll(".period")
+            .data(categories)
+            .enter().append("g")
+                .attr("class", "g")
+                .attr("transform", function (d, i) { return "translate(" + xPosition[i] + ",0)"; });
+
+        period.selectAll("rect")
+            .data(series)
+            .enter().append("rect")
+                .attr("width", x1.rangeBand())
+                .attr("x", function (d, m) { return x0(xPosition); })
+                .attr("y", function (d, i, j) { return y(d.data[j]); })
+                .attr("height", function (d, i, j) { return height - y(d.data[j]); })
+                .attr("transform", function (d, i) { return "translate(" + xPosition0[i] +",0)"; })
+                .style("fill", function (d) { return color(d.name); })
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide);
+
+        var legend = svg.selectAll(".legend")
+            .data(series.slice().reverse())
+            .enter().append("g")
+                .attr("class", "legend")
+                .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+        legend.append("rect")
+            .attr("x", width - 18)
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", function (d) { return color(d.name); });
+
+        legend.append("text")
+            .attr("x", width - 24)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(function (d) { return d.name; });
 	};
 
 	initHighChartsPlot = function(element, plot_type) {
