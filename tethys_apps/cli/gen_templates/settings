@@ -60,10 +60,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'social_auth.backends.facebook.FacebookBackend',
-    'social_auth.backends.google.GoogleOAuthBackend',
-    'social_auth.backends.google.GoogleOAuth2Backend',
-    'social_auth.backends.google.GoogleBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -144,14 +140,6 @@ GRAVATAR_DEFAULT_SIZE = '80'
 GRAVATAR_DEFAULT_IMAGE = 'retro'
 GRAVATAR_DEFAULT_RATING = 'g'
 GRAVATAR_DFFAULT_SECURE = True
-
-# OAuth Keys
-FACEBOOK_APP_ID              = ''
-FACEBOOK_API_SECRET          = ''
-GOOGLE_CONSUMER_KEY          = ''
-GOOGLE_CONSUMER_SECRET       = ''
-GOOGLE_OAUTH2_CLIENT_ID      = ''
-GOOGLE_OAUTH2_CLIENT_SECRET  = ''
 
 # Templates and static files
 STATICFILES_FINDERS = ('django.contrib.staticfiles.finders.FileSystemFinder',

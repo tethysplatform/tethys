@@ -17,8 +17,9 @@ def validate_dataset_service_endpoint(value):
     """
     validate_url(value)
 
-    if '/api/3/action' not in value:
-        raise ValidationError('Invalid Endpoint: CKAN endpoints follow the pattern "http://example.com/api/3/action".')
+    if '/api/3/action' not in value and '/hsapi' not in value:
+        raise ValidationError('Invalid Endpoint: CKAN endpoints follow the pattern "http://example.com/api/3/action" '
+                              'and HydroShare endpoints must follow the pattern "http://example.com/hsapi"')
 
 
 def validate_spatial_dataset_service_endpoint(value):
