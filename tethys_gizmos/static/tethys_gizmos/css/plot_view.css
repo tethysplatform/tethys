@@ -4,7 +4,6 @@
 
 rect {
     cursor: pointer;
-    stroke: #000;
 }
 
 rect.disabled {
