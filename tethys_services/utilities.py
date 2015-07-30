@@ -16,6 +16,18 @@ from pprint import pprint
 def ensure_oauth2(provider):
     """
     Decorator to ensure a user has been authenticated with the given oauth2 provider.
+
+    Usage:
+
+        from tethys_apps.sdk import ensure_oauth2, get_dataset_engine
+
+        @ensure_oauth2('hydroshare-oauth2')
+        def controller(request):
+            engine = get_dataset_engine('default_hydroshare', request=request)
+            return render(request, 'my_template.html', {})
+
+    Note that calling get_dataset_engine for a hydroshare dataset engine will throw an error 
+    if it is not called in a function that is decorated with the ensure_oauth2 decorator.
     """
     def decorator(function):
         @wraps(function)
