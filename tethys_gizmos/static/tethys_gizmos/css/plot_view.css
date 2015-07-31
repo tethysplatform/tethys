@@ -15,21 +15,6 @@ h1 {
     text-align: center;
 }
 
-.d3-tooltip {
-    background: #eee;
-    box-shadow: 0 0 5px #999999;
-    color: #333;
-    display: none;
-    font-size: 12px;
-    left: 130px;
-    padding: 10px;
-    position: absolute;
-    text-align: center;
-    top: 95px;
-    width: 80px;
-    z-index: 10;
-}
-
 body {
   font: 11px sans-serif;
 }
@@ -62,24 +47,10 @@ body {
 
 .d3-tip {
   line-height: 1;
-  font-weight: bold;
   padding: 12px;
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
   border-radius: 2px;
-}
-
-/* Creates a small triangle extender for the bar plot tooltip */
-.d3-tip:after {
-  box-sizing: border-box;
-  display: inline;
-  font-size: 10px;
-  width: 100%;
-  line-height: 1;
-  color: rgba(0, 0, 0, 0.8);
-  content: "\25BC";
-  position: absolute;
-  text-align: center;
 }
 
 /* Style northward tooltips differently */
