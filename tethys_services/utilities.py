@@ -5,7 +5,7 @@ from owslib.wps import WebProcessingService
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
-from social.exceptions import AuthAlreadyAssociated
+from social.exceptions import AuthAlreadyAssociated, AuthException
 
 from tethys_apps.base.app_base import TethysAppBase
 from .models import DatasetService as DsModel, SpatialDatasetService as SdsModel, WebProcessingService as WpsModel
@@ -60,6 +60,9 @@ def initialize_engine_object(engine, endpoint, apikey=None, username=None, passw
     """
     Initialize a DatasetEngine object from a string that points at the engine class.
     """
+    # Constants
+    HYDROSHARE_OAUTH_PROVIDER_NAME = 'hydroshare'
+
     # Derive import parts from engine string
     engine_split = engine.split('.')
     module_string = '.'.join(engine_split[:-1])
@@ -74,12 +77,14 @@ def initialize_engine_object(engine, endpoint, apikey=None, username=None, passw
         user = request.user
 
         try:
-            social = user.social_auth.get(provider='google-oauth2') # TODO: change to hydroshare-oauth2 when implemented
+            # social = user.social_auth.get(provider='google-oauth2')
+            social = user.social_auth.get(provider=HYDROSHARE_OAUTH_PROVIDER_NAME)
             apikey = social.extra_data['access_token']
         except ObjectDoesNotExist:
             # User is not associated with that provider
             # Need to prompt for association
-            raise ValueError('Use ensure_oauth2 decorator...') # TODO: Use a better exception or create a custom exception here.
+            raise AuthException("HydroShare authentication required. To automate the authentication prompt decorate "
+                                "your controller function with the @ensure_oauth('hydroshare') decorator.")
         except AttributeError:
             # Anonymous User...
             raise
