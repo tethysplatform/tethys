@@ -38,11 +38,118 @@
   }
 }
 
+.btn-hydroshare {
+  color: @default-header-text-color;
+  background-color: #ffffff;
+  border-color: rgba(0,0,0,0.2);
+}
+
+.btn-hydroshare:hover {
+  color: #ffffff;
+  background-color: #71a43a;
+  border-color: rgba(0,0,0,0.2);
+}
+
+.fa-hydroshare {
+  background-image:url(/static/tethys_portal/images/hs-icon-sm.png);
+  background-repeat: no-repeat;
+  background-size: 75%;
+  background-position: 4px 5px;
+}
+
+.btn-google {
+  background-color: #ffffff;
+  color: @default-header-text-color;
+}
+
+.fa-google {
+  color: #dd4b39;
+}
+
+.btn-google:hover {
+  background-color: #dd4b39;
+
+  .fa-google {
+    color: #ffffff;
+  }
+}
+
+.btn-linkedin {
+  background-color: #ffffff;
+  color: @default-header-text-color;
+}
+
+.fa-linkedin {
+  color: #007bb6;
+}
+
+.btn-linkedin:hover {
+  background-color: #007bb6;
+
+  .fa-linkedin {
+    color: #ffffff;
+  }
+}
+
+.btn-facebook {
+  background-color: #ffffff;
+  color: @default-header-text-color;
+}
+
+.fa-facebook {
+  color: #3b5998;
+}
+
+.btn-facebook:hover {
+  background-color: #3b5998;
+
+  .fa-facebook {
+    color: #ffffff;
+  }
+}
+
+.btn-social {
+  font-size: 15px;
+  font-weight: 500;
+  .font-smoothing();
+
+}
+
+.btn-block+.btn-block {
+    margin-top: 10px;
+}
+
+.social-divide-or {
+  position: relative;
+  margin: 30px 0;
+  width: 100%;
+  text-align: center;
+
+
+  .line {
+    width: 100%;
+    height: 1px;
+    background-color: #dddddd;
+  }
+
+  .or {
+    position: absolute;
+    left: 50%;
+    top: -15px;
+    margin-left: -20px;
+    background-color: #ffffff;
+    padding: 0 10px;
+    font-size: 20px;
+    color: @default-header-text-color;
+    .font-smoothing();
+  }
+}
+
 // Mobile styles
 @media(max-width: 992px) {
 
   .account-form-wrapper {
     margin: 0;
   }
-
 }
+
