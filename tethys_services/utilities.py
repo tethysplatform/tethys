@@ -3,14 +3,13 @@ from functools import wraps
 
 from owslib.wps import WebProcessingService
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from social.exceptions import AuthAlreadyAssociated
 
 from tethys_apps.base.app_base import TethysAppBase
 from .models import DatasetService as DsModel, SpatialDatasetService as SdsModel, WebProcessingService as WpsModel
 from tethys_dataset_services.engines import HydroShareDatasetEngine
-
-from pprint import pprint
 
 
 def ensure_oauth2(provider):
@@ -34,14 +33,19 @@ def ensure_oauth2(provider):
         def wrapper(request, *args, **kwargs):
             user = request.user
 
+            # Assemble redirect response
+            redirect_url = reverse('social:begin', args=[provider]) + '?next={0}'.format(request.path)
+            redirect_response = redirect(redirect_url)
+
             try:
-                social = user.social_auth.get(provider=provider)
+                user.social_auth.get(provider=provider)
             except ObjectDoesNotExist:
                 # User is not associated with that provider
-                return redirect('/login/{0}/?next={1}'.format(provider, request.path))
+                return redirect_response
             except AttributeError:
                 # Anonymous User needs to be logged in and associated with that provider
-                return redirect('/login/{0}/?next={1}'.format(provider, request.path))
+                # return redirect('/login/{0}/?next={1}'.format(provider, request.path))
+                return redirect_response
             except AuthAlreadyAssociated:
                 # Another user has already used the account to associate...
                 raise
@@ -65,7 +69,7 @@ def initialize_engine_object(engine, endpoint, apikey=None, username=None, passw
     module = __import__(module_string, fromlist=[engine_class_string])
     EngineClass = getattr(module, engine_class_string)
 
-    # Get Token if HydroShare
+    # Get Token for HydroShare interactions
     if EngineClass is HydroShareDatasetEngine:
         user = request.user
 
@@ -75,7 +79,7 @@ def initialize_engine_object(engine, endpoint, apikey=None, username=None, passw
         except ObjectDoesNotExist:
             # User is not associated with that provider
             # Need to prompt for association
-            raise ValueError('Use ensure_oauth2 decorator...') # TODO: Fix This...
+            raise ValueError('Use ensure_oauth2 decorator...') # TODO: Use a better exception or create a custom exception here.
         except AttributeError:
             # Anonymous User...
             raise
@@ -83,7 +87,6 @@ def initialize_engine_object(engine, endpoint, apikey=None, username=None, passw
             raise
         except:
             raise
-
 
     # Create Engine Object
     engine_instance = EngineClass(endpoint=endpoint,
