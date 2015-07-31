@@ -794,7 +794,7 @@ a:hover {
 }
 .user-dropdown .user-dropdown-menu {
   padding: 0;
-  min-width: 150px;
+  min-width: 155px;
 }
 .user-dropdown .user-dropdown-menu li {
   display: block;
@@ -1891,6 +1891,12 @@ footer.site-footer .tethys-attribution a:hover {
 .btn-google:hover .fa-google {
   color: #ffffff;
 }
+.btn-google:focus {
+  background-color: #dd4b39;
+}
+.btn-google:focus .fa-google {
+  color: #ffffff;
+}
 .btn-linkedin {
   background-color: #ffffff;
   color: #555555;
@@ -1904,6 +1910,12 @@ footer.site-footer .tethys-attribution a:hover {
 .btn-linkedin:hover .fa-linkedin {
   color: #ffffff;
 }
+.btn-linkedin:focus {
+  background-color: #007bb6;
+}
+.btn-linkedin:focus .fa-linkedin {
+  color: #ffffff;
+}
 .btn-facebook {
   background-color: #ffffff;
   color: #555555;
@@ -1915,6 +1927,12 @@ footer.site-footer .tethys-attribution a:hover {
   background-color: #3b5998;
 }
 .btn-facebook:hover .fa-facebook {
+  color: #ffffff;
+}
+.btn-facebook:focus {
+  background-color: #3b5998;
+}
+.btn-facebook:focus .fa-facebook {
   color: #ffffff;
 }
 .btn-social {
