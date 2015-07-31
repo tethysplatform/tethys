@@ -1,5 +1,5 @@
 /*****************************************************************************
- * FILE:    d3_plot_view.js
+ * FILE:    plot_view.js
  * DATE:    15 July 2015
  * AUTHOR: Ezra J. Rice
  * COPYRIGHT: (c) 2015 Brigham Young University
@@ -114,8 +114,14 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             }
         }
 
+        if (json.chart.type === 'spline') {
+            var line_type = "cardinal";
+        } else {
+            var line_type = "linear";
+        }
+
         var line = d3.svg.line()
-            .interpolate("linear")
+            .interpolate(line_type)
             .x(function (d) { return x(d[0]); })
             .y(function (d) { return y(d[1]); });
 
@@ -264,18 +270,19 @@ var TETHYS_D3_PLOT_VIEW = (function() {
               .sort(null);
 
             //Create the variable and set up changes necessary for the tooltip
-            var tooltip = d3.select(element)
-              .append('div')
-              .attr('class', 'd3-tooltip');
 
-            tooltip.append('div')
-              .attr('class', 'name');
+            var tooltip = d3.tip()
+                .attr('class', 'd3-tip')
+                .html(function (d) {
+                var total = d3.sum(series.map(function (d) {
+                  return (d.enabled) ? d.value : 0;
+                }));
+                var percent = Math.round(1000 * d.data.value / total) / 10;
+                    return "<strong>" + d.data.name + "</strong><br>" + 'Value: ' + d.data.value + "<br>" + percent + '%';
+                });
 
-            tooltip.append('div')
-              .attr('class', 'value');
+            svg.call(tooltip);
 
-            tooltip.append('div')
-              .attr('class', 'percent');
             //End tooltip variable manipulation
 
             var path = svg.selectAll('path')
@@ -286,23 +293,11 @@ var TETHYS_D3_PLOT_VIEW = (function() {
               .attr('fill', function (d, i) {
                 return color(d.data.name);
               })
-              .each(function (d) { this._current = d; });
-
-              /*
-              This function is what makes the tooltip appear when the mouse
-              hovers over the section.
-              */
-              path.on('mouseover', function (d) {
-                var total = d3.sum(series.map(function (d) {
-                  return (d.enabled) ? d.value : 0;
-                }));
-                var percent = Math.round(1000 * d.data.value / total) / 10;
-                tooltip.select('.name').html(d.data.name);
-                tooltip.select('.value').html('Value: ' + d.data.value);
-                tooltip.select('.percent').html(percent + '%');
-                tooltip.style('display', 'block');
-              });
-              //End tooltip call function
+              .each(function (d) { this._current = d; })
+              .on('mouseover', tooltip.show)
+              .on('mousemove', function(){return tooltip.style("top",
+                  (d3.event.pageY-75) + "px").style("left", (d3.event.pageX-50) + "px");})
+              .on('mouseout', tooltip.hide);
 
               //Create legend
               var legend = svg.selectAll('.legend')
