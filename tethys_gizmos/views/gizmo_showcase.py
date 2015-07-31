@@ -35,7 +35,7 @@ def index(request):
     """
     # Docs version
     docs_version = '1.1.0'
-    docs_endpoint = 'http://docs.tethys.ci-water.org/en/' + docs_version
+    docs_endpoint = 'http://docs.tethysplatform.org/en/latest'
 
     # Uncomment this line for debugging on the localhost
     # docs_endpoint = 'http://localhost:63342/tethys/docs/_build/html'
