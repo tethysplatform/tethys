@@ -21,6 +21,8 @@ user_urls = [
     url(r'^$', 'tethys_portal.views.user.profile', name='profile'),
     url(r'^settings/$', 'tethys_portal.views.user.settings', name='settings'),
     url(r'^change-password/$', 'tethys_portal.views.user.change_password', name='change_password'),
+    url(r'^disconnect/(?P<provider>[\w.@+-]+)/(?P<association_id>[0-9]+)/$', 'tethys_portal.views.user.social_disconnect', name='disconnect'),
+    url(r'^delete-account/$', 'tethys_portal.views.user.delete_account', name='delete'),
 ]
 
 developer_urls = [
