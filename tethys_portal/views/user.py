@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth import logout
 
 from django.contrib import messages
 
@@ -62,6 +63,9 @@ def settings(request, username=None):
 
 @login_required()
 def change_password(request, username=None):
+    """
+    Handle change password request.
+    """
     # Get the user object from model
     request_user = request.user
 
@@ -98,3 +102,46 @@ def change_password(request, username=None):
     context = {'form': form}
 
     return render(request, 'tethys_portal/user/change_password.html', context)
+
+@login_required()
+def social_disconnect(request, username, provider, association_id):
+    """
+    Display a confirmation for disconnect a social account.
+    """
+    # Users are not allowed to make changes to other users settings
+    if request.user.username != username:
+        messages.warning(request, "You are not allowed to change other users' settings.")
+        return redirect('user:profile', username=request.user.username)
+
+    context = {'provider': provider,
+               'association_id': association_id}
+    return render(request, 'tethys_portal/user/disconnect.html', context)
+
+
+@login_required()
+def delete_account(request, username):
+    """
+    Handle account delete requests.
+    """
+    # Users are not allowed to make changes to other users settings
+    if request.user.username != username:
+        messages.warning(request, "You are not allowed to change other users' settings.")
+        return redirect('user:profile', username=request.user.username)
+
+    # Handle form submission
+    if request.method == 'POST' and 'delete-account-submit' in request.POST:
+        # Delete user
+        request.user.delete()
+
+        # Perform user logout
+        logout(request)
+
+        # Give feedback
+        messages.success(request, 'Your account has been successfully deleted.')
+
+        # Redirect to home
+        return redirect('home')
+
+    context = {}
+
+    return render(request, 'tethys_portal/user/delete.html', context)

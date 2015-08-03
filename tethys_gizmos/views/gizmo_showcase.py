@@ -34,7 +34,6 @@ def index(request):
     Django view for the gizmo showcase page
     """
     # Docs version
-    docs_version = '1.1.0'
     docs_endpoint = 'http://docs.tethysplatform.org/en/latest'
 
     # Uncomment this line for debugging on the localhost
@@ -721,8 +720,7 @@ def index(request):
                                legend=True)
 
     # Define the context object
-    context = {'docs_version': docs_version,
-               'docs_endpoint': docs_endpoint,
+    context = {'docs_endpoint': docs_endpoint,
                'single_button': single_button,
                'horizontal_buttons': horizontal_buttons,
                'vertical_buttons': vertical_buttons,

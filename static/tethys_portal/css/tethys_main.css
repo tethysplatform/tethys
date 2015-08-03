@@ -1859,8 +1859,14 @@ footer.site-footer .tethys-attribution a:hover {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.account-form-wrapper.disconnect p {
+  padding: 20px 0;
+}
 .account-form-wrapper .account-form-body {
   margin-top: 50px;
+}
+.account-form-wrapper .help-block {
+  margin-top: 10px;
 }
 .btn-hydroshare {
   color: #555555;
@@ -2038,6 +2044,16 @@ footer.site-footer .tethys-attribution a:hover {
 .profile-section .profile-parameters ul li .value {
   float: left;
 }
+.profile-section .profile-parameters ul li .value.button {
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-font-smoothing: subpixel-antialiased;
+  -ms-font-smoothing: subpixel-antialiased;
+  -o-font-smoothing: subpixel-antialiased;
+  font-smoothing: subpixel-antialiased;
+}
+.profile-section .profile-parameters ul li .value.button .btn {
+  font-size: 13.5px;
+}
 .profile-section .profile-parameters ul > li:last-of-type {
   margin-bottom: 0;
 }
@@ -2065,6 +2081,15 @@ footer.site-footer .tethys-attribution a:hover {
 }
 .profile-section .profile-parameters .form-control {
   margin-top: 4px;
+}
+.profile-section.social .profile-parameters ul li {
+  height: auto;
+}
+.profile-section.social .profile-parameters ul li .social-label-container {
+  margin-left: 30%;
+}
+.profile-section.social .profile-parameters ul li .social-label-container span {
+  line-height: 32px;
 }
 #settings-buttons {
   margin: 20px 0;
@@ -2113,6 +2138,13 @@ footer.site-footer .tethys-attribution a:hover {
     padding-left: 15px;
     width: 100%;
   }
+  .profile-section.social .profile-parameters ul li .social-label-container {
+    margin-left: 15px;
+  }
+  .profile-section.social .profile-parameters ul li .social-label-container span {
+    line-height: 45px;
+    font-size: 18px;
+  }
   #settings-buttons .btn-toolbar {
     float: none!important;
   }
@@ -2134,6 +2166,38 @@ footer.site-footer .tethys-attribution a:hover {
     width: 80%;
     margin: 0 10%;
   }
+}
+.label-google {
+  color: #dd4b39;
+  border: #aaaaaa solid 1px;
+}
+.label-google:hover {
+  color: #ffffff;
+  background-color: #dd4b39;
+}
+.label-facebook {
+  color: #3b5998;
+  border: #aaaaaa solid 1px;
+}
+.label-facebook:hover {
+  color: #ffffff;
+  background-color: #3b5998;
+}
+.label-hydroshare {
+  color: #71a43a;
+  border: #aaaaaa solid 1px;
+}
+.label-hydroshare:hover {
+  color: #ffffff;
+  background-color: #71a43a;
+}
+.label-linkedin {
+  color: #007bb6;
+  border: #aaaaaa solid 1px;
+}
+.label-linkedin:hover {
+  color: #ffffff;
+  background-color: #007bb6;
 }
 .tethys-secondary-header {
   position: relative;
