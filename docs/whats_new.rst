@@ -2,9 +2,32 @@
 What's New
 **********
 
-**Last Updated:** May 28, 2015
+**Last Updated:** August 4, 2015
 
 Refer to this article for information about each new release of Tethys Platform.
+
+
+Release 1.2.0
+=============
+
+Social Authentication
+---------------------
+
+
+D3 Plotting Gizmos
+------------------
+
+
+Job Manager Gizmo
+-----------------
+
+
+Job Manager Updates
+-------------------
+
+
+Workspaces
+----------
 
 
 Release 1.1.0
