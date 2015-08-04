@@ -47,7 +47,8 @@ INSTALLED_APPS = (
     'tethys_apps',
     'tethys_gizmos',
     'tethys_services',
-    'tethys_compute'
+    'tethys_compute',
+    'social.apps.django_app.default',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -57,9 +58,14 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
+#    'tethys_services.backends.hydroshare.HydroShareOAuth2',
+#    'social.backends.linkedin.LinkedinOAuth2',
+#    'social.backends.google.GoogleOAuth2',
+#    'social.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -156,7 +162,10 @@ TEMPLATE_CONTEXT_PROCESSORS = ('django.contrib.auth.context_processors.auth',
                                'django.core.context_processors.media',
                                'django.core.context_processors.static',
                                'django.core.context_processors.tz',
+                               'django.core.context_processors.request',
                                'django.contrib.messages.context_processors.messages',
+                               'social.apps.django_app.context_processors.backends',
+                               'social.apps.django_app.context_processors.login_redirect',
                                'tethys_config.context_processors.tethys_global_settings_context',
                                'tethys_apps.context_processors.tethys_apps_context',
                                'tethys_gizmos.context_processors.tethys_gizmos_context')
@@ -172,3 +181,29 @@ BYPASS_TETHYS_HOME_PAGE = False
 #EMAIL_HOST_PASSWORD = ''
 #EMAIL_USE_TLS = False
 #DEFAULT_FROM_EMAIL = 'Example <noreply@exmaple.com>'
+
+
+# OAuth Settings
+# http://psa.matiasaguirre.net/docs/configuration/index.html
+SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
+SOCIAL_AUTH_SLUGIFY_USERNAMES = True
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/apps/'
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/accounts/login/'
+
+# OAuth Providers
+## Google
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
+
+## Facebook
+SOCIAL_AUTH_FACEBOOK_KEY = ''
+SOCIAL_AUTH_FACEBOOK_SECRET = ''
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+
+## LinkedIn
+SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = ''
+SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = ''
+
+## HydroShare
+SOCIAL_AUTH_HYDROSHARE_KEY = ''
+SOCIAL_AUTH_HYDROSHARE_SECRET = ''
