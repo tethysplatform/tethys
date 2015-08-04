@@ -485,6 +485,40 @@ def index(request):
                                width='500px',
                                height='500px')
 
+    # D3 Time series plot
+    d3_timeseries_plot_view = TimeSeries(
+        title='Irregular Timeseries Plot',
+        y_axis_title='Snow depth',
+        y_axis_units='m',
+        series=[{
+                    'name': 'Winter 2007-2008',
+                    'data': [
+                        [datetime(2008, 12, 2), 0.8],
+                        [datetime(2008, 12, 9), 0.6],
+                        [datetime(2008, 12, 16), 0.6],
+                        [datetime(2008, 12, 28), 0.67],
+                        [datetime(2009, 1, 1), 0.81],
+                        [datetime(2009, 1, 8), 0.78],
+                        [datetime(2009, 1, 12), 0.98],
+                        [datetime(2009, 1, 27), 1.84],
+                        [datetime(2009, 2, 10), 1.80],
+                        [datetime(2009, 2, 18), 1.80],
+                        [datetime(2009, 2, 24), 1.92],
+                        [datetime(2009, 3, 4), 2.49],
+                        [datetime(2009, 3, 11), 2.79],
+                        [datetime(2009, 3, 15), 2.73],
+                        [datetime(2009, 3, 25), 2.61],
+                        [datetime(2009, 4, 2), 2.76],
+                        [datetime(2009, 4, 6), 2.82],
+                        [datetime(2009, 4, 13), 2.8],
+                        [datetime(2009, 5, 3), 2.1],
+                        [datetime(2009, 5, 26), 1.1],
+                        [datetime(2009, 6, 9), 0.25],
+                        [datetime(2009, 6, 12), 0]
+                    ]
+                }]
+    )
+
     averages = [
         [datetime(2009, 7, 1), 21.5], [datetime(2009, 7, 2), 22.1], [datetime(2009, 7, 3), 23],
         [datetime(2009, 7, 4), 23.8], [datetime(2009, 7, 5), 21.4], [datetime(2009, 7, 6), 21.3],
@@ -858,6 +892,7 @@ def index(request):
                'd3_line_plot_view': d3_line_plot_view,
                'd3_scatter_plot_view': d3_scatter_plot_view,
                'd3_bar_plot_view': d3_bar_plot_view,
+               'd3_timeseries_plot_view': d3_timeseries_plot_view,
                'bar_plot_view': bar_plot_view,
                'area_range_plot': area_range_plot,
                'heat_map_plot': heat_map_plot,

@@ -26,7 +26,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
  	*************************************************************************/
  	// Date picker private methods
  	var functionReviver, initD3Plot, initD3LinePlot, initD3PiePlot, initD3ScatterPlot, initHighChartsPlot,
- 	    initD3BarPlot;
+ 	    initD3BarPlot, initD3TimeSeriesPlot;
 
  	functionReviver = function(k, v) {
  		if (typeof v === 'string' && v.indexOf('function') !== -1) {
@@ -57,6 +57,8 @@ var TETHYS_D3_PLOT_VIEW = (function() {
                 initD3ScatterPlot(element, json);
             } else if (json.chart.type === 'column' || json.chart.type === 'bar') {
                 initD3BarPlot(element, json);
+            } else if (json.chart.type === 'area') {
+                initD3TimeSeriesPlot(element, json);
             }
 	    } else  if ('plotOptions' in json) {
 	        var plot_options = json.plotOptions;
@@ -619,6 +621,64 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             .attr("dy", ".35em")
             .style("text-anchor", "end")
             .text(function (d) { return d.name; });
+	};
+
+	initD3TimeSeriesPlot = function(element, json) {
+	    var title = json.title.text;
+	    var y_axis_title = json.yAxis.title.text;;
+	    var series = json.series;
+
+	    var margin = {top: 40, right: 20, bottom: 30, left: 50},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        var x = d3.time.scale()
+            .range([0, width]);
+
+        var y = d3.scale.linear()
+            .range([height, 0]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
+        var area = d3.svg.area()
+            .x(function(d) { return x(d.date); })
+            .y0(height)
+            .y1(function(d) { return y(d.close); });
+
+        var svg = d3.select(element).append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        x.domain(d3.extent(series[0].data, function(d) { return d.date; }));
+        y.domain([0, d3.max(series[0].data, function(d) { return d.close; })]);
+
+        svg.append("path")
+            .datum(series[0].data)
+            .attr("class", "area")
+            .attr("d", area);
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text(y_axis_title);
 	};
 
 	initHighChartsPlot = function(element, plot_type) {
