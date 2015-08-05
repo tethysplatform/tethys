@@ -647,9 +647,9 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             .orient("left");
 
         var area = d3.svg.area()
-            .x(function(d) { return x(d.date); })
+            .x(function(d) { return x(d[0]); })
             .y0(height)
-            .y1(function(d) { return y(d.close); });
+            .y1(function(d) { return y(d[1]); });
 
         var svg = d3.select(element).append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -657,8 +657,16 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        x.domain(d3.extent(series[0].data, function(d) { return d.date; }));
-        y.domain([0, d3.max(series[0].data, function(d) { return d.close; })]);
+        //Create the chart title and subtitle
+        svg.append("text")
+            .attr("x", (width/2))
+            .attr("y", 0 - (margin.top / 2))
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .text(title);
+
+        x.domain(d3.extent(series[0].data, function(d) { return d[0]; }));
+        y.domain([0, d3.max(series[0].data, function(d) { return d[1]; })]);
 
         svg.append("path")
             .datum(series[0].data)
