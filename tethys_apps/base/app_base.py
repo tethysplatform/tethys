@@ -7,8 +7,15 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import os
+import sys
+
+from django.http import HttpRequest
+from django.contrib.auth.models import User
+from django.utils.functional import SimpleLazyObject
 
 from tethys_compute.job_manager import JobManager
+from tethys_apps.base.workspace import TethysWorkspace
 
 
 class TethysAppBase(object):
@@ -206,3 +213,50 @@ class TethysAppBase(object):
         templates = cls.job_templates()
         job_manager = JobManager(label=cls.package, job_templates=templates)
         return job_manager
+
+
+    @classmethod
+    def get_user_workspace(cls, user):
+        """
+        Get the file workspace (directory) for a user.
+
+        Args:
+          user(User or HttpRequest): User or request object.
+
+        Returns:
+          TethysWorkspace: An object representing the workspace.
+        """
+        username = ''
+
+        if isinstance(user, User):
+            username = user.username
+        elif isinstance(user, HttpRequest):
+            username = user.user.username
+        elif isinstance(user, SimpleLazyObject):
+            username = user.username
+        elif user is None:
+            pass
+        else:
+            raise ValueError("Invalid type for argument 'user': must be either an User or HttpRequest object.")
+
+        if not username:
+            username = 'anonymous_user'
+
+        project_directory = os.path.dirname(sys.modules[cls.__module__].__file__)
+        workspace_directory = os.path.join(project_directory, 'workspaces', 'user_workspaces', username)
+        return TethysWorkspace(workspace_directory)
+
+    @classmethod
+    def get_app_workspace(cls):
+        """
+        Get the file workspace (directory) for the app.
+
+        Returns:
+          tethys_apps.base.TethysWorkspace: An object representing the workspace.
+        """
+        # Find the path to the app project directory
+        ## Hint: cls will be a child class of this class.
+        ## See: http://stackoverflow.com/questions/4006102/is-possible-to-know-the-path-of-the-file-of-a-subclass-in-python
+        project_directory = os.path.dirname(sys.modules[cls.__module__].__file__)
+        workspace_directory = os.path.join(project_directory, 'workspaces', cls.package + '_workspace')
+        return TethysWorkspace(workspace_directory)
