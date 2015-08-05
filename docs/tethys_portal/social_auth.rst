@@ -4,32 +4,24 @@ Social Authentication
 
 **Last Updated:** August 4, 2015
 
-Tethys Portal supports authenticating users with Google, Facebook, LinkedIn and HydroShare. The social authentication and authorization features have been implemented using the `Python Social Auth <http://psa.matiasaguirre.net/>`_ module and the social buttons provided by the `Social Buttons for Bootstrap <http://lipis.github.io/bootstrap-social/>`_.
-
-Social login is disabled by default, because enabling it requires registering your tethys portal instance with each provider. To enable social authentication, follow the directions below for on or more of the providers.
+Tethys Portal supports authenticating users with Google, Facebook, LinkedIn and HydroShare via the OAuth 2.0 method. The social authentication and authorization features have been implemented using the `Python Social Auth <http://psa.matiasaguirre.net/>`_ module and the social buttons provided by the `Social Buttons for Bootstrap <http://lipis.github.io/bootstrap-social/>`_. Social login is disabled by default, because enabling it requires registering your tethys portal instance with each provider.
 
 
 Enable Social Login
 ===================
 
-Enabling social login consists of 3 steps:
-
-1. Register your Tethys Portal instance with the authentication provider
-2. Add the appropriate backend to the AUTHENTICATION_BACKENDS setting in :file:`settings.py`
-3. Add the client ID/key and client secret obtained from the provider on during registration to the :file:`settings.py` file
-
-This process is slightly different for each provider, so detailed instructions are provided for each provider.
+Use the following instructions to setup social login for the providers you desire.
 
 .. caution::
 
-    These instructions assume that you have generated a new settings file after upgrading to 1.2. If this is not the case, please review the :ref:`social_auth_settings` section.
+    These instructions assume that you have generated a new settings file after upgrading to **Tethys Platform 1.2.0**. If this is not the case, please review the :ref:`social_auth_settings` section.
 
 Google
 ------
 
 1. Create a Google Developer Account
 
-  You will need a Google developer account to register your Tethys Portal with Google. To create an account, visit `https://developers.google.com/ <https://developers.google.com/>`_ and sign in with a Google account.
+  You will need a Google developer account to register your Tethys Portal with Google. To create an account, visit `https://developers.google.com <https://developers.google.com>`_ and sign in with a Google account.
 
 2. Create a New Project
 
@@ -65,7 +57,18 @@ Google
 
     Take note the ``Client ID`` and ``Client secret`` that are assigned to your app for the next step.
 
-4. Open ``settings.py`` file located in :file:`/usr/lib/tethys/src/tethys_apps/settings.py`
+3. Enable the Google+ API
+
+  a. Use the navigation on the left to go to ``APIs & auth > APIs``.
+  b. Search for ``Google+ API`` and select it from the results.
+  c. Click on the ``Enable API`` button to enable it.
+
+  .. note::
+
+      Some Google APIs are free to use up to a certain quota of hits. Familiarize your self with the quotas for any APIs you use by selecting the API and viewing the ``Quota`` tab.
+
+
+4. Open  ``settings.py`` script located in :file:`/usr/lib/tethys/src/tethys_apps/settings.py`
 
 
   Add the ``social.backends.google.GoogleOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
@@ -85,12 +88,21 @@ Google
       SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '...'
       SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '...'
 
+References
+++++++++++
+
+For more detailed information about using Google social authentication see the following articles:
+
+* `Python Social Auth Supported Backends: Google <http://psa.matiasaguirre.net/docs/backends/google.html>`_
+* `Developer Console Help <https://developers.google.com/console/help/new/?hl=en_US#generatingoauth2>`_
+* `Google Identity Platform <https://developers.google.com/identity/protocols/OAuth2>`_
+
 Facebook
 --------
 
 1. Create a Facebook Developer Account
 
-  You will need a Facebook developer account to register your Tethys Portal with Facebook. To create an account, visit `https://developers.facebook.com// <https://developers.facebook.com/>`_ and sign in with a Facebook account.
+  You will need a Facebook developer account to register your Tethys Portal with Facebook. To create an account, visit `https://developers.facebook.com <https://developers.facebook.com/>`_ and sign in with a Facebook account.
 
   Point to ``My Apps`` and select ``Become a Facebook Developer``. Click on ``Register Now`` and then accept the terms.
 
@@ -101,7 +113,8 @@ Facebook
   c. Type the name of the new app in the text field and press the ``Create New Facebook App ID`` button from the drop down.
   d. Choose a category and press ``Create App ID``.
   e. View the Quick Start tutorial if you wish or press the ``Skip Quick Start`` button to skip.
-  f. Note the ``App ID`` and ``App Secret`` for later steps.
+
+3. Note the ``App ID`` and ``App Secret`` for Step 5.
 
 4. Setup OAuth
 
@@ -117,9 +130,9 @@ Facebook
 
   .. note::
 
-      The Facebook app must be public for you to allow anyone to authenticate using Facebook in your Tethys Portal. For testing, you can use the ``Roles`` menu item to add specific Facebook users that are allowed to authenticate (like yourself or other developers).
+      The Facebook app must be public for you to allow anyone to authenticate using Facebook in your Tethys Portal. For testing, you can use the ``Roles`` menu item to add specific Facebook users that are allowed to authenticate when the app is in development mode.
 
-4. Open ``settings.py`` file located in :file:`/usr/lib/tethys/src/tethys_apps/settings.py`
+5. Open  ``settings.py`` script located in :file:`/usr/lib/tethys/src/tethys_apps/settings.py`
 
 
   Add the ``social.backends.facebook.FacebookOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
@@ -139,9 +152,71 @@ Facebook
       SOCIAL_AUTH_FACEBOOK_KEY = '...'
       SOCIAL_AUTH_FACEBOOK_SECRET = '...'
 
+References
+++++++++++
+
+For more detailed information about using Facebook social authentication see the following articles:
+
+* `Python Social Auth Supported Backends: Facebook <http://psa.matiasaguirre.net/docs/backends/facebook.html>`_
+* `Facebook Login <https://developers.facebook.com/docs/facebook-login/v2.4>`_
+* `Facebook Login for the Web with the JavaScript SDK <https://developers.facebook.com/docs/facebook-login/login-flow-for-web/v2.4>`_
 
 LinkedIn
 --------
+
+1. Create a LinkedIn Developer Account
+
+  You will need a LinkedIn developer account to register your Tethys Portal with LinkedIn. To create an account, visit `https://developer.linkedin.com/my-apps <https://developer.linkedin.com/my-apps>`_ and sign in with a LinkedIn account.
+
+2. Create a LinkedIn Application
+
+  a. Navigate back to `https://developer.linkedin.com/my-apps <https://developer.linkedin.com/my-apps>`_, if necessary and press the ``Create Application`` button.
+  b. Fill out the form and press ``Submit``.
+
+3. Note the ``Client ID`` and ``Client Secret`` for Step 5.
+
+4. Setup OAuth
+
+  a. Add the call back URLs under the OAuth 2.0 section. For example, if my Tethys Portal was located at the domain ``www.example.org``:
+
+    ::
+
+        https://www.example.org/oauth2/complete/linkedin-oauth2/
+        http://localhost:8000/oauth2/complete/linkedin-oauth2/
+
+  b. Select ``Settings`` from the left navigation menu. Make the app public by selecting ``Live`` from the ``Application Status`` dropdown.
+
+  .. note::
+
+      The LinkedIn app must be public for you to allow anyone to authenticate using LinkedIn in your Tethys Portal. For testing, you can use the ``Roles`` menu item to add specific LinkedIn users that are allowed to authenticate when the app is in development mode.
+
+5. Open  ``settings.py`` script located in :file:`/usr/lib/tethys/src/tethys_apps/settings.py`
+
+
+  Add the ``social.backends.linkedin.LinkedinOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
+
+  ::
+
+      AUTHENTICATION_BACKENDS = (
+          ...
+          'social.backends.linkedin.LinkedinOAuth2',
+          'django.contrib.auth.backends.ModelBackend',
+      )
+
+  Assign the ``Client ID`` and ``Client Secret`` to the ``SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY`` and ``SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET`` settings, respectively:
+
+  ::
+
+      SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = '...'
+      SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = '...'
+
+References
+++++++++++
+
+For more detailed information about using LinkedIn social authentication see the following articles:
+
+* `Python Social Auth Supported Backends: LinkedIn <http://psa.matiasaguirre.net/docs/backends/linkedin.html>`_
+* `LinkedIn: Authenticating with OAuth 2.0 <https://developer.linkedin.com/docs/oauth2>`_
 
 
 HydroShare
@@ -157,7 +232,51 @@ HydroShare
 Social Auth Settings
 ====================
 
+Social authentication requires Tethys Platform 1.2.0 or later. If you are using an older version of Tethys Platform, you will need to upgrade by following either the :doc:`../installation/update` or the :doc:`../production/update` instructions. The  ``settings.py`` script is unaffected by the upgrade. You will need to either generate a new  ``settings.py`` script using ``tethys gen settings`` or add the following settings to your existing ``settings.py`` script to support social login.
 
+
+::
+
+    INSTALLED_APPS = (
+        ...
+        'social.apps.django_app.default',
+    )
+
+    MIDDLEWARE_CLASSES = (
+        ...
+        'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
+    )
+
+    TEMPLATE_CONTEXT_PROCESSORS = (
+        ...
+        'django.core.context_processors.request',
+        'social.apps.django_app.context_processors.backends',
+        'social.apps.django_app.context_processors.login_redirect',
+    )
+
+    # OAuth Settings
+    SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
+    SOCIAL_AUTH_SLUGIFY_USERNAMES = True
+    SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/apps/'
+    SOCIAL_AUTH_LOGIN_ERROR_URL = '/accounts/login/'
+
+    # OAuth Providers
+    ## Google
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
+
+    ## Facebook
+    SOCIAL_AUTH_FACEBOOK_KEY = ''
+    SOCIAL_AUTH_FACEBOOK_SECRET = ''
+    SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+
+    ## LinkedIn
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = ''
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = ''
+
+    ## HydroShare
+    SOCIAL_AUTH_HYDROSHARE_KEY = ''
+    SOCIAL_AUTH_HYDROSHARE_SECRET = ''
 
 
 
