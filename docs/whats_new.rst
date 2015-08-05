@@ -2,7 +2,7 @@
 What's New
 **********
 
-**Last Updated:** August 4, 2015
+**Last Updated:** August 5, 2015
 
 Refer to this article for information about each new release of Tethys Platform.
 
@@ -13,14 +13,23 @@ Release 1.2.0
 Social Authentication
 ---------------------
 
+* Social login supported
+* Google, LinkedIn, and Facebook
+* HydroShare coming soon
+* New controls on User Profile page to manage social accounts
+
 
 D3 Plotting Gizmos
 ------------------
 
+* D3 alternatives for all the HighCharts plot views
+* Use the same plot objects to define both types of charts
+* Simplified and generalized the mechanism for declaring plot views
 
 Job Manager Gizmo
 -----------------
 
+* New Gizmo that will show the status of jobs running with the Job Manager
 
 Job Manager Updates
 -------------------
