@@ -1,12 +1,12 @@
-*************************************
-HydroShare Dataset Engine Reference !
-*************************************
+***********************************
+HydroShare Dataset Engine Reference
+***********************************
 
-**Last Updated**: January 19, 2015
+**Last Updated**: August 5, 2015
 
 .. warning::
 
-    COMING SOON
+    Coming Soon!
 
 The following reference provides a summary the class used to define the ``HydroShareDatasetEngine`` objects.
 
