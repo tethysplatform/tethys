@@ -2,7 +2,7 @@
 Dataset Services API
 ********************
 
-**Last Updated**: May 13, 2015
+**Last Updated**: August 5, 2015
 
 :term:`Dataset services` are web services external to Tethys Platform that can be used to store and publish file-based
 :term:`datasets` (e.g.: text files, Excel files, zip archives, other model files). Tethys app developers can use the
@@ -32,6 +32,7 @@ All ``DatasetEngine`` objects implement a minimum set of base methods. However, 
 
     dataset_service/base_reference
     dataset_service/ckan_reference
+    dataset_service/hydroshare_reference
 
 Register New Dataset Service
 ============================
@@ -137,3 +138,26 @@ After you have a ``DatasetEngine``, simply call the desired method on it. All ``
       print(result['error'])
 
 Use the dataset service engines references above for descriptions of the methods available and examples.
+
+
+.. note::
+
+    The HydroShare dataset engine uses OAuth 2.0 to authenticate and authorize interactions with the HydroShare via the REST API. This requires passing the ``request`` object as one of the arguments in ``get_dataset_engine()`` method call. Also, to ensure the user is connected to HydroShare, app developers must use the ``ensure_oauth2()`` decorator on any controllers that use the HydroShare dataset engine. For example:
+
+    ::
+
+        from tethys_apps.sdk import get_dataset_engine, ensure_oauth2
+
+        @ensure_oauth2('hydroshare')
+        def my_controller(request):
+            """
+            This is an example controller that uses the HydroShare API.
+            """
+            engine = get_dataset_engine('hydroshare', request=request)
+
+            response = engine.list_datasets()
+
+            context = {}
+
+            return render(request, 'red_one/home.html', context)
+
