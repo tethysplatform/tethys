@@ -22,7 +22,7 @@ def generate_command(args):
     template = None
     context = Context()
 
-    # Determine template _path
+    # Determine template path
     gen_templates_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'gen_templates')
     template_path = os.path.join(gen_templates_dir, args.type)
 
@@ -49,7 +49,7 @@ def generate_command(args):
         # Parse template
         template = Template(open(template_path).read())
 
-    # Default destination _path is the current working directory
+    # Default destination path is the current working directory
     destination_dir = os.getcwd()
 
     if args.directory:

@@ -8,7 +8,7 @@ from setuptools.command.install import install
 
 def get_tethysapp_directory():
     """
-    Return the absolute _path to the tethysapp directory.
+    Return the absolute path to the tethysapp directory.
     """
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), 'tethysapp')
 
