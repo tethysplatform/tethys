@@ -242,7 +242,7 @@ class Command(BaseCommand):
                                                               TerminalColors.ENDC
                                                               ))
 
-                    # Pre-process initializer path
+                    # Pre-process initializer _path
                     initializer_path = '.'.join(('tethys_apps.tethysapp', app.package, initializer_mod))
 
                     # Import module

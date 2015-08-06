@@ -3,7 +3,7 @@ import os
 
 def get_tethysapp_dir():
     """
-    Returns absolute path to the tethysapp directory.
+    Returns absolute _path to the tethysapp directory.
     """
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), 'tethysapp')
 

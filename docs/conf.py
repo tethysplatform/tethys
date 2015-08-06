@@ -21,9 +21,9 @@ from django.conf import settings
 settings.configure()
 
 # If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath('.'))
+# add these directories to sys._path here. If the directory is relative to the
+# documentation root, use os._path.abspath to make it absolute, like shown here.
+#sys._path.insert(0, os._path.abspath('.'))
 
 # -- General configuration ------------------------------------------------
 
@@ -124,7 +124,7 @@ html_theme = 'default'
 # of the sidebar.
 #html_logo = None
 
-# The name of an image file (within the static path) to use as favicon of the
+# The name of an image file (within the static _path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
 html_favicon = 'images/default_favicon.ico'

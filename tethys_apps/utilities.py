@@ -140,7 +140,7 @@ class TethysAppsStaticFinder(BaseFinder):
     def find_location(self, root, path, prefix=None):
         """
         Finds a requested static file in a location, returning the found
-        absolute path (or ``None`` if no match).
+        absolute _path (or ``None`` if no match).
         """
         if prefix:
             prefix = '%s%s' % (prefix, os.sep)
