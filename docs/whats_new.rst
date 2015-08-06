@@ -48,6 +48,17 @@ Workspaces
 
 See: :doc:`./tethys_sdk/workspaces`
 
+Video Tutorials
+---------------
+
+* New video tutorials have been created
+* The videos highlight working with different software suite elements
+* CKAN, GeoServer, PostGIS
+* Advanced user input forms
+* Advanced Mapping and Plotting Gizmos
+
+See: :doc:`./tutorials/video_tutorials`
+
 
 Release 1.1.0
 =============
