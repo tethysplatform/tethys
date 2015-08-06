@@ -200,7 +200,7 @@ class TethysAppBase(object):
                                                          'condorpy_template_name': 'vanilla_transfer_files',
                                                          'attributes': {'transfer_output_files': 'example_output'},
                                                          'remote_input_files': ['my_script.py','input_1', 'input_2'],
-                                                         'working_directory': os._path.dirname(__file__)}
+                                                         'working_directory': os.path.dirname(__file__)}
                                             ),
                                 )
 
@@ -239,7 +239,7 @@ class TethysAppBase(object):
                 \"""
                 # Retrieve the workspace
                 user_workspace = MyFirstApp.get_user_workspace(request.user)
-                new_file_path = os._path.join(user_workspace._path, 'new_file.txt')
+                new_file_path = os.path.join(user_workspace.path, 'new_file.txt')
 
                 with open(new_file_path, 'w') as a_file:
                     a_file.write('...')
@@ -290,7 +290,7 @@ class TethysAppBase(object):
                 \"""
                 # Retrieve the workspace
                 app_workspace = MyFirstApp.get_app_workspace()
-                new_file_path = os._path.join(app_workspace._path, 'new_file.txt')
+                new_file_path = os.path.join(app_workspace.path, 'new_file.txt')
 
                 with open(new_file_path, 'w') as a_file:
                     a_file.write('...')
@@ -300,7 +300,7 @@ class TethysAppBase(object):
                 return render(request, 'my_first_app/template.html', context)
 
         """
-        # Find the _path to the app project directory
+        # Find the path to the app project directory
         ## Hint: cls is a child class of this class.
         ## Credits: http://stackoverflow.com/questions/4006102/is-possible-to-know-the-_path-of-the-file-of-a-subclass-in-python
         project_directory = os.path.dirname(sys.modules[cls.__module__].__file__)

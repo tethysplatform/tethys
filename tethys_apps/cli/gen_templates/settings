@@ -132,6 +132,9 @@ TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'), )
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
 
+# Workspaces
+#WORKSPACES_ROOT = '/var/www/tethys/workspaces'
+
 # Messaging settings
 MESSAGE_TAGS = {message_constants.DEBUG: 'alert-danger',
                 message_constants.INFO: 'alert-info',

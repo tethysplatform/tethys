@@ -32,3 +32,34 @@ TethysWorkspace Objects
 
 .. autoclass:: tethys_apps.base.TethysWorkspace
     :members: files, directories, remove, clear
+
+Centralize Workspaces
+=====================
+
+The Workspaces API includes a command, ``collectworkspaces``, for moving all workspaces to a central location and symbolically linking them back to the app project directories. This is especially useful for production where the administrator may want to locate workspace content on a mounted drive to optimize storage. A brief explanation of how to use this command will follow. Refer to the :doc:`./tethys_cli` documentation for details about the ``collectworkspaces`` command.
+
+Setting
+-------
+
+To enable centralized workspaces create a directory for the workspaces and specify its path in the ``settings.py`` file using the ``WORKSPACES_ROOT`` setting.
+
+::
+
+    WORKSPACES_ROOT = '/var/www/tethys/workspaces'
+
+Command
+-------
+
+Run the ``collectworkspaces`` command to automatically move all of the workspace directories to the ``WORKSPACE_ROOT`` directory and symbolically link them back. You will need to run this command each time you install new apps.
+
+::
+
+    $ tethys manage collectworkspaces
+
+.. tip::
+
+    A convenience command is provided called ``collectall`` that can be used to run both the ``collectstatic`` and the ``collectworkspaces`` commands:
+
+    ::
+
+        $ tethys manage collectall
