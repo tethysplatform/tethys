@@ -103,7 +103,7 @@ class TethysGizmoIncludeNode(template.Node):
             if gizmo_name not in context['gizmos_rendered']:
                 context['gizmos_rendered'].append(gizmo_name)
 
-            # Determine path to gizmo template
+            # Determine _path to gizmo template
             gizmo_file_name = '{0}.html'.format(gizmo_name)
             template_name = os.path.join(gizmo_templates_root, gizmo_file_name)
 
@@ -184,7 +184,7 @@ class TethysGizmoDependenciesNode(template.Node):
                         static_url = static(dependency)
 
                     if static_url not in dependencies:
-                        # Lookup the static url given the path
+                        # Lookup the static url given the _path
                         dependencies.append(static_url)
 
             except AttributeError:
@@ -199,7 +199,7 @@ class TethysGizmoDependenciesNode(template.Node):
                 static_url = static(dependency)
 
             if static_url not in dependencies:
-                # Lookup the static url given the path
+                # Lookup the static url given the _path
                 dependencies.append(static_url)
 
         # Create markup tags

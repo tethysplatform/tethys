@@ -51,7 +51,7 @@ class TethysAppBase(object):
         Returns:
           iterable: A list or tuple of ``UrlMap`` objects.
 
-        Example:
+        **Example:**
 
         ::
 
@@ -79,7 +79,7 @@ class TethysAppBase(object):
         Returns:
           iterable: A list or tuple of ``PersistentStore`` objects. A persistent store database will be created for each object returned.
 
-        Example:
+        **Example:**
 
         ::
 
@@ -105,7 +105,7 @@ class TethysAppBase(object):
         Returns:
           iterable: A list or tuple of ``DatasetService`` objects.
 
-        Example:
+        **Example:**
 
         ::
 
@@ -131,7 +131,7 @@ class TethysAppBase(object):
         Returns:
           iterable: A list or tuple of ``SpatialDatasetService`` objects.
 
-        Example:
+        **Example:**
 
         ::
 
@@ -158,7 +158,7 @@ class TethysAppBase(object):
         Returns:
           iterable: A list or tuple of ``WpsService`` objects.
 
-        Example:
+        **Example:**
 
         ::
 
@@ -183,7 +183,7 @@ class TethysAppBase(object):
         Returns:
             iterable: A list or tuple of ``JobTemplate`` objects.
 
-        Example:
+        **Example:**
 
         ::
 
@@ -200,7 +200,7 @@ class TethysAppBase(object):
                                                          'condorpy_template_name': 'vanilla_transfer_files',
                                                          'attributes': {'transfer_output_files': 'example_output'},
                                                          'remote_input_files': ['my_script.py','input_1', 'input_2'],
-                                                         'working_directory': os.path.dirname(__file__)}
+                                                         'working_directory': os._path.dirname(__file__)}
                                             ),
                                 )
 
@@ -224,7 +224,30 @@ class TethysAppBase(object):
           user(User or HttpRequest): User or request object.
 
         Returns:
-          TethysWorkspace: An object representing the workspace.
+          tethys_apps.base.TethysWorkspace: An object representing the workspace.
+
+        **Example:**
+
+        ::
+
+            import os
+            from .app import MyFirstApp
+
+            def a_controller(request):
+                \"""
+                Example controller that uses get_user_workspace() method.
+                \"""
+                # Retrieve the workspace
+                user_workspace = MyFirstApp.get_user_workspace(request.user)
+                new_file_path = os._path.join(user_workspace._path, 'new_file.txt')
+
+                with open(new_file_path, 'w') as a_file:
+                    a_file.write('...')
+
+                context = {}
+
+                return render(request, 'my_first_app/template.html', context)
+
         """
         username = ''
 
@@ -253,10 +276,33 @@ class TethysAppBase(object):
 
         Returns:
           tethys_apps.base.TethysWorkspace: An object representing the workspace.
+
+        **Example:**
+
+        ::
+
+            import os
+            from .app import MyFirstApp
+
+            def a_controller(request):
+                \"""
+                Example controller that uses get_app_workspace() method.
+                \"""
+                # Retrieve the workspace
+                app_workspace = MyFirstApp.get_app_workspace()
+                new_file_path = os._path.join(app_workspace._path, 'new_file.txt')
+
+                with open(new_file_path, 'w') as a_file:
+                    a_file.write('...')
+
+                context = {}
+
+                return render(request, 'my_first_app/template.html', context)
+
         """
-        # Find the path to the app project directory
-        ## Hint: cls will be a child class of this class.
-        ## Credits: http://stackoverflow.com/questions/4006102/is-possible-to-know-the-path-of-the-file-of-a-subclass-in-python
+        # Find the _path to the app project directory
+        ## Hint: cls is a child class of this class.
+        ## Credits: http://stackoverflow.com/questions/4006102/is-possible-to-know-the-_path-of-the-file-of-a-subclass-in-python
         project_directory = os.path.dirname(sys.modules[cls.__module__].__file__)
         workspace_directory = os.path.join(project_directory, 'workspaces', 'app_workspace')
         return TethysWorkspace(workspace_directory)

@@ -19,7 +19,7 @@ class Command(BaseCommand):
         """
         if not settings.STATIC_ROOT:
             print('WARNING: Cannot find the STATIC_ROOT setting in the settings.py file. '
-                  'Please provide the path to the static directory using the STATIC_ROOT setting and try again.')
+                  'Please provide the _path to the static directory using the STATIC_ROOT setting and try again.')
             exit(1)
 
         # Read settings

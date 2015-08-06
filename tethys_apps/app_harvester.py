@@ -77,7 +77,7 @@ class SingletonAppHarvester(object):
         for app_package in app_packages_list:
             # Collect data from each app package in the apps directory
             if app_package not in ['__init__.py', '__init__.pyc', '.gitignore', '.DS_Store']:
-                # Create the path to the app module in the custom app package
+                # Create the _path to the app module in the custom app package
                 app_module_name = '.'.join(['tethys_apps.tethysapp', app_package, 'app'])
 
                 # Import the app.py module from the custom app package programmatically
