@@ -127,6 +127,14 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             .x(function (d) { return x(d[0]); })
             .y(function (d) { return y(d[1]); });
 
+        var tip = d3.tip()
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function (d, i, j) {
+                return "<strong>" + d3.select(this.parentNode).name + "</strong> </br>" + x_axis_title + ": <span style='color:yellow'>"
+                    + d[0] + "</span> </br>" + y_axis_title + ": <span style='color:yellow'>" + d[1] + "</span>";
+            });
+
         var svg = d3.select(element).append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
@@ -146,6 +154,8 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             .attr("text-anchor", "middle")
             .style("font-size", "14px")
             .text(subtitle);
+
+        svg.call(tip);
 
         x.domain([
             d3.min(series, function (d, i) { return d3.min(series[i].x); }) - 5,
@@ -196,7 +206,9 @@ var TETHYS_D3_PLOT_VIEW = (function() {
                     .attr("class", "point")
                     .attr("d", d3.svg.symbol().type("circle"))
                     .attr("transform", function (d) { return "translate(" + x(d[0]) + "," + y(d[1]) + ")"; })
-                    .style("fill", function (d) {return color(series[i].name); });
+                    .style("fill", function (d) {return color(series[i].name); })
+                    .on("mouseover", tip.show)
+                    .on("mouseout", tip.hide);
         };
 
         // draw legend
@@ -628,9 +640,17 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 	    var y_axis_title = json.yAxis.title.text;;
 	    var series = json.series;
 
+	    var color = d3.scale.category20b();
+
+	    var number_of_series = d3.max(d3.keys(series));
+
+        var number_of_points = d3.max(d3.keys(series[0].data));
+
 	    var margin = {top: 40, right: 20, bottom: 30, left: 50},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
+
+        var parseDate = d3.time.format("%d-%b-%y");
 
         var x = d3.time.scale()
             .range([0, width]);
@@ -640,16 +660,37 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 
         var xAxis = d3.svg.axis()
             .scale(x)
-            .orient("bottom");
+            .orient("bottom")
+            .tickFormat(d3.time.format("%b '%y"));
 
         var yAxis = d3.svg.axis()
             .scale(y)
             .orient("left");
 
+        var dataCallback = function (d, i, j) {
+            d[i].x.push(series[i].data[j][0]);
+            d[i].y.push(series[i].data[j][1]);
+        };
+
+        for (var i = 0; i <= number_of_series; i++) {
+
+            series[i].x = [];
+            series[i].y = [];
+
+            for (var j = 0; j <= number_of_points; j++) {
+                dataCallback(series, i, j);
+            }
+        }
+
         var area = d3.svg.area()
             .x(function(d) { return x(d[0]); })
             .y0(height)
             .y1(function(d) { return y(d[1]); });
+
+        var line = d3.svg.line()
+            .interpolate("linear")
+            .x(function (d) { return x(d[0]); })
+            .y(function (d) { return y(d[1]); });
 
         var svg = d3.select(element).append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -671,7 +712,31 @@ var TETHYS_D3_PLOT_VIEW = (function() {
         svg.append("path")
             .datum(series[0].data)
             .attr("class", "area")
-            .attr("d", area);
+            .attr("d", area)
+            .style("fill", function (d) { return color(d.name); })
+            .style("opacity", 0.5);
+
+        var lineNames = svg.selectAll(".line")
+            .data(series)
+            .enter().append("g")
+                .attr("class", "line");
+
+        lineNames.append("path")
+            .attr("class", "line")
+            .attr("d", function (d) { return line(d.data); })
+            .attr("stroke-width", 2)
+            .style("stroke", function (d) { return color(d.name); });
+
+        for (var i = 0; i <= number_of_series; i++) {
+
+            svg.selectAll("point")
+                .data(series[i].data)
+                .enter().append("path")
+                    .attr("class", "point")
+                    .attr("d", d3.svg.symbol().type("circle"))
+                    .attr("transform", function (d) { return "translate(" + x(d[0]) + "," + y(d[1]) + ")"; })
+                    .style("fill", function (d) {return color(series[i].name); });
+        };
 
         svg.append("g")
             .attr("class", "x axis")
