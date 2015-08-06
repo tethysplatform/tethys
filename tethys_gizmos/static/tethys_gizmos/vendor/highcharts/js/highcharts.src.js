@@ -762,7 +762,7 @@ Highcharts.numberFormat = function (number, decimals, decPoint, thousandsSep) {
  */
 pathAnim = {
 	/**
-	 * Prepare start and end values so that the _path can be animated one to one
+	 * Prepare start and end values so that the path can be animated one to one
 	 */
 	init: function (elem, fromD, toD) {
 		fromD = fromD || '';
@@ -796,7 +796,7 @@ pathAnim = {
 			endBaseLine = end.splice(end.length - 6, 6);
 		}
 
-		// if shifting points, prepend a dummy point to the end _path
+		// if shifting points, prepend a dummy point to the end path
 		if (shift <= end.length / numParams && start.length === end.length) {
 			while (shift--) {
 				end = [].concat(end).splice(0, numParams).concat(end);
@@ -827,14 +827,14 @@ pathAnim = {
 	},
 
 	/**
-	 * Interpolate each value of the _path and return the array
+	 * Interpolate each value of the path and return the array
 	 */
 	step: function (start, end, pos, complete) {
 		var ret = [],
 			i = start.length,
 			startVal;
 
-		if (pos === 1) { // land on the final _path without adjustment points appended in the ends
+		if (pos === 1) { // land on the final path without adjustment points appended in the ends
 			ret = complete;
 
 		} else if (i === end.length && pos < 1) {
@@ -923,7 +923,7 @@ pathAnim = {
 				return elem.attr ? (elem.opacity || 0) : proceed.call(this, elem, computed);
 			});
 			
-			// Define the setter function for d (_path definitions)
+			// Define the setter function for d (path definitions)
 			this.addAnimSetter('d', function (fx) {
 				var elem = fx.elem,
 					ends;
@@ -938,7 +938,7 @@ pathAnim = {
 					fx.started = true;
 				}
 		
-				// Interpolate each value of the _path
+				// Interpolate each value of the path
 				elem.attr('d', pathAnim.step(fx.start, fx.end, fx.pos, elem.toD));
 			});
 			
@@ -2145,11 +2145,11 @@ SVGElement.prototype = {
 	},
 
 	/**
-	 * Apply a clipping _path to this object
+	 * Apply a clipping path to this object
 	 * @param {String} id
 	 */
 	clip: function (clipRect) {
-		return this.attr('clip-_path', clipRect ? 'url(' + this.renderer.url + '#' + clipRect.id + ')' : NONE);
+		return this.attr('clip-path', clipRect ? 'url(' + this.renderer.url + '#' + clipRect.id + ')' : NONE);
 	},
 
 	/**
@@ -2786,7 +2786,7 @@ SVGElement.prototype = {
 
 
 	dSetter: function (value, key, element) {
-		if (value && value.join) { // join _path
+		if (value && value.join) { // join path
 			value = value.join(' ');
 		}
 		if (/(NaN| {2}|^$)/.test(value)) {
@@ -3506,8 +3506,8 @@ SVGRenderer.prototype = {
 
 
 	/**
-	 * Draw a _path
-	 * @param {Array} path An SVG _path in array form
+	 * Draw a path
+	 * @param {Array} path An SVG path in array form
 	 */
 	path: function (path) {
 		var attr = {
@@ -3707,7 +3707,7 @@ SVGRenderer.prototype = {
 			// get the symbol definition function
 			symbolFn = this.symbols[symbol],
 
-			// check if there's a _path defined for this symbol
+			// check if there's a path defined for this symbol
 			path = symbolFn && symbolFn(
 				mathRound(x),
 				mathRound(y),
@@ -4798,7 +4798,7 @@ VMLElement = {
 	},
 
 	/**
-	 * Converts a subset of an SVG _path definition to its VML counterpart. Takes an array
+	 * Converts a subset of an SVG path definition to its VML counterpart. Takes an array
 	 * as the parameter and returns a string.
 	 */
 	pathToVML: function (value) {
@@ -4813,7 +4813,7 @@ VMLElement = {
 			// align with SVG, but this hasn't been tested thoroughly
 			if (isNumber(value[i])) {
 				path[i] = mathRound(value[i] * 10) - 5;
-			} else if (value[i] === 'Z') { // close the _path
+			} else if (value[i] === 'Z') { // close the path
 				path[i] = 'x';
 			} else {
 				path[i] = value[i];
@@ -4835,14 +4835,14 @@ VMLElement = {
 		}
 
 		
-		// Loop up again to handle _path shortcuts (#2132)
-		/*while (i++ < _path.length) {
-			if (_path[i] === 'H') { // horizontal line to
-				_path[i] = 'L';
-				_path.splice(i + 2, 0, _path[i - 1]);
-			} else if (_path[i] === 'V') { // vertical line to
-				_path[i] = 'L';
-				_path.splice(i + 1, 0, _path[i - 2]);
+		// Loop up again to handle path shortcuts (#2132)
+		/*while (i++ < path.length) {
+			if (path[i] === 'H') { // horizontal line to
+				path[i] = 'L';
+				path.splice(i + 2, 0, path[i - 1]);
+			} else if (path[i] === 'V') { // vertical line to
+				path[i] = 'L';
+				path.splice(i + 1, 0, path[i - 2]);
 			}
 		}*/
 		return path.join(' ') || 'x';
@@ -4975,7 +4975,7 @@ VMLElement = {
 				}
 
 				markup = ['<shape isShadow="true" strokeweight="', strokeWidth,
-					'" filled="false" _path="', modifiedPath,
+					'" filled="false" path="', modifiedPath,
 					'" coordsize="10 10" style="', element.style.cssText, '" />'];
 
 				shadow = createElement(renderer.prepVML(markup),
@@ -5186,7 +5186,7 @@ var VMLRendererExtension = { // inherit SVGRenderer
 			doc.namespaces.add('hcv', 'urn:schemas-microsoft-com:vml');
 
 			// Setup default CSS (#2153, #2368, #2384)
-			css = 'hcv\\:fill, hcv\\:_path, hcv\\:shape, hcv\\:stroke' +
+			css = 'hcv\\:fill, hcv\\:path, hcv\\:shape, hcv\\:stroke' +
 				'{ behavior:url(#default#VML); display: inline-block; } ';
 			try {
 				doc.createStyleSheet().cssText = css;
@@ -5477,7 +5477,7 @@ var VMLRendererExtension = { // inherit SVGRenderer
 	text: SVGRenderer.prototype.html,
 
 	/**
-	 * Create and return a _path element
+	 * Create and return a path element
 	 * @param {Array} path
 	 */
 	path: function (path) {
@@ -5640,7 +5640,7 @@ var VMLRendererExtension = { // inherit SVGRenderer
 				y + innerRadius * sinEnd, // start y
 				x + innerRadius * cosStart, // end x
 				y + innerRadius * sinStart, // end y
-				'x', // finish _path
+				'x', // finish path
 				'e' // close
 			);
 
@@ -5648,7 +5648,7 @@ var VMLRendererExtension = { // inherit SVGRenderer
 			return ret;
 
 		},
-		// Add circle symbol _path. This performs significantly faster than v:oval.
+		// Add circle symbol path. This performs significantly faster than v:oval.
 		circle: function (x, y, w, h, wrapper) {
 
 			if (wrapper) {
@@ -5661,7 +5661,7 @@ var VMLRendererExtension = { // inherit SVGRenderer
 				y -= h / 2;
 			}
 
-			// Return the _path
+			// Return the path
 			return [
 				'wa', // clockwisearcto
 				x, // left
@@ -5672,14 +5672,14 @@ var VMLRendererExtension = { // inherit SVGRenderer
 				y + h / 2,     // start y
 				x + w, // end x
 				y + h / 2,     // end y
-				//'x', // finish _path
+				//'x', // finish path
 				'e' // close
 			];
 		},
 		/**
-		 * Add rectangle symbol _path which eases rotation and omits arcsize problems
+		 * Add rectangle symbol path which eases rotation and omits arcsize problems
 		 * compared to the built-in VML roundrect shape. When borders are not rounded,
-		 * use the simpler square _path, else use the callout _path without the arrow.
+		 * use the simpler square path, else use the callout path without the arrow.
 		 */
 		rect: function (x, y, w, h, options) {
 			return SVGRenderer.prototype.symbols[
@@ -5989,7 +5989,7 @@ Tick.prototype = {
 	},
 
 	/**
-	 * Extendible method to return the _path of the marker
+	 * Extendible method to return the path of the marker
 	 */
 	getMarkPath: function (x, y, tickLength, tickWidth, horiz, renderer) {
 		return renderer.crispLine([
@@ -6333,7 +6333,7 @@ Highcharts.PlotLineOrBand.prototype = {
 AxisPlotLineOrBandExtension = {
 
 	/**
-	 * Create the _path for a plot band
+	 * Create the path for a plot band
 	 */ 
 	getPlotBandPath: function (from, to) {
 		var toPath = this.getPlotLinePath(to, null, null, true),
@@ -6981,7 +6981,7 @@ Axis.prototype = {
 	},
 
 	/**
-	 * Create the _path for a plot line that goes from the given value on
+	 * Create the path for a plot line that goes from the given value on
 	 * this axis, across the plot to the opposite side
 	 * @param {Number} value
 	 * @param {Number} lineWidth Used for calculation crisp line
@@ -8163,7 +8163,7 @@ Axis.prototype = {
 	},
 
 	/**
-	 * Get the _path for the axis line
+	 * Get the path for the axis line
 	 */
 	getLinePath: function (lineWidth) {
 		var chart = this.chart,
@@ -8517,7 +8517,7 @@ Axis.prototype = {
 		
 		} else {			
 
-			// Get the _path
+			// Get the path
 			if (!pick(options.snap, true)) {
 				pos = (this.horiz ? e.chartX - this.pos : this.len - e.chartY + this.pos);
 			} else if (defined(point)) {
@@ -14167,7 +14167,7 @@ Series.prototype = {
 	},
 
 	/**
-	 * Return the graph _path of a segment
+	 * Return the graph path of a segment
 	 */
 	getSegmentPath: function (segment) {
 		var series = this,
@@ -14226,7 +14226,7 @@ Series.prototype = {
 	},
 
 	/**
-	 * Get the graph _path
+	 * Get the graph path
 	 */
 	getGraphPath: function () {
 		var series = this,
@@ -15703,13 +15703,13 @@ var AreaSeries = extendClass(Series, {
 	},
 	
 	/**
-	 * Extend the base Series getSegmentPath method by adding the _path for the area.
-	 * This _path is pushed to the series.areaPath property.
+	 * Extend the base Series getSegmentPath method by adding the path for the area.
+	 * This path is pushed to the series.areaPath property.
 	 */
 	getSegmentPath: function (segment) {
 		
 		var segmentPath = Series.prototype.getSegmentPath.call(this, segment), // call base method
-			areaSegmentPath = [].concat(segmentPath), // work on a copy for the area _path
+			areaSegmentPath = [].concat(segmentPath), // work on a copy for the area path
 			i,
 			options = this.options,
 			segLength = segmentPath.length,
@@ -15744,7 +15744,7 @@ var AreaSeries = extendClass(Series, {
 	},
 	
 	/**
-	 * Extendable method to close the segment _path of an area. This is overridden in polar
+	 * Extendable method to close the segment path of an area. This is overridden in polar
 	 * charts.
 	 */
 	closeSegment: function (path, segment, translatedThreshold) {
@@ -15887,7 +15887,7 @@ var SplineSeries = extendClass(Series, {
 					fill: 'none'
 				})
 				.add();
-			this.chart.renderer._path(['M', leftContX + this.chart.plotLeft, leftContY + this.chart.plotTop,
+			this.chart.renderer.path(['M', leftContX + this.chart.plotLeft, leftContY + this.chart.plotTop,
 				'L', plotX + this.chart.plotLeft, plotY + this.chart.plotTop])
 				.attr({
 					stroke: 'red',
@@ -15901,7 +15901,7 @@ var SplineSeries = extendClass(Series, {
 					fill: 'none'
 				})
 				.add();
-			this.chart.renderer._path(['M', rightContX + this.chart.plotLeft, rightContY + this.chart.plotTop,
+			this.chart.renderer.path(['M', rightContX + this.chart.plotLeft, rightContY + this.chart.plotTop,
 				'L', plotX + this.chart.plotLeft, plotY + this.chart.plotTop])
 				.attr({
 					stroke: 'green',

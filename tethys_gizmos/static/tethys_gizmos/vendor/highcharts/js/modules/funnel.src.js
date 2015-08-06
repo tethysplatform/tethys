@@ -171,7 +171,7 @@ seriesTypes.funnel = Highcharts.extendClass(seriesTypes.pie, {
 				y3 = height - y3;
 				y5 = (y5 ? height - y5 : null);
 			}
-			// save the _path
+			// save the path
 			path = [
 				'M',
 				x1, y1,

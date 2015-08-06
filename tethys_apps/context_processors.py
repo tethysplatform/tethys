@@ -16,7 +16,7 @@ def tethys_apps_context(request):
 
     # Find the app key
     if apps_root in url_parts:
-        # The app root_url is the _path item following (+1) the apps_root item
+        # The app root_url is the path item following (+1) the apps_root item
         app_root_url_index = url_parts.index(apps_root) + 1
         app_root_url = url_parts[app_root_url_index]
 

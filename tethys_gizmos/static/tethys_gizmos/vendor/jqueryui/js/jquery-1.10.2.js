@@ -1241,7 +1241,7 @@ function Sizzle( selector, context, results, seed ) {
 			}
 		}
 
-		// QSA _path
+		// QSA path
 		if ( support.qsa && (!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
 			nid = old = expando;
 			newContext = context;
@@ -3582,7 +3582,7 @@ function internalData( elem, name, data, pvt /* Internal Use Only */ ){
 		cache = isNode ? jQuery.cache : elem,
 
 		// Only defining an ID for JS objects if its cache already exists allows
-		// the code to shortcut on the same _path as a DOM node with no cache
+		// the code to shortcut on the same path as a DOM node with no cache
 		id = isNode ? elem[ internalKey ] : elem[ internalKey ] && internalKey;
 
 	// Avoid doing any more work than we need to when trying to get data on an
@@ -3700,7 +3700,7 @@ function internalRemoveData( elem, name, pvt ) {
 				// keys will be converted to camelCase.
 				// Since there is no way to tell _how_ a key was added, remove
 				// both plain key and camelCase key. #12786
-				// This will only penalize the array argument _path.
+				// This will only penalize the array argument path.
 				name = name.concat( jQuery.map( name, jQuery.camelCase ) );
 			}
 
@@ -4974,7 +4974,7 @@ jQuery.event = {
 			return;
 		}
 
-		// Determine event propagation _path in advance, per W3C events spec (#9951)
+		// Determine event propagation path in advance, per W3C events spec (#9951)
 		// Bubble up to document, then to window; watch for a global ownerDocument var (#9724)
 		if ( !onlyHandlers && !special.noBubble && !jQuery.isWindow( elem ) ) {
 
@@ -4993,7 +4993,7 @@ jQuery.event = {
 			}
 		}
 
-		// Fire handlers on the event _path
+		// Fire handlers on the event path
 		i = 0;
 		while ( (cur = eventPath[i++]) && !event.isPropagationStopped() ) {
 
@@ -6390,7 +6390,7 @@ function fixCloneNodeIssues( src, dest ) {
 			dest.outerHTML = src.outerHTML;
 		}
 
-		// This _path appears unavoidable for IE9. When cloning an object
+		// This path appears unavoidable for IE9. When cloning an object
 		// element in IE9, the outerHTML strategy above is not sufficient.
 		// If the src has innerHTML and the destination does not,
 		// copy the src.innerHTML into the dest.innerHTML. #10324
@@ -7358,7 +7358,7 @@ if ( !jQuery.support.opacity ) {
 
 				// Setting style.filter to null, "" & " " still leave "filter:" in the cssText
 				// if "filter:" is present at all, clearType is disabled, we want to avoid this
-				// style.removeAttribute is IE Only, but so apparently is this code _path...
+				// style.removeAttribute is IE Only, but so apparently is this code path...
 				style.removeAttribute( "filter" );
 
 				// if there is no filter style applied in a css rule or unset inline opacity, we are done
