@@ -131,7 +131,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             .attr('class', 'd3-tip')
             .offset([-10, 0])
             .html(function (d, i, j) {
-                return "<strong>" + d3.select(this.parentNode).name + "</strong> </br>" + x_axis_title + ": <span style='color:yellow'>"
+                return "<strong>" + series[j].name + "</strong> </br>" + x_axis_title + ": <span style='color:yellow'>"
                     + d[0] + "</span> </br>" + y_axis_title + ": <span style='color:yellow'>" + d[1] + "</span>";
             });
 
