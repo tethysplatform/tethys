@@ -13,28 +13,28 @@ MANAGE_COLLECTSTATIC = 'collectstatic'
 
 def get_manage_path(args):
     """
-    Validate user defined manage path, use default, or throw error
+    Validate user defined manage _path, use default, or throw error
     """
-    # Determine path to manage.py file
+    # Determine _path to manage.py file
     manage_path = os.path.join(DEFAULT_INSTALLATION_DIRECTORY, 'manage.py')
 
-    # Check for path option
+    # Check for _path option
     if args.manage:
         manage_path = args.manage
 
-        # Throw error if path is not valid
+        # Throw error if _path is not valid
         if not os.path.isfile(manage_path):
             print('ERROR: Can\'t open file "{0}", no such file.'.format(manage_path))
             exit(1)
 
     elif not os.path.isfile(manage_path):
-        # Try the development path version
+        # Try the development _path version
         manage_path = os.path.join(DEVELOPMENT_DIRECTORY, 'manage.py')
 
-        # Throw error if default path is not valid
+        # Throw error if default _path is not valid
         if not os.path.isfile(manage_path):
             print('ERROR: Cannot find the "manage.py" file at the default location. Try using the "--manage"'
-                  'option to provide the path to the location of the "manage.py" file.')
+                  'option to provide the _path to the location of the "manage.py" file.')
             exit(1)
 
     return manage_path
@@ -44,7 +44,7 @@ def manage_command(args):
     """
     Management commands.
     """
-    # Get the path to manage.py
+    # Get the _path to manage.py
     manage_path = get_manage_path(args)
 
     # Define the process to be run

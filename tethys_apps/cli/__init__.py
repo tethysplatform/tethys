@@ -130,7 +130,7 @@ def syncstores_command(args):
     """
     Sync persistent stores.
     """
-    # Get the path to manage.py
+    # Get the _path to manage.py
     manage_path = get_manage_path(args)
 
     # This command is a wrapper for a custom Django manage.py method called syncstores.
@@ -195,7 +195,7 @@ def tethys_command():
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
     manage_parser.add_argument('command', help='Management command to run.',
                                choices=[MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC])
-    manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
+    manage_parser.add_argument('-m', '--manage', help='Absolute _path to manage.py for Tethys Platform installation.')
     manage_parser.add_argument('-p', '--port', type=int, help='Port on which to start the development server.')
     manage_parser.set_defaults(func=manage_command)
 
@@ -220,7 +220,7 @@ def tethys_command():
                                    action='store_true',
                                    dest='firsttime')
     syncstores_parser.add_argument('-d', '--database', help='Name of database to sync.')
-    syncstores_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
+    syncstores_parser.add_argument('-m', '--manage', help='Absolute _path to manage.py for Tethys Platform installation.')
     syncstores_parser.set_defaults(func=syncstores_command, refresh=False, firstime=False)
 
     # Setup the docker commands

@@ -4,9 +4,10 @@ import shutil
 
 class TethysWorkspace(object):
     """
-    Definition of objects representing file workspaces (directories) for apps.
+    Defines objects that represent file workspaces (directories) for apps and users.
 
-
+    Attributes:
+      path(str): The absolute path to the workspace directory. Cannot be overwritten.
     """
 
     def __init__(self, path):
@@ -18,60 +19,77 @@ class TethysWorkspace(object):
             os.makedirs(path)
 
         # Validate that the path is a directory
-        self.path = path
+        self._path = path
 
     def __repr__(self):
         """
         Rendering
         """
-        return '<TethysWorkspace path="{0}">'.format(self.path)
+        return '<TethysWorkspace path="{0}">'.format(self._path)
 
-    def files(self, fullpath=False):
+    @property
+    def path(self):
+        return self._path
+
+    @path.setter
+    def path(self, value):
+        """
+        Don't allow overwriting the path property.
+        """
+        pass
+
+    def files(self, full_path=False):
         """
         Return a list of files that are in the workspace.
 
         Args:
-          fullpath(bool): Returns list of files with full path names when True. Defaults to False.
+          full_path(bool): Returns list of files with full path names when True. Defaults to False.
 
         Returns:
           list: A list of files in the workspace.
 
-        Example:
+        **Examples:**
 
         ::
 
+            # List file names
             workspace.files()
-            workspace.files(fullpath=True)
+
+            # List full path file names
+            workspace.files(full_path=True)
 
         """
-        if fullpath:
-            files = [os.path.join(self.path, f) for f in os.listdir(self.path) if os.path.isfile(os.path.join(self.path, f))]
+        if full_path:
+            files = [os.path.join(self._path, f) for f in os.listdir(self._path) if os.path.isfile(os.path.join(self._path, f))]
         else:
-            files = [f for f in os.listdir(self.path) if os.path.isfile(os.path.join(self.path, f))]
+            files = [f for f in os.listdir(self._path) if os.path.isfile(os.path.join(self._path, f))]
         return files
 
-    def directories(self, fullpath=False):
+    def directories(self, full_path=False):
         """
         Return a list of directories that are in the workspace.
 
         Args:
-          fullpath(bool): Returns list of directories with full path names when True. Defaults to False.
+          full_path(bool): Returns list of directories with full path names when True. Defaults to False.
 
         Returns:
           list: A list of directories in the workspace.
 
-        Example:
+        **Examples:**
 
         ::
 
+            # List directory names
             workspace.directories()
-            workspace.directories(fullpath=True)
+
+            # List full path directory names
+            workspace.directories(full_path=True)
 
         """
-        if fullpath:
-            directories = [os.path.join(self.path, d) for d in os.listdir(self.path) if os.path.isdir(os.path.join(self.path, d))]
+        if full_path:
+            directories = [os.path.join(self._path, d) for d in os.listdir(self._path) if os.path.isdir(os.path.join(self._path, d))]
         else:
-            directories = [d for d in os.listdir(self.path) if os.path.isdir(os.path.join(self.path, d))]
+            directories = [d for d in os.listdir(self._path) if os.path.isdir(os.path.join(self._path, d))]
         return directories
 
     def clear(self, exclude=[], exclude_files=False, exclude_directories=False):
@@ -79,32 +97,39 @@ class TethysWorkspace(object):
         Remove all files and directories in the workspace.
 
         Args:
-          exclude(iterable): A list or tuple of file and directory names to exclude from clearing.
-          exclude_files(bool): Excludes files from clearing when True. Defaults to False.
-          exclude_directories(bool): Excludes directories from clearing when True. Defaults to False.
+          exclude(iterable): A list or tuple of file and directory names to exclude from clearing operation.
+          exclude_files(bool): Excludes all files from clearing operation when True. Defaults to False.
+          exclude_directories(bool): Excludes all directories from clearing operation when True. Defaults to False.
 
-        Example:
+        **Examples:**
 
         ::
 
+            # Clear everything
             workspace.clear()
+
+            # Clear directories only
             workspace.clear(exclude_files=True)
+
+            # Clear files only
             workspace.clear(exclude_directories=True)
+
+            # Clear all but specified files and directories
             workspace.clear(exclude=['file1.txt', '/full/path/to/directory1', 'directory2', '/full/path/to/file2.txt'])
 
         """
-        files = [f for f in os.listdir(self.path) if os.path.isfile(os.path.join(self.path, f))]
-        directories = [d for d in os.listdir(self.path) if os.path.isdir(os.path.join(self.path, d))]
+        files = [f for f in os.listdir(self._path) if os.path.isfile(os.path.join(self._path, f))]
+        directories = [d for d in os.listdir(self._path) if os.path.isdir(os.path.join(self._path, d))]
 
         if not exclude_files:
             for file in files:
-                fullpath = os.path.join(self.path, file)
+                fullpath = os.path.join(self._path, file)
                 if file not in exclude and fullpath not in exclude:
                     os.remove(fullpath)
 
         if not exclude_directories:
             for directory in directories:
-                fullpath = os.path.join(self.path, directory)
+                fullpath = os.path.join(self._path, directory)
                 if directory not in exclude and fullpath not in exclude:
                     shutil.rmtree(fullpath)
 
@@ -115,22 +140,29 @@ class TethysWorkspace(object):
         Args:
           item(str): Name of the item to remove from the workspace.
 
-        Examples:
+        **Examples:**
 
         ::
 
             workspace.remove('file.txt')
             workspace.remove('/full/path/to/file.txt')
+            workspace.remove('relative/path/to/file.txt')
             workspace.remove('directory')
             workspace.remove('/full/path/to/directory')
+            workspace.remove('relative/path/to/directory')
+
+        **Note:** Though you can specify relative paths, the ``remove()`` method will not allow you to back into other directories using "../" or similar notation. Futhermore, absolute paths given must contain the path of the workspace to be valid.
 
         """
-        fullpath = item
+        # Sanitize to prevent backing into other directories or entering the home directory
+        full_path = item.replace('../', '').replace('./', '').\
+                         replace('..\\', '').replace('.\\', '').\
+                         replace('~/', '').replace('~\\', '')
 
-        if self.path not in fullpath:
-            fullpath = os.path.join(self.path, item)
+        if self._path not in full_path:
+            full_path = os.path.join(self._path, full_path)
 
-        if os.path.isdir(fullpath):
-            shutil.rmtree(fullpath)
-        elif os.path.isfile(fullpath):
-            os.remove(fullpath)
+        if os.path.isdir(full_path):
+            shutil.rmtree(full_path)
+        elif os.path.isfile(full_path):
+            os.remove(full_path)
