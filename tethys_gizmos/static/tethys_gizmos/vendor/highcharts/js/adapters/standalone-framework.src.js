@@ -298,7 +298,7 @@ return {
 				if (animSetters[this.prop]) {
 					animSetters[this.prop](this);
 
-				// Animating a path definition on SVGElement
+				// Animating a _path definition on SVGElement
 				} else if (paths && elemelem) {
 					elem.attr('d', pathAnim.step(paths[0], paths[1], this.now, this.toD));
 

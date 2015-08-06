@@ -1700,7 +1700,7 @@ QUnit.equiv = (function() {
 						loop = false;
 						for ( j = 0; j < parents.length; j++ ) {
 							if ( parents[j] === a[i] ) {
-								// don't go down the same path twice
+								// don't go down the same _path twice
 								loop = true;
 							}
 						}

@@ -33,7 +33,7 @@ Map Publishing
 
 Tethys Software Suite provides `GeoServer <http://geoserver.org/>`_ for publishing spatial data as web services. GeoServer is used to publish common spatial files such as Shapefiles and GeoTIFFs in web-friendly formats like GeoJSON and images.
 
-To use the map publishing capabilities of GeoServer in your app use the :doc:`./tethys_sdk/spatial_publishing`.
+To use the map publishing capabilities of GeoServer in your app use the :doc:`./tethys_sdk/spatial_dataset_services`.
 
 Geoprocessing
 =============
@@ -137,7 +137,7 @@ Software                               API                                      
 =====================================  ===============================================  ============================================
 PostgreSQL                             :doc:`./tethys_sdk/persistent_store`             SQL Database Storage
 PostGIS                                :doc:`./tethys_sdk/spatial_persistent_store`     Spatial Database Storage and Geoprocessing
-GeoServer                              :doc:`./tethys_sdk/spatial_publishing`           Spatial File Publishing
+GeoServer                              :doc:`./tethys_sdk/spatial_dataset_services`     Spatial File Publishing
 52° North WPS                          :doc:`./tethys_sdk/geoprocessing`                Geoprocessing
 OpenLayers, Google Maps, HighCharts    :doc:`./tethys_sdk/gizmos`                       Spatial and Tabular Visualization
 HTCondor                               :doc:`./tethys_sdk/cloud_computing`              Computing and Job Management

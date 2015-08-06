@@ -397,7 +397,7 @@ function gotoSection(anchor, hilighted) {
 				}
 			}
 
-			// For the last path item, show the section etc
+			// For the last _path item, show the section etc
 			if (/[A-Z]/.test(level[0])) {
 				level = 'object-' + level;
 			}

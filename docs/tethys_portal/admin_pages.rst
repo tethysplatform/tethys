@@ -32,7 +32,7 @@ Permissions and users can be managed from the administrator dashboard using the 
 Manage Tethys Services
 ======================
 
-The administrator pages provide a simple mechanism for linking to the other services of Tethys Platform. Use the ``Spatial Dataset Services`` link to connect your Tethys Portal to GeoServer, the ``Dataset Services`` link to connect to CKAN instances or HydroShare, or the ``Web Processing Services`` link to connect to WPS instances. For detailed instructions on how to perform each of these tasks, refer to the :doc:`../tethys_sdk/spatial_publishing`, :doc:`../tethys_sdk/dataset_services`, and :doc:`../tethys_sdk/geoprocessing` documentation, respectively.
+The administrator pages provide a simple mechanism for linking to the other services of Tethys Platform. Use the ``Spatial Dataset Services`` link to connect your Tethys Portal to GeoServer, the ``Dataset Services`` link to connect to CKAN instances or HydroShare, or the ``Web Processing Services`` link to connect to WPS instances. For detailed instructions on how to perform each of these tasks, refer to the :doc:`../tethys_sdk/spatial_dataset_services`, :doc:`../tethys_sdk/dataset_services`, and :doc:`../tethys_sdk/geoprocessing` documentation, respectively.
 
 Manage Computing Resources
 ==========================

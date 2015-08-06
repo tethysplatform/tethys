@@ -1093,8 +1093,8 @@ if(!Array.prototype.indexOf){
 				}
 				
 				// clip
-				if (this.attribute('clip-path').hasValue()) {
-					var clip = this.attribute('clip-path').Definition.getDefinition();
+				if (this.attribute('clip-_path').hasValue()) {
+					var clip = this.attribute('clip-_path').Definition.getDefinition();
 					if (clip != null) clip.apply(ctx);
 				}
 				
@@ -1385,7 +1385,7 @@ if(!Array.prototype.indexOf){
 		}
 		svg.Element.polygon.prototype = new svg.Element.polyline;
 
-		// path element
+		// _path element
 		svg.Element.path = function(node) {
 			this.base = svg.Element.PathElementBase;
 			this.base(node);
@@ -1399,7 +1399,7 @@ if(!Array.prototype.indexOf){
 			d = d.replace(/([^\s])([MmZzLlHhVvCcSsQqTtAa])/gm,'$1 $2'); // separate commands from points
 			d = d.replace(/([0-9])([+\-])/gm,'$1 $2'); // separate digits when no comma
 			d = d.replace(/(\.[0-9]*)(\.)/gm,'$1 $2'); // separate digits when no comma
-			d = d.replace(/([Aa](\s+[0-9]+){3})\s+([01])\s*([01])/gm,'$1 $3 $4 '); // shorthand elliptical arc path syntax
+			d = d.replace(/([Aa](\s+[0-9]+){3})\s+([01])\s*([01])/gm,'$1 $3 $4 '); // shorthand elliptical arc _path syntax
 			d = svg.compressSpaces(d); // compress multiple spaces
 			d = svg.trim(d);
 			this.PathParser = new (function(d) {

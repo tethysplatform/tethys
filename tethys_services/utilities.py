@@ -44,7 +44,7 @@ def ensure_oauth2(provider):
                 return redirect_response
             except AttributeError:
                 # Anonymous User needs to be logged in and associated with that provider
-                # return redirect('/login/{0}/?next={1}'.format(provider, request.path))
+                # return redirect('/login/{0}/?next={1}'.format(provider, request._path))
                 return redirect_response
             except AuthAlreadyAssociated:
                 # Another user has already used the account to associate...

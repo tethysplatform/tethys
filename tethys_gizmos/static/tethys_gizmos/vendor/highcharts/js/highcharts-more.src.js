@@ -233,7 +233,7 @@ var radialAxisMixin = {
 
 
 	/**
-	 * Get the path for the axis line. This method is also referenced in the getPlotLinePath
+	 * Get the _path for the axis line. This method is also referenced in the getPlotLinePath
 	 * method.
 	 */
 	getLinePath: function (lineWidth, radius) {
@@ -350,7 +350,7 @@ var radialAxisMixin = {
 	},
 	
 	/**
-	 * Find the path for plot bands along the radial axis
+	 * Find the _path for plot bands along the radial axis
 	 */
 	getPlotBandPath: function (from, to, options) {
 		var center = this.center,
@@ -422,7 +422,7 @@ var radialAxisMixin = {
 	},
 	
 	/**
-	 * Find the path for plot lines perpendicular to the radial axis.
+	 * Find the _path for plot lines perpendicular to the radial axis.
 	 */
 	getPlotLinePath: function (value, reverse) {
 		var axis = this,
@@ -631,7 +631,7 @@ wrap(tickProto, 'getLabelPosition', function (proceed, x, y, label, horiz, label
 });
 
 /**
- * Wrap the getMarkPath function to return the path of the radial marker
+ * Wrap the getMarkPath function to return the _path of the radial marker
  */
 wrap(tickProto, 'getMarkPath', function (proceed, x, y, tickLength, tickWidth, horiz, renderer) {
 	var axis = this.axis,
@@ -764,7 +764,7 @@ seriesTypes.arearange = extendClass(seriesTypes.area, {
 	
 	/**
 	 * Extend the line series' getSegmentPath method by applying the segment
-	 * path to both lower and higher values of the range
+	 * _path to both lower and higher values of the range
 	 */
 	getSegmentPath: function (segment) {
 		
@@ -809,7 +809,7 @@ seriesTypes.arearange = extendClass(seriesTypes.area, {
 		// Create a line on both top and bottom of the range
 		linePath = [].concat(lowerPath, higherPath);
 		
-		// For the area path, we need to change the 'move' statement into 'lineTo' or 'curveTo'
+		// For the area _path, we need to change the 'move' statement into 'lineTo' or 'curveTo'
 		if (!this.chart.polar) {
 			higherPath[0] = 'L'; // this probably doesn't work for spline
 		}
@@ -2218,7 +2218,7 @@ Axis.prototype.beforePadding = function () {
 		if (this.chart.polar) {
 		
 			/**
-			 * Overridden method to close a segment path. While in a cartesian plane the area 
+			 * Overridden method to close a segment _path. While in a cartesian plane the area
 			 * goes down to the threshold, in the polar chart it goes to the center.
 			 */
 			this.closeSegment = function (path) {
@@ -2386,7 +2386,7 @@ Axis.prototype.beforePadding = function () {
 		
 		var points = this.points;
 	
-		// Connect the path
+		// Connect the _path
 		if (this.chart.polar && this.options.connectEnds !== false && 
 				segment[segment.length - 1] === points[points.length - 1] && points[0].y !== null) {
 			this.connectEnds = true; // re-used in splines
