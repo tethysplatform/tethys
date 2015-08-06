@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'tethys_portal.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
+# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -107,7 +107,7 @@ TETHYS_DATABASES = {
 }
 
 # Internationalization
-# https://docs.djangoproject.com/en/1.6/topics/i18n/
+# https://docs.djangoproject.com/en/1.7/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -132,8 +132,8 @@ TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'), )
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
 
-# Workspaces
-#WORKSPACES_ROOT = '/var/www/tethys/workspaces'
+# Tethys Workspaces
+#TETHYS_WORKSPACES_ROOT = '/var/www/tethys/workspaces'
 
 # Messaging settings
 MESSAGE_TAGS = {message_constants.DEBUG: 'alert-danger',
