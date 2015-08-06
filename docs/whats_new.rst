@@ -18,6 +18,8 @@ Social Authentication
 * HydroShare coming soon
 * New controls on User Profile page to manage social accounts
 
+See: :doc:`./tethys_portal/social_auth`
+
 
 D3 Plotting Gizmos
 ------------------
@@ -25,6 +27,8 @@ D3 Plotting Gizmos
 * D3 alternatives for all the HighCharts plot views
 * Use the same plot objects to define both types of charts
 * Simplified and generalized the mechanism for declaring plot views
+
+See: :doc:`./tethys_sdk/gizmos_api`
 
 Job Manager Gizmo
 -----------------
@@ -37,6 +41,12 @@ Job Manager Updates
 
 Workspaces
 ----------
+
+* SDK methods for creating and managing workspaces for apps
+* List files and directories in workspace directory
+* Clear and remove files and directories in workspace
+
+See: :doc:`./tethys_sdk/workspaces`
 
 
 Release 1.1.0

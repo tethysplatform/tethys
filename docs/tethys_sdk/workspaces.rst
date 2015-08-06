@@ -41,16 +41,16 @@ The Workspaces API includes a command, ``collectworkspaces``, for moving all wor
 Setting
 -------
 
-To enable centralized workspaces create a directory for the workspaces and specify its path in the ``settings.py`` file using the ``WORKSPACES_ROOT`` setting.
+To enable centralized workspaces create a directory for the workspaces and specify its path in the ``settings.py`` file using the ``TETHYS_WORKSPACES_ROOT`` setting.
 
 ::
 
-    WORKSPACES_ROOT = '/var/www/tethys/workspaces'
+    TETHYS_WORKSPACES_ROOT = '/var/www/tethys/workspaces'
 
 Command
 -------
 
-Run the ``collectworkspaces`` command to automatically move all of the workspace directories to the ``WORKSPACE_ROOT`` directory and symbolically link them back. You will need to run this command each time you install new apps.
+Run the ``collectworkspaces`` command to automatically move all of the workspace directories to the ``TETHYS_WORKSPACES_ROOT`` directory and symbolically link them back. You will need to run this command each time you install new apps.
 
 ::
 
