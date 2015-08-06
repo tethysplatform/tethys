@@ -10,12 +10,7 @@ rect.disabled {
     fill: transparent !important;
 }
 
-h1 {
-    font-size: 14px;
-    text-align: center;
-}
-
-body {
+.d3-plot {
   font: 11px sans-serif;
 }
 
@@ -60,6 +55,3 @@ body {
   left: 0;
 }
 
-.area {
-  fill: steelblue;
-}
