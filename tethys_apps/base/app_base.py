@@ -256,7 +256,7 @@ class TethysAppBase(object):
         """
         # Find the path to the app project directory
         ## Hint: cls will be a child class of this class.
-        ## See: http://stackoverflow.com/questions/4006102/is-possible-to-know-the-path-of-the-file-of-a-subclass-in-python
+        ## Credits: http://stackoverflow.com/questions/4006102/is-possible-to-know-the-path-of-the-file-of-a-subclass-in-python
         project_directory = os.path.dirname(sys.modules[cls.__module__].__file__)
-        workspace_directory = os.path.join(project_directory, 'workspaces', cls.package + '_workspace')
+        workspace_directory = os.path.join(project_directory, 'workspaces', 'app_workspace')
         return TethysWorkspace(workspace_directory)
