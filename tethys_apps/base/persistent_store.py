@@ -11,6 +11,8 @@
 import sys
 
 from django.conf import settings
+from django.db import DatabaseError
+
 from sqlalchemy import create_engine
 
 
@@ -63,6 +65,8 @@ def get_persistent_store_engine(app_name, persistent_store_name):
     Returns:
       object: An SQLAlchemy engine object for the persistent store requested.
     """
+    print('DEPRECTATION WARNING: The ".utilities.get_persistent_store" method has been deprecated. Use the '
+          '"get_persistent_store" method on the App Class instead (e.g.: MyApp.get_persistent_store("name") ).')
     # Create the unique store name
     unique_store_name = '_'.join([app_name, persistent_store_name])
 
@@ -111,6 +115,5 @@ def get_persistent_store_engine(app_name, persistent_store_name):
         return create_engine(persistent_store_url)
 
     else:
-        print('ERROR: No persistent store "{0}" for app "{1}". Make sure you register the persistent store in app.py '
-              'and reinstall app.'.format(persistent_store_name, app_name))
-        sys.exit()
+        raise DatabaseError('No persistent store "{0}" for app "{1}". Make sure you register the persistent store in app.py '
+                            'and reinstall app.'.format(persistent_store_name, app_name))
