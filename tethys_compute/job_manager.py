@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: job_manager.py
+* Author: Scott Christensen
+* Created On: 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from tethys_compute.models import TethysJob, CondorJob
 
 class JobManager(object):
