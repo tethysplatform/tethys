@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: admin.py
+* Author: Scott Christensen
+* Created On: 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from django.contrib import admin
 from django.forms import Textarea
 from django.db import models
