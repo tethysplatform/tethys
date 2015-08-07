@@ -131,7 +131,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             .attr('class', 'd3-tip')
             .offset([-10, 0])
             .html(function (d, i, j) {
-                return "<strong>" + series[j].name + "</strong> </br>" + x_axis_title + ": <span style='color:yellow'>"
+                return "<strong>" + d.name + "</strong> </br>" + x_axis_title + ": <span style='color:yellow'>"
                     + d[0] + "</span> </br>" + y_axis_title + ": <span style='color:yellow'>" + d[1] + "</span>";
             });
 
@@ -407,6 +407,16 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+        var tip = d3.tip()
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function (d, i, j) {
+                return "<strong>" + "</strong> </br>" + x_axis_title + ": <span style='color:yellow'>"
+                    + d[0] + "</span> </br>" + y_axis_title + ": <span style='color:yellow'>" + d[1] + "</span>";
+            });
+
+        svg.call(tip);
+
         //Create the chart title and subtitle
         svg.append("text")
             .attr("x", (width/2))
@@ -420,11 +430,6 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             .attr("text-anchor", "middle")
             .style("font-size", "14px")
             .text(subtitle);
-
-        // add the tooltip area to the webpage
-        var tooltip = d3.select(element).append("div")
-            .attr("class", "d3-scatter-tooltip")
-            .style("opacity", 0);
 
         var number_of_series = series.length;
 
@@ -490,7 +495,9 @@ var TETHYS_D3_PLOT_VIEW = (function() {
                     .attr("class", "point")
                     .attr("d", d3.svg.symbol().type("circle"))
                     .attr("transform", function (d) { return "translate(" + x(d[0]) + "," + y(d[1]) + ")"; })
-                    .style("fill", function (d) { return color(series[i].name); });
+                    .style("fill", function (d) { return color(series[i].name); })
+                    .on("mouseover", tip.show)
+                    .on("mouseout", tip.hide);
         }
 
             // draw legend
@@ -502,7 +509,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 
             // draw legend colored rectangles
             legend.append("rect")
-                .attr("x", width - 18)
+                .attr("x", width - 45)
                 .attr("width", 18)
                 .attr("height", 18)
                 .style("fill", color);
@@ -512,7 +519,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
                 .attr("x", width - 24)
                 .attr("y", 9)
                 .attr("dy", ".35em")
-                .style("text-anchor", "end")
+                .style("text-anchor", "start")
                 .text(function (d) { return d; });
 	};
 
