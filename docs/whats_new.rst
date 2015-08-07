@@ -66,6 +66,15 @@ New Location for Tethys SDK
 
 See: :doc:`./tethys_sdk`
 
+Persistent Stores Changes
+-------------------------
+
+* Moved the get_persistent_stores_engine() method to the TethysAppBase class.
+* To call the method import your :term:`app class` and call it on the class.
+* The old get_persistent_stores_engine() method has been flagged for deprecation.
+
+See: :doc:`./tethys_sdk/persistent_store`
+
 
 Release 1.1.0
 =============
