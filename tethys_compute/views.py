@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: views.py
+* Author: Scott Christensen
+* Created On: 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.http import HttpResponse, HttpResponseServerError
 from django.core.urlresolvers import reverse
