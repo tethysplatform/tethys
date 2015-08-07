@@ -1,6 +1,27 @@
+/*****************************************************************************
+ * FILE: error
+ * DATE: 2014
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
+/*****************************************************************************
+ * FILE: variables
+ * DATE: 2014
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
 /* =========
    Variables
    ========= */
+/*****************************************************************************
+ * FILE: mixins
+ * DATE: 2014
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
 .error-container {
   margin: 50px;
 }

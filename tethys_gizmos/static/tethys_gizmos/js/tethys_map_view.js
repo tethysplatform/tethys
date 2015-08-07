@@ -2,7 +2,7 @@
  * FILE:    Tethys Map View Library
  * DATE:    February 4, 2015
  * AUTHOR:  Nathan Swain
- * COPYRIGHT: (c) 2015 Brigham Young University
+ * COPYRIGHT: (c) Brigham Young University 2015
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
 

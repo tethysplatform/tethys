@@ -1,4 +1,11 @@
-/* Get rid of colon after labels */
+/*****************************************************************************
+ * FILE: tethys_gizmos
+ * DATE: 2014
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
+ /* Get rid of colon after labels */
 label:after {
 	content: none;
 }
