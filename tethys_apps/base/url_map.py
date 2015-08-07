@@ -1,3 +1,13 @@
+"""
+********************************************************************************
+* Name: url_map.py
+* Author: Nathan Swain
+* Created On: September 2014
+* Copyright: (c) Brigham Young University 2014
+* License: BSD 2-Clause
+********************************************************************************
+"""
+
 DEFAULT_EXPRESSION = '[0-9A-Za-z-_.]+'
 
 
