@@ -33,7 +33,7 @@ class RangeSlider(TethysGizmoOptions):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import RangeSlider
+        from tethys_sdk.gizmos import RangeSlider
 
         slider1 = RangeSlider(display_text='Slider 1',
                               name='slider1',

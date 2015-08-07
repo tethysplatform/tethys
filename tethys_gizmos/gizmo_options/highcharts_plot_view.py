@@ -43,7 +43,7 @@ class PlotView(TethysGizmoOptions):
         # CONTROLLER
 
         # coding=utf-8
-        from tethys_apps.sdk.gizmos import *
+        from tethys_sdk.gizmos import *
 
         ### Line Plot
 
@@ -466,7 +466,7 @@ class HighChartsLinePlot(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsLinePlot, PlotView
+        from tethys_sdk.gizmos import HighChartsLinePlot, PlotView
 
         highcharts_object = HighChartsLinePlot(title='Plot Title',
                                                subtitle='Plot Subtitle',
@@ -573,7 +573,7 @@ class HighChartsPolarPlot(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsPolarPlot, PlotView
+        from tethys_sdk.gizmos import HighChartsPolarPlot, PlotView
 
         web_plot_object = HighChartsPolarPlot(title='Polar Chart',
                                               subtitle='Polar Chart',
@@ -652,7 +652,7 @@ class HighChartsScatterPlot(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsScatterPlot, PlotView
+        from tethys_sdk.gizmos import HighChartsScatterPlot, PlotView
 
         male_dataset = {
             'name': 'Male',
@@ -769,7 +769,7 @@ class HighChartsPiePlot(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsPieChart, PlotView
+        from tethys_sdk.gizmos import HighChartsPieChart, PlotView
 
         pie_plot_object = HighChartsPiePlot(title='Pie Chart',
                                             subtitle='Pie Chart',
@@ -849,7 +849,7 @@ class HighChartsBarPlot(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsBarPlot, PlotView
+        from tethys_sdk.gizmos import HighChartsBarPlot, PlotView
 
         bar_plot_view = HighChartsBarPlot(
             title='Bar Chart',
@@ -953,7 +953,7 @@ class HighChartsTimeSeries(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsTimeSeries, PlotView
+        from tethys_sdk.gizmos import HighChartsTimeSeries, PlotView
 
         timeseries_plot_object = HighChartsTimeSeries(
             title='Irregular Timeseries Plot',
@@ -1045,7 +1045,7 @@ class HighChartsAreaRange(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsAreaRange, PlotView
+        from tethys_sdk.gizmos import HighChartsAreaRange, PlotView
 
         averages = [
             [datetime(2009, 7, 1), 21.5], [datetime(2009, 7, 2), 22.1], [datetime(2009, 7, 3), 23],
@@ -1154,7 +1154,7 @@ class HighChartsHeatMap(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsHeatMap, PlotView
+        from tethys_sdk.gizmos import HighChartsHeatMap, PlotView
 
         sales_data = [
             [0, 0, 10], [0, 1, 19], [0, 2, 8], [0, 3, 24], [0, 4, 67], [1, 0, 92],

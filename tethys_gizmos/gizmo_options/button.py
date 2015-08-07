@@ -28,7 +28,7 @@ class ButtonGroup(TethysGizmoOptions):
 
         # CONTROLLER
 
-        from tethys_apps.sdk.gizmos import Button, ButtonGroup
+        from tethys_sdk.gizmos import Button, ButtonGroup
 
         # Horizontal Button Group
         add_button = Button(display_text='Add',
@@ -92,7 +92,7 @@ class Button(TethysGizmoOptions):
 
         # CONTROLLER
 
-        from tethys_apps.sdk.gizmos import Button
+        from tethys_sdk.gizmos import Button
 
         # Single Button
         single_button = Button(display_text='Click Me',
