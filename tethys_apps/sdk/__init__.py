@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: sdk/__init__.py
+* Author: Nathan Swain
+* Created On: February 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 # DO NOT ERASE
 from tethys_services.utilities import (list_dataset_engines, 
 									   get_dataset_engine,

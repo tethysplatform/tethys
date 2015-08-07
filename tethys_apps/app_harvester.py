@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-* Name: app_harvester
+* Name: app_harvester.py
 * Author: Nathan Swain and Scott Christensen
 * Created On: August 19, 2013
 * Copyright: (c) Brigham Young University 2013

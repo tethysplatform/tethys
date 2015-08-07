@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: syncstores.py
+* Author: Nathan Swain
+* Created On: 2014
+* Copyright: (c) Brigham Young University 2014
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from django.core.management.base import BaseCommand, make_option
 from django.conf import settings
 
