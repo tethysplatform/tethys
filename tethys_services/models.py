@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: models.py
+* Author: Nathan Swain
+* Created On: 2014
+* Copyright: (c) Brigham Young University 2014
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from django.db import models
 from django.core.exceptions import ValidationError
 from tethys_dataset_services.valid_engines import VALID_ENGINES, VALID_SPATIAL_ENGINES
