@@ -35,7 +35,7 @@ class TextInput(TethysGizmoOptions):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import TextInput
+        from tethys_sdk.gizmos import TextInput
 
         text_input = TextInput(display_text='Text',
                                name='inputAmount',

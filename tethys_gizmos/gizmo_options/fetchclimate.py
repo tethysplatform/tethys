@@ -182,6 +182,7 @@ class FetchClimateMap(TethysGizmoOptions):
     ::
 
         # CONTROLLER
+        from tethys_sdk.gizmos import *
 
         fetchclimate_map = FetchClimateMap(
                     url_parameter=FetchClimateURLParameter(serverUrl='http://fetchclimate2.cloudapp.net'),

@@ -16,8 +16,8 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from requests.exceptions import ConnectionError
 
-from tethys_apps.sdk.gizmos import *
-from tethys_apps.sdk import list_spatial_dataset_engines
+from tethys_sdk.gizmos import *
+from tethys_sdk.services import list_spatial_dataset_engines
 
 
 spatial_dataset_engines = list_spatial_dataset_engines()

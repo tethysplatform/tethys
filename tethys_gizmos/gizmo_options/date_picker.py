@@ -44,7 +44,7 @@ class DatePicker(TethysGizmoOptions):
 
         # CONTROLLER
 
-        from tethys_apps.sdk.gizmos import DatePickerOptions
+        from tethys_sdk.gizmos import DatePickerOptions
 
         # Date Picker Options
         date_picker = DatePicker(name='date1',

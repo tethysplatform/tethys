@@ -15,14 +15,14 @@ Registering spatially enabled persistent stores follows the same process as regi
 
 ::
 
-    from tethys_apps.base import TethysAppBase, url_map_maker, PersistentStore
+    from tethys_sdk.base import TethysAppBase, url_map_maker
+    from tethys_sdk.stores import PersistentStore
 
 
     class MyFirstApp(TethysAppBase):
         """
         Tethys App Class for My First App.
         """
-
         ...
 
         def persistent_stores(self):

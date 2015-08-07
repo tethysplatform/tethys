@@ -16,3 +16,4 @@ from tethys_services.utilities import (list_dataset_engines,
 									   list_wps_service_engines,
 									   ensure_oauth2)
 
+print('DEPRECATION WARNING: The "tethys_apps.sdk" module has been deprecated. Use the "tethys_sdk" module instead.')

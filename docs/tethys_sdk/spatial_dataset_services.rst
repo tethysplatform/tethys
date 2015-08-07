@@ -116,7 +116,7 @@ After spatial dataset services have been properly configured, you can use the se
 
 The Spatial Dataset Services API provides a convenience function called ``get_spatial_dataset_engine``. To retrieve and engine for a sitewide configuration, call ``get_spatial_dataset_engine`` with the name of the configuration::
 
-  from tethys_apps.sdk import get_spatial_dataset_engine
+  from tethys_sdk.services import get_spatial_dataset_engine
 
   dataset_engine = get_dataset_engine(name='example')
 
@@ -124,7 +124,7 @@ It will return the first service with a matching name or raise an exception if t
 
 ::
 
-  from tethys_apps.sdk import list_spatial_dataset_engines
+  from tethys_sdk.services import list_spatial_dataset_engines
 
   dataset_engines = list_spatial_dataset_engines()
 
@@ -148,7 +148,7 @@ Consider the following example for uploading a shapefile to spatial dataset serv
 
 ::
 
-  from tethys_apps.sdk import get_spatial_dataset_engine
+  from tethys_sdk.services import get_spatial_dataset_engine
 
   # First get an engine
   engine = get_spatial_dataset_engine(name='example')
