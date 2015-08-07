@@ -40,7 +40,7 @@ You will now be looking at the Tethys Portal Web Admin Console. The Web Admin co
 2. Link to 52 North WPS Docker
 ------------------------------
 
-The built in 52 North Web Processing Service (WPS) is provided as one mechanism for Geoprocessing in apps. It exposes the GRASS GIS and Sextante geoprocessing libraries as web services. See :doc:`../tethys_sdk/geoprocessing` documentation for more details about how to use 52 North WPS processing in apps. Complete the following steps to link Tethys with the 52 North WPS:
+The built in 52 North Web Processing Service (WPS) is provided as one mechanism for Geoprocessing in apps. It exposes the GRASS GIS and Sextante geoprocessing libraries as web services. See :doc:`../tethys_sdk/web_processing_services` documentation for more details about how to use 52 North WPS processing in apps. Complete the following steps to link Tethys with the 52 North WPS:
 
 a. Select "Web Processing Services" from the options listed on the Tethys Portal Admin Console.
 
