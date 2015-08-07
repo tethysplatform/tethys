@@ -1,4 +1,12 @@
-
+"""
+********************************************************************************
+* Name: base.py
+* Author: Nathan Swain and Ezra Rice
+* Created On: May 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 
 class TethysGizmoOptions(dict):
     """
