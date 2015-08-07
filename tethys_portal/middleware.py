@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: middleware.py
+* Author: Nathan Swain
+* Created On: August 1, 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from django.contrib import messages
 from django.shortcuts import redirect
 from social.apps.django_app.middleware import SocialAuthExceptionMiddleware

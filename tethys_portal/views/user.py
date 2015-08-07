@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: user.py
+* Author: Nathan Swain
+* Created On: 2014
+* Copyright: (c) Brigham Young University 2014
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
