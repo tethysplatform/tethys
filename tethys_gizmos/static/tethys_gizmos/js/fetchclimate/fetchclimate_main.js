@@ -1,3 +1,10 @@
+/*****************************************************************************
+ * FILE:   fetchclimate_main.js
+ * DATE: 7/25/2014
+ * AUTHOR: Alan Snow
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
 jQuery(window).load(function() {
   jQuery('#fc_next_step_button').click(function() {
     //Order of 'if statement' matters because the map is not always there

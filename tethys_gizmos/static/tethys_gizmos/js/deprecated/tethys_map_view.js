@@ -2,7 +2,7 @@
  * FILE:    tethys_map_view.js
  * DATE:    21 April 2014
  * AUTHOR: Scott D. Christensen
- * COPYRIGHT: (c) 2014 Brigham Young University
+ * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
 
