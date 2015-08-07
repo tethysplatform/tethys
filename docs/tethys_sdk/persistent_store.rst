@@ -23,14 +23,14 @@ Registering new :term:`persistent stores` is accomplished by adding the ``persis
 
 ::
 
-    from tethys_apps.base import TethysAppBase, url_map_maker, PersistentStore
+    from tethys_sdk.base import TethysAppBase, url_map_maker
+    from tethys_sdk.stores import PersistentStore
 
 
     class MyFirstApp(TethysAppBase):
         """
         Tethys App Class for My First App.
         """
-
         ...
 
         def persistent_stores(self):
@@ -192,7 +192,7 @@ This command would create all the non-existent persistent stores that are regist
 API Documentation
 =================
 
-.. autoclass:: tethys_apps.base.persistent_store.PersistentStore
+.. autoclass:: tethys_sdk.stores.PersistentStore
 
 .. automethod:: tethys_apps.base.persistent_store.get_persistent_store_engine
 

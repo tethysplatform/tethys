@@ -27,7 +27,7 @@ def ensure_oauth2(provider):
 
     Usage:
 
-        from tethys_apps.sdk import ensure_oauth2, get_dataset_engine
+        from tethys_sdk.services import ensure_oauth2, get_dataset_engine
 
         @ensure_oauth2('hydroshare-oauth2')
         def controller(request):

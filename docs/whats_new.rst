@@ -59,6 +59,13 @@ Video Tutorials
 
 See: :doc:`./tutorials/video_tutorials`
 
+New Location for Tethys SDK
+---------------------------
+
+* Tethys SDK methods centralized to a new convenient package: tethys_sdk
+
+See: :doc:`./tethys_sdk`
+
 
 Release 1.1.0
 =============

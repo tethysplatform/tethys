@@ -32,7 +32,7 @@ class MessageBox(TethysGizmoOptions):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import MessageBox
+        from tethys_sdk.gizmos import MessageBox
 
         message_box = MessageBox(name='sampleModal',
                                  title='Message Box Title',
