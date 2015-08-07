@@ -68,7 +68,7 @@ class MapView(TethysGizmoOptions):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import MapView, MVDraw, MVView, MVLayer, MVLegendClass
+        from tethys_sdk.gizmos import MapView, MVDraw, MVView, MVLayer, MVLegendClass
 
         # Define view options
         view_options = MVView(

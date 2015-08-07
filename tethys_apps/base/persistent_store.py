@@ -35,7 +35,8 @@ class PersistentStore(object):
         self.name = name
         self.initializer = initializer
         self.postgis = postgis
-        self.spatial = spatial
+        self.spatial = \
+            spatial
 
     def __repr__(self):
         """
