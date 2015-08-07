@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-* Name: sdk/__init__.py
+* Name: stores.py
 * Author: Nathan Swain
 * Created On: 7 August 2015
 * Copyright: (c) Brigham Young University 2015
@@ -8,11 +8,4 @@
 ********************************************************************************
 """
 # DO NOT ERASE
-from tethys_services.utilities import (list_dataset_engines, 
-									   get_dataset_engine,
-									   list_spatial_dataset_engines,
-									   get_spatial_dataset_engine,
-									   get_wps_service_engine,
-									   list_wps_service_engines,
-									   ensure_oauth2)
-
+from tethys_apps.base.persistent_store import PersistentStore
