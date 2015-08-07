@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: map_view.py
+* Author: Nathan Swain
+* Created On: May 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 
 __all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer', 'MVLegendClass']

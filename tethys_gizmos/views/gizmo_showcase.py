@@ -1,4 +1,13 @@
 # coding=utf-8
+"""
+********************************************************************************
+* Name: gizmo_showcase.py
+* Author: Nathan Swain
+* Created On: 2014
+* Copyright: (c) Brigham Young University 2014
+* License: BSD 2-Clause
+********************************************************************************
+"""
 import json
 from datetime import datetime
 from django.shortcuts import render

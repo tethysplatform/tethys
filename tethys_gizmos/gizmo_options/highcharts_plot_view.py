@@ -1,4 +1,13 @@
 # coding=utf-8
+"""
+********************************************************************************
+* Name: highcharts_plot_view.py
+* Author: Nathan Swain and Ezra Rice
+* Created On: May 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from .base import TethysGizmoOptions
 
 __all__ = ['PlotView', 'HighChartsObjectBase', 'HighChartsLinePlot', 'HighChartsPolarPlot', 'HighChartsScatterPlot',
