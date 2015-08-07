@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: google_map.py
+* Author: Nathan Swain
+* Created On: May 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from .base import TethysGizmoOptions
 
 __all__ = ['GoogleMapView']

@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: admin.py
+* Author: Nathan Swain
+* Created On: 2014
+* Copyright: (c) Brigham Young University 2014
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from django.contrib import admin
 from django.forms import Textarea
 from django.db import models
