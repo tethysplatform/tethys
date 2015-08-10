@@ -2,11 +2,11 @@
 Template Gizmos API
 *******************
 
-**Last Updated:** May 21, 2015
+**Last Updated:** August 10, 2015
 
 Template Gizmos are building blocks that can be used to create beautiful interactive controls for web apps. Using the Template Gizmos API, developers can add date-pickers, plots, and maps to their app pages with minimal coding. This article provides an overview of how to use Gizmos. If you are not familiar with templating in Tethys apps, please review :doc:`../tutorials/getting_started/view` tutorial before proceeding.
 
-For a detailed explanation and code examples of each Gizmo, see the :doc:`./gizmos_api` documentation.
+For a detailed explanation and code examples of each Gizmo, see the :ref:`gizmo_options` section.
 
 Working with Gizmos
 ===================
@@ -52,7 +52,7 @@ In this case, we import ``DatePicker`` and initialize a new object called ``date
 
     The Gizmo Options objects are new as of version 1.1.0. Prior to this time, Gizmo options were defined using dictionaries. The dictionary parameterization of Gizmos is still supported, but will no longer be referenced in the documentation.
 
-The :doc:`./gizmos_api` provides detailed descriptions of each Gizmo option object, valid parameters, and examples of how to use them.
+The :ref:`gizmo_options` section provides detailed descriptions of each Gizmo option object, valid parameters, and examples of how to use them.
 
 2. Load Gizmo Library
 ---------------------
@@ -101,7 +101,7 @@ Select the Gizmos developer tool and you will be brought to the Gizmo Showcase p
 .. figure:: ../images/gizmo_showcase_page.png
     :width: 650px
 
-For explanations the Gizmo Options objects and code examples, refer to the :doc:`./gizmos_api`.
+For explanations the Gizmo Options objects and code examples, refer to the :ref:`gizmo_options` section.
 
 Django Tag Reference
 ====================
@@ -150,3 +150,44 @@ Inserts the CSS and JavaScript dependencies at the location of the tag. This tag
 
     # JavaScript only
     {% gizmo_dependencies js %}
+
+.. _gizmo_options:
+
+Gizmos Options Objects
+======================
+
+This section provides explanations of each of the Gizmo Options Objects available for configuring Gizmos. It also provide code and usage examples for each object.
+
+Form Controls
+-------------
+
+.. toctree::
+   :maxdepth: 1
+
+   gizmos/button
+   gizmos/date_picker
+   gizmos/range_slider
+   gizmos/select_input
+   gizmos/text_input
+   gizmos/toggle_switch
+
+Visualization
+-------------
+
+.. toctree::
+     :maxdepth: 1
+
+     gizmos/plot_view
+     gizmos/map_view
+     gizmos/google_map
+     gizmos/fetchclimate
+
+
+Other
+-----
+
+.. toctree::
+    :maxdepth: 1
+
+    gizmos/message_box
+    gizmos/table_view
