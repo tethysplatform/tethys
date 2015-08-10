@@ -43,7 +43,7 @@ __all__ = ['HighChartsObjectBase', 'HighChartsLinePlot', 'HighChartsPolarPlot', 
 #         # CONTROLLER
 #
 #         # coding=utf-8
-#         from tethys_apps.sdk.gizmos import *
+#         from tethys_sdk.gizmos import *
 #
 #         ### Line Plot
 #
