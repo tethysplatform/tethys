@@ -1,394 +1,21 @@
 # coding=utf-8
 from .base import TethysGizmoOptions
 
-__all__ = ['PlotView', 'PlotViewObject', 'LinePlot', 'PolarPlot', 'ScatterPlot',
+__all__ = ['PlotView', 'PlotObject', 'LinePlot', 'PolarPlot', 'ScatterPlot',
            'PiePlot', 'BarPlot', 'TimeSeries', 'AreaRange', 'HeatMap']
 
 
 class PlotView(TethysGizmoOptions):
     """
-    The Plot View gizmo can be used to generate interactive plots of tabular data. All of the plots available through this gizmo are powered by the ` <http://www..com/>`_ JavaScript library.
-
-    Attributes
-        _object(Object, required): The _object contains the definition of the plot. The full ` API reference <http://api..com/>`_ is supported via this object. The object can either be a JavaScript string, a JavaScript-equivalent Python data structure, or one of the supported options objects that are described below. The latter is recommended.
-        height(str): Height of the plot element. Any valid css unit of length.
-        width(str): Width of the plot element. Any valid css unit of length.
-        attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
-        classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
-
-    Plots are configured using the _object parameter, which accepts either one of the Options objects or a dictionary equivalent of a  JavaScript object. The Options objects provide the easiest option for creating Plot Views (see the examples below).
-
-    Alternatively, developers can specify any valid option from the ` JavaScript API <http://api..com/>`_ using equivalent Python dictionaries. The recommended strategy for creating custom plots using dictionaries and the  Plot View is to find a similar example from the ` demos <http://www..com/demo/>`_ page. Use the *Edit in jsFiddle* link to view the source code. Use the JavaScript source of the example to construct the equivalent in Python. Here are a few tips for converting from JavaScript to Python:
-
-    * The Python equivalent of JavaScript objects are dictionaries. However, the keys for Python dictionaries must be strings, not literals.
-    * Python datetime objects should be used for times (see the timeseries plot example).
-    * Some  API parameters require JavaScript functions to be passed in (e.g.: axis scale labels). To accomplish this in Python, pass a string representing the equivalent JavaScript function definition. These function definitions *must* be anonymous (no name). An example of this is shown in the line plot example.
-    * Use the Python syntax for Booleans (e.g.: True instead of true).
-
-    Note: To use non ASCII characters such as degree signs (°), you must declare utf-8 encoding at the top of your Python script: # coding=utf-8
-
-    Example
-
-    ::
-
-        # CONTROLLER
-
-        # coding=utf-8
-        from tethys_apps.sdk.gizmos import *
-
-        ### Line Plot
-
-        _object = LinePlot(title='Plot Title',
-                                               subtitle='Plot Subtitle',
-                                               spline=True,
-                                               x_axis_title='Altitude',
-                                               x_axis_units='km',
-                                               y_axis_title='Temperature',
-                                               y_axis_units='°C',
-                                               series=[
-                                                   {
-                                                       'name': 'Air Temp',
-                                                       'color': '#0066ff',
-                                                       'marker': {'enabled': False},
-                                                       'data': [
-                                                           [0, 5], [10, -70],
-                                                           [20, -86.5], [30, -66.5],
-                                                           [40, -32.1],
-                                                           [50, -12.5], [60, -47.7],
-                                                           [70, -85.7], [80, -106.5]
-                                                       ]
-                                                   },
-                                                   {
-                                                       'name': 'Water Temp',
-                                                       'color': '#ff6600',
-                                                       'data': [
-                                                           [0, 15], [10, -50],
-                                                           [20, -56.5], [30, -46.5],
-                                                           [40, -22.1],
-                                                           [50, -2.5], [60, -27.7],
-                                                           [70, -55.7], [80, -76.5]
-                                                       ]
-                                                   }
-                                               ]
-        )
-
-        line_plot_view = PlotView(_object=_object,
-                                  width='500px',
-                                  height='500px')
-
-        ### Scatter Plot
-
-        male_dataset = {
-            'name': 'Male',
-            'color': '#0066ff',
-            'data': [
-                [174.0, 65.6], [175.3, 71.8], [193.5, 80.7], [186.5, 72.6],
-                [187.2, 78.8], [181.5, 74.8], [184.0, 86.4], [184.5, 78.4],
-                [175.0, 62.0], [184.0, 81.6], [180.0, 76.6], [177.8, 83.6],
-                [192.0, 90.0], [176.0, 74.6], [174.0, 71.0], [184.0, 79.6],
-                [192.7, 93.8], [171.5, 70.0], [173.0, 72.4], [176.0, 85.9],
-                [176.0, 78.8], [180.5, 77.8], [172.7, 66.2], [176.0, 86.4],
-                [173.5, 81.8], [178.0, 89.6], [180.3, 82.8], [180.3, 76.4],
-                [164.5, 63.2], [173.0, 60.9], [183.5, 74.8], [175.5, 70.0],
-                [188.0, 72.4], [189.2, 84.1], [172.8, 69.1], [170.0, 59.5],
-                [182.0, 67.2], [170.0, 61.3], [177.8, 68.6], [184.2, 80.1],
-                [186.7, 87.8], [171.4, 84.7], [172.7, 73.4], [175.3, 72.1],
-                [180.3, 82.6], [182.9, 88.7], [188.0, 84.1], [177.2, 94.1],
-                [172.1, 74.9], [167.0, 59.1], [169.5, 75.6], [174.0, 86.2],
-                [172.7, 75.3], [182.2, 87.1], [164.1, 55.2], [163.0, 57.0],
-                [171.5, 61.4], [184.2, 76.8], [174.0, 86.8], [174.0, 72.2],
-                [177.0, 71.6], [186.0, 84.8], [167.0, 68.2], [171.8, 66.1]
-            ]
-        }
-
-        female_dataset = {
-            'name': 'Female',
-            'color': '#ff6600',
-            'data': [
-                [161.2, 51.6], [167.5, 59.0], [159.5, 49.2], [157.0, 63.0],
-                [155.8, 53.6], [170.0, 59.0], [159.1, 47.6], [166.0, 69.8],
-                [176.2, 66.8], [160.2, 75.2], [172.5, 55.2], [170.9, 54.2],
-                [172.9, 62.5], [153.4, 42.0], [160.0, 50.0], [147.2, 49.8],
-                [168.2, 49.2], [175.0, 73.2], [157.0, 47.8], [167.6, 68.8],
-                [159.5, 50.6], [175.0, 82.5], [166.8, 57.2], [176.5, 87.8],
-                [170.2, 72.8], [174.0, 54.5], [173.0, 59.8], [179.9, 67.3],
-                [170.5, 67.8], [160.0, 47.0], [154.4, 46.2], [162.0, 55.0],
-                [176.5, 83.0], [160.0, 54.4], [152.0, 45.8], [162.1, 53.6],
-                [170.0, 73.2], [160.2, 52.1], [161.3, 67.9], [166.4, 56.6],
-                [168.9, 62.3], [163.8, 58.5], [167.6, 54.5], [160.0, 50.2],
-                [161.3, 60.3], [167.6, 58.3], [165.1, 56.2], [160.0, 50.2],
-                [170.0, 72.9], [157.5, 59.8], [167.6, 61.0], [160.7, 69.1],
-                [163.2, 55.9], [152.4, 46.5], [157.5, 54.3], [168.3, 54.8],
-                [180.3, 60.7], [165.5, 60.0], [165.0, 62.0], [164.5, 60.3]
-            ]
-        }
-
-        _object = ScatterPlot(title='Scatter Plot',
-                                                  subtitle='Scatter Plot',
-                                                  x_axis_title='Height',
-                                                  x_axis_units='cm',
-                                                  y_axis_title='Weight',
-                                                  y_axis_units='kg',
-                                                  series=[male_dataset, female_dataset]
-        )
-
-        scatter_plot_view = PlotView(_object=_object,
-                                     width='500px',
-                                     height='500px')
-
-        ### Polar Plot
-
-        web_plot_object = PolarPlot(title='Polar Chart',
-                                              subtitle='Polar Chart',
-                                              pane={
-                                                  'size': '80%'
-                                              },
-                                              categories=['Infiltration', 'Soil Moisture', 'Precipitation',
-                                                          'Evaporation',
-                                                          'Roughness', 'Runoff', 'Permeability', 'Vegetation'],
-                                              series=[
-                                                  {
-                                                      'name': 'Park City',
-                                                      'data': [0.2, 0.5, 0.1, 0.8, 0.2, 0.6, 0.8, 0.3],
-                                                      'pointPlacement': 'on'
-                                                  },
-                                                  {
-                                                      'name': 'Little Dell',
-                                                      'data': [0.8, 0.3, 0.2, 0.5, 0.1, 0.8, 0.2, 0.6],
-                                                      'pointPlacement': 'on'
-                                                  }
-                                              ]
-        )
-
-        web_plot = PlotView(_object=web_plot_object,
-                            width='500px',
-                            height='500px')
-
-        ### Pie Plot
-
-        pie_plot_object = PiePlot(title='Pie Chart',
-                                            subtitle='Pie Chart',
-                                            series=[{
-                                                        'type': 'pie',
-                                                        'name': 'Browser share',
-                                                        'data': [
-                                                            ['Firefox', 45.0],
-                                                            ['IE', 26.8],
-                                                            {
-                                                                'name': 'Chrome',
-                                                                'y': 12.8,
-                                                                'sliced': True,
-                                                                'selected': True
-                                                            },
-                                                            ['Safari', 8.5],
-                                                            ['Opera', 6.2],
-                                                            ['Others', 0.7]
-                                                        ]
-                                                    }]
-        )
-
-        pie_plot_view = PlotView(_object=pie_plot_object,
-                                 width='500px',
-                                 height='500px')
-
-        ### Bar Plot
-
-        bar_plot_view = BarPlot(
-            title='Bar Chart',
-            subtitle='Bar Chart',
-            vertical=False,
-            categories=[
-                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-            ],
-            y_axis_units='millions',
-            y_axis_title='Population',
-            series=[{
-                        'name': 'Year 1800',
-                        'data': [107, 31, 635, 203, 2]
-                    }, {
-                        'name': 'Year 1900',
-                        'data': [133, 156, 947, 408, 6]
-                    }, {
-                        'name': 'Year 2008',
-                        'data': [973, 914, 4054, 732, 34]}
-            ]
-        )
-
-        bar_plot_view = PlotView(_object=bar_plot_view,
-                                 width='500px',
-                                 height='500px')
-
-
-        ### Time Series Plot
-
-        timeseries_plot_object = TimeSeries(
-            title='Irregular Timeseries Plot',
-            y_axis_title='Snow depth',
-            y_axis_units='m',
-            series=[{
-                        'name': 'Winter 2007-2008',
-                        'data': [
-                            [datetime(2008, 12, 2), 0.8],
-                            [datetime(2008, 12, 9), 0.6],
-                            [datetime(2008, 12, 16), 0.6],
-                            [datetime(2008, 12, 28), 0.67],
-                            [datetime(2009, 1, 1), 0.81],
-                            [datetime(2009, 1, 8), 0.78],
-                            [datetime(2009, 1, 12), 0.98],
-                            [datetime(2009, 1, 27), 1.84],
-                            [datetime(2009, 2, 10), 1.80],
-                            [datetime(2009, 2, 18), 1.80],
-                            [datetime(2009, 2, 24), 1.92],
-                            [datetime(2009, 3, 4), 2.49],
-                            [datetime(2009, 3, 11), 2.79],
-                            [datetime(2009, 3, 15), 2.73],
-                            [datetime(2009, 3, 25), 2.61],
-                            [datetime(2009, 4, 2), 2.76],
-                            [datetime(2009, 4, 6), 2.82],
-                            [datetime(2009, 4, 13), 2.8],
-                            [datetime(2009, 5, 3), 2.1],
-                            [datetime(2009, 5, 26), 1.1],
-                            [datetime(2009, 6, 9), 0.25],
-                            [datetime(2009, 6, 12), 0]
-                        ]
-                    }]
-        )
-
-        timeseries_plot = PlotView(_object=timeseries_plot_object,
-                                   width='500px',
-                                   height='500px')
-
-        ### Area Range Plot
-        averages = [
-            [datetime(2009, 7, 1), 21.5], [datetime(2009, 7, 2), 22.1], [datetime(2009, 7, 3), 23],
-            [datetime(2009, 7, 4), 23.8], [datetime(2009, 7, 5), 21.4], [datetime(2009, 7, 6), 21.3],
-            [datetime(2009, 7, 7), 18.3], [datetime(2009, 7, 8), 15.4], [datetime(2009, 7, 9), 16.4],
-            [datetime(2009, 7, 10), 17.7], [datetime(2009, 7, 11), 17.5], [datetime(2009, 7, 12), 17.6],
-            [datetime(2009, 7, 13), 17.7], [datetime(2009, 7, 14), 16.8], [datetime(2009, 7, 15), 17.7],
-            [datetime(2009, 7, 16), 16.3], [datetime(2009, 7, 17), 17.8], [datetime(2009, 7, 18), 18.1],
-            [datetime(2009, 7, 19), 17.2], [datetime(2009, 7, 20), 14.4],
-            [datetime(2009, 7, 21), 13.7], [datetime(2009, 7, 22), 15.7], [datetime(2009, 7, 23), 14.6],
-            [datetime(2009, 7, 24), 15.3], [datetime(2009, 7, 25), 15.3], [datetime(2009, 7, 26), 15.8],
-            [datetime(2009, 7, 27), 15.2], [datetime(2009, 7, 28), 14.8], [datetime(2009, 7, 29), 14.4],
-            [datetime(2009, 7, 30), 15], [datetime(2009, 7, 31), 13.6]
-        ]
-
-        ranges = [
-            [datetime(2009, 7, 1), 14.3, 27.7], [datetime(2009, 7, 2), 14.5, 27.8], [datetime(2009, 7, 3), 15.5, 29.6],
-            [datetime(2009, 7, 4), 16.7, 30.7], [datetime(2009, 7, 5), 16.5, 25.0], [datetime(2009, 7, 6), 17.8, 25.7],
-            [datetime(2009, 7, 7), 13.5, 24.8], [datetime(2009, 7, 8), 10.5, 21.4], [datetime(2009, 7, 9), 9.2, 23.8],
-            [datetime(2009, 7, 10), 11.6, 21.8], [datetime(2009, 7, 11), 10.7, 23.7], [datetime(2009, 7, 12), 11.0, 23.3],
-            [datetime(2009, 7, 13), 11.6, 23.7], [datetime(2009, 7, 14), 11.8, 20.7], [datetime(2009, 7, 15), 12.6, 22.4],
-            [datetime(2009, 7, 16), 13.6, 19.6], [datetime(2009, 7, 17), 11.4, 22.6], [datetime(2009, 7, 18), 13.2, 25.0],
-            [datetime(2009, 7, 19), 14.2, 21.6], [datetime(2009, 7, 20), 13.1, 17.1], [datetime(2009, 7, 21), 12.2, 15.5],
-            [datetime(2009, 7, 22), 12.0, 20.8], [datetime(2009, 7, 23), 12.0, 17.1], [datetime(2009, 7, 24), 12.7, 18.3],
-            [datetime(2009, 7, 25), 12.4, 19.4], [datetime(2009, 7, 26), 12.6, 19.9], [datetime(2009, 7, 27), 11.9, 20.2],
-            [datetime(2009, 7, 28), 11.0, 19.3], [datetime(2009, 7, 29), 10.8, 17.8], [datetime(2009, 7, 30), 11.8, 18.5],
-            [datetime(2009, 7, 31), 10.8, 16.1]
-        ]
-
-        area_range_plot_object = AreaRange(
-            title='July Temperatures',
-            y_axis_title='Temperature',
-            y_axis_units='*C',
-            series=[{
-                'name': 'Temperature',
-                'data': averages,
-                'zIndex': 1,
-                'marker': {
-                    'lineWidth': 2,
-                }
-            }, {
-                'name': 'Range',
-                'data': ranges,
-                'type': 'arearange',
-                'lineWidth': 0,
-                'linkedTo': ':previous',
-                'fillOpacity': 0.3,
-                'zIndex': 0
-            }]
-        )
-
-        area_range_plot = PlotView(_object=area_range_plot_object,
-                                   width='500px',
-                                   height='500px')
-
-
-        ### Custom Plot derived from: http://www..com/demo/columnrange
-        custom_plot_dictionary = {
-            'chart': {
-                'type': 'columnrange',
-                'inverted': True
-            },
-            'title': {
-                'text': 'Temperature variation by month'
-            },
-            'subtitle': {
-                'text': 'Observed in Vik i Sogn, Norway, 2009'
-            },
-            'xAxis': {
-                'categories': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-            },
-            'yAxis': {
-                'title': {
-                    'text': 'Temperature ( °C )'
-                }
-            },
-            'tooltip': {
-                'valueSuffix': '°C'
-            },
-            'plotOptions': {
-                'columnrange': {
-                    'dataLabels': {
-                        'enabled': True,
-                        'formatter': "function () {return this.y + '°C';}"
-                    }
-                }
-            },
-            'legend': {
-                'enabled': False
-            },
-            'series': [{
-                'name': 'Temperatures',
-                'data': [
-                    [-9.7, 9.4],
-                    [-8.7, 6.5],
-                    [-3.5, 9.4],
-                    [-1.4, 19.9],
-                    [0.0, 22.6],
-                    [2.9, 29.5],
-                    [9.2, 30.7],
-                    [7.3, 26.5],
-                    [4.4, 18.0],
-                    [-3.1, 11.4],
-                    [-5.2, 10.4],
-                    [-13.5, 9.8]
-                ]
-            }]
-        }
-
-        custom_plot = PlotView(_object=custom_plot_dictionary,
-                               width='500px',
-                               height='500px')
-
-
-        # TEMPLATE
-
-        {% gizmo _plot_view line_plot_view %}
-        {% gizmo _plot_view scatter_plot_view %}
-        {% gizmo _plot_view web_plot %}
-        {% gizmo _plot_view pie_plot_view %}
-        {% gizmo _plot_view bar_plot_view %}
-        {% gizmo _plot_view timeseries_plot %}
-        {% gizmo _plot_view area_range_plot %}
-        {% gizmo _plot_view custom_plot %}
-
+    This object is deprecated.
     """
 
     def __init__(self, highcharts_object=None, plot_object=None, height='520px', width='100%', attributes='', classes=''):
         """
         Constructor
         """
+        print('DEPRECATION WARNING: The "PlotView" object has been deprecated as of version 1.2.0. '
+              'Please use the new method for configuring plot views.')
         # Initialize super class
         super(PlotView, self).__init__(attributes=attributes, classes=classes)
 
@@ -405,7 +32,7 @@ class PlotView(TethysGizmoOptions):
 
 class PlotViewBase(TethysGizmoOptions):
     """
-    Docs
+    Plot view classes inherit from this class.
     """
 
     def __init__(self, width='500px', height='500px', engine='d3'):
@@ -422,14 +49,12 @@ class PlotViewBase(TethysGizmoOptions):
             raise ValueError('Parameter "engine" must be either "d3" or "highcharts".')
 
         self.engine = engine
-        self.plot_object = PlotViewObject()
+        self.plot_object = PlotObject()
 
 
-class PlotViewObject(TethysGizmoOptions):
+class PlotObject(TethysGizmoOptions):
     """
-     Object
-
-    Attributes
+    Base Plot Object that is constructed by plot views
     """
 
     def __init__(self,  chart={}, title='', subtitle='', legend=True, tooltip=True, x_axis={}, y_axis={},
@@ -438,7 +63,7 @@ class PlotViewObject(TethysGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(PlotViewObject, self).__init__()
+        super(PlotObject, self).__init__()
 
         self.chart = chart
         self.xAxis = x_axis
@@ -469,10 +94,13 @@ class PlotViewObject(TethysGizmoOptions):
 
 class LinePlot(PlotViewBase):
     """
-    Used to create  line plot visualizations.
+    Used to create line plot visualizations.
 
-    Attributes
+    Attributes:
         series(list, required): A list of  series dictionaries.
+        height(str): Height of the plot element. Any valid css unit of length.
+        width(str): Width of the plot element. Any valid css unit of length.
+        engine(str): The plot engine to be used for rendering, either 'd3' or 'highcharts'. Defaults to 'd3'.
         title(str): Title of the plot.
         subtitle(str): Subtitle of the plot.
         spline(bool): If True, lines are smoothed using a spline technique.
@@ -481,54 +109,55 @@ class LinePlot(PlotViewBase):
         y_axis_title(str): Title of the y-axis.
         y_axis_units(str): Units of the y-axis.
 
-    Example
+    **Example**
 
     ::
+        # coding=utf-8
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import LinePlot, PlotView
+        from tethys_sdk.gizmos import LinePlot
 
-        _object = LinePlot(title='Plot Title',
-                                               subtitle='Plot Subtitle',
-                                               spline=True,
-                                               x_axis_title='Altitude',
-                                               x_axis_units='km',
-                                               y_axis_title='Temperature',
-                                               y_axis_units='°C',
-                                               series=[
-                                                   {
-                                                       'name': 'Air Temp',
-                                                       'color': '#0066ff',
-                                                       'marker': {'enabled': False},
-                                                       'data': [
-                                                           [0, 5], [10, -70],
-                                                           [20, -86.5], [30, -66.5],
-                                                           [40, -32.1],
-                                                           [50, -12.5], [60, -47.7],
-                                                           [70, -85.7], [80, -106.5]
-                                                       ]
-                                                   },
-                                                   {
-                                                       'name': 'Water Temp',
-                                                       'color': '#ff6600',
-                                                       'data': [
-                                                           [0, 15], [10, -50],
-                                                           [20, -56.5], [30, -46.5],
-                                                           [40, -22.1],
-                                                           [50, -2.5], [60, -27.7],
-                                                           [70, -55.7], [80, -76.5]
-                                                       ]
-                                                   }
-                                               ]
+        line_plot_view = LinePlot(
+            height='500px',
+            width='500px',
+            engine='highcharts',
+            title='Plot Title',
+            subtitle='Plot Subtitle',
+            spline=True,
+            x_axis_title='Altitude',
+            x_axis_units='km',
+            y_axis_title='Temperature',
+            y_axis_units='°C',
+            series=[
+               {
+                   'name': 'Air Temp',
+                   'color': '#0066ff',
+                   'marker': {'enabled': False},
+                   'data': [
+                       [0, 5], [10, -70],
+                       [20, -86.5], [30, -66.5],
+                       [40, -32.1],
+                       [50, -12.5], [60, -47.7],
+                       [70, -85.7], [80, -106.5]
+                   ]
+               },
+               {
+                   'name': 'Water Temp',
+                   'color': '#ff6600',
+                   'data': [
+                       [0, 15], [10, -50],
+                       [20, -56.5], [30, -46.5],
+                       [40, -22.1],
+                       [50, -2.5], [60, -27.7],
+                       [70, -55.7], [80, -76.5]
+                   ]
+               }
+            ]
         )
-
-        line_plot_view = PlotView(_object=_object,
-                                  width='500px',
-                                  height='500px')
 
         # TEMPLATE
 
-        {% gizmo _plot_view line_plot_view %}
+        {% gizmo plot_view line_plot_view %}
 
     """
 
@@ -577,56 +206,60 @@ class LinePlot(PlotViewBase):
         }
 
         # Initialize the plot view object
-        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series,
-                                              x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series,
+                                      x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
 
 
 class PolarPlot(PlotViewBase):
     """
     Use to create a  polar plot visualization.
 
-    Attributes
+    Attributes:
         series(list, required): A list of  series dictionaries.
+        height(str): Height of the plot element. Any valid css unit of length.
+        width(str): Width of the plot element. Any valid css unit of length.
+        engine(str): The plot engine to be used for rendering, either 'd3' or 'highcharts'. Defaults to 'd3'.
         title(str): Title of the plot.
         subtitle(str): Subtitle of the plot.
         categories(list): List of category names, one for each data point in the series.
 
-    Example
+    **Example**
 
     ::
 
+        # coding=utf-8
+
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import PolarPlot, PlotView
+        from tethys_sdk.gizmos import PolarPlot
 
-        web_plot_object = PolarPlot(title='Polar Chart',
-                                              subtitle='Polar Chart',
-                                              pane={
-                                                  'size': '80%'
-                                              },
-                                              categories=['Infiltration', 'Soil Moisture', 'Precipitation',
-                                                          'Evaporation',
-                                                          'Roughness', 'Runoff', 'Permeability', 'Vegetation'],
-                                              series=[
-                                                  {
-                                                      'name': 'Park City',
-                                                      'data': [0.2, 0.5, 0.1, 0.8, 0.2, 0.6, 0.8, 0.3],
-                                                      'pointPlacement': 'on'
-                                                  },
-                                                  {
-                                                      'name': 'Little Dell',
-                                                      'data': [0.8, 0.3, 0.2, 0.5, 0.1, 0.8, 0.2, 0.6],
-                                                      'pointPlacement': 'on'
-                                                  }
-                                              ]
+        web_plot = PolarPlot(
+            height='500px',
+            width='500px',
+            engine='highcharts',
+            title='Polar Chart',
+            subtitle='Polar Chart',
+            pane={
+              'size': '80%'
+            },
+            categories=['Infiltration', 'Soil Moisture', 'Precipitation', 'Evaporation',
+                      'Roughness', 'Runoff', 'Permeability', 'Vegetation'],
+            series=[
+              {
+                  'name': 'Park City',
+                  'data': [0.2, 0.5, 0.1, 0.8, 0.2, 0.6, 0.8, 0.3],
+                  'pointPlacement': 'on'
+              },
+              {
+                  'name': 'Little Dell',
+                  'data': [0.8, 0.3, 0.2, 0.5, 0.1, 0.8, 0.2, 0.6],
+                  'pointPlacement': 'on'
+              }
+            ]
         )
-
-        web_plot = PlotView(_object=web_plot_object,
-                            width='500px',
-                            height='500px')
 
         # TEMPLATE
 
-        {% gizmo _plot_view web_plot %}
+        {% gizmo plot_view web_plot %}
 
     """
 
@@ -656,16 +289,19 @@ class PolarPlot(PlotViewBase):
         }
 
         # Initialize super class
-        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series,
-                                          x_axis=x_axis, y_axis=y_axis, **kwargs)
+        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series,
+                                      x_axis=x_axis, y_axis=y_axis, **kwargs)
 
 
 class ScatterPlot(PlotViewBase):
     """
     Use to create a  scatter plot visualization.
 
-    Attributes
+    Attributes:
         series(list, required): A list of  series dictionaries.
+        height(str): Height of the plot element. Any valid css unit of length.
+        width(str): Width of the plot element. Any valid css unit of length.
+        engine(str): The plot engine to be used for rendering, either 'd3' or 'highcharts'. Defaults to 'd3'.
         title(str): Title of the plot.
         subtitle(str): Subtitle of the plot.
         spline(bool): If True, lines are smoothed using a spline technique.
@@ -674,12 +310,14 @@ class ScatterPlot(PlotViewBase):
         y_axis_title(str): Title of the y-axis.
         y_axis_units(str): Units of the y-axis.
 
-    Example
+    **Example**
 
     ::
 
+        # coding=utf-8
+
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import ScatterPlot, PlotView
+        from tethys_sdk.gizmos import ScatterPlot
 
         male_dataset = {
             'name': 'Male',
@@ -726,22 +364,25 @@ class ScatterPlot(PlotViewBase):
             ]
         }
 
-        _object = ScatterPlot(title='Scatter Plot',
-                                                  subtitle='Scatter Plot',
-                                                  x_axis_title='Height',
-                                                  x_axis_units='cm',
-                                                  y_axis_title='Weight',
-                                                  y_axis_units='kg',
-                                                  series=[male_dataset, female_dataset]
+        scatter_plot_view = ScatterPlot(
+            width='500px',
+            height='500px',
+            engine='highcharts',
+            title='Scatter Plot',
+            subtitle='Scatter Plot',
+            x_axis_title='Height',
+            x_axis_units='cm',
+            y_axis_title='Weight',
+            y_axis_units='kg',
+            series=[
+                male_dataset,
+                female_dataset
+            ]
         )
-
-        scatter_plot_view = PlotView(_object=_object,
-                                     width='500px',
-                                     height='500px')
 
         # TEMPLATE
 
-        {% gizmo _plot_view scatter_plot_view %}
+        {% gizmo plot_view scatter_plot_view %}
 
     """
 
@@ -780,54 +421,50 @@ class ScatterPlot(PlotViewBase):
         }
 
         # Initialize super class
-        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series,
-                                          x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series,
+                                      x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
 
 
 class PiePlot(PlotViewBase):
     """
     Use to create a  pie plot visualization.
 
-    Attributes
+    Attributes:
         series(list, required): A list of  series dictionaries.
+        height(str): Height of the plot element. Any valid css unit of length.
+        width(str): Width of the plot element. Any valid css unit of length.
+        engine(str): The plot engine to be used for rendering, either 'd3' or 'highcharts'. Defaults to 'd3'.
         title(str): Title of the plot.
         subtitle(str): Subtitle of the plot.
 
-    Example:
+    **Example**
 
     ::
 
+        # coding=utf-8
+
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import PieChart, PlotView
+        from tethys_sdk.gizmos import PieChart
 
-        pie_plot_object = PiePlot(title='Pie Chart',
-                                            subtitle='Pie Chart',
-                                            series=[{
-                                                        'type': 'pie',
-                                                        'name': 'Browser share',
-                                                        'data': [
-                                                            ['Firefox', 45.0],
-                                                            ['IE', 26.8],
-                                                            {
-                                                                'name': 'Chrome',
-                                                                'y': 12.8,
-                                                                'sliced': True,
-                                                                'selected': True
-                                                            },
-                                                            ['Safari', 8.5],
-                                                            ['Opera', 6.2],
-                                                            ['Others', 0.7]
-                                                        ]
-                                                    }]
+        pie_plot_view = PiePlot(
+            height='500px',
+            width='500px',
+            engine='highcharts',
+            title='Pie Chart',
+            subtitle='Pie Chart',
+            series=[
+                  {'name': 'Firefox', 'value': 45.0},
+                  {'name': 'IE', 'value': 26.8},
+                  {'name': 'Chrome', 'value': 12.8},
+                  {'name': 'Safari', 'value': 8.5},
+                  {'name': 'Opera', 'value': 8.5},
+                  {'name': 'Others', 'value': 0.7}
+            ]
         )
-
-        pie_plot_view = PlotView(_object=pie_plot_object,
-                                 width='500px',
-                                 height='500px')
 
         # TEMPLATE
 
-        {% gizmo _plot_view pie_plot_view %}
+        {% gizmo plot_view pie_plot_view %}
 
     """
 
@@ -857,8 +494,8 @@ class PiePlot(PlotViewBase):
             'pointFormat': '{series.name}: <b>{point.percentage:.1f}%</b>'
         }
         # Initialize super class
-        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series,
-                                          plotOptions=plotOptions, tooltip_format=tooltip_format, **kwargs)
+        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series,
+                                      plotOptions=plotOptions, tooltip_format=tooltip_format, **kwargs)
 
 
 class BarPlot(PlotViewBase):
@@ -867,8 +504,11 @@ class BarPlot(PlotViewBase):
 
     Displays as either a bar or column chart.
 
-    Attributes
+    Attributes:
         series(list, required): A list of  series dictionaries.
+        height(str): Height of the plot element. Any valid css unit of length.
+        width(str): Width of the plot element. Any valid css unit of length.
+        engine(str): The plot engine to be used for rendering, either 'd3' or 'highcharts'. Defaults to 'd3'.
         title(str): Title of the plot.
         subtitle(str): Subtitle of the plot.
         horizontal(bool): If True, bars are displayed horizontally, otherwise they are displayed vertically.
@@ -876,40 +516,42 @@ class BarPlot(PlotViewBase):
         axis_title(str): Title of the axis.
         axis_units(str): Units of the axis.
 
-    Example
+    **Example**
 
     ::
 
+        # coding=utf-8
+
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import BarPlot, PlotView
+        from tethys_sdk.gizmos import BarPlot
 
         bar_plot_view = BarPlot(
-            width='500px',
             height='500px',
-            renderer='d3',
+            width='500px',
+            engine='highcharts',
             title='Bar Chart',
             subtitle='Bar Chart',
-            vertical=False,
+            vertical=True,
             categories=[
                 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
             ],
             axis_units='millions',
             axis_title='Population',
             series=[{
-                        'name': 'Year 1800',
-                        'data': [107, 31, 635, 203, 2]
-                    }, {
-                        'name': 'Year 1900',
-                        'data': [133, 156, 947, 408, 6]
-                    }, {
-                        'name': 'Year 2008',
-                        'data': [973, 914, 4054, 732, 34]}
+                    'name': "Year 1800",
+                    'data': [100, 31, 635, 203, 275, 487, 872, 671, 736, 568, 487, 432]
+                }, {
+                    'name': "Year 1900",
+                    'data': [133, 200, 947, 408, 682, 328, 917, 171, 482, 140, 176, 237]
+                }, {
+                    'name': "Year 2000",
+                    'data': [764, 628, 300, 134, 678, 200, 781, 571, 773, 192, 836, 172]
+                }, {
+                    'name': "Year 2008",
+                    'data': [973, 914, 500, 400, 349, 108, 372, 726, 638, 927, 621, 364]
+                }
             ]
         )
-
-        bar_plot_view = PlotView(_object=bar_plot_view,
-                                 width='500px',
-                                 height='500px')
 
         # TEMPLATE
 
@@ -970,69 +612,73 @@ class BarPlot(PlotViewBase):
             }
 
         # Initialize super class
-        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series,
-                                          plotOptions=plotOptions, tooltip_format=tooltip_format, x_axis=x_axis,
-                                          y_axis=y_axis, **kwargs)
+        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series,
+                                      plotOptions=plotOptions, tooltip_format=tooltip_format, x_axis=x_axis,
+                                      y_axis=y_axis, **kwargs)
 
 
 class TimeSeries(PlotViewBase):
     """
-    Use to create a  timeseries plot visualization
+    Use to create a timeseries plot visualization
 
-    Attributes
+    Attributes:
         series(list, required): A list of  series dictionaries.
+        height(str): Height of the plot element. Any valid css unit of length.
+        width(str): Width of the plot element. Any valid css unit of length.
+        engine(str): The plot engine to be used for rendering, either 'd3' or 'highcharts'. Defaults to 'd3'.
         title(str): Title of the plot.
         subtitle(str): Subtitle of the plot.
         y_axis_title(str): Title of the axis.
         y_axis_units(str): Units of the axis.
 
-    Example
+    **Example**
 
     ::
 
-        # CONTROLLER
-        from tethys_apps.sdk.gizmos import TimeSeries, PlotView
+        # coding=utf-8
 
-        timeseries_plot_object = TimeSeries(
+        # CONTROLLER
+        from tethys_sdk.gizmos import TimeSeries
+
+        timeseries_plot = TimeSeries(
+            height='500px',
+            width='500px',
+            engine='highcharts',
             title='Irregular Timeseries Plot',
             y_axis_title='Snow depth',
             y_axis_units='m',
             series=[{
-                        'name': 'Winter 2007-2008',
-                        'data': [
-                            [datetime(2008, 12, 2), 0.8],
-                            [datetime(2008, 12, 9), 0.6],
-                            [datetime(2008, 12, 16), 0.6],
-                            [datetime(2008, 12, 28), 0.67],
-                            [datetime(2009, 1, 1), 0.81],
-                            [datetime(2009, 1, 8), 0.78],
-                            [datetime(2009, 1, 12), 0.98],
-                            [datetime(2009, 1, 27), 1.84],
-                            [datetime(2009, 2, 10), 1.80],
-                            [datetime(2009, 2, 18), 1.80],
-                            [datetime(2009, 2, 24), 1.92],
-                            [datetime(2009, 3, 4), 2.49],
-                            [datetime(2009, 3, 11), 2.79],
-                            [datetime(2009, 3, 15), 2.73],
-                            [datetime(2009, 3, 25), 2.61],
-                            [datetime(2009, 4, 2), 2.76],
-                            [datetime(2009, 4, 6), 2.82],
-                            [datetime(2009, 4, 13), 2.8],
-                            [datetime(2009, 5, 3), 2.1],
-                            [datetime(2009, 5, 26), 1.1],
-                            [datetime(2009, 6, 9), 0.25],
-                            [datetime(2009, 6, 12), 0]
-                        ]
-                    }]
+                'name': 'Winter 2007-2008',
+                'data': [
+                    [datetime(2008, 12, 2), 0.8],
+                    [datetime(2008, 12, 9), 0.6],
+                    [datetime(2008, 12, 16), 0.6],
+                    [datetime(2008, 12, 28), 0.67],
+                    [datetime(2009, 1, 1), 0.81],
+                    [datetime(2009, 1, 8), 0.78],
+                    [datetime(2009, 1, 12), 0.98],
+                    [datetime(2009, 1, 27), 1.84],
+                    [datetime(2009, 2, 10), 1.80],
+                    [datetime(2009, 2, 18), 1.80],
+                    [datetime(2009, 2, 24), 1.92],
+                    [datetime(2009, 3, 4), 2.49],
+                    [datetime(2009, 3, 11), 2.79],
+                    [datetime(2009, 3, 15), 2.73],
+                    [datetime(2009, 3, 25), 2.61],
+                    [datetime(2009, 4, 2), 2.76],
+                    [datetime(2009, 4, 6), 2.82],
+                    [datetime(2009, 4, 13), 2.8],
+                    [datetime(2009, 5, 3), 2.1],
+                    [datetime(2009, 5, 26), 1.1],
+                    [datetime(2009, 6, 9), 0.25],
+                    [datetime(2009, 6, 12), 0]
+                ]
+            }]
         )
-
-        timeseries_plot = PlotView(_object=timeseries_plot_object,
-                                   width='500px',
-                                   height='500px')
 
         # TEMPLATE
 
-        {% gizmo _plot_view timeseries_plot %}
+        {% gizmo plot_view timeseries_plot %}
     """
 
     def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='', y_axis_title='',
@@ -1065,28 +711,32 @@ class TimeSeries(PlotViewBase):
         }
 
         # Initialize super class
-        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series,
-                                          x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format,
-                                          **kwargs)
+        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series,
+                                      x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
 
 
 class AreaRange(PlotViewBase):
     """
     Use to create a  area range plot visualization.
 
-    Attributes
+    Attributes:
         series(list, required): A list of  series dictionaries.
+        height(str): Height of the plot element. Any valid css unit of length.
+        width(str): Width of the plot element. Any valid css unit of length.
+        engine(str): The plot engine to be used for rendering, either 'd3' or 'highcharts'. Defaults to 'd3'.
         title(str): Title of the plot.
         subtitle(str): Subtitle of the plot.
         y_axis_title(str): Title of the axis.
         y_axis_units(str): Units of the axis.
 
-    Example
+    **Example**
 
     ::
 
+        # coding=utf-8
+
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import AreaRange, PlotView
+        from tethys_sdk.gizmos import AreaRange
 
         averages = [
             [datetime(2009, 7, 1), 21.5], [datetime(2009, 7, 2), 22.1], [datetime(2009, 7, 3), 23],
@@ -1144,7 +794,7 @@ class AreaRange(PlotViewBase):
 
         # TEMPLATE
 
-        {% gizmo _plot_view area_range_plot %}
+        {% gizmo plot_view area_range_plot %}
 
     """
 
@@ -1176,16 +826,19 @@ class AreaRange(PlotViewBase):
         }
 
         # Initialize super class
-        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series,
-                                          x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series,
+                                      x_axis=x_axis, y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
 
 
 class HeatMap(PlotViewBase):
     """
     Use to create a  heat map visualization.
 
-    Attributes
+    Attributes:
         series(list, required): A list of  series dictionaries.
+        height(str): Height of the plot element. Any valid css unit of length.
+        width(str): Width of the plot element. Any valid css unit of length.
+        engine(str): The plot engine to be used for rendering, either 'd3' or 'highcharts'. Defaults to 'd3'.
         title(str): Title of the plot.
         subtitle(str): Subtitle of the plot.
         x_categories(list):
@@ -1193,12 +846,14 @@ class HeatMap(PlotViewBase):
         tooltip_phrase_one(str):
         tooltip_phrase_two(str):
 
-    Example
+    **Example**
 
     ::
 
+        # coding=utf-8
+
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HeatMap, PlotView
+        from tethys_sdk.gizmos import HeatMap
 
         sales_data = [
             [0, 0, 10], [0, 1, 19], [0, 2, 8], [0, 3, 24], [0, 4, 67], [1, 0, 92],
@@ -1248,7 +903,7 @@ class HeatMap(PlotViewBase):
 
         # TEMPLATE
 
-        {% gizmo _plot_view heat_map_plot %}
+        {% gizmo plot_view heat_map_plot %}
 
     """
 
@@ -1256,8 +911,6 @@ class HeatMap(PlotViewBase):
                  y_categories=[], tooltip_phrase_one='', tooltip_phrase_two='', **kwargs):
         """
         Constructor
-
-        Args:
         """
         # Initialize super class
         super(HeatMap, self).__init__(height=height, width=width, engine=engine)
@@ -1282,5 +935,5 @@ class HeatMap(PlotViewBase):
         }
 
         # Initialize super class
-        self.plot_object = PlotViewObject(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis,
-                                          y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
+        self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series, x_axis=x_axis,
+                                      y_axis=y_axis, tooltip_format=tooltip_format, **kwargs)
