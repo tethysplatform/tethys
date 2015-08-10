@@ -18,6 +18,8 @@ from requests.exceptions import ConnectionError
 
 from tethys_sdk.gizmos import *
 from tethys_sdk.services import list_spatial_dataset_engines
+from tethys_apps.sdk.gizmos import *
+from tethys_compute.models import TethysJob, BasicJob
 
 
 spatial_dataset_engines = list_spatial_dataset_engines()
@@ -1052,3 +1054,30 @@ def fetchclimate_map(request):
     context = {'fetchclimate_map': fetchclimate_map}
 
     return render(request, 'tethys_gizmos/gizmo_showcase/fetchclimate_map.html', context)
+
+def jobs_table_results(request, job_id):
+    return redirect(reverse('gizmos:showcase') + '#jobs_table_docs')
+
+def create_sample_jobs(request):
+
+    def create_job(id, description, status):
+        job = BasicJob(name='job_{0}'.format(id),
+                         user=request.user,
+                         description=description,
+                         label='gizmos_showcase',
+                         #execute_time=,
+                         #completion_time=,
+                         _status=status,
+                        )
+        job.save()
+
+    create_job('1', 'Pending job', 'PEN')
+    create_job('2', 'Submitted job', 'SUB')
+    create_job('3', 'Running job', 'RUN')
+    create_job('4', 'Running multi-process job with various statuses', 'VAR')
+    create_job('5', 'Job error', 'ERR')
+    create_job('6', 'Aborted job', 'ABT')
+    create_job('7', 'Completed job', 'COM')
+    create_job('8', 'Completed multi-process job with some errors', 'VCP')
+
+    return redirect(reverse('gizmos:showcase') + '#jobs_table_docs')
