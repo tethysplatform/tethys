@@ -131,7 +131,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             .attr('class', 'd3-tip')
             .offset([-10, 0])
             .html(function (d, i, j) {
-                return "<strong>" + d.name + "</strong> </br>" + x_axis_title + ": <span style='color:yellow'>"
+                return x_axis_title + ": <span style='color:yellow'>"
                     + d[0] + "</span> </br>" + y_axis_title + ": <span style='color:yellow'>" + d[1] + "</span>";
             });
 
@@ -411,7 +411,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             .attr('class', 'd3-tip')
             .offset([-10, 0])
             .html(function (d, i, j) {
-                return "<strong>" + "</strong> </br>" + x_axis_title + ": <span style='color:yellow'>"
+                return x_axis_title + ": <span style='color:yellow'>"
                     + d[0] + "</span> </br>" + y_axis_title + ": <span style='color:yellow'>" + d[1] + "</span>";
             });
 
