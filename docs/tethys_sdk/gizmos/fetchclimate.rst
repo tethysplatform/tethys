@@ -6,20 +6,38 @@ Fetch Climate Map
 
 .. autoclass:: tethys_sdk.gizmos.FetchClimateMap
 
-Secondary
----------
+FetchClimateURLParameter
+------------------------
 
 .. autoclass:: tethys_sdk.gizmos.FetchClimateURLParameter
 
+FetchClimateMapData
+-------------------
+
 .. autoclass:: tethys_sdk.gizmos.FetchClimateMapData
+
+FetchClimateMapParameters
+-------------------------
 
 .. autoclass:: tethys_sdk.gizmos.FetchClimateMapParameters
 
+FetchClimatePlotParameters
+--------------------------
+
 .. autoclass:: tethys_sdk.gizmos.FetchClimatePlotParameters
+
+FetchClimateVariableParameters
+------------------------------
 
 .. autoclass:: tethys_sdk.gizmos.FetchClimateVariableParameters
 
+FetchClimateGridParameters
+--------------------------
+
 .. autoclass:: tethys_sdk.gizmos.FetchClimateGridParameters
+
+FetchClimatePointParameters
+---------------------------
 
 .. autoclass:: tethys_sdk.gizmos.FetchClimatePointParameters
 

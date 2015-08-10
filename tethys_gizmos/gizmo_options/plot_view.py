@@ -54,7 +54,7 @@ class PlotViewBase(TethysGizmoOptions):
 
 class PlotObject(TethysGizmoOptions):
     """
-    Base Plot Object that is constructed by plot views
+    Base Plot Object that is constructed by plot views.
     """
 
     def __init__(self,  chart={}, title='', subtitle='', legend=True, tooltip=True, x_axis={}, y_axis={},
@@ -112,6 +112,7 @@ class LinePlot(PlotViewBase):
     **Example**
 
     ::
+
         # coding=utf-8
 
         # CONTROLLER

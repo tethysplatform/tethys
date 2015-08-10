@@ -167,9 +167,9 @@ This section provides explanations of each of the Gizmo Options Objects availabl
    gizmos/select_input
    gizmos/text_input
    gizmos/toggle_switch
+   gizmos/message_box
+   gizmos/table_view
    gizmos/plot_view
    gizmos/map_view
    gizmos/google_map
    gizmos/fetchclimate
-   gizmos/message_box
-   gizmos/table_view
