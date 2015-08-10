@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: utilities.py
+* Author: Scott Christensen
+* Created On: 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 # code for DictionaryField was taken from https://djangosnippets.org/snippets/1979/
 
 import json

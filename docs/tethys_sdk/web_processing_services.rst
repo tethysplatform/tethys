@@ -69,7 +69,7 @@ Anytime you wish to use a WPS service in an app, you will need to obtain an ``ow
 
 ::
 
-  from tethys_apps.sdk import get_wps_service_engine
+  from tethys_sdk.services import get_wps_service_engine
 
   wps_engine = get_wps_service_engine(name='example')
 
@@ -77,7 +77,7 @@ Alternatively, you may retrieve a list of all the dataset engine objects that ar
 
 ::
 
-  from tethys_apps.sdk import list_wps_service_engines
+  from tethys_sdk.services import list_wps_service_engines
 
   wps_engines = list_wps_service_engines()
 

@@ -15744,7 +15744,7 @@ var AreaSeries = extendClass(Series, {
 	},
 	
 	/**
-	 * Extendable method to close the segment path of an area. This is overridden in polar 
+	 * Extendable method to close the segment path of an area. This is overridden in polar
 	 * charts.
 	 */
 	closeSegment: function (path, segment, translatedThreshold) {

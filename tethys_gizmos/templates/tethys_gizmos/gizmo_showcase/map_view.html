@@ -18,7 +18,11 @@
 {% block primary_content %}
   <div class="gizmo-page-wrapper">
     <h2>Map View</h2>
-    {% gizmo map_view map_view %}
+    <form action="" method="post">
+      {% csrf_token %}
+      {% gizmo map_view map_view %}
+      <input type="submit" name="submit">
+    </form>
   </div>
 {% endblock %}
 

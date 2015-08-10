@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+"""
+********************************************************************************
+* Name: init.py
+* Author: Nathan Swain
+* Created On: 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from django.utils import timezone
 from .models import SettingsCategory, Setting
 

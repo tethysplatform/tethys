@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: message_box.py
+* Author: Nathan Swain and Ezra Rice
+* Created On: May 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from .base import TethysGizmoOptions
 
 __all__ = ['MessageBox']
@@ -23,7 +32,7 @@ class MessageBox(TethysGizmoOptions):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import MessageBox
+        from tethys_sdk.gizmos import MessageBox
 
         message_box = MessageBox(name='sampleModal',
                                  title='Message Box Title',
