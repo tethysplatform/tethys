@@ -19,3 +19,4 @@ from highcharts_plot_view import *
 from map_view import *
 from google_map import *
 from fetchclimate import *
+from jobs_table import *
