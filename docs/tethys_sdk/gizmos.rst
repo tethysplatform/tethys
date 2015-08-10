@@ -158,11 +158,8 @@ Gizmos Options Objects
 
 This section provides explanations of each of the Gizmo Options Objects available for configuring Gizmos. It also provide code and usage examples for each object.
 
-Form Controls
--------------
-
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    gizmos/button
    gizmos/date_picker
@@ -170,24 +167,9 @@ Form Controls
    gizmos/select_input
    gizmos/text_input
    gizmos/toggle_switch
-
-Visualization
--------------
-
-.. toctree::
-     :maxdepth: 1
-
-     gizmos/plot_view
-     gizmos/map_view
-     gizmos/google_map
-     gizmos/fetchclimate
-
-
-Other
------
-
-.. toctree::
-    :maxdepth: 1
-
-    gizmos/message_box
-    gizmos/table_view
+   gizmos/plot_view
+   gizmos/map_view
+   gizmos/google_map
+   gizmos/fetchclimate
+   gizmos/message_box
+   gizmos/table_view
