@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: select_input.py
+* Author: Nathan Swain and Ezra Rice
+* Created On: May 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from .base import TethysGizmoOptions
 
 __all__ = ['SelectInput']
@@ -23,7 +32,7 @@ class SelectInput(TethysGizmoOptions):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import SelectInput
+        from tethys_sdk.gizmos import SelectInput
 
         select_input2 = SelectInput(display_text='Select2',
                                     name='select1',

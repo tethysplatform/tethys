@@ -1,6 +1,6 @@
 '''
 ********************************************************************************
-* Name: New App Paste Template/Scaffold
+* Name: pastetemplates/__init__.py
 * Author: Nathan Swain
 * Copyright: (c) Brigham Young University 2013
 * License: BSD 2-Clause

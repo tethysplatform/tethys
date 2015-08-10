@@ -1,3 +1,10 @@
+/*****************************************************************************
+ * FILE: workerTest.js
+ * DATE: 2015
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2015
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
 var j=0;
 recurse();
 console.log(self);

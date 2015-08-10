@@ -13,6 +13,32 @@
         </div>
         <div class="account-form-body">
           <form role="form" method="post">
+            {% if 'hydroshare' in backends.not_associated %}
+              <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare' %}">
+                <i class="fa fa-hydroshare"></i> Sign up with HydroShare
+              </a>
+            {% endif %}
+            {% if 'google-oauth2' in backends.not_associated %}
+              <a class="btn btn-block btn-social btn-google" href="{% url 'social:begin' 'google-oauth2' %}">
+                <i class="fa fa-google"></i> Sign up with Google
+              </a>
+            {% endif %}
+            {% if 'linkedin-oauth2' in backends.not_associated %}
+              <a class="btn btn-block btn-social btn-linkedin" href="{% url 'social:begin' 'linkedin-oauth2' %}">
+                <i class="fa fa-linkedin"></i> Sign up with LinkedIn
+              </a>
+            {% endif %}
+            {% if 'facebook' in backends.not_associated %}
+              <a class="btn btn-block btn-social btn-facebook" href="{% url 'social:begin' 'facebook' %}">
+                <i class="fa fa-facebook"></i> Sign up with Facebook
+              </a>
+            {% endif %}
+            {% if backends.not_associated %}
+              <div class="social-divide-or">
+                <div class="line"></div>
+                <span class="or">or</span>
+              </div>
+            {% endif %}
             {% csrf_token %}
             {% bootstrap_form form %}
             <button type="submit" id="register-submit" class="btn btn-default" name="register-submit">Sign Up</button>

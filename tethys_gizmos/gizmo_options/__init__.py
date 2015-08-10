@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: gizmo_options/__init__.py
+* Author: Nathan Swain and Ezra Rice
+* Created On: May 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from date_picker import *
 from button import *
 from range_slider import *

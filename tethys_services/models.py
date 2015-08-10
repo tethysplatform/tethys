@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: models.py
+* Author: Nathan Swain
+* Created On: 2014
+* Copyright: (c) Brigham Young University 2014
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from django.db import models
 from django.core.exceptions import ValidationError
 from tethys_dataset_services.valid_engines import VALID_ENGINES, VALID_SPATIAL_ENGINES
@@ -17,8 +26,9 @@ def validate_dataset_service_endpoint(value):
     """
     validate_url(value)
 
-    if '/api/3/action' not in value:
-        raise ValidationError('Invalid Endpoint: CKAN endpoints follow the pattern "http://example.com/api/3/action".')
+    if '/api/3/action' not in value and '/hsapi' not in value:
+        raise ValidationError('Invalid Endpoint: CKAN endpoints follow the pattern "http://example.com/api/3/action" '
+                              'and HydroShare endpoints must follow the pattern "http://example.com/hsapi"')
 
 
 def validate_spatial_dataset_service_endpoint(value):

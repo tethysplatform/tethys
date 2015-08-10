@@ -1,0 +1,25 @@
+{% extends "page.html" %}
+
+{% block title %}- Delete Account Confirmation{% endblock %}
+
+{% load bootstrap3 %}
+{% bootstrap_messages %}
+{% block content %}
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <div class="account-form-wrapper disconnect">
+        <div class="account-form-header">
+          <h1>Delete</h1>
+        </div>
+        <div class="account-form-body">
+          <form role="form" method="post" action="">
+            <p>Are you sure you want delete your account with {{ site_globals.brand_text }}?</p>
+            {% csrf_token %}
+            <a href="{% url 'user:settings' username=user.username %}" class="btn btn-default">Cancel</a>
+            <button type="submit" id="delete-account-submit" class="btn btn-danger" name="delete-account-submit">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

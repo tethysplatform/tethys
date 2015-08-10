@@ -1,8 +1,8 @@
 /*****************************************************************************
  * FILE:    JavaScript Enclosure Template
- * DATE:    
+ * DATE:    D MMMMMMM YYYY
  * AUTHOR: 
- * COPYRIGHT: (c) XXXX Brigham Young University
+ * COPYRIGHT: (c) Brigham Young University XXXX
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
 

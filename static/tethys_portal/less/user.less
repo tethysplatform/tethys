@@ -1,3 +1,10 @@
+/*****************************************************************************
+ * FILE: user
+ * DATE: 2014
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
 @profile-header-height: 250px;
 @profile-name-font-size: 60px;
 @profile-name-line-height: 100px;
@@ -46,6 +53,8 @@
     border-bottom: none;
   }
 
+
+
   .profile-section-header {
     h3 {
       margin: 0;
@@ -79,6 +88,18 @@
 
         .value {
           float: left;
+
+          &.button {
+            -webkit-font-smoothing: subpixel-antialiased;
+               -moz-font-smoothing: subpixel-antialiased;
+                -ms-font-smoothing: subpixel-antialiased;
+                 -o-font-smoothing: subpixel-antialiased;
+            font-smoothing: subpixel-antialiased;
+
+            .btn {
+              font-size: 13.5px;
+            }
+          }
         }
 
       }
@@ -116,7 +137,28 @@
       margin-top: 4px;
     }
   }
+
+  &.social {
+    .profile-parameters {
+
+      ul {
+        li {
+          height: auto;
+
+          .social-label-container {
+            margin-left: 30%;
+
+            span {
+              line-height: 32px;
+            }
+          }
+        }
+      }
+    }
+  }
 }
+
+
 
 #settings-buttons {
   margin: 20px 0;
@@ -189,6 +231,24 @@
         }
       }
     }
+
+    &.social {
+      .profile-parameters {
+        ul {
+
+          li {
+            .social-label-container {
+              margin-left: 15px;
+
+              span {
+                line-height: 45px;
+                font-size: 18px;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   #settings-buttons {
@@ -217,5 +277,45 @@
       width: 80%;
       margin: 0 10%;
     }
+  }
+}
+
+.label-google {
+  color: @google-color;
+  border: #aaaaaa solid 1px;
+
+  &:hover {
+    color: #ffffff;
+    background-color: @google-color;
+  }
+}
+
+.label-facebook {
+  color: @facebook-color;
+  border: #aaaaaa solid 1px;
+
+  &:hover {
+    color: #ffffff;
+    background-color: @facebook-color;
+  }
+}
+
+.label-hydroshare {
+  color: @hydroshare-color;
+  border: #aaaaaa solid 1px;
+
+  &:hover {
+    color: #ffffff;
+    background-color: @hydroshare-color;
+  }
+}
+
+.label-linkedin {
+  color: @linkedin-color;
+  border: #aaaaaa solid 1px;
+
+  &:hover {
+    color: #ffffff;
+    background-color: @linkedin-color;
   }
 }

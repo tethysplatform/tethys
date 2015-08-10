@@ -13,11 +13,38 @@
         </div>
         <div class="account-form-body">
           <form role="form" method="post">
+            {% if 'hydroshare' in backends.not_associated %}
+              <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare' %}">
+                <i class="fa fa-hydroshare"></i> Sign in with HydroShare
+              </a>
+            {% endif %}
+            {% if 'google-oauth2' in backends.not_associated %}
+              <a class="btn btn-block btn-social btn-google" href="{% url 'social:begin' 'google-oauth2' %}">
+                <i class="fa fa-google"></i> Sign in with Google
+              </a>
+            {% endif %}
+            {% if 'linkedin-oauth2' in backends.not_associated %}
+              <a class="btn btn-block btn-social btn-linkedin" href="{% url 'social:begin' 'linkedin-oauth2' %}">
+                <i class="fa fa-linkedin"></i> Sign in with LinkedIn
+              </a>
+            {% endif %}
+            {% if 'facebook' in backends.not_associated %}
+              <a class="btn btn-block btn-social btn-facebook" href="{% url 'social:begin' 'facebook' %}">
+                <i class="fa fa-facebook"></i> Sign in with Facebook
+              </a>
+            {% endif %}
+            {% if backends.not_associated %}
+              <div class="social-divide-or">
+                <div class="line"></div>
+                <span class="or">or</span>
+              </div>
+            {% endif %}
+
             {% csrf_token %}
             {% bootstrap_form form %}
             <button type="submit" id="login-submit" class="btn btn-default" name="login-submit">Login</button>
             <span class="help-block">Don't have an account? <a href="{% url 'accounts:register' %}">Sign Up</a></span>
-            <span class="help-block">Forget your password? <a href="{% url 'accounts:password_reset' %}">Reset Your Password</a></span>
+            <span class="help-block"><a href="{% url 'accounts:password_reset' %}">Forget your password?</a></span>
           </form>
         </div>
       </div>

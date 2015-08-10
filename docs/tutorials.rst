@@ -2,11 +2,12 @@
 Tutorials
 *********
 
-**Last Updated:** May 19, 2015
+**Last Updated:** August 6, 2015
 
 Use the following tutorials to learn the basics about Tethys Platform.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    tutorials/getting_started
+   tutorials/video_tutorials

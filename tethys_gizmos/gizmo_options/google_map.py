@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: google_map.py
+* Author: Nathan Swain
+* Created On: May 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from .base import TethysGizmoOptions
 
 __all__ = ['GoogleMapView']
@@ -31,7 +40,7 @@ class GoogleMapView(TethysGizmoOptions):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import GoogleMapView
+        from tethys_sdk.gizmos import GoogleMapView
 
         google_map_view = GoogleMapView(height='600px',
                                         width='100%',

@@ -2,7 +2,7 @@
  * FILE:    fetchclimate_plot.js
  * DATE:    7/25/2014
  * AUTHOR: Alan Snow
- * COPYRIGHT: (c) 2014 Brigham Young University
+ * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
 if(jQuery('#fetchclimate_plot').length > 0) {
@@ -56,7 +56,7 @@ if(jQuery('#fetchclimate_plot').length > 0) {
 
     //checks calculation status of request
     checkStatus = function(bar, stat_var, stat_hash, stat_response) {
-      request = jQuery.ajax({
+      var request = jQuery.ajax({
         type: "POST",
         url: "/apps/snippets-ajax/fetchclimate/statusCheck",
         data: { variable : stat_var, 

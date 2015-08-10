@@ -1,8 +1,8 @@
 /*****************************************************************************
- * FILE:      Tethys App Base Module
+ * FILE:      app_base.js
  * DATE:      6 September 2014
  * AUTHOR:    Nathan Swain
- * COPYRIGHT: (c) 2014 Brigham Young University
+ * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE:   BSD 2-Clause
  *****************************************************************************/
 

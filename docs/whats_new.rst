@@ -2,9 +2,69 @@
 What's New
 **********
 
-**Last Updated:** May 28, 2015
+**Last Updated:** August 5, 2015
 
 Refer to this article for information about each new release of Tethys Platform.
+
+
+Release 1.2.0
+=============
+
+Social Authentication
+---------------------
+
+* Social login supported
+* Google, LinkedIn, and Facebook
+* HydroShare coming soon
+* New controls on User Profile page to manage social accounts
+
+See: :doc:`./tethys_portal/social_auth`
+
+
+D3 Plotting Gizmos
+------------------
+
+* D3 alternatives for all the HighCharts plot views
+* Use the same plot objects to define both types of charts
+* Simplified and generalized the mechanism for declaring plot views
+
+See: :doc:`./tethys_sdk/gizmos_api`
+
+Job Manager Gizmo
+-----------------
+
+* New Gizmo that will show the status of jobs running with the Job Manager
+
+Job Manager Updates
+-------------------
+
+
+Workspaces
+----------
+
+* SDK methods for creating and managing workspaces for apps
+* List files and directories in workspace directory
+* Clear and remove files and directories in workspace
+
+See: :doc:`./tethys_sdk/workspaces`
+
+Video Tutorials
+---------------
+
+* New video tutorials have been created
+* The videos highlight working with different software suite elements
+* CKAN, GeoServer, PostGIS
+* Advanced user input forms
+* Advanced Mapping and Plotting Gizmos
+
+See: :doc:`./tutorials/video_tutorials`
+
+New Location for Tethys SDK
+---------------------------
+
+* Tethys SDK methods centralized to a new convenient package: tethys_sdk
+
+See: :doc:`./tethys_sdk`
 
 
 Release 1.1.0

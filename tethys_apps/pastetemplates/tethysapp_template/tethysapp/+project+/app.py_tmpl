@@ -1,4 +1,4 @@
-from tethys_apps.base import TethysAppBase, url_map_maker
+from tethys_sdk.base import TethysAppBase, url_map_maker
 
 
 class {{proper_no_spaces}}(TethysAppBase):

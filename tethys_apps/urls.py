@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: urls.py
+* Author: Nathan Swain
+* Created On: 2014
+* Copyright: (c) Brigham Young University 2014
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from django.conf.urls import patterns, url, include
 
 from tethys_apps.utilities import generate_app_url_patterns

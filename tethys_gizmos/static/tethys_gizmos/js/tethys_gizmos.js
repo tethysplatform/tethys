@@ -2,7 +2,7 @@
  * FILE:    tethys_snippets.js
  * DATE:    5 November 2013
  * AUTHOR: Nathan R. Swain
- * COPYRIGHT: (c) 2013 Brigham Young University
+ * COPYRIGHT: (c) Brigham Young University 2013
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
 
