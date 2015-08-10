@@ -2,7 +2,7 @@
  * FILE:    tethys_map.js
  * DATE:    13 January 2014
  * AUTHOR: Nathan R. Swain
- * COPYRIGHT: (c) 2014 Brigham Young University
+ * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
 

@@ -1,3 +1,13 @@
+"""
+********************************************************************************
+* Name: controller.py
+* Author: Nathan Swain
+* Created On: August 2013
+* Copyright: (c) Brigham Young University 2013
+* License: BSD 2-Clause
+********************************************************************************
+"""
+
 from .url_map import UrlMapBase
 
 

@@ -29,12 +29,14 @@
       <p class="form-control-static">{{ user.username }}</p>
     </div>
   </div>
-  <div class="form-group">
-    <label class="col-md-3 control-label">Password: </label>
-    <div class="col-md-6">
-      <p class="form-control-static"><a href="{% url 'user:change_password' username=user.username %}" class="btn btn-default">Change Password</a></p>
+  {% if context_user.has_usable_password and user.username == context_user.username %}
+    <div class="form-group">
+      <label class="col-md-3 control-label">Password: </label>
+      <div class="col-md-6">
+        <p class="form-control-static"><a href="{% url 'user:change_password' username=user.username %}" class="btn btn-default">Change Password</a></p>
+      </div>
     </div>
-  </div>
+  {% endif %}
 
 {% endblock %}
 
@@ -49,6 +51,74 @@
         <label for="id_email" class="control-label error-label">{{ error }}</label>
       {% endfor %}
     {% endif %}
+  </div>
+{% endblock %}
+
+{% block social_parameters %}
+  <ul>
+    <li><span class="parameter">Connected:</span>
+      {% if user.username == context_user.username %}
+        {% if backends.associated %}
+          <div class="social-label-container">
+            {% for association in backends.associated %}
+              {% if 'linkedin' in association.provider %}
+                <a href="{% url 'user:disconnect' user.username 'linkedin-oauth2' association.id %}"><span class="label label-linkedin">Disconnect LinkedIn</span></a>
+              {% elif 'google' in association.provider %}
+                <a href="{% url 'user:disconnect' user.username 'google-oauth2' association.id %}"><span class="label label-google">Disconnect Google</span></a>
+              {% elif 'facebook' in association.provider %}
+                <a href="{% url 'user:disconnect' user.username 'facebook' association.id %}"><span class="label label-facebook">Disconnect Facebook</span></a>
+              {% elif 'hydroshare' in association.provider %}
+                <a href="{% url 'user:disconnect' user.username 'hydroshare' association.id %}"><span class="label label-hydroshare">Disconnect HydroShare</span></a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <span>None</span>
+        {% endif %}
+      {% else %}
+        <span class="label label-info">Private</span>
+      {% endif %}
+    </span></li>
+    <li><span class="parameter">Not Connected:</span>
+      {% if user.username == context_user.username %}
+        {% if backends.not_associated %}
+          <div class="social-label-container">
+            {% for backend in backends.not_associated %}
+              {% if 'linkedin' in backend %}
+                <a href="{% url 'social:begin' 'linkedin-oauth2' %}?next={{ request.path }}"><span class="label label-linkedin">Connect LinkedIn</span></a>
+              {% elif 'google' in backend %}
+                <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}"><span class="label label-google">Connect Google</span></a>
+              {% elif 'facebook' in backend %}
+                <a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}"><span class="label label-facebook">Connect Facebook</span></a>
+              {% elif 'hydroshare' in backend %}
+                <a href="{% url 'social:begin' 'hydroshare' %}?next={{ request.path }}"><span class="label label-hydroshare">Connect HydroShare</span></a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <span>None</span>
+        {% endif %}
+      {% else %}
+        <span class="label label-info">Private</span>
+      {% endif %}
+    </span></li>
+  </ul>
+{% endblock %}
+
+{% block account_parameters %}
+  <div class="profile-section last">
+    <div class="row">
+      <div class="col-md-2 col-md-offset-2 profile-section-header">
+        <h3>Account</h3>
+      </div>
+      <div class="col-md-8 profile-parameters">
+        <ul>
+          <li><span class="parameter">Member Since:</span><span class="value">{{ context_user.date_joined|date:"F j, Y" }}</span></li>
+          <li><span class="parameter">Status:</span><span class="value">{% if context_user.is_active %}Active{% else %}Inactive{% endif %}</span></li>
+          <li><span class="parameter">Delete Account:</span><span class="value button"><a class="btn btn-danger btn-sm" href="{% url 'user:delete' user.username %}">Delete Account</a></span></li>
+        </ul>
+      </div>
+    </div>
   </div>
 {% endblock %}
 
@@ -73,4 +143,6 @@
     </div>
   </form>
 {% endblock %}
+
+
 

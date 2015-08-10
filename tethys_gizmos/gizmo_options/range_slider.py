@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: range_slider.py
+* Author: Nathan Swain and Ezra Rice
+* Created On: May 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from .base import TethysGizmoOptions
 
 __all__ = ['RangeSlider']
@@ -24,7 +33,7 @@ class RangeSlider(TethysGizmoOptions):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import RangeSlider
+        from tethys_sdk.gizmos import RangeSlider
 
         slider1 = RangeSlider(display_text='Slider 1',
                               name='slider1',

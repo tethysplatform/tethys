@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: app_installation.py
+* Author: Nathan Swain
+* Created On: 2014
+* Copyright: (c) Brigham Young University 2014
+* License: BSD 2-Clause
+********************************************************************************
+"""
 import os
 import shutil
 import subprocess
