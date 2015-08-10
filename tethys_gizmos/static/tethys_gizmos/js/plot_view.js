@@ -657,7 +657,8 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
-        var parseDate = d3.time.format("%d-%b-%y");
+        //var parseDate = d3.time.format("%d-%b-%y");
+        var formatTime = function (d) {d3.time.format("%d %b, %y"); }
 
         var x = d3.time.scale()
             .range([0, width]);
@@ -705,6 +706,17 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+        var tip = d3.tip()
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function (d, i, j) {
+                return "Date: <span style='color:yellow'>"
+                    + formatTime(d[0]) + "</span> </br>"
+                    + y_axis_title + ": <span style='color:yellow'>" + d[1] + "</span>";
+            });
+
+        svg.call(tip);
+
         //Create the chart title and subtitle
         svg.append("text")
             .attr("x", (width/2))
@@ -742,7 +754,9 @@ var TETHYS_D3_PLOT_VIEW = (function() {
                     .attr("class", "point")
                     .attr("d", d3.svg.symbol().type("circle"))
                     .attr("transform", function (d) { return "translate(" + x(d[0]) + "," + y(d[1]) + ")"; })
-                    .style("fill", function (d) {return color(series[i].name); });
+                    .style("fill", function (d) {return color(series[i].name); })
+                    .on("mouseover", tip.show)
+                    .on("mouseout", tip.hide);
         };
 
         svg.append("g")
