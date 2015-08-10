@@ -658,7 +658,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             height = 500 - margin.top - margin.bottom;
 
         //var parseDate = d3.time.format("%d-%b-%y");
-        var formatTime = function (d) {d3.time.format("%d %b, %y"); }
+        var formatDate = d3.time.format("%d %b, %y");
 
         var x = d3.time.scale()
             .range([0, width]);
@@ -711,7 +711,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             .offset([-10, 0])
             .html(function (d, i, j) {
                 return "Date: <span style='color:yellow'>"
-                    + formatTime(d[0]) + "</span> </br>"
+                    + d[0].formatDate + "</span> </br>"
                     + y_axis_title + ": <span style='color:yellow'>" + d[1] + "</span>";
             });
 
