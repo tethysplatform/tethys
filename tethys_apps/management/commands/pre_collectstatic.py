@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: pre_collectstatic.py
+* Author: Nathan Swain
+* Created On: February 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 import os
 import shutil
 

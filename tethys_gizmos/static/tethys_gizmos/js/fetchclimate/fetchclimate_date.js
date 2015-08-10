@@ -2,7 +2,7 @@
  * FILE:   fetchclimate_date.js
  * DATE: 7/25/2014   
  * AUTHOR: Alan Snow
- * COPYRIGHT: (c) 2014 Brigham Young University
+ * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
 

@@ -1,4 +1,13 @@
 # coding=utf-8
+"""
+********************************************************************************
+* Name: highcharts_plot_view.py
+* Author: Nathan Swain and Ezra Rice
+* Created On: May 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from .base import TethysGizmoOptions
 
 __all__ = ['PlotView', 'HighChartsObjectBase', 'HighChartsLinePlot', 'HighChartsPolarPlot', 'HighChartsScatterPlot',
@@ -34,7 +43,7 @@ class PlotView(TethysGizmoOptions):
         # CONTROLLER
 
         # coding=utf-8
-        from tethys_apps.sdk.gizmos import *
+        from tethys_sdk.gizmos import *
 
         ### Line Plot
 
@@ -457,7 +466,7 @@ class HighChartsLinePlot(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsLinePlot, PlotView
+        from tethys_sdk.gizmos import HighChartsLinePlot, PlotView
 
         highcharts_object = HighChartsLinePlot(title='Plot Title',
                                                subtitle='Plot Subtitle',
@@ -499,7 +508,7 @@ class HighChartsLinePlot(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view line_plot_view %}
+        {% gizmo highcharts_plot_view line_plot_view %}
 
     """
 
@@ -564,7 +573,7 @@ class HighChartsPolarPlot(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsPolarPlot, PlotView
+        from tethys_sdk.gizmos import HighChartsPolarPlot, PlotView
 
         web_plot_object = HighChartsPolarPlot(title='Polar Chart',
                                               subtitle='Polar Chart',
@@ -594,7 +603,7 @@ class HighChartsPolarPlot(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view web_plot %}
+        {% gizmo highcharts_plot_view web_plot %}
 
     """
 
@@ -643,7 +652,7 @@ class HighChartsScatterPlot(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsScatterPlot, PlotView
+        from tethys_sdk.gizmos import HighChartsScatterPlot, PlotView
 
         male_dataset = {
             'name': 'Male',
@@ -705,7 +714,7 @@ class HighChartsScatterPlot(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view scatter_plot_view %}
+        {% gizmo highcharts_plot_view scatter_plot_view %}
 
     """
 
@@ -760,7 +769,7 @@ class HighChartsPiePlot(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsPieChart, PlotView
+        from tethys_sdk.gizmos import HighChartsPieChart, PlotView
 
         pie_plot_object = HighChartsPiePlot(title='Pie Chart',
                                             subtitle='Pie Chart',
@@ -789,7 +798,7 @@ class HighChartsPiePlot(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view pie_plot_view %}
+        {% gizmo highcharts_plot_view pie_plot_view %}
 
     """
 
@@ -840,7 +849,7 @@ class HighChartsBarPlot(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsBarPlot, PlotView
+        from tethys_sdk.gizmos import HighChartsBarPlot, PlotView
 
         bar_plot_view = HighChartsBarPlot(
             title='Bar Chart',
@@ -869,7 +878,7 @@ class HighChartsBarPlot(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view bar_plot_view %}
+        {% gizmo highcharts_plot_view bar_plot_view %}
 
     """
 
@@ -944,7 +953,7 @@ class HighChartsTimeSeries(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsTimeSeries, PlotView
+        from tethys_sdk.gizmos import HighChartsTimeSeries, PlotView
 
         timeseries_plot_object = HighChartsTimeSeries(
             title='Irregular Timeseries Plot',
@@ -985,7 +994,7 @@ class HighChartsTimeSeries(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view timeseries_plot %}
+        {% gizmo highcharts_plot_view timeseries_plot %}
     """
 
     def __init__(self, series=[], title='', subtitle='', y_axis_title='', y_axis_units='', **kwargs):
@@ -999,7 +1008,7 @@ class HighChartsTimeSeries(HighChartsObjectBase):
         }
 
         x_axis = {
-            'maxZoom': 30 * 24 * 3600000,
+            #'maxZoom': 30 * 24 * 3600000,
             'type': 'datetime'
         }
 
@@ -1036,7 +1045,7 @@ class HighChartsAreaRange(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsAreaRange, PlotView
+        from tethys_sdk.gizmos import HighChartsAreaRange, PlotView
 
         averages = [
             [datetime(2009, 7, 1), 21.5], [datetime(2009, 7, 2), 22.1], [datetime(2009, 7, 3), 23],
@@ -1094,7 +1103,7 @@ class HighChartsAreaRange(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view area_range_plot %}
+        {% gizmo highcharts_plot_view area_range_plot %}
 
     """
 
@@ -1145,7 +1154,7 @@ class HighChartsHeatMap(HighChartsObjectBase):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import HighChartsHeatMap, PlotView
+        from tethys_sdk.gizmos import HighChartsHeatMap, PlotView
 
         sales_data = [
             [0, 0, 10], [0, 1, 19], [0, 2, 8], [0, 3, 24], [0, 4, 67], [1, 0, 92],
@@ -1195,7 +1204,7 @@ class HighChartsHeatMap(HighChartsObjectBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view heat_map_plot %}
+        {% gizmo highcharts_plot_view heat_map_plot %}
 
     """
 
