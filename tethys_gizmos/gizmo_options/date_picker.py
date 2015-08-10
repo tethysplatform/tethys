@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: date_picker.py
+* Author: Nathan Swain and Ezra Rice
+* Created On: May 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from .base import TethysGizmoOptions
 
 __all__ = ['DatePicker']
@@ -35,7 +44,7 @@ class DatePicker(TethysGizmoOptions):
 
         # CONTROLLER
 
-        from tethys_apps.sdk.gizmos import DatePickerOptions
+        from tethys_sdk.gizmos import DatePickerOptions
 
         # Date Picker Options
         date_picker = DatePicker(name='date1',

@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: button.py
+* Author: Nathan Swain and Ezra Rice
+* Created On: May 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from .base import TethysGizmoOptions
 
 __all__ = ['ButtonGroup', 'Button']
@@ -19,7 +28,7 @@ class ButtonGroup(TethysGizmoOptions):
 
         # CONTROLLER
 
-        from tethys_apps.sdk.gizmos import Button, ButtonGroup
+        from tethys_sdk.gizmos import Button, ButtonGroup
 
         # Horizontal Button Group
         add_button = Button(display_text='Add',
@@ -83,7 +92,7 @@ class Button(TethysGizmoOptions):
 
         # CONTROLLER
 
-        from tethys_apps.sdk.gizmos import Button
+        from tethys_sdk.gizmos import Button
 
         # Single Button
         single_button = Button(display_text='Click Me',

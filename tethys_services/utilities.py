@@ -1,15 +1,77 @@
+"""
+********************************************************************************
+* Name: utilities.py
+* Author: Nathan Swain
+* Created On: 2014
+* Copyright: (c) Brigham Young University 2014
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from urllib2 import HTTPError, URLError
+from functools import wraps
 
 from owslib.wps import WebProcessingService
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
+from social.exceptions import AuthAlreadyAssociated, AuthException
 
 from tethys_apps.base.app_base import TethysAppBase
 from .models import DatasetService as DsModel, SpatialDatasetService as SdsModel, WebProcessingService as WpsModel
+from tethys_dataset_services.engines import HydroShareDatasetEngine
 
 
-def initialize_engine_object(engine, endpoint, apikey=None, username=None, password=None):
+def ensure_oauth2(provider):
+    """
+    Decorator to ensure a user has been authenticated with the given oauth2 provider.
+
+    Usage:
+
+        from tethys_sdk.services import ensure_oauth2, get_dataset_engine
+
+        @ensure_oauth2('hydroshare-oauth2')
+        def controller(request):
+            engine = get_dataset_engine('default_hydroshare', request=request)
+            return render(request, 'my_template.html', {})
+
+    Note that calling get_dataset_engine for a hydroshare dataset engine will throw an error 
+    if it is not called in a function that is decorated with the ensure_oauth2 decorator.
+    """
+    def decorator(function):
+        @wraps(function)
+        def wrapper(request, *args, **kwargs):
+            user = request.user
+
+            # Assemble redirect response
+            redirect_url = reverse('social:begin', args=[provider]) + '?next={0}'.format(request.path)
+            redirect_response = redirect(redirect_url)
+
+            try:
+                user.social_auth.get(provider=provider)
+            except ObjectDoesNotExist:
+                # User is not associated with that provider
+                return redirect_response
+            except AttributeError:
+                # Anonymous User needs to be logged in and associated with that provider
+                # return redirect('/login/{0}/?next={1}'.format(provider, request.path))
+                return redirect_response
+            except AuthAlreadyAssociated:
+                # Another user has already used the account to associate...
+                raise
+            except:
+                raise
+            return function(request, *args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def initialize_engine_object(engine, endpoint, apikey=None, username=None, password=None, request=None):
     """
     Initialize a DatasetEngine object from a string that points at the engine class.
     """
+    # Constants
+    HYDROSHARE_OAUTH_PROVIDER_NAME = 'hydroshare'
+
     # Derive import parts from engine string
     engine_split = engine.split('.')
     module_string = '.'.join(engine_split[:-1])
@@ -19,6 +81,27 @@ def initialize_engine_object(engine, endpoint, apikey=None, username=None, passw
     module = __import__(module_string, fromlist=[engine_class_string])
     EngineClass = getattr(module, engine_class_string)
 
+    # Get Token for HydroShare interactions
+    if EngineClass is HydroShareDatasetEngine:
+        user = request.user
+
+        try:
+            # social = user.social_auth.get(provider='google-oauth2')
+            social = user.social_auth.get(provider=HYDROSHARE_OAUTH_PROVIDER_NAME)
+            apikey = social.extra_data['access_token']
+        except ObjectDoesNotExist:
+            # User is not associated with that provider
+            # Need to prompt for association
+            raise AuthException("HydroShare authentication required. To automate the authentication prompt decorate "
+                                "your controller function with the @ensure_oauth('hydroshare') decorator.")
+        except AttributeError:
+            # Anonymous User...
+            raise
+        except AuthAlreadyAssociated:
+            raise
+        except:
+            raise
+
     # Create Engine Object
     engine_instance = EngineClass(endpoint=endpoint,
                                   apikey=apikey,
@@ -27,7 +110,7 @@ def initialize_engine_object(engine, endpoint, apikey=None, username=None, passw
     return engine_instance
 
 
-def list_dataset_engines():
+def list_dataset_engines(request=None):
     """
     Returns a list of the available dataset engines.
     """
@@ -42,14 +125,15 @@ def list_dataset_engines():
                                                               endpoint=site_dataset_service.endpoint,
                                                               apikey=site_dataset_service.apikey,
                                                               username=site_dataset_service.username,
-                                                              password=site_dataset_service.password)
+                                                              password=site_dataset_service.password,
+                                                              request=request)
 
             dataset_service_engines.append(dataset_service_object)
 
     return dataset_service_engines
 
 
-def get_dataset_engine(name, app_class=None):
+def get_dataset_engine(name, app_class=None, request=None):
     """
     Get a dataset engine with the given name.
 
@@ -78,7 +162,8 @@ def get_dataset_engine(name, app_class=None):
                                                 endpoint=app_dataset_service.endpoint,
                                                 apikey=app_dataset_service.apikey,
                                                 username=app_dataset_service.username,
-                                                password=app_dataset_service.password)
+                                                password=app_dataset_service.password,
+                                                request=request)
 
     # If the dataset engine cannot be found in the app_class, check database for site-wide dataset engines
     site_dataset_services = DsModel.objects.all()
@@ -93,7 +178,8 @@ def get_dataset_engine(name, app_class=None):
                                                                   endpoint=site_dataset_service.endpoint,
                                                                   apikey=site_dataset_service.apikey,
                                                                   username=site_dataset_service.username,
-                                                                  password=site_dataset_service.password)
+                                                                  password=site_dataset_service.password,
+                                                                  request=request)
 
                 return dataset_service_object
 

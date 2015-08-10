@@ -1,3 +1,13 @@
+"""
+********************************************************************************
+* Name: manage_commands.py
+* Author: Nathan Swain
+* Created On: 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
+
 import os
 import shutil
 import subprocess
@@ -9,6 +19,8 @@ DEVELOPMENT_DIRECTORY = '/usr/lib/tethys/tethys'
 MANAGE_START = 'start'
 MANAGE_SYNCDB = 'syncdb'
 MANAGE_COLLECTSTATIC = 'collectstatic'
+MANAGE_COLLECTWORKSPACES = 'collectworkspaces'
+MANAGE_COLLECT = 'collectall'
 
 
 def get_manage_path(args):
@@ -68,6 +80,41 @@ def manage_command(args):
 
         # Setup for main collectstatic
         process = ['python', manage_path, 'collectstatic']
+        try:
+            subprocess.call(process)
+        except KeyboardInterrupt:
+            pass
+
+    elif args.command == MANAGE_COLLECTWORKSPACES:
+        # Run collectworkspaces command
+        process = ['python', manage_path, 'collectworkspaces']
+        try:
+            subprocess.call(process)
+        except KeyboardInterrupt:
+            pass
+
+    elif args.command == MANAGE_COLLECT:
+        # Convenience command to run collectstatic and collectworkspaces
+        ## Run pre_collectstatic
+        process = ['python', manage_path, 'pre_collectstatic']
+        try:
+            subprocess.call(process)
+        except KeyboardInterrupt:
+            pass
+
+        ## Setup for main collectstatic
+        process = ['python', manage_path, 'collectstatic']
+        try:
+            subprocess.call(process)
+        except KeyboardInterrupt:
+            pass
+
+        ## Run collectworkspaces command
+        process = ['python', manage_path, 'collectworkspaces']
+        try:
+            subprocess.call(process)
+        except KeyboardInterrupt:
+            pass
 
     # Call the process with a little trick to ignore the keyboard interrupt error when it happens
     if process:

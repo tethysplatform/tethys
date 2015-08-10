@@ -2,7 +2,7 @@
  * FILE:    Tethys Map View Library
  * DATE:    February 4, 2015
  * AUTHOR:  Nathan Swain
- * COPYRIGHT: (c) 2015 Brigham Young University
+ * COPYRIGHT: (c) Brigham Young University 2015
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
 
@@ -1137,6 +1137,7 @@ var TETHYS_MAP_VIEW = (function() {
     }
 
     button = document.createElement('button');
+    button.setAttribute('type', 'button');
     button_image = document.createElement('div');
     button_image.className = icon_class;
     button.appendChild(button_image);

@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: table_view.py
+* Author: Ezra Rice
+* Created On: May 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from .base import TethysGizmoOptions
 
 __all__ = ['TableView']
@@ -24,7 +33,7 @@ class TableView(TethysGizmoOptions):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import TableView
+        from tethys_sdk.gizmos import TableView
 
         table_view = TableView(column_names=('Name', 'Age', 'Job'),
                                rows=[('Bill', 30, 'contractor'),

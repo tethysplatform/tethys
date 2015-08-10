@@ -1,3 +1,13 @@
+"""
+********************************************************************************
+* Name: docker_commands.py
+* Author: Nathan Swain
+* Created On: July 2014
+* Copyright: (c) Brigham Young University 2014
+* License: BSD 2-Clause
+********************************************************************************
+"""
+
 import subprocess
 from subprocess import PIPE
 import os

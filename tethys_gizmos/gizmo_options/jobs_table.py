@@ -89,3 +89,4 @@ class JobsTable(TethysGizmoOptions):
                     row_values.append(job.__getattribute__(attribute))
             rows.append(row_values)
         return rows
+

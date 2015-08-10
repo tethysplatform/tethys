@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: text_input.py
+* Author: Nathan Swain and Ezra Rice
+* Created On: May 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from .base import TethysGizmoOptions
 
 __all__ = ['TextInput']
@@ -26,7 +35,7 @@ class TextInput(TethysGizmoOptions):
     ::
 
         # CONTROLLER
-        from tethys_apps.sdk.gizmos import TextInput
+        from tethys_sdk.gizmos import TextInput
 
         text_input = TextInput(display_text='Text',
                                name='inputAmount',
