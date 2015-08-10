@@ -1,8 +1,8 @@
 .. _plot-view:
 
-**********
-Plot Views
-**********
+*********
+Plot View
+*********
 
 **Last Updated:** August 10, 2015
 
