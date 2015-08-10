@@ -1,4 +1,10 @@
-
+/*****************************************************************************
+ * FILE: cluster_index.js
+ * DATE: 2015
+ * AUTHOR: Scott Christense
+ * COPYRIGHT: (c) Brigham Young University 2015
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
 function add_listeners(ref_elem, update_elem, update_btn){
     function update(){
         update_elem.value = ref_elem.value;

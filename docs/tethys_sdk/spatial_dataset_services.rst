@@ -2,7 +2,7 @@
 Spatial Dataset Services API
 ****************************
 
-**Last Updated:** May 13, 2015
+**Last Updated:** July 17, 2015
 
 Spatial dataset services are web services that can be used to store and publish file-based :term:`spatial datasets` (e.g.: Shapefile and GeoTiff). The spatial datasets published using spatial dataset services are made available in a variety of formats, many of which or more web friendly than the native format (e.g.: PNG, JPEG, GeoJSON, and KML). Tethys app developers can use this Spatial Dataset Services API to store and access :term:` spatial datasets` for use in their apps and publish any resulting :term:`datasets` their apps may produce.
 
@@ -116,7 +116,7 @@ After spatial dataset services have been properly configured, you can use the se
 
 The Spatial Dataset Services API provides a convenience function called ``get_spatial_dataset_engine``. To retrieve and engine for a sitewide configuration, call ``get_spatial_dataset_engine`` with the name of the configuration::
 
-  from tethys_apps.sdk import get_spatial_dataset_engine
+  from tethys_sdk.services import get_spatial_dataset_engine
 
   dataset_engine = get_dataset_engine(name='example')
 
@@ -124,7 +124,7 @@ It will return the first service with a matching name or raise an exception if t
 
 ::
 
-  from tethys_apps.sdk import list_spatial_dataset_engines
+  from tethys_sdk.services import list_spatial_dataset_engines
 
   dataset_engines = list_spatial_dataset_engines()
 
@@ -132,11 +132,11 @@ You can also create a ``SpatialDatasetEngine`` object directly without using the
 
   from tethys_dataset_services.engines import GeoServerSpatialDatasetEngine
 
-  spatial_dataset_engine = GeoServerSpatialDatasetEngine(endpoint='http://www.example.com/api/3/action', username='admin', password='geoserver')
+  spatial_dataset_engine = GeoServerSpatialDatasetEngine(endpoint='http://www.example.com/geoserver/rest', username='admin', password='geoserver')
 
 .. caution::
 
-  Take care not to store API keys, usernames, or passwords in the source files of your app--especially if the source is made public. This could compromise the security of the spatial dataset service.
+  Take care not to store API keys, usernames, or passwords in the source files of your app--especially if the source code is made public. This could compromise the security of the spatial dataset service.
 
 2. Use the Spatial Dataset Engine
 ---------------------------------
@@ -148,7 +148,7 @@ Consider the following example for uploading a shapefile to spatial dataset serv
 
 ::
 
-  from tethys_apps.sdk import get_spatial_dataset_engine
+  from tethys_sdk.services import get_spatial_dataset_engine
 
   # First get an engine
   engine = get_spatial_dataset_engine(name='example')

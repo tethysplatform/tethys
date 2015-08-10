@@ -81,6 +81,8 @@ This command contains several subcommands that are used to help manage Tethys Pl
     * *start*: Starts the Django development server. Wrapper for ``manage.py runserver``.
     * *syncdb*: Initialize the database during installation. Wrapper for ``manage.py syncdb``.
     * *collectstatic*: Link app static/public directories to STATIC_ROOT directory and then run Django's collectstatic command. Preprocessor and wrapper for ``manage.py collectstatic``.
+    * *collectworkspaces*: Link app workspace directories to TETHYS_WORKSPACES_ROOT directory.
+    * *collectall*: Convenience command for running both *collectstatic* and *collectworkspaces*.
 
 **Optional Arguments:**
 
@@ -100,6 +102,12 @@ This command contains several subcommands that are used to help manage Tethys Pl
 
     # Collect static files
     $ tethys manage collectstatic
+
+    # Collect workspaces
+    $ tethys manage collectworkspaces
+
+    # Collect static files and workspaces
+    $ tethys manage collectall
 
 syncstores <app_name, app_name...> [options]
 --------------------------------------------
