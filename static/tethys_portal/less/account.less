@@ -1,4 +1,11 @@
-// Styles for the account login and register forms
+/*****************************************************************************
+ * FILE: account
+ * DATE: 2014
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
+ // Styles for the account login and register forms
 
 
 //Colors
@@ -33,8 +40,149 @@
     }
   }
 
+  &.disconnect {
+    p {
+      padding: 20px 0;
+    }
+  }
+
   .account-form-body {
     margin-top: 50px;
+  }
+
+  .help-block {
+    margin-top: 10px;
+  }
+}
+
+.btn-hydroshare {
+  color: @default-header-text-color;
+  background-color: #ffffff;
+  border-color: rgba(0,0,0,0.2);
+}
+
+.btn-hydroshare:hover {
+  color: #ffffff;
+  background-color: @hydroshare-color;
+  border-color: rgba(0,0,0,0.2);
+}
+
+.fa-hydroshare {
+  background-image:url(/static/tethys_portal/images/hs-icon-sm.png);
+  background-repeat: no-repeat;
+  background-size: 75%;
+  background-position: 4px 5px;
+}
+
+.btn-google {
+  background-color: #ffffff;
+  color: @default-header-text-color;
+}
+
+.fa-google {
+  color: @google-color;
+}
+
+.btn-google:hover {
+  background-color: @google-color;
+
+  .fa-google {
+    color: #ffffff;
+  }
+}
+
+.btn-google:focus {
+  background-color: @google-color;
+
+  .fa-google {
+    color: #ffffff;
+  }
+}
+
+.btn-linkedin {
+  background-color: #ffffff;
+  color: @default-header-text-color;
+}
+
+.fa-linkedin {
+  color: @linkedin-color;
+}
+
+.btn-linkedin:hover {
+  background-color: @linkedin-color;
+
+  .fa-linkedin {
+    color: #ffffff;
+  }
+}
+
+.btn-linkedin:focus {
+  background-color: @linkedin-color;
+
+  .fa-linkedin {
+    color: #ffffff;
+  }
+}
+
+.btn-facebook {
+  background-color: #ffffff;
+  color: @default-header-text-color;
+}
+
+.fa-facebook {
+  color: @facebook-color;
+}
+
+.btn-facebook:hover {
+  background-color: @facebook-color;
+
+  .fa-facebook {
+    color: #ffffff;
+  }
+}
+
+.btn-facebook:focus {
+  background-color: @facebook-color;
+
+  .fa-facebook {
+    color: #ffffff;
+  }
+}
+
+.btn-social {
+  font-size: 15px;
+  font-weight: 500;
+  .font-smoothing();
+
+}
+
+.btn-block+.btn-block {
+    margin-top: 10px;
+}
+
+.social-divide-or {
+  position: relative;
+  margin: 30px 0;
+  width: 100%;
+  text-align: center;
+
+
+  .line {
+    width: 100%;
+    height: 1px;
+    background-color: #dddddd;
+  }
+
+  .or {
+    position: absolute;
+    left: 50%;
+    top: -15px;
+    margin-left: -20px;
+    background-color: #ffffff;
+    padding: 0 10px;
+    font-size: 20px;
+    color: @default-header-text-color;
+    .font-smoothing();
   }
 }
 
@@ -44,5 +192,5 @@
   .account-form-wrapper {
     margin: 0;
   }
-
 }
+

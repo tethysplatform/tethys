@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: models.py
+* Author: Scott Christensen
+* Created On: 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import pre_save, post_save, post_delete
@@ -293,18 +302,21 @@ class TethysJob(models.Model):
         ('RUN', 'Running'),
         ('COM', 'Complete'),
         ('ERR', 'Error'),
-        ('ABT', 'Aborted')
+        ('ABT', 'Aborted'),
+        ('VAR', 'Various'),
+        ('VCP', 'Various-Complete'),
     )
 
     STATUS_DICT = {k: v for v, k in STATUSES}
 
-    name = models.CharField(max_length=30)
-    description = models.CharField(max_length=1024, blank=True, default='')
+    name = models.CharField(max_length=1024)
+    description = models.CharField(max_length=2048, blank=True, default='')
     user = models.ForeignKey(User)
-    label = models.CharField(max_length=30)
+    label = models.CharField(max_length=1024)
     creation_time = models.DateTimeField(auto_now_add=True)
     execute_time = models.DateTimeField(blank=True, null=True)
     completion_time = models.DateTimeField(blank=True, null=True)
+    _subclass = models.CharField(max_length=30)
     _status = models.CharField(max_length=3, choices=STATUSES, default=STATUSES[0][0])
 
     @property
@@ -314,6 +326,9 @@ class TethysJob(models.Model):
         status = self._get_FIELD_display(field)
         return status
 
+    @property
+    def child(self):
+        return getattr(self, self._subclass)
 
     def execute(self):
         """
@@ -349,20 +364,32 @@ class TethysJob(models.Model):
         """
         raise NotImplementedError()
 
+class BasicJob(TethysJob):
+
+    def __init__(self, *args, **kwargs):
+        kwargs.update({'_subclass': self.__class__.__name__.lower()})
+        super(self.__class__, self).__init__(*args, **kwargs)
+
+    def _update_status(self):
+        pass
+
+    def _execute(self):
+        pass
+
 
 class CondorJob(TethysJob):
     """
 
     """
-    executable = models.CharField(max_length=256)
-    condorpy_template_name = models.CharField(max_length=256, blank=True, null=True)
+    executable = models.CharField(max_length=1024)
+    condorpy_template_name = models.CharField(max_length=1024, blank=True, null=True)
     attributes = DictionaryField(default='')
     remote_input_files = ListField(default='')
-    working_directory = models.CharField(max_length=512, blank=True, null=True)
+    working_directory = models.CharField(max_length=1024, blank=True, null=True)
     cluster_id = models.IntegerField(blank=True, default=0)
     num_jobs = models.IntegerField(default=1)
     remote_id = models.CharField(max_length=32, blank=True, null=True)
-    tethys_job = models.OneToOneField(TethysJob, related_name='child')
+    tethys_job = models.OneToOneField(TethysJob)
     #scheduler_ip = models.CharField(max_length=12, blank=True, null=True) ##TethysCompute only supports one scheduler
     #ami = models.CharField(max_length=9)  ## use documentation to specify this
     STATUS_MAP = {'Unexpanded': 'PEN',
@@ -371,7 +398,15 @@ class CondorJob(TethysJob):
                   'Removed': 'ABT',
                   'Completed': 'COM',
                   'Held': 'ERR',
-                  'Submission_err': 'ERR'}
+                  'Submission_err': 'ERR',
+                  'Various': 'VAR',
+                  'Various-Complete': 'VCP',
+                 }
+
+    def __init__(self, *args, **kwargs):
+        kwargs.update({'_subclass': self.__class__.__name__.lower()})
+        super(self.__class__, self).__init__(*args, **kwargs)
+
 
     @property
     def condorpy_template(self):
@@ -405,12 +440,23 @@ class CondorJob(TethysJob):
             self._condorpy_job = job
         return self._condorpy_job
 
+    @property
+    def statuses(self):
+        return self.condorpy_job.statuses
+
     def _update_status(self):
-        if self._status in ['PEN', 'SUB', 'RUN']:
+        if self._status in ['PEN', 'SUB', 'RUN', 'VAR']:
             try:
                 condor_status = self.condorpy_job.status
                 if condor_status == 'Completed':
                     self._process_results()
+                elif condor_status == 'Various':
+                    statuses = self.condorpy_job.statuses
+                    running_statuses = statuses['Unexpanded'] + statuses['Idle'] + statuses['Running']
+                    if running_statuses:
+                        pass
+                    else:
+                        condor_status = 'Various-Complete'
             except Exception, e:
                 # raise e
                 condor_status = 'Submission_err'

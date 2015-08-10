@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: cli/__init__.py
+* Author: Nathan Swain
+* Created On: 2014
+* Copyright: (c) Brigham Young University 2014
+* License: BSD 2-Clause
+********************************************************************************
+"""
 # Commandline interface for Tethys
 import argparse
 import subprocess
@@ -8,7 +17,7 @@ from django.conf import settings
 
 from tethys_apps.terminal_colors import TerminalColors
 from .docker_commands import *
-from .manage_commands import manage_command, get_manage_path, MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC
+from .manage_commands import manage_command, get_manage_path, MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT
 from .gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
 from tethys_apps.helpers import get_installed_tethys_apps
 
@@ -194,7 +203,7 @@ def tethys_command():
     # Setup start server command
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
     manage_parser.add_argument('command', help='Management command to run.',
-                               choices=[MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC])
+                               choices=[MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT])
     manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
     manage_parser.add_argument('-p', '--port', type=int, help='Port on which to start the development server.')
     manage_parser.set_defaults(func=manage_command)

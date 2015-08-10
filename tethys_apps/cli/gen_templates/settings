@@ -47,7 +47,8 @@ INSTALLED_APPS = (
     'tethys_apps',
     'tethys_gizmos',
     'tethys_services',
-    'tethys_compute'
+    'tethys_compute',
+    'social.apps.django_app.default',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -57,13 +58,14 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
-    'social_auth.backends.facebook.FacebookBackend',
-    'social_auth.backends.google.GoogleOAuthBackend',
-    'social_auth.backends.google.GoogleOAuth2Backend',
-    'social_auth.backends.google.GoogleBackend',
+#    'tethys_services.backends.hydroshare.HydroShareOAuth2',
+#    'social.backends.linkedin.LinkedinOAuth2',
+#    'social.backends.google.GoogleOAuth2',
+#    'social.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -73,7 +75,7 @@ WSGI_APPLICATION = 'tethys_portal.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
+# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -105,7 +107,7 @@ TETHYS_DATABASES = {
 }
 
 # Internationalization
-# https://docs.djangoproject.com/en/1.6/topics/i18n/
+# https://docs.djangoproject.com/en/1.7/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -130,6 +132,9 @@ TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'), )
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
 
+# Tethys Workspaces
+#TETHYS_WORKSPACES_ROOT = '/var/www/tethys/workspaces'
+
 # Messaging settings
 MESSAGE_TAGS = {message_constants.DEBUG: 'alert-danger',
                 message_constants.INFO: 'alert-info',
@@ -145,33 +150,34 @@ GRAVATAR_DEFAULT_IMAGE = 'retro'
 GRAVATAR_DEFAULT_RATING = 'g'
 GRAVATAR_DFFAULT_SECURE = True
 
-# OAuth Keys
-FACEBOOK_APP_ID              = ''
-FACEBOOK_API_SECRET          = ''
-GOOGLE_CONSUMER_KEY          = ''
-GOOGLE_CONSUMER_SECRET       = ''
-GOOGLE_OAUTH2_CLIENT_ID      = ''
-GOOGLE_OAUTH2_CLIENT_SECRET  = ''
-
 # Templates and static files
-STATICFILES_FINDERS = ('django.contrib.staticfiles.finders.FileSystemFinder',
-                       'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-                       'tethys_apps.utilities.TethysAppsStaticFinder')
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'tethys_apps.utilities.TethysAppsStaticFinder'
+)
 
-TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',
-                    'django.template.loaders.app_directories.Loader',
-                    'tethys_apps.utilities.tethys_apps_template_loader')
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+    'tethys_apps.utilities.tethys_apps_template_loader'
+)
 
-TEMPLATE_CONTEXT_PROCESSORS = ('django.contrib.auth.context_processors.auth',
-                               'django.core.context_processors.debug',
-                               'django.core.context_processors.i18n',
-                               'django.core.context_processors.media',
-                               'django.core.context_processors.static',
-                               'django.core.context_processors.tz',
-                               'django.contrib.messages.context_processors.messages',
-                               'tethys_config.context_processors.tethys_global_settings_context',
-                               'tethys_apps.context_processors.tethys_apps_context',
-                               'tethys_gizmos.context_processors.tethys_gizmos_context')
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.tz',
+    'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
+    'social.apps.django_app.context_processors.backends',
+    'social.apps.django_app.context_processors.login_redirect',
+    'tethys_config.context_processors.tethys_global_settings_context',
+    'tethys_apps.context_processors.tethys_apps_context',
+    'tethys_gizmos.context_processors.tethys_gizmos_context'
+)
 
 # Use this setting to bypass the home page
 BYPASS_TETHYS_HOME_PAGE = False
@@ -184,3 +190,29 @@ BYPASS_TETHYS_HOME_PAGE = False
 #EMAIL_HOST_PASSWORD = ''
 #EMAIL_USE_TLS = False
 #DEFAULT_FROM_EMAIL = 'Example <noreply@exmaple.com>'
+
+
+# OAuth Settings
+# http://psa.matiasaguirre.net/docs/configuration/index.html
+SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
+SOCIAL_AUTH_SLUGIFY_USERNAMES = True
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/apps/'
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/accounts/login/'
+
+# OAuth Providers
+## Google
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
+
+## Facebook
+SOCIAL_AUTH_FACEBOOK_KEY = ''
+SOCIAL_AUTH_FACEBOOK_SECRET = ''
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+
+## LinkedIn
+SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = ''
+SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = ''
+
+## HydroShare
+SOCIAL_AUTH_HYDROSHARE_KEY = ''
+SOCIAL_AUTH_HYDROSHARE_SECRET = ''

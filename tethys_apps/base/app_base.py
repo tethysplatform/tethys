@@ -7,8 +7,15 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import os
+import sys
+
+from django.http import HttpRequest
+from django.contrib.auth.models import User
+from django.utils.functional import SimpleLazyObject
 
 from tethys_compute.job_manager import JobManager
+from tethys_apps.base.workspace import TethysWorkspace
 
 
 class TethysAppBase(object):
@@ -44,7 +51,7 @@ class TethysAppBase(object):
         Returns:
           iterable: A list or tuple of ``UrlMap`` objects.
 
-        Example:
+        **Example:**
 
         ::
 
@@ -72,7 +79,7 @@ class TethysAppBase(object):
         Returns:
           iterable: A list or tuple of ``PersistentStore`` objects. A persistent store database will be created for each object returned.
 
-        Example:
+        **Example:**
 
         ::
 
@@ -98,7 +105,7 @@ class TethysAppBase(object):
         Returns:
           iterable: A list or tuple of ``DatasetService`` objects.
 
-        Example:
+        **Example:**
 
         ::
 
@@ -124,7 +131,7 @@ class TethysAppBase(object):
         Returns:
           iterable: A list or tuple of ``SpatialDatasetService`` objects.
 
-        Example:
+        **Example:**
 
         ::
 
@@ -151,7 +158,7 @@ class TethysAppBase(object):
         Returns:
           iterable: A list or tuple of ``WpsService`` objects.
 
-        Example:
+        **Example:**
 
         ::
 
@@ -175,7 +182,7 @@ class TethysAppBase(object):
         Returns:
             iterable: A list or tuple of ``JobTemplate`` objects.
 
-        Example:
+        **Example:**
 
         ::
 
@@ -205,3 +212,96 @@ class TethysAppBase(object):
         templates = app.job_templates()
         job_manager = JobManager(label=cls.package, job_templates=templates)
         return job_manager
+
+
+    @classmethod
+    def get_user_workspace(cls, user):
+        """
+        Get the file workspace (directory) for a user.
+
+        Args:
+          user(User or HttpRequest): User or request object.
+
+        Returns:
+          tethys_apps.base.TethysWorkspace: An object representing the workspace.
+
+        **Example:**
+
+        ::
+
+            import os
+            from .app import MyFirstApp
+
+            def a_controller(request):
+                \"""
+                Example controller that uses get_user_workspace() method.
+                \"""
+                # Retrieve the workspace
+                user_workspace = MyFirstApp.get_user_workspace(request.user)
+                new_file_path = os.path.join(user_workspace.path, 'new_file.txt')
+
+                with open(new_file_path, 'w') as a_file:
+                    a_file.write('...')
+
+                context = {}
+
+                return render(request, 'my_first_app/template.html', context)
+
+        """
+        username = ''
+
+        if isinstance(user, User):
+            username = user.username
+        elif isinstance(user, HttpRequest):
+            username = user.user.username
+        elif isinstance(user, SimpleLazyObject):
+            username = user.username
+        elif user is None:
+            pass
+        else:
+            raise ValueError("Invalid type for argument 'user': must be either an User or HttpRequest object.")
+
+        if not username:
+            username = 'anonymous_user'
+
+        project_directory = os.path.dirname(sys.modules[cls.__module__].__file__)
+        workspace_directory = os.path.join(project_directory, 'workspaces', 'user_workspaces', username)
+        return TethysWorkspace(workspace_directory)
+
+    @classmethod
+    def get_app_workspace(cls):
+        """
+        Get the file workspace (directory) for the app.
+
+        Returns:
+          tethys_apps.base.TethysWorkspace: An object representing the workspace.
+
+        **Example:**
+
+        ::
+
+            import os
+            from .app import MyFirstApp
+
+            def a_controller(request):
+                \"""
+                Example controller that uses get_app_workspace() method.
+                \"""
+                # Retrieve the workspace
+                app_workspace = MyFirstApp.get_app_workspace()
+                new_file_path = os.path.join(app_workspace.path, 'new_file.txt')
+
+                with open(new_file_path, 'w') as a_file:
+                    a_file.write('...')
+
+                context = {}
+
+                return render(request, 'my_first_app/template.html', context)
+
+        """
+        # Find the path to the app project directory
+        ## Hint: cls is a child class of this class.
+        ## Credits: http://stackoverflow.com/questions/4006102/is-possible-to-know-the-_path-of-the-file-of-a-subclass-in-python
+        project_directory = os.path.dirname(sys.modules[cls.__module__].__file__)
+        workspace_directory = os.path.join(project_directory, 'workspaces', 'app_workspace')
+        return TethysWorkspace(workspace_directory)

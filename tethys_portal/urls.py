@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: urls.py
+* Author: Nathan Swain
+* Created On: 2014
+* Copyright: (c) Brigham Young University 2014
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from django.conf.urls import patterns, include, url
 
 from django.contrib import admin
@@ -21,6 +30,8 @@ user_urls = [
     url(r'^$', 'tethys_portal.views.user.profile', name='profile'),
     url(r'^settings/$', 'tethys_portal.views.user.settings', name='settings'),
     url(r'^change-password/$', 'tethys_portal.views.user.change_password', name='change_password'),
+    url(r'^disconnect/(?P<provider>[\w.@+-]+)/(?P<association_id>[0-9]+)/$', 'tethys_portal.views.user.social_disconnect', name='disconnect'),
+    url(r'^delete-account/$', 'tethys_portal.views.user.delete_account', name='delete'),
 ]
 
 developer_urls = [
@@ -40,6 +51,7 @@ urlpatterns = patterns('',
     url(r'^$', 'tethys_portal.views.home.home', name='home'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include(account_urls, namespace='accounts')),
+    url(r'^oauth2/', include('social.apps.django_app.urls', namespace='social')),
     url(r'^user/(?P<username>[\w.@+-]+)/', include(user_urls, namespace='user')),
     url(r'^apps/', include('tethys_apps.urls')),
     url(r'^developer/', include(developer_urls)),
