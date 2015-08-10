@@ -40,7 +40,7 @@ You will now be looking at the Tethys Portal Web Admin Console. The Web Admin co
 2. Link to 52 North WPS Docker
 ------------------------------
 
-The built in 52 North Web Processing Service (WPS) is provided as one mechanism for Geoprocessing in apps. It exposes the GRASS GIS and Sextante geoprocessing libraries as web services. See :doc:`../tethys_sdk/geoprocessing` documentation for more details about how to use 52 North WPS processing in apps. Complete the following steps to link Tethys with the 52 North WPS:
+The built in 52 North Web Processing Service (WPS) is provided as one mechanism for Geoprocessing in apps. It exposes the GRASS GIS and Sextante geoprocessing libraries as web services. See :doc:`../tethys_sdk/web_processing_services` documentation for more details about how to use 52 North WPS processing in apps. Complete the following steps to link Tethys with the 52 North WPS:
 
 a. Select "Web Processing Services" from the options listed on the Tethys Portal Admin Console.
 
@@ -80,7 +80,7 @@ e. Press "Save" to save the WPS configuration.
 3.  Link to GeoServer
 ---------------------
 
-Tethys Platform provides GeoServer as a built-in Spatial Dataset Service. Spatial Dataset Services can be used by apps to publish Shapefiles and other spatial files as web resources. See :doc:`../tethys_sdk/spatial_publishing` documentation for how to use Spatial Dataset Services in apps. To link your Tethys Platform to the built-in GeoServer or an external Spatial Dataset Service, complete the following steps.
+Tethys Platform provides GeoServer as a built-in Spatial Dataset Service. Spatial Dataset Services can be used by apps to publish Shapefiles and other spatial files as web resources. See :doc:`../tethys_sdk/spatial_dataset_services` documentation for how to use Spatial Dataset Services in apps. To link your Tethys Platform to the built-in GeoServer or an external Spatial Dataset Service, complete the following steps.
 
 a. Select "Spatial Dataset Services" from the options listed on the Tethys Portal Admin Console.
 

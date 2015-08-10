@@ -33,7 +33,7 @@ Map Publishing
 
 Tethys Software Suite provides `GeoServer <http://geoserver.org/>`_ for publishing spatial data as web services. GeoServer is used to publish common spatial files such as Shapefiles and GeoTIFFs in web-friendly formats like GeoJSON and images.
 
-To use the map publishing capabilities of GeoServer in your app use the :doc:`./tethys_sdk/spatial_publishing`.
+To use the map publishing capabilities of GeoServer in your app use the :doc:`./tethys_sdk/spatial_dataset_services`.
 
 Geoprocessing
 =============
@@ -46,7 +46,7 @@ Geoprocessing
 
 The PostGIS extension, included in the software suite, can also provide geoprocessing capabilities on data that is stored in a spatially-enabled database. PostGIS includes SQL geoprocessing functions for splicing, dicing, morphing, reclassifying, and collecting/unioning raster and vector types. It also includes functions for vectorizing rasters, clipping rasters with vectors, and running stats on rasters by geometric region.
 
-To use 52°North WPS or other WPS geoprocessing services in your app use the :doc:`./tethys_sdk/geoprocessing`.
+To use 52°North WPS or other WPS geoprocessing services in your app use the :doc:`./tethys_sdk/web_processing_services`.
 
 Visualization
 =============
@@ -137,8 +137,8 @@ Software                               API                                      
 =====================================  ===============================================  ============================================
 PostgreSQL                             :doc:`./tethys_sdk/persistent_store`             SQL Database Storage
 PostGIS                                :doc:`./tethys_sdk/spatial_persistent_store`     Spatial Database Storage and Geoprocessing
-GeoServer                              :doc:`./tethys_sdk/spatial_publishing`           Spatial File Publishing
-52° North WPS                          :doc:`./tethys_sdk/geoprocessing`                Geoprocessing
+GeoServer                              :doc:`./tethys_sdk/spatial_dataset_services`     Spatial File Publishing
+52° North WPS                          :doc:`./tethys_sdk/web_processing_services`      Geoprocessing Services
 OpenLayers, Google Maps, HighCharts    :doc:`./tethys_sdk/gizmos`                       Spatial and Tabular Visualization
 HTCondor                               :doc:`./tethys_sdk/cloud_computing`              Computing and Job Management
 CKAN, HydroShare                       :doc:`./tethys_sdk/dataset_services`             Flat File Storage

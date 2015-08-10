@@ -1,3 +1,12 @@
+"""
+********************************************************************************
+* Name: fetchclimate.py
+* Author: Alan Snow and Ezra Rice
+* Created On: May 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from .base import TethysGizmoOptions
 
 __all__ = ['FetchClimateMap', 'FetchClimateURLParameter', 'FetchClimateMapData', 'FetchClimateMapParameters',
@@ -173,6 +182,7 @@ class FetchClimateMap(TethysGizmoOptions):
     ::
 
         # CONTROLLER
+        from tethys_sdk.gizmos import *
 
         fetchclimate_map = FetchClimateMap(
                     url_parameter=FetchClimateURLParameter(serverUrl='http://fetchclimate2.cloudapp.net'),

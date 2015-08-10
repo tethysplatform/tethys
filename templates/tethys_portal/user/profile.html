@@ -21,13 +21,15 @@
   {% endblock %}
 
   {% block edit_button %}
-    <div class="row">
-      <div class="col-md-12">
-        <div class="profile-edit-button">
-          <a href="{% url 'user:settings' username=context_user.username %}" class="btn btn-default btn-lg">Edit</a>
+    {% if context_user.username == user.username %}
+      <div class="row">
+        <div class="col-md-12">
+          <div class="profile-edit-button">
+            <a href="{% url 'user:settings' username=context_user.username %}" class="btn btn-default btn-lg">Edit</a>
+          </div>
         </div>
       </div>
-    </div>
+    {% endif %}
   {% endblock %}
 
   {% block profile_sections %}
@@ -56,7 +58,9 @@
           {% block credential_parameters %}
           <ul>
             <li><span class="parameter">Username:</span><span class="value">{{ context_user.username }}</span></li>
-            <li><span class="parameter">Password:</span><span class="value">********</span></li>
+            {% if context_user.has_usable_password and user.username == context_user.username %}
+              <li><span class="parameter">Password:</span><span class="value">********</span></li>
+            {% endif %}
           </ul>
           {% endblock %}
         </div>
@@ -78,6 +82,69 @@
       </div>
     </div>
 
+    {% if backends.backends %}
+    <div class="profile-section social">
+      <div class="row">
+        <div class="col-md-2 col-md-offset-2 profile-section-header">
+          <h3>Social</h3>
+        </div>
+        <div class="col-md-8 profile-parameters">
+          {% block social_parameters %}
+          <ul>
+            <li><span class="parameter">Connected:</span>
+              {% if user.username == context_user.username %}
+                {% if backends.associated %}
+                  <div class="social-label-container">
+                    {% for backend in backends.associated %}
+                      {% if 'linkedin' in backend.provider %}
+                        <span class="label label-linkedin">LinkedIn</span>
+                      {% elif 'google' in backend.provider %}
+                        <span class="label label-google">Google</span>
+                      {% elif 'facebook' in backend.provider %}
+                        <span class="label label-facebook">Facebook</span>
+                      {% elif 'hydroshare' in backend.provider %}
+                        <span class="label label-hydroshare">HydroShare</span>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <span>None</span>
+                {% endif %}
+              {% else %}
+                <span class="label label-info">Private</span>
+              {% endif %}
+            </span></li>
+            <li><span class="parameter">Not Connected:</span>
+              {% if user.username == context_user.username %}
+                {% if backends.not_associated %}
+                  <div class="social-label-container">
+                    {% for backend in backends.not_associated %}
+                      {% if 'linkedin' in backend %}
+                        <span class="label label-linkedin">LinkedIn</span>
+                      {% elif 'google' in backend %}
+                        <span class="label label-google">Google</span>
+                      {% elif 'facebook' in backend %}
+                        <span class="label label-facebook">Facebook</span>
+                      {% elif 'hydroshare' in backend %}
+                        <span class="label label-hydroshare">HydroShare</span>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <span>None</span>
+                {% endif %}
+              {% else %}
+                <span class="label label-info">Private</span>
+              {% endif %}
+            </span></li>
+          </ul>
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% block account_parameters %}
     <div class="profile-section last">
       <div class="row">
         <div class="col-md-2 col-md-offset-2 profile-section-header">
@@ -91,6 +158,7 @@
         </div>
       </div>
     </div>
+    {% endblock %}
   {% endblock %}
 
 {% endblock %}
