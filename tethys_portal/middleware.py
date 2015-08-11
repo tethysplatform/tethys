@@ -46,4 +46,4 @@ class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
             else:
                 raise
         else:
-            raise exception
+            pass
