@@ -1,3 +1,13 @@
+# coding=utf-8
+"""
+********************************************************************************
+* Name: jobs_table.py
+* Author: Scott Christensen
+* Created On: August 2015
+* Copyright: (c) Brigham Young University 2015
+* License: BSD 2-Clause
+********************************************************************************
+"""
 from .base import TethysGizmoOptions
 
 __all__ = ['JobsTable']
