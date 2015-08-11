@@ -21,6 +21,7 @@ MANAGE_SYNCDB = 'syncdb'
 MANAGE_COLLECTSTATIC = 'collectstatic'
 MANAGE_COLLECTWORKSPACES = 'collectworkspaces'
 MANAGE_COLLECT = 'collectall'
+MANAGE_CREATESUPERUSER = 'createsuperuser'
 
 
 def get_manage_path(args):
@@ -109,6 +110,9 @@ def manage_command(args):
 
         ## Run collectworkspaces command
         primary_process = ['python', manage_path, 'collectworkspaces']
+
+    elif args.command == MANAGE_CREATESUPERUSER:
+        primary_process = ['python', manage_path, 'createsuperuser']
 
     # Call the process with a little trick to ignore the keyboard interrupt error when it happens
     if primary_process:
