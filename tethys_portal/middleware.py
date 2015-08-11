@@ -10,7 +10,6 @@
 from django.contrib import messages
 from django.shortcuts import redirect
 from social.apps.django_app.middleware import SocialAuthExceptionMiddleware
-from django.http import HttpResponse
 from social import exceptions as social_exceptions
 from social.exceptions import AuthCanceled, AuthAlreadyAssociated
 
@@ -43,7 +42,3 @@ class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
                     return redirect('accounts:login')
                 else:
                     return redirect('user:settings', username=request.user.username)
-            else:
-                raise
-        else:
-            raise exception
