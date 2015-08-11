@@ -2,7 +2,7 @@
 Installation
 ************
 
-**Last Updated:** April 18, 2015
+**Last Updated:** August 11, 2015
 
 This section describes how to install Tethys Platform. Installation instructions are provided for Linux (Ubuntu), Mac OSX, and Windows.
 
@@ -11,7 +11,6 @@ This section describes how to install Tethys Platform. Installation instructions
 
     installation/system_requirements
     installation/linux
-    installation/mac
     installation/web_admin_setup
     installation/update
 
