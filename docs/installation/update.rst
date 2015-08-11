@@ -1,44 +1,53 @@
 **********************************
-Development Update from 1.0 to 1.1
+Development Update from 1.1 to 1.2
 **********************************
 
 
-**Last Updated:** April 24, 2015
+**Last Updated:** August 11, 2015
 
-The following article describes how to update your Tethys Platform installation from version 1.0.X to 1.1.0. There are two methods that can be used to update to 1.1.0:
+1. Pull Repository
+==================
 
-1. Delete Tethys Virtual Environment
-====================================
-
-Use the following command to delete the Tethys Platform virtual environment:
+When you installed Tethys Platform you did so using it's remote Git repository on GitHub. To get the latest version of Tethys Platform, you will need to pull the latest changes from this repository. However, the repository has moved from where it was for version 1.1.0, so first you need to set the URL of the remote repository to point its new location. All of this can be done as follows:
 
 ::
 
-   $ sudo rm -rf /usr/lib/tethys
+    $ cd /usr/lib/tethys/src
+    $ git remote set-url https://github.com/tethysplatform/tethys
+    $ git pull origin master
 
-2. Reinstall Tethys Platform
-============================
+2. Install Requirements and Run Setup Script
+============================================
 
-Follow the normal installation instructions to reinstall Tethys Platform, but do not update the Docker containers:
-
-* :doc:`./linux`
-* :doc:`./mac`
-
-.. warning::
-
-    Updating the Docker containers will result in the loss of all data.
-
-3. Reinstall Apps
-=================
-
-Reinstall any apps that you wish to have installed on Tethys Platform. Refer to the documentation for each app for specific installation instructions, but generally apps can be installed as follows:
+Install new dependencies and upgrade old ones:
 
 ::
 
              $ . /usr/lib/tethys/bin/activate
-    (tethys) $ cd /path/to/tethysapp-my_first_app
-    (tethys) $ python setup.py install
-    (tethys) $ tethys syncstores my_first_app
+    (tethys) $ pip install --upgrade -r /usr/lib/tethys/src/requirements.txt
+    (tethys) $ python /usr/lib/tethys/src/setup.py develop
 
-The databases for the apps should have been retained unless you updated the Docker containers.
+3. Sync the Database
+====================
+
+Start the database docker if not already started and apply any changes to the database that may have been issued with the new release:
+
+::
+
+    (tethys) $ tethys docker start -c postgis
+    (tethys) $ tethys manage syncdb
+
+4. Generate New Settings Script
+===============================
+
+Backup your old settings script (``settings.py``) and generate a new settings file to get the latest version of the settings. Then copy any settings (like database usernames and passwords) from the backed up settings script to the new settings script.
+
+::
+
+    (tethys) $ mv /usr/lib/tethys/src/tethys_apps/settings.py /usr/lib/tethys/src/tethys_apps/settings.py_bak
+    (tethys) $ tethys gen settings -d /usr/lib/tethys/src/tethys_apps
+
+.. tip::
+
+    Don't forget to copy any settings that you have set from the backup version of the settings script to the new one (e.g.: your database usernames and passwords). After you have copied these settings, you can remove the backup settings file.
 

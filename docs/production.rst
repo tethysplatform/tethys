@@ -1,8 +1,8 @@
-******
-Deploy
-******
+**********
+Production
+**********
 
-**Last Updated:** May 23, 2015
+**Last Updated:** August 11, 2015
 
 The following instructions can be used to deploy Tethys Platform.
 
@@ -11,6 +11,8 @@ The following instructions can be used to deploy Tethys Platform.
 
     production/system_requirements
     production/installation
+    production/app_installation
     production/distributed
     production/update
+
 
