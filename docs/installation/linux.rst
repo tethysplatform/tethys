@@ -38,11 +38,11 @@ b. Add your user to the Docker group. This is necessary to use the Tethys Docker
 
   ::
 
-    $ sudo groupadd docker
     $ sudo gpasswd -a ${USER} docker
     $ sudo service docker.io restart
+    $ gnome-session-quit --logout
 
-c. Close the terminal, then **log out** and **log back in** to make the changes take effect.
+c. Select **log out** and then **log back in** to make the changes take effect.
 
 .. important::
 
@@ -52,16 +52,7 @@ c. Close the terminal, then **log out** and **log back in** to make the changes 
 
     Adding a user to the Docker group is the equivalent of declaring a user as root. See `Giving non-root access <https://docs.docker.com/installation/ubuntulinux/#giving-non-root-access>`_ for more details.
 
-3. Install HTCondor (Optional)
----------------------------------------------------------
-
-HTCondor is a job scheduling and resource management system that is used by the Tethys Compute module. Distributed computing can be configured without installing HTCondor. For more information on how HTCondor is used for distributed computing in Tethys and the different configuration options see :doc:`../tethys_sdk/cloud_computing`. Use one of the following links for instructions on how to install HTCondor through the package manager:
-
-    Enterprise Linux: `HTCondor YUM Repository <http://research.cs.wisc.edu/htcondor/yum/>`_
-
-    Debian Linux: `HTCondor Debian Repository <http://research.cs.wisc.edu/htcondor/debian/>`_
-
-4. Create Virtual Environment and Install Tethys Platform
+3. Create Virtual Environment and Install Tethys Platform
 ---------------------------------------------------------
 
 Python virtual environments are used to create isolated Python installations to avoid conflicts with dependencies of other Python applications on the same system. The following commands should be executed in a terminal.
@@ -113,38 +104,27 @@ d. Restart the Python virtual environment::
              $ . /usr/lib/tethys/bin/activate
 
 
-5. Install Tethys Software Suite Using Docker
----------------------------------------------
+4. Install Tethys Software Suite Docker Containers
+--------------------------------------------------
 
-Tethys Platform provides a software suite that addresses the unique needs of water resources web app development including:
-
-* PostgreSQL with PostGIS enabled for spatial database storage,
-* 52 North WPS with GRASS and Sextante enabled for geoprocessing services, and
-* GeoServer for spatial dataset publishing.
-
-Installing some of these dependencies can be VERY difficult, so they have been provided as Docker containers to make installation EASY. The following instructions will walk you through installation of these software using Docker. See the `Docker Documentation <https://docs.docker.com/>`_ for more information about Docker containers.
-
-
-Initialize the Docker Containers
-================================
-
-Tethys provides set of commandline tools to help you manage the Docker containers. You must activate your Python environment to use the commandline tools. Execute the following Tethys commands using the :command:`tethys` :doc:`../tethys_sdk/tethys_cli` to initialize the Docker containers:
+Execute the following Tethys commands using the :command:`tethys` :doc:`../tethys_sdk/tethys_cli` to initialize the Docker containers:
 
 ::
 
   (tethys) $ tethys docker init
 
+You will be prompted to enter various parameters needed to customize your instance of the software. **Take note of the usernames and passwords that you specify**. You will need them to complete the installation.
 
 .. tip::
 
     Running into errors with this command? Make sure you have completed all of step 2, including part c.
 
-The first time you initialize the Docker containers, the images for each container will be downloaded. These images are large and it may take a long time for them to download.
+    Occasionally, you may encounter an error due to poor internet connection. Run the ``tethys docker init`` command repeatedly. It will pick up where it left off and eventually lead to success. When in doubt, try, try again.
 
-After the images have been downloaded, the containers will automatically be installed. During installation, you will be prompted to enter various parameters needed to customize your instance of the software. Some of the parameters are usernames and passwords. **Take note of the usernames and passwords that you specify**. You will need them to complete the installation.
 
-Start the Docker Containers
-===========================
+
+5. Start the Docker Containers
+------------------------------
 
 Use the following Tethys command to start the Docker containers:
 
@@ -153,8 +133,6 @@ Use the following Tethys command to start the Docker containers:
   (tethys) $ tethys docker start
 
 If you would like to test the Docker containers, see :doc:`../supplementary/docker_testing`.
-
-
 
 6. Create Settings File and Configure Settings
 ----------------------------------------------
