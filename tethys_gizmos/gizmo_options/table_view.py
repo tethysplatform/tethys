@@ -23,7 +23,7 @@ class TableView(TethysGizmoOptions):
         striped(bool): Stripe rows
         bordered(bool): Add borders and rounded corners
         condensed(bool): A more tightly packed table
-        editable_columns(list or tuple): A list or tuple with an entry for each column in the table. The entry is either False for non-editable columns or a string that will be used to create identifiers for the input fields in that column.
+        editable_columns(list or tuple): A list or tuple with an entry for each column in the table. The entry is either False for non-editable columns or a string that will be used to create identifiers for the input column_fields in that column.
         row_ids(list or tuple): A list or tuple of ids for each row in the table. These will be combined with the string in the editable_columns parameter to create unique identifiers for easy input field in the table. If not specified, each row will be assigned an integer value.
         attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
