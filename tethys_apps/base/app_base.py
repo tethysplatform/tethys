@@ -179,6 +179,29 @@ class TethysAppBase(object):
         """
         return None
 
+    def handoff_handlers(self):
+        """
+        Use this method to define handoff handlers for use in your app.
+
+        Returns:
+          iterable: A list or tuple of ``HandoffHandler`` objects.
+
+        **Example:**
+
+        ::
+
+            def handoff_handlers(self):
+                \"""
+                Example handoff_handlers method.
+                \"""
+                handoff_handlers = (HandoffHandlers(name='example',
+                                                    handler='handlers:my_handler'),
+                )
+
+                return handoff_handlers
+        """
+        return None
+
     @classmethod
     def job_templates(cls):
         """

@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
 from tethys_apps.app_harvester import SingletonAppHarvester
@@ -33,14 +33,13 @@ def handoff(request, app_name, handler_name):
     Handle handoff requests.
     """
     app_name = app_name.replace('-', '_')
-    handler_name = handler_name.replace('-', '_')
 
     # Get the app
     harvester = SingletonAppHarvester()
     apps = harvester.apps
 
     for app in apps:
-        if app.package == app_name:
+        if app.package == app_name and app.handoff_handlers():
             for handoff_handler in app.handoff_handlers():
                 if handoff_handler.name == handler_name:
                     # Split into module name and function name
@@ -55,9 +54,5 @@ def handoff(request, app_name, handler_name):
                     # Get the function
                     handler = getattr(module, handler_function)
 
-                    urlish = handler(request, **request.GET)
-                    print(app)
-
-    # Get its handlers
-
-    return HttpResponse('APP: {0}<br> HANDLER: {1}'.format(app_name, handler_name))
+                    urlish = handler(request, **request.GET.dict())
+                    return redirect(urlish)
