@@ -1,44 +1,30 @@
 {% load staticfiles tethys_gizmos %}
 
 <div id="jobs-table-messages"></div>
-<table class="table{% if bordered %} table-bordered{% endif %}{% if hover %} table-hover{% endif %}{% if striped %} table-striped{% endif %}{% if condensed %} table-condensed{% endif %}{% if classes %} {{ classes }}{% endif %}" {% if attributes %} {{ attributes }} {% endif %} data-col-filters="{{ filters }}">
-    <tr>
-      {% for column_name in column_names %}
-        <th>{{ column_name }}</th>
-      {% endfor %}
-      {% if status %}
-        <th>Status</th>
-      {% endif %}
-      {% if actions %}
-        <th>Actions</th>
-      {% endif %}
-    </tr>
-
-    {% for row in rows %}
-      {% with row_idx=forloop.counter0 %}
-        {% with job=jobs|return_item:row_idx %}
-          <tr id="jobs-table-row-{{ job.id }}">
-            {% for column_value in row %}
-              <td>{{ column_value }}</td>
-            {% endfor %}
-              {% if status %}
-                <td data-job-id="{{ job.id }}" data-results-url="{{ results_url }}" data-run="{{ run }}" id="jobs-table-status-{{ job.id }}" class="job-status" >
-                  Updating
-                </td>
-              {% endif %}
-              {% if actions %}
-                <td>
-                  {% if delete %}
-                    <a data-job-id="{{ job.id }}" class='btn btn-danger btn-xs btn-job-delete' href="javascript:void(0)">Delete</a>
-                  {% endif %}
-                </td>
-              {% endif %}
-            {% endwith %}
-          </tr>
-      {% endwith %}
-    {% empty %}
-      <tr>
-        <td colspan="100" align="center">No Jobs</td>
-      </tr>
+<table class="table{% if bordered %} table-bordered{% endif %}{% if hover %} table-hover{% endif %}{% if striped %} table-striped{% endif %}{% if condensed %} table-condensed{% endif %}{% if classes %} {{ classes }}{% endif %}" {% if attributes %} {{ attributes }} {% endif %} data-col-filters="{{ filters }}" data-status="{{ status }}" data-actions="{{ actions }}" data-results-url="{{ results_url }}" data-run="{{ run }}" data-delete="{{ delete }}">
+  <tr>
+    {% for column_name in column_names %}
+      <th>{{ column_name }}</th>
     {% endfor %}
+    {% if status %}
+      <th>Status</th>
+    {% endif %}
+    {% if actions %}
+      <th>Actions</th>
+    {% endif %}
+  </tr>
+
+  {% for row in rows %}
+    {% with row_idx=forloop.counter0 %}
+      {% with job=jobs|return_item:row_idx %}
+        <tr class="job-row" id="jobs-table-row-{{ job.id }}" data-job-id="{{ job.id }}">
+          {% include "tethys_gizmos/gizmos/job_row.html" %}
+        </tr>
+      {% endwith %}
+    {% endwith %}
+  {% empty %}
+    <tr>
+      <td colspan="100" align="center">No Jobs</td>
+    </tr>
+  {% endfor %}
 </table>

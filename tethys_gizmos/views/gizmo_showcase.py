@@ -18,7 +18,7 @@ from requests.exceptions import ConnectionError
 
 from tethys_sdk.gizmos import *
 from tethys_sdk.services import list_spatial_dataset_engines
-from tethys_compute.models import TethysJob, BasicJob
+from tethys_compute.models import BasicJob
 
 
 spatial_dataset_engines = list_spatial_dataset_engines()
@@ -729,12 +729,12 @@ def index(request):
                                draw=drawing_options,
                                legend=True)
 
-    jobs = TethysJob.objects.filter(label='gizmos_showcase')
+    jobs = BasicJob.objects.filter(label='gizmos_showcase').order_by('id')
 
     # Table View
     jobs_table_options = JobsTable(
                            jobs=jobs,
-                           filters=('id', 'name', 'description', 'creation_time'),
+                           filters=('id', 'name', 'description', 'creation_time', 'execute_time'),
                            hover=True,
                            striped=False,
                            bordered=False,
