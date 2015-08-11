@@ -9,6 +9,7 @@
 """
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.http import HttpResponse
 
 from tethys_apps.app_harvester import SingletonAppHarvester
 
@@ -25,3 +26,38 @@ def library(request):
     context = {'apps': harvester.apps}
 
     return render(request, 'tethys_apps/app_library.html', context)
+
+@login_required()
+def handoff(request, app_name, handler_name):
+    """
+    Handle handoff requests.
+    """
+    app_name = app_name.replace('-', '_')
+    handler_name = handler_name.replace('-', '_')
+
+    # Get the app
+    harvester = SingletonAppHarvester()
+    apps = harvester.apps
+
+    for app in apps:
+        if app.package == app_name:
+            for handoff_handler in app.handoff_handlers():
+                if handoff_handler.name == handler_name:
+                    # Split into module name and function name
+                    handler_mod, handler_function = handoff_handler.handler.split(':')
+
+                    # Pre-process handler path
+                    handler_path = '.'.join(('tethys_apps.tethysapp', app.package, handler_mod))
+
+                    # Import module
+                    module = __import__(handler_path, fromlist=[handler_function])
+
+                    # Get the function
+                    handler = getattr(module, handler_function)
+
+                    urlish = handler(request, **request.GET)
+                    print(app)
+
+    # Get its handlers
+
+    return HttpResponse('APP: {0}<br> HANDLER: {1}'.format(app_name, handler_name))
