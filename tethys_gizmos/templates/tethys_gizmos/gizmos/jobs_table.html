@@ -1,16 +1,13 @@
 {% load staticfiles tethys_gizmos %}
 
 <div id="jobs-table-messages"></div>
-<table class="table{% if bordered %} table-bordered{% endif %}{% if hover %} table-hover{% endif %}{% if striped %} table-striped{% endif %}{% if condensed %} table-condensed{% endif %}{% if classes %} {{ classes }}{% endif %}" {% if attributes %} {{ attributes }} {% endif %} data-col-filters="{{ filters }}" data-status="{{ status }}" data-actions="{{ actions }}" data-results-url="{{ results_url }}" data-run="{{ run }}" data-delete="{{ delete }}">
+<table class="table{% if bordered %} table-bordered{% endif %}{% if hover %} table-hover{% endif %}{% if striped %} table-striped{% endif %}{% if condensed %} table-condensed{% endif %}{% if classes %} {{ classes }}{% endif %}" {% if attributes %} {{ attributes }} {% endif %} data-column-fields="{{ column_fields }}" data-status-actions="{{ status_actions }}" data-run="{{ run }}" data-delete="{{ delete }}" data-results-url="{{ results_url }}">
   <tr>
     {% for column_name in column_names %}
       <th>{{ column_name }}</th>
     {% endfor %}
-    {% if status %}
-      <th>Status</th>
-    {% endif %}
-    {% if actions %}
-      <th>Actions</th>
+    {% if status_actions %}
+      <th {% if delete %}colspan="2"{% endif %}>Status</th>
     {% endif %}
   </tr>
 

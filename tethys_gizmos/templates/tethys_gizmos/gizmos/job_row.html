@@ -1,15 +1,13 @@
-  {% for column_value in row %}
-    <td>{{ column_value }}</td>
-  {% endfor %}
-  {% if status %}
-    <td id="jobs-table-status-{{ job.id }}" class="job-status" data-job-id="{{ job.id }}">
-      {% include "tethys_gizmos/gizmos/job_status.html" %}
-    </td>
-  {% endif %}
-  {% if actions %}
+{% for column_value in row %}
+  <td>{{ column_value }}</td>
+{% endfor %}
+{% if status_actions %}
+  <td id="jobs-table-status-{{ job.id }}" class="job-status" data-job-id="{{ job.id }}">
+    {% include "tethys_gizmos/gizmos/job_status.html" %}
+  </td>
+  {% if delete %}
     <td>
-      {% if delete %}
-        <a class='btn btn-danger btn-xs btn-job-delete' href="javascript:void(0)" data-job-id="{{ job.id }}" >Delete</a>
-      {% endif %}
+      <a class='btn btn-danger btn-xs btn-job-delete' href="javascript:void(0)" data-job-id="{{ job.id }}" >Delete</a>
     </td>
   {% endif %}
+{% endif %}

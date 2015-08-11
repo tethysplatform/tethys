@@ -77,44 +77,20 @@ function bind_delete_button(btn){
     });
 }
 
-function update_status(table_elem){
-    var job_id = $(table_elem).attr('data-job-id');
-    var results_url = $(table_elem).attr('data-results-url');
-    var run = $(table_elem).attr('data-run');
-    var filters = $(table_elem).closest('table').attr('data-col-filters');
-    var update_url = '/developer/gizmos/ajax/' + job_id + '/update-status';
-    $.ajax({
-        method: 'POST',
-        url: update_url,
-        data: {results_url: results_url, run: run}
-    }).done(function(json){
-        if(json.success){
-            table_elem = $(table_elem).html(json.html);
-            status = json.status;
-            if(status == 'Running' || status == 'Submitted' || status == 'Various'){
-                setTimeout(function(){
-                    update_status(table_elem);
-                }, 4000);
-            }
-        }
-    });
-}
-
 function update_row(table_elem){
     var table = $(table_elem).closest('table');
-    var results_url = $(table).attr('data-results-url');
+    var status_actions = $(table).attr('data-status-actions');
+    var column_fields = $(table).attr('data-column-fields');
     var run = $(table).attr('data-run');
-    var status = $(table).attr('data-status');
-    var actions = $(table).attr('data-actions');
-    var filters = $(table).attr('data-col-filters');
     var delete_btn = $(table).attr('data-delete');
+    var results_url = $(table).attr('data-results-url');
 
     var job_id = $(table_elem).attr('data-job-id');
     var update_url = '/developer/gizmos/ajax/' + job_id + '/update-row';
     $.ajax({
         method: 'POST',
         url: update_url,
-        data: {results_url: results_url, run: run, filters: filters, status: status, actions: actions, delete: delete_btn}
+        data: {column_fields: column_fields, status_actions: status_actions, run: run, delete: delete_btn, results_url: results_url}
     }).done(function(json){
         if(json.success){
             $(table_elem).html(json.html);
@@ -140,10 +116,6 @@ $('.btn-job-run').each(function(){
 
 $('.btn-job-delete').each(function(){
     bind_delete_button(this);
-});
-
-$('.job-status').each(function(){
-    //update_status(this);
 });
 
 $('.job-row').each(function(){

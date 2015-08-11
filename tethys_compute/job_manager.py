@@ -36,14 +36,13 @@ class JobManager(object):
         job = JobClass(**kwrgs)
         return job
 
-    def list_jobs(self, user):
-        """Lists all the jobs from current app for current user
-
+    def list_jobs(self, user, order_by='id'):
         """
-        jobs = TethysJob.objects.filter(label=self.label, user=user)
+        Lists all the jobs from current app for current user
+        """
+        jobs = TethysJob.objects.filter(label=self.label, user=user).order_by(order_by)
         jobs = [job.child for job in jobs]
         return jobs
-
 
 class JobTemplate(object):
     def __init__(self, name, type=None, parameters=None):

@@ -733,14 +733,14 @@ def index(request):
 
     # Table View
     jobs_table_options = JobsTable(
-                           jobs=jobs,
-                           filters=('id', 'name', 'description', 'creation_time', 'execute_time'),
-                           hover=True,
-                           striped=False,
-                           bordered=False,
-                           condensed=False,
-                           results_url='gizmos:results',
-                        )
+                                   jobs=jobs,
+                                   column_fields=('id', 'name', 'description', 'creation_time', 'execute_time'),
+                                   hover=True,
+                                   striped=False,
+                                   bordered=False,
+                                   condensed=False,
+                                   results_url='gizmos:results',
+                                 )
 
     # Define the context object
     context = {'docs_endpoint': docs_endpoint,

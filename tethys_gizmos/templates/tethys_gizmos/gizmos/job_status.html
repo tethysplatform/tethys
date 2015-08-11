@@ -28,7 +28,6 @@
       </div>
     </div>
   {% elif job.status == 'Submitted' %}
-{#    <img src="/static/tethys_gizmos/images/square-loader.gif" />#}
     <div class="progress" style="margin-bottom: 0;">
       <div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
         <span class="sr-only">100% Complete</span>
@@ -36,12 +35,12 @@
       </div>
     </div>
   {% elif job.status == 'Error' %}
-    <img src="/static/tethys_gizmos/images/warning.png" height="22px" width="22px" />
+    <img src="/static/tethys_gizmos/images/job_error.png" height="20px" width="20px" />
     <span style="vertical-align: middle;">
       {{ job.status }}
     </span>
   {% elif job.status == 'Aborted' %}
-    <img src="/static/tethys_gizmos/images/cancel.png" height="18px" width="18px" />
+    <img src="/static/tethys_gizmos/images/job_aborted.png" height="20px" width="20px" />
     <span style="vertical-align: middle;">
       {{ job.status }}
     </span>
