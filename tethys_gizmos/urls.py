@@ -16,7 +16,6 @@ ajax_urls = [
     url(r'^fetchclimate/single-request/$', 'tethys_gizmos.views.gizmos.fetchclimate.data_request_single', name='single_request'),
     url(r'^(?P<job_id>[\d.@+-]+)/delete$', 'tethys_gizmos.views.gizmos.jobs_table.delete', name='delete_job'),
     url(r'^(?P<job_id>[\d.@+-]+)/execute', 'tethys_gizmos.views.gizmos.jobs_table.execute', name='execute_job'),
-    url(r'^(?P<job_id>[\d.@+-]+)/update-status', 'tethys_gizmos.views.gizmos.jobs_table.update_status', name='update_job_status'),
     url(r'^(?P<job_id>[\d.@+-]+)/update-row', 'tethys_gizmos.views.gizmos.jobs_table.update_row', name='update_job_row'),
 ]
 

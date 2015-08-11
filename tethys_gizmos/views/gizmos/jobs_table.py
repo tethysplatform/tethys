@@ -20,27 +20,10 @@ def delete(request, job_id):
         success = False
     return JsonResponse({'success': success})
 
-def update_status(request, job_id):
-    try:
-        results_url = request.POST['results_url']
-        run = request.POST['run']
-        job = TethysJob.objects.filter(id=job_id)[0].child
-        if job.label == 'gizmos_showcase':
-            job.statuses = {'Complete': 40, 'Error': 10, 'Running': 30, 'Aborted':5}
-        success = True
-        status = job.status
-        html = render_to_string('tethys_gizmos/gizmos/job_status.html', {'job': job, 'results_url': results_url, 'run': run})
-    except:
-        success = False
-        status = None
-        html = None
-
-    return JsonResponse({'success': success, 'status': status, 'html': html})
-
 def update_row(request, job_id):
     try:
         data = {key:val for key, val in request.POST.iteritems()}
-        filter_string = data.pop('filters')
+        filter_string = data.pop('column_fields')
         filters = [f.strip('\'\" ') for f in filter_string.strip('()').split(',')]
         job = TethysJob.objects.filter(id=job_id)[0].child
 
