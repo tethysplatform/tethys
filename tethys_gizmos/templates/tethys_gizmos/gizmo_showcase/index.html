@@ -57,6 +57,9 @@
           <li>
             <a href="#fetchclimate_docs">FetchClimate</a>
           </li>
+          <li>
+            <a href="#jobs_table_docs">Jobs Table</a>
+          </li>
         </ul>
       </div>
     </div> {# end col #}
@@ -449,7 +452,27 @@ def my_view(request):
           </div>
         </div>
       </div>
-      <h1> </h1>
+
+      {# Jobs Table -----------------------------------------------------------------------------------------------#}
+      <a id="jobs_table_docs" class="anchor"></a>
+      <div class="docs-section">
+        <h2>Jobs Table</h2>
+        <p>Description of Jobs Table</p>
+        <p>
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos_api.html#jobs-table">Jobs Table</a>.
+        </p>
+
+        <div class="example">
+          <div class="demo">
+            <h4>Jobs Table</h4>
+            {% gizmo jobs_table jobs_table_options %}
+            {% if not jobs_table_options.jobs %}
+              <a class="btn btn-success" href="{% url 'gizmos:sample_jobs' %}">Create Sample Jobs</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
     </div> {# end col #}
   </div> {# end gizmo-showcase-wrapper #}
 {% endblock %}
