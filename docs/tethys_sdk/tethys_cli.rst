@@ -83,6 +83,7 @@ This command contains several subcommands that are used to help manage Tethys Pl
     * *collectstatic*: Link app static/public directories to STATIC_ROOT directory and then run Django's collectstatic command. Preprocessor and wrapper for ``manage.py collectstatic``.
     * *collectworkspaces*: Link app workspace directories to TETHYS_WORKSPACES_ROOT directory.
     * *collectall*: Convenience command for running both *collectstatic* and *collectworkspaces*.
+    * *superuser*: Create a new superuser/website admin for your Tethys Portal.
 
 **Optional Arguments:**
 
@@ -108,6 +109,9 @@ This command contains several subcommands that are used to help manage Tethys Pl
 
     # Collect static files and workspaces
     $ tethys manage collectall
+
+    # Create a new superuser
+    $ tethys manage createsuperuser
 
 syncstores <app_name, app_name...> [options]
 --------------------------------------------

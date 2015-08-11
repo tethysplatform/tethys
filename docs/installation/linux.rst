@@ -20,8 +20,6 @@ a. Install most of the dependencies via :command:`apt-get`. Open a terminal and 
 
   You may be prompted to enter your password to authorize the installation of these packages. If you are prompted about the disk space that will be used to install the dependencies, enter :kbd:`Y` and press :kbd:`Enter` to continue.
 
-  There will be a lot of text printed to the terminal as the dependencies are installed and it may take several minutes to complete. When it is finished you will see a blinking terminal cursor again.
-
 
 2. Finish the Docker Installation
 ---------------------------------
@@ -199,22 +197,27 @@ e. Save your changes and close the :file:`settings.py` file.
 7. Create Database Tables
 -------------------------
 
-Execute the :command:`tethys manage syncdb` command from the Tethys :doc:`../tethys_sdk/tethys_cli` to create the database tables. In the terminal::
+Execute the following command to initialize the database tables::
 
     (tethys) $ tethys manage syncdb
 
-.. important::
+8. Create a Superuser
+---------------------
 
-  When prompted to create a system administrator enter 'yes'. Take note of the username and password, as this will be the user you use to manage your Tethys Platform installation.
+Create a superuser/website administrator for your Tethys Portal:
 
-8. Start up the Django Development Server
+::
+
+    (tethys) $ tethys manage createsuperuser
+
+9. Start up the Django Development Server
 -----------------------------------------
 
-You are now ready to start the development server and view your instance of Tethys Platform. The website that comes with Tethys Platform is called Tethys Portal. In the terminal, execute the following command from the Tethys :doc:`../tethys_sdk/tethys_cli`::
+You are now ready to start the development server and view your instance of Tethys Platform. The website that ships with Tethys Platform is called :doc:`../tethys_portal`. In the terminal, execute the following command to start the development server::
 
     (tethys) $ tethys manage start
 
-Open `<http://localhost:8000/>`_ in a new tab in your web browser and you should see the default Tethys Portal landing page.
+Open `<http://localhost:8000/>`_ in a new tab in your web browser and you should see the default :doc:`../tethys_portal` landing page.
 
 .. figure:: ../images/tethys_portal_landing.png
     :width: 650px

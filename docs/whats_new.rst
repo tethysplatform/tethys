@@ -2,7 +2,7 @@
 What's New
 **********
 
-**Last Updated:** August 5, 2015
+**Last Updated:** August 11, 2015
 
 Refer to this article for information about each new release of Tethys Platform.
 
@@ -74,6 +74,14 @@ Persistent Stores Changes
 * The old get_persistent_stores_engine() method has been flagged for deprecation.
 
 See: :doc:`./tethys_sdk/persistent_store`
+
+Command Line Interface
+----------------------
+
+* New management commands including ``createsuperuser``, ``collectworkspaces``, and ``collectall``
+* Modified behavior of ``syncdb`` management command, which now makes and then applies migrations.
+
+See: :doc:`./tethys_sdk/tethys_cli`
 
 
 Release 1.1.0
