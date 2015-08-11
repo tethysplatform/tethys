@@ -1,8 +1,8 @@
-***********************
-Production Installation
-***********************
+***************************************
+Production Installation on Ubuntu 14.04
+***************************************
 
-**Last Updated:** May 26, 2015
+**Last Updated:** August 11, 2015
 
 This article will provide an overview of how to install Tethys Portal in a production setup ready to host apps. The recommended deployment platform for Python web projects is to use `WSGI <http://www.wsgi.org/>`_. The easiest and most stable way to deploy a WSGI application is with the `modwsgi <https://code.google.com/p/modwsgi/>`_ extension for the `Apache Server <http://httpd.apache.org/>`_. These instructions are optimized for Ubuntu 14.04 using Apache and modwsgi, though installation on other Linux distributions will be similar.
 
@@ -158,7 +158,11 @@ e. Set email settings
       EMAIL_USE_TLS = False
       DEFAULT_FROM_EMAIL = 'Example <noreply@exmaple.com>'
 
-For more information about setting up email capabilities for Tethys Platform, refer to the `Sending email <https://docs.djangoproject.com/en/1.8/topics/email/>`_ documentation.
+  For more information about setting up email capabilities for Tethys Platform, refer to the `Sending email <https://docs.djangoproject.com/en/1.8/topics/email/>`_ documentation.
+
+d. Setup social authentication
+
+  If you wish to enable social authentication capabilities in your Tethys Portal, follow the :doc:`../tethys_portal/social_auth` instructions.
 
 
 Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` to save changes and exit.

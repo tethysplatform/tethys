@@ -30,18 +30,9 @@ Install new dependencies and upgrade old ones:
     (tethys) $ python /usr/lib/tethys/src/setup.py develop
     (tethys) $ exit
 
-3. Sync the Database
-====================
 
-Start the database docker if not already started and apply any changes to the database that may have been issued with the new release:
 
-::
-
-             $ . /usr/lib/tethys/bin/activate
-    (tethys) $ tethys docker start -c postgis
-    (tethys) $ tethys manage syncdb
-
-4. Generate New Settings Script
+3. Generate New Settings Script
 ===============================
 
 Backup your old settings script (``settings.py``) and generate a new settings file to get the latest version of the settings. Then copy any settings (like database usernames and passwords) from the backed up settings script to the new settings script.
@@ -53,9 +44,35 @@ Backup your old settings script (``settings.py``) and generate a new settings fi
     (tethys) $ tethys gen settings -d /usr/lib/tethys/src/tethys_apps
     (tethys) $ exit
 
-.. tip::
+.. caution::
 
-    Don't forget to copy any settings that you have set from the backup version of the settings script (``settings.py_bak``) to the new one (e.g.: your database usernames and passwords). After you have copied these settings, you can remove the backup settings file.
+    Don't forget to copy any settings from the backup settings script (``settings.py_bak``) to the new settings script. Common settings that need to be copied include:
+
+    * DEBUG, TEMPLATE_DEBUG
+    * ALLOWED_HOSTS
+    * DATABASES, TETHYS_DATABASES
+    * STATIC_ROOT, TETHYS_WORKSPACES_ROOT
+    * EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_USE_TLS, DEFAULT_FROM_EMAIL
+    * SOCIAL_OAUTH_XXXX_KEY, SOCIAL_OAUTH_XXXX_SECRET
+    * BYPASS_TETHYS_HOME_PAGE
+
+    After you have copied these settings, you can delete the backup settings script.
+
+4. Setup Social Authentication (optional)
+=========================================
+
+One of the new features in Tethys Platform 1.2.0 is the ability to us social credentials from Facebook, Google, LinkedIn, and/or HydroShare to authenticate users. However, it requires some configuration in the settings script. If you wish to add social authentication to your Tethys Portal, follow the :doc:`../tethys_portal/social_auth` instructions.
+
+5. Sync the Database
+====================
+
+Start the database docker if not already started and apply any changes to the database that may have been issued with the new release:
+
+::
+
+             $ . /usr/lib/tethys/bin/activate
+    (tethys) $ tethys docker start -c postgis
+    (tethys) $ tethys manage syncdb
 
 6. Collect Static Files
 =======================
@@ -68,8 +85,8 @@ Collect the new static files and update the old ones:
     (tethys) $ tethys manage collectstatic
     (tethys) $ exit
 
-7. Change Permissions
-=====================
+7. Transfer Ownership to Apache
+===============================
 
 Assign ownership of Tethys Platform files and resources to the Apache user:
 
