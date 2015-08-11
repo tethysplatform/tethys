@@ -211,8 +211,12 @@ c. Find the TETHYS_DATABASES setting near the bottom of the file and set the PAS
         }
     }
 
+d. Setup social authentication
 
-d. Save your changes and close the :file:`settings.py` file.
+  If you wish to enable social authentication capabilities for testing your Tethys Portal, follow the :doc:`../tethys_portal/social_auth` instructions.
+
+
+e. Save your changes and close the :file:`settings.py` file.
 
 7. Create Database Tables
 -------------------------
