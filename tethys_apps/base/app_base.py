@@ -202,8 +202,6 @@ class TethysAppBase(object):
         """
         return None
 
-    @classmethod
-    def job_templates(cls):
     def job_templates(self):
         """
         Use this method to define job templates to easily create and submit jobs in your app.
