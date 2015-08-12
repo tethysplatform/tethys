@@ -10,6 +10,8 @@
 """
 import json
 from datetime import datetime
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, JsonResponse
@@ -39,6 +41,7 @@ for spatial_dataset_engine in spatial_dataset_engines:
 print(geoserver_wms)
 
 
+@login_required()
 def index(request):
     """
     Django view for the gizmo showcase page
@@ -839,6 +842,7 @@ def swap_overlays(request):
     return HttpResponse(json.dumps(overlay_json), content_type='application/json')
 
 
+@login_required()
 def editable_map(request):
     """
     Place to display editable google map in an isolated environment
@@ -891,6 +895,7 @@ def editable_map(request):
     return render(request, 'tethys_gizmos/gizmo_showcase/editable_map.html', context)
 
 
+@login_required()
 def google_map(request):
     """
     Place to display google map view in an isoloted environment
@@ -908,6 +913,7 @@ def google_map(request):
     return render(request, 'tethys_gizmos/gizmo_showcase/google_map.html', context)
 
 
+@login_required()
 def map_view(request):
     """
     Place to show off the new map view
@@ -1033,6 +1039,7 @@ def map_view(request):
     return render(request, 'tethys_gizmos/gizmo_showcase/map_view.html', context)
 
 
+@login_required()
 def fetchclimate_map(request):
     """
     Place to show off the new map view
