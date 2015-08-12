@@ -20,7 +20,8 @@ from tethys_compute import (TETHYSCLUSTER_CFG_FILE,
                             TETHYSCLUSTER_AZURE_CFG_TEMPLATE)
 from tethys_compute.utilities import DictionaryField, ListField
 
-import os, re
+import os
+import re
 from multiprocessing import Process
 from abc import abstractmethod
 
@@ -273,7 +274,6 @@ class Cluster(models.Model):
 def cluster_pre_save(sender, instance, raw, using, update_fields, **kwargs):
     instance._update_status()
 
-
 @receiver(post_save, sender=Cluster)
 def cluster_post_save(sender, instance, created, raw, using, update_fields, **kwargs):
     if created:
@@ -289,9 +289,18 @@ def cluster_post_delete(sender, instance, **kwargs):
     process.start()
 
 
-class TethysJob(models.Model):
-    """Base class for all job types.
+class Scheduler(models.Model):
+    name = models.CharField(max_length=1024)
+    host = models.CharField(max_length=1024)
+    username = models.CharField(max_length=1024, blank=True, null=True)
+    password = models.CharField(max_length=1024, blank=True, null=True)
+    private_key_path = models.CharField(max_length=1024, blank=True, null=True)
+    private_key_pass = models.CharField(max_length=1024, blank=True, null=True)
 
+
+class TethysJob(models.Model):
+    """
+    Base class for all job types. This is intended to be an abstract class that is not directly instantiated.
     """
     class Meta:
         verbose_name = 'Job'
@@ -316,7 +325,9 @@ class TethysJob(models.Model):
     creation_time = models.DateTimeField(auto_now_add=True)
     execute_time = models.DateTimeField(blank=True, null=True)
     completion_time = models.DateTimeField(blank=True, null=True)
-    _subclass = models.CharField(max_length=30)
+    workspace = models.CharField(max_length=1024, default=os.path.expanduser('~/.tethyscluster/workspace'))
+    extended_properties = DictionaryField(default='')
+    _subclass = models.CharField(max_length=30, default='basicjob')
     _status = models.CharField(max_length=3, choices=STATUSES, default=STATUSES[0][0])
 
     @property
@@ -330,16 +341,16 @@ class TethysJob(models.Model):
     def child(self):
         return getattr(self, self._subclass)
 
-    def execute(self):
+    def execute(self, *args, **kwargs):
         """
 
         """
         self.execute_time = timezone.now()
         self.save()
-        self.child._execute()
+        self.child._execute(*args, **kwargs)
 
     @abstractmethod
-    def _execute(self):
+    def _execute(self, *args, **kwargs):
         pass
 
     @abstractmethod
@@ -364,7 +375,11 @@ class TethysJob(models.Model):
         """
         raise NotImplementedError()
 
+
 class BasicJob(TethysJob):
+    """
+    Basic job type. Use this class as a model for subclassing TethysJob
+    """
 
     def __init__(self, *args, **kwargs):
         kwargs.update({'_subclass': self.__class__.__name__.lower()})
@@ -379,19 +394,18 @@ class BasicJob(TethysJob):
 
 class CondorJob(TethysJob):
     """
-
+    Condor job type
     """
     executable = models.CharField(max_length=1024)
     condorpy_template_name = models.CharField(max_length=1024, blank=True, null=True)
     attributes = DictionaryField(default='')
     remote_input_files = ListField(default='')
-    working_directory = models.CharField(max_length=1024, blank=True, null=True)
     cluster_id = models.IntegerField(blank=True, default=0)
     num_jobs = models.IntegerField(default=1)
     remote_id = models.CharField(max_length=32, blank=True, null=True)
     tethys_job = models.OneToOneField(TethysJob)
-    #scheduler_ip = models.CharField(max_length=12, blank=True, null=True) ##TethysCompute only supports one scheduler
-    #ami = models.CharField(max_length=9)  ## use documentation to specify this
+    scheduler = models.ForeignKey(Scheduler)
+
     STATUS_MAP = {'Unexpanded': 'PEN',
                   'Idle': 'SUB',
                   'Running': 'RUN',
@@ -419,17 +433,18 @@ class CondorJob(TethysJob):
     @property
     def condorpy_job(self):
         if not hasattr(self, '_condorpy_job'):
-            settings = Setting.as_dict()
             if 'executable' in self.attributes.keys():
                 del self.attributes['executable']
             job = Job(name=self.name,
                       attributes=self.condorpy_template,
                       executable=self.executable,
-                      host=settings['scheduler_ip'],
-                      username='tethysadmin',
-                      private_key=settings['scheduler_key_location'],
+                      host=self.scheduler.host,
+                      username=self.scheduler.username,
+                      password=self.scheduler.password,
+                      private_key=self.scheduler.private_key_path,
+                      private_key_pass=self.scheduler.private_key_pass,
                       remote_input_files=self.remote_input_files,
-                      working_directory=self.working_directory,
+                      working_directory=self.workspace,
                       **self.attributes)
             job._cluster_id = self.cluster_id
             job._num_jobs = self.num_jobs
@@ -463,9 +478,9 @@ class CondorJob(TethysJob):
             self._status = self.STATUS_MAP[condor_status]
             self.save()
 
-    def _execute(self, queue=1, options=[]):
-        self.num_jobs = queue
-        self.cluster_id = self.condorpy_job.submit(queue, options)
+    def _execute(self, queue=None, options=[]):
+        self.num_jobs = queue or self.num_jobs
+        self.cluster_id = self.condorpy_job.submit(self.num_jobs, options)
         self.save()
 
     def _process_results(self):
