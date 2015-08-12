@@ -7,9 +7,11 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import inspect
+import json
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, HttpResponse
 
 from tethys_apps.app_harvester import SingletonAppHarvester
 
@@ -26,6 +28,39 @@ def library(request):
     context = {'apps': harvester.apps}
 
     return render(request, 'tethys_apps/app_library.html', context)
+
+@login_required()
+def handoff_capabilities(request, app_name):
+    """
+    Show handoff capabilities of the app name provided.
+    """
+    app_name = app_name.replace('-', '_')
+
+    # Get the app
+    harvester = SingletonAppHarvester()
+    apps = harvester.apps
+
+    handlers = []
+
+    for app in apps:
+        if app.package == app_name and app.handoff_handlers():
+            for handoff_handler in app.handoff_handlers():
+                handler_mod, handler_function = handoff_handler.handler.split(':')
+
+                # Pre-process handler path
+                handler_path = '.'.join(('tethys_apps.tethysapp', app.package, handler_mod))
+
+                # Import module
+                module = __import__(handler_path, fromlist=[handler_function])
+
+                # Get the function
+                handler = getattr(module, handler_function)
+                args = inspect.getargspec(handler)
+                handlers.append({"arguments": args.args,
+                                 "name": handoff_handler.name})
+
+    return HttpResponse(json.dumps(handlers), content_type='application/javascript')
+
 
 @login_required()
 def handoff(request, app_name, handler_name):
@@ -57,4 +92,11 @@ def handoff(request, app_name, handler_name):
                     urlish = handler(request, **request.GET.dict())
                     return redirect(urlish)
 
-    return HttpResponseBadRequest()
+    error = {"message": "HTTP 400 Bad Request: No handoff handler '{0}' "
+                        "for app '{1}' found.".format(app_name, handler_name),
+             "code": 400,
+             "status": "error",
+             "app_name": app_name,
+             "handler_name": handler_name}
+
+    return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
