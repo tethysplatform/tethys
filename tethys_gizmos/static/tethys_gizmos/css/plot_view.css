@@ -1,0 +1,57 @@
+.legend {
+    font-size: 12px;
+}
+
+rect {
+    cursor: pointer;
+}
+
+rect.disabled {
+    fill: transparent !important;
+}
+
+.d3-plot {
+  font: 11px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.d3-scatter-tooltip {
+    position: absolute;
+    width: 200px;
+    height: 28px;
+    pointer-events: none;
+}
+
+.d3-tip {
+  line-height: 1;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
