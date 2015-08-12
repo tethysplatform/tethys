@@ -2,7 +2,7 @@
 What's New
 **********
 
-**Last Updated:** August 5, 2015
+**Last Updated:** August 11, 2015
 
 Refer to this article for information about each new release of Tethys Platform.
 
@@ -28,7 +28,7 @@ D3 Plotting Gizmos
 * Use the same plot objects to define both types of charts
 * Simplified and generalized the mechanism for declaring plot views
 
-See: :doc:`./tethys_sdk/gizmos_api`
+See: :doc:`./tethys_sdk/gizmos/plot_view`
 
 Job Manager Gizmo
 -----------------
@@ -66,6 +66,23 @@ New Location for Tethys SDK
 
 See: :doc:`./tethys_sdk`
 
+Persistent Stores Changes
+-------------------------
+
+* Moved the get_persistent_stores_engine() method to the TethysAppBase class.
+* To call the method import your :term:`app class` and call it on the class.
+* The old get_persistent_stores_engine() method has been flagged for deprecation.
+
+See: :doc:`./tethys_sdk/persistent_store`
+
+Command Line Interface
+----------------------
+
+* New management commands including ``createsuperuser``, ``collectworkspaces``, and ``collectall``
+* Modified behavior of ``syncdb`` management command, which now makes and then applies migrations.
+
+See: :doc:`./tethys_sdk/tethys_cli`
+
 
 Release 1.1.0
 =============
@@ -73,7 +90,7 @@ Release 1.1.0
 Gizmos
 ------
 
-* Options objects for configuring gizmos (see :doc:`./tethys_sdk/gizmos` and :doc:`./tethys_sdk/gizmos_api` for more details).
+* Options objects for configuring gizmos (see :doc:`./tethys_sdk/gizmos` for more details).
 * Many improvements to Map View (see :ref:`map-view`)
 
   * Improved layer support including GeoJSON, KML, WMS services, and ArcGIS REST services

@@ -54,10 +54,10 @@ Working with the ``raster``, ``geometry``, and ``geography`` column types provid
 
     from geoalchemy2 import Geometry
 
-    from .utilities import get_persistent_store_engine
+    from .app import MyFirstApp
 
     # Spatial DB Engine, sessiomaker, and base
-    spatial_engine = get_persistent_store_engine('spatial_db')
+    spatial_engine = MyFirstApp.get_persistent_store_engine('spatial_db')
     SpatialSessionMaker = sessionmaker(bind=spatial_engine)
     SpatialBase = declarative_base()
 
@@ -124,6 +124,7 @@ Initializing spatial persistent stores is performed in exactly the same way as n
             session.add(gage2)
 
             session.commit()
+            session.close()
 
 Using Spatial Database Functions
 --------------------------------

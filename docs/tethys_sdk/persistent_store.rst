@@ -7,7 +7,7 @@ Persistent Stores API
 
 The Persistent Store API streamlines the use of SQL databases in Tethys apps. Using this API, you can provision up to 5 SQL databases for your app. The databases that will be created are `PostgreSQL <http://www.postgresql.org/>`_ databases. Currently, no other databases are supported.
 
-The process of creating a new persistent database can be summed up in the following steps:
+The process of creating a new persistent database can be summarized in the following steps:
 
 1. register a new persistent store in the :term:`app configuration file`,
 2. create a data model to define the table structure of the database,
@@ -19,7 +19,7 @@ More detailed descriptions of each step of the persistent store process will be 
 Persistent Store Registration
 =============================
 
-Registering new :term:`persistent stores` is accomplished by adding the ``persistent_stores()`` method to your :term:`app class`, which is located in your :term:`app configuration file` (:file:`app.py`). This method must return a list or tuple of ``PersistentStore`` objects. The following example illustrates what an :term:`app class` with the ``persistent_stores()`` method would look like:
+Registering new :term:`persistent stores` is accomplished by adding the ``persistent_stores()`` method to your :term:`app class`, which is located in your :term:`app configuration file` (:file:`app.py`). This method should return a list or tuple of ``PersistentStore`` objects. For example:
 
 ::
 
@@ -50,12 +50,12 @@ Registering new :term:`persistent stores` is accomplished by adding the ``persis
 
 In this example, a database called "example_db" would be created for this app. It would be initialized by a function called "init_example_db", which is located in a Python module called :file:`init_stores.py`. Notice that the path to the initializer function is given using dot notation with a colon delineating the function (e.g.: ``'foo.bar:function'``).
 
-Up to 5 databases can be created for an app using the Persistent Store API. Databases follow a specific naming convention that is essentially a combination of the app name and the name that is provided during registration. For example, the database for the example above may have a name "my_first_app_example_db". To register another database, add another ``Persistent Store`` object to the tuple that is returned by the ``persistent_stores()`` method.
+Databases follow a specific naming convention that is a combination of the app name and the name that is provided during registration. For example, the database for the example above may have a name "my_first_app_example_db". To register another database, add another ``Persistent Store`` object to the tuple that is returned by the ``persistent_stores()`` method.
 
 Data Model Definition
 =====================
 
-The tables for a persistent store should be defined using an SQLAlchemy data model. The recommended location for data model code is :file:`model.py` file that is generated with the scaffold. If your data model requires multiple files, it is recommended that you replace the :file:`model.py` module with a package called :file:`model` and store all of the model related modules in this package. The following example illustrates what a typical SQLAlchemy data model may consist of:
+The tables for a persistent store should be defined using an SQLAlchemy data model. The recommended location for data model code is :file:`model.py` file that is generated with the scaffold. The following example illustrates what a typical SQLAlchemy data model may consist of:
 
 ::
 
@@ -63,10 +63,10 @@ The tables for a persistent store should be defined using an SQLAlchemy data mod
     from sqlalchemy import Column, Integer, Float
     from sqlalchemy.orm import sessionmaker
 
-    from .utilities import get_persistent_store_engine
+    from .app import MyFirstApp
 
     # DB Engine, sessionmaker, and base
-    engine = get_persistent_store_engine('example_db')
+    engine = MyFirstApp.get_persistent_store_engine('example_db')
     SessionMaker = sessionmaker(bind=engine)
     Base = declarative_base()
 
@@ -91,19 +91,19 @@ The tables for a persistent store should be defined using an SQLAlchemy data mod
             self.longitude = longitude
             self.value = value
 
-
 Object Relational Mapping
 -------------------------
-Each class in an SQLAlchemy data model defines a table in the database. Each object instantiated using an SQLAlchemy class represents individual rows or records in the table. The entire contents of a table could be represented as a list of SQLAlchemy objects. This pattern for interacting between database tables using objects in code is called Object Relational Mapping or ORM.
 
-The example above consists of a single table called "stream_gages", as denoted by the ``__tablename__`` property of the ``StreamGage`` class. The ``StreamGage`` class is defined as an SQLAlchemy data model class because it inherits from the ``Base`` class that was created in the previous lines using the ``declarative_base()`` function provided by SQLAlchemy.This inheritance notifies SQLAlchemy that the ``StreamGage`` class is part of the data model. All tables belonging to the same data model should inherit from the same ``Base`` class.
+Each class in an SQLAlchemy data model defines a table in the database. Each object instantiated using an SQLAlchemy class represent a row or record in the table. The contents of a table or multiple rows would be represented as a list of SQLAlchemy objects. This pattern for interacting between database tables using objects in code is called Object Relational Mapping or ORM.
+
+The example above consists of a single table called "stream_gages", as denoted by the ``__tablename__`` property of the ``StreamGage`` class. The ``StreamGage`` class is defined as an SQLAlchemy data model class because it inherits from the ``Base`` class that was created in the previous lines using the ``declarative_base()`` function provided by SQLAlchemy. This inheritance makes SQLAlchemy aware of the ``StreamGage`` class is part of the data model. All tables belonging to the same data model should inherit from the same ``Base`` class.
 
 The columns of tables defined using SQLAlchemy classes are defined by properties that contain ``Column`` objects. The class in the example above defines four columns for the "stream_gages" table: ``id``, ``latitude``, ``longitude``, and ``value``. The column type and options are defined by the arguments passed to the ``Column`` constructor. For example, the ``latitude`` column is of type ``Float`` while the ``id`` column is of type ``Integer`` and is also flagged as the primary key for the table.
 
 Engine Object
 -------------
 
-Anytime you wish to query a persistent store database, you will need to connect to it. In SQLAlchemy, the connection to a database is provided via an ``engine`` objects. You can retrieve the SQLAlchemy ``engine`` object for a persistent store database using the ``get_persistent_store_engine()`` function provided by the Persistent Store API. The example above shows how the ``get_persistent_store_engine()`` function should be used. Provide the name of the persistent store to the function and it will return the ``engine`` object for that store.
+Anytime you wish to retrieve data from a persistent store database, you will need to connect to it. In SQLAlchemy, the connection to a database is provided via ``engine`` objects. You can retrieve the SQLAlchemy ``engine`` object for a persistent store database using the ``get_persistent_store_engine()`` method of the :term:`app class` provided by the Persistent Store API. The example above shows how the ``get_persistent_store_engine()`` function should be used. Provide the name of the persistent store to the function and it will return the ``engine`` object for that store.
 
 .. note::
 
@@ -153,11 +153,12 @@ The code for initializing a persistent store database should be defined in an in
             session.add(gage2)
 
             session.commit()
+            session.close()
 
 Create Tables
 -------------
 
-The SQLAlchemy ``Base`` class defined in the data model is used to create the tables. Every class that inherits from the ``Base`` class is tracked by a ``metadata`` object. As the name implies, the ``metadata`` object collects metadata about each table defined by the classes in the data model. This information used to create the tables when the ``metadata.create_all()`` method is called. In other words, the tables for persistent stores are created using a single line of code:
+The SQLAlchemy ``Base`` class defined in the data model is used to create the tables. Every class that inherits from the ``Base`` class is tracked by a ``metadata`` object. As the name implies, the ``metadata`` object collects metadata about each table defined by the classes in the data model. This information is used to create the tables when the ``metadata.create_all()`` method is called:
 
 ::
 
@@ -165,7 +166,7 @@ The SQLAlchemy ``Base`` class defined in the data model is used to create the ta
 
 .. note::
 
-    The ``metadata.create_all()`` method accepts the ``engine`` object for connection information.
+    The ``metadata.create_all()`` method requires the ``engine`` object as an argument for connection information.
 
 Initial Data
 ------------
@@ -175,7 +176,7 @@ The initialization functions should also be used to add any initial data to pers
 Example SQLAlchemy Query
 ------------------------
 
-This initial data code uses an SQLAlchemy data model to add four stream gages to the persistent store database. A new ``session`` object is created using the ``SessionMaker`` that was defined in the model. Creating a new record in the database using SQLAlchemy is achieved by creating a new ``StreamGage`` object and adding it to the ``session`` object using the ``session.add()`` method. The ``session.commit()`` method is called, to persist the new records to the persistent store database.
+This initial data code uses an SQLAlchemy data model to add four stream gages to the persistent store database. A new ``session`` object is created using the ``SessionMaker`` that was defined in the model. Creating a new record in the database using SQLAlchemy is achieved by creating a new ``StreamGage`` object and adding it to the ``session`` object using the ``session.add()`` method. The ``session.commit()`` method is called, to persist the new records to the persistent store database. Finally, ``session.close()`` is called to free up the connection to the database.
 
 Managing Persistent Stores
 ==========================
@@ -192,16 +193,12 @@ This command would create all the non-existent persistent stores that are regist
 API Documentation
 =================
 
+
+.. automethod:: tethys_sdk.base.TethysAppBase.get_persistent_store_engine
+
+.. automethod:: tethys_sdk.base.TethysAppBase.persistent_stores
+
 .. autoclass:: tethys_sdk.stores.PersistentStore
-
-.. automethod:: tethys_apps.base.persistent_store.get_persistent_store_engine
-
-See :doc:`./app_class` for an explanation of the ``TethysAppBase.persistent_stores()`` method.
-
-
-.. note::
-
-    Tethys app projects generated using the scaffold include a function in the :file:`utilities.py` called ``get_persistent_store_engine()``. This function is a wrapper for the function defined above and it allows the omission of the  ``app_name`` parameter for simplicity. The example above uses the ``utilities.get_persistent_store_engine()`` function.
 
 
 

@@ -9,32 +9,27 @@ The final step required to setup your Tethys Platform is to link it to the softw
 1. Access Tethys Portal Admin Console
 -------------------------------------
 
-The Tethys Portal Admin Console is only accessible to users with administrator rights. When you initialized the database, you were prompted to create the default admin user. Use these credentials to log in for the first time.
+The Tethys Portal Admin Console is only accessible to users with administrator rights. When you installed Tethys Platform, you created superuser. Use these credentials to log in for the first time.
 
-a. Use the "Log In" link on the Tethys Portal homepage to log in as an administrator. Use the username and password that you setup when you initialized the database.
+a. Use the "Log In" link on the Tethys Portal homepage to log in as an administrator.
 
   .. figure:: ../images/site_admin/log_in.png
       :width: 600px
       :align: center
 
-      **Figure 1.** Log In link for Tethys Portal.
 
-b. Select "Site Admin" from the user drop down menu (Figure 1).
+b. Select "Site Admin" from the user drop down menu.
 
   .. figure:: ../images/site_admin/select_site_admin.png
       :width: 600px
       :align: center
 
-      **Figure 2.** Select "Site Admin" from the user dropdown menu.
 
-
-You will now be looking at the Tethys Portal Web Admin Console. The Web Admin console can be used to manage user accounts, customize the homepage of your Tethys Portal, and configure the software included in Tethys Platform. Take a moment to familiarize yourself with the different options that are available in the Web Admin (Figure 2).
+You will now see the Tethys Portal Web Admin Console. The Web Admin console can be used to manage user accounts, customize the homepage of your Tethys Portal, and configure the software included in Tethys Platform. Take a moment to familiarize yourself with the different options that are available in the Web Admin.
 
   .. figure:: ../images/site_admin/home.png
       :width: 600px
       :align: center
-
-      **Figure 3.** The Tethys Portal Web Admin Console.
 
 
 2. Link to 52 North WPS Docker
@@ -50,13 +45,15 @@ b. Click on the "Add Web Processing Service" button to create a new link to the 
       :width: 600px
       :align: center
 
-      **Figure 4.** Select the "Add Web Processing Service" button.
-
 c. Provide a unique name for the web processing service.
 
-d. Provide an endpoint to the 52 North WPS that is running in Docker. The endpoint is a URL pointing to the WPS API. The endpoint will be of the form: ``http://<host>:<port>/wps/WebProcessingService``.
+d. Provide an endpoint to the 52 North WPS that is running in Docker. The endpoint is a URL pointing to the WPS API. The endpoint will be of the form:
 
-  Execute the following command in the terminal to determine the endpoint for the built-in GeoServer:
+  ::
+
+    http://<host>:<port>/wps/WebProcessingService
+
+  Execute the following command in the terminal to determine the endpoint for the built-in 52 North server:
 
   ::
 
@@ -73,14 +70,12 @@ d. Provide an endpoint to the 52 North WPS that is running in Docker. The endpoi
     :width: 600px
     :align: center
 
-    **Figure 5.** Fill out the form to register a new Web Processing Service.
-
 e. Press "Save" to save the WPS configuration.
 
 3.  Link to GeoServer
 ---------------------
 
-Tethys Platform provides GeoServer as a built-in Spatial Dataset Service. Spatial Dataset Services can be used by apps to publish Shapefiles and other spatial files as web resources. See :doc:`../tethys_sdk/spatial_dataset_services` documentation for how to use Spatial Dataset Services in apps. To link your Tethys Platform to the built-in GeoServer or an external Spatial Dataset Service, complete the following steps.
+Tethys Platform provides GeoServer as a built-in Spatial Dataset Service. Spatial Dataset Services can be used by apps to publish Shapefiles and other spatial files as web resources. See :doc:`../tethys_sdk/spatial_dataset_services` documentation for how to use Spatial Dataset Services in apps. To link your Tethys Platform to the built-in GeoServer or an external Spatial Dataset Service, complete the following steps:
 
 a. Select "Spatial Dataset Services" from the options listed on the Tethys Portal Admin Console.
 
@@ -90,11 +85,13 @@ b. Click on the "Add Spatial Dataset Service" button to create a new spatial dat
       :width: 600px
       :align: center
 
-      **Figure 4.** Select the "Add Spatial Dataset Service" button.
-
 c. Provide a unique name for the spatial dataset service.
 
-d. Select *"GeoServer"* as the engine and provide an endpoint to the Spatial Dataset Service. The endpoint is a URL pointing to the API of the Spatial Dataset Service. For GeoServers, this endpoint is of the form: ``http://<host>:<port>/geoserver/rest``.
+d. Select *"GeoServer"* as the engine and provide an endpoint to the Spatial Dataset Service. The endpoint is a URL pointing to the API of the Spatial Dataset Service. For GeoServers, this endpoint is of the form:
+
+  ::
+
+    http://<host>:<port>/geoserver/rest
 
   Execute the following command in the terminal to determine the endpoint for the built-in GeoServer:
 
@@ -115,8 +112,6 @@ e. Specify either the username or password of your GeoServer as well. The defaul
     :width: 600px
     :align: center
 
-    **Figure 5.** Fill out the form to register a new Spatial Dataset Service.
-
 f. Press "Save" to save the Spatial Dataset Service configuration.
 
 4. Link to Dataset Services
@@ -132,11 +127,13 @@ b. Click on the "Add Dataset Service" button to create a new link to the dataset
       :width: 600px
       :align: center
 
-      **Figure 4.** Select the "Add Dataset Service" button.
-
 c. Provide a unique name for the dataset service.
 
-d. Select the appropriate engine and provide an endpoint to the Dataset Service. The endpoint is a URL pointing to the dataset service API. For example, the endpoint for a CKAN dataset service would be of the form ``http://<host>:<port>/api/3/action``.
+d. Select the appropriate engine and provide an endpoint to the Dataset Service. The endpoint is a URL pointing to the dataset service API. For example, the endpoint for a CKAN dataset service would be of the form
+
+  ::
+
+      http://<host>:<port>/api/3/action
 
   If authentication is required, specify either the API Key or username or password as well. When you are done you will have something similar to this:
 
@@ -144,15 +141,11 @@ d. Select the appropriate engine and provide an endpoint to the Dataset Service.
     :width: 600px
     :align: center
 
-    **Figure 5.** Fill out the form to register a new Dataset Service.
-
   .. tip::
 
       When linking Tethys to a CKAN dataset service, an API Key is required. All user accounts are issued an API key. To access the API Key log into the CKAN site where you have an account and browse to your user profiles. The API key will be listed as a private attribute of your user profile.
 
 e. Press "Save" to save the Dataset Service configuration.
-
-
 
 
 What's Next?

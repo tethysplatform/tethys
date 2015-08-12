@@ -1,8 +1,8 @@
-***********************
-Production Installation
-***********************
+***************************************
+Production Installation on Ubuntu 14.04
+***************************************
 
-**Last Updated:** May 26, 2015
+**Last Updated:** August 11, 2015
 
 This article will provide an overview of how to install Tethys Portal in a production setup ready to host apps. The recommended deployment platform for Python web projects is to use `WSGI <http://www.wsgi.org/>`_. The easiest and most stable way to deploy a WSGI application is with the `modwsgi <https://code.google.com/p/modwsgi/>`_ extension for the `Apache Server <http://httpd.apache.org/>`_. These instructions are optimized for Ubuntu 14.04 using Apache and modwsgi, though installation on other Linux distributions will be similar.
 
@@ -158,7 +158,15 @@ e. Set email settings
       EMAIL_USE_TLS = False
       DEFAULT_FROM_EMAIL = 'Example <noreply@exmaple.com>'
 
-For more information about setting up email capabilities for Tethys Platform, refer to the `Sending email <https://docs.djangoproject.com/en/1.8/topics/email/>`_ documentation.
+  For more information about setting up email capabilities for Tethys Platform, refer to the `Sending email <https://docs.djangoproject.com/en/1.8/topics/email/>`_ documentation.
+
+d. Setup social authentication
+
+  If you wish to enable social authentication capabilities in your Tethys Portal, follow the :doc:`../tethys_portal/social_auth` instructions.
+
+e. Configure workspaces (optional)
+
+  If you would like all of the app workspace directories to be aggregated to a central location, create the directory and then specify it using the ``TETHYS_WORKSPACES_ROOT`` setting.
 
 
 Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` to save changes and exit.
@@ -166,8 +174,6 @@ Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` 
 .. important::
 
     Review the `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ carefully.
-
-
 
 8. Create Apache Site Configuration File
 ========================================
@@ -182,7 +188,7 @@ Create an Apache configuration for your Tethys Platform using the :command:`gen`
     (tethys) $ vim /etc/apache2/sites-available/tethys-default.conf
     (tethys) $ exit
 
-Press :kbd:`i` to enter ``INSERT`` mode and edit the file. Copy and paste the following changing the ``ServerName`` and ``ServerAlias`` appropriately. The :file:`tethys-default.conf` will look similar to this when you are done:
+Press :kbd:`i` to enter ``INSERT`` mode and edit the file. Change the ``ServerName`` and ``ServerAlias`` to match the domain for your Tethys Portal. The :file:`tethys-default.conf` will look similar to this when you are done:
 
 ::
 
@@ -230,8 +236,8 @@ Download and install any apps that you want to host using this installation of T
     (tethys) $ python setup.py install
     (tethys) $ exit
 
-10. Run Collectstatic
-=====================
+10. Collect Static Files
+========================
 
 The static files need to be collected into the directory that you created. Enter the following commands and enter "yes" if prompted:
 
@@ -242,7 +248,19 @@ The static files need to be collected into the directory that you created. Enter
     (tethys) $ tethys manage collectstatic
     (tethys) $ exit
 
-11. Setup the Persistent Stores for Apps
+11. Collect Workspaces (optional)
+=================================
+
+If you configured a workspaces directory with the ``TETHYS_WORKSPACES_ROOT`` setting, you will need to run the following command to collect all the workspaces to that directory:
+
+::
+
+             $ sudo su
+             $ . /usr/lib/tethys/bin/activate
+    (tethys) $ tethys manage collectworkspaces
+    (tethys) $ exit
+
+12. Setup the Persistent Stores for Apps
 ========================================
 
 After all the apps have been successfully installed, you will need to initialize the persistent stores for the apps:
@@ -252,8 +270,8 @@ After all the apps have been successfully installed, you will need to initialize
              $ . /usr/lib/tethys/bin/activate
     (tethys) $ tethys syncstores all
 
-12. Change Ownership
-====================
+13. Transfer Ownership to Apache
+================================
 
 When you are finished installing Tethys Portal, change the ownership of the source code and static files to be the Apache user (``www-data``):
 
@@ -261,7 +279,7 @@ When you are finished installing Tethys Portal, change the ownership of the sour
 
     $ sudo chown -R www-data:www-data /usr/lib/tethys/src /var/www/tethys/static /var/www/.tethyscluster
 
-13. Enable Site and Restart Apache
+14. Enable Site and Restart Apache
 ==================================
 
 Finally, you need to disable the default apache site, enable the Tethys Portal site, and reload Apache:
@@ -275,7 +293,9 @@ Finally, you need to disable the default apache site, enable the Tethys Portal s
     To install additional apps after the initial setup of Tethys, you will follow the following process:
 
     1. Change ownership of the ``src`` and ``static`` directories to your user using the patter in step 12 OR login as root user using ``sudo su``.
-    2. Install apps, syncstores, and collectstatic as in steps 9-11.
-    3. Set the apache user as owner of ``src`` and ``static`` again as in 12.
+    2. Install apps, syncstores, collectstatic, and collectworkspaces as in steps 9-12.
+    3. Transfer ownership of files to Apache user as in step 13.
     4. Reload the apache server using ``sudo service apache2 reload``.
+
+    For more information see: :doc:`./app_installation`.
 

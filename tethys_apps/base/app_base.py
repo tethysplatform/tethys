@@ -13,6 +13,10 @@ import sys
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.utils.functional import SimpleLazyObject
+from django.conf import settings
+from django.db import DatabaseError
+
+from sqlalchemy import create_engine
 
 from tethys_sdk.jobs import JobManager
 from tethys_apps.base.workspace import TethysWorkspace
@@ -308,7 +312,7 @@ class TethysAppBase(object):
         project_directory = os.path.dirname(sys.modules[cls.__module__].__file__)
         workspace_directory = os.path.join(project_directory, 'workspaces', 'app_workspace')
         return TethysWorkspace(workspace_directory)
-
+    
     @classmethod
     def get_jobs_workspace(cls):
         """
@@ -339,3 +343,77 @@ class TethysAppBase(object):
         app_workspace_directory = cls.get_app_workspace().path;
         workspace_directory = os.path.join(app_workspace_directory, 'jobs_workspace')
         return TethysWorkspace(workspace_directory)
+
+    @classmethod
+    def get_persistent_store_engine(cls, persistent_store_name):
+        """
+        Creates an SQLAlchemy engine object for the app and persistent store given.
+
+        Args:
+          app_name(string): Name of the app to which the persistent store belongs. More specifically, the app package name.
+          persistent_store_name(string): Name of the persistent store for which to retrieve the engine.
+
+        Returns:
+          object: An SQLAlchemy engine object for the persistent store requested.
+
+
+        **Example:**
+
+        ::
+
+            from .app import MyFirstApp
+
+            engine = MyFirstApp.get_persistent_store_engine('example_db')
+
+        """
+        # Create the unique store name
+        app_name = cls.package
+        unique_store_name = '_'.join([app_name, persistent_store_name])
+
+        # Get database manager
+        database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
+        database_manager_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager',
+                                                                         database_manager_db['PASSWORD'] if 'PASSWORD' in database_manager_db else 'pass',
+                                                                         database_manager_db['HOST'] if 'HOST' in database_manager_db else '127.0.0.1',
+                                                                         database_manager_db['PORT'] if 'PORT' in database_manager_db else '5435',
+                                                                         database_manager_db['NAME'] if 'NAME' in database_manager_db else 'tethys_db_manager')
+
+        # Create connection engine
+        engine = create_engine(database_manager_url)
+        connection = engine.connect()
+
+        # Check for Database
+        existing_dbs_statement = '''
+                                 SELECT d.datname as name
+                                 FROM pg_catalog.pg_database d
+                                 LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid
+                                 ORDER BY 1;
+                                 '''
+
+        existing_dbs = connection.execute(existing_dbs_statement)
+
+        # Compile list of db names
+        existing_db_names = []
+
+        for existing_db in existing_dbs:
+            existing_db_names.append(existing_db.name)
+
+        # Check to make sure that the persistent store exists
+        if unique_store_name in existing_db_names:
+            # Retrieve the database manager url.
+            # The database manager database user is the owner of all the app databases.
+            database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
+
+            # Assemble url for persistent store with that name
+            persistent_store_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager',
+                                                                             database_manager_db['PASSWORD'] if 'PASSWORD' in database_manager_db else 'pass',
+                                                                             database_manager_db['HOST'] if 'HOST' in database_manager_db else '127.0.0.1',
+                                                                             database_manager_db['PORT'] if 'PORT' in database_manager_db else '5435',
+                                                                             unique_store_name)
+
+            # Return SQLAlchemy Engine
+            return create_engine(persistent_store_url)
+
+        else:
+            raise DatabaseError('No persistent store "{0}" for app "{1}". Make sure you register the persistent store in app.py '
+                                'and run "tethys syncstores {1}".'.format(persistent_store_name, app_name))

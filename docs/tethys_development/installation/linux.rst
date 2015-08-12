@@ -2,7 +2,7 @@
 Development Installation on Linux
 *********************************
 
-**Last Updated:** May 28, 2015
+**Last Updated:** August 11, 2015
 
 .. important::
 
@@ -31,9 +31,9 @@ Tethys Platform is versioned with Git and hosted on GitHub. Change into the proj
 
 ::
 
-    $ git clone https://github.com/CI-WATER/tethys.git
-    $ git clone https://github.com/CI-WATER/tethys_dataset_services.git
-    $ git clone https://github.com/CI-WATER/tethys_docker.git
+    $ git clone https://github.com/tethysplatform/tethys.git
+    $ git clone https://github.com/tethysplatform/tethys_dataset_services.git
+    $ git clone https://github.com/tethysplatform/tethys_docker.git
 
 When you are done, your project directory should have the following contents:
 

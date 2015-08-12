@@ -99,7 +99,7 @@ a. Create a :term:`Python virtual environment` and activate it::
 
 b. Install Tethys Platform into the virtual environment with the following command::
 
-    (tethys) $ git clone https://github.com/CI-WATER/tethys /usr/lib/tethys/src
+    (tethys) $ git clone https://github.com/tethysplatform/tethys /usr/lib/tethys/src
 
 .. tip::
 
@@ -110,7 +110,7 @@ b. Install Tethys Platform into the virtual environment with the following comma
         cd /usr/lib/tethys/src
         git checkout tags/1.0.0
 
-    For a list of all tagged releases, see `Tethys Platform Releases <https://github.com/CI-WATER/tethys/releases>`_. Depending on the version you intend to install, you may need to delete your entire virtual environment (i.e.: the ``/usr/lib/tethys`` directory) to start fresh.
+    For a list of all tagged releases, see `Tethys Platform Releases <https://github.com/tethysplatform/tethys/releases>`_. Depending on the version you intend to install, you may need to delete your entire virtual environment (i.e.: the ``/usr/lib/tethys`` directory) to start fresh.
 
 
 c. Install the Python modules that Tethys requires::

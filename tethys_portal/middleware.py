@@ -43,7 +43,3 @@ class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
                     return redirect('accounts:login')
                 else:
                     return redirect('user:settings', username=request.user.username)
-            else:
-                raise
-        else:
-            pass
