@@ -69,6 +69,12 @@ def handoff(request, app_name, handler_name):
     """
     app_name = app_name.replace('-', '_')
 
+    error = {"message": "",
+             "code": 400,
+             "status": "error",
+             "app_name": app_name,
+             "handler_name": handler_name}
+
     # Get the app
     harvester = SingletonAppHarvester()
     apps = harvester.apps
@@ -89,14 +95,12 @@ def handoff(request, app_name, handler_name):
                     # Get the function
                     handler = getattr(module, handler_function)
 
-                    urlish = handler(request, **request.GET.dict())
-                    return redirect(urlish)
+                    try:
+                        urlish = handler(request, **request.GET.dict())
+                        return redirect(urlish)
+                    except TypeError as e:
+                        error['message'] = "HTTP 400 Bad Request: {0}. ".format(e.message)
+                        return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
 
-    error = {"message": "HTTP 400 Bad Request: No handoff handler '{0}' "
-                        "for app '{1}' found.".format(app_name, handler_name),
-             "code": 400,
-             "status": "error",
-             "app_name": app_name,
-             "handler_name": handler_name}
-
+    error['message'] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".format(app_name, handler_name)
     return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
