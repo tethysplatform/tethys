@@ -14,7 +14,7 @@ from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.utils.functional import SimpleLazyObject
 
-from tethys_compute.job_manager import JobManager
+from tethys_sdk.jobs import JobManager
 from tethys_apps.base.workspace import TethysWorkspace
 
 
@@ -186,20 +186,25 @@ class TethysAppBase(object):
 
         ::
 
-            from tethys_compute.job_manager import JobTemplate, JobManager
+            from tethys_sdk.jobs import CondorJobTemplate
+            from tethys_sdk.compute import list_schedulers
 
             def job_templates(cls):
                 \"""
                 Example job_templates method.
                 \"""
-                job_templates = (JobTemplate(name='example',
-                                             type=JobManager.JOB_TYPES_DICT['CONDOR'],
-                                             parameters={'executable': 'my_script.py',
-                                                         'condorpy_template_name': 'vanilla_transfer_files',
-                                                         'attributes': {'transfer_output_files': 'example_output'},
-                                                         'remote_input_files': ['my_script.py','input_1', 'input_2'],
-                                                         'working_directory': os.path.dirname(__file__)}
-                                            ),
+                my_scheduler = list_schedulers()[0]
+
+                job_templates = (CondorJobTemplate(name='example',
+                                                   parameters={'executable': 'my_script.py',
+                                                               'condorpy_template_name': 'vanilla_transfer_files',
+                                                               'attributes': {'transfer_input_files': ('../input_1', '../input_2'),
+                                                                              'transfer_output_files': ('example_output1', example_output2),
+                                                                             },
+                                                               'scheduler': my_scheduler,
+                                                               'remote_input_files': ('my_script.py', 'input_1', '$(USER_WORKSPACE)input_2'),
+                                                              }
+                                                  ),
                                 )
 
                 return job_templates
@@ -209,10 +214,8 @@ class TethysAppBase(object):
     @classmethod
     def get_job_manager(cls):
         app = cls()
-        templates = app.job_templates()
-        job_manager = JobManager(label=cls.package, job_templates=templates)
+        job_manager = JobManager(app)
         return job_manager
-
 
     @classmethod
     def get_user_workspace(cls, user):
@@ -304,4 +307,35 @@ class TethysAppBase(object):
         ## Credits: http://stackoverflow.com/questions/4006102/is-possible-to-know-the-_path-of-the-file-of-a-subclass-in-python
         project_directory = os.path.dirname(sys.modules[cls.__module__].__file__)
         workspace_directory = os.path.join(project_directory, 'workspaces', 'app_workspace')
+        return TethysWorkspace(workspace_directory)
+
+    @classmethod
+    def get_jobs_workspace(cls):
+        """
+        Get the file workspace (directory) for Tethys Compute jobs in the app.
+
+        Returns:
+          tethys_apps.base.TethysWorkspace: An object representing the workspace.
+
+        **Example:**
+
+        ::
+
+            import os
+            from .app import MyFirstApp
+
+            def a_controller(request):
+                \"""
+                Example controller that uses get_app_workspace() method.
+                \"""
+                # Retrieve the jobs workspace
+                jobs_workspace = MyFirstApp.get_jobs_workspace()
+
+                context = {}
+
+                return render(request, 'my_first_app/template.html', context)
+
+        """
+        app_workspace_directory = cls.get_app_workspace().path;
+        workspace_directory = os.path.join(app_workspace_directory, 'jobs_workspace')
         return TethysWorkspace(workspace_directory)

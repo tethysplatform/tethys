@@ -10,7 +10,7 @@
 from django.contrib import admin
 from django.forms import Textarea
 from django.db import models
-from tethys_compute.models import Cluster, SettingsCategory, Setting, TethysJob
+from tethys_compute.models import Cluster, SettingsCategory, Setting, Scheduler, TethysJob
 # Register your models here.
 
 
@@ -44,7 +44,6 @@ class SettingCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Cluster)
 class ClusterAdmin(admin.ModelAdmin):
-
     list_display = ['name', 'size', 'status', 'cloud_provider']
     list_display_links = ('name', 'size')
 
@@ -70,6 +69,11 @@ class ClusterAdmin(admin.ModelAdmin):
             fields[:] = ['_name', '_size', '_status']
             advanced_options.pop(1)
         return super(ClusterAdmin, self).get_form(request, obj, **kwargs)
+
+
+@admin.register(Scheduler)
+class SchedulerAdmin(admin.ModelAdmin):
+    list_display = ['name', 'host', 'username', 'password', 'private_key_path', 'private_key_pass']
 
 
 @admin.register(TethysJob)
