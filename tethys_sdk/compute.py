@@ -7,3 +7,4 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from tethys_compute.scheduler_manager import list_schedulers, get_scheduler

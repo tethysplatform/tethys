@@ -28,7 +28,7 @@ D3 Plotting Gizmos
 * Use the same plot objects to define both types of charts
 * Simplified and generalized the mechanism for declaring plot views
 
-See: :doc:`./tethys_sdk/gizmos_api`
+See: :doc:`./tethys_sdk/gizmos/plot_view`
 
 Job Manager Gizmo
 -----------------
@@ -98,7 +98,7 @@ Release 1.1.0
 Gizmos
 ------
 
-* Options objects for configuring gizmos (see :doc:`./tethys_sdk/gizmos` and :doc:`./tethys_sdk/gizmos_api` for more details).
+* Options objects for configuring gizmos (see :doc:`./tethys_sdk/gizmos` for more details).
 * Many improvements to Map View (see :ref:`map-view`)
 
   * Improved layer support including GeoJSON, KML, WMS services, and ArcGIS REST services

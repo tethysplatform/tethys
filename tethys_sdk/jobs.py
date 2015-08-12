@@ -8,4 +8,9 @@
 ********************************************************************************
 """
 # DO NOT ERASE
-from tethys_compute.job_manager import JobManager, JobTemplate
+from tethys_compute.job_manager import (JobManager,
+                                        JobTemplate,
+                                        JOB_TYPES,
+                                        BasicJobTemplate,
+                                        CondorJobTemplate,
+                                       )

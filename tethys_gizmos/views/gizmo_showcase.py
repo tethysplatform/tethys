@@ -179,7 +179,10 @@ def index(request):
                                           error='Here is my error text')
 
     # Plot Views
-    highcharts_object = HighChartsLinePlot(title='Plot Title',
+    line_plot_view = LinePlot(height='500px',
+                              width='500px',
+                              engine='highcharts',
+                              title='Plot Title',
                                            subtitle='Plot Subtitle',
                                            spline=True,
                                            x_axis_title='Altitude',
@@ -213,9 +216,48 @@ def index(request):
                                            ]
                                            )
 
-    line_plot_view = PlotView(highcharts_object=highcharts_object,
-                              width='500px',
-                              height='500px')
+    # line_plot_view = PlotView(highcharts_object=highcharts_object,
+    #                           width='500px',
+    #                           height='500px')
+
+    # D3 Line Plot View
+    d3_line_plot_view = LinePlot(height='500px',
+                                 width='500px',
+                                 engine='d3',
+                                   title='Plot Title',
+                                   subtitle='Plot Subtitle',
+                                   spline=True,
+                                   x_axis_title='Altitude',
+                                   x_axis_units='km',
+                                   y_axis_title='Temperature',
+                                   y_axis_units='°C',
+                                   series=[
+                                       {
+                                           'name': 'Air Temp',
+                                           'data': [
+                                               [0, 5], [10, -70],
+                                               [20, -86.5], [30, -66.5],
+                                               [40, -32.1],
+                                               [50, -12.5], [60, -47.7],
+                                               [70, -85.7], [80, -106.5]
+                                           ]
+                                       },
+                                       {
+                                           'name': 'Water Temp',
+                                           'data': [
+                                               [0, 15], [10, -50],
+                                               [20, -56.5], [30, -46.5],
+                                               [40, -22.1],
+                                               [50, -2.5], [60, -27.7],
+                                               [70, -55.7], [80, -76.5]
+                                           ]
+                                       }
+                                   ]
+                                   )
+
+    # d3_line_plot_view = PlotView(plot_object=d3_line_plot_object,
+    #                           width='500px',
+    #                           height='500px')
 
     # Plot Views
     male_dataset = {
@@ -276,6 +318,23 @@ def index(request):
                                  width='500px',
                                  height='500px')
 
+    # D3 Scatter Plot
+    d3_scatter_plot_view = ScatterPlot(width='500px',
+                                        height='500px',
+                                        engine='d3',
+                                        title='D3 Scatter Plot',
+                                         subtitle='D3 Scatter Plot',
+                                         x_axis_title='Height',
+                                         x_axis_units='cm',
+                                         y_axis_title='Weight',
+                                         y_axis_units='kg',
+                                         series=[male_dataset, female_dataset]
+                                        )
+
+    # d3_scatter_plot_view = PlotView(plot_object=d3_scatter_plot_object,
+    #                                 width='500px',
+    #                                 height='500px')
+
     # Web Plot
     web_plot_object = HighChartsPolarPlot(title='Polar Chart',
                                           subtitle='Polar Chart',
@@ -329,6 +388,25 @@ def index(request):
                              width='500px',
                              height='500px')
 
+    # D3 Pie Plot
+    d3_pie_plot_view = PiePlot(width='500px',
+                               height='500px',
+                               engine='d3',
+                               title='Pie Chart',
+                                 subtitle='Pie Chart',
+                                 series=[
+                                          {'name': 'Firefox', 'value': 45.0},
+                                          {'name': 'IE', 'value': 26.8},
+                                          {'name': 'Chrome', 'value': 12.8},
+                                          {'name': 'Safari', 'value': 8.5},
+                                          {'name': 'Opera', 'value': 8.5},
+                                          {'name': 'Others', 'value': 0.7}
+                                 ])
+
+    # d3_pie_plot_view = PlotView(plot_object=d3_pie_plot_object,
+    #                             width='500px',
+    #                             height='500px')
+
     # Bar Plot
     bar_plot_view = HighChartsBarPlot(
         title='Bar Chart',
@@ -355,6 +433,31 @@ def index(request):
                              width='500px',
                              height='500px')
 
+    # D3 Bar Plot
+    d3_bar_plot_view = BarPlot(
+        title='Bar Chart',
+        subtitle='Bar Chart',
+        vertical=True,
+        categories=[
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ],
+        axis_units='millions',
+        axis_title='Population',
+        series=[{
+                'name': "Year 1800",
+                'data': [100, 31, 635, 203, 275, 487, 872, 671, 736, 568, 487, 432]
+            }, {
+                'name': "Year 1900",
+                'data': [133, 200, 947, 408, 682, 328, 917, 171, 482, 140, 176, 237]
+            }, {
+                'name': "Year 2000",
+                'data': [764, 628, 300, 134, 678, 200, 781, 571, 773, 192, 836, 172]
+            }, {
+                'name': "Year 2008",
+                'data': [973, 914, 500, 400, 349, 108, 372, 726, 638, 927, 621, 364]
+            }
+        ]
+    )
 
     # Time series plot
     timeseries_plot_object = HighChartsTimeSeries(
@@ -387,12 +490,98 @@ def index(request):
                         [datetime(2009, 6, 9), 0.25],
                         [datetime(2009, 6, 12), 0]
                     ]
+                }, {
+                    'name': 'Winter test',
+                    'data': [
+                        [datetime(2008, 12, 2), 1.8],
+                        [datetime(2008, 12, 9), 1.6],
+                        [datetime(2008, 12, 16), 1.6],
+                        [datetime(2008, 12, 28), 1.67],
+                        [datetime(2009, 1, 1), 1.81],
+                        [datetime(2009, 1, 8), 1.78],
+                        [datetime(2009, 1, 12), 1.98],
+                        [datetime(2009, 1, 27), 2.84],
+                        [datetime(2009, 2, 10), 2.80],
+                        [datetime(2009, 2, 18), 2.80],
+                        [datetime(2009, 2, 24), 2.92],
+                        [datetime(2009, 3, 4), 3.49],
+                        [datetime(2009, 3, 11), 3.79],
+                        [datetime(2009, 3, 15), 3.73],
+                        [datetime(2009, 3, 25), 3.61],
+                        [datetime(2009, 4, 2), 3.76],
+                        [datetime(2009, 4, 6), 3.82],
+                        [datetime(2009, 4, 13), 3.8],
+                        [datetime(2009, 5, 3), 3.1],
+                        [datetime(2009, 5, 26), 2.1],
+                        [datetime(2009, 6, 9), 1.25],
+                        [datetime(2009, 6, 12), 0]
+                    ]
                 }]
     )
 
     timeseries_plot = PlotView(highcharts_object=timeseries_plot_object,
                                width='500px',
                                height='500px')
+
+    # D3 Time series plot
+    d3_timeseries_plot_view = TimeSeries(
+        title='Irregular Timeseries Plot',
+        y_axis_title='Snow depth',
+        y_axis_units='m',
+        series=[{
+                    'name': 'Winter 2007-2008',
+                    'data': [
+                        [datetime(2008, 12, 2), 0.8],
+                        [datetime(2008, 12, 9), 0.6],
+                        [datetime(2008, 12, 16), 0.6],
+                        [datetime(2008, 12, 28), 0.67],
+                        [datetime(2009, 1, 1), 0.81],
+                        [datetime(2009, 1, 8), 0.78],
+                        [datetime(2009, 1, 12), 0.98],
+                        [datetime(2009, 1, 27), 1.84],
+                        [datetime(2009, 2, 10), 1.80],
+                        [datetime(2009, 2, 18), 1.80],
+                        [datetime(2009, 2, 24), 1.92],
+                        [datetime(2009, 3, 4), 2.49],
+                        [datetime(2009, 3, 11), 2.79],
+                        [datetime(2009, 3, 15), 2.73],
+                        [datetime(2009, 3, 25), 2.61],
+                        [datetime(2009, 4, 2), 2.76],
+                        [datetime(2009, 4, 6), 2.82],
+                        [datetime(2009, 4, 13), 2.8],
+                        [datetime(2009, 5, 3), 2.1],
+                        [datetime(2009, 5, 26), 1.1],
+                        [datetime(2009, 6, 9), 0.25],
+                        [datetime(2009, 6, 12), 0]
+                    ]
+                }, {
+                    'name': 'Winter test',
+                    'data': [
+                        [datetime(2008, 12, 2), 1.8],
+                        [datetime(2008, 12, 9), 1.6],
+                        [datetime(2008, 12, 16), 1.6],
+                        [datetime(2008, 12, 28), 1.67],
+                        [datetime(2009, 1, 1), 1.81],
+                        [datetime(2009, 1, 8), 1.78],
+                        [datetime(2009, 1, 12), 1.98],
+                        [datetime(2009, 1, 27), 2.84],
+                        [datetime(2009, 2, 10), 2.80],
+                        [datetime(2009, 2, 18), 2.80],
+                        [datetime(2009, 2, 24), 2.92],
+                        [datetime(2009, 3, 4), 3.49],
+                        [datetime(2009, 3, 11), 3.79],
+                        [datetime(2009, 3, 15), 3.73],
+                        [datetime(2009, 3, 25), 3.61],
+                        [datetime(2009, 4, 2), 3.76],
+                        [datetime(2009, 4, 6), 3.82],
+                        [datetime(2009, 4, 13), 3.8],
+                        [datetime(2009, 5, 3), 3.1],
+                        [datetime(2009, 5, 26), 2.1],
+                        [datetime(2009, 6, 9), 1.25],
+                        [datetime(2009, 6, 12), 0]
+                    ]
+                }]
+    )
 
     averages = [
         [datetime(2009, 7, 1), 21.5], [datetime(2009, 7, 2), 22.1], [datetime(2009, 7, 3), 23],
@@ -776,6 +965,11 @@ def index(request):
                'map_view_options': map_view_options,
                'scatter_plot_view': scatter_plot_view,
                'pie_plot_view': pie_plot_view,
+               'd3_pie_plot_view': d3_pie_plot_view,
+               'd3_line_plot_view': d3_line_plot_view,
+               'd3_scatter_plot_view': d3_scatter_plot_view,
+               'd3_bar_plot_view': d3_bar_plot_view,
+               'd3_timeseries_plot_view': d3_timeseries_plot_view,
                'bar_plot_view': bar_plot_view,
                'area_range_plot': area_range_plot,
                'heat_map_plot': heat_map_plot,
