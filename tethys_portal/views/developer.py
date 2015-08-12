@@ -7,7 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
 from django.shortcuts import render
 
 
@@ -15,6 +15,7 @@ def is_staff(user):
     return user.is_staff
 
 
+@login_required()
 @user_passes_test(is_staff)
 def home(request):
     context = {}
