@@ -219,8 +219,3 @@ When *ONE* of the requests is complete - 'e.detail' contains all of the data ret
     jQuery('#fetchclimate_data')[0].addEventListener('fcOneDataRequestComplete', function(e) {
         console.log(e.detail);
     });
-
-Jobs Table
-==========
-
-.. autoclass:: tethys_gizmos.gizmo_options.JobsTable
