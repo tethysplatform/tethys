@@ -486,6 +486,32 @@ def index(request):
                         [datetime(2009, 6, 9), 0.25],
                         [datetime(2009, 6, 12), 0]
                     ]
+                }, {
+                    'name': 'Winter test',
+                    'data': [
+                        [datetime(2008, 12, 2), 1.8],
+                        [datetime(2008, 12, 9), 1.6],
+                        [datetime(2008, 12, 16), 1.6],
+                        [datetime(2008, 12, 28), 1.67],
+                        [datetime(2009, 1, 1), 1.81],
+                        [datetime(2009, 1, 8), 1.78],
+                        [datetime(2009, 1, 12), 1.98],
+                        [datetime(2009, 1, 27), 2.84],
+                        [datetime(2009, 2, 10), 2.80],
+                        [datetime(2009, 2, 18), 2.80],
+                        [datetime(2009, 2, 24), 2.92],
+                        [datetime(2009, 3, 4), 3.49],
+                        [datetime(2009, 3, 11), 3.79],
+                        [datetime(2009, 3, 15), 3.73],
+                        [datetime(2009, 3, 25), 3.61],
+                        [datetime(2009, 4, 2), 3.76],
+                        [datetime(2009, 4, 6), 3.82],
+                        [datetime(2009, 4, 13), 3.8],
+                        [datetime(2009, 5, 3), 3.1],
+                        [datetime(2009, 5, 26), 2.1],
+                        [datetime(2009, 6, 9), 1.25],
+                        [datetime(2009, 6, 12), 0]
+                    ]
                 }]
     )
 
@@ -522,6 +548,32 @@ def index(request):
                         [datetime(2009, 5, 3), 2.1],
                         [datetime(2009, 5, 26), 1.1],
                         [datetime(2009, 6, 9), 0.25],
+                        [datetime(2009, 6, 12), 0]
+                    ]
+                }, {
+                    'name': 'Winter test',
+                    'data': [
+                        [datetime(2008, 12, 2), 1.8],
+                        [datetime(2008, 12, 9), 1.6],
+                        [datetime(2008, 12, 16), 1.6],
+                        [datetime(2008, 12, 28), 1.67],
+                        [datetime(2009, 1, 1), 1.81],
+                        [datetime(2009, 1, 8), 1.78],
+                        [datetime(2009, 1, 12), 1.98],
+                        [datetime(2009, 1, 27), 2.84],
+                        [datetime(2009, 2, 10), 2.80],
+                        [datetime(2009, 2, 18), 2.80],
+                        [datetime(2009, 2, 24), 2.92],
+                        [datetime(2009, 3, 4), 3.49],
+                        [datetime(2009, 3, 11), 3.79],
+                        [datetime(2009, 3, 15), 3.73],
+                        [datetime(2009, 3, 25), 3.61],
+                        [datetime(2009, 4, 2), 3.76],
+                        [datetime(2009, 4, 6), 3.82],
+                        [datetime(2009, 4, 13), 3.8],
+                        [datetime(2009, 5, 3), 3.1],
+                        [datetime(2009, 5, 26), 2.1],
+                        [datetime(2009, 6, 9), 1.25],
                         [datetime(2009, 6, 12), 0]
                     ]
                 }]
