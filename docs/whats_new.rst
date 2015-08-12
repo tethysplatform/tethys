@@ -48,6 +48,14 @@ Workspaces
 
 See: :doc:`./tethys_sdk/workspaces`
 
+Handoff
+-------
+
+* Use handoff to launch one app from another
+* Pass arguments via GET parameters that can be used to retrieve data from the sender app
+
+See: :doc:`./tethys_sdk/handoff`
+
 Video Tutorials
 ---------------
 

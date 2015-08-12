@@ -55,6 +55,8 @@ urlpatterns = patterns('',
     url(r'^user/(?P<username>[\w.@+-]+)/', include(user_urls, namespace='user')),
     url(r'^apps/', include('tethys_apps.urls')),
     url(r'^developer/', include(developer_urls)),
+    url(r'^handoff/(?P<app_name>[\w-]+)/$', 'tethys_apps.views.handoff_capabilities', name='handoff_capabilities'),
+    url(r'^handoff/(?P<app_name>[\w-]+)/(?P<handler_name>[\w-]+)/$', 'tethys_apps.views.handoff', name='handoff'),
     #url(r'^error/', include(development_error_urls)),
 )
 
