@@ -35,10 +35,6 @@ Job Manager Gizmo
 
 * New Gizmo that will show the status of jobs running with the Job Manager
 
-Job Manager Updates
--------------------
-
-
 Workspaces
 ----------
 
