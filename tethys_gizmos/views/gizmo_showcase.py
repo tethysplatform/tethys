@@ -10,6 +10,7 @@
 """
 import json
 from datetime import datetime
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, JsonResponse
@@ -39,6 +40,7 @@ for spatial_dataset_engine in spatial_dataset_engines:
 print(geoserver_wms)
 
 
+@login_required()
 def index(request):
     """
     Django view for the gizmo showcase page
@@ -219,7 +221,7 @@ def index(request):
 
     # D3 Line Plot View
     d3_line_plot_view = LinePlot(height='500px',
-                                 width='500px',
+                                 width='100%',
                                  engine='d3',
                                    title='Plot Title',
                                    subtitle='Plot Subtitle',
@@ -316,7 +318,7 @@ def index(request):
                                  height='500px')
 
     # D3 Scatter Plot
-    d3_scatter_plot_view = ScatterPlot(width='500px',
+    d3_scatter_plot_view = ScatterPlot(width='100%',
                                         height='500px',
                                         engine='d3',
                                         title='D3 Scatter Plot',
@@ -386,7 +388,7 @@ def index(request):
                              height='500px')
 
     # D3 Pie Plot
-    d3_pie_plot_view = PiePlot(width='500px',
+    d3_pie_plot_view = PiePlot(width='100%',
                                height='500px',
                                engine='d3',
                                title='Pie Chart',
@@ -432,6 +434,7 @@ def index(request):
 
     # D3 Bar Plot
     d3_bar_plot_view = BarPlot(
+        width='100%',
         title='Bar Chart',
         subtitle='Bar Chart',
         vertical=True,
@@ -522,6 +525,7 @@ def index(request):
 
     # D3 Time series plot
     d3_timeseries_plot_view = TimeSeries(
+        width='100%',
         title='Irregular Timeseries Plot',
         y_axis_title='Snow depth',
         y_axis_units='m',
@@ -1033,6 +1037,7 @@ def swap_overlays(request):
     return HttpResponse(json.dumps(overlay_json), content_type='application/json')
 
 
+@login_required()
 def editable_map(request):
     """
     Place to display editable google map in an isolated environment
@@ -1085,6 +1090,7 @@ def editable_map(request):
     return render(request, 'tethys_gizmos/gizmo_showcase/editable_map.html', context)
 
 
+@login_required()
 def google_map(request):
     """
     Place to display google map view in an isoloted environment
@@ -1102,6 +1108,7 @@ def google_map(request):
     return render(request, 'tethys_gizmos/gizmo_showcase/google_map.html', context)
 
 
+@login_required()
 def map_view(request):
     """
     Place to show off the new map view
@@ -1227,6 +1234,7 @@ def map_view(request):
     return render(request, 'tethys_gizmos/gizmo_showcase/map_view.html', context)
 
 
+@login_required()
 def fetchclimate_map(request):
     """
     Place to show off the new map view
