@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 from django.conf import settings
+from pprint import pprint
 
 
 def global_dependencies(context):
@@ -102,6 +103,18 @@ def fetchclimate(context):
             'tethys_gizmos/js/fetchclimate/fetchclimate_plot.js',
             'tethys_gizmos/js/fetchclimate/fetchclimate_data.js')
 
+def plot_view(context):
+    """
+    Dependencies for D3 Plots.
+    """
+
+    return ('tethys_gizmos/css/plot_view.css',
+            'tethys_gizmos/vendor/highcharts/js/highcharts.js',
+            'tethys_gizmos/vendor/highcharts/js/highcharts-more.js',
+            'tethys_gizmos/vendor/highcharts/js/modules/exporting.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js',
+            'http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js',
+            'tethys_gizmos/js/plot_view.js')
 def jobs_table(context):
     """
     Dependencies for jobs_table gizmo.
