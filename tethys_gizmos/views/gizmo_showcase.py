@@ -11,7 +11,6 @@
 import json
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, JsonResponse
@@ -222,7 +221,7 @@ def index(request):
 
     # D3 Line Plot View
     d3_line_plot_view = LinePlot(height='500px',
-                                 width='500px',
+                                 width='100%',
                                  engine='d3',
                                    title='Plot Title',
                                    subtitle='Plot Subtitle',
@@ -319,7 +318,7 @@ def index(request):
                                  height='500px')
 
     # D3 Scatter Plot
-    d3_scatter_plot_view = ScatterPlot(width='500px',
+    d3_scatter_plot_view = ScatterPlot(width='100%',
                                         height='500px',
                                         engine='d3',
                                         title='D3 Scatter Plot',
@@ -389,7 +388,7 @@ def index(request):
                              height='500px')
 
     # D3 Pie Plot
-    d3_pie_plot_view = PiePlot(width='500px',
+    d3_pie_plot_view = PiePlot(width='100%',
                                height='500px',
                                engine='d3',
                                title='Pie Chart',
@@ -435,6 +434,7 @@ def index(request):
 
     # D3 Bar Plot
     d3_bar_plot_view = BarPlot(
+        width='100%',
         title='Bar Chart',
         subtitle='Bar Chart',
         vertical=True,
@@ -525,6 +525,7 @@ def index(request):
 
     # D3 Time series plot
     d3_timeseries_plot_view = TimeSeries(
+        width='100%',
         title='Irregular Timeseries Plot',
         y_axis_title='Snow depth',
         y_axis_units='m',
