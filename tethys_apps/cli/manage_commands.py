@@ -21,6 +21,7 @@ MANAGE_SYNCDB = 'syncdb'
 MANAGE_COLLECTSTATIC = 'collectstatic'
 MANAGE_COLLECTWORKSPACES = 'collectworkspaces'
 MANAGE_COLLECT = 'collectall'
+MANAGE_CREATESUPERUSER = 'createsuperuser'
 
 
 def get_manage_path(args):
@@ -60,65 +61,62 @@ def manage_command(args):
     manage_path = get_manage_path(args)
 
     # Define the process to be run
-    process = None
+    primary_process = None
 
     if args.command == MANAGE_START:
         if args.port:
-            process = ['python', manage_path, 'runserver', str(args.port)]
+            primary_process = ['python', manage_path, 'runserver', str(args.port)]
         else:
-            process = ['python', manage_path, 'runserver']
+            primary_process = ['python', manage_path, 'runserver']
     elif args.command == MANAGE_SYNCDB:
-        process = ['python', manage_path, 'syncdb']
+        intermediate_process = ['python', manage_path, 'makemigrations']
+        try:
+            subprocess.call(intermediate_process)
+        except KeyboardInterrupt:
+            pass
+
+        primary_process = ['python', manage_path, 'migrate']
 
     elif args.command == MANAGE_COLLECTSTATIC:
         # Run pre_collectstatic
-        process = ['python', manage_path, 'pre_collectstatic']
+        intermediate_process = ['python', manage_path, 'pre_collectstatic']
         try:
-            subprocess.call(process)
+            subprocess.call(intermediate_process)
         except KeyboardInterrupt:
             pass
 
         # Setup for main collectstatic
-        process = ['python', manage_path, 'collectstatic']
-        try:
-            subprocess.call(process)
-        except KeyboardInterrupt:
-            pass
+        primary_process = ['python', manage_path, 'collectstatic']
 
     elif args.command == MANAGE_COLLECTWORKSPACES:
         # Run collectworkspaces command
-        process = ['python', manage_path, 'collectworkspaces']
-        try:
-            subprocess.call(process)
-        except KeyboardInterrupt:
-            pass
+        primary_process = ['python', manage_path, 'collectworkspaces']
 
     elif args.command == MANAGE_COLLECT:
         # Convenience command to run collectstatic and collectworkspaces
         ## Run pre_collectstatic
-        process = ['python', manage_path, 'pre_collectstatic']
+        intermediate_process = ['python', manage_path, 'pre_collectstatic']
         try:
-            subprocess.call(process)
+            subprocess.call(intermediate_process)
         except KeyboardInterrupt:
             pass
 
         ## Setup for main collectstatic
-        process = ['python', manage_path, 'collectstatic']
+        intermediate_process = ['python', manage_path, 'collectstatic']
         try:
-            subprocess.call(process)
+            subprocess.call(intermediate_process)
         except KeyboardInterrupt:
             pass
 
         ## Run collectworkspaces command
-        process = ['python', manage_path, 'collectworkspaces']
-        try:
-            subprocess.call(process)
-        except KeyboardInterrupt:
-            pass
+        primary_process = ['python', manage_path, 'collectworkspaces']
+
+    elif args.command == MANAGE_CREATESUPERUSER:
+        primary_process = ['python', manage_path, 'createsuperuser']
 
     # Call the process with a little trick to ignore the keyboard interrupt error when it happens
-    if process:
+    if primary_process:
         try:
-            subprocess.call(process)
+            subprocess.call(primary_process)
         except KeyboardInterrupt:
             pass
