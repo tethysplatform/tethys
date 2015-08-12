@@ -103,7 +103,7 @@ def my_view(request):
 
         <p>
           Next, open the template you intend to add the gizmo to and load the <b>tethys_gizmos</b> library. Be sure to
-          do this somewhere near <u>the top</u> of your template&mdash;before any gizmo occurances. This only needs to be
+          do this somewhere near <u>the top</u> of your template&mdash;before any gizmo occurrences. This only needs to be
           done once for each template that uses gizmos.
         </p>
 
@@ -155,7 +155,7 @@ def my_view(request):
         </p>
 
         <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos_api.html#button-and-button-group">Button and Button Group</a>.
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/button.html">Button and Button Group</a>.
         </p>
 
         <div class="example">
@@ -177,7 +177,7 @@ def my_view(request):
           <a href="http://bootstrap-datepicker.readthedocs.org/en/release/index.html"  target="_blank">Bootstrap Datepicker</a>.
         </p>
         <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos_api.html#date-picker">Date Picker</a>.
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/date_picker.html">Date Picker</a>.
         </p>
 
         <div class="example">
@@ -198,7 +198,7 @@ def my_view(request):
           The table below summarizes the options for sliders.
         </p>
         <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos_api.html#range-slider">Range Slider</a>.
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/range_slider.html">Range Slider</a>.
         </p>
 
         <div class="example">
@@ -219,7 +219,7 @@ def my_view(request):
           <a href="http://ivaynberg.github.io/select2/">Select2</a> functionality.
         </p>
         <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos_api.html#select-input">Select Input</a>.
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/select_input.html">Select Input</a>.
         </p>
 
         <div class="example">
@@ -242,7 +242,7 @@ def my_view(request):
         </p>
 
         <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos_api.html#text-input">Text Input</a>.
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/text_input.html">Text Input</a>.
         </p>
 
         <div class="example">
@@ -263,7 +263,7 @@ def my_view(request):
         </p>
 
         <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos_api.html#toggle-switch">Toggle Switch</a>.
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/toggle_switch.html">Toggle Switch</a>.
         </p>
 
         <div class="example">
@@ -282,7 +282,7 @@ def my_view(request):
         <p>Message box gizmos can be used to display messages to users. These are especially useful for alerts and
         warning messages. The message box gizmo is implemented using Twitter Bootstrap's modal.</p>
         <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos_api.html#message-box">Message Box</a>.
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/message_box.html">Message Box</a>.
         </p>
 
         <div class="example">
@@ -300,7 +300,7 @@ def my_view(request):
         <p>Table views can be used to display tabular data. The table view gizmo can be configured to have
           columns that are editable. When used in this capacity, embed the table view in a form with a submit button.</p>
         <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos_api.html#table-view">Table View</a>.
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/table_view.html">Table View</a>.
         </p>
         <div class="example">
           <div class="demo">
@@ -319,7 +319,7 @@ def my_view(request):
           are powered by the <a href="http://www.highcharts.com/" target="_blank">Highcharts</a> JavaScript library.
         </p>
         <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos_api.html#plot-view">Plot View</a>.
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/plot_view.html">Plot View</a>.
         </p>
         <div class="alert alert-warning" role="alert">
           <span class="alert-header">Caution</span>
@@ -329,7 +329,7 @@ def my_view(request):
         </div>
         <div class="example">
           <div class="demo">
-            {% gizmo highcharts_plot_view line_plot_view %}
+            {% gizmo plot_view line_plot_view %}
           </div>
         </div>
         <div class="example">
@@ -367,6 +367,31 @@ def my_view(request):
           {% gizmo highcharts_plot_view custom_plot %}
           </div>
         </div>
+        <div class="example">
+          <div class="demo">
+          {% gizmo plot_view d3_line_plot_view %}
+          </div>
+        </div>
+        <div class="example">
+          <div class="demo">
+          {% gizmo plot_view d3_pie_plot_view %}
+          </div>
+        </div>
+        <div class="example">
+          <div class="demo">
+          {% gizmo plot_view d3_scatter_plot_view %}
+          </div>
+        </div>
+        <div class="example">
+          <div class="demo">
+          {% gizmo plot_view d3_bar_plot_view %}
+          </div>
+        </div>
+        <div class="example">
+          <div class="demo">
+          {% gizmo plot_view d3_timeseries_plot_view %}
+          </div>
+        </div>
 
       </div>
 
@@ -376,7 +401,7 @@ def my_view(request):
         <h2>Map View</h2>
         <p>The Map View gizmo can be used to visualize maps of spatial data. Map View is powered by <a href="http://openlayers.org/">OpenLayers 3</a>, an open source pure javascript mapping library.</p>
         <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos_api.html#map-view">Map View</a>.
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/map_view.html">Map View</a>.
         </p>
         <p><strong>NOTE: Do not create more than one Map View gizmo on a page at any given time.</strong></p>
         <p>Click <a href="{% url 'gizmos:map_view' %}">here</a> for demo on a separate page.</p>
@@ -397,7 +422,7 @@ def my_view(request):
           <a href="#retrieving_shapes">Retrieving Shapes</a> section).
         </p>
         <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos_api.html#google-map-view">Google Map View</a>.
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/google_map.html">Google Map View</a>.
         </p>
         <p><strong>NOTE: Do not create more than one map on a page at any given time.</strong></p>
         <div class="alert alert-warning" role="alert">
@@ -433,7 +458,7 @@ def my_view(request):
         <h2>FetchClimate</h2>
         <p>This gizmo can be used to get climate data based off of a bounding box over an area or a point. It is based off of Microsoft Research. See the <a href="http://research.microsoft.com/en-us/projects/fetchclimate/">FetchClimate page</a> for more info.</p>
         <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos_api.html#fetch-climate-map">Fetch Climate</a>.
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/fetchclimate.html">Fetch Climate</a>.
         </p>
         <p><strong>NOTE: Do not create more than one map on a page at any given time.</strong></p>
 
