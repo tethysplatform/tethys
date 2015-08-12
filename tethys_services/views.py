@@ -7,11 +7,13 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from utilities import get_wps_service_engine, list_wps_service_engines, abstract_is_link
 
 
+@login_required()
 def datasets_home(request):
     """
     Home page for Tethys Datasets tool
@@ -21,6 +23,7 @@ def datasets_home(request):
     return render(request, 'tethys_services/tethys_datasets/home.html', context)
 
 
+@login_required()
 def wps_home(request):
     """
     Home page for Tethys WPS tool. Lists all the WPS services that are linked.
@@ -32,6 +35,7 @@ def wps_home(request):
     return render(request, 'tethys_services/tethys_wps/home.html', context)
 
 
+@login_required()
 def wps_service(request, service):
     """
     View that lists the processes for a given service.
@@ -45,6 +49,7 @@ def wps_service(request, service):
     return render(request, 'tethys_services/tethys_wps/service.html', context)
 
 
+@login_required()
 def wps_process(request, service, identifier):
     """
     View that displays a detailed description for a WPS process.
