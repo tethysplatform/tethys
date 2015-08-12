@@ -277,12 +277,10 @@ class TethysAppBase(object):
         """
         username = ''
 
-        if isinstance(user, User):
+        if isinstance(user, User) or isinstance(user, SimpleLazyObject):
             username = user.username
         elif isinstance(user, HttpRequest):
             username = user.user.username
-        elif isinstance(user, SimpleLazyObject):
-            username = user.username
         elif user is None:
             pass
         else:
