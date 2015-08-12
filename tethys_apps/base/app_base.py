@@ -179,6 +179,29 @@ class TethysAppBase(object):
         """
         return None
 
+    def handoff_handlers(self):
+        """
+        Use this method to define handoff handlers for use in your app.
+
+        Returns:
+          iterable: A list or tuple of ``HandoffHandler`` objects.
+
+        **Example:**
+
+        ::
+
+            def handoff_handlers(self):
+                \"""
+                Example handoff_handlers method.
+                \"""
+                handoff_handlers = (HandoffHandlers(name='example',
+                                                    handler='handlers:my_handler'),
+                )
+
+                return handoff_handlers
+        """
+        return None
+
     def job_templates(self):
         """
         Use this method to define job templates to easily create and submit jobs in your app.
@@ -257,12 +280,10 @@ class TethysAppBase(object):
         """
         username = ''
 
-        if isinstance(user, User):
+        if isinstance(user, User) or isinstance(user, SimpleLazyObject):
             username = user.username
         elif isinstance(user, HttpRequest):
             username = user.user.username
-        elif isinstance(user, SimpleLazyObject):
-            username = user.username
         elif user is None:
             pass
         else:

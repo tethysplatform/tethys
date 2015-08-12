@@ -35,10 +35,6 @@ Job Manager Gizmo
 
 * New Gizmo that will show the status of jobs running with the Job Manager
 
-Job Manager Updates
--------------------
-
-
 Workspaces
 ----------
 
@@ -47,6 +43,14 @@ Workspaces
 * Clear and remove files and directories in workspace
 
 See: :doc:`./tethys_sdk/workspaces`
+
+Handoff
+-------
+
+* Use handoff to launch one app from another
+* Pass arguments via GET parameters that can be used to retrieve data from the sender app
+
+See: :doc:`./tethys_sdk/handoff`
 
 Video Tutorials
 ---------------

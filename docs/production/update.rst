@@ -13,7 +13,7 @@ When you installed Tethys Platform you did so using it's remote Git repository o
 
     $ sudo su
     $ cd /usr/lib/tethys/src
-    $ git remote set-url https://github.com/tethysplatform/tethys
+    $ git remote set-url origin https://github.com/tethysplatform/tethys
     $ git pull origin master
     $ exit
 
