@@ -21,5 +21,6 @@ from tethys_gizmos.gizmo_options.map_view import *
 from tethys_gizmos.gizmo_options.google_map import *
 from tethys_gizmos.gizmo_options.fetchclimate import *
 from tethys_gizmos.gizmo_options.jobs_table import *
+from tethys_gizmos.gizmo_options.plot_view import *
 
 # from tethys_gizmos.gizmo_options import *

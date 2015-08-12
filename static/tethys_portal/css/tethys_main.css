@@ -871,7 +871,7 @@ a:hover {
 }
 .user-dropdown .user-dropdown-menu {
   padding: 0;
-  min-width: 155px;
+  min-width: 170px;
 }
 .user-dropdown .user-dropdown-menu li {
   display: block;
