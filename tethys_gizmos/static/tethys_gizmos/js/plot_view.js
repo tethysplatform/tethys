@@ -49,7 +49,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 	    var chart_type;
 
 	    chart_type = json.chart_type;
-
+        var svg;
 	    if ('type' in json.chart) {
 	        if (json.chart.type === 'line' || json.chart.type === 'spline') {
 	            initD3LinePlot(element, json);
@@ -81,9 +81,16 @@ var TETHYS_D3_PLOT_VIEW = (function() {
         var number_of_series = d3.max(d3.keys(series));
         var number_of_points = d3.max(d3.keys(series[0].data));
 
-        var margin = {top: 40, right: 80, bottom: 30, left: 50},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+        var margin = {top: 40, right: 80, bottom: 30, left: 50};
+
+        var svg = d3.select(element).append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%");
+
+        var width = svg.node().getBoundingClientRect().width - margin.left - margin.right;
+        var height = svg.node().getBoundingClientRect().height - margin.top - margin.bottom;
+
+        svg = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         var x = d3.scale.linear()
             .range([0, width]);
@@ -135,11 +142,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
                     + d[0] + "</span> </br>" + y_axis_title + ": <span style='color:yellow'>" + d[1] + "</span>";
             });
 
-        var svg = d3.select(element).append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
         //Create the chart title and subtitle
         svg.append("text")
@@ -228,11 +231,16 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 
         // draw legend text
         legend.append("text")
-            .attr("x", width - 24)
+            .attr("x", width)
             .attr("y", 9)
             .attr("dy", ".35em")
-            .style("text-anchor", "end")
+            .style("text-anchor", "beginning")
             .text(function (d) { return d; });
+
+        window.onresize = function () {
+            d3.select(element).selectAll("*").remove();
+            initD3Plot(element, json);
+        };
     };
 
 	initD3PiePlot = function(element, json) {
