@@ -8,7 +8,7 @@ Distributed computing in Tethys Platform is made possible with HTCondor. HTCondo
 
 Tethys Compute
 ==============
-The Tethys Compute settings in site admin allows an administrator to manage computing clusters, oversee jobs, and configure settings for computing resources.
+The Tethys Compute settings in site admin allows an administrator to manage computing clusters, configure schedulers, oversee jobs, and configure settings for computing resources.
 
 (add screenshot of settings?)
 
