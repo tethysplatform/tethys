@@ -1,14 +1,17 @@
-*************************
-Distributed Computing API
-*************************
+********************
+Compute and Jobs API
+********************
 
-**Last Updated:** May 26, 2015
+**Last Updated:** August 19, 2015
 
 Distributed computing in Tethys Platform is made possible with HTCondor. HTCondor computing resources are managed through the `Tethys Compute`_ settings of the site admin in Tethys Portal. Access to the HTCondor computing environment is made possible to app developers through a `Job Manager`_ object. For more information on HTCondor see `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_ or the `HTCondor User Manual <http://research.cs.wisc.edu/htcondor/manual/>`_.
 
+Compute API
++++++++++++
+
 Tethys Compute
 ==============
-The Tethys Compute settings in site admin allows an administrator to manage computing clusters, configure schedulers, oversee jobs, and configure settings for computing resources.
+The Tethys Compute settings in site admin allows an administrator to manage computing clusters, oversee jobs,  configure schedulers, and configure settings for computing resources.
 
 (add screenshot of settings?)
 
@@ -24,6 +27,9 @@ Jobs
 ----
 Jobs represent some sort of computation that is sent from an app to a cluster using the `Job Manager`_. For each job that is created a database entry is made to store some of the basic information about the job including: name, user, creation time, and status. The Jobs section in Tethys Compute allows for basic management of these database entries.
 
+Schedulers
+----------
+Schedulers are HTCondor nodes that have scheduling rights in the pool they belong to. Schedulers are needed for CondorJob types (see `Job Manager`_ documentation).
 
 Settings
 --------
@@ -78,15 +84,79 @@ Default Cluster
 
 
 
+Jobs API
+++++++++
+- intro to jobs api
+- allows you to define and submit jobs in an app
+- condor jobs a run using the compute clusters
 
+JobManager,
+JobTemplate,
+JOB_TYPES,
+BasicJobTemplate,
+CondorJobTemplate,
 
 Job Manager
 ===========
 
 
-Configuring the Job Manager
----------------------------
+Defining Job Templates
+----------------------
+To create jobs in an app you first need to define job templates. A job template specifies the type of job, and also defines all of the static parameters of the job that will be the same for all instances of that template. These parameters often include the names of the executable, input files, and output files. Job templates are defined in a method on the TethysAppBase subclass in app.py module.
 
+
+::
+
+  from tethys_sdk.jobs import JobTemplate, JOB_TYPES
+  from tethys_sdk.compute import list_schedulers
+
+  def job_templates(cls):
+      """
+      Example job_templates method.
+      """
+      my_scheduler = list_schedulers()[0]
+
+      job_templates = (JobTemplate(name='example',
+                                   type=JOB_TYPES['CONDOR'],
+                                   parameters={'executable': 'my_script.py',
+                                               'condorpy_template_name': 'vanilla_transfer_files',
+                                               'attributes': {'transfer_input_files': ('../input_1', '../input_2'),
+                                                              'transfer_output_files': ('example_output1', example_output2),
+                                                             },
+                                               'scheduler': my_scheduler,
+                                               'remote_input_files': ('my_script.py', 'input_1', '$(USER_WORKSPACE)input_2'),
+                                              }
+                                  ),
+                      )
+
+      return job_templates
+
+
+It
+::
+
+  from tethys_sdk.jobs import CondorJobTemplate
+  from tethys_sdk.compute import list_schedulers
+
+  def job_templates(cls):
+      """
+      Example job_templates method.
+      """
+      my_scheduler = list_schedulers()[0]
+
+      job_templates = (CondorJobTemplate(name='example',
+                                         parameters={'executable': 'my_script.py',
+                                                     'condorpy_template_name': 'vanilla_transfer_files',
+                                                     'attributes': {'transfer_input_files': ('../input_1', '../input_2'),
+                                                                    'transfer_output_files': ('example_output1', example_output2),
+                                                                   },
+                                                     'scheduler': my_scheduler,
+                                                     'remote_input_files': ('my_script.py', 'input_1', '$(USER_WORKSPACE)input_2'),
+                                                    }
+                                        ),
+                      )
+
+      return job_templates
 
 Using the Job Manager in your App
 ---------------------------------
