@@ -1,17 +1,14 @@
-********************
-Compute and Jobs API
-********************
+***********
+Compute API
+***********
 
-**Last Updated:** August 19, 2015
+**Last Updated:** September 3, 2015
 
 Distributed computing in Tethys Platform is made possible with HTCondor. HTCondor computing resources are managed through the `Tethys Compute`_ settings of the site admin in Tethys Portal. Access to the HTCondor computing environment is made possible to app developers through a `Job Manager`_ object. For more information on HTCondor see `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_ or the `HTCondor User Manual <http://research.cs.wisc.edu/htcondor/manual/>`_.
 
-Compute API
-+++++++++++
-
 Tethys Compute
 ==============
-The Tethys Compute settings in site admin allows an administrator to manage computing clusters, oversee jobs,  configure schedulers, and configure settings for computing resources.
+The Tethys Compute settings in site admin allows an administrator to manage computing clusters, oversee jobs, configure schedulers, and configure settings for computing resources.
 
 (add screenshot of settings?)
 
@@ -37,31 +34,39 @@ Tethys Compute settings are divided into three sections: `Azure Credentials`_, `
 
 Azure Credentials
 .................
+This section contains settings for connecting to an Azure account. There are two required settings: `Subscription ID`_ and `Certificate Path`_.
 
 Subscription ID
 '''''''''''''''
+The `Subscription ID`_ is a unique identifier for your Azure subscription. For instructions on how to find your subscription id see this `video <https://www.youtube.com/watch?v=VNoGnxvTLDQ>`_.
 
 Certificate Path
 ''''''''''''''''
-
+The `Certificate Path`_ is the path to an SSL certificate file on the Tethys Portal server that is also registered in with your Azure subscription. View these `instructions <https://msdn.microsoft.com/en-us/library/azure/gg551722.aspx>`_ for help creating and uploading a certificate to the Microsoft Azure Management Portal.
 
 Amazon Credentials
 ..................
+This section contains settings for connecting to an Amazon Web Services (AWS) account.
 
 AWS Access Key ID
 '''''''''''''''''
+The `AWS Access Key ID`_ is a unique id for your IAM user. View these `instructions <http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSGettingStartedGuide/AWSCredentials.html>`_ for getting your Access Key ID and Secret Access Key.
 
 AWS Secret Access Key
 '''''''''''''''''''''
+The `AWS Secret Access Key`_ is like a password for the AWS account. It is associated with your Access Key ID, but is not viewable through the AWS Management Console. They only time a Secret Access Key can be retrieved is when it is created. View these `instructions <http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSGettingStartedGuide/AWSCredentials.html>`_ for getting your Access Key ID and Secret Access Key.
 
 AWS User ID
 '''''''''''
+The `AWS User ID`_ is a unique 12-digit number that identifies the AWS account. This is different from the `AWS Access Key ID`_ which is associated with a specific IAM user within an AWS account.
 
 Key Name
 ''''''''
+The `Key Name`_ is the name of an SSH key pair that is uploaded to your AWS account. For more information see `Amazon EC2 Key Pairs <http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html>`_.
 
 Key Location
 ''''''''''''
+The `Key Location`_ is the path to the SSH private key on the Tethys Portal server. For more information see `Amazon EC2 Key Pairs <http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html>`_.
 
 Cluster Management
 ..................
@@ -79,84 +84,10 @@ Default Cluster
 '''''''''''''''
 
 
+API Documentation
+=================
 
 
+.. automethod:: tethys_sdk.compute.list_schedulers
 
-
-
-Jobs API
-++++++++
-- intro to jobs api
-- allows you to define and submit jobs in an app
-- condor jobs a run using the compute clusters
-
-JobManager,
-JobTemplate,
-JOB_TYPES,
-BasicJobTemplate,
-CondorJobTemplate,
-
-Job Manager
-===========
-
-
-Defining Job Templates
-----------------------
-To create jobs in an app you first need to define job templates. A job template specifies the type of job, and also defines all of the static parameters of the job that will be the same for all instances of that template. These parameters often include the names of the executable, input files, and output files. Job templates are defined in a method on the TethysAppBase subclass in app.py module.
-
-
-::
-
-  from tethys_sdk.jobs import JobTemplate, JOB_TYPES
-  from tethys_sdk.compute import list_schedulers
-
-  def job_templates(cls):
-      """
-      Example job_templates method.
-      """
-      my_scheduler = list_schedulers()[0]
-
-      job_templates = (JobTemplate(name='example',
-                                   type=JOB_TYPES['CONDOR'],
-                                   parameters={'executable': 'my_script.py',
-                                               'condorpy_template_name': 'vanilla_transfer_files',
-                                               'attributes': {'transfer_input_files': ('../input_1', '../input_2'),
-                                                              'transfer_output_files': ('example_output1', example_output2),
-                                                             },
-                                               'scheduler': my_scheduler,
-                                               'remote_input_files': ('my_script.py', 'input_1', '$(USER_WORKSPACE)input_2'),
-                                              }
-                                  ),
-                      )
-
-      return job_templates
-
-
-It
-::
-
-  from tethys_sdk.jobs import CondorJobTemplate
-  from tethys_sdk.compute import list_schedulers
-
-  def job_templates(cls):
-      """
-      Example job_templates method.
-      """
-      my_scheduler = list_schedulers()[0]
-
-      job_templates = (CondorJobTemplate(name='example',
-                                         parameters={'executable': 'my_script.py',
-                                                     'condorpy_template_name': 'vanilla_transfer_files',
-                                                     'attributes': {'transfer_input_files': ('../input_1', '../input_2'),
-                                                                    'transfer_output_files': ('example_output1', example_output2),
-                                                                   },
-                                                     'scheduler': my_scheduler,
-                                                     'remote_input_files': ('my_script.py', 'input_1', '$(USER_WORKSPACE)input_2'),
-                                                    }
-                                        ),
-                      )
-
-      return job_templates
-
-Using the Job Manager in your App
----------------------------------
+.. automethod:: tethys_sdk.compute.get_scheduler
