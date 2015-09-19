@@ -9,6 +9,7 @@
 ********************************************************************************
 """
 from .base import TethysGizmoOptions
+import datetime
 
 __all__ = ['JobsTable']
 
@@ -64,7 +65,7 @@ class JobsTable(TethysGizmoOptions):
 
 
         self.jobs = jobs
-        self.rows = self.get_rows(column_fields)
+        self.rows = self.get_rows(jobs, column_fields)
         self.column_fields = column_fields
         self.column_names = [col_name.title().replace('_', ' ') for col_name in column_fields]
         self.status_actions = status_actions
@@ -78,15 +79,40 @@ class JobsTable(TethysGizmoOptions):
         self.attributes = attributes
         self.classes = classes
 
-    def get_rows(self, column_fields):
+    @classmethod
+    def get_rows(cls, jobs, column_fields):
         rows = []
-        if self.jobs:
-            attributes = self.jobs[0].__dict__.keys()
-        for job in self.jobs:
+        if jobs:
+            attributes = jobs[0].__dict__.keys()
+        for job in jobs:
             row_values = []
             for attribute in column_fields:
                 if attribute in attributes:
                     row_values.append(job.__getattribute__(attribute))
+                elif attribute == 'run_time':
+                    row_values.append(cls._get_run_time(job))
             rows.append(row_values)
         return rows
 
+    @classmethod
+    def _get_run_time(self, job):
+        start_time = job.execute_time
+        end_time = job.completion_time
+        if not end_time:
+            tzinfo = start_time.tzinfo
+            end_time = datetime.datetime.now(tzinfo)
+        run_time = end_time - start_time
+
+        times = []
+        total_seconds = run_time.seconds
+        times.append(('days', run_time.days))
+        times.append(('hr', total_seconds/3600))
+        times.append(('min', (total_seconds%3600)/60))
+        times.append(('sec', total_seconds%60))
+        run_time_str = ''
+        for time_str, time in times:
+            if time:
+                run_time_str += "%s %s " % (time, time_str)
+        if not run_time_str or (run_time.days == 0 and total_seconds < 2):
+            run_time_str = '%.2f sec' % (total_seconds + float(run_time.microseconds)/1000000,)
+        return run_time_str
