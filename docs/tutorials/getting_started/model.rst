@@ -17,8 +17,8 @@ Open the app configuration file for your app located at :file:`my_first_app/app.
 
 ::
 
-    from tethys_apps.base import TethysAppBase, url_map_maker
-    from tethys_apps.base import PersistentStore
+    from tethys_sdk.base import TethysAppBase, url_map_maker
+    from tethys_sdk.stores import PersistentStore
 
 
     class MyFirstApp(TethysAppBase):
@@ -80,7 +80,7 @@ First, add the following import statements to your :file:`model.py` file:
     from sqlalchemy import Column, Integer, Float
     from sqlalchemy.orm import sessionmaker
 
-    from .utilities import get_persistent_store_engine
+    from .app import MyFirstApp
 
 
 Next, add these lines to your :file:`model.py` file:
@@ -88,7 +88,7 @@ Next, add these lines to your :file:`model.py` file:
 ::
 
     # DB Engine, sessionmaker and base
-    engine = get_persistent_store_engine('stream_gage_db')
+    engine = MyFirstApp.get_persistent_store_engine('stream_gage_db')
     SessionMaker = sessionmaker(bind=engine)
     Base = declarative_base()
 
