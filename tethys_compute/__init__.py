@@ -12,7 +12,6 @@ import os
 default_app_config = 'tethys_compute.apps.TethysComputeConfig'
 
 TETHYSCLUSTER_CFG_DIR = os.path.join(os.path.expanduser('~'), '.tethyscluster')
-print TETHYSCLUSTER_CFG_DIR
 TETHYSCLUSTER_CFG_FILE = os.path.join(TETHYSCLUSTER_CFG_DIR, 'config')
 TETHYSCLUSTER_TETHYS_CFG_FILE = os.path.join(TETHYSCLUSTER_CFG_DIR, 'tethys_config')
 TETHYSCLUSTER_AWS_CFG_FILE = os.path.join(TETHYSCLUSTER_CFG_DIR, 'aws_config')
