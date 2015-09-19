@@ -1,5 +1,6 @@
 .legend {
-    font-size: 12px;
+    width: 50px;
+    word-wrap: break-word;
 }
 
 rect {
