@@ -101,7 +101,7 @@ The Apache user must own any files that it Apache is serving. This includes the 
 
 ::
 
-    $ sudo chown -R www-data:www-data /var/www/tethys/
+    $ sudo chown -R www-data:www-data /var/www/tethys/ /usr/lib/tethys/src/tethys_apps/tethysapp/
 
 .. note::
 
