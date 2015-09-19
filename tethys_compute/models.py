@@ -9,7 +9,7 @@
 """
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import pre_save, post_save, post_delete
+from django.db.models.signals import pre_save, post_save, pre_delete, post_delete
 from django.dispatch import receiver
 from django.utils import timezone
 from tethys_compute import (TETHYSCLUSTER_CFG_FILE,
@@ -22,6 +22,7 @@ from tethys_compute.utilities import DictionaryField, ListField
 
 import os
 import re
+import shutil
 from multiprocessing import Process
 from abc import abstractmethod
 
@@ -167,7 +168,6 @@ class Cluster(models.Model):
             try:
                 tc = self.TC_MANAGER.get_default_template_cluster(self.name)
                 tc.update({'cluster_size':self.size})
-                print tc
                 tc.start()
                 self._tethys_cluster = tc
                 self.connect_scheduler_and_master()
@@ -326,13 +326,13 @@ class TethysJob(models.Model):
     execute_time = models.DateTimeField(blank=True, null=True)
     completion_time = models.DateTimeField(blank=True, null=True)
     workspace = models.CharField(max_length=1024, default=os.path.expanduser('~/.tethyscluster/workspace'))
-    extended_properties = DictionaryField(default='')
+    extended_properties = DictionaryField(default='', blank=True)
     _subclass = models.CharField(max_length=30, default='basicjob')
     _status = models.CharField(max_length=3, choices=STATUSES, default=STATUSES[0][0])
 
     @property
     def status(self):
-        self.child._update_status()
+        self.update_status()
         field = self.child._meta.get_field('_status')
         status = self._get_FIELD_display(field)
         return status
@@ -349,12 +349,34 @@ class TethysJob(models.Model):
         self.save()
         self.child._execute(*args, **kwargs)
 
+    def update_status(self, *args, **kwargs):
+        if self._status in ['PEN', 'SUB', 'RUN', 'VAR']:
+            self.child._update_status(*args, **kwargs)
+            self._status = self.child._status
+            if self._status == "COM" or self._status == "VCP":
+                self.process_results()
+            elif self._status == 'ERR' or self._status == 'ABT':
+                self.completion_time = timezone.now()
+            self.save()
+
+    def process_results(self, *args, **kwargs):
+        """
+
+        """
+        self.completion_time = timezone.now()
+        self.save()
+        self.child._process_results(*args, **kwargs)
+
     @abstractmethod
     def _execute(self, *args, **kwargs):
         pass
 
     @abstractmethod
-    def _update_status(self):
+    def _update_status(self, *args, **kwargs):
+        pass
+
+    @abstractmethod
+    def _process_results(self, *args, **kwargs):
         pass
 
     @abstractmethod
@@ -404,7 +426,7 @@ class CondorJob(TethysJob):
     num_jobs = models.IntegerField(default=1)
     remote_id = models.CharField(max_length=32, blank=True, null=True)
     tethys_job = models.OneToOneField(TethysJob)
-    scheduler = models.ForeignKey(Scheduler)
+    scheduler = models.ForeignKey(Scheduler, blank=True, null=True)
 
     STATUS_MAP = {'Unexpanded': 'PEN',
                   'Idle': 'SUB',
@@ -435,17 +457,32 @@ class CondorJob(TethysJob):
         if not hasattr(self, '_condorpy_job'):
             if 'executable' in self.attributes.keys():
                 del self.attributes['executable']
-            job = Job(name=self.name,
+
+            if self.scheduler:
+                host=self.scheduler.host
+                username=self.scheduler.username
+                password=self.scheduler.password
+                private_key=self.scheduler.private_key_path
+                private_key_pass=self.scheduler.private_key_pass
+            else:
+                host=None
+                username=None
+                password=None
+                private_key=None
+                private_key_pass=None
+
+            job = Job(name=self.name.replace(' ', '_'),
                       attributes=self.condorpy_template,
                       executable=self.executable,
-                      host=self.scheduler.host,
-                      username=self.scheduler.username,
-                      password=self.scheduler.password,
-                      private_key=self.scheduler.private_key_path,
-                      private_key_pass=self.scheduler.private_key_pass,
+                      host=host,
+                      username=username,
+                      password=password,
+                      private_key=private_key,
+                      private_key_pass=private_key_pass,
                       remote_input_files=self.remote_input_files,
                       working_directory=self.workspace,
                       **self.attributes)
+
             job._cluster_id = self.cluster_id
             job._num_jobs = self.num_jobs
             if self.remote_id:
@@ -459,24 +496,23 @@ class CondorJob(TethysJob):
     def statuses(self):
         return self.condorpy_job.statuses
 
+    @property
+    def initial_dir(self):
+        return os.path.join(self.workspace, self.condorpy_job.initial_dir)
+
     def _update_status(self):
-        if self._status in ['PEN', 'SUB', 'RUN', 'VAR']:
-            try:
-                condor_status = self.condorpy_job.status
-                if condor_status == 'Completed':
-                    self._process_results()
-                elif condor_status == 'Various':
-                    statuses = self.condorpy_job.statuses
-                    running_statuses = statuses['Unexpanded'] + statuses['Idle'] + statuses['Running']
-                    if running_statuses:
-                        pass
-                    else:
-                        condor_status = 'Various-Complete'
-            except Exception, e:
-                # raise e
-                condor_status = 'Submission_err'
-            self._status = self.STATUS_MAP[condor_status]
-            self.save()
+        try:
+            condor_status = self.condorpy_job.status
+            if condor_status == 'Various':
+                statuses = self.condorpy_job.statuses
+                running_statuses = statuses['Unexpanded'] + statuses['Idle'] + statuses['Running']
+                if not running_statuses:
+                    condor_status = 'Various-Complete'
+        except Exception, e:
+            # raise e
+            condor_status = 'Submission_err'
+        self._status = self.STATUS_MAP[condor_status]
+        self.save()
 
     def _execute(self, queue=None, options=[]):
         self.num_jobs = queue or self.num_jobs
@@ -484,8 +520,9 @@ class CondorJob(TethysJob):
         self.save()
 
     def _process_results(self):
-        self.condorpy_job.sync_remote_output()
-        self.condorpy_job.close_remote()
+        if self.scheduler:
+            self.condorpy_job.sync_remote_output()
+            self.condorpy_job.close_remote()
 
     def stop(self):
         self.condorpy_job.remove()
@@ -502,3 +539,10 @@ class CondorJob(TethysJob):
 @receiver(pre_save, sender=CondorJob)
 def condor_job_pre_save(sender, instance, raw, using, update_fields, **kwargs):
     instance._update_attributes()
+
+@receiver(pre_delete, sender=CondorJob)
+def condor_job_pre_delete(sender, instance, using, **kwargs):
+    try:
+        shutil.rmtree(instance.initial_dir)
+    except Exception, e:
+        print e

@@ -12,7 +12,6 @@
 import json
 from django import forms
 from django.core import exceptions
-from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -33,7 +32,7 @@ class DictionaryField(models.Field):
             try:
                 return dict(json.loads(value))
             except (ValueError, TypeError):
-                raise exceptions.ValidationError(self.error_messages['invalid'])
+                raise exceptions.ValidationError(self.error_messages['invalid value for json: %s' % value])
 
         if isinstance(value, dict):
             return value
@@ -77,8 +76,9 @@ class ListField(models.Field):
         elif isinstance(value, basestring):
             try:
                 return json.loads(value)
-            except (ValueError, TypeError):
-                raise exceptions.ValidationError(self.error_messages['invalid'])
+            except (ValueError, TypeError), e:
+                raise e
+                #raise exceptions.ValidationError(self.error_messages['invalid value for json: %s' % value])
 
         if isinstance(value, list):
             return value
