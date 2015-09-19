@@ -44,3 +44,13 @@ label:after {
 	padding-left: 130px;
 	padding-top: 5px;
 }
+
+/*Jobs Table status column*/
+.status-col{
+  min-width: 100px;
+}
+
+/*Jobs Table status column*/
+.status-col.span-two{
+  min-width: 165px;
+}

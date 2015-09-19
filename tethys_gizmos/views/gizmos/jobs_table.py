@@ -1,24 +1,29 @@
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from tethys_compute.models import TethysJob
+from tethys_gizmos.gizmo_options.jobs_table import JobsTable
 
 def execute(request, job_id):
     try:
         job = TethysJob.objects.filter(id=job_id)[0].child
         job.execute()
         success = True
-    except:
+        message = ''
+    except Exception, e:
         success = False
-    return JsonResponse({'success': success})
+        message = str(e)
+    return JsonResponse({'success': success, 'message': message})
 
 def delete(request, job_id):
     try:
         job = TethysJob.objects.filter(id=job_id)[0].child
         job.delete()
         success = True
-    except:
-        success = False
-    return JsonResponse({'success': success})
+        message = ''
+    except Exception, e:
+        success = True
+        message = str(e)
+    return JsonResponse({'success': success, 'message': message})
 
 def update_row(request, job_id):
     try:
@@ -27,11 +32,7 @@ def update_row(request, job_id):
         filters = [f.strip('\'\" ') for f in filter_string.strip('()').split(',')]
         job = TethysJob.objects.filter(id=job_id)[0].child
 
-        attributes = job.__dict__.keys()
-        row = []
-        for attribute in filters:
-            if attribute in attributes:
-                row.append(job.__getattribute__(attribute))
+        row = JobsTable.get_rows([job], filters)[0]
 
         data.update({'job':job, 'row':row})
 
@@ -49,3 +50,4 @@ def update_row(request, job_id):
         html = None
 
     return JsonResponse({'success': success, 'status': status, 'html': html})
+
