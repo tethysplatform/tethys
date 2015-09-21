@@ -91,7 +91,7 @@
               {% elif 'facebook' in backend %}
                 <a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}"><span class="label label-facebook">Connect Facebook</span></a>
               {% elif 'hydroshare' in backend %}
-                <a href="{% url 'social:begin' 'hydroshare' %}?next={{ request.path }}"><span class="label label-hydroshare">Connect HydroShare</span></a>
+                <a href="{% url 'social:begin' 'hydroshare-oauth2' %}?next={{ request.path }}"><span class="label label-hydroshare">Connect HydroShare</span></a>
               {% endif %}
             {% endfor %}
           </div>

@@ -20,9 +20,9 @@ class HydroShareOAuth2(BaseOAuth2):
           the HydroShare OAuth2 authentication service is working. See this article for more details about custom
           python social auth backends: http://psa.matiasaguirre.net/docs/backends/implementation.html
     """
-    name = 'hydroshare'
-    AUTHORIZATION_URL = 'https://www.hydroshare.com/login/oauth/authorize'
-    ACCESS_TOKEN_URL = 'https://www.hydroshare.com/login/oauth/access_token'
+    name = 'hydroshare-oauth2'
+    AUTHORIZATION_URL = 'http://playground.hydroshare.org/o/authorize'
+    ACCESS_TOKEN_URL = 'http://playground.hydroshare.org/accounts/callback/hydroshare-test/'
     SCOPE_SEPARATOR = ','
     EXTRA_DATA = [
         ('id', 'id'),
