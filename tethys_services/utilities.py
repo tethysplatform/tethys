@@ -198,11 +198,11 @@ def list_spatial_dataset_engines():
     if site_spatial_dataset_services:
         # Search for match
         for site_spatial_dataset_service in site_spatial_dataset_services:
-            spatial_dataset_object =  initialize_engine_object(engine=site_spatial_dataset_service.engine.encode('utf-8'),
-                                                               endpoint=site_spatial_dataset_service.endpoint,
-                                                               apikey=site_spatial_dataset_service.apikey,
-                                                               username=site_spatial_dataset_service.username,
-                                                               password=site_spatial_dataset_service.password)
+            spatial_dataset_object = initialize_engine_object(engine=site_spatial_dataset_service.engine.encode('utf-8'),
+                                                              endpoint=site_spatial_dataset_service.endpoint,
+                                                              apikey=site_spatial_dataset_service.apikey,
+                                                              username=site_spatial_dataset_service.username,
+                                                              password=site_spatial_dataset_service.password)
             spatial_dataset_service_engines.append(spatial_dataset_object)
 
     return spatial_dataset_service_engines
