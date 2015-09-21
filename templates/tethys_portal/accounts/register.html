@@ -13,8 +13,8 @@
         </div>
         <div class="account-form-body">
           <form role="form" method="post">
-            {% if 'hydroshare-oauth2' in backends.not_associated %}
-              <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare-oauth2' %}">
+            {% if 'hydroshare' in backends.not_associated %}
+              <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare' %}">
                 <i class="fa fa-hydroshare"></i> Sign up with HydroShare
               </a>
             {% endif %}
