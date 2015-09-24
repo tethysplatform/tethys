@@ -20,6 +20,7 @@ from sqlalchemy import create_engine
 
 from tethys_sdk.jobs import JobManager
 from tethys_apps.base.workspace import TethysWorkspace
+from tethys_apps.base.handoff import HandoffManager
 
 
 class TethysAppBase(object):
@@ -202,6 +203,15 @@ class TethysAppBase(object):
         """
         return None
 
+    @classmethod
+    def get_handoff_manager(cls):
+        """
+        Get the handoff manager for the app.
+        """
+        app = cls()
+        handoff_manager = HandoffManager(app)
+        return handoff_manager
+
     def job_templates(self):
         """
         Use this method to define job templates to easily create and submit jobs in your app.
@@ -240,6 +250,9 @@ class TethysAppBase(object):
 
     @classmethod
     def get_job_manager(cls):
+        """
+        Get the job manager for the app
+        """
         app = cls()
         job_manager = JobManager(app)
         return job_manager
