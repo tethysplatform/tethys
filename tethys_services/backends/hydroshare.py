@@ -21,8 +21,8 @@ class HydroShareOAuth2(BaseOAuth2):
           python social auth backends: http://psa.matiasaguirre.net/docs/backends/implementation.html
     """
     name = 'hydroshare'
-    AUTHORIZATION_URL = 'https://www.hydroshare.com/login/oauth/authorize'
-    ACCESS_TOKEN_URL = 'https://www.hydroshare.com/login/oauth/access_token'
+    AUTHORIZATION_URL = 'http://playground.hydroshare.org/o/authorize'
+    ACCESS_TOKEN_URL = 'http://playground.hydroshare.org/accounts/callback/hydroshare-test/'
     SCOPE_SEPARATOR = ','
     EXTRA_DATA = [
         ('id', 'id'),
