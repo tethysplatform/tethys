@@ -7,7 +7,7 @@
  *****************************************************************************/
 #map_view_outer_container {
   position: relative;
-  margin: 20px;
+  height: 100%;
 }
 .tethys-map-view-draw-control {
   top: 7px;

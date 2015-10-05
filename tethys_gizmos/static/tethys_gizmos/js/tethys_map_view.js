@@ -11,13 +11,13 @@
  *****************************************************************************/
 
 var TETHYS_MAP_VIEW = (function() {
-	// Wrap the library in a package function
-	"use strict"; // And enable strict mode for this library
+  // Wrap the library in a package function
+  "use strict"; // And enable strict mode for this library
 
-	/************************************************************************
- 	*                      MODULE LEVEL / GLOBAL VARIABLES
- 	*************************************************************************/
- 	// Constants
+  /************************************************************************
+   *                      MODULE LEVEL / GLOBAL VARIABLES
+   *************************************************************************/
+   // Constants
   var DEFAULT_PROJECTION = 'EPSG:3857',                     // Spherical Mercator Projection
       DEFAULT_OUTPUT_FORMAT = 'GeoJSON',                    // The default output format
       GEOJSON_FORMAT = 'GeoJSON',                           // GeoJSON format type
@@ -33,7 +33,7 @@ var TETHYS_MAP_VIEW = (function() {
       VIEW_ATTRIBUTE = 'data-view';                         // HTML attribute containing the view options
 
   // Objects
-  var public_interface,				                              // Object returned by the module
+  var public_interface,                                      // Object returned by the module
       m_drawing_interaction,                                // Drawing interaction used for drawing
       m_drawing_source,                                     // Drawing sources for drawing feature
       m_drawing_layer,                                      // Drawing layer for drawing feature
@@ -44,7 +44,7 @@ var TETHYS_MAP_VIEW = (function() {
       m_legend_element,                                     // Stores the document element for the legend
       m_legend_items,                                       // Stores the legend items
       m_legend_control,                                     // OpenLayers map control
-      m_map;					                                      // The map
+      m_map;                                                // The map
 
   // Selectors
   var m_map_target,                                         // Selector for the map container
@@ -62,11 +62,11 @@ var TETHYS_MAP_VIEW = (function() {
   // Others
   var m_draw_id_counter;                                    // Draw id counter
 
-	/************************************************************************
- 	*                       PRIVATE METHOD DECLARATIONS
- 	*************************************************************************/
+  /************************************************************************
+   *                       PRIVATE METHOD DECLARATIONS
+   *************************************************************************/
   // Initialization Methods
- 	var ol_base_map_init, ol_controls_init, ol_drawing_init, ol_layers_init, ol_legend_init, ol_map_init, ol_view_init,
+   var ol_base_map_init, ol_controls_init, ol_drawing_init, ol_layers_init, ol_legend_init, ol_map_init, ol_view_init,
       parse_options;
 
   // Drawing Methods
@@ -91,9 +91,9 @@ var TETHYS_MAP_VIEW = (function() {
   // Class Declarations
   var DrawingControl, DragFeatureInteraction;
 
- 	/************************************************************************
- 	*                    PRIVATE FUNCTION IMPLEMENTATIONS
- 	*************************************************************************/
+   /************************************************************************
+   *                    PRIVATE FUNCTION IMPLEMENTATIONS
+   *************************************************************************/
   /***********************************
    * Initialization Methods
    ***********************************/
@@ -530,7 +530,7 @@ var TETHYS_MAP_VIEW = (function() {
 
 
   // Initialize the map
- 	ol_map_init = function()
+   ol_map_init = function()
   {
     // Init Map
     m_map = new ol.Map({
@@ -551,7 +551,8 @@ var TETHYS_MAP_VIEW = (function() {
     var view_json;
 
     // Get view settings from data attribute
-    view_json = $('#' + m_map_target).attr('data-view');
+    var $map_element = $('#' + m_map_target);
+    view_json = $map_element.attr('data-view');
 
     if (typeof view_json !== typeof undefined && view_json !== false) {
       var view_obj;
@@ -566,6 +567,11 @@ var TETHYS_MAP_VIEW = (function() {
 
       m_map.setView(new ol.View(view_obj));
     }
+    
+    //function to change size of the map when the map element size changes
+    $map_element.changeSize(function($this){
+      m_map.updateSize();
+    });
 
   };
 
@@ -1257,15 +1263,15 @@ var TETHYS_MAP_VIEW = (function() {
 
 
   /************************************************************************
- 	*                        DEFINE PUBLIC INTERFACE
- 	*************************************************************************/
-	/*
-	 * Library object that contains public facing functions of the package.
-	 * This is the object that is returned by the library wrapper function.
-	 * See below.
-	 * NOTE: The functions in the public interface have access to the private
-	 * functions of the library because of JavaScript function scope.
-	 */
+   *                        DEFINE PUBLIC INTERFACE
+   *************************************************************************/
+  /*
+   * Library object that contains public facing functions of the package.
+   * This is the object that is returned by the library wrapper function.
+   * See below.
+   * NOTE: The functions in the public interface have access to the private
+   * functions of the library because of JavaScript function scope.
+   */
 
   function get_map() {
     return m_map;
@@ -1281,12 +1287,12 @@ var TETHYS_MAP_VIEW = (function() {
   };
 
   /************************************************************************
- 	*                  INITIALIZATION / CONSTRUCTOR
- 	*************************************************************************/
+   *                  INITIALIZATION / CONSTRUCTOR
+   *************************************************************************/
 
-	// Initialization: jQuery function that gets called when
-	// the DOM tree finishes loading
-	$(function() {
+  // Initialization: jQuery function that gets called when
+  // the DOM tree finishes loading
+  $(function() {
     // Map container selector
     m_map_target = 'map_view';
     m_textarea_target = 'map_view_geometry';
@@ -1317,9 +1323,9 @@ var TETHYS_MAP_VIEW = (function() {
     // Initialize Legend
     ol_legend_init();
 
-	});
+  });
 
-	return public_interface;
+  return public_interface;
 
 }()); // End of package wrapper
 // NOTE: that the call operator (open-closed parenthesis) is used to invoke the library wrapper
