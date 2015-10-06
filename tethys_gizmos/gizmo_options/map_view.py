@@ -280,8 +280,9 @@ class MVLayer(SecondaryGizmoOptions):
 
     Attributes:
         source (str, required): The source or data type of the layer (e.g.: ImageWMS)
-        options (dict, required): A dictionary representation of the OpenLayers layer options object for the source.
+        options (dict, required): A dictionary representation of the OpenLayers options object for ol.source.
         legend_title (str, required): The human readable name of the layer that will be displayed in the legend.
+        layer_options (dict): A dictionary representation of the OpenLayers options object for ol.layer.
         legend_classes (list): A list of MVLegendClass objects.
         legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
@@ -363,7 +364,7 @@ class MVLayer(SecondaryGizmoOptions):
                                 legend_extent=[-173, 17, -65, 72]),
     """
 
-    def __init__(self, source, options, legend_title, legend_classes=None, legend_extent=None, legend_extent_projection='EPSG:4326'):
+    def __init__(self, source, options, legend_title, layer_options=None, legend_classes=None, legend_extent=None, legend_extent_projection='EPSG:4326'):
         """
         Constructor
         """
@@ -372,6 +373,7 @@ class MVLayer(SecondaryGizmoOptions):
         self.source = source
         self.legend_title = legend_title
         self.options = options
+        self.layer_options = layer_options
         self.legend_classes = legend_classes
         self.legend_extent = legend_extent
         self.legend_extent_projection = legend_extent_projection

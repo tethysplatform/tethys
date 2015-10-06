@@ -403,27 +403,30 @@ var TETHYS_MAP_VIEW = (function() {
     if (is_defined(m_layers_options)) {
       for (var i = m_layers_options.length; i--; ) {
         var current_layer,
-            layer, Source;
+            layer, Source, current_layer_layer_options;
 
         current_layer = m_layers_options[i];
 
+        // Extract layer_options
+        if ('layer_options' in current_layer && current_layer.layer_options) {
+          current_layer_layer_options = current_layer.layer_options;
+        } else {
+          current_layer_layer_options = {};
+        }
+        console.log(current_layer_layer_options);
 
         // Tile layer case
         if (in_array(current_layer.source, TILE_SOURCES)) {
           Source = string_to_function('ol.source.' + current_layer.source);
-
-          layer = new ol.layer.Tile({
-            source: new Source(current_layer.options)
-          });
+          current_layer_layer_options['source'] = new Source(current_layer.options);
+          layer = new ol.layer.Tile(current_layer_layer_options);
         }
 
         // Image layer case
         else if (in_array(current_layer.source, IMAGE_SOURCES)) {
           Source = string_to_function('ol.source.' + current_layer.source);
-
-          layer = new ol.layer.Image({
-            source: new Source(current_layer.options)
-          });
+          current_layer_layer_options['source'] = new Source(current_layer.options);
+          layer = new ol.layer.Image(current_layer_layer_options);
         }
 
         // Vector layer case
@@ -450,22 +453,20 @@ var TETHYS_MAP_VIEW = (function() {
               features: features
             });
 
-            layer = new ol.layer.Vector({
-              source: geojson_source
-            })
+            current_layer_layer_options['source'] = geojson_source;
+            layer = new ol.layer.Vector(current_layer_layer_options);
           }
 
           // KML case
           else if (current_layer.source === KML){
             // From URL case
             if (current_layer.options.hasOwnProperty('url')) {
-              layer = new ol.layer.Vector({
-                source: new ol.source.Vector({
-                  url: current_layer.options.url,
-                  format: new ol.format.KML(),
-                  projection: new ol.proj.get(DEFAULT_PROJECTION)
-                })
+              current_layer_layer_options['source'] = new ol.source.Vector({
+                url: current_layer.options.url,
+                format: new ol.format.KML(),
+                projection: new ol.proj.get(DEFAULT_PROJECTION)
               });
+              layer = new ol.layer.Vector(current_layer_layer_options);
             }
 
             // From string case
@@ -477,19 +478,16 @@ var TETHYS_MAP_VIEW = (function() {
                 projection: new ol.proj.get(DEFAULT_PROJECTION)
               });
 
-              layer = new ol.layer.Vector({
-                source: kml_source
-              });
+              current_layer_layer_options['source'] = kml_source;
+              layer = new ol.layer.Vector(current_layer_layer_options);
             }
           }
 
           // Generic vector case
           else {
             Source = string_to_function('ol.source.' + current_layer.source);
-
-            layer = new ol.layer.Vector({
-              source: new Source(current_layer.options)
-            });
+            current_layer_layer_options['source'] = new Source(current_layer.options);
+            layer = new ol.layer.Vector(current_layer_layer_options);
           }
         }
 
@@ -948,12 +946,18 @@ var TETHYS_MAP_VIEW = (function() {
     // Declare Vars
     var html, last_item, title,
         opacity_control, display_control, zoom_control, menu_toggle_control,
-        legend_classes;
+        legend_classes, init_display_control_text;
 
     if (layer.hasOwnProperty('tethys_legend_title')) {
       title = layer.tethys_legend_title;
     } else {
       title = 'Untitled';
+    }
+
+    if (layer.getVisible()) {
+      init_display_control_text = 'Hide Layer';
+    } else {
+      init_display_control_text = 'Show Layer';
     }
 
     html =  '<li class="legend-item">' +
@@ -969,7 +973,7 @@ var TETHYS_MAP_VIEW = (function() {
                       '<span>Opacity</span> ' +
                       '<input type="range" min="0.0" max="1.0" step="0.01" value="' + layer.getOpacity() + '">' +
                     '</a></li>' +
-                    '<li><a class="display-control" href="javascript:void(0);">Hide Layer</a></li>' +
+                    '<li><a class="display-control" href="javascript:void(0);">' + init_display_control_text + '</a></li>' +
                   '</ul>' +
                 '</div>' +
               '</div>';
