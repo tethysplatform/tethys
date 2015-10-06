@@ -30,7 +30,8 @@ var TETHYS_MAP_VIEW = (function() {
       DRAW_ATTRIBUTE = 'data-draw',                         // HTML attribute containing the drawing options
       LAYERS_ATTRIBUTE = 'data-layers',                     // HTML attribute containing the layers options
       LEGEND_ATTRIBUTE = 'data-legend',                     // HTML attribute containing the legend options
-      VIEW_ATTRIBUTE = 'data-view';                         // HTML attribute containing the view options
+      VIEW_ATTRIBUTE = 'data-view',                         // HTML attribute containing the view options
+      DISABLE_BASE_MAP_ATTRIBUTE = 'data-disable-base-map'; // HTML attribute containing the disable base map option
 
   // Objects
   var public_interface,                                      // Object returned by the module
@@ -44,7 +45,7 @@ var TETHYS_MAP_VIEW = (function() {
       m_legend_element,                                     // Stores the document element for the legend
       m_legend_items,                                       // Stores the legend items
       m_legend_control,                                     // OpenLayers map control
-      m_map;                                                // The map
+      m_map;					                            // The map
 
   // Selectors
   var m_map_target,                                         // Selector for the map container
@@ -57,7 +58,8 @@ var TETHYS_MAP_VIEW = (function() {
       m_draw_options,                                       // Draw options json
       m_layers_options,                                     // Layers options json
       m_legend_options,                                     // Legend options json
-      m_view_options;                                       // View options json
+      m_view_options,                                       // View options json
+      m_disable_base_map;                                   // Disable base map option json
 
   // Others
   var m_draw_id_counter;                                    // Draw id counter
@@ -109,6 +111,10 @@ var TETHYS_MAP_VIEW = (function() {
 
     // Declarations
     var base_map_layer;
+
+    if (is_defined(m_disable_base_map) && m_disable_base_map) {
+      return;
+    }
 
     // Default base map
     base_map_layer = new ol.layer.Tile({
@@ -587,6 +593,7 @@ var TETHYS_MAP_VIEW = (function() {
     m_layers_options = $map_element.attr(LAYERS_ATTRIBUTE);
     m_legend_options = $map_element.attr(LEGEND_ATTRIBUTE);
     m_view_options = $map_element.attr(VIEW_ATTRIBUTE);
+    m_disable_base_map = $map_element.attr(DISABLE_BASE_MAP_ATTRIBUTE);
 
     // Parse JSON
     if (is_defined(m_attribute_table_options)) {
@@ -615,6 +622,10 @@ var TETHYS_MAP_VIEW = (function() {
 
     if (is_defined(m_view_options)) {
       m_view_options = JSON.parse(m_view_options);
+    }
+
+    if (is_defined(m_disable_base_map)) {
+      m_disable_base_map = JSON.parse(m_disable_base_map);
     }
   };
 
