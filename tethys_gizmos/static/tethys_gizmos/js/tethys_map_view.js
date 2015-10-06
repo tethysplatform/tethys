@@ -413,7 +413,6 @@ var TETHYS_MAP_VIEW = (function() {
         } else {
           current_layer_layer_options = {};
         }
-        console.log(current_layer_layer_options);
 
         // Tile layer case
         if (in_array(current_layer.source, TILE_SOURCES)) {
