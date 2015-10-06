@@ -41,7 +41,7 @@ class HydroShareOAuth2(BaseOAuth2):
         """
         Loads user data from service.
         """
-        url = 'https://www.hydroshare.org/hsapi/user' + urlencode({
+        url = 'http://playground.hydroshare.org/o/applications/register/' + urlencode({
             'access_token': access_token
         })
         try:
