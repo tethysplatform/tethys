@@ -19,6 +19,8 @@ var TETHYS_MAP_VIEW = (function() {
    *************************************************************************/
    // Constants
   var DEFAULT_PROJECTION = 'EPSG:3857',                     // Spherical Mercator Projection
+      LAT_LON_PROJECTION = 'EPSG:4326',                     // Standard Geographic Projection
+      RESOLUTION_MULTIPLIER = 2,                            // Used in selectable features
       DEFAULT_OUTPUT_FORMAT = 'GeoJSON',                    // The default output format
       GEOJSON_FORMAT = 'GeoJSON',                           // GeoJSON format type
       WKT_FORMAT = 'WKT';                                   // Well know text format type
@@ -31,6 +33,7 @@ var TETHYS_MAP_VIEW = (function() {
       LAYERS_ATTRIBUTE = 'data-layers',                     // HTML attribute containing the layers options
       LEGEND_ATTRIBUTE = 'data-legend',                     // HTML attribute containing the legend options
       VIEW_ATTRIBUTE = 'data-view',                         // HTML attribute containing the view options
+      FEAT_SELECTION_ATTRIBUTE = 'data-feature-selection',  // HTML attribute containing the feature selection options
       DISABLE_BASE_MAP_ATTRIBUTE = 'data-disable-base-map'; // HTML attribute containing the disable base map option
 
   // Objects
@@ -45,6 +48,10 @@ var TETHYS_MAP_VIEW = (function() {
       m_legend_element,                                     // Stores the document element for the legend
       m_legend_items,                                       // Stores the legend items
       m_legend_control,                                     // OpenLayers map control
+      m_selectable_layers,                                  // The layers that allow for selectable features
+      m_points_selected_layer,                              // The layer that contains the currently selected points
+      m_lines_selected_layer,                               // The layer that contains the currently selected lines
+      m_polygons_selected_layer,                            // The layer that contains the currently selected polygons
       m_map;					                            // The map
 
   // Selectors
@@ -59,6 +66,7 @@ var TETHYS_MAP_VIEW = (function() {
       m_layers_options,                                     // Layers options json
       m_legend_options,                                     // Legend options json
       m_view_options,                                       // View options json
+      m_feature_selection_options,                          // Feature selection options json
       m_disable_base_map;                                   // Disable base map option json
 
   // Others
@@ -68,8 +76,8 @@ var TETHYS_MAP_VIEW = (function() {
    *                       PRIVATE METHOD DECLARATIONS
    *************************************************************************/
   // Initialization Methods
-   var ol_base_map_init, ol_controls_init, ol_drawing_init, ol_layers_init, ol_legend_init, ol_map_init, ol_view_init,
-      parse_options;
+   var ol_base_map_init, ol_controls_init, ol_drawing_init, ol_layers_init, ol_legend_init, ol_map_init,
+       ol_feature_selection_init, ol_view_init, parse_options;
 
   // Drawing Methods
   var add_drawing_interaction, add_drag_box_interaction, add_drag_feature_interaction, add_modify_interaction,
@@ -83,6 +91,10 @@ var TETHYS_MAP_VIEW = (function() {
 
   // Legend Methods
   var clear_legend, new_legend_item, update_legend;
+
+  // Selectable Features Methods
+  var default_selected_feature_styler, highlight_selected_features, jsonp_response_handler, map_clicked,
+      override_selection_styler, selected_features_changed;
 
   // UI Management Methods
   var update_field;
@@ -426,6 +438,14 @@ var TETHYS_MAP_VIEW = (function() {
           Source = string_to_function('ol.source.' + current_layer.source);
           current_layer_layer_options['source'] = new Source(current_layer.options);
           layer = new ol.layer.Image(current_layer_layer_options);
+
+          // Actions Specific to ImageWMS layers
+          if (current_layer.source == 'ImageWMS') {
+            if ('feature_selection' in current_layer && current_layer.feature_selection) {
+              // Push layer to m_selectable layers to enable selection
+              m_selectable_layers.push(layer);
+            }
+          }
         }
 
         // Vector layer case
@@ -547,6 +567,34 @@ var TETHYS_MAP_VIEW = (function() {
     });
   };
 
+  // Initialize the selectable layers
+  ol_feature_selection_init = function()
+  {
+    // Only turn on feature selection if there are layers that support it.
+    if (m_selectable_layers.length <= 0) { return; }
+
+    m_points_selected_layer = new ol.layer.Vector({
+      source: new ol.source.Vector(),
+      style: default_selected_feature_styler,
+    });
+    m_points_selected_layer.setMap(m_map);
+
+    m_lines_selected_layer = new ol.layer.Vector({
+      source: new ol.source.Vector(),
+      style: default_selected_feature_styler,
+    });
+    m_lines_selected_layer.setMap(m_map);
+
+    m_polygons_selected_layer = new ol.layer.Vector({
+      source: new ol.source.Vector(),
+      style: default_selected_feature_styler,
+    });
+    m_polygons_selected_layer.setMap(m_map);
+
+    // Bind the to the map onclick event
+    m_map.on('singleclick', map_clicked);
+  }
+
   // Initialize the map view
   ol_view_init = function()
   {
@@ -591,6 +639,7 @@ var TETHYS_MAP_VIEW = (function() {
     m_legend_options = $map_element.attr(LEGEND_ATTRIBUTE);
     m_view_options = $map_element.attr(VIEW_ATTRIBUTE);
     m_disable_base_map = $map_element.attr(DISABLE_BASE_MAP_ATTRIBUTE);
+    m_feature_selection_options = $map_element.attr(FEAT_SELECTION_ATTRIBUTE);
 
     // Parse JSON
     if (is_defined(m_attribute_table_options)) {
@@ -623,6 +672,10 @@ var TETHYS_MAP_VIEW = (function() {
 
     if (is_defined(m_disable_base_map)) {
       m_disable_base_map = JSON.parse(m_disable_base_map);
+    }
+
+    if (is_defined(m_feature_selection_options)) {
+      m_feature_selection_options = JSON.parse(m_feature_selection_options);
     }
   };
 
@@ -1056,7 +1109,7 @@ var TETHYS_MAP_VIEW = (function() {
 
       if (is_defined(extent)) {
         var lat_lon_extent = ol.proj.transformExtent(extent, layer.tethys_legend_extent_projection, DEFAULT_PROJECTION);
-        m_map.getView().fitExtent(lat_lon_extent, m_map.getSize());
+        m_map.getView().fit(lat_lon_extent, m_map.getSize());
       }
     });
   };
@@ -1080,6 +1133,194 @@ var TETHYS_MAP_VIEW = (function() {
     }
   };
 
+  /***********************************
+   * Selectable Features Methods
+   ***********************************/
+
+  default_selected_feature_styler = function(feature, resolution) {
+    var image, styles;
+
+    image = new ol.style.Circle({
+      radius: 5,
+      fill: new ol.style.Fill({
+        color: '#7300e5'
+      }),
+      stroke: new ol.style.Stroke({
+        color: 'white',
+        width: 1
+      })
+    });
+
+    styles = {
+      'Point': [new ol.style.Style({
+        image: image
+      })],
+      'MultiPoint': [new ol.style.Style({
+        image: image
+      })],
+      'LineString': [new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: '#7300e5',
+          width: 3
+        })
+      })],
+      'MultiLineString': [new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: '#7300e5',
+          width: 3
+        })
+      })],
+      'Polygon': [new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: '#7300e5',
+          width: 3
+        }),
+        fill: new ol.style.Fill({
+          color: 'rgba(115, 0, 229, 0.1)'
+        })
+      })],
+      'MultiPolygon': [new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: '#7300e5',
+          width: 3
+        }),
+        fill: new ol.style.Fill({
+          color: 'rgba(115, 0, 229, 0.1)'
+        })
+      })]
+    }
+
+    return styles[feature.getGeometry().getType()];
+  };
+
+  selected_features_changed = function(points, lines, polygons) {
+    // This is an abstract method to be overridden
+  };
+
+  highlight_selected_features = function(geojson) {
+    var points_source, lines_source, polygons_source;
+    var features, curr_features;
+    var incoming_type = geojson.features[0].geometry.type;
+    var points, lines, polygons;
+
+    // Get sources
+    points_source = m_points_selected_layer.getSource();
+    lines_source = m_lines_selected_layer.getSource();
+    polygons_source = m_polygons_selected_layer.getSource();
+
+    // Valid Geometries
+    points = ['Point', 'MultiPoint'];
+    lines = ['LineString', 'MultiLineString'];
+    polygons = ['Polygon', 'MultiPolygon'];
+
+    // Parse the Features
+    features = (new ol.format.GeoJSON()).readFeatures(geojson);
+
+    if (in_array(incoming_type, points)) {
+      points_source.addFeatures(features);
+    }
+    else if (in_array(incoming_type, lines)) {
+      lines_source.addFeatures(features);
+    }
+    else if (in_array(incoming_type, polygons)) {
+      polygons_source.addFeatures(features);
+    }
+
+    // Hide lines if a point is selected (to allow selection of nodes that fall on a line)
+    if (points_source && lines_source && points_source.getFeatures().length > 0) {
+      lines_source.clear();
+    }
+
+    // Hide lines if a point is selected (to allow selection of nodes that fall on a polygon)
+    if (points_source && polygons_source && points_source.getFeatures().length > 0) {
+      polygons_source.clear();
+    }
+  };
+
+  jsonp_response_handler = function(data) {
+    // Check for features
+    if (!('features' in data && data.features.length > 0)) { return }
+
+    // Process response
+    highlight_selected_features(data);
+
+    // Call Features Changed Method
+    if (selected_features_changed) {
+      selected_features_changed(m_points_selected_layer, m_lines_selected_layer, m_polygons_selected_layer);
+    }
+  };
+
+  override_selection_styler = function(type, styler) {
+    // Set styler for selection layers
+    if (type === 'points' && m_points_selected_layer) {
+      m_points_selected_layer.setStyle(styler);
+    }
+    else if (type === 'lines' && m_lines_selected_layer) {
+      m_lines_selected_layer.setStyle(styler);
+    }
+    else if (type === 'polygons' && m_polygons_selected_layer) {
+      m_polygons_selected_layer.setStyle(styler);
+    }
+  };
+
+  map_clicked = function(event) {
+    var urls, tolerance, x, y;
+    x = event.coordinate[0]
+    y = event.coordinate[1]
+    urls = [];
+    tolerance = m_map.getView().getResolution() * RESOLUTION_MULTIPLIER;
+
+    // Clear current selection
+    m_points_selected_layer.getSource().clear();
+    m_lines_selected_layer.getSource().clear();
+    m_polygons_selected_layer.getSource().clear();
+
+    if (selected_features_changed) {
+      selected_features_changed(m_points_selected_layer, m_lines_selected_layer, m_polygons_selected_layer);
+    }
+
+    for (var i = 0; i < m_selectable_layers.length; i++) {
+      var source, wms_url, url, layer, layer_name;
+      var bbox, cql_filter;
+
+      // Don't select if not visible
+      layer = m_selectable_layers[i];
+      if (!layer.getVisible()) { continue; }
+
+      // Check for undefined source or non-WMS layers before proceeding
+      source = layer.getSource();
+      if (!(source && 'getGetFeatureInfoUrl' in source)) { continue; }
+
+      // URL Params
+      bbox = '{{minx}}%2C{{miny}}%2C{{maxx}}%2C{{maxy}}'
+      bbox = bbox.replace('{{minx}}', x - tolerance);
+      bbox = bbox.replace('{{miny}}', y - tolerance);
+      bbox = bbox.replace('{{maxx}}', x + tolerance);
+      bbox = bbox.replace('{{maxy}}', y + tolerance);
+      cql_filter = '&CQL_FILTER=BBOX(geometry%2C' + bbox + '%2C%27EPSG%3A3857%27)';
+      layer_name = source.getParams().LAYERS;
+      wms_url = source.getUrl();
+
+      url = wms_url.replace('wms', 'wfs')
+          + '?SERVICE=wfs'
+          + '&VERSION=2.0.0'
+          + '&REQUEST=GetFeature'
+          + '&TYPENAMES=' + layer_name
+          + '&OUTPUTFORMAT=text/javascript'
+          + '&FORMAT_OPTIONS=callback:TETHYS_MAP_VIEW.jsonResponseHandler;'
+          + '&SRSNAME=' + DEFAULT_PROJECTION
+          + cql_filter;
+      urls.push(url);
+    }
+
+    // Get the features if applicable
+    for (var j = 0; j < urls.length; j++) {
+      $.ajax({
+        url: urls[j],
+        dataType: 'jsonp',
+      });
+    }
+  };
 
   /***********************************
    * Initialization Methods
@@ -1297,7 +1538,44 @@ var TETHYS_MAP_VIEW = (function() {
 
   public_interface = {
     getMap: get_map,
-    getTarget: get_target
+    getTarget: get_target,
+    jsonResponseHandler: jsonp_response_handler,
+
+    zoomToExtent: function(lat_long_extent) {
+      var map_extent = ol.proj.transformExtent(lat_long_extent, LAT_LON_PROJECTION, DEFAULT_PROJECTION);
+      m_map.getView().fit(map_extent, m_map.getSize());
+    },
+
+    overrideSelectionStyler(geometry_type, styler) {
+      if (!in_array(geometry_type, ['points', 'lines', 'polygons'])) {
+        console.log('Warning: "' + geometry_type +'" is not a valid value for the geometry_type argument. Must be one of: "points", "lines", or "polygons"');
+        return;
+      }
+      override_selection_styler(geometry_type, styler);
+    },
+
+    clearSelection: function() {
+      if(m_points_selected_layer) {
+        m_points_selected_layer.getSource().clear();
+      }
+
+      if (m_lines_selected_layer) {
+        m_lines_selected_layer.getSource().clear();
+      }
+
+      if (m_polygons_selected_layer) {
+        m_polygons_selected_layer.getSource().clear();
+      }
+
+      // Call Features Changed Method
+      if (selected_features_changed) {
+        selected_features_changed(m_points_selected_layer, m_lines_selected_layer, m_polygons_selected_layer);
+      }
+    },
+
+    onSelectionChange: function(func) {
+      selected_features_changed = func;
+    },
   };
 
   /************************************************************************
@@ -1310,6 +1588,7 @@ var TETHYS_MAP_VIEW = (function() {
     // Map container selector
     m_map_target = 'map_view';
     m_textarea_target = 'map_view_geometry';
+    m_selectable_layers = [];
 
     m_draw_id_counter = 1;
 
@@ -1327,6 +1606,9 @@ var TETHYS_MAP_VIEW = (function() {
 
     // Initialize Layers
     ol_layers_init();
+
+    // Initialize Selectable Features
+    ol_feature_selection_init();
 
     // Initialize Drawing
     ol_drawing_init();
