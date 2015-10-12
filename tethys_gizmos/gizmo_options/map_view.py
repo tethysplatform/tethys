@@ -180,7 +180,8 @@ class MapView(TethysGizmoOptions):
     """
 
     def __init__(self, height='100%', width='100%', basemap='OpenStreetMap', view={'center': [-100, 40], 'zoom': 2},
-                 controls=[], layers=[], draw=None, legend=False, attributes='', classes='', disable_basemap=False):
+                 controls=[], layers=[], draw=None, legend=False, attributes='', classes='', disable_basemap=False,
+                 feature_selection=None):
         """
         Constructor
         """
@@ -196,6 +197,7 @@ class MapView(TethysGizmoOptions):
         self.draw = draw
         self.legend = legend
         self.disable_basemap = disable_basemap
+        self.feature_selection = feature_selection
 
 
 class MVView(SecondaryGizmoOptions):
@@ -283,6 +285,7 @@ class MVLayer(SecondaryGizmoOptions):
         options (dict, required): A dictionary representation of the OpenLayers options object for ol.source.
         legend_title (str, required): The human readable name of the layer that will be displayed in the legend.
         layer_options (dict): A dictionary representation of the OpenLayers options object for ol.layer.
+        feature_selection (bool): Set to True to enable feature selection on this layer. Defaults to False.
         legend_classes (list): A list of MVLegendClass objects.
         legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
@@ -364,7 +367,8 @@ class MVLayer(SecondaryGizmoOptions):
                                 legend_extent=[-173, 17, -65, 72]),
     """
 
-    def __init__(self, source, options, legend_title, layer_options=None, legend_classes=None, legend_extent=None, legend_extent_projection='EPSG:4326'):
+    def __init__(self, source, options, legend_title, layer_options=None, legend_classes=None, legend_extent=None,
+                 legend_extent_projection='EPSG:4326', feature_selection=False):
         """
         Constructor
         """
@@ -377,6 +381,7 @@ class MVLayer(SecondaryGizmoOptions):
         self.legend_classes = legend_classes
         self.legend_extent = legend_extent
         self.legend_extent_projection = legend_extent_projection
+        self.feature_selection = feature_selection
 
 
 class MVLegendClass(SecondaryGizmoOptions):

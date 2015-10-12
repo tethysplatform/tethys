@@ -1229,6 +1229,11 @@ def map_view(request):
         legend=True
     )
 
+    submitted_geometry = request.POST.get('geometry', None)
+
+    if submitted_geometry is not None:
+        messages.info(request, submitted_geometry)
+
     context = {'map_view': map_view_options}
 
     return render(request, 'tethys_gizmos/gizmo_showcase/map_view.html', context)

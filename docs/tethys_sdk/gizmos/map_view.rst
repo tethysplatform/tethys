@@ -44,4 +44,103 @@ This method returns the OpenLayers map object. You can use the `OpenLayers Map A
 
 .. caution::
 
-    The Map View Gizmo is powered by OpenLayers version 3.5.0. When referring to the OpenLayers documentation, ensure that you are browsing the correct version of documentation (see the URL of the documentation page).
+    The Map View Gizmo is powered by OpenLayers version 3.10.1. When referring to the OpenLayers documentation, ensure that you are browsing the correct version of documentation (see the URL of the documentation page).
+
+TETHYS_MAP_VIEW.zoomToExtent(latlongextent)
++++++++++++++++++++++++++++++++++++++++++++
+
+This method can be used to set the view of the map to the extent provided. The extent is assumed to be given in the EPSG:4326 coordinate reference system.
+
+::
+
+    var extent = [-109.49945001309617, 37.58047995600726, -109.44540360290348, 37.679502621605735];
+    TETHYS_MAP_VIEW.zoomToExtent(extent);
+
+TETHYS_MAP_VIEW.clearSelection()
+++++++++++++++++++++++++++++++++
+
+This method applies to the WMS layer feature selection functionality. Use this method to clear the current selection via JavaScript.
+
+::
+
+    TETHYS_MAP_VIEW.clearSelection();
+
+
+TETHYS_MAP_VIEW.overrideSelectionStyler(geometry_type, styler)
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This method applies to the WMS layer feature selection functionality. This method can be used to override the default styling for the points, lines, and polygons selected feature layers.
+
+* geometry_type (str): The type of the layer that the styler function will apply to. One of: 'points', 'lines', or 'polygons'.
+* styler (func): A function that accepts two arguments, feature and resolution, and returns an array of valid ol.style objects.
+
+::
+
+    function my_styler(feature, resolution) {
+    var image, properties;
+        properties = feature.getProperties();
+
+        // Default icon
+        image = new ol.style.Circle({
+            radius: 5,
+            fill: new ol.style.Fill({
+                color: 'red'
+            })
+        });
+
+        if ('type' in properties) {
+            if (properties.type === 'TANK') {
+                image = new ol.style.RegularShape({
+                    fill: new ol.style.Fill({
+                        color: SELECTED_NODE_COLOR
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'white',
+                        width: 1
+                    }),
+                    points: 4,
+                    radius: 14,
+                    rotation: 0,
+                    angle: Math.PI / 4
+                });
+
+            }
+            else if (properties.type === 'RESERVOIR') {
+                image = new ol.style.RegularShape({
+                    fill: new ol.style.Fill({
+                        color: SELECTED_NODE_COLOR
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'white',
+                        width: 1
+                    }),
+                    points: 3,
+                    radius: 14,
+                    rotation: 0,
+                    angle: 0
+                });
+            }
+        }
+
+        return [new ol.style.Style({image: image})];
+
+    }
+
+    TETHYS_MAP_VIEW.overrideSelectionStyler('points', my_styler);
+
+
+TETHYS_MAP_VIEW.onSelectionChange(callback)
++++++++++++++++++++++++++++++++++++++++++++
+
+This method applies to the WMS layer feature selection functionality. The callback function provided will be called each time the feature selection is changed.
+
+* callback (func): A function that accepts three arguments, points_layer, lines_layer, polygons_layer. These are handles on the OpenLayers layers that are rendering the selected features. The features are divided into three layers by type.
+
+::
+
+    function my_callback(points_layer, lines_layer, polygons_layer) {
+       console.log(points_layer);
+    }
+
+    TETHYS_MAP_VIEW.onSelectionChange(my_callback);
+
