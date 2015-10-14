@@ -2,7 +2,7 @@
 Handoff API
 ***********
 
-**Last Updated:** August 12, 2015
+**Last Updated:** October 14, 2015
 
 App developers can use Handoff to launch one app from another app or an external website. Handoff also provides a mechanism for passing data from the originator app to the target app. Using Handoff, apps can be strung together to form a workflow, allowing apps to become modular and specialized in their capabilities.
 
@@ -61,7 +61,7 @@ The Handoff handler needs to be registered to make it available for other apps t
             Register some handoff handlers
             """
             handoff_handlers = (HandoffHandler(name='plot-csv',
-                                               handler='handoff:csv'),
+                                               handler='app_name.handoff.csv'),
             )
             return handoff_handlers
 

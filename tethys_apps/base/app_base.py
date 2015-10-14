@@ -196,7 +196,7 @@ class TethysAppBase(object):
                 Example handoff_handlers method.
                 \"""
                 handoff_handlers = (HandoffHandlers(name='example',
-                                                    handler='handlers:my_handler'),
+                                                    handler='my_first_app.controllers.my_handler'),
                 )
 
                 return handoff_handlers
