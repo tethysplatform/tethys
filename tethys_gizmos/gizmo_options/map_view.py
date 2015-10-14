@@ -27,6 +27,7 @@ class MapView(TethysGizmoOptions):
         layers(list): A list of MVLayer objects.
         draw(MVDraw): An MVDraw object specifying the drawing options.
         disable_basemap(bool): Render the map without a base map.
+        feature_selection(bool): A dictionary of global feature selection options. See below.
         attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
@@ -62,6 +63,12 @@ class MapView(TethysGizmoOptions):
     * ScaleLine: `ol.control.ScaleLine <http://openlayers.org/en/v3.5.0/apidoc/ol.control.ScaleLine.html>`_
     * ZoomSlider: `ol.control.ZoomSlider <http://openlayers.org/en/v3.5.0/apidoc/ol.control.ZoomSlider.html>`_
     * ZoomToExtent: `ol.control.ZoomToExtent <http://openlayers.org/en/v3.5.0/apidoc/ol.control.ZoomToExtent.html>`_
+
+    **Feature Selection**
+
+    The feature_selection dictionary contains global settings that can be used to modify the behavior of the feature selection functionality. An explanation of valid options follows:
+
+    * multiselect: Set to True to allow multiple features to be selected while holding the shift key on the keyboard. Defaults to False.
 
 
     Example

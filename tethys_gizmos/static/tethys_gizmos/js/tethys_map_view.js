@@ -1265,15 +1265,28 @@ var TETHYS_MAP_VIEW = (function() {
 
   map_clicked = function(event) {
     var urls, tolerance, x, y;
+    var multiselect;
     x = event.coordinate[0]
     y = event.coordinate[1]
     urls = [];
     tolerance = m_map.getView().getResolution() * RESOLUTION_MULTIPLIER;
 
+    // Determine if multiselect applies
+    multiselect = false;
+
+    if (is_defined(m_feature_selection_options) &&
+        'multiselect' in m_feature_selection_options &&
+        m_feature_selection_options.multiselect &&
+        event.browserEvent.shiftKey) {
+      multiselect = true;
+    }
+
     // Clear current selection
-    m_points_selected_layer.getSource().clear();
-    m_lines_selected_layer.getSource().clear();
-    m_polygons_selected_layer.getSource().clear();
+    if (!multiselect) {
+      m_points_selected_layer.getSource().clear();
+      m_lines_selected_layer.getSource().clear();
+      m_polygons_selected_layer.getSource().clear();
+    }
 
     if (selected_features_changed) {
       selected_features_changed(m_points_selected_layer, m_lines_selected_layer, m_polygons_selected_layer);
@@ -1309,7 +1322,8 @@ var TETHYS_MAP_VIEW = (function() {
           + '&OUTPUTFORMAT=text/javascript'
           + '&FORMAT_OPTIONS=callback:TETHYS_MAP_VIEW.jsonResponseHandler;'
           + '&SRSNAME=' + DEFAULT_PROJECTION
-          + cql_filter;
+          + cql_filter
+          + '#multiselect:' + multiselect;
       urls.push(url);
     }
 
@@ -1318,6 +1332,7 @@ var TETHYS_MAP_VIEW = (function() {
       $.ajax({
         url: urls[j],
         dataType: 'jsonp',
+        context: {'multiselect': multiselect},
       });
     }
   };
