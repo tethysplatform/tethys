@@ -300,7 +300,7 @@ body {
   transform: translate3d(300px, 0, 0);
 }
 #app-content-wrapper.show-nav #app-content #app-actions {
-  padding-right: 300px;
+  padding-right: 350px;
 }
 #app-content-wrapper.with-transition #app-content {
   -webkit-transition: 0.2s ease-in-out all;
