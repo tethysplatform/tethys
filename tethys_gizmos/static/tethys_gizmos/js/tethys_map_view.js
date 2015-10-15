@@ -51,6 +51,7 @@ var TETHYS_MAP_VIEW = (function() {
       m_selectable_layers,                                  // The layers that allow for selectable features
       m_points_selected_layer,                              // The layer that contains the currently selected points
       m_lines_selected_layer,                               // The layer that contains the currently selected lines
+      m_feature_selection_changed_callbacks,                         // An array of callback functions to execute whenever features change
       m_polygons_selected_layer,                            // The layer that contains the currently selected polygons
       m_map;					                            // The map
 
@@ -570,6 +571,9 @@ var TETHYS_MAP_VIEW = (function() {
   // Initialize the selectable layers
   ol_feature_selection_init = function()
   {
+    // Initialize the callback array always
+    m_feature_selection_changed_callbacks = [];
+
     // Only turn on feature selection if there are layers that support it.
     if (m_selectable_layers.length <= 0) { return; }
 
@@ -1194,7 +1198,11 @@ var TETHYS_MAP_VIEW = (function() {
   };
 
   selected_features_changed = function(points, lines, polygons) {
-    // This is an abstract method to be overridden
+    for (var i = 0; i < m_feature_selection_changed_callbacks.length; i++) {
+      var callback = m_feature_selection_changed_callbacks[i];
+      callback(points, lines, polygons);
+      console.log('foo');
+    }
   };
 
   highlight_selected_features = function(geojson) {
@@ -1589,7 +1597,11 @@ var TETHYS_MAP_VIEW = (function() {
     },
 
     onSelectionChange: function(func) {
-      selected_features_changed = func;
+      m_feature_selection_changed_callbacks.push(func);
+    },
+
+    clearSelectionChangeCallbacks: function() {
+      m_feature_selection_changed_callbacks = [];
     },
   };
 
