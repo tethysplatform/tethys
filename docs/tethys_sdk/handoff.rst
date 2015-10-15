@@ -80,7 +80,7 @@ Any parameters that need to be passed with the Handoff call are passed as query 
 
 ::
 
-    http://www.example.com/hydrograph-plotter/plot-csv/?csv=http://www.another.com/url/to/file.csv
+    http://www.example.com/hydrograph-plotter/plot-csv/?csv_url=http://www.another.com/url/to/file.csv
 
 The URL must have query parameters for each argument defined in the Handoff handler function or it will throw an error. It will also throw an error if extra query parameters are provided that are not defined as arguments for the Handoff handler function.
 
@@ -103,7 +103,7 @@ The output would look something like this:
 
 ::
 
-    [{"arguments": ["csv"], "name": "plot-csv"}]
+    [{"arguments": ["csv_url"], "name": "plot-csv"}]
 
 
 
