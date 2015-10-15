@@ -1201,7 +1201,6 @@ var TETHYS_MAP_VIEW = (function() {
     for (var i = 0; i < m_feature_selection_changed_callbacks.length; i++) {
       var callback = m_feature_selection_changed_callbacks[i];
       callback(points, lines, polygons);
-      console.log('foo');
     }
   };
 
