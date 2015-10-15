@@ -13,8 +13,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import HttpResponseBadRequest, HttpResponse
 
-# from tethys_apps.app_harvester import SingletonAppHarvester
+from tethys_apps.app_harvester import *
 
+#TODO add docstrings
 class HandoffManager(object):
     """
 
@@ -60,6 +61,8 @@ class HandoffManager(object):
 
             try:
                 urlish = handler(request, **kwargs)
+                if isinstance(urlish, tuple):
+                    return redirect(*urlish)
                 return redirect(urlish)
             except TypeError as e:
                 error['message'] = "HTTP 400 Bad Request: {0}. ".format(e.message)
@@ -87,20 +90,20 @@ class HandoffManager(object):
             return self
 
         # Get the app
-        # harvester = SingletonAppHarvester()
-        # apps = harvester.apps
-        #
-        # for app in apps:
-        #     if app.package == app_name:
-        #         manager = app.get_handoff_manager()
-        #         return manager
+        harvester = SingletonAppHarvester()
+        apps = harvester.apps
+
+        for app in apps:
+            if app.package == app_name:
+                manager = app.get_handoff_manager()
+                return manager
 
     def _get_handler_function(self, handoff_handler):
         """
         Returns the function of a handoff_handler object
         """
 
-        if ':' in handoff_handler.handler: #TODO delete deprecated code
+        if ':' in handoff_handler.handler: #TODO DEPRECATE: delete deprecated code
             print('DEPRECATION WARNING: handler controllers should now be in the form: "my_first_app.controllers.my_handler"')
             # Split into module name and function name
             handler_mod, handler_function = handoff_handler.handler.split(':')
@@ -108,11 +111,14 @@ class HandoffManager(object):
             # Pre-process handler path
             handler_path = '.'.join(('tethys_apps.tethysapp', self.app.package, handler_mod))
         else:
-            # Split into app package, module name, and function name
-            app_package, handler_mod, handler_function = handoff_handler.handler.split('.')
+            # Split into parts and extract function name
+            handler_parts = handoff_handler.handler.split('.')
+            handler_function = handler_parts[-1]
 
             #Pre-process handler path
-            handler_path = '.'.join(('tethys_apps.tethysapp', app_package, handler_mod))
+            handler_path_parts = handler_parts[:-1]
+            handler_path_parts.insert(0, 'tethys_apps.tethysapp')
+            handler_path = '.'.join(handler_path_parts)
 
         # Import module
         module = __import__(handler_path, fromlist=[handler_function])

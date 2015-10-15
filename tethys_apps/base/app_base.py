@@ -49,7 +49,7 @@ class TethysAppBase(object):
         """
         return '<TethysApp: {0}>'.format(self.name)
 
-    def url_map(self):
+    def url_maps(self):
         """
         Use this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically.
 
