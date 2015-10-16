@@ -62,3 +62,13 @@ Tethys Portal can also be configured to bypass the home page. When this setting 
 ::
 
     BYPASS_TETHYS_HOME_PAGE = True
+
+Enable Open Signup
+==================
+
+Prior to version 1.3.0, any visitor to a Tethys portal could signup for an account without administrator approval or in other words account signup was open. For version 1.3.0+ the open signup capability has been disabled by default for security reasons. To enable open signup, you must modify the ``ENABLE_OPEN_SIGNUP`` setting in the ``settings.py`` script:
+
+::
+
+    ENABLE_OPEN_SIGNUP = True
+
