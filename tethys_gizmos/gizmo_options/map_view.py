@@ -26,6 +26,8 @@ class MapView(TethysGizmoOptions):
         controls(list): A list of controls to add to the map. The list can be a list of strings or a list of dictionaries. Valid controls are ZoomSlider, Rotate, FullScreen, ScaleLine, ZoomToExtent, and 'MousePosition'. See below for more detail.
         layers(list): A list of MVLayer objects.
         draw(MVDraw): An MVDraw object specifying the drawing options.
+        disable_basemap(bool): Render the map without a base map.
+        feature_selection(bool): A dictionary of global feature selection options. See below.
         attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
@@ -43,9 +45,9 @@ class MapView(TethysGizmoOptions):
 
     There are three base maps supported by the Map View gizmo: OpenStreetMap, Bing, and MapQuest. Use the following links to learn about the additional options you can configure the base maps with:
 
-    * Bing: `ol.source.BingMaps <http://openlayers.org/en/v3.5.0/apidoc/ol.source.BingMaps.html>`_
-    * MapQuest: `ol.source.MapQuest <http://openlayers.org/en/v3.5.0/apidoc/ol.source.MapQuest.html>`_
-    * OpenStreetMap: `ol.source.OSM <http://openlayers.org/en/v3.5.0/apidoc/ol.source.OSM.html>`_
+    * Bing: `ol.source.BingMaps <http://openlayers.org/en/v3.10.1/apidoc/ol.source.BingMaps.html>`_
+    * MapQuest: `ol.source.MapQuest <http://openlayers.org/en/v3.10.1/apidoc/ol.source.MapQuest.html>`_
+    * OpenStreetMap: `ol.source.OSM <http://openlayers.org/en/v3.10.1/apidoc/ol.source.OSM.html>`_
 
     ::
 
@@ -55,12 +57,18 @@ class MapView(TethysGizmoOptions):
 
     Use the following links to learn about options for the different controls:
 
-    * FullScreen: `ol.control.FullScreen <http://openlayers.org/en/v3.5.0/apidoc/ol.control.FullScreen.html>`_
-    * MousePosition: `ol.control.MousePosition <http://openlayers.org/en/v3.5.0/apidoc/ol.control.MousePosition.html>`_
-    * Rotate: `ol.control.Rotate <http://openlayers.org/en/v3.5.0/apidoc/ol.control.Rotate.html>`_
-    * ScaleLine: `ol.control.ScaleLine <http://openlayers.org/en/v3.5.0/apidoc/ol.control.ScaleLine.html>`_
-    * ZoomSlider: `ol.control.ZoomSlider <http://openlayers.org/en/v3.5.0/apidoc/ol.control.ZoomSlider.html>`_
-    * ZoomToExtent: `ol.control.ZoomToExtent <http://openlayers.org/en/v3.5.0/apidoc/ol.control.ZoomToExtent.html>`_
+    * FullScreen: `ol.control.FullScreen <http://openlayers.org/en/v3.10.1/apidoc/ol.control.FullScreen.html>`_
+    * MousePosition: `ol.control.MousePosition <http://openlayers.org/en/v3.10.1/apidoc/ol.control.MousePosition.html>`_
+    * Rotate: `ol.control.Rotate <http://openlayers.org/en/v3.10.1/apidoc/ol.control.Rotate.html>`_
+    * ScaleLine: `ol.control.ScaleLine <http://openlayers.org/en/v3.10.1/apidoc/ol.control.ScaleLine.html>`_
+    * ZoomSlider: `ol.control.ZoomSlider <http://openlayers.org/en/v3.10.1/apidoc/ol.control.ZoomSlider.html>`_
+    * ZoomToExtent: `ol.control.ZoomToExtent <http://openlayers.org/en/v3.10.1/apidoc/ol.control.ZoomToExtent.html>`_
+
+    **Feature Selection**
+
+    The feature_selection dictionary contains global settings that can be used to modify the behavior of the feature selection functionality. An explanation of valid options follows:
+
+    * multiselect: Set to True to allow multiple features to be selected while holding the shift key on the keyboard. Defaults to False.
 
 
     Example
@@ -179,7 +187,8 @@ class MapView(TethysGizmoOptions):
     """
 
     def __init__(self, height='100%', width='100%', basemap='OpenStreetMap', view={'center': [-100, 40], 'zoom': 2},
-                 controls=[], layers=[], draw=None, legend=False, attributes='', classes=''):
+                 controls=[], layers=[], draw=None, legend=False, attributes='', classes='', disable_basemap=False,
+                 feature_selection=None):
         """
         Constructor
         """
@@ -194,6 +203,8 @@ class MapView(TethysGizmoOptions):
         self.layers = layers
         self.draw = draw
         self.legend = legend
+        self.disable_basemap = disable_basemap
+        self.feature_selection = feature_selection
 
 
 class MVView(SecondaryGizmoOptions):
@@ -278,8 +289,10 @@ class MVLayer(SecondaryGizmoOptions):
 
     Attributes:
         source (str, required): The source or data type of the layer (e.g.: ImageWMS)
-        options (dict, required): A dictionary representation of the OpenLayers layer options object for the source.
+        options (dict, required): A dictionary representation of the OpenLayers options object for ol.source.
         legend_title (str, required): The human readable name of the layer that will be displayed in the legend.
+        layer_options (dict): A dictionary representation of the OpenLayers options object for ol.layer.
+        feature_selection (bool): Set to True to enable feature selection on this layer. Defaults to False.
         legend_classes (list): A list of MVLegendClass objects.
         legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
@@ -361,7 +374,8 @@ class MVLayer(SecondaryGizmoOptions):
                                 legend_extent=[-173, 17, -65, 72]),
     """
 
-    def __init__(self, source, options, legend_title, legend_classes=None, legend_extent=None, legend_extent_projection='EPSG:4326'):
+    def __init__(self, source, options, legend_title, layer_options=None, legend_classes=None, legend_extent=None,
+                 legend_extent_projection='EPSG:4326', feature_selection=False):
         """
         Constructor
         """
@@ -370,9 +384,11 @@ class MVLayer(SecondaryGizmoOptions):
         self.source = source
         self.legend_title = legend_title
         self.options = options
+        self.layer_options = layer_options
         self.legend_classes = legend_classes
         self.legend_extent = legend_extent
         self.legend_extent_projection = legend_extent_projection
+        self.feature_selection = feature_selection
 
 
 class MVLegendClass(SecondaryGizmoOptions):

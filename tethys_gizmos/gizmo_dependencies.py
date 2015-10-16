@@ -48,7 +48,14 @@ def map_view(context):
     """
     Dependencies for map_view gizmo.
     """
-    return ('tethys_gizmos/css/tethys_map_view.css',
+    openlayers_library = 'tethys_gizmos/vendor/openlayers/ol.js'
+
+    if settings.DEBUG:
+        openlayers_library = 'tethys_gizmos/vendor/openlayers/ol-debug.js'
+    return ('tethys_gizmos/vendor/openlayers/ol.css',
+            'tethys_gizmos/css/tethys_map_view.css',
+            openlayers_library,
+            'tethys_gizmos/js/gizmo_utilities.js',
             'tethys_gizmos/js/tethys_map_view.js')
 
 

@@ -206,7 +206,7 @@ def tethys_command():
     manage_parser.add_argument('command', help='Management command to run.',
                                choices=[MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT, MANAGE_CREATESUPERUSER])
     manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
-    manage_parser.add_argument('-p', '--port', type=int, help='Port on which to start the development server.')
+    manage_parser.add_argument('-p', '--port', type=str, help='Host and/or port on which to bind the development server.')
     manage_parser.set_defaults(func=manage_command)
 
     # Setup uninstall command
