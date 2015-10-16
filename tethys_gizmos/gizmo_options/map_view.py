@@ -45,9 +45,9 @@ class MapView(TethysGizmoOptions):
 
     There are three base maps supported by the Map View gizmo: OpenStreetMap, Bing, and MapQuest. Use the following links to learn about the additional options you can configure the base maps with:
 
-    * Bing: `ol.source.BingMaps <http://openlayers.org/en/v3.5.0/apidoc/ol.source.BingMaps.html>`_
-    * MapQuest: `ol.source.MapQuest <http://openlayers.org/en/v3.5.0/apidoc/ol.source.MapQuest.html>`_
-    * OpenStreetMap: `ol.source.OSM <http://openlayers.org/en/v3.5.0/apidoc/ol.source.OSM.html>`_
+    * Bing: `ol.source.BingMaps <http://openlayers.org/en/v3.10.1/apidoc/ol.source.BingMaps.html>`_
+    * MapQuest: `ol.source.MapQuest <http://openlayers.org/en/v3.10.1/apidoc/ol.source.MapQuest.html>`_
+    * OpenStreetMap: `ol.source.OSM <http://openlayers.org/en/v3.10.1/apidoc/ol.source.OSM.html>`_
 
     ::
 
@@ -57,12 +57,12 @@ class MapView(TethysGizmoOptions):
 
     Use the following links to learn about options for the different controls:
 
-    * FullScreen: `ol.control.FullScreen <http://openlayers.org/en/v3.5.0/apidoc/ol.control.FullScreen.html>`_
-    * MousePosition: `ol.control.MousePosition <http://openlayers.org/en/v3.5.0/apidoc/ol.control.MousePosition.html>`_
-    * Rotate: `ol.control.Rotate <http://openlayers.org/en/v3.5.0/apidoc/ol.control.Rotate.html>`_
-    * ScaleLine: `ol.control.ScaleLine <http://openlayers.org/en/v3.5.0/apidoc/ol.control.ScaleLine.html>`_
-    * ZoomSlider: `ol.control.ZoomSlider <http://openlayers.org/en/v3.5.0/apidoc/ol.control.ZoomSlider.html>`_
-    * ZoomToExtent: `ol.control.ZoomToExtent <http://openlayers.org/en/v3.5.0/apidoc/ol.control.ZoomToExtent.html>`_
+    * FullScreen: `ol.control.FullScreen <http://openlayers.org/en/v3.10.1/apidoc/ol.control.FullScreen.html>`_
+    * MousePosition: `ol.control.MousePosition <http://openlayers.org/en/v3.10.1/apidoc/ol.control.MousePosition.html>`_
+    * Rotate: `ol.control.Rotate <http://openlayers.org/en/v3.10.1/apidoc/ol.control.Rotate.html>`_
+    * ScaleLine: `ol.control.ScaleLine <http://openlayers.org/en/v3.10.1/apidoc/ol.control.ScaleLine.html>`_
+    * ZoomSlider: `ol.control.ZoomSlider <http://openlayers.org/en/v3.10.1/apidoc/ol.control.ZoomSlider.html>`_
+    * ZoomToExtent: `ol.control.ZoomToExtent <http://openlayers.org/en/v3.10.1/apidoc/ol.control.ZoomToExtent.html>`_
 
     **Feature Selection**
 

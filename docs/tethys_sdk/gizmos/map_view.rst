@@ -34,7 +34,7 @@ For advanced features, the JavaScript API can be used to interact with the OpenL
 TETHYS_MAP_VIEW.getMap()
 ++++++++++++++++++++++++
 
-This method returns the OpenLayers map object. You can use the `OpenLayers Map API version 3.5.0 <http://openlayers.org/en/v3.5.0/apidoc/ol.Map.html>`_ to perform operations on this object such as adding layers and custom controls.
+This method returns the OpenLayers map object. You can use the `OpenLayers Map API version 3.10.1 <http://openlayers.org/en/v3.10.1/apidoc/ol.Map.html>`_ to perform operations on this object such as adding layers and custom controls.
 
 ::
 
