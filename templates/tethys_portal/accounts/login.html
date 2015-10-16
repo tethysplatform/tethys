@@ -43,7 +43,9 @@
             {% csrf_token %}
             {% bootstrap_form form %}
             <button type="submit" id="login-submit" class="btn btn-default" name="login-submit">Login</button>
-            <span class="help-block">Don't have an account? <a href="{% url 'accounts:register' %}">Sign Up</a></span>
+            {% if signup_enabled %}
+              <span class="help-block">Don't have an account? <a href="{% url 'accounts:register' %}">Sign Up</a></span>
+            {% endif %}
             <span class="help-block"><a href="{% url 'accounts:password_reset' %}">Forget your password?</a></span>
           </form>
         </div>
