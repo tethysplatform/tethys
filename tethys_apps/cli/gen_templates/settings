@@ -182,6 +182,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 # Use this setting to bypass the home page
 BYPASS_TETHYS_HOME_PAGE = False
 
+# Use this setting to disable open account signup
+ENABLE_OPEN_SIGNUP = False
+
 # Uncomment the following lines and adjust to match your setup to enable emailing capabilities
 #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 #EMAIL_HOST = 'localhost'
