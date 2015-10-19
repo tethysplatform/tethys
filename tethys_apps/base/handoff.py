@@ -15,11 +15,15 @@ from django.http import HttpResponseBadRequest, HttpResponse
 
 from tethys_apps.app_harvester import *
 
-#TODO add docstrings
 class HandoffManager(object):
     """
+    An object that is used to interact with HandoffHandlers.
 
+    Attributes:
+      app (str): Instance of a TethysAppBase object.
+      handlers (str): A list of HandoffHandlers registered in the app.
     """
+
     def __init__(self, app):
         """
         Constructor
@@ -27,9 +31,21 @@ class HandoffManager(object):
         self.app = app
         self.handlers = app.handoff_handlers()
 
+    def __repr__(self):
+        """
+        String representation
+        """
+        return '<Handoff Manager: app={0}, handlers={1}>'.format(self.app, self.handlers)
+
     def get_capabilities(self, app_name=None):
         """
         Gets a list of the handoff handlers.
+
+        Args:
+            app_name (str, optional): The name of another app whose capabilities should be listed. Defaults to None in which case the capabilities of the current app will be listed.
+
+        Returns:
+            A list of dictionary objects containing the handoff capabilities of app_name.
         """
         manager = self.get_handoff_manager_for_app(app_name)
 
@@ -46,6 +62,15 @@ class HandoffManager(object):
     def handoff(self, request, handler_name, app_name=None, **kwargs):
         """
         Calls handler if it exists for the app.
+
+        Args:
+            request (HttpRequest): The request object passed by the http call.
+            handler_name (str): The name of the HandoffHandler object to handle the handoff.
+            app_name (str, optional): The name of another app where the handler should exist. Defaults to None in which case the current app will attempt to handle the handoff.
+            **kwargs: Key-value pairs to be passed on to the handler.
+
+        Returns:
+            HttpResponse object.
         """
 
         error = {"message": "",
@@ -73,7 +98,13 @@ class HandoffManager(object):
 
     def get_handler(self, handler_name):
         """
-        Returns the handler function with name == handler_name
+        Returns the handler function with name == handler_name.
+
+        Args:
+            handler_name (str): the name of a HandoffHandler object.
+
+        Returns:
+            A HandoffHandler object where the name attribute is equal to handler_name or None if no HandoffHandler with that name is found.
         """
         for handoff_handler in self.handlers:
             if handoff_handler.name == handler_name:
@@ -84,6 +115,12 @@ class HandoffManager(object):
     def get_handoff_manager_for_app(self, app_name):
         """
         Returns the app manager for app with package == app_name if that app is installed.
+
+        Args:
+            app_name (str): The name of another Tethys app whose HandoffManager should be returned.
+
+        Returns:
+            A HandoffManager object for the app with the name app_name or None if no app with that name is found.
         """
 
         if not app_name:
@@ -100,7 +137,13 @@ class HandoffManager(object):
 
     def _get_handler_function(self, handoff_handler):
         """
-        Returns the function of a handoff_handler object
+        Returns the function of a handoff_handler object.
+
+        Args:
+            handoff_handler (HandoffHandler): The HandoffHandler object whose Python function should be returned.
+
+        Returns:
+            A handle to a Python function that will process the handoff.
         """
 
         if ':' in handoff_handler.handler: #TODO DEPRECATE: delete deprecated code
@@ -135,7 +178,7 @@ class HandoffHandler(object):
 
     Attributes:
       name(str): Name of the handoff handler.
-      handler(str): Path to the handler function for the handoff interaction. Use dot-notation with a colon delineating the function (e.g.: "foo.bar:function").
+      handler(str): Path to the handler function for the handoff interaction. Use dot-notation (e.g.: "foo.bar.function").
     """
 
     def __init__(self, name, handler):
