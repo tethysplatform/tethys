@@ -16,8 +16,8 @@ def validate_url(value):
     """
     Validate URLs
     """
-    if 'http://' not in value:
-        raise ValidationError('Invalid URL: Must be prefixed with "http://".')
+    if 'http://' not in value or 'https://' not in value:
+        raise ValidationError('Invalid Endpoint: Must be prefixed with "http://" or "https://".')
 
 
 def validate_dataset_service_endpoint(value):
