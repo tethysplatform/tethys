@@ -4,6 +4,39 @@
 
 {% block title %}- Welcome!{% endblock %}
 
+{% block styles %}
+  {{ block.super }}
+  <style>
+    body {
+      background: {{ site_globals.background_color|default:'#efefef' }};
+    }
+
+    .blurb h3 {
+      color: {{ site_globals.primary_text_color|default:'#ffffff' }};
+    }
+
+		.hero-message h2 {
+		  color: {{ site_globals.secondary_text_color|default:'#666666' }};
+		}
+
+		.features .feature h4 {
+		  color: {{ site_globals.secondary_text_color|default:'#666666' }};
+		}
+
+		.features .feature span {
+		  color: {{ site_globals.secondary_text_color|default:'#666666' }};
+		}
+
+		.hero-background {
+		  background-color: {{ site_globals.background_color|default:'#ffffff' }};
+		}
+
+		.hero-message a:hover {
+		  background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
+		}
+  </style>
+{% endblock %}
+
 {% block content %}
 <section class="hero clearfix">
 	<div class="hero-background"></div>
