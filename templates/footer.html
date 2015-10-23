@@ -1,5 +1,12 @@
 {% load staticfiles %}
-
+<style>
+  .copyright {
+    color: {{ site_globals.primary_text_color|default:'#ffffff' }};
+  }
+  footer.site-footer .tethys-attribution {
+    color: {{ site_globals.primary_text_color|default:'#ffffff' }};
+  }
+</style>
 <footer id="site-footer" class="site-footer" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
   {% block footer_content %}
 
