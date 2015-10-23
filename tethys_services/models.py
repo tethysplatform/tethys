@@ -68,6 +68,7 @@ class DatasetService(models.Model):
     name = models.CharField(max_length=30, unique=True)
     engine = models.CharField(max_length=200, choices=ENGINE_CHOICES, default=CKAN)
     endpoint = models.CharField(max_length=1024, validators=[validate_dataset_service_endpoint])
+    public_endpoint = models.CharField(max_length=1024, validators=[validate_dataset_service_endpoint], blank=True)
     apikey = models.CharField(max_length=100, blank=True)
     username = models.CharField(max_length=100, blank=True)
     password = models.CharField(max_length=100, blank=True)
@@ -93,6 +94,7 @@ class SpatialDatasetService(models.Model):
     name = models.CharField(max_length=30, unique=True)
     engine = models.CharField(max_length=200, choices=ENGINE_CHOICES, default=GEOSERVER)
     endpoint = models.CharField(max_length=1024, validators=[validate_spatial_dataset_service_endpoint])
+    public_endpoint = models.CharField(max_length=1024, validators=[validate_spatial_dataset_service_endpoint], blank=True)
     apikey = models.CharField(max_length=100, blank=True)
     username = models.CharField(max_length=100, blank=True)
     password = models.CharField(max_length=100, blank=True)
@@ -111,6 +113,7 @@ class WebProcessingService(models.Model):
     """
     name = models.CharField(max_length=30, unique=True)
     endpoint = models.CharField(max_length=1024, validators=[validate_wps_service_endpoint])
+    public_endpoint = models.CharField(max_length=1024, validators=[validate_wps_service_endpoint], blank=True)
     username = models.CharField(max_length=100, blank=True)
     password = models.CharField(max_length=100, blank=True)
 
