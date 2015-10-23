@@ -9,8 +9,8 @@
 """
 import json
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.shortcuts import render
+from django.http import HttpResponse
 
 from tethys_apps.app_harvester import SingletonAppHarvester
 from tethys_apps.base.app_base import TethysAppBase
@@ -38,6 +38,15 @@ def handoff_capabilities(request, app_name):
 
     manager = TethysAppBase.get_handoff_manager()
     handlers = manager.get_capabilities(app_name)
+
+    # filter out request arguments and internal handlers
+    for handler in handlers:
+        try:
+            index = handler['arguments'].index('request')
+        except ValueError:
+            pass
+        else:
+            handler['arguments'].pop(index)
 
     return HttpResponse(json.dumps(handlers), content_type='application/javascript')
 
