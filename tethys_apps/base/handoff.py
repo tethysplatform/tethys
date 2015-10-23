@@ -147,20 +147,33 @@ class HandoffManager(object):
         valid_handlers = [handler for handler in self.handlers if handler.valid]
 
         # Code for backwards compatibility TODO: delete this code block when deprecated
-        print 'DEPRECATION WARNING: '
         valid_handlers = []
         for handler in self.handlers:
             if handler.valid:
                 valid_handlers.append(handler)
             else:
                 handler_str = handler.handler
-                try:
-                    pass
-                except:
-                    pass
-                else:
-                    valid_handlers.append(handler)
+                if ':' in handler_str:
+                    print('DEPRECATION WARNING: The handler attribute of a HandoffHandler should now be in the form: \
+                          "my_first_app.controllers.my_handler". The form "handoff:my_handler" is now deprecated.')
 
+                    # Split into module name and function name
+                    module_path, function_name  = handler_str.split(':')
+
+                    # Pre-process handler path
+                    full_module_path = '.'.join(('tethys_apps.tethysapp', self.app.package, module_path))
+
+                    try:
+                        # Import module
+                        module = __import__(full_module_path, fromlist=[function_name])
+                    except ImportError:
+                        pass
+                    else:
+                        handler._function = getattr(module, function_name)
+                        handler._valid = True
+                        valid_handlers.append(handler)
+
+        return valid_handlers
 
 
 class HandoffHandler(object):
@@ -220,16 +233,16 @@ class HandoffHandler(object):
             A handle to a Python function that will process the handoff.
         """
         if not self._function and self.valid is None:
-            # Split into parts and extract function name
-            module_path, function_name = self.handler.rsplit('.', 1)
-
-            #Pre-process handler path
-            full_module_path = '.'.join(('tethys_apps.tethysapp', module_path))
-
             try:
+                # Split into parts and extract function name
+                module_path, function_name = self.handler.rsplit('.', 1)
+
+                #Pre-process handler path
+                full_module_path = '.'.join(('tethys_apps.tethysapp', module_path))
+
                 # Import module
                 module = __import__(full_module_path, fromlist=[function_name])
-            except ImportError:
+            except (ValueError, ImportError):
                 self._valid = False
             else:
                 # Get the function
