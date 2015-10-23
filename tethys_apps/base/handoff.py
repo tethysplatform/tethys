@@ -20,7 +20,8 @@ class HandoffManager(object):
 
     Attributes:
       app (str): Instance of a TethysAppBase object.
-      handlers (str): A list of HandoffHandlers registered in the app.
+      handlers (list[HandoffHandler]): A list of HandoffHandlers registered in the app.
+      valid_handlers (list[HandoffHandler]): A filtered list of only the valid HandoffHandlers.
     """
 
     def __init__(self, app):
@@ -227,10 +228,10 @@ class HandoffHandler(object):
     @property
     def function(self):
         """
-        Returns the function pointed to by the handler attribute.
+        The function pointed to by the handler attribute.
 
         Returns:
-            A handle to a Python function that will process the handoff.
+            A handle to a Python function that will process the handoff or None if function is not valid.
         """
         if not self._function and self.valid is None:
             try:
