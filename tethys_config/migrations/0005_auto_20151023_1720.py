@@ -55,32 +55,32 @@ def settings12to13(apps, schema_editor):
 
     if not primary_text_color:
         general_category.setting_set.create(name="Primary Text Color",
-                                            content="#dddddd",
+                                            content="",
                                             date_modified=now)
 
     if not primary_hover_color:
         general_category.setting_set.create(name="Primary Text Hover Color",
-                                            content="#ffffff",
+                                            content="",
                                             date_modified=now)
 
     if not secondary_text_color:
         general_category.setting_set.create(name="Secondary Text Color",
-                                            content="#dddddd",
+                                            content="",
                                             date_modified=now)
 
     if not secondary_hover_color:
         general_category.setting_set.create(name="Secondary Text Hover Color",
-                                            content="#ffffff",
+                                            content="",
                                             date_modified=now)
 
     if not background_color:
         general_category.setting_set.create(name="Background Color",
-                                            content="#efefef",
+                                            content="",
                                             date_modified=now)
 
     if not brand_image_height:
         general_category.setting_set.create(name="Brand Image Height",
-                                            content="60px",
+                                            content="",
                                             date_modified=now)
 
     if not brand_image_width:
