@@ -76,7 +76,7 @@ class HandoffManager(object):
         error = {"message": "",
                  "code": 400,
                  "status": "error",
-                 "app_name": self.app.name,
+                 "app_name": app_name or self.app.name,
                  "handler_name": handler_name}
 
         manager = self.get_handoff_manager_for_app(app_name)
@@ -86,8 +86,6 @@ class HandoffManager(object):
 
             try:
                 urlish = handler(request, **kwargs)
-                if isinstance(urlish, tuple):
-                    return redirect(*urlish)
                 return redirect(urlish)
             except TypeError as e:
                 error['message'] = "HTTP 400 Bad Request: {0}. ".format(e.message)
@@ -96,28 +94,32 @@ class HandoffManager(object):
         error['message'] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".format(self.app.name, handler_name)
         return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
 
-    def get_handler(self, handler_name):
+    def get_handler(self, handler_name, app_name=None):
         """
         Returns the handler function with name == handler_name.
 
         Args:
             handler_name (str): the name of a HandoffHandler object.
+            app_name (str, optional): the name of the app with handler_name. Defaults to None in which case the current app will be used.
 
         Returns:
             A HandoffHandler object where the name attribute is equal to handler_name or None if no HandoffHandler with that name is found.
         """
-        for handoff_handler in self.handlers:
-            if handoff_handler.name == handler_name:
-                handler = self._get_handler_function(handoff_handler)
+        manager = self.get_handoff_manager_for_app(app_name)
 
-                return handler
+        if manager:
+            for handoff_handler in manager.handlers:
+                if handoff_handler.name == handler_name:
+                    handler = manager._get_handler_function(handoff_handler)
+
+                    return handler
 
     def get_handoff_manager_for_app(self, app_name):
         """
         Returns the app manager for app with package == app_name if that app is installed.
 
         Args:
-            app_name (str): The name of another Tethys app whose HandoffManager should be returned.
+            app_name (str): The name of another Tethys app whose HandoffManager should be returned. If None then self is returned.
 
         Returns:
             A HandoffManager object for the app with the name app_name or None if no app with that name is found.
@@ -179,15 +181,28 @@ class HandoffHandler(object):
       handler(str): Path to the handler function for the handoff interaction. Use dot-notation (e.g.: "foo.bar.function").
     """
 
-    def __init__(self, name, handler):
+    def __init__(self, name, handler, internal=False):
         """
         Constructor
         """
         self.name = name
         self.handler = handler
+        self.internal = internal
 
     def __repr__(self):
         """
         String representation
         """
         return '<Handoff Handler: name={0}, handler={1}>'.format(self.name, self.handler)
+
+    def __json__(self):
+        """
+        JSON representation
+        """
+        return {'name': self.name,
+                'arguments': self.json_arguments,
+                }
+
+    @property
+    def function(self):
+        pass
