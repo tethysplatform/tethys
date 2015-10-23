@@ -30,34 +30,39 @@ class HandoffManager(object):
 
         self.app = app
         self.handlers = app.handoff_handlers() or []
+        self.valid_handlers = self._get_valid_handlers()
 
     def __repr__(self):
         """
         String representation
         """
-        return '<Handoff Manager: app={0}, handlers={1}>'.format(self.app, self.handlers)
+        return '<Handoff Manager: app={0}, handlers={1}>'.format(self.app, [handler.name for handler in self.handlers])
 
-    def get_capabilities(self, app_name=None):
+    def get_capabilities(self, app_name=None, external_only=False, jsonify=False):
         """
-        Gets a list of the handoff handlers.
+        Gets a list of the valid handoff handlers.
 
         Args:
             app_name (str, optional): The name of another app whose capabilities should be listed. Defaults to None in which case the capabilities of the current app will be listed.
+            external_only (bool, optional): If True only return handlers where the internal attribute is False. Default is False.
+            jsonify (bool, optional): If True return the JSON representation of the handlers is used. Default is False.
 
         Returns:
-            A list of dictionary objects containing the handoff capabilities of app_name.
+            A list of valid HandoffHandler objects (or a JSON string if jsonify=True) representing the capabilities of app_name, or None if no app with app_name is found.
         """
         manager = self.get_handoff_manager_for_app(app_name)
 
-        handlers = []
-
         if manager:
-            for handoff_handler in manager.handlers:
-                handler = manager._get_handler_function(handoff_handler)
-                args = inspect.getargspec(handler)
-                handlers.append({"arguments": args.args,
-                                 "name": handoff_handler.name})
-        return handlers
+            handlers =  manager.valid_handlers
+
+            if external_only:
+                handlers = [handler for handler in handlers if not handler.internal]
+
+            if jsonify:
+                handlers = json.dumps([handler.__json__() for handler in handlers])
+
+            return handlers
+
 
     def handoff(self, request, handler_name, app_name=None, **kwargs):
         """
@@ -91,27 +96,25 @@ class HandoffManager(object):
                 error['message'] = "HTTP 400 Bad Request: {0}. ".format(e.message)
                 return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
 
-        error['message'] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".format(self.app.name, handler_name)
+        error['message'] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".format(manager.app.name, handler_name)
         return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
 
     def get_handler(self, handler_name, app_name=None):
         """
-        Returns the handler function with name == handler_name.
+        Returns the HandoffHandler with name == handler_name.
 
         Args:
             handler_name (str): the name of a HandoffHandler object.
             app_name (str, optional): the name of the app with handler_name. Defaults to None in which case the current app will be used.
 
         Returns:
-            A HandoffHandler object where the name attribute is equal to handler_name or None if no HandoffHandler with that name is found.
+            A HandoffHandler object where the name attribute is equal to handler_name or None if no HandoffHandler with that name is found or no app with app_name is found.
         """
         manager = self.get_handoff_manager_for_app(app_name)
 
         if manager:
-            for handoff_handler in manager.handlers:
-                if handoff_handler.name == handler_name:
-                    handler = manager._get_handler_function(handoff_handler)
-
+            for handler in manager.valid_handlers:
+                if handler.name == handler_name:
                     return handler
 
     def get_handoff_manager_for_app(self, app_name):
@@ -137,39 +140,27 @@ class HandoffManager(object):
                 manager = app.get_handoff_manager()
                 return manager
 
-    def _get_handler_function(self, handoff_handler):
+    def _get_valid_handlers(self):
         """
-        Returns the function of a handoff_handler object.
-
-        Args:
-            handoff_handler (HandoffHandler): The HandoffHandler object whose Python function should be returned.
-
-        Returns:
-            A handle to a Python function that will process the handoff.
+        Returns a list of valid HandoffHandler objects.
         """
+        valid_handlers = [handler for handler in self.handlers if handler.valid]
 
-        if ':' in handoff_handler.handler: #TODO DEPRECATE: delete deprecated code
-            print('DEPRECATION WARNING: The handler attribute of a HandoffHandler should now be in the form: "my_first_app.controllers.my_handler". The form "handoff:my_handler" is now deprecated.')
+        # Code for backwards compatibility TODO: delete this code block when deprecated
+        print 'DEPRECATION WARNING: '
+        valid_handlers = []
+        for handler in self.handlers:
+            if handler.valid:
+                valid_handlers.append(handler)
+            else:
+                handler_str = handler.handler
+                try:
+                    pass
+                except:
+                    pass
+                else:
+                    valid_handlers.append(handler)
 
-            # Split into module name and function name
-            handler_mod, handler_function = handoff_handler.handler.split(':')
-
-            # Pre-process handler path
-            handler_path = '.'.join(('tethys_apps.tethysapp', self.app.package, handler_mod))
-        else:
-            # Split into parts and extract function name
-            handler_mod, handler_function = handoff_handler.handler.rsplit('.', 1)
-
-            #Pre-process handler path
-            handler_path = '.'.join(('tethys_apps.tethysapp', handler_mod))
-
-        # Import module
-        module = __import__(handler_path, fromlist=[handler_function])
-
-        # Get the function
-        handler = getattr(module, handler_function)
-
-        return handler
 
 
 class HandoffHandler(object):
@@ -179,6 +170,7 @@ class HandoffHandler(object):
     Attributes:
       name(str): Name of the handoff handler.
       handler(str): Path to the handler function for the handoff interaction. Use dot-notation (e.g.: "foo.bar.function").
+      internal(bool, optional): Specifies that the handler is only for internal (i.e. within the same Tethys server) purposes.
     """
 
     def __init__(self, name, handler, internal=False):
@@ -188,6 +180,15 @@ class HandoffHandler(object):
         self.name = name
         self.handler = handler
         self.internal = internal
+        self._valid = None
+        self._function = None
+
+        # ensure that the function and valid attributes are initialized
+        self.function
+
+        # make each instance callable
+        self.__class__ = type(self.__class__.__name__, (self.__class__,), {})
+        self.__class__.__call__ = lambda this, *args, **kwargs: this.function(*args, **kwargs)
 
     def __repr__(self):
         """
@@ -204,5 +205,53 @@ class HandoffHandler(object):
                 }
 
     @property
+    def valid(self):
+        """
+        True if function is valid otherwise False.
+        """
+        return self._valid
+
+    @property
     def function(self):
-        pass
+        """
+        Returns the function pointed to by the handler attribute.
+
+        Returns:
+            A handle to a Python function that will process the handoff.
+        """
+        if not self._function and self.valid is None:
+            # Split into parts and extract function name
+            module_path, function_name = self.handler.rsplit('.', 1)
+
+            #Pre-process handler path
+            full_module_path = '.'.join(('tethys_apps.tethysapp', module_path))
+
+            try:
+                # Import module
+                module = __import__(full_module_path, fromlist=[function_name])
+            except ImportError:
+                self._valid = False
+            else:
+                # Get the function
+                self._function = getattr(module, function_name)
+                self._valid = True
+
+        return self._function
+
+    @property
+    def arguments(self):
+        """
+        Returns a list of arguments for the HandoffHandler function.
+        """
+        return inspect.getargspec(self.function).args
+
+    @property
+    def json_arguments(self):
+        """
+        Returns self.arguments with the 'request' argument removed.
+        """
+        args = self.arguments
+        if 'request' in args:
+            index = args.index('request')
+            args.pop(index)
+        return args

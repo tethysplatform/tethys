@@ -7,7 +7,6 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-import json
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -37,18 +36,9 @@ def handoff_capabilities(request, app_name):
     app_name = app_name.replace('-', '_')
 
     manager = TethysAppBase.get_handoff_manager()
-    handlers = manager.get_capabilities(app_name)
+    handlers = manager.get_capabilities(app_name, external_only=True, jsonify=True)
 
-    # filter out request arguments and internal handlers
-    for handler in handlers:
-        try:
-            index = handler['arguments'].index('request')
-        except ValueError:
-            pass
-        else:
-            handler['arguments'].pop(index)
-
-    return HttpResponse(json.dumps(handlers), content_type='application/javascript')
+    return HttpResponse(handlers, content_type='application/javascript')
 
 
 @login_required()
