@@ -40,7 +40,7 @@ def initial_settings(apps, schema_editor):
                                         date_modified=now)
 
     general_category.setting_set.create(name="Brand Image Height",
-                                        content="60px",
+                                        content="",
                                         date_modified=now)
 
     general_category.setting_set.create(name="Brand Image Width",
@@ -63,24 +63,24 @@ def initial_settings(apps, schema_editor):
                                         content="#1b95dc",
                                         date_modified=now)
 
+    general_category.setting_set.create(name="Background Color",
+                                        content="",
+                                        date_modified=now)
+
     general_category.setting_set.create(name="Primary Text Color",
-                                        content="#dddddd",
+                                        content="",
                                         date_modified=now)
 
     general_category.setting_set.create(name="Primary Text Hover Color",
-                                        content="#ffffff",
+                                        content="",
                                         date_modified=now)
 
     general_category.setting_set.create(name="Secondary Text Color",
-                                        content="#dddddd",
+                                        content="",
                                         date_modified=now)
 
     general_category.setting_set.create(name="Secondary Text Hover Color",
-                                        content="#ffffff",
-                                        date_modified=now)
-
-    general_category.setting_set.create(name="Background Color",
-                                        content="#efefef",
+                                        content="",
                                         date_modified=now)
 
     general_category.setting_set.create(name="Footer Copyright",
