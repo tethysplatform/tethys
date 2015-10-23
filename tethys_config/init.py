@@ -39,6 +39,18 @@ def initial_settings(apps, schema_editor):
                                         content="/static/tethys_portal/images/tethys-logo-75.png",
                                         date_modified=now)
 
+    general_category.setting_set.create(name="Brand Image Height",
+                                        content="60px",
+                                        date_modified=now)
+
+    general_category.setting_set.create(name="Brand Image Width",
+                                        content="",
+                                        date_modified=now)
+
+    general_category.setting_set.create(name="Brand Image Padding",
+                                        content="",
+                                        date_modified=now)
+
     general_category.setting_set.create(name="Apps Library Title",
                                         content="Apps Library",
                                         date_modified=now)
@@ -49,6 +61,26 @@ def initial_settings(apps, schema_editor):
 
     general_category.setting_set.create(name="Secondary Color",
                                         content="#1b95dc",
+                                        date_modified=now)
+
+    general_category.setting_set.create(name="Primary Text Color",
+                                        content="#dddddd",
+                                        date_modified=now)
+
+    general_category.setting_set.create(name="Primary Text Hover Color",
+                                        content="#ffffff",
+                                        date_modified=now)
+
+    general_category.setting_set.create(name="Secondary Text Color",
+                                        content="#dddddd",
+                                        date_modified=now)
+
+    general_category.setting_set.create(name="Secondary Text Hover Color",
+                                        content="#ffffff",
+                                        date_modified=now)
+
+    general_category.setting_set.create(name="Background Color",
+                                        content="#efefef",
                                         date_modified=now)
 
     general_category.setting_set.create(name="Footer Copyright",
