@@ -29,8 +29,28 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+# List those who should be notified of an error when DEBUG = False as a tuple of (name, email address).
+# i.e.: ADMINS = (('John', 'john@example.com'), ('Mary', 'mary@example.com'))
+ADMINS = ()
 
+# See https://docs.djangoproject.com/en/1.8/topics/logging/#configuring-logging for more logging configuration options.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'WARNING'),
+        },
+    },
+}
+
+ALLOWED_HOSTS = []
 
 # Application definition
 
