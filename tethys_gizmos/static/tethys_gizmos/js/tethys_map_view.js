@@ -1284,7 +1284,7 @@ var TETHYS_MAP_VIEW = (function() {
     if (is_defined(m_feature_selection_options) &&
         'multiselect' in m_feature_selection_options &&
         m_feature_selection_options.multiselect &&
-        event.browserEvent.shiftKey) {
+        ol.events.condition.shiftKeyOnly(event)) {
       multiselect = true;
     }
 
