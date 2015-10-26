@@ -7,6 +7,15 @@
 
 {% block title %}- User Settings{% endblock %}
 
+{% block styles %}
+  {{ block.super }}
+  <style>
+    body {
+      background: {{ site_globals.background_color|default:'#efefef' }};
+    }
+  </style>
+{% endblock %}
+
 {% block name_parameters %}
   <div class="form-group">
     <label for="id_first_name" class="control-label col-md-3">First Name:</label>

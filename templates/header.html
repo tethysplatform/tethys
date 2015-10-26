@@ -24,6 +24,71 @@
   .mobile-nav-button:hover {
     background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
   }
+
+  .site-header .header-nav li.header-action a {
+    color: {{ site_globals.primary_text_color|default:'#ffffff' }};
+  }
+
+  .site-header .header-nav li.header-action a:hover {
+    color: {{ site_globals.primary_text_hover_color|default:'#dddddd' }};
+  }
+
+  .site-header .header-logo .logo-title a {
+    color: {{ site_globals.primary_text_color|default:'#ffffff' }};
+  }
+
+  .site-header .header-logo .logo-title a:hover {
+    color: {{ site_globals.primary_text_hover_color|default:'#dddddd' }};
+  }
+
+  .site-header .header-nav li a {
+    color: {{ site_globals.primary_text_color|default:'#dddddd' }};
+  }
+
+  .site-header .header-nav li a:hover {
+    color: {{ site_globals.primary_text_hover_color|default:'#ffffff' }};
+  }
+
+  .site-header .header-logo .logo-image img {
+    height: {{ site_globals.brand_image_height|default:'60px' }};
+    {% if site_globals.brand_image_width %}
+      width: {{ site_globals.brand_image_width }};
+    {% endif %}
+    {% if site_globals.brand_image_padding %}
+      margin-top: {{ site_globals.brand_image_padding }};
+    {% endif %}
+  }
+
+  @media (max-width: 750px) {
+    .site-header .header-logo .logo-image img {
+      height: 40px;
+      {% if site_globals.brand_image_padding %}
+        margin-top: 0;
+      {% endif %}
+    }
+  }
+
+  @media (max-width: 900px) {
+    .site-header .header-logo .logo-image img {
+      height: 40px;
+      {% if site_globals.brand_image_padding %}
+        margin-top: 0;
+      {% endif %}
+    }
+  }
+
+  @media (max-width: 1080px) {
+    .site-header .header-logo .logo-image img {
+      height: 40px;
+      {% if site_globals.brand_image_padding %}
+        margin-top: 0;
+      {% endif %}
+    }
+  }
+
+  .user-dropdown .user-dropdown-menu li a {
+    color: #666666;
+  }
 </style>
 
 {# Mobile site navigation #}
@@ -64,7 +129,7 @@
   <header class="site-header">
     <div class="header-logo">
       {% if site_globals.brand_image %}
-        <a class="logo-image" href="/"><img  src="{% static site_globals.brand_image %}"></a>
+        <a class="logo-image" href="/"><img  src="{{ site_globals.brand_image }}"></a>
       {% endif %}
 
       {% if site_globals.brand_text %}
