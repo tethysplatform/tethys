@@ -22,7 +22,7 @@ There are four optional options when creating a cluster: 'master image id',' mas
 
 Jobs
 ----
-Jobs represent some sort of computation that is sent from an app to a cluster using the `Job Manager`_. For each job that is created a database entry is made to store some of the basic information about the job including: name, user, creation time, and status. The Jobs section in Tethys Compute allows for basic management of these database entries.
+Jobs represent some sort of computation that is sent from an app to a cluster using the `Job Manager`_. For each job that is created a database record is made to store some of the basic information about the job including: name, user, creation time, and status. The Jobs section in the Tethys Compute admin page allows for basic management of these database records.
 
 Schedulers
 ----------
