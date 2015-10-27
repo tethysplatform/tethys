@@ -325,7 +325,7 @@ class TethysJob(models.Model):
     creation_time = models.DateTimeField(auto_now_add=True)
     execute_time = models.DateTimeField(blank=True, null=True)
     completion_time = models.DateTimeField(blank=True, null=True)
-    workspace = models.CharField(max_length=1024, default=os.path.expanduser('~/.tethyscluster/workspace'))
+    workspace = models.CharField(max_length=1024, default='')
     extended_properties = DictionaryField(default='', blank=True)
     _subclass = models.CharField(max_length=30, default='basicjob')
     _status = models.CharField(max_length=3, choices=STATUSES, default=STATUSES[0][0])

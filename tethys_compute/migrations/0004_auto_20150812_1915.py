@@ -61,7 +61,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tethysjob',
             name='workspace',
-            field=models.CharField(default=b'/Users/sdc50/.tethyscluster/workspace', max_length=1024),
+            field=models.CharField(default=b'', max_length=1024),
             preserve_default=True,
         ),
         migrations.AlterField(
