@@ -25,9 +25,10 @@ class HydroShareOAuth2(BaseOAuth2):
     ACCESS_TOKEN_URL = 'http://playground.hydroshare.org/o/token/'
     ACCESS_TOKEN_METHOD = 'POST'
     SCOPE_SEPARATOR = ','
-    # ID_KEY = 'id' # This is default. Uncomment and change is the user ID is returned under a different key.
+    ID_KEY = 'username'
     EXTRA_DATA = [
-        ('id', 'id'),
+        ('email', 'email'),
+        ('username', 'id'),
         ('expires_in', 'expires'),
     ]
 
@@ -36,15 +37,14 @@ class HydroShareOAuth2(BaseOAuth2):
         Return user details from HydroShare account.
         """
         return {'username': response.get('username'),
-                'email': response.get('email') or '',
-                'first_name': response.get('first_name'),
-                'last_name': response.get('last_name')}
+                'email': response.get('email'),
+                }
 
     def user_data(self, access_token, *args, **kwargs):
         """
         Loads user data from service.
         """
-        url = 'http://playground.hydroshare.org/accounts/getUserInfo'
+        url = 'http://playground.hydroshare.org/hsapi/userInfo/'
         try:
             return self.get_json(url, params={'access_token': access_token})
         except ValueError:
