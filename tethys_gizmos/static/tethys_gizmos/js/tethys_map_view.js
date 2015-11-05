@@ -20,7 +20,7 @@ var TETHYS_MAP_VIEW = (function() {
    // Constants
   var DEFAULT_PROJECTION = 'EPSG:3857',                     // Spherical Mercator Projection
       LAT_LON_PROJECTION = 'EPSG:4326',                     // Standard Geographic Projection
-      RESOLUTION_MULTIPLIER = 2,                            // Used in selectable features
+      DEFAULT_SENSITIVITY = 2,                              // Used in selectable features
       DEFAULT_OUTPUT_FORMAT = 'GeoJSON',                    // The default output format
       GEOJSON_FORMAT = 'GeoJSON',                           // GeoJSON format type
       WKT_FORMAT = 'WKT';                                   // Well know text format type
@@ -1272,11 +1272,16 @@ var TETHYS_MAP_VIEW = (function() {
 
   map_clicked = function(event) {
     var urls, tolerance, x, y;
-    var multiselect;
+    var multiselect, sensitivity;
     x = event.coordinate[0]
     y = event.coordinate[1]
     urls = [];
-    tolerance = m_map.getView().getResolution() * RESOLUTION_MULTIPLIER;
+    sensitivity = DEFAULT_SENSITIVITY;
+
+    if (is_defined(m_feature_selection_options) && 'sensitivity' in m_feature_selection_options) {
+      sensitivity = m_feature_selection_options.sensitivity;
+    }
+    tolerance = m_map.getView().getResolution() * sensitivity;
 
     // Determine if multiselect applies
     multiselect = false;
