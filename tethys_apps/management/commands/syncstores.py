@@ -240,25 +240,40 @@ class Command(BaseCommand):
                 # 4. Run initialization functions for each store here
                 #------------------------------------------------------------------------------------------------------#
                 for persistent_store in target_persistent_stores:
-                    # Split into module name and function name
-                    initializer_mod, initializer_function = persistent_store.initializer.split(':')
+
+                    if persistent_store.initializer_is_valid:
+                        initializer = persistent_store.initializer_function
+                    else:
+                        if ':' in persistent_store.initializer:
+                            print('DEPRECATION WARNING: The initializer attribute of a PersistentStore should now be in the form: "my_first_app.init_stores.init_spatial_db". The form "init_stores:init_spatial_db" is now deprecated.')
+
+                            # Split into module name and function name
+                            initializer_mod, initializer_function = persistent_store.initializer.split(':')
+
+                            # Pre-process initializer path
+                            initializer_path = '.'.join(('tethys_apps.tethysapp', app.package, initializer_mod))
+
+                            try:
+                                # Import module
+                                module = __import__(initializer_path, fromlist=[initializer_function])
+                            except ImportError:
+                                pass
+                            else:
+                                # Get the function
+                                initializer = getattr(module, initializer_function)
+
+                    if not initializer:
+                        raise ValueError('{0} is not a valid function.'.format(persistent_store.initializer))
+
 
                     self.stdout.write('Initializing database {3}"{0}"{4} for app {3}"{1}"{4} using initializer '
                                       '{3}"{2}"{4}...'.format(persistent_store.name,
                                                               app.package,
-                                                              initializer_function,
+                                                              initializer.__name__,
                                                               TerminalColors.BLUE,
                                                               TerminalColors.ENDC
                                                               ))
 
-                    # Pre-process initializer path
-                    initializer_path = '.'.join(('tethys_apps.tethysapp', app.package, initializer_mod))
-
-                    # Import module
-                    module = __import__(initializer_path, fromlist=[initializer_function])
-
-                    # Get the function
-                    initializer = getattr(module, initializer_function)
                     if options['first_time']:
                         initializer(True)
                     else:
