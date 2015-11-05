@@ -69,6 +69,7 @@ class MapView(TethysGizmoOptions):
     The feature_selection dictionary contains global settings that can be used to modify the behavior of the feature selection functionality. An explanation of valid options follows:
 
     * multiselect: Set to True to allow multiple features to be selected while holding the shift key on the keyboard. Defaults to False.
+    * sensitivity: Integer value that adjust the feature selection sensitivity. Defaults to 2.
 
 
     Example
