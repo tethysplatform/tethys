@@ -83,13 +83,13 @@ class HandoffManager(object):
                 if handler.name == handler_name:
                     return handler
 
-    def handoff(self, request, handler_name, app_name=None, **kwargs):
+    def handoff(self, request, handler_name, app_name=None, external_only=True, **kwargs):
         """
-        Calls handler if it exists for the app.
+        Calls handler if it is not internal and if it exists for the app.
 
         Args:
             request (HttpRequest): The request object passed by the http call.
-            handler_name (str): The name of the HandoffHandler object to handle the handoff.
+            handler_name (str): The name of the HandoffHandler object to handle the handoff. Must not be internal.
             app_name (str, optional): The name of another app where the handler should exist. Defaults to None in which case the current app will attempt to handle the handoff.
             **kwargs: Key-value pairs to be passed on to the handler.
 
@@ -107,13 +107,13 @@ class HandoffManager(object):
 
         if manager:
             handler = manager.get_handler(handler_name)
-
-            try:
-                urlish = handler(request, **kwargs)
-                return redirect(urlish)
-            except TypeError as e:
-                error['message'] = "HTTP 400 Bad Request: {0}. ".format(e.message)
-                return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
+            if not handler.internal:
+                try:
+                    urlish = handler(request, **kwargs)
+                    return redirect(urlish)
+                except TypeError as e:
+                    error['message'] = "HTTP 400 Bad Request: {0}. ".format(e.message)
+                    return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
 
         error['message'] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".format(manager.app.name, handler_name)
         return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
