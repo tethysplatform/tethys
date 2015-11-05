@@ -38,7 +38,7 @@ Registering new :term:`persistent stores` is accomplished by adding the ``persis
             Add one or more persistent stores
             """
             stores = (PersistentStore(name='example_db',
-                                      initializer='init_stores:init_example_db'
+                                      initializer='my_first_app.init_stores.init_example_db'
                     ),
             )
 
@@ -48,7 +48,7 @@ Registering new :term:`persistent stores` is accomplished by adding the ``persis
 
     The ellipsis in the code block above indicates code that is not shown for brevity. **DO NOT COPY VERBATIM**.
 
-In this example, a database called "example_db" would be created for this app. It would be initialized by a function called "init_example_db", which is located in a Python module called :file:`init_stores.py`. Notice that the path to the initializer function is given using dot notation with a colon delineating the function (e.g.: ``'foo.bar:function'``).
+In this example, a database called "example_db" would be created for this app. It would be initialized by a function called "init_example_db", which is located in a Python module called :file:`init_stores.py`. Notice that the path to the initializer function is given using dot notation (e.g.: ``'foo.bar.function'``).
 
 Databases follow a specific naming convention that is a combination of the app name and the name that is provided during registration. For example, the database for the example above may have a name "my_first_app_example_db". To register another database, add another ``Persistent Store`` object to the tuple that is returned by the ``persistent_stores()`` method.
 
