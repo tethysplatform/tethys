@@ -293,7 +293,7 @@ class MVLayer(SecondaryGizmoOptions):
         options (dict, required): A dictionary representation of the OpenLayers options object for ol.source.
         legend_title (str, required): The human readable name of the layer that will be displayed in the legend.
         layer_options (dict): A dictionary representation of the OpenLayers options object for ol.layer.
-        feature_selection (bool): Set to True to enable feature selection on this layer. Defaults to False.
+        feature_selection (bool): Set to True to enable feature selection on this layer. Only ImageWMS and TileWMS sources are supported. Defaults to False.
         legend_classes (list): A list of MVLegendClass objects.
         legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
