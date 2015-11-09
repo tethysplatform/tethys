@@ -359,9 +359,10 @@ class MVLayer(SecondaryGizmoOptions):
                                   ])
 
         # Define GeoServer Tile Layer with Custom tile grid
-        # Tile Grid is for OpenLayers default projection EPSG:3857
+        # The default EPSG:900913 gridset can be used with OpenLayers.
+        # You must ensure that OpenLayers requests tiles with the same gridset and origin as the gridset GeoServer uses
+        # to use GeoWebCaching capabilities. This is done by setting the TILESORIGIN parameter and specifying a custom tileGrid.
         # Refer to OpenLayers API for ol.tilegrid.TileGrid for explanation and options.
-        # NOTE: the EPSG:3857 tile grid/gridset is not defined by default in GeoServer.
         # See: http://docs.geoserver.org/2.7.0/user/webadmin/tilecache/index.html
         geoserver_layer = MVLayer(source='TileWMS',
                                   options={'url': 'http://192.168.59.103:8181/geoserver/wms',
