@@ -346,6 +346,7 @@ class TethysJob(models.Model):
 
         """
         self.execute_time = timezone.now()
+        self._status = 'PEN'
         self.save()
         self.child._execute(*args, **kwargs)
 
@@ -471,6 +472,10 @@ class CondorJob(TethysJob):
                 private_key=None
                 private_key_pass=None
 
+            attributes = dict()
+            attributes.update(self.attributes)
+            attributes.pop('remote_input_files', None)
+
             job = Job(name=self.name.replace(' ', '_'),
                       attributes=self.condorpy_template,
                       executable=self.executable,
@@ -481,7 +486,7 @@ class CondorJob(TethysJob):
                       private_key_pass=private_key_pass,
                       remote_input_files=self.remote_input_files,
                       working_directory=self.workspace,
-                      **self.attributes)
+                      **attributes)
 
             job._cluster_id = self.cluster_id
             job._num_jobs = self.num_jobs
@@ -501,6 +506,8 @@ class CondorJob(TethysJob):
         return os.path.join(self.workspace, self.condorpy_job.initial_dir)
 
     def _update_status(self):
+        if not self.execute_time:
+            return 'PEN'
         try:
             condor_status = self.condorpy_job.status
             if condor_status == 'Various':
