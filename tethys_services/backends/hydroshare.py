@@ -21,12 +21,15 @@ class HydroShareOAuth2(BaseOAuth2):
           python social auth backends: http://psa.matiasaguirre.net/docs/backends/implementation.html
     """
     name = 'hydroshare'
-    AUTHORIZATION_URL = 'https://www.hydroshare.com/login/oauth/authorize'
-    ACCESS_TOKEN_URL = 'https://www.hydroshare.com/login/oauth/access_token'
+    AUTHORIZATION_URL = 'https://hydroshare.org/o/authorize/'
+    ACCESS_TOKEN_URL = 'https://hydroshare.org/o/token/'
+    ACCESS_TOKEN_METHOD = 'POST'
     SCOPE_SEPARATOR = ','
+    ID_KEY = 'username'
     EXTRA_DATA = [
-        ('id', 'id'),
-        ('expires', 'expires'),
+        ('email', 'email'),
+        ('username', 'id'),
+        ('expires_in', 'expires'),
     ]
 
     def get_user_details(self, response):
@@ -34,17 +37,15 @@ class HydroShareOAuth2(BaseOAuth2):
         Return user details from HydroShare account.
         """
         return {'username': response.get('username'),
-                'email': response.get('email') or '',
-                'first_name': response.get('name')}
+                'email': response.get('email'),
+                }
 
     def user_data(self, access_token, *args, **kwargs):
         """
         Loads user data from service.
         """
-        url = 'https://www.hydroshare.org/hsapi/user' + urlencode({
-            'access_token': access_token
-        })
+        url = 'https://hydroshare.org/hsapi/userInfo/'
         try:
-            return json.load(self.urlopen(url))
+            return self.get_json(url, params={'access_token': access_token})
         except ValueError:
             return None
