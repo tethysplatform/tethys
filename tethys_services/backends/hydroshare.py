@@ -21,8 +21,8 @@ class HydroShareOAuth2(BaseOAuth2):
           python social auth backends: http://psa.matiasaguirre.net/docs/backends/implementation.html
     """
     name = 'hydroshare'
-    AUTHORIZATION_URL = 'http://playground.hydroshare.org/o/authorize/'
-    ACCESS_TOKEN_URL = 'http://playground.hydroshare.org/o/token/'
+    AUTHORIZATION_URL = 'https://hydroshare.org/o/authorize/'
+    ACCESS_TOKEN_URL = 'https://hydroshare.org/o/token/'
     ACCESS_TOKEN_METHOD = 'POST'
     SCOPE_SEPARATOR = ','
     ID_KEY = 'username'
@@ -44,7 +44,7 @@ class HydroShareOAuth2(BaseOAuth2):
         """
         Loads user data from service.
         """
-        url = 'http://playground.hydroshare.org/hsapi/userInfo/'
+        url = 'https://hydroshare.org/hsapi/userInfo/'
         try:
             return self.get_json(url, params={'access_token': access_token})
         except ValueError:
