@@ -65,7 +65,7 @@ def manage_command(args):
 
     if args.command == MANAGE_START:
         if args.port:
-            primary_process = ['python', manage_path, 'runserver', str(args.port)]
+            primary_process = ['python', manage_path, 'runserver', args.port]
         else:
             primary_process = ['python', manage_path, 'runserver']
     elif args.command == MANAGE_SYNCDB:

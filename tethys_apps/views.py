@@ -7,13 +7,12 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-import inspect
-import json
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.shortcuts import render
+from django.http import HttpResponse
 
 from tethys_apps.app_harvester import SingletonAppHarvester
+from tethys_apps.base.app_base import TethysAppBase
 
 
 @login_required()
@@ -36,30 +35,10 @@ def handoff_capabilities(request, app_name):
     """
     app_name = app_name.replace('-', '_')
 
-    # Get the app
-    harvester = SingletonAppHarvester()
-    apps = harvester.apps
+    manager = TethysAppBase.get_handoff_manager()
+    handlers = manager.get_capabilities(app_name, external_only=True, jsonify=True)
 
-    handlers = []
-
-    for app in apps:
-        if app.package == app_name and app.handoff_handlers():
-            for handoff_handler in app.handoff_handlers():
-                handler_mod, handler_function = handoff_handler.handler.split(':')
-
-                # Pre-process handler path
-                handler_path = '.'.join(('tethys_apps.tethysapp', app.package, handler_mod))
-
-                # Import module
-                module = __import__(handler_path, fromlist=[handler_function])
-
-                # Get the function
-                handler = getattr(module, handler_function)
-                args = inspect.getargspec(handler)
-                handlers.append({"arguments": args.args,
-                                 "name": handoff_handler.name})
-
-    return HttpResponse(json.dumps(handlers), content_type='application/javascript')
+    return HttpResponse(handlers, content_type='application/javascript')
 
 
 @login_required()
@@ -69,38 +48,6 @@ def handoff(request, app_name, handler_name):
     """
     app_name = app_name.replace('-', '_')
 
-    error = {"message": "",
-             "code": 400,
-             "status": "error",
-             "app_name": app_name,
-             "handler_name": handler_name}
+    manager = TethysAppBase.get_handoff_manager()
 
-    # Get the app
-    harvester = SingletonAppHarvester()
-    apps = harvester.apps
-
-    for app in apps:
-        if app.package == app_name and app.handoff_handlers():
-            for handoff_handler in app.handoff_handlers():
-                if handoff_handler.name == handler_name:
-                    # Split into module name and function name
-                    handler_mod, handler_function = handoff_handler.handler.split(':')
-
-                    # Pre-process handler path
-                    handler_path = '.'.join(('tethys_apps.tethysapp', app.package, handler_mod))
-
-                    # Import module
-                    module = __import__(handler_path, fromlist=[handler_function])
-
-                    # Get the function
-                    handler = getattr(module, handler_function)
-
-                    try:
-                        urlish = handler(request, **request.GET.dict())
-                        return redirect(urlish)
-                    except TypeError as e:
-                        error['message'] = "HTTP 400 Bad Request: {0}. ".format(e.message)
-                        return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
-
-    error['message'] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".format(app_name, handler_name)
-    return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
+    return manager.handoff(request, handler_name, app_name, **request.GET.dict())
