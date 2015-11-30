@@ -127,6 +127,7 @@ def list_dataset_engines(request=None):
                                                               username=site_dataset_service.username,
                                                               password=site_dataset_service.password,
                                                               request=request)
+            dataset_service_object.public_endpoint = site_dataset_service.public_endpoint
 
             dataset_service_engines.append(dataset_service_object)
 
@@ -181,6 +182,7 @@ def get_dataset_engine(name, app_class=None, request=None):
                                                                   password=site_dataset_service.password,
                                                                   request=request)
 
+                dataset_service_object.public_endpoint = site_dataset_service.public_endpoint
                 return dataset_service_object
 
     raise NameError('Could not find dataset service with name "{0}". Please check that dataset service with that name '
@@ -203,6 +205,7 @@ def list_spatial_dataset_engines():
                                                                apikey=site_spatial_dataset_service.apikey,
                                                                username=site_spatial_dataset_service.username,
                                                                password=site_spatial_dataset_service.password)
+            spatial_dataset_object.public_endpoint = site_spatial_dataset_service.public_endpoint
             spatial_dataset_service_engines.append(spatial_dataset_object)
 
     return spatial_dataset_service_engines
@@ -248,11 +251,14 @@ def get_spatial_dataset_engine(name, app_class=None):
 
             # If match is found initiate engine object
             if site_spatial_dataset_service.name == name:
-                return initialize_engine_object(engine=site_spatial_dataset_service.engine.encode('utf-8'),
-                                                endpoint=site_spatial_dataset_service.endpoint,
-                                                apikey=site_spatial_dataset_service.apikey,
-                                                username=site_spatial_dataset_service.username,
-                                                password=site_spatial_dataset_service.password)
+                 spatial_dataset_object = initialize_engine_object(engine=site_spatial_dataset_service.engine.encode('utf-8'),
+                                                                   endpoint=site_spatial_dataset_service.endpoint,
+                                                                   apikey=site_spatial_dataset_service.apikey,
+                                                                   username=site_spatial_dataset_service.username,
+                                                                   password=site_spatial_dataset_service.password)
+
+                 spatial_dataset_object.public_endpoint = site_spatial_dataset_service.public_endpoint
+                 return spatial_dataset_object
 
     raise NameError('Could not find spatial dataset service with name "{0}". Please check that dataset service with that name '
                     'exists in either the Admin Settings or in your app.py.'.format(name))
