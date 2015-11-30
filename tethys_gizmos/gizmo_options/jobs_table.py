@@ -98,10 +98,13 @@ class JobsTable(TethysGizmoOptions):
     def _get_run_time(self, job):
         start_time = job.execute_time
         end_time = job.completion_time
-        if not end_time:
-            tzinfo = start_time.tzinfo
-            end_time = datetime.datetime.now(tzinfo)
-        run_time = end_time - start_time
+        if start_time:
+            if not end_time:
+                tzinfo = start_time.tzinfo
+                end_time = datetime.datetime.now(tzinfo)
+            run_time = end_time - start_time
+        else:
+            return ''
 
         times = []
         total_seconds = run_time.seconds

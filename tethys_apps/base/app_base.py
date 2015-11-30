@@ -20,6 +20,7 @@ from sqlalchemy import create_engine
 
 from tethys_sdk.jobs import JobManager
 from tethys_apps.base.workspace import TethysWorkspace
+from tethys_apps.base.handoff import HandoffManager
 
 
 class TethysAppBase(object):
@@ -48,7 +49,7 @@ class TethysAppBase(object):
         """
         return '<TethysApp: {0}>'.format(self.name)
 
-    def url_map(self):
+    def url_maps(self):
         """
         Use this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically.
 
@@ -195,12 +196,21 @@ class TethysAppBase(object):
                 Example handoff_handlers method.
                 \"""
                 handoff_handlers = (HandoffHandlers(name='example',
-                                                    handler='handlers:my_handler'),
+                                                    handler='my_first_app.controllers.my_handler'),
                 )
 
                 return handoff_handlers
         """
         return None
+
+    @classmethod
+    def get_handoff_manager(cls):
+        """
+        Get the handoff manager for the app.
+        """
+        app = cls()
+        handoff_manager = HandoffManager(app)
+        return handoff_manager
 
     def job_templates(self):
         """
@@ -240,6 +250,9 @@ class TethysAppBase(object):
 
     @classmethod
     def get_job_manager(cls):
+        """
+        Get the job manager for the app
+        """
         app = cls()
         job_manager = JobManager(app)
         return job_manager

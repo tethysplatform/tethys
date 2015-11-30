@@ -11,18 +11,26 @@ General Settings
 
 The following settings can be used to modify global features of the site.  Access the settings using the ``Site Settings > General Settings`` links on the admin pages.
 
-================== =================================================================================
-Setting            Description
-================== =================================================================================
-Site Title         Title of the web page that appears in browser tabs and bookmarks of the site.
-Favicon            Path to the image that is used in browser tabs and bookmarks.
-Brand Text         Title that appears in the header.
-Brand Image        Logo or image that appears next to the title in the header.
-Apps Library Title Title of the page that displays app icons.
-Primary Color      Color that is used as the primary theme color  (e.g.: #ff0000 or rgb(255,0,0)).
-Secondary Color    Color that is used as the secondary theme color (e.g.: #ff0000 or rgb(255,0,0)).
-Footer Copyright   Copyright text that appears in the footer.
-================== =================================================================================
+========================== =================================================================================
+Setting                    Description
+========================== =================================================================================
+Site Title                 Title of the web page that appears in browser tabs and bookmarks of the site.
+Favicon                    Path to the image that is used in browser tabs and bookmarks.
+Brand Text                 Title that appears in the header.
+Brand Image                Logo or image that appears next to the title in the header.
+Brand Image Height         Height to scale the brand image to.
+Brand Image Width          Width to scale the brand image to.
+Brand Image Padding        Adjust space above brand image to center it.
+Apps Library Title         Title of the page that displays app icons.
+Primary Color              Color that is used as the primary theme color  (e.g.: #ff0000 or rgb(255,0,0)).
+Secondary Color            Color that is used as the secondary theme color.
+Primary Text Color         Color of the text appearing in the headers and footer.
+Primary Text Hover Color   Hover color of the text appearing in the headers and footer (where applicable).
+Secondary Text Color       Color of secondary text on the home page.
+Secondary Text Hover Color Hover color of the secondary text on the home page.
+Background Color           Color of the background on the apps library page and other pages.
+Footer Copyright           Copyright text that appears in the footer.
+========================== =================================================================================
 
 **Figure 2.** General settings for Tethys Portal.
 
@@ -62,3 +70,13 @@ Tethys Portal can also be configured to bypass the home page. When this setting 
 ::
 
     BYPASS_TETHYS_HOME_PAGE = True
+
+Enable Open Signup
+==================
+
+Prior to version 1.3.0, any visitor to a Tethys portal could signup for an account without administrator approval or in other words account signup was open. For version 1.3.0+ the open signup capability has been disabled by default for security reasons. To enable open signup, you must modify the ``ENABLE_OPEN_SIGNUP`` setting in the ``settings.py`` script:
+
+::
+
+    ENABLE_OPEN_SIGNUP = True
+
