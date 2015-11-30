@@ -4,11 +4,6 @@
 
 {% block title %}- {{ "{" }}{ tethys_app.name }{{ "}" }}{% endblock %}
 
-{% block styles %}
-  {{ "{" }}{ block.super }{{ "}" }}
-  <link href="{% static '{{project}}/css/main.css' %}" rel="stylesheet"/>
-{% endblock %}
-
 {% block app_icon %}
   {# The path you provided in your app.py is accessible through the tethys_app.icon context variable #}
   <img src="{% static tethys_app.icon %}">
@@ -34,6 +29,11 @@
 {% endblock %}
 
 {% block app_actions %}
+{% endblock %}
+
+{% block content_dependent_styles %}
+  {{ "{" }}{ block.super }{{ "}" }}
+  <link href="{% static '{{project}}/css/main.css' %}" rel="stylesheet"/>
 {% endblock %}
 
 {% block scripts %}

@@ -45,21 +45,30 @@ class JobManager(object):
         job = JobClass(**kwrgs)
         return job
 
-    def list_jobs(self, user, order_by='id'):
+    def list_jobs(self, user=None, order_by='id'):
         """
         Lists all the jobs from current app for current user
         """
-        jobs = TethysJob.objects.filter(label=self.label, user=user).order_by(order_by)
+        filters = dict()
+        filters['label'] = self.label
+        if user:
+            filters['user'] = user
+        jobs = TethysJob.objects.filter(**filters).order_by(order_by)
         jobs = [job.child for job in jobs]
         return jobs
 
-    def get_job(self, job_id):
+    def get_job(self, job_id, user=None):
         """
         Get job by id
         """
         job = TethysJob.objects.filter(label=self.label, id=job_id)
         if job:
-            return job[0].child
+            job = job[0].child
+
+            if user and job.user != user:
+                return None
+
+            return job
 
     def _replace_workspaces(self, parameters, user_workspace):
         """
