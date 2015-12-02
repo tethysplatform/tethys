@@ -24,7 +24,7 @@ class SelectInput(TethysGizmoOptions):
         options(list): List of tuples that represent the options and values of the select input
         disabled(bool): Disabled state of the select input
         error(str): Error message for form validation
-        attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Example
@@ -68,7 +68,7 @@ class SelectInput(TethysGizmoOptions):
     """
 
     def __init__(self, name, display_text='', multiple=False, original=False, options='', disabled=False, error='',
-                 attributes='', classes=''):
+                 attributes={}, classes=''):
         """
         Constructor
         """

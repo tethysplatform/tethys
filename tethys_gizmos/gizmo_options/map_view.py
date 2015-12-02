@@ -26,7 +26,7 @@ class MapView(TethysGizmoOptions):
         controls(list): A list of controls to add to the map. The list can be a list of strings or a list of dictionaries. Valid controls are ZoomSlider, Rotate, FullScreen, ScaleLine, ZoomToExtent, and 'MousePosition'. See below for more detail.
         layers(list): A list of MVLayer objects.
         draw(MVDraw): An MVDraw object specifying the drawing options.
-        attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     **Options Dictionaries**
@@ -179,7 +179,7 @@ class MapView(TethysGizmoOptions):
     """
 
     def __init__(self, height='100%', width='100%', basemap='OpenStreetMap', view={'center': [-100, 40], 'zoom': 2},
-                 controls=[], layers=[], draw=None, legend=False, attributes='', classes=''):
+                 controls=[], layers=[], draw=None, legend=False, attributes={}, classes=''):
         """
         Constructor
         """
