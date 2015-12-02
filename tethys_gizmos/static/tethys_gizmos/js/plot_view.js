@@ -879,7 +879,6 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 
 	    // Initialize any d3 plots
 	    if(redraw) {
-	    console.log("redraw");
 	        redraw = false;
 	        $('.d3-plot').each(function() {
                 $(this).empty();

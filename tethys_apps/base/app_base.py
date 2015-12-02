@@ -20,6 +20,7 @@ from sqlalchemy import create_engine
 
 from tethys_sdk.jobs import JobManager
 from tethys_apps.base.workspace import TethysWorkspace
+from tethys_apps.base.handoff import HandoffManager
 
 
 class TethysAppBase(object):
@@ -48,7 +49,7 @@ class TethysAppBase(object):
         """
         return '<TethysApp: {0}>'.format(self.name)
 
-    def url_map(self):
+    def url_maps(self):
         """
         Use this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically.
 
@@ -195,12 +196,21 @@ class TethysAppBase(object):
                 Example handoff_handlers method.
                 \"""
                 handoff_handlers = (HandoffHandlers(name='example',
-                                                    handler='handlers:my_handler'),
+                                                    handler='my_first_app.controllers.my_handler'),
                 )
 
                 return handoff_handlers
         """
         return None
+
+    @classmethod
+    def get_handoff_manager(cls):
+        """
+        Get the handoff manager for the app.
+        """
+        app = cls()
+        handoff_manager = HandoffManager(app)
+        return handoff_manager
 
     def job_templates(self):
         """
@@ -223,13 +233,13 @@ class TethysAppBase(object):
                 my_scheduler = list_schedulers()[0]
 
                 job_templates = (CondorJobTemplate(name='example',
-                                                   parameters={'executable': 'my_script.py',
+                                                   parameters={'executable': '$(APP_WORKSPACE)/example_exe.py',
                                                                'condorpy_template_name': 'vanilla_transfer_files',
-                                                               'attributes': {'transfer_input_files': ('../input_1', '../input_2'),
-                                                                              'transfer_output_files': ('example_output1', example_output2),
+                                                               'attributes': {'transfer_input_files': ('../input_1.in', '../input_2.in'),
+                                                                              'transfer_output_files': ('example_output1.out', 'example_output2.out'),
                                                                              },
                                                                'scheduler': my_scheduler,
-                                                               'remote_input_files': ('my_script.py', 'input_1', '$(USER_WORKSPACE)input_2'),
+                                                               'remote_input_files': ('$(APP_WORKSPACE)/example_exe.py', '$(APP_WORKSPACE)/input_1.in', '$(USER_WORKSPACE)/input_2.in'),
                                                               }
                                                   ),
                                 )
@@ -240,6 +250,9 @@ class TethysAppBase(object):
 
     @classmethod
     def get_job_manager(cls):
+        """
+        Get the job manager for the app
+        """
         app = cls()
         job_manager = JobManager(app)
         return job_manager
@@ -332,37 +345,6 @@ class TethysAppBase(object):
         ## Credits: http://stackoverflow.com/questions/4006102/is-possible-to-know-the-_path-of-the-file-of-a-subclass-in-python
         project_directory = os.path.dirname(sys.modules[cls.__module__].__file__)
         workspace_directory = os.path.join(project_directory, 'workspaces', 'app_workspace')
-        return TethysWorkspace(workspace_directory)
-    
-    @classmethod
-    def get_jobs_workspace(cls):
-        """
-        Get the file workspace (directory) for Tethys Compute jobs in the app.
-
-        Returns:
-          tethys_apps.base.TethysWorkspace: An object representing the workspace.
-
-        **Example:**
-
-        ::
-
-            import os
-            from .app import MyFirstApp
-
-            def a_controller(request):
-                \"""
-                Example controller that uses get_app_workspace() method.
-                \"""
-                # Retrieve the jobs workspace
-                jobs_workspace = MyFirstApp.get_jobs_workspace()
-
-                context = {}
-
-                return render(request, 'my_first_app/template.html', context)
-
-        """
-        app_workspace_directory = cls.get_app_workspace().path;
-        workspace_directory = os.path.join(app_workspace_directory, 'jobs_workspace')
         return TethysWorkspace(workspace_directory)
 
     @classmethod

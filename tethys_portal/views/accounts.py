@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
@@ -65,7 +66,11 @@ def login_view(request):
         # Create new empty login form
         form = LoginForm()
 
-    context = {'form': form}
+    # Determine if signup is disabled or not
+    signup_enabled = settings.ENABLE_OPEN_SIGNUP if hasattr(settings, 'ENABLE_OPEN_SIGNUP') else False
+
+    context = {'form': form,
+               'signup_enabled': signup_enabled}
 
     return render(request, 'tethys_portal/accounts/login.html', context)
 
@@ -77,6 +82,10 @@ def register(request):
     # Only allow users to access register page if they are not logged in
     if not request.user.is_anonymous():
         return redirect('user:profile', username=request.user.username)
+
+    # Disallow access to this page if open signup is disabled
+    if not hasattr(settings, 'ENABLE_OPEN_SIGNUP') or not settings.ENABLE_OPEN_SIGNUP:
+        return redirect('accounts:login')
 
     # Handle form
     if request.method == 'POST' and 'register-submit' in request.POST:
