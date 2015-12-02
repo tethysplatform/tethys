@@ -12,7 +12,11 @@
            {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
            {% if initial %}value="{{ initial }}"{% endif %}
            {% if disabled %}disabled{% endif %}
-           {% if attributes %} {{ attributes }} {% endif %}>
+           {% if attributes %}
+               {% for key, value in attributes.items %}
+                  {{ key }}="{{ value }}"
+               {% endfor %}
+           {% endif %}>
       {% if append %}
         <div class="input-group-addon">{{ append }}</div>
       {% elif icon_append %}
