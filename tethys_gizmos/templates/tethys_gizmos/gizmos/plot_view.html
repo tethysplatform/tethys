@@ -7,5 +7,9 @@
     data-json="{{ plot_object|jsonify }}"
   {% endif %}
   style="{% if width %}min-width: {{ width }};{% endif %} {% if height %}height: {{ height }};{% endif %} margin: 0 auto;"
-  {% if attributes %} {{ attributes }} {% endif %}>
+  {% if attributes %}
+      {% for key, value in attributes.items %}
+          {{ key }}="{{ value }}"
+      {% endfor %}
+  {% endif %}>
 </div>

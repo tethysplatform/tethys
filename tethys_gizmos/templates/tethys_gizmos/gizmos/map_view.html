@@ -29,7 +29,11 @@
   <div id="map_wrapper" style="height: {{ height|default:'100%' }}; width:{{ width|default:'100%'}};">
     <div id="map_view" style="width: 100%; height:100%; position: relative;"
          {% if classes %}class="{{ classes }}"{% endif %}
-         {% if attributes %} {{ attributes }} {% endif %}
+         {% if attributes %}
+             {% for key, value in attributes.items %}
+                 {{ key }}="{{ value }}"
+             {% endfor %}
+         {% endif %}
          {% if controls %}data-controls="{{ controls|jsonify }}"{% endif %}
          {% if interactions %}data-interactions="{{ interactions|jsonify }}"{% endif %}
          {% if layers %}data-layers="{{ layers|jsonify }}"{% endif %}

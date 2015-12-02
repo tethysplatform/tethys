@@ -11,7 +11,11 @@
            value="{{ initial }}"
            oninput="updateSliderDisplayValue('{{ name }}', this);"
            {% if disabled %}disabled{% endif %}
-           {% if attributes %} {{ attributes }} {% endif %}>
+           {% if attributes %}
+               {% for key, value in attributes.items %}
+                   {{ key }}="{{ value }}"
+               {% endfor %}
+           {% endif %}>
     <span class="input-group-addon slider-after">{{ max }}</span>
 
   </div>
