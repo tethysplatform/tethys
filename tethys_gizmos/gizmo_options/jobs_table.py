@@ -28,7 +28,7 @@ class JobsTable(TethysGizmoOptions):
         striped(bool): Stripe rows
         bordered(bool): Add borders and rounded corners
         condensed(bool): A more tightly packed table
-        attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Example
@@ -55,7 +55,7 @@ class JobsTable(TethysGizmoOptions):
     """
 
     def __init__(self, jobs, column_fields, status_actions=True, run_btn=True, delete_btn=True, results_url='',
-                 hover=False, striped=False, bordered=False, condensed=False, attributes='', classes=''):
+                 hover=False, striped=False, bordered=False, condensed=False, attributes={}, classes=''):
         """
         Constructor
         """

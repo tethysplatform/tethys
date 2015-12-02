@@ -35,7 +35,7 @@ class DatePicker(TethysGizmoOptions):
         initial (str): Initial date to appear in date picker.
         disabled (bool): Disabled state of the date picker.
         error (str): Error message for form validation.
-        attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Example
@@ -72,7 +72,7 @@ class DatePicker(TethysGizmoOptions):
     def __init__(self, name, display_text='', autoclose=False, calendar_weeks=False, clear_button=False,
                  days_of_week_disabled='', end_date='', format='', min_view_mode='days', multidate=1, start_date='',
                  start_view='month', today_button=False, today_highlight=False, week_start=0, initial='',
-                 disabled=False, error='', attributes='', classes=''):
+                 disabled=False, error='', attributes={}, classes=''):
         """
         Constructor
         """

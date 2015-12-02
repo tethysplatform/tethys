@@ -34,7 +34,7 @@ class TethysGizmoOptions(dict):
                 attributes = dict()
                 for i in range(1, len(pairs), 2):
                     attributes[pairs[i]] = pairs[i+1]
-                    print attributes
+
         self.attributes = attributes
         self.classes = classes
 
