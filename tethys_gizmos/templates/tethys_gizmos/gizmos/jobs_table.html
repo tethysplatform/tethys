@@ -13,7 +13,7 @@
       <th>{{ column_name }}</th>
     {% endfor %}
     {% if status_actions %}
-      <th {% if delete %}colspan="2"{% endif %}>Status</th>
+      <th class="status-col{% if delete %} span-two" colspan="2"{% else %}"{% endif %}>Status</th>
     {% endif %}
   </tr>
 
