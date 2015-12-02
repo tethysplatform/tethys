@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 from tethys_compute.models import TethysJob, CondorJob, BasicJob
+import re
 
 JOB_TYPES = {'CONDOR': CondorJob,
              'BASIC': BasicJob,
@@ -24,7 +25,7 @@ class JobManager(object):
     def __init__(self, app):
         self.app = app
         self.label = app.package
-        self.workspace = app.get_jobs_workspace()
+        self.app_workspace = app.get_app_workspace()
         self.job_templates = dict()
         for template in app.job_templates():
             self.job_templates[template.name] = template
@@ -35,36 +36,83 @@ class JobManager(object):
         except KeyError, e:
             raise KeyError('A job template with name %s was not defined' % (template_name,))
         JobClass = template.type
-
-        kwrgs = dict(name=name, user=user, label=self.label, workspace=self.workspace.path)
         user_workspace = self.app.get_user_workspace(user)
+
+        kwrgs = dict(name=name, user=user, label=self.label, workspace=user_workspace.path)
         parameters = self._replace_workspaces(template.parameters, user_workspace)
         kwrgs.update(parameters)
         kwrgs.update(kwargs)
         job = JobClass(**kwrgs)
         return job
 
-    def list_jobs(self, user, order_by='id'):
+    def list_jobs(self, user=None, order_by='id'):
         """
         Lists all the jobs from current app for current user
         """
-        jobs = TethysJob.objects.filter(label=self.label, user=user).order_by(order_by)
+        filters = dict()
+        filters['label'] = self.label
+        if user:
+            filters['user'] = user
+        jobs = TethysJob.objects.filter(**filters).order_by(order_by)
         jobs = [job.child for job in jobs]
         return jobs
 
-    def get_job(self, job_id):
+    def get_job(self, job_id, user=None):
         """
         Get job by id
         """
         job = TethysJob.objects.filter(label=self.label, id=job_id)
         if job:
-            return job[0].child
+            job = job[0].child
+
+            if user and job.user != user:
+                return None
+
+            return job
 
     def _replace_workspaces(self, parameters, user_workspace):
+        """
+        Replaces all instances of '$(APP_WORKSPACE)' and '$(USER_WORKSPACE)' in job parameters with the actual paths.
+        """
+
+        def replace_in_value(value):
+            value_type = type(value)
+            if value_type in TYPE_DICT.keys():
+                replace_func = TYPE_DICT[value_type]
+                new_value = replace_func(value)
+                return new_value
+            return value
+
+        def replace_in_string(string_value):
+            new_string_value = re.sub('\$\(APP_WORKSPACE\)', self.app_workspace.path, string_value)
+            new_string_value = re.sub('\$\(USER_WORKSPACE\)', user_workspace.path, new_string_value)
+            return new_string_value
+
+        def replace_in_dict(dict_value):
+            new_dict_value = dict()
+            for key, value in dict_value.iteritems():
+                new_dict_value[key] = replace_in_value(value)
+            return new_dict_value
+
+        def replace_in_list(list_value):
+            new_list_value = [replace_in_value(value) for value in list_value]
+            return new_list_value
+
+        def replace_in_tuple(tuple_value):
+            new_tuple_value = tuple(replace_in_list(tuple_value))
+            return new_tuple_value
+
+        TYPE_DICT = {str: replace_in_string,
+                     dict: replace_in_dict,
+                     list: replace_in_list,
+                     tuple: replace_in_tuple,
+                    }
+
         new_parameters = dict()
-        for parameter in parameters.values():
-            pass
-        return parameters
+        for parameter, value in parameters.iteritems():
+            new_value = replace_in_value(value)
+            new_parameters[parameter] = new_value
+        return new_parameters
 
 
 class JobTemplate(object):

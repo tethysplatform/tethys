@@ -20,7 +20,8 @@ is included in the SDK:
    tethys_sdk/dataset_services
    tethys_sdk/spatial_dataset_services
    tethys_sdk/web_processing_services
-   tethys_sdk/cloud_computing
+   tethys_sdk/compute
+   tethys_sdk/jobs
    tethys_sdk/workspaces
    tethys_sdk/handoff
    tethys_sdk/tethys_cli
