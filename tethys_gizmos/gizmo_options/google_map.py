@@ -31,7 +31,7 @@ class GoogleMapView(TethysGizmoOptions):
         initial_drawing_mode(string): A string representing the drawing mode that will be enabled by default. Valid modes are: 'POLYGONS', 'POINTS', 'POLYLINES'. The mode used must be one of the drawing_types_enabled that the user is allowed to draw.
         output_format(string): A string specifying the format of the string that is output by the editable map tool. Valid values are 'GEOJSON' for GeoJSON format or 'WKT' for Well Known Text Format.
         input_overlays(PySON): A JavaScript-equivalent Python data structure representing GeoJSON or WktJSON containing the geometry and attributes to be added to the map as overlays (see example below). Only points, lines and polygons are supported.
-        attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
 
@@ -104,7 +104,7 @@ class GoogleMapView(TethysGizmoOptions):
     """
 
     def __init__(self, height, width, maps_api_key="", reference_kml_action="", drawing_types_enabled=[],
-                 initial_drawing_mode="", output_format='GEOJSON', input_overlays=[None], attributes='', classes=''):
+                 initial_drawing_mode="", output_format='GEOJSON', input_overlays=[None], attributes={}, classes=''):
         """
         Constructor
         """
