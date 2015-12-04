@@ -67,7 +67,7 @@ class SelectInput(TethysGizmoOptions):
 
     """
 
-    def __init__(self, name, display_text='', multiple=False, original=False, options='', disabled=False, error='',
+    def __init__(self, name, display_text='', initial=[], multiple=False, original=False, options='', disabled=False, error='',
                  attributes={}, classes=''):
         """
         Constructor
@@ -77,6 +77,7 @@ class SelectInput(TethysGizmoOptions):
 
         self.display_text = display_text
         self.name = name
+        self.initial=initial
         self.multiple = multiple
         self.original = original
         self.options = options
