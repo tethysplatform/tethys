@@ -222,10 +222,46 @@ For more detailed information about using LinkedIn social authentication see the
 HydroShare
 ----------
 
-.. note::
+1. Create a HydroShare Account
 
-    Coming soon!
+  You will need a HydroShare account to register your Tethys Portal with HydroShare. To create an account, visit `https://www.hydroshare.org <https://www.hydroshare.org>`_.
 
+2. Create a HydroShare Application
+
+  a. Navigate to `https://www.hydroshare.org/o/applications/register/ <https://www.hydroshare.org/o/applications/register/>`_.
+  b. See Step 4 for instructions on Redirect URIs.
+  c. Fill out the form and press ``Save``.
+
+3. Note the ``Client ID`` and ``Client Secret`` for Step 5.
+
+4. Setup OAuth
+
+  a. Add the call back URLs under the Redirect URIs section. For example, if my Tethys Portal was located at the domain ``www.example.org``:
+
+    ::
+
+        https://www.example.org/oauth2/complete/hydroshare/
+        http://localhost:8000/oauth2/complete/hydroshare/
+
+5. Open  ``settings.py`` script located in :file:`/usr/lib/tethys/src/tethys_apps/settings.py`
+
+
+  Add the ``social.backends.hydroshare.HydroShareOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
+
+  ::
+
+      AUTHENTICATION_BACKENDS = (
+          'tethys_services.backends.hydroshare.HydroShareOAuth2',
+          ...
+          'django.contrib.auth.backends.ModelBackend',
+      )
+
+  Assign the ``Client ID`` and ``Client Secret`` to the ``SOCIAL_AUTH_HYDROSHARE_KEY`` and ``SOCIAL_AUTH_HYDROSHARE_SECRET`` settings, respectively:
+
+  ::
+
+      SOCIAL_AUTH_HYDROSHARE_KEY = '...'
+      SOCIAL_AUTH_HYDROSHARE_SECRET = '...'
 
 .. _social_auth_settings:
 
