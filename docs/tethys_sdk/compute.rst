@@ -4,7 +4,7 @@ Compute API
 
 **Last Updated:** September 3, 2015
 
-Distributed computing in Tethys Platform is made possible with HTCondor. HTCondor computing resources are managed through the `Tethys Compute`_ settings of the site admin in Tethys Portal. Access to the HTCondor computing environment is made possible to app developers through a `Job Manager`_ object. For more information on HTCondor see `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_ or the `HTCondor User Manual <http://research.cs.wisc.edu/htcondor/manual/>`_.
+Distributed computing in Tethys Platform is made possible with HTCondor. HTCondor computing resources are managed through the `Tethys Compute`_ settings of the site admin in Tethys Portal. Access to the HTCondor computing environment is made possible to app developers through a :ref:`job-manager-label` object. For more information on HTCondor see `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_ or the `HTCondor User Manual <http://research.cs.wisc.edu/htcondor/manual/>`_.
 
 Tethys Compute
 ==============
@@ -22,11 +22,11 @@ There are four optional options when creating a cluster: 'master image id',' mas
 
 Jobs
 ----
-Jobs represent some sort of computation that is sent from an app to a cluster using the `Job Manager`_. For each job that is created a database record is made to store some of the basic information about the job including: name, user, creation time, and status. The Jobs section in the Tethys Compute admin page allows for basic management of these database records.
+Jobs represent some sort of computation that is sent from an app to a cluster using the :ref:`job-manager-label`. For each job that is created a database record is made to store some of the basic information about the job including: name, user, creation time, and status. The Jobs section in the Tethys Compute admin page allows for basic management of these database records.
 
 Schedulers
 ----------
-Schedulers are HTCondor nodes that have scheduling rights in the pool they belong to. Schedulers are needed for CondorJob types (see `Job Manager`_ documentation).
+Schedulers are HTCondor nodes that have scheduling rights in the pool they belong to. Schedulers are needed for CondorJob types (see :ref:`job-manager-label` documentation).
 
 Settings
 --------
@@ -42,7 +42,7 @@ The `Subscription ID`_ is a unique identifier for your Azure subscription. For i
 
 Certificate Path
 ''''''''''''''''
-The `Certificate Path`_ is the path to an SSL certificate file on the Tethys Portal server that is also registered in with your Azure subscription. View these `instructions <https://msdn.microsoft.com/en-us/library/azure/gg551722.aspx>`_ for help creating and uploading a certificate to the Microsoft Azure Management Portal.
+The `Certificate Path`_ is the path to an SSL certificate file on the Tethys Portal server that is also registered in with your Azure subscription. View these `instructions <https://msdn.microsoft.com/en-us/library/azure/gg551722.aspx>`__ for help creating and uploading a certificate to the Microsoft Azure Management Portal.
 
 Amazon Credentials
 ..................
@@ -50,7 +50,7 @@ This section contains settings for connecting to an Amazon Web Services (AWS) ac
 
 AWS Access Key ID
 '''''''''''''''''
-The `AWS Access Key ID`_ is a unique id for your IAM user. View these `instructions <http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSGettingStartedGuide/AWSCredentials.html>`_ for getting your Access Key ID and Secret Access Key.
+The `AWS Access Key ID`_ is a unique id for your IAM user. View these `instructions <http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSGettingStartedGuide/AWSCredentials.html>`__ for getting your Access Key ID and Secret Access Key.
 
 AWS Secret Access Key
 '''''''''''''''''''''
@@ -88,6 +88,6 @@ API Documentation
 =================
 
 
-.. automethod:: tethys_sdk.compute.list_schedulers
+.. autofunction:: tethys_sdk.compute.list_schedulers
 
-.. automethod:: tethys_sdk.compute.get_scheduler
+.. autofunction:: tethys_sdk.compute.get_scheduler

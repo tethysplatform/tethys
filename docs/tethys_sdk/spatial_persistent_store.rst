@@ -30,7 +30,7 @@ Registering spatially enabled persistent stores follows the same process as regi
             Add one or more persistent stores
             """
             stores = (PersistentStore(name='spatial_db',
-                                      initializer='init_stores:init_spatial_db',
+                                      initializer='my_first_app.init_stores.init_spatial_db',
                                       spatial=True
                     ),
             )
