@@ -8,6 +8,7 @@ Jobs API
 - allows you to define and submit jobs in an app
 - condor jobs a run using the compute clusters
 
+.. _job-manager-label:
 
 Job Manager
 ===========
@@ -37,7 +38,7 @@ To create jobs in an app you first need to define job templates. A job template 
                                                               'transfer_output_files': ('example_output1', example_output2),
                                                              },
                                                'scheduler': my_scheduler,
-                                               'remote_input_files': ('my_script.py', 'input_1', '$(USER_WORKSPACE)input_2'),
+                                               'remote_input_files': ('my_script.py', 'input_1', '$(USER_WORKSPACE)/input_2'),
                                               }
                                   ),
                       )
@@ -70,7 +71,7 @@ For convenience, templates for specific job types (e.g. ``CondorJobTemplate``) c
                                                                     'transfer_output_files': ('example_output1', example_output2),
                                                                    },
                                                      'scheduler': my_scheduler,
-                                                     'remote_input_files': ('my_script.py', 'input_1', '$(USER_WORKSPACE)input_2'),
+                                                     'remote_input_files': ('my_script.py', 'input_1', '$(USER_WORKSPACE)/input_2'),
                                                     }
                                         ),
                       )
@@ -83,7 +84,7 @@ For convenience, templates for specific job types (e.g. ``CondorJobTemplate``) c
 
 Job Types
 .........
-The job manager handles various job types that enable different types of jobs.
+The job manager handles various job types that enables.
 
 BasicJob
 ''''''''
