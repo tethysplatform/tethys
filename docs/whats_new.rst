@@ -2,7 +2,7 @@
 What's New
 **********
 
-**Last Updated:** August 11, 2015
+**Last Updated:** Dec 10, 2015
 
 Refer to this article for information about each new release of Tethys Platform.
 
@@ -37,6 +37,28 @@ Spatial Dataset Services
 * Provide two new methods on the geoserver engine to create SQL views and simplify the process of linking PostGIS databases with GeoServer.
 
 See: :doc:`./tethys_sdk/spatial_dataset_service/geoserver_reference`
+
+Handoff
+-------
+
+* Handoff Manager now available, which can be used from controllers to handoff from one app to another on the same Tethys portal (without having to use the REST API)
+* The way handoff handler controllers are specified was changed to be consistent with other controllers
+
+See: :doc:`./tethys_sdk/handoff`
+
+Jobs Table Gizmo
+----------------
+
+* The refresh interval for job status and runtime is configurable
+
+See: :doc:`./tethys_sdk/gizmos/jobs_table`
+
+Social Authentication
+---------------------
+
+* Support for HydroShare added
+
+See: :doc:`./tethys_portal/social_auth`
 
 Release 1.2.0
 =============
