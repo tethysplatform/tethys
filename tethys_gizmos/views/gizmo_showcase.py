@@ -934,6 +934,7 @@ def index(request):
         bordered=False,
         condensed=False,
         results_url='gizmos:results',
+        refresh_interval=10000,
     )
 
     # Define the context object
