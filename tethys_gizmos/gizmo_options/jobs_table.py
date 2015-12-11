@@ -18,7 +18,7 @@ class JobsTable(TethysGizmoOptions):
     """
     A jobs table can be used to display users' jobs. The JobsTable gizmo takes the same formatting options as the table view gizmo, but does not allow the columns to be edited. Additional attributes for the jobs table allows for a dynamically updating status field, and action buttons.
 
-    Attributes
+    Attributes:
         jobs(tuple or list, required): A list/tuple of TethysJob objects.
         column_fields(tuple or list, required): A tuple or list of strings that represent TethysJob object attributes to show in the columns.
         status_actions(bool): Add a column to the table to show dynamically updating status, and action buttons. If this is false then the values for run_btn, delete_btn, and results_url will be ignored. Default is True.
@@ -31,6 +31,7 @@ class JobsTable(TethysGizmoOptions):
         condensed(bool): A more tightly packed table
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
+        refresh_interval(int): The refresh interval for the runtime and status fields in milliseconds. Default is 5000.
 
     Example
 
@@ -56,7 +57,7 @@ class JobsTable(TethysGizmoOptions):
     """
 
     def __init__(self, jobs, column_fields, status_actions=True, run_btn=True, delete_btn=True, results_url='',
-                 hover=False, striped=False, bordered=False, condensed=False, attributes={}, classes=''):
+                 hover=False, striped=False, bordered=False, condensed=False, attributes={}, classes='', refresh_interval=5000):
         """
         Constructor
         """
@@ -78,6 +79,7 @@ class JobsTable(TethysGizmoOptions):
         self.condensed = condensed
         self.attributes = attributes
         self.classes = classes
+        self.refresh_interval = refresh_interval
 
     @classmethod
     def get_rows(cls, jobs, column_fields):
