@@ -288,6 +288,11 @@ def my_view(request):
         <div class="example">
           <div class="demo">
             <a href="#{{ message_box.name }}" role="button" class="btn btn-success" data-toggle="modal">Show Message Box</a>
+            <style>
+              .modal {
+                padding-right: 0!important;
+              }
+            </style>
             {% gizmo message_box message_box %}
           </div>
         </div>
