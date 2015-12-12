@@ -22,7 +22,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{% if dismiss_button %} {{ dismiss_button }} {% else %} Cancel {% endif %}</button>
-        <a class="btn btn-success" {% if affirmative_attributes %} {{ affirmative_attributes }} {% endif %}>{% if affirmative_button %} {{ affirmative_button }} {% else %} OK {% endif %}</a>
+        <a class="btn btn-primary" data-dismiss="modal" aria-hidden="true" {% if affirmative_attributes %} {{ affirmative_attributes }} {% endif %}>{% if affirmative_button %} {{ affirmative_button }} {% else %} OK {% endif %}</a>
       </div>
     </div>
   </div>
