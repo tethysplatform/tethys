@@ -36,8 +36,6 @@ for spatial_dataset_engine in spatial_dataset_engines:
         except ConnectionError:
             pass
 
-print(geoserver_wms)
-
 
 @login_required()
 def index(request):
