@@ -7,13 +7,14 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 
 from tethys_apps.utilities import generate_app_url_patterns
+from tethys_apps.views import library
 
-urlpatterns = patterns('',
-    url(r'^$', 'tethys_apps.views.library', name='app_library'),
-)
+urlpatterns = [
+    url(r'^$', library, name='app_library'),
+]
 
 # Append the app urls urlpatterns
 app_url_patterns = generate_app_url_patterns()
