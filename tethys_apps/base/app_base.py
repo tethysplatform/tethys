@@ -34,6 +34,8 @@ class TethysAppBase(object):
       package (string): Name of the app package.
       root_url (string): Root URL of the app.
       color (string): App theme color as RGB hexadecimal.
+      enable_feedback (boolean): Shows feedback button on all app pages.
+      feedback_emails (list): A list of emails corresponding to where submitted feedback forms are sent.
 
     """
     name = ''
