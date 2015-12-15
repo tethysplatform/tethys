@@ -2,7 +2,7 @@
 What's New
 **********
 
-**Last Updated:** December 14, 2015
+**Last Updated:** December 15, 2015
 
 Refer to this article for information about each new release of Tethys Platform.
 
