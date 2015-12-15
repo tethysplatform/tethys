@@ -2,7 +2,7 @@
 What's New
 **********
 
-**Last Updated:** Dec 10, 2015
+**Last Updated:** December 14, 2015
 
 Refer to this article for information about each new release of Tethys Platform.
 
@@ -59,6 +59,20 @@ Social Authentication
 * Support for HydroShare added
 
 See: :doc:`./tethys_portal/social_auth`
+
+Bugs
+----
+
+* Missing initial value parameter was added to the select and select2 gizmos.
+* Addressed several cases of mixed content warnings when running behind HTTPS.
+* The disconnect social account buttons are now disabled if your account doesn't have a password or there is only one social account associated with the account.
+* Fixed issues with some of the documentation not being generated.
+* Fixed styling issues that made the Message Box gizmo unusable.
+* Normalized references to controllers, persistent store initializers, and handoff handler functions.
+* Various docs typos were fixed.
+* Plot view was fixed to allow parameter overwriting as was intended.
+
+
 
 Release 1.2.0
 =============
