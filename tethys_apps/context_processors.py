@@ -39,4 +39,11 @@ def tethys_apps_context(request):
                                          'index': app.index,
                                          'icon': app.icon,
                                          'color': app.color}
+
+                if hasattr(app, 'feedback_emails') and len(app.feedback_emails) > 0:
+                    context['tethys_app']['feedback_emails'] = app.feedback_emails
+
+                    if hasattr(app, 'enable_feedback'):
+                        context['tethys_app']['enable_feedback'] = app.enable_feedback
+
     return context

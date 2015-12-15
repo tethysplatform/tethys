@@ -13,6 +13,7 @@ from tethys_apps.utilities import generate_app_url_patterns
 
 urlpatterns = patterns('',
     url(r'^$', 'tethys_apps.views.library', name='app_library'),
+    url(r'^send-beta-feedback/$', 'tethys_apps.views.send_beta_feedback_email', name='send_beta_feedback'),
 )
 
 # Append the app urls urlpatterns

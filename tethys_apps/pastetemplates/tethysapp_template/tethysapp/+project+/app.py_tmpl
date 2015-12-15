@@ -12,6 +12,9 @@ class {{proper_no_spaces}}(TethysAppBase):
     package = '{{project}}'
     root_url = '{{project_url}}'
     color = '{{color}}'
+    enable_feedback = False
+    feedback_emails = []
+
         
     def url_maps(self):
         """

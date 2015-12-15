@@ -2,7 +2,7 @@
 What's New
 **********
 
-**Last Updated:** August 11, 2015
+**Last Updated:** December 15, 2015
 
 Refer to this article for information about each new release of Tethys Platform.
 
@@ -37,6 +37,15 @@ Spatial Dataset Services
 * Provide two new methods on the geoserver engine to create SQL views and simplify the process of linking PostGIS databases with GeoServer.
 
 See: :doc:`./tethys_sdk/spatial_dataset_service/geoserver_reference`
+
+App Feedback
+----------------
+
+* Places button on all app pages that activates a feedback form
+* Sends app-users comments to specified developer emails
+* Includes user and app specific information
+
+See: :doc:`./tethys_portal/feedback`
 
 Release 1.2.0
 =============
