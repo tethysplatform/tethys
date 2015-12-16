@@ -1319,7 +1319,7 @@ var TETHYS_MAP_VIEW = (function() {
 
   map_clicked = function(event) {
     var urls, tolerance, x, y;
-    var multiselect, sensitivity, resolution, power, powered;
+    var multiselect, sensitivity;
     x = event.coordinate[0]
     y = event.coordinate[1]
     urls = [];
@@ -1328,14 +1328,7 @@ var TETHYS_MAP_VIEW = (function() {
     if (is_defined(m_feature_selection_options) && 'sensitivity' in m_feature_selection_options) {
       sensitivity = m_feature_selection_options.sensitivity;
     }
-
-    // Calculate buffer distance around the coordinates
-    power = 0.8;
-    resolution = m_map.getView().getResolution();
-    powered = Math.pow(resolution, power);
-    console.log('Original: ' + resolution);
-    console.log('Powered: ' + powered);
-    tolerance =  powered * sensitivity;
+    tolerance = m_map.getView().getResolution() * sensitivity;
 
     // Determine if multiselect applies
     multiselect = false;
