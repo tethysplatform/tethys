@@ -19,6 +19,9 @@ __all__ = ['GEN_APACHE_OPTION', 'GEN_APACHE_OPTION', 'generate_command']
 
 # Initialize settings
 settings.configure()
+import django
+django.setup()
+
 
 GEN_SETTINGS_OPTION = 'settings'
 GEN_APACHE_OPTION = 'apache'

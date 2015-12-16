@@ -11,14 +11,13 @@ import os
 import sys
 
 from django.http import HttpRequest
-from django.contrib.auth.models import User
 from django.utils.functional import SimpleLazyObject
 from django.conf import settings
 from django.db import DatabaseError
 
 from sqlalchemy import create_engine
 
-from tethys_sdk.jobs import JobManager
+
 from tethys_apps.base.workspace import TethysWorkspace
 from tethys_apps.base.handoff import HandoffManager
 
@@ -255,6 +254,7 @@ class TethysAppBase(object):
         """
         Get the job manager for the app
         """
+        from tethys_sdk.jobs import JobManager
         app = cls()
         job_manager = JobManager(app)
         return job_manager
@@ -295,6 +295,7 @@ class TethysAppBase(object):
         """
         username = ''
 
+        from django.contrib.auth.models import User
         if isinstance(user, User) or isinstance(user, SimpleLazyObject):
             username = user.username
         elif isinstance(user, HttpRequest):

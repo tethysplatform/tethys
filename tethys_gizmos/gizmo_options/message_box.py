@@ -44,6 +44,7 @@ class MessageBox(TethysGizmoOptions):
 
         # TEMPLATE
 
+        <a href="#sampleModal" role="button" class="btn btn-success" data-toggle="modal">Show Message Box</a>
         {% gizmo message_box message_box %}
 
     """
