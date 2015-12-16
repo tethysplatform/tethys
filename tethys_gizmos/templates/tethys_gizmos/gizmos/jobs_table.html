@@ -7,7 +7,7 @@
                 {{ key }}="{{ value }}"
             {% endfor %}
         {% endif %}
-       data-column-fields="{{ column_fields }}" data-status-actions="{{ status_actions }}" data-run="{{ run }}" data-delete="{{ delete }}" data-results-url="{{ results_url }}">
+       data-column-fields="{{ column_fields }}" data-status-actions="{{ status_actions }}" data-run="{{ run }}" data-delete="{{ delete }}" data-results-url="{{ results_url }}" data-refresh-interval="{{ refresh_interval }}">
   <tr>
     {% for column_name in column_names %}
       <th>{{ column_name }}</th>

@@ -39,49 +39,49 @@
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 300;
-  src: local('Open Sans Light'), local('OpenSans-Light'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/DXI1ORHCpsQm3Vp6mXoaTaRDOzjiPcYnFooOUGCOsRk.woff) format('woff');
+  src: local('Open Sans Light'), local('OpenSans-Light'), url(https://themes.googleusercontent.com/static/fonts/opensans/v8/DXI1ORHCpsQm3Vp6mXoaTaRDOzjiPcYnFooOUGCOsRk.woff) format('woff');
 }
 @font-face {
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
-  src: local('Open Sans'), local('OpenSans'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/cJZKeOuBrn4kERxqtaUH3bO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
+  src: local('Open Sans'), local('OpenSans'), url(https://themes.googleusercontent.com/static/fonts/opensans/v8/cJZKeOuBrn4kERxqtaUH3bO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
 }
 @font-face {
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 600;
-  src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/MTP_ySUJH_bn48VBG8sNSqRDOzjiPcYnFooOUGCOsRk.woff) format('woff');
+  src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url(https://themes.googleusercontent.com/static/fonts/opensans/v8/MTP_ySUJH_bn48VBG8sNSqRDOzjiPcYnFooOUGCOsRk.woff) format('woff');
 }
 @font-face {
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 700;
-  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/k3k702ZOKiLJc3WVjuplzKRDOzjiPcYnFooOUGCOsRk.woff) format('woff');
+  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(https://themes.googleusercontent.com/static/fonts/opensans/v8/k3k702ZOKiLJc3WVjuplzKRDOzjiPcYnFooOUGCOsRk.woff) format('woff');
 }
 @font-face {
   font-family: 'Open Sans';
   font-style: italic;
   font-weight: 300;
-  src: local('Open Sans Light Italic'), local('OpenSansLight-Italic'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/PRmiXeptR36kaC0GEAetxvR_54zmj3SbGZQh3vCOwvY.woff) format('woff');
+  src: local('Open Sans Light Italic'), local('OpenSansLight-Italic'), url(https://themes.googleusercontent.com/static/fonts/opensans/v8/PRmiXeptR36kaC0GEAetxvR_54zmj3SbGZQh3vCOwvY.woff) format('woff');
 }
 @font-face {
   font-family: 'Open Sans';
   font-style: italic;
   font-weight: 400;
-  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/xjAJXh38I15wypJXxuGMBrrIa-7acMAeDBVuclsi6Gc.woff) format('woff');
+  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(https://themes.googleusercontent.com/static/fonts/opensans/v8/xjAJXh38I15wypJXxuGMBrrIa-7acMAeDBVuclsi6Gc.woff) format('woff');
 }
 @font-face {
   font-family: 'Open Sans';
   font-style: italic;
   font-weight: 600;
-  src: local('Open Sans Semibold Italic'), local('OpenSans-SemiboldItalic'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/PRmiXeptR36kaC0GEAetxuw_rQOTGi-AJs5XCWaKIhU.woff) format('woff');
+  src: local('Open Sans Semibold Italic'), local('OpenSans-SemiboldItalic'), url(https://themes.googleusercontent.com/static/fonts/opensans/v8/PRmiXeptR36kaC0GEAetxuw_rQOTGi-AJs5XCWaKIhU.woff) format('woff');
 }
 @font-face {
   font-family: 'Open Sans';
   font-style: italic;
   font-weight: 700;
-  src: local('Open Sans Bold Italic'), local('OpenSans-BoldItalic'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/PRmiXeptR36kaC0GEAetxhbnBKKEOwRKgsHDreGcocg.woff) format('woff');
+  src: local('Open Sans Bold Italic'), local('OpenSans-BoldItalic'), url(https://themes.googleusercontent.com/static/fonts/opensans/v8/PRmiXeptR36kaC0GEAetxhbnBKKEOwRKgsHDreGcocg.woff) format('woff');
 }
 /*****************************************************************************
  * FILE: base
@@ -93,13 +93,6 @@
 /* ===========================================
    General and Typography
    =========================================== */
-/*****************************************************************************
- * FILE: mixins
- * DATE: 2014
- * AUTHOR: Nathan Swain
- * COPYRIGHT: (c) Brigham Young University 2014
- * LICENSE: BSD 2-Clause
- *****************************************************************************/
 h1,
 h2,
 h3,
@@ -239,7 +232,6 @@ a:hover {
 .center-parent {
   text-align: center;
   /* The ghost, nudged to maintain perfect centering */
-
 }
 .center-parent:before {
   content: '';
@@ -248,7 +240,6 @@ a:hover {
   vertical-align: middle;
   margin-right: -0.25em;
   /* Adjusts for spacing */
-
 }
 /* The element to be centered, can also be of any width and height */
 .centered {
@@ -283,7 +274,6 @@ a:hover {
  *****************************************************************************/
 #site-wrapper {
   /* equal to footer height */
-
   margin-bottom: -100px;
   min-height: 100%;
   padding-top: 80px;
@@ -296,7 +286,6 @@ a:hover {
 #site-footer,
 #site-wrapper:after {
   /* .push must be the same height as footer */
-
   height: 100px;
 }
 @media (max-width: 860px) {
@@ -306,7 +295,6 @@ a:hover {
   #site-footer,
   #site-wrapper:after {
     /* .push must be the same height as footer */
-  
     height: 100px;
   }
 }
@@ -695,7 +683,7 @@ a:hover {
   z-index: 1000;
   top: 0;
   width: 100%;
-  background: #0a62a9;
+  background: #0A62A9;
   box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.35);
   box-sizing: border-box;
 }
@@ -1172,16 +1160,17 @@ a:hover {
 }
 /* ===========================================
    Blurb Secton
-   =========================================== */.blurb {
+   =========================================== */
+.blurb {
   position: relative;
   max-height: 200px;
   z-index: 100;
-  background-color: #0a62a9;
+  background-color: #0A62A9;
   box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.25);
 }
 .blurb h3 {
   display: block;
-  color: #ffffff;
+  color: white;
   padding: 50px 0;
   white-space: pre;
   text-align: center;
@@ -1273,7 +1262,6 @@ a:hover {
   .features .feature img {
     width: 50%;
     /*padding-bottom: 35%;*/
-  
     left: 25%;
   }
   .features .feature h4 {
@@ -1294,7 +1282,6 @@ a:hover {
   .features .feature img {
     width: 70%;
     /*padding-bottom: 70%;*/
-  
     left: 15%;
   }
   .features .feature h4 {
@@ -1344,7 +1331,8 @@ a:hover {
 }
 /* ===========================================
    Get Started Section
-   =========================================== */.get-started {
+   =========================================== */
+.get-started {
   height: 300px;
   max-height: 300px;
   overflow: auto;
@@ -1420,7 +1408,7 @@ a:hover {
 .nav-list > .active > a,
 .nav-list > .active > a:hover,
 .nav-list > .active > a:focus {
-  background-color: #0a62a9;
+  background-color: #0A62A9;
 }
 @media (max-width: 1250px) {
   .container {
@@ -1582,35 +1570,31 @@ a:hover {
   }
   .stages {
     /*li:nth-of-type(1):before {
-  			&:before {
-  				content: "1";
-  			}
-  		}
-  		
-  		li:nth-of-type(2){
-  			&:before {
-  				content: "2";
-  			}
-  		}*/
-  
+			&:before {
+				content: "1";
+			}
+		}
+		
+		li:nth-of-type(2){
+			&:before {
+				content: "2";
+			}
+		}*/
   }
   .stages li {
     /*display: none;*/
-  
     width: 100%;
     /*&.active {
-  				display:block;
-  			}*/
-  
+				display:block;
+			}*/
   }
   .stages li:after {
     content: none;
   }
   .stages li:nth-of-type(3).active {
     /*&:before {
-  				content: "3";
-  			}*/
-  
+				content: "3";
+			}*/
     left: -1px;
   }
 }
@@ -1716,7 +1700,7 @@ li.dataset-item .dataset-content p {
   height: 40px;
 }
 .module-content.page-header .nav.nav-tabs li a {
-  color: #0a62a9;
+  color: #0A62A9;
 }
 .module-content.page-header .nav.nav-tabs li.active a {
   color: #555;
@@ -1728,7 +1712,7 @@ li.dataset-item .dataset-content p {
   top: 10px;
 }
 .tags .tag-list li a.tag:hover {
-  background-color: #0a62a9;
+  background-color: #0A62A9;
 }
 .additional-info h3 {
   font-weight: normal;
@@ -1745,7 +1729,7 @@ li.dataset-item .dataset-content p {
   color: #505050;
 }
 .nav-simple .nav-item.active a {
-  background-color: #0a62a9;
+  background-color: #0A62A9;
 }
 .nav-simple .nav-item.active a:before {
   background-image: none;
@@ -1753,29 +1737,29 @@ li.dataset-item .dataset-content p {
   width: 0;
   border-top: 17px solid transparent;
   border-bottom: 17px solid transparent;
-  border-left: 6px solid #0a62a9;
+  border-left: 6px solid #0A62A9;
 }
 .nav-simple .nav-item a:hover {
   color: #333;
 }
 .banner {
-  background-color: #0a62a9;
+  background-color: #0A62A9;
 }
 .popover-followee .popover-content .nav li a {
-  color: #0a62a9;
+  color: #0A62A9;
 }
 .popover-followee .popover-content .nav li a i {
   color: white;
-  background-color: #0a62a9;
+  background-color: #0A62A9;
   -webkit-font-smooting: antialiased;
 }
 .popover-followee .popover-content .nav li.active a {
   color: white;
-  background-color: #0a62a9;
+  background-color: #0A62A9;
 }
 .popover-followee .popover-content .nav li.active a i {
   background-color: white;
-  color: #0a62a9;
+  color: #0A62A9;
   -webkit-font-smooting: antialiased;
 }
 /*****************************************************************************
@@ -1789,7 +1773,7 @@ li.dataset-item .dataset-content p {
    The footer at the bottom of the site
    ==================================== */
 footer.site-footer {
-  background-color: #0a62a9;
+  background-color: #0A62A9;
   position: relative;
   z-index: 100;
   box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.25);
