@@ -36,8 +36,6 @@ for spatial_dataset_engine in spatial_dataset_engines:
         except ConnectionError:
             pass
 
-print(geoserver_wms)
-
 
 @login_required()
 def index(request):
@@ -119,12 +117,14 @@ def index(request):
                                 name='select1',
                                 multiple=False,
                                 options=[('One', '1'), ('Two', '2'), ('Three', '3')],
+                                initial=['Three'],
                                 original=['Two'])
 
     select_input2_multiple = SelectInput(display_text='Select2 Multiple',
                                          name='select2',
                                          multiple=True,
-                                         options=[('One', '1'), ('Two', '2'), ('Three', '3')])
+                                         options=[('One', '1'), ('Two', '2'), ('Three', '3')],
+                                         initial=['Two', 'One'])
 
     select_input_multiple = SelectInput(display_text='Select Multiple',
                                         name='select2.1',
@@ -932,6 +932,7 @@ def index(request):
         bordered=False,
         condensed=False,
         results_url='gizmos:results',
+        refresh_interval=10000,
     )
 
     # Define the context object

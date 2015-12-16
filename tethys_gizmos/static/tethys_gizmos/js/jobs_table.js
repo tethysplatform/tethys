@@ -84,6 +84,7 @@ function update_row(table_elem){
     var run = $(table).attr('data-run');
     var delete_btn = $(table).attr('data-delete');
     var results_url = $(table).attr('data-results-url');
+    var refresh_interval = $(table).attr('data-refresh-interval');
 
     var job_id = $(table_elem).attr('data-job-id');
     var update_url = '/developer/gizmos/ajax/' + job_id + '/update-row';
@@ -104,7 +105,7 @@ function update_row(table_elem){
             if(status == 'Running' || status == 'Submitted' || status == 'Various'){
                 setTimeout(function(){
                     update_row(table_elem);
-                }, 4000);
+                }, refresh_interval);
             }
         }
     });

@@ -101,10 +101,10 @@
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 {% if maps_api_key %}
   <!-- App Developer API Key -->
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=drawing&key={{ maps_api_key }}&sensor=false"></script>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=drawing&key={{ maps_api_key }}"></script>
 {% else %}
   <!-- Global API Key -->
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=drawing&sensor=false"></script>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=drawing"></script>
 {% endif %}
 <script type="text/javascript">
   {% autoescape off %}

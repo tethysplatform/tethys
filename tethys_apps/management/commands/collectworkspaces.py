@@ -10,7 +10,7 @@
 import os
 import shutil
 
-from django.core.management.base import BaseCommand, make_option
+from django.core.management.base import BaseCommand
 from django.conf import settings
 
 from tethys_apps.helpers import get_installed_tethys_apps

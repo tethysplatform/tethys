@@ -22,6 +22,7 @@ class SelectInput(TethysGizmoOptions):
         multiple(bool): If True, select input will be a multi-select
         original(bool): If True, `Select2 reference <http://ivaynberg.github.io/select2/>`_ functionality will be turned off
         options(list): List of tuples that represent the options and values of the select input
+        initial(list): List of values that represent the initial selected values
         disabled(bool): Disabled state of the select input
         error(str): Error message for form validation
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
@@ -38,12 +39,14 @@ class SelectInput(TethysGizmoOptions):
                                     name='select1',
                                     multiple=False,
                                     options=[('One', '1'), ('Two', '2'), ('Three', '3')],
+                                    initial=['Three'],
                                     original=['Two'])
 
         select_input2_multiple = SelectInput(display_text='Select2 Multiple',
                                              name='select2',
                                              multiple=True,
-                                             options=[('One', '1'), ('Two', '2'), ('Three', '3')])
+                                             options=[('One', '1'), ('Two', '2'), ('Three', '3')],
+                                             initial=['Two', 'Three'])
 
         select_input_multiple = SelectInput(display_text='Select Multiple',
                                             name='select2.1',
@@ -67,7 +70,7 @@ class SelectInput(TethysGizmoOptions):
 
     """
 
-    def __init__(self, name, display_text='', multiple=False, original=False, options='', disabled=False, error='',
+    def __init__(self, name, display_text='', initial=[], multiple=False, original=False, options='', disabled=False, error='',
                  attributes={}, classes=''):
         """
         Constructor
@@ -77,6 +80,7 @@ class SelectInput(TethysGizmoOptions):
 
         self.display_text = display_text
         self.name = name
+        self.initial=initial
         self.multiple = multiple
         self.original = original
         self.options = options
