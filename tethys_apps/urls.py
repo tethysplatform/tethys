@@ -7,14 +7,15 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 
 from tethys_apps.utilities import generate_app_url_patterns
+from tethys_apps.views import library, send_beta_feedback_email
 
-urlpatterns = patterns('',
-    url(r'^$', 'tethys_apps.views.library', name='app_library'),
-    url(r'^send-beta-feedback/$', 'tethys_apps.views.send_beta_feedback_email', name='send_beta_feedback'),
-)
+urlpatterns = [
+    url(r'^$', library, name='app_library'),
+    url(r'^send-beta-feedback/$', send_beta_feedback_email, name='send_beta_feedback'),
+]
 
 # Append the app urls urlpatterns
 app_url_patterns = generate_app_url_patterns()

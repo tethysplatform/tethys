@@ -14,7 +14,7 @@ Use the following instructions to setup social login for the providers you desir
 
 .. caution::
 
-    These instructions assume that you have generated a new settings file after upgrading to **Tethys Platform 1.2.0**. If this is not the case, please review the :ref:`social_auth_settings` section.
+    These instructions assume that you have generated a new settings file after upgrading to **Tethys Platform 1.2.0** or later. If this is not the case, please review the :ref:`social_auth_settings` section.
 
 Google
 ------

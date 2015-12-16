@@ -13,9 +13,8 @@ from django.conf.urls import url
 from django.contrib.staticfiles import utils
 from django.contrib.staticfiles.finders import BaseFinder
 from django.core.files.storage import FileSystemStorage
-from django.template import TemplateDoesNotExist
 from django.utils._os import safe_join
-from django.utils.datastructures import SortedDict
+from collections import OrderedDict as SortedDict
 
 from tethys_apps.app_harvester import SingletonAppHarvester
 
@@ -50,7 +49,21 @@ def generate_app_url_patterns():
                     app_url_patterns[app_namespace] = []
 
                 # Create django url object
-                django_url = url(url_map.url, url_map.controller, name=url_map.name)
+                if isinstance(url_map.controller, basestring):
+                    controller_parts = url_map.controller.split('.')
+                    module_name = '.'.join(controller_parts[:-1])
+                    function_name = controller_parts[-1]
+                    try:
+                        module = __import__(module_name, fromlist=[function_name])
+                    except ImportError:
+                        raise ValueError('"{0}" is not a valid controller function.'.format(url_map.controller))
+                    try:
+                        controller_function = getattr(module, function_name)
+                    except AttributeError:
+                        raise ValueError('"{0}" is not a valid controller function.'.format(url_map.controller))
+                else:
+                    controller_function = url_map.controller
+                django_url = url(url_map.url, controller_function, name=url_map.name)
 
                 # Append to namespace list
                 app_url_patterns[app_namespace].append(django_url)
@@ -82,35 +95,6 @@ def get_directories_in_tethys_apps(directory_names, with_app_name=False):
                         tethysapp_match_dirs.append((item, match_dir))
 
     return tethysapp_match_dirs
-
-
-def tethys_apps_template_loader(template_name, template_dirs=None):
-    """
-    Custom Django template loader for tethys apps
-    """
-    # Search for the template in the list of template directories
-    tethysapp_template_dirs = get_directories_in_tethys_apps(('templates',))
-
-    template = None
-
-    for template_dir in tethysapp_template_dirs:
-        template_path = safe_join(template_dir, template_name)
-
-        try:
-            template = open(template_path).read(), template_name
-            break
-        except IOError:
-            pass
-
-    # If the template is still None, raise the exception
-    if not template:
-        raise TemplateDoesNotExist(template_name)
-
-    return template
-
-
-# This loader is always usable
-tethys_apps_template_loader.is_usable = True
 
 
 class TethysAppsStaticFinder(BaseFinder):
