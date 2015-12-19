@@ -245,7 +245,6 @@ HydroShare
 
 5. Open  ``settings.py`` script located in :file:`/usr/lib/tethys/src/tethys_apps/settings.py`
 
-
   Add the ``social.backends.hydroshare.HydroShareOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
 
   ::
