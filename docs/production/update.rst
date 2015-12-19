@@ -61,7 +61,7 @@ Backup your old settings script (``settings.py``) and generate a new settings fi
 4. Setup Social Authentication (optional)
 =========================================
 
-One of the new features in Tethys Platform 1.2.0 is the ability to us social credentials from Facebook, Google, LinkedIn, and/or HydroShare to authenticate users. However, it requires some configuration in the settings script. If you wish to add social authentication to your Tethys Portal, follow the :doc:`../tethys_portal/social_auth` instructions.
+If you would like to allow users to signup using their social credentials from Facebook, Google, LinkedIn, and/or HydroShare, follow the :doc:`../tethys_portal/social_auth` instructions.
 
 5. Sync the Database
 ====================

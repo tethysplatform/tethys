@@ -28,7 +28,7 @@ class MapView(TethysGizmoOptions):
         draw(MVDraw): An MVDraw object specifying the drawing options.
         disable_basemap(bool): Render the map without a base map.
         feature_selection(bool): A dictionary of global feature selection options. See below.
-        attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     **Options Dictionaries**
@@ -69,6 +69,7 @@ class MapView(TethysGizmoOptions):
     The feature_selection dictionary contains global settings that can be used to modify the behavior of the feature selection functionality. An explanation of valid options follows:
 
     * multiselect: Set to True to allow multiple features to be selected while holding the shift key on the keyboard. Defaults to False.
+    * sensitivity: Integer value that adjust the feature selection sensitivity. Defaults to 2.
 
 
     Example
@@ -187,7 +188,7 @@ class MapView(TethysGizmoOptions):
     """
 
     def __init__(self, height='100%', width='100%', basemap='OpenStreetMap', view={'center': [-100, 40], 'zoom': 2},
-                 controls=[], layers=[], draw=None, legend=False, attributes='', classes='', disable_basemap=False,
+                 controls=[], layers=[], draw=None, legend=False, attributes={}, classes='', disable_basemap=False,
                  feature_selection=None):
         """
         Constructor
@@ -357,6 +358,50 @@ class MVLayer(SecondaryGizmoOptions):
                                       MVLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
                                       MVLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
                                   ])
+
+        # Define GeoServer Tile Layer with Custom tile grid
+        # The default EPSG:900913 gridset can be used with OpenLayers.
+        # You must ensure that OpenLayers requests tiles with the same gridset and origin as the gridset GeoServer uses
+        # to use GeoWebCaching capabilities. This is done by setting the TILESORIGIN parameter and specifying a custom tileGrid.
+        # Refer to OpenLayers API for ol.tilegrid.TileGrid for explanation and options.
+        # See: http://docs.geoserver.org/2.7.0/user/webadmin/tilecache/index.html
+        geoserver_layer = MVLayer(source='TileWMS',
+                                  options={'url': 'http://192.168.59.103:8181/geoserver/wms',
+                                           'params': {'LAYERS': 'topp:states',
+                                                      'TILED': True,
+                                                      'TILESORIGIN': '0.0,0.0'},
+                                           'serverType': 'geoserver',
+                                           'tileGrid': {
+                                           'resolutions': [
+                                               156543.03390625,
+                                               78271.516953125,
+                                               39135.7584765625,
+                                               19567.87923828125,
+                                               9783.939619140625,
+                                               4891.9698095703125,
+                                               2445.9849047851562,
+                                               1222.9924523925781,
+                                               611.4962261962891,
+                                               305.74811309814453,
+                                               152.87405654907226,
+                                               76.43702827453613,
+                                               38.218514137268066,
+                                               19.109257068634033,
+                                               9.554628534317017,
+                                               4.777314267158508,
+                                               2.388657133579254,
+                                               1.194328566789627,
+                                               0.5971642833948135,
+                                               0.2985821416974068,
+                                               0.1492910708487034,
+                                               0.0746455354243517,
+                                             ],
+                                             'extent': [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+                                             'origin': [0, 0],
+                                             'tileSize': [256, 256]
+                                           }
+                                  },
+                                  legend_title='USA Population')
 
         # Define KML Layer
         kml_layer = MVLayer(source='KML',

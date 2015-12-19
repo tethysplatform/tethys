@@ -10,7 +10,11 @@
         data-off-color="{% if off_style %}{{ off_style }}{% else %}default{% endif %}"
         {% if disabled %}disabled{% endif %}
         {% if initial %}checked{% endif %}
-        {% if attributes %} {{ attributes }} {% endif %}>
+        {% if attributes %}
+            {% for key, value in attributes.items %}
+                {{ key }}="{{ value }}"
+            {% endfor %}
+        {% endif %}>
   {% if error %}
   <p class="help-block">{{ error }}</p>
   {% endif %}

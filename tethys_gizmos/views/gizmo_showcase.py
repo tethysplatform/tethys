@@ -21,7 +21,6 @@ from tethys_sdk.gizmos import *
 from tethys_sdk.services import list_spatial_dataset_engines
 from tethys_compute.models import BasicJob
 
-
 spatial_dataset_engines = list_spatial_dataset_engines()
 geoserver_engine = None
 geoserver_wms = "http://ciwmap.chpc.utah.edu:8080/geoserver/wms"
@@ -36,8 +35,6 @@ for spatial_dataset_engine in spatial_dataset_engines:
             break
         except ConnectionError:
             pass
-
-print(geoserver_wms)
 
 
 @login_required()
@@ -72,7 +69,7 @@ def index(request):
     edit_button = Button(display_text='Edit',
                          icon='glyphicon glyphicon-wrench',
                          style='warning',
-                         attributes='id=edit_button')
+                         attributes='id="edit button" new_attr=attr')
     info_button = Button(display_text='Info',
                          icon='glyphicon glyphicon-question-sign',
                          style='info',
@@ -120,12 +117,14 @@ def index(request):
                                 name='select1',
                                 multiple=False,
                                 options=[('One', '1'), ('Two', '2'), ('Three', '3')],
+                                initial=['Three'],
                                 original=['Two'])
 
     select_input2_multiple = SelectInput(display_text='Select2 Multiple',
                                          name='select2',
                                          multiple=True,
-                                         options=[('One', '1'), ('Two', '2'), ('Three', '3')])
+                                         options=[('One', '1'), ('Two', '2'), ('Three', '3')],
+                                         initial=['Two', 'One'])
 
     select_input_multiple = SelectInput(display_text='Select Multiple',
                                         name='select2.1',
@@ -182,38 +181,38 @@ def index(request):
                               width='500px',
                               engine='highcharts',
                               title='Plot Title',
-                                           subtitle='Plot Subtitle',
-                                           spline=True,
-                                           x_axis_title='Altitude',
-                                           x_axis_units='km',
-                                           y_axis_title='Temperature',
-                                           y_axis_units='°C',
-                                           series=[
-                                               {
-                                                   'name': 'Air Temp',
-                                                   'color': '#0066ff',
-                                                   'marker': {'enabled': False},
-                                                   'data': [
-                                                       [0, 5], [10, -70],
-                                                       [20, -86.5], [30, -66.5],
-                                                       [40, -32.1],
-                                                       [50, -12.5], [60, -47.7],
-                                                       [70, -85.7], [80, -106.5]
-                                                   ]
-                                               },
-                                               {
-                                                   'name': 'Water Temp',
-                                                   'color': '#ff6600',
-                                                   'data': [
-                                                       [0, 15], [10, -50],
-                                                       [20, -56.5], [30, -46.5],
-                                                       [40, -22.1],
-                                                       [50, -2.5], [60, -27.7],
-                                                       [70, -55.7], [80, -76.5]
-                                                   ]
-                                               }
-                                           ]
-                                           )
+                              subtitle='Plot Subtitle',
+                              spline=True,
+                              x_axis_title='Altitude',
+                              x_axis_units='km',
+                              y_axis_title='Temperature',
+                              y_axis_units='°C',
+                              series=[
+                                  {
+                                      'name': 'Air Temp',
+                                      'color': '#0066ff',
+                                      'marker': {'enabled': False},
+                                      'data': [
+                                          [0, 5], [10, -70],
+                                          [20, -86.5], [30, -66.5],
+                                          [40, -32.1],
+                                          [50, -12.5], [60, -47.7],
+                                          [70, -85.7], [80, -106.5]
+                                      ]
+                                  },
+                                  {
+                                      'name': 'Water Temp',
+                                      'color': '#ff6600',
+                                      'data': [
+                                          [0, 15], [10, -50],
+                                          [20, -56.5], [30, -46.5],
+                                          [40, -22.1],
+                                          [50, -2.5], [60, -27.7],
+                                          [70, -55.7], [80, -76.5]
+                                      ]
+                                  }
+                              ]
+                              )
 
     # line_plot_view = PlotView(highcharts_object=highcharts_object,
     #                           width='500px',
@@ -223,36 +222,36 @@ def index(request):
     d3_line_plot_view = LinePlot(height='500px',
                                  width='100%',
                                  engine='d3',
-                                   title='Plot Title',
-                                   subtitle='Plot Subtitle',
-                                   spline=True,
-                                   x_axis_title='Altitude',
-                                   x_axis_units='km',
-                                   y_axis_title='Temperature',
-                                   y_axis_units='°C',
-                                   series=[
-                                       {
-                                           'name': 'Air Temp',
-                                           'data': [
-                                               [0, 5], [10, -70],
-                                               [20, -86.5], [30, -66.5],
-                                               [40, -32.1],
-                                               [50, -12.5], [60, -47.7],
-                                               [70, -85.7], [80, -106.5]
-                                           ]
-                                       },
-                                       {
-                                           'name': 'Water Temp',
-                                           'data': [
-                                               [0, 15], [10, -50],
-                                               [20, -56.5], [30, -46.5],
-                                               [40, -22.1],
-                                               [50, -2.5], [60, -27.7],
-                                               [70, -55.7], [80, -76.5]
-                                           ]
-                                       }
-                                   ]
-                                   )
+                                 title='Plot Title',
+                                 subtitle='Plot Subtitle',
+                                 spline=True,
+                                 x_axis_title='Altitude',
+                                 x_axis_units='km',
+                                 y_axis_title='Temperature',
+                                 y_axis_units='°C',
+                                 series=[
+                                     {
+                                         'name': 'Air Temp',
+                                         'data': [
+                                             [0, 5], [10, -70],
+                                             [20, -86.5], [30, -66.5],
+                                             [40, -32.1],
+                                             [50, -12.5], [60, -47.7],
+                                             [70, -85.7], [80, -106.5]
+                                         ]
+                                     },
+                                     {
+                                         'name': 'Water Temp',
+                                         'data': [
+                                             [0, 15], [10, -50],
+                                             [20, -56.5], [30, -46.5],
+                                             [40, -22.1],
+                                             [50, -2.5], [60, -27.7],
+                                             [70, -55.7], [80, -76.5]
+                                         ]
+                                     }
+                                 ]
+                                 )
 
     # d3_line_plot_view = PlotView(plot_object=d3_line_plot_object,
     #                           width='500px',
@@ -319,16 +318,16 @@ def index(request):
 
     # D3 Scatter Plot
     d3_scatter_plot_view = ScatterPlot(width='100%',
-                                        height='500px',
-                                        engine='d3',
-                                        title='D3 Scatter Plot',
-                                         subtitle='D3 Scatter Plot',
-                                         x_axis_title='Height',
-                                         x_axis_units='cm',
-                                         y_axis_title='Weight',
-                                         y_axis_units='kg',
-                                         series=[male_dataset, female_dataset]
-                                        )
+                                       height='500px',
+                                       engine='d3',
+                                       title='D3 Scatter Plot',
+                                       subtitle='D3 Scatter Plot',
+                                       x_axis_title='Height',
+                                       x_axis_units='cm',
+                                       y_axis_title='Weight',
+                                       y_axis_units='kg',
+                                       series=[male_dataset, female_dataset]
+                                       )
 
     # d3_scatter_plot_view = PlotView(plot_object=d3_scatter_plot_object,
     #                                 width='500px',
@@ -365,22 +364,22 @@ def index(request):
     pie_plot_object = HighChartsPiePlot(title='Pie Chart',
                                         subtitle='Pie Chart',
                                         series=[{
-                                                    'type': 'pie',
-                                                    'name': 'Browser share',
-                                                    'data': [
-                                                        ['Firefox', 45.0],
-                                                        ['IE', 26.8],
-                                                        {
-                                                            'name': 'Chrome',
-                                                            'y': 12.8,
-                                                            'sliced': True,
-                                                            'selected': True
-                                                        },
-                                                        ['Safari', 8.5],
-                                                        ['Opera', 6.2],
-                                                        ['Others', 0.7]
-                                                    ]
-                                                }]
+                                            'type': 'pie',
+                                            'name': 'Browser share',
+                                            'data': [
+                                                ['Firefox', 45.0],
+                                                ['IE', 26.8],
+                                                {
+                                                    'name': 'Chrome',
+                                                    'y': 12.8,
+                                                    'sliced': True,
+                                                    'selected': True
+                                                },
+                                                ['Safari', 8.5],
+                                                ['Opera', 6.2],
+                                                ['Others', 0.7]
+                                            ]
+                                        }]
                                         )
 
     pie_plot_view = PlotView(highcharts_object=pie_plot_object,
@@ -392,15 +391,15 @@ def index(request):
                                height='500px',
                                engine='d3',
                                title='Pie Chart',
-                                 subtitle='Pie Chart',
-                                 series=[
-                                          {'name': 'Firefox', 'value': 45.0},
-                                          {'name': 'IE', 'value': 26.8},
-                                          {'name': 'Chrome', 'value': 12.8},
-                                          {'name': 'Safari', 'value': 8.5},
-                                          {'name': 'Opera', 'value': 8.5},
-                                          {'name': 'Others', 'value': 0.7}
-                                 ])
+                               subtitle='Pie Chart',
+                               series=[
+                                   {'name': 'Firefox', 'value': 45.0},
+                                   {'name': 'IE', 'value': 26.8},
+                                   {'name': 'Chrome', 'value': 12.8},
+                                   {'name': 'Safari', 'value': 8.5},
+                                   {'name': 'Opera', 'value': 8.5},
+                                   {'name': 'Others', 'value': 0.7}
+                               ])
 
     # d3_pie_plot_view = PlotView(plot_object=d3_pie_plot_object,
     #                             width='500px',
@@ -417,14 +416,14 @@ def index(request):
         axis_units='millions',
         axis_title='Population',
         series=[{
-                    'name': 'Year 1800',
-                    'data': [107, 31, 635, 203, 2]
-                }, {
-                    'name': 'Year 1900',
-                    'data': [133, 156, 947, 408, 6]
-                }, {
-                    'name': 'Year 2008',
-                    'data': [973, 914, 4054, 732, 34]}
+            'name': 'Year 1800',
+            'data': [107, 31, 635, 203, 2]
+        }, {
+            'name': 'Year 1900',
+            'data': [133, 156, 947, 408, 6]
+        }, {
+            'name': 'Year 2008',
+            'data': [973, 914, 4054, 732, 34]}
         ]
     )
 
@@ -444,18 +443,18 @@ def index(request):
         axis_units='millions',
         axis_title='Population',
         series=[{
-                'name': "Year 1800",
-                'data': [100, 31, 635, 203, 275, 487, 872, 671, 736, 568, 487, 432]
-            }, {
-                'name': "Year 1900",
-                'data': [133, 200, 947, 408, 682, 328, 917, 171, 482, 140, 176, 237]
-            }, {
-                'name': "Year 2000",
-                'data': [764, 628, 300, 134, 678, 200, 781, 571, 773, 192, 836, 172]
-            }, {
-                'name': "Year 2008",
-                'data': [973, 914, 500, 400, 349, 108, 372, 726, 638, 927, 621, 364]
-            }
+            'name': "Year 1800",
+            'data': [100, 31, 635, 203, 275, 487, 872, 671, 736, 568, 487, 432]
+        }, {
+            'name': "Year 1900",
+            'data': [133, 200, 947, 408, 682, 328, 917, 171, 482, 140, 176, 237]
+        }, {
+            'name': "Year 2000",
+            'data': [764, 628, 300, 134, 678, 200, 781, 571, 773, 192, 836, 172]
+        }, {
+            'name': "Year 2008",
+            'data': [973, 914, 500, 400, 349, 108, 372, 726, 638, 927, 621, 364]
+        }
         ]
     )
 
@@ -465,58 +464,58 @@ def index(request):
         y_axis_title='Snow depth',
         y_axis_units='m',
         series=[{
-                    'name': 'Winter 2007-2008',
-                    'data': [
-                        [datetime(2008, 12, 2), 0.8],
-                        [datetime(2008, 12, 9), 0.6],
-                        [datetime(2008, 12, 16), 0.6],
-                        [datetime(2008, 12, 28), 0.67],
-                        [datetime(2009, 1, 1), 0.81],
-                        [datetime(2009, 1, 8), 0.78],
-                        [datetime(2009, 1, 12), 0.98],
-                        [datetime(2009, 1, 27), 1.84],
-                        [datetime(2009, 2, 10), 1.80],
-                        [datetime(2009, 2, 18), 1.80],
-                        [datetime(2009, 2, 24), 1.92],
-                        [datetime(2009, 3, 4), 2.49],
-                        [datetime(2009, 3, 11), 2.79],
-                        [datetime(2009, 3, 15), 2.73],
-                        [datetime(2009, 3, 25), 2.61],
-                        [datetime(2009, 4, 2), 2.76],
-                        [datetime(2009, 4, 6), 2.82],
-                        [datetime(2009, 4, 13), 2.8],
-                        [datetime(2009, 5, 3), 2.1],
-                        [datetime(2009, 5, 26), 1.1],
-                        [datetime(2009, 6, 9), 0.25],
-                        [datetime(2009, 6, 12), 0]
-                    ]
-                }, {
-                    'name': 'Winter test',
-                    'data': [
-                        [datetime(2008, 12, 2), 1.8],
-                        [datetime(2008, 12, 9), 1.6],
-                        [datetime(2008, 12, 16), 1.6],
-                        [datetime(2008, 12, 28), 1.67],
-                        [datetime(2009, 1, 1), 1.81],
-                        [datetime(2009, 1, 8), 1.78],
-                        [datetime(2009, 1, 12), 1.98],
-                        [datetime(2009, 1, 27), 2.84],
-                        [datetime(2009, 2, 10), 2.80],
-                        [datetime(2009, 2, 18), 2.80],
-                        [datetime(2009, 2, 24), 2.92],
-                        [datetime(2009, 3, 4), 3.49],
-                        [datetime(2009, 3, 11), 3.79],
-                        [datetime(2009, 3, 15), 3.73],
-                        [datetime(2009, 3, 25), 3.61],
-                        [datetime(2009, 4, 2), 3.76],
-                        [datetime(2009, 4, 6), 3.82],
-                        [datetime(2009, 4, 13), 3.8],
-                        [datetime(2009, 5, 3), 3.1],
-                        [datetime(2009, 5, 26), 2.1],
-                        [datetime(2009, 6, 9), 1.25],
-                        [datetime(2009, 6, 12), 0]
-                    ]
-                }]
+            'name': 'Winter 2007-2008',
+            'data': [
+                [datetime(2008, 12, 2), 0.8],
+                [datetime(2008, 12, 9), 0.6],
+                [datetime(2008, 12, 16), 0.6],
+                [datetime(2008, 12, 28), 0.67],
+                [datetime(2009, 1, 1), 0.81],
+                [datetime(2009, 1, 8), 0.78],
+                [datetime(2009, 1, 12), 0.98],
+                [datetime(2009, 1, 27), 1.84],
+                [datetime(2009, 2, 10), 1.80],
+                [datetime(2009, 2, 18), 1.80],
+                [datetime(2009, 2, 24), 1.92],
+                [datetime(2009, 3, 4), 2.49],
+                [datetime(2009, 3, 11), 2.79],
+                [datetime(2009, 3, 15), 2.73],
+                [datetime(2009, 3, 25), 2.61],
+                [datetime(2009, 4, 2), 2.76],
+                [datetime(2009, 4, 6), 2.82],
+                [datetime(2009, 4, 13), 2.8],
+                [datetime(2009, 5, 3), 2.1],
+                [datetime(2009, 5, 26), 1.1],
+                [datetime(2009, 6, 9), 0.25],
+                [datetime(2009, 6, 12), 0]
+            ]
+        }, {
+            'name': 'Winter test',
+            'data': [
+                [datetime(2008, 12, 2), 1.8],
+                [datetime(2008, 12, 9), 1.6],
+                [datetime(2008, 12, 16), 1.6],
+                [datetime(2008, 12, 28), 1.67],
+                [datetime(2009, 1, 1), 1.81],
+                [datetime(2009, 1, 8), 1.78],
+                [datetime(2009, 1, 12), 1.98],
+                [datetime(2009, 1, 27), 2.84],
+                [datetime(2009, 2, 10), 2.80],
+                [datetime(2009, 2, 18), 2.80],
+                [datetime(2009, 2, 24), 2.92],
+                [datetime(2009, 3, 4), 3.49],
+                [datetime(2009, 3, 11), 3.79],
+                [datetime(2009, 3, 15), 3.73],
+                [datetime(2009, 3, 25), 3.61],
+                [datetime(2009, 4, 2), 3.76],
+                [datetime(2009, 4, 6), 3.82],
+                [datetime(2009, 4, 13), 3.8],
+                [datetime(2009, 5, 3), 3.1],
+                [datetime(2009, 5, 26), 2.1],
+                [datetime(2009, 6, 9), 1.25],
+                [datetime(2009, 6, 12), 0]
+            ]
+        }]
     )
 
     timeseries_plot = PlotView(highcharts_object=timeseries_plot_object,
@@ -530,58 +529,58 @@ def index(request):
         y_axis_title='Snow depth',
         y_axis_units='m',
         series=[{
-                    'name': 'Winter 2007-2008',
-                    'data': [
-                        [datetime(2008, 12, 2), 0.8],
-                        [datetime(2008, 12, 9), 0.6],
-                        [datetime(2008, 12, 16), 0.6],
-                        [datetime(2008, 12, 28), 0.67],
-                        [datetime(2009, 1, 1), 0.81],
-                        [datetime(2009, 1, 8), 0.78],
-                        [datetime(2009, 1, 12), 0.98],
-                        [datetime(2009, 1, 27), 1.84],
-                        [datetime(2009, 2, 10), 1.80],
-                        [datetime(2009, 2, 18), 1.80],
-                        [datetime(2009, 2, 24), 1.92],
-                        [datetime(2009, 3, 4), 2.49],
-                        [datetime(2009, 3, 11), 2.79],
-                        [datetime(2009, 3, 15), 2.73],
-                        [datetime(2009, 3, 25), 2.61],
-                        [datetime(2009, 4, 2), 2.76],
-                        [datetime(2009, 4, 6), 2.82],
-                        [datetime(2009, 4, 13), 2.8],
-                        [datetime(2009, 5, 3), 2.1],
-                        [datetime(2009, 5, 26), 1.1],
-                        [datetime(2009, 6, 9), 0.25],
-                        [datetime(2009, 6, 12), 0]
-                    ]
-                }, {
-                    'name': 'Winter test',
-                    'data': [
-                        [datetime(2008, 12, 2), 1.8],
-                        [datetime(2008, 12, 9), 1.6],
-                        [datetime(2008, 12, 16), 1.6],
-                        [datetime(2008, 12, 28), 1.67],
-                        [datetime(2009, 1, 1), 1.81],
-                        [datetime(2009, 1, 8), 1.78],
-                        [datetime(2009, 1, 12), 1.98],
-                        [datetime(2009, 1, 27), 2.84],
-                        [datetime(2009, 2, 10), 2.80],
-                        [datetime(2009, 2, 18), 2.80],
-                        [datetime(2009, 2, 24), 2.92],
-                        [datetime(2009, 3, 4), 3.49],
-                        [datetime(2009, 3, 11), 3.79],
-                        [datetime(2009, 3, 15), 3.73],
-                        [datetime(2009, 3, 25), 3.61],
-                        [datetime(2009, 4, 2), 3.76],
-                        [datetime(2009, 4, 6), 3.82],
-                        [datetime(2009, 4, 13), 3.8],
-                        [datetime(2009, 5, 3), 3.1],
-                        [datetime(2009, 5, 26), 2.1],
-                        [datetime(2009, 6, 9), 1.25],
-                        [datetime(2009, 6, 12), 0]
-                    ]
-                }]
+            'name': 'Winter 2007-2008',
+            'data': [
+                [datetime(2008, 12, 2), 0.8],
+                [datetime(2008, 12, 9), 0.6],
+                [datetime(2008, 12, 16), 0.6],
+                [datetime(2008, 12, 28), 0.67],
+                [datetime(2009, 1, 1), 0.81],
+                [datetime(2009, 1, 8), 0.78],
+                [datetime(2009, 1, 12), 0.98],
+                [datetime(2009, 1, 27), 1.84],
+                [datetime(2009, 2, 10), 1.80],
+                [datetime(2009, 2, 18), 1.80],
+                [datetime(2009, 2, 24), 1.92],
+                [datetime(2009, 3, 4), 2.49],
+                [datetime(2009, 3, 11), 2.79],
+                [datetime(2009, 3, 15), 2.73],
+                [datetime(2009, 3, 25), 2.61],
+                [datetime(2009, 4, 2), 2.76],
+                [datetime(2009, 4, 6), 2.82],
+                [datetime(2009, 4, 13), 2.8],
+                [datetime(2009, 5, 3), 2.1],
+                [datetime(2009, 5, 26), 1.1],
+                [datetime(2009, 6, 9), 0.25],
+                [datetime(2009, 6, 12), 0]
+            ]
+        }, {
+            'name': 'Winter test',
+            'data': [
+                [datetime(2008, 12, 2), 1.8],
+                [datetime(2008, 12, 9), 1.6],
+                [datetime(2008, 12, 16), 1.6],
+                [datetime(2008, 12, 28), 1.67],
+                [datetime(2009, 1, 1), 1.81],
+                [datetime(2009, 1, 8), 1.78],
+                [datetime(2009, 1, 12), 1.98],
+                [datetime(2009, 1, 27), 2.84],
+                [datetime(2009, 2, 10), 2.80],
+                [datetime(2009, 2, 18), 2.80],
+                [datetime(2009, 2, 24), 2.92],
+                [datetime(2009, 3, 4), 3.49],
+                [datetime(2009, 3, 11), 3.79],
+                [datetime(2009, 3, 15), 3.73],
+                [datetime(2009, 3, 25), 3.61],
+                [datetime(2009, 4, 2), 3.76],
+                [datetime(2009, 4, 6), 3.82],
+                [datetime(2009, 4, 13), 3.8],
+                [datetime(2009, 5, 3), 3.1],
+                [datetime(2009, 5, 26), 2.1],
+                [datetime(2009, 6, 9), 1.25],
+                [datetime(2009, 6, 12), 0]
+            ]
+        }]
     )
 
     averages = [
@@ -617,21 +616,21 @@ def index(request):
         y_axis_title='Temperature',
         y_axis_units='*C',
         series=[{
-                    'name': 'Temperature',
-                    'data': averages,
-                    'zIndex': 1,
-                    'marker': {
-                        'lineWidth': 2,
-                    }
-                }, {
-                    'name': 'Range',
-                    'data': ranges,
-                    'type': 'arearange',
-                    'lineWidth': 0,
-                    'linkedTo': ':previous',
-                    'fillOpacity': 0.3,
-                    'zIndex': 0
-                }]
+            'name': 'Temperature',
+            'data': averages,
+            'zIndex': 1,
+            'marker': {
+                'lineWidth': 2,
+            }
+        }, {
+            'name': 'Range',
+            'data': ranges,
+            'type': 'arearange',
+            'lineWidth': 0,
+            'linkedTo': ':previous',
+            'fillOpacity': 0.3,
+            'zIndex': 0
+        }]
     )
 
     area_range_plot = PlotView(highcharts_object=area_range_plot_object,
@@ -670,14 +669,14 @@ def index(request):
             'symbolHeight': 280
         },
         series=[{
-                    'name': 'Sales per employee',
-                    'borderWidth': 1,
-                    'data': sales_data,
-                    'dataLabels': {
-                        'enabled': True,
-                        'color': '#000000'
-                    }
-                }]
+            'name': 'Sales per employee',
+            'borderWidth': 1,
+            'data': sales_data,
+            'dataLabels': {
+                'enabled': True,
+                'color': '#000000'
+            }
+        }]
     )
 
     heat_map_plot = PlotView(highcharts_object=heat_map_object,
@@ -719,22 +718,22 @@ def index(request):
             'enabled': False
         },
         'series': [{
-                       'name': 'Temperatures',
-                       'data': [
-                           [-9.7, 9.4],
-                           [-8.7, 6.5],
-                           [-3.5, 9.4],
-                           [-1.4, 19.9],
-                           [0.0, 22.6],
-                           [2.9, 29.5],
-                           [9.2, 30.7],
-                           [7.3, 26.5],
-                           [4.4, 18.0],
-                           [-3.1, 11.4],
-                           [-5.2, 10.4],
-                           [-13.5, 9.8]
-                       ]
-                   }]
+            'name': 'Temperatures',
+            'data': [
+                [-9.7, 9.4],
+                [-8.7, 6.5],
+                [-3.5, 9.4],
+                [-1.4, 19.9],
+                [0.0, 22.6],
+                [2.9, 29.5],
+                [9.2, 30.7],
+                [7.3, 26.5],
+                [4.4, 18.0],
+                [-3.1, 11.4],
+                [-5.2, 10.4],
+                [-13.5, 9.8]
+            ]
+        }]
     }
 
     custom_plot = PlotView(highcharts_object=custom_plot_dictionary,
@@ -926,14 +925,15 @@ def index(request):
 
     # Table View
     jobs_table_options = JobsTable(
-                                   jobs=jobs,
-                                   column_fields=('id', 'name', 'description', 'creation_time', 'execute_time'),
-                                   hover=True,
-                                   striped=False,
-                                   bordered=False,
-                                   condensed=False,
-                                   results_url='gizmos:results',
-                                 )
+        jobs=jobs,
+        column_fields=('id', 'name', 'description', 'creation_time', 'execute_time'),
+        hover=True,
+        striped=False,
+        bordered=False,
+        condensed=False,
+        results_url='gizmos:results',
+        refresh_interval=10000,
+    )
 
     # Define the context object
     context = {'docs_endpoint': docs_endpoint,
@@ -1016,7 +1016,7 @@ def swap_overlays(request):
                                                     [40.63805550673186, -111.48110389709473],
                                                     [40.6413120105605, -111.48539543151855]],
                                     "properties": {"id": 4, "value": 5}, "crs": {"type": "link", "properties": {
-                        "href": "http://spatialreference.org/ref/epsg/4326/proj4/", "type": "proj4"}}
+                            "href": "http://spatialreference.org/ref/epsg/4326/proj4/", "type": "proj4"}}
                                     },
                                    {"type": "Point",
                                     "coordinates": [40.629587853312174, -111.50959968566895],
@@ -1132,36 +1132,36 @@ def map_view(request):
 
     # Define GeoJSON layer
     geojson_object = {
-      'type': 'FeatureCollection',
-      'crs': {
-        'type': 'name',
-        'properties': {
-          'name': 'EPSG:3857'
-        }
-      },
-      'features': [
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'Point',
-            'coordinates': [0, 0]
-          }
+        'type': 'FeatureCollection',
+        'crs': {
+            'type': 'name',
+            'properties': {
+                'name': 'EPSG:3857'
+            }
         },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'LineString',
-            'coordinates': [[4e6, -2e6], [8e6, 2e6]]
-          }
-        },
-        {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'Polygon',
-            'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
-          }
-        }
-      ]
+        'features': [
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'Point',
+                    'coordinates': [0, 0]
+                }
+            },
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'LineString',
+                    'coordinates': [[4e6, -2e6], [8e6, 2e6]]
+                }
+            },
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'Polygon',
+                    'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
+                }
+            }
+        ]
     }
 
     # Define layers
@@ -1275,20 +1275,21 @@ def fetchclimate_map(request):
 
     return render(request, 'tethys_gizmos/gizmo_showcase/fetchclimate_map.html', context)
 
+
 def jobs_table_results(request, job_id):
     return redirect(reverse('gizmos:showcase') + '#jobs_table_docs')
 
-def create_sample_jobs(request):
 
+def create_sample_jobs(request):
     def create_job(id, description, status):
         job = BasicJob(name='job_{0}'.format(id),
-                         user=request.user,
-                         description=description,
-                         label='gizmos_showcase',
-                         #execute_time=,
-                         #completion_time=,
-                         _status=status,
-                        )
+                       user=request.user,
+                       description=description,
+                       label='gizmos_showcase',
+                       # execute_time=,
+                       # completion_time=,
+                       _status=status,
+                       )
         job.save()
 
     create_job('1', 'Pending job', 'PEN')

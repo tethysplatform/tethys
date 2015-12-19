@@ -7,13 +7,14 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-import inspect
-import json
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
 
 from tethys_apps.app_harvester import SingletonAppHarvester
+from tethys_apps.base.app_base import TethysAppBase
 
 
 @login_required()
@@ -36,30 +37,10 @@ def handoff_capabilities(request, app_name):
     """
     app_name = app_name.replace('-', '_')
 
-    # Get the app
-    harvester = SingletonAppHarvester()
-    apps = harvester.apps
+    manager = TethysAppBase.get_handoff_manager()
+    handlers = manager.get_capabilities(app_name, external_only=True, jsonify=True)
 
-    handlers = []
-
-    for app in apps:
-        if app.package == app_name and app.handoff_handlers():
-            for handoff_handler in app.handoff_handlers():
-                handler_mod, handler_function = handoff_handler.handler.split(':')
-
-                # Pre-process handler path
-                handler_path = '.'.join(('tethys_apps.tethysapp', app.package, handler_mod))
-
-                # Import module
-                module = __import__(handler_path, fromlist=[handler_function])
-
-                # Get the function
-                handler = getattr(module, handler_function)
-                args = inspect.getargspec(handler)
-                handlers.append({"arguments": args.args,
-                                 "name": handoff_handler.name})
-
-    return HttpResponse(json.dumps(handlers), content_type='application/javascript')
+    return HttpResponse(handlers, content_type='application/javascript')
 
 
 @login_required()
@@ -69,38 +50,66 @@ def handoff(request, app_name, handler_name):
     """
     app_name = app_name.replace('-', '_')
 
-    error = {"message": "",
-             "code": 400,
-             "status": "error",
-             "app_name": app_name,
-             "handler_name": handler_name}
+    manager = TethysAppBase.get_handoff_manager()
 
-    # Get the app
+    return manager.handoff(request, handler_name, app_name, **request.GET.dict())
+
+@login_required()
+def send_beta_feedback_email(request):
+    """
+    Processes and send the beta form data submitted by beta testers
+    """
+
+    post = request.POST
+    #email_users = User.objects.filter(is_staff=True)
+    # Setup variables
     harvester = SingletonAppHarvester()
-    apps = harvester.apps
+    apps_root = 'apps'
 
-    for app in apps:
-        if app.package == app_name and app.handoff_handlers():
-            for handoff_handler in app.handoff_handlers():
-                if handoff_handler.name == handler_name:
-                    # Split into module name and function name
-                    handler_mod, handler_function = handoff_handler.handler.split(':')
+    # Get url and parts
+    url = post.get('betaFormUrl')
+    url_parts = url.split('/')
 
-                    # Pre-process handler path
-                    handler_path = '.'.join(('tethys_apps.tethysapp', app.package, handler_mod))
+    # Find the app key
+    if apps_root in url_parts:
+        # The app root_url is the path item following (+1) the apps_root item
+        app_root_url_index = url_parts.index(apps_root) + 1
+        print app_root_url_index
+        app_root_url = url_parts[app_root_url_index]
+        print app_root_url
 
-                    # Import module
-                    module = __import__(handler_path, fromlist=[handler_function])
+        # Get list of app dictionaries from the harvester
+        apps = harvester.apps
+        print apps
 
-                    # Get the function
-                    handler = getattr(module, handler_function)
+        # If a match can be made, return the app dictionary as part of the context
+        for app in apps:
+            if app.root_url == app_root_url:
+                if hasattr(app, 'feedback_emails'):
+                    email_users = app.feedback_emails
+                else:
+                    json = {'error': 'feedback_emails not defined in app.py'}
+                    return JsonResponse(json)
 
-                    try:
-                        urlish = handler(request, **request.GET.dict())
-                        return redirect(urlish)
-                    except TypeError as e:
-                        error['message'] = "HTTP 400 Bad Request: {0}. ".format(e.message)
-                        return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
+    subject = 'User-Feedback'
 
-    error['message'] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".format(app_name, handler_name)
-    return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
+    username =  post.get('betaUser')
+    local_user_time =  post.get('betaSubmitLocalTime')
+    UTC_offset_in_hours =  post.get('betaSubmitUTCOffset')
+    app_url =  post.get('betaFormUrl')
+    comments =  post.get('betaUserComments')
+
+    message = 'User: {0}\n'\
+            'Local User Time: {1}\n'\
+            'UTC Offset in Hours: {2}\n'\
+            'App URL: {3}\n'\
+            'Comments: {4}'.format(username,local_user_time,UTC_offset_in_hours,app_url,comments)
+
+    try:
+        send_mail(subject,message, from_email=None,recipient_list=email_users)
+    except:
+        json = {'error': 'Failed to send emails'}
+        return JsonResponse(json)
+
+    json = {'success': 'Emails sent to specified developers'}
+    return JsonResponse(json)

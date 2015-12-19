@@ -82,7 +82,12 @@
 	}
 </style>
 
-<div id="outer_container" {% if classes %}class="{{ classes }}"{% endif %} {% if attributes %}{{ attributes }}{% endif %}>
+<div id="outer_container" {% if classes %}class="{{ classes }}"{% endif %}
+        {% if attributes %}
+            {% for key, value in attributes.items %}
+                {{ key }}="{{ value }}"
+            {% endfor %}
+        {% endif %}>
 	<div id="editable_google_map_loading" class="center-parent" style="height: {{ height }}; width: {{ width }}; background-color:#efefef;">
 		<div class="centered" on>
 			<img src="{% static 'tethys_gizmos/images/ajax-loader.gif' %}" />
@@ -96,10 +101,10 @@
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 {% if maps_api_key %}
   <!-- App Developer API Key -->
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=drawing&key={{ maps_api_key }}&sensor=false"></script>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=drawing&key={{ maps_api_key }}"></script>
 {% else %}
   <!-- Global API Key -->
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=drawing&sensor=false"></script>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=drawing"></script>
 {% endif %}
 <script type="text/javascript">
   {% autoescape off %}

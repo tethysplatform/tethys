@@ -1,7 +1,13 @@
 {% load staticfiles tethys_gizmos %}
 
 <div id="jobs-table-messages"></div>
-<table class="table{% if bordered %} table-bordered{% endif %}{% if hover %} table-hover{% endif %}{% if striped %} table-striped{% endif %}{% if condensed %} table-condensed{% endif %}{% if classes %} {{ classes }}{% endif %}" {% if attributes %} {{ attributes }} {% endif %} data-column-fields="{{ column_fields }}" data-status-actions="{{ status_actions }}" data-run="{{ run }}" data-delete="{{ delete }}" data-results-url="{{ results_url }}">
+<table class="table{% if bordered %} table-bordered{% endif %}{% if hover %} table-hover{% endif %}{% if striped %} table-striped{% endif %}{% if condensed %} table-condensed{% endif %}{% if classes %} {{ classes }}{% endif %}"
+        {% if attributes %}
+            {% for key, value in attributes.items %}
+                {{ key }}="{{ value }}"
+            {% endfor %}
+        {% endif %}
+       data-column-fields="{{ column_fields }}" data-status-actions="{{ status_actions }}" data-run="{{ run }}" data-delete="{{ delete }}" data-results-url="{{ results_url }}" data-refresh-interval="{{ refresh_interval }}">
   <tr>
     {% for column_name in column_names %}
       <th>{{ column_name }}</th>

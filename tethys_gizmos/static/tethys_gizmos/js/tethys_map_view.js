@@ -20,7 +20,7 @@ var TETHYS_MAP_VIEW = (function() {
    // Constants
   var DEFAULT_PROJECTION = 'EPSG:3857',                     // Spherical Mercator Projection
       LAT_LON_PROJECTION = 'EPSG:4326',                     // Standard Geographic Projection
-      RESOLUTION_MULTIPLIER = 2,                            // Used in selectable features
+      DEFAULT_SENSITIVITY = 2,                              // Used in selectable features
       DEFAULT_OUTPUT_FORMAT = 'GeoJSON',                    // The default output format
       GEOJSON_FORMAT = 'GeoJSON',                           // GeoJSON format type
       WKT_FORMAT = 'WKT';                                   // Well know text format type
@@ -431,8 +431,50 @@ var TETHYS_MAP_VIEW = (function() {
 
         // Tile layer case
         if (in_array(current_layer.source, TILE_SOURCES)) {
+          var resolutions, source_options, tile_grid;
+
+          source_options = current_layer.options;
+
+          if (source_options && 'tileGrid' in source_options) {
+            source_options['tileGrid'] = new ol.tilegrid.TileGrid(source_options['tileGrid']);
+          } else {
+            // Define a default TileGrid that is the same as the default one generated for EPSG:3857 in GeoServer
+            resolutions = [
+              156543.03390625,
+               78271.516953125,
+               39135.7584765625,
+               19567.87923828125,
+                9783.939619140625,
+                4891.9698095703125,
+                2445.9849047851562,
+                1222.9924523925781,
+                 611.4962261962891,
+                 305.74811309814453,
+                 152.87405654907226,
+                  76.43702827453613,
+                  38.218514137268066,
+                  19.109257068634033,
+                   9.554628534317017,
+                   4.777314267158508,
+                   2.388657133579254,
+                   1.194328566789627,
+                   0.5971642833948135,
+                   0.2985821416974068,
+                   0.1492910708487034,
+                   0.0746455354243517,
+            ]
+
+            // Create the tile grid
+            source_options['tileGrid'] = new ol.tilegrid.TileGrid({
+              extent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+              resolutions: resolutions,
+              origin: [0, 0],
+              tileSize: [256, 256],
+            });
+          }
+
           Source = string_to_function('ol.source.' + current_layer.source);
-          current_layer_layer_options['source'] = new Source(current_layer.options);
+          current_layer_layer_options['source'] = new Source(source_options);
           layer = new ol.layer.Tile(current_layer_layer_options);
         }
 
@@ -441,14 +483,6 @@ var TETHYS_MAP_VIEW = (function() {
           Source = string_to_function('ol.source.' + current_layer.source);
           current_layer_layer_options['source'] = new Source(current_layer.options);
           layer = new ol.layer.Image(current_layer_layer_options);
-
-          // Actions Specific to ImageWMS layers
-          if (current_layer.source == 'ImageWMS') {
-            if ('feature_selection' in current_layer && current_layer.feature_selection) {
-              // Push layer to m_selectable layers to enable selection
-              m_selectable_layers.push(layer);
-            }
-          }
         }
 
         // Vector layer case
@@ -522,6 +556,14 @@ var TETHYS_MAP_VIEW = (function() {
 
           // Add layer to the map
           m_map.addLayer(layer);
+
+          // Enable feature selection layers
+          if (in_array(current_layer.source, ['ImageWMS', 'TileWMS'])) {
+            if ('feature_selection' in current_layer && current_layer.feature_selection) {
+              // Push layer to m_selectable layers to enable selection
+              m_selectable_layers.push(layer);
+            }
+          }
         }
       }
     }
@@ -1215,8 +1257,16 @@ var TETHYS_MAP_VIEW = (function() {
   highlight_selected_features = function(geojson) {
     var points_source, lines_source, polygons_source;
     var features, curr_features;
-    var incoming_type = geojson.features[0].geometry.type;
+    var incoming_type;
     var points, lines, polygons;
+
+    // Don't highlight if there is nothing to show
+    if (!is_defined(geojson) ||
+       ('totalFeatures' in geojson && geojson.totalFeatures <= 0)) {
+      return;
+    }
+
+    incoming_type = geojson.features[0].geometry.type;
 
     // Get sources
     points_source = m_points_selected_layer.getSource();
@@ -1253,9 +1303,6 @@ var TETHYS_MAP_VIEW = (function() {
   };
 
   jsonp_response_handler = function(data) {
-    // Check for features
-    if (!('features' in data && data.features.length > 0)) { return }
-
     // Process response
     highlight_selected_features(data);
 
@@ -1280,11 +1327,16 @@ var TETHYS_MAP_VIEW = (function() {
 
   map_clicked = function(event) {
     var urls, tolerance, x, y;
-    var multiselect;
+    var multiselect, sensitivity;
     x = event.coordinate[0]
     y = event.coordinate[1]
     urls = [];
-    tolerance = m_map.getView().getResolution() * RESOLUTION_MULTIPLIER;
+    sensitivity = DEFAULT_SENSITIVITY;
+
+    if (is_defined(m_feature_selection_options) && 'sensitivity' in m_feature_selection_options) {
+      sensitivity = m_feature_selection_options.sensitivity;
+    }
+    tolerance = m_map.getView().getResolution() * sensitivity;
 
     // Determine if multiselect applies
     multiselect = false;
@@ -1327,7 +1379,17 @@ var TETHYS_MAP_VIEW = (function() {
       bbox = bbox.replace('{{maxy}}', y + tolerance);
       cql_filter = '&CQL_FILTER=BBOX(' + m_geometry_attribute + '%2C' + bbox + '%2C%27EPSG%3A3857%27)';
       layer_name = source.getParams().LAYERS;
-      wms_url = source.getUrl();
+
+      if (source instanceof ol.source.ImageWMS) {
+        wms_url = source.getUrl();
+      }
+      else if (source instanceof ol.source.TileWMS) {
+        var tile_urls = source.getUrls();
+        if (tile_urls.length > 0) {
+          wms_url = tile_urls[0];
+        }
+      }
+
 
       url = wms_url.replace('wms', 'wfs')
           + '?SERVICE=wfs'

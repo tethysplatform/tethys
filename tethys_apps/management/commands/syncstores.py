@@ -7,7 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from django.core.management.base import BaseCommand, make_option
+from django.core.management.base import BaseCommand
 from django.conf import settings
 
 from tethys_apps.app_harvester import SingletonAppHarvester
@@ -21,28 +21,28 @@ class Command(BaseCommand):
     """
     Command class that handles the syncstores command. Provides persistent store management functionality.
     """
-    option_list = BaseCommand.option_list + (
-        make_option('-r', '--refresh',
-                    action='store_true',
-                    dest='refresh',
-                    default=False,
-                    help='When called with this option, the database will be dropped prior to syncing resulting in a '
-                         'refreshed database.'),
-        make_option('-f', '--firsttime',
-                    action='store_true',
-                    dest='first_time',
-                    default=False,
-                    help='Call with this option to force the initializer functions to be executed with '
-                         '"first_time" parameter True.'),
-        make_option('-d', '--database',
-                    help='Name of database to sync.')
-    )
+    def add_arguments(self, parser):
+        parser.add_argument('app_name', nargs='+', type=str)
+        parser.add_argument('-r', '--refresh',
+                            action='store_true',
+                            dest='refresh',
+                            default=False,
+                            help='When called with this option, the database will be dropped prior to syncing '
+                                 'resulting in a refreshed database.'),
+        parser.add_argument('-f', '--firsttime',
+                            action='store_true',
+                            dest='first_time',
+                            default=False,
+                            help='Call with this option to force the initializer functions to be executed with '
+                                 '"first_time" parameter True.'),
+        parser.add_argument('-d', '--database',
+                            help='Name of database to sync.')
 
     def handle(self, *args, **options):
         """
         Handle the command
         """
-        self.provision_persistent_stores(args, options)
+        self.provision_persistent_stores(options['app_name'], options)
 
     def provision_persistent_stores(self, app_names, options):
         """
@@ -240,25 +240,42 @@ class Command(BaseCommand):
                 # 4. Run initialization functions for each store here
                 #------------------------------------------------------------------------------------------------------#
                 for persistent_store in target_persistent_stores:
-                    # Split into module name and function name
-                    initializer_mod, initializer_function = persistent_store.initializer.split(':')
+
+                    if persistent_store.initializer_is_valid:
+                        initializer = persistent_store.initializer_function
+                    else:
+                        if ':' in persistent_store.initializer:
+                            print('DEPRECATION WARNING: The initializer attribute of a PersistentStore should now be in the form: "my_first_app.init_stores.init_spatial_db". The form "init_stores:init_spatial_db" is now deprecated.')
+
+                            # Split into module name and function name
+                            initializer_mod, initializer_function = persistent_store.initializer.split(':')
+
+                            # Pre-process initializer path
+                            initializer_path = '.'.join(('tethys_apps.tethysapp', app.package, initializer_mod))
+
+                            try:
+                                # Import module
+                                module = __import__(initializer_path, fromlist=[initializer_function])
+                            except ImportError:
+                                pass
+                            else:
+                                # Get the function
+                                initializer = getattr(module, initializer_function)
+
+                    try:
+                        if not initializer:
+                            raise ValueError('"{0}" is not a valid function.'.format(persistent_store.initializer))
+                    except UnboundLocalError:
+                        raise ValueError('"{0}" is not a valid function.'.format(persistent_store.initializer))
 
                     self.stdout.write('Initializing database {3}"{0}"{4} for app {3}"{1}"{4} using initializer '
                                       '{3}"{2}"{4}...'.format(persistent_store.name,
                                                               app.package,
-                                                              initializer_function,
+                                                              initializer.__name__,
                                                               TerminalColors.BLUE,
                                                               TerminalColors.ENDC
                                                               ))
 
-                    # Pre-process initializer path
-                    initializer_path = '.'.join(('tethys_apps.tethysapp', app.package, initializer_mod))
-
-                    # Import module
-                    module = __import__(initializer_path, fromlist=[initializer_function])
-
-                    # Get the function
-                    initializer = getattr(module, initializer_function)
                     if options['first_time']:
                         initializer(True)
                     else:
