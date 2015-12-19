@@ -61,6 +61,8 @@ When running Tethys Platform in development mode, the static files are automatic
     $ sudo mkdir /var/www/.tethyscluster && sudo mkdir -p /var/www/tethys/static
     $ sudo chown `whoami` /var/www/tethys/static
 
+.. _setup_email_capabilities:
+
 6. Setup Email Capabilities
 ===========================
 

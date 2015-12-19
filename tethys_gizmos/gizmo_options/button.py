@@ -83,7 +83,7 @@ class Button(TethysGizmoOptions):
         href(str): Link for anchor type buttons.
         submit(bool): Set this to true to make the button a submit type button for forms.
         disabled(bool): Set the disabled state.
-        attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Example:
@@ -97,7 +97,7 @@ class Button(TethysGizmoOptions):
         # Single Button
         single_button = Button(display_text='Click Me',
                                name='click_me_name',
-                               attributes='onclick=alert(this.name);',
+                               attributes={"onclick": "alert(this.name);"},
                                submit=True)
 
         # TEMPLATE
@@ -106,7 +106,7 @@ class Button(TethysGizmoOptions):
     """
 
     def __init__(self, display_text='', name='', style='', icon='', href='',
-                 submit=False, disabled=False, attributes='', classes=''):
+                 submit=False, disabled=False, attributes={}, classes=''):
         """
         Constructor
         """

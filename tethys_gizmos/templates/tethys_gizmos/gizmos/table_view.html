@@ -1,6 +1,11 @@
 {% load tethys_gizmos %}
 
-<table class="table{% if bordered %} table-bordered{% endif %}{% if hover %} table-hover{% endif %}{% if striped %} table-striped{% endif %}{% if condensed %} table-condensed{% endif %}{% if classes %} {{ classes }}{% endif %}" {% if attributes %} {{ attributes }} {% endif %}>
+<table class="table{% if bordered %} table-bordered{% endif %}{% if hover %} table-hover{% endif %}{% if striped %} table-striped{% endif %}{% if condensed %} table-condensed{% endif %}{% if classes %} {{ classes }}{% endif %}"
+        {% if attributes %}
+            {% for key, value in attributes.items %}
+                {{ key }}="{{ value }}"
+            {% endfor %}
+        {% endif %}>
     {% if column_names %}
     <tr>
       {% for column_name in column_names %}
