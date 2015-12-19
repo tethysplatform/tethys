@@ -12,6 +12,10 @@ Tethys Platform provides two interactive plotting engines: `D3 <http://d3js.org/
 
     Highcharts is free-of-charge for certain applications (see: `Highcharts JS Licensing <http://shop.highsoft.com/highcharts.html>`_). If you need a guaranteed fee-free solution, D3 is recommended.
 
+.. note::
+
+    D3 plotting implemented for Line Plot, Pie Plot, Bar Plot, Scatter Plot, and Timeseries Plot.
+
 Line Plot
 =========
 
