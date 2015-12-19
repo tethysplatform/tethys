@@ -2,9 +2,9 @@
 Handoff API
 ***********
 
-**Last Updated:** August 12, 2015
+**Last Updated:** October 14, 2015
 
-App developers can use Handoff to launch one app from another app or an external website. Handoff also provides a mechanism for passing data from the originator app to the target app. Using Handoff, apps can be strung together to form a workflow, allowing apps to become modular and specialized in their capabilities.
+App developers can use Handoff to launch one app from another app or an external website. Handoff also provides a mechanism for passing data from the originator app to the target app. Using Handoff, apps can be strung together to form a workflow, allowing apps to become modular and specialized in their capabilities. If the handoff is initiated from an app then the HandoffManager can be used. Alternatively, there are REST endpoints (described below) that allow an app to be launched from an external site, but can also be used for app-to-app handoff.
 
 As an example, consider an app called "Hydrograph Plotter" that plots hydrographs. We would like Hydrograph Plotter to be able to accept hydrograph CSV files from other apps so that it can be used as a generic hydrograph viewer. One way to do this would be to define a Handoff endpoint that accepts a URL to a CSV file. The Handoff handler would use that URL to download or pull the CSV file into the app and then redirect it to a page with a plot. The GET request/pull mechanism is used to get around the limitations associated with POST requests, which are required to push or upload files.
 
@@ -61,7 +61,7 @@ The Handoff handler needs to be registered to make it available for other apps t
             Register some handoff handlers
             """
             handoff_handlers = (HandoffHandler(name='plot-csv',
-                                               handler='handoff:csv'),
+                                               handler='hydrograph_plotter.handoff.csv'),
             )
             return handoff_handlers
 
@@ -80,7 +80,7 @@ Any parameters that need to be passed with the Handoff call are passed as query 
 
 ::
 
-    http://www.example.com/hydrograph-plotter/plot-csv/?csv=http://www.another.com/url/to/file.csv
+    http://www.example.com/hydrograph-plotter/plot-csv/?csv_url=http://www.another.com/url/to/file.csv
 
 The URL must have query parameters for each argument defined in the Handoff handler function or it will throw an error. It will also throw an error if extra query parameters are provided that are not defined as arguments for the Handoff handler function.
 
@@ -103,9 +103,83 @@ The output would look something like this:
 
 ::
 
-    [{"arguments": ["csv"], "name": "plot-csv"}]
+    [{"arguments": ["csv_url"], "name": "plot-csv"}]
 
 
+HandoffManager
+--------------
+
+If a handoff is initiated from an app to another app on the same instance of Tethys then the HandoffManager can be used. This has several benefits including being able to being able to process the handoff in a controller and use Python to add logic or handle errors. Additionally, the HandoffManager will expose HandoffHandlers that are marked as "internal". An internal HanoffHandler can take advantage of the assumption that the both sides of the handoff are on the same system by, for example, using file paths and symbolic links rather than passing large files over the network.
+
+A HandoffHandler can be marked as internal when it is registered in :term:`app class`.
+
+::
+
+    from tethys_sdk.handoff import HandoffHandler
+
+    class HydrographPlotter(TethysAppBase):
+        """
+        Tethys app class for Hydrograph Plotter
+        """
+        ...
+
+        def handoff_handlers(self):
+            """
+            Register some handoff handlers
+            """
+            handoff_handlers = (HandoffHandler(name='internal-plot-csv',
+                                               handler='hydrograph_plotter.handoff.csv_internal',
+                                               internal=True),
+            )
+            return handoff_handlers
+
+An example of an internal HandoffHandler:
+
+::
+
+    import os
+    import requests
+    from .app import HydrographPlotter
+
+    def csv_internal(request, path_to_csv):
+        """
+        Internal handoff handler for csv files.
+        """
+        # Get a filename in the current user's workspace
+        user_workspace = HydrographPlotter.get_user_workspace(request.user)
+
+        # Create symbolic link to the csv in the user's workspace
+        src = path_to_csv
+        dst = os.path.join(user_workspace, 'hydrograph.csv')
+
+        try:
+            os.symlink(src, dst)
+        except OSError:
+            pass
+
+        return 'hydrograph_plotter:plot_csv'
+
+An example of initiating a handoff with the HandoffManager from a controller:
+
+::
+
+    def plot(request):
+        handoff_manager = app.get_handoff_manager()
+        app_name = 'hydrograph_plotter'
+        handler_name = 'internal-plot-csv'
+
+        handler = handoff_manager.get_handler(handler_name, app_name)
+        if handler:
+            try:
+                return redirect(handler(request, path_to_netcdf_file=file_path))
+            except Exception, e:
+                pass
+
+    return redirect(reverse('my_app:home', kwargs={'message': 'Hydrograph plotting is not working.'}))
 
 
+HandoffManager API
+------------------
 
+.. autoclass:: tethys_apps.base.handoff.HandoffManager
+    :members: get_capabilities, get_handler, handoff
