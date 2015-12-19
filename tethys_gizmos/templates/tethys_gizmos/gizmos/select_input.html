@@ -6,9 +6,13 @@
   <select id="{{ name }}" class="{% if not original %}select2{% else %}form-control{% endif %}{% if classes %} {{ classes }}{% endif %}"
     name="{{ name }}" {% if not original %}style="width:100%;"{% endif %}
     {% if multiple %}multiple{% endif %} {% if disabled %}disabled{% endif %}
-    {% if attributes %} {{ attributes }} {% endif %}>
+    {% if attributes %}
+        {% for key, value in attributes.items %}
+            {{ key }}="{{ value }}"
+        {% endfor %}
+    {% endif %}>
     {% for option, value in options %}
-      {% if initial and option in initial %}
+      {% if option in initial %}
       <option value="{{value}}" selected>{{ option }}</option>
       {% else %}
       <option value="{{value}}">{{ option }}</option>

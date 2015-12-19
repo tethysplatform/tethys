@@ -15,8 +15,58 @@ from django.db import DatabaseError
 
 from sqlalchemy import create_engine
 
+class TethysFunctionExtractor(object):
+    """
+    Base class for PersistentStore and HandoffHandler that returns a function handle from a string path to the function.
 
-class PersistentStore(object):
+    Attributes:
+        path (str): The path to a function in the form "app_name.module_name.function_name".
+    """
+    PATH_PREFIX = 'tethys_apps.tethysapp'
+
+    def __init__(self, path):
+        self.path = path
+        self._valid = None
+        self._function = None
+
+    @property
+    def valid(self):
+        """
+        True if function is valid otherwise False.
+        """
+        if self._valid is None:
+            self.function
+        return self._valid
+
+    @property
+    def function(self):
+        """
+        The function pointed to by the path_str attribute.
+
+        Returns:
+            A handle to a Python function or None if function is not valid.
+        """
+        if not self._function and self._valid is None:
+            try:
+                # Split into parts and extract function name
+                module_path, function_name = self.path.rsplit('.', 1)
+
+                #Pre-process handler path
+                full_module_path = '.'.join((self.PATH_PREFIX, module_path))
+
+                # Import module
+                module = __import__(full_module_path, fromlist=[function_name])
+            except (ValueError, ImportError):
+                self._valid = False
+            else:
+                # Get the function
+                self._function = getattr(module, function_name)
+                self._valid = True
+
+        return self._function
+
+
+class PersistentStore(TethysFunctionExtractor):
     """
     An object that stores the registration data for a Tethys Persistent Store.
 
@@ -37,8 +87,8 @@ class PersistentStore(object):
         self.name = name
         self.initializer = initializer
         self.postgis = postgis
-        self.spatial = \
-            spatial
+        self.spatial = spatial
+        super(PersistentStore, self).__init__(self.initializer)
 
     def __repr__(self):
         """
@@ -52,6 +102,20 @@ class PersistentStore(object):
             return '<Persistent Store: name={0}, initializer={1}, spatial={2}>'.format(self.name,
                                                                                        self.initializer,
                                                                                        self.postgis)
+
+    @property
+    def initializer_is_valid(self):
+        return self.valid
+
+    @property
+    def initializer_function(self):
+        """
+        The function pointed to by the initializer attribute.
+
+        Returns:
+            A handle to a Python function that will initialize the database or None if function is not valid.
+        """
+        return self.function
 
 
 def get_persistent_store_engine(app_name, persistent_store_name):

@@ -18,4 +18,10 @@ class Migration(migrations.Migration):
             field=tethys_compute.utilities.DictionaryField(default=b'', blank=True),
             preserve_default=True,
         ),
+        migrations.AlterField(
+            model_name='tethysjob',
+            name='workspace',
+            field=models.CharField(default=b'', max_length=1024),
+            preserve_default=True,
+        ),
     ]
