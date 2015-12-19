@@ -34,6 +34,7 @@ var TETHYS_MAP_VIEW = (function() {
       LEGEND_ATTRIBUTE = 'data-legend',                     // HTML attribute containing the legend options
       VIEW_ATTRIBUTE = 'data-view',                         // HTML attribute containing the view options
       FEAT_SELECTION_ATTRIBUTE = 'data-feature-selection',  // HTML attribute containing the feature selection options
+      GEOMETRY_ATTRIBUTE = 'data-geometry-attribute',       // HTML attribute containing the geometry attribute of the file
       DISABLE_BASE_MAP_ATTRIBUTE = 'data-disable-base-map'; // HTML attribute containing the disable base map option
 
   // Objects
@@ -68,6 +69,7 @@ var TETHYS_MAP_VIEW = (function() {
       m_legend_options,                                     // Legend options json
       m_view_options,                                       // View options json
       m_feature_selection_options,                          // Feature selection options json
+      m_geometry_attribute,                                 // Geometry attribute json
       m_disable_base_map;                                   // Disable base map option json
 
   // Others
@@ -644,6 +646,8 @@ var TETHYS_MAP_VIEW = (function() {
     m_view_options = $map_element.attr(VIEW_ATTRIBUTE);
     m_disable_base_map = $map_element.attr(DISABLE_BASE_MAP_ATTRIBUTE);
     m_feature_selection_options = $map_element.attr(FEAT_SELECTION_ATTRIBUTE);
+    m_geometry_attribute = $map_view.attr(GEOMETRY_ATTRIBUTE);
+    console.log(m_feature_selection_options);
 
     // Parse JSON
     if (is_defined(m_attribute_table_options)) {
@@ -680,6 +684,10 @@ var TETHYS_MAP_VIEW = (function() {
 
     if (is_defined(m_feature_selection_options)) {
       m_feature_selection_options = JSON.parse(m_feature_selection_options);
+    }
+
+    if (is_defined(m_geometry_attribute)) {
+      m_geometry_attribute = JSON.parse(m_geometry_attribute);
     }
   };
 
@@ -1317,7 +1325,7 @@ var TETHYS_MAP_VIEW = (function() {
       bbox = bbox.replace('{{miny}}', y - tolerance);
       bbox = bbox.replace('{{maxx}}', x + tolerance);
       bbox = bbox.replace('{{maxy}}', y + tolerance);
-      cql_filter = '&CQL_FILTER=BBOX(geometry%2C' + bbox + '%2C%27EPSG%3A3857%27)';
+      cql_filter = '&CQL_FILTER=BBOX(' + m_geometry_attribute + '%2C' + bbox + '%2C%27EPSG%3A3857%27)';
       layer_name = source.getParams().LAYERS;
       wms_url = source.getUrl();
 
@@ -1332,6 +1340,7 @@ var TETHYS_MAP_VIEW = (function() {
           + cql_filter
           + '#multiselect:' + multiselect;
       urls.push(url);
+      console.log(m_geometry_attribute);
     }
 
     // Get the features if applicable

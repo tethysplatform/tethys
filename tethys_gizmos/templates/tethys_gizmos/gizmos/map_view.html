@@ -35,7 +35,8 @@
          {% if basemap %}data-base-map="{{ basemap|jsonify }}"{% endif %}
          {% if legend %}data-legend="{{ legend|jsonify }}"{% endif %}
          {% if disable_basemap %}data-disable-base-map="{{ disable_basemap|jsonify }}"{% endif %}
-         {% if feature_selection %}data-feature-selection="{{ feature_selection|jsonify }}"{% endif %}></div>
+         {% if feature_selection %}data-feature-selection="{{ feature_selection|jsonify }}"{% endif %}>
+         {% if geometry_attribute %}data-geometry-attribute="{{ geometry_attribute|jsonify }}"{% endif %}></div>
     <textarea id="map_view_geometry" name="geometry" rows="4" cols="180" hidden></textarea>
   </div>
 </div> <!-- end outerContainer -->
