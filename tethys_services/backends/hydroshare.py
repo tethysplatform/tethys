@@ -1,7 +1,7 @@
 """
 ********************************************************************************
 * Name: hydroshare.py
-* Author: Nathan Swain
+* Author: Nathan Swain and Ezra Rice
 * Created On: July 31, 2015
 * Copyright: (c) Brigham Young University 2015
 * License: BSD 2-Clause
@@ -31,7 +31,7 @@ class HydroShareOAuth2(BaseOAuth2):
     EXTRA_DATA = [
         ('email', 'email'),
         ('username', 'id'),
-        ('expires_at', 'expires_at'),
+        ('expires_in', 'expires_in'),
         ('token_type', 'token_type'),
         ('refresh_token', 'refresh_token'),
         ('scope', 'scope'),
@@ -39,20 +39,18 @@ class HydroShareOAuth2(BaseOAuth2):
     ]
 
     def extra_data(self, user, uid, response, details=None, *args, **kwargs):
-        data = super(HydroShareOAuth2, self).extra_data(user, uid, response, 
+        data = super(HydroShareOAuth2, self).extra_data(user, uid, response,
                                                         details,
                                                         *args, **kwargs)
         # Calculate 'expires_at'
         t = time.time()
         expires_in = response.get('expires_in', '') or \
                      kwargs.get('expires_in')
-        expires_at = int(t) + int(expires_in)
-        data['expires_at'] = expires_at
         # Reconstitute token dictionary for client convenience
         token_dict = {
             'access_token': data['access_token'],
             'token_type': data['token_type'],
-            'expires_at': data['expires_at'],
+            'expires_in': expires_in,
             'refresh_token': data['refresh_token'],
             'scope': data['scope']
             }
@@ -77,5 +75,3 @@ class HydroShareOAuth2(BaseOAuth2):
             return self.get_json(url, params={'access_token': access_token})
         except ValueError:
             return None
-
-
