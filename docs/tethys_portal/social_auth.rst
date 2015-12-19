@@ -262,6 +262,13 @@ HydroShare
       SOCIAL_AUTH_HYDROSHARE_KEY = '...'
       SOCIAL_AUTH_HYDROSHARE_SECRET = '...'
 
+References
+++++++++++
+
+For more detailed information about using HydroShare social authentication see the following articles:
+
+* `https://github.com/hydroshare/hydroshare/wiki/HydroShare-REST-API#oauth-20-support <https://github.com/hydroshare/hydroshare/wiki/HydroShare-REST-API#oauth-20-support>`_
+
 .. _social_auth_settings:
 
 Social Auth Settings
