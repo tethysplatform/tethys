@@ -30,6 +30,13 @@ Map View
 
 See: :doc:`./tethys_sdk/gizmos/map_view`
 
+Plot View
+---------
+
+* D3 plotting implemented as a free alternative to Highcharts for line plot, pie plot, scatter plot, bar plot, and timeseries plot.
+
+See: :doc:`./tethys_sdk/gizmos/plot_view`
+
 Spatial Dataset Services
 ------------------------
 
@@ -79,7 +86,6 @@ Bugs
 * Fixed styling issues that made the Message Box gizmo unusable.
 * Normalized references to controllers, persistent store initializers, and handoff handler functions.
 * Various docs typos were fixed.
-* Plot view was fixed to allow parameter overwriting as was intended.
 
 Prior Release Notes
 ===================
