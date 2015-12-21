@@ -1,18 +1,17 @@
-**********************
-Update from 1.1 to 1.2
-**********************
+***********************
+Upgrade from 1.2 to 1.3
+***********************
 
-**Last Updated:** August 11, 2015
+**Last Updated:** December 21, 2015
 
-1. Pull Repository
-==================
+1. Get the Latest Version
+=========================
 
-When you installed Tethys Platform you did so using it's remote Git repository on GitHub. To get the latest version of Tethys Platform, you will need to pull the latest changes from this repository. However, the repository has moved from where it was for version 1.1.0, so first you need to set the URL of the remote repository to point its new location. All of this can be done as follows:
+When you installed Tethys Platform you did so using it's remote Git repository on GitHub. To get the latest version of Tethys Platform, you will need to pull the latest changes from this repository:
 
 ::
 
     $ cd /usr/lib/tethys/src
-    $ git remote set-url origin https://github.com/tethysplatform/tethys
     $ git pull origin master
 
 2. Install Requirements and Run Setup Script
@@ -40,7 +39,7 @@ Backup your old settings script (``settings.py``) and generate a new settings fi
 
     Don't forget to copy any settings from the backup settings script (``settings.py_bak``) to the new settings script. Common settings that need to be copied include:
 
-    * DEBUG, TEMPLATE_DEBUG
+    * DEBUG
     * ALLOWED_HOSTS
     * DATABASES, TETHYS_DATABASES
     * STATIC_ROOT, TETHYS_WORKSPACES_ROOT
@@ -48,7 +47,7 @@ Backup your old settings script (``settings.py``) and generate a new settings fi
     * SOCIAL_OAUTH_XXXX_KEY, SOCIAL_OAUTH_XXXX_SECRET
     * BYPASS_TETHYS_HOME_PAGE
 
-    After you have copied these settings, you can delete the backup settings script.
+    After you have copied these settings, you can delete or archive the backup settings script.
 
 4. Sync the Database
 ====================
