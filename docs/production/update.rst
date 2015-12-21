@@ -1,8 +1,8 @@
-**********************
-Update from 1.1 to 1.2
-**********************
+***********************
+Upgrade from 1.2 to 1.3
+***********************
 
-**Last Updated:** August 11, 2015
+**Last Updated:** December 21, 2015
 
 1. Pull Repository
 ==================
