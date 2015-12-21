@@ -21,20 +21,27 @@ from tethys_sdk.gizmos import *
 from tethys_sdk.services import list_spatial_dataset_engines
 from tethys_compute.models import BasicJob
 
-spatial_dataset_engines = list_spatial_dataset_engines()
-geoserver_engine = None
-geoserver_wms = "http://ciwmap.chpc.utah.edu:8080/geoserver/wms"
 
-for spatial_dataset_engine in spatial_dataset_engines:
-    if spatial_dataset_engine.type == 'GEOSERVER':
-        try:
-            spatial_dataset_engine.validate()
-            geoserver_engine = spatial_dataset_engine
-            geoserver_endpoint = spatial_dataset_engine.endpoint
-            geoserver_wms = geoserver_endpoint.replace('rest', 'wms')
-            break
-        except ConnectionError:
-            pass
+def get_geoserver_wms():
+    """
+    Try to get the built in geoserver wms for this installation if possible.
+    Otherwise point at the chpc geoserver.
+    """
+    spatial_dataset_engines = list_spatial_dataset_engines()
+    geoserver_wms = "http://ciwmap.chpc.utah.edu:8080/geoserver/wms"
+
+    for spatial_dataset_engine in spatial_dataset_engines:
+        if spatial_dataset_engine.type == 'GEOSERVER':
+            try:
+                spatial_dataset_engine.validate()
+                geoserver_engine = spatial_dataset_engine
+                geoserver_endpoint = spatial_dataset_engine.endpoint
+                geoserver_wms = geoserver_endpoint.replace('rest', 'wms')
+                break
+            except ConnectionError:
+                pass
+
+    return geoserver_wms
 
 
 @login_required()
@@ -871,10 +878,10 @@ def index(request):
 
     map_layers.append(geojson_layer)
 
-    if geoserver_wms:
+    if get_geoserver_wms():
         # Define GeoServer Layer
         geoserver_layer = MVLayer(source='ImageWMS',
-                                  options={'url': geoserver_wms,
+                                  options={'url': get_geoserver_wms(),
                                            'params': {'LAYERS': 'topp:states'},
                                            'serverType': 'geoserver'},
                                   legend_title='USA Population',
@@ -1178,10 +1185,10 @@ def map_view(request):
 
     map_layers.append(geojson_layer)
 
-    if geoserver_wms:
+    if get_geoserver_wms():
         # Define GeoServer Layer
         geoserver_layer = MVLayer(source='ImageWMS',
-                                  options={'url': geoserver_wms,
+                                  options={'url': get_geoserver_wms(),
                                            'params': {'LAYERS': 'topp:states'},
                                            'serverType': 'geoserver'},
                                   legend_title='USA Population',

@@ -17,10 +17,6 @@ from social.backends.oauth import BaseOAuth2
 class HydroShareOAuth2(BaseOAuth2):
     """
     HydroShare OAuth2 authentication backend.
-
-    TODO: This is just an example shell of how to define the HydroShareOAuth2 backend. This needs to be configured when
-          the HydroShare OAuth2 authentication service is working. See this article for more details about custom
-          python social auth backends: http://psa.matiasaguirre.net/docs/backends/implementation.html
     """
     name = 'hydroshare'
     AUTHORIZATION_URL = 'https://www.hydroshare.org/o/authorize/'
