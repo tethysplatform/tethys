@@ -2,7 +2,7 @@
 Installation on Ubuntu 14.04
 ****************************
 
-**Last Updated:** August 11, 2015
+**Last Updated:** December 21, 2015
 
 .. tip::
 
@@ -30,15 +30,19 @@ a. Execute the following command to finish the installation of Docker:
 
   ::
 
-    $ source /etc/bash_completion.d/docker.io
+    $ source /etc/bash_completion.d/docker
+
+  .. note::
+
+      If running this command and those that follow with **docker** doesn't work, try substituting **docker.io** instead.
 
 b. Add your user to the Docker group. This is necessary to use the Tethys Docker commandline tools. In a command prompt execute:
 
   ::
 
     $ sudo gpasswd -a ${USER} docker
-    $ sudo service docker.io restart
-    $ gnome-session-quit --logout
+    $ sudo service docker restart
+    $ newgrp
 
 c. Select **log out** and then **log back in** to make the changes take effect.
 
