@@ -43,7 +43,6 @@ $(document).ready(function(){
     }
 
   var csrftoken = getCookie('csrftoken');
-  console.log(csrftoken);
 
   var betamodalform = "<form action='/apps/send-beta-feedback/' method='post' enctype='multipart/form-data' id='uploadBetaFeedback' name='uploadBetaFeedback'>"+
                             "<div class='betaForm'>"+
@@ -88,7 +87,6 @@ $(document).ready(function(){
 
 //Make the feedback form on click of the feedback button
   $("#beta-feedback-button").on("click", function() {
-    console.log(local_date_time);
     $("body").append('<div id="darkBackground"></div>');
     $("body").append('<div  id="beta-feedback-modal"></div>');
     $("#beta-feedback-modal").append(betamodalform);
