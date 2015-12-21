@@ -128,7 +128,6 @@ b. Turn off debugging
   ::
 
       DEBUG = False
-      TEMPLATE_DEBUG = False
 
 c. Set the allowed hosts
 
