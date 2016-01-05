@@ -31,6 +31,10 @@ div.breadcrumbs {
   border: none;
   font-size: 16px;
   .font-smoothing();
+
+  a {
+    color: #2ca6ed;
+  }
 }
 
 a:link, a:visited {
@@ -58,6 +62,7 @@ a:hover {
     font-weight: 500;
     font-size: 12px;
     .font-smoothing();
+    padding: 3px 12px;
 
     &:hover {
       background: @primary-color + #111111 url(/static/admin/img/tooltag-add.png) 95% center no-repeat;
@@ -246,6 +251,12 @@ thead {
   background: none;
   border: none;
   padding: 10px 0;
+
+  a {
+    &.deletelink {
+      height: auto;
+    }
+  }
 }
 
 [type=submit], [type=button], .button, .submit-row, input {
@@ -258,6 +269,7 @@ input[type=submit] {
   border: 1px #888888 solid;
   .font-smoothing();
   font-weight: 500;
+  color: #222222;
 
   &:hover {
     background: #efefef - #111111;
@@ -266,6 +278,7 @@ input[type=submit] {
   &[name=_save] {
     background: @success-color;
     border: 1px @success-color - #111111 solid;
+    color: #ffffff;
 
     &:hover {
       background: @success-color - #111111;

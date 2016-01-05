@@ -2,17 +2,17 @@
   color: #fff;
   font-weight: bold;
   position: absolute;
-  left: -25px;
+  left: -31px;
   bottom: 50px;
   background-color: #660099;
   vertical-align:top;
   margin-top:23px;
-  width:80px;height:30px;
+  padding: 5px 10px;
   transform:rotate(7deg);
   -ms-transform:rotate(90deg); /* IE 9 */
   -moz-transform:rotate(90deg); /* Firefox */
   -webkit-transform:rotate(90deg); /* Safari and Chrome */
-  -o-transform:rotate(90deg); /* Opera */}
+  -o-transform:rotate(90deg); /* Opera */
 }
 
 #beta-feedback-button:hover {
