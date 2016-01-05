@@ -73,6 +73,15 @@ Start the database docker if not already started and apply any changes to the da
     (tethys) $ tethys docker start -c postgis
     (tethys) $ tethys manage syncdb
 
+.. note::
+
+    For migration errors use:
+
+    ::
+
+        $ cd ~/usr/lib/tethys/src
+        $ python manage.py makemigrations --merge
+
 6. Collect Static Files
 =======================
 
