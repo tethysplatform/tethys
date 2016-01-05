@@ -21,20 +21,27 @@ from tethys_sdk.gizmos import *
 from tethys_sdk.services import list_spatial_dataset_engines
 from tethys_compute.models import BasicJob
 
-spatial_dataset_engines = list_spatial_dataset_engines()
-geoserver_engine = None
-geoserver_wms = "http://ciwmap.chpc.utah.edu:8080/geoserver/wms"
 
-for spatial_dataset_engine in spatial_dataset_engines:
-    if spatial_dataset_engine.type == 'GEOSERVER':
-        try:
-            spatial_dataset_engine.validate()
-            geoserver_engine = spatial_dataset_engine
-            geoserver_endpoint = spatial_dataset_engine.endpoint
-            geoserver_wms = geoserver_endpoint.replace('rest', 'wms')
-            break
-        except ConnectionError:
-            pass
+def get_geoserver_wms():
+    """
+    Try to get the built in geoserver wms for this installation if possible.
+    Otherwise point at the chpc geoserver.
+    """
+    spatial_dataset_engines = list_spatial_dataset_engines()
+    geoserver_wms = "http://ciwmap.chpc.utah.edu:8080/geoserver/wms"
+
+    for spatial_dataset_engine in spatial_dataset_engines:
+        if spatial_dataset_engine.type == 'GEOSERVER':
+            try:
+                spatial_dataset_engine.validate()
+                geoserver_engine = spatial_dataset_engine
+                geoserver_endpoint = spatial_dataset_engine.endpoint
+                geoserver_wms = geoserver_endpoint.replace('rest', 'wms')
+                break
+            except ConnectionError:
+                pass
+
+    return geoserver_wms
 
 
 @login_required()
@@ -214,10 +221,6 @@ def index(request):
                               ]
                               )
 
-    # line_plot_view = PlotView(highcharts_object=highcharts_object,
-    #                           width='500px',
-    #                           height='500px')
-
     # D3 Line Plot View
     d3_line_plot_view = LinePlot(height='500px',
                                  width='100%',
@@ -252,10 +255,6 @@ def index(request):
                                      }
                                  ]
                                  )
-
-    # d3_line_plot_view = PlotView(plot_object=d3_line_plot_object,
-    #                           width='500px',
-    #                           height='500px')
 
     # Plot Views
     male_dataset = {
@@ -303,18 +302,17 @@ def index(request):
         ]
     }
 
-    highcharts_object = HighChartsScatterPlot(title='Scatter Plot',
-                                              subtitle='Scatter Plot',
-                                              x_axis_title='Height',
-                                              x_axis_units='cm',
-                                              y_axis_title='Weight',
-                                              y_axis_units='kg',
-                                              series=[male_dataset, female_dataset]
-                                              )
-
-    scatter_plot_view = PlotView(highcharts_object=highcharts_object,
-                                 width='500px',
-                                 height='500px')
+    scatter_plot_view = ScatterPlot(
+        width='500px',
+        height='500px',
+        title='Scatter Plot',
+        subtitle='Scatter Plot',
+        x_axis_title='Height',
+        x_axis_units='cm',
+        y_axis_title='Weight',
+        y_axis_units='kg',
+        series=[male_dataset, female_dataset]
+    )
 
     # D3 Scatter Plot
     d3_scatter_plot_view = ScatterPlot(width='100%',
@@ -329,62 +327,56 @@ def index(request):
                                        series=[male_dataset, female_dataset]
                                        )
 
-    # d3_scatter_plot_view = PlotView(plot_object=d3_scatter_plot_object,
-    #                                 width='500px',
-    #                                 height='500px')
-
     # Web Plot
-    web_plot_object = HighChartsPolarPlot(title='Polar Chart',
-                                          subtitle='Polar Chart',
-                                          pane={
-                                              'size': '80%'
-                                          },
-                                          categories=['Infiltration', 'Soil Moisture', 'Precipitation',
-                                                      'Evaporation',
-                                                      'Roughness', 'Runoff', 'Permeability', 'Vegetation'],
-                                          series=[
-                                              {
-                                                  'name': 'Park City',
-                                                  'data': [0.2, 0.5, 0.1, 0.8, 0.2, 0.6, 0.8, 0.3],
-                                                  'pointPlacement': 'on'
-                                              },
-                                              {
-                                                  'name': 'Little Dell',
-                                                  'data': [0.8, 0.3, 0.2, 0.5, 0.1, 0.8, 0.2, 0.6],
-                                                  'pointPlacement': 'on'
-                                              }
-                                          ]
-                                          )
-
-    web_plot = PlotView(highcharts_object=web_plot_object,
-                        width='500px',
-                        height='500px')
+    web_plot = PolarPlot(
+        width='500px',
+        height='500px',
+        title='Polar Chart',
+        subtitle='Polar Chart',
+        pane={
+          'size': '80%'
+        },
+        categories=['Infiltration', 'Soil Moisture', 'Precipitation',
+                    'Evaporation', 'Roughness', 'Runoff', 'Permeability',
+                    'Vegetation'],
+        series=[
+          {
+              'name': 'Park City',
+              'data': [0.2, 0.5, 0.1, 0.8, 0.2, 0.6, 0.8, 0.3],
+              'pointPlacement': 'on'
+          },
+          {
+              'name': 'Little Dell',
+              'data': [0.8, 0.3, 0.2, 0.5, 0.1, 0.8, 0.2, 0.6],
+              'pointPlacement': 'on'
+          }
+        ]
+    )
 
     # Pie Plot
-    pie_plot_object = HighChartsPiePlot(title='Pie Chart',
-                                        subtitle='Pie Chart',
-                                        series=[{
-                                            'type': 'pie',
-                                            'name': 'Browser share',
-                                            'data': [
-                                                ['Firefox', 45.0],
-                                                ['IE', 26.8],
-                                                {
-                                                    'name': 'Chrome',
-                                                    'y': 12.8,
-                                                    'sliced': True,
-                                                    'selected': True
-                                                },
-                                                ['Safari', 8.5],
-                                                ['Opera', 6.2],
-                                                ['Others', 0.7]
-                                            ]
-                                        }]
-                                        )
-
-    pie_plot_view = PlotView(highcharts_object=pie_plot_object,
-                             width='500px',
-                             height='500px')
+    pie_plot_view = PiePlot(
+        width='500px',
+        height='500px',
+        title='Pie Chart',
+        subtitle='Pie Chart',
+        series=[{
+            'type': 'pie',
+            'name': 'Browser share',
+            'data': [
+                ['Firefox', 45.0],
+                ['IE', 26.8],
+                {
+                    'name': 'Chrome',
+                    'y': 12.8,
+                    'sliced': True,
+                    'selected': True
+                },
+                ['Safari', 8.5],
+                ['Opera', 6.2],
+                ['Others', 0.7]
+            ]
+        }]
+    )
 
     # D3 Pie Plot
     d3_pie_plot_view = PiePlot(width='100%',
@@ -401,12 +393,10 @@ def index(request):
                                    {'name': 'Others', 'value': 0.7}
                                ])
 
-    # d3_pie_plot_view = PlotView(plot_object=d3_pie_plot_object,
-    #                             width='500px',
-    #                             height='500px')
-
     # Bar Plot
-    bar_plot_view = HighChartsBarPlot(
+    bar_plot_view = BarPlot(
+        width='500px',
+        height='500px',
         title='Bar Chart',
         subtitle='Bar Chart',
         vertical=False,
@@ -426,10 +416,6 @@ def index(request):
             'data': [973, 914, 4054, 732, 34]}
         ]
     )
-
-    bar_plot_view = PlotView(highcharts_object=bar_plot_view,
-                             width='500px',
-                             height='500px')
 
     # D3 Bar Plot
     d3_bar_plot_view = BarPlot(
@@ -459,7 +445,9 @@ def index(request):
     )
 
     # Time series plot
-    timeseries_plot_object = HighChartsTimeSeries(
+    timeseries_plot = TimeSeries(
+        width='500px',
+        height='500px',
         title='Irregular Timeseries Plot',
         y_axis_title='Snow depth',
         y_axis_units='m',
@@ -517,10 +505,6 @@ def index(request):
             ]
         }]
     )
-
-    timeseries_plot = PlotView(highcharts_object=timeseries_plot_object,
-                               width='500px',
-                               height='500px')
 
     # D3 Time series plot
     d3_timeseries_plot_view = TimeSeries(
@@ -611,7 +595,9 @@ def index(request):
         [datetime(2009, 7, 31), 10.8, 16.1]
     ]
     # Area Range plot
-    area_range_plot_object = HighChartsAreaRange(
+    area_range_plot = AreaRange(
+        width='500px',
+        height='500px',
         title='July Temperatures',
         y_axis_title='Temperature',
         y_axis_units='*C',
@@ -633,55 +619,52 @@ def index(request):
         }]
     )
 
-    area_range_plot = PlotView(highcharts_object=area_range_plot_object,
-                               width='500px',
-                               height='500px')
     # Heat Map
-    sales_data = [
-        [0, 0, 10], [0, 1, 19], [0, 2, 8], [0, 3, 24], [0, 4, 67], [1, 0, 92],
-        [1, 1, 58], [1, 2, 78], [1, 3, 117], [1, 4, 48], [2, 0, 35], [2, 1, 15],
-        [2, 2, 123], [2, 3, 64], [2, 4, 52], [3, 0, 72], [3, 1, 132], [3, 2, 114],
-        [3, 3, 19], [3, 4, 16], [4, 0, 38], [4, 1, 5], [4, 2, 8], [4, 3, 117],
-        [4, 4, 115], [5, 0, 88], [5, 1, 32], [5, 2, 12], [5, 3, 6], [5, 4, 120],
-        [6, 0, 13], [6, 1, 44], [6, 2, 88], [6, 3, 98], [6, 4, 96], [7, 0, 31],
-        [7, 1, 1], [7, 2, 82], [7, 3, 32], [7, 4, 30], [8, 0, 85], [8, 1, 97],
-        [8, 2, 123], [8, 3, 64], [8, 4, 84], [9, 0, 47], [9, 1, 114], [9, 2, 31],
-        [9, 3, 48], [9, 4, 91]
-    ]
-
-    heat_map_object = HighChartsHeatMap(
-        title='Sales per employee per weekday',
-        x_categories=['Alexander', 'Marie', 'Maximilian', 'Sophia', 'Lukas', 'Maria', 'Leon', 'Anna', 'Tim', 'Laura'],
-        y_categories=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        tooltip_phrase_one='sold',
-        tooltip_phrase_two='items on',
-        colorAxis={
-            'min': 0,
-            'minColor': '#FFFFFF',
-            'maxColor': 'Highcharts.getOptions().colors[0]'
-        },
-        legend={
-            'align': 'right',
-            'layout': 'vertical',
-            'margin': 0,
-            'verticalAlign': 'top',
-            'y': 25,
-            'symbolHeight': 280
-        },
-        series=[{
-            'name': 'Sales per employee',
-            'borderWidth': 1,
-            'data': sales_data,
-            'dataLabels': {
-                'enabled': True,
-                'color': '#000000'
-            }
-        }]
-    )
-
-    heat_map_plot = PlotView(highcharts_object=heat_map_object,
-                             width='500px',
-                             height='500px')
+    # sales_data = [
+    #     [0, 0, 10], [0, 1, 19], [0, 2, 8], [0, 3, 24], [0, 4, 67], [1, 0, 92],
+    #     [1, 1, 58], [1, 2, 78], [1, 3, 117], [1, 4, 48], [2, 0, 35], [2, 1, 15],
+    #     [2, 2, 123], [2, 3, 64], [2, 4, 52], [3, 0, 72], [3, 1, 132], [3, 2, 114],
+    #     [3, 3, 19], [3, 4, 16], [4, 0, 38], [4, 1, 5], [4, 2, 8], [4, 3, 117],
+    #     [4, 4, 115], [5, 0, 88], [5, 1, 32], [5, 2, 12], [5, 3, 6], [5, 4, 120],
+    #     [6, 0, 13], [6, 1, 44], [6, 2, 88], [6, 3, 98], [6, 4, 96], [7, 0, 31],
+    #     [7, 1, 1], [7, 2, 82], [7, 3, 32], [7, 4, 30], [8, 0, 85], [8, 1, 97],
+    #     [8, 2, 123], [8, 3, 64], [8, 4, 84], [9, 0, 47], [9, 1, 114], [9, 2, 31],
+    #     [9, 3, 48], [9, 4, 91]
+    # ]
+    #
+    # heat_map_object = HighChartsHeatMap(
+    #     title='Sales per employee per weekday',
+    #     x_categories=['Alexander', 'Marie', 'Maximilian', 'Sophia', 'Lukas', 'Maria', 'Leon', 'Anna', 'Tim', 'Laura'],
+    #     y_categories=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    #     tooltip_phrase_one='sold',
+    #     tooltip_phrase_two='items on',
+    #     colorAxis={
+    #         'min': 0,
+    #         'minColor': '#FFFFFF',
+    #         'maxColor': 'Highcharts.getOptions().colors[0]'
+    #     },
+    #     legend={
+    #         'align': 'right',
+    #         'layout': 'vertical',
+    #         'margin': 0,
+    #         'verticalAlign': 'top',
+    #         'y': 25,
+    #         'symbolHeight': 280
+    #     },
+    #     series=[{
+    #         'name': 'Sales per employee',
+    #         'borderWidth': 1,
+    #         'data': sales_data,
+    #         'dataLabels': {
+    #             'enabled': True,
+    #             'color': '#000000'
+    #         }
+    #     }]
+    # )
+    #
+    # heat_map_plot = PlotView(highcharts_object=heat_map_object,
+    #                          width='500px',
+    #                          height='500px')
 
     # Custom Plot
     custom_plot_dictionary = {
@@ -871,10 +854,10 @@ def index(request):
 
     map_layers.append(geojson_layer)
 
-    if geoserver_wms:
+    if get_geoserver_wms():
         # Define GeoServer Layer
         geoserver_layer = MVLayer(source='ImageWMS',
-                                  options={'url': geoserver_wms,
+                                  options={'url': get_geoserver_wms(),
                                            'params': {'LAYERS': 'topp:states'},
                                            'serverType': 'geoserver'},
                                   legend_title='USA Population',
@@ -973,7 +956,7 @@ def index(request):
                'd3_timeseries_plot_view': d3_timeseries_plot_view,
                'bar_plot_view': bar_plot_view,
                'area_range_plot': area_range_plot,
-               'heat_map_plot': heat_map_plot,
+               # 'heat_map_plot': heat_map_plot,
                'custom_plot': custom_plot,
                }
 
@@ -1178,10 +1161,10 @@ def map_view(request):
 
     map_layers.append(geojson_layer)
 
-    if geoserver_wms:
+    if get_geoserver_wms():
         # Define GeoServer Layer
         geoserver_layer = MVLayer(source='ImageWMS',
-                                  options={'url': geoserver_wms,
+                                  options={'url': get_geoserver_wms(),
                                            'params': {'LAYERS': 'topp:states'},
                                            'serverType': 'geoserver'},
                                   legend_title='USA Population',

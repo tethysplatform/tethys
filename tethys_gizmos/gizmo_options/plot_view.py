@@ -170,10 +170,13 @@ class LinePlot(PlotViewBase):
         # Initialize super class
         super(LinePlot, self).__init__(height=height, width=width, engine=engine)
 
-        if spline:
-            chart = {'type': 'spline'}
-        else:
-            chart = {'type': 'line'}
+        chart = kwargs.pop('chart', None)
+
+        if not chart:
+            if spline:
+                chart = {'type': 'spline'}
+            else:
+                chart = {'type': 'line'}
 
         if x_axis_title:
             x_axis = {
@@ -272,10 +275,13 @@ class PolarPlot(PlotViewBase):
         # Initialize super class
         super(PolarPlot, self).__init__(height=height, width=width, engine=engine)
 
-        chart = {
-            'polar': True,
-            'type': 'line'
-        }
+        chart = kwargs.pop('chart', None)
+
+        if not chart:
+            chart = {
+                'polar': True,
+                'type': 'line'
+            }
 
         x_axis = {
             'categories': categories,
@@ -395,10 +401,13 @@ class ScatterPlot(PlotViewBase):
         # Initialize super class
         super(ScatterPlot, self).__init__(height=height, width=width, engine=engine)
 
-        chart = {
-            'type': 'scatter',
-            'zoomType': 'xy'
-        }
+        chart = kwargs.pop('chart', None)
+
+        if not chart:
+            chart = {
+                'type': 'scatter',
+                'zoomType': 'xy'
+            }
 
         if x_axis_title:
             x_axis = {
@@ -478,9 +487,13 @@ class PiePlot(PlotViewBase):
         # Initialize super class
         super(PiePlot, self).__init__(height=height, width=width, engine=engine)
 
-        chart = {
-            'plotShadow': False
-        }
+        chart = kwargs.pop('chart', None)
+
+        if not chart:
+            chart = {
+                'plotShadow': False
+            }
+
         plotOptions = {
             'pie': {
                 'allowPointSelect': True,
@@ -568,39 +581,51 @@ class BarPlot(PlotViewBase):
         # Initialize super class
         super(BarPlot, self).__init__(height=height, width=width, engine=engine)
 
-        if not horizontal:
-            chart = {
-                'type': 'column'
-            }
-            plotOptions = {
-                'column': {
-                    'pointPadding': 0.2,
-                    'borderWidth': 0
+        chart = kwargs.pop('chart', None)
+
+        if not chart:
+            if not horizontal:
+                chart = {
+                    'type': 'column'
                 }
-            }
-        else:
-            chart = {
-                'type': 'bar'
-            }
-            plotOptions = {
-                'bar': {
-                    'dataLabels': {
-                        'enabled': True
+                plotOptions = {
+                    'column': {
+                        'pointPadding': 0.2,
+                        'borderWidth': 0
                     }
                 }
-            }
+            else:
+                chart = {
+                    'type': 'bar'
+                }
+                plotOptions = {
+                    'bar': {
+                        'dataLabels': {
+                            'enabled': True
+                        }
+                    }
+                }
 
         x_axis = {
             'categories': categories,
             'crosshair': True
         }
 
-        y_axis = {
-            'min': 0,
-            'title': {
-                'text': '{0} ({1})'.format(axis_title, axis_units)
+        if axis_units:
+            y_axis = {
+                'min': 0,
+                'title': {
+                    'text': '{0} ({1})'.format(axis_title, axis_units)
+                }
             }
-        }
+
+        else:
+            y_axis = {
+                'min': 0,
+                'title': {
+                    'text': axis_title
+                }
+            }
 
         if group_tools:
             tooltip_format = {
@@ -690,10 +715,13 @@ class TimeSeries(PlotViewBase):
         # Initialize super class
         super(TimeSeries, self).__init__(height=height, width=width, engine=engine)
 
-        chart = {
-            'type': 'area',
-            'zoomType': 'x'
-        }
+        chart = kwargs.pop('chart', None)
+
+        if not chart:
+            chart = {
+                'type': 'area',
+                'zoomType': 'x'
+            }
 
         x_axis = {
             #'maxZoom': 30 * 24 * 3600000,
@@ -807,8 +835,11 @@ class AreaRange(PlotViewBase):
         # Initialize super class
         super(AreaRange, self).__init__(height=height, width=width, engine=engine)
 
-        chart = {
-        }
+        chart = kwargs.pop('chart', None)
+
+        if not chart:
+            chart = {
+            }
 
         x_axis = {
             'type': 'datetime'
@@ -916,11 +947,14 @@ class HeatMap(PlotViewBase):
         # Initialize super class
         super(HeatMap, self).__init__(height=height, width=width, engine=engine)
 
-        chart = {
-            'type': 'heatmap',
-            'marginTop': 40,
-            'marginBottom': 80
-        }
+        chart = kwargs.pop('chart', None)
+
+        if not chart:
+            chart = {
+                'type': 'heatmap',
+                'marginTop': 40,
+                'marginBottom': 80
+            }
 
         x_axis = {
             'categories': x_categories

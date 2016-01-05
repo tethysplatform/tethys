@@ -43,6 +43,9 @@ div.breadcrumbs {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+div.breadcrumbs a {
+  color: #2ca6ed;
+}
 a:link,
 a:visited {
   color: #2ca6ed;
@@ -51,7 +54,7 @@ a:hover {
   color: #0a84cb;
 }
 .object-tools a:link {
-  background: #0a62a9;
+  background: #0A62A9;
   font-weight: 500;
   font-size: 12px;
   -webkit-font-smoothing: antialiased;
@@ -61,11 +64,12 @@ a:hover {
   background-color: #1b73ba;
 }
 .object-tools a.addlink {
-  background: #0a62a9 url(/static/admin/img/tooltag-add.png) 95% center no-repeat;
+  background: #0A62A9 url(/static/admin/img/tooltag-add.png) 95% center no-repeat;
   font-weight: 500;
   font-size: 12px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  padding: 3px 12px;
 }
 .object-tools a.addlink:hover {
   background: #1b73ba url(/static/admin/img/tooltag-add.png) 95% center no-repeat;
@@ -90,7 +94,7 @@ a:hover {
   font-weight: 400;
 }
 .module h2 {
-  background: #0a62a9;
+  background: #0A62A9;
   color: white;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -113,7 +117,7 @@ thead th {
   font-weight: 500;
 }
 .inline-group h2 {
-  background: #0a62a9;
+  background: #0A62A9;
   color: white;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -142,7 +146,7 @@ thead th {
 }
 #changelist #toolbar form input[type=submit] {
   padding: 4px 6px;
-  background: #0a62a9;
+  background: #0A62A9;
   color: #ffffff;
 }
 #changelist #toolbar form input[type=submit]:hover {
@@ -152,7 +156,7 @@ thead th {
   z-index: 995;
 }
 #changelist #changelist-filter h2 {
-  background: #0a62a9;
+  background: #0A62A9;
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -177,7 +181,7 @@ thead th {
 }
 #changelist #changelist-form .actions .button {
   padding: 4px 6px;
-  background: #0a62a9;
+  background: #0A62A9;
   color: white;
 }
 #changelist #changelist-form .actions .button:hover {
@@ -201,6 +205,9 @@ thead th {
   border: none;
   padding: 10px 0;
 }
+.submit-row a.deletelink {
+  height: auto;
+}
 [type=submit],
 [type=button],
 .button,
@@ -214,13 +221,15 @@ input[type=submit] {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: 500;
+  color: #222222;
 }
 input[type=submit]:hover {
   background: #dedede;
 }
 input[type=submit][name=_save] {
-  background: #1da456;
+  background: #1DA456;
   border: 1px #0c9345 solid;
+  color: #ffffff;
 }
 input[type=submit][name=_save]:hover {
   background: #0c9345;
