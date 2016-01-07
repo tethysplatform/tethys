@@ -34,7 +34,6 @@ var TETHYS_MAP_VIEW = (function() {
       LEGEND_ATTRIBUTE = 'data-legend',                     // HTML attribute containing the legend options
       VIEW_ATTRIBUTE = 'data-view',                         // HTML attribute containing the view options
       FEAT_SELECTION_ATTRIBUTE = 'data-feature-selection',  // HTML attribute containing the feature selection options
-      GEOMETRY_ATTRIBUTE = 'data-geometry-attribute',       // HTML attribute containing the geometry attribute of the file
       DISABLE_BASE_MAP_ATTRIBUTE = 'data-disable-base-map'; // HTML attribute containing the disable base map option
 
   // Objects
@@ -69,7 +68,6 @@ var TETHYS_MAP_VIEW = (function() {
       m_legend_options,                                     // Legend options json
       m_view_options,                                       // View options json
       m_feature_selection_options,                          // Feature selection options json
-      m_geometry_attribute,                                 // Geometry attribute json
       m_disable_base_map;                                   // Disable base map option json
 
   // Others
@@ -421,14 +419,12 @@ var TETHYS_MAP_VIEW = (function() {
             layer, Source, current_layer_layer_options;
 
         current_layer = m_layers_options[i];
-
         // Extract layer_options
         if ('layer_options' in current_layer && current_layer.layer_options) {
           current_layer_layer_options = current_layer.layer_options;
         } else {
           current_layer_layer_options = {};
         }
-
         // Tile layer case
         if (in_array(current_layer.source, TILE_SOURCES)) {
           var resolutions, source_options, tile_grid;
@@ -560,6 +556,14 @@ var TETHYS_MAP_VIEW = (function() {
           // Enable feature selection layers
           if (in_array(current_layer.source, ['ImageWMS', 'TileWMS'])) {
             if ('feature_selection' in current_layer && current_layer.feature_selection) {
+              // add geometry attribute to layer properties for selection
+              if('geometry_attribute' in current_layer && current_layer.geometry_attribute) {
+                  layer.setProperties({'geometry_attribute': current_layer.geometry_attribute});
+              }
+              else{
+                  layer.setProperties({'geometry_attribute': null});
+                  console.log('WARNING: geometry_attribute undefined. Unexpected behavior possible.')
+              }
               // Push layer to m_selectable layers to enable selection
               m_selectable_layers.push(layer);
             }
@@ -688,8 +692,6 @@ var TETHYS_MAP_VIEW = (function() {
     m_view_options = $map_element.attr(VIEW_ATTRIBUTE);
     m_disable_base_map = $map_element.attr(DISABLE_BASE_MAP_ATTRIBUTE);
     m_feature_selection_options = $map_element.attr(FEAT_SELECTION_ATTRIBUTE);
-    m_geometry_attribute = $map_view.attr(GEOMETRY_ATTRIBUTE);
-    console.log(m_feature_selection_options);
 
     // Parse JSON
     if (is_defined(m_attribute_table_options)) {
@@ -726,10 +728,6 @@ var TETHYS_MAP_VIEW = (function() {
 
     if (is_defined(m_feature_selection_options)) {
       m_feature_selection_options = JSON.parse(m_feature_selection_options);
-    }
-
-    if (is_defined(m_geometry_attribute)) {
-      m_geometry_attribute = JSON.parse(m_geometry_attribute);
     }
   };
 
@@ -1360,24 +1358,25 @@ var TETHYS_MAP_VIEW = (function() {
     }
 
     for (var i = 0; i < m_selectable_layers.length; i++) {
-      var source, wms_url, url, layer, layer_name;
+      var source, wms_url, url, layer, layer_name, geometry_attribute;
       var bbox, cql_filter;
 
       // Don't select if not visible
       layer = m_selectable_layers[i];
       if (!layer.getVisible()) { continue; }
-
       // Check for undefined source or non-WMS layers before proceeding
       source = layer.getSource();
       if (!(source && 'getGetFeatureInfoUrl' in source)) { continue; }
 
+      //get geometry_attribute from the layer
+      geometry_attribute = layer.getProperties().geometry_attribute;
       // URL Params
       bbox = '{{minx}}%2C{{miny}}%2C{{maxx}}%2C{{maxy}}'
       bbox = bbox.replace('{{minx}}', x - tolerance);
       bbox = bbox.replace('{{miny}}', y - tolerance);
       bbox = bbox.replace('{{maxx}}', x + tolerance);
       bbox = bbox.replace('{{maxy}}', y + tolerance);
-      cql_filter = '&CQL_FILTER=BBOX(' + m_geometry_attribute + '%2C' + bbox + '%2C%27EPSG%3A3857%27)';
+      cql_filter = '&CQL_FILTER=BBOX(' + geometry_attribute + '%2C' + bbox + '%2C%27EPSG%3A3857%27)';
       layer_name = source.getParams().LAYERS;
 
       if (source instanceof ol.source.ImageWMS) {
@@ -1402,7 +1401,6 @@ var TETHYS_MAP_VIEW = (function() {
           + cql_filter
           + '#multiselect:' + multiselect;
       urls.push(url);
-      console.log(m_geometry_attribute);
     }
 
     // Get the features if applicable
