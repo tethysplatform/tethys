@@ -561,8 +561,8 @@ var TETHYS_MAP_VIEW = (function() {
                   layer.setProperties({'geometry_attribute': current_layer.geometry_attribute});
               }
               else{
-                  layer.setProperties({'geometry_attribute': null});
-                  console.log('WARNING: geometry_attribute undefined. Unexpected behavior possible.')
+                  layer.setProperties({'geometry_attribute': "the_geom"});
+                  console.log('WARNING: geometry_attribute undefined. Default value of "the_geom" used.')
               }
               // Push layer to m_selectable layers to enable selection
               m_selectable_layers.push(layer);
