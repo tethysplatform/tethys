@@ -437,6 +437,9 @@ class MVLayer(SecondaryGizmoOptions):
         self.feature_selection = feature_selection
         self.geometry_attribute = geometry_attribute
 
+        #TODO this should be a log
+        if feature_selection and not geometry_attribute:
+            print "WARNING: geometry_attribute not defined -using default value 'the_geom'"
 
 class MVLegendClass(SecondaryGizmoOptions):
     """
