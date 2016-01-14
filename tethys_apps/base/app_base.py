@@ -356,7 +356,6 @@ class TethysAppBase(object):
         Creates an SQLAlchemy engine object for the app and persistent store given.
 
         Args:
-          app_name(string): Name of the app to which the persistent store belongs. More specifically, the app package name.
           persistent_store_name(string): Name of the persistent store for which to retrieve the engine.
 
         Returns:
@@ -423,3 +422,107 @@ class TethysAppBase(object):
         else:
             raise DatabaseError('No persistent store "{0}" for app "{1}". Make sure you register the persistent store in app.py '
                                 'and run "tethys syncstores {1}".'.format(persistent_store_name, app_name))
+
+    @classmethod
+    def create_persistent_store(cls, persistent_store_name, spatial=False):
+        """
+        Creates a new persistent store database for this app.
+
+        Args:
+          persistent_store_name(string): Name of the persistent store that will be created.
+          spatial(bool): Enable spatial extension on the database being created.
+
+        Returns:
+          bool: True if successful.
+
+
+        **Example:**
+
+        ::
+
+            from .app import MyFirstApp
+
+            result = MyFirstApp.create_persistent_store('example_db')
+
+            if result:
+                engine = MyFirstApp.get_persistent_store_engine('example_db')
+        """
+
+        # Get database manager url from the config
+        database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
+        database_manager_name = database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager'
+
+        database_manager_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
+            database_manager_name,
+            database_manager_db['PASSWORD'] if 'PASSWORD' in database_manager_db else 'pass',
+            database_manager_db['HOST'] if 'HOST' in database_manager_db else '127.0.0.1',
+            database_manager_db['PORT'] if 'PORT' in database_manager_db else '5435',
+            database_manager_db['NAME'] if 'NAME' in database_manager_db else 'tethys_db_manager'
+        )
+
+        # Compose db name
+        full_db_name = '_'.join((cls.package, persistent_store_name))
+
+        # 1. Check conflicting database with name
+        engine = create_engine(database_manager_url)
+
+        # Cannot create databases in a transaction: connect and commit to close transaction
+        connection = engine.connect()
+
+        existing_dbs_statement = "SELECT d.datname as name " \
+                                 "FROM pg_catalog.pg_database d " \
+                                 "LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid " \
+                                 "WHERE d.datname = '{0}';".format(full_db_name)
+
+        existing_dbs = connection.execute(existing_dbs_statement)
+        connection.close()
+
+        for _ in existing_dbs:
+            # If we get in here, then there is a database with name that matches the one
+            # we are trying to create. Return false.
+            raise NameError('Database with name "{0}" for app "{1}" already exists.'.format(
+                persistent_store_name,
+                cls.package
+            ))
+
+        # Cannot create databases in a transaction: connect and commit to close transaction
+        create_connection = engine.connect()
+
+        # Create db
+        create_db_statement = '''
+                              CREATE DATABASE {0}
+                              WITH OWNER {1}
+                              TEMPLATE template0
+                              ENCODING 'UTF8'
+                              '''.format(full_db_name, database_manager_name)
+
+        # Close transaction first and then execute
+        create_connection.execute('commit')
+        create_connection.execute(create_db_statement)
+        create_connection.close()
+
+        # 3. Enable PostGIS extension
+        if spatial:
+            # Get URL for Tethys Superuser to enable extensions
+            super_db = settings.TETHYS_DATABASES['tethys_super']
+
+            new_db_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
+                super_db['USER'] if 'USER' in super_db else 'tethys_super',
+                super_db['PASSWORD'] if 'PASSWORD' in super_db else 'pass',
+                super_db['HOST'] if 'HOST' in super_db else '127.0.0.1',
+                super_db['PORT'] if 'PORT' in super_db else '5435',
+                full_db_name
+            )
+
+            # Connect to new database
+            new_db_engine = create_engine(new_db_url)
+            new_db_connection = new_db_engine.connect()
+
+            # Notify user
+            enable_postgis_statement = 'CREATE EXTENSION IF NOT EXISTS postgis'
+
+            # Execute postgis statement
+            new_db_connection.execute(enable_postgis_statement)
+            new_db_connection.close()
+
+        return True
