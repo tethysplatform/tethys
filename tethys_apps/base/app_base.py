@@ -446,8 +446,8 @@ class TethysAppBase(object):
 
             if result:
                 engine = MyFirstApp.get_persistent_store_engine('example_db')
-        """
 
+        """
         # Get database manager url from the config
         database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
         database_manager_name = database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager'
@@ -462,24 +462,9 @@ class TethysAppBase(object):
 
         # Compose db name
         full_db_name = '_'.join((cls.package, persistent_store_name))
-
-        # 1. Check conflicting database with name
         engine = create_engine(database_manager_url)
 
-        # Cannot create databases in a transaction: connect and commit to close transaction
-        connection = engine.connect()
-
-        existing_dbs_statement = "SELECT d.datname as name " \
-                                 "FROM pg_catalog.pg_database d " \
-                                 "LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid " \
-                                 "WHERE d.datname = '{0}';".format(full_db_name)
-
-        existing_dbs = connection.execute(existing_dbs_statement)
-        connection.close()
-
-        for _ in existing_dbs:
-            # If we get in here, then there is a database with name that matches the one
-            # we are trying to create. Return false.
+        if cls.persistent_store_exists(persistent_store_name):
             raise NameError('Database with name "{0}" for app "{1}" already exists.'.format(
                 persistent_store_name,
                 cls.package
@@ -501,7 +486,7 @@ class TethysAppBase(object):
         create_connection.execute(create_db_statement)
         create_connection.close()
 
-        # 3. Enable PostGIS extension
+        # Enable PostGIS extension
         if spatial:
             # Get URL for Tethys Superuser to enable extensions
             super_db = settings.TETHYS_DATABASES['tethys_super']
@@ -526,3 +511,111 @@ class TethysAppBase(object):
             new_db_connection.close()
 
         return True
+
+    @classmethod
+    def list_persistent_stores(cls):
+        """
+        Returns a list of existing persistent stores for this app.
+
+        Returns:
+          list: A list of persistent store names.
+
+
+        **Example:**
+
+        ::
+
+            from .app import MyFirstApp
+
+            persistent_stores = MyFirstApp.list_persistent_stores()
+
+        """
+        # Get database manager url from the config
+        database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
+        database_manager_name = database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager'
+
+        database_manager_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
+            database_manager_name,
+            database_manager_db['PASSWORD'] if 'PASSWORD' in database_manager_db else 'pass',
+            database_manager_db['HOST'] if 'HOST' in database_manager_db else '127.0.0.1',
+            database_manager_db['PORT'] if 'PORT' in database_manager_db else '5435',
+            database_manager_db['NAME'] if 'NAME' in database_manager_db else 'tethys_db_manager'
+        )
+
+        # Check conflicting database with name
+        engine = create_engine(database_manager_url)
+
+        # Cannot create databases in a transaction: connect and commit to close transaction
+        connection = engine.connect()
+
+        existing_dbs_statement = "SELECT d.datname as name " \
+                                 "FROM pg_catalog.pg_database d " \
+                                 "LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid " \
+                                 "WHERE d.datname LIKE '" + cls.package + "_%%' " \
+                                 "ORDER BY 1;"
+
+        existing_dbs = connection.execute(existing_dbs_statement)
+        connection.close()
+
+        persistent_stores = []
+        for existing_db in existing_dbs:
+            persistent_stores.append(existing_db.name.replace(cls.package + '_', ''))
+
+        return persistent_stores
+
+    @classmethod
+    def persistent_store_exists(cls, persistent_store_name):
+        """
+        Returns True if a persistent store with the given name exists for this app.
+
+        Args:
+          persistent_store_name(string): Name of the persistent store that will be created.
+
+        Returns:
+          bool: True if persistent store exists.
+
+
+        **Example:**
+
+        ::
+
+            from .app import MyFirstApp
+
+            result = MyFirstApp.persistent_store_exists('example_db')
+
+            if result:
+                engine = MyFirstApp.get_persistent_store_engine('example_db')
+
+        """
+        # Get database manager url from the config
+        database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
+        database_manager_name = database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager'
+
+        database_manager_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
+            database_manager_name,
+            database_manager_db['PASSWORD'] if 'PASSWORD' in database_manager_db else 'pass',
+            database_manager_db['HOST'] if 'HOST' in database_manager_db else '127.0.0.1',
+            database_manager_db['PORT'] if 'PORT' in database_manager_db else '5435',
+            database_manager_db['NAME'] if 'NAME' in database_manager_db else 'tethys_db_manager'
+        )
+
+        # Compose db name
+        full_db_name = '_'.join((cls.package, persistent_store_name))
+        engine = create_engine(database_manager_url)
+
+        # Cannot create databases in a transaction: connect and commit to close transaction
+        connection = engine.connect()
+
+        existing_dbs_statement = "SELECT d.datname as name " \
+                                 "FROM pg_catalog.pg_database d " \
+                                 "LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid " \
+                                 "WHERE d.datname = '{0}';".format(full_db_name)
+
+        existing_dbs = connection.execute(existing_dbs_statement)
+        connection.close()
+
+        for existing_db in existing_dbs:
+            if existing_db.name == full_db_name:
+                return True
+
+        return False
