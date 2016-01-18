@@ -420,8 +420,9 @@ class TethysAppBase(object):
             return create_engine(persistent_store_url)
 
         else:
-            raise DatabaseError('No persistent store "{0}" for app "{1}". Make sure you register the persistent store in app.py '
-                                'and run "tethys syncstores {1}".'.format(persistent_store_name, app_name))
+            print('WARNING: No persistent store "{0}" for app "{1}". Make sure you register the persistent store in app.py '
+                  'and run "tethys syncstores {1}".'.format(persistent_store_name, app_name))
+            return None
 
     @classmethod
     def create_persistent_store(cls, persistent_store_name, spatial=False):
