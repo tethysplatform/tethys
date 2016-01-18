@@ -21,7 +21,8 @@ var TETHYS_APPS_LIBRARY = (function() {
  	    msnry,              // Global masonry object
  	    app_list_container, // Container with the app items in it
  	    apps_library_url,    // App library url
- 	    app_item_selector;  // App item selector
+ 	    app_item_selector,  // App item selector
+		app_help_icon;  // App help icon selector
 
 	/************************************************************************
  	*                    PRIVATE FUNCTION DECLARATIONS
@@ -156,9 +157,37 @@ var TETHYS_APPS_LIBRARY = (function() {
 	    app_list_container = document.getElementById('app-list');
 	    app_item_selector = '.app-container';
 	    apps_library_url = '/apps/';
+		app_help_icon = $('.app-help-icon');
 
 	    // Apply app theme effects
 	    //app_theme_effects();
+
+		// Apply help-icon event to apps depending on device (touchscreen or not)
+		if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) {
+			app_help_icon.on('click', function(e) {
+				e.stopPropagation();
+				var app_help_info = this.nextElementSibling;
+				$(app_help_info)
+					.removeClass('hidden')
+					.next().removeClass('hidden')
+					.on('click', function(e) {
+						e.stopPropagation();
+						$(app_help_info).addClass('hidden');
+						$(this).addClass('hidden');
+					})
+			});
+		} else {
+			app_help_icon.on('mouseenter', function() {
+				var app_help_info = this.nextElementSibling;
+				$(app_help_info)
+					.removeClass('hidden')
+					.on('mouseleave', function () {
+						$(this).addClass('hidden');
+					});
+			});
+		}
+
+
 
 	    // The Tethys apps library page uses masonry.js to accomplish the Pinterest-like stacking of the app icons
 	    // Initialize the msnry object if there are any apps in the list.
