@@ -28,7 +28,7 @@ from abc import abstractmethod
 
 from tethyscluster import config as tethyscluster_config
 from tethyscluster.sshutils import get_certificate_fingerprint
-from condorpy import Job, Templates
+from condorpy import Job, Templates, logger as condorpy_logger
 
 
 class SettingsCategory(models.Model):
@@ -415,6 +415,9 @@ class BasicJob(TethysJob):
         pass
 
 
+condorpy_logger.activate_console_logging()
+
+
 class CondorJob(TethysJob):
     """
     Condor job type
@@ -455,6 +458,7 @@ class CondorJob(TethysJob):
 
     @property
     def condorpy_job(self):
+        print 'Attributes: ', self.attributes
         if not hasattr(self, '_condorpy_job'):
             if 'executable' in self.attributes.keys():
                 del self.attributes['executable']
@@ -538,10 +542,12 @@ class CondorJob(TethysJob):
         self.condorpy_job.get(attribute)
 
     def set_attribute(self, attribute, value):
-        self.condorpy_job.set(attribute, value)
+        setattr(self.condorpy_job, attribute, value)
 
     def _update_attributes(self):
         self.attributes = self.condorpy_job._attributes
+        self.remote_input_files = self.condorpy_job.remote_input_files
+        self.remote_id = self.condorpy_job._remote_id
 
 @receiver(pre_save, sender=CondorJob)
 def condor_job_pre_save(sender, instance, raw, using, update_fields, **kwargs):
@@ -550,6 +556,7 @@ def condor_job_pre_save(sender, instance, raw, using, update_fields, **kwargs):
 @receiver(pre_delete, sender=CondorJob)
 def condor_job_pre_delete(sender, instance, using, **kwargs):
     try:
+        instance.condorpy_job.close_remote()
         shutil.rmtree(instance.initial_dir)
     except Exception, e:
         print e
