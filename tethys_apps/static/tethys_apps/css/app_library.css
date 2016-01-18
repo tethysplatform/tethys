@@ -158,6 +158,41 @@ body {
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.15);
 }
+#app-list .app-container .app-help-icon {
+  position: absolute;
+  bottom: 5px;
+  right: 0;
+  box-sizing: content-box;
+  padding: 5px;
+  height: 15px;
+  width: 15px;
+}
+#app-list .app-container .app-help-icon img {
+  height: 100%;
+  width: 100%;
+}
+#app-list .app-container .app-help-close {
+  font-weight: bold;
+  color: #666666;
+  font-size: 16px;
+  position: absolute;
+  top: 0;
+  right: 2px;
+  padding: 5px;
+}
+#app-list .app-container .app-help-info {
+  background-color: white;
+  color: #666666;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  padding: 15px;
+}
+#app-list .app-container .app-help-info p {
+  font-size: 14px;
+}
 #app-list .app-container:hover {
   box-shadow: 0px 0 10px 0 rgba(0, 0, 0, 0.1);
   text-decoration: none;
