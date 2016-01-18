@@ -36,6 +36,13 @@
               <span>{{ app.name }}</span>
             </div>
             <div class="color-effect" data-app-theme-color="{{ app.color }}"></div>
+            <div class="app-help-icon">
+                <img src="{% static 'tethys_apps/images/question-mark.svg' %}"/>
+            </div>
+            <div class="app-help-info hidden">
+                <p>{% if app.description %}{{ app.description }}{% else %}No description available{% endif %}</p>
+            </div>
+            <div class="app-help-close hidden">X</div>
           </a>
         {% endfor %}
       </div>
