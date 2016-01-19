@@ -2,7 +2,7 @@
 What's New
 **********
 
-**Last Updated:** December 15, 2015
+**Last Updated:** January 19, 2016
 
 Refer to this article for information about each new release of Tethys Platform.
 
@@ -46,7 +46,7 @@ Spatial Dataset Services
 See: :doc:`./tethys_sdk/spatial_dataset_service/geoserver_reference`
 
 App Feedback
-----------------
+------------
 
 * Places button on all app pages that activates a feedback form
 * Sends app-users comments to specified developer emails
@@ -75,6 +75,14 @@ Social Authentication
 * Support for HydroShare added
 
 See: :doc:`./tethys_portal/social_auth`
+
+Persistent Stores
+-----------------
+
+* Persistent stores can now be created dynamically (at runtime)
+* Helper methods to list persistent stores for the app and check whether a store exists.
+
+See: :dock:`./tethys_sdk/persistent_store`
 
 Bugs
 ----
