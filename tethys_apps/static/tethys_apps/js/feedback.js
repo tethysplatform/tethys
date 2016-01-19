@@ -77,8 +77,8 @@ $(document).ready(function(){
                                "</div>";
 
     var betamodalformError = "<div class='betaFormError' id='betamodalformError'>"+
-                               "<h6>Feedback Not Submitted Due To Error</h6>"+
-                               "<h6>Please Contact App Admin</h6>"+
+                               "<h6>We're sorry, but your feedback has not been received due to an error. "+
+                               "Please, try again later.</h6>"+
                              "</div>";
 
   $("body").append('<button id="beta-feedback-button">Feedback</button>');
@@ -86,7 +86,7 @@ $(document).ready(function(){
   //Make the feedback form on click of the feedback button
   $("#beta-feedback-button").on("click", function() {
     $("body").append('<div id="darkBackground"></div>');
-    $("body").append('<div  id="beta-feedback-modal"></div>');
+    $("body").append('<div id="beta-feedback-modal-wrapper"><div id="beta-feedback-modal"></div></div>');
     $("#beta-feedback-modal").append(betamodalform);
 
     //Using Ajax, validate the form, submit, and redirect to home page
@@ -99,21 +99,27 @@ $(document).ready(function(){
           success: function(data) {
             $("#uploadBetaFeedback").remove();
             $("#beta-feedback-modal").append(betamodalformSuccess);
-            setTimeout(function () {$("#beta-feedback-modal").remove();
-            $("#darkBackground").remove(); }, 2000);
+
+            setTimeout(function () {
+              $("#beta-feedback-modal-wrapper").remove();
+              $("#darkBackground").remove();
+            }, 2000);
           },
           error: function(data) {
             $("#uploadBetaFeedback").remove();
             $("#beta-feedback-modal").append(betamodalformError);
-            setTimeout(function () {$("#beta-feedback-modal").remove();
-            $("#darkBackground").remove(); }, 3000);
+
+            setTimeout(function () {
+              $("#beta-feedback-modal-wrapper").remove();
+              $("#darkBackground").remove();
+            }, 4000);
           }
         });
     });
 
     $("#cancelBetaForm").on("click", function() {
         $("#darkBackground").remove();
-        $("#beta-feedback-modal").remove();
+        $("#beta-feedback-modal-wrapper").remove();
     });
   });
 });
