@@ -14,7 +14,7 @@ from tethys_apps.views import library, send_beta_feedback_email
 
 urlpatterns = [
     url(r'^$', library, name='app_library'),
-    url(r'^send-beta-feedback/$', send_beta_feedback_email, name='send_beta_feedback'),
+    # url(r'^send-beta-feedback/$', send_beta_feedback_email, name='send_beta_feedback'),
 ]
 
 # Append the app urls urlpatterns
