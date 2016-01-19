@@ -164,12 +164,8 @@ body {
   right: 0;
   box-sizing: content-box;
   padding: 5px;
-  height: 15px;
-  width: 15px;
-}
-#app-list .app-container .app-help-icon img {
-  height: 100%;
-  width: 100%;
+  height: 10px;
+  width: 12px;
 }
 #app-list .app-container .app-help-close {
   font-weight: bold;
@@ -181,6 +177,7 @@ body {
   padding: 5px;
 }
 #app-list .app-container .app-help-info {
+  overflow-y: scroll;
   background-color: white;
   color: #666666;
   position: absolute;
