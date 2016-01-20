@@ -76,13 +76,22 @@ Social Authentication
 
 See: :doc:`./tethys_portal/social_auth`
 
-Persistent Stores
------------------
+Dynamic Persistent Stores
+-------------------------
 
 * Persistent stores can now be created dynamically (at runtime)
 * Helper methods to list persistent stores for the app and check whether a store exists.
 
-See: :dock:`./tethys_sdk/persistent_store`
+See: :doc:`./tethys_sdk/persistent_store`
+
+App Descriptions
+----------------
+
+* Apps now feature optional descriptions.
+* An information icon appears on the app icon when descriptions are available.
+* When the information icon is clicked on the description is shown.
+
+See: :doc:`./tethys_sdk/app_class`
 
 Bugs
 ----
