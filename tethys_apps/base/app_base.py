@@ -13,7 +13,6 @@ import sys
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
 from django.conf import settings
-from django.db import DatabaseError
 
 from sqlalchemy import create_engine
 
@@ -33,6 +32,7 @@ class TethysAppBase(object):
       package (string): Name of the app package.
       root_url (string): Root URL of the app.
       color (string): App theme color as RGB hexadecimal.
+      description (string): Description of the app.
       enable_feedback (boolean): Shows feedback button on all app pages.
       feedback_emails (list): A list of emails corresponding to where submitted feedback forms are sent.
 
@@ -43,6 +43,9 @@ class TethysAppBase(object):
     package = ''
     root_url = ''
     color = ''
+    description = ''
+    enable_feedback = False
+    feedback_emails = []
 
     def __repr__(self):
         """
