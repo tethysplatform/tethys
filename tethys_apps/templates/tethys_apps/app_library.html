@@ -8,12 +8,12 @@
   {{ block.super }}
   <link href="{% static 'tethys_apps/css/app_library.css' %}" rel="stylesheet" />
   <style>
-  body {
-    background: {{ site_globals.background_color|default:'#efefef' }};
-  }
-  .tethys-secondary-header .secondary-title-wrapper .secondary-title {
-    color: {{ site_globals.primary_text_color|default:'#ffffff' }};
-  }
+    body {
+      background: {{ site_globals.background_color|default:'#efefef' }};
+    }
+    .tethys-secondary-header .secondary-title-wrapper .secondary-title {
+      color: {{ site_globals.primary_text_color|default:'#ffffff' }};
+    }
   </style>
 {% endblock %}
 
