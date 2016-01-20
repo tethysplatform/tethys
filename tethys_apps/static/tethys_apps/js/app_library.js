@@ -164,25 +164,28 @@ var TETHYS_APPS_LIBRARY = (function() {
 		$('.app-help-info>p').each(function() {
 			if ($(this).text() != '') {
 				if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) {
-					$($(this).parent().prev().children()[0]).on('click', function (e) {
+					$(this).parent().prev().on('click', function (e) {
 						e.stopPropagation();
-						var app_help_info = this.nextElementSibling;
-						$(app_help_info)
+						$(this).next()
 							.removeClass('hidden')
-							.next().removeClass('hidden')
-							.on('click', function (e) {
-								e.stopPropagation();
-								$(app_help_info).addClass('hidden');
-								$(this).addClass('hidden');
-							})
+							.next().removeClass('hidden');
+					});
+					$(this).parent().next().on('click', function (e) {
+						e.stopPropagation();
+						$(this).addClass('hidden');
+						$(this).prev().addClass('hidden');
 					});
 				} else {
-					$($(this).parent().prev().children()[0]).on('mouseenter', function () {
+					$($(this).parent().prev().children([0])).on('mouseenter', function (e) {
+						e.stopPropagation();
 						$(this).parent().next()
-							.removeClass('hidden')
-							.on('mouseleave', function () {
-								$(this).addClass('hidden');
-							});
+							.removeClass('hidden');
+					});
+					$(this).parent().on('mouseleave', function (e) {
+						e.stopPropagation();
+						$(this)
+							.scrollTop(0)
+							.addClass('hidden')
 					});
 				}
 			} else {
