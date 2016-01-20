@@ -419,14 +419,12 @@ var TETHYS_MAP_VIEW = (function() {
             layer, Source, current_layer_layer_options;
 
         current_layer = m_layers_options[i];
-
         // Extract layer_options
         if ('layer_options' in current_layer && current_layer.layer_options) {
           current_layer_layer_options = current_layer.layer_options;
         } else {
           current_layer_layer_options = {};
         }
-
         // Tile layer case
         if (in_array(current_layer.source, TILE_SOURCES)) {
           var resolutions, source_options, tile_grid;
@@ -558,6 +556,14 @@ var TETHYS_MAP_VIEW = (function() {
           // Enable feature selection layers
           if (in_array(current_layer.source, ['ImageWMS', 'TileWMS'])) {
             if ('feature_selection' in current_layer && current_layer.feature_selection) {
+              // add geometry attribute to layer properties for selection
+              if('geometry_attribute' in current_layer && current_layer.geometry_attribute) {
+                  layer.setProperties({'geometry_attribute': current_layer.geometry_attribute});
+              }
+              else{
+                  layer.setProperties({'geometry_attribute': "the_geom"});
+                  console.log('WARNING: geometry_attribute undefined. Default value of "the_geom" used.')
+              }
               // Push layer to m_selectable layers to enable selection
               m_selectable_layers.push(layer);
             }
@@ -1352,24 +1358,25 @@ var TETHYS_MAP_VIEW = (function() {
     }
 
     for (var i = 0; i < m_selectable_layers.length; i++) {
-      var source, wms_url, url, layer, layer_name;
+      var source, wms_url, url, layer, layer_name, geometry_attribute;
       var bbox, cql_filter;
 
       // Don't select if not visible
       layer = m_selectable_layers[i];
       if (!layer.getVisible()) { continue; }
-
       // Check for undefined source or non-WMS layers before proceeding
       source = layer.getSource();
       if (!(source && 'getGetFeatureInfoUrl' in source)) { continue; }
 
+      //get geometry_attribute from the layer
+      geometry_attribute = layer.getProperties().geometry_attribute;
       // URL Params
       bbox = '{{minx}}%2C{{miny}}%2C{{maxx}}%2C{{maxy}}'
       bbox = bbox.replace('{{minx}}', x - tolerance);
       bbox = bbox.replace('{{miny}}', y - tolerance);
       bbox = bbox.replace('{{maxx}}', x + tolerance);
       bbox = bbox.replace('{{maxy}}', y + tolerance);
-      cql_filter = '&CQL_FILTER=BBOX(geometry%2C' + bbox + '%2C%27EPSG%3A3857%27)';
+      cql_filter = '&CQL_FILTER=BBOX(' + geometry_attribute + '%2C' + bbox + '%2C%27EPSG%3A3857%27)';
       layer_name = source.getParams().LAYERS;
 
       if (source instanceof ol.source.ImageWMS) {
