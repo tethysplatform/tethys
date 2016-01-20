@@ -293,7 +293,8 @@ class MVLayer(SecondaryGizmoOptions):
         options (dict, required): A dictionary representation of the OpenLayers options object for ol.source.
         legend_title (str, required): The human readable name of the layer that will be displayed in the legend.
         layer_options (dict): A dictionary representation of the OpenLayers options object for ol.layer.
-        feature_selection (bool): Set to True to enable feature selection on this layer. Only ImageWMS and TileWMS sources are supported. Defaults to False.
+        feature_selection (bool): Set to True to enable feature selection on this layer. Defaults to False.
+        geometry_attribute (str): The name of the attribute in the shapefile that describes the geometry
         legend_classes (list): A list of MVLegendClass objects.
         legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
@@ -420,7 +421,7 @@ class MVLayer(SecondaryGizmoOptions):
     """
 
     def __init__(self, source, options, legend_title, layer_options=None, legend_classes=None, legend_extent=None,
-                 legend_extent_projection='EPSG:4326', feature_selection=False):
+                 legend_extent_projection='EPSG:4326', feature_selection=False, geometry_attribute=None):
         """
         Constructor
         """
@@ -434,7 +435,11 @@ class MVLayer(SecondaryGizmoOptions):
         self.legend_extent = legend_extent
         self.legend_extent_projection = legend_extent_projection
         self.feature_selection = feature_selection
+        self.geometry_attribute = geometry_attribute
 
+        #TODO this should be a log
+        if feature_selection and not geometry_attribute:
+            print "WARNING: geometry_attribute not defined -using default value 'the_geom'"
 
 class MVLegendClass(SecondaryGizmoOptions):
     """

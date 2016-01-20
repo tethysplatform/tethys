@@ -13,7 +13,6 @@ import sys
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
 from django.conf import settings
-from django.db import DatabaseError
 
 from sqlalchemy import create_engine
 
@@ -33,6 +32,7 @@ class TethysAppBase(object):
       package (string): Name of the app package.
       root_url (string): Root URL of the app.
       color (string): App theme color as RGB hexadecimal.
+      description (string): Description of the app.
       enable_feedback (boolean): Shows feedback button on all app pages.
       feedback_emails (list): A list of emails corresponding to where submitted feedback forms are sent.
 
@@ -43,6 +43,9 @@ class TethysAppBase(object):
     package = ''
     root_url = ''
     color = ''
+    description = ''
+    enable_feedback = False
+    feedback_emails = []
 
     def __repr__(self):
         """
@@ -356,7 +359,6 @@ class TethysAppBase(object):
         Creates an SQLAlchemy engine object for the app and persistent store given.
 
         Args:
-          app_name(string): Name of the app to which the persistent store belongs. More specifically, the app package name.
           persistent_store_name(string): Name of the persistent store for which to retrieve the engine.
 
         Returns:
@@ -421,5 +423,203 @@ class TethysAppBase(object):
             return create_engine(persistent_store_url)
 
         else:
-            raise DatabaseError('No persistent store "{0}" for app "{1}". Make sure you register the persistent store in app.py '
-                                'and run "tethys syncstores {1}".'.format(persistent_store_name, app_name))
+            print('WARNING: No persistent store "{0}" for app "{1}". Make sure you register the persistent store in app.py '
+                  'and run "tethys syncstores {1}".'.format(persistent_store_name, app_name))
+            return None
+
+    @classmethod
+    def create_persistent_store(cls, persistent_store_name, spatial=False):
+        """
+        Creates a new persistent store database for this app.
+
+        Args:
+          persistent_store_name(string): Name of the persistent store that will be created.
+          spatial(bool): Enable spatial extension on the database being created.
+
+        Returns:
+          bool: True if successful.
+
+
+        **Example:**
+
+        ::
+
+            from .app import MyFirstApp
+
+            result = MyFirstApp.create_persistent_store('example_db')
+
+            if result:
+                engine = MyFirstApp.get_persistent_store_engine('example_db')
+
+        """
+        # Get database manager url from the config
+        database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
+        database_manager_name = database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager'
+
+        database_manager_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
+            database_manager_name,
+            database_manager_db['PASSWORD'] if 'PASSWORD' in database_manager_db else 'pass',
+            database_manager_db['HOST'] if 'HOST' in database_manager_db else '127.0.0.1',
+            database_manager_db['PORT'] if 'PORT' in database_manager_db else '5435',
+            database_manager_db['NAME'] if 'NAME' in database_manager_db else 'tethys_db_manager'
+        )
+
+        # Compose db name
+        full_db_name = '_'.join((cls.package, persistent_store_name))
+        engine = create_engine(database_manager_url)
+
+        if cls.persistent_store_exists(persistent_store_name):
+            raise NameError('Database with name "{0}" for app "{1}" already exists.'.format(
+                persistent_store_name,
+                cls.package
+            ))
+
+        # Cannot create databases in a transaction: connect and commit to close transaction
+        create_connection = engine.connect()
+
+        # Create db
+        create_db_statement = '''
+                              CREATE DATABASE {0}
+                              WITH OWNER {1}
+                              TEMPLATE template0
+                              ENCODING 'UTF8'
+                              '''.format(full_db_name, database_manager_name)
+
+        # Close transaction first and then execute
+        create_connection.execute('commit')
+        create_connection.execute(create_db_statement)
+        create_connection.close()
+
+        # Enable PostGIS extension
+        if spatial:
+            # Get URL for Tethys Superuser to enable extensions
+            super_db = settings.TETHYS_DATABASES['tethys_super']
+
+            new_db_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
+                super_db['USER'] if 'USER' in super_db else 'tethys_super',
+                super_db['PASSWORD'] if 'PASSWORD' in super_db else 'pass',
+                super_db['HOST'] if 'HOST' in super_db else '127.0.0.1',
+                super_db['PORT'] if 'PORT' in super_db else '5435',
+                full_db_name
+            )
+
+            # Connect to new database
+            new_db_engine = create_engine(new_db_url)
+            new_db_connection = new_db_engine.connect()
+
+            # Notify user
+            enable_postgis_statement = 'CREATE EXTENSION IF NOT EXISTS postgis'
+
+            # Execute postgis statement
+            new_db_connection.execute(enable_postgis_statement)
+            new_db_connection.close()
+
+        return True
+
+    @classmethod
+    def list_persistent_stores(cls):
+        """
+        Returns a list of existing persistent stores for this app.
+
+        Returns:
+          list: A list of persistent store names.
+
+
+        **Example:**
+
+        ::
+
+            from .app import MyFirstApp
+
+            persistent_stores = MyFirstApp.list_persistent_stores()
+
+        """
+        # Get database manager url from the config
+        database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
+        database_manager_name = database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager'
+
+        database_manager_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
+            database_manager_name,
+            database_manager_db['PASSWORD'] if 'PASSWORD' in database_manager_db else 'pass',
+            database_manager_db['HOST'] if 'HOST' in database_manager_db else '127.0.0.1',
+            database_manager_db['PORT'] if 'PORT' in database_manager_db else '5435',
+            database_manager_db['NAME'] if 'NAME' in database_manager_db else 'tethys_db_manager'
+        )
+
+        # Check conflicting database with name
+        engine = create_engine(database_manager_url)
+
+        # Cannot create databases in a transaction: connect and commit to close transaction
+        connection = engine.connect()
+
+        existing_dbs_statement = "SELECT d.datname as name " \
+                                 "FROM pg_catalog.pg_database d " \
+                                 "LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid " \
+                                 "WHERE d.datname LIKE '" + cls.package + "_%%' " \
+                                 "ORDER BY 1;"
+
+        existing_dbs = connection.execute(existing_dbs_statement)
+        connection.close()
+
+        persistent_stores = []
+        for existing_db in existing_dbs:
+            persistent_stores.append(existing_db.name.replace(cls.package + '_', ''))
+
+        return persistent_stores
+
+    @classmethod
+    def persistent_store_exists(cls, persistent_store_name):
+        """
+        Returns True if a persistent store with the given name exists for this app.
+
+        Args:
+          persistent_store_name(string): Name of the persistent store that will be created.
+
+        Returns:
+          bool: True if persistent store exists.
+
+
+        **Example:**
+
+        ::
+
+            from .app import MyFirstApp
+
+            result = MyFirstApp.persistent_store_exists('example_db')
+
+            if result:
+                engine = MyFirstApp.get_persistent_store_engine('example_db')
+
+        """
+        # Get database manager url from the config
+        database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
+        database_manager_name = database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager'
+
+        database_manager_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
+            database_manager_name,
+            database_manager_db['PASSWORD'] if 'PASSWORD' in database_manager_db else 'pass',
+            database_manager_db['HOST'] if 'HOST' in database_manager_db else '127.0.0.1',
+            database_manager_db['PORT'] if 'PORT' in database_manager_db else '5435',
+            database_manager_db['NAME'] if 'NAME' in database_manager_db else 'tethys_db_manager'
+        )
+
+        # Compose db name
+        full_db_name = '_'.join((cls.package, persistent_store_name))
+        engine = create_engine(database_manager_url)
+
+        # Cannot create databases in a transaction: connect and commit to close transaction
+        connection = engine.connect()
+
+        existing_dbs_statement = "SELECT d.datname as name " \
+                                 "FROM pg_catalog.pg_database d " \
+                                 "LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid " \
+                                 "WHERE d.datname = '{0}';".format(full_db_name)
+
+        existing_dbs = connection.execute(existing_dbs_statement)
+        connection.close()
+
+        for existing_db in existing_dbs:
+            if existing_db.name == full_db_name:
+                return True
+
+        return False

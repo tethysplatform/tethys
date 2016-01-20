@@ -2,7 +2,7 @@
 Persistent Stores API
 *********************
 
-**Last Updated:** November 12, 2014
+**Last Updated:** January 19, 2016
 
 
 The Persistent Store API streamlines the use of SQL databases in Tethys apps. Using this API, you can provision up to 5 SQL databases for your app. The databases that will be created are `PostgreSQL <http://www.postgresql.org/>`_ databases. Currently, no other databases are supported.
@@ -190,6 +190,11 @@ Persistent store management is handled via the :command:`syncstores` command pro
 This command would create all the non-existent persistent stores that are registered for ``my_first_app`` and run the initialization functions for them. This is the most basic usage of the :command:`syncstores` command. A detailed description of the :command:`syncstores` command can be found in the :doc:`./tethys_cli` documentation.
 
 
+Dynamic Persistent Store Provisioning
+=====================================
+
+As of Tethys Platform 1.3.0, three methods were added to the app class that allow apps to create persistent stores at run time, list existing persistent stores, and check if a given persistent store exists. See the API documentation below for details.
+
 API Documentation
 =================
 
@@ -197,6 +202,12 @@ API Documentation
 .. automethod:: tethys_sdk.base.TethysAppBase.get_persistent_store_engine
 
 .. automethod:: tethys_sdk.base.TethysAppBase.persistent_stores
+
+.. automethod:: tethys_sdk.base.TethysAppBase.create_persistent_store
+
+.. automethod:: tethys_sdk.base.TethysAppBase.list_persistent_stores
+
+.. automethod:: tethys_sdk.base.TethysAppBase.persistent_store_exists
 
 .. autoclass:: tethys_sdk.stores.PersistentStore
 
