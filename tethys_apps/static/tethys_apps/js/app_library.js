@@ -164,13 +164,13 @@ var TETHYS_APPS_LIBRARY = (function() {
 		$('.app-help-info>p').each(function() {
 			if ($(this).text() != '') {
 				if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) {
-					$(this).parent().prev().on('click', function (e) {
+					$(this).parent().prev().on('tap', function (e) {
 						e.stopPropagation();
 						$(this).next()
 							.removeClass('hidden')
 							.next().removeClass('hidden');
 					});
-					$(this).parent().next().on('click', function (e) {
+					$(this).parent().next().on('tap', function (e) {
 						e.stopPropagation();
 						$(this).addClass('hidden');
 						$(this).prev().addClass('hidden');
