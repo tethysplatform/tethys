@@ -54,14 +54,15 @@ def handoff(request, app_name, handler_name):
 
     return manager.handoff(request, handler_name, app_name, **request.GET.dict())
 
+
 @login_required()
 def send_beta_feedback_email(request):
     """
     Processes and send the beta form data submitted by beta testers
     """
-
     post = request.POST
-    #email_users = User.objects.filter(is_staff=True)
+    app = None
+
     # Setup variables
     harvester = SingletonAppHarvester()
     apps_root = 'apps'
@@ -74,42 +75,49 @@ def send_beta_feedback_email(request):
     if apps_root in url_parts:
         # The app root_url is the path item following (+1) the apps_root item
         app_root_url_index = url_parts.index(apps_root) + 1
-        print app_root_url_index
         app_root_url = url_parts[app_root_url_index]
-        print app_root_url
 
         # Get list of app dictionaries from the harvester
         apps = harvester.apps
-        print apps
 
         # If a match can be made, return the app dictionary as part of the context
-        for app in apps:
-            if app.root_url == app_root_url:
-                if hasattr(app, 'feedback_emails'):
-                    email_users = app.feedback_emails
-                else:
-                    json = {'error': 'feedback_emails not defined in app.py'}
-                    return JsonResponse(json)
+        for a in apps:
+            if a.root_url == app_root_url:
+                app = a
 
-    subject = 'User-Feedback'
-
-    username =  post.get('betaUser')
-    local_user_time =  post.get('betaSubmitLocalTime')
-    UTC_offset_in_hours =  post.get('betaSubmitUTCOffset')
-    app_url =  post.get('betaFormUrl')
-    comments =  post.get('betaUserComments')
-
-    message = 'User: {0}\n'\
-            'Local User Time: {1}\n'\
-            'UTC Offset in Hours: {2}\n'\
-            'App URL: {3}\n'\
-            'Comments: {4}'.format(username,local_user_time,UTC_offset_in_hours,app_url,comments)
-
-    try:
-        send_mail(subject,message, from_email=None,recipient_list=email_users)
-    except:
-        json = {'error': 'Failed to send emails'}
+    if app is None or not hasattr(app, 'feedback_emails'):
+        json = {'success': False,
+                'error': 'App not found or feedback_emails not defined in app.py'}
         return JsonResponse(json)
 
-    json = {'success': 'Emails sent to specified developers'}
+    # Formulate email
+    subject = 'User Feedback for {0}'.format(app.name)
+
+    message = 'User: {0}\n'\
+              'User Local Time: {1}\n'\
+              'UTC Offset in Hours: {2}\n'\
+              'App URL: {3}\n'\
+              'User Agent: {4}\n'\
+              'Vendor: {5}\n'\
+              'Comments:\n' \
+              '{6}'.\
+        format(
+            post.get('betaUser'),
+            post.get('betaSubmitLocalTime'),
+            post.get('betaSubmitUTCOffset'),
+            post.get('betaFormUrl'),
+            post.get('betaFormUserAgent'),
+            post.get('betaFormVendor'),
+            post.get('betaUserComments')
+        )
+
+    try:
+        send_mail(subject, message, from_email=None, recipient_list=app.feedback_emails)
+    except Exception as e:
+        json = {'success': False,
+                'error': 'Failed to send email: ' + e.message}
+        return JsonResponse(json)
+
+    json = {'success': True,
+            'result': 'Emails sent to specified developers'}
     return JsonResponse(json)

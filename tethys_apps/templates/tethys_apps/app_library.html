@@ -36,6 +36,13 @@
               <span>{{ app.name }}</span>
             </div>
             <div class="color-effect" data-app-theme-color="{{ app.color }}"></div>
+            <div class="app-help-icon">
+                <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+            </div>
+            <div class="app-help-info hidden">
+                <p>{% if app.description %}{{ app.description }}{% else %}{% endif %}</p>
+            </div>
+            <div class="app-help-close hidden">X</div>
           </a>
         {% endfor %}
       </div>
