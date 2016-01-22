@@ -42,7 +42,7 @@ b. Add your user to the Docker group. This is necessary to use the Tethys Docker
 
     $ sudo gpasswd -a ${USER} docker
     $ sudo service docker restart
-    $ newgrp
+    $ gnome-session-quit --logout
 
 c. Select **log out** and then **log back in** to make the changes take effect.
 
