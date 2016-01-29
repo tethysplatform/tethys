@@ -14,7 +14,7 @@ The Tethys Compute settings in site admin allows an administrator to manage comp
 
 Clusters
 --------
-A cluster is a group of virtual machines (VMs) that are configured with HTCondor so that they provided a distributed computing environment. Each cluster is made up of a master node and zero to many worker nodes. The master node is responsible for assigning jobs to the worker nodes based on their availability and capability. Tethys Platform uses a Python module called `TethysCluster <http://ci-water.github.io/TethysCluster/>`_ to provision and manage clusters using commercial clouds. TethysCluster enables provisioning clusters using either Amazon Web Services (AWS) or Microsoft Azure.
+A cluster is a group of virtual machines (VMs) that are configured with HTCondor so that they provided a distributed computing environment. Each cluster is made up of a master node and zero to many worker nodes. The master node is responsible for assigning jobs to the worker nodes based on their availability and capability. Tethys Platform uses a Python module called `TethysCluster <http://www.tethysplatform.org/TethysCluster/>`_ to provision and manage clusters using commercial clouds. TethysCluster enables provisioning clusters using either Amazon Web Services (AWS) or Microsoft Azure.
 
 When creating a new cluster there are only two required settings: 'name' and 'size'. The name must be unique among all of the clusters for a given cloud account. Therefore, if the same account credentials are used for two separate instances of Tethys Portal then the the two Tethys Portals may not both have a cluster with the same name. The size is the number of VMs the cluster will contain. The size may be changed after the cluster is created.
 
