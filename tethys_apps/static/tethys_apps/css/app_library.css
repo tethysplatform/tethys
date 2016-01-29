@@ -173,7 +173,7 @@ body {
   width: 25px;
 }
 #app-list .app-container .app-help-info {
-  overflow-y: scroll;
+  overflow-y: auto;
   background-color: white;
   color: #666666;
   font-size: 14px;
