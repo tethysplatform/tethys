@@ -16,6 +16,8 @@ from django.core.mail import send_mail
 from tethys_apps.app_harvester import SingletonAppHarvester
 from tethys_apps.base.app_base import TethysAppBase
 
+from tethys_compute.models import TethysJob
+
 
 @login_required()
 def library(request):
@@ -120,4 +122,17 @@ def send_beta_feedback_email(request):
 
     json = {'success': True,
             'result': 'Emails sent to specified developers'}
+    return JsonResponse(json)
+
+def update_job_status(request, job_id):
+    """
+    Callback endpoint for jobs to update status.
+    """
+    try:
+        job = TethysJob.objects.filter(id=job_id)[0]
+        job.status
+        json = {'success': True}
+    except Exception, e:
+        json = {'success': False}
+
     return JsonResponse(json)

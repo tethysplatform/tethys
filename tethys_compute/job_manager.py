@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from django.core.urlresolvers import reverse
 from tethys_compute.models import TethysJob, CondorJob, BasicJob
 import re
 
@@ -69,6 +70,14 @@ class JobManager(object):
                 return None
 
             return job
+
+    def get_job_status_callback_url(self, request, job_id):
+        """
+        Get the absolute url to call to update job status
+        """
+        relative_uri =  reverse('update_job_status', kwargs={'job_id': job_id})
+        absolute_uri = request.build_absolute_uri(relative_uri)
+        return absolute_uri
 
     def _replace_workspaces(self, parameters, user_workspace):
         """
