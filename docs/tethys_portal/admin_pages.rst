@@ -37,4 +37,9 @@ The administrator pages provide a simple mechanism for linking to the other serv
 Manage Computing Resources
 ==========================
 
-Manage the computing resources of Tethys Portal using the ``Tethys Compute`` admin pages. Powered, by TethysCluster <http://www.tethysplatform.org/TethysCluster/>`_, these pages allow Tethys Portal administrators to spin up clusters of computing resources on either the Amazon or Microsoft Azure commercial clouds. These computational nodes will be made available to apps that are installed in your Tethys Portal. For more detailed information on the computing capabilities of Tethys Platform, refer to the :doc:`../tethys_sdk/cloud_computing` documentation.
+Computing resources can be managed using the ``Tethys Compute`` admin pages. Powered, by TethysCluster <http://www.tethysplatform.org/TethysCluster/>`_, these pages allow Tethys Portal administrators to spin up clusters of computing resources on either the Amazon or Microsoft Azure commercial clouds, and link local computing clusters that are managed with HTCondor. These computational These computational resources are accessed in apps through the :doc:`../tethys_sdk/jobs` and the :doc:`../tethys_sdk/compute`. For more detailed documentation refer to the links below.
+
+.. toctree::
+   :maxdepth: 2
+
+   tethys_compute_admin_pages
