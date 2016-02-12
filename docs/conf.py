@@ -18,7 +18,8 @@ import os
 # Fixes django settings module problem
 sys.path.insert(0, os.path.abspath('..'))
 from django.conf import settings
-settings.configure()
+from ..tethys_apps.settings import INSTALLED_APPS
+settings.configure(INSTALLED_APPS = INSTALLED_APPS)
 import django
 django.setup()
 
