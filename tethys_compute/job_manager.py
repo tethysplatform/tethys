@@ -187,7 +187,7 @@ class BasicJobTemplate(JobTemplate):
 
 class CondorJobTemplate(JobTemplate):
     """
-    A subclass of the JobTemplate with the ``type argument set to CondorJob.
+    A subclass of the JobTemplate with the ``type`` argument set to CondorJob.
 
     Args:
         name (str): Name to refer to the template.
