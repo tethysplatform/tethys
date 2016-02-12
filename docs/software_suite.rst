@@ -140,7 +140,8 @@ PostGIS                                :doc:`./tethys_sdk/spatial_persistent_sto
 GeoServer                              :doc:`./tethys_sdk/spatial_dataset_services`     Spatial File Publishing
 52° North WPS                          :doc:`./tethys_sdk/web_processing_services`      Geoprocessing Services
 OpenLayers, Google Maps, HighCharts    :doc:`./tethys_sdk/gizmos`                       Spatial and Tabular Visualization
-HTCondor                               :doc:`./tethys_sdk/cloud_computing`              Computing and Job Management
+HTCondor                               :doc:`./tethys_sdk/compute` and                  Computing and Job Management
+                                       :doc:`./tethys_sdk/jobs`
 CKAN, HydroShare                       :doc:`./tethys_sdk/dataset_services`             Flat File Storage
 =====================================  ===============================================  ============================================
 
