@@ -458,7 +458,6 @@ class CondorJob(TethysJob):
 
     @property
     def condorpy_job(self):
-        print 'Attributes: ', self.attributes
         if not hasattr(self, '_condorpy_job'):
             if 'executable' in self.attributes.keys():
                 del self.attributes['executable']
