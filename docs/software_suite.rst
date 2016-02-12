@@ -84,7 +84,7 @@ Distributed Computing
 
 To facilitate the large-scale computing that is often required by water resources applications, Tethys Software Suite leverages the computing management middleware `HTCondor <http://research.cs.wisc.edu/htcondor/>`_. HTCondor is both a resource management and a job scheduling software.
 
-To use the HTCondor and the computing capabilities in your app use the :doc:`./tethys_sdk/cloud_computing`.
+To use the HTCondor and the computing capabilities in your app use the :doc:`./tethys_sdk/jobs` and the :doc:`./tethys_sdk/compute`.
 
 
 File Dataset Storage
