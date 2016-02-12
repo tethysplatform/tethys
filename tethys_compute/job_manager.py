@@ -17,11 +17,17 @@ JOB_TYPES = {'CONDOR': CondorJob,
 
 class JobManager(object):
     """
+    A manager for interacting with the Jobs database providing a simple interface creating and retrieving jobs.
 
+    Note:
+        Each app creates its own instance of the JobManager. the ``get_job_manager`` method returns the app.
+
+        ::
+
+            from app import MyApp as app
+
+            job_manager = app.get_job_manager()
     """
-
-    # for backwards compatibility
-    JOB_TYPES_DICT = JOB_TYPES
 
     def __init__(self, app):
         self.app = app
@@ -32,6 +38,18 @@ class JobManager(object):
             self.job_templates[template.name] = template
 
     def create_job(self, name, user, template_name, **kwargs):
+        """
+        Creates a new job from a JobTemplate.
+
+        Args:
+            name (str): The name of the job.
+            user (User): A User object for the user who creates the job.
+            template_name (str): The name of the JobTemplate from which to create the job.
+            **kwargs
+
+        Returns:
+            A new job object of the type specified by the JobTemplate
+        """
         try:
             template = self.job_templates[template_name]
         except KeyError, e:
@@ -48,7 +66,14 @@ class JobManager(object):
 
     def list_jobs(self, user=None, order_by='id'):
         """
-        Lists all the jobs from current app for current user
+        Lists all the jobs from current app for current user.
+
+        Args:
+            user (User, optional): The user to filter the jobs by. Default is None.
+            order_by (str, optional): An expression to order jobs. Default is 'id'.
+
+        Returns:
+            A list of jobs created in the app (and by the user if the user argument is passed in).
         """
         filters = dict()
         filters['label'] = self.label
@@ -60,7 +85,14 @@ class JobManager(object):
 
     def get_job(self, job_id, user=None):
         """
-        Get job by id
+        Gets a job by id.
+
+        Args:
+            job_id (int): The id of the job to get.
+            user (User, optional): The user to filter the jobs by.
+
+        Returns:
+            A instance of a subclass of TethysJob if a job with job_id exists (and was created by user if the user argument is passed in).
         """
         job = TethysJob.objects.filter(label=self.label, id=job_id)
         if job:
@@ -125,6 +157,14 @@ class JobManager(object):
 
 
 class JobTemplate(object):
+    """
+    A template from which to create a job.
+
+    Args:
+        name (str): Name to refer to the template.
+        type (TethysJob): A subclass of the TethysJob base class. Use the JOB_TYPE dictionary for possible values.
+        parameters (dict): A dictionary of key-value pairs. Each Job type defines the possible parameters.
+    """
     def __init__(self, name, type=None, parameters=None):
         self.name = name
         self.type = type or JOB_TYPES['BASIC']
@@ -134,10 +174,24 @@ class JobTemplate(object):
 
 
 class BasicJobTemplate(JobTemplate):
+    """
+    A subclass of JobTemplate with the ``type`` argument set to BasicJob.
+
+    Args:
+        name (str): Name to refer to the template.
+        parameters (dict): A dictionary of key-value pairs. Each Job type defines the possible parameters.
+    """
     def __init__(self, name, parameters=None):
         super(self.__class__, self).__init__(name, JOB_TYPES['BASIC'], parameters)
 
 
 class CondorJobTemplate(JobTemplate):
+    """
+    A subclass of the JobTemplate with the ``type argument set to CondorJob.
+
+    Args:
+        name (str): Name to refer to the template.
+        parameters (dict): A dictionary of key-value pairs. Each Job type defines the possible parameters.
+    """
     def __init__(self, name, parameters=None):
         super(self.__class__, self).__init__(name, JOB_TYPES['CONDOR'], parameters)
