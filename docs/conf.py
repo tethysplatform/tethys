@@ -14,12 +14,19 @@
 
 import sys
 import os
+import re
 
 # Fixes django settings module problem
 sys.path.insert(0, os.path.abspath('..'))
 from django.conf import settings
-from ..tethys_apps.settings import INSTALLED_APPS
-settings.configure(INSTALLED_APPS = INSTALLED_APPS)
+
+# parse the installed apps list from the settings template
+with open('../tethys_apps/cli/gen_templates/settings', 'r') as settings_file:
+    settings_str = settings_file.read()
+    match = re.search('INSTALLED_APPS = \(\n(.*?)\)', settings_str, re.DOTALL)
+    installed_apps = [app.strip('\'|,') for app in match.group(1).split()]
+
+settings.configure(INSTALLED_APPS = installed_apps)
 import django
 django.setup()
 
