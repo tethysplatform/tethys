@@ -7,5 +7,7 @@
 *.idea
 *.sqlite3
 *.db
+tethys_apps/settings.py
+tethys_apps/settings.py_bak
 settings.py
 docs/_build
