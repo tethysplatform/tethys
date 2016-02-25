@@ -24,7 +24,7 @@ import os
 import re
 import shutil
 from multiprocessing import Process
-from abc import abstractmethod
+from abc import abstractmethod, abstractproperty
 
 from tethyscluster import config as tethyscluster_config
 from tethyscluster.sshutils import get_certificate_fingerprint
@@ -343,7 +343,7 @@ class TethysJob(models.Model):
 
     def execute(self, *args, **kwargs):
         """
-
+        executes the job
         """
         self.execute_time = timezone.now()
         self._status = 'PEN'
@@ -383,18 +383,21 @@ class TethysJob(models.Model):
     @abstractmethod
     def stop(self):
         """
-
+        Stops job from executing
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def pause(self):
         """
-
+        Pauses job during execution
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def resume(self):
         """
+        Resumes a job that has been paused
         """
         raise NotImplementedError()
 
@@ -408,29 +411,93 @@ class BasicJob(TethysJob):
         kwargs.update({'_subclass': self.__class__.__name__.lower()})
         super(self.__class__, self).__init__(*args, **kwargs)
 
-    def _update_status(self):
+    def _execute(self, *args, **kwargs):
         pass
 
-    def _execute(self):
+    def _update_status(self, *args, **kwargs):
+        pass
+
+    def _process_results(self, *args, **kwargs):
+        pass
+
+    def stop(self):
+        pass
+
+    def pause(self):
+        pass
+
+    def resume(self):
         pass
 
 
 condorpy_logger.activate_console_logging()
 
 
-class CondorJob(TethysJob):
+class CondorPyJob(models.Model):
     """
-    Condor job type
+    Database model for condorpy jobs
     """
-    executable = models.CharField(max_length=1024)
-    condorpy_template_name = models.CharField(max_length=1024, blank=True, null=True)
     attributes = DictionaryField(default='')
-    remote_input_files = ListField(default='')
-    cluster_id = models.IntegerField(blank=True, default=0)
     num_jobs = models.IntegerField(default=1)
+    remote_input_files = ListField(default='')
+
+    @classmethod
+    def get_condorpy_template(cls, template_name):
+        template_name = template_name or 'base'
+        template = getattr(Templates, template_name)
+        if not template:
+            template = Templates.base
+        return template
+
+    @property
+    def workspace(self):
+        """
+        The workspace of the containing workflow
+        """
+        return '.'
+
+    @property
+    def condorpy_job(self):
+        if not hasattr(self, '_condorpy_job'):
+            job = Job(name=self.name.replace(' ', '_'),
+                      attributes=self.attributes,
+                      num_jobs=self.num_jobs,
+                      remote_input_files=self.remote_input_files,
+                      working_directory=self.workspace)
+
+            self._condorpy_job = job
+
+        return self._condorpy_job
+
+    @property
+    def initial_dir(self):
+        return os.path.join(self.workspace, self.condorpy_job.initial_dir)
+
+    def get_attribute(self, attribute):
+        self.condorpy_job.get(attribute)
+
+    def set_attribute(self, attribute, value):
+        setattr(self.condorpy_job, attribute, value)
+
+    def update_attributes(self):
+        self.attributes = self.condorpy_job.attributes
+        self.num_jobs = self.condorpy_job.num_jobs
+        self.remote_input_files = self.condorpy_job.remote_input_files
+
+
+@receiver(pre_save, sender=CondorPyJob)
+def condorpy_job_pre_save(sender, instance, raw, using, update_fields, **kwargs):
+    instance.update_attributes()
+
+
+class CondorBase(TethysJob):
+    """
+    Base class for CondorJob and CondorWorkflow
+    """
+    tethys_job = models.OneToOneField(TethysJob, parent_link=True)
+    cluster_id = models.IntegerField(blank=True, default=0)
     remote_id = models.CharField(max_length=32, blank=True, null=True)
-    tethys_job = models.OneToOneField(TethysJob)
-    scheduler = models.ForeignKey(Scheduler, blank=True, null=True)
+    _scheduler = models.ForeignKey(Scheduler, blank=True, null=True, db_column='scheduler')
 
     STATUS_MAP = {'Unexpanded': 'PEN',
                   'Idle': 'SUB',
@@ -443,78 +510,56 @@ class CondorJob(TethysJob):
                   'Various-Complete': 'VCP',
                  }
 
-    def __init__(self, *args, **kwargs):
-        kwargs.update({'_subclass': self.__class__.__name__.lower()})
-        super(self.__class__, self).__init__(*args, **kwargs)
-
-
-    @property
-    def condorpy_template(self):
-        if self.condorpy_template_name:
-            template = getattr(Templates, self.condorpy_template_name)
-        else:
-            template = Templates.base
-        return template
+    @abstractproperty
+    def condor_object(self):
+        """
+        Returns: an instance of a condorpy job or condorpy workflow
+        """
+        pass
 
     @property
-    def condorpy_job(self):
-        if not hasattr(self, '_condorpy_job'):
-            if 'executable' in self.attributes.keys():
-                del self.attributes['executable']
+    def scheduler(self):
+        """
+        getter for _scheduler field
+        """
+        return self._scheduler
 
-            if self.scheduler:
-                host=self.scheduler.host
-                username=self.scheduler.username
-                password=self.scheduler.password
-                private_key=self.scheduler.private_key_path
-                private_key_pass=self.scheduler.private_key_pass
-            else:
-                host=None
-                username=None
-                password=None
-                private_key=None
-                private_key_pass=None
+    @scheduler.setter
+    def scheduler(self, scheduler):
+        """
+        setter for _scheduler field
 
-            attributes = dict()
-            attributes.update(self.attributes)
-            attributes.pop('remote_input_files', None)
-
-            job = Job(name=self.name.replace(' ', '_'),
-                      attributes=self.condorpy_template,
-                      executable=self.executable,
-                      host=host,
-                      username=username,
-                      password=password,
-                      private_key=private_key,
-                      private_key_pass=private_key_pass,
-                      remote_input_files=self.remote_input_files,
-                      working_directory=self.workspace,
-                      **attributes)
-
-            job._cluster_id = self.cluster_id
-            job._num_jobs = self.num_jobs
-            if self.remote_id:
-                job._remote_id = self.remote_id
-            else:
-                self.remote_id = job._remote_id
-            self._condorpy_job = job
-        return self._condorpy_job
+        Args:
+            scheduler (Scheduler): the scheduler object to set
+        """
+        self._scheduler = scheduler
+        self.condor_object.set_scheduler(scheduler.host,
+                                         scheduler.username,
+                                         scheduler.password,
+                                         scheduler.private_key_path,
+                                         scheduler.private_key_pass
+                                         )
 
     @property
     def statuses(self):
-        return self.condorpy_job.statuses
+        return self.condor_object.statuses
 
     @property
     def initial_dir(self):
-        return os.path.join(self.workspace, self.condorpy_job.initial_dir)
+        return os.path.join(self.workspace, self.condor_object.initial_dir)
+
+    @abstractmethod
+    def _execute(self, *args, **kwargs):
+        self.cluster_id = self.condor_object.submit(*args, **kwargs)
+        self.save()
 
     def _update_status(self):
         if not self.execute_time:
             return 'PEN'
         try:
-            condor_status = self.condorpy_job.status
+            condor_status = self.condor_object.status
             if condor_status == 'Various':
-                statuses = self.condorpy_job.statuses
+                statuses = self.condor_object.statuses
                 running_statuses = statuses['Unexpanded'] + statuses['Idle'] + statuses['Running']
                 if not running_statuses:
                     condor_status = 'Various-Complete'
@@ -524,38 +569,96 @@ class CondorJob(TethysJob):
         self._status = self.STATUS_MAP[condor_status]
         self.save()
 
-    def _execute(self, queue=None, options=[]):
-        self.num_jobs = queue or self.num_jobs
-        self.cluster_id = self.condorpy_job.submit(self.num_jobs, options)
-        self.save()
-
     def _process_results(self):
         if self.scheduler:
-            self.condorpy_job.sync_remote_output()
-            self.condorpy_job.close_remote()
+            self.condor_object.sync_remote_output()
+            self.condor_object.close_remote()
 
     def stop(self):
-        self.condorpy_job.remove()
+        self.condor_object.remove()
 
-    def get_attribute(self, attribute):
-        self.condorpy_job.get(attribute)
+    def pause(self):
+        """
+        Pauses job during execution
+        """
+        pass
+        # self.condor_object.hold()
 
-    def set_attribute(self, attribute, value):
-        setattr(self.condorpy_job, attribute, value)
+    def resume(self):
+        """
+        Resumes a job that has been paused
+        """
+        pass
+        # self.condor_object.release()
 
-    def _update_attributes(self):
-        self.attributes = self.condorpy_job._attributes
-        self.remote_input_files = self.condorpy_job.remote_input_files
-        self.remote_id = self.condorpy_job._remote_id
+    def update_attributes(self):
+        self.remote_id = self.condor_object._remote_id
 
-@receiver(pre_save, sender=CondorJob)
-def condor_job_pre_save(sender, instance, raw, using, update_fields, **kwargs):
-    instance._update_attributes()
 
-@receiver(pre_delete, sender=CondorJob)
-def condor_job_pre_delete(sender, instance, using, **kwargs):
+@receiver(pre_save, sender=CondorBase)
+def condor_base_pre_save(sender, instance, raw, using, update_fields, **kwargs):
+    instance.update_attributes()
+
+
+@receiver(pre_delete, sender=CondorBase)
+def condor_base_pre_delete(sender, instance, using, **kwargs):
     try:
-        instance.condorpy_job.close_remote()
+        instance.condor_object.close_remote()
         shutil.rmtree(instance.initial_dir)
     except Exception, e:
         print e
+
+
+class CondorJob(CondorBase, CondorPyJob):
+    """
+    CondorPy Job job type
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs.update({'_subclass': self.__class__.__name__.lower()})
+        super(self.__class__, self).__init__(*args, **kwargs)
+
+    @property
+    def condor_object(self):
+        """
+        Returns: an instance of a condorpy job
+        """
+        return self.condorpy_job
+
+    def _execute(self, queue=None, options=[]):
+        self.num_jobs = queue or self.num_jobs
+        super(CondorBase, self)._execute(queue=self.num_jobs, options=options)
+
+
+class CondorWorkflow(CondorBase):
+    """
+    CondorPy Workflow job type
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs.update({'_subclass': self.__class__.__name__.lower()})
+        super(self.__class__, self).__init__(*args, **kwargs)
+
+    @property
+    def condor_object(self):
+        """
+        Returns: an instance of a condorpy Workflow
+        """
+        return self.condorpy_workflow
+
+    def _execute(self, options=[]):
+        super(CondorBase, self)._execute(options=options)
+
+
+class CondorWorkflowNode(models.Model):
+    """
+    Base class for CondorWorkflow Nodes
+    """
+    pass
+
+
+class CondorJobNode(CondorWorkflowNode, CondorPyJob):
+    """
+    CondorWorkflow JOB type node
+    """
+    pass
