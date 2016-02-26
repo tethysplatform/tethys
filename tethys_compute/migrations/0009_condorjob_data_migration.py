@@ -18,11 +18,15 @@ def migrate_condorjobs(apps, schema_editor):
     CondorPyJob = apps.get_model('tethys_compute', 'CondorPyJob')
 
     condorjobs = CondorJob.objects.all()
+
     for condorjob in condorjobs:
         condorbase = CondorBase(tethysjob_ptr=condorjob.tethys_job,
                                 cluster_id=condorjob.cluster_id,
                                 remote_id=condorjob.remote_id,
                                 _scheduler=condorjob.scheduler)
+        tethysjob = condorbase.tethysjob_ptr
+        condorbase.creation_time = tethysjob.creation_time
+        condorbase.user_id = tethysjob.user_id
         condorbase.save()
 
         condorpyjob = CondorPyJob(attributes=condorjob.attributes,

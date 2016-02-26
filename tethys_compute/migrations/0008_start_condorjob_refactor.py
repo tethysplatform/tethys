@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='condorjob',
             name='condorbase_ptr',
-            field=models.OneToOneField(auto_created=True, null=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_compute.CondorBase'),
+            field=models.OneToOneField(auto_created=True, null=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, serialize=False, to='tethys_compute.CondorBase'),
             preserve_default=False,
         ),
         migrations.AddField(
