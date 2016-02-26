@@ -13,18 +13,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='condorjob',
-            name='condorbase_ptr',
-            field=models.OneToOneField(auto_created=True, null=False, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_compute.CondorBase'),
-            preserve_default=False,
-        ),
-        migrations.AlterField(
-            model_name='condorjob',
-            name='condorpyjob_ptr',
-            field=models.OneToOneField(auto_created=True, null=False, on_delete=django.db.models.deletion.CASCADE, parent_link=True, to='tethys_compute.CondorPyJob'),
-            preserve_default=False,
-        ),
         migrations.RemoveField(
             model_name='condorjob',
             name='tethys_job',
@@ -52,5 +40,21 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='condorjob',
             name='remote_input_files',
+        ),
+        migrations.AlterField(
+            model_name='condorjob',
+            name='condorbase_ptr',
+            field=models.OneToOneField(auto_created=True, null=False, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_compute.CondorBase'),
+            preserve_default=False,
+        ),
+        migrations.AlterField(
+            model_name='condorjob',
+            name='condorpyjob_ptr',
+            field=models.OneToOneField(auto_created=True, null=False, on_delete=django.db.models.deletion.CASCADE, parent_link=True, to='tethys_compute.CondorPyJob'),
+            preserve_default=False,
+        ),
+        migrations.RemoveField(
+            model_name='condorjob',
+            name='id'
         ),
     ]
