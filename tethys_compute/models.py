@@ -46,7 +46,7 @@ class Setting(models.Model):
     name = models.TextField(max_length=30)
     content = models.TextField(max_length=500, blank=True)
     date_modified = models.DateTimeField('date modified', auto_now=True)
-    category = models.ForeignKey(SettingsCategory)
+    category = models.ForeignKey(SettingsCategory, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return self.name
@@ -320,7 +320,7 @@ class TethysJob(models.Model):
 
     name = models.CharField(max_length=1024)
     description = models.CharField(max_length=2048, blank=True, default='')
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     label = models.CharField(max_length=1024)
     creation_time = models.DateTimeField(auto_now_add=True)
     execute_time = models.DateTimeField(blank=True, null=True)
@@ -437,6 +437,7 @@ class CondorPyJob(models.Model):
     """
     Database model for condorpy jobs
     """
+    condorpyjob_id = models.AutoField(primary_key=True)
     attributes = DictionaryField(default='')
     num_jobs = models.IntegerField(default=1)
     remote_input_files = ListField(default='')
@@ -494,10 +495,9 @@ class CondorBase(TethysJob):
     """
     Base class for CondorJob and CondorWorkflow
     """
-    tethys_job = models.OneToOneField(TethysJob, parent_link=True)
     cluster_id = models.IntegerField(blank=True, default=0)
     remote_id = models.CharField(max_length=32, blank=True, null=True)
-    _scheduler = models.ForeignKey(Scheduler, blank=True, null=True, db_column='scheduler')
+    _scheduler = models.ForeignKey(Scheduler, on_delete=models.SET_NULL, blank=True, null=True, db_column='scheduler')
 
     STATUS_MAP = {'Unexpanded': 'PEN',
                   'Idle': 'SUB',
@@ -630,35 +630,35 @@ class CondorJob(CondorBase, CondorPyJob):
         super(CondorBase, self)._execute(queue=self.num_jobs, options=options)
 
 
-class CondorWorkflow(CondorBase):
-    """
-    CondorPy Workflow job type
-    """
-
-    def __init__(self, *args, **kwargs):
-        kwargs.update({'_subclass': self.__class__.__name__.lower()})
-        super(self.__class__, self).__init__(*args, **kwargs)
-
-    @property
-    def condor_object(self):
-        """
-        Returns: an instance of a condorpy Workflow
-        """
-        return self.condorpy_workflow
-
-    def _execute(self, options=[]):
-        super(CondorBase, self)._execute(options=options)
-
-
-class CondorWorkflowNode(models.Model):
-    """
-    Base class for CondorWorkflow Nodes
-    """
-    pass
-
-
-class CondorJobNode(CondorWorkflowNode, CondorPyJob):
-    """
-    CondorWorkflow JOB type node
-    """
-    pass
+# class CondorWorkflow(CondorBase):
+#     """
+#     CondorPy Workflow job type
+#     """
+#
+#     def __init__(self, *args, **kwargs):
+#         kwargs.update({'_subclass': self.__class__.__name__.lower()})
+#         super(self.__class__, self).__init__(*args, **kwargs)
+#
+#     @property
+#     def condor_object(self):
+#         """
+#         Returns: an instance of a condorpy Workflow
+#         """
+#         return self.condorpy_workflow
+#
+#     def _execute(self, options=[]):
+#         super(CondorBase, self)._execute(options=options)
+#
+#
+# class CondorWorkflowNode(models.Model):
+#     """
+#     Base class for CondorWorkflow Nodes
+#     """
+#     pass
+#
+#
+# class CondorWorkflowJobNode(CondorWorkflowNode, CondorPyJob):
+#     """
+#     CondorWorkflow JOB type node
+#     """
+#     pass
