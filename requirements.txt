@@ -15,3 +15,4 @@ owslib>=0.8.0,<0.9.0
 condorpy>=0.1.8,<0.2.0
 TethysCluster>=0.1.5,<0.2.0
 python_social_auth>=0.2.12,<0.3.0
+django-model-utils>=2.4,<2.5
