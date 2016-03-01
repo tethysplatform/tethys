@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='tethysjob',
             name='workspace',
-            field=models.CharField(default=b'/home/nswain/.tethyscluster/workspace', max_length=1024),
+            field=models.CharField(default=b'', max_length=1024),
             preserve_default=True,
         ),
     ]

@@ -21,6 +21,7 @@ class Migration(migrations.Migration):
                 ('cluster_id', models.IntegerField(blank=True, default=0)),
                 ('remote_id', models.CharField(blank=True, max_length=32, null=True)),
                 ('_scheduler', models.ForeignKey(blank=True, db_column=b'scheduler', null=True, on_delete=django.db.models.deletion.SET_NULL, to='tethys_compute.Scheduler')),
+                ('_subclass1', models.CharField(default=b'condorjob', max_length=30)),
             ],
             bases=('tethys_compute.tethysjob',),
         ),
@@ -35,22 +36,14 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='condorjob',
-            name='condorbase_ptr',
-            field=models.OneToOneField(auto_created=True, null=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, serialize=False, to='tethys_compute.CondorBase'),
-            preserve_default=False,
-        ),
-        migrations.AddField(
-            model_name='condorjob',
             name='condorpyjob_ptr',
             field=models.OneToOneField(auto_created=True, null=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, to='tethys_compute.CondorPyJob'),
             preserve_default=False,
         ),
-        migrations.RemoveField(
-            model_name='condorjob',
-            name='condorpy_template_name',
-        ),
-        migrations.RemoveField(
+        migrations.AlterField(
             model_name='condorjob',
             name='executable',
+            field=models.CharField(max_length=1024, default=''),
+            preserve_default=True,
         ),
     ]
