@@ -10,6 +10,7 @@
 from django.core.urlresolvers import reverse
 from tethys_compute.models import TethysJob, CondorJob, BasicJob
 import re
+from abc import abstractmethod
 
 JOB_TYPES = {'CONDOR': CondorJob,
              'BASIC': BasicJob,
@@ -35,6 +36,10 @@ class JobManager(object):
         self.app_workspace = app.get_app_workspace()
         self.job_templates = dict()
         for template in app.job_templates():
+            # TODO remove when JobTemplate is made completely abstract
+            if template.__class__ == JobTemplate:
+                # TODO print deprecation warning
+                template.__class__ = JOB_CAST[template.type]
             self.job_templates[template.name] = template
 
     def create_job(self, name, user, template_name, **kwargs):
@@ -58,24 +63,26 @@ class JobManager(object):
         user_workspace = self.app.get_user_workspace(user)
 
         kwrgs = dict(name=name, user=user, label=self.label, workspace=user_workspace.path)
+        template.process_parameters()
         parameters = self._replace_workspaces(template.parameters, user_workspace)
         kwrgs.update(parameters)
         kwrgs.update(kwargs)
         job = JobClass(**kwrgs)
         return job
 
-    def list_jobs(self, user=None, order_by='id'):
+    def list_jobs(self, user=None, order_by='id', filters=None):
         """
         Lists all the jobs from current app for current user.
 
         Args:
             user (User, optional): The user to filter the jobs by. Default is None.
             order_by (str, optional): An expression to order jobs. Default is 'id'.
+            filters (dict, optional): A list of key-value pairs to filter the jobs by. Default is None.
 
         Returns:
             A list of jobs created in the app (and by the user if the user argument is passed in).
         """
-        filters = dict()
+        filters = filters or dict()
         filters['label'] = self.label
         if user:
             filters['user'] = user
@@ -165,12 +172,17 @@ class JobTemplate(object):
         type (TethysJob): A subclass of the TethysJob base class. Use the JOB_TYPE dictionary for possible values.
         parameters (dict): A dictionary of key-value pairs. Each Job type defines the possible parameters.
     """
+
     def __init__(self, name, type=None, parameters=None):
         self.name = name
         self.type = type or JOB_TYPES['BASIC']
         self.parameters = parameters or dict()
         assert issubclass(type, TethysJob)
         assert isinstance(parameters, dict)
+
+    @abstractmethod
+    def process_parameters(self):
+        pass
 
 
 class BasicJobTemplate(JobTemplate):
@@ -184,6 +196,9 @@ class BasicJobTemplate(JobTemplate):
     def __init__(self, name, parameters=None):
         super(self.__class__, self).__init__(name, JOB_TYPES['BASIC'], parameters)
 
+    def process_parameters(self):
+        pass
+
 
 class CondorJobTemplate(JobTemplate):
     """
@@ -195,3 +210,27 @@ class CondorJobTemplate(JobTemplate):
     """
     def __init__(self, name, parameters=None):
         super(self.__class__, self).__init__(name, JOB_TYPES['CONDOR'], parameters)
+
+    def process_parameters(self):
+        attributes = dict()
+
+        def update_attribute(attribute_name):
+            if attribute_name in self.parameters:
+                attribute = self.parameters.pop(attribute_name)
+                attributes[attribute_name] = attribute
+
+        if 'condorpy_template_name' in self.parameters:
+            template_name = self.parameters.pop('condorpy_template_name')
+            template = CondorJob.get_condorpy_template(template_name)
+            attributes.update(template)
+        if 'attributes' in self.parameters:
+            attributes.update(self.parameters['attributes'])
+        for attribute_name in ['executable']:
+            update_attribute(attribute_name)
+
+        self.parameters['attributes'] = attributes
+
+# TODO remove when JobTemplate is made completely abstract
+JOB_CAST = {CondorJob: CondorJobTemplate,
+            BasicJob: BasicJobTemplate,
+            }

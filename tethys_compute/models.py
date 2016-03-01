@@ -339,7 +339,11 @@ class TethysJob(models.Model):
 
     @property
     def child(self):
-        return getattr(self, self._subclass)
+        """
+        Return bottom level child object.
+        """
+        direct_child = getattr(self, self._subclass)
+        return direct_child.child
 
     def execute(self, *args, **kwargs):
         """
@@ -411,6 +415,13 @@ class BasicJob(TethysJob):
         kwargs.update({'_subclass': self.__class__.__name__.lower()})
         super(self.__class__, self).__init__(*args, **kwargs)
 
+    @property
+    def child(self):
+        """
+        Return bottom level child object (in this case self).
+        """
+        return self
+
     def _execute(self, *args, **kwargs):
         pass
 
@@ -451,13 +462,6 @@ class CondorPyJob(models.Model):
         return template
 
     @property
-    def workspace(self):
-        """
-        The workspace of the containing workflow
-        """
-        return '.'
-
-    @property
     def condorpy_job(self):
         if not hasattr(self, '_condorpy_job'):
             job = Job(name=self.name.replace(' ', '_'),
@@ -467,7 +471,6 @@ class CondorPyJob(models.Model):
                       working_directory=self.workspace)
 
             self._condorpy_job = job
-
         return self._condorpy_job
 
     @property
@@ -498,6 +501,7 @@ class CondorBase(TethysJob):
     cluster_id = models.IntegerField(blank=True, default=0)
     remote_id = models.CharField(max_length=32, blank=True, null=True)
     _scheduler = models.ForeignKey(Scheduler, on_delete=models.SET_NULL, blank=True, null=True, db_column='scheduler')
+    _subclass1 = models.CharField(max_length=30, default='condorjob')
 
     STATUS_MAP = {'Unexpanded': 'PEN',
                   'Idle': 'SUB',
@@ -509,6 +513,18 @@ class CondorBase(TethysJob):
                   'Various': 'VAR',
                   'Various-Complete': 'VCP',
                  }
+
+    # def __init__(self, *args, **kwargs):
+    #     kwargs.update({'_subclass': self.__class__.__name__.lower()})
+    #     super(self.__class__, self).__init__(*args, **kwargs)
+
+    @property
+    def child(self):
+        """
+        Return bottom level child object.
+        """
+        direct_child = getattr(self, self._subclass1)
+        return direct_child.child
 
     @abstractproperty
     def condor_object(self):
@@ -557,7 +573,12 @@ class CondorBase(TethysJob):
         if not self.execute_time:
             return 'PEN'
         try:
+            # set the cluster id of the condorpy job/workflow to the cluster id saved in the database
+            self.condor_object._cluster_id = self.cluster_id
+
+            # get the status of the condorpy job/workflow
             condor_status = self.condor_object.status
+
             if condor_status == 'Various':
                 statuses = self.condor_object.statuses
                 running_statuses = statuses['Unexpanded'] + statuses['Idle'] + statuses['Running']
@@ -603,8 +624,8 @@ def condor_base_pre_save(sender, instance, raw, using, update_fields, **kwargs):
 @receiver(pre_delete, sender=CondorBase)
 def condor_base_pre_delete(sender, instance, using, **kwargs):
     try:
-        instance.condor_object.close_remote()
-        shutil.rmtree(instance.initial_dir)
+        instance.child.condor_object.close_remote()
+        shutil.rmtree(instance.child.initial_dir)
     except Exception, e:
         print e
 
@@ -615,8 +636,16 @@ class CondorJob(CondorBase, CondorPyJob):
     """
 
     def __init__(self, *args, **kwargs):
-        kwargs.update({'_subclass': self.__class__.__name__.lower()})
+        kwargs.update({'_subclass': 'condorbase'})
+        kwargs.update({'_subclass1': self.__class__.__name__.lower()})
         super(self.__class__, self).__init__(*args, **kwargs)
+
+    @property
+    def child(self):
+        """
+        Return bottom level child object (in this case self).
+        """
+        return self
 
     @property
     def condor_object(self):
@@ -627,7 +656,7 @@ class CondorJob(CondorBase, CondorPyJob):
 
     def _execute(self, queue=None, options=[]):
         self.num_jobs = queue or self.num_jobs
-        super(CondorBase, self)._execute(queue=self.num_jobs, options=options)
+        super(self.__class__, self)._execute(queue=self.num_jobs, options=options)
 
 
 # class CondorWorkflow(CondorBase):

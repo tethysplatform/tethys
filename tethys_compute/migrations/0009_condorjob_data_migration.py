@@ -23,7 +23,8 @@ def migrate_condorjobs(apps, schema_editor):
         condorbase = CondorBase(tethysjob_ptr=condorjob.tethys_job,
                                 cluster_id=condorjob.cluster_id,
                                 remote_id=condorjob.remote_id,
-                                _scheduler=condorjob.scheduler)
+                                _scheduler=condorjob.scheduler,
+                                )
         tethysjob = condorbase.tethysjob_ptr
         condorbase.creation_time = tethysjob.creation_time
         condorbase.user_id = tethysjob.user_id
@@ -38,6 +39,10 @@ def migrate_condorjobs(apps, schema_editor):
         condorjob.condorpyjob_ptr = condorpyjob
         condorjob.save()
 
+        tethysjob = condorjob.tethys_job
+        tethysjob._subclass = 'condorbase'
+        tethysjob.save()
+
 
 def unmigrate_condorjobs(apps, schema_editor):
     """
@@ -48,22 +53,27 @@ def unmigrate_condorjobs(apps, schema_editor):
         schema_editor: Instance of SchemaEditor for manual DB editing.
     """
     CondorJob = apps.get_model('tethys_compute', 'CondorJob')
+    CondorBase = apps.get_model('tethys_compute', 'CondorBase')
 
     condorjobs = CondorJob.objects.all()
     for condorjob in condorjobs:
-        condorbase = condorjob.condorbase_ptr
-        condorjob.tethys_job = condorbase.tethysjob_ptr
+        condorbase = CondorBase.objects.get(pk=condorjob.tethys_job_id)
         condorjob.cluster_id =condorbase.cluster_id
         condorjob.remote_id = condorbase.remote_id
         condorjob.scheduler = condorbase._scheduler
+        tethysjob = condorbase.tethysjob_ptr
 
         condorpyjob = condorjob.condorpyjob_ptr
         condorjob.attributes = condorpyjob.attributes
         condorjob.num_jobs = condorpyjob.num_jobs
         condorjob.remote_input_files = condorpyjob.remote_input_files
+        if 'executable' in condorjob.attributes:
+            condorjob.executable = condorjob.attributes['executable']
 
         condorjob.save()
 
+        tethysjob._subclass = 'condorjob'
+        tethysjob.save()
 
 class Migration(migrations.Migration):
 
@@ -72,5 +82,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(code=migrate_condorjobs, reverse_code=migrations.RunPython.noop)
+        migrations.RunPython(code=migrate_condorjobs, reverse_code=unmigrate_condorjobs)
     ]
