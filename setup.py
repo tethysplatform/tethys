@@ -30,7 +30,7 @@ setup(
     long_description=README,
     url='http://tethysplatform.org/',
     author='Nathan Swain',
-    author_email='nathan.swain@byu.net',
+    author_email='nswain@aquaveo.com',
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
