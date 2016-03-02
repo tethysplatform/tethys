@@ -104,6 +104,12 @@ Bugs
 * Normalized references to controllers, persistent store initializers, and handoff handler functions.
 * Various docs typos were fixed.
 
+Patches
+-------
+
+* 1.3.1
+   * Updated dependency for condorpy to fix status for muti-process jobs on the jobs table.
+
 Prior Release Notes
 ===================
 
