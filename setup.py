@@ -28,7 +28,7 @@ setup(
     license='BSD 2-Clause License',
     description='Primary Tethys Platform Django Site Project',
     long_description=README,
-    url='http://tethys.ci-water.org/',
+    url='http://tethysplatform.org/',
     author='Nathan Swain',
     author_email='nathan.swain@byu.net',
     classifiers=[
