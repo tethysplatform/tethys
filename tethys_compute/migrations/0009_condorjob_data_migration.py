@@ -23,7 +23,7 @@ def migrate_condorjobs(apps, schema_editor):
         condorbase = CondorBase(tethysjob_ptr=condorjob.tethys_job,
                                 cluster_id=condorjob.cluster_id,
                                 remote_id=condorjob.remote_id,
-                                _scheduler=condorjob.scheduler,
+                                scheduler=condorjob.scheduler,
                                 )
         tethysjob = condorbase.tethysjob_ptr
         condorbase.creation_time = tethysjob.creation_time
@@ -60,7 +60,7 @@ def unmigrate_condorjobs(apps, schema_editor):
         condorbase = CondorBase.objects.get(pk=condorjob.tethys_job_id)
         condorjob.cluster_id =condorbase.cluster_id
         condorjob.remote_id = condorbase.remote_id
-        condorjob.scheduler = condorbase._scheduler
+        condorjob.scheduler = condorbase.scheduler
         tethysjob = condorbase.tethysjob_ptr
 
         condorpyjob = condorjob.condorpyjob_ptr

@@ -86,11 +86,11 @@ class JobManager(object):
         filters['label'] = self.label
         if user:
             filters['user'] = user
-        jobs = TethysJob.objects.filter(**filters).order_by(order_by)
-        jobs = [job.child for job in jobs]
+        jobs = TethysJob.objects.filter(**filters).order_by(order_by).select_subclasses()
+        # jobs = [job.child for job in jobs]
         return jobs
 
-    def get_job(self, job_id, user=None):
+    def get_job(self, job_id, user=None, filters=None):
         """
         Gets a job by id.
 
@@ -101,14 +101,18 @@ class JobManager(object):
         Returns:
             A instance of a subclass of TethysJob if a job with job_id exists (and was created by user if the user argument is passed in).
         """
-        job = TethysJob.objects.filter(label=self.label, id=job_id)
-        if job:
-            job = job[0].child
+        filters = filters or dict()
+        filters['label'] = self.label
+        filters['id'] = job_id
+        if user:
+            filters['user'] = user
 
-            if user and job.user != user:
-                return None
+        try:
+            job = TethysJob.objects.get_subclass(**filters)
+        except TethysJob.DoesNotExist:
+            return None
 
-            return job
+        return job
 
     def get_job_status_callback_url(self, request, job_id):
         """
