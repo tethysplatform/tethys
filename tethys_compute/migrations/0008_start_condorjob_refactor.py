@@ -20,8 +20,7 @@ class Migration(migrations.Migration):
                 ('tethysjob_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_compute.TethysJob')),
                 ('cluster_id', models.IntegerField(blank=True, default=0)),
                 ('remote_id', models.CharField(blank=True, max_length=32, null=True)),
-                ('_scheduler', models.ForeignKey(blank=True, db_column=b'scheduler', null=True, on_delete=django.db.models.deletion.SET_NULL, to='tethys_compute.Scheduler')),
-                ('_subclass1', models.CharField(default=b'condorjob', max_length=30)),
+                ('scheduler', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='tethys_compute.Scheduler')),
             ],
             bases=('tethys_compute.tethysjob',),
         ),
@@ -45,5 +44,9 @@ class Migration(migrations.Migration):
             name='executable',
             field=models.CharField(max_length=1024, default=''),
             preserve_default=True,
+        ),
+        migrations.RemoveField(
+            model_name='tethysjob',
+            name='_subclass',
         ),
     ]
