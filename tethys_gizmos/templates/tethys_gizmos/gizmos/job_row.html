@@ -2,7 +2,7 @@
   <td>{{ column_value }}</td>
 {% endfor %}
 {% if status_actions %}
-  <td id="jobs-table-status-{{ job.id }}" class="job-status" data-job-id="{{ job.id }}">
+  <td id="jobs-table-status-{{ job.id }}" class="job-status, status-col" data-job-id="{{ job.id }}">
     {% include "tethys_gizmos/gizmos/job_status.html" %}
   </td>
   {% if delete %}

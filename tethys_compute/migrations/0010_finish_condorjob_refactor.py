@@ -5,6 +5,8 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import django.db.models.deletion
 
+import tethys_compute
+
 
 class Migration(migrations.Migration):
 
@@ -61,5 +63,43 @@ class Migration(migrations.Migration):
             name='condorpyjob_ptr',
             field=models.OneToOneField(auto_created=True, null=False, on_delete=django.db.models.deletion.CASCADE, parent_link=True, to='tethys_compute.CondorPyJob'),
             preserve_default=False,
+        ),
+        migrations.CreateModel(
+            name='CondorPyWorkflow',
+            fields=[
+                ('condorpyworkflow_id', models.AutoField(primary_key=True, serialize=False)),
+                ('max_jobs', tethys_compute.utilities.DictionaryField(blank=True, default=b'')),
+                ('config', models.CharField(blank=True, max_length=1024, null=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='CondorWorkflow',
+            fields=[
+                ('condorpyworkflow_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, to='tethys_compute.CondorPyWorkflow')),
+                ('condorbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_compute.CondorBase')),
+            ],
+            bases=('tethys_compute.condorbase', 'tethys_compute.condorpyworkflow'),
+        ),
+        migrations.CreateModel(
+            name='CondorWorkflowNode',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('workflow', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tethys_compute.CondorPyWorkflow')),
+                ('type', models.CharField(choices=[(b'JOB', b'JOB'), (b'DAT', b'DATA'), (b'SUB', b'SUBDAG'), (b'SPL', b'SPLICE'), (b'FIN', b'FINAL')], default=b'JOB', max_length=3)),
+                ('pre_script_args', models.CharField(blank=True, max_length=1024, null=True)),
+                ('post_script', models.CharField(blank=True, max_length=1024, null=True)),
+                ('variables', tethys_compute.utilities.DictionaryField(blank=True, default=b'')),
+                ('priority', models.IntegerField(blank=True, null=True)),
+                ('category', models.CharField(blank=True, max_length=128, null=True)),
+                ('retry', models.PositiveSmallIntegerField(blank=True, null=True)),
+                ('retry_unless_exit_value', models.IntegerField(blank=True, null=True)),
+                ('pre_script', models.IntegerField(blank=True, null=True)),
+                ('abort_dag_on', models.IntegerField(blank=True, null=True)),
+                ('abort_dag_on_return_value', models.IntegerField(blank=True, null=True)),
+                ('dir', models.CharField(blank=True, max_length=1024, null=True)),
+                ('noop', models.BooleanField(default=False)),
+                ('done', models.BooleanField(default=False)),
+                ('parents', models.ManyToManyField(related_name='children', to='tethys_compute.CondorWorkflowNode')),
+            ],
         ),
     ]
