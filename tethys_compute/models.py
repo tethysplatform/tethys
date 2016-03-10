@@ -7,6 +7,12 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import os
+import re
+import shutil
+from multiprocessing import Process
+from abc import abstractmethod, abstractproperty
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import pre_save, post_save, pre_delete, post_delete
@@ -21,12 +27,6 @@ from tethys_compute import (TETHYSCLUSTER_CFG_FILE,
                             TETHYSCLUSTER_AZURE_CFG_FILE,
                             TETHYSCLUSTER_AZURE_CFG_TEMPLATE)
 from tethys_compute.utilities import DictionaryField, ListField
-
-import os
-import re
-import shutil
-from multiprocessing import Process
-from abc import abstractmethod, abstractproperty
 
 from tethyscluster import config as tethyscluster_config
 from tethyscluster.sshutils import get_certificate_fingerprint
@@ -696,13 +696,12 @@ class CondorWorkflowNode(models.Model):
     pre_script = models.CharField(max_length=1024, null=True, blank=True)
     pre_script_args = models.CharField(max_length=1024, null=True, blank=True)
     post_script = models.CharField(max_length=1024, null=True, blank=True)
-    post_script = models.CharField(max_length=1024, null=True, blank=True)
+    post_script_args = models.CharField(max_length=1024, null=True, blank=True)
     variables = DictionaryField(default='', blank=True)
     priority = models.IntegerField(null=True, blank=True)
     category = models.CharField(max_length=128, null=True, blank=True)
     retry = models.PositiveSmallIntegerField(null=True, blank=True)
     retry_unless_exit_value = models.IntegerField(null=True, blank=True)
-    pre_script = models.IntegerField(null=True, blank=True)
     abort_dag_on = models.IntegerField(null=True, blank=True)
     abort_dag_on_return_value = models.IntegerField(null=True, blank=True)
     dir = models.CharField(max_length=1024, null=True, blank=True)
@@ -712,8 +711,8 @@ class CondorWorkflowNode(models.Model):
     objects = InheritanceManager()
 
 
-# class CondorWorkflowJobNode(CondorWorkflowNode, CondorPyJob):
-#     """
-#     CondorWorkflow JOB type node
-#     """
-#     pass
+class CondorWorkflowJobNode(CondorWorkflowNode, CondorPyJob):
+    """
+    CondorWorkflow JOB type node
+    """
+    pass
