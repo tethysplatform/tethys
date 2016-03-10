@@ -7,14 +7,18 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from django.core.urlresolvers import reverse
-from tethys_compute.models import TethysJob, CondorJob, BasicJob
 import re
 from abc import abstractmethod
 
-JOB_TYPES = {'CONDOR': CondorJob,
-             'BASIC': BasicJob,
-            }
+from django.core.urlresolvers import reverse
+
+from tethys_compute.models import (TethysJob,
+                                   BasicJob,
+                                   CondorJob,
+                                   CondorWorkflow,
+                                   CondorWorkflowJobNode,
+                                   )
+
 
 class JobManager(object):
     """
@@ -118,7 +122,7 @@ class JobManager(object):
         """
         Get the absolute url to call to update job status
         """
-        relative_uri =  reverse('update_job_status', kwargs={'job_id': job_id})
+        relative_uri = reverse('update_job_status', kwargs={'job_id': job_id})
         absolute_uri = request.build_absolute_uri(relative_uri)
         return absolute_uri
 
@@ -167,6 +171,13 @@ class JobManager(object):
         return new_parameters
 
 
+JOB_TYPES = {'CONDOR': CondorJob,
+             'CONDORJOB': CondorJob,
+             'CONDORWORKFLOW': CondorWorkflow,
+             'BASIC': BasicJob,
+             }
+
+
 class JobTemplate(object):
     """
     A template from which to create a job.
@@ -213,7 +224,7 @@ class CondorJobTemplate(JobTemplate):
         parameters (dict): A dictionary of key-value pairs. Each Job type defines the possible parameters.
     """
     def __init__(self, name, parameters=None):
-        super(self.__class__, self).__init__(name, JOB_TYPES['CONDOR'], parameters)
+        super(self.__class__, self).__init__(name, JOB_TYPES['CONDORJOB'], parameters)
 
     def process_parameters(self):
         attributes = dict()
@@ -233,6 +244,99 @@ class CondorJobTemplate(JobTemplate):
             update_attribute(attribute_name)
 
         self.parameters['attributes'] = attributes
+
+
+class CondorWorkflowTemplate(JobTemplate):
+    """
+    A subclass of the JobTemplate with the ``type`` argument set to CondorWorkflow.
+
+    Args:
+        name (str): Name to refer to the template.
+        parameters (dict): A dictionary of key-value pairs. Each Job type defines the possible parameters.
+    """
+    def __init__(self, name, parameters=None):
+        super(self.__class__, self).__init__(name, JOB_TYPES['CONDORWORKFLOW'], parameters)
+
+    def process_parameters(self):
+        pass
+
+
+NODE_TYPES = {'JOB': CondorWorkflowJobNode,
+              # 'SUBWWORKFLOW': CondorWorkflowSubworkflowNode,
+              # 'DATA': CondorWorkflowDataNode,
+              # 'FINAL': CondorWorkflowFinalNode,
+              }
+
+
+class CondorWorkflowNodeBaseTemplate(object):
+    """
+    A template from which to create a job.
+
+    Args:
+        name (str): Name to refer to the template.
+        type (TethysJob): A subclass of the TethysJob base class. Use the JOB_TYPE dictionary for possible values.
+        parameters (dict): A dictionary of key-value pairs. Each Job type defines the possible parameters.
+    """
+
+    def __init__(self, name, type=None, parameters=None):
+        self.name = name
+        self.type = type or JOB_TYPES['JOB']
+        self.parameters = parameters or dict()
+        assert issubclass(type, TethysJob)
+        assert isinstance(parameters, dict)
+
+        # type = models.CharField(max_length=3, choices=TYPES, default=TYPES[0][0])
+        # parents = models.ManyToManyField('self', related_name='children', symmetrical=False)
+        # pre_script = models.CharField(max_length=1024, null=True, blank=True)
+        # pre_script_args = models.CharField(max_length=1024, null=True, blank=True)
+        # post_script = models.CharField(max_length=1024, null=True, blank=True)
+        # post_script = models.CharField(max_length=1024, null=True, blank=True)
+        # variables = DictionaryField(default='', blank=True)
+        # priority = models.IntegerField(null=True, blank=True)
+        # category = models.CharField(max_length=128, null=True, blank=True)
+        # retry = models.PositiveSmallIntegerField(null=True, blank=True)
+        # retry_unless_exit_value = models.IntegerField(null=True, blank=True)
+        # pre_script = models.IntegerField(null=True, blank=True)
+        # abort_dag_on = models.IntegerField(null=True, blank=True)
+        # abort_dag_on_return_value = models.IntegerField(null=True, blank=True)
+        # dir = models.CharField(max_length=1024, null=True, blank=True)
+        # noop = models.BooleanField(default=False)
+        # done = models.BooleanField(default=False)
+
+    def add_parent(self, parent):
+        """
+        Adds a dependency or parent workflow-job to the current workflow-job.
+
+        Args:
+            parent:
+        """
+
+
+class CondorWorkflowJobTemplate(CondorWorkflowNodeBaseTemplate):
+    """
+    A subclass of the CondorWorkflowNodeBaseTemplate with the ``type`` argument set to CondorWorkflowJobNade.
+
+    Args:
+        name (str): Name to refer to the template.
+        parameters (dict): A dictionary of key-value pairs. Each Job type defines the possible parameters.
+    """
+    def __init__(self, name, parameters=None):
+        super(self.__class__, self).__init__(name, NODE_TYPES['JOB'], parameters)
+
+    def process_parameters(self):
+        pass
+
+
+class CondorWorkflowSubworkflowTemplate(CondorWorkflowNodeBaseTemplate):
+    pass
+
+
+class CondorWorkflowDataJobTemplate(CondorWorkflowNodeBaseTemplate):
+    pass
+
+
+class CondorWorkflowFinalTemplate(CondorWorkflowNodeBaseTemplate):
+    pass
 
 # TODO remove when JobTemplate is made completely abstract
 JOB_CAST = {CondorJob: CondorJobTemplate,
