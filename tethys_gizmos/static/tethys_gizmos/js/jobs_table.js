@@ -85,7 +85,6 @@ function update_row(table_elem){
     var delete_btn = $(table).attr('data-delete');
     var results_url = $(table).attr('data-results-url');
     var refresh_interval = $(table).attr('data-refresh-interval');
-
     var job_id = $(table_elem).attr('data-job-id');
     var update_url = '/developer/gizmos/ajax/' + job_id + '/update-row';
     $.ajax({
@@ -111,6 +110,35 @@ function update_row(table_elem){
     });
 }
 
+
+function update_status(table_elem){
+    console.log(table_elem);
+    var table = $(table_elem).closest('table');
+    var status_actions = $(table).attr('data-status-actions');
+    var run = $(table).attr('data-run');
+    var delete_btn = $(table).attr('data-delete');
+    var results_url = $(table).attr('data-results-url');
+    var refresh_interval = $(table).attr('data-refresh-interval');
+    var job_id = $(table_elem).attr('data-job-id');
+    var update_url = '/developer/gizmos/ajax/' + job_id + '/update-status';
+    $.ajax({
+        method: 'POST',
+        url: update_url,
+        data: {status_actions: status_actions, run: run, delete: delete_btn, results_url: results_url}
+    }).done(function(json){
+    console.log(json);
+        if(json.success){
+            $(table_elem).html(json.html);
+            status = json.status;
+            if(status == 'Running' || status == 'Submitted' || status == 'Various'){
+                setTimeout(function(){
+                    update_status(table_elem);
+                }, refresh_interval);
+            }
+        }
+    });
+}
+
 $('.btn-job-run').each(function(){
     bind_run_button(this);
 });
@@ -119,6 +147,7 @@ $('.btn-job-delete').each(function(){
     bind_delete_button(this);
 });
 
-$('.job-row').each(function(){
-   update_row(this);
+$('.job-status').each(function(){
+    console.log(this);
+    update_status(this);
 });

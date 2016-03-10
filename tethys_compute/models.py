@@ -10,8 +10,11 @@
 import os
 import re
 import shutil
+import datetime
 from multiprocessing import Process
 from abc import abstractmethod, abstractproperty
+import logging
+log = logging.getLogger('tethys.tethys_compute.models')
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -334,6 +337,16 @@ class TethysJob(models.Model):
     _status = models.CharField(max_length=3, choices=STATUSES, default=STATUSES[0][0])
 
     @property
+    def update_status_interval(self):
+        if not hasattr(self, '_update_status_interval'):
+            self._update_status_interval = datetime.timedelta(seconds=10)
+        return self._update_status_interval
+
+    @property
+    def last_status_update(self):
+        return self._last_status_update
+
+    @property
     def status(self):
         self.update_status()
         field = self._meta.get_field('_status')
@@ -351,8 +364,9 @@ class TethysJob(models.Model):
 
     def update_status(self, *args, **kwargs):
         if self._status in ['PEN', 'SUB', 'RUN', 'VAR']:
-            self._update_status(*args, **kwargs)
-            self._status = self._status
+            if not hasattr(self, '_last_status_update') or datetime.datetime.now()-self.last_status_update > self.update_status_interval:
+                self._update_status(*args, **kwargs)
+                self._last_status_update = datetime.datetime.now()
             if self._status == "COM" or self._status == "VCP":
                 self.process_results()
             elif self._status == 'ERR' or self._status == 'ABT':
@@ -424,9 +438,7 @@ class BasicJob(TethysJob):
     def resume(self):
         pass
 
-
-condorpy_logger.activate_console_logging()
-
+# condorpy_logger.activate_console_logging()
 
 class CondorBase(TethysJob):
     """
@@ -445,7 +457,7 @@ class CondorBase(TethysJob):
                   'Submission_err': 'ERR',
                   'Various': 'VAR',
                   'Various-Complete': 'VCP',
-                 }
+                  }
 
     @property
     def condor_object(self):
@@ -474,7 +486,13 @@ class CondorBase(TethysJob):
 
     @property
     def statuses(self):
-        return self.condor_object.statuses
+        updated = True
+        if hasattr(self, '_last_status_update'):
+            updated = datetime.datetime.now() - self.last_status_update < self.update_status_interval
+        if not (hasattr(self, '_statuses') and updated):
+            self._statuses = self.condor_object.statuses
+
+        return self._statuses
 
     @abstractmethod
     def _execute(self, *args, **kwargs):
@@ -487,9 +505,8 @@ class CondorBase(TethysJob):
         try:
             # get the status of the condorpy job/workflow
             condor_status = self.condor_object.status
-            print 'STATUS: ', condor_status
             if condor_status == 'Various':
-                statuses = self.condor_object.statuses
+                statuses = self.statuses
                 running_statuses = statuses['Unexpanded'] + statuses['Idle'] + statuses['Running']
                 if not running_statuses:
                     condor_status = 'Various-Complete'
