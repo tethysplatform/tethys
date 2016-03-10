@@ -20,6 +20,7 @@ from tethys_compute.models import (TethysJob,
                                    )
 
 
+
 class JobManager(object):
     """
     A manager for interacting with the Jobs database providing a simple interface creating and retrieving jobs.
