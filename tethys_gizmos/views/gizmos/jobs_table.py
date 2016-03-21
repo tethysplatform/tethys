@@ -39,17 +39,20 @@ def update_row(request, job_id):
         filters = [f.strip('\'\" ') for f in filter_string.strip('()').split(',')]
         job = TethysJob.objects.get_subclass(id=job_id)
         status = job.status
+        statuses = None
+        if status == "Various":
+            # Hard code statues for the gizmo showcase
+            if job.label == 'gizmos_showcase':
+                statuses = {'Completed': 40, 'Error': 10, 'Running': 30, 'Aborted': 5}
+            else:
+                statuses = job.statuses
 
         row = JobsTable.get_rows([job], filters)[0]
 
-        data.update({'job': job, 'job_status': status, 'row': row})
-
-        # Hard code statues for the gizmo showcase
-        if job.label == 'gizmos_showcase':
-            job.statuses = {'Complete': 40, 'Error': 10, 'Running': 30, 'Aborted': 5}
+        data.update({'job': job, 'row': row, 'job_status': status,
+                     'job_statuses': statuses, 'delay_loading_status': False})
 
         success = True
-
         html = render_to_string('tethys_gizmos/gizmos/job_row.html', data)
     except Exception, e:
         log.error('The following error occurred when updating row for job %s: %s', job_id, e.message)
