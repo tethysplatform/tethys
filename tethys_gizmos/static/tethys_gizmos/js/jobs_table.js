@@ -49,6 +49,13 @@ function bind_run_button(btn){
         $.ajax({
             url: execute_url
         }).done(function (json) {
+            status_html =
+            '<div class="progress" style="margin-bottom: 0;">' +
+                '<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
+                    '<span class="sr-only">100% Complete</span>' +
+                '</div>' +
+            '</div>'
+            $(btn).parent().html(status_html);
             update_row($('#jobs-table-row-' + job_id));
         });
     });
@@ -102,9 +109,10 @@ function update_row(table_elem){
             });
             status = json.status;
             if(status == 'Running' || status == 'Submitted' || status == 'Various'){
-                setTimeout(function(){
-                    update_row(table_elem);
-                }, refresh_interval);
+                update_row(table_elem);
+//                setTimeout(function(){
+//                    update_row(table_elem);
+//                }, refresh_interval);
             }
         }
     });
@@ -112,7 +120,6 @@ function update_row(table_elem){
 
 
 function update_status(table_elem){
-    console.log(table_elem);
     var table = $(table_elem).closest('table');
     var status_actions = $(table).attr('data-status-actions');
     var run = $(table).attr('data-run');
@@ -126,7 +133,6 @@ function update_status(table_elem){
         url: update_url,
         data: {status_actions: status_actions, run: run, delete: delete_btn, results_url: results_url}
     }).done(function(json){
-    console.log(json);
         if(json.success){
             $(table_elem).html(json.html);
             status = json.status;
@@ -147,7 +153,6 @@ $('.btn-job-delete').each(function(){
     bind_delete_button(this);
 });
 
-$('.job-status').each(function(){
-    console.log(this);
-    update_status(this);
+$('.job-row').each(function(){
+    update_row(this);
 });
