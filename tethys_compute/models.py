@@ -11,6 +11,7 @@ import os
 import re
 import shutil
 import datetime
+import inspect
 from multiprocessing import Process
 from abc import abstractmethod, abstractproperty
 import logging
@@ -30,10 +31,11 @@ from tethys_compute import (TETHYSCLUSTER_CFG_FILE,
                             TETHYSCLUSTER_AZURE_CFG_FILE,
                             TETHYSCLUSTER_AZURE_CFG_TEMPLATE)
 from tethys_compute.utilities import DictionaryField, ListField
+from tethys_apps.base.persistent_store import TethysFunctionExtractor
 
 from tethyscluster import config as tethyscluster_config
 from tethyscluster.sshutils import get_certificate_fingerprint
-from condorpy import Job, Workflow, Templates, logger as condorpy_logger
+from condorpy import Job, Workflow, Node, Templates, logger as condorpy_logger
 
 
 class SettingsCategory(models.Model):
@@ -111,7 +113,7 @@ class Cluster(models.Model):
     try:
         TC_MANAGER = tethyscluster_config.get_cluster_manager()
     except Exception as e:
-        print e.message
+        log.exception(e.message)
         TC_MANAGER = None
 
     _name = models.CharField(max_length=30, unique=True, default='tethys_default')
@@ -164,7 +166,7 @@ class Cluster(models.Model):
             try:
                 self._tethys_cluster = self.TC_MANAGER.get_cluster_or_none(self.name)
             except Exception as e:
-                print e.message
+                log.exception(e.message)
         return self._tethys_cluster
 
     def create_tethys_cluster(self):
@@ -178,7 +180,7 @@ class Cluster(models.Model):
                 self.connect_scheduler_and_master()
                 self.save()
             except Exception as e:
-                print e.message
+                log.exception(e.message)
         else:
             pass
             #raise
@@ -275,9 +277,11 @@ class Cluster(models.Model):
             elif not tc.is_valid():
                 self._status = self.STATUS_DICT['Error']
 
+
 @receiver(pre_save, sender=Cluster)
 def cluster_pre_save(sender, instance, raw, using, update_fields, **kwargs):
     instance._update_status()
+
 
 @receiver(post_save, sender=Cluster)
 def cluster_post_save(sender, instance, created, raw, using, update_fields, **kwargs):
@@ -287,6 +291,7 @@ def cluster_post_save(sender, instance, created, raw, using, update_fields, **kw
         target = instance.update_tethys_cluster
     process = Process(target=target)
     process.start()
+
 
 @receiver(post_delete, sender=Cluster)
 def cluster_post_delete(sender, instance, **kwargs):
@@ -331,9 +336,11 @@ class TethysJob(models.Model):
     label = models.CharField(max_length=1024)
     creation_time = models.DateTimeField(auto_now_add=True)
     execute_time = models.DateTimeField(blank=True, null=True)
+    start_time = models.DateTimeField(blank=True, null=True)
     completion_time = models.DateTimeField(blank=True, null=True)
     workspace = models.CharField(max_length=1024, default='')
     extended_properties = DictionaryField(default='', blank=True)
+    _process_results_function = models.CharField(max_length=1024, blank=True, null=True)
     _status = models.CharField(max_length=3, choices=STATUSES, default=STATUSES[0][0])
 
     @property
@@ -353,6 +360,35 @@ class TethysJob(models.Model):
         status = self._get_FIELD_display(field)
         return status
 
+    @property
+    def run_time(self):
+        if self.start_time:
+            if not self.completion_time:
+                tzinfo = self.start_time.tzinfo
+                end_time = datetime.datetime.now(tzinfo)
+            else:
+                end_time = self.completion_time
+            run_time = end_time - self.start_time
+        else:
+            if self.completion_time and self.execute_time:
+                run_time = self.completion_time - self.execute_time
+            else:
+                return ''
+
+        times = []
+        total_seconds = run_time.seconds
+        times.append(('days', run_time.days))
+        times.append(('hr', total_seconds/3600))
+        times.append(('min', (total_seconds%3600)/60))
+        times.append(('sec', total_seconds%60))
+        run_time_str = ''
+        for time_str, time in times:
+            if time:
+                run_time_str += "%s %s " % (time, time_str)
+        if not run_time_str or (run_time.days == 0 and total_seconds < 2):
+            run_time_str = '%.2f sec' % (total_seconds + float(run_time.microseconds)/1000000,)
+        return run_time_str
+
     def execute(self, *args, **kwargs):
         """
         executes the job
@@ -363,15 +399,37 @@ class TethysJob(models.Model):
         self._execute(*args, **kwargs)
 
     def update_status(self, *args, **kwargs):
+        old_status = self._status
         if self._status in ['PEN', 'SUB', 'RUN', 'VAR']:
-            if not hasattr(self, '_last_status_update') or datetime.datetime.now()-self.last_status_update > self.update_status_interval:
+            if not hasattr(self, '_last_status_update') \
+                    or datetime.datetime.now()-self.last_status_update > self.update_status_interval:
                 self._update_status(*args, **kwargs)
                 self._last_status_update = datetime.datetime.now()
+            if self._status == 'RUN' and (old_status == 'PEN' or old_status == 'SUB'):
+                self.start_time = timezone.now()
             if self._status == "COM" or self._status == "VCP":
                 self.process_results()
             elif self._status == 'ERR' or self._status == 'ABT':
                 self.completion_time = timezone.now()
             self.save()
+
+    @property
+    def process_results_function(self):
+        """
+
+        Returns:
+            A function handle or None if function cannot be resolved.
+        """
+        if self._process_results_function:
+            function_extractor = TethysFunctionExtractor(self._process_results_function, None)
+            if function_extractor.valid:
+                return function_extractor.function
+
+    @process_results_function.setter
+    def process_results_function(self, function):
+        module_path = inspect.getmodule(function).__name__.split('.')[2:]
+        module_path.append(function.__name__)
+        self._process_results_function = '.'.join(module_path)
 
     def process_results(self, *args, **kwargs):
         """
@@ -438,7 +496,9 @@ class BasicJob(TethysJob):
     def resume(self):
         pass
 
+
 # condorpy_logger.activate_console_logging()
+
 
 class CondorBase(TethysJob):
     """
@@ -465,7 +525,8 @@ class CondorBase(TethysJob):
         Returns: an instance of a condorpy job or condorpy workflow with scheduler, cluster_id, and remote_id attributes set
         """
         condor_object = self._condor_object
-        condor_object._remote_id = self.remote_id
+        if self.remote_id:
+            condor_object._remote_id = self.remote_id
         condor_object._cluster_id = self.cluster_id
         condor_object._cwd = self.workspace
         if self.scheduler:
@@ -539,7 +600,7 @@ class CondorBase(TethysJob):
         # self.condor_object.release()
 
     def update_database_fields(self):
-        self.remote_id = self.condor_object._remote_id
+        self.remote_id = self._condor_object._remote_id
 
 
 class CondorPyJob(models.Model):
@@ -547,9 +608,9 @@ class CondorPyJob(models.Model):
     Database model for condorpy jobs
     """
     condorpyjob_id = models.AutoField(primary_key=True)
-    attributes = DictionaryField(default='')
-    num_jobs = models.IntegerField(default=1)
-    remote_input_files = ListField(default='')
+    _attributes = DictionaryField(default='')
+    _num_jobs = models.IntegerField(default=1)
+    _remote_input_files = ListField(default='')
 
     @classmethod
     def get_condorpy_template(cls, template_name):
@@ -561,6 +622,7 @@ class CondorPyJob(models.Model):
 
     @property
     def condorpy_job(self):
+
         if not hasattr(self, '_condorpy_job'):
             job = Job(name=self.name.replace(' ', '_'),
                       attributes=self.attributes,
@@ -570,6 +632,35 @@ class CondorPyJob(models.Model):
 
             self._condorpy_job = job
         return self._condorpy_job
+
+    @property
+    def attributes(self):
+        return self._attributes
+
+    # @attributes.setter
+    # def attributes(self, attributes):
+    #     assert isinstance(attributes, dict)
+    #     self.condorpy_job._attributes = attributes
+    #     self._attributes = attributes
+
+    @property
+    def num_jobs(self):
+        return self._num_jobs
+
+    @num_jobs.setter
+    def num_jobs(self, num_jobs):
+        num_jobs = int(num_jobs)
+        self.condorpy_job.num_jobs = num_jobs
+        self._num_jobs = num_jobs
+
+    @property
+    def remote_input_files(self):
+        return self._remote_input_files
+
+    @remote_input_files.setter
+    def remote_input_files(self, remote_input_files):
+        self.condorpy_job.remote_input_files = remote_input_files
+        self._remote_input_files = remote_input_files
 
     @property
     def initial_dir(self):
@@ -582,7 +673,7 @@ class CondorPyJob(models.Model):
         setattr(self.condorpy_job, attribute, value)
 
     def update_database_fields(self):
-        self.attributes = self.condorpy_job.attributes
+        self._attributes = self.condorpy_job.attributes
         self.num_jobs = self.condorpy_job.num_jobs
         self.remote_input_files = self.condorpy_job.remote_input_files
 
@@ -619,7 +710,7 @@ def condor_job_pre_delete(sender, instance, using, **kwargs):
         instance.condor_object.close_remote()
         shutil.rmtree(instance.initial_dir)
     except Exception, e:
-        print e
+        log.exception(e.message)
 
 
 class CondorPyWorkflow(models.Model):
@@ -627,21 +718,59 @@ class CondorPyWorkflow(models.Model):
     Database model for condorpy workflows
     """
     condorpyworkflow_id = models.AutoField(primary_key=True)
-    max_jobs = DictionaryField(default='', blank=True)
-    config = models.CharField(max_length=1024, null=True, blank=True)
+    _max_jobs = DictionaryField(default='', blank=True)
+    _config = models.CharField(max_length=1024, null=True, blank=True)
 
     @property
     def condorpy_workflow(self):
         """
         Returns: an instance of a condorpy Workflow
         """
+        print 'MAX_JOBS', self.max_jobs
         if not hasattr(self, '_condorpy_workflow'):
             workflow = Workflow(name=self.name.replace(' ', '_'),
                                 max_jobs=self.max_jobs,
-                                config=self.config)
+                                config=self.config,
+                                working_directory=self.workspace
+                                )
 
             self._condorpy_workflow = workflow
+            self.load_nodes()
         return self._condorpy_workflow
+
+    @property
+    def max_jobs(self):
+        return self._max_jobs
+
+    @property
+    def config(self):
+        return self._config
+
+    @config.setter
+    def config(self, config):
+        self.condorpy_workflow.config = config
+        self._config = config
+
+    @property
+    def nodes(self):
+        return self.node_set.select_subclasses()
+
+    def load_nodes(self):
+        workflow = self.condorpy_workflow
+        node_dict = dict()
+
+        def add_node_to_dict(node):
+            if node not in node_dict:
+                node_dict[node] = node.condorpy_node
+
+        for node in self.nodes:
+            add_node_to_dict(node)
+            condorpy_node = node_dict[node]
+            parents = node.parents
+            for parent in parents:
+                add_node_to_dict(parent)
+                condorpy_node.add_parent(node_dict[parent])
+            workflow.add_node(condorpy_node)
 
     def add_max_jobs_throttle(self, category, max_jobs):
         """
@@ -651,13 +780,13 @@ class CondorPyWorkflow(models.Model):
             category (str): The category to throttle.
             max_jobs (int): The maximum number of jobs that submit at one time
         """
-        # self.max_jobs[category] = max_jobs
-        self.condorpy_workflow.add_max_jobs(category, max_jobs)
+        self.max_jobs[category] = max_jobs
+        self.condorpy_workflow.add_max_jobs_throttle(category, max_jobs)
 
     def update_database_fields(self):
-        self.max_jobs = self.condorpy_workflow.max_jobs
-        self.config = self.condorpy_workflow.config
-        for node in self.node_set:
+        # self.max_jobs = self.condorpy_workflow.max_jobs
+        # self.config = self.condorpy_workflow.config
+        for node in self.nodes:
             node.update_database_fields()
 
 
@@ -674,10 +803,19 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
         return self.condorpy_workflow
 
     def _execute(self, options=[]):
+        self.load_nodes()
         super(self.__class__, self)._execute(options=options)
+
+    def get_job(self, job_name):
+        try:
+            node = self.node_set.get_subclass(name=job_name)
+            return node
+        except CondorWorkflowNode.DoesNotExist:
+            return None
 
     def update_database_fields(self):
         CondorBase.update_database_fields(self)
+        CondorPyWorkflow.update_database_fields(self)
 
 
 @receiver(pre_save, sender=CondorWorkflow)
@@ -691,7 +829,7 @@ def condor_workflow_pre_delete(sender, instance, using, **kwargs):
         instance.condor_object.close_remote()
         shutil.rmtree(instance.initial_dir)
     except Exception, e:
-        print e
+        log.exception(e.message)
 
 
 class CondorWorkflowNode(models.Model):
@@ -707,9 +845,11 @@ class CondorWorkflowNode(models.Model):
 
     TYPE_DICT = {k: v for v, k in TYPES}
 
-    workflow = models.ForeignKey(CondorPyWorkflow, on_delete=models.CASCADE)
-    type = models.CharField(max_length=3, choices=TYPES, default=TYPES[0][0])
-    parents = models.ManyToManyField('self', related_name='children', symmetrical=False)
+    objects = InheritanceManager()
+
+    name = models.CharField(max_length=1024)
+    workflow = models.ForeignKey(CondorPyWorkflow, on_delete=models.CASCADE, related_name='node_set')
+    parent_nodes = models.ManyToManyField('self', related_name='children_nodes', symmetrical=False)
     pre_script = models.CharField(max_length=1024, null=True, blank=True)
     pre_script_args = models.CharField(max_length=1024, null=True, blank=True)
     post_script = models.CharField(max_length=1024, null=True, blank=True)
@@ -719,6 +859,7 @@ class CondorWorkflowNode(models.Model):
     category = models.CharField(max_length=128, null=True, blank=True)
     retry = models.PositiveSmallIntegerField(null=True, blank=True)
     retry_unless_exit_value = models.IntegerField(null=True, blank=True)
+    pre_skip = models.IntegerField(null=True, blank=True)
     abort_dag_on = models.IntegerField(null=True, blank=True)
     abort_dag_on_return_value = models.IntegerField(null=True, blank=True)
     dir = models.CharField(max_length=1024, null=True, blank=True)
@@ -727,9 +868,82 @@ class CondorWorkflowNode(models.Model):
 
     objects = InheritanceManager()
 
+    @abstractproperty
+    def type(self):
+        pass
+
+    @abstractproperty
+    def job(self):
+        pass
+
+    @property
+    def condorpy_node(self):
+        if not hasattr(self, '_condorpy_node'):
+            condorpy_node = Node(job=self.job,
+                                 pre_script=self.pre_script,
+                                 pre_script_args=self.pre_script_args,
+                                 post_script=self.post_script,
+                                 post_script_args=self.post_script_args,
+                                 variables=self.variables,
+                                 priority=self.priority,
+                                 category=self.category,
+                                 retry=self.retry,
+                                 pre_skip=self.pre_skip,
+                                 abort_dag_on=self.abort_dag_on,
+                                 abort_dag_on_return_value=self.abort_dag_on_return_value,
+                                 dir=self.dir,
+                                 noop=self.noop,
+                                 done=self.done
+                                 )
+            self._condorpy_node = condorpy_node
+        return self._condorpy_node
+
+    @property
+    def parents(self):
+        return self.parent_nodes.select_subclasses()
+
+    def add_parent(self, parent):
+        self.parent_nodes.add(parent)
+
+    def update_database_fields(self):
+        pass
+
 
 class CondorWorkflowJobNode(CondorWorkflowNode, CondorPyJob):
     """
     CondorWorkflow JOB type node
     """
-    pass
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize both CondorWorkflowNode and CondorPyJob
+
+        Args:
+            name:
+            workflow:
+            attributes:
+            num_jobs:
+            remote_input_files:
+        """
+        CondorWorkflowNode.__init__(self, *args, **kwargs)
+        CondorPyJob.__init__(self, *args, **kwargs)
+
+    @property
+    def type(self):
+        return 'JOB'
+
+    @property
+    def workspace(self):
+        return ''
+
+    @property
+    def job(self):
+        return self.condorpy_job
+
+    def update_database_fields(self):
+        CondorWorkflowNode.update_database_fields(self)
+        CondorPyJob.update_database_fields(self)
+
+
+@receiver(pre_save, sender=CondorWorkflowJobNode)
+def condor_workflow_job_node_pre_save(sender, instance, raw, using, update_fields, **kwargs):
+    instance.update_database_fields()
