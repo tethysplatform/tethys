@@ -109,10 +109,9 @@ function update_row(table_elem){
             });
             status = json.status;
             if(status == 'Running' || status == 'Submitted' || status == 'Various'){
-                update_row(table_elem);
-//                setTimeout(function(){
-//                    update_row(table_elem);
-//                }, refresh_interval);
+                setTimeout(function(){
+                    update_row(table_elem);
+                }, refresh_interval);
             }
         }
     });
