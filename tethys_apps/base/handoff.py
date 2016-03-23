@@ -13,7 +13,8 @@ from django.shortcuts import redirect
 from django.http import HttpResponseBadRequest
 
 import tethys_apps
-from persistent_store import TethysFunctionExtractor
+from tethys_apps.base.persistent_store import TethysFunctionExtractor
+
 
 class HandoffManager(object):
     """
@@ -55,7 +56,7 @@ class HandoffManager(object):
         manager = self._get_handoff_manager_for_app(app_name)
 
         if manager:
-            handlers =  manager.valid_handlers
+            handlers = manager.valid_handlers
 
             if external_only:
                 handlers = [handler for handler in handlers if not handler.internal]
@@ -117,7 +118,6 @@ class HandoffManager(object):
 
         error['message'] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".format(manager.app.name, handler_name)
         return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
-
 
     def _get_handoff_manager_for_app(self, app_name):
         """

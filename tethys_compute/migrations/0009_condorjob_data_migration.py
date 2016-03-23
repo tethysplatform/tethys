@@ -30,9 +30,9 @@ def migrate_condorjobs(apps, schema_editor):
         condorbase.user_id = tethysjob.user_id
         condorbase.save()
 
-        condorpyjob = CondorPyJob(attributes=condorjob.attributes,
-                                  num_jobs=condorjob.num_jobs,
-                                  remote_input_files=condorjob.remote_input_files)
+        condorpyjob = CondorPyJob(_attributes=condorjob.attributes,
+                                  _num_jobs=condorjob.num_jobs,
+                                  _remote_input_files=condorjob.remote_input_files)
         condorpyjob.save()
 
         condorjob.condorbase_ptr = condorbase
@@ -74,6 +74,7 @@ def unmigrate_condorjobs(apps, schema_editor):
 
         tethysjob._subclass = 'condorjob'
         tethysjob.save()
+
 
 class Migration(migrations.Migration):
 
