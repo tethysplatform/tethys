@@ -28,9 +28,9 @@ class Migration(migrations.Migration):
             name='CondorPyJob',
             fields=[
                 ('condorpyjob_id', models.AutoField(primary_key=True, serialize=False)),
-                ('attributes', tethys_compute.utilities.DictionaryField(default=b'')),
-                ('num_jobs', models.IntegerField(default=1)),
-                ('remote_input_files', tethys_compute.utilities.ListField(default=b'')),
+                ('_attributes', tethys_compute.utilities.DictionaryField(default=b'')),
+                ('_num_jobs', models.IntegerField(default=1)),
+                ('_remote_input_files', tethys_compute.utilities.ListField(default=b'')),
             ],
         ),
         migrations.AddField(
