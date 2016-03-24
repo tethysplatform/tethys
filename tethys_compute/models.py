@@ -362,13 +362,11 @@ class TethysJob(models.Model):
 
     @property
     def run_time(self):
-        if self.start_time:
-            if not self.completion_time:
-                tzinfo = self.start_time.tzinfo
-                end_time = datetime.datetime.now(tzinfo)
-            else:
-                end_time = self.completion_time
-            run_time = end_time - self.start_time
+        # start_time = self.start_time
+        start_time = self.execute_time
+        if start_time:
+            end_time = self.completion_time or datetime.datetime.now(start_time.tzinfo)
+            run_time = end_time - start_time
         else:
             if self.completion_time and self.execute_time:
                 run_time = self.completion_time - self.execute_time
@@ -726,7 +724,6 @@ class CondorPyWorkflow(models.Model):
         """
         Returns: an instance of a condorpy Workflow
         """
-        print 'MAX_JOBS', self.max_jobs
         if not hasattr(self, '_condorpy_workflow'):
             workflow = Workflow(name=self.name.replace(' ', '_'),
                                 max_jobs=self.max_jobs,
