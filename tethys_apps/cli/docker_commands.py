@@ -9,6 +9,7 @@
 """
 
 import subprocess
+from pprint import pprint
 from subprocess import PIPE
 import os
 import sys
@@ -16,7 +17,7 @@ import json
 import getpass
 from exceptions import OSError
 from functools import cmp_to_key
-from docker.utils import kwargs_from_env, compare_version
+from docker.utils import kwargs_from_env, compare_version, create_host_config
 from docker.client import Client as DockerClient
 from docker.constants import DEFAULT_DOCKER_API_VERSION as MAX_CLIENT_DOCKER_API_VERSION
 
@@ -62,23 +63,101 @@ REQUIRED_DOCKER_CONTAINERS = [POSTGIS_CONTAINER,
 DEFAULT_DOCKER_HOST = '127.0.0.1'
 
 
-def validate_numeric_cli_input(value, default, max=None):
-    if value == '':
+def add_max_to_prompt(prompt, max):
+    if max is not None:
+        prompt += ' (max {0})'.format(max)
+    return prompt
+
+
+def add_default_to_prompt(prompt, default, choices=None):
+    if default is not None:
+        if choices is not None:
+            # Remove default choice from choices and lower case remaining options
+            lower_choices = [choice.lower() for choice in choices]
+            for index, choice in enumerate(lower_choices):
+                if choice.lower() == default.lower():
+                    lower_choices.pop(index)
+
+            prompt += ' [{0}/{1}]'.format(default.title(), '/'.join(lower_choices))
+        else:
+            prompt += ' [{0}]'.format(default)
+    return prompt
+
+
+def close_prompt(prompt):
+    prompt += ': '
+    return prompt
+
+
+def validate_numeric_cli_input(value, default=None, max=None):
+    if default is not None and value == '':
         return str(default)
 
     valid = False
     while not valid:
+        if default is not None and value == '':
+            return str(default)
+
         try:
             float(value)
+
         except ValueError:
-            raw_input('Not a valid value, please enter a number: ')
-            valid = False
+            prompt = 'Please enter a number'
+            prompt = add_max_to_prompt(prompt, max)
+            prompt = add_default_to_prompt(prompt, default)
+            prompt = close_prompt(prompt)
+            value = raw_input(prompt)
             continue
 
-        if float(value) > max:
-            raw_input('Value must be less than {0}: '.format(max))
-        else:
-            valid = True
+        if max is not None:
+            if float(value) > max:
+                if default is not None:
+                    value = raw_input('Maximum allowed value is {0} [{1}]: '.format(max, default))
+                else:
+                    value = raw_input('Maximum allowed value is {0}: '.format(max))
+                continue
+        valid = True
+    return value
+
+
+def validate_choice_cli_input(value, choices, default=None):
+    if default is not None and value == '':
+        return str(default)
+
+    while value.lower() not in choices:
+        if default is not None and value == '':
+            return str(default)
+
+        prompt = 'Please provide a valid option'
+        prompt = add_default_to_prompt(prompt, default, choices)
+        prompt = close_prompt(prompt)
+        value = raw_input(prompt)
+
+    return value
+
+
+def validate_directory_cli_input(value, default=None):
+    valid = False
+    while not valid:
+        if default is not None and value == '':
+            value = str(default)
+
+        if len(value) > 0 and value[0] != '/':
+            value = '/' + value
+
+        if not os.path.isdir(value):
+            try:
+                os.makedirs(value)
+            except OSError as e:
+                print ('{0}: {1}'.format(repr(e), value))
+                prompt = 'Please provide a valid directory'
+                prompt = add_default_to_prompt(prompt, default)
+                prompt = close_prompt(prompt)
+                value = raw_input(prompt)
+                continue
+
+        valid = True
+
     return value
 
 
@@ -429,62 +508,110 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
         print("\nInstalling the GeoServer Docker container...")
 
         if "cluster" in GEOSERVER_IMAGE:
-            # Cluster settings
-            enabled_nodes = '1'
-            rest_nodes = '1'
-
-            # Flow Control Settings
-            max_timeout = '60'
-            num_cores = '4'
-
-            max_ows_global = '100'
-            max_wms_getmap = '8'
-            max_ows_gwc = '16'
-            max_per_user = '8'
 
             if not defaults:
-                print("The GeoServer docker can be configured to run in a clustered mode for better performance. This is "
-                      "especially useful for production use of GeoServer.")
+                # Environmental variables from user input
+                environment = dict()
+
+                print("The GeoServer docker can be configured to run in a clustered mode (multiple instances of "
+                      "GeoServer running in the docker container) for better performance.\n")
 
                 enabled_nodes = raw_input('Number of GeoServer Instances Enabled (max 4) [1]: ')
-                enabled_nodes = validate_numeric_cli_input(enabled_nodes, 1, 4)
+                environment['ENABLED_NODES'] = validate_numeric_cli_input(enabled_nodes, 1, 4)
 
                 rest_nodes = raw_input('Number of GeoServer Instances with REST API Enabled (max 4) [1]: ')
-                rest_nodes = validate_numeric_cli_input(rest_nodes, 1, 4)
+                environment['REST_NODES'] = validate_numeric_cli_input(rest_nodes, 1, 4)
 
-                print("GeoServer can be configured to flow control limits to prevent it from becoming "
-                      "overwhelmed with too many simultaneous calls. This can be done automatically based on the "
-                      "number of processors the GeoServer is running on or each limit can be set explicitly.")
+                print("\nGeoServer can be configured with limits to certain types of requests to prevent it from "
+                      "becoming overwhelmed. This can be done automatically based on a number of processors or each "
+                      "limit can be set explicitly.\n")
 
                 flow_control_mode = raw_input('Would you like to specify number of Processors (c) OR set '
-                                              'limits explicitly (e): ')
-                while flow_control_mode not in ['c' or 'e']:
-                    flow_control_mode = raw_input('Invalid option supplied, please enter either "c" to specify number '
-                                                  'of cores or "e" to set limits explicitly: ')
+                                              'limits explicitly (e) [C/e]: ')
+                flow_control_mode = validate_choice_cli_input(flow_control_mode, ['c', 'e'], 'c')
 
-                if flow_control_mode == 'c':
+                if flow_control_mode.lower() == 'c':
                     num_cores = raw_input('Number of Processors [4]: ')
-                    if num_cores == '':
-                        num_cores = '4'
+                    environment['NUM_CORES'] = validate_numeric_cli_input(num_cores, '4')
+
                 else:
-                   max_ows_global = raw_input('Maximum Number of Simultaneous OWS Requests [100]: ')
-                   max_ows_global = validate_numeric_cli_input(max_ows_global, '100')
+                    max_ows_global = raw_input('Maximum number of simultaneous OGC web service requests '
+                                               '(e.g.: WMS, WCS, WFS) [100]: ')
+                    environment['MAX_OWS_GLOBAL'] = validate_numeric_cli_input(max_ows_global, '100')
 
-                   max_wms_getmap = raw_input('Maximum Number of Simultaneous GetMap Requests [8]: ')
-                   max_wms_getmap = validate_numeric_cli_input(max_wms_getmap, '8')
+                    max_wms_getmap = raw_input('Maximum number of simultaneous GetMap requests [8]: ')
+                    environment['MAX_WMS_GETMAP'] = validate_numeric_cli_input(max_wms_getmap, '8')
 
-                   max_ows_gwc = raw_input('Maximum Number of Simultaneous GeoWebCache Tile Renders [16]: ')
-                   max_ows_gwc = validate_numeric_cli_input(max_ows_gwc, '16')
+                    max_ows_gwc = raw_input('Maximum number of simultaneous GeoWebCache tile renders [16]: ')
+                    environment['MAX_OWS_GWC'] = validate_numeric_cli_input(max_ows_gwc, '16')
 
-                   max_per_user = raw_input('Maximum Number of Requests per User [8]: ')
-                   max_per_user = validate_numeric_cli_input(max_per_user, '8')
+                    max_per_user = raw_input('Maximum number of simultaneous requests per user [8]: ')
+                    environment['MAX_PER_USER'] = validate_numeric_cli_input(max_per_user, '8')
 
+                max_timeout = raw_input('Maximum request timeout in seconds [60]: ')
+                environment['MAX_TIMEOUT'] = validate_numeric_cli_input(max_timeout, '60')
 
-            exit(0)
-            docker_client.create_container(
-                name=GEOSERVER_CONTAINER,
-                image=GEOSERVER_IMAGE
-            )
+                max_memory = raw_input('Maximum memory to allocate to each GeoServer instance in MB '
+                                       '(max 4096) [1024]: ')
+                environment['MAX_MEMORY'] = validate_numeric_cli_input(max_memory, '1024', max='4096')
+                min_memory = raw_input('Minimum memory to allocate to each GeoServer instance in MB '
+                                       '(max {0}) [{0}]: '.format(max_memory))
+                environment['MIN_MEMORY'] = validate_numeric_cli_input(min_memory, max_memory, max=max_memory)
+
+                mount_data_dir = raw_input('Bind the GeoServer data directory to the host? [Y/n]: ')
+                mount_data_dir = validate_choice_cli_input(mount_data_dir, ['y', 'n'], 'y')
+
+                if mount_data_dir.lower() == 'y':
+                    default_mount_location = '/usr/lib/tethys/geoserver/data'
+                    gs_data_volume = '/var/geoserver/data'
+                    mount_location = raw_input('Specify location to bind data directory '
+                                               '[{0}]: '.format(default_mount_location))
+                    mount_location = validate_directory_cli_input(mount_location, default_mount_location)
+                    host_config = create_host_config(
+                        binds=[
+                            ':'.join([mount_location, gs_data_volume])
+                        ]
+                    )
+
+                    docker_client.create_container(
+                        name=GEOSERVER_CONTAINER,
+                        image=GEOSERVER_IMAGE,
+                        environment=environment,
+                        volumes=['/var/log/supervisor', '/var/geoserver/data', '/var/geoserver'],
+                        host_config=host_config,
+                    )
+                else:
+                    docker_client.create_container(
+                        name=GEOSERVER_CONTAINER,
+                        image=GEOSERVER_IMAGE,
+                        environment=environment,
+                        volumes=['/var/log/supervisor', '/var/geoserver/data', '/var/geoserver'],
+                    )
+
+            else:
+                # Default environmental variables
+                environment = {
+                    'ENABLED_NODES': '1',
+                    'REST_NODES': '1',
+                    'MAX_TIMEOUT': '60',
+                    'NUM_CORES': '4',
+                    'MAX_MEMORY': '1024',
+                    'MIN_MEMORY': '1024',
+                }
+
+                host_config = create_host_config(
+                        binds=[
+                            '/usr/lib/tethys/geoserver/data:/var/geoserver/data'
+                        ]
+                    )
+
+                docker_client.create_container(
+                    name=GEOSERVER_CONTAINER,
+                    image=GEOSERVER_IMAGE,
+                    environment=environment,
+                    volumes=['/var/log/supervisor', '/var/geoserver/data', '/var/geoserver'],
+                    host_config=host_config
+                )
         else:
             exit(0)
             docker_client.create_container(
@@ -599,21 +726,6 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
     print("\nThe Docker containers have been successfully installed.")
 
 
-def container_check(docker_client, containers=ALL_DOCKER_INPUTS):
-    """
-    Check to ensure containers are installed.
-    """
-    # Perform this check to make sure the "tethys docker init" command has been run
-    containers_needing_to_be_installed = get_containers_to_create(docker_client, containers=containers)
-
-    # if len(containers_needing_to_be_installed) > 0:
-    #     print('The following Docker containers have not been installed: {0}'.format(
-    #         ', '.join(containers_needing_to_be_installed)))
-    #     print('Run the "tethys docker init" command to install them or specify a specific container '
-    #           'using the "-c" option.')
-    #     exit(1)
-
-
 def start_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
     """
     Start Docker containers
@@ -641,9 +753,18 @@ def start_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
             if not container_status[GEOSERVER_CONTAINER] and container == GEOSERVER_INPUT:
                 # Start GeoServer
                 print('Starting GeoServer container...')
-                docker_client.start(container=GEOSERVER_CONTAINER,
-                                    restart_policy='always',
-                                    port_bindings={8080: DEFAULT_GEOSERVER_PORT})
+                if 'cluster' in GEOSERVER_IMAGE:
+                    docker_client.start(container=GEOSERVER_CONTAINER,
+                                        restart_policy='always',
+                                        port_bindings={8181: DEFAULT_GEOSERVER_PORT,
+                                                       8081: ('0.0.0.0', 8081),
+                                                       8082: ('0.0.0.0', 8082),
+                                                       8083: ('0.0.0.0', 8083),
+                                                       8084: ('0.0.0.0', 8084)})
+                else:
+                    docker_client.start(container=GEOSERVER_CONTAINER,
+                                        restart_policy='always',
+                                        port_bindings={8080: DEFAULT_GEOSERVER_PORT})
             elif not container or container == GEOSERVER_INPUT:
                 print('GeoServer container already running...')
         except KeyError:
@@ -729,22 +850,22 @@ def remove_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
     """
     Remove all docker containers
     """
-    # Perform check
-    container_check(docker_client, containers=containers)
+    # Check for containers that aren't installed
+    containers_not_installed = get_containers_to_create(docker_client, containers=containers)
 
     for container in containers:
         # Remove PostGIS
-        if container == POSTGIS_INPUT:
+        if container == POSTGIS_INPUT and POSTGIS_CONTAINER not in containers_not_installed:
             print('Removing PostGIS...')
             docker_client.remove_container(container=POSTGIS_CONTAINER)
 
         # Remove GeoServer
-        if container == GEOSERVER_INPUT:
+        if container == GEOSERVER_INPUT and GEOSERVER_CONTAINER not in containers_not_installed:
             print('Removing GeoServer...')
-            docker_client.remove_container(container=GEOSERVER_CONTAINER)
+            docker_client.remove_container(container=GEOSERVER_CONTAINER, v=True)
 
         # Remove 52 North WPS
-        if container == N52WPS_INPUT:
+        if container == N52WPS_INPUT and N52WPS_CONTAINER not in containers_not_installed:
             print('Removing 52 North WPS...')
             docker_client.remove_container(container=N52WPS_CONTAINER)
 
