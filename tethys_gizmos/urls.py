@@ -19,6 +19,7 @@ ajax_urls = [
     url(r'^(?P<job_id>[\d.@+-]+)/delete$', jobs_table_views.delete, name='delete_job'),
     url(r'^(?P<job_id>[\d.@+-]+)/execute', jobs_table_views.execute, name='execute_job'),
     url(r'^(?P<job_id>[\d.@+-]+)/update-row', jobs_table_views.update_row, name='update_job_row'),
+    url(r'^(?P<job_id>[\d.@+-]+)/update-status', jobs_table_views.update_status, name='update_job_status'),
 ]
 
 urlpatterns = [
