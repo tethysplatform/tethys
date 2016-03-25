@@ -126,7 +126,7 @@ Management command for Persistent Stores. To learn more about persistent stores 
 
 * **-r, --refresh**: Drop databases prior to performing persistent store sync resulting in a refreshed database.
 * **-f, --firsttime**: All initialization functions will be executed with the ``first_time`` parameter set to ``True``.
-* **-d, DATABASE, --database DATABASE**: Name of the persistent store database to target.
+* **-d DATABASE, --database DATABASE**: Name of the persistent store database to target.
 * **-m MANAGE, --manage MANAGE**: Absolute path to :file:`manage.py` file for Tethys Platform installation if different than default.
 
 **Examples:**
@@ -191,7 +191,7 @@ Management commands for the Tethys Docker containers. To learn more about Docker
 **Optional Arguments:**
 
 * **-d, --defaults**: Install Docker containers with default values (will not prompt for input). Only applicable to *init* subcommand.
-* **-c {postgis, geoserver, wps}, --container {postgis, geoserver, wps}**: Execute subcommand only on the container specified.
+* **-c {postgis, geoserver, wps} [{postgis, geoserver, wps} ...], --containers {postgis, geoserver, wps} [{postgis, geoserver, wps} ...]**: Execute subcommand only on the container(s) specified.
 * **-b, --boot2docker**: Also stop Boot2Docker when *stop* subcommand is called with this option.
 
 **Examples:**
@@ -209,6 +209,9 @@ Management commands for the Tethys Docker containers. To learn more about Docker
 
     # Start only PostGIS Docker
     $ tethys docker start -c postgis
+
+    # Start PostGIS and GeoServer Docker
+    $ tethys docker start -c postgis geoserver
 
     # Stop Tethys Dockers
     $ tethys docker stop
