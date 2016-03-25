@@ -8,6 +8,10 @@
 ********************************************************************************
 """
 import os
+import sys
+import traceback
+import logging
+log = logging.getLogger('tethys.tethys_apps.utilities')
 
 from django.conf.urls import url
 from django.contrib.staticfiles import utils
@@ -56,11 +60,17 @@ def generate_app_url_patterns():
                     try:
                         module = __import__(module_name, fromlist=[function_name])
                     except ImportError:
-                        raise ValueError('"{0}" is not a valid controller function.'.format(url_map.controller))
+                        error_msg = 'The following error occurred while trying to import the controller function ' \
+                                    '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
+                        log.error(error_msg)
+                        sys.exit(1)
                     try:
                         controller_function = getattr(module, function_name)
-                    except AttributeError:
-                        raise ValueError('"{0}" is not a valid controller function.'.format(url_map.controller))
+                    except AttributeError, e:
+                        error_msg = 'The following error occurred while tyring to access the controller function ' \
+                                    '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
+                        log.error(error_msg)
+                        sys.exit(1)
                 else:
                     controller_function = url_map.controller
                 django_url = url(url_map.url, controller_function, name=url_map.name)

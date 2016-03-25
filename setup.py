@@ -18,7 +18,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 requires = []
 
-version = '1.3.0'
+version = '1.4.0'
 
 setup(
     name='tethys_platform',
@@ -28,9 +28,9 @@ setup(
     license='BSD 2-Clause License',
     description='Primary Tethys Platform Django Site Project',
     long_description=README,
-    url='http://tethys.ci-water.org/',
+    url='http://tethysplatform.org/',
     author='Nathan Swain',
-    author_email='nathan.swain@byu.net',
+    author_email='nswain@aquaveo.com',
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',

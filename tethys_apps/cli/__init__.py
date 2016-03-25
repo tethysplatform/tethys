@@ -112,28 +112,28 @@ def docker_command(args):
     Docker management commands.
     """
     if args.command == 'init':
-        docker_init(container=args.container, defaults=args.defaults)
+        docker_init(containers=args.containers, defaults=args.defaults)
 
     elif args.command == 'start':
-        docker_start(container=args.container)
+        docker_start(containers=args.containers)
 
     elif args.command == 'stop':
-        docker_stop(container=args.container, boot2docker=args.boot2docker)
+        docker_stop(containers=args.containers, boot2docker=args.boot2docker)
 
     elif args.command == 'status':
         docker_status()
 
     elif args.command == 'update':
-        docker_update(container=args.container, defaults=args.defaults)
+        docker_update(containers=args.containers, defaults=args.defaults)
 
     elif args.command == 'remove':
-        docker_remove(container=args.container)
+        docker_remove(containers=args.containers)
 
     elif args.command == 'ip':
         docker_ip()
 
     elif args.command == 'restart':
-        docker_restart(container=args.container)
+        docker_restart(containers=args.containers)
 
 
 def syncstores_command(args):
@@ -242,8 +242,9 @@ def tethys_command():
                                action='store_true',
                                dest='defaults',
                                help="Run command without prompting without interactive input, using defaults instead.")
-    docker_parser.add_argument('-c', '--container',
-                               help="Execute the command only on the given container.",
+    docker_parser.add_argument('-c', '--containers',
+                               nargs='+',
+                               help="Execute the command only on the given container(s).",
                                choices=[POSTGIS_INPUT, GEOSERVER_INPUT, N52WPS_INPUT])
     docker_parser.add_argument('-b', '--boot2docker',
                                action='store_true',
