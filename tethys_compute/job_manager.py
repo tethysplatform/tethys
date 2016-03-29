@@ -397,7 +397,8 @@ class CondorWorkflowNodeBaseTemplate(object):
 
     def create_node(self, workflow, app_workspace, user_workspace):
         kwargs = JobManager._replace_workspaces(self.parameters, app_workspace, user_workspace)
-        kwargs.pop('parents')
+        if 'parents' in kwargs:
+            kwargs.pop('parents')
         node = self.type(name=self.name,
                          workflow=workflow,
                          **kwargs)
