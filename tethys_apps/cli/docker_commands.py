@@ -389,6 +389,28 @@ def get_docker_container_dicts(docker_client):
     return container_dicts
 
 
+def get_docker_container_image(docker_client):
+    """
+    Returns a dictionary containing the image each existing container.
+    """
+    containers = docker_client.containers(all=True)
+    images = dict()
+
+    for container in containers:
+        names = container['Names']
+        image = container['Image']
+
+        for name in names:
+            if GEOSERVER_CONTAINER in name:
+                images[GEOSERVER_CONTAINER] = image
+            elif POSTGIS_CONTAINER in name:
+                images[POSTGIS_CONTAINER] = image
+            elif N52WPS_CONTAINER in name:
+                images[N52WPS_CONTAINER] = image
+
+    return images
+
+
 def get_docker_container_status(docker_client):
     """
     Returns a dictionary representing the container status. If a container is included in the dictionary keys, it is
@@ -730,6 +752,8 @@ def start_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
     """
     Start Docker containers
     """
+    container_images = get_docker_container_image(docker_client)
+
     for container in containers:
         # Get container dicts
         container_status = get_docker_container_status(docker_client)
@@ -753,7 +777,7 @@ def start_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
             if not container_status[GEOSERVER_CONTAINER] and container == GEOSERVER_INPUT:
                 # Start GeoServer
                 print('Starting GeoServer container...')
-                if 'cluster' in GEOSERVER_IMAGE:
+                if 'cluster' in container_images[GEOSERVER_CONTAINER]:
                     docker_client.start(container=GEOSERVER_CONTAINER,
                                         restart_policy='always',
                                         port_bindings={8181: DEFAULT_GEOSERVER_PORT,
