@@ -109,6 +109,7 @@ function update_row(table_elem){
             });
             status = json.status;
             if(status == 'Running' || status == 'Submitted' || status == 'Various'){
+                var run_time_field = $('#run_time-' + job_id)
                 setTimeout(function(){
                     update_row(table_elem);
                 }, refresh_interval);

@@ -93,7 +93,23 @@ class JobsTable(TethysGizmoOptions):
             for attribute in column_fields:
                 column_name = attribute.title().replace('_', ' ')
                 if hasattr(job, attribute):
-                    row_values.append(getattr(job, attribute))
+                    value = getattr(job, attribute)
+                    # Truncate fractional seconds
+                    if attribute == 'run_time':
+                        # times = []
+                        # total_seconds = value.seconds
+                        # times.append(('days', run_time.days))
+                        # times.append(('hr', total_seconds/3600))
+                        # times.append(('min', (total_seconds%3600)/60))
+                        # times.append(('sec', total_seconds%60))
+                        # run_time_str = ''
+                        # for time_str, time in times:
+                        #     if time:
+                        #         run_time_str += "%s %s " % (time, time_str)
+                        # if not run_time_str or (run_time.days == 0 and total_seconds < 2):
+                        #     run_time_str = '%.2f sec' % (total_seconds + float(run_time.microseconds)/1000000,)
+                        value = str(value).split('.')[0]
+                    row_values.append(value)
                 else:
                     log.waring('Column %s was not added because %s Job %s has no attribute %s.',
                                column_name, str(job), attribute)
