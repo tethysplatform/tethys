@@ -373,19 +373,7 @@ class TethysJob(models.Model):
             else:
                 return ''
 
-        times = []
-        total_seconds = run_time.seconds
-        times.append(('days', run_time.days))
-        times.append(('hr', total_seconds/3600))
-        times.append(('min', (total_seconds%3600)/60))
-        times.append(('sec', total_seconds%60))
-        run_time_str = ''
-        for time_str, time in times:
-            if time:
-                run_time_str += "%s %s " % (time, time_str)
-        if not run_time_str or (run_time.days == 0 and total_seconds < 2):
-            run_time_str = '%.2f sec' % (total_seconds + float(run_time.microseconds)/1000000,)
-        return run_time_str
+        return run_time
 
     def execute(self, *args, **kwargs):
         """
@@ -824,7 +812,7 @@ def condor_workflow_pre_save(sender, instance, raw, using, update_fields, **kwar
 def condor_workflow_pre_delete(sender, instance, using, **kwargs):
     try:
         instance.condor_object.close_remote()
-        shutil.rmtree(instance.initial_dir)
+        shutil.rmtree(instance.workspace)
     except Exception, e:
         log.exception(e.message)
 
