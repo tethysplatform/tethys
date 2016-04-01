@@ -285,7 +285,7 @@ class CondorJobTemplate(JobTemplate):
             parameters['_attributes'] = job_description.attributes
         else:
             msg = 'The job_description argument was not defined in the job_template {0}. ' \
-                  'This argument will be required in version 1.4 of Tethys.'.format(name)
+                  'This argument will be required in version 1.5 of Tethys.'.format(name)
             warnings.warn(msg, DeprecationWarning)
         parameters.update(kwargs)
         super(self.__class__, self).__init__(name, JOB_TYPES['CONDORJOB'], parameters)
@@ -397,7 +397,8 @@ class CondorWorkflowNodeBaseTemplate(object):
 
     def create_node(self, workflow, app_workspace, user_workspace):
         kwargs = JobManager._replace_workspaces(self.parameters, app_workspace, user_workspace)
-        kwargs.pop('parents')
+        if 'parents' in kwargs:
+            kwargs.pop('parents')
         node = self.type(name=self.name,
                          workflow=workflow,
                          **kwargs)
