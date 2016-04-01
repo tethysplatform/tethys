@@ -1,5 +1,9 @@
+{% load staticfiles tethys_gizmos %}
+
 {% for column_value in row %}
-  <td>{{ column_value }}</td>
+  {% with col_idx=forloop.counter0 %}
+    <td id="{{ column_fields|return_item:col_idx }}-{{ job.id }}">{{ column_value }}</td>
+  {% endwith %}
 {% endfor %}
 {% if status_actions %}
   <td id="jobs-table-status-{{ job.id }}" class="job-status status-col" data-job-id="{{ job.id }}">

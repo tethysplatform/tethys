@@ -49,7 +49,7 @@ def update_row(request, job_id):
 
         row = JobsTable.get_rows([job], filters)[0]
 
-        data.update({'job': job, 'row': row, 'job_status': status,
+        data.update({'job': job, 'row': row, 'column_fields': filters, 'job_status': status,
                      'job_statuses': statuses, 'delay_loading_status': False})
 
         success = True
