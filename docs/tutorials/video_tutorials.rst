@@ -51,14 +51,3 @@ This tutorial was given during the National Flood Interoperability Experiment an
 
     <iframe width="420" height="315" src="https://www.youtube.com/embed/1NIEoc5G8Ks" frameborder="0" allowfullscreen style="margin-bottom: 25px;"></iframe>
 
-Dam Break Tutorial
-==================
-
-This tutorial was originally given during the CUAHSI 2015 conference on HydroInformatics in Tuscaloosa, AL. It provides a good overview of many of the features of Tethys Platform.
-
-.. note::
-
-  Video coming soon!
-
-**View Solution Source Code:** `<https://github.com/tethysplatform/tethysapp-dam_break>`_
-
