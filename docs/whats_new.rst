@@ -109,6 +109,10 @@ Patches
 
 * 1.3.1
    * Updated dependency for condorpy to fix status for muti-process jobs on the jobs table.
+* 1.3.2
+   * Documentation update to reference new tutorial. See :doc:`./tutorials/dam_break`.
+* 1.3.3
+   * Locked down Python Social Auth dependency to version 0.2.13. Versions after this one break social authentication.
 
 Prior Release Notes
 ===================
