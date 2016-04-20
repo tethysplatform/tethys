@@ -401,13 +401,13 @@ def get_docker_container_image(docker_client):
         image = container['Image']
 
         for name in names:
-            if GEOSERVER_CONTAINER in name:
+            # Container names have a slash before them like this: "/tethys_geoserver"
+            if GEOSERVER_CONTAINER == name[1:]:
                 images[GEOSERVER_CONTAINER] = image
-            elif POSTGIS_CONTAINER in name:
+            elif POSTGIS_CONTAINER == name[1:]:
                 images[POSTGIS_CONTAINER] = image
-            elif N52WPS_CONTAINER in name:
+            elif N52WPS_CONTAINER == name[1:]:
                 images[N52WPS_CONTAINER] = image
-
     return images
 
 
