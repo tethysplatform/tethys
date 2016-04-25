@@ -80,7 +80,8 @@ var TETHYS_MAP_VIEW = (function() {
    *************************************************************************/
   // Initialization Methods
    var ol_base_map_init, ol_controls_init, ol_drawing_init, ol_layers_init, ol_legend_init, ol_map_init,
-       ol_selection_interaction_init, ol_wms_feature_selection_init, ol_view_init, parse_options;
+       ol_selection_interaction_init, ol_wms_feature_selection_init, ol_view_init, parse_options,
+       ol_initialize_all;
 
   // Drawing Methods
   var add_drawing_interaction, add_drag_box_interaction, 
@@ -752,6 +753,46 @@ var TETHYS_MAP_VIEW = (function() {
     if (is_defined(m_feature_selection_options)) {
       m_feature_selection_options = JSON.parse(m_feature_selection_options);
     }
+  };
+
+  ol_initialize_all = function() {
+    // Map container selector
+    m_map_target = 'map_view';
+    m_textarea_target = 'map_view_geometry';
+    m_selectable_layers = [];
+    m_selectable_wms_layers = [];
+
+    m_draw_id_counter = 1;
+
+    // Parse options
+    parse_options();
+
+    // Initialize the map
+    ol_map_init();
+
+    // Initialize Controls
+    ol_controls_init();
+
+    // Initialize Base Map
+    ol_base_map_init();
+
+    // Initialize Layers
+    ol_layers_init();
+
+    // Initialize WMS Selectable Features
+    ol_wms_feature_selection_init();
+
+    // Initialize Selectable Features
+    ol_selection_interaction_init();
+
+    // Initialize Drawing
+    ol_drawing_init();
+
+    // Initialize View
+    ol_view_init();
+
+    // Initialize Legend
+    ol_legend_init();
   };
 
   /***********************************
@@ -1654,6 +1695,7 @@ var TETHYS_MAP_VIEW = (function() {
     getMap: get_map,
     getTarget: get_target,
     jsonResponseHandler: jsonp_response_handler,
+    reInitializeMap: ol_initialize_all,
 
     zoomToExtent: function(lat_long_extent) {
       var map_extent = ol.proj.transformExtent(lat_long_extent, LAT_LON_PROJECTION, DEFAULT_PROJECTION);
@@ -1710,44 +1752,7 @@ var TETHYS_MAP_VIEW = (function() {
   // Initialization: jQuery function that gets called when
   // the DOM tree finishes loading
   $(function() {
-    // Map container selector
-    m_map_target = 'map_view';
-    m_textarea_target = 'map_view_geometry';
-    m_selectable_layers = [];
-    m_selectable_wms_layers = [];
-
-    m_draw_id_counter = 1;
-
-    // Parse options
-    parse_options();
-
-    // Initialize the map
-    ol_map_init();
-
-    // Initialize Controls
-    ol_controls_init();
-
-    // Initialize Base Map
-    ol_base_map_init();
-
-    // Initialize Layers
-    ol_layers_init();
-
-    // Initialize WMS Selectable Features
-    ol_wms_feature_selection_init();
-
-    // Initialize Selectable Features
-    ol_selection_interaction_init();
-
-    // Initialize Drawing
-    ol_drawing_init();
-
-    // Initialize View
-    ol_view_init();
-
-    // Initialize Legend
-    ol_legend_init();
-
+    ol_initialize_all();
   });
 
   return public_interface;
