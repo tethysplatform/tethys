@@ -1158,25 +1158,31 @@ var TETHYS_MAP_VIEW = (function() {
 
         legend_class = legend_classes[i];
 
-        html += '<li class="legend-class ' + legend_class.type + '"><span class="legend-class-symbol"><svg>';
-
-        if (legend_class.type === legend_class.POINT_TYPE) {
-          html += '<circle cx="10" cy="10" r="25%" fill="' + legend_class.fill + '"/>';
+        html += '<li class="legend-class ' + legend_class.type + '">';
+        if (legend_class.type === legend_class.RASTER_TYPE) {
+          html += '<span class="legend-class-symbol">' + legend_class.value + '</span>' +
+                  '<span class="legend-class-value"><img src="' + legend_class.geoserver_url + 
+                  '?REQUEST=GetLegendGraphic&VERSION=1.0.0&' +
+                  'STYLE=' + legend_class.style +
+                  '&FORMAT=image/png&WIDTH=20&HEIGHT=10&' +
+                  'LEGEND_OPTIONS=forceRule:true&' +
+                  'LAYER=' + legend_class.layer + '"></span></li>';
+        } else {
+            html += '<span class="legend-class-symbol"><svg>';
+            if (legend_class.type === legend_class.POINT_TYPE) {
+              html += '<circle cx="10" cy="10" r="25%" fill="' + legend_class.fill + '"/>';
+            }
+    
+            else if (legend_class.type === legend_class.LINE_TYPE) {
+              html += '<polyline points="19 1, 1 6, 19 14, 1 19" stroke="' + legend_class.stroke + '" fill="transparent" stroke-width="2"/>';
+            }
+    
+            else if (legend_class.type === legend_class.POLYGON_TYPE) {
+              html += '<polygon points="1 10, 5 3, 13 1, 19 9, 14 19, 9 13" stroke="' + legend_class.stroke + '" fill="' + legend_class.fill + '" stroke-width="2"/>';
+            }
+    
+            html += '</svg></span><span class="legend-class-value">' + legend_class.value + '</span></li>';
         }
-
-        else if (legend_class.type === legend_class.LINE_TYPE) {
-          html += '<polyline points="19 1, 1 6, 19 14, 1 19" stroke="' + legend_class.stroke + '" fill="transparent" stroke-width="2"/>';
-        }
-
-        else if (legend_class.type === legend_class.POLYGON_TYPE) {
-          html += '<polygon points="1 10, 5 3, 13 1, 19 9, 14 19, 9 13" stroke="' + legend_class.stroke + '" fill="' + legend_class.fill + '" stroke-width="2"/>';
-        }
-
-        else if (legend_class.type === legend_class.RASTER_TYPE) {
-
-        }
-
-        html += '</svg></span><span class="legend-class-value">' + legend_class.value + '</span></li>';
       }
 
       html += '</ul></div>';

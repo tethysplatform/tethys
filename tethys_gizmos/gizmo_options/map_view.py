@@ -462,7 +462,7 @@ class MVLegendClass(SecondaryGizmoOptions):
 
     """
 
-    def __init__(self, type, value, fill='', stroke='', ramp=[]):
+    def __init__(self, type, value, fill='', stroke='', geoserver_url='', style='', layer=''):
         """
         Constructor
         """
@@ -506,9 +506,11 @@ class MVLegendClass(SecondaryGizmoOptions):
                 raise ValueError('Argument "fill" must be specified for MVLegendClass of type "polygon".')
 
         elif type == self.RASTER_TYPE:
-            if ramp:
-                self.ramp = ramp
+            if geoserver_url and style and layer:
+                self.geoserver_url = geoserver_url
+                self.style = style
+                self.layer = layer
             else:
-                raise ValueError('Argument "ramp" must be specified for MVLegendClass of type "raster".')
+                raise ValueError('Arguments "geoserver_url" "style" and "layer" must be specified for MVLegendClass of type "raster".')
 
 
