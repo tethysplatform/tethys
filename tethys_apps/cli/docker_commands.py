@@ -577,7 +577,7 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                                        '(max 4096) [1024]: ')
                 environment['MAX_MEMORY'] = validate_numeric_cli_input(max_memory, '1024', max='4096')
                 min_memory = raw_input('Minimum memory to allocate to each GeoServer instance in MB '
-                                       '(max {0}) [{0}]: '.format(max_memory))
+                                       '(max {0}) [{0}]: '.format(max_memory if max_memory else '1024'))
                 environment['MIN_MEMORY'] = validate_numeric_cli_input(min_memory, max_memory, max=max_memory)
 
                 mount_data_dir = raw_input('Bind the GeoServer data directory to the host? [Y/n]: ')
