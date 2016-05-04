@@ -541,8 +541,10 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                 enabled_nodes = raw_input('Number of GeoServer Instances Enabled (max 4) [1]: ')
                 environment['ENABLED_NODES'] = validate_numeric_cli_input(enabled_nodes, 1, 4)
 
-                rest_nodes = raw_input('Number of GeoServer Instances with REST API Enabled (max 4) [1]: ')
-                environment['REST_NODES'] = validate_numeric_cli_input(rest_nodes, 1, 4)
+                max_rest_nodes = enabled_nodes if enabled_nodes else 1
+                rest_nodes = raw_input('Number of GeoServer Instances with REST API Enabled (max {0}) [1]: '.format(
+                    max_rest_nodes))
+                environment['REST_NODES'] = validate_numeric_cli_input(rest_nodes, 1, max_rest_nodes)
 
                 print("\nGeoServer can be configured with limits to certain types of requests to prevent it from "
                       "becoming overwhelmed. This can be done automatically based on a number of processors or each "
@@ -567,18 +569,16 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                     max_ows_gwc = raw_input('Maximum number of simultaneous GeoWebCache tile renders [16]: ')
                     environment['MAX_OWS_GWC'] = validate_numeric_cli_input(max_ows_gwc, '16')
 
-                    max_per_user = raw_input('Maximum number of simultaneous requests per user [8]: ')
-                    environment['MAX_PER_USER'] = validate_numeric_cli_input(max_per_user, '8')
-
                 max_timeout = raw_input('Maximum request timeout in seconds [60]: ')
                 environment['MAX_TIMEOUT'] = validate_numeric_cli_input(max_timeout, '60')
 
                 max_memory = raw_input('Maximum memory to allocate to each GeoServer instance in MB '
                                        '(max 4096) [1024]: ')
-                environment['MAX_MEMORY'] = validate_numeric_cli_input(max_memory, '1024', max='4096')
+                max_memory = validate_numeric_cli_input(max_memory, '1024', max='4096')
+                environment['MAX_MEMORY'] = max_memory
                 min_memory = raw_input('Minimum memory to allocate to each GeoServer instance in MB '
-                                       '(max {0}) [{0}]: '.format(max_memory if max_memory else '1024'))
-                environment['MIN_MEMORY'] = validate_numeric_cli_input(min_memory, max_memory, max=max_memory)
+                                       '(max {0}) [{0}]: '.format(max_memory))
+                environment['MIN_MEMORY'] = validate_numeric_cli_input(min_memory, max_memory, max=int(max_memory))
 
                 mount_data_dir = raw_input('Bind the GeoServer data directory to the host? [Y/n]: ')
                 mount_data_dir = validate_choice_cli_input(mount_data_dir, ['y', 'n'], 'y')
@@ -635,7 +635,7 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                     host_config=host_config
                 )
         else:
-            exit(0)
+            pass
             docker_client.create_container(
                 name=GEOSERVER_CONTAINER,
                 image=GEOSERVER_IMAGE
@@ -763,7 +763,7 @@ def start_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
             if not container_status[POSTGIS_CONTAINER] and container == POSTGIS_INPUT:
                 print('Starting PostGIS container...')
                 docker_client.start(container=POSTGIS_CONTAINER,
-                                    restart_policy='always',
+                                    # restart_policy='always',
                                     port_bindings={5432: DEFAULT_POSTGIS_PORT})
             elif container == POSTGIS_INPUT:
                 print('PostGIS container already running...')
@@ -779,7 +779,7 @@ def start_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
                 print('Starting GeoServer container...')
                 if 'cluster' in container_images[GEOSERVER_CONTAINER]:
                     docker_client.start(container=GEOSERVER_CONTAINER,
-                                        restart_policy='always',
+                                        # restart_policy='always',
                                         port_bindings={8181: DEFAULT_GEOSERVER_PORT,
                                                        8081: ('0.0.0.0', 8081),
                                                        8082: ('0.0.0.0', 8082),
@@ -787,7 +787,7 @@ def start_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
                                                        8084: ('0.0.0.0', 8084)})
                 else:
                     docker_client.start(container=GEOSERVER_CONTAINER,
-                                        restart_policy='always',
+                                        # restart_policy='always',
                                         port_bindings={8080: DEFAULT_GEOSERVER_PORT})
             elif not container or container == GEOSERVER_INPUT:
                 print('GeoServer container already running...')
@@ -802,7 +802,7 @@ def start_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
                 # Start 52 North WPS
                 print('Starting 52 North WPS container...')
                 docker_client.start(container=N52WPS_CONTAINER,
-                                    restart_policy='always',
+                                    # restart_policy='always',
                                     port_bindings={8080: DEFAULT_N52WPS_PORT})
             elif container == N52WPS_INPUT:
                 print('52 North WPS container already running...')
