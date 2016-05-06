@@ -11,7 +11,6 @@ import os
 import sys
 import traceback
 import logging
-log = logging.getLogger('tethys.tethys_apps.utilities')
 
 from django.conf.urls import url
 from django.contrib.staticfiles import utils
@@ -23,7 +22,10 @@ from collections import OrderedDict as SortedDict
 from tethys_apps.app_harvester import SingletonAppHarvester
 
 # Other dependency imports DO NOT ERASE
+from tethys_apps.models import TethysApp
 from tethys_services.utilities import get_dataset_engine
+
+log = logging.getLogger('tethys.tethys_apps.utilities')
 
 
 def generate_app_url_patterns():
@@ -162,3 +164,60 @@ class TethysAppsStaticFinder(BaseFinder):
             storage = self.storages[root]
             for path in utils.get_files(storage, ignore_patterns):
                 yield path, storage
+
+
+def sync_tethys_app_db():
+    """
+    Sync installed apps with database.
+    """
+    # Get the harvester
+    harvester = SingletonAppHarvester()
+
+    try:
+        # Make pass to remove apps that were uninstalled
+        db_apps = TethysApp.objects.all()
+        installed_app_packages = [app.package for app in harvester.apps]
+
+        for db_apps in db_apps:
+            if db_apps.package not in installed_app_packages:
+                db_apps.delete()
+
+        # Make pass to add apps to db that are newly installed
+        installed_apps = harvester.apps
+
+        for installed_app in installed_apps:
+            # Query to see if installed app is in the database
+            db_apps = TethysApp.objects.\
+                filter(package__exact=installed_app.package).\
+                all()
+
+            # If the app is not in the database, then add it
+            if len(db_apps) == 0:
+                app = TethysApp(
+                    name=installed_app.name,
+                    package=installed_app.package,
+                    description=installed_app.description,
+                    enable_feedback=installed_app.enable_feedback,
+                    feedback_emails=installed_app.feedback_emails,
+                    index=installed_app.index,
+                    icon=installed_app.icon,
+                    root_url=installed_app.root_url,
+                    color=installed_app.color
+                )
+                app.save()
+
+            # If the app is in the database, update developer-first attributes
+            elif len(db_apps) == 1:
+                db_app = db_apps[0]
+                db_app.index = installed_app.index
+                db_app.icon = installed_app.icon
+                db_app.root_url = installed_app.root_url
+                db_app.color = installed_app.color
+                db_app.save()
+
+            # More than one instance of the app in db... (what to do here?)
+            elif len(db_apps) >= 2:
+                continue
+    except Exception as e:
+        log.error(e)
+

@@ -28,6 +28,7 @@
     {% if apps %}
       <div id="app-list">
         {% for app in apps %}
+          {% if app.show_in_apps_library and app.enabled %}
           <a class="app-container" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '{% url app.index %}');" data-app-theme-color="{{ app.color }}">
             <div class="app-icon">
               <img {% if app.icon %}src="{% static app.icon %}"{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} />
@@ -44,6 +45,7 @@
             </div>
             <div class="app-help-close hidden">X</div>
           </a>
+          {% endif %}
         {% endfor %}
       </div>
     {% else %}
