@@ -8,9 +8,11 @@
 ********************************************************************************
 """
 from django.conf.urls import url, include
-
-from tethys_apps.utilities import generate_app_url_patterns
+from tethys_apps.utilities import generate_app_url_patterns, sync_tethys_app_db
 from tethys_apps.views import library, send_beta_feedback_email
+
+# Sync the tethys apps database
+sync_tethys_app_db()
 
 urlpatterns = [
     url(r'^$', library, name='app_library'),
