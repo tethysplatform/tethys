@@ -15,6 +15,7 @@ from django.core.mail import send_mail
 
 from tethys_apps.app_harvester import SingletonAppHarvester
 from tethys_apps.base.app_base import TethysAppBase
+from tethys_apps.models import TethysApp
 
 from tethys_compute.models import TethysJob
 
@@ -25,12 +26,13 @@ def library(request):
     Handle the library view
     """
     # Retrieve the app harvester
-    harvester = SingletonAppHarvester()
+    apps = TethysApp.objects.all()
 
     # Define the context object
-    context = {'apps': harvester.apps}
+    context = {'apps': apps}
 
     return render(request, 'tethys_apps/app_library.html', context)
+
 
 @login_required()
 def handoff_capabilities(request, app_name):
