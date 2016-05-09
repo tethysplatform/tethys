@@ -23,3 +23,4 @@ class TethysAppsConfig(AppConfig):
         # Perform App Harvesting
         harvester = SingletonAppHarvester()
         harvester.harvest_apps()
+

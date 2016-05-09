@@ -64,6 +64,8 @@ class TethysAppBase(object):
 
         ::
 
+            from tethys_sdk.base import url_map_maker
+
             def url_maps(self):
                 \"""
                 Example url_maps method.
@@ -91,6 +93,8 @@ class TethysAppBase(object):
         **Example:**
 
         ::
+
+            from tethys_sdk.stores import PersistentStore
 
             def persistent_stores(self):
                 \"""
@@ -195,6 +199,8 @@ class TethysAppBase(object):
 
         ::
 
+            from tethys_sdk.handoff import HandoffHandler
+
             def handoff_handlers(self):
                 \"""
                 Example handoff_handlers method.
@@ -204,6 +210,51 @@ class TethysAppBase(object):
                 )
 
                 return handoff_handlers
+        """
+        return None
+
+    def permissions(self):
+        """
+        Use this method to define permissions for your app.
+
+        Returns:
+          iterable: A list or tuple of ``Permission`` or ``PermissionGroup`` objects.
+
+        **Example:**
+
+        ::
+
+            from tethys_sdk.permissions import Permission, PermissionGroup
+
+            def permissions(self):
+                \"""
+                Example permissions method.
+                \"""
+                # Viewer Permissions
+                view_map = Permission(
+                    name='view_map',
+                    description='View map'
+                )
+
+                delete_projects = Permission(
+                    name='delete_projects',
+                    description='Delete projects'
+                )
+
+                create_projects = Permission(
+                    name='create_projects',
+                    description='Create projects'
+                )
+
+                admin = PermissionGroup(
+                    name='admin',
+                    permissions=(delete_projects, create_projects)
+                )
+
+
+                permissions = (admin, view_map)
+
+                return permissions
         """
         return None
 

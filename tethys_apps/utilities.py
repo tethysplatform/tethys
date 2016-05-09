@@ -11,16 +11,20 @@ import os
 import sys
 import traceback
 import logging
+from collections import OrderedDict as SortedDict, Iterable
 
 from django.conf.urls import url
+from django.contrib.auth.models import Permission, Group
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.staticfiles import utils
 from django.contrib.staticfiles.finders import BaseFinder
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files.storage import FileSystemStorage
 from django.utils._os import safe_join
-from collections import OrderedDict as SortedDict
+from guardian.shortcuts import assign_perm, remove_perm, get_perms
 
 from tethys_apps import tethys_log
+from tethys_apps.base import permissions
 from tethys_apps.app_harvester import SingletonAppHarvester
 
 # Other dependency imports DO NOT ERASE
@@ -28,6 +32,130 @@ from tethys_apps.models import TethysApp
 from tethys_services.utilities import get_dataset_engine
 
 log = logging.getLogger('tethys.tethys_apps.utilities')
+
+
+def register_app_permissions():
+    """
+    Register and sync the app permissions.
+    """
+    # Get the apps
+    harvester = SingletonAppHarvester()
+    apps = harvester.apps
+    all_app_permissions = {}
+    all_groups = {}
+
+    for app in apps:
+        perms = app.permissions()
+
+        # Name spaced prefix for app permissions
+        # e.g. my_first_app:view_things
+        # e.g. my_first_app | View things
+        perm_codename_prefix = app.package + ':'
+        perm_name_prefix = app.package + ' | '
+
+        if perms is not None:
+            # Thing is either a Permission or a PermissionGroup object
+
+            for thing in perms:
+                # Permission Case
+                if isinstance(thing, permissions.Permission):
+                    # Name space the permissions and add it to the list
+                    permission_codename = perm_codename_prefix + thing.name
+                    permission_name = perm_name_prefix + thing.description
+                    all_app_permissions[permission_codename] = permission_name
+
+                # PermissionGroup Case
+                elif isinstance(thing, permissions.PermissionGroup):
+                    # Record in dict of groups
+                    group_permissions = []
+                    group_name = perm_codename_prefix + thing.name
+
+                    for perm in thing.permissions:
+                        # Name space the permissions and add it to the list
+                        permission_codename = perm_codename_prefix + perm.name
+                        permission_name = perm_name_prefix + perm.description
+                        all_app_permissions[permission_codename] = permission_name
+                        group_permissions.append(permission_codename)
+
+                    # Store all groups for all apps
+                    all_groups[group_name] = {'permissions': group_permissions, 'app_package': app.package}
+
+    # Get the TethysApp content type
+    tethys_content_type = ContentType.objects.get(
+        app_label='tethys_apps',
+        model='tethysapp'
+    )
+
+    # Remove any permissions that no longer exist
+    db_app_permissions = Permission.objects.filter(content_type=tethys_content_type).all()
+
+    for db_app_permission in db_app_permissions:
+        # Delete the permission if the permission is no longer required by an app
+        if db_app_permission.codename not in all_app_permissions:
+            db_app_permission.delete()
+
+    # Create permissions that need to be created
+    for perm in all_app_permissions:
+        # Create permission if it doesn't exist
+        try:
+            # If permission exists, update it
+            p = Permission.objects.get(codename=perm)
+
+            p.name = all_app_permissions[perm]
+            p.content_type = tethys_content_type
+            p.save()
+
+        except Permission.DoesNotExist:
+            p = Permission(
+                name=all_app_permissions[perm],
+                codename=perm,
+                content_type=tethys_content_type
+            )
+            p.save()
+
+    # Remove any groups that no longer exist
+    db_groups = Group.objects.all()
+    db_apps = TethysApp.objects.all()
+    db_app_names = [db_app.package for db_app in db_apps]
+
+    for db_group in db_groups:
+        db_group_name_parts = db_group.name.split(':')
+
+        # Only perform maintenance on groups that belong to Tethys Apps
+        if (len(db_group_name_parts) > 1) and (db_group_name_parts[0] in db_app_names):
+
+            # Delete groups that is no longer required by an app
+            if db_group.name not in all_groups:
+                db_group.delete()
+
+    # Create groups that need to be created
+    for group in all_groups:
+        # Look up the app
+        db_app = TethysApp.objects.get(package=all_groups[group]['app_package'])
+
+        # Create group if it doesn't exist
+        try:
+            # If it exists, update the permissions assigned to it
+            g = Group.objects.get(name=group)
+
+            # Get the permissions for the group and remove all of them
+            perms = get_perms(g, db_app)
+
+            for p in perms:
+                remove_perm(p, g, db_app)
+
+            # Assign the permission to the group and the app instance
+            for p in all_groups[group]['permissions']:
+                assign_perm(p, g, db_app)
+
+        except Group.DoesNotExist:
+            # Create a new group
+            g = Group(name=group)
+            g.save()
+
+            # Assign the permission to the group and the app instance
+            for p in all_groups[group]['permissions']:
+                assign_perm(p, g, db_app)
 
 
 def generate_app_url_patterns():
@@ -246,13 +374,13 @@ def get_active_app(request=None, url=None):
         app_root_url_index = url_parts.index(apps_root) + 1
         app_root_url = url_parts[app_root_url_index]
 
-        try:
-            # Get the app from the database
-            app = TethysApp.objects.get(root_url=app_root_url)
-        except ObjectDoesNotExist:
-            tethys_log.warning('Could not locate app with root url "{0}".'.format(app_root_url))
-        except MultipleObjectsReturned:
-            tethys_log.warning('Multiple apps found with root url "{0}".'.format(app_root_url))
-
+        if app_root_url:
+            try:
+                # Get the app from the database
+                app = TethysApp.objects.get(root_url=app_root_url)
+            except ObjectDoesNotExist:
+                tethys_log.warning('Could not locate app with root url "{0}".'.format(app_root_url))
+            except MultipleObjectsReturned:
+                tethys_log.warning('Multiple apps found with root url "{0}".'.format(app_root_url))
     return app
 
