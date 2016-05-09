@@ -67,6 +67,7 @@ INSTALLED_APPS = (
     'tethys_services',
     'tethys_compute',
     'social.apps.django_app.default',
+    'guardian',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -85,6 +86,7 @@ AUTHENTICATION_BACKENDS = (
 #    'social.backends.google.GoogleOAuth2',
 #    'social.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
 )
 
 ROOT_URLCONF = 'tethys_portal.urls'
@@ -245,3 +247,10 @@ SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = ''
 ## HydroShare
 SOCIAL_AUTH_HYDROSHARE_KEY = ''
 SOCIAL_AUTH_HYDROSHARE_SECRET = ''
+
+# Django Guardian Settings
+ANONYMOUS_USER_ID = -1
+# GUARDIAN_RAISE_403 = False  # Mutually exclusive with GUARDIAN_RENDER_403
+# GUARDIAN_RENDER_403 = False  # Mutually exclusive with GUARDIAN_RAISE_403
+# GUARDIAN_TEMPLATE_403 = ''
+# ANONYMOUS_DEFAULT_USERNAME_VALUE = 'anonymous'

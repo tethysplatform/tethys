@@ -15,10 +15,12 @@ import logging
 from django.conf.urls import url
 from django.contrib.staticfiles import utils
 from django.contrib.staticfiles.finders import BaseFinder
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files.storage import FileSystemStorage
 from django.utils._os import safe_join
 from collections import OrderedDict as SortedDict
 
+from tethys_apps import tethys_log
 from tethys_apps.app_harvester import SingletonAppHarvester
 
 # Other dependency imports DO NOT ERASE
@@ -220,4 +222,37 @@ def sync_tethys_app_db():
                 continue
     except Exception as e:
         log.error(e)
+
+
+def get_active_app(request=None, url=None):
+    """
+    Get the active TethysApp object based on the request or URL.
+    """
+    apps_root = 'apps'
+
+    if request is not None:
+        the_url = request.path
+    elif url is not None:
+        the_url = url
+    else:
+        return None
+
+    url_parts = the_url.split('/')
+    app = None
+
+    # Find the app key
+    if apps_root in url_parts:
+        # The app root_url is the path item following (+1) the apps_root item
+        app_root_url_index = url_parts.index(apps_root) + 1
+        app_root_url = url_parts[app_root_url_index]
+
+        try:
+            # Get the app from the database
+            app = TethysApp.objects.get(root_url=app_root_url)
+        except ObjectDoesNotExist:
+            tethys_log.warning('Could not locate app with root url "{0}".'.format(app_root_url))
+        except MultipleObjectsReturned:
+            tethys_log.warning('Multiple apps found with root url "{0}".'.format(app_root_url))
+
+    return app
 
