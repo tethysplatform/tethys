@@ -9,3 +9,4 @@
 """
 # DO NOT ERASE
 from tethys_apps.base import Permission, PermissionGroup
+from tethys_apps.decorators import permission_required
