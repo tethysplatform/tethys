@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 from django.conf.urls import url, include
-from tethys_apps.utilities import generate_app_url_patterns, sync_tethys_app_db
+from tethys_apps.utilities import generate_app_url_patterns, sync_tethys_app_db, register_app_permissions
 from tethys_apps.views import library, send_beta_feedback_email
 
 # Sync the tethys apps database
@@ -25,3 +25,6 @@ app_url_patterns = generate_app_url_patterns()
 for namespace, urls in app_url_patterns.iteritems():
     root_pattern = r'^{0}/'.format(namespace.replace('_', '-'))
     urlpatterns.append(url(root_pattern, include(urls, namespace=namespace)))
+
+# Register permissions here?
+register_app_permissions()
