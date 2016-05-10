@@ -15,15 +15,16 @@ from django.shortcuts import redirect
 from django.utils.functional import wraps
 from tethys_apps.utilities import get_active_app
 from tethys_portal.views import error as tethys_portal_error
+from tethys_apps.base import has_permission
 
 
-def permission_required(perm, raise_403=False):
+def permission_required(perm, raise_exception=False):
     """
     Decorator for Tethys App controllers that checks whether a user has a permission.
 
     Args:
         perm (string): The name of a permission for the app (e.g. 'create_things')
-        raise_403 (bool, optional): Raise 403 error if True. Defaults to False.
+        raise_exception (bool, optional): Raise 403 error if True. Defaults to False.
     """
 
     if not isinstance(perm, basestring):
@@ -31,16 +32,12 @@ def permission_required(perm, raise_403=False):
 
     def decorator(controller_func):
         def _wrapped_controller(request, *args, **kwargs):
-            app = get_active_app(request)
-            user = request.user
-            namespaced_perm = 'tethys_apps.' + app.package + ':' + perm
-
             # Check permission
-            if not user.has_perm(namespaced_perm, app):
+            if not has_permission(request, perm):
 
-                if not raise_403:
+                if not raise_exception:
                     # If user is authenticated...
-                    if user.is_authenticated():
+                    if request.user.is_authenticated():
                         # User feedback
                         messages.add_message(request, messages.WARNING, "We're sorry, but you are not allowed "
                                                                         "to perform this operation.")

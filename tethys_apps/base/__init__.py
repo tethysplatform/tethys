@@ -14,4 +14,4 @@ from tethys_apps.base.controller import app_controller_maker
 from tethys_services.base import DatasetService, SpatialDatasetService, WpsService
 from tethys_apps.base.url_map import url_map_maker
 from tethys_apps.base.workspace import TethysWorkspace
-from tethys_apps.base.permissions import Permission, PermissionGroup
+from tethys_apps.base.permissions import Permission, PermissionGroup, has_permission
