@@ -7,6 +7,7 @@
 * License: 
 ********************************************************************************
 """
+# from tethys_apps.utilities import get_active_app
 
 
 class Permission:
@@ -59,3 +60,21 @@ class PermissionGroup:
 
     def __repr__(self):
         return self._repr()
+
+
+# def has_permission(request, perm):
+#     """
+#     Returns True if a user has the given permission for the app.
+#
+#     Args:
+#         request (Request): The current request object.
+#         perm (string): The name of the permission (e.g. 'create_things').
+#     """
+#     app = get_active_app(request)
+#     user = request.user
+#     namespaced_perm = 'tethys_apps.' + app.package + ':' + perm
+#
+#     # Check permission
+#     if user.has_perm(namespaced_perm, app):
+#         return True
+#     return False
