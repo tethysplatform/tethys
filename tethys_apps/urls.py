@@ -7,9 +7,11 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from django.db.utils import ProgrammingError
 from django.conf.urls import url, include
 from tethys_apps.utilities import generate_app_url_patterns, sync_tethys_app_db, register_app_permissions
 from tethys_apps.views import library, send_beta_feedback_email
+from tethys_apps import tethys_log
 
 # Sync the tethys apps database
 sync_tethys_app_db()
@@ -27,4 +29,8 @@ for namespace, urls in app_url_patterns.iteritems():
     urlpatterns.append(url(root_pattern, include(urls, namespace=namespace)))
 
 # Register permissions here?
-register_app_permissions()
+try:
+    register_app_permissions()
+except ProgrammingError as e:
+    tethys_log.error(e)
+
