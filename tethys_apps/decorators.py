@@ -23,10 +23,61 @@ def permission_required(*args, **kwargs):
     Decorator for Tethys App controllers that checks whether a user has a permission.
 
     Args:
-        args (string): Any number of permission names for the app (e.g. 'create_things')
-        message: (string, optional): Override default message that is displayed to user when permission is denied. Default message is "We're sorry, but you are not allowed to perform this operation.".
-        raise_exception (bool, optional): Raise 403 error if True. Defaults to False.
-        use_or (bool, optional): When multiple permissions are provided and this is True, use OR comparison rather than AND comparison, which is default.
+        *args: Any number of permission names for the app (e.g. 'create_projects')
+        **kwargs: Any of keyword arguments specified below.
+
+    **Valid Kwargs:**
+
+    * **message: (string):** Override default message that is displayed to user when permission is denied. Default message is "We're sorry, but you are not allowed to perform this operation.".
+    * **raise_exception (bool):** Raise 403 error if True. Defaults to False.
+    * **use_or (bool):** When multiple permissions are provided and this is True, use OR comparison rather than AND comparison, which is default.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.permissions import permission_required
+
+        # Basic use
+        @permission_required('create_projects')
+        def my_controller(request):
+            \"""
+            Example controller
+            \"""
+            ...
+
+        # Custom message when permission is denied
+        @permission_required('create_projects', message="You do not have permission to create projects")
+        def my_controller(request):
+            \"""
+            Example controller
+            \"""
+            ...
+
+        # Multiple permissions with AND comparison (must pass both permissions tests)
+        @permission_required('create_projects', 'delete_projects')
+        def my_controller(request):
+            \"""
+            Example controller
+            \"""
+            ...
+
+        # Multiple permissions with OR comparison (must pass at least one permissions test)
+        @permission_required('create_projects', 'delete_projects', use_or=True)
+        def my_controller(request):
+            \"""
+            Example controller
+            \"""
+            ...
+
+        # Raise 403 exception rather than redirecting and displaying message (useful for REST controllers).
+        @permission_required('create_projects', raise_exception=True)
+        def my_controller(request):
+            \"""
+            Example controller
+            \"""
+            ...
+
     """
 
     use_or = kwargs.get('use_or', False)

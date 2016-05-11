@@ -16,6 +16,18 @@ class Permission:
     Attributes:
         name (string): The code name for the permission. Only numbers, letters, and underscores allowed.
         description (string): Short description of the permission for the admin interface.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.permissions import Permission
+
+        create_projects = Permission(
+            name='create_projects',
+            description='Create projects'
+        )
+
     """
 
     def __init__(self, name, description):
@@ -42,6 +54,28 @@ class PermissionGroup:
     Attributes:
         name (string): The name for the group. Only numbers, letters, and underscores allowed.
         permissions (iterable): A list or tuple of Permission objects.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.permissions import Permission, PermissionGroup
+
+        create_projects = Permission(
+            name='create_projects',
+            description='Create projects'
+        )
+
+        delete_projects = Permission(
+            name='delete_projects',
+            description='Delete projects'
+        )
+
+        admin = PermissionGroup(
+            name='admin',
+            permissions=(create_projects, delete_projects)
+        )
+
     """
 
     def __init__(self, name, permissions=[]):
@@ -68,6 +102,23 @@ def has_permission(request, perm):
     Args:
         request (Request): The current request object.
         perm (string): The name of the permission (e.g. 'create_things').
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.permissions import has_permission
+
+        def my_controller(request):
+            \"""
+            Example controller
+            \"""
+
+            can_create_projects = has_permission(request, 'create_projects')
+
+            if can_create_projects:
+                ...
+
     """
     from tethys_apps.utilities import get_active_app
 
