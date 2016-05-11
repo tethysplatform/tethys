@@ -18,29 +18,61 @@ from tethys_portal.views import error as tethys_portal_error
 from tethys_apps.base import has_permission
 
 
-def permission_required(perm, raise_exception=False):
+def permission_required(*args, **kwargs):
     """
     Decorator for Tethys App controllers that checks whether a user has a permission.
 
     Args:
-        perm (string): The name of a permission for the app (e.g. 'create_things')
+        args (string): Any number of permission names for the app (e.g. 'create_things')
+        message: (string, optional): Override default message that is displayed to user when permission is denied. Default message is "We're sorry, but you are not allowed to perform this operation.".
         raise_exception (bool, optional): Raise 403 error if True. Defaults to False.
+        use_or (bool, optional): When multiple permissions are provided and this is True, use OR comparison rather than AND comparison, which is default.
     """
 
-    if not isinstance(perm, basestring):
-        raise ValueError("First argument must be a string.")
+    use_or = kwargs.get('use_or', False)
+    message = kwargs.get('message', "We're sorry, but you are not allowed to perform this operation.")
+    raise_exception = kwargs.get('raise_exception', False)
+
+    for arg in args:
+        if not isinstance(arg, basestring):
+            raise ValueError("Arguments must be a string and the name of a permission for the app.")
+
+    perms = args
 
     def decorator(controller_func):
         def _wrapped_controller(request, *args, **kwargs):
-            # Check permission
-            if not has_permission(request, perm):
+            # With OR check, we assume the permission test passes upfront
 
+            # Check permission
+            pass_permission_test = True
+
+            # OR Loop
+            if use_or:
+                pass_permission_test = False
+                for perm in perms:
+                    # If any one of the permission evaluates to True, the test passes
+                    if has_permission(request, perm):
+                        pass_permission_test = True
+                        break
+
+            # AND Loop
+            else:
+                # Assume pass test
+                pass_permission_test = True
+
+                for perm in perms:
+                    # If any one of the permissions evaluates to False, the test fails
+                    if not has_permission(request, perm):
+                        pass_permission_test = False
+                        break
+
+
+            if not pass_permission_test:
                 if not raise_exception:
                     # If user is authenticated...
                     if request.user.is_authenticated():
                         # User feedback
-                        messages.add_message(request, messages.WARNING, "We're sorry, but you are not allowed "
-                                                                        "to perform this operation.")
+                        messages.add_message(request, messages.WARNING, message)
 
                         # Default redirect URL
                         redirect_url = reverse('app_library')
