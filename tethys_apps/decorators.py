@@ -80,9 +80,9 @@ def permission_required(*args, **kwargs):
 
     """
 
-    use_or = kwargs.get('use_or', False)
-    message = kwargs.get('message', "We're sorry, but you are not allowed to perform this operation.")
-    raise_exception = kwargs.get('raise_exception', False)
+    use_or = kwargs.pop('use_or', False)
+    message = kwargs.pop('message', "We're sorry, but you are not allowed to perform this operation.")
+    raise_exception = kwargs.pop('raise_exception', False)
 
     for arg in args:
         if not isinstance(arg, basestring):
