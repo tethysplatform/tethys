@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 from django.db.utils import ProgrammingError
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf.urls import url, include
 from tethys_apps.utilities import generate_app_url_patterns, sync_tethys_app_db, register_app_permissions
 from tethys_apps.views import library, send_beta_feedback_email
@@ -31,6 +32,6 @@ for namespace, urls in app_url_patterns.iteritems():
 # Register permissions here?
 try:
     register_app_permissions()
-except ProgrammingError as e:
+except (ProgrammingError, ObjectDoesNotExist) as e:
     tethys_log.error(e)
 
