@@ -45,7 +45,7 @@
           </div>
       <div id="app-list" class="isotopeContainer">
         {% for app in apps %}
-          <a class="app-container isotopeSelector {{ app.tags }}" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '{% url app.index %}');" data-app-theme-color="{{ app.color }}">
+          <a class="app-container isotopeSelector {{ app|get_class }}" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '{% url app.index %}');" data-app-theme-color="{{ app.color }}">
             <div class="app-icon">
               <img {% if app.icon %}src="{% static app.icon %}"{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} />
             </div>
