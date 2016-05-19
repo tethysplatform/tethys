@@ -2,7 +2,7 @@
 Software Suite
 **************
 
-**Last Updated:** May 19, 2015
+**Last Updated:** May 18, 2016
 
 The Software Suite is the component of Tethys Platform that provides access to resources and functionality that are commonly required to develop water resources web apps. The primary motivation of creating the Tethys Software Suite was overcome the hurdle associated with selecting a GIS software stack to support spatial capabilities in apps. Some of the more specialized needs for water resources app development arise from the spatial data components of the models that are used in the apps. Distributed hydrologic models, for example, are parameterized using raster or vector layers such as land use maps, digital elevation models, and rainfall intensity grids.
 
@@ -31,9 +31,9 @@ Map Publishing
    :width: 200px
    :align: right
 
-Tethys Software Suite provides `GeoServer <http://geoserver.org/>`_ for publishing spatial data as web services. GeoServer is used to publish common spatial files such as Shapefiles and GeoTIFFs in web-friendly formats like GeoJSON and images.
+Tethys Software Suite provides `GeoServer <http://geoserver.org/>`_ for publishing spatial data as web services. GeoServer is used to publish common spatial files such as Shapefiles and GeoTIFFs in web-friendly formats.
 
-To use the map publishing capabilities of GeoServer in your app use the :doc:`./tethys_sdk/spatial_dataset_services`.
+To use the map publishing capabilities of GeoServer in your app refer to the :doc:`./software_suite/geoserver` documentation and use the :doc:`./tethys_sdk/spatial_dataset_services`.
 
 Geoprocessing
 =============
