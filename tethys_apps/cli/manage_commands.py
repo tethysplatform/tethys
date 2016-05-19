@@ -9,13 +9,16 @@
 """
 
 import os
-import shutil
 import subprocess
 
-from tethys_apps.helpers import get_installed_tethys_apps
-
-DEFAULT_INSTALLATION_DIRECTORY = '/usr/lib/tethys/src'
-DEVELOPMENT_DIRECTORY = '/usr/lib/tethys/tethys'
+#/usr/lib/tethys/src/tethys_apps/cli
+CURRENT_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+#/usr/lib/tethys
+TETHYS_MAIN_DIR = os.sep.join(CURRENT_SCRIPT_DIR.split(os.sep)[:-3])
+#/usr/lib/tethys/src
+DEFAULT_INSTALLATION_DIRECTORY = os.path.join(TETHYS_MAIN_DIR,'src')
+#/usr/lib/tethys/tethys
+DEVELOPMENT_DIRECTORY = os.path.join(TETHYS_MAIN_DIR,'tethys')
 MANAGE_START = 'start'
 MANAGE_SYNCDB = 'syncdb'
 MANAGE_COLLECTSTATIC = 'collectstatic'
