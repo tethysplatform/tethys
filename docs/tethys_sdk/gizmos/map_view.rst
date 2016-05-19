@@ -38,9 +38,13 @@ This method returns the OpenLayers map object. You can use the `OpenLayers Map A
 
 ::
 
-    var ol_map = TETHYS_MAP_VIEW.map;
-    ol_map.addLayer(...);
-    ol_map.setView(...);
+    $(function() { //wait for page to load
+
+        var ol_map = TETHYS_MAP_VIEW.getMap();
+        ol_map.addLayer(...);
+        ol_map.setView(...);
+
+    });
 
 .. caution::
 
@@ -53,8 +57,11 @@ This method can be used to set the view of the map to the extent provided. The e
 
 ::
 
-    var extent = [-109.49945001309617, 37.58047995600726, -109.44540360290348, 37.679502621605735];
-    TETHYS_MAP_VIEW.zoomToExtent(extent);
+    $(function() { //wait for page to load
+
+        var extent = [-109.49945001309617, 37.58047995600726, -109.44540360290348, 37.679502621605735];
+        TETHYS_MAP_VIEW.zoomToExtent(extent);
+    });
 
 TETHYS_MAP_VIEW.clearSelection()
 ++++++++++++++++++++++++++++++++
@@ -143,4 +150,29 @@ This method applies to the WMS layer feature selection functionality. The callba
     }
 
     TETHYS_MAP_VIEW.onSelectionChange(my_callback);
+
+
+TETHYS_MAP_VIEW.getSelectInteraction()
+++++++++++++++++++++++++++++++++++++++
+
+This method applies to the WFS/GeoJSON/KML layer feature selection functionality.
+
+::
+
+    $(function() { //wait for page to load
+
+        var selection_interaction = TETHYS_MAP_VIEW.getSelectInteraction();
+
+        //when selected, print feature to developers console
+        selection_interaction.getFeatures().on('change:length', function(e) {
+          if (e.target.getArray().length > 0) {
+            // this means there is at least 1 feature selected
+            var selected_feature = e.target.item(0); // 1st feature in Collection
+            console.log(selected_feature);
+
+          }
+        });
+
+    });
+
 
