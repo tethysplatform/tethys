@@ -536,7 +536,6 @@ class MVLegendImageClass(SecondaryGizmoOptions):
         """
         Constructor
         """
-
         # Initialize super class
         super(MVLegendImageClass, self).__init__()
 
@@ -572,13 +571,10 @@ class MVLegendGeoServerImageClass(MVLegendImageClass):
         """
         Constructor
         """
-        image_url = "".join([geoserver_url,
-                             "/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&",
-                             "STYLE=", style, 
-                             "&FORMAT=image/png&WIDTH={0}&HEIGHT={1}&".format(width, height),
-                            "LEGEND_OPTIONS=forceRule:true&",
-                            "LAYER=", layer,
-                            ])
+        image_url = "{0}/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&" \
+                    "STYLE={1}&FORMAT=image/png&WIDTH={2}&HEIGHT={3}&" \
+                    "LEGEND_OPTIONS=forceRule:true&" \
+                    "LAYER={4}".format(geoserver_url, style, width, height, layer)
                     
         # Initialize super class
         super(MVLegendGeoServerImageClass, self).__init__(value, image_url)
