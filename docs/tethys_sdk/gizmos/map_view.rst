@@ -17,12 +17,12 @@ MVLegendClass
 .. autoclass:: tethys_sdk.gizmos.MVLegendClass
 
 MVLegendImageClass
--------------
+------------------
 
 .. autoclass:: tethys_sdk.gizmos.MVLegendImageClass
 
 MVLegendGeoServerImageClass
--------------
+---------------------------
 
 .. autoclass:: tethys_sdk.gizmos.MVLegendGeoServerImageClass
 
