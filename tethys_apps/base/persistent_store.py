@@ -28,9 +28,10 @@ class TethysFunctionExtractor(object):
         self._valid = None
         self._function = None
 
-        if path.callable():
-            self.valid = True  # TODO should we ensure that function is part of the app?
-            self.function = path
+        if not isinstance(path, basestring):
+            if path.callable():
+                self.valid = True  # TODO should we ensure that function is part of the app?
+                self.function = path
 
     @property
     def valid(self):
@@ -59,6 +60,7 @@ class TethysFunctionExtractor(object):
 
                 # Import module
                 module = __import__(full_module_path, fromlist=[function_name])
+                      
             except (ValueError, ImportError):
                 self._valid = False
             else:
