@@ -553,7 +553,7 @@ class MVLegendGeoServerImageClass(MVLegendImageClass):
         style (str, required): The name of the geoserver style (e.g. green).
         layer (str, required): The name of the geoserver layer (e.g. rivers).
         width (int): The legend width (default is 20).
-        height (int): The legend height (defaule is 10).
+        height (int): The legend height (default is 10).
 
     Example
 
