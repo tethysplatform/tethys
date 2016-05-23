@@ -185,4 +185,87 @@ This method applies to the WFS/GeoJSON/KML layer feature selection functionality
 
     });
 
+TETHYS_MAP_VIEW.reInitializeMap()
++++++++++++++++++++++++++++++++++
+
+This method is intended for initializing a map generated from an AJAX request.
+
+.. caution::
+
+    This method assumes there is only one and that there will only ever be one map on the page.
+
+Four elements are required:
+
+1) A controller for the AJAX call with a map view gizmo.
+::
+
+    @login_required()
+    def dam_break_map_ajax(request):
+        """
+        Controller for the dam_break_map ajax request.
+        """
+        if request.GET:
+            ...            
+            
+            #get layers
+            map_layer_list = ...
+
+            # Define initial view for Map View
+            view_options = MVView(
+                projection='EPSG:4326',
+                center=[(bbox[0]+bbox[2])/2.0, (bbox[1]+bbox[3])/2.0],
+                zoom=10,
+                maxZoom=18,
+                minZoom=2,
+            )
+        
+            # Configure the map
+            map_options = MapView(height='500px',
+                                  width='100%',
+                                  layers=map_layer_list,
+                                  controls=['FullScreen'],
+                                  view=view_options,
+                                  basemap='OpenStreetMap',
+                                  legend=True,
+                                  )
+        
+            context = { 'map_options': map_options }
+            
+            return render(request, 'dam_break_map_ajax/map_ajax.html', context)
+
+2) A url map to the controller in app.py
+::
+
+    ...
+        UrlMap(name='dam_break_map_ajax',
+               url='dam-break/map/dam_break_map_ajax',
+               controller='dam_break.controllers.dam_break_map_ajax'),
+    ...
+
+3) A template for with the tethys gizmo (e.g. map_ajax.html)
+::
+
+    {% load tethys_gizmos %}
+
+    {% gizmo map_view map_options %}
+
+
+4) The AJAX call in the javascript
+::
+
+    $(function() { //wait for page to load
+
+        $.ajax({
+            url: ajax_url,
+            method: 'GET',
+            data: ajax_data,
+            success: function(data) {
+                //add new map to map div
+                $('#main_map_div').html(data);
+
+                TETHYS_MAP_VIEW.reInitializeMap();
+            }
+        });
+
+    });
 
