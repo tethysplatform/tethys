@@ -2,12 +2,20 @@
 What's New
 **********
 
-**Last Updated:** March 25, 2016
+**Last Updated:** May 28, 2016
 
 Refer to this article for information about each new release of Tethys Platform.
 
 Release 1.4.0
 =============
+
+App Permissions
+---------------
+
+* There is now a formalized mechanism for creating permissions for apps.
+* It includes a `permission_required` decorator for controllers and a `has_permission` method for checking permissions within controllers.
+
+See: :doc:`tethys_sdk/permissions`
 
 GeoServer
 ---------
@@ -22,12 +30,16 @@ GeoServer
    * `NetCDF <http://docs.geoserver.org/2.8.x/en/user/extensions/netcdf/netcdf.html>`_
    * `NetCDF Output <http://docs.geoserver.org/2.8.x/en/user/extensions/netcdf-out/index.html>`_
 
+See: :doc:`software_suite/geoserver`
+
 Tethys Docker CLI
 -----------------
 
 * Modified behaviour of "-c" option to accept a list of containers names so that commands can be performed on subsets of the containers
 * Improved behaviour of "start" and "stop" commands such that they will start/stop all installed containers if some are not installed
 * Improved behaviour of the "remove" command to skip containers that are not installed
+
+See: :ref:`tethys_cli_docker`
 
 Select2 Gizmo
 -------------
@@ -37,6 +49,8 @@ Select2 Gizmo
 * If you are using advanced features of Select2, you will likely need to migrate some of your code.
 * Refer to `<https://select2.github.io/announcements-4.0.html#migrating-from-select2-35>`_ for migration help.
 
+See: :doc:`tethys_sdk/gizmos/select_input`
+
 MapView Gizmo
 -------------
 
@@ -44,21 +58,21 @@ MapView Gizmo
 * Use the `TETHYS_MAP_VIEW.getSelectInteraction()` method to have more control over items that are selected.
 * MVLayer Select Features now supports selection of vector layers in addition to the WMS Layers.
 * Added support for images in the legend including support for GeoServer GetLegendGraphic requests.
-* See: :doc:`tethys_sdk/gizmos/map_view`
+
+See: :doc:`tethys_sdk/gizmos/map_view`
 
 PlotView Gizmo
 --------------
 
 * New JavaScript API endpoints for initializing PlotViews dynamically.
-* See: :doc:`tethys_sdk/gizmos/plot_view`
+
+See: :doc:`tethys_sdk/gizmos/plot_view`
 
 
 Bug Fixes
 ---------
 
 * Fixed various bugs...
-
-
 
 
 Prior Release Notes

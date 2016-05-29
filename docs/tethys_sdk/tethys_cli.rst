@@ -170,6 +170,8 @@ Use this command to uninstall apps.
     # Uninstall my_first_app
     $ tethys uninstall my_first_app
 
+.. _tethys_cli_docker:
+
 docker <subcommand> [options]
 -----------------------------
 
