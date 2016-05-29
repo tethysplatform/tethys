@@ -19,15 +19,36 @@ Tethys Portal includes administration pages that can be used to manage the websi
 
         $ python /usr/lib/tethys/src/manage.py createsuperuser
 
+.. _tethys_portal_permissions:
+
 Manage Users and Permissions
 ============================
 
-Permissions and users can be managed from the administrator dashboard using the ``Groups`` and ``Users`` links under the Authentication and Authorization heading. Figure 4 shows an example of the user management page for a user named John. Permissions can be assigned to each user individually or users can be assigned to groups and they will be given the permissions of that group.
+Permissions and users can be managed from the administrator dashboard using ``Users`` link under the ``Authentication and Authorization`` heading. Figure 4 shows an example of the user management page for a user named John.
 
 .. figure:: ../images/tethys_portal/tethys_portal_user_management.png
     :width: 500px
 
 **Figure 4.** User management for Tethys Portal.
+
+Assign App Permission Groups
+----------------------------
+
+To assign an app permission group to a user, select the desired user and locate the ``Groups`` dialog under the ``Permissions`` heading of the ``Change User`` page. All app permission groups will appear in the ``Available Groups`` list box. Assigning the permission group is done by moving the permission group to the ``Chosen Groups`` list box. Although the permissions may also appear in the ``User Permissions`` list box below, they cannot be properly assigned in the ``Change User`` dialog.
+
+Assign App Permissions
+----------------------
+
+To assign a singluar app permission to a user, return to the administrator dashboard and navigate to the ``Installed Apps`` link under the ``Tethys Apps`` heading. Select the link with the app name from the list. In the upper right corner of the ``Change Tethys App`` page click the ``Object Permissions`` button. On the ``Object Permissions`` page you can assign app specific permissions to a user by entering the username in the ``User Identification`` field and press the ``Manage user`` button. Incidentally, you can also manage the app permissions groups from the ``Object Permisions`` page, but changes will be overridden the next time the server restarts and permissions are synced from the app.
+
+.. note::
+
+	Since assigning the individual app permissions is so difficult, we highly recommend that you use the app permission groups to group app permissions and then assign the permission groups to the users using the ``Change User`` page.
+
+Anonymous User
+--------------
+
+The ``AnonymousUser`` can be used to assign permissions and permission groups to users who are not logged in. This means that you can define permissions for each feature of your app, but then assign them all to the ``AnonymousUser`` if you want the app to be publicly accessible.
 
 Manage Tethys Services
 ======================
