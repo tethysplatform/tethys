@@ -30,9 +30,10 @@
             <div class="col-sm-12 col-xs-12">
                 <div class="filter-container isotopeFilters">
                     <ul class="list-inline filter">
-                    <li><a href="#" data-filter="*" class="button active" >All </a></li>
-              {% if  apps|get_tags_from_apps%}
-                    {% for tag in apps|get_tags_from_apps %}
+
+              {% if  apps|get_tags_from_apps %}
+                  <li><a href="#" data-filter="*" class="button active" >All </a></li>
+                    {% for tag in apps|get_tags_from_apps%}
                         {% if tag %}
                         <li><a href="#" data-filter=".{{ tag }}" class="button">{{ tag }}</a></li>
                         {% endif %}
@@ -45,7 +46,7 @@
           </div>
       <div id="app-list" class="isotopeContainer">
         {% for app in apps %}
-          <a class="app-container isotopeSelector {{ app|get_class }}" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '{% url app.index %}');" data-app-theme-color="{{ app.color }}">
+          <a class="app-container isotopeSelector {{ app|get_tag_class }}" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '{% url app.index %}');" data-app-theme-color="{{ app.color }}">
             <div class="app-icon">
               <img {% if app.icon %}src="{% static app.icon %}"{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} />
             </div>

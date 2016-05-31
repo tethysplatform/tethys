@@ -34,7 +34,7 @@ class TethysAppTemplate(Template):
     vars = [
         var('proper_name', 'e.g.: "My First App" for project name "my_first_app"'),
         var('version', 'e.g.: 0.0.1'),
-        var('tags','Tags for filtering your apps. You can add multiple tags with spaces. e.g.: "Hydrology","Reference Timeseries"'),
+        var('tags','Tags for filtering your apps. You can add multiple tags with commas. e.g.: "Hydrology","Reference Timeseries"'),
         var('description', 'One-line description of the app'),
         var('author', 'Author name'),
         var('author_email', 'Author email'),
@@ -124,15 +124,6 @@ class TethysAppTemplate(Template):
         title_split_proper_name = [x.title() for x in split_proper_name]
         vars['proper_no_spaces'] = ''.join(title_split_proper_name)
 
-        # Validate the tags. Making sure that it only has letters and spaces.
-        tags_error_regex = re.compile(r'^[a-zA-Z0-9\s,]+$')
-
-        tags = vars['tags']
-
-        #If it doesn't have letters or spaces exit the setup
-        if not tags_error_regex.match(tags):
-            print '\nError: Invalid characters in tags. No special characters are allowed. Only commas and spaces are allowed.'
-            sys.exit(1)
 
         # Add the color variable to vars
         vars['color'] = random.choice(self.default_colors)
