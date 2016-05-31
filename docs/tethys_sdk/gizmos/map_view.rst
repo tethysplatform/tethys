@@ -194,6 +194,31 @@ This method is intended for initializing a map generated from an AJAX request.
 
     This method assumes there is only one and that there will only ever be one map on the page.
 
+.. note::
+
+    In order to use this, you will either need to use a MapView gizmo or import the JavaScript/CSS libraries
+    in the main html template page. 
+
+    For example:
+    ::
+
+        {% block styles %}
+          {{ block.super }}
+          <link rel="stylesheet" href="/static/tethys_gizmos/vendor/openlayers/ol.css"" type="text/css">
+        {% endblock %}
+
+        {% block global_scripts %}
+          {{ block.super }}
+          <script src="/static/tethys_gizmos/vendor/openlayers/ol.js" type="text/javascript"></script>
+        {% endblock %}
+
+        ...
+
+        {% block scripts %}
+          {{ block.super }}
+          <script src="/static/tethys_gizmos/js/tethys_map_view.js" type="text/javascript"></script>
+        {% endblock %}
+
 Four elements are required:
 
 1) A controller for the AJAX call with a map view gizmo.
