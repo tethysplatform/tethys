@@ -57,8 +57,8 @@ class PlotObject(TethysGizmoOptions):
     Base Plot Object that is constructed by plot views.
     """
 
-    def __init__(self,  chart={}, title='', subtitle='', legend=True, tooltip=True, x_axis={}, y_axis={},
-                 tooltip_format={}, plotOptions={}, **kwargs):
+    def __init__(self,  chart={}, title='', subtitle='', legend=None, display_legend=True,
+                 tooltip=True, x_axis={}, y_axis={}, tooltip_format={}, plotOptions={}, **kwargs):
         """
         Constructor
         """
@@ -76,13 +76,14 @@ class PlotObject(TethysGizmoOptions):
         if subtitle != '':
             self.subtitle = {'text': subtitle}
 
-        if legend:
-            self.legend = {
-                'layout': 'vertical',
-                'align': 'right',
-                'verticalAlign': 'middle',
-                'borderWidth': 0
-            }
+        if display_legend:
+            default_legend = {
+                    'layout': 'vertical',
+                    'align': 'right',
+                    'verticalAlign': 'middle',
+                    'borderWidth': 0
+                }
+            self.legend = legend or default_legend
 
         if tooltip:
             self.tooltip = tooltip_format

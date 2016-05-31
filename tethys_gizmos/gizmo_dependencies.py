@@ -31,8 +31,8 @@ def select_input(context):
     """
     Dependencies for select2_input gizmo.
     """
-    return ('tethys_gizmos/vendor/select2_3.5.1/select2.css',
-            'tethys_gizmos/vendor/select2_3.5.1/select2.js')
+    return ('tethys_gizmos/vendor/select2_4.0.2/css/select2.css',
+            'tethys_gizmos/vendor/select2_4.0.2/js/select2.min.js')
 
 
 def highcharts_plot_view(context):
