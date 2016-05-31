@@ -13,7 +13,7 @@ class {{proper_no_spaces}}(TethysAppBase):
     root_url = '{{project_url}}'
     color = '{{color}}'
     description = {{repr(description) or 'Place a brief description of your app here.'}}
-    tags = '{{tags}}' #Tags need to be separated by commas. No special characters are allowed.
+    tags = '{{tags}}'
     enable_feedback = False
     feedback_emails = []
 
