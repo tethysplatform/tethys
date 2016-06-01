@@ -61,6 +61,28 @@ TETHYS_PLOT_VIEW.initHighChartsPlot(jquery_element)
 
 This method initializes a chart generated from an AJAX request. An example is demonstrated in the `Dam Break javascript tutorial <https://github.com/erdc-cm/tethysapp-dam_break/wiki/Javascript-Tutorial>`_.
 
+.. note::
+
+    In order to use this, you will either need to use a PlotView gizmo or import the JavaScript libraries
+    in the main html template page. 
+
+    For example:
+    ::
+
+        {% block global_scripts %}
+          {{ block.super }}
+          <script src="/static/tethys_gizmos/vendor/highcharts/js/highcharts.js" type="text/javascript"></script>
+          <script src="/static/tethys_gizmos/vendor/highcharts/js/highcharts-more.js" type="text/javascript"></script>
+        {% endblock %}
+
+        ...
+
+        {% block scripts %}
+          {{ block.super }}
+          <script src="/static/tethys_gizmos/js/plot_view.js" type="text/javascript"></script>
+        {% endblock %}
+
+
 Four elements are required:
 
 1) A controller for the AJAX call with a plot view gizmo.
