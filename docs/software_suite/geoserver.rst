@@ -39,7 +39,7 @@ This command will initiate the download of the GeoServer Docker image. Once the 
 
   .. note:: 
   
-      If you bind the geoserver data directory to the host machine (highly recommended), you can edit these options by editing the ``controlflow.properties`` file which is located in the geoserver data directory. Refer to the Control Flow documentation for more details (http://docs.geoserver.org/2.8.x/en/user/extensions/controlflow/index.html).
+      If you bind the geoserver data directory to the host machine (highly recommended), you can edit these options by editing the ``controlflow.properties`` file which is located in the geoserver data directory. Refer to the Control Flow documentation for more details (see: `Control Flow Documentation <http://docs.geoserver.org/2.8.x/en/user/extensions/controlflow/index.html>`_).
 
 * **Max Timeout**: The amount of time in seconds to wait before terminating a request.
 * **Min and Max Memory**: The amount of memory to allocate as heap space for each GeoServer instance. It is usually a good idea to set the min to be the same as the max to avoid the overhead of allocating additional memory if it is needed. 2 GB per instance is probably the maximum you will need for this and the default of 1 GB is likely to be sufficient for many installations.
