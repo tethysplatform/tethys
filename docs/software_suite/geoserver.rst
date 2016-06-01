@@ -21,7 +21,7 @@ Features
 Installation
 ============
 
-Installing the GeoServer Docker is done using the Tethys Command Line Interface (see: :ref:`tethys_cli_docker`). To install it, open a terminal, activate the Tethys virtual environment, and execute the command:
+Installing the GeoServer Docker is done using the Tethys Command Line Interface (see: :ref:`tethys_cli_docker` ). To install it, open a terminal, activate the Tethys virtual environment, and execute the command:
 
 ::
 
@@ -30,22 +30,25 @@ Installing the GeoServer Docker is done using the Tethys Command Line Interface 
 
 This command will initiate the download of the GeoServer Docker image. Once the image finishes downloading it will be used to create a Docker container and you will be prompted to configure it. Here is a brief explanation of each of the configuration options:
 
-* **GeoServer Instances Enabled**: This is the number of parallel running GeoServer's to start up when the docker starts. All of the GeoServer instances share the same directory and remain synced via the JMS clustering extension (see: http://docs.geoserver.org/2.8.x/en/user/community/jms-cluster/installation.html). Access to the instances is automatically load balanced via NGINX. The load-balanced cluster of GeoServers is accessed using port 8181 and this should be used as the endpoint for you GeoServer docker. You will notice that the identifier of the node appears in the top left corner of the GeoServer admin page. When accessing the admin page of the cluster using port 8181, you will always be redirected to the first node. Any changes to this node will be synced to the other nodes, so usually it will be sufficient to administer the GeoServer this way. However, you can access the admin pages of each node directly using ports 8081-8084, respectively, for troubleshooting.
+* **GeoServer Instances Enabled**: This is the number of parallel running GeoServer's to start up when the docker starts. All of the GeoServer instances share the same directory and remain synced via the JMS clustering extension (see: `JMS Clustering Documentation <http://docs.geoserver.org/2.8.x/en/user/community/jms-cluster/installation.html>`_). Access to the instances is automatically load balanced via NGINX. The load-balanced cluster of GeoServers is accessed using port 8181 and this should be used as the endpoint for you GeoServer docker. You will notice that the identifier of the node appears in the top left corner of the GeoServer admin page. When accessing the admin page of the cluster using port 8181, you will always be redirected to the first node. Any changes to this node will be synced to the other nodes, so usually it will be sufficient to administer the GeoServer this way. However, you can access the admin pages of each node directly using ports 8081-8084, respectively, for troubleshooting.
 * **GeoServer Instances with REST Enabled**: The number of running GeoServer instances that have the REST API enabled. Tethys Dataset Services uses the rest API to manage data (create, read, update, delete) in GeoServer. It is a good idea to leave a few of your GeoServer nodes as read-only (REST disabled) to retain access to GeoServer data even when it is processing data. To configure it this way, be sure this number is less than the number of enabled GeoServer nodes.
-* **Control Flow Options**: The control flow extenion allows you to limit the number of requests that are allowed to run simultaneously, placing any excess requests into a queue to be executed late. This prevents your GeoServer from becoming overwhelmed during heavy traffic periods.
-
-  There are two ways to configure control flow during setup:
-    1 Automatically derive flow control options based on the number of cores of your computer (recommended for development or inexperienced developers)
-    2 Explicitly set several of the most useful options (useful for a production installation and more experienced developers)
+* **Control Flow Options**: The control flow extenion allows you to limit the number of requests that are allowed to run simultaneously, placing any excess requests into a queue to be executed late. This prevents your GeoServer from becoming overwhelmed during heavy traffic periods. There are two ways to configure control flow during setup:
+  
+  #. Automatically derive flow control options based on the number of cores of your computer (recommended for development or inexperienced developers)
+  #. Explicitly set several of the most useful options (useful for a production installation and more experienced developers)
 
   .. note:: 
   
       If you bind the geoserver data directory to the host machine (highly recommended), you can edit these options by editing the ``controlflow.properties`` file which is located in the geoserver data directory. Refer to the Control Flow documentation for more details (http://docs.geoserver.org/2.8.x/en/user/extensions/controlflow/index.html).
 
-* **Max timeout**: The amount of time in seconds to wait before terminating a request.
+* **Max Timeout**: The amount of time in seconds to wait before terminating a request.
 * **Min and Max Memory**: The amount of memory to allocate as heap space for each GeoServer instance. It is usually a good idea to set the min to be the same as the max to avoid the overhead of allocating additional memory if it is needed. 2 GB per instance is probably the maximum you will need for this and the default of 1 GB is likely to be sufficient for many installations.
-    Warning: BE CAREFUL WITH THIS. If you set the min memory to be 2 GB per instance and 4 instances enabled, GeoServer will try to allocate 8GB of memory. If your machine doesn't have 8GB of memory, it will get overwhelmed and lock down.
-* **Bind the GeoServer data directory to the Host (HIGHLY RECOMMENDED)**: This allows you to mount one of the directories on your machine into the docker container. Long story short, this will give you direct access to the GeoServer data directory outside of the docker container. This is useful if you want to configure your controlflow.properties, add data directly to the data directory, or view the files that were uploaded for debugging. The GeoServer docker container will automatically add the demo data to this directory after starting up the first time.
+  
+  .. warning::
+  
+      BE CAREFUL WITH THIS. If you set the min memory to be 2 GB per instance and 4 instances enabled, GeoServer will try to allocate 8GB of memory. If your machine doesn't have 8GB of memory, it will get overwhelmed and lock down.
+  
+* **Bind the GeoServer data directory to the Host** (HIGHLY RECOMMENDED): This allows you to mount one of the directories on your machine into the docker container. Long story short, this will give you direct access to the GeoServer data directory outside of the docker container. This is useful if you want to configure your controlflow.properties, add data directly to the data directory, or view the files that were uploaded for debugging. The GeoServer docker container will automatically add the demo data to this directory after starting up the first time.
     
   .. warning::
   
