@@ -20,15 +20,16 @@ See: :doc:`tethys_sdk/permissions`
 GeoServer
 ---------
 
-* The GeoServer docker was updated to version 2.8.2
+* The GeoServer docker was updated to version 2.8.3
 * It can be configured to run in clustered mode (multiple instances of GeoServer running inside the container) for greater stability and performance
 * Several extensions are now included:
 
-   * `JMS Clustering <http://docs.geoserver.org/stable/en/user/community/jms-cluster/index.html>`_
+   * `JMS Clustering <http://docs.geoserver.org/2.8.x/en/user/community/jms-cluster/index.html>`_
    * `Flow Control <http://docs.geoserver.org/2.8.x/en/user/extensions/css/index.html>`_
    * `CSS Styles <http://docs.geoserver.org/2.8.x/en/user/extensions/controlflow/index.html>`_
    * `NetCDF <http://docs.geoserver.org/2.8.x/en/user/extensions/netcdf/netcdf.html>`_
    * `NetCDF Output <http://docs.geoserver.org/2.8.x/en/user/extensions/netcdf-out/index.html>`_
+   * `GDAL WCS Output <http://docs.geoserver.org/2.8.x/en/user/community/gdal/index.html>`_
 
 See: :doc:`software_suite/geoserver`
 
