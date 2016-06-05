@@ -73,7 +73,8 @@ See: :doc:`tethys_sdk/gizmos/plot_view`
 Bug Fixes
 ---------
 
-* Fixed various bugs...
+* Fixed an issue with URL mapping that was masking true errors with contollers (see: `Issue #177 <https://github.com/tethysplatform/tethys/issues/177>`_
+* Fixed an issue with syncstores that use the string version of the path to the intializer function (see: `Issue #185 <https://github.com/tethysplatform/tethys/issues/185>`_)
 
 
 Prior Release Notes
