@@ -14,7 +14,7 @@ from tethys_apps.models import TethysApp
 
 class TethysAppAdmin(GuardedModelAdmin):
     readonly_fields = ('package',)
-    fields = ('package', 'name', 'description', 'enabled', 'show_in_apps_library', 'enable_feedback')
+    fields = ('package', 'name', 'description', 'tags', 'enabled', 'show_in_apps_library', 'enable_feedback')
 
     def has_delete_permission(self, request, obj=None):
         return False
