@@ -1,6 +1,6 @@
 {% extends "page.html" %}
 
-{% load staticfiles %}
+{% load staticfiles tags %}
 
 {% block title %}- Apps Library{% endblock %}
 
@@ -11,7 +11,6 @@
     body {
       background: {{ site_globals.background_color|default:'#efefef' }};
     }
-
     .tethys-secondary-header .secondary-title-wrapper .secondary-title {
       color: {{ site_globals.primary_text_color|default:'#ffffff' }};
     }
@@ -26,10 +25,29 @@
   </div>
   <div class="app-library-wrapper clearfix">
     {% if apps %}
-      <div id="app-list">
+        <div class="container" align="center">
+          <div class="row">
+            <div class="col-sm-12 col-xs-12">
+                <div class="filter-container isotopeFilters">
+                    <ul class="list-inline filter">
+
+              {% if  apps|get_tags_from_apps %}
+                  <li><a href="#" data-filter="*" class="button active" >All </a></li>
+                    {% for tag in apps|get_tags_from_apps%}
+                        {% if tag %}
+                        <li><a href="#" data-filter=".{{ tag }}" class="button">{{ tag }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+              {% endif %}
+                    </ul>
+                </div>
+                </div>
+            </div>
+          </div>
+      <div id="app-list" class="isotopeContainer">
         {% for app in apps %}
           {% if app.show_in_apps_library and app.enabled %}
-          <a class="app-container" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '{% url app.index %}');" data-app-theme-color="{{ app.color }}">
+          <a class="app-container isotopeSelector {{ app|get_tag_class }}" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '{% url app.index %}');" data-app-theme-color="{{ app.color }}">
             <div class="app-icon">
               <img {% if app.icon %}src="{% static app.icon %}"{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} />
             </div>
@@ -60,4 +78,5 @@
   <script src="{% static 'tethys_apps/vendor/imagesloaded.min.js' %}" type="text/javascript"></script>
   <script src="{% static 'tethys_apps/vendor/masonry.min.js' %}" type="text/javascript"></script>
   <script src="{% static 'tethys_apps/js/app_library.js' %}" type="text/javascript"></script>
+  <script src="{% static 'tethys_apps/js/isotope.pkgd.min.js' %}" type="text/javascript"></script>
 {% endblock %}

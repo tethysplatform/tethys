@@ -15,6 +15,7 @@ dependencies = []
 setup(
     name=release_package,
     version={{repr(version or '0.0')}},
+    tags={{repr(tags) or ''}},
     description={{repr(description) or ''}},
     long_description='',
     keywords='',
