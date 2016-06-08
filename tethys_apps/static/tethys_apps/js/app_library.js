@@ -22,6 +22,7 @@ var TETHYS_APPS_LIBRARY = (function() {
  	    app_list_container, // Container with the app items in it
  	    apps_library_url,    // App library url
  	    app_item_selector;  // App item selector
+	var $win = $( window ); //For executing tags
 
 	/************************************************************************
  	*                    PRIVATE FUNCTION DECLARATIONS
@@ -208,6 +209,37 @@ var TETHYS_APPS_LIBRARY = (function() {
             msnry.layout();
           });
         }
+		//Function for executing the filters/tags
+		var isotopeContainer = $('.isotopeContainer');
+		if( !isotopeContainer.length || !jQuery().isotope ) return;
+		$win.load(function(){
+			var $isotopeContainer = $('.isotopeContainer').imagesLoaded( function() {
+			isotopeContainer.isotope({
+				itemSelector: '.isotopeSelector',
+				animationEngine:'best-available',
+				animationOptions:{
+					duration: '800'
+				},
+				containerStyle:{
+					position:'relative',
+					overflow:'visible'
+				},
+				masonry:{
+					columnWidth: '240'
+				}
+			});
+				});
+
+
+
+		$('.isotopeFilters').on( 'click', 'a', function(e) {
+				$('.isotopeFilters').find('.active').removeClass('active');
+				$(this).parent().addClass('active');
+				var filterValue = $(this).attr('data-filter');
+				isotopeContainer.isotope({ filter: filterValue });
+				e.preventDefault();
+			});
+		});
 
         // Check for app exit
         app_exit_handler();
