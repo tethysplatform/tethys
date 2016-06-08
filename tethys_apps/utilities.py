@@ -332,7 +332,8 @@ def sync_tethys_app_db():
                     index=installed_app.index,
                     icon=installed_app.icon,
                     root_url=installed_app.root_url,
-                    color=installed_app.color
+                    color=installed_app.color,
+                    tags=installed_app.tags
                 )
                 app.save()
 
