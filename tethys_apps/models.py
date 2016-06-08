@@ -23,6 +23,7 @@ class TethysApp(models.Model):
     description = models.TextField(max_length=1000, blank=True, default='')
     enable_feedback = models.BooleanField(default=False)
     feedback_emails = ListField(default='', blank=True)
+    tags = models.CharField(max_length=200, blank=True,  default='')
 
     # Developer first attributes
     index = models.CharField(max_length=200, default='')
