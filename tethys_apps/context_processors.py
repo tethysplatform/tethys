@@ -29,6 +29,7 @@ def tethys_apps_context(request):
             'index': app.index,
             'icon': app.icon,
             'color': app.color,
+            'tags': app.tags,
             'description': app.description
         }
 
