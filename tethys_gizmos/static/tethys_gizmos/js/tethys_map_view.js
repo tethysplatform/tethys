@@ -99,7 +99,7 @@ var TETHYS_MAP_VIEW = (function() {
 
   // Selectable Features Methods
   var default_selected_feature_styler, highlight_selected_features, jsonp_response_handler, map_clicked,
-      override_selection_styler, selected_features_changed;
+      override_selection_styler, selected_features_changed, select_features_by_attribute;
 
   // UI Management Methods
   var update_field;
@@ -1481,6 +1481,10 @@ var TETHYS_MAP_VIEW = (function() {
     }
   };
 
+  select_features_by_attribute =  function(layer_name, attribute_name, attribute_value)
+  {
+  };
+
   /***********************************
    * Initialization Methods
    ***********************************/
@@ -1747,6 +1751,8 @@ var TETHYS_MAP_VIEW = (function() {
     getSelectInteraction: function() {
         return m_select_interaction;
     },
+
+    selectFeaturesByAttribute: select_features_by_attribute,
   };
 
   /************************************************************************
