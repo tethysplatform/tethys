@@ -7,6 +7,8 @@ Installation on Ubuntu 14.04
 .. tip::
 
     To install and use Tethys Platform, you will need to be familiar with using the command line/terminal. For a quick introduction to the command line, see the :doc:`../supplementary/terminal_quick_guide` article.
+    
+    Also, check to make sure that your installation of Ubuntu = version 14.04. The following steps are likely not to work with other versions.
 
 1. Install the Dependencies
 ---------------------------
