@@ -46,6 +46,7 @@ var TETHYS_MAP_VIEW = (function() {
       m_modify_interaction,                                 // Modify interaction used for modifying features
       m_modify_select_interaction,                          // Select interaction for modify action
       m_select_interaction,                                 // Select interaction for main layers
+      m_zoom_on_selection,                                  // Indicates whether to zoom on selection event
       m_legend_element,                                     // Stores the document element for the legend
       m_legend_items,                                       // Stores the legend items
       m_legend_control,                                     // OpenLayers map control
@@ -98,7 +99,7 @@ var TETHYS_MAP_VIEW = (function() {
   var clear_legend, new_legend_item, update_legend;
 
   // Selectable Features Methods
-  var default_selected_feature_styler, highlight_selected_features, jsonp_response_handler, map_clicked,
+  var default_selected_feature_styler, highlight_selected_features, zoom_to_selection, jsonp_response_handler, map_clicked,
       override_selection_styler, selected_features_changed, select_features_by_attribute;
 
   // UI Management Methods
@@ -761,6 +762,7 @@ var TETHYS_MAP_VIEW = (function() {
     m_textarea_target = 'map_view_geometry';
     m_selectable_layers = [];
     m_selectable_wms_layers = [];
+    m_zoom_on_selection = false;
 
     m_draw_id_counter = 1;
 
@@ -1368,9 +1370,96 @@ var TETHYS_MAP_VIEW = (function() {
     }
   };
 
+  zoom_to_selection = function(geojson) {
+    if (!is_defined(geojson)) {
+      return;
+    }
+    var total_features, features, min_x, min_y, max_x, max_y, feature_extent, zoom_buffer,
+        selection_type;
+    zoom_buffer = 50;
+    total_features = geojson.totalFeatures;
+
+    if (total_features > 0 && total_features <= 20) {
+        features = geojson.features;
+        selection_type = features[0].geometry.type;
+        if (selection_type == 'Point') {
+            min_x = features[0].geometry.coordinates[0];
+            max_x = min_x;
+            min_y = features[0].geometry.coordinates[1];
+            max_y = min_y;
+        } else if (selection_type == 'LineString' || selection_type == 'MultiPoint') {
+            min_x = features[0].geometry.coordinates[0][0];
+            max_x = min_x;
+            min_y = features[0].geometry.coordinates[0][1];
+            max_y = min_y;
+            for (var i = 0; i < total_features; i++) {
+                for (var j = 0; j < features[i].geometry.coordinates.length; j++) {
+                    if (features[i].geometry.coordinates[j][0] < min_x) {
+                        min_x = features[i].geometry.coordinates[j][0];
+                    }
+                    if (features[i].geometry.coordinates[j][0] > max_x) {
+                        max_x = features[i].geometry.coordinates[j][0];
+                    }
+                    if (features[i].geometry.coordinates[j][1] < min_y) {
+                        min_y = features[i].geometry.coordinates[j][1];
+                    }
+                    if (features[i].geometry.coordinates[j][1] > max_y) {
+                        max_y = features[i].geometry.coordinates[j][1];
+                    }
+                }
+            }
+        } else if (selection_type == 'Polygon' || selection_type == 'MultiLineString') {
+            min_x = features[0].geometry.coordinates[0][0][0];
+            max_x = min_x;
+            min_y = features[0].geometry.coordinates[0][0][1];
+            max_y = min_y;
+            for (var i = 0; i < total_features; i++) {
+                for (var j = 0; j < features[i].geometry.coordinates.length; j++) {
+                    for (var k = 0; k < features[i].geometry.coordinates[j].length; k++) {
+                        if (features[i].geometry.coordinates[j][k][0] < min_x) {
+                            min_x = features[i].geometry.coordinates[j][k][0];
+                        }
+                        if (features[i].geometry.coordinates[j][k][0] > max_x) {
+                            max_x = features[i].geometry.coordinates[j][k][0];
+                        }
+                        if (features[i].geometry.coordinates[j][k][1] < min_y) {
+                            min_y = features[i].geometry.coordinates[j][k][1];
+                        }
+                        if (features[i].geometry.coordinates[j][k][1] > max_y) {
+                            max_y = features[i].geometry.coordinates[j][k][1];
+                        }
+                    }
+                }
+            }
+        }
+
+        if (Math.abs(max_x - min_x) < 111.13175 || Math.abs(max_y - min_y) < 111.13175) {
+            min_x = min_x - 111.13175;
+            max_x = max_x + 111.13175;
+            min_y = min_y - 111.13175;
+            max_y = max_y + 111.13175;
+        }
+
+        // Add in the buffer;
+        min_x = min_x - zoom_buffer;
+        max_x = max_x + zoom_buffer;
+        min_y = min_y - zoom_buffer;
+        max_y = max_y + zoom_buffer;
+
+        feature_extent = [min_x, min_y, max_x, max_y];
+
+        m_map.getView().fit(feature_extent, m_map.getSize());
+    }
+  };
+
   jsonp_response_handler = function(data) {
     // Process response
     highlight_selected_features(data);
+
+    // Handle zooming to selection
+    if (m_zoom_on_selection) {
+      zoom_to_selection(data);
+    }
 
     // Call Features Changed Method
     if (selected_features_changed) {
@@ -1398,6 +1487,7 @@ var TETHYS_MAP_VIEW = (function() {
     y = event.coordinate[1]
     urls = [];
     sensitivity = DEFAULT_SENSITIVITY;
+    m_zoom_on_selection = false;
 
     if (is_defined(m_feature_selection_options) && 'sensitivity' in m_feature_selection_options) {
       sensitivity = m_feature_selection_options.sensitivity;
@@ -1481,9 +1571,51 @@ var TETHYS_MAP_VIEW = (function() {
     }
   };
 
-  select_features_by_attribute =  function(layer_name, attribute_name, attribute_value)
-  {
-  };
+  select_features_by_attribute =  function(layer_name, attribute_name, attribute_value, zoom_on_selection=true) {
+    for (var i = 0; i < m_selectable_wms_layers.length; i++) {
+      var source, wms_url, url, layer;
+      var cql_filter;
+      m_zoom_on_selection = zoom_on_selection;
+
+      // Don't select if not visible
+      layer = m_selectable_wms_layers[i];
+      if (!layer.getVisible()) { continue; }
+      // Check for undefined source or non-WMS layers before proceeding
+      source = layer.getSource();
+      if (!(source && 'getGetFeatureInfoUrl' in source)) { continue; }
+      if (source.getParams().LAYERS == layer_name) {
+        if (source instanceof ol.source.ImageWMS) {
+          wms_url = source.getUrl();
+        }
+        else if (source instanceof ol.source.TileWMS) {
+          var tile_urls = source.getUrls();
+          if (tile_urls.length > 0) {
+            wms_url = tile_urls[0];
+          }
+        }
+
+        // Generate cql_filter
+        cql_filter = '&cql_filter=' + attribute_name + '=%27' + attribute_value + '%27';
+
+        // Create callback url
+        url = wms_url.replace('wms', 'wfs')
+              + '?SERVICE=wfs'
+              + '&VERSION=2.0.0'
+              + '&REQUEST=GetFeature'
+              + '&TYPENAMES=' + layer_name
+              + '&OUTPUTFORMAT=text/javascript'
+              + '&FORMAT_OPTIONS=callback:TETHYS_MAP_VIEW.jsonResponseHandler;'
+              + '&SRSNAME=' + DEFAULT_PROJECTION
+              + cql_filter;
+
+        // Get the features if applicable
+        $.ajax({
+          url: url,
+          dataType: 'jsonp',
+        });
+      }
+    }
+  }
 
   /***********************************
    * Initialization Methods
