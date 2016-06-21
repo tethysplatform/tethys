@@ -2,7 +2,11 @@
 Installation on Ubuntu 14.04
 ****************************
 
-**Last Updated:** December 21, 2015
+**Last Updated:** June 21, 2016
+
+.. warning::
+
+    These installation instructions have been tested for Ubuntu 14.04 only. It is likely that you will encounter problems if you try to use these instructions on any other Linux distribution (e.g. RedHat, CentOS) or even other versions of Ubuntu. The current release of Ubuntu is 16.04, so use the `Alternative Downloads <http://www.ubuntu.com/download/alternative-downloads>`_ page to download and install Ubuntu 14.04.
 
 .. tip::
 
