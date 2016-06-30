@@ -60,6 +60,21 @@ This method returns the OpenLayers map object. You can use the `OpenLayers Map A
 
     The Map View Gizmo is powered by OpenLayers version 3.10.1. When referring to the OpenLayers documentation, ensure that you are browsing the correct version of documentation (see the URL of the documentation page).
 
+TETHYS_MAP_VIEW.updateLegend()
+++++++++++++++++++++++++++++++
+
+This method can be used to update the legend after removing/adding layers to the map.
+
+::
+
+    $(function() { //wait for page to load
+
+        var ol_map = TETHYS_MAP_VIEW.getMap();
+        ol_map.addLayer(...);
+        TETHYS_MAP_VIEW.updateLegend();
+    
+    });
+
 TETHYS_MAP_VIEW.zoomToExtent(latlongextent)
 +++++++++++++++++++++++++++++++++++++++++++
 
