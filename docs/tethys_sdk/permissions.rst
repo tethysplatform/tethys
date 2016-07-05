@@ -1,6 +1,6 @@
-***********
-Permissions
-***********
+***************
+Permissions API
+***************
 
 **Last Updated:** May 28, 2016
 
