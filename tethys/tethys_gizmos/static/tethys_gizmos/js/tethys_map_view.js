@@ -1658,7 +1658,7 @@ var TETHYS_MAP_VIEW = (function() {
                 layer.getSource().removeFeature(feature);
             };
         });
-    return false;
+    return;
     };
 
   /************************************************************************
