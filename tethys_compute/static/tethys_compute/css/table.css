@@ -1,0 +1,31 @@
+/*****************************************************************************
+ * FILE: table.css
+ * DATE: 2015
+ * AUTHOR: Scott Christensen
+ * COPYRIGHT: (c) Brigham Young University 2015
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
+table{
+	width:100%;
+	height:100%;
+    border:1px solid #cccccc;
+}th{
+    height:40px;
+}tr:hover td{
+	background-color:#2ca6ed;
+}td{
+    border:1px solid #cccccc;
+	text-align:left;
+	padding:7px;
+	font-size:14px;
+	font-weight:bold;
+	color:#666666;
+}tr td:last-child{
+    width:200px;
+}td:nth-child(4){
+    width:50px;
+    text-align: center;
+}td input[type=range]{
+    width:80%;
+    display:inline;
+}

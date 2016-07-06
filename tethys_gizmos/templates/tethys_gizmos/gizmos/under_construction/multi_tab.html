@@ -1,0 +1,34 @@
+{#
+Inserts a generic stepped progress indicators or stages. Each stage can
+have one of three states, "uncomplete", "complete" and "active". This is
+a modified version of the ckan package/snippets/stages.html snippet.
+
+stages - A list of stage attribute dictionaries
+states - A list of states for each of the stages. Missing stages default
+         to "uncomplete".
+
+Example:
+
+    {% snippet 'package/snippets/stages.html', states=['active'] %}
+    {% snippet 'package/snippets/stages.html', states=['complete', 'active'] %}
+    {% snippet 'package/snippets/stages.html', states=['active', 'complete', 'complete'] %}
+    
+In controller define each state using dictionaries with the following keys:
+
+c.stages = [{'title': 'General',
+			 'value': 'go-general'},
+			 {'title': 'Inflow Rates',
+			 'value': 'go-inflow'},
+			 {'title': 'Demand Rates',
+			 'value': 'go-demand'},
+			 {'title': 'Scenario',
+			 'value': 'go-scenario'}]
+#}
+
+{% set width = 1/stages|count * 100 %}
+
+<ul class="nav nav-tabs">
+  {% for stage in stages %}
+  <li class="" style="width:{{ width }}%"><a href="#{{ stage.value }}" data-toggle="tab">{{ stage.title }}</a></li>
+  {% endfor %}
+</ul>

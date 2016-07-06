@@ -1,0 +1,339 @@
+/*****************************************************************************
+ * FILE: admin_tweaks
+ * DATE: 2014
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
+@import "mixins.less";
+@import "variables.less";
+
+.dashboard #content {
+  width: auto;
+}
+
+#content {
+  h1 {
+    font-size: 30px;
+    .font-smoothing();
+    text-transform: capitalize;
+  }
+}
+
+#container {
+  width: auto;
+  margin: 0 50px;
+  margin-top: 20px;
+}
+
+div.breadcrumbs {
+  background: none;
+  border: none;
+  font-size: 16px;
+  .font-smoothing();
+
+  a {
+    color: #2ca6ed;
+  }
+}
+
+a:link, a:visited {
+  color: @link-color;
+}
+
+a:hover {
+  color: @link-hover-color;
+}
+
+.object-tools {
+  a:link {
+    background: @primary-color;
+    font-weight: 500;
+    font-size: 12px;
+    .font-smoothing();
+
+    &:hover {
+      background-color: @primary-color + #111111;
+    }
+  }
+
+  a.addlink {
+    background: @primary-color url(/static/admin/img/tooltag-add.png) 95% center no-repeat;
+    font-weight: 500;
+    font-size: 12px;
+    .font-smoothing();
+    padding: 3px 12px;
+
+    &:hover {
+      background: @primary-color + #111111 url(/static/admin/img/tooltag-add.png) 95% center no-repeat;
+    }
+  }
+}
+
+.module {
+
+  caption {
+    font-size: 16px;
+    font-weight: 400;
+    .font-smoothing();
+    background: #0a62a9;
+    padding: 10px;
+    padding-left: 8px;
+  }
+
+  tr {
+    th, td {
+      padding: 8px;
+    }
+
+    th {
+      font-size: 14px;
+      .font-smoothing();
+      font-weight: 400;
+    }
+  }
+
+  h2 {
+    background: @primary-color;
+    color: white;
+    .font-smoothing();
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 8px;
+    font-weight: 500;
+  }
+}
+
+thead {
+  th {
+    background: #efefef;
+  }
+}
+
+#content-related {
+
+  .module {
+
+    h2 {
+      background: @link-color;
+      color: white;
+      .font-smoothing();
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 8px;
+      font-weight: 500;
+    }
+  }
+}
+
+.inline-group {
+  h2 {
+    background: @primary-color;
+    color: white;
+    .font-smoothing();
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 8px;
+    font-weight: 500;
+  }
+
+  .inline-related {
+    h3 {
+      color: #666666;
+      background: #efefef;
+      font-size: 12px;
+      line-height: 1.5;
+      padding: 8px;
+      font-weight: 500;
+      .font-smoothing();
+    }
+  }
+
+  .tabular {
+    tr.add-row {
+      td {
+        background: #ffffff;
+        padding: 8px;
+      }
+    }
+  }
+}
+
+#changelist {
+  #toolbar {
+    background: #efefef;
+    padding: 5px;
+
+    form {
+      input[type=submit] {
+        padding: 4px 6px;
+        background: @primary-color;
+        color: #ffffff;
+
+        &:hover {
+          background: @primary-color + #111111;
+        }
+      }
+    }
+  }
+
+  #changelist-filter {
+    z-index: 995;
+
+    h2 {
+      background: @primary-color;
+      font-size: 16px;
+      .font-smoothing();
+      line-height: 2;
+      padding: 8px;
+      font-weight: 500;
+      margin-left: -2px;
+    }
+
+    h3 {
+      color: #666666;
+      .font-smoothing();
+      font-weight: 400;
+    }
+
+    li {
+      &.selected {
+        a {
+          color: @link-color !important;
+        }
+      }
+    }
+  }
+
+  #changelist-form {
+    .actions {
+      background: #ffffff;
+      border-top: none;
+      padding: 5px;
+
+      .button {
+        padding: 4px 6px;
+        background: @primary-color;
+        color: white;
+
+        &:hover {
+          background: @primary-color + #111111;
+        }
+      }
+    }
+
+    .paginator {
+      background: #ffffff;
+    }
+
+    #result_list {
+      thead {
+        th {
+          background: #efefef;
+          padding: 5px;
+
+          &.sorted {
+            background: #dedede;
+          }
+        }
+      }
+
+      tbody {
+        td {
+          padding: 5px;
+        }
+      }
+    }
+  }
+}
+
+.submit-row {
+  background: none;
+  border: none;
+  padding: 10px 0;
+
+  a {
+    &.deletelink {
+      height: auto;
+    }
+  }
+}
+
+[type=submit], [type=button], .button, .submit-row, input {
+  border-radius: 5px;
+}
+
+input[type=submit] {
+
+  background: #ffffff;
+  border: 1px #888888 solid;
+  .font-smoothing();
+  font-weight: 500;
+  color: #222222;
+
+  &:hover {
+    background: #efefef - #111111;
+  }
+
+  &[name=_save] {
+    background: @success-color;
+    border: 1px @success-color - #111111 solid;
+    color: #ffffff;
+
+    &:hover {
+      background: @success-color - #111111;
+    }
+  }
+}
+
+.dynamic-setting_set {
+  .original {
+    p {
+      display: none;
+    }
+  }
+}
+
+
+// Styles specific to the settings admin
+#settingscategory_form {
+  .module {
+    // Remove of label and move name over
+    &:first-of-type {
+      border: none;
+
+      .form-row {
+        border: none;
+        padding: 0;
+
+        label {
+          display: none;
+        }
+
+        p {
+          font-size: 22px;
+          margin: 0;
+          padding: 0;
+        }
+      }
+    }
+  }
+
+  .inline-group {
+    .tabular {
+      .module {
+        h2 {
+          display: none;
+        }
+
+        tbody {
+          td {
+            p {
+              font-size: 12px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

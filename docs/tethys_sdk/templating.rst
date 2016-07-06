@@ -1,0 +1,601 @@
+******************
+App Templating API
+******************
+
+**Last Updated:** November 24, 2014
+
+The pages of a Tethys app are created using the Django template language. This provides an overview of important Django templating concepts and introduces the base templates that are provided to make templating easier.
+
+Django Templating Concepts
+==========================
+
+The Django template language allows you to create dynamic HTML templates and minmizes the amount of HTML you need to write for your app pages. This section will provide a crash course in Django template language basics, but we highly recommend a review of the `Django Template Language <https://docs.djangoproject.com/en/1.7/topics/templates/>`_ documentation.
+
+.. tip::
+
+    Review the `Django Template Language <https://docs.djangoproject.com/en/1.7/topics/templates/>`_ to get a better grasp on templating in Tethys.
+
+Variables
+---------
+
+In Django templates, variables are denoted by double curly brace syntax: ``{{ variable }}``. The variable expression will be replaced by the value of the variable. Dot notation can be used access attributes of a variable: ``{{ variable.attribute }}``.
+
+Examples:
+
+::
+
+  # Examples of Django template variable syntax
+  {{ variable }}
+
+  # Access items in a list or tuple using dot notation
+  {{ list.0 }}
+
+  # Access items in a dictionary using dot notation
+  {{ dict.key }}
+
+  # Access attributes of objects using dot notation
+  {{ object.attribute }}
+
+.. hint::
+
+    See `Django template Variables <https://docs.djangoproject.com/en/1.7/topics/templates/#variables>`_ documentation for more information.
+
+Filters
+-------
+
+Variables can be modified by filters which look like this: ``{{ variable|filter:argument }}``. Filters perform modifying functions on variable output such as formatting dates, formatting numbers, changing the letter case, and concatenating multiple variables.
+
+Examples:
+
+::
+
+    # The default filter can be used to print a default value when the variable is falsy
+    {{ variable|default:"nothing" }}
+
+    # The join filter can be used to join a list with a the separator given
+    {{ list|join:", " }}
+
+.. hint::
+
+    Refer to the `Django Filter Reference <https://docs.djangoproject.com/en/1.7/ref/templates/builtins/#ref-templates-builtins-filters>`_ for a full list of the filters available.
+
+Tags
+----
+
+Tags use curly brace percent sign syntax like this: ``{% tag %}``. Tags perform many different functions including creating text, controlling flow, or loading external information to be used in the app. Some commonly used tags include ``for``, ``if``, ``block``, and ``extends``.
+
+Examples:
+
+::
+
+    # The if tag only prints its contents when the condition evaluates to True
+    {% if name %}
+        <h1>Hello, {{ name }}!</h1>
+    {% else %}
+        <h1>Welcome!</h1>
+    {% endif %}
+
+    #  The for tag can be used to loop through iterables printing its contents on each iteration
+    <ul>
+      {% for item in item_list %}
+        <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+
+    # The block tag is used to override the contents of the block of a parent template
+    {% block example %}
+      <p>I just overrode the contents of the "example" block with this paragraph.</p>
+    {% endblock %}
+
+.. hint::
+
+    See the `Django Tag Reference <https://docs.djangoproject.com/en/1.7/ref/templates/builtins/#ref-templates-builtins-tags>`_ for a complete list of tags that Django provides.
+
+Template Inheritance
+--------------------
+
+One of the advantages of using the Django template language is that it provides a method for child templates to extend parent templates, which can reduce the amount of HTML you need to write. Template inheritance is accomplished using two tags, ``extends`` and ``block``. Parent templates provide ``blocks`` of content that can be overridden by child templates. Child templates can extend parent templates by using the ``extends`` tag. Calling the ``block`` tag of a parent template in a child template will override any content in that ``block`` tag with the content in the child template.
+
+.. hint::
+
+    The `Django Template Inheritance <https://docs.djangoproject.com/en/1.7/topics/templates/#template-inheritance>`_ documentation provides an excellent example that illustrates how inheritance works.
+
+
+Base Templates
+==============
+
+There are two layers of templates provided for Tethys app development. The :file:`app_base.html` template provides the HTML skeleton for all Tethys app templates, which includes the base HTML structural elements (e.g.: ``<html>``, ``<head>``, and ``<body>`` elements), the base style sheets and JavaScript libraries, and many blocks for customization. All Tethys app projects also include a :file:`base.html` template that inherits from the :file:`app_base.html` template.
+
+App developers are encouraged to use the :file:`base.html` file as the base template for all of their templates, rather than extending the :file:`app_base.html` file directly. The :file:`base.html` template is easier to work with, because it includes only the blocks that will be used most often from the :file:`app_base.html` template. However, all of the blocks that are available from :file:`app_base.html` template will also be available for use in the :file:`base.html` template and any templates that extend it.
+
+Many of the blocks in the template correspond with different portions of the app interface. Figure 1 provides a graphical explanation of these blocks. An explanation of all the blocks provided in the :file:`app_base.html` and :file:`base.html` templates can be found in the section that follows.
+
+.. figure:: ../images/detailed_template_blocks.png
+    :width: 700px
+
+    **Figure 1.** Illustration of the blocks that correspond with app interface elements as follows:
+
+    1. app_header_override
+    2. app_navigation_toggle_override
+    3. app_icon_override, app_icon
+    4. app_title_override, app_title
+    5. exit_button_override
+    6. app_content_override
+    7. app_navigation_override
+    8. app_navigation, app_navigation_items
+    9. flash
+    10. app_content
+    11. app_actions_override
+    12. app_actions
+
+Blocks
+======
+
+This section provides an explanation of the blocks are available for use in child templates of either the :file:`app_base.html` or the :file:`base.html` templates.
+
+htmltag
+-------
+
+Override the ``<html>`` element open tag.
+
+*Example:*
+
+::
+
+    {% block htmltag %}<html lang="es">{% endblock %}
+
+headtag
+-------
+
+Add attributes to the ``<head>`` element.
+
+*Example:*
+
+::
+
+    {% block headtag %}style="display: block;"{% endblock %}
+
+meta
+----
+
+Override or append ``<meta>`` elements to the ``<head>`` element. To append to existing elements, use ``block.super``.
+
+*Example:*
+
+::
+
+    {% block meta %}
+      {{ block.super }}
+      <meta name="description" value="My website description" />
+    {% endblock %}
+
+title
+-----
+
+Change title for the page. The title is used as metadata for the site and shows up in the browser in tabs and bookmark names.
+
+*Example:*
+
+::
+
+    {% block title %}{{ block.super }} - My Sub Title{% endblock %}
+
+links
+-----
+
+Add content before the stylesheets such as rss feeds and favicons. Use ``block.super`` to preserve the default favicon or override completely to specify custom favicon.
+
+*Example:*
+
+::
+
+    {% block links %}
+      <link rel="shortcut icon" href="/path/to/favicon.ico" />
+    {% endblock %}
+
+styles
+------
+
+Add additional stylesheets to the page. Use ``block.super`` to preserve the existing styles for the app (recommended) or override completely to use your own custom stylesheets.
+
+*Example:*
+
+::
+
+    {% block styles %}
+      {{ block.super }}
+      <link href="/path/to/styles.css" rel="stylesheet" />
+    {% endblock %}
+
+global_scripts
+--------------
+
+Add JavaScript libraries that need to be loaded prior to the page being loaded. This is a good block to use for libraries that are referenced globally. The global libraries included as global scripts by default are JQuery and Bootstrap. Use ``block.super`` to preserve the default global libraries.
+
+*Example:*
+
+::
+
+    {% block global_scripts %}
+      {{ block.super }}
+      <script src="/path/to/script.js" type="text/javascript"></script>
+    {% endblock %}
+
+bodytag
+-------
+
+Add attributes to the ``body`` element.
+
+*Example:*
+
+::
+
+    {% block bodytag %}class="a-class" onload="run_this();"{% endblock %}
+
+app_content_wrapper_override
+----------------------------
+
+Override the app content structure completely. The app content wrapper contains all content in the ``<body>`` element other than the scripts. Use this block to override all of the app template structure completely.
+
+*Override Eliminates:*
+
+app_header_override, app_navigation_toggle_override, app_icon_override, app_icon, app_title_override, app_title, exit_button_override, app_content_override, flash, app_navigation_override, app_navigation, app_navigation_items, app_content, app_actions_override, app_actions.
+
+*Example:*
+
+::
+
+    {% block app_content_wrapper_override %}
+      <div>
+        <p>My custom content</p>
+      </div>
+    {% endblock %}
+
+app_header_override
+-------------------
+
+Override the app header completely including any wrapping elements. Useful for creating a custom header for your app.
+
+*Override Eliminates:*
+
+app_navigation_toggle_override, app_icon_override, app_icon, app_title_override, app_title, exit_button_override
+
+app_navigation_toggle_override
+------------------------------
+
+Override the app navigation toggle button. This is useful if you want to create an app that does not include the navigation pane. Use this to remove the navigation toggle button as well.
+
+*Example:*
+
+::
+
+    {% block app_navigation_toggle_override %}{% endblock %}
+
+app_icon_override
+-----------------
+
+Override the app icon in the header completely including any wrapping elements.
+
+*Override Eliminates:*
+
+app_icon
+
+
+app_icon
+--------
+
+Override the app icon ``<img>`` element in the header.
+
+*Example:*
+
+::
+
+    {% block app_icon %}<img src="/path/to/icon.png">{% endblock %}
+
+app_title_override
+------------------
+
+Override the app title in the header completely including any wrapping elements.
+
+*Override Eliminates:*
+
+app_title
+
+app_title
+---------
+
+Override the app title element in the header.
+
+*Example:*
+
+::
+
+    {% block app_title %}My App Title{% endblock %}
+
+exit_button_override
+--------------------
+
+Override the exit button completely including any wrapping elements.
+
+app_content_override
+--------------------
+
+Override only the app content area while preserving the header. The navigation and actions areas will also be overridden.
+
+*Override Eliminates:*
+
+flash, app_navigation_override, app_navigation, app_navigation_items, app_content, app_actions_override, app_actions
+
+flash
+-----
+
+Override the flash messaging capabilities. Flash messages are used to display dismissible messages to the user using the Django messaging capabilities. Override if you would like to implement your own messaging system or eliminate functionality all together.
+
+app_navigation_override
+-----------------------
+
+Override the app navigation elements including any wrapping elements.
+
+*Override Eliminates:*
+
+app_navigation, app_navigation_items
+
+app_navigation
+--------------
+
+Override the app navigation container. The default container for navigation is an unordered list. Use this block to override the unordered list for custom navigation.
+
+*Override Eliminates:*
+
+app_navigation_items
+
+app_navigation_items
+--------------------
+
+Override or append to the app navigation list. These should be ``<li>`` elements.
+
+app_content
+-----------
+
+Add content to the app content area. This should be the primary block used to add content to the app.
+
+*Example:*
+
+::
+
+    {% block app_content %}
+      <p>Content for my app.</p>
+    {% endblock %}
+
+app_actions_override
+--------------------
+
+Override app content elements including any wrapping elements.
+
+app_actions
+-----------
+
+Override or append actions to the action area. These are typically buttons or links. The actions are floated right, so they need to be listed in right to left order.
+
+*Example:*
+
+::
+
+    {% block app_actions %}
+      <a href="" class="btn btn-default">Next</a>
+      <a href="" class="btn btn-default">Back</a>
+    {% endblock %}
+
+scripts
+-------
+
+Add additional JavaScripts to the page. Use ``block.super`` to preserve the existing scripts for the app (recommended) or override completely to use your own custom scripts.
+
+*Example:*
+
+::
+
+    {% block scripts %}
+      {{ block.super }}
+      <script href="/path/to/script.js" type="text/javascript"></script>
+    {% endblock %}
+
+app_base.html
+=============
+
+This section provides the complete contents of the :file:`app_base.html` template. It is meant to be used as a reference for app developers, so they can be aware of the HTML structure underlying their app templates.
+
+::
+
+    {% load staticfiles tethys_gizmos %}
+    <!DOCTYPE html>
+
+    {% block htmltag %}
+    <!--[if IE 7]> <html lang="en" class="ie ie7"> <![endif]-->
+    <!--[if IE 8]> <html lang="en"  class="ie ie8"> <![endif]-->
+    <!--[if IE 9]> <html lang="en"  class="ie9"> <![endif]-->
+    <!--[if gt IE 8]><!--> <html lang="en" > <!--<![endif]-->
+    {% endblock %}
+
+      <head {% block headtag %}{% endblock %}>
+
+        {% block meta %}
+          <meta charset="utf-8" />
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <meta name="generator" content="Django" />
+        {% endblock %}
+
+        <title>
+          {% if site_globals.site_title %}
+             {{ site_globals.site_title }}
+          {% elif site_globals.brand_text %}
+            {{ site_globals.brand_text }}
+          {% else %}
+            Tethys
+          {% endif %}
+          {% block title %}{% endblock %}
+        </title>
+
+        {% block links %}
+          {% if site_globals.favicon %}
+            <link rel="shortcut icon" href="{{ site_globals.favicon }}" />
+          {% endif %}
+        {% endblock %}
+
+        {% block styles %}
+          <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" />
+          <link href="{% static 'tethys_apps/css/app_base.css' %}" rel="stylesheet" />
+        {% endblock %}
+
+        {% block global_scripts %}
+          <script src="//code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
+          <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" type="text/javascript"></script>
+        {% endblock %}
+
+      </head>
+
+      <body {% block bodytag %}{% endblock %}>
+
+        {% block app_content_wrapper_override %}
+          <div id="app-content-wrapper" class="show-nav">
+
+            {% block app_header_override %}
+              <div id="app-header" class="clearfix">
+                <div class="tethys-app-header" style="background: {{ tethys_app.color|default:'#1b95dc' }};">
+
+                  {% block app-navigation-toggle-override %}
+                    <a href="javascript:void(0);" class="toggle-nav">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </a>
+                  {% endblock %}
+
+                  {% block app_icon_override %}
+                    <div class="icon-wrapper">
+                      {% block app_icon %}<img src="{% static tethys_app.icon %}">{% endblock %}
+                    </div>
+                  {% endblock %}
+
+                  {% block app_title_override %}
+                    <div class="app-title-wrapper">
+                      <span class="app-title">{% block app_title %}{{ tethys_app.name }}{% endblock %}</span>
+                    </div>
+                  {% endblock %}
+
+                  {% block exit_button_override %}
+                    <div class="exit-button">
+                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');">Exit</a>
+                    </div>
+                  {% endblock %}
+                </div>
+              </div>
+            {% endblock %}
+
+            {% block app_content_override %}
+              <div id="app-content">
+
+                {% block flash %}
+                  {% if messages %}
+                    <div class="flash-messages">
+
+                      {% for message in messages %}
+                        <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible" role="alert">
+                          <button type="button" class="close" data-dismiss="alert">
+                            <span aria-hidden="true">&times;</span>
+                            <span class="sr-only">Close</span>
+                          </button>
+                          {{ message }}
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                {% endblock %}
+
+                {% block app_navigation_override %}
+                  <div id="app-navigation">
+                    {% block app_navigation %}
+                      <ul class="nav nav-pills nav-stacked">
+                        {% block app_navigation_items %}{% endblock %}
+                      </ul>
+                    {% endblock %}
+                  </div>
+                {% endblock %}
+
+                <div id="inner-app-content">
+                  {% block app_content %}{% endblock %}
+
+                  {# App actions are fixed to the bottom #}
+                  {% block app_actions_override %}
+                    <div id="app-actions">
+                      {% block app_actions %}{% endblock %}
+                    </div>
+                  {% endblock %}
+                </div>
+              </div>
+            {% endblock %}
+          </div>
+        {% endblock %}
+
+        {% block scripts %}
+          <script src="{% static 'tethys_apps/vendor/cookies.js' %}" type="text/javascript"></script>
+          <script src="{% static 'tethys_apps/js/app_base.js' %}" type="text/javascript"></script>
+          {% gizmo_dependencies %}
+        {% endblock %}
+      </body>
+    </html>
+
+base.html
+=========
+
+The :file:`base.html` is the base template that is used directly by app templates. This file is generated in all new Tethys app projects that are created using the scaffold. The contents are provided here for reference.
+
+All of the blocks provided by the :file:`base.html` template are inherited from the :file:`app_base.html` template. The :file:`base.html` template is intended to be a simplified version of the :file:`app_base.html` template, providing only the the blocks that should be used in a default app configuration. However, the blocks that are excluded from the :file:`base.html` template can be used by advanced Tethys app developers who wish customize parts or all of the app template structure.
+
+See the `Blocks`_ section for an explanation of each block.
+
+::
+
+    {% extends "tethys_apps/app_base.html" %}
+
+    {% load staticfiles %}
+
+    {% block title %}- {{ tethys_app.name }}{% endblock %}
+
+    {% block styles %}
+      {{ block.super }}
+      <link href="{% static 'new_template_app/css/main.css' %}" rel="stylesheet"/>
+    {% endblock %}
+
+    {% block app_icon %}
+      {# The path you provided in your app.py is accessible through the tethys_app.icon context variable #}
+      <img src="{% static tethys_app.icon %}">
+    {% endblock %}
+
+    {# The name you provided in your app.py is accessible through the tethys_app.name context variable #}
+    {% block app_title %}{{ tethys_app.name }}{% endblock %}
+
+    {% block app_navigation_items %}
+      <li class="title">App Navigation</li>
+      <li class="active"><a href="">Home</a></li>
+      <li><a href="">Jobs</a></li>
+      <li><a href="">Results</a></li>
+      <li class="title">Steps</li>
+      <li><a href="">1. The First Step</a></li>
+      <li><a href="">2. The Second Step</a></li>
+      <li><a href="">3. The Third Step</a></li>
+      <li class="separator"></li>
+      <li><a href="">Get Started</a></li>
+    {% endblock %}
+
+    {% block app_content %}
+    {% endblock %}
+
+    {% block app_actions %}
+    {% endblock %}
+
+    {% block scripts %}
+      {{ block.super }}
+      <script src="{% static 'new_template_app/js/main.js' %}" type="text/javascript"></script>
+    {% endblock %}

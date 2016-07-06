@@ -1,0 +1,216 @@
+{% extends "page.html" %}
+
+{% load gravatar %}
+
+{% block title %}- Profile{% endblock %}
+
+{% block styles %}
+  {{ block.super }}
+  <style>
+    body {
+      background: {{ site_globals.background_color|default:'#efefef' }};
+    }
+
+    .profile-header .profile-name {
+      color: {{ site_globals.primary_text_color|default:'#ffffff' }};
+    }
+  </style>
+{% endblock %}
+
+{% block primary_content %}
+  {% block profile_header %}
+    <div class="profile-header" style="background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};">
+      <div class="row">
+        <div class="col-md-3 col-md-offset-2">
+          <div class="profile-image-wrapper">
+            {% gravatar context_user.email 250 %}
+          </div>
+        </div>
+        <div class="col-md-7">
+          <span class="profile-name">{% if context_user.first_name %}{{ context_user.first_name }} {{ context_user.last_name }}{% else %}{{ context_user.username }}{% endif %}</span>
+        </div>
+      </div>
+    </div>
+  {% endblock %}
+
+  {% block edit_button %}
+    {% if context_user.username == user.username %}
+      <div class="row">
+        <div class="col-md-12">
+          <div class="profile-edit-button">
+            <a href="{% url 'user:settings' username=context_user.username %}" class="btn btn-default btn-lg">Edit</a>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endblock %}
+
+  {% block profile_sections %}
+    <div class="profile-section first">
+      <div class="row">
+        <div class="col-md-2 col-md-offset-2 profile-section-header">
+          <h3>Name</h3>
+        </div>
+        <div class="col-md-8 profile-parameters">
+          {% block name_parameters %}
+          <ul>
+            <li><span class="parameter">First Name:</span><span class="value">{{ context_user.first_name|default:"Not Given" }}</span></li>
+            <li><span class="parameter">Last Name:</span><span class="value">{{ context_user.last_name|default:"Not Given" }}</span></li>
+          </ul>
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-section">
+      <div class="row">
+        <div class="col-md-2 col-md-offset-2 profile-section-header">
+          <h3>Credentials</h3>
+        </div>
+        <div class="col-md-8 profile-parameters">
+          {% block credential_parameters %}
+          <ul>
+            <li><span class="parameter">Username:</span><span class="value">{{ context_user.username }}</span></li>
+            {% if context_user.has_usable_password and user.username == context_user.username %}
+              <li><span class="parameter">Password:</span><span class="value">********</span></li>
+            {% endif %}
+          </ul>
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-section">
+      <div class="row">
+        <div class="col-md-2 col-md-offset-2 profile-section-header">
+          <h3>Gravatar</h3>
+        </div>
+        <div class="col-md-8 profile-parameters">
+          {% block gravatar_parameters %}
+          <ul>
+            <li><span class="parameter">Email:</span><span class="value">{% if user.username == context_user.username %}{{ user.email|default:"Not Given" }}{% else %}<span class="label label-info">Private</span>{% endif %}</span></li>
+          </ul>
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+
+    {% if backends.backends %}
+    <div class="profile-section social">
+      <div class="row">
+        <div class="col-md-2 col-md-offset-2 profile-section-header">
+          <h3>Social</h3>
+        </div>
+        <div class="col-md-8 profile-parameters">
+          {% block social_parameters %}
+          <ul>
+            <li><span class="parameter">Connected:</span>
+              {% if user.username == context_user.username %}
+                {% if backends.associated %}
+                  <div class="social-label-container">
+                    {% for backend in backends.associated %}
+                      {% if 'linkedin' in backend.provider %}
+                        <span class="label label-linkedin">LinkedIn</span>
+                      {% elif 'google' in backend.provider %}
+                        <span class="label label-google">Google</span>
+                      {% elif 'facebook' in backend.provider %}
+                        <span class="label label-facebook">Facebook</span>
+                      {% elif 'hydroshare' in backend.provider %}
+                        <span class="label label-hydroshare">HydroShare</span>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <span>None</span>
+                {% endif %}
+              {% else %}
+                <span class="label label-info">Private</span>
+              {% endif %}
+            </span></li>
+            <li><span class="parameter">Not Connected:</span>
+              {% if user.username == context_user.username %}
+                {% if backends.not_associated %}
+                  <div class="social-label-container">
+                    {% for backend in backends.not_associated %}
+                      {% if 'linkedin' in backend %}
+                        <span class="label label-linkedin">LinkedIn</span>
+                      {% elif 'google' in backend %}
+                        <span class="label label-google">Google</span>
+                      {% elif 'facebook' in backend %}
+                        <span class="label label-facebook">Facebook</span>
+                      {% elif 'hydroshare' in backend %}
+                        <span class="label label-hydroshare">HydroShare</span>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <span>None</span>
+                {% endif %}
+              {% else %}
+                <span class="label label-info">Private</span>
+              {% endif %}
+            </span></li>
+          </ul>
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% block account_parameters %}
+    <div class="profile-section last">
+      <div class="row">
+        <div class="col-md-2 col-md-offset-2 profile-section-header">
+          <h3>Account</h3>
+        </div>
+        <div class="col-md-8 profile-parameters">
+          <ul>
+            <li><span class="parameter">Member Since:</span><span class="value">{{ context_user.date_joined|date:"F j, Y" }}</span></li>
+            <li><span class="parameter">Status:</span><span class="value">{% if context_user.is_active %}Active{% else %}Inactive{% endif %}</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    {% endblock %}
+  {% endblock %}
+
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script>
+
+    function resize_profile_name() {
+      var profile_name_element, name_height, header_height;
+
+
+
+      profile_name_element = $('.profile-header .profile-name');
+      name_height = parseInt(profile_name_element.css('height'));
+      header_height = parseInt($('.profile-header').css('height'));
+
+      if (name_height > 215 && header_height === 250) {
+        profile_name_element.css('padding-top', '46px');
+
+      } else if (name_height <= 215 && header_height === 250) {
+        profile_name_element.css('padding-top', '130px');
+
+      } else if (name_height > 88 && header_height === 125) {
+        profile_name_element.css('padding-top', '12px');
+
+      } else if (name_height <= 88 && header_height === 125) {
+        profile_name_element.css('padding-top', '38px');
+      }
+    }
+
+    // Check when page loads
+    window.onload = function(event){
+      resize_profile_name();
+    }
+
+    // Also check on page resize event
+    window.onresize = function(event) {
+      resize_profile_name();
+    }
+  </script>
+{% endblock %}

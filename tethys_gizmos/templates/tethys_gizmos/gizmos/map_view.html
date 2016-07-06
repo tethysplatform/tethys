@@ -1,0 +1,45 @@
+{% load staticfiles tethys_gizmos %}
+<style>
+  .ol-mouse-position {
+    top: 10px;
+    right: 40px;
+  }
+
+  .ol-zoomslider {
+    width: 28px;
+  }
+
+  {% if controls and 'ZoomSlider' in controls %}
+  .ol-zoom-extent {
+    top: 269px;
+  }
+  {% endif %}
+
+  {% if controls and 'FullScreen' in controls %}
+  .ol-rotate {
+    top: 40px;
+  }
+  {% endif %}
+</style>
+
+<div id="map_view_outer_container">
+  <div id="map_wrapper" style="height: {{ height|default:'100%' }}; width:{{ width|default:'100%'}};">
+    <div id="map_view" style="width: 100%; height:100%; position: relative;"
+         {% if classes %}class="{{ classes }}"{% endif %}
+         {% if attributes %}
+             {% for key, value in attributes.items %}
+                 {{ key }}="{{ value }}"
+             {% endfor %}
+         {% endif %}
+         {% if controls %}data-controls="{{ controls|jsonify }}"{% endif %}
+         {% if interactions %}data-interactions="{{ interactions|jsonify }}"{% endif %}
+         {% if layers %}data-layers="{{ layers|jsonify }}"{% endif %}
+         {% if draw %}data-draw="{{ draw|jsonify }}"{% endif %}
+         {% if view %}data-view="{{ view|jsonify }}"{% endif %}
+         {% if basemap %}data-base-map="{{ basemap|jsonify }}"{% endif %}
+         {% if legend %}data-legend="{{ legend|jsonify }}"{% endif %}
+         {% if disable_basemap %}data-disable-base-map="{{ disable_basemap|jsonify }}"{% endif %}
+         {% if feature_selection %}data-feature-selection="{{ feature_selection|jsonify }}"{% endif %}></div>
+    <textarea id="map_view_geometry" name="geometry" rows="4" cols="180" hidden></textarea>
+  </div>
+</div> <!-- end outerContainer -->

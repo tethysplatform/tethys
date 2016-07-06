@@ -1,0 +1,208 @@
+{% load gravatar staticfiles %}
+
+<style>
+  .user-dropdown .user-profile-nav-item a.lit {
+    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
+  }
+
+  .user-dropdown .user-profile-nav-item a:hover {
+    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
+  }
+
+  .user-dropdown .user-dropdown-menu li a:hover {
+    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
+  }
+
+  .site-header .header-nav li.header-action a:hover {
+    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
+  }
+
+  .site-header .header-nav li.header-action.lit a {
+    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
+  }
+
+  .mobile-nav-button:hover {
+    background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
+  }
+
+  .site-header .header-nav li.header-action a {
+    color: {{ site_globals.primary_text_color|default:'#ffffff' }};
+  }
+
+  .site-header .header-nav li.header-action a:hover {
+    color: {{ site_globals.primary_text_hover_color|default:'#dddddd' }};
+  }
+
+  .site-header .header-logo .logo-title a {
+    color: {{ site_globals.primary_text_color|default:'#ffffff' }};
+  }
+
+  .site-header .header-logo .logo-title a:hover {
+    color: {{ site_globals.primary_text_hover_color|default:'#dddddd' }};
+  }
+
+  .site-header .header-nav li a {
+    color: {{ site_globals.primary_text_color|default:'#dddddd' }};
+  }
+
+  .site-header .header-nav li a:hover {
+    color: {{ site_globals.primary_text_hover_color|default:'#ffffff' }};
+  }
+
+  .site-header .header-logo .logo-image img {
+    height: {{ site_globals.brand_image_height|default:'60px' }};
+    {% if site_globals.brand_image_width %}
+      width: {{ site_globals.brand_image_width }};
+    {% endif %}
+    {% if site_globals.brand_image_padding %}
+      margin-top: {{ site_globals.brand_image_padding }};
+    {% endif %}
+  }
+
+  @media (max-width: 750px) {
+    .site-header .header-logo .logo-image img {
+      height: 40px;
+      {% if site_globals.brand_image_padding %}
+        margin-top: 0;
+      {% endif %}
+    }
+  }
+
+  @media (max-width: 900px) {
+    .site-header .header-logo .logo-image img {
+      height: 40px;
+      {% if site_globals.brand_image_padding %}
+        margin-top: 0;
+      {% endif %}
+    }
+  }
+
+  @media (max-width: 1080px) {
+    .site-header .header-logo .logo-image img {
+      height: 40px;
+      {% if site_globals.brand_image_padding %}
+        margin-top: 0;
+      {% endif %}
+    }
+  }
+
+  .user-dropdown .user-dropdown-menu li a {
+    color: #666666;
+  }
+</style>
+
+{# Mobile site navigation #}
+{% block mobile_nav %}
+  <div class="mobile-nav mobile-nav-links">
+    <ul>
+      {% block mobile_nav_items %}
+        <li><a href="{% url 'app_library' %}" title="Apps">Apps</a></li>
+        {% if user.is_staff or user.is_superuser %}
+        <li><a href="{% url 'developer_home' %}" title="Developer">Developer</a></li>
+        {% endif %}
+        {% if user.is_authenticated and user.is_active %}
+          <li>
+            <a href="{% url 'user:profile' username=user.username %}" title="User Profile">
+              <span>Profile</span>
+            </a>
+          </li>
+          {% if user.is_staff %}
+            <li>
+              <a href="{% url 'admin:index' %}" title="System Admin Settings">
+                <span>Site Admin</span>
+              </a>
+            </li>
+          {% endif %}
+
+          <li>
+            <a href="{% url 'accounts:logout' %}" title="Log Out">
+              <span>Log Out</span>
+            </a>
+          </li>
+        {% endif %}
+      {% endblock %}
+    </ul>
+  </div>
+{% endblock %}
+
+<div class="header-wrapper" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
+  <header class="site-header">
+    <div class="header-logo">
+      {% if site_globals.brand_image %}
+        <a class="logo-image" href="/"><img  src="{{ site_globals.brand_image }}"></a>
+      {% endif %}
+
+      {% if site_globals.brand_text %}
+        <h1 class="logo-title">
+          <a href="/">{{ site_globals.brand_text }}</a>
+        </h1>
+      {% endif %}
+
+      {% if not site_globals.brand_text and not site_globals.brand_image %}
+        <h1 class="logo-title">
+          <a href="/">Tethys</a>
+        </h1>
+      {% endif %}
+    </div>
+
+    {% block header_nav %}
+    <ul class="header-nav">
+      {% block header_nav_items %}
+        {% if user.is_authenticated and user.is_active %}
+          <li><a href="{% url 'app_library' %}" title="Apps">Apps</a></li>
+          {% if user.is_staff or user.is_superuser %}
+          <li><a href="{% url 'developer_home' %}" title="Developer">Developer</a></li>
+          {% endif %}
+        {% endif %}
+      {% endblock %}
+
+      {% if user.is_authenticated and user.is_active %}
+
+        <li class="user-dropdown">
+          <div class="user-profile-nav-item">
+            <a id="user-profile" class="user-profile" href="{% url 'user:profile' username=user.username %}" class="image" title="User Profile"><span>{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}  {% gravatar user.email 25 %}</span></a>
+            <a id="user-dropdown-toggle" class="user-dropdown-toggle" title="User Menu" href="javascript:void(0);" onclick="toggle_menu('#user-profile', this, '#user-dropdown-menu');"><span class="glyphicon glyphicon-chevron-down"></span></a>
+          </div>
+          <ul id="user-dropdown-menu" class="user-dropdown-menu">
+            <li>
+              <a href="{% url 'user:settings' username=user.username %}" title="User Settings">
+                <span class="glyphicon glyphicon-user"></span><span>    User Settings</span>
+              </a>
+            </li>
+
+            {% if user.is_staff %}
+              <li class="separator"></li>
+              <li>
+                <a href="{% url 'admin:index' %}" title="System Admin Settings">
+                  <span class="glyphicon glyphicon-cog"></span><span>   Site Admin</span>
+                </a>
+              </li>
+            {% endif %}
+
+            <li class="separator"></li>
+            <li>
+              <a href="{% url 'accounts:logout' %}" title="Log Out">
+                <span class="glyphicon glyphicon-log-out"></span><span>   Log Out</span>
+              </a>
+            </li>
+          </ul> {# END user-dropdown-menu #}
+        </li> {# END user-dropdown #}
+
+      {% else %}
+        <li class="action header-action"><a href="{% url 'accounts:login' %}" title="Log In">Log In</a></li>
+      {% endif %}
+
+    </ul>
+    {% endblock %}
+
+    {% if user.is_authenticated and user.is_active %}
+      <a class="mobile-nav-button mobile-links">
+          <div></div>
+          <div></div>
+          <div></div>
+      </a>
+    {% else %}
+      <a class="mobile-nav-button mobile-login" href="{% url 'accounts:login' %}" title="Log In">Log In</a>
+    {% endif %}
+  </header>
+</div>
