@@ -2,7 +2,7 @@
 Installation on Ubuntu 14.04
 ****************************
 
-**Last Updated:** December 21, 2015
+**Last Updated:** July 1, 2016
 
 .. tip::
 
@@ -79,6 +79,15 @@ a. Create a :term:`Python virtual environment` and activate it::
     The Tethys virtual environment must remain active for the entire installation. If you need to logout or close the terminal in the middle of the installation, you will need to reactivate the virtual environment. This can be done at anytime by executing the following command (don't forget the dot)::
 
         $ . /usr/lib/tethys/bin/activate
+
+    If you get tired of typing ``. /usr/lib/tethys/bin/activate`` to activate your virtual environment, you can add an alias to your ``.bashrc`` file::
+  
+      $ echo "alias t='. /usr/lib/tethys/bin/activate'" >> ~/.bashrc
+    
+    Close your terminal window and reopen it to effect the changes. Now, to activate your virtual environment all you have to do is use the alias ``t``::
+    
+        $ t
+      (tethys) $ _
 
 b. Install Tethys Platform into the virtual environment with the following command::
 
