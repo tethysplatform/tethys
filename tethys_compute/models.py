@@ -113,7 +113,7 @@ class Cluster(models.Model):
     try:
         TC_MANAGER = tethyscluster_config.get_cluster_manager()
     except Exception as e:
-        log.exception(e)
+        log.debug(e)
         TC_MANAGER = None
 
     _name = models.CharField(max_length=30, unique=True, default='tethys_default')
