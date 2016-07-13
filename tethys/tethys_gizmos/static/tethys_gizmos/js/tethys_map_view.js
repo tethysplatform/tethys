@@ -1654,7 +1654,7 @@ var TETHYS_MAP_VIEW = (function() {
     var map = event.map;
     var feature = map.forEachFeatureAtPixel(event.pixel,
         function(feature, layer) {
-            if (layer instanceof ol.layer.Vector) {
+            if (layer.tethys_legend_title === "Drawing Layer") {
                 layer.getSource().removeFeature(feature);
             };
         });
