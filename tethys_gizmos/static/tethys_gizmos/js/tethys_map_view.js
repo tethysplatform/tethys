@@ -43,6 +43,7 @@ var TETHYS_MAP_VIEW = (function() {
       m_drawing_layer,                                      // Drawing layer for drawing feature
       m_drag_box_interaction,                               // Drag box interaction used for drawing rectangles
       m_drag_feature_interaction,                           // Drag feature interaction
+      m_delete_feature_interaction,                         // Delete feature interaction
       m_modify_interaction,                                 // Modify interaction used for modifying features
       m_select_interaction,                                 // Select interaction for modify action
       m_legend_element,                                     // Stores the document element for the legend
@@ -81,7 +82,7 @@ var TETHYS_MAP_VIEW = (function() {
        ol_feature_selection_init, ol_view_init, parse_options;
 
   // Drawing Methods
-  var add_drawing_interaction, add_drag_box_interaction, add_drag_feature_interaction, add_modify_interaction,
+  var add_drawing_interaction, add_drag_box_interaction, add_drag_feature_interaction, add_delete_feature_interaction, add_modify_interaction,
       add_feature_callback, draw_end_callback, draw_change_callback, switch_interaction;
 
   // Feature Parser Methods
@@ -104,7 +105,7 @@ var TETHYS_MAP_VIEW = (function() {
   var is_defined, in_array, string_to_function;
 
   // Class Declarations
-  var DrawingControl, DragFeatureInteraction;
+  var DrawingControl, DragFeatureInteraction, DeleteFeatureInteraction;
 
    /************************************************************************
    *                    PRIVATE FUNCTION IMPLEMENTATIONS
@@ -319,7 +320,7 @@ var TETHYS_MAP_VIEW = (function() {
       }
 
       switch_interaction(initial_drawing_mode);
-      
+
       // Add drawing controls to the map
       if (is_defined(m_draw_options.controls)) {
         var pan_control;
@@ -348,6 +349,22 @@ var TETHYS_MAP_VIEW = (function() {
 
           button_left_offset += BUTTON_SPACING;
           m_map.addControl(modify_control);
+        }
+
+        // Add delete control second
+        if (in_array('Delete', draw_controls)) {
+          var modify_control;
+
+          modify_control = new DrawingControl({
+            control_type: 'delete',
+            left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
+            active: false
+          });
+
+
+          button_left_offset += BUTTON_SPACING;
+          m_map.addControl(modify_control
+          );
         }
 
         if (in_array('Move', draw_controls)) {
@@ -670,7 +687,7 @@ var TETHYS_MAP_VIEW = (function() {
 
       m_map.setView(new ol.View(view_obj));
     }
-    
+
     //function to change size of the map when the map element size changes
     $map_element.changeSize(function($this){
       m_map.updateSize();
@@ -791,6 +808,12 @@ var TETHYS_MAP_VIEW = (function() {
     m_map.addInteraction(m_drag_feature_interaction);
   };
 
+  add_delete_feature_interaction = function() {
+    // Add delete feature interaction
+    m_delete_feature_interaction = new DeleteFeatureInteraction();
+    m_map.addInteraction(m_delete_feature_interaction);
+  };
+
   add_modify_interaction = function() {
     // Modify interaction works in conjunction with a selection interaction
     var selected_features;
@@ -842,6 +865,7 @@ var TETHYS_MAP_VIEW = (function() {
     m_map.removeInteraction(m_select_interaction);
     m_map.removeInteraction(m_modify_interaction);
     m_map.removeInteraction(m_drag_feature_interaction);
+    m_map.removeInteraction(m_delete_feature_interaction);
     m_map.removeInteraction(m_drag_box_interaction);
 
     // Set appropriate drawing interaction
@@ -851,6 +875,8 @@ var TETHYS_MAP_VIEW = (function() {
       add_modify_interaction();
     } else if (interaction_type === 'drag') {
       add_drag_feature_interaction();
+    } else if (interaction_type === 'delete') {
+      add_delete_feature_interaction();
     } else if (interaction_type === 'Box') {
       add_drag_box_interaction();
     } else {
@@ -1559,7 +1585,7 @@ var TETHYS_MAP_VIEW = (function() {
 
     return !!feature;
   };
-  
+
   // Handle drag feature
   DragFeatureInteraction.prototype.handleDragEvent = function(event) {
     var map = event.map;
@@ -1607,6 +1633,33 @@ var TETHYS_MAP_VIEW = (function() {
     return false;
   };
 
+  //Custom interaction for deleting features
+  DeleteFeatureInteraction = function() {
+    ol.interaction.Pointer.call(this, {
+      handleDownEvent: DeleteFeatureInteraction.prototype.handleDownEvent,
+      //Borrow the code from the DragFeatureInteraction for map movement (pointer)
+      handleMoveEvent: DragFeatureInteraction.prototype.handleMoveEvent
+      });
+
+    this.coordinate_ = null;
+    this.cursor_ = 'pointer';
+    this.feature_ = null;
+    this.previousCursor_ = undefined;
+
+    };
+
+  ol.inherits(DeleteFeatureInteraction, ol.interaction.Pointer);
+
+  DeleteFeatureInteraction.prototype.handleDownEvent = function(event) {
+    var map = event.map;
+    var feature = map.forEachFeatureAtPixel(event.pixel,
+        function(feature, layer) {
+            if (layer.tethys_legend_title === "Drawing Layer") {
+                layer.getSource().removeFeature(feature);
+            };
+        });
+    return;
+    };
 
   /************************************************************************
    *                        DEFINE PUBLIC INTERFACE
