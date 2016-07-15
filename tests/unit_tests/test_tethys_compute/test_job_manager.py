@@ -6,19 +6,6 @@ from django.contrib.auth.models import User
 def echo(arg):
     return arg
 
-
-def create_job(name, user):
-    job = TethysJob(name=name,
-                   user=user,
-                   description='test job',
-                   label='test',
-                   # execute_time=,
-                   # completion_time=,
-                   # _status=status,
-                   )
-    job.save()
-    return job
-
 class TestApp(TethysAppBase):
     def job_templates(self):
         return []
@@ -34,9 +21,6 @@ class TethysJobTestCase(TestCase):
         self.assertIsInstance(job, CondorJob, 'Empty job is not an instance of CondorJob')
         self.assertIsInstance(job, TethysJob, 'Empty job is not an instance of TethysJob')
 
-        job.save()
-        id = job.id
-        # job = TethysJob.objects.get_subclass(id=id)
         self.assertIsInstance(job.extended_properties, dict)
 
         job.extended_properties['property'] = 'value'
@@ -51,3 +35,4 @@ class TethysJobTestCase(TestCase):
         job.save()
 
         self.assertEqual(job.process_results('test'), 'test')
+        self.assertTrue(hasattr(job.process_results, '__call__'))
