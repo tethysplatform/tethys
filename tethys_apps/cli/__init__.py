@@ -15,10 +15,10 @@ import shutil
 
 from tethys_apps.terminal_colors import TerminalColors
 from .docker_commands import *
-from .manage_commands import (manage_command, get_manage_path,
+from .manage_commands import (manage_command, get_manage_path, run_process,
                               MANAGE_START, MANAGE_SYNCDB,
                               MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
-                              MANAGE_COLLECT, MANAGE_CREATESUPERUSER)
+                              MANAGE_COLLECT, MANAGE_CREATESUPERUSER, DEFAULT_INSTALLATION_DIRECTORY)
 from .gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
 from tethys_apps.helpers import get_installed_tethys_apps
 
@@ -179,6 +179,29 @@ def syncstores_command(args):
     except KeyboardInterrupt:
         pass
 
+def test_command(args):
+    # Get the path to manage.py
+    manage_path = get_manage_path(args)
+
+    # Define the process to be run
+    primary_process = ['python', manage_path, 'test']
+
+    if args.coverage:
+        source_dirs = '--source="{0}"'.format(DEFAULT_INSTALLATION_DIRECTORY)
+        primary_process = ['coverage', 'run', source_dirs, manage_path, 'test']
+
+    if args.file:
+        primary_process.append(args.file)
+    elif args.unit:
+        primary_process.append('tests/unit_tests')
+    elif args.gui:
+        primary_process.append('tests/gui_tests')
+
+    # print(primary_process)
+    run_process(primary_process)
+    # if args.coverage:
+        # run_process(['coverage', 'report'])
+
 
 def tethys_command():
     """
@@ -208,6 +231,15 @@ def tethys_command():
     manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
     manage_parser.add_argument('-p', '--port', type=str, help='Host and/or port on which to bind the development server.')
     manage_parser.set_defaults(func=manage_command)
+
+    # Setup test command
+    test_parser = subparsers.add_parser('test', help='Testing commands for Tethys Platform.')
+    test_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
+    test_parser.add_argument('-c', '--coverage', help='Run tests with coverage.', action='store_true')
+    test_parser.add_argument('-u', '--unit', help='Run only unit tests.', action='store_true')
+    test_parser.add_argument('-g', '--gui', help='Run only gui tests.', action='store_true')
+    test_parser.add_argument('-f', '--file', type=str, help='File to run tests in.')
+    test_parser.set_defaults(func=test_command)
 
     # Setup uninstall command
     uninstall_parser = subparsers.add_parser('uninstall', help='Uninstall an app.')
