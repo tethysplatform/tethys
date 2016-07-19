@@ -1833,6 +1833,7 @@ var TETHYS_MAP_VIEW = (function() {
 
   public_interface = {
     getMap: get_map,
+    updateLegend: update_legend,
     getTarget: get_target,
     jsonResponseHandler: jsonp_response_handler,
     reInitializeMap: ol_initialize_all,
