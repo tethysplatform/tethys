@@ -12,13 +12,14 @@ import argparse
 import subprocess
 import os
 import shutil
+import webbrowser
 
 from tethys_apps.terminal_colors import TerminalColors
 from .docker_commands import *
-from .manage_commands import (manage_command, get_manage_path,
+from .manage_commands import (manage_command, get_manage_path, run_process,
                               MANAGE_START, MANAGE_SYNCDB,
                               MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
-                              MANAGE_COLLECT, MANAGE_CREATESUPERUSER)
+                              MANAGE_COLLECT, MANAGE_CREATESUPERUSER, DEFAULT_INSTALLATION_DIRECTORY)
 from .gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
 from tethys_apps.helpers import get_installed_tethys_apps
 
@@ -180,6 +181,39 @@ def syncstores_command(args):
         pass
 
 
+def test_command(args):
+    args.manage = False
+    # Get the path to manage.py
+    manage_path = get_manage_path(args)
+    tests_path = os.path.join(DEFAULT_INSTALLATION_DIRECTORY, 'tests')
+
+    # Define the process to be run
+    primary_process = ['python', manage_path, 'test']
+
+    if args.coverage or args.coverage_html:
+        os.environ['TETHYS_TEST_DIR'] = tests_path
+        config_opt = '--rcfile={0}'.format(os.path.join(tests_path, 'coverage.cfg'))
+        primary_process = ['coverage', 'run', config_opt, manage_path, 'test']
+
+    if args.file:
+        primary_process.append(args.file)
+    elif args.unit:
+        primary_process.append(os.path.join(tests_path, 'unit_tests'))
+    elif args.gui:
+        primary_process.append(os.path.join(tests_path,'gui_tests'))
+
+    # print(primary_process)
+    run_process(primary_process)
+    if args.coverage:
+        run_process(['coverage', 'report', config_opt])
+    if args.coverage_html:
+        run_process(['coverage', 'html', config_opt])
+        try:
+            run_process(['open', os.path.join(tests_path, 'coverage_html_report', 'index.html')])
+        except:
+            webbrowser.open_new_tab(os.path.join(tests_path, 'coverage_html_report', 'index.html'))
+
+
 def tethys_command():
     """
     Tethys commandline interface function.
@@ -208,6 +242,19 @@ def tethys_command():
     manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
     manage_parser.add_argument('-p', '--port', type=str, help='Host and/or port on which to bind the development server.')
     manage_parser.set_defaults(func=manage_command)
+
+    # Setup test command
+    test_parser = subparsers.add_parser('test', help='Testing commands for Tethys Platform.')
+    test_parser.add_argument('-c', '--coverage', help='Run coverage with tests and output report to console.',
+                             action='store_true')
+    test_parser.add_argument('-C', '--coverage-html', help='Run coverage with tests and output html formatted report.',
+                             action='store_true')
+    test_parser.add_argument('-u', '--unit', help='Run only unit tests.', action='store_true')
+    test_parser.add_argument('-g', '--gui', help='Run only gui tests. Mutually exclusive with -u. '
+                                                 'If both flags are set then -u takes president.',
+                             action='store_true')
+    test_parser.add_argument('-f', '--file', type=str, help='File to run tests in. Overrides -g and -u.')
+    test_parser.set_defaults(func=test_command)
 
     # Setup uninstall command
     uninstall_parser = subparsers.add_parser('uninstall', help='Uninstall an app.')
