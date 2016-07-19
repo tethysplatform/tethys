@@ -209,6 +209,11 @@ var TETHYS_APPS_LIBRARY = (function() {
             msnry.layout();
           });
         }
+
+        // Check for app exit
+        // This must happen or header of library page will not load appropriately
+        app_exit_handler();
+
 		//Function for executing the filters/tags
 		var isotopeContainer = $('.isotopeContainer');
 		if( !isotopeContainer.length || !jQuery().isotope ) return;
@@ -240,9 +245,6 @@ var TETHYS_APPS_LIBRARY = (function() {
 				e.preventDefault();
 			});
 		});
-
-        // Check for app exit
-        app_exit_handler();
 	});
 
 	return public_interface;
