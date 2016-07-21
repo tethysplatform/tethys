@@ -43,6 +43,7 @@ var TETHYS_MAP_VIEW = (function() {
       m_drawing_layer,                                      // Drawing layer for drawing feature
       m_drag_box_interaction,                               // Drag box interaction used for drawing rectangles
       m_drag_feature_interaction,                           // Drag feature interaction
+      m_delete_feature_interaction,                         // Delete feature interaction
       m_modify_interaction,                                 // Modify interaction used for modifying features
       m_modify_select_interaction,                          // Select interaction for modify action
       m_select_interaction,                                 // Select interaction for main layers
@@ -84,8 +85,8 @@ var TETHYS_MAP_VIEW = (function() {
        ol_initialize_all;
 
   // Drawing Methods
-  var add_drawing_interaction, add_drag_box_interaction, 
-      add_drag_feature_interaction, add_modify_interaction, add_feature_callback,
+  var add_drawing_interaction, add_drag_box_interaction, add_drag_feature_interaction,
+      add_delete_feature_interaction, add_modify_interaction, add_feature_callback,
       draw_end_callback, draw_change_callback, switch_interaction;
 
   // Feature Parser Methods
@@ -108,7 +109,7 @@ var TETHYS_MAP_VIEW = (function() {
   var is_defined, in_array, string_to_function;
 
   // Class Declarations
-  var DrawingControl, DragFeatureInteraction;
+  var DrawingControl, DragFeatureInteraction, DeleteFeatureInteraction;
 
    /************************************************************************
    *                    PRIVATE FUNCTION IMPLEMENTATIONS
@@ -331,7 +332,7 @@ var TETHYS_MAP_VIEW = (function() {
 
         // Always add the pan_control
         pan_control = new DrawingControl({
-          control_type: 'pan',
+          control_type: 'Pan',
           left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
           active: false
         });
@@ -344,7 +345,7 @@ var TETHYS_MAP_VIEW = (function() {
           var modify_control;
 
           modify_control = new DrawingControl({
-            control_type: 'modify',
+            control_type: 'Modify',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
             active: false
           });
@@ -354,12 +355,28 @@ var TETHYS_MAP_VIEW = (function() {
           m_map.addControl(modify_control);
         }
 
+        // Add delete control
+        if (in_array('Delete', draw_controls)) {
+          var modify_control;
+
+          modify_control = new DrawingControl({
+            control_type: 'Delete',
+            left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
+            active: false
+          });
+
+
+          button_left_offset += BUTTON_SPACING;
+          m_map.addControl(modify_control
+          );
+        }
+
         if (in_array('Move', draw_controls)) {
           var drag_feature_control;
 
           // Add drag feature control next
           drag_feature_control = new DrawingControl({
-            control_type: 'drag',
+            control_type: 'Drag',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
             active: false
           });
@@ -793,6 +810,9 @@ var TETHYS_MAP_VIEW = (function() {
 
     // Initialize Legend
     ol_legend_init();
+
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip()
   };
 
   /***********************************
@@ -855,6 +875,12 @@ var TETHYS_MAP_VIEW = (function() {
     m_map.addInteraction(m_drag_feature_interaction);
   };
 
+  add_delete_feature_interaction = function() {
+    // Add delete feature interaction
+    m_delete_feature_interaction = new DeleteFeatureInteraction();
+    m_map.addInteraction(m_delete_feature_interaction);
+  };
+
   add_modify_interaction = function() {
     // Modify interaction works in conjunction with a selection interaction
     var selected_features;
@@ -906,15 +932,18 @@ var TETHYS_MAP_VIEW = (function() {
     m_map.removeInteraction(m_modify_select_interaction);
     m_map.removeInteraction(m_modify_interaction);
     m_map.removeInteraction(m_drag_feature_interaction);
+	m_map.removeInteraction(m_delete_feature_interaction);
     m_map.removeInteraction(m_drag_box_interaction);
 
     // Set appropriate drawing interaction
-    if (interaction_type === 'pan') {
+    if (interaction_type === 'Pan') {
       // Do nothing
-    } else if (interaction_type === 'modify') {
+    } else if (interaction_type === 'Modify') {
       add_modify_interaction();
-    } else if (interaction_type === 'drag') {
+    } else if (interaction_type === 'Drag') {
       add_drag_feature_interaction();
+  	} else if (interaction_type === 'Delete') {
+      add_delete_feature_interaction();
     } else if (interaction_type === 'Box') {
       add_drag_box_interaction();
     } else {
@@ -1558,6 +1587,9 @@ var TETHYS_MAP_VIEW = (function() {
 
     button = document.createElement('button');
     button.setAttribute('type', 'button');
+    button.setAttribute('data-toggle', 'tooltip');
+    button.setAttribute('data-placement', 'bottom');
+    button.setAttribute('title', options.control_type);
     button_image = document.createElement('div');
     button_image.className = icon_class;
     button.appendChild(button_image);
@@ -1675,6 +1707,33 @@ var TETHYS_MAP_VIEW = (function() {
     return false;
   };
 
+  //Custom interaction for deleting features
+  DeleteFeatureInteraction = function() {
+    ol.interaction.Pointer.call(this, {
+      handleDownEvent: DeleteFeatureInteraction.prototype.handleDownEvent,
+      //Borrow the code from the DragFeatureInteraction for map movement (pointer)
+      handleMoveEvent: DragFeatureInteraction.prototype.handleMoveEvent
+      });
+
+    this.coordinate_ = null;
+    this.cursor_ = 'pointer';
+    this.feature_ = null;
+    this.previousCursor_ = undefined;
+
+    };
+
+  ol.inherits(DeleteFeatureInteraction, ol.interaction.Pointer);
+
+  DeleteFeatureInteraction.prototype.handleDownEvent = function(event) {
+    var map = event.map;
+    var feature = map.forEachFeatureAtPixel(event.pixel,
+        function(feature, layer) {
+            if (layer instanceof ol.layer.Vector) {
+                layer.getSource().removeFeature(feature);
+            };
+        });
+    return;
+    };
 
   /************************************************************************
    *                        DEFINE PUBLIC INTERFACE
