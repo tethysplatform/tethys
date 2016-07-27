@@ -87,7 +87,7 @@ var TETHYS_MAP_VIEW = (function() {
   // Drawing Methods
   var add_drawing_interaction, add_drag_box_interaction, add_drag_feature_interaction,
       add_delete_feature_interaction, add_modify_interaction, add_feature_callback,
-      draw_end_callback, draw_change_callback, switch_interaction;
+      draw_end_callback, draw_change_callback, delete_feature_callback, switch_interaction;
 
   // Feature Parser Methods
   var geojsonify, wellknowtextify;
@@ -313,6 +313,7 @@ var TETHYS_MAP_VIEW = (function() {
 
       // Bind event
       m_drawing_source.on('addfeature', add_feature_callback);
+	  m_drawing_source.on('removefeature', delete_feature_callback);
 
       // Set initial drawing interaction
       if (is_defined(m_draw_options.initial) &&
@@ -907,6 +908,11 @@ var TETHYS_MAP_VIEW = (function() {
   add_feature_callback = function(feature) {
     // Update the field
     update_field();
+  };
+
+  delete_feature_callback = function(feature){
+  	// Update the hidden text field
+  	update_field();
   };
 
   draw_end_callback = function(feature) {
