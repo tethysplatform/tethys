@@ -90,7 +90,7 @@ class MapView(TethysGizmoOptions):
 
         # Define drawing options
         drawing_options = MVDraw(
-            controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
+            controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
             initial='Point',
             output_format='WKT'
         )
@@ -252,7 +252,7 @@ class MVDraw(SecondaryGizmoOptions):
     MVDraw objects are used to define the drawing options for Map View.
 
     Attributes:
-        controls(list, required): List of drawing controls to add to the map. Valid options are 'Modify', 'Move', 'Point', 'LineString', 'Polygon' and 'Box'.
+        controls(list, required): List of drawing controls to add to the map. Valid options are 'Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon' and 'Box'.
         initial(str, required): Drawing control to be enabled initially. Must be included in the controls list.
         output_format(str): Format to output to the hidden text area. Either 'WKT' (for Well Known Text format) or 'GeoJSON'. Defaults to 'GeoJSON'
 
@@ -261,7 +261,7 @@ class MVDraw(SecondaryGizmoOptions):
     ::
 
         drawing_options = MVDraw(
-            controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
+            controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
             initial='Point',
             output_format='WKT'
         )
