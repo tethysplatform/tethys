@@ -95,13 +95,14 @@ class PermissionGroup:
         return self._repr()
 
 
-def has_permission(request, perm):
+def has_permission(request, perm, user=None):
     """
-    Returns True if a user has the given permission for the app.
+    Returns True if the user of the given request has the given permission for the app. If a user object is provided, it is tested instead of the request user. The Request object is still required to derive the app context of the permission check.
 
     Args:
         request (Request): The current request object.
         perm (string): The name of the permission (e.g. 'create_things').
+        user (django.contrib.auth.models.User): A user object to test instead of the user provided in the request.
 
     **Example:**
 
@@ -123,7 +124,10 @@ def has_permission(request, perm):
     from tethys_apps.utilities import get_active_app
 
     app = get_active_app(request)
-    user = request.user
+
+    if user is None:
+        user = request.user
+
     namespaced_perm = 'tethys_apps.' + app.package + ':' + perm
 
     # Check permission
