@@ -74,6 +74,12 @@
 .tethys-map-view-draw-control .tethys-map-view-draw-icon.drag.active {
   background-position: 0 -208px;
 }
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.delete {
+  background-position: 0 -256px;
+}
+.tethys-map-view-draw-control .tethys-map-view-draw-icon.delete.active {
+  background-position: 0 -272px;
+}
 .ol-mouse-position {
   top: auto;
   bottom: 10px;
