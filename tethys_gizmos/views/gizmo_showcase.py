@@ -801,7 +801,7 @@ def index(request):
 
     # Define drawing options
     drawing_options = MVDraw(
-        controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
+        controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
         initial='Point',
         output_format='WKT'
     )
@@ -1108,7 +1108,7 @@ def map_view(request):
 
     # Define drawing options
     drawing_options = MVDraw(
-        controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
+        controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
         initial='Point',
         output_format='WKT'
     )
