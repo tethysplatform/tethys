@@ -1,4 +1,4 @@
-{% load staticfiles tethys_gizmos %}
+{% load staticfiles tethys_gizmos terms_tags %}
 <!DOCTYPE html>
 
 {# Allows custom attributes to be added to the html tag #}
@@ -171,6 +171,9 @@
           </div>
         {% endblock %}
       </div>
+    {% endblock %}
+    {% block terms-of-service-override %}
+      {% show_terms_if_not_agreed %}
     {% endblock %}
 
     {% block page_attributes_override %}
