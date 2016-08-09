@@ -61,6 +61,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_gravatar',
     'bootstrap3',
+    'termsandconditions',
     'tethys_config',
     'tethys_apps',
     'tethys_gizmos',
@@ -88,6 +89,11 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
+
+# Terms and conditions settings
+ACCEPT_TERMS_PATH = '/terms/accept/'
+TERMS_EXCLUDE_URL_PREFIX_LIST = {'/admin/', '/oauth2/', '/handoff/', '/accounts/', '/terms/'}
+TERMS_EXCLUDE_URL_LIST = {'/'}
 
 ROOT_URLCONF = 'tethys_portal.urls'
 
