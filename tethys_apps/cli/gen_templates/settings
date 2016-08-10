@@ -94,6 +94,7 @@ AUTHENTICATION_BACKENDS = (
 ACCEPT_TERMS_PATH = '/terms/accept/'
 TERMS_EXCLUDE_URL_PREFIX_LIST = {'/admin/', '/oauth2/', '/handoff/', '/accounts/', '/terms/'}
 TERMS_EXCLUDE_URL_LIST = {'/'}
+TERMS_BASE_TEMPLATE = 'page.html'
 
 ROOT_URLCONF = 'tethys_portal.urls'
 
