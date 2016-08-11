@@ -173,4 +173,3 @@ This section provides explanations of each of the Gizmo Options Objects availabl
    gizmos/map_view
    gizmos/google_map
    gizmos/jobs_table
-   gizmos/fetchclimate
