@@ -771,24 +771,6 @@ def index(request):
         # Display the JSON as flash message
         flash_message = geometry_string
 
-    # Fetchclimate
-    fetchclimate_array = FetchClimateMap(
-        url_parameter=FetchClimateURLParameter(serverUrl='http://fetchclimate2.cloudapp.net'),
-        variable_parameters=FetchClimateVariableParameters(variables={
-            'prate': [423, 432, 426, 424],
-            'elev': []
-        }),
-        grid_parameters=FetchClimateGridParameters(
-            title='Provo Canyon Watershed',
-            boundingBox=[40.308836, 40.381579, -111.654462, -111.550778],
-            gridResolution=[25, 25]
-        ),
-        point_parameters=FetchClimatePointParameters(
-            title='Clyde Building',
-            location=[40.246942, -111.647971]
-        )
-    )
-
     # Map View
     # Define view options
     view_options = MVView(
@@ -944,7 +926,6 @@ def index(request):
                'message_box': message_box,
                'google_map_view': google_map_view,
                'flash_message': flash_message,
-               'fetchclimate_array': fetchclimate_array,
                'jobs_table_options': jobs_table_options,
                'map_view_options': map_view_options,
                'scatter_plot_view': scatter_plot_view,
@@ -1220,43 +1201,6 @@ def map_view(request):
     context = {'map_view': map_view_options}
 
     return render(request, 'tethys_gizmos/gizmo_showcase/map_view.html', context)
-
-
-@login_required()
-def fetchclimate_map(request):
-    """
-    Place to show off the new map view
-    """
-    fetchclimate_map = FetchClimateMap(
-        url_parameter=FetchClimateURLParameter(serverUrl='http://fetchclimate2.cloudapp.net'),
-        variable_parameters=FetchClimateVariableParameters(variables={
-            'prate': [423, 432, 426, 424],
-            'elev': []
-        }),
-        map_parameters=FetchClimateMapParameters(
-            css={'height': '600px',
-                 'width': '100%'},
-            map_data=FetchClimateMapData(
-                drawing_types_enabled=['RECTANGLE', 'POINTS'],
-                initial_drawing_mode='RECTANGLE',
-                max_num_grids=2
-            )
-        ),
-        grid_parameters=FetchClimateGridParameters(
-            title='Provo Canyon Watershed',
-            boundingBox=[40.308836, 40.381579, -111.654462, -111.550778],
-            gridResolution=[25, 25]
-        ),
-        point_parameters=FetchClimatePointParameters(
-            title='Clyde Building',
-            location=[40.246942, -111.647971],
-        ),
-        plot_parameters=FetchClimatePlotParameters(dimensions={'width': 500, 'height': 350})
-    )
-
-    context = {'fetchclimate_map': fetchclimate_map}
-
-    return render(request, 'tethys_gizmos/gizmo_showcase/fetchclimate_map.html', context)
 
 
 def jobs_table_results(request, job_id):
