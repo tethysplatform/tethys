@@ -32,10 +32,10 @@
                     <ul class="list-inline filter">
 
               {% if  apps|get_tags_from_apps %}
-                  <li><a href="#" data-filter="*" class="button active" >All </a></li>
+                  <li><a href="#" data-filter="*" class="tag-button active" >All </a></li>
                     {% for tag in apps|get_tags_from_apps%}
                         {% if tag %}
-                        <li><a href="#" data-filter=".{{ tag }}" class="button">{{ tag }}</a></li>
+                        <li><a href="#" data-filter=".{{ tag }}" class="tag-button">{{ tag }}</a></li>
                         {% endif %}
                     {% endfor %}
               {% endif %}
