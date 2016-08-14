@@ -275,25 +275,35 @@ body {
   z-index: 1;
 }
 /*** Styling for the tags button***/
-.button {
-  -webkit-border-radius: 19;
-  -moz-border-radius: 19;
-  border-radius: 19px;
-  font-family: Arial;
-  color: #ffffff;
-  font-size: 10px;
-  background: #1b95dc;
-  padding: 3px 10px 3px 10px;
-  border: solid #1f628d 1px;
-  text-decoration: none;
-}
+@tag-color: #1b95dc;
+.filter-container {
+  ul {
+    li {
+      margin-bottom: 10px;
+      
+      .tag-button {
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+        font-family: Arial;
+        color: #ffffff;
+        font-size: 18px;
+        background: @tag-color;
+        padding: 3px 10px 3px 10px;
+        text-decoration: none;
+        
+        &:hover {
+          background: @tag-color + #111111;
+          color: #ffffff;
+          text-decoration: none;
+        }
+      }
 
-.button:hover {
-  background: #3cb0fd;
-  background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
-  text-decoration: none;
+      &.active {
+        .tag-button {
+          background: @tag-color - #222222;
+        }
+      }
+    }
+  }
 }
