@@ -55,6 +55,27 @@ Manage Tethys Services
 
 The administrator pages provide a simple mechanism for linking to the other services of Tethys Platform. Use the ``Spatial Dataset Services`` link to connect your Tethys Portal to GeoServer, the ``Dataset Services`` link to connect to CKAN instances or HydroShare, or the ``Web Processing Services`` link to connect to WPS instances. For detailed instructions on how to perform each of these tasks, refer to the :doc:`../tethys_sdk/spatial_dataset_services`, :doc:`../tethys_sdk/dataset_services`, and :doc:`../tethys_sdk/web_processing_services` documentation, respectively.
 
+.. _tethys_portal_terms_and_conditions:
+
+Manage Terms and Conditions
+===========================
+
+Portal administrators can manage and enforce portal wide terms and conditions and other legal documents via the administrator pages.
+
+Use the ``Terms and Conditions`` link to create new legal documents (see Figure 5). To issue an update to a particular document, create a new entry with the same slug (e.g. 'site-terms'), but a different version number (e.g.: 1.10). This allows you to track multiple versions of the legal document and which users have accepted each. The document will not become active until the ``Date active`` field has been set and the date has past.
+
+.. figure:: ../images/tethys_portal/tethys_portal_toc_new.png
+    :width: 500px
+
+**Figure 5.** Creating a new legal document using the terms and conditions feature.
+
+When a new document becomes active, users will be presented with a modal prompting them to review and accept the new terms and conditions (see Figure 6). The modal can be dismissed, but will reappear each time a page is refreshed until the user accepts the new versions of the legal documents.
+
+.. figure:: ../images/tethys_portal/tethys_portal_toc_modal.png
+    :width: 500px
+
+**Figure 6.** Terms and conditions modal.
+
 Manage Computing Resources
 ==========================
 
@@ -64,3 +85,4 @@ Computing resources can be managed using the ``Tethys Compute`` admin pages. Pow
    :maxdepth: 2
 
    tethys_compute_admin_pages
+
