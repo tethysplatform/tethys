@@ -25,6 +25,16 @@ Tags for Apps
 * If there are more than 5 app tiles in the apps library, a list of buttons, one for each tag, will be displayed at the top of the Apps Library page.
 * Clicking on one of the tag buttons, will filter the list of displayed apps to only those with the selected tag.
 
+Terms and Conditions Management
+-------------------------------
+
+* Portal Admins can now manage and enforce portal-wide terms and conditions and other legal documents.
+* Documents are added via the admin interface of the portal.
+* Documents can be versioned and dates at which they become active can be set.
+* Once the date passes, all users will be prompted to accept the terms of the new documents.
+
+See: :ref:`tethys_portal_terms_and_conditions`
+
 GeoServer
 ---------
 
