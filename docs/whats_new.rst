@@ -2,7 +2,7 @@
 What's New
 **********
 
-**Last Updated:** May 28, 2016
+**Last Updated:** August 13, 2016
 
 Refer to this article for information about each new release of Tethys Platform.
 
@@ -16,6 +16,14 @@ App Permissions
 * It includes a `permission_required` decorator for controllers and a `has_permission` method for checking permissions within controllers.
 
 See: :doc:`tethys_sdk/permissions`
+
+Tags for Apps
+-------------
+
+* Apps can be assigned tags via the "tags" property in app.py.
+* App tags can be overriden by portal admins using the ``Installed Apps`` settings in the admin portal.
+* If there are more than 5 app tiles in the apps library, a list of buttons, one for each tag, will be displayed at the top of the Apps Library page.
+* Clicking on one of the tag buttons, will filter the list of displayed apps to only those with the selected tag.
 
 GeoServer
 ---------

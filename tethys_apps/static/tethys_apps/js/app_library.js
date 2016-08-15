@@ -229,9 +229,6 @@ var TETHYS_APPS_LIBRARY = (function() {
 					position:'relative',
 					overflow:'visible'
 				},
-				masonry:{
-					columnWidth: '240'
-				}
 			});
 				});
 
