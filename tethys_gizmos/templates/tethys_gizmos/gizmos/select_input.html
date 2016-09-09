@@ -12,7 +12,7 @@
         {% endfor %}
     {% endif %}>
     {% for option, value in options %}
-      {% if option in initial or value in initial %}
+      {% if option == initial or value == initial %}
       <option value="{{value}}" selected="selected">{{ option }}</option>
       {% else %}
       <option value="{{value}}">{{ option }}</option>
