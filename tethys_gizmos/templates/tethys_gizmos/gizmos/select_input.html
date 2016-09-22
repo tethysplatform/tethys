@@ -3,6 +3,7 @@
 {% endif %}
 <div class="form-group {% if error %} has-error {% endif %}">
   {% if display_text %}<label class="control-label" for="{{ name }}">{{ display_text }}</label>{% endif %}
+  {{ initial_is_iterable }}
   <select id="{{ name }}" class="{% if not original %}select2{% else %}form-control{% endif %}{% if classes %} {{ classes }}{% endif %}"
     name="{{ name }}" {% if not original %}style="width:100%;"{% endif %}
     {% if multiple %}multiple{% endif %} {% if disabled %}disabled{% endif %}
@@ -12,10 +13,20 @@
         {% endfor %}
     {% endif %}>
     {% for option, value in options %}
-      {% if option == initial or value == initial %}
-      <option value="{{value}}" selected="selected">{{ option }}</option>
+      {% if initial_is_iterable %}
+        {% for initial_value in initial %}
+          {% if option == initial_value or value == initial_value %}
+          <option value="{{value}}" selected="selected">{{ option }}</option>
+          {% else %}
+          <option value="{{value}}">{{ option }}</option>
+          {% endif %}
+        {% endfor %}
       {% else %}
-      <option value="{{value}}">{{ option }}</option>
+        {% if option == initial or value == initial %}
+        <option value="{{value}}" selected="selected">{{ option }}</option>
+        {% else %}
+        <option value="{{value}}">{{ option }}</option>
+        {% endif %}
       {% endif %}
     {% endfor %}
   </select>
