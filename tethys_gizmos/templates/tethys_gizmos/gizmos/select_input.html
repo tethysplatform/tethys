@@ -14,13 +14,11 @@
     {% endif %}>
     {% for option, value in options %}
       {% if initial_is_iterable %}
-        {% for initial_value in initial %}
-          {% if option == initial_value or value == initial_value %}
-          <option value="{{value}}" selected="selected">{{ option }}</option>
-          {% else %}
-          <option value="{{value}}">{{ option }}</option>
-          {% endif %}
-        {% endfor %}
+        {% if option in initial or value in initial %}
+        <option value="{{value}}" selected="selected">{{ option }}</option>
+        {% else %}
+        <option value="{{value}}">{{ option }}</option>
+        {% endif %}
       {% else %}
         {% if option == initial or value == initial %}
         <option value="{{value}}" selected="selected">{{ option }}</option>
