@@ -2,7 +2,7 @@
 Create a New Tethys App Project
 *******************************
 
-**Last Updated:** May 19, 2015
+**Last Updated:** September 29, 2016
 
 Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../../supplementary/app_project`). In this tutorial you will start a new Tethys app project using the scaffold and install it into your Tethys Platform ready for development.
 
@@ -47,11 +47,11 @@ Now that you have a new Tethys app project, you need to install the app into Tet
 View Your New App
 =================
 
-Use start up the Tethys dockers and then the development server:
+Use start up the database Docker (postgis) and the development server:
 
 ::
 
-    (tethys) $ tethys docker start
+    (tethys) $ tethys docker start -c postgis
     (tethys) $ tethys manage start
 
 Browse to `<http://127.0.0.1:8000/apps>`_. If all has gone well, you should see your app listed on the app library page. Exploring your new app won't take long, because there is only one page. Familiarize yourself with different parts of the app interface (see below).
