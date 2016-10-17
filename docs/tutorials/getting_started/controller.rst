@@ -2,7 +2,7 @@
 The Controller
 **************
 
-**Last Updated:** May 20, 2015
+**Last Updated:** September 29, 2016
 
 The Controller component of MVC will be discussed in this part of the tutorial. The job of the controller is to coordinate between the View and the Model. Often this means querying a database and transforming the data to a format that the view expects it to be in. The Controller also handles most of the application logic such as processing and validating form data or launching model runs. In a Tethys app, controllers are simple Python functions.
 
@@ -22,12 +22,13 @@ Add the following imports to the top of the file:
 ::
 
     from .model import SessionMaker, StreamGage
-    from tethys_gizmos.gizmo_options import MapView, MVLayer, MVView
+    from tethys_sdk.gizmos import MapView, MVLayer, MVView
 
 Then add a new controller function called ``map`` after the ``home`` function:
 
 ::
 
+    @login_required()
     def map(request):
         """
         Controller for map page.
@@ -72,8 +73,8 @@ Then add a new controller function called ``map`` after the ``home`` function:
         # Define initial view for Map View
         view_options = MVView(
             projection='EPSG:4326',
-            center=[-100, 40],
-            zoom=3.5,
+            center=[-111.70, 40.24],
+            zoom=13,
             maxZoom=18,
             minZoom=2
         )
