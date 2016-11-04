@@ -9,6 +9,8 @@ __all__ = ['PlotlyView']
 class PlotlyView(TethysGizmoOptions):
     """
     Simple options object for plotly view.
+    
+    .. info:: See https://plot.ly/python for Plotly API
 
     Attributes:
         plot_input(plotly graph_objs): A plotly graph_objs to be plotted.
@@ -22,7 +24,7 @@ class PlotlyView(TethysGizmoOptions):
                                  An example case of setting to False is using AJAX to add another chart.
                                  Default is True.
                                  
-    Controller Code::
+    Controller Code Example 1::
     
         import datetime as datetime
         import plotly.graph_objs as go
@@ -32,8 +34,20 @@ class PlotlyView(TethysGizmoOptions):
              datetime(year=2013, month=11, day=05),
              datetime(year=2013, month=12, day=06)]
     
-        my_plotly_view = PlotlyView([go.Scatter(x=x,y=[1, 3, 6])])
+        my_plotly_view = PlotlyView([go.Scatter(x=x, y=[1, 3, 6])])
         
+        context = {'plotly_view_input': my_plotly_view}
+        
+    Controller Code Example 2::
+    
+        import numpy as np
+        import pandas as pd
+        from tethys_sdk.gizmos import PlotlyView
+        
+        df = pd.DataFrame(np.random.randn(1000, 2), columns=['A', 'B']).cumsum()
+
+        my_plotly_view = PlotlyView(df.iplot(asFigure=True))
+
         context = {'plotly_view_input': my_plotly_view}
         
     Template Code::
@@ -41,7 +55,6 @@ class PlotlyView(TethysGizmoOptions):
         {% load tethys_gizmos %}
     
         {% gizmo plotly_view plotly_view_input %}
-        
     """
     js_loaded = False
     
