@@ -18,7 +18,10 @@ class PlotlyView(TethysGizmoOptions):
         classes(Optional[str]): Space separated string of classes to add to the outer div.
         hidden(Optional[bool]): If True, the plot will be hidden. Default is False.
         show_link(Optional[bool]): If True, the link to export plot to view in plotly is shown. Default is False.
-
+        load_js(Optional[bool]): If False, then it will not include the javascript.  
+                                 An example case of setting to False is using AJAX to add another chart.
+                                 Default is True.
+                                 
     Controller Code::
     
         import datetime as datetime
@@ -44,16 +47,22 @@ class PlotlyView(TethysGizmoOptions):
     
     def __init__(self, plot_input, height='520px', width='100%', 
                  attributes='', classes='', divid='', hidden=False,
-                 show_link=False):
+                 show_link=False, load_js=True):
         """
         Constructor
         """
         # Initialize the super class
         super(PlotlyView, self).__init__()
         
-        include_plotlyjs = not self.__class__.js_loaded
-        if not self.__class__.js_loaded:
-            self.__class__.js_loaded = True
+        include_plotlyjs = load_js
+        
+        if load_js:
+            #to ensure that there are no other instances 
+            #loaded so there is not duplicate loads of javascript
+            #on the page
+            include_plotlyjs = not self.__class__.js_loaded
+            if not self.__class__.js_loaded:
+                self.__class__.js_loaded = True
 
         self.plotly_div = opy.plot(plot_input, 
                                    auto_open=False, 
