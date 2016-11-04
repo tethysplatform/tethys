@@ -1,5 +1,6 @@
 # coding=utf-8
 import plotly.offline as opy
+
 from .base import TethysGizmoOptions
 
 __all__ = ['PlotlyView']
@@ -16,6 +17,7 @@ class PlotlyView(TethysGizmoOptions):
         attributes(Optional[dict]): Dictionary of attributed to add to the outer div.
         classes(Optional[str]): Space separated string of classes to add to the outer div.
         hidden(Optional[bool]): If True, the plot will be hidden. Default is False.
+        show_link(Optional[bool]): If True, the link to export plot to view in plotly is shown. Default is False.
 
     Controller Code::
     
@@ -38,16 +40,26 @@ class PlotlyView(TethysGizmoOptions):
         {% gizmo plotly_view plotly_view_input %}
         
     """
-
+    js_loaded = False
+    
     def __init__(self, plot_input, height='520px', width='100%', 
-                 attributes='', classes='', divid='', hidden=False):
+                 attributes='', classes='', divid='', hidden=False,
+                 show_link=False):
         """
         Constructor
         """
         # Initialize the super class
         super(PlotlyView, self).__init__()
         
-        self.plotly_div = opy.plot(plot_input, auto_open=False, output_type='div')
+        include_plotlyjs = not self.__class__.js_loaded
+        if not self.__class__.js_loaded:
+            self.__class__.js_loaded = True
+
+        self.plotly_div = opy.plot(plot_input, 
+                                   auto_open=False, 
+                                   output_type='div',
+                                   include_plotlyjs=include_plotlyjs,
+                                   show_link=show_link)
         self.height = height
         self.width = width
         self.attributes = attributes
