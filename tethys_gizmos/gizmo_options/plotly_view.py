@@ -27,7 +27,7 @@ class PlotlyView(TethysGizmoOptions):
              datetime(year=2013, month=11, day=05),
              datetime(year=2013, month=12, day=06)]
     
-        my_plotly_view = PlotlyView([go.Scatter(x=x1,y=[1, 3, 6])])
+        my_plotly_view = PlotlyView([go.Scatter(x=x,y=[1, 3, 6])])
         
         context = {'plotly_view_input': my_plotly_view}
         
