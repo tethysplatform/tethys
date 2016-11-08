@@ -2,7 +2,7 @@
 URL Mapping
 ***********
 
-**Last Updated:** May 20, 2015
+**Last Updated:** September 29, 2016
 
 Whenever you create a new controller, you will also need to associate it with a URL by creating URL map for it. When a URL is requested, the controller that it is mapped to will be executed.
 
@@ -17,16 +17,6 @@ Your :term:`app class` will already have one ``UrlMap`` for the home page called
 
 ::
 
-    class MyFirstApp(TethysAppBase):
-        """
-        Tethys App Class for My First App.
-        """
-        name = 'My First App'
-        index = 'my_first_app:home'
-        icon = 'my_first_app/images/icon.gif'
-        package = 'my_first_app'
-        root_url = 'my-first-app'
-        color = '#3498db'
 
         def url_maps(self):
             """
@@ -44,17 +34,6 @@ Your :term:`app class` will already have one ``UrlMap`` for the home page called
 
             return url_maps
 
-        def persistent_stores(self):
-            """
-            Add one or more persistent stores
-            """
-            stores = (PersistentStore(name='stream_gage_db',
-                                      initializer='init_stores:init_stream_gage_db',
-                                      spatial=True
-                    ),
-            )
-
-            return stores
 
 .. important::
 
