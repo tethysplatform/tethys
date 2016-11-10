@@ -18,16 +18,21 @@ from django.template import TemplateSyntaxError
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.serializers.json import DjangoJSONEncoder
 
+from plotly.offline.offline import get_plotlyjs
+
 from ..gizmo_dependencies import global_dependencies
 
 register = template.Library()
 
 CSS_OUTPUT_TYPE = 'css'
+CSS_GLOBAL_OUTPUT_TYPE = 'global_css'
 JS_OUTPUT_TYPE = 'js'
+JS_GLOBAL_OUTPUT_TYPE = 'global_js'
 CSS_EXTENSION = 'css'
 JS_EXTENSION = 'js'
 EXTERNAL_INDICATOR = '://'
-VALID_OUTPUT_TYPES = (CSS_OUTPUT_TYPE, JS_OUTPUT_TYPE)
+GLOBAL_OUTPUT_TYPES = (CSS_GLOBAL_OUTPUT_TYPE, JS_GLOBAL_OUTPUT_TYPE)
+VALID_OUTPUT_TYPES = (CSS_OUTPUT_TYPE, JS_OUTPUT_TYPE) + GLOBAL_OUTPUT_TYPES
 
 
 class HighchartsDateEncoder(DjangoJSONEncoder):
@@ -126,7 +131,32 @@ class TethysGizmoIncludeNode(template.Node):
                 raise
             return ''
 
+class TethysGizmoIncludeDependency(template.Node):
+    """
+    Custom template include node that returns Tethys gizmos
+    """
+    def __init__(self, gizmo_name, *args, **kwargs):
+        super(TethysGizmoIncludeDependency, self).__init__(*args, **kwargs)
+        self.gizmo_name = gizmo_name
 
+    def render(self, context):
+        # Get the name of the gizmo to load
+        gizmo_name = self.gizmo_name
+
+        # Handle case where gizmo_name is a string literal
+        if self.gizmo_name[0] in ('"', "'"):
+            gizmo_name = self.gizmo_name.replace("'", '')
+            gizmo_name = gizmo_name.replace('"', '')
+
+        # Add gizmo name to 'gizmos_rendered' context variable (used to load static libraries
+        if 'gizmos_rendered' not in context:
+            context.update({'gizmos_rendered': []})
+
+        if gizmo_name not in context['gizmos_rendered']:
+            context['gizmos_rendered'].append(gizmo_name)
+            
+        return ''
+        
 @register.tag
 def gizmo(parser, token):
     """
@@ -158,16 +188,38 @@ def gizmo(parser, token):
 
     return TethysGizmoIncludeNode(gizmo_name, options_literal)
 
+@register.tag
+def register_gizmo_dependency(parser, token):
+    """
+    The gizmo dependency tag will add the dependencies for the gizmo specified.
+
+    To register a gizmo's dependency, use the "register_gizmo_dependency" tag and give it the name of a gizmo.
+
+    Example::
+        {% load tethys_gizmos %}
+
+        {% register_gizmo_dependency example_gizmo %}
+        {% register_gizmo_dependency "example_gizmo" %}
+
+    ALSO NOTE: All supporting css and javascript libraries are loaded using the gizmo_dependencies tag (see below).
+    """
+    try:
+        tag_name, gizmo_name = token.split_contents()
+
+    except ValueError:
+        raise template.TemplateSyntaxError('"%s" tag requires exactly one argument' % token.contents.split()[0])
+
+    return TethysGizmoIncludeDependency(gizmo_name)
 
 class TethysGizmoDependenciesNode(template.Node):
     """
     Loads gizmo dependencies and renders in "script" or "link" tag appropriately.
     """
-
+    
     def __init__(self, output_type, *args, **kwargs):
         super(TethysGizmoDependenciesNode, self).__init__(*args, **kwargs)
         self.output_type = output_type
-
+        
     def render(self, context):
         # Get the gizmos rendered from the context
         gizmos_rendered = context['gizmos_rendered']
@@ -178,8 +230,12 @@ class TethysGizmoDependenciesNode(template.Node):
         # Add gizmo dependencies
         for rendered_gizmo in gizmos_rendered:
             try:
+                dependency_module_path = 'tethys_gizmos.gizmo_dependencies'
+                if self.output_type in GLOBAL_OUTPUT_TYPES:
+                    dependency_module_path = 'tethys_gizmos.gizmo_global_dependencies'
+                    
                 # Retrieve the "gizmo_dependencies" module and find the appropriate function
-                dependencies_module = __import__('tethys_gizmos.gizmo_dependencies', fromlist=[rendered_gizmo])
+                dependencies_module = __import__(dependency_module_path, fromlist=[rendered_gizmo])
                 dependencies_function = getattr(dependencies_module, rendered_gizmo)
 
                 # Retrieve a list of dependencies for the gizmo
@@ -199,35 +255,48 @@ class TethysGizmoDependenciesNode(template.Node):
             except AttributeError:
                 # Skip those that do not have dependencies
                 pass
-
-        # Add the global dependencies last
-        for dependency in global_dependencies(context):
-            if EXTERNAL_INDICATOR in dependency:
-                static_url = dependency
-            else:
-                static_url = static(dependency)
-
-            if static_url not in dependencies:
-                # Lookup the static url given the path
-                dependencies.append(static_url)
+            
+        if self.output_type not in GLOBAL_OUTPUT_TYPES:
+            # Add the global dependencies last
+            for dependency in global_dependencies(context):
+                if EXTERNAL_INDICATOR in dependency:
+                    static_url = dependency
+                else:
+                    static_url = static(dependency)
+    
+                if static_url not in dependencies:
+                    # Lookup the static url given the path
+                    dependencies.append(static_url)
 
         # Create markup tags
         script_tags = []
         style_tags = []
         for dependency in dependencies:
             # Only process Script tags if the dependency has a ".js" extension and the output type is JS or not specified
-            if JS_EXTENSION in dependency and (self.output_type == JS_OUTPUT_TYPE or self.output_type is None):
-                script_tags.append('<script src="{0}" type="text/javascript"></script>'.format(dependency))
+            if JS_EXTENSION in dependency and \
+                (self.output_type == JS_OUTPUT_TYPE or self.output_type == JS_GLOBAL_OUTPUT_TYPE or self.output_type is None):
+                    if dependency.endswith('plotly-load_from_python.js'):
+                        script_tags.append(''.join([
+                                                    '<script type="text/javascript">',
+                                                    get_plotlyjs(),
+                                                    '</script>',
+                                                    ]))
+                    else:
+                        script_tags.append('<script src="{0}" type="text/javascript"></script>'.format(dependency))
 
             # Only process Style tags if the dependency has a ".css" extension and the output type is CSS or not specified
-            elif CSS_EXTENSION in dependency and (self.output_type == CSS_OUTPUT_TYPE or self.output_type is None):
+            elif CSS_EXTENSION in dependency and \
+                (self.output_type == CSS_OUTPUT_TYPE or self.output_type == CSS_GLOBAL_OUTPUT_TYPE or self.output_type is None):
                 style_tags.append('<link href="{0}" rel="stylesheet" />'.format(dependency))
 
         # Combine all tags
         tags = style_tags + script_tags
         tags_string = '\n'.join(tags)
+        if self.output_type in GLOBAL_OUTPUT_TYPES:
+            print(self.output_type)
+            print("dependencies: {}".format(dependencies))
+            print("tags_string: {}".format(tags_string))
         return tags_string
-
 
 @register.tag
 def gizmo_dependencies(parser, token):
@@ -238,6 +307,9 @@ def gizmo_dependencies(parser, token):
 
         {% gizmo_dependencies css %}
         {% gizmo_dependencies js %}
+
+        {% gizmo_dependencies global_css %}
+        {% gizmo_dependencies global_js %}
     """
     output_type = None
 
@@ -261,7 +333,7 @@ def gizmo_dependencies(parser, token):
 
         # Check for valid values
         if output_type not in VALID_OUTPUT_TYPES:
-            raise TemplateSyntaxError('Invalid output type specified: only "js" and "css" are '
+            raise TemplateSyntaxError('Invalid output type specified: only "js", "global_js", "css" and "global_css" are '
                                       'allowed, "{0}" given.'.format(output_type))
 
     return TethysGizmoDependenciesNode(output_type)
