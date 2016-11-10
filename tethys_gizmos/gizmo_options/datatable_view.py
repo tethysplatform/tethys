@@ -35,6 +35,8 @@ class DataTableView(TethysGizmoOptions):
                                          ('Fred', 18, 'programmer'),
                                          ('Bob', 26, 'boss')],
                                    searching=False,
+                                   orderClasses=False,
+                                   lengthMenu=[ [10, 25, 50, -1], [10, 25, 50, "All"] ],
                                    )
 
         # TEMPLATE
