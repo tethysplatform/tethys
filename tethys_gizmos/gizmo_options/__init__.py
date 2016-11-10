@@ -21,3 +21,4 @@ from google_map import *
 from jobs_table import *
 from plot_view import *
 from plotly_view import PlotlyView
+from bokeh_view import BokehView
