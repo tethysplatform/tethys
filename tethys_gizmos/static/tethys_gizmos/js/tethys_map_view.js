@@ -272,6 +272,7 @@ var TETHYS_MAP_VIEW = (function() {
   ol_drawing_init = function()
   {
     // Constants
+////////////////////////////////////////// Color of annotation tools and Button Spacing ////////////////////////////////
     var VALID_GEOMETRY_TYPES = ['Polygon', 'Point', 'LineString', 'Box'];
     var INITIAL_FILL_COLOR = 'rgba(255, 255, 255, 0.2)',
         INITIAL_STROKE_COLOR = '#ffcc33',
@@ -335,6 +336,7 @@ var TETHYS_MAP_VIEW = (function() {
         // Always add the pan_control
         pan_control = new DrawingControl({
           control_type: 'Pan',
+          control_id: 'drawControl1',
           left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
           active: false
         });
@@ -348,7 +350,9 @@ var TETHYS_MAP_VIEW = (function() {
 
           modify_control = new DrawingControl({
             control_type: 'Modify',
+            control_id: 'drawControl2',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
+//            right_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
             active: false
           });
 
@@ -363,6 +367,7 @@ var TETHYS_MAP_VIEW = (function() {
 
           modify_control = new DrawingControl({
             control_type: 'Delete',
+            control_id: 'drawControl3',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
             active: false
           });
@@ -379,6 +384,7 @@ var TETHYS_MAP_VIEW = (function() {
           // Add drag feature control next
           drag_feature_control = new DrawingControl({
             control_type: 'Drag',
+            control_id: 'drawControl4',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
             active: false
           });
@@ -407,6 +413,7 @@ var TETHYS_MAP_VIEW = (function() {
 
             new_control = new DrawingControl({
               control_type: current_control_type,
+              control_id: 'drawControl' + (i+3),
               left_offset: offset_string,
               active: is_initial
             });
@@ -1710,6 +1717,8 @@ var TETHYS_MAP_VIEW = (function() {
   /***********************************
    * Class Implementations
    ***********************************/
+///////////////////////////////////////// This is the place to play with the button locations //////////////////////////
+
   DrawingControl = function(opt_options) {
     var options,
         button,
@@ -1732,6 +1741,7 @@ var TETHYS_MAP_VIEW = (function() {
     button.setAttribute('data-toggle', 'tooltip');
     button.setAttribute('data-placement', 'bottom');
     button.setAttribute('title', options.control_type);
+    button.setAttribute('id',options.control_id);
     button_image = document.createElement('div');
     button_image.className = icon_class;
     button.appendChild(button_image);
