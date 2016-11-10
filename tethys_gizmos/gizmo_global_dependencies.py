@@ -52,6 +52,14 @@ def toggle_switch(context):
             'tethys_gizmos/vendor/bootstrap_switch/dist/js/bootstrap-switch.min.js')
 
 
+def datatable_view(context):
+    """
+    Dependencies for the datatable_view gizmo.
+    """
+    return ('https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css',
+            'https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js')
+    
+
 def editable_google_map(context):
     """
     Dependencies for editable_google_map gizmo.
