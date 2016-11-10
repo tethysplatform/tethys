@@ -44,6 +44,11 @@ def google_map(context):
     """
     return ('tethys_gizmos/js/tethys_map.js',)
 
+def datatable_view(context):
+    """
+    Dependencies for the table_view gizmo.
+    """
+    return ('tethys_gizmos/js/datatable_view.js',)
 
 def plot_view(context):
     """
