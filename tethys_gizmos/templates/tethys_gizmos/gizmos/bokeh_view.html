@@ -1,0 +1,15 @@
+{% load tethys_gizmos %}
+
+<div class="{% if classes %} {{ classes }} {% endif %} {% if hidden %} hidden {% endif %}" 
+  {% if divid %} id="{{ divid }}"{% endif %}
+  style="{% if width %}width: {{ width }};{% endif %} {% if height %}height: {{ height }};{% endif %}"
+  {% if attributes %}
+      {% for key, value in attributes.items %}
+          {{ key }}="{{ value }}"
+      {% endfor %}
+  {% endif %}>
+
+  {{ script | safe }}
+  {{ div | safe }}
+
+</div>
