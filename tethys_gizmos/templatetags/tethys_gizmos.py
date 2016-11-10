@@ -292,10 +292,6 @@ class TethysGizmoDependenciesNode(template.Node):
         # Combine all tags
         tags = style_tags + script_tags
         tags_string = '\n'.join(tags)
-        if self.output_type in GLOBAL_OUTPUT_TYPES:
-            print(self.output_type)
-            print("dependencies: {}".format(dependencies))
-            print("tags_string: {}".format(tags_string))
         return tags_string
 
 @register.tag
