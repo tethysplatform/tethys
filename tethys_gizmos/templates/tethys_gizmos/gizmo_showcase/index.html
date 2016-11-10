@@ -4,8 +4,8 @@
 
 {% block title %}- Gizmo Showcase{% endblock %}
 
-
 {% block register_gizmos %}
+  {% register_gizmo_dependency table_view %}
   {% register_gizmo_dependency map_view %}
   {% register_gizmo_dependency highcharts_plot_view %}
   {% register_gizmo_dependency plot_view %}
@@ -505,8 +505,10 @@ def my_view(request):
 {% endblock %}
 
 {% block scripts %}
+  {% gizmo_dependencies global_css %}
   {% gizmo_dependencies css %}
   {{ block.super }}
+  {% gizmo_dependencies global_js %}
   <script src="{% static 'tethys_gizmos/vendor/prism/prism.js' %}" type="text/javascript"></script>
   {% gizmo_dependencies js %}
 {% endblock %}
