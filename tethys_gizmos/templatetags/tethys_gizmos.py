@@ -221,18 +221,28 @@ class TethysGizmoDependenciesNode(template.Node):
         self.output_type = output_type
         
     def render(self, context):
+        
         # Get the gizmos rendered from the context
         gizmos_rendered = context['gizmos_rendered']
 
         # Compile list of unique gizmo dependencies
         dependencies = []
 
+        #check if global js already loaded
+        if 'global_js_loaded' not in context:
+            context.update({'global_js_loaded': []})
+            
+        if 'global_css_loaded' not in context:
+            context.update({'global_css_loaded': []})
+            
+        #load from either global or custom depenencies
+        dependency_module_path = 'tethys_gizmos.gizmo_dependencies'
+        if self.output_type in GLOBAL_OUTPUT_TYPES:
+            dependency_module_path = 'tethys_gizmos.gizmo_global_dependencies'
+
         # Add gizmo dependencies
         for rendered_gizmo in gizmos_rendered:
             try:
-                dependency_module_path = 'tethys_gizmos.gizmo_dependencies'
-                if self.output_type in GLOBAL_OUTPUT_TYPES:
-                    dependency_module_path = 'tethys_gizmos.gizmo_global_dependencies'
                     
                 # Retrieve the "gizmo_dependencies" module and find the appropriate function
                 dependencies_module = __import__(dependency_module_path, fromlist=[rendered_gizmo])
@@ -274,20 +284,29 @@ class TethysGizmoDependenciesNode(template.Node):
         for dependency in dependencies:
             # Only process Script tags if the dependency has a ".js" extension and the output type is JS or not specified
             if JS_EXTENSION in dependency and \
-                (self.output_type == JS_OUTPUT_TYPE or self.output_type == JS_GLOBAL_OUTPUT_TYPE or self.output_type is None):
-                    if dependency.endswith('plotly-load_from_python.js'):
-                        script_tags.append(''.join([
-                                                    '<script type="text/javascript">',
-                                                    get_plotlyjs(),
-                                                    '</script>',
-                                                    ]))
-                    else:
-                        script_tags.append('<script src="{0}" type="text/javascript"></script>'.format(dependency))
+                (self.output_type == JS_OUTPUT_TYPE or self.output_type == JS_GLOBAL_OUTPUT_TYPE or self.output_type is None) \
+                and dependency not in context['global_js_loaded']:
+
+                if dependency.endswith('plotly-load_from_python.js'):
+                    script_tags.append(''.join([
+                                                '<script type="text/javascript">',
+                                                get_plotlyjs(),
+                                                '</script>',
+                                                ]))
+                else:
+                    script_tags.append('<script src="{0}" type="text/javascript"></script>'.format(dependency))
+
+                if self.output_type == JS_GLOBAL_OUTPUT_TYPE:
+                    context['global_js_loaded'].append(dependency)                 
 
             # Only process Style tags if the dependency has a ".css" extension and the output type is CSS or not specified
             elif CSS_EXTENSION in dependency and \
-                (self.output_type == CSS_OUTPUT_TYPE or self.output_type == CSS_GLOBAL_OUTPUT_TYPE or self.output_type is None):
+                (self.output_type == CSS_OUTPUT_TYPE or self.output_type == CSS_GLOBAL_OUTPUT_TYPE or self.output_type is None)\
+                and dependency not in context['global_css_loaded']:
                 style_tags.append('<link href="{0}" rel="stylesheet" />'.format(dependency))
+
+                if self.output_type == CSS_GLOBAL_OUTPUT_TYPE:
+                    context['global_css_loaded'].append(dependency)                 
 
         # Combine all tags
         tags = style_tags + script_tags

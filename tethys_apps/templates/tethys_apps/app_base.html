@@ -95,11 +95,10 @@
         <link href="{% static 'tethys_apps/css/feedback.css' %}" rel="stylesheet" />
       {% endif %}
       {% gizmo_dependencies global_css %}
-
     {% endblock %}
 
     {% block global_scripts %}
-      <script src="//code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
+      <script src="//code.jquery.com/jquery-2.2.4.min.js" type="text/javascript"></script>
       <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" type="text/javascript"></script>
       {% gizmo_dependencies global_js %}
     {% endblock %}
@@ -199,6 +198,7 @@
     {% endblock %}
 
     {% block content_dependent_styles %}
+      {% gizmo_dependencies global_css %}
       {% gizmo_dependencies css %}
     {% endblock %}
 
@@ -219,6 +219,7 @@
       {% if tethys_app.enable_feedback %}
         <script src="{% static 'tethys_apps/js/feedback.js' %}" type="text/javascript"></script>
       {% endif %}
+      {% gizmo_dependencies global_js %}
       {% gizmo_dependencies js %}
     {% endblock %}
   </body>
