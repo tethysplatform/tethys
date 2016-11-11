@@ -116,18 +116,22 @@ class TethysGizmoIncludeDependency(template.Node):
         This loads the rendered gizmos into context
         """
         # Add gizmo name to 'gizmos_rendered' context variable (used to load static libraries
-        if 'gizmos_rendered' not in context.render_context:
-            context.render_context['gizmos_rendered'] = []
+        if 'gizmos_rendered' not in context:
+            context.update({'gizmos_rendered': [] })
 
-        if self.gizmo_name not in context.render_context['gizmos_rendered']:
-            context.render_context['gizmos_rendered'].append(self.gizmo_name)
+        if self.gizmo_name not in context['gizmos_rendered']:
+            context['gizmos_rendered'].append(self.gizmo_name)
 
     def render(self, context):
         """
         Load in the gizmos to be rendered
         """
-        self._load_gizmos_rendered(context)
-           
+        try:
+            self._load_gizmos_rendered(context)
+        except:
+            if settings.TEMPLATE_DEBUG:
+                raise
+        
         return ''
 
 class TethysGizmoIncludeNode(TethysGizmoIncludeDependency):
@@ -141,7 +145,6 @@ class TethysGizmoIncludeNode(TethysGizmoIncludeDependency):
     def render(self, context):
         try:
             self._load_gizmos_rendered(context)
-            
             # Determine path to gizmo template
             gizmo_templates_root = os.path.join('tethys_gizmos', 'gizmos')
             gizmo_file_name = '{0}.html'.format(self.gizmo_name)
@@ -225,7 +228,7 @@ class TethysGizmoDependenciesNode(template.Node):
         # Get the gizmos rendered from the context
         #NOTE: Use render_context as it is recommended to do so here
         #https://docs.djangoproject.com/en/1.10/howto/custom-template-tags/
-        gizmos_rendered = context.render_context['gizmos_rendered']
+        gizmos_rendered = context['gizmos_rendered']
 
         # Compile list of unique gizmo dependencies
         dependencies = []
