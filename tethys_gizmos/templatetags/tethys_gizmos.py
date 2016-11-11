@@ -92,35 +92,59 @@ def divide(value, divisor):
     return v/d
 
 
-class TethysGizmoIncludeNode(template.Node):
+class TethysGizmoIncludeDependency(template.Node):
+    """
+    Custom template include node that returns Tethys gizmos
+    """
+    def __init__(self, gizmo_name, *args, **kwargs):
+        super(TethysGizmoIncludeDependency, self).__init__(*args, **kwargs)
+        self._load_gizmo_name(gizmo_name)
+
+    def _load_gizmo_name(self, gizmo_name):
+        """
+        This loads the rendered gizmos into context
+        """
+        self.gizmo_name = gizmo_name
+        
+        # Handle case where gizmo_name is a string literal
+        if self.gizmo_name[0] in ('"', "'"):
+            self.gizmo_name = self.gizmo_name.replace("'", '')
+            self.gizmo_name = self.gizmo_name.replace('"', '')
+            
+    def _load_gizmos_rendered(self, context):
+        """
+        This loads the rendered gizmos into context
+        """
+        # Add gizmo name to 'gizmos_rendered' context variable (used to load static libraries
+        if 'gizmos_rendered' not in context.render_context:
+            context.render_context['gizmos_rendered'] = []
+
+        if self.gizmo_name not in context.render_context['gizmos_rendered']:
+            context.render_context['gizmos_rendered'].append(self.gizmo_name)
+
+    def render(self, context):
+        """
+        Load in the gizmos to be rendered
+        """
+        self._load_gizmos_rendered(context)
+           
+        return ''
+
+class TethysGizmoIncludeNode(TethysGizmoIncludeDependency):
     """
     Custom template include node that returns Tethys gizmos
     """
     def __init__(self, gizmo_name, options, *args, **kwargs):
-        super(TethysGizmoIncludeNode, self).__init__(*args, **kwargs)
-        self.gizmo_name = gizmo_name
+        super(TethysGizmoIncludeNode, self).__init__(gizmo_name, *args, **kwargs)
         self.options = template.Variable(options)
-
+       
     def render(self, context):
         try:
-            # Get the name of the gizmo to load
-            gizmo_name = self.gizmo_name
-            gizmo_templates_root = os.path.join('tethys_gizmos', 'gizmos')
-
-            # Handle case where gizmo_name is a string literal
-            if self.gizmo_name[0] in ('"', "'"):
-                gizmo_name = self.gizmo_name.replace("'", '')
-                gizmo_name = gizmo_name.replace('"', '')
-
-            # Add gizmo name to 'gizmos_rendered' context variable (used to load static libraries
-            if 'gizmos_rendered' not in context.render_context:
-                context.render_context['gizmos_rendered'] = []
-    
-            if gizmo_name not in context.render_context['gizmos_rendered']:
-                context.render_context['gizmos_rendered'].append(gizmo_name)
-
+            self._load_gizmos_rendered(context)
+            
             # Determine path to gizmo template
-            gizmo_file_name = '{0}.html'.format(gizmo_name)
+            gizmo_templates_root = os.path.join('tethys_gizmos', 'gizmos')
+            gizmo_file_name = '{0}.html'.format(self.gizmo_name)
             template_name = os.path.join(gizmo_templates_root, gizmo_file_name)
 
             # Retrieve the gizmo template and render
@@ -132,31 +156,6 @@ class TethysGizmoIncludeNode(template.Node):
                 raise
             return ''
 
-class TethysGizmoIncludeDependency(template.Node):
-    """
-    Custom template include node that returns Tethys gizmos
-    """
-    def __init__(self, gizmo_name, *args, **kwargs):
-        super(TethysGizmoIncludeDependency, self).__init__(*args, **kwargs)
-        self.gizmo_name = gizmo_name
-
-    def render(self, context):
-        # Get the name of the gizmo to load
-        gizmo_name = self.gizmo_name
-
-        # Handle case where gizmo_name is a string literal
-        if self.gizmo_name[0] in ('"', "'"):
-            gizmo_name = self.gizmo_name.replace("'", '')
-            gizmo_name = gizmo_name.replace('"', '')
-
-        # Add gizmo name to 'gizmos_rendered' context variable (used to load static libraries
-        if 'gizmos_rendered' not in context.render_context:
-            context.render_context['gizmos_rendered'] = []
-
-        if gizmo_name not in context.render_context['gizmos_rendered']:
-            context.render_context['gizmos_rendered'].append(gizmo_name)
-            
-        return ''
         
 @register.tag
 def gizmo(parser, token):
