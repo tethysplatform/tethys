@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 
-def global_dependencies(context):
+def global_dependencies():
     """
     Dependencies that are loaded for all tethys gizmos (after gizmo dependencies).
     """
@@ -16,7 +16,7 @@ def global_dependencies(context):
            'tethys_gizmos/js/tethys_gizmos.js')
 
 
-def map_view(context):
+def map_view():
     """
     Dependencies for map_view gizmo.
     """
@@ -24,33 +24,33 @@ def map_view(context):
             'tethys_gizmos/js/gizmo_utilities.js',
             'tethys_gizmos/js/tethys_map_view.js')
 
-def editable_google_map(context):
+def editable_google_map():
     """
     Dependencies for editable_google_map gizmo.
     """
     return ('tethys_gizmos/js/tethys_editable_map.js')
 
 
-def google_map_view(context):
+def google_map_view():
     """
     Dependencies for google_map_view gizmo.
     """
     return ('tethys_gizmos/js/tethys_google_map_view.js')
 
 
-def google_map(context):
+def google_map():
     """
     Dependencies for google_map gizmo.
     """
     return ('tethys_gizmos/js/tethys_map.js',)
 
-def datatable_view(context):
+def datatable_view():
     """
     Dependencies for the table_view gizmo.
     """
     return ('tethys_gizmos/js/datatable_view.js',)
 
-def plot_view(context):
+def plot_view():
     """
     Dependencies for D3 Plots.
     """
@@ -58,7 +58,7 @@ def plot_view(context):
             'tethys_gizmos/js/plot_view.js')
 
 
-def jobs_table(context):
+def jobs_table():
     """
     Dependencies for jobs_table gizmo.
     """
