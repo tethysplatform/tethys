@@ -31,8 +31,10 @@ JS_GLOBAL_OUTPUT_TYPE = 'global_js'
 CSS_EXTENSION = 'css'
 JS_EXTENSION = 'js'
 EXTERNAL_INDICATOR = '://'
+CSS_OUTPUT_TYPES = (CSS_OUTPUT_TYPE, CSS_GLOBAL_OUTPUT_TYPE)
+JS_OUTPUT_TYPES = (JS_OUTPUT_TYPE, JS_GLOBAL_OUTPUT_TYPE)
 GLOBAL_OUTPUT_TYPES = (CSS_GLOBAL_OUTPUT_TYPE, JS_GLOBAL_OUTPUT_TYPE)
-VALID_OUTPUT_TYPES = (CSS_OUTPUT_TYPE, JS_OUTPUT_TYPE) + GLOBAL_OUTPUT_TYPES
+VALID_OUTPUT_TYPES = CSS_OUTPUT_TYPES + JS_OUTPUT_TYPES
 
 
 class HighchartsDateEncoder(DjangoJSONEncoder):
@@ -111,11 +113,11 @@ class TethysGizmoIncludeNode(template.Node):
                 gizmo_name = gizmo_name.replace('"', '')
 
             # Add gizmo name to 'gizmos_rendered' context variable (used to load static libraries
-            if 'gizmos_rendered' not in context:
-                context.update({'gizmos_rendered': []})
-
-            if gizmo_name not in context['gizmos_rendered']:
-                context['gizmos_rendered'].append(gizmo_name)
+            if 'gizmos_rendered' not in context.render_context:
+                context.render_context['gizmos_rendered'] = []
+    
+            if gizmo_name not in context.render_context['gizmos_rendered']:
+                context.render_context['gizmos_rendered'].append(gizmo_name)
 
             # Determine path to gizmo template
             gizmo_file_name = '{0}.html'.format(gizmo_name)
@@ -123,8 +125,7 @@ class TethysGizmoIncludeNode(template.Node):
 
             # Retrieve the gizmo template and render
             t = get_template(template_name)
-            c = context.new(self.options.resolve(context))
-            return t.render(c)
+            return t.render(self.options.resolve(context))
 
         except:
             if settings.TEMPLATE_DEBUG:
@@ -149,11 +150,11 @@ class TethysGizmoIncludeDependency(template.Node):
             gizmo_name = gizmo_name.replace('"', '')
 
         # Add gizmo name to 'gizmos_rendered' context variable (used to load static libraries
-        if 'gizmos_rendered' not in context:
-            context.update({'gizmos_rendered': []})
+        if 'gizmos_rendered' not in context.render_context:
+            context.render_context['gizmos_rendered'] = []
 
-        if gizmo_name not in context['gizmos_rendered']:
-            context['gizmos_rendered'].append(gizmo_name)
+        if gizmo_name not in context.render_context['gizmos_rendered']:
+            context.render_context['gizmos_rendered'].append(gizmo_name)
             
         return ''
         
@@ -223,17 +224,17 @@ class TethysGizmoDependenciesNode(template.Node):
     def render(self, context):
         
         # Get the gizmos rendered from the context
-        gizmos_rendered = context['gizmos_rendered']
+        gizmos_rendered = context.render_context['gizmos_rendered']
 
         # Compile list of unique gizmo dependencies
         dependencies = []
+        
+        #create lists to check if global js/css already loaded
+        if 'global_js_loaded' not in context.render_context:
+            context.render_context['global_js_loaded'] = []
 
-        #check if global js already loaded
-        if 'global_js_loaded' not in context:
-            context.update({'global_js_loaded': []})
-            
-        if 'global_css_loaded' not in context:
-            context.update({'global_css_loaded': []})
+        if 'global_css_loaded' not in context.render_context:
+            context.render_context['global_css_loaded'] = []
             
         #load from either global or custom depenencies
         dependency_module_path = 'tethys_gizmos.gizmo_dependencies'
@@ -249,7 +250,7 @@ class TethysGizmoDependenciesNode(template.Node):
                 dependencies_function = getattr(dependencies_module, rendered_gizmo)
 
                 # Retrieve a list of dependencies for the gizmo
-                gizmo_deps = dependencies_function(context)
+                gizmo_deps = dependencies_function()
 
                 # Only append dependencies if they do not already exist
                 for dependency in gizmo_deps:
@@ -268,7 +269,7 @@ class TethysGizmoDependenciesNode(template.Node):
             
         if self.output_type not in GLOBAL_OUTPUT_TYPES:
             # Add the global dependencies last
-            for dependency in global_dependencies(context):
+            for dependency in global_dependencies():
                 if EXTERNAL_INDICATOR in dependency:
                     static_url = dependency
                 else:
@@ -284,8 +285,8 @@ class TethysGizmoDependenciesNode(template.Node):
         for dependency in dependencies:
             # Only process Script tags if the dependency has a ".js" extension and the output type is JS or not specified
             if JS_EXTENSION in dependency and \
-                (self.output_type == JS_OUTPUT_TYPE or self.output_type == JS_GLOBAL_OUTPUT_TYPE or self.output_type is None) \
-                and dependency not in context['global_js_loaded']:
+                (self.output_type in JS_OUTPUT_TYPES or self.output_type is None) \
+                and dependency not in context.render_context['global_js_loaded']:
 
                 if dependency.endswith('plotly-load_from_python.js'):
                     script_tags.append(''.join([
@@ -297,16 +298,18 @@ class TethysGizmoDependenciesNode(template.Node):
                     script_tags.append('<script src="{0}" type="text/javascript"></script>'.format(dependency))
 
                 if self.output_type == JS_GLOBAL_OUTPUT_TYPE:
-                    context['global_js_loaded'].append(dependency)                 
+                    context.render_context['global_js_loaded'].append(dependency)                 
 
             # Only process Style tags if the dependency has a ".css" extension and the output type is CSS or not specified
             elif CSS_EXTENSION in dependency and \
-                (self.output_type == CSS_OUTPUT_TYPE or self.output_type == CSS_GLOBAL_OUTPUT_TYPE or self.output_type is None)\
-                and dependency not in context['global_css_loaded']:
+                (self.output_type in CSS_OUTPUT_TYPES or self.output_type is None) \
+                and dependency not in context.render_context['global_css_loaded']:
+                    
                 style_tags.append('<link href="{0}" rel="stylesheet" />'.format(dependency))
 
                 if self.output_type == CSS_GLOBAL_OUTPUT_TYPE:
-                    context['global_css_loaded'].append(dependency)                 
+                    context.render_context['global_css_loaded'].append(dependency)
+        
 
         # Combine all tags
         tags = style_tags + script_tags

@@ -7,7 +7,7 @@
 """
 from django.conf import settings
 
-def date_picker(context):
+def date_picker():
     """
     Dependencies for date_picker gizmo.
     """
@@ -15,7 +15,7 @@ def date_picker(context):
             'tethys_gizmos/vendor/bootstrap_datepicker/js/bootstrap_datepicker.js')
 
 
-def select_input(context):
+def select_input():
     """
     Dependencies for select2_input gizmo.
     """
@@ -23,7 +23,7 @@ def select_input(context):
             'tethys_gizmos/vendor/select2_4.0.2/js/select2.min.js')
 
 
-def highcharts_plot_view(context):
+def highcharts_plot_view():
     """
     Dependencies for highcharts_plot_view gizmo.
     """
@@ -32,7 +32,7 @@ def highcharts_plot_view(context):
             'tethys_gizmos/vendor/highcharts/js/modules/exporting.js')
 
 
-def map_view(context):
+def map_view():
     """
     Dependencies for map_view gizmo.
     """
@@ -44,7 +44,7 @@ def map_view(context):
             openlayers_library)
 
 
-def toggle_switch(context):
+def toggle_switch():
     """
     Dependencies for toggle_switch gizmo.
     """
@@ -52,7 +52,7 @@ def toggle_switch(context):
             'tethys_gizmos/vendor/bootstrap_switch/dist/js/bootstrap-switch.min.js')
 
 
-def datatable_view(context):
+def datatable_view():
     """
     Dependencies for the datatable_view gizmo.
     """
@@ -60,7 +60,7 @@ def datatable_view(context):
             'https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js')
     
 
-def editable_google_map(context):
+def editable_google_map():
     """
     Dependencies for editable_google_map gizmo.
     """
@@ -68,7 +68,7 @@ def editable_google_map(context):
             'tethys_gizmos/vendor/farbtastic/farbtastic.js')
 
 
-def google_map_view(context):
+def google_map_view():
     """
     Dependencies for google_map_view gizmo.
     """
@@ -76,7 +76,7 @@ def google_map_view(context):
             'tethys_gizmos/vendor/farbtastic/farbtastic.js')
 
 
-def plot_view(context):
+def plot_view():
     """
     Dependencies for D3 & Highcharts Plots.
     """
@@ -86,13 +86,13 @@ def plot_view(context):
             'https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js',
             'tethys_gizmos/vendor/d3_tooltip/d3.tip.v0.6.3.js')
 
-def plotly_view(context):
+def plotly_view():
     """
     Dependencies for Plotly Plots.
     """
     return ('://plotly-load_from_python.js',)
     
-def bokeh_view(context):
+def bokeh_view():
     """
     Dependencies for Bokeh Plots.
     """
