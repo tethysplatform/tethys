@@ -272,7 +272,6 @@ var TETHYS_MAP_VIEW = (function() {
   ol_drawing_init = function()
   {
     // Constants
-////////////////////////////////////////// Color of annotation tools and Button Spacing ////////////////////////////////
     var VALID_GEOMETRY_TYPES = ['Polygon', 'Point', 'LineString', 'Box'];
     var INITIAL_FILL_COLOR = 'rgba(255, 255, 255, 0.2)',
         INITIAL_STROKE_COLOR = '#ffcc33',
@@ -1712,7 +1711,6 @@ var TETHYS_MAP_VIEW = (function() {
   /***********************************
    * Class Implementations
    ***********************************/
-///////////////////////////////////////// This is the place to play with the button locations //////////////////////////
 
   DrawingControl = function(opt_options) {
     var options,
