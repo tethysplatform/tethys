@@ -10,7 +10,7 @@ class PlotlyView(TethysGizmoOptions):
     """
     Simple options object for plotly view.
     
-    .. info:: See https://plot.ly/python for Plotly API
+    .. note:: Information about the Plotly API can be found at https://plot.ly/python.
 
     Attributes:
         plot_input(plotly graph_objs): A plotly graph_objs to be plotted.
@@ -20,11 +20,8 @@ class PlotlyView(TethysGizmoOptions):
         classes(Optional[str]): Space separated string of classes to add to the outer div.
         hidden(Optional[bool]): If True, the plot will be hidden. Default is False.
         show_link(Optional[bool]): If True, the link to export plot to view in plotly is shown. Default is False.
-        load_js(Optional[bool]): If False, then it will not include the javascript.  
-                                 An example case of setting to False is using AJAX to add another chart.
-                                 Default is True.
                                  
-    Controller Code Example 1::
+    Controller Code Basic Example::
     
         import datetime as datetime
         import plotly.graph_objs as go
@@ -38,7 +35,7 @@ class PlotlyView(TethysGizmoOptions):
         
         context = {'plotly_view_input': my_plotly_view}
         
-    Controller Code Example 2::
+    Controller Code Pandas Example::
     
         import numpy as np
         import pandas as pd
