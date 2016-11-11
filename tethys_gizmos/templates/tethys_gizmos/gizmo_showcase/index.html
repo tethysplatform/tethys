@@ -5,15 +5,18 @@
 {% block title %}- Gizmo Showcase{% endblock %}
 
 {% block register_gizmos %}
-  {% register_gizmo_dependency table_view %}
-  {% register_gizmo_dependency map_view %}
-  {% register_gizmo_dependency highcharts_plot_view %}
-  {% register_gizmo_dependency plot_view %}
+  {% register_gizmo_dependency date_picker %}
+  {% register_gizmo_dependency select_input %}
   {% register_gizmo_dependency toggle_switch %}
+  {% register_gizmo_dependency table_view %}
+  {% register_gizmo_dependency datatable_view %}
+  {% register_gizmo_dependency plot_view %}
+  {% register_gizmo_dependency highcharts_plot_view %}
+  {% register_gizmo_dependency plotly_view %}
+  {% register_gizmo_dependency bokeh_view %}
+  {% register_gizmo_dependency map_view %}
   {% register_gizmo_dependency editable_google_map %}
   {% register_gizmo_dependency google_map_view %}
-  {% register_gizmo_dependency select_input %}
-  {% register_gizmo_dependency date_picker %}
 {% endblock %}
 
 {% block styles %}
@@ -21,11 +24,14 @@
   <link href="{% static 'tethys_gizmos/vendor/prism/prism.css' %}" rel="stylesheet" />
   <link href="{% static 'tethys_gizmos/css/gizmo_showcase.css' %}" rel="stylesheet" />
   {% gizmo_dependencies global_css %}
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.dataTables.min.css">
 {% endblock %}
 
 {% block global_scripts %}
   {{ block.super }}
   {% gizmo_dependencies global_js %}
+  <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
+
 {% endblock %}
 
 {% block bodytag %}data-spy="scroll" data-target="#showcase_nav_list" style="position: relative;"{% endblock %}
@@ -64,7 +70,16 @@
             <a href="#table_view_docs">Table View</a>
           </li>
           <li>
+            <a href="#datatable_view_docs">DataTable View</a>
+          </li>
+          <li>
             <a href="#plot_view_docs">Plot View</a>
+          </li>
+          <li>
+            <a href="#plotly_view_docs">Plotly View</a>
+          </li>
+          <li>
+            <a href="#bokeh_view_docs">Bokeh View</a>
           </li>
           <li>
             <a href="#map_view_docs">Map View</a>
@@ -130,7 +145,7 @@ def my_view(request):
         </p>
 
         <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} block register_gizmos {% templatetag closeblock %}
-    {% templatetag openblock %} register_gizmo_dependency  date_picker {% templatetag closeblock %}
+    {% templatetag openblock %} register_gizmo_dependency date_picker {% templatetag closeblock %}
 {% templatetag openblock %} endblock {% templatetag closeblock %}</code></pre>
 
         <p>
@@ -145,11 +160,10 @@ def my_view(request):
         </p>
 
         <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} extends "tethys_apps/app_base.html" {% templatetag closeblock %}
-{% templatetag openblock %} load staticfiles {% templatetag closeblock %}
-{% templatetag openblock %} load tethys_gizmos {% templatetag closeblock %}
+{% templatetag openblock %} load staticfiles tethys_gizmos {% templatetag closeblock %}
 
 {% templatetag openblock %} block register_gizmos {% templatetag closeblock %}
-    {% templatetag openblock %} register_gizmo_dependency  date_picker {% templatetag closeblock %}
+    {% templatetag openblock %} register_gizmo_dependency date_picker {% templatetag closeblock %}
 {% templatetag openblock %} endblock {% templatetag closeblock %}
 
 {% templatetag openblock %}  block app_content {% templatetag closeblock %}
@@ -333,7 +347,31 @@ def my_view(request):
         <div class="example">
           <div class="demo">
             {% gizmo table_view table_view %}
+          </div>
+          <div class="demo">
             {% gizmo table_view table_view_edit %}
+          </div>
+        </div>
+      </div>
+
+      {# DataTable View --------------------------------------------------------------------------------------------------#}
+      <a id="datatable_view_docs" class="anchor"></a>
+      <div class="docs-section">
+        <h2>DataTable View</h2>
+        <p>DataTable views can be used to display, search, and sort tabular data.
+           Many of the DataTable options are supported and can be added by using
+           the name of the input value for DataTables. For more information about
+           DataTables, see the <a target="_blank" href="https://datatables.net">
+           DataTables website</a></p>
+        <p>
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/datatable_view.html">DataTable View</a>.
+        </p>
+        <div class="example">
+          <div class="demo">
+            {% gizmo datatable_view datatable_default %}
+          </div>
+          <div class="demo">
+            {% gizmo datatable_view datatable_with_extension %}
           </div>
         </div>
       </div>
@@ -421,6 +459,42 @@ def my_view(request):
           </div>
         </div>
 
+      </div>
+
+      {# Plotly View --------------------------------------------------------------------------------------------------#}
+      <a id="plotly_view_docs" class="anchor"></a>
+      <div class="docs-section">
+        <h2>Plotly View</h2>
+        <p>Plotly views can be used to create interactive charts using the Plotly
+           python library. For more information about
+           Plotly, see the <a target="_blank" href="https://plot.ly/python">
+           Plotly website</a></p>
+        <p>
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/plotly_view.html">Plotly View</a>.
+        </p>
+        <div class="example">
+          <div class="demo">
+            {% gizmo plotly_view my_plotly_view %}
+          </div>
+        </div>
+      </div>
+
+      {# Bokeh View --------------------------------------------------------------------------------------------------#}
+      <a id="bokeh_view_docs" class="anchor"></a>
+      <div class="docs-section">
+        <h2>Bokeh View</h2>
+        <p>Bokeh views can be used to create charts using the Bokeh
+           python library. For more information about
+           Bokeh, see the <a target="_blank" href="http://bokeh.pydata.org">
+           Bokeh website</a></p>
+        <p>
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/bokeh_view.html">Bokeh View</a>.
+        </p>
+        <div class="example">
+          <div class="demo">
+            {% gizmo bokeh_view my_bokeh_view %}
+          </div>
+        </div>
       </div>
 
       {# Map View ----------------------------------------------------------------------------------------------------#}

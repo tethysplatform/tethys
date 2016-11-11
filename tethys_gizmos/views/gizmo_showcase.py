@@ -15,6 +15,8 @@ from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
+import plotly.graph_objs as go
+from bokeh.plotting import figure as bokeh_figure
 from requests.exceptions import ConnectionError
 
 from tethys_sdk.gizmos import *
@@ -723,6 +725,20 @@ def index(request):
                            width='500px',
                            height='500px')
 
+    # Plotly View
+    x = [datetime(year=2013, month=10, day=04),
+         datetime(year=2013, month=11, day=05),
+         datetime(year=2013, month=12, day=06)]
+    
+    my_plotly_view = PlotlyView([go.Scatter(x=x, y=[1, 3, 6])])
+    
+    #TODO: Add pandas example when pandas is included with Tethys Platform
+
+    # Bokeh View
+    plot = bokeh_figure(plot_height=300)
+    plot.circle([1,2], [3,4])
+    my_bokeh_view = BokehView(plot, height="300px")
+
     # Table View
     table_view = TableView(column_names=('Name', 'Age', 'Job'),
                            rows=[('Bill', 30, 'contractor'),
@@ -744,6 +760,22 @@ def index(request):
                                 editable_columns=(False, 'ageInput', 'jobInput'),
                                 row_ids=[21, 25, 31])
 
+    # DataTable View
+    datatable_default = DataTableView(column_names=('Name', 'Age', 'Job'),
+                                      rows=[('Bill', 30, 'contractor'),
+                                            ('Fred', 18, 'programmer'),
+                                            ('Bob', 26, 'boss')],
+                                      searching=False,
+                                      orderClasses=False,
+                                      lengthMenu=[ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+                                      )
+
+    datatable_with_extension = DataTableView(column_names=('Name', 'Age', 'Job'),
+                                             rows=[('Bill', 30, 'contractor'),
+                                                   ('Fred', 18, 'programmer'),
+                                                   ('Bob', 26, 'boss')],
+                                             colReorder=True,
+                                             )
 
     # Message Box
     message_box = MessageBox(name='sampleModal',
@@ -921,8 +953,12 @@ def index(request):
                'line_plot_view': line_plot_view,
                'web_plot': web_plot,
                'timeseries_plot': timeseries_plot,
+               'my_plotly_view': my_plotly_view,
+               'my_bokeh_view': my_bokeh_view,
                'table_view': table_view,
                'table_view_edit': table_view_edit,
+               'datatable_default': datatable_default,
+               'datatable_with_extension': datatable_with_extension,
                'message_box': message_box,
                'google_map_view': google_map_view,
                'flash_message': flash_message,

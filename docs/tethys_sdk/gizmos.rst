@@ -63,7 +63,20 @@ Now near the top of the template where the Gizmo will be inserted, load the ``te
 
     {% load tethys_gizmos %}
 
-3. Insert the Gizmo
+3. Load in Gizmo Dependencies
+-----------------------------
+
+To make sure the dependencies load correctly, use the ``register_gizmo_dependency`` tag in 
+the ``register_gizmos`` block. Pass the name of the gizmo into the tag to load it:
+
+::
+
+    {% block register_gizmos %}
+        {% register_gizmo_dependency date_picker %}
+    {% endblock %}
+
+
+4. Insert the Gizmo
 -------------------
 
 The ``gizmo`` tag is used to insert the date picker anywhere in the template. The ``gizmo`` tag accepts two arguments: the name of the Gizmo to insert and a dictionary of configuration options for the Gizmo:
@@ -146,9 +159,11 @@ Inserts the CSS and JavaScript dependencies at the location of the tag. This tag
     {% gizmo_dependencies %}
 
     # CSS only
+    {% gizmo_dependencies global_css %}
     {% gizmo_dependencies css %}
 
     # JavaScript only
+    {% gizmo_dependencies global_js %}
     {% gizmo_dependencies js %}
 
 .. _gizmo_options:
@@ -169,7 +184,10 @@ This section provides explanations of each of the Gizmo Options Objects availabl
    gizmos/toggle_switch
    gizmos/message_box
    gizmos/table_view
+   gizmos/datatable_view
    gizmos/plot_view
+   gizmos/plotly_view
+   gizmos/bokeh_view
    gizmos/map_view
    gizmos/google_map
    gizmos/jobs_table
