@@ -223,7 +223,7 @@ class TethysGizmoDependenciesNode(template.Node):
     def render(self, context):
         
         # Get the gizmos rendered from the context
-        #NOTE: Userender_context as it is recommended to do so here
+        #NOTE: Use render_context as it is recommended to do so here
         #https://docs.djangoproject.com/en/1.10/howto/custom-template-tags/
         gizmos_rendered = context.render_context['gizmos_rendered']
 
