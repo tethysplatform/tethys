@@ -272,10 +272,14 @@ var TETHYS_MAP_VIEW = (function() {
   ol_drawing_init = function()
   {
     // Constants
+////////////////////////////////////////// Color of annotation tools and Button Spacing ////////////////////////////////
     var VALID_GEOMETRY_TYPES = ['Polygon', 'Point', 'LineString', 'Box'];
-    var INITIAL_FILL_COLOR = 'rgba(255, 255, 255, 0.2)',
-        INITIAL_STROKE_COLOR = '#ffcc33',
-        INITIAL_POINT_FILL_COLOR = '#ffcc33',
+//    var INITIAL_FILL_COLOR = 'rgba(255, 255, 255, 0.2)',
+    var INITIAL_FILL_COLOR = m_draw_options.fillColor,
+//        INITIAL_STROKE_COLOR = '#ffcc33',
+        INITIAL_STROKE_COLOR = m_draw_options.lineColor,
+//        INITIAL_POINT_FILL_COLOR = '#ffcc33',
+        INITIAL_POINT_FILL_COLOR = m_draw_options.pointColor,
         BUTTON_SPACING = 30,
         BUTTON_OFFSET_UNITS = 'px';
 
@@ -349,6 +353,7 @@ var TETHYS_MAP_VIEW = (function() {
           modify_control = new DrawingControl({
             control_type: 'Modify',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
+//            right_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
             active: false
           });
 
@@ -1710,6 +1715,8 @@ var TETHYS_MAP_VIEW = (function() {
   /***********************************
    * Class Implementations
    ***********************************/
+///////////////////////////////////////// This is the place to play with the button locations //////////////////////////
+
   DrawingControl = function(opt_options) {
     var options,
         button,
@@ -1732,6 +1739,7 @@ var TETHYS_MAP_VIEW = (function() {
     button.setAttribute('data-toggle', 'tooltip');
     button.setAttribute('data-placement', 'bottom');
     button.setAttribute('title', options.control_type);
+    button.setAttribute('id',options.control_id);
     button_image = document.createElement('div');
     button_image.className = icon_class;
     button.appendChild(button_image);
