@@ -313,7 +313,7 @@ class MVDraw(SecondaryGizmoOptions):
 
     """
 
-    def __init__(self, controls, initial, output_format='GeoJSON'):
+    def __init__(self, controls, initial, output_format='GeoJSON',lineColor="#ffcc33",fillColor='rgba(255, 255, 255, 0.2)',pointColor="#ffcc33"):
         """
         Constructor
         """
@@ -327,6 +327,9 @@ class MVDraw(SecondaryGizmoOptions):
             raise ValueError('Value of "initial" must be contained in the "controls" list.')
         self.initial = initial
         self.output_format = output_format
+        self.fillColor = fillColor
+        self.lineColor = lineColor
+        self.pointColor = pointColor
 
 
 class MVLayer(SecondaryGizmoOptions):
