@@ -12,6 +12,7 @@ This section describes how to install Tethys Platform. Installation instructions
     installation/system_requirements
     installation/ubuntu14
     installation/ubuntu16
+    installation/ubuntu16_conda
     installation/web_admin_setup
     installation/update
 
