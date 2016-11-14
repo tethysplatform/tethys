@@ -141,6 +141,27 @@ Inserts a Gizmo at the location of the tag.
     # With string for name parameter
     {% gizmo "date_picker" date_picker_options %}
 
+**register_gizmo_dependency**
+---------
+
+Tells the ``gizmo_dependencies`` to load in the dependencies for the gizmo.
+This tag must be in the ``register_gizmos`` block. This is useful for loading
+the dependencies into the page for a gizmo if you plan on loading the gizmos 
+using AJAX. Additionally, it will load the libraries required by the gizmos 
+in the <header> instead of the <body>, so it is recommended to use even if it
+is not required.
+
+*Parameters*:
+
+* **name** (string or literal) - The name of the Gizmo to insert as either a string (e.g.: "date_picker") or a literal (e.g.: date_picker).
+
+*Examples*:
+
+::
+
+    {% block register_gizmos %}
+        {% register_gizmo_dependency date_picker %}
+    {% endblock %}
 
 **gizmo_dependencies**
 ----------------------
@@ -149,7 +170,7 @@ Inserts the CSS and JavaScript dependencies at the location of the tag. This tag
 
 *Parameters*:
 
-* **type** (string or literal, optional) - The type of dependency to import. This parameter can be used to include the CSS and JavaScript dependencies at different locations in the template. Valid values include "css" for CSS dependencies or "js" for JavaScript dependencies.
+* **type** (string or literal, optional) - The type of dependency to import. This parameter can be used to include the CSS and JavaScript dependencies at different locations in the template. Valid values include "css" for CSS dependencies, "global_css" for CSS library dependencies, "js" for JavaScript dependencies, and "global_js" for JavaScript library dependencies.
 
 *Examples*:
 
