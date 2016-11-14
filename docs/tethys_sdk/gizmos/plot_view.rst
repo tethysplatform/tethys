@@ -63,25 +63,17 @@ This method initializes a chart generated from an AJAX request. An example is de
 
 .. note::
 
-    In order to use this, you will either need to use a PlotView gizmo or import the JavaScript libraries
-    in the main html template page. 
+    In order to use this, you will either need to use a ``PlotView`` gizmo on
+    the main page or register the dependencies in the main html template page
+    using the ``register_gizmo_dependency`` tag with the ``plot_view`` name
+    in the ``register_gizmos`` block.
 
     For example:
     ::
 
-        {% block global_scripts %}
-          {{ block.super }}
-          <script src="/static/tethys_gizmos/vendor/highcharts/js/highcharts.js" type="text/javascript"></script>
-          <script src="/static/tethys_gizmos/vendor/highcharts/js/highcharts-more.js" type="text/javascript"></script>
+        {% block register_gizmos %}
+            {% register_gizmo_dependency plot_view %}
         {% endblock %}
-
-        ...
-
-        {% block scripts %}
-          {{ block.super }}
-          <script src="/static/tethys_gizmos/js/plot_view.js" type="text/javascript"></script>
-        {% endblock %}
-
 
 Four elements are required:
 
