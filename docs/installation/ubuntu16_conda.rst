@@ -86,7 +86,7 @@ a. Download and install Anaconda.
 .. note:: Make note of where your version of Anaconda is installed as it will be used later.
           In this example, we installed it in $HOME/anaconda3.
 
-a. Create a :term:`Python virtual environment` and activate it::
+b. Create a :term:`Python virtual environment` and activate it::
 
     $ wget https://raw.githubusercontent.com/erdc-cm/tethys/dev/conda-environment.yml
     $ conda env create -f conda-environment.yml python=2
@@ -111,7 +111,7 @@ a. Create a :term:`Python virtual environment` and activate it::
         $ t
       (tethys) $ _
 
-b. Install Tethys Platform into the virtual environment:
+c. Install Tethys Platform into the virtual environment:
 
   .. note:: In the example we use, we installed Anaconda into $HOME/anaconda3. So our virtual environment path is $HOME/anaconda3/env/tethys.
 
@@ -130,12 +130,12 @@ b. Install Tethys Platform into the virtual environment:
 
     For a list of all tagged releases, see `Tethys Platform Releases <https://github.com/tethysplatform/tethys/releases>`_. Depending on the version you intend to install, you may need to delete your entire virtual environment (i.e.: ``$ conda remove --name tethys --all``) to start fresh.
 
-c. Install the Python modules that Tethys requires::
+d Install the Python modules that Tethys requires::
 
     (tethys) $ pip install --upgrade -r $HOME/anaconda3/env/tethys/src/requirements.txt
     (tethys) $ python $HOME/anaconda3/env/tethys/src/setup.py develop
 
-d. Restart the Python virtual environment::
+e. Restart the Python virtual environment::
 
     (tethys) $ source deactivate
              $ source activate tethys
