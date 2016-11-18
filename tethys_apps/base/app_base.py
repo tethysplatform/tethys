@@ -427,6 +427,11 @@ class TethysAppBase(object):
             engine = MyFirstApp.get_persistent_store_engine('example_db')
 
         """
+        # If testing environment, the engine for the "test" version of the persistent store should be fetched
+        if settings.TESTING:
+            test_store_name = 'test_{0}'.format(persistent_store_name)
+            persistent_store_name = test_store_name
+
         # Create the unique store name
         app_name = cls.package
         unique_store_name = '_'.join([app_name, persistent_store_name])
@@ -460,7 +465,7 @@ class TethysAppBase(object):
             existing_db_names.append(existing_db.name)
 
         # Check to make sure that the persistent store exists
-        if unique_store_name in existing_db_names:
+        if unique_store_name in existing_db_names or settings.TESTING:
             # Retrieve the database manager url.
             # The database manager database user is the owner of all the app databases.
             database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
@@ -676,3 +681,48 @@ class TethysAppBase(object):
                 return True
 
         return False
+
+
+    @classmethod
+    def initialize_persistent_stores(cls, store=None, database=None, first_time=False):
+        persistent_stores = cls().persistent_stores()
+
+        if persistent_stores:
+            target_persistent_stores = []
+            if database:
+                for persistent_store in persistent_stores:
+                    if database == persistent_store.name:
+                        target_persistent_stores.append(persistent_store)
+            else:
+                target_persistent_stores = persistent_stores
+
+            for persistent_store in target_persistent_stores:
+                if persistent_store.initializer_is_valid:
+                    initializer = persistent_store.initializer_function
+                else:
+                    if ':' in persistent_store.initializer:
+                        print(
+                        'DEPRECATION WARNING: The initializer attribute of a PersistentStore should now be in the form: "my_first_app.init_stores.init_spatial_db". The form "init_stores:init_spatial_db" is now deprecated.')
+
+                        # Split into module name and function name
+                        initializer_mod, initializer_function = persistent_store.initializer.split(':')
+
+                        # Pre-process initializer path
+                        initializer_path = '.'.join(('tethys_apps.tethysapp', app.package, initializer_mod))
+
+                        try:
+                            # Import module
+                            module = __import__(initializer_path, fromlist=[initializer_function])
+                        except ImportError:
+                            pass
+                        else:
+                            # Get the function
+                            initializer = getattr(module, initializer_function)
+
+                try:
+                    if not initializer:
+                        raise ValueError('"{0}" is not a valid function.'.format(persistent_store.initializer))
+                except UnboundLocalError:
+                    raise ValueError('"{0}" is not a valid function.'.format(persistent_store.initializer))
+
+                initializer(first_time)
