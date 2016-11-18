@@ -190,9 +190,17 @@ def test_command(args):
     # Define the process to be run
     primary_process = ['python', manage_path, 'test']
 
+    # Tag to later check if tests are being run on a specific app
+    app_package_tag = 'tethys_apps.tethysapp.'
+
     if args.coverage or args.coverage_html:
         os.environ['TETHYS_TEST_DIR'] = tests_path
-        config_opt = '--rcfile={0}'.format(os.path.join(tests_path, 'coverage.cfg'))
+        if args.file and app_package_tag in args.file:
+            app_package_parts = args.file.split(app_package_tag)
+            app_package = app_package_tag + app_package_parts[1].split('.')[0]
+            config_opt = '--source={0}'.format(app_package)
+        else:
+            config_opt = '--rcfile={0}'.format(os.path.join(tests_path, 'coverage.cfg'))
         primary_process = ['coverage', 'run', config_opt, manage_path, 'test']
 
     if args.file:
@@ -205,9 +213,15 @@ def test_command(args):
     # print(primary_process)
     run_process(primary_process)
     if args.coverage:
-        run_process(['coverage', 'report', config_opt])
+        if args.file and app_package_tag in args.file:
+            run_process(['coverage', 'report'])
+        else:
+            run_process(['coverage', 'report', config_opt])
     if args.coverage_html:
-        run_process(['coverage', 'html', config_opt])
+        if args.file and app_package_tag in args.file:
+            run_process(['coverage', 'html', '--directory=$TETHYS_TEST_DIR/coverage_html_report'])
+        else:
+            run_process(['coverage', 'html', config_opt])
         try:
             run_process(['open', os.path.join(tests_path, 'coverage_html_report', 'index.html')])
         except:

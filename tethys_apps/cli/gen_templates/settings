@@ -31,6 +31,9 @@ DEBUG = True
 # i.e.: ADMINS = (('John', 'john@example.com'), ('Mary', 'mary@example.com'))
 ADMINS = ()
 
+# Detect if being executed in the Django testing environment
+TESTING = len(argv) > 1 and argv[1] == 'test'
+
 # See https://docs.djangoproject.com/en/1.8/topics/logging/#configuring-logging for more logging configuration options.
 LOGGING = {
     'version': 1,
