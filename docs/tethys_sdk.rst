@@ -26,5 +26,6 @@ is included in the SDK:
    tethys_sdk/handoff
    tethys_sdk/permissions
    tethys_sdk/tethys_cli
+   tethys_sdk/testing
 
 
