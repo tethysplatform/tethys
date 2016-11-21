@@ -84,7 +84,7 @@ class TethysAppBase(object):
                 return url_maps
         """
         raise NotImplementedError()
-    
+
     def persistent_stores(self):
         """
         Define this method to register persistent store databases for your app. You may define up to 5 persistent stores for an app.
@@ -428,7 +428,7 @@ class TethysAppBase(object):
 
         """
         # If testing environment, the engine for the "test" version of the persistent store should be fetched
-        if settings.TESTING:
+        if hasattr(settings, 'TESTING') and settings.TESTING:
             test_store_name = 'test_{0}'.format(persistent_store_name)
             persistent_store_name = test_store_name
 
@@ -464,8 +464,9 @@ class TethysAppBase(object):
         for existing_db in existing_dbs:
             existing_db_names.append(existing_db.name)
 
-        # Check to make sure that the persistent store exists
-        if unique_store_name in existing_db_names or settings.TESTING:
+        # Check to make sure that the persistent store exists, or if in the testing environment (in which case
+        # the test persistent store won't yet exist but the engine should be created anyway)
+        if unique_store_name in existing_db_names or (hasattr(settings, 'TESTING') and settings.TESTING):
             # Retrieve the database manager url.
             # The database manager database user is the owner of all the app databases.
             database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
@@ -571,6 +572,86 @@ class TethysAppBase(object):
             # Execute postgis statement
             new_db_connection.execute(enable_postgis_statement)
             new_db_connection.close()
+
+        return True
+
+    @classmethod
+    def destroy_persistent_store(cls, persistent_store_name):
+        """
+                Destroys (drops) a persistent store database from this app.
+
+                Args:
+                  persistent_store_name(string): Name of the persistent store that will be created.
+
+                Returns:
+                  bool: True if successful.
+
+
+                **Example:**
+
+                ::
+
+                    from .app import MyFirstApp
+
+                    result = MyFirstApp.destroy_persistent_store('example_db')
+
+                    if result:
+                        # App database 'example_db' was successfuly destroyed and no longer exists
+                        pass
+
+                """
+        if not cls.persistent_store_exists(persistent_store_name):
+            raise NameError('Database with name "{0}" for app "{1}" already exists.'.format(
+                persistent_store_name,
+                cls.package
+            ))
+
+        super_db = settings.TETHYS_DATABASES['tethys_super']
+
+        super_db_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
+            super_db['USER'] if 'USER' in super_db else 'tethys_super',
+            super_db['PASSWORD'] if 'PASSWORD' in super_db else 'pass',
+            super_db['HOST'] if 'HOST' in super_db else '127.0.0.1',
+            super_db['PORT'] if 'PORT' in super_db else '5435',
+            super_db['NAME'] if 'NAME' in super_db else 'tethys_super'
+        )
+
+        # Compose db name
+        full_db_name = '_'.join((cls.package, persistent_store_name))
+
+        # Create db engine
+        engine = create_engine(super_db_url)
+
+        # Create db
+        drop_db_statement = 'DROP DATABASE IF EXISTS {0}'.format(full_db_name)
+
+        # Connection variable
+        drop_connection = None
+
+        try:
+            drop_connection = engine.connect()
+            drop_connection.execute('commit')
+            drop_connection.execute(drop_db_statement)
+        except Exception as e:
+            if 'being accessed by other users' in str(e):
+
+                # Force disconnect all other connections to the database
+                disconnect_sessions_statement = '''
+                                                SELECT pg_terminate_backend(pg_stat_activity.pid)
+                                                FROM pg_stat_activity
+                                                WHERE pg_stat_activity.datname = '{0}'
+                                                AND pg_stat_activity.pid <> pg_backend_pid();
+                                                '''.format(full_db_name)
+                drop_connection.execute(disconnect_sessions_statement)
+
+                # Try again to drop the databse
+                drop_connection.execute('commit')
+                drop_connection.execute(drop_db_statement)
+                drop_connection.close()
+            else:
+                raise e
+        finally:
+            drop_connection.close()
 
         return True
 
@@ -681,48 +762,3 @@ class TethysAppBase(object):
                 return True
 
         return False
-
-
-    @classmethod
-    def initialize_persistent_stores(cls, store=None, database=None, first_time=False):
-        persistent_stores = cls().persistent_stores()
-
-        if persistent_stores:
-            target_persistent_stores = []
-            if database:
-                for persistent_store in persistent_stores:
-                    if database == persistent_store.name:
-                        target_persistent_stores.append(persistent_store)
-            else:
-                target_persistent_stores = persistent_stores
-
-            for persistent_store in target_persistent_stores:
-                if persistent_store.initializer_is_valid:
-                    initializer = persistent_store.initializer_function
-                else:
-                    if ':' in persistent_store.initializer:
-                        print(
-                        'DEPRECATION WARNING: The initializer attribute of a PersistentStore should now be in the form: "my_first_app.init_stores.init_spatial_db". The form "init_stores:init_spatial_db" is now deprecated.')
-
-                        # Split into module name and function name
-                        initializer_mod, initializer_function = persistent_store.initializer.split(':')
-
-                        # Pre-process initializer path
-                        initializer_path = '.'.join(('tethys_apps.tethysapp', app.package, initializer_mod))
-
-                        try:
-                            # Import module
-                            module = __import__(initializer_path, fromlist=[initializer_function])
-                        except ImportError:
-                            pass
-                        else:
-                            # Get the function
-                            initializer = getattr(module, initializer_function)
-
-                try:
-                    if not initializer:
-                        raise ValueError('"{0}" is not a valid function.'.format(persistent_store.initializer))
-                except UnboundLocalError:
-                    raise ValueError('"{0}" is not a valid function.'.format(persistent_store.initializer))
-
-                initializer(first_time)
