@@ -347,11 +347,13 @@ class MVLayer(SecondaryGizmoOptions):
         options (dict, required): A dictionary representation of the OpenLayers options object for ol.source.
         legend_title (str, required): The human readable name of the layer that will be displayed in the legend.
         layer_options (dict): A dictionary representation of the OpenLayers options object for ol.layer.
+        editable (bool): If true the layer will be editable with the tethys_map_view drawing/editing tools.
         feature_selection (bool): Set to True to enable feature selection on this layer. Defaults to False.
         geometry_attribute (str): The name of the attribute in the shapefile that describes the geometry
         legend_classes (list): A list of MVLegendClass objects.
         legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
+        tethys_toc (bool): If true the layer will be included in the Table of Contents gizmo
 
     Example
 
@@ -474,8 +476,8 @@ class MVLayer(SecondaryGizmoOptions):
                                 legend_extent=[-173, 17, -65, 72]),
     """
 
-    def __init__(self, source, options, legend_title, layer_options=None, legend_classes=None, legend_extent=None,
-                 legend_extent_projection='EPSG:4326', feature_selection=False, geometry_attribute=None):
+    def __init__(self, source, options, legend_title, layer_options=None, editable=True, legend_classes=None, legend_extent=None,
+                 legend_extent_projection='EPSG:4326', feature_selection=False, geometry_attribute=None, tethys_toc=True):
         """
         Constructor
         """
@@ -484,12 +486,14 @@ class MVLayer(SecondaryGizmoOptions):
         self.source = source
         self.legend_title = legend_title
         self.options = options
+        self.editable = editable
         self.layer_options = layer_options
         self.legend_classes = legend_classes
         self.legend_extent = legend_extent
         self.legend_extent_projection = legend_extent_projection
         self.feature_selection = feature_selection
         self.geometry_attribute = geometry_attribute
+        self.tethys_toc = tethys_toc
 
         #TODO this should be a log
         if feature_selection and not geometry_attribute:
