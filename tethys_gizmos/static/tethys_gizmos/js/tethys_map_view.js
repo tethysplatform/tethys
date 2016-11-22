@@ -308,6 +308,7 @@ var TETHYS_MAP_VIEW = (function() {
 
       // Add drawing layer legend properites
       m_drawing_layer.tethys_legend_title = 'Drawing Layer';
+      m_drawing_layer.editable = true;
 
       // Add drawing layer to the map
       m_map.addLayer(m_drawing_layer);
@@ -336,7 +337,8 @@ var TETHYS_MAP_VIEW = (function() {
         pan_control = new DrawingControl({
           control_type: 'Pan',
           left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-          active: false
+          active: false,
+          control_id: "tethys_pan"
         });
 
         button_left_offset += BUTTON_SPACING;
@@ -349,8 +351,8 @@ var TETHYS_MAP_VIEW = (function() {
           modify_control = new DrawingControl({
             control_type: 'Modify',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-//            right_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-            active: false
+            active: false,
+            control_id: "tethys_modify"
           });
 
 
@@ -365,7 +367,8 @@ var TETHYS_MAP_VIEW = (function() {
           modify_control = new DrawingControl({
             control_type: 'Delete',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-            active: false
+            active: false,
+            control_id: "tethys_delete"
           });
 
 
@@ -381,7 +384,8 @@ var TETHYS_MAP_VIEW = (function() {
           drag_feature_control = new DrawingControl({
             control_type: 'Drag',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-            active: false
+            active: false,
+            control_id: "tethys_move"
           });
 
           button_left_offset += BUTTON_SPACING;
@@ -409,7 +413,8 @@ var TETHYS_MAP_VIEW = (function() {
             new_control = new DrawingControl({
               control_type: current_control_type,
               left_offset: offset_string,
-              active: is_initial
+              active: is_initial,
+              control_id: "draw_" + current_control_type
             });
 
             m_map.addControl(new_control);
@@ -892,7 +897,13 @@ var TETHYS_MAP_VIEW = (function() {
     selected_features = null;
 
     // Create select interaction
-    m_modify_select_interaction = new ol.interaction.Select();
+    m_modify_select_interaction = new ol.interaction.Select({
+        layers: function(layer){
+            if (layer.editable){
+                return layer
+            }
+        },
+    });
     m_map.addInteraction(m_modify_select_interaction);
 
     // Get selected features
@@ -1734,13 +1745,13 @@ var TETHYS_MAP_VIEW = (function() {
     button.setAttribute('data-toggle', 'tooltip');
     button.setAttribute('data-placement', 'bottom');
     button.setAttribute('title', options.control_type);
-    button.setAttribute('id',options.control_id);
     button_image = document.createElement('div');
     button_image.className = icon_class;
     button.appendChild(button_image);
     button_wrapper = document.createElement('div');
     button_wrapper.className = 'tethys-map-view-draw-control ol-unselectable ol-control';
     button_wrapper.style.left = options.left_offset;
+    button_wrapper.setAttribute('id',options.control_id);
     button_wrapper.appendChild(button);
 
     // Create action handler
@@ -1794,6 +1805,9 @@ var TETHYS_MAP_VIEW = (function() {
 
     var feature = map.forEachFeatureAtPixel(event.pixel,
         function(feature, layer) {
+          if (layer.editable === false){
+            return false;
+          }
           return feature;
         });
 
@@ -1873,7 +1887,7 @@ var TETHYS_MAP_VIEW = (function() {
     var map = event.map;
     var feature = map.forEachFeatureAtPixel(event.pixel,
         function(feature, layer) {
-            if (layer instanceof ol.layer.Vector) {
+            if (layer.editable && layer instanceof ol.layer.Vector) {
                 layer.getSource().removeFeature(feature);
             };
         });
