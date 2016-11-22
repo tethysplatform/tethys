@@ -601,7 +601,7 @@ class TethysAppBase(object):
 
                 """
         if not cls.persistent_store_exists(persistent_store_name):
-            raise NameError('Database with name "{0}" for app "{1}" already exists.'.format(
+            raise NameError('Database with name "{0}" for app "{1}" does not exists.'.format(
                 persistent_store_name,
                 cls.package
             ))
