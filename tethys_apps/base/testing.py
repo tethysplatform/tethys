@@ -96,7 +96,7 @@ class TethysTestCase(TestCase):
         Destroys the temporary persistent store databases for this app that were used in testing.
 
         Args:
-            app_class(TethysAppBase): The app class from the app's app.py module
+            app_class: The app class from the app's app.py module
         Return:
             None
         """
@@ -104,9 +104,9 @@ class TethysTestCase(TestCase):
             raise TypeError('The app_class argument was not of the correct type. '
                             'It must be a class that inherits from <TethysAppBase>.')
 
-        for store in app_class.list_persistent_stores():
-            if store.startswith('test_'):
-                app_class.destroy_persistent_store(store)
+        for store in app_class().persistent_stores():
+            test_store_name = 'test_{0}'.format(store.name)
+            app_class.destroy_persistent_store(test_store_name)
 
     @staticmethod
     def create_test_user(username, password, email=None):
