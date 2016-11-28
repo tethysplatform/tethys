@@ -51,11 +51,12 @@ class TextInput(TethysGizmoOptions):
 
         # TEMPLATE
 
-        {% gizmo text_input text_input %}
-        {% gizmo text_input text_error_input %}
+        {% gizmo text_input %}
+        {% gizmo text_error_input %}
 
     """
-
+    gizmo_name = "text_input"
+    
     def __init__(self, name, display_text='', initial='', placeholder='', prepend='', append='', icon_prepend='',
                  icon_append='', disabled=False, error='', attributes={}, classes=''):
         """
