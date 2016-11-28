@@ -196,7 +196,7 @@ def gizmo(parser, token):
 
         {% gizmo options %}
 
-    The old method if using the gizmo name is still supported.
+    The old method of using the gizmo name is still supported.
 
     Example::
     
@@ -204,8 +204,9 @@ def gizmo(parser, token):
 
         {% gizmo gizmo_name options %}
 
-    NOTE: the "options" dictionary must be a template context variable.
-    ALSO NOTE: All supporting css and javascript libraries are loaded using the gizmo_dependency tag (see below).
+    .. note: The Gizmo "options" object must be a template context variable.
+
+    .. note: All supporting css and javascript libraries are loaded using the gizmo_dependency tag (see below).
     """
     gizmo_arg_list = token.split_contents()[1:]
     if len(gizmo_arg_list) == 1:
@@ -226,12 +227,13 @@ def register_gizmo_dependency(parser, token):
     To register a gizmo's dependency, use the "register_gizmo_dependency" tag and give it the name of a gizmo.
 
     Example::
+    
         {% load tethys_gizmos %}
 
         {% register_gizmo_dependency example_gizmo %}
         {% register_gizmo_dependency "example_gizmo" %}
 
-    ALSO NOTE: All supporting css and javascript libraries are loaded using the gizmo_dependencies tag (see below).
+    .. note: All supporting css and javascript libraries are loaded using the gizmo_dependencies tag (see below).
     """
     try:
         tag_name, gizmo_name = token.split_contents()
@@ -352,7 +354,7 @@ class TethysGizmoDependenciesNode(template.Node):
 @register.tag
 def gizmo_dependencies(parser, token):
     """
-    Load all gizmo dependencies (JavaScript and CSS).
+    Write all gizmo dependencies (JavaScript and CSS) to HTML.
 
     Example::
 
