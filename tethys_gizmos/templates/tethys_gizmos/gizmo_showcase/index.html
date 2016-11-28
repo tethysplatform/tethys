@@ -5,18 +5,7 @@
 {% block title %}- Gizmo Showcase{% endblock %}
 
 {% block register_gizmos %}
-  {% register_gizmo_dependency date_picker %}
-  {% register_gizmo_dependency select_input %}
-  {% register_gizmo_dependency toggle_switch %}
-  {% register_gizmo_dependency table_view %}
-  {% register_gizmo_dependency datatable_view %}
-  {% register_gizmo_dependency plot_view %}
-  {% register_gizmo_dependency highcharts_plot_view %}
-  {% register_gizmo_dependency plotly_view %}
   {% register_gizmo_dependency bokeh_view %}
-  {% register_gizmo_dependency map_view %}
-  {% register_gizmo_dependency editable_google_map %}
-  {% register_gizmo_dependency google_map_view %}
 {% endblock %}
 
 {% block styles %}
@@ -395,67 +384,62 @@ def my_view(request):
         </div>
         <div class="example">
           <div class="demo">
-            {% gizmo plot_view line_plot_view %}
+            {% gizmo line_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-            {% gizmo highcharts_plot_view scatter_plot_view %}
+            {% gizmo scatter_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo highcharts_plot_view web_plot %}
+          {% gizmo web_plot %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo highcharts_plot_view pie_plot_view %}
+          {% gizmo pie_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo highcharts_plot_view bar_plot_view %}
+          {% gizmo bar_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo highcharts_plot_view timeseries_plot %}
+          {% gizmo timeseries_plot %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo highcharts_plot_view area_range_plot %}
+          {% gizmo area_range_plot %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo highcharts_plot_view custom_plot %}
+          {% gizmo d3_line_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo plot_view d3_line_plot_view %}
+          {% gizmo d3_pie_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo plot_view d3_pie_plot_view %}
+          {% gizmo d3_scatter_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo plot_view d3_scatter_plot_view %}
+          {% gizmo d3_bar_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo plot_view d3_bar_plot_view %}
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-          {% gizmo plot_view d3_timeseries_plot_view %}
+          {% gizmo d3_timeseries_plot_view %}
           </div>
         </div>
 
@@ -533,7 +517,7 @@ def my_view(request):
             Google Maps API is not free and open source and it is only free to use under certain conditions. Please familiarize yourself with <a href="https://developers.google.com/maps/licensing" target="_blank">Google Maps API Licensing</a> before using it.
           </p>
         </div>
-        <p>Click <a href="{% url 'gizmos:editable_map' %}">here</a> for demo on a separate page.</p>
+        <p>Click <a href="{% url 'gizmos:google_map_view' %}">here</a> for demo on a separate page.</p>
         <div class="example">
           <div class="demo">
           <!-- Flash Message -->
@@ -579,10 +563,8 @@ def my_view(request):
 {% endblock %}
 
 {% block scripts %}
-  {% gizmo_dependencies global_css %}
   {% gizmo_dependencies css %}
   {{ block.super }}
-  {% gizmo_dependencies global_js %}
   <script src="{% static 'tethys_gizmos/vendor/prism/prism.js' %}" type="text/javascript"></script>
   {% gizmo_dependencies js %}
 {% endblock %}

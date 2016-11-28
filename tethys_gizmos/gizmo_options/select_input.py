@@ -63,13 +63,14 @@ class SelectInput(TethysGizmoOptions):
 
         # TEMPLATE
 
-        {% gizmo select_input select_input2 %}
-        {% gizmo select_input select_input2_multiple %}
-        {% gizmo select_input select_input_multiple %}
-        {% gizmo select_input select_input2_error %}
+        {% gizmo select_input2 %}
+        {% gizmo select_input2_multiple %}
+        {% gizmo select_input_multiple %}
+        {% gizmo select_input2_error %}
 
     """
-
+    gizmo_name = "select_input"
+    
     def __init__(self, name, display_text='', initial=[], multiple=False, original=False, options='', disabled=False, error='',
                  attributes={}, classes=''):
         """
@@ -87,3 +88,19 @@ class SelectInput(TethysGizmoOptions):
         self.options = options
         self.disabled = disabled
         self.error = error
+
+    @staticmethod
+    def get_global_js():
+        """
+        JavaScript vendor libraries to be placed in the 
+        {% block global_scripts %} block
+        """
+        return ('tethys_gizmos/vendor/select2_4.0.2/js/select2.min.js',)
+
+    @staticmethod
+    def get_global_css():
+        """
+        CSS vendor libraries to be placed in the 
+        {% block styles %} block
+        """
+        return ('tethys_gizmos/vendor/select2_4.0.2/css/select2.css',)

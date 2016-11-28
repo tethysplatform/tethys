@@ -55,8 +55,10 @@ class PlotlyView(TethysGizmoOptions):
           {% register_gizmo_dependency plotly_view %}
         {% endblock %}
     
-        {% gizmo plotly_view plotly_view_input %}
+        {% gizmo plotly_view_input %}
     """
+    gizmo_name = "plotly_view"
+    
     def __init__(self, plot_input, height='520px', width='100%', 
                  attributes='', classes='', divid='', hidden=False,
                  show_link=False):
@@ -78,5 +80,10 @@ class PlotlyView(TethysGizmoOptions):
         self.divid = divid
         self.hidden = hidden
 
-
-
+    @staticmethod
+    def get_global_js():
+        """
+        JavaScript vendor libraries to be placed in the 
+        {% block global_scripts %} block
+        """
+        return ('://plotly-load_from_python.js',)

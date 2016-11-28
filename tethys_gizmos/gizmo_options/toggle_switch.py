@@ -62,12 +62,13 @@ class ToggleSwitch(TethysGizmoOptions):
 
         # TEMPLATE
 
-        {% gizmo toggle_switch toggle_switch %}
-        {% gizmo toggle_switch toggle_switch_styled %}
-        {% gizmo toggle_switch toggle_switch_disabled %}
+        {% gizmo toggle_switch %}
+        {% gizmo toggle_switch_styled %}
+        {% gizmo toggle_switch_disabled %}
 
     """
-
+    gizmo_name = "toggle_switch"
+    
     def __init__(self, name, display_text='', on_label='ON', off_label='OFF', on_style='primary', off_style='default',
                  size='regular', initial=False, disabled=False, error='', attributes={}, classes=''):
         """
@@ -86,3 +87,19 @@ class ToggleSwitch(TethysGizmoOptions):
         self.initial = initial
         self.disabled = disabled
         self.error = error
+
+    @staticmethod
+    def get_global_js():
+        """
+        JavaScript vendor libraries to be placed in the 
+        {% block global_scripts %} block
+        """
+        return ('tethys_gizmos/vendor/bootstrap_switch/dist/js/bootstrap-switch.min.js',)
+
+    @staticmethod
+    def get_global_css():
+        """
+        CSS vendor libraries to be placed in the 
+        {% block styles %} block
+        """
+        return ('tethys_gizmos/vendor/bootstrap_switch/dist/css/bootstrap3/bootstrap-switch.min.css',)

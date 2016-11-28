@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
+from django.conf import settings
 
 __all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer', 'MVLegendClass', 'MVLegendImageClass', 'MVLegendGeoServerImageClass']
 
@@ -183,10 +184,11 @@ class MapView(TethysGizmoOptions):
 
         # TEMPLATE
 
-        {% gizmo map_view map_view_options %}
+        {% gizmo map_view_options %}
 
     """
-
+    gizmo_name = "map_view"
+    
     def __init__(self, height='100%', width='100%', basemap='OpenStreetMap', view={'center': [-100, 40], 'zoom': 2},
                  controls=[], layers=[], draw=None, legend=False, attributes={}, classes='', disable_basemap=False,
                  feature_selection=None):
@@ -206,6 +208,42 @@ class MapView(TethysGizmoOptions):
         self.legend = legend
         self.disable_basemap = disable_basemap
         self.feature_selection = feature_selection
+
+    @staticmethod
+    def get_global_js():
+        """
+        JavaScript vendor libraries to be placed in the 
+        {% block global_scripts %} block
+        """
+        openlayers_library = 'tethys_gizmos/vendor/openlayers/ol.js'
+        if settings.DEBUG:
+            openlayers_library = 'tethys_gizmos/vendor/openlayers/ol-debug.js'
+        return (openlayers_library,)
+
+    @staticmethod
+    def get_js():
+        """
+        JavaScript specific to gizmo to be placed in the 
+        {% block scripts %} block
+        """
+        return ('tethys_gizmos/js/gizmo_utilities.js',
+                'tethys_gizmos/js/tethys_map_view.js')
+
+    @staticmethod
+    def get_global_css():
+        """
+        CSS vendor libraries to be placed in the 
+        {% block styles %} block
+        """
+        return ('tethys_gizmos/vendor/openlayers/ol.css',)
+
+    @staticmethod
+    def get_css():
+        """
+        CSS specific to gizmo to be placed in the 
+        {% block content_dependent_styles %} block      
+        """
+        return ('tethys_gizmos/css/tethys_map_view.css',)
 
 
 class MVView(SecondaryGizmoOptions):

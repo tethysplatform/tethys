@@ -64,10 +64,11 @@ class DatePicker(TethysGizmoOptions):
 
         # TEMPLATE
 
-        {% gizmo date_picker date_picker %}
-        {% gizmo date_picker date_picker_error %}
+        {% gizmo date_picker %}
+        {% gizmo date_picker_error %}
 
     """
+    gizmo_name = "date_picker"
 
     def __init__(self, name, display_text='', autoclose=False, calendar_weeks=False, clear_button=False,
                  days_of_week_disabled='', end_date='', format='', min_view_mode='days', multidate=1, start_date='',
@@ -98,7 +99,18 @@ class DatePicker(TethysGizmoOptions):
         self.disabled = disabled
         self.error = error
 
-
-
-
-
+            
+    @staticmethod
+    def get_global_css():
+        """
+        JavaScript vendor libraries to be placed in the 
+        {% block global_scripts %} block
+        """
+        return ('tethys_gizmos/vendor/bootstrap_datepicker/css/datepicker3.css',)
+    @staticmethod
+    def get_global_js():
+        """
+        JavaScript vendor libraries to be placed in the 
+        {% block global_scripts %} block
+        """
+        return ('tethys_gizmos/vendor/bootstrap_datepicker/js/bootstrap_datepicker.js',)
