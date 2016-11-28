@@ -57,10 +57,11 @@ class ButtonGroup(TethysGizmoOptions):
 
         # TEMPLATE
 
-        {% gizmo button_group horizontal_buttons %}
-        {% gizmo button_group vertical_buttons %}
+        {% gizmo horizontal_buttons %}
+        {% gizmo vertical_buttons %}
 
     """
+    gizmo_name = "button_group"
 
     def __init__(self, buttons, vertical=False, attributes='', classes=''):
         """
@@ -102,8 +103,9 @@ class Button(TethysGizmoOptions):
 
         # TEMPLATE
 
-        {% gizmo button single_button %}
+        {% gizmo single_button %}
     """
+    gizmo_name = "button"
 
     def __init__(self, display_text='', name='', style='', icon='', href='',
                  submit=False, disabled=False, attributes={}, classes=''):

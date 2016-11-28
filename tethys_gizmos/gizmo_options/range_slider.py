@@ -53,11 +53,12 @@ class RangeSlider(TethysGizmoOptions):
 
         # TEMPLATE
 
-        {% gizmo range_slider slider1 %}
-        {% gizmo range_slider slider2 %}
+        {% gizmo slider1 %}
+        {% gizmo slider2 %}
 
     """
-
+    gizmo_name = "range_slider"
+    
     def __init__(self, name, min, max, initial, step, disabled=False, display_text='', error='', attributes={}, classes=''):
         """
         Constructor

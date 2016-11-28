@@ -1,6 +1,7 @@
 # coding=utf-8
 from bokeh.embed import components
-
+from bokeh.resources import CDN
+    
 from .base import TethysGizmoOptions
 
 __all__ = ['BokehView']
@@ -39,22 +40,35 @@ class BokehView(TethysGizmoOptions):
           {% register_gizmo_dependency bokeh_view %}
         {% endblock %}
     
-        {% gizmo bokeh_view bokeh_view_input %}
+        {% gizmo bokeh_view_input %}
     """
+    gizmo_name = "bokeh_view"
+
     def __init__(self, plot_input, height='520px', width='100%', 
                  attributes='', classes='', divid='', hidden=False):
         """
         Constructor
         """
         # Initialize the super class
-        super(BokehView, self).__init__()
+        super(BokehView, self).__init__(attributes, classes)
         self.script, self.div = components(plot_input)
         self.height = height
         self.width = width
-        self.attributes = attributes
-        self.classes = classes
         self.divid = divid
         self.hidden = hidden
 
-
-
+    @staticmethod
+    def get_global_css():
+        """
+        JavaScript vendor libraries to be placed in the 
+        {% block global_scripts %} block
+        """
+        return CDN.css_files
+        
+    @staticmethod
+    def get_global_js():
+        """
+        JavaScript vendor libraries to be placed in the 
+        {% block global_scripts %} block
+        """
+        return CDN.js_files
