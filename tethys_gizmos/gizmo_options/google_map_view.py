@@ -16,7 +16,7 @@ class GoogleMapView(TethysGizmoOptions):
     """
     Google Map View
 
-    The Google Map View is similar to Map View, but it is powered by Google Maps 3. It has the drawing library enabled to allow geospatial user input. An optional background dataset can be specified for reference, but only the shapes drawn by the user are returned (see `Retrieving Shapes reference <http://127.0.0.1:8000/developer/gizmos/#retrieving_shapes>`_ section).
+    The Google Map View is powered by Google Maps 3. It has the drawing library enabled to allow geospatial user input. An optional background dataset can be specified for reference, but only the shapes drawn by the user are returned (see `Retrieving Shapes reference <http://127.0.0.1:8000/developer/gizmos/#retrieving_shapes>`_ section).
 
     Shapes that are drawn on the map by users can be retrieved from the map in two ways. A hidden text field named 'geometry' is updated every time the map is changed. The text in the text field is a string representation of JSON. The geometry can be formatted as either GeoJSON or Well Known Text. This can be configured by setting the output_format parameter. If the Google Map View is embedded in a form, the geometry that is drawn on the map will automatically be submitted with the rest of the form via the hidden text field.
 
@@ -42,12 +42,12 @@ class GoogleMapView(TethysGizmoOptions):
         # CONTROLLER
         from tethys_sdk.gizmos import GoogleMapView
 
-        google_map_view = GoogleMapView(height='600px',
-                                        width='100%',
-                                        reference_kml_action=reverse('gizmos:get_kml'),
-                                        drawing_types_enabled=['POLYGONS', 'POINTS', 'POLYLINES'],
-                                        initial_drawing_mode='POINTS',
-                                        output_format='WKT')
+        google_map_view_options = GoogleMapView(height='600px',
+                                                width='100%',
+                                                reference_kml_action=reverse('gizmos:get_kml'),
+                                                drawing_types_enabled=['POLYGONS', 'POINTS', 'POLYLINES'],
+                                                initial_drawing_mode='POINTS',
+                                                output_format='WKT')
 
         # GeoJSON Example
         geo_json = {'type':'WKTGeometryCollection',
@@ -67,12 +67,12 @@ class GoogleMapView(TethysGizmoOptions):
                           ]
             }
 
-        google_map_view_options = {'height': '700px',
-                                   'width': '100%',
-                                   'maps_api_key': 'S0mEaPIk3y',
-                                   'drawing_types_enabled': ['POLYGONS', 'POINTS', 'POLYLINES'],
-                                   'initial_drawing_mode': 'POINTS',
-                                   'input_overlays': geo_json}
+        google_map_view_options = GoogleMapView(height='700px',
+                                                width='100%',
+                                                maps_api_key='S0mEaPIk3y',
+                                                drawing_types_enabled=['POLYGONS', 'POINTS', 'POLYLINES'],
+                                                initial_drawing_mode='POINTS',
+                                                input_overlays=geo_json)
 
         # WKT Example
 
@@ -90,19 +90,19 @@ class GoogleMapView(TethysGizmoOptions):
                           ]
             }
 
-        google_map_view_options = {'height': '700px',
-                                   'width': '100%',
-                                   'maps_api_key': 'S0mEaPIk3y',
-                                   'drawing_types_enabled': ['POLYGONS', 'POINTS', 'POLYLINES'],
-                                   'initial_drawing_mode': 'POINTS',
-                                   'input_overlays': wkt_json}
-
+        google_map_view_options = GoogleMapView(height='700px',
+                                                width='100%',
+                                                maps_api_key='S0mEaPIk3y',
+                                                drawing_types_enabled=['POLYGONS', 'POINTS', 'POLYLINES'],
+                                                initial_drawing_mode='POINTS',
+                                                input_overlays=wkt_json)
         # TEMPLATE
 
-        {% gizmo google_map_view google_map_view_options %}
+        {% gizmo google_map_view_options %}
 
     """
-
+    gizmo_name = "google_map_view"
+    
     def __init__(self, height, width, maps_api_key="", reference_kml_action="", drawing_types_enabled=[],
                  initial_drawing_mode="", output_format='GEOJSON', input_overlays=[None], attributes={}, classes=''):
         """
@@ -119,3 +119,27 @@ class GoogleMapView(TethysGizmoOptions):
         self.initial_drawing_mode = initial_drawing_mode
         self.output_format = output_format
         self.input_overlays = input_overlays
+        
+    @staticmethod
+    def get_global_js():
+        """
+        JavaScript vendor libraries to be placed in the 
+        {% block global_scripts %} block
+        """
+        return ('tethys_gizmos/vendor/farbtastic/farbtastic.js',)
+
+    @staticmethod    
+    def get_global_css():
+        """
+        CSS vendor libraries to be placed in the 
+        {% block styles %} block
+        """
+        return ('tethys_gizmos/vendor/farbtastic/farbtastic.css',)
+
+    @staticmethod
+    def get_js():
+        """
+        JavaScript specific to gizmo to be placed in the 
+        {% block scripts %} block
+        """
+        return ('tethys_gizmos/js/tethys_google_map_view.js',)

@@ -57,10 +57,11 @@ class TableView(TethysGizmoOptions):
 
         # TEMPLATE
 
-        {% gizmo table_view table_view %}
-        {% gizmo table_view table_view_edit %}
+        {% gizmo table_view %}
+        {% gizmo table_view_edit %}
 
     """
+    gizmo_name = "table_view"
 
     def __init__(self, rows, column_names='', hover=False, striped=False, bordered=False, condensed=False,
                  editable_columns='', row_ids='', attributes={}, classes=''):
