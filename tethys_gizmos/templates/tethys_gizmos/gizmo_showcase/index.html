@@ -174,7 +174,7 @@ def my_view(request):
         <div class="example">
           <div class="demo">
             {% gizmo button single_button %}
-            {% gizmo button_group horizontal_buttons %}
+            {% gizmo horizontal_buttons %}
             {% gizmo button_group vertical_buttons %}
           </div>
         </div>
@@ -195,7 +195,7 @@ def my_view(request):
 
         <div class="example">
           <div class="demo">
-            {% gizmo date_picker date_picker %}
+            {% gizmo date_picker %}
             {% gizmo date_picker date_picker_error %}
           </div>
         </div>
@@ -217,7 +217,7 @@ def my_view(request):
         <div class="example">
           <div class="demo">
             {% gizmo range_slider slider1 %}
-            {% gizmo range_slider slider2 %}
+            {% gizmo slider2 %}
           </div>
         </div>
       </div>
@@ -238,8 +238,8 @@ def my_view(request):
         <div class="example">
           <div class="demo">
             {% gizmo select_input select_input2 %}
-            {% gizmo select_input select_input2_multiple %}
-            {% gizmo select_input select_input_multiple %}
+            {% gizmo select_input2_multiple %}
+            {% gizmo select_input_multiple %}
             {% gizmo select_input select_input2_error %}
           </div>
         </div>
@@ -261,7 +261,7 @@ def my_view(request):
         <div class="example">
           <div class="demo">
             {% gizmo text_input text_input %}
-            {% gizmo text_input text_error_input %}
+            {% gizmo text_error_input %}
           </div>
         </div>
       </div>
@@ -282,7 +282,7 @@ def my_view(request):
         <div class="example">
           <div class="demo">
             {% gizmo toggle_switch toggle_switch %}
-            {% gizmo toggle_switch toggle_switch_styled %}
+            {% gizmo toggle_switch_styled %}
             {% gizmo toggle_switch toggle_switch_disabled %}
           </div>
         </div>
