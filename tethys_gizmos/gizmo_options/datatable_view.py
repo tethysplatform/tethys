@@ -52,7 +52,7 @@ class DataTableView(TethysGizmoOptions):
           {% register_gizmo_dependency datatable_view %}
         {% endblock %}
 
-        {% gizmo datatable_view table_view %}
+        {% gizmo table_view %}
         
     .. note:: You can also add extensions to the data table view as shown in the next example.
               To learn more about DataTable extensions, go to https://datatables.net/extensions/index.
@@ -94,12 +94,13 @@ class DataTableView(TethysGizmoOptions):
         {% endblock %}
         #END LOAD IN EXTENSION JAVASCRIPT/CSS
     
-        {% gizmo datatable_view datatable_with_extension %}
+        {% gizmo datatable_with_extension %}
 
     """
     ##UNSUPPORTED_EXTENSIONS = ('autoFill', 'select', 'keyTable', 'rowReorder')
     ##SUPPORTED_EXTENSIONS = ('buttons', 'colReorder', 'fizedColumns', 
     ##                        'fixedHeader', 'responsive',  'scroller')
+    gizmo_name = "datatable_view"
     
     def __init__(self, rows, column_names, attributes={}, classes='', **kwargs):
         """
@@ -114,3 +115,26 @@ class DataTableView(TethysGizmoOptions):
         for key, value in kwargs.iteritems():
             data_name = re.sub("([a-z])([A-Z])","\g<1>-\g<2>",key).lower()
             self.datatable_options[data_name] = dumps(value)
+            
+    @staticmethod
+    def get_global_css():
+        """
+        JavaScript vendor libraries to be placed in the 
+        {% block global_scripts %} block
+        """
+        return ('https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css',)
+    @staticmethod
+    def get_global_js():
+        """
+        JavaScript vendor libraries to be placed in the 
+        {% block global_scripts %} block
+        """
+        return ('https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js',)
+
+    @staticmethod
+    def get_js():
+        """
+        JavaScript specific to gizmo to be placed in the 
+        {% block scripts %} block
+        """
+        return ('tethys_gizmos/js/datatable_view.js',)

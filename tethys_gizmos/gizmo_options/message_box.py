@@ -45,9 +45,10 @@ class MessageBox(TethysGizmoOptions):
         # TEMPLATE
 
         <a href="#sampleModal" role="button" class="btn btn-success" data-toggle="modal">Show Message Box</a>
-        {% gizmo message_box message_box %}
+        {% gizmo message_box %}
 
     """
+    gizmo_name = "message_box"
 
     def __init__(self, name, title, message='', dismiss_button='Cancel', affirmative_button='Ok',
                  affirmative_attributes='', width=560, attributes={}, classes=''):

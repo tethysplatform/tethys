@@ -1,39 +1,15 @@
 # coding=utf-8
 from .base import TethysGizmoOptions
 
-__all__ = ['PlotView', 'PlotObject', 'LinePlot', 'PolarPlot', 'ScatterPlot',
+__all__ = ['PlotObject', 'LinePlot', 'PolarPlot', 'ScatterPlot',
            'PiePlot', 'BarPlot', 'TimeSeries', 'AreaRange', 'HeatMap']
-
-
-class PlotView(TethysGizmoOptions):
-    """
-    This object is deprecated.
-    """
-
-    def __init__(self, highcharts_object=None, plot_object=None, height='520px', width='100%', attributes='', classes=''):
-        """
-        Constructor
-        """
-        print('DEPRECATION WARNING: The "PlotView" object has been deprecated as of version 1.2.0. '
-              'Please use the new method for configuring plot views.')
-        # Initialize super class
-        super(PlotView, self).__init__(attributes=attributes, classes=classes)
-
-        if plot_object:
-            self.plot_object = plot_object
-        elif highcharts_object:
-            self.plot_object = highcharts_object
-        else:
-            raise ValueError('Must specify either plot_object or highcharts_object.')
-
-        self.height = height
-        self.width = width
 
 
 class PlotViewBase(TethysGizmoOptions):
     """
     Plot view classes inherit from this class.
-    """
+    """    
+    gizmo_name = "plot_view"
 
     def __init__(self, width='500px', height='500px', engine='d3'):
         """
@@ -50,6 +26,34 @@ class PlotViewBase(TethysGizmoOptions):
 
         self.engine = engine
         self.plot_object = PlotObject()
+
+    @staticmethod
+    def get_global_js():
+        """
+        JavaScript vendor libraries to be placed in the 
+        {% block global_scripts %} block
+        """
+        return ('tethys_gizmos/vendor/highcharts/js/highcharts.js',
+                'tethys_gizmos/vendor/highcharts/js/highcharts-more.js',
+                'tethys_gizmos/vendor/highcharts/js/modules/exporting.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js',
+                'tethys_gizmos/vendor/d3_tooltip/d3.tip.v0.6.3.js')
+
+    @staticmethod
+    def get_js():
+        """
+        JavaScript specific to gizmo to be placed in the 
+        {% block scripts %} block
+        """
+        return ('tethys_gizmos/js/plot_view.js',)
+
+    @staticmethod
+    def get_css():
+        """
+        CSS specific to gizmo to be placed in the 
+        {% block content_dependent_styles %} block      
+        """
+        return ('tethys_gizmos/css/plot_view.css',)
 
 
 class PlotObject(TethysGizmoOptions):
@@ -159,7 +163,7 @@ class LinePlot(PlotViewBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view line_plot_view %}
+        {% gizmo line_plot_view %}
 
     """
 
@@ -264,7 +268,7 @@ class PolarPlot(PlotViewBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view web_plot %}
+        {% gizmo web_plot %}
 
     """
 
@@ -390,7 +394,7 @@ class ScatterPlot(PlotViewBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view scatter_plot_view %}
+        {% gizmo scatter_plot_view %}
 
     """
 
@@ -475,7 +479,7 @@ class PiePlot(PlotViewBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view pie_plot_view %}
+        {% gizmo pie_plot_view %}
 
     """
 
@@ -570,7 +574,7 @@ class BarPlot(PlotViewBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view bar_plot_view %}
+        {% gizmo bar_plot_view %}
 
     """
 
@@ -705,7 +709,7 @@ class TimeSeries(PlotViewBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view timeseries_plot %}
+        {% gizmo timeseries_plot %}
     """
 
     def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='', y_axis_title='',
@@ -824,7 +828,7 @@ class AreaRange(PlotViewBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view area_range_plot %}
+        {% gizmo area_range_plot %}
 
     """
 
@@ -936,7 +940,7 @@ class HeatMap(PlotViewBase):
 
         # TEMPLATE
 
-        {% gizmo plot_view heat_map_plot %}
+        {% gizmo heat_map_plot %}
 
     """
 
