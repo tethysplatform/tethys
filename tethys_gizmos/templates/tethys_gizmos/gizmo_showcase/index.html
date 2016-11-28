@@ -129,20 +129,11 @@ def my_view(request):
         <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} load tethys_gizmos {% templatetag closeblock %}</code></pre>
 
         <p>
-          Then, use the <b>register_gizmo_dependency</b> tag in the <b> register_gizmos</b> block to make sure the dependencies are loaded.
-          Pass the name of the gizmo into the tag to load it:
+          Then, use the <b>gizmo</b> tag to insert the date picker anywhere in your template. Pass the the options dictionary 
+          that you passed to the template from your view as arguments:
         </p>
 
-        <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} block register_gizmos {% templatetag closeblock %}
-    {% templatetag openblock %} register_gizmo_dependency date_picker {% templatetag closeblock %}
-{% templatetag openblock %} endblock {% templatetag closeblock %}</code></pre>
-
-        <p>
-          Then, use the <b>gizmo</b> tag to insert the date picker anywhere in your template. Pass the name of the gizmo
-          and the options dictionary that you passed to the template from your view as arguments:
-        </p>
-
-        <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} gizmo date_picker date_picker_options {% templatetag closeblock %}</code></pre>
+        <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} gizmo date_picker_options {% templatetag closeblock %}</code></pre>
 
         <p>
           All together your template may look something like this:
@@ -151,12 +142,8 @@ def my_view(request):
         <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} extends "tethys_apps/app_base.html" {% templatetag closeblock %}
 {% templatetag openblock %} load staticfiles tethys_gizmos {% templatetag closeblock %}
 
-{% templatetag openblock %} block register_gizmos {% templatetag closeblock %}
-    {% templatetag openblock %} register_gizmo_dependency date_picker {% templatetag closeblock %}
-{% templatetag openblock %} endblock {% templatetag closeblock %}
-
 {% templatetag openblock %}  block app_content {% templatetag closeblock %}
-  {% templatetag openblock %} gizmo date_picker date_picker_options {% templatetag closeblock %}
+  {% templatetag openblock %} gizmo date_picker_options {% templatetag closeblock %}
 {% templatetag openblock %}  endblock {% templatetag closeblock %}</code></pre>
 
         <h3>How it Works</h3>

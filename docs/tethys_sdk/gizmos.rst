@@ -63,34 +63,22 @@ Now near the top of the template where the Gizmo will be inserted, load the ``te
 
     {% load tethys_gizmos %}
 
-3. Load in Gizmo Dependencies
------------------------------
-
-To make sure the dependencies load correctly, use the ``register_gizmo_dependency`` tag in 
-the ``register_gizmos`` block. Pass the name of the gizmo into the tag to load it:
-
-::
-
-    {% block register_gizmos %}
-        {% register_gizmo_dependency date_picker %}
-    {% endblock %}
-
 
 4. Insert the Gizmo
 -------------------
 
-The ``gizmo`` tag is used to insert the date picker anywhere in the template. The ``gizmo`` tag accepts two arguments: the name of the Gizmo to insert and a dictionary of configuration options for the Gizmo:
+The ``gizmo`` tag is used to insert the date picker anywhere in the template. The ``gizmo`` tag accepts a Gizmo object of configuration options for the Gizmo:
 
 ::
 
-    {% gizmo <name> <options> %}
+    {% gizmo <options> %}
 
 
 For this example, the ``date_picker`` Gizmo is inserted and the ``date_picker_options`` object that was defined in the controller and passed to the template is provided:
 
 ::
 
-    {% gizmo date_picker date_picker_options %}
+    {% gizmo date_picker_options %}
 
 Rendered Gizmo
 ==============
@@ -128,18 +116,13 @@ Inserts a Gizmo at the location of the tag.
 
 *Parameters*:
 
-* **name** (string or literal) - The name of the Gizmo to insert as either a string (e.g.: "date_picker") or a literal (e.g.: date_picker).
 * **options** (dict) - The configuration options for the Gizmo. The options are Gizmo specific. See the Gizmo Showcase documentation for descriptions of the options that are available.
 
-*Examples*:
+*Example*:
 
 ::
 
-    # With literal for name parameter
-    {% gizmo date_picker date_picker_options %}
-
-    # With string for name parameter
-    {% gizmo "date_picker" date_picker_options %}
+    {% gizmo date_picker_options %}
 
 **register_gizmo_dependency**
 ---------
@@ -147,20 +130,35 @@ Inserts a Gizmo at the location of the tag.
 Tells the ``gizmo_dependencies`` to load in the dependencies for the gizmo.
 This tag must be in the ``register_gizmos`` block. This is useful for loading
 the dependencies into the page for a gizmo if you plan on loading the gizmos 
-using AJAX. Additionally, it will load the libraries required by the gizmos 
-in the <header> instead of the <body>, so it is recommended to use even if it
-is not required.
+using AJAX after the initial page load.
 
 *Parameters*:
 
 * **name** (string or literal) - The name of the Gizmo to insert as either a string (e.g.: "date_picker") or a literal (e.g.: date_picker).
 
-*Examples*:
+.. note:: You can get the name of the gizmo through the *gizmo_name* attribute of the gizmo object.
+
+
+*Controller Example*:
+
+::
+
+    from tethys_sdk.gizmos import DatePicker
+
+    def example_controller(request):
+        """
+        Example of a controller that defines options for a Template Gizmo.
+        """
+        context = {'date_picker_name': DatePicker.gizmo_name}
+
+        return render(request, 'path/to/my/template.html', context)
+
+*Template Example*:
 
 ::
 
     {% block register_gizmos %}
-        {% register_gizmo_dependency date_picker %}
+        {% register_gizmo_dependency date_picker_name %}
     {% endblock %}
 
 **gizmo_dependencies**
