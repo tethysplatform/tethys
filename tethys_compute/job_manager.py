@@ -319,7 +319,7 @@ class CondorWorkflowTemplate(JobTemplate):
         parameters (dict, DEPRECATED): A dictionary of key-value pairs. Each Job type defines the possible parameters.
         jobs (list): A list of CondorWorkflowJobTemplates.
         max_jobs (dict, optional): A dictionary of category-max_job pairs defining the maximum number of jobs that will run simultaneously from each category.
-        config: (str, optional): A path to a configuration file for the condorpy DAG.
+        config (str, optional): A path to a configuration file for the condorpy DAG.
     """
     def __init__(self, name, parameters=None, jobs=None, max_jobs=None, config=None, **kwargs):
         parameters = parameters or dict()
@@ -408,11 +408,11 @@ class CondorWorkflowNodeBaseTemplate(object):
 
 class CondorWorkflowJobTemplate(CondorWorkflowNodeBaseTemplate):
     """
-    A subclass of the CondorWorkflowNodeBaseTemplate with the ``type`` argument set to CondorWorkflowJobNade.
+    A subclass of the CondorWorkflowNodeBaseTemplate with the ``type`` argument set to CondorWorkflowJobNode.
 
     Args:
         name (str): Name to refer to the template.
-        parameters (dict): A dictionary of key-value pairs. Each Job type defines the possible parameters.
+        job_description (CondorJobDescription): An instance of `CondorJobDescription` containing of key-value pairs of job attributes.
     """
     def __init__(self, name, job_description, **kwargs):
         parameters = kwargs
