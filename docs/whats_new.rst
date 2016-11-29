@@ -88,6 +88,17 @@ PlotView Gizmo
 
 See: :doc:`tethys_sdk/gizmos/plot_view`
 
+Workflow Job Type
+-----------------
+
+* New Condor Workflow provides a way to run a group of jobs (which can have hierarchical relationships) as a single job.
+* The hierarchical relationships are defined as parent-child relationships between jobs.
+* As part of this addition the original Condor Job type was refactored and, while backwards compatibility is maintained in version 1.4, several aspects of how job templates are defined have been deprecated.
+
+See: :doc:`tethys_sdk/jobs/condor_workflow_type`
+
+Testing Framework
+-----------------
 
 Bug Fixes
 ---------
