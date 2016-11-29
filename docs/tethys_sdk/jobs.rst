@@ -2,31 +2,31 @@
 Jobs API
 ********
 
-**Last Updated:** February 11, 2016
+**Last Updated:** September 12, 2016
 
 The Jobs API provides a way for your app to run asynchronous tasks (meaning that after starting a task you don't have to wait for it to finish before moving on). As an example, you may need to run a model that takes a long time (potentially hours or days) to complete. Using the Jobs API you can create a job that will run the model, and then leave it to run while your app moves on and does other stuff. You can check the job's status at any time, and when the job is done the Jobs API will help retrieve the results.
-
-.. note::
-    The real power of the jobs API comes when it is combined with the :doc:`compute`. This make it possible for jobs to be offloaded from the main web server to a scalable computing cluster, which in turn enables very large scale jobs to be processed. This is done through the `CondorJob`_ type.
 
 
 Key Concepts
 ============
-To facilitate interacting with jobs asynchronously, they are stored in a database. The Jobs API provides a job manager to handle the details of working with the database, and provides a simple interface for creating and retrieving jobs. The first step to creating a job is to define a job template. A job template is like a blue print that describes certain key characteristics about the job, such as the job type and where the job will be run. The job manager uses a job template to create a new job that has all of the characteristics there were defined in the template. Once a job has been created from a template it can then be customized with any parameters that are needed for that specific job.
+To facilitate interacting with jobs asynchronously, they are stored in a database. The Jobs API provides a job manager to handle the details of working with the database, and provides a simple interface for creating and retrieving jobs. The first step to creating a job is to define a job template. A job template is like a blue print that describes certain key characteristics about the job, such as the job type and where the job will be run. The job manager uses a job template to create a new job that has all of the attributes that were defined in the template. Once a job has been created from a template it can then be customized with any additional attributes that are needed for that specific job.
 
 
-The Jobs API supports various types of jobs (see `Job Types`_), but the primary type, which is used in conjunction with the :doc:`compute`, is the `CondorJob`_ type.
+The Jobs API supports various types of jobs (see `Job Types`_).
+
+.. note::
+    The real power of the jobs API comes when it is combined with the :doc:`compute`. This make it possible for jobs to be offloaded from the main web server to a scalable computing cluster, which in turn enables very large scale jobs to be processed. This is done through the :doc:`jobs/condor_job_type` or the :doc:`jobs/condor_workflow_type`.
 
 .. seealso::
-    The CondorJob type uses the CondorPy library to submit jobs to HTCondor compute pools. For more information on CondorPy and HTCondor see the `CondorPy documentation <http://condorpy.readthedocs.org/en/latest/>`_ and specifically the `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_.
+    The Condor Job and the Condor Workflow job types use the CondorPy library to submit jobs to HTCondor compute pools. For more information on CondorPy and HTCondor see the `CondorPy documentation <http://condorpy.readthedocs.org/en/latest/>`_ and specifically the `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_.
 
 Defining Job Templates
 ======================
-To create jobs in an app you first need to define job templates. A job template specifies the type of job, and also defines all of the static parameters of the job that will be the same for all instances of that template. These parameters often include the names of the executable, input files, and output files. Job templates are defined in a method on the ``TethysAppBase`` subclass in ``app.py`` module. The following code sample shows how this is done:
+To create jobs in an app you first need to define job templates. A job template specifies the type of job, and also defines all of the static attributes of the job that will be the same for all instances of that template. These attributes often include the names of the executable, input files, and output files. Job templates are defined in a method on the ``TethysAppBase`` subclass in ``app.py`` module. The following code sample shows how this is done:
 
 ::
 
-  from tethys_sdk.jobs import JobTemplate, JOB_TYPES
+  from tethys_sdk.jobs import CondorJobTemplate, CondorJobDescription
   from tethys_sdk.compute import list_schedulers
 
   def job_templates(cls):
@@ -35,93 +35,79 @@ To create jobs in an app you first need to define job templates. A job template 
       """
       my_scheduler = list_schedulers()[0]
 
-      job_templates = (JobTemplate(name='example',
-                                   type=JOB_TYPES['CONDOR'],
-                                   parameters={'executable': 'my_script.py',
-                                               'condorpy_template_name': 'vanilla_transfer_files',
-                                               'attributes': {'transfer_input_files': ('../input_1', '../input_2'),
-                                                              'transfer_output_files': ('example_output1', example_output2),
-                                                             },
-                                               'scheduler': my_scheduler,
-                                               'remote_input_files': ('$(APP_WORKSPACE)/my_script.py', '$(APP_WORKSPACE)/input_1', '$(USER_WORKSPACE)/input_2'),
-                                              }
-                                  ),
-                      )
-
-      return job_templates
-
-Note that ``JobTemplate`` and ``JOB_TYPES`` need to be imported through the jobs SDK. A job template takes three arguments:
-
-* ``name``: A string designating the name of the template. This will be used to identify the template in the app controllers.
-* ``type``: The name of a Tethys job type. These can be accessed through the ``JOB_TYPES`` dictionary (see `Job Types`_).
-* ``parameters``: A dictionary of job parameters. These are parameters that will be the same for all instances of this job template. Additional parameters can be added to a job once it is created from the template (see `Using the Job Manager in your App`_). The acceptable parameters are determined by the job type.
-
-.. Note::
-    In this example the ConorJob type is used. For more information about the CondorJob parameters see `CondorJob`_.
-
-For convenience, templates for specific job types (e.g. ``CondorJobTemplate``) can be imported rather than the generic ``JobTemplate``. In this case the type is already defined; thus only the ``name`` and ``parameters`` arguments must be specified.
-
-::
-
-  from tethys_sdk.jobs import CondorJobTemplate
-  from tethys_sdk.compute import list_schedulers
-
-  def job_templates(cls):
-      """
-      Example job_templates method.
-      """
-      my_scheduler = list_schedulers()[0]
+      my_job_description = CondorJobDescription(condorpy_template_name='vanilla_transfer_files',
+                                                remote_input_files=('$(APP_WORKSPACE)/my_script.py', '$(APP_WORKSPACE)/input_1', '$(USER_WORKSPACE)/input_2'),
+                                                executable='my_script.py',
+                                                transfer_input_files=('../input_1', '../input_2'),
+                                                transfer_output_files=('example_output1', example_output2),
+                                                )
 
       job_templates = (CondorJobTemplate(name='example',
-                                         parameters={'executable': 'my_script.py',
-                                                     'condorpy_template_name': 'vanilla_transfer_files',
-                                                     'attributes': {'transfer_input_files': ('../input_1', '../input_2'),
-                                                                    'transfer_output_files': ('example_output1', example_output2),
-                                                                   },
-                                                     'scheduler': my_scheduler,
-                                                     'remote_input_files': ('$(APP_WORKSPACE)/my_script.py', '$(APP_WORKSPACE)/input_1', '$(USER_WORKSPACE)/input_2'),
-                                                    }
+                                         job_description=my_job_description,
+                                         scheduler=my_scheduler,
                                         ),
                       )
 
       return job_templates
 
+.. note::
+    To define job templates the appropriate template class and any supporting classes must be imported from ``tethys_sdk.jobs``. In this case the template class `CondorJobTemplate` is imported along with the supporting class `CondorJobDescription`.
+
+There is a corresponding job template class for every job type. In this example the `CondorJobTemplate` class is used, which corresponds to the :doc:`jobs/condor_job_type`. For a list of all possible job types see `Job Types`_.
+
+When instantiating any job template class there is a required ``name`` parameter, which is used used to identify the template to the job manager (see `Using the Job Manager in your App`_). The template class for each job type may have additional required and/or optional parameters. In the above example the `job_description` and the `scheduler` parameters are required because the the `CondorJobTemplate` class is being instantiated. Job template classes may also support setting job attributes as parameters in the template. See the `Job Types`_ documentation for a list of acceptable parameters for the template class of each job type.
+
+.. warning::
+    The generic template class ``JobTemplate`` allong with the dictionary ``JOB_TYPES`` have been used to define job templates in the past but are being deprecated in favor of job-type specific templates classes (e.g. `CondorJobTemplate` or `CondorWorkflowTemplate`).
+
 Job Types
 ---------
-The Jobs API is designed to support multiple job types. The job type defines the way the job is run. The following parameters can be defined for all job types:
+The Jobs API is designed to support multiple job types. Each job type provides a different framework and environment for executing jobs. To create a job of a particular job type, you must first create a job template from the template class corresponding to that job type (see `Defining Job Templates`_). After the job template for the job type you want has been instantiated you can create a new job instance using the job manager (see `Using the Job Manager in your App`_).
 
+Once you have a newly created job from the job manager you can then customize the job by setting job attributes. All jobs have a common set of attributes, and then each job type may add additional attributes.
+
+The following attributes can be defined for all job types:
+
+    * ``name`` (string, required): a unique identifier for the job. This should not be confused with the job template name. The template name identifies a template from which jobs can be created and is set when the template is created. The job ``name`` attribute is defined when the job is created (see `Creating and Executing a Job`_).
     * ``description`` (string): a short description of the job.
-    * ``workspace`` (string): a path to a directory that will act as the workspace for the job. Each job type may interact with the workspace differently. By default the workspace is set to the user's workspace in the app that is creating the job.
-    * ``extended_properties`` (dict): a dictionary of additional properties.
+    * ``workspace`` (string): a path to a directory that will act as the workspace for the job. Each job type may interact with the workspace differently. By default the workspace is set to the user's workspace in the app that is creating the job (see `Workspaces`_).
+    * ``extended_properties`` (dict): a dictionary of additional properties that can be used to create custom job attributes.
 
-Specific job types may define additional parameters. Currently there are only two: `BasicJob`_ and `CondorJob`_.
 
-BasicJob
-''''''''
-The BasicJob type is a sample job type. It has all of the basic properties and methods of a job, but it doesn't have any mechanism for running jobs. It's primary purpose is for demonstration.
+All job types also have the following read-only attributes:
 
-CondorJob
-'''''''''
-The CondorJob type facilitates running jobs on HTCondor using the CondorPy library. The following additional parameters can be defined for the CondorJob type:
+    * ``user`` (User): the user who created the job.
+    * ``label`` (string): the package name of the Tethys App used to created the job.
+    * ``creation_time`` (datetime): the time the job was created.
+    * ``execute_time`` (datetime): the time that job execution was started.
+    * ``start_time`` (datetime):
+    * ``completion_time`` (datetime): the time that the job status changed to 'Complete'.
+    * ``status`` (string): a string representing the state of the job. Possible statuses are:
 
-    * ``executable`` (string): the file path to the job executable.
-    * ``condorpy_template_name`` (string): the name of a template from the CondorPy library pre-configures certain job attributes.
-    * ``attributes`` (dict): a dictionary of HTCondor job attributes.
-    * ``remote_input_files`` (list of strings): a list of file paths for files that need to be transferred to the remote scheduler to run.
-    * ``num_jobs`` (integer): the number of sub-jobs that will be executed as part of the job.
-    * ``scheduler`` (Scheduler): a `Scheduler` object that contains the connection information for the remote scheduler where the job will be submitted to. If the ``scheduler`` parameter is not included, or defined as ``None``, then the job will be submitted to the local scheduler if it is configured. For more information about schedulers refer to the :doc:`compute`.
+        - 'Pending'
+        - 'Submitted'
+        - 'Running'
+        - 'Complete'
+        - 'Error'
+        - 'Aborted'
+        - 'Various'*
+        - 'Various-Complete'*
 
-For more information about these parameters see the `CondorPy documentation <http://condorpy.readthedocs.org/en/latest/>`_.
+        *used for job types with multiple sub-jobs (e.g. CondorWorkflow).
 
 .. note::
-    These parameters to create a CondorPy Job object. Most of the CondorJob parameters are called the same as the CondorPy Job arguments that they are used for with a few exceptions:
+    Job template classes may support passing in job attributes as additional arguments. See the documentation for each job type for a list of acceptable parameters for each template class add if additional arguments are supported.
 
-    * the ``condorpy_template_name`` is used to access retrieve a CondorPy Template. The attributes of the template are combined with the ``attributes`` dict.
-    * the ``scheduler`` is used to define the ``host``, ``username``, ``password``, ``private_key``, and ``private_key_pass``, in the CondorPy Job.
-    * the ``workspace`` is used to set the CondorPy Job ``working_directory``.
+Specific job types may define additional attributes. The following job types are available.
 
-.. important::
-    Perhaps the most confusing part about CondorJob parameters is the file paths. Different parameters require that the paths be defined relative to different locations. For more information about how to define paths in CondorJob parameters see the `CondorPy documentation <http://condorpy.readthedocs.org/en/latest/>`_
+.. toctree::
+   :maxdepth: 1
+
+   jobs/basic_job_type
+   jobs/condor_job_type
+   jobs/condor_workflow_type
+
+
 
 Workspaces
 ----------
@@ -151,7 +137,7 @@ You can now use the job manager to create a new job, or retrieve an existing job
 
 Creating and Executing a Job
 ----------------------------
-To create a job call the ``create_job`` method on the job manager. The required parameters are ``name``, ``user`` and ``template_name``. Any other job parameters can also be passed in as `kwargs`.
+To create a job call the ``create_job`` method on the job manager. The required parameters are ``name``, ``user`` and ``template_name``. Any other job attributes can also be passed in as `kwargs`.
 
 ::
 
