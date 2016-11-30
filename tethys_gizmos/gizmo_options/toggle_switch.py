@@ -110,3 +110,11 @@ class ToggleSwitch(TethysGizmoOptions):
         {% block styles %} block
         """
         return ('tethys_gizmos/vendor/bootstrap_switch/dist/css/bootstrap3/bootstrap-switch.min.css',)
+
+    @staticmethod
+    def get_gizmo_js():
+        """
+        JavaScript specific to gizmo to be placed in the 
+        {% block scripts %} block
+        """
+        return ('tethys_gizmos/js/toggle_switch.js',)

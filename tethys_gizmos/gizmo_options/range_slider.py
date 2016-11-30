@@ -80,3 +80,11 @@ class RangeSlider(TethysGizmoOptions):
         self.disabled = disabled
         self.display_text = display_text
         self.error = error
+
+    @staticmethod
+    def get_gizmo_js():
+        """
+        JavaScript specific to gizmo to be placed in the 
+        {% block scripts %} block
+        """
+        return ('tethys_gizmos/js/range_slider.js',)
