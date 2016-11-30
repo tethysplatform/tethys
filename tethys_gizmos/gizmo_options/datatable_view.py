@@ -48,11 +48,7 @@ class DataTableView(TethysGizmoOptions):
     
         {% load tethys_gizmos %}
         
-        {% block register_gizmos %}
-          {% register_gizmo_dependency datatable_view %}
-        {% endblock %}
-
-        {% gizmo table_view %}
+        {% gizmo datatable_view %}
         
     .. note:: You can also add extensions to the data table view as shown in the next example.
               To learn more about DataTable extensions, go to https://datatables.net/extensions/index.
@@ -78,10 +74,6 @@ class DataTableView(TethysGizmoOptions):
 
         {% load tethys_gizmos %}
         
-        {% block register_gizmos %}
-          {% register_gizmo_dependency datatable_view %}
-        {% endblock %}
-    
         #LOAD IN EXTENSION JAVASCRIPT/CSS
         {% block global_scripts %}
           {{ block.super }}

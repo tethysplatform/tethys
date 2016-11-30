@@ -16,7 +16,7 @@ class TableView(TethysGizmoOptions):
     """
     Table views can be used to display tabular data. The table view gizmo can be configured to have columns that are editable. When used in this capacity, embed the table view in a form with a submit button.
 
-    Attributes
+    Attributes:
         rows(tuple or list, required): A list/tuple of lists/tuples representing each row in the table.
         column_names(tuple or list): A tuple or list of strings that represent the table columns names.
         hover(bool): Illuminate rows on hover (does not work on striped tables)
@@ -28,11 +28,10 @@ class TableView(TethysGizmoOptions):
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
-    Example
+    Controller Example
 
     ::
 
-        # CONTROLLER
         from tethys_sdk.gizmos import TableView
 
         table_view = TableView(column_names=('Name', 'Age', 'Job'),
@@ -55,8 +54,17 @@ class TableView(TethysGizmoOptions):
                                     editable_columns=(False, 'ageInput', 'jobInput'),
                                     row_ids=[21, 25, 31])
 
-        # TEMPLATE
+        context = {
+                    'table_view': table_view,
+                    'table_view_edit': table_view_edit,
+                  }
 
+    Template Example
+
+    ::
+
+        {% load tethys_gizmos %}
+        
         {% gizmo table_view %}
         {% gizmo table_view_edit %}
 

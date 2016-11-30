@@ -38,11 +38,9 @@ class DatePicker(TethysGizmoOptions):
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
-    Example
+    Controller Example
 
     ::
-
-        # CONTROLLER
 
         from tethys_sdk.gizmos import DatePicker
 
@@ -62,7 +60,16 @@ class DatePicker(TethysGizmoOptions):
                                        disabled=True,
                                        error='Here is my error text.')
 
-        # TEMPLATE
+        context = {
+                    'date_picker': date_picker,
+                    'date_picker_error': date_picker_error,
+                  }
+
+    Template Example
+
+    ::
+
+        {% load tethys_gizmos %}
 
         {% gizmo date_picker %}
         {% gizmo date_picker_error %}

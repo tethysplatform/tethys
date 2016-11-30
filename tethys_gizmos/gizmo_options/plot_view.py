@@ -114,13 +114,10 @@ class LinePlot(PlotViewBase):
         y_axis_title(str): Title of the y-axis.
         y_axis_units(str): Units of the y-axis.
 
-    **Example**
+    **Controller Example**
 
     ::
 
-        # coding=utf-8
-
-        # CONTROLLER
         from tethys_sdk.gizmos import LinePlot
 
         line_plot_view = LinePlot(
@@ -161,7 +158,15 @@ class LinePlot(PlotViewBase):
             ]
         )
 
-        # TEMPLATE
+        context = {
+                    'line_plot_view': line_plot_view,
+                  }
+
+    **Template Example**
+
+    ::
+
+        {% load tethys_gizmos %}
 
         {% gizmo line_plot_view %}
 
@@ -232,13 +237,10 @@ class PolarPlot(PlotViewBase):
         subtitle(str): Subtitle of the plot.
         categories(list): List of category names, one for each data point in the series.
 
-    **Example**
+    **Controller Example**
 
     ::
 
-        # coding=utf-8
-
-        # CONTROLLER
         from tethys_sdk.gizmos import PolarPlot
 
         web_plot = PolarPlot(
@@ -266,7 +268,15 @@ class PolarPlot(PlotViewBase):
             ]
         )
 
-        # TEMPLATE
+        context = {
+                    'web_plot': web_plot,
+                  }
+
+    **Template Example**
+
+    ::
+
+        {% load tethys_gizmos %}
 
         {% gizmo web_plot %}
 
@@ -322,13 +332,10 @@ class ScatterPlot(PlotViewBase):
         y_axis_title(str): Title of the y-axis.
         y_axis_units(str): Units of the y-axis.
 
-    **Example**
+    **Controller Example**
 
     ::
 
-        # coding=utf-8
-
-        # CONTROLLER
         from tethys_sdk.gizmos import ScatterPlot
 
         male_dataset = {
@@ -392,7 +399,15 @@ class ScatterPlot(PlotViewBase):
             ]
         )
 
-        # TEMPLATE
+        context = {
+                    'scatter_plot_view': scatter_plot_view,
+                  }
+
+    **Template Example**
+
+    ::
+
+        {% load tethys_gizmos %}
 
         {% gizmo scatter_plot_view %}
 
@@ -452,13 +467,10 @@ class PiePlot(PlotViewBase):
         title(str): Title of the plot.
         subtitle(str): Subtitle of the plot.
 
-    **Example**
+    **Controller Example**
 
     ::
 
-        # coding=utf-8
-
-        # CONTROLLER
         from tethys_sdk.gizmos import PieChart
 
         pie_plot_view = PiePlot(
@@ -477,7 +489,15 @@ class PiePlot(PlotViewBase):
             ]
         )
 
-        # TEMPLATE
+        context = {
+                    'pie_plot_view': pie_plot_view,
+                  }
+
+    **Template Example**
+
+    ::
+
+        {% load tethys_gizmos %}
 
         {% gizmo pie_plot_view %}
 
@@ -535,13 +555,10 @@ class BarPlot(PlotViewBase):
         axis_title(str): Title of the axis.
         axis_units(str): Units of the axis.
 
-    **Example**
+    **Controller Example**
 
     ::
 
-        # coding=utf-8
-
-        # CONTROLLER
         from tethys_sdk.gizmos import BarPlot
 
         bar_plot_view = BarPlot(
@@ -572,7 +589,15 @@ class BarPlot(PlotViewBase):
             ]
         )
 
-        # TEMPLATE
+        context = {
+                    'bar_plot_view': bar_plot_view,
+                  }
+
+    **Template Example**
+
+    ::
+
+        {% load tethys_gizmos %}
 
         {% gizmo bar_plot_view %}
 
@@ -662,13 +687,10 @@ class TimeSeries(PlotViewBase):
         y_axis_title(str): Title of the axis.
         y_axis_units(str): Units of the axis.
 
-    **Example**
+    **Controller Example**
 
     ::
 
-        # coding=utf-8
-
-        # CONTROLLER
         from tethys_sdk.gizmos import TimeSeries
 
         timeseries_plot = TimeSeries(
@@ -707,7 +729,15 @@ class TimeSeries(PlotViewBase):
             }]
         )
 
-        # TEMPLATE
+        context = {
+                    'timeseries_plot': timeseries_plot,
+                  }
+
+    **Template Example**
+
+    ::
+
+        {% load tethys_gizmos %}
 
         {% gizmo timeseries_plot %}
     """
@@ -763,13 +793,10 @@ class AreaRange(PlotViewBase):
         y_axis_title(str): Title of the axis.
         y_axis_units(str): Units of the axis.
 
-    **Example**
+    **Controller Example**
 
     ::
 
-        # coding=utf-8
-
-        # CONTROLLER
         from tethys_sdk.gizmos import AreaRange
 
         averages = [
@@ -825,7 +852,15 @@ class AreaRange(PlotViewBase):
         )
 
 
-        # TEMPLATE
+        context = {
+                    'area_range_plot_object': area_range_plot_object,
+                  }
+
+    **Template Example**
+
+    ::
+
+        {% load tethys_gizmos %}
 
         {% gizmo area_range_plot_object %}
 
@@ -882,13 +917,10 @@ class HeatMap(PlotViewBase):
         tooltip_phrase_one(str):
         tooltip_phrase_two(str):
 
-    **Example**
+    **Controller Example**
 
     ::
 
-        # coding=utf-8
-
-        # CONTROLLER
         from tethys_sdk.gizmos import HeatMap
 
         sales_data = [
@@ -936,7 +968,15 @@ class HeatMap(PlotViewBase):
         )
 
 
-        # TEMPLATE
+        context = {
+                    'heat_map_plot': heat_map_plot,
+                  }
+
+    **Template Example**
+
+    ::
+
+        {% load tethys_gizmos %}
 
         {% gizmo heat_map_plot %}
 

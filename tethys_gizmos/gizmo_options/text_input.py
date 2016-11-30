@@ -30,11 +30,10 @@ class TextInput(TethysGizmoOptions):
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
-    Example
+    Controller Example
 
     ::
 
-        # CONTROLLER
         from tethys_sdk.gizmos import TextInput
 
         text_input = TextInput(display_text='Text',
@@ -49,7 +48,14 @@ class TextInput(TethysGizmoOptions):
                                      icon_append='glyphicon glyphicon-envelope',
                                      error='Here is my error text')
 
-        # TEMPLATE
+        context = {
+                    'text_input': text_input,
+                    'text_error_input': text_error_input,
+                  }
+
+    Template Example
+
+    ::
 
         {% gizmo text_input %}
         {% gizmo text_error_input %}
