@@ -51,10 +51,6 @@ class PlotlyView(TethysGizmoOptions):
     
         {% load tethys_gizmos %}
         
-        {% block register_gizmos %}
-          {% register_gizmo_dependency plotly_view %}
-        {% endblock %}
-    
         {% gizmo plotly_view_input %}
     """
     gizmo_name = "plotly_view"
@@ -81,7 +77,7 @@ class PlotlyView(TethysGizmoOptions):
         self.hidden = hidden
 
     @staticmethod
-    def get_global_js():
+    def get_vendor_js():
         """
         JavaScript vendor libraries to be placed in the 
         {% block global_scripts %} block

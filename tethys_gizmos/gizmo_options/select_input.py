@@ -90,7 +90,7 @@ class SelectInput(TethysGizmoOptions):
         self.error = error
 
     @staticmethod
-    def get_global_js():
+    def get_vendor_js():
         """
         JavaScript vendor libraries to be placed in the 
         {% block global_scripts %} block
@@ -98,7 +98,7 @@ class SelectInput(TethysGizmoOptions):
         return ('tethys_gizmos/vendor/select2_4.0.2/js/select2.min.js',)
 
     @staticmethod
-    def get_global_css():
+    def get_vendor_css():
         """
         CSS vendor libraries to be placed in the 
         {% block styles %} block

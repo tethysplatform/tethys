@@ -1,7 +1,7 @@
 """
 ********************************************************************************
 * Name: base.py
-* Author: Nathan Swain and Ezra Rice
+* Authors: Nathan Swain and Ezra Rice
 * Created On: May 2015
 * Copyright: (c) Brigham Young University 2015
 * License: BSD 2-Clause
@@ -40,21 +40,21 @@ class TethysGizmoOptions(dict):
         self.classes = classes
 
     @staticmethod
-    def get_tethys_gizmo_js():
+    def get_tethys_gizmos_js():
         """
         Tethys gizmo JavaScript files applicable to all gizmos
         """
         return ('tethys_gizmos/js/tethys_gizmos.js',)
 
     @staticmethod
-    def get_tethys_gizmo_css():
+    def get_tethys_gizmos_css():
         """
         Tethys gizmo CSS files applicable to all gizmos
         """
         return ('tethys_gizmos/css/tethys_gizmos.css',)
 
     @staticmethod
-    def get_global_js():
+    def get_vendor_js():
         """
         JavaScript vendor libraries to be placed in the 
         {% block global_scripts %} block
@@ -62,7 +62,7 @@ class TethysGizmoOptions(dict):
         return ()
 
     @staticmethod
-    def get_js():
+    def get_gizmo_js():
         """
         JavaScript specific to gizmo to be placed in the 
         {% block scripts %} block
@@ -70,7 +70,7 @@ class TethysGizmoOptions(dict):
         return ()
 
     @staticmethod
-    def get_global_css():
+    def get_vendor_css():
         """
         CSS vendor libraries to be placed in the 
         {% block styles %} block
@@ -78,7 +78,7 @@ class TethysGizmoOptions(dict):
         return ()
 
     @staticmethod
-    def get_css():
+    def get_gizmo_css():
         """
         CSS specific to gizmo to be placed in the 
         {% block content_dependent_styles %} block      

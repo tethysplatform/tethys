@@ -220,18 +220,20 @@ def gizmo(parser, token):
     return TethysGizmoIncludeNode(gizmo_options, gizmo_name)
 
 @register.tag
-def register_gizmo_dependency(parser, token):
+def import_gizmo_dependency(parser, token):
     """
-    The gizmo dependency tag will add the dependencies for the gizmo specified.
+    The gizmo dependency tag will add the dependencies for the gizmo specified 
+    so that is will be loaded when using the *gizmo_dependencies* tag.
 
-    To register a gizmo's dependency, use the "register_gizmo_dependency" tag and give it the name of a gizmo.
+    To manually import a gizmo's dependency, use the "import_gizmo_dependency" 
+    tag and give it the name of a gizmo.
 
     Example::
     
         {% load tethys_gizmos %}
 
-        {% register_gizmo_dependency example_gizmo %}
-        {% register_gizmo_dependency "example_gizmo" %}
+        {% import_gizmo_dependency example_gizmo %}
+        {% import_gizmo_dependency "example_gizmo" %}
 
     .. note: All supporting css and javascript libraries are loaded using the gizmo_dependencies tag (see below).
     """
@@ -302,19 +304,19 @@ class TethysGizmoDependenciesNode(template.Node):
                 dependencies_module = GIZMO_NAME_MAP[rendered_gizmo]
     
                 # Only append dependencies if they do not already exist
-                for dependency in dependencies_module.get_css():
+                for dependency in dependencies_module.get_gizmo_css():
                     self._append_dependency(dependency, context.render_context['gizmo_css_list'])
-                for dependency in dependencies_module.get_js():
+                for dependency in dependencies_module.get_gizmo_js():
                     self._append_dependency(dependency, context.render_context['gizmo_js_list'])
-                for dependency in dependencies_module.get_global_css():
+                for dependency in dependencies_module.get_vendor_css():
                     self._append_dependency(dependency, context.render_context['global_gizmo_css_list'])                            
-                for dependency in dependencies_module.get_global_js():
+                for dependency in dependencies_module.get_vendor_js():
                     self._append_dependency(dependency, context.render_context['global_gizmo_js_list'])
                 
                 # Add the main gizmo dependencies last
-                for dependency in TethysGizmoOptions.get_tethys_gizmo_css():
+                for dependency in TethysGizmoOptions.get_tethys_gizmos_css():
                     self._append_dependency(dependency, context.render_context['gizmo_css_list'])
-                for dependency in TethysGizmoOptions.get_tethys_gizmo_js():
+                for dependency in TethysGizmoOptions.get_tethys_gizmos_js():
                     self._append_dependency(dependency, context.render_context['gizmo_js_list'])
                     
             context.render_context['gizmo_dependencies_loaded'] = True

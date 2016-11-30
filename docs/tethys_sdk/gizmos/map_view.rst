@@ -218,8 +218,8 @@ This method is intended for initializing a map generated from an AJAX request.
     For example:
     ::
 
-        {% block register_gizmos %}
-            {% register_gizmo_dependency map_view %}
+        {% block import_gizmos %}
+            {% import_gizmo_dependency map_view %}
         {% endblock %}
 
 Four elements are required:
@@ -275,7 +275,7 @@ Four elements are required:
 
     {% load tethys_gizmos %}
 
-    {% gizmo map_view map_options %}
+    {% gizmo map_options %}
 
 
 4) The AJAX call in the javascript

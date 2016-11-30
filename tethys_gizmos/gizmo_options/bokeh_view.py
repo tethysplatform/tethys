@@ -36,10 +36,6 @@ class BokehView(TethysGizmoOptions):
     
         {% load tethys_gizmos %}
         
-        {% block register_gizmos %}
-          {% register_gizmo_dependency bokeh_view %}
-        {% endblock %}
-    
         {% gizmo bokeh_view_input %}
     """
     gizmo_name = "bokeh_view"
@@ -58,7 +54,7 @@ class BokehView(TethysGizmoOptions):
         self.hidden = hidden
 
     @staticmethod
-    def get_global_css():
+    def get_vendor_css():
         """
         JavaScript vendor libraries to be placed in the 
         {% block global_scripts %} block
@@ -66,7 +62,7 @@ class BokehView(TethysGizmoOptions):
         return CDN.css_files
         
     @staticmethod
-    def get_global_js():
+    def get_vendor_js():
         """
         JavaScript vendor libraries to be placed in the 
         {% block global_scripts %} block
