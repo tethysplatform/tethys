@@ -35,36 +35,44 @@ class SelectInput(TethysGizmoOptions):
         from tethys_sdk.gizmos import SelectInput
 
         select_input2 = SelectInput(display_text='Select2',
-                                    name='select1',
+                                    name='select2',
                                     multiple=False,
                                     options=[('One', '1'), ('Two', '2'), ('Three', '3')],
-                                    initial=['Three'],
-                                    original=True)
-
+                                    initial=['Three'])
+    
         select_input2_multiple = SelectInput(display_text='Select2 Multiple',
-                                             name='select2',
+                                             name='select21',
                                              multiple=True,
                                              options=[('One', '1'), ('Two', '2'), ('Three', '3')],
-                                             initial=['1', '2'])
-
-        select_input_multiple = SelectInput(display_text='Select Multiple',
-                                            name='select2.1',
-                                            multiple=True,
-                                            original=True,
-                                            options=[('One', '1'), ('Two', '2'), ('Three', '3')])
-
+                                             initial=['Two', 'One'])
+    
         select_input2_error = SelectInput(display_text='Select2 Disabled',
-                                          name='select3',
+                                          name='select22',
                                           multiple=False,
                                           options=[('One', '1'), ('Two', '2'), ('Three', '3')],
                                           disabled=True,
                                           error='Here is my error text')
+    
+        select_input = SelectInput(display_text='Select',
+                                   name='select1',
+                                   multiple=False,
+                                   original=True,
+                                   options=[('One', '1'), ('Two', '2'), ('Three', '3')],
+                                   initial=['Three'])
+    
+        select_input_multiple = SelectInput(display_text='Select Multiple',
+                                            name='select11',
+                                            multiple=True,
+                                            original=True,
+                                            options=[('One', '1'), ('Two', '2'), ('Three', '3')])
+
 
         context = {
                     'select_input2': select_input2,
                     'select_input2_multiple': select_input2_multiple,
-                    'select_input_multiple': select_input_multiple,
                     'select_input2_error': select_input2_error,
+                    'select_input': select_input,
+                    'select_input_multiple': select_input_multiple,
                   }
 
     Template Example
@@ -73,8 +81,9 @@ class SelectInput(TethysGizmoOptions):
 
         {% gizmo select_input2 %}
         {% gizmo select_input2_multiple %}
-        {% gizmo select_input_multiple %}
         {% gizmo select_input2_error %}
+        {% gizmo select_input %}
+        {% gizmo select_input_multiple %}
 
     """
     gizmo_name = "select_input"
@@ -112,3 +121,11 @@ class SelectInput(TethysGizmoOptions):
         {% block styles %} block
         """
         return ('tethys_gizmos/vendor/select2_4.0.2/css/select2.css',)
+
+    @staticmethod
+    def get_gizmo_js():
+        """
+        JavaScript specific to gizmo to be placed in the 
+        {% block scripts %} block
+        """
+        return ('tethys_gizmos/js/select_input.js',)

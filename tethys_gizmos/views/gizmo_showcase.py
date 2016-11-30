@@ -123,30 +123,37 @@ def index(request):
 
     # Select Input
     select_input2 = SelectInput(display_text='Select2',
-                                name='select1',
+                                name='select2',
                                 multiple=False,
                                 options=[('One', '1'), ('Two', '2'), ('Three', '3')],
-                                initial=['Three'],
-                                original=['Two'])
+                                initial=['Three'])
 
     select_input2_multiple = SelectInput(display_text='Select2 Multiple',
-                                         name='select2',
+                                         name='select21',
                                          multiple=True,
                                          options=[('One', '1'), ('Two', '2'), ('Three', '3')],
                                          initial=['Two', 'One'])
 
-    select_input_multiple = SelectInput(display_text='Select Multiple',
-                                        name='select2.1',
-                                        multiple=True,
-                                        original=True,
-                                        options=[('One', '1'), ('Two', '2'), ('Three', '3')])
-
     select_input2_error = SelectInput(display_text='Select2 Disabled',
-                                      name='select3',
+                                      name='select22',
                                       multiple=False,
                                       options=[('One', '1'), ('Two', '2'), ('Three', '3')],
                                       disabled=True,
                                       error='Here is my error text')
+
+    select_input = SelectInput(display_text='Select',
+                               name='select1',
+                               multiple=False,
+                               original=True,
+                               options=[('One', '1'), ('Two', '2'), ('Three', '3')],
+                               initial=['Three'])
+
+    select_input_multiple = SelectInput(display_text='Select Multiple',
+                                        name='select11',
+                                        multiple=True,
+                                        original=True,
+                                        options=[('One', '1'), ('Two', '2'), ('Three', '3')])
+
 
     # Text Input
     text_input = TextInput(display_text='Text',
@@ -845,8 +852,9 @@ def index(request):
                'slider2': slider2,
                'select_input2': select_input2,
                'select_input2_multiple': select_input2_multiple,
-               'select_input_multiple': select_input_multiple,
                'select_input2_error': select_input2_error,
+               'select_input': select_input,
+               'select_input_multiple': select_input_multiple,
                'text_input': text_input,
                'text_error_input': text_error_input,
                'toggle_switch': toggle_switch,
