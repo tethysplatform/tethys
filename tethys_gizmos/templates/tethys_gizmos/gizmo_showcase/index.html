@@ -4,8 +4,8 @@
 
 {% block title %}- Gizmo Showcase{% endblock %}
 
-{% block register_gizmos %}
-  {% register_gizmo_dependency bokeh_view %}
+{% block import_gizmos %}
+  {% import_gizmo_dependency bokeh_view %}
 {% endblock %}
 
 {% block styles %}
@@ -238,8 +238,9 @@ def my_view(request):
           <div class="demo">
             {% gizmo select_input select_input2 %}
             {% gizmo select_input2_multiple %}
-            {% gizmo select_input_multiple %}
             {% gizmo select_input select_input2_error %}
+            {% gizmo select_input %}
+            {% gizmo select_input_multiple %}
           </div>
         </div>
       </div>
