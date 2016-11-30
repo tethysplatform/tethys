@@ -159,11 +159,11 @@ class TethysGizmoIncludeNode(TethysGizmoIncludeDependency):
         resolved_options = template.Variable(self.options).resolve(context)
 
         try:
-            if self.gizmo_name is None:
+            if self.gizmo_name is None or self.gizmo_name not in GIZMO_NAME_MAP:
                 if hasattr(resolved_options, "gizmo_name"):
                     self._load_gizmo_name(resolved_options.gizmo_name)
                 else:
-                    raise TemplateSyntaxError('The gizmo name is required for this input format.')
+                    raise TemplateSyntaxError('A valid gizmo name is required for this input format.')
                 
             self._load_gizmos_rendered(context)
             # Determine path to gizmo template
@@ -241,7 +241,7 @@ def import_gizmo_dependency(parser, token):
         tag_name, gizmo_name = token.split_contents()
 
     except ValueError:
-        raise template.TemplateSyntaxError('"%s" tag requires exactly one argument' % token.contents.split()[0])
+        raise TemplateSyntaxError('"%s" tag requires exactly one argument' % token.contents.split()[0])
 
     return TethysGizmoIncludeDependency(gizmo_name)
 
