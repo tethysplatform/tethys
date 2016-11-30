@@ -28,11 +28,10 @@ class SelectInput(TethysGizmoOptions):
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
-    Example
+    Controller Example
 
     ::
 
-        # CONTROLLER
         from tethys_sdk.gizmos import SelectInput
 
         select_input2 = SelectInput(display_text='Select2',
@@ -40,7 +39,7 @@ class SelectInput(TethysGizmoOptions):
                                     multiple=False,
                                     options=[('One', '1'), ('Two', '2'), ('Three', '3')],
                                     initial=['Three'],
-                                    original=['Two'])
+                                    original=True)
 
         select_input2_multiple = SelectInput(display_text='Select2 Multiple',
                                              name='select2',
@@ -61,7 +60,16 @@ class SelectInput(TethysGizmoOptions):
                                           disabled=True,
                                           error='Here is my error text')
 
-        # TEMPLATE
+        context = {
+                    'select_input2': select_input2,
+                    'select_input2_multiple': select_input2_multiple,
+                    'select_input_multiple': select_input_multiple,
+                    'select_input2_error': select_input2_error,
+                  }
+
+    Template Example
+
+    ::
 
         {% gizmo select_input2 %}
         {% gizmo select_input2_multiple %}
