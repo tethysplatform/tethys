@@ -121,7 +121,7 @@ class GoogleMapView(TethysGizmoOptions):
         self.input_overlays = input_overlays
         
     @staticmethod
-    def get_global_js():
+    def get_vendor_js():
         """
         JavaScript vendor libraries to be placed in the 
         {% block global_scripts %} block
@@ -129,7 +129,7 @@ class GoogleMapView(TethysGizmoOptions):
         return ('tethys_gizmos/vendor/farbtastic/farbtastic.js',)
 
     @staticmethod    
-    def get_global_css():
+    def get_vendor_css():
         """
         CSS vendor libraries to be placed in the 
         {% block styles %} block
@@ -137,7 +137,7 @@ class GoogleMapView(TethysGizmoOptions):
         return ('tethys_gizmos/vendor/farbtastic/farbtastic.css',)
 
     @staticmethod
-    def get_js():
+    def get_gizmo_js():
         """
         JavaScript specific to gizmo to be placed in the 
         {% block scripts %} block

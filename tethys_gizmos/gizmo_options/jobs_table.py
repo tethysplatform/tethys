@@ -119,7 +119,7 @@ class JobsTable(TethysGizmoOptions):
         return rows
 
     @staticmethod
-    def get_js():
+    def get_gizmo_js():
         """
         JavaScript specific to gizmo to be placed in the 
         {% block scripts %} block

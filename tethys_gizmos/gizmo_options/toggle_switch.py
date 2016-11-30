@@ -89,7 +89,7 @@ class ToggleSwitch(TethysGizmoOptions):
         self.error = error
 
     @staticmethod
-    def get_global_js():
+    def get_vendor_js():
         """
         JavaScript vendor libraries to be placed in the 
         {% block global_scripts %} block
@@ -97,7 +97,7 @@ class ToggleSwitch(TethysGizmoOptions):
         return ('tethys_gizmos/vendor/bootstrap_switch/dist/js/bootstrap-switch.min.js',)
 
     @staticmethod
-    def get_global_css():
+    def get_vendor_css():
         """
         CSS vendor libraries to be placed in the 
         {% block styles %} block

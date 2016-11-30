@@ -210,7 +210,7 @@ class MapView(TethysGizmoOptions):
         self.feature_selection = feature_selection
 
     @staticmethod
-    def get_global_js():
+    def get_vendor_js():
         """
         JavaScript vendor libraries to be placed in the 
         {% block global_scripts %} block
@@ -221,7 +221,7 @@ class MapView(TethysGizmoOptions):
         return (openlayers_library,)
 
     @staticmethod
-    def get_js():
+    def get_gizmo_js():
         """
         JavaScript specific to gizmo to be placed in the 
         {% block scripts %} block
@@ -230,7 +230,7 @@ class MapView(TethysGizmoOptions):
                 'tethys_gizmos/js/tethys_map_view.js')
 
     @staticmethod
-    def get_global_css():
+    def get_vendor_css():
         """
         CSS vendor libraries to be placed in the 
         {% block styles %} block
@@ -238,7 +238,7 @@ class MapView(TethysGizmoOptions):
         return ('tethys_gizmos/vendor/openlayers/ol.css',)
 
     @staticmethod
-    def get_css():
+    def get_gizmo_css():
         """
         CSS specific to gizmo to be placed in the 
         {% block content_dependent_styles %} block      
