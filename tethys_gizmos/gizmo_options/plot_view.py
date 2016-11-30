@@ -751,7 +751,7 @@ class TimeSeries(PlotViewBase):
 
 class AreaRange(PlotViewBase):
     """
-    Use to create a  area range plot visualization.
+    Use to create a area range plot visualization.
 
     Attributes:
         series(list, required): A list of  series dictionaries.
@@ -804,6 +804,8 @@ class AreaRange(PlotViewBase):
             title='July Temperatures',
             y_axis_title='Temperature',
             y_axis_units='*C',
+            width='500px',
+            height='500px',
             series=[{
                 'name': 'Temperature',
                 'data': averages,
@@ -822,13 +824,10 @@ class AreaRange(PlotViewBase):
             }]
         )
 
-        area_range_plot = PlotView(_object=area_range_plot_object,
-                                   width='500px',
-                                   height='500px')
 
         # TEMPLATE
 
-        {% gizmo area_range_plot %}
+        {% gizmo area_range_plot_object %}
 
     """
 
@@ -904,7 +903,9 @@ class HeatMap(PlotViewBase):
             [9, 3, 48], [9, 4, 91]
         ]
 
-        heat_map_object = HeatMap(
+        heat_map_plot = HeatMap(
+            width='500px',
+            height='500px',
             title='Sales per employee per weekday',
             x_categories=['Alexander', 'Marie', 'Maximilian', 'Sophia', 'Lukas', 'Maria', 'Leon', 'Anna', 'Tim', 'Laura'],
             y_categories=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
@@ -934,9 +935,6 @@ class HeatMap(PlotViewBase):
                     }]
         )
 
-        heat_map_plot = PlotView(_object=heat_map_object,
-                                 width='500px',
-                                 height='500px')
 
         # TEMPLATE
 
