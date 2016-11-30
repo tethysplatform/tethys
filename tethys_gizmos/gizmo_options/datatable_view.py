@@ -117,14 +117,15 @@ class DataTableView(TethysGizmoOptions):
             self.datatable_options[data_name] = dumps(value)
             
     @staticmethod
-    def get_global_css():
+    def get_vendor_css():
         """
         JavaScript vendor libraries to be placed in the 
         {% block global_scripts %} block
         """
         return ('https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css',)
+        
     @staticmethod
-    def get_global_js():
+    def get_vendor_js():
         """
         JavaScript vendor libraries to be placed in the 
         {% block global_scripts %} block
@@ -132,7 +133,7 @@ class DataTableView(TethysGizmoOptions):
         return ('https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js',)
 
     @staticmethod
-    def get_js():
+    def get_gizmo_js():
         """
         JavaScript specific to gizmo to be placed in the 
         {% block scripts %} block

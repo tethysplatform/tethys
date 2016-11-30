@@ -28,7 +28,7 @@ class PlotViewBase(TethysGizmoOptions):
         self.plot_object = PlotObject()
 
     @staticmethod
-    def get_global_js():
+    def get_vendor_js():
         """
         JavaScript vendor libraries to be placed in the 
         {% block global_scripts %} block
@@ -40,7 +40,7 @@ class PlotViewBase(TethysGizmoOptions):
                 'tethys_gizmos/vendor/d3_tooltip/d3.tip.v0.6.3.js')
 
     @staticmethod
-    def get_js():
+    def get_gizmo_js():
         """
         JavaScript specific to gizmo to be placed in the 
         {% block scripts %} block
@@ -48,7 +48,7 @@ class PlotViewBase(TethysGizmoOptions):
         return ('tethys_gizmos/js/plot_view.js',)
 
     @staticmethod
-    def get_css():
+    def get_gizmo_css():
         """
         CSS specific to gizmo to be placed in the 
         {% block content_dependent_styles %} block      
