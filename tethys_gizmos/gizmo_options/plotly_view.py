@@ -23,7 +23,7 @@ class PlotlyView(TethysGizmoOptions):
                                  
     Controller Code Basic Example::
     
-        import datetime as datetime
+        from datetime import datetime
         import plotly.graph_objs as go
         from tethys_sdk.gizmos import PlotlyView
 
