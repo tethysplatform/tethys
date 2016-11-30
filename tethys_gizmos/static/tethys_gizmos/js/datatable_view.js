@@ -1,5 +1,5 @@
 /*****************************************************************************
- * FILE:    table_view.js
+ * FILE:    datatable_view.js
  * DATE:    November 2016
  * AUTHOR: Alan D. Snow
  * LICENSE: BSD 2-Clause
@@ -9,7 +9,7 @@
  *                      LIBRARY WRAPPER
  *****************************************************************************/
 
-var TETHYS_TABLE_VIEW = (function() {
+var TETHYS_DATATABLE_VIEW = (function() {
 	// Wrap the library in a package function
 	"use strict"; // And enable strict mode for this library
 
@@ -18,9 +18,7 @@ var TETHYS_TABLE_VIEW = (function() {
  	*************************************************************************/
  	var public_interface;				// Object returned by the module
 
-
-
-	/************************************************************************
+     /************************************************************************
  	*                    PRIVATE FUNCTION DECLARATIONS
  	*************************************************************************/
  	// private methods
@@ -29,8 +27,6 @@ var TETHYS_TABLE_VIEW = (function() {
  	initTableView = function(tag) {
         $(tag).DataTable();
  	};
-
-
 
 	/************************************************************************
  	*                            TOP LEVEL CODE
