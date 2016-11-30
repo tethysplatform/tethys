@@ -226,14 +226,17 @@ def import_gizmo_dependency(parser, token):
     so that is will be loaded when using the *gizmo_dependencies* tag.
 
     To manually import a gizmo's dependency, use the "import_gizmo_dependency" 
-    tag and give it the name of a gizmo.
+    tag and give it the name of a gizmo. It needs to be inside of the
+    "import_gizmos" block.
 
     Example::
     
         {% load tethys_gizmos %}
-
-        {% import_gizmo_dependency example_gizmo %}
-        {% import_gizmo_dependency "example_gizmo" %}
+        
+        {% block import_gizmos %}
+            {% import_gizmo_dependency example_gizmo %}
+            {% import_gizmo_dependency "example_gizmo" %}
+        {% endblock %}
 
     .. note: All supporting css and javascript libraries are loaded using the gizmo_dependencies tag (see below).
     """
