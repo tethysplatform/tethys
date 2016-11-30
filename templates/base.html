@@ -60,19 +60,19 @@
       <link rel="shortcut icon" href="{% if site_globals.favicon %}{{ site_globals.favicon }}{% else %}/static/tethys_portal/images/default_favicon.png{% endif %}" />
     {% endblock %}
 
-    {% comment "register_gizmos explanation" %}
-      The register_gizmos block allows you register gizmos to be added to your
+    {% comment "import_gizmos explanation" %}
+      The import_gizmos block allows you register gizmos to be added to your
       page so that the dependencies load properly.
 
       Example:
 
-        {% block register_gizmos %}
-          {% register_gizmo_dependency map_view %}
+        {% block import_gizmos %}
+          {% import_gizmo_dependency map_view %}
         {% endblock %}
 
     {% endcomment %}
 
-    {% block register_gizmos %}
+    {% block import_gizmos %}
     {% endblock %}
 
     {% comment "styles explanation" %}
