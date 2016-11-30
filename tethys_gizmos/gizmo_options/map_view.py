@@ -73,11 +73,10 @@ class MapView(TethysGizmoOptions):
     * sensitivity: Integer value that adjust the feature selection sensitivity. Defaults to 2.
 
 
-    Example
+    Controller Example
 
     ::
 
-        # CONTROLLER
         from tethys_sdk.gizmos import MapView, MVDraw, MVView, MVLayer, MVLegendClass
 
         # Define view options
@@ -182,7 +181,15 @@ class MapView(TethysGizmoOptions):
                 legend=True
         )
 
-        # TEMPLATE
+        context = {
+                    'map_view_options': map_view_options,
+                  }
+
+    Template Example
+
+    ::
+
+        {% load tethys_gizmos %}
 
         {% gizmo map_view_options %}
 
