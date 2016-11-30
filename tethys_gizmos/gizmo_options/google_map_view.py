@@ -14,15 +14,13 @@ __all__ = ['GoogleMapView']
 
 class GoogleMapView(TethysGizmoOptions):
     """
-    Google Map View
-
     The Google Map View is powered by Google Maps 3. It has the drawing library enabled to allow geospatial user input. An optional background dataset can be specified for reference, but only the shapes drawn by the user are returned (see `Retrieving Shapes reference <http://127.0.0.1:8000/developer/gizmos/#retrieving_shapes>`_ section).
 
     Shapes that are drawn on the map by users can be retrieved from the map in two ways. A hidden text field named 'geometry' is updated every time the map is changed. The text in the text field is a string representation of JSON. The geometry can be formatted as either GeoJSON or Well Known Text. This can be configured by setting the output_format parameter. If the Google Map View is embedded in a form, the geometry that is drawn on the map will automatically be submitted with the rest of the form via the hidden text field.
 
     Alternatively, the data can be extracted directly using the JavaScript API (see below).
 
-    Attributes
+    Attributes:
         height(string, required): Height of map container in normal css units
         width(string, required): Width of map container in normal css units
         maps_api_key(string, required): The Google Maps API key. If the API key is provided in the settings.py via the TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY option, this parameter is not required.
@@ -35,11 +33,10 @@ class GoogleMapView(TethysGizmoOptions):
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
 
-    Example
+    Controller Default Example
 
     ::
 
-        # CONTROLLER
         from tethys_sdk.gizmos import GoogleMapView
 
         google_map_view_options = GoogleMapView(height='600px',
@@ -49,7 +46,14 @@ class GoogleMapView(TethysGizmoOptions):
                                                 initial_drawing_mode='POINTS',
                                                 output_format='WKT')
 
-        # GeoJSON Example
+        context = {
+                    'google_map_view_options': google_map_view_options,
+                  }
+
+    Controller GeoJSON Example
+
+    ::
+
         geo_json = {'type':'WKTGeometryCollection',
             'geometries':[
                           {'type':'Point',
@@ -74,7 +78,13 @@ class GoogleMapView(TethysGizmoOptions):
                                                 initial_drawing_mode='POINTS',
                                                 input_overlays=geo_json)
 
-        # WKT Example
+        context = {
+                    'google_map_view_options': google_map_view_options,
+                  }
+
+    Controller WKT Example
+
+    ::
 
         wkt_json = {"type":"GeometryCollection",
             "geometries":[
@@ -96,7 +106,16 @@ class GoogleMapView(TethysGizmoOptions):
                                                 drawing_types_enabled=['POLYGONS', 'POINTS', 'POLYLINES'],
                                                 initial_drawing_mode='POINTS',
                                                 input_overlays=wkt_json)
-        # TEMPLATE
+
+        context = {
+                    'google_map_view_options': google_map_view_options,
+                  }
+
+    Template Example
+
+    ::
+
+        {% load tethys_gizmos %}
 
         {% gizmo google_map_view_options %}
 

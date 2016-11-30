@@ -32,7 +32,6 @@ class RangeSlider(TethysGizmoOptions):
 
     ::
 
-        # CONTROLLER
         from tethys_sdk.gizmos import RangeSlider
 
         slider1 = RangeSlider(display_text='Slider 1',
@@ -51,7 +50,14 @@ class RangeSlider(TethysGizmoOptions):
                               disabled=True,
                               error='Incorrect, please choose another value.')
 
-        # TEMPLATE
+        context = {
+                    'slider1': slider1,
+                    'slider2': slider2,
+                  }
+
+    Template Example
+
+    ::
 
         {% gizmo slider1 %}
         {% gizmo slider2 %}

@@ -16,7 +16,7 @@ class MessageBox(TethysGizmoOptions):
     """
     Message box gizmos can be used to display messages to users. These are especially useful for alerts and warning messages. The message box gizmo is implemented using Twitter Bootstrap's modal.
 
-    Attributes
+    Attributes:
         name(str, required): Unique name for the message box
         title(str, required): Title that appears at the top of the message box
         message(str): Message that will appear in the main body of the message box
@@ -27,11 +27,10 @@ class MessageBox(TethysGizmoOptions):
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
-    Example
+    Controller Example
 
     ::
 
-        # CONTROLLER
         from tethys_sdk.gizmos import MessageBox
 
         message_box = MessageBox(name='sampleModal',
@@ -42,7 +41,15 @@ class MessageBox(TethysGizmoOptions):
                                  width=400,
                                  affirmative_attributes='href=javascript:void(0);')
 
-        # TEMPLATE
+        context = {
+                    'message_box': message_box,
+                  }
+
+    Template Example
+
+    ::
+
+        {% load tethys_gizmos %}
 
         <a href="#sampleModal" role="button" class="btn btn-success" data-toggle="modal">Show Message Box</a>
         {% gizmo message_box %}

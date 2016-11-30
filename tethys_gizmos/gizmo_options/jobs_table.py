@@ -34,11 +34,10 @@ class JobsTable(TethysGizmoOptions):
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
         refresh_interval(int): The refresh interval for the runtime and status fields in milliseconds. Default is 5000.
 
-    Example
+    Controller Example
 
     ::
 
-        # CONTROLLER
         from tethys_apps.sdk.gizmos import JobsTable
 
         jobs_table_options = JobsTable(
@@ -50,8 +49,15 @@ class JobsTable(TethysGizmoOptions):
                                        condensed=False,
                                        results_url='app_name:results_controller',
                                      )
+        context = {
+                    'jobs_table_options': jobs_table_options,
+                  }
 
-        # TEMPLATE
+    Template Example
+
+    ::
+
+        {% load tethys_gizmos %}
 
         {% gizmo jobs_table_options %}
 
