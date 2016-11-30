@@ -124,11 +124,11 @@ Inserts a Gizmo at the location of the tag.
 
     {% gizmo date_picker_options %}
 
-**register_gizmo_dependency**
----------
+**import_gizmo_dependency**
+---------------------------
 
 Tells the ``gizmo_dependencies`` to load in the dependencies for the gizmo.
-This tag must be in the ``register_gizmos`` block. This is useful for loading
+This tag must be in the ``import_gizmos`` block. This is useful for loading
 the dependencies into the page for a gizmo if you plan on loading the gizmos 
 using AJAX after the initial page load.
 
@@ -157,8 +157,8 @@ using AJAX after the initial page load.
 
 ::
 
-    {% block register_gizmos %}
-        {% register_gizmo_dependency date_picker_name %}
+    {% block import_gizmos %}
+        {% import_gizmo_dependency date_picker_name %}
     {% endblock %}
 
 **gizmo_dependencies**

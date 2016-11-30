@@ -65,14 +65,14 @@ This method initializes a chart generated from an AJAX request. An example is de
 
     In order to use this, you will either need to use a ``PlotView`` gizmo on
     the main page or register the dependencies in the main html template page
-    using the ``register_gizmo_dependency`` tag with the ``plot_view`` name
-    in the ``register_gizmos`` block.
+    using the ``import_gizmo_dependency`` tag with the ``plot_view`` name
+    in the ``import_gizmos`` block.
 
     For example:
     ::
 
-        {% block register_gizmos %}
-            {% register_gizmo_dependency plot_view %}
+        {% block import_gizmos %}
+            {% import_gizmo_dependency plot_view %}
         {% endblock %}
 
 Four elements are required:

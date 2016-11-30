@@ -20,7 +20,6 @@
   {{ block.super }}
   {% gizmo_dependencies global_js %}
   <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
-
 {% endblock %}
 
 {% block bodytag %}data-spy="scroll" data-target="#showcase_nav_list" style="position: relative;"{% endblock %}
@@ -490,7 +489,7 @@ def my_view(request):
       <div class="docs-section">
         <h2>Google Map View</h2>
         <p>
-          The Google Map View is similar to Map View, but it is powered by Google Maps 3. It has the drawing library enabled to allow geospatial user input.
+          The Google Map View is powered by Google Maps 3. It has the drawing library enabled to allow geospatial user input.
           An optional background dataset can be specified for reference, but only the shapes drawn by the user are returned (see
           <a href="#retrieving_shapes">Retrieving Shapes</a> section).
         </p>
