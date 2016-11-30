@@ -101,14 +101,15 @@ class DatePicker(TethysGizmoOptions):
 
             
     @staticmethod
-    def get_global_css():
+    def get_vendor_css():
         """
         JavaScript vendor libraries to be placed in the 
         {% block global_scripts %} block
         """
         return ('tethys_gizmos/vendor/bootstrap_datepicker/css/datepicker3.css',)
+        
     @staticmethod
-    def get_global_js():
+    def get_vendor_js():
         """
         JavaScript vendor libraries to be placed in the 
         {% block global_scripts %} block
