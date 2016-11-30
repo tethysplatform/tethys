@@ -4,28 +4,7 @@ Condor Job Type
 
 **Last Updated:** March 29, 2016
 
-CondorJob
-'''''''''
-The CondorJob type facilitates running jobs on HTCondor using the CondorPy library. The following additional parameters can be defined for the CondorJob type:
 
-    * ``executable`` (string): the file path to the job executable.
-    * ``condorpy_template_name`` (string): the name of a template from the CondorPy library pre-configures certain job attributes.
-    * ``attributes`` (dict): a dictionary of HTCondor job attributes.
-    * ``remote_input_files`` (list of strings): a list of file paths for files that need to be transferred to the remote scheduler to run.
-    * ``num_jobs`` (integer): the number of sub-jobs that will be executed as part of the job.
-    * ``scheduler`` (Scheduler): a `Scheduler` object that contains the connection information for the remote scheduler where the job will be submitted to. If the ``scheduler`` parameter is not included, or defined as ``None``, then the job will be submitted to the local scheduler if it is configured. For more information about schedulers refer to the :doc:`compute`.
-
-For more information about these parameters see the `CondorPy documentation <http://condorpy.readthedocs.org/en/latest/>`_.
-
-.. note::
-    These parameters to create a CondorPy Job object. Most of the CondorJob parameters are called the same as the CondorPy Job arguments that they are used for with a few exceptions:
-
-    * the ``condorpy_template_name`` is used to access retrieve a CondorPy Template. The attributes of the template are combined with the ``attributes`` dict.
-    * the ``scheduler`` is used to define the ``host``, ``username``, ``password``, ``private_key``, and ``private_key_pass``, in the CondorPy Job.
-    * the ``workspace`` is used to set the CondorPy Job ``working_directory``.
-
-.. important::
-    Perhaps the most confusing part about CondorJob parameters is the file paths. Different parameters require that the paths be defined relative to different locations. For more information about how to define paths in CondorJob parameters see the `CondorPy documentation <http://condorpy.readthedocs.org/en/latest/>`_
 
 Setting up a CondorJobTemplate
 ==============================
@@ -54,3 +33,29 @@ Setting up a CondorJobTemplate
                       )
 
       return job_templates
+
+Creating and Customizing a Job
+==============================
+To create a job call the ``create_job`` method on the job manager. The required parameters are ``name``, ``user`` and ``template_name``. Any other job attributes can also be passed in as `kwargs`.
+
+::
+
+    # create a new job
+    job = job_manager.create_job(name='job_name', user=request.user, template_name='example', description='my first job')
+
+    # customize the job using methods provided by the job type
+    job.set_attribute('arguments', 'input_2')
+
+    # save or execute the job
+    job.save()
+    # or
+    job.execute()
+
+Before a controller returns a response the job must be saved or else all of the changes made to the job will be lost (executing the job automatically saves it). If submitting the job takes a long time (e.g. if a large amount of data has to be uploaded to a remote scheduler) then it may be best to use AJAX to execute the job.
+
+API Documentation
+=================
+
+.. autoclass:: tethys_sdk.jobs.CondorJobTemplate
+
+.. autoclass:: tethys_compute.models.CondorJob
