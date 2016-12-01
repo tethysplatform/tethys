@@ -13,12 +13,9 @@ class HydroShareOAuth2(BaseOAuth2):
     """
     HydroShare OAuth2 authentication backend.
     """
-    # example: www.hydroshare.org or beta.hydroshare.org:8000
-    auth_server_hostname = "www.hydroshare.org"
-    # "http" or "https"
-    http_scheme = "https"
-    # backend name
-    name = 'hydroshare'
+    auth_server_hostname = "beta.hydroshare.org"  # www.hydroshare.org:8080
+    http_scheme = "https"  # "http" or "https"
+    name = 'hydroshare_beta'
 
     auth_server_full_url = "{0}://{1}".format(http_scheme, auth_server_hostname)
     AUTHORIZATION_URL = '{0}/o/authorize/'.format(auth_server_full_url)
