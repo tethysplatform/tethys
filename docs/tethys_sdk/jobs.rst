@@ -92,7 +92,6 @@ All job types also have the following read-only attributes:
         - 'Aborted'
         - 'Various'*
         - 'Various-Complete'*
-
         *used for job types with multiple sub-jobs (e.g. CondorWorkflow).
 
 .. note::
