@@ -2,7 +2,7 @@
 What's New
 **********
 
-**Last Updated:** August 13, 2016
+**Last Updated:** December 1, 2016
 
 Refer to this article for information about each new release of Tethys Platform.
 
@@ -88,13 +88,38 @@ PlotView Gizmo
 
 See: :doc:`tethys_sdk/gizmos/plot_view`
 
+Workflow Job Type
+-----------------
+
+* New Condor Workflow provides a way to run a group of jobs (which can have hierarchical relationships) as a single job.
+* The hierarchical relationships are defined as parent-child relationships between jobs.
+* As part of this addition the original Condor Job type was refactored and, while backwards compatibility is maintained in version 1.4, several aspects of how job templates are defined have been deprecated.
+
+See: :doc:`tethys_sdk/jobs/condor_workflow_type`
+
+Testing Framework
+-----------------
+
+* New Tethys CLI command to run tests on Tethys and apps.
+* Tethys SDK now provides a TethysTestCase to streamlines app testing.
+* Persistent stores is supported in testing.
+* Tethys App Scaffold now includes testing module with example test code.
+
+See: :doc:`tethys_sdk/testing` and :ref:`tethys_cli_testing`
+
+Installation
+------------
+
+* Installation Instructions for Ubuntu 16.04
+
+See: :doc:`installation/ubuntu16`
 
 Bug Fixes
 ---------
 
-* Fixed an issue with URL mapping that was masking true errors with contollers (see: `Issue #177 <https://github.com/tethysplatform/tethys/issues/177>`_
+* Fixed an issue with URL mapping that was masking true errors with contollers (see: `Issue #177 <https://github.com/tethysplatform/tethys/issues/177>`_)
 * Fixed an issue with syncstores that use the string version of the path to the intializer function (see: `Issue #185 <https://github.com/tethysplatform/tethys/issues/185>`_)
-
+* Fixed an issue with syncstores that would cause it to fail the first time (see: `Issue #194 <https://github.com/tethysplatform/tethys/issues/194>`_)
 
 Prior Release Notes
 ===================
