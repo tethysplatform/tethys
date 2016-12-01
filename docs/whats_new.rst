@@ -2,7 +2,7 @@
 What's New
 **********
 
-**Last Updated:** August 13, 2016
+**Last Updated:** December 1, 2016
 
 Refer to this article for information about each new release of Tethys Platform.
 
@@ -106,6 +106,13 @@ Testing Framework
 * Tethys App Scaffold now includes testing module with example test code.
 
 See: :doc:`tethys_sdk/testing` and :ref:`tethys_cli_testing`
+
+Installation
+------------
+
+* Installation Instructions for Ubuntu 16.04
+
+See: :doc:`installation/ubuntu16`
 
 Bug Fixes
 ---------
