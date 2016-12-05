@@ -9,7 +9,6 @@
 """
 from hydroshare import HydroShareOAuth2
 
-
 class HydroShareBetaOAuth2(HydroShareOAuth2):
 
     # override necessary settings
