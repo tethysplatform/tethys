@@ -9,7 +9,7 @@ Select Input
 AJAX
 ----
 
-Often dynamically loading in plots can be useful. Here is a description of how
+Often dynamically loading in a select input can be useful. Here is a description of how
 to do so with the SelectInput gizmo.
 
 .. note::
