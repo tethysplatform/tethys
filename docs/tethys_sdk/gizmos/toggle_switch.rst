@@ -74,7 +74,7 @@ Four elements are required:
             method: 'GET',
             success: function(data) {
                 //add DataTable  to page
-               $("#toggle_div").html(data);
+                $("#toggle_div").html(data);
 
                 //Initialize DataTable
                 $("#toggle_div").find('.bootstrap-switch').bootstrapSwitch();
