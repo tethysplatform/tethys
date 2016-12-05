@@ -9,7 +9,6 @@
 """
 from social.backends.oauth import BaseOAuth2
 
-
 class HydroShareOAuth2(BaseOAuth2):
     """
     HydroShare OAuth2 authentication backend.
@@ -43,21 +42,6 @@ class HydroShareOAuth2(BaseOAuth2):
                                                         *args, **kwargs)
 
         # Reconstitute token dictionary for client convenience
-        hs_restclient_para_dict = {}
-        hs_restclient_para_dict['token'] = {
-            'access_token': data['access_token'],
-            'token_type': data['token_type'],
-            'expires_in': data['expires_in'],
-            'refresh_token': data['refresh_token'],
-            'scope': data['scope']
-            }
-
-        hs_restclient_para_dict['key_name'] = "SOCIAL_AUTH_{0}_KEY".format(self.name.upper())
-        hs_restclient_para_dict['secret_name'] = "SOCIAL_AUTH_{0}_SECRET".format(self.name.upper())
-        hs_restclient_para_dict['auth_server_hostname'] = self.auth_server_hostname
-        hs_restclient_para_dict["http_scheme"] = self.http_scheme
-
-        data['hs_restclient'] = hs_restclient_para_dict
 
         # backward compatible
         token_dict = {
