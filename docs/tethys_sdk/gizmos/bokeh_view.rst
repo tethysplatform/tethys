@@ -11,7 +11,7 @@ AJAX
 ----
 
 Often dynamically loading in plots can be useful. Here is a description of how
-to do so with Bokeh
+to do so with Bokeh.
 
 .. note::
 
