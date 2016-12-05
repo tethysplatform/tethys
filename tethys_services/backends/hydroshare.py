@@ -9,6 +9,7 @@
 """
 from social.backends.oauth import BaseOAuth2
 
+
 class HydroShareOAuth2(BaseOAuth2):
     """
     HydroShare OAuth2 authentication backend.
