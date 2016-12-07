@@ -23,13 +23,18 @@
         <div class="account-form-body">
           <form role="form" method="post">
             {% if 'hydroshare' in backends.not_associated %}
-              <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare' %}">
-                <i class="fa fa-hydroshare"></i> Sign in with HydroShare
+              <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare' %}{% if request.GET.next %}?next={{request.GET.next}}{% endif %}">
+                 <i class="fa fa-hydroshare"></i> Sign in with HydroShare
               </a>
             {% endif %}
             {% if 'hydroshare_beta' in backends.not_associated %}
-              <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare_beta' %}">
+              <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare_beta' %}{% if request.GET.next %}?next={{request.GET.next}}{% endif %}">
                 <i class="fa fa-hydroshare"></i> Sign in with HydroShare-beta
+              </a>
+            {% endif %}
+            {% if 'hydroshare_playground' in backends.not_associated %}
+              <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare_playground' %}{% if request.GET.next %}?next={{request.GET.next}}{% endif %}">
+                <i class="fa fa-hydroshare"></i> Sign in with HydroShare-playground
               </a>
             {% endif %}
             {% if 'google-oauth2' in backends.not_associated %}
