@@ -218,14 +218,20 @@ def test_command(args):
         else:
             run_process(['coverage', 'report', config_opt])
     if args.coverage_html:
+        report_dirname = 'coverage_html_report'
+        index_fname = 'index.html'
+
         if args.file and app_package_tag in args.file:
-            run_process(['coverage', 'html', '--directory=$TETHYS_TEST_DIR/coverage_html_report'])
+            run_process(['coverage', 'html', '--directory={0}'.format(os.path.join(tests_path, report_dirname))])
         else:
             run_process(['coverage', 'html', config_opt])
+
         try:
-            run_process(['open', os.path.join(tests_path, 'coverage_html_report', 'index.html')])
+            status = run_process(['open', os.path.join(tests_path, report_dirname, index_fname)])
+            if status != 0:
+                raise Exception
         except:
-            webbrowser.open_new_tab(os.path.join(tests_path, 'coverage_html_report', 'index.html'))
+            webbrowser.open_new_tab(os.path.join(tests_path, report_dirname, index_fname))
 
 
 def tethys_command():

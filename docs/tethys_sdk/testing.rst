@@ -50,20 +50,34 @@ Running Tests
 -------------
 To run any tests at an app level:
 
-    1. Open a terminal
-    2. Enter the Tethys Platform python environment:
-        ``$ . /usr/lib/tethys/bin/activate``
-    3. Enter app-level ``tethys test`` command.
-        ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name(required)>.<folder_name>.<file_name>.<class_name>.<function_name>``
+1. Open a terminal
+2. Enter the Tethys Platform python environment:
+    ``$ . /usr/lib/tethys/bin/activate``
+3. In settings.py make sure that the tethys_default database user is set to tethys_super:
+::
 
-    More specifically:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'tethys_default',
+            'USER': 'tethys_super',
+            'PASSWORD': 'pass',
+            'HOST': '127.0.0.1',
+            'PORT': '5435'
+        }
+    }
 
-    To run all tests across an app:
-        Test command: ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name>``
-    To run all tests within specific directory of an app:
-        Test command: ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name>.<folder_name>``
+4. Enter app-level ``tethys test`` command.
+    ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name(required)>.<folder_name>.<file_name>.<class_name>.<function_name>``
 
-    And so forth.
+Generally:
+
+To run all tests across an app:
+    Test command: ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name>``
+To run all tests within specific directory of an app:
+    Test command: ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name>.<folder_name>``
+
+And so forth.
 
 Thus, you can hone in on the exact tests that you want to run.
 
