@@ -68,18 +68,20 @@ To run any tests at an app level:
     }
 
 4. Enter app-level ``tethys test`` command.
-    ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name(required)>.<folder_name>.<file_name>.<class_name>.<function_name>``
+    ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name(required)>.<folder_name>.<file_name>.<class_name>.<function_name> [-c/C]``
+    Where ``-c`` tracks code coverage and prints out a report in the terminal, and ``-C`` does opens the report as an interactive HTML page in your browser
 
-Generally:
+More specifically:
 
 To run all tests across an app:
     Test command: ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name>``
 To run all tests within specific directory of an app:
     Test command: ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name>.<folder_name>``
 
-And so forth.
+And so forth... Thus, you can hone in on the exact tests that you want to run.
 
-Thus, you can hone in on the exact tests that you want to run.
+  .. note::
+    Remember to append either ``-c`` or ``-C`` if you would like a coverage report at the end of the testing printed in your terminal, or opened in your browser as an interactive HTML page, respectively.
 
 API Documentation
 -----------------
