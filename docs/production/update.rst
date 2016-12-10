@@ -1,8 +1,8 @@
-***********************
-Upgrade from 1.3 to 1.4
-***********************
+****************
+Upgrade to 1.5.0
+****************
 
-**Last Updated:** December 1, 2016
+**Last Updated:** December 10, 2016
 
 1. Pull Repository
 ==================

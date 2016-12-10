@@ -4,7 +4,7 @@
    :align: left
 
 *********************
-Tethys Platform 1.4.0
+Tethys Platform 1.5.0
 *********************
 
 **Last Updated:** December 12, 2016
@@ -13,7 +13,7 @@ Tethys is a platform that can be used to develop and host environmental web apps
 
 .. important::
 
-    Tethys Platform 1.4.0 has arrived! Check out the :doc:`./whats_new` article for a description of the new features and changes.
+    Tethys Platform 1.5.0 has arrived! Check out the :doc:`./whats_new` article for a description of the new features and changes.
 
 Contents
 ========
