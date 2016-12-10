@@ -76,6 +76,7 @@ INSTALLED_APPS = (
     'tethys_services',
     'tethys_compute',
     'social_django',
+    'tethys_layouts',
     'guardian',
     'captcha',
     'rest_framework',
