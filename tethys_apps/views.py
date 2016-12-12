@@ -70,7 +70,7 @@ def send_beta_feedback_email(request):
     url = post.get('betaFormUrl')
 
     # Get app
-    app = get_active_app(the_url=url)
+    app = get_active_app(url=url)
 
     if app is None or not hasattr(app, 'feedback_emails'):
         json = {'success': False,
@@ -78,7 +78,7 @@ def send_beta_feedback_email(request):
         return JsonResponse(json)
 
     # Formulate email
-    subject = 'User Feedback for {0}'.format(app.name)
+    subject = 'User Feedback for {0}'.format(app.name.encode('utf-8'))
 
     message = 'User: {0}\n'\
               'User Local Time: {1}\n'\
