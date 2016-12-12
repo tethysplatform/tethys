@@ -9,7 +9,7 @@
 """
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 
-__all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer', 'MVLegendClass']
+__all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer', 'MVLegendClass', 'MVLegendImageClass', 'MVLegendGeoServerImageClass']
 
 
 class MapView(TethysGizmoOptions):
@@ -90,7 +90,7 @@ class MapView(TethysGizmoOptions):
 
         # Define drawing options
         drawing_options = MVDraw(
-            controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
+            controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
             initial='Point',
             output_format='WKT'
         )
@@ -252,7 +252,7 @@ class MVDraw(SecondaryGizmoOptions):
     MVDraw objects are used to define the drawing options for Map View.
 
     Attributes:
-        controls(list, required): List of drawing controls to add to the map. Valid options are 'Modify', 'Move', 'Point', 'LineString', 'Polygon' and 'Box'.
+        controls(list, required): List of drawing controls to add to the map. Valid options are 'Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon' and 'Box'.
         initial(str, required): Drawing control to be enabled initially. Must be included in the controls list.
         output_format(str): Format to output to the hidden text area. Either 'WKT' (for Well Known Text format) or 'GeoJSON'. Defaults to 'GeoJSON'
 
@@ -261,7 +261,7 @@ class MVDraw(SecondaryGizmoOptions):
     ::
 
         drawing_options = MVDraw(
-            controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
+            controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
             initial='Point',
             output_format='WKT'
         )
@@ -469,7 +469,8 @@ class MVLegendClass(SecondaryGizmoOptions):
 
         # Initialize super class
         super(MVLegendClass, self).__init__()
-
+        
+        self.LEGEND_TYPE = 'mvlegend'
         self.POINT_TYPE = 'point'
         self.LINE_TYPE = 'line'
         self.POLYGON_TYPE = 'polygon'
@@ -510,5 +511,70 @@ class MVLegendClass(SecondaryGizmoOptions):
                 self.ramp = ramp
             else:
                 raise ValueError('Argument "ramp" must be specified for MVLegendClass of type "raster".')
+        else:
+            raise ValueError('Invalid type specified: {0}.'.format(type))
+           
 
+class MVLegendImageClass(SecondaryGizmoOptions):
+    """
+    MVLegendImageClasses are used to define the classes listed in the legend using a pre-generated image.
 
+    Attributes:
+        value (str, required): The value or name of the legend class.
+        image_url (str, required): The url to the legend image.
+
+    Example
+
+    ::
+
+        image_class = MVLegendImageClass(value='Cities',
+                                         image_url='https://upload.wikimedia.org/wikipedia/commons/d/da/The_City_London.jpg'
+                                         )
+    """
+
+    def __init__(self, value, image_url):
+        """
+        Constructor
+        """
+        # Initialize super class
+        super(MVLegendImageClass, self).__init__()
+
+        self.LEGEND_TYPE = 'mvlegendimage'
+        self.value = value
+        self.image_url = image_url
+
+class MVLegendGeoServerImageClass(MVLegendImageClass):
+    """
+    MVLegendGeoServerImageClasses are used to define the classes listed in the legend using the GeoServer generated legend.
+
+    Attributes:
+        value (str, required): The value or name of the legend class.
+        geoserver_url (str, required): The url to your geoserver (e.g. http://localhost:8181/geoserver).
+        style (str, required): The name of the geoserver style (e.g. green).
+        layer (str, required): The name of the geoserver layer (e.g. rivers).
+        width (int): The legend width (default is 20).
+        height (int): The legend height (default is 10).
+
+    Example
+
+    ::
+
+        image_class = MVLegendGeoServerImageClass(value='Cities', 
+                                                  geoserver_url='http://localhost:8181/geoserver', 
+                                                  style='green', 
+                                                  layer='rivers',
+                                                  width=20,
+                                                  height=10)
+    """
+
+    def __init__(self, value, geoserver_url, style, layer, width=20, height=10):
+        """
+        Constructor
+        """
+        image_url = "{0}/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&" \
+                    "STYLE={1}&FORMAT=image/png&WIDTH={2}&HEIGHT={3}&" \
+                    "LEGEND_OPTIONS=forceRule:true&" \
+                    "LAYER={4}".format(geoserver_url, style, width, height, layer)
+                    
+        # Initialize super class
+        super(MVLegendGeoServerImageClass, self).__init__(value, image_url)

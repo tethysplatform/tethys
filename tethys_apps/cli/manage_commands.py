@@ -9,13 +9,16 @@
 """
 
 import os
-import shutil
 import subprocess
 
-from tethys_apps.helpers import get_installed_tethys_apps
-
-DEFAULT_INSTALLATION_DIRECTORY = '/usr/lib/tethys/src'
-DEVELOPMENT_DIRECTORY = '/usr/lib/tethys/tethys'
+#/usr/lib/tethys/src/tethys_apps/cli
+CURRENT_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+#/usr/lib/tethys
+TETHYS_MAIN_DIR = os.sep.join(CURRENT_SCRIPT_DIR.split(os.sep)[:-3])
+#/usr/lib/tethys/src
+DEFAULT_INSTALLATION_DIRECTORY = os.path.join(TETHYS_MAIN_DIR,'src')
+#/usr/lib/tethys/tethys
+DEVELOPMENT_DIRECTORY = os.path.join(TETHYS_MAIN_DIR,'tethys')
 MANAGE_START = 'start'
 MANAGE_SYNCDB = 'syncdb'
 MANAGE_COLLECTSTATIC = 'collectstatic'
@@ -63,6 +66,7 @@ def manage_command(args):
     # Define the process to be run
     primary_process = None
 
+
     if args.command == MANAGE_START:
         if args.port:
             primary_process = ['python', manage_path, 'runserver', args.port]
@@ -70,20 +74,14 @@ def manage_command(args):
             primary_process = ['python', manage_path, 'runserver']
     elif args.command == MANAGE_SYNCDB:
         intermediate_process = ['python', manage_path, 'makemigrations']
-        try:
-            subprocess.call(intermediate_process)
-        except KeyboardInterrupt:
-            pass
+        run_process(intermediate_process)
 
         primary_process = ['python', manage_path, 'migrate']
 
     elif args.command == MANAGE_COLLECTSTATIC:
         # Run pre_collectstatic
         intermediate_process = ['python', manage_path, 'pre_collectstatic']
-        try:
-            subprocess.call(intermediate_process)
-        except KeyboardInterrupt:
-            pass
+        run_process(intermediate_process)
 
         # Setup for main collectstatic
         primary_process = ['python', manage_path, 'collectstatic']
@@ -96,17 +94,11 @@ def manage_command(args):
         # Convenience command to run collectstatic and collectworkspaces
         ## Run pre_collectstatic
         intermediate_process = ['python', manage_path, 'pre_collectstatic']
-        try:
-            subprocess.call(intermediate_process)
-        except KeyboardInterrupt:
-            pass
+        run_process(intermediate_process)
 
         ## Setup for main collectstatic
         intermediate_process = ['python', manage_path, 'collectstatic']
-        try:
-            subprocess.call(intermediate_process)
-        except KeyboardInterrupt:
-            pass
+        run_process(intermediate_process)
 
         ## Run collectworkspaces command
         primary_process = ['python', manage_path, 'collectworkspaces']
@@ -114,9 +106,13 @@ def manage_command(args):
     elif args.command == MANAGE_CREATESUPERUSER:
         primary_process = ['python', manage_path, 'createsuperuser']
 
-    # Call the process with a little trick to ignore the keyboard interrupt error when it happens
     if primary_process:
-        try:
-            subprocess.call(primary_process)
-        except KeyboardInterrupt:
-            pass
+        run_process(primary_process)
+
+
+def run_process(process):
+    # Call the process with a little trick to ignore the keyboard interrupt error when it happens
+    try:
+        subprocess.call(process)
+    except KeyboardInterrupt:
+        pass

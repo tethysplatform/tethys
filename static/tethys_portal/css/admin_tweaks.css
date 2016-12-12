@@ -208,6 +208,9 @@ thead th {
 .submit-row a.deletelink {
   height: auto;
 }
+.delete-confirmation form .cancel-link {
+  height: auto;
+}
 [type=submit],
 [type=button],
 .button,

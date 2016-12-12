@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load staticfiles terms_tags %}
 <!DOCTYPE html>
 
 {# Allows custom attributes to be added to the html tag #}
@@ -106,6 +106,10 @@
     {% endcomment %}
 
     {% block page %}{% endblock %}
+
+    {% block tos_override %}
+      {% show_terms_if_not_agreed %}
+    {% endblock %}
 
     {% comment "scripts explanation" %}
       Use this block for adding scripts. Call with block.super to include the default

@@ -9,8 +9,15 @@
 """
 # DO NOT ERASE
 from tethys_compute.job_manager import (JobManager,
-                                        JobTemplate,
-                                        JOB_TYPES,
                                         BasicJobTemplate,
                                         CondorJobTemplate,
-                                       )
+                                        CondorJobDescription,
+                                        CondorWorkflowTemplate,
+                                        CondorWorkflowJobTemplate,
+                                        # CondorWorkflowSubworkflowTemplate,
+                                        # CondorWorkflowDataJobTemplate,
+                                        # CondorWorkflowFinalTemplate,
+                                        )
+
+# Depricated imports
+from tethys_compute.job_manager import (JobTemplate, JOB_TYPES)

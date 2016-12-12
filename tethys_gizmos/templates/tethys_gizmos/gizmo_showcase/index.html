@@ -55,9 +55,6 @@
             <a href="#google_map_view_docs">Google Map View</a>
           </li>
           <li>
-            <a href="#fetchclimate_docs">FetchClimate</a>
-          </li>
-          <li>
             <a href="#jobs_table_docs">Jobs Table</a>
           </li>
         </ul>
@@ -453,32 +450,6 @@ def my_view(request):
               {% gizmo google_map_view google_map_view %}
               <button class="btn btn-primary" type="submit" name="editable_map_submit">Submit</button>
             </form>
-          </div>
-        </div>
-      </div>
-
-      {# Fetch Climate -----------------------------------------------------------------------------------------------#}
-      <a id="fetchclimate_docs" class="anchor"></a>
-      <div class="docs-section">
-        <h2>FetchClimate</h2>
-        <p>This gizmo can be used to get climate data based off of a bounding box over an area or a point. It is based off of Microsoft Research. See the <a href="http://research.microsoft.com/en-us/projects/fetchclimate/">FetchClimate page</a> for more info.</p>
-        <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/fetchclimate.html">Fetch Climate</a>.
-        </p>
-        <p><strong>NOTE: Do not create more than one map on a page at any given time.</strong></p>
-
-        <div class="example">
-          <div class="demo">
-            <h4>Fetchclimate With Map</h4>
-            <p> Demo cannot be shown on this page because of the demo for the editable google map.
-            Click on button below for live demo.</p>
-            <a class="btn btn-success" href="{% url 'gizmos:fetchclimate_map' %}">Live Demo</a>
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-            <h4>Fetchclimate With Javascript API Output</h4>
-            {% gizmo fetchclimate fetchclimate_array %}
           </div>
         </div>
       </div>
