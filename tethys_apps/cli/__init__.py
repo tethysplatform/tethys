@@ -271,7 +271,7 @@ def tethys_command():
                              action='store_true')
     test_parser.add_argument('-u', '--unit', help='Run only unit tests.', action='store_true')
     test_parser.add_argument('-g', '--gui', help='Run only gui tests. Mutually exclusive with -u. '
-                                                 'If both flags are set then -u takes president.',
+                                                 'If both flags are set then -u takes precedence.',
                              action='store_true')
     test_parser.add_argument('-f', '--file', type=str, help='File to run tests in. Overrides -g and -u.')
     test_parser.set_defaults(func=test_command)
