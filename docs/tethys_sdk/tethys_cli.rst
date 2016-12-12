@@ -232,3 +232,34 @@ Management commands for the Tethys Docker containers. To learn more about Docker
 
     # View Host and Port Info
     $ tethys docker ip
+
+.. _tethys_cli_testing:
+
+test [options]
+--------------
+
+Management commands for running tests for Tethys Platform and Tethys Apps. See :doc:`./testing`.
+
+**Optional Arguments:**
+
+* **-c, --coverage**: Run coverage with tests and output report to console.
+* **-C, --coverage-html**: Run coverage with tests and output html formatted report.
+* **-u, --unit**: Run only unit tests.
+* **-g, --gui**: Run only gui tests. Mutually exclusive with -u. If both flags are set, then -u takes precedence.
+* **-f FILE, --file FILE**: File or directory to run test in. If a directory, recursively searches for tests starting at this directory. Overrides -g and -u.
+
+**Examples:**
+
+::
+
+    # Run all tests
+    tethys test
+
+    # Run all unit tests with coverage report
+    tethys test -u -c
+
+    # Run all gui tests
+    tethys test -g
+
+    # Run tests for a single app
+    tethys test -f tethys_apps.tethysapp.my_first_app
