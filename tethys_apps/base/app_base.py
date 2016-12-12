@@ -33,6 +33,7 @@ class TethysAppBase(object):
       root_url (string): Root URL of the app.
       color (string): App theme color as RGB hexadecimal.
       description (string): Description of the app.
+      tag [string]: A string for filtering apps.
       enable_feedback (boolean): Shows feedback button on all app pages.
       feedback_emails (list): A list of emails corresponding to where submitted feedback forms are sent.
 
@@ -44,6 +45,7 @@ class TethysAppBase(object):
     root_url = ''
     color = ''
     description = ''
+    tags = ''
     enable_feedback = False
     feedback_emails = []
 
@@ -64,6 +66,8 @@ class TethysAppBase(object):
 
         ::
 
+            from tethys_sdk.base import url_map_maker
+
             def url_maps(self):
                 \"""
                 Example url_maps method.
@@ -80,7 +84,7 @@ class TethysAppBase(object):
                 return url_maps
         """
         raise NotImplementedError()
-    
+
     def persistent_stores(self):
         """
         Define this method to register persistent store databases for your app. You may define up to 5 persistent stores for an app.
@@ -91,6 +95,8 @@ class TethysAppBase(object):
         **Example:**
 
         ::
+
+            from tethys_sdk.stores import PersistentStore
 
             def persistent_stores(self):
                 \"""
@@ -195,6 +201,8 @@ class TethysAppBase(object):
 
         ::
 
+            from tethys_sdk.handoff import HandoffHandler
+
             def handoff_handlers(self):
                 \"""
                 Example handoff_handlers method.
@@ -204,6 +212,51 @@ class TethysAppBase(object):
                 )
 
                 return handoff_handlers
+        """
+        return None
+
+    def permissions(self):
+        """
+        Use this method to define permissions for your app.
+
+        Returns:
+          iterable: A list or tuple of ``Permission`` or ``PermissionGroup`` objects.
+
+        **Example:**
+
+        ::
+
+            from tethys_sdk.permissions import Permission, PermissionGroup
+
+            def permissions(self):
+                \"""
+                Example permissions method.
+                \"""
+                # Viewer Permissions
+                view_map = Permission(
+                    name='view_map',
+                    description='View map'
+                )
+
+                delete_projects = Permission(
+                    name='delete_projects',
+                    description='Delete projects'
+                )
+
+                create_projects = Permission(
+                    name='create_projects',
+                    description='Create projects'
+                )
+
+                admin = PermissionGroup(
+                    name='admin',
+                    permissions=(delete_projects, create_projects)
+                )
+
+
+                permissions = (admin, view_map)
+
+                return permissions
         """
         return None
 
@@ -374,58 +427,28 @@ class TethysAppBase(object):
             engine = MyFirstApp.get_persistent_store_engine('example_db')
 
         """
+        # If testing environment, the engine for the "test" version of the persistent store should be fetched
+        if hasattr(settings, 'TESTING') and settings.TESTING:
+            test_store_name = 'test_{0}'.format(persistent_store_name)
+            persistent_store_name = test_store_name
+
         # Create the unique store name
         app_name = cls.package
         unique_store_name = '_'.join([app_name, persistent_store_name])
 
-        # Get database manager
+        # The database manager database user is the owner of all the app databases.
         database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
-        database_manager_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager',
+
+        # Assemble url for persistent store with that name
+        persistent_store_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager',
                                                                          database_manager_db['PASSWORD'] if 'PASSWORD' in database_manager_db else 'pass',
                                                                          database_manager_db['HOST'] if 'HOST' in database_manager_db else '127.0.0.1',
                                                                          database_manager_db['PORT'] if 'PORT' in database_manager_db else '5435',
-                                                                         database_manager_db['NAME'] if 'NAME' in database_manager_db else 'tethys_db_manager')
+                                                                         unique_store_name)
 
-        # Create connection engine
-        engine = create_engine(database_manager_url)
-        connection = engine.connect()
+        # Return SQLAlchemy Engine
+        return create_engine(persistent_store_url)
 
-        # Check for Database
-        existing_dbs_statement = '''
-                                 SELECT d.datname as name
-                                 FROM pg_catalog.pg_database d
-                                 LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid
-                                 ORDER BY 1;
-                                 '''
-
-        existing_dbs = connection.execute(existing_dbs_statement)
-
-        # Compile list of db names
-        existing_db_names = []
-
-        for existing_db in existing_dbs:
-            existing_db_names.append(existing_db.name)
-
-        # Check to make sure that the persistent store exists
-        if unique_store_name in existing_db_names:
-            # Retrieve the database manager url.
-            # The database manager database user is the owner of all the app databases.
-            database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
-
-            # Assemble url for persistent store with that name
-            persistent_store_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager',
-                                                                             database_manager_db['PASSWORD'] if 'PASSWORD' in database_manager_db else 'pass',
-                                                                             database_manager_db['HOST'] if 'HOST' in database_manager_db else '127.0.0.1',
-                                                                             database_manager_db['PORT'] if 'PORT' in database_manager_db else '5435',
-                                                                             unique_store_name)
-
-            # Return SQLAlchemy Engine
-            return create_engine(persistent_store_url)
-
-        else:
-            print('WARNING: No persistent store "{0}" for app "{1}". Make sure you register the persistent store in app.py '
-                  'and run "tethys syncstores {1}".'.format(persistent_store_name, app_name))
-            return None
 
     @classmethod
     def create_persistent_store(cls, persistent_store_name, spatial=False):
@@ -513,6 +536,86 @@ class TethysAppBase(object):
             # Execute postgis statement
             new_db_connection.execute(enable_postgis_statement)
             new_db_connection.close()
+
+        return True
+
+    @classmethod
+    def destroy_persistent_store(cls, persistent_store_name):
+        """
+                Destroys (drops) a persistent store database from this app.
+
+                Args:
+                  persistent_store_name(string): Name of the persistent store that will be created.
+
+                Returns:
+                  bool: True if successful.
+
+
+                **Example:**
+
+                ::
+
+                    from .app import MyFirstApp
+
+                    result = MyFirstApp.destroy_persistent_store('example_db')
+
+                    if result:
+                        # App database 'example_db' was successfuly destroyed and no longer exists
+                        pass
+
+                """
+        if not cls.persistent_store_exists(persistent_store_name):
+            raise NameError('Database with name "{0}" for app "{1}" does not exists.'.format(
+                persistent_store_name,
+                cls.package
+            ))
+
+        super_db = settings.TETHYS_DATABASES['tethys_super']
+
+        super_db_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
+            super_db['USER'] if 'USER' in super_db else 'tethys_super',
+            super_db['PASSWORD'] if 'PASSWORD' in super_db else 'pass',
+            super_db['HOST'] if 'HOST' in super_db else '127.0.0.1',
+            super_db['PORT'] if 'PORT' in super_db else '5435',
+            super_db['NAME'] if 'NAME' in super_db else 'tethys_super'
+        )
+
+        # Compose db name
+        full_db_name = '_'.join((cls.package, persistent_store_name))
+
+        # Create db engine
+        engine = create_engine(super_db_url)
+
+        # Create db
+        drop_db_statement = 'DROP DATABASE IF EXISTS {0}'.format(full_db_name)
+
+        # Connection variable
+        drop_connection = None
+
+        try:
+            drop_connection = engine.connect()
+            drop_connection.execute('commit')
+            drop_connection.execute(drop_db_statement)
+        except Exception as e:
+            if 'being accessed by other users' in str(e):
+
+                # Force disconnect all other connections to the database
+                disconnect_sessions_statement = '''
+                                                SELECT pg_terminate_backend(pg_stat_activity.pid)
+                                                FROM pg_stat_activity
+                                                WHERE pg_stat_activity.datname = '{0}'
+                                                AND pg_stat_activity.pid <> pg_backend_pid();
+                                                '''.format(full_db_name)
+                drop_connection.execute(disconnect_sessions_statement)
+
+                # Try again to drop the databse
+                drop_connection.execute('commit')
+                drop_connection.execute(drop_db_statement)
+                drop_connection.close()
+            else:
+                raise e
+        finally:
+            drop_connection.close()
 
         return True
 

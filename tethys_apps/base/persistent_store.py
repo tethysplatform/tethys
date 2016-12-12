@@ -8,12 +8,10 @@
 ********************************************************************************
 """
 
-import sys
-
 from django.conf import settings
 from django.db import DatabaseError
-
 from sqlalchemy import create_engine
+
 
 class TethysFunctionExtractor(object):
     """
@@ -24,10 +22,16 @@ class TethysFunctionExtractor(object):
     """
     PATH_PREFIX = 'tethys_apps.tethysapp'
 
-    def __init__(self, path):
+    def __init__(self, path, prefix=PATH_PREFIX):
         self.path = path
+        self.prefix = prefix
         self._valid = None
         self._function = None
+
+        if not isinstance(path, basestring):
+            if path.callable():
+                self.valid = True  # TODO should we ensure that function is part of the app?
+                self.function = path
 
     @property
     def valid(self):
@@ -52,10 +56,11 @@ class TethysFunctionExtractor(object):
                 module_path, function_name = self.path.rsplit('.', 1)
 
                 #Pre-process handler path
-                full_module_path = '.'.join((self.PATH_PREFIX, module_path))
+                full_module_path = '.'.join((self.prefix, module_path)) if self.prefix else module_path
 
                 # Import module
                 module = __import__(full_module_path, fromlist=[function_name])
+                      
             except (ValueError, ImportError):
                 self._valid = False
             else:

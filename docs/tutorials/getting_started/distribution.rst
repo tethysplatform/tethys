@@ -2,7 +2,7 @@
 Distributing Apps
 *****************
 
-**Last Updated:** November 17, 2014
+**Last Updated:** September 29, 2016
 
 Once your app is complete, you will likely want to distribute it for others to use or at the very least install it in a production Tethys Platform environment. When you share your app with others, you will share the entire :term:`release package`, which is the outermost directory of your :term:`app project`. For these tutorials, your release package is called "tethysapp-my_first_app".
 
@@ -32,6 +32,7 @@ When you generate your app using the scaffold, it will automatically generate a 
     setup(
         name=release_package,
         version='0.0',
+        tags='',
         description='',
         long_description='',
         keywords='',
@@ -49,6 +50,7 @@ When you generate your app using the scaffold, it will automatically generate a 
             'develop': custom_develop_command(app_package, app_package_dir, dependencies)
         }
     )
+
 
 As a general rule, you should never modify the parameters under the "Apps Definition" heading. These parameters are used by the :term:`setup script` to find the source code for your app and changing their values could result in your app not working properly. If you use Python libraries that are external to your app or Tethys Platform, you will need add the library name to the ``dependencies`` list in the :term:`setup script`. These libraries will automatically be installed when your app is installed.
 
