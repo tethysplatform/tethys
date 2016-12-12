@@ -31,8 +31,8 @@ def select_input(context):
     """
     Dependencies for select2_input gizmo.
     """
-    return ('tethys_gizmos/vendor/select2_3.5.1/select2.css',
-            'tethys_gizmos/vendor/select2_3.5.1/select2.js')
+    return ('tethys_gizmos/vendor/select2_4.0.2/css/select2.css',
+            'tethys_gizmos/vendor/select2_4.0.2/js/select2.min.js')
 
 
 def highcharts_plot_view(context):
@@ -90,25 +90,6 @@ def google_map(context):
     Dependencies for google_map gizmo.
     """
     return ('tethys_gizmos/js/tethys_map.js',)
-
-
-def fetchclimate(context):
-    """
-    Dependencies for fetchclimate gizmo.
-    """
-    return ('tethys_gizmos/vendor/farbtastic/farbtastic.css',
-            'tethys_gizmos/vendor/bootstrap_datepicker/css/datepicker3.css',
-            'tethys_gizmos/css/fetchclimate/fetchclimate.css',
-            'tethys_gizmos/css/fetchclimate/fetchclimate_map.css',
-            'tethys_gizmos/css/fetchclimate/fetchclimate_plot.css',
-            'tethys_gizmos/vendor/bootstrap_datepicker/js/bootstrap_datepicker.js',
-            'tethys_gizmos/js/fetchclimate/fetchclimate_main.js',
-            'tethys_gizmos/js/fetchclimate/fetchclimate_date.js',
-            'tethys_gizmos/js/fetchclimate/fetchclimate_map.js',
-            'tethys_gizmos/vendor/highcharts/js/highcharts.js',
-            'tethys_gizmos/vendor/highcharts/js/highcharts-more.js',
-            'tethys_gizmos/js/fetchclimate/fetchclimate_plot.js',
-            'tethys_gizmos/js/fetchclimate/fetchclimate_data.js')
 
 
 def plot_view(context):

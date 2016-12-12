@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from sys import argv
 
 from django.contrib.messages import constants as message_constants
 
@@ -30,6 +31,13 @@ DEBUG = True
 # List those who should be notified of an error when DEBUG = False as a tuple of (name, email address).
 # i.e.: ADMINS = (('John', 'john@example.com'), ('Mary', 'mary@example.com'))
 ADMINS = ()
+
+# Force users to re-login after the browser has been closed.
+# If changed, delete all django_session table entries from the tethys_default database to ensure updated behavior
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Detect if being executed in the Django testing environment.
+TESTING = len(argv) > 1 and argv[1] == 'test'
 
 # See https://docs.djangoproject.com/en/1.8/topics/logging/#configuring-logging for more logging configuration options.
 LOGGING = {
@@ -61,12 +69,14 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_gravatar',
     'bootstrap3',
+    'termsandconditions',
     'tethys_config',
     'tethys_apps',
     'tethys_gizmos',
     'tethys_services',
     'tethys_compute',
     'social.apps.django_app.default',
+    'guardian',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -85,7 +95,14 @@ AUTHENTICATION_BACKENDS = (
 #    'social.backends.google.GoogleOAuth2',
 #    'social.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
 )
+
+# Terms and conditions settings
+ACCEPT_TERMS_PATH = '/terms/accept/'
+TERMS_EXCLUDE_URL_PREFIX_LIST = {'/admin/', '/oauth2/', '/handoff/', '/accounts/', '/terms/'}
+TERMS_EXCLUDE_URL_LIST = {'/'}
+TERMS_BASE_TEMPLATE = 'page.html'
 
 ROOT_URLCONF = 'tethys_portal.urls'
 
@@ -245,3 +262,10 @@ SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = ''
 ## HydroShare
 SOCIAL_AUTH_HYDROSHARE_KEY = ''
 SOCIAL_AUTH_HYDROSHARE_SECRET = ''
+
+# Django Guardian Settings
+ANONYMOUS_USER_ID = -1
+# GUARDIAN_RAISE_403 = False  # Mutually exclusive with GUARDIAN_RENDER_403
+# GUARDIAN_RENDER_403 = False  # Mutually exclusive with GUARDIAN_RAISE_403
+# GUARDIAN_TEMPLATE_403 = ''
+# ANONYMOUS_DEFAULT_USERNAME_VALUE = 'anonymous'
