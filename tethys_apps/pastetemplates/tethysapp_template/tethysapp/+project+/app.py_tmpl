@@ -12,7 +12,8 @@ class {{proper_no_spaces}}(TethysAppBase):
     package = '{{project}}'
     root_url = '{{project_url}}'
     color = '{{color}}'
-    description = 'Place a brief description of your app here.'
+    description = {{repr(description) or 'Place a brief description of your app here.'}}
+    tags = '{{tags}}'
     enable_feedback = False
     feedback_emails = []
 

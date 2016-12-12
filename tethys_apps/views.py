@@ -10,11 +10,11 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.models import User
 from django.core.mail import send_mail
 
-from tethys_apps.app_harvester import SingletonAppHarvester
 from tethys_apps.base.app_base import TethysAppBase
+from tethys_apps.models import TethysApp
+from tethys_apps.utilities import get_active_app
 
 from tethys_compute.models import TethysJob
 
@@ -25,12 +25,13 @@ def library(request):
     Handle the library view
     """
     # Retrieve the app harvester
-    harvester = SingletonAppHarvester()
+    apps = TethysApp.objects.all()
 
     # Define the context object
-    context = {'apps': harvester.apps}
+    context = {'apps': apps}
 
     return render(request, 'tethys_apps/app_library.html', context)
+
 
 @login_required()
 def handoff_capabilities(request, app_name):
@@ -62,30 +63,14 @@ def send_beta_feedback_email(request):
     """
     Processes and send the beta form data submitted by beta testers
     """
+    # Form parameters
     post = request.POST
-    app = None
-
-    # Setup variables
-    harvester = SingletonAppHarvester()
-    apps_root = 'apps'
 
     # Get url and parts
     url = post.get('betaFormUrl')
-    url_parts = url.split('/')
 
-    # Find the app key
-    if apps_root in url_parts:
-        # The app root_url is the path item following (+1) the apps_root item
-        app_root_url_index = url_parts.index(apps_root) + 1
-        app_root_url = url_parts[app_root_url_index]
-
-        # Get list of app dictionaries from the harvester
-        apps = harvester.apps
-
-        # If a match can be made, return the app dictionary as part of the context
-        for a in apps:
-            if a.root_url == app_root_url:
-                app = a
+    # Get app
+    app = get_active_app(url=url)
 
     if app is None or not hasattr(app, 'feedback_emails'):
         json = {'success': False,
@@ -93,7 +78,7 @@ def send_beta_feedback_email(request):
         return JsonResponse(json)
 
     # Formulate email
-    subject = 'User Feedback for {0}'.format(app.name)
+    subject = 'User Feedback for {0}'.format(app.name.encode('utf-8'))
 
     message = 'User: {0}\n'\
               'User Local Time: {1}\n'\
@@ -123,6 +108,7 @@ def send_beta_feedback_email(request):
     json = {'success': True,
             'result': 'Emails sent to specified developers'}
     return JsonResponse(json)
+
 
 def update_job_status(request, job_id):
     """
