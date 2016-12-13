@@ -18,3 +18,5 @@ python_social_auth==0.2.14
 django-model-utils>=2.4,<2.5
 django-guardian>=1.4.4,<1.5.0
 django-termsandconditions>=1.1.9,<1.2.0
+selenium>=3.0.0,<3.0.2
+coverage>=4.0,<4.2

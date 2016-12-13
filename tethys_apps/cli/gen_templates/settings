@@ -32,7 +32,11 @@ DEBUG = True
 # i.e.: ADMINS = (('John', 'john@example.com'), ('Mary', 'mary@example.com'))
 ADMINS = ()
 
-# Detect if being executed in the Django testing environment
+# Force users to re-login after the browser has been closed.
+# If changed, delete all django_session table entries from the tethys_default database to ensure updated behavior
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Detect if being executed in the Django testing environment.
 TESTING = len(argv) > 1 and argv[1] == 'test'
 
 # See https://docs.djangoproject.com/en/1.8/topics/logging/#configuring-logging for more logging configuration options.
