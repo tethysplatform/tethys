@@ -61,7 +61,7 @@ def _send_refresh_request(user_social):
     strategy = load_strategy()
     user_social.refresh_token(strategy)
 
-    # update token_dict for back compatible
+    # update token_dict for backward compatible
     data = user_social.extra_data
     token_dict = {
        'access_token': data['access_token'],
