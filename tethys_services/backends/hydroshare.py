@@ -41,7 +41,7 @@ class HydroShareOAuth2(BaseOAuth2):
     margin_in_seconds = 300
 
     # testing purpose
-    #set_expires_in_to = margin_in_seconds + 20
+    # set_expires_in_to = margin_in_seconds + 20
     set_expires_in_to = None
 
     def extra_data(self, user, uid, response, details=None, *args, **kwargs):
@@ -64,7 +64,6 @@ class HydroShareOAuth2(BaseOAuth2):
         expires_at_str = datetime.fromtimestamp(expires_at).strftime('%Y-%m-%d %H:%M:%S')
         data["expires_at_str"] = expires_at_str
 
-
         # Reconstitute token dictionary for client convenience
         # backward compatible
         token_dict = {
@@ -77,8 +76,6 @@ class HydroShareOAuth2(BaseOAuth2):
         }
         data['token_dict'] = token_dict
 
-
-
         return data
 
     def get_user_details(self, response):
@@ -88,6 +85,7 @@ class HydroShareOAuth2(BaseOAuth2):
         return {'username': response.get('username'),
                 'email': response.get('email'),
                 }
+
 
     def user_data(self, access_token, *args, **kwargs):
         """
