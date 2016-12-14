@@ -208,7 +208,7 @@ def test_command(args):
     elif args.unit:
         primary_process.append(os.path.join(tests_path, 'unit_tests'))
     elif args.gui:
-        primary_process.append(os.path.join(tests_path,'gui_tests'))
+        primary_process.append(os.path.join(tests_path, 'gui_tests'))
 
     # print(primary_process)
     run_process(primary_process)
