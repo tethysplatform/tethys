@@ -428,7 +428,7 @@ class TethysAppBase(object):
 
         """
         # If testing environment, the engine for the "test" version of the persistent store should be fetched
-        if hasattr(settings, 'TESTING') and settings.TESTING:
+        if os.environ.get('TETHYS_TESTING_IN_PROGRESS'):
             test_store_name = 'test_{0}'.format(persistent_store_name)
             persistent_store_name = test_store_name
 
@@ -466,7 +466,7 @@ class TethysAppBase(object):
 
         # Check to make sure that the persistent store exists, or if in the testing environment (in which case
         # the test persistent store won't yet exist but the engine should be created anyway)
-        if unique_store_name in existing_db_names or (hasattr(settings, 'TESTING') and settings.TESTING):
+        if unique_store_name in existing_db_names or os.environ.get('TETHYS_TESTING_IN_PROGRESS'):
             # Retrieve the database manager url.
             # The database manager database user is the owner of all the app databases.
             database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
