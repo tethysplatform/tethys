@@ -255,6 +255,9 @@ class MVDraw(SecondaryGizmoOptions):
         controls(list, required): List of drawing controls to add to the map. Valid options are 'Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon' and 'Box'.
         initial(str, required): Drawing control to be enabled initially. Must be included in the controls list.
         output_format(str): Format to output to the hidden text area. Either 'WKT' (for Well Known Text format) or 'GeoJSON'. Defaults to 'GeoJSON'
+        lineColor(str): User control for customizing the stroke color of annotation objects
+        fillColor(str): User control for customizing the fill color of polygons (suggest rgba format for setting transparency)
+        pointColor(str): User control for customizing the color of points
 
     Example
 
@@ -263,12 +266,15 @@ class MVDraw(SecondaryGizmoOptions):
         drawing_options = MVDraw(
             controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
             initial='Point',
-            output_format='WKT'
+            output_format='WKT',
+            lineColor='#663399',
+            fillColor='rgba(255,255,255,0.2)',
+            pointColor='#663399'
         )
 
     """
 
-    def __init__(self, controls, initial, output_format='GeoJSON'):
+    def __init__(self, controls, initial, output_format='GeoJSON',lineColor="#ffcc33",fillColor='rgba(255, 255, 255, 0.2)',pointColor="#ffcc33"):
         """
         Constructor
         """
@@ -282,6 +288,9 @@ class MVDraw(SecondaryGizmoOptions):
             raise ValueError('Value of "initial" must be contained in the "controls" list.')
         self.initial = initial
         self.output_format = output_format
+        self.fillColor = fillColor
+        self.lineColor = lineColor
+        self.pointColor = pointColor
 
 
 class MVLayer(SecondaryGizmoOptions):
