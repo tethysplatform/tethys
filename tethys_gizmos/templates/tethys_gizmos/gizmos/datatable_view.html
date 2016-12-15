@@ -20,6 +20,7 @@
       {% endfor %}
     </tr>
 </thead>
+{% if footer %}
 <tfoot>
     <tr>
       {% for column_name in column_names %}
@@ -27,6 +28,7 @@
       {% endfor %}
     </tr>
 </tfoot>
+{% endif %}
 <tbody>
     {% for row in rows %}
       <tr>

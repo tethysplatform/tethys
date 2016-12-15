@@ -21,6 +21,7 @@ class DataTableView(TethysGizmoOptions):
     Attributes:
         rows(tuple or list, required): A list/tuple of lists/tuples representing each row in the table.
         column_names(tuple or list): A tuple or list of strings that represent the table columns names.
+        footer(Optional[bool]):If True, it will add the column names to the bottom of the table.
         attributes(Optional[dict]): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(Optional[str]): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
         **kwargs(DataTable Options): See https://datatables.net/reference/option.
@@ -94,7 +95,7 @@ class DataTableView(TethysGizmoOptions):
     ##                        'fixedHeader', 'responsive',  'scroller')
     gizmo_name = "datatable_view"
     
-    def __init__(self, rows, column_names, attributes={}, classes='', **kwargs):
+    def __init__(self, rows, column_names, footer=False, attributes={}, classes='', **kwargs):
         """
         Constructor
         """
@@ -103,6 +104,7 @@ class DataTableView(TethysGizmoOptions):
 
         self.rows = rows
         self.column_names = column_names
+        self.footer = footer
         self.datatable_options = {}        
         for key, value in kwargs.iteritems():
             data_name = re.sub("([a-z])([A-Z])","\g<1>-\g<2>",key).lower()
