@@ -37,6 +37,9 @@ class HydroShareOAuth2(BaseOAuth2):
         ('scope', 'scope'),
     ]
 
+    # user data endpoint
+    USER_DATA_URL = '{0}/hsapi/userInfo/'.format(auth_server_full_url)
+
     # small margin in expires_at to be safe
     margin_in_seconds = 300
 
@@ -86,14 +89,12 @@ class HydroShareOAuth2(BaseOAuth2):
                 'email': response.get('email'),
                 }
 
-
     def user_data(self, access_token, *args, **kwargs):
         """
         Loads user data from service.
         """
-        url = '{0}/hsapi/userInfo/'.format(self.auth_server_full_url)
         try:
-            return self.get_json(url, params={'access_token': access_token})
+            return self.get_json(self.USER_DATA_URL, params={'access_token': access_token})
         except ValueError:
             return None
 

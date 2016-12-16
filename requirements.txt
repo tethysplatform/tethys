@@ -21,3 +21,4 @@ django-termsandconditions>=1.1.9,<1.2.0
 selenium>=3.0.0,<3.0.2
 coverage>=4.0,<4.2
 hs_restclient>=1.2.5,<1.2.6
+requests_mock>=1.2.0, <1.2.1

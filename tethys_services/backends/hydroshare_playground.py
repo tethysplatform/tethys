@@ -19,3 +19,4 @@ class HydroSharePlaygroundOAuth2(HydroShareOAuth2):
     auth_server_full_url = "{0}://{1}".format(http_scheme, auth_server_hostname)
     AUTHORIZATION_URL = '{0}/o/authorize/'.format(auth_server_full_url)
     ACCESS_TOKEN_URL = '{0}/o/token/'.format(auth_server_full_url)
+    USER_DATA_URL = '{0}/hsapi/userInfo/'.format(auth_server_full_url)
