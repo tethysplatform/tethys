@@ -582,6 +582,8 @@ var TETHYS_MAP_VIEW = (function() {
           layer.tethys_legend_classes = current_layer.legend_classes;
           layer.tethys_legend_extent = current_layer.legend_extent;
           layer.tethys_legend_extent_projection = current_layer.legend_extent_projection;
+          layer.tethys_editable = current_layer.editable;
+          layer.tethys_table_of_contents = current_layer.table_of_contents;
 
           // Add layer to the map
           m_map.addLayer(layer);
