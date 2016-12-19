@@ -477,7 +477,7 @@ class MVLayer(SecondaryGizmoOptions):
     """
 
     def __init__(self, source, options, legend_title, layer_options=None, editable=True, legend_classes=None, legend_extent=None,
-                 legend_extent_projection='EPSG:4326', feature_selection=False, geometry_attribute=None, tethys_toc=True):
+                 legend_extent_projection='EPSG:4326', feature_selection=False, geometry_attribute=None, table_of_contents=True):
         """
         Constructor
         """
@@ -493,7 +493,7 @@ class MVLayer(SecondaryGizmoOptions):
         self.legend_extent_projection = legend_extent_projection
         self.feature_selection = feature_selection
         self.geometry_attribute = geometry_attribute
-        self.tethys_toc = tethys_toc
+        self.table_of_contents = table_of_contents
 
         #TODO this should be a log
         if feature_selection and not geometry_attribute:
