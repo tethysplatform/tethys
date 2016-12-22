@@ -85,6 +85,11 @@
       <script src="{% static 'tethys_portal/vendor/bootstrap/js/bootstrap.min.js' %}" type="text/javascript"></script>
     {% endblock %}
 
+    {% block session_timeout_modal %}
+      {% include 'session_security/all.html' %}
+      <link href="{% static 'tethys_portal/css/session_security_override.css' %}"  rel="stylesheet" />
+    {% endblock %}
+
     {% block extrahead %}{% endblock %}
     {% block blockbots %}{% endblock %}
   </head>

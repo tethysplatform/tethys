@@ -31,9 +31,15 @@ DEBUG = True
 # i.e.: ADMINS = (('John', 'john@example.com'), ('Mary', 'mary@example.com'))
 ADMINS = ()
 
-# Force users to re-login after the browser has been closed.
+# Force user logout once the browser has been closed.
 # If changed, delete all django_session table entries from the tethys_default database to ensure updated behavior
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Warn user of forced logout after indicated number of seconds
+SESSION_SECURITY_WARN_AFTER = 540
+
+# Force user logout after a certain number of seconds
+SESSION_SECURITY_EXPIRE_AFTER = 600
 
 # See https://docs.djangoproject.com/en/1.8/topics/logging/#configuring-logging for more logging configuration options.
 LOGGING = {
@@ -73,6 +79,7 @@ INSTALLED_APPS = (
     'tethys_compute',
     'social.apps.django_app.default',
     'guardian',
+    'session_security'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -83,6 +90,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
+    'session_security.middleware.SessionSecurityMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
