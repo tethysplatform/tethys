@@ -427,8 +427,8 @@ class TethysAppBase(object):
             engine = MyFirstApp.get_persistent_store_engine('example_db')
 
         """
-        # If testing environment, the engine for the "test" version of the persistent store should be fetched
-        if hasattr(settings, 'TESTING') and settings.TESTING:
+        # If testing environment, the engine for the "test" version of the persistent store engine should be generated
+        if os.environ.get('TETHYS_TESTING_IN_PROGRESS'):
             test_store_name = 'test_{0}'.format(persistent_store_name)
             persistent_store_name = test_store_name
 
@@ -448,7 +448,6 @@ class TethysAppBase(object):
 
         # Return SQLAlchemy Engine
         return create_engine(persistent_store_url)
-
 
     @classmethod
     def create_persistent_store(cls, persistent_store_name, spatial=False):
