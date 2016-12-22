@@ -17,19 +17,20 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
 	/************************************************************************
  	*                      MODULE LEVEL / GLOBAL VARIABLES
  	*************************************************************************/
- 	var m_public_interface,				// Object returned by the module
- 	    m_map,
- 	    m_map_selector;
+ 	var m_public_interface;				// Object returned by the module
 
 	/************************************************************************
  	*                    PRIVATE FUNCTION DECLARATIONS
  	*************************************************************************/
- 	var resize_map;
+ 	var handle_save, resize_map;
 
 
  	/************************************************************************
  	*                    PRIVATE FUNCTION IMPLEMENTATIONS
  	*************************************************************************/
+    handle_save = function() {
+        console.log('foo');
+    };
 
  	resize_map = function() {
  	    var header_height = $('.tethys-app-header').height(),
@@ -40,7 +41,6 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             'max-height': $('#app-content').height(),
             'width': '100%',
         });
-        m_map.render();
  	};
 
 	/************************************************************************
@@ -59,15 +59,14 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
  	*                  INITIALIZATION / CONSTRUCTOR
  	*************************************************************************/
 	$(function() {
-	    // Initialize module variables
-	    var m_map_selector = '#map_view';
-	    var m_map = TETHYS_MAP_VIEW.getMap();
 
-	    // Events
+	    // Bind to events
         $(window).resize(function() {
             resize_map();
-
         });
+
+        // Save event
+        $('#save-btn').click(handle_save);
 
         // Initialize map
         resize_map();
