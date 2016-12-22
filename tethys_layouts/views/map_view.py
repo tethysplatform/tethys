@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from django.http import JsonResponse
 from tethys_layouts.views.base import TethysLayoutController
 from tethys_sdk.gizmos import MapView, MVView, MVDraw, MVLayer, MVLegendClass
 
@@ -132,12 +133,29 @@ class MapViewLayoutController(TethysLayoutController):
         )
         return map_view_gizmo
 
+    def on_save(self, request, *args, **kwargs):
+        """
+        Handle a save event from the map.
+        """
+        success = True
+        # Do nothing by default
+        return success
+
     def get(self, request, *args, **kwargs):
         """
         Handle Get Requests
         """
         # Get context
         context = self.get_context_data(**kwargs)
+
+        request_type = request.GET.get('type', None)
+
+        if request_type == 'on-save':
+            success = self.on_save(request, args, kwargs)
+            return JsonResponse({'success': success})
+        elif request_type == 'on-delete':
+            # do stuff
+            return JsonResponse({'success': True})
 
         # Add to context
         context['map_view_gizmo'] = self.build_map_view(request, args, kwargs)
