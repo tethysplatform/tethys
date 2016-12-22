@@ -91,6 +91,13 @@ def google_map(context):
     """
     return ('tethys_gizmos/js/tethys_map.js',)
 
+def esri_map(context):
+    """
+    Dependencies for esri_map gizmo.
+    """
+
+    return ('tethys_gizmos/js/esri_map.js',)
+
 
 def plot_view(context):
     """
