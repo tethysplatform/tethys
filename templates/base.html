@@ -83,6 +83,7 @@
     {% block global_scripts %}
       <script src="{% static 'tethys_portal/vendor/jquery/jquery.min.js' %}" type="text/javascript"></script>
       <script src="{% static 'tethys_portal/vendor/bootstrap/js/bootstrap.min.js' %}" type="text/javascript"></script>
+      {% include 'session_security/all.html' %}
     {% endblock %}
 
     {% block extrahead %}{% endblock %}
