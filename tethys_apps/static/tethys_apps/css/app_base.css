@@ -216,12 +216,13 @@ body {
   background: #efefef;
   padding: 0 15px;
   padding-top: 100px;
+  overflow-y: auto;
 }
 #app-content-wrapper #app-content #app-navigation .nav {
   padding: 20px 0;
   padding-bottom: 40px;
   height: 100%;
-  overflow: auto;
+  overflow: initial;
 }
 #app-content-wrapper #app-content #app-navigation .nav::-webkit-scrollbar {
   display: none;
