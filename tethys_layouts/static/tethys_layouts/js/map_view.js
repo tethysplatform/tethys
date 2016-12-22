@@ -30,6 +30,9 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
  	*************************************************************************/
     handle_save = function() {
         console.log('foo');
+        // Get the JSON from the hidden field
+        // Build AJAX
+        // map?type="on-save"&var1="foo"&var2="bar"
     };
 
  	resize_map = function() {
