@@ -882,7 +882,10 @@ def index(request):
                                           }],
                                layers=map_layers,
                                view=view_options,
-                               basemap='OpenStreetMap',
+                               basemap=['OpenStreetMap',
+                                        {'OpenStreetMap': {'url': 'http://tile.stamen.com/watercolor/{z}/{x}/{y}.jpg',
+                                                           'label': 'Watercolor'}
+                                         }],
                                draw=drawing_options,
                                legend=True)
 
