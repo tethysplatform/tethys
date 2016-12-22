@@ -64,6 +64,7 @@ urlpatterns = [
     url(r'^handoff/(?P<app_name>[\w-]+)/(?P<handler_name>[\w-]+)/$', tethys_apps_views.handoff, name='handoff'),
     url(r'^update-job-status/(?P<job_id>[\w-]+)/$', tethys_apps_views.update_job_status, name='update_job_status'),
     url(r'^terms/', include('termsandconditions.urls')),
+    url(r'session_security/', include('session_security.urls')),
     #url(r'^error/', include(development_error_urls)),
 ]
 
