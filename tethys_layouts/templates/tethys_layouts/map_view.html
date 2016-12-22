@@ -3,6 +3,7 @@
 
 {% block app_navigation %}
   {{ block.super }}
+  <a id="save-btn" class="btn btn-default">Save</a>
 {% endblock %}
 
 {% block app_content %}
@@ -11,6 +12,7 @@
   </div>
 {% endblock %}
 
+{# Hide the app actions bar #}
 {% block app_actions_override %}
 {% endblock %}
 
