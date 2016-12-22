@@ -10,6 +10,7 @@
 
 import os
 import subprocess
+from tethys_apps.base.testing import set_testing
 
 #/usr/lib/tethys/src/tethys_apps/cli
 CURRENT_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -113,6 +114,10 @@ def manage_command(args):
 def run_process(process):
     # Call the process with a little trick to ignore the keyboard interrupt error when it happens
     try:
+        if 'test' in process:
+            set_testing(True)
         subprocess.call(process)
     except KeyboardInterrupt:
         pass
+    finally:
+        set_testing(False)
