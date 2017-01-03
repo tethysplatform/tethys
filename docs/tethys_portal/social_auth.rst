@@ -236,20 +236,21 @@ HydroShare
 
   d. Client secret: Leave unchanged. Note this value for step 3.
 
-  r. Client type: Select "Confidential".
+  e. Client type: Select "Confidential".
 
   f. Authorization grant type: Select "Authorzation code".
 
   g. Redirect uris: Add the call back URLs. The right protocol (http or https) that matches your Tethys Portal settings should be explicitly included in this url. For example:
 
     ::
-	if your Tethys Portal was located at the domain ``https://www.my-tethys-portal.com``:
-        https://www.my-tethys-portal.com/oauth2/complete/hydroshare/
 
-    if your Tethys Portal was on a local development machine:
-        http://localhost:8000/oauth2/complete/hydroshare/
-        or
-        http://127.0.0.1:8000/oauth2/complete/hydroshare/
+        if your Tethys Portal was located at the domain ``https://www.my-tethys-portal.com``:
+            https://www.my-tethys-portal.com/oauth2/complete/hydroshare/
+
+        if your Tethys Portal was on a local development machine:
+            http://localhost:8000/oauth2/complete/hydroshare/
+            or
+            http://127.0.0.1:8000/oauth2/complete/hydroshare/
 
   h. Press the "Save" button.
 
@@ -278,6 +279,7 @@ HydroShare
   A helper function is provided to make this integration smoother.
 
   ::
+
       # import helper function
       from tethys_services.backends.hs_restclient_helper import get_oauth_hs
 
@@ -305,6 +307,7 @@ HydroShare
     To activate them, you need to go through steps 1-3 for each backend (replace www.hydroshare.org with the testing domain urls accordingly).
 
     At step 3:
+
     a. Append the following classes in ``AUTHENTICATION_BACKENDS`` settings:
       hydroshare-beta:
         ``tethys_services.backends.hydroshare_beta.HydroShareBetaOAuth2``
