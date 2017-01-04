@@ -112,7 +112,7 @@ class SelectInput(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the 
         {% block global_scripts %} block
         """
-        return ('tethys_gizmos/vendor/select2_4.0.2/js/select2.min.js',)
+        return ('tethys_gizmos/vendor/select2_4.0.2/js/select2.full.min.js',)
 
     @staticmethod
     def get_vendor_css():
@@ -120,7 +120,7 @@ class SelectInput(TethysGizmoOptions):
         CSS vendor libraries to be placed in the 
         {% block styles %} block
         """
-        return ('tethys_gizmos/vendor/select2_4.0.2/css/select2.css',)
+        return ('tethys_gizmos/vendor/select2_4.0.2/css/select2.min.css',)
 
     @staticmethod
     def get_gizmo_js():
