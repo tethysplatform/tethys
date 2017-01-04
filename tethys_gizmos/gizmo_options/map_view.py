@@ -319,7 +319,7 @@ class MVDraw(SecondaryGizmoOptions):
 
     """
 
-    def __init__(self, controls, initial, output_format='GeoJSON',lineColor="#ffcc33",fillColor='rgba(255, 255, 255, 0.2)',pointColor="#ffcc33"):
+    def __init__(self, controls, initial, output_format='GeoJSON',line_color="#ffcc33",fill_color='rgba(255, 255, 255, 0.2)',point_color="#ffcc33"):
         """
         Constructor
         """
@@ -333,9 +333,9 @@ class MVDraw(SecondaryGizmoOptions):
             raise ValueError('Value of "initial" must be contained in the "controls" list.')
         self.initial = initial
         self.output_format = output_format
-        self.fillColor = fillColor
-        self.lineColor = lineColor
-        self.pointColor = pointColor
+        self.fill_color = fill_color
+        self.line_color = line_color
+        self.point_color = point_color
 
 
 class MVLayer(SecondaryGizmoOptions):
@@ -477,7 +477,7 @@ class MVLayer(SecondaryGizmoOptions):
     """
 
     def __init__(self, source, options, legend_title, layer_options=None, editable=True, legend_classes=None, legend_extent=None,
-                 legend_extent_projection='EPSG:4326', feature_selection=False, geometry_attribute=None, table_of_contents=True):
+                 legend_extent_projection='EPSG:4326', feature_selection=False, geometry_attribute=None, data={}):
         """
         Constructor
         """
@@ -493,7 +493,7 @@ class MVLayer(SecondaryGizmoOptions):
         self.legend_extent_projection = legend_extent_projection
         self.feature_selection = feature_selection
         self.geometry_attribute = geometry_attribute
-        self.table_of_contents = table_of_contents
+        self.data = data
 
         #TODO this should be a log
         if feature_selection and not geometry_attribute:

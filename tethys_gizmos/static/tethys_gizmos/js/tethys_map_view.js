@@ -275,11 +275,11 @@ var TETHYS_MAP_VIEW = (function() {
 ////////////////////////////////////////// Color of annotation tools and Button Spacing ////////////////////////////////
     var VALID_GEOMETRY_TYPES = ['Polygon', 'Point', 'LineString', 'Box'];
 //    var INITIAL_FILL_COLOR = 'rgba(255, 255, 255, 0.2)',
-    var INITIAL_FILL_COLOR = m_draw_options.fillColor,
+    var INITIAL_FILL_COLOR = m_draw_options.fill_color,
 //        INITIAL_STROKE_COLOR = '#ffcc33',
-        INITIAL_STROKE_COLOR = m_draw_options.lineColor,
+        INITIAL_STROKE_COLOR = m_draw_options.line_color,
 //        INITIAL_POINT_FILL_COLOR = '#ffcc33',
-        INITIAL_POINT_FILL_COLOR = m_draw_options.pointColor,
+        INITIAL_POINT_FILL_COLOR = m_draw_options.point_color,
         BUTTON_SPACING = 30,
         BUTTON_OFFSET_UNITS = 'px';
 
@@ -312,7 +312,6 @@ var TETHYS_MAP_VIEW = (function() {
 
       // Add drawing layer legend properites
       m_drawing_layer.tethys_legend_title = 'Drawing Layer';
-      m_drawing_layer.editable = true;
 
       // Add drawing layer to the map
       m_map.addLayer(m_drawing_layer);
@@ -583,7 +582,7 @@ var TETHYS_MAP_VIEW = (function() {
           layer.tethys_legend_extent = current_layer.legend_extent;
           layer.tethys_legend_extent_projection = current_layer.legend_extent_projection;
           layer.tethys_editable = current_layer.editable;
-          layer.tethys_table_of_contents = current_layer.table_of_contents;
+          layer.tethys_data = current_layer.data;
 
           // Add layer to the map
           m_map.addLayer(layer);
@@ -905,7 +904,7 @@ var TETHYS_MAP_VIEW = (function() {
     // Create select interaction
     m_modify_select_interaction = new ol.interaction.Select({
         layers: function(layer){
-            if (layer.editable){
+            if (layer.tethys_editable){
                 return layer
             }
         },
@@ -1812,7 +1811,7 @@ var TETHYS_MAP_VIEW = (function() {
 
     var feature = map.forEachFeatureAtPixel(event.pixel,
         function(feature, layer) {
-          if (layer.editable === false){
+          if (layer.tethys_editable === false){
             return false;
           }
           return feature;
@@ -1894,7 +1893,7 @@ var TETHYS_MAP_VIEW = (function() {
     var map = event.map;
     var feature = map.forEachFeatureAtPixel(event.pixel,
         function(feature, layer) {
-            if (layer.editable && layer instanceof ol.layer.Vector) {
+            if (layer.tethys_editable && layer instanceof ol.layer.Vector) {
                 layer.getSource().removeFeature(feature);
             };
         });
