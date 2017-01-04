@@ -240,17 +240,17 @@ HydroShare
 
   f. Authorization grant type: Select "Authorzation code".
 
-  g. Redirect uris: Add the call back URLs. The right protocol (http or https) that matches your Tethys Portal settings should be explicitly included in this url. For example:
+  g. Redirect uris: Add the call back URLs. The protocol (http or https) that matches your Tethys Portal settings should be included in this url. For example:
 
-    ::
+  ::
 
-        if your Tethys Portal was located at the domain ``https://www.my-tethys-portal.com``:
-            https://www.my-tethys-portal.com/oauth2/complete/hydroshare/
+      if your Tethys Portal was located at the domain ``https://www.my-tethys-portal.com``:
+          https://www.my-tethys-portal.com/oauth2/complete/hydroshare/
 
-        if your Tethys Portal was on a local development machine:
-            http://localhost:8000/oauth2/complete/hydroshare/
-            or
-            http://127.0.0.1:8000/oauth2/complete/hydroshare/
+      if your Tethys Portal was on a local development machine:
+          http://localhost:8000/oauth2/complete/hydroshare/
+          or
+          http://127.0.0.1:8000/oauth2/complete/hydroshare/
 
   h. Press the "Save" button.
 
@@ -286,13 +286,12 @@ HydroShare
       # your controller function
       def home(request)
 
-          # put codes inside a 'try..except...' statement
+          # put codes in a 'try..except...' statement
           try:
               # pass in request object
               hs = get_oauth_hs(request)
 
-              # your logic goes here.
-              # for example: list all HydroShare resources that you have permission
+              # your logic goes here. For example: list all HydroShare resources
               for resource in hs.getResourceList():
                   print(resource)
 
@@ -315,11 +314,15 @@ HydroShare
         ``tethys_services.backends.hydroshare_playground.HydroSharePlaygroundOAuth2``
 
     b. Assign the ``Client ID`` and ``Client Secret`` to the following variables:
+
       hydroshare-beta:
         ``SOCIAL_AUTH_HYDROSHARE_BETA_KEY``
+
         ``SOCIAL_AUTH_HYDROSHARE_BETA_SECRET``
+
       hydroshare-playground:
         ``SOCIAL_AUTH_HYDROSHARE_PLAYGROUND_KEY``
+
         ``SOCIAL_AUTH_HYDROSHARE_PLAYGROUND_SECRET``
 
     Note: To prevent any unexpected behavior in section (4), a Tethys account SHOULD NOT be associated with multiple HydroShare social accounts.
