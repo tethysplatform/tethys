@@ -28,7 +28,7 @@ a. Installers can be found on the `Miniconda website <http://conda.pydata.org/mi
 2. Clone the Tethys Platform Repository
 ---------------------------------------
 
-a. Create a directory for the source code with the proper permissions and clone the code into that directory.
+a. Create a directory for the source code with the proper permissions and clone the code into that directory:
 
   ::
 
@@ -54,7 +54,7 @@ a. Create a directory for the source code with the proper permissions and clone 
 
     The source code can be placed into any directory, however it is recommended that you use `/usr/lib/tethys/src` for consistency with the documentation.
 
-c. Create a Conda environment with the Tethys dependencies and install Tethys into that environment.
+b. Create a Conda environment with the Tethys dependencies and install Tethys into that environment:
 
   ::
 
@@ -125,6 +125,13 @@ d. Add your user to the Docker group. This is necessary to use the Tethys Docker
 
     Adding a user to the Docker group is the equivalent of declaring a user as root. See `Giving non-root access <https://docs.docker.com/installation/ubuntulinux/#giving-non-root-access>`_ for more details.
 
+e. The last command logged you into the docker group, which provided you with a new prompt, so you'll need to activate the tethys environment again:
+
+  ::
+
+    export PATH="$HOME/miniconda/bin:$PATH"
+    . activate tethys
+
 4. Install Tethys Software Suite Docker Containers
 --------------------------------------------------
 
@@ -138,7 +145,7 @@ You will be prompted to enter various parameters needed to customize your instan
 
 .. tip::
 
-    Running into errors with this command? Try logging out and logging back in to reinitialize the docker group permissions for you user.
+    Running into errors with this command? Try logging out and logging back in to reinitialize the docker group permissions for you user. Be sure to activate the tethys environment after logging back in.
 
     Occasionally, you may encounter an error due to poor internet connection. Run the ``tethys docker init`` command repeatedly. It will pick up where it left off and eventually lead to success. When in doubt, try, try again.
 
@@ -272,26 +279,30 @@ You are now ready to configure your Tethys Platform installation using the web a
         sudo chown $USER /usr/lib/tethys
         git clone https://github.com/tethysplatform/tethys /usr/lib/tethys/src
         cd /usr/lib/tethys/src
-        git checkout dev
+        git checkout conda_env
         conda env create -f tethys_conda_env.yml
         . activate tethys
         python setup.py develop
+        tethys gen settings -d /usr/lib/tethys/src/tethys_apps
         sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-    ::
-
         echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list
         sudo apt-get update
+        sudo apt-get install -y docker-engine
+        .
+
 
     ::
 
-        sudo apt-get install -y docker-engine
         sudo gpasswd -a $USER docker
         sudo service docker restart
-        newgrp docker
+        sudo su $USER
+        .
+
     ::
 
+        . $HOME/miniconda/bin/activate tethys
         tethys docker init -d
         tethys docker start -c postgis
-        tethys gen settings -d /usr/lib/tethys/src/tethys_apps
         tethys manage syncdb
         tethys manage createsuperuser
+        .
