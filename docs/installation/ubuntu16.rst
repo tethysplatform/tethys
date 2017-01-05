@@ -2,7 +2,7 @@
 Installation on Ubuntu 16.04
 ****************************
 
-**Last Updated:** July 1, 2016
+**Last Updated:** January 5, 2017
 
 .. warning::
 
@@ -14,76 +14,53 @@ Installation on Ubuntu 16.04
     
     Also, check to make sure that your installation of Ubuntu = version 16.04. The following steps are likely not to work with other versions.
 
-1. Install the Dependencies
----------------------------
+1. Install Miniconda (or Anaconda)
+----------------------------------
 
-a. Install most of the dependencies via :command:`apt-get`. Open a terminal and execute the following commands:
-
-  ::
-
-      $ sudo apt-get update
-      $ sudo apt-get install python-dev python-pip python-virtualenv libpq-dev libxml2-dev libxslt1-dev libffi-dev git-core
-
-  You may be prompted to enter your password to authorize the installation of these packages. If you are prompted about the disk space that will be used to install the dependencies, enter :kbd:`Y` and press :kbd:`Enter` to continue.
-
-
-2. Install Docker
------------------
-
-Docker needs to be installed to install the Tethys Software Suite. These instructions are adapted from the `Installation on Ubuntu <https://docs.docker.com/engine/installation/linux/ubuntulinux/>`_ Docker tutorial and the `How to Install and Use Docker on Ubuntu 16.04 <https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04>`_ Digital Ocean tutorial.
-
-a. Add the GPG key for the official Docker repository:
-
-  ::
-  
-    $ sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-  
-b. Add the Docker repository to APT sources:
-
-  ::
-  
-    $ echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list
-  
-c. Update APT sources again and install Docker engine:
-
-  ::
-  
-    $ sudo apt-get update
-    $ sudo apt-get install -y docker-engine
-
-d. Add your user to the Docker group. This is necessary to use the Tethys Docker commandline tools. In a command prompt execute:
+a. Installers can be found on the `Miniconda website <http://conda.pydata.org/miniconda.html>`_. Or to perform a silent installation of Miniconda (which assumes you accept the `terms and conditions <https://docs.continuum.io/anaconda/eula>`_), open a terminal and execute the following commands:
 
   ::
 
-    $ sudo gpasswd -a ${USER} docker
-    $ sudo service docker restart
-    $ gnome-session-quit --logout
+    wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
+    bash ~/miniconda.sh -b -p $HOME/miniconda
+    export PATH="$HOME/miniconda/bin:$PATH"
 
-e. Select **log out** and then **log back in** to make the changes take effect.
+2. Clone the Tethys Platform Repository
+---------------------------------------
 
-.. important::
+a. Create a directory for the source code with the proper permissions and clone the code into that directory.
 
-    **DO NOT FORGET PART E!** Be sure to logout of Ubuntu and log back in before you continue. You will not be able to complete the installation without completing this step.
+  ::
 
-.. warning::
+    sudo mkdir -p /usr/lib/tethys
+    sudo chown $USER /usr/lib/tethys
+    conda install --yes git
+    git clone https://github.com/tethysplatform/tethys /usr/lib/tethys/src
+    cd /usr/lib/tethys/src
+    git checkout dev
 
-    Adding a user to the Docker group is the equivalent of declaring a user as root. See `Giving non-root access <https://docs.docker.com/installation/ubuntulinux/#giving-non-root-access>`_ for more details.
+.. tip::
 
-3. Create Virtual Environment and Install Tethys Platform
----------------------------------------------------------
+    The last line that was executed checks out the development branch of Tethys Platform. If you would like to install a different version, you can use git to checkout the tagged release branch. For example, to checkout version 1.4.0:
 
-Python virtual environments are used to create isolated Python installations to avoid conflicts with dependencies of other Python applications on the same system. The following commands should be executed in a terminal.
+    ::
 
-a. Create a :term:`Python virtual environment` and activate it::
+        $ cd /usr/lib/tethys/src
+        $ git checkout tags/1.4.0
 
-    $ sudo mkdir -p /usr/lib/tethys
-    $ sudo chown `whoami` /usr/lib/tethys
-    $ virtualenv --no-site-packages /usr/lib/tethys
-    $ . /usr/lib/tethys/bin/activate
+    For a list of all tagged releases, see `Tethys Platform Releases <https://github.com/tethysplatform/tethys/releases>`_. Depending on the version you intend to install, you may need to delete your entire virtual environment (i.e.: the ``/usr/lib/tethys`` directory) to start fresh.
 
-.. hint::
+.. note::
 
-    You may be tempted to enter single quotes around the *whoami* directive above, but those characters are actually `grave accent <http://www.wikiwand.com/en/Grave_accent>`_ characters: :kbd:`\``. This key is usually located to the left of the :kbd:`1` key or in that vicinity.
+    The source code can be placed into any directory, however it is recommended that you use `/usr/lib/tethys/src` for consistency with the documentation.
+
+c. Create a Conda environment with the Tethys dependencies and install Tethys into that environment.
+
+  ::
+
+    conda env create -f tethys_conda_env.yml
+    . activate tethys
+    python setup.py develop
 
 .. important::
 
@@ -91,44 +68,62 @@ a. Create a :term:`Python virtual environment` and activate it::
 
         (tethys) $ _
 
-    The Tethys virtual environment must remain active for the entire installation. If you need to logout or close the terminal in the middle of the installation, you will need to reactivate the virtual environment. This can be done at anytime by executing the following command (don't forget the dot)::
+    The Tethys virtual environment must remain active for the entire installation. If you need to logout or close the terminal in the middle of the installation, you will need to reactivate the virtual environment. To activate the environment you first need to add the miniconda `bin` directory to your path::
 
-        $ . /usr/lib/tethys/bin/activate
-    
-    If you get tired of typing ``. /usr/lib/tethys/bin/activate`` to activate your virtual environment, you can add an alias to your ``.bashrc`` file::
-    
-        $ echo "alias t='. /usr/lib/tethys/bin/activate'" >> ~/.bashrc
-      
-    Close your terminal window and reopen it to effect the changes. Now, to activate your virtual environment all you have to do is use the alias ``t``::
-    
-        $ t
-      (tethys) $ _
+        export PATH="$HOME/miniconda/bin:$PATH"
 
-b. Install Tethys Platform into the virtual environment with the following command::
+    Then you can activate the tethys environment by executing the following command (don't forget the dot)::
 
-    (tethys) $ git clone https://github.com/tethysplatform/tethys /usr/lib/tethys/src
+        . activate tethys
 
-.. tip::
+    If you get tired of going through these steps to activate your environment, you can add an alias to your ``.bashrc`` file::
 
-    If you would like to install a different version of Tethys Platform, you can use git to checkout the tagged release branch. For example, to checkout version 1.0.0:
+        echo "alias t='. $HOME/miniconda/bin/activate tethys'" >> ~/.bashrc
 
-    ::
+    Execute the ``.bashrc`` file to effect the changes. (This file is automatically executed when a new terminal is opened)::
 
-        $ cd /usr/lib/tethys/src
-        $ git checkout tags/1.0.0
+        . ~/.bashrc
 
-    For a list of all tagged releases, see `Tethys Platform Releases <https://github.com/tethysplatform/tethys/releases>`_. Depending on the version you intend to install, you may need to delete your entire virtual environment (i.e.: the ``/usr/lib/tethys`` directory) to start fresh.
+    Now, to activate your virtual environment all you have to do is use the alias ``t``::
 
-c. Install the Python modules that Tethys requires::
+        t
+        (tethys) $ _
 
-    (tethys) $ pip install --upgrade -r /usr/lib/tethys/src/requirements.txt
-    (tethys) $ python /usr/lib/tethys/src/setup.py develop
+3. Install Docker
+-----------------
 
-d. Restart the Python virtual environment::
+Docker needs to be installed to install the Tethys Software Suite. These instructions are adapted from the `Installation on Ubuntu <https://docs.docker.com/engine/installation/linux/ubuntulinux/>`_ Docker tutorial and the `How to Install and Use Docker on Ubuntu 16.04 <https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04>`_ Digital Ocean tutorial.
 
-    (tethys) $ deactivate
-             $ . /usr/lib/tethys/bin/activate
+a. Add the GPG key for the official Docker repository:
 
+  ::
+
+    sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+  
+b. Add the Docker repository to APT sources:
+
+  ::
+
+    echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list
+  
+c. Update APT sources again and install Docker engine:
+
+  ::
+
+    sudo apt-get update
+    sudo apt-get install -y docker-engine
+
+d. Add your user to the Docker group. This is necessary to use the Tethys Docker commandline tools. In a command prompt execute:
+
+  ::
+
+    sudo gpasswd -a $USER docker
+    sudo service docker restart
+    newgrp docker
+
+.. warning::
+
+    Adding a user to the Docker group is the equivalent of declaring a user as root. See `Giving non-root access <https://docs.docker.com/installation/ubuntulinux/#giving-non-root-access>`_ for more details.
 
 4. Install Tethys Software Suite Docker Containers
 --------------------------------------------------
@@ -137,13 +132,13 @@ Execute the following Tethys commands using the :command:`tethys` :doc:`../tethy
 
 ::
 
-  (tethys) $ tethys docker init
+  tethys docker init
 
 You will be prompted to enter various parameters needed to customize your instance of the software. **Take note of the usernames and passwords that you specify**. You will need them to complete the installation.
 
 .. tip::
 
-    Running into errors with this command? Make sure you have completed all of step 2, including part c.
+    Running into errors with this command? Try logging out and logging back in to reinitialize the docker group permissions for you user.
 
     Occasionally, you may encounter an error due to poor internet connection. Run the ``tethys docker init`` command repeatedly. It will pick up where it left off and eventually lead to success. When in doubt, try, try again.
 
@@ -156,7 +151,7 @@ Use the following Tethys command to start the Database Docker container for the 
 
 ::
 
-  (tethys) $ tethys docker start -c postgis
+  tethys docker start -c postgis
 
 If you would like to test the Docker containers, see :doc:`../supplementary/docker_testing`.
 
@@ -165,7 +160,7 @@ If you would like to test the Docker containers, see :doc:`../supplementary/dock
 
 In the next steps you will configure your Tethys Platform and link it to each of the software in the software suite. Create a new settings file for your Tethys Platform installation using the :command:`tethys` :doc:`../tethys_sdk/tethys_cli`. Execute the following command in the terminal::
 
-    (tethys) $ tethys gen settings -d /usr/lib/tethys/src/tethys_apps
+    tethys gen settings -d /usr/lib/tethys/src/tethys_apps
 
 This will create a file called :file:`settings.py` in the directory :file:`/usr/lib/tethys/src/tethys_apps`. As the name suggests, the :file:`settings.py` file contains all of the settings for the Tethys Platform. There are a few settings that need to be configured in this file.
 
@@ -179,7 +174,7 @@ a. Run the following command to obtain the host and port for Docker running the 
 
   ::
 
-    (tethys) $ tethys docker ip
+    tethys docker ip
 
 b. Replace the password for the main Tethys Portal database, **tethys_default**, with the password you created in the previous step. Also make sure that the host and port match those given from the ``tethys docker ip`` command (PostGIS). This is done by changing the values of the PASSWORD, HOST, and PORT parameters of the DATABASES setting:
 
@@ -227,7 +222,7 @@ e. Save your changes and close the :file:`settings.py` file.
 
 Execute the following command to initialize the database tables::
 
-    (tethys) $ tethys manage syncdb
+    tethys manage syncdb
 
 8. Create a Superuser
 ---------------------
@@ -236,21 +231,67 @@ Create a superuser/website administrator for your Tethys Portal:
 
 ::
 
-    (tethys) $ tethys manage createsuperuser
+    tethys manage createsuperuser
 
 9. Start up the Django Development Server
 -----------------------------------------
 
 You are now ready to start the development server and view your instance of Tethys Platform. The website that ships with Tethys Platform is called :doc:`../tethys_portal`. In the terminal, execute the following command to start the development server::
 
-    (tethys) $ tethys manage start
+    tethys manage start
 
 Open `<http://localhost:8000/>`_ in a new tab in your web browser and you should see the default :doc:`../tethys_portal` landing page.
 
 .. figure:: ../images/tethys_portal_landing.png
     :width: 650px
 
+.. tip::
+
+    Whenever you need to start the Tethys development server you must (1) activate the environment, (2) start the dockers, and (3) start the server. To facilitate these steps you can add another alias to your ``.bashrc`` file::
+
+        echo "alias tstart='. $HOME/miniconda/bin/activate tethys; tethys docker start; tethys manage start'" >> ~/.bashrc
+
+    Now to start the development server all you need to do is type::
+
+        tstart
+
 9. Web Admin Setup
 ------------------
 
 You are now ready to configure your Tethys Platform installation using the web admin interface. Follow the :doc:`./web_admin_setup` instructions to finish setting up your Tethys Platform.
+
+.. tip::
+
+    If you are already familiar with all of the installation steps and just need to quickly install Tethys with the default settings, then you can just copy and paste the following command blocks in succession into your terminal::
+
+        wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
+        bash ~/miniconda.sh -b -p $HOME/miniconda
+        export PATH="$HOME/miniconda/bin:$PATH"
+        conda install --yes git
+        sudo mkdir -p /usr/lib/tethys
+        sudo chown $USER /usr/lib/tethys
+        git clone https://github.com/tethysplatform/tethys /usr/lib/tethys/src
+        cd /usr/lib/tethys/src
+        git checkout dev
+        conda env create -f tethys_conda_env.yml
+        . activate tethys
+        python setup.py develop
+        sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+    ::
+
+        echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list
+        sudo apt-get update
+
+    ::
+
+        sudo apt-get install -y docker-engine
+        sudo gpasswd -a $USER docker
+        sudo service docker restart
+        newgrp docker
+    ::
+
+        tethys docker init -d
+        tethys docker start -c postgis
+        tethys gen settings -d /usr/lib/tethys/src/tethys_apps
+        tethys manage syncdb
+        tethys manage createsuperuser
