@@ -288,21 +288,18 @@ You are now ready to configure your Tethys Platform installation using the web a
         echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list
         sudo apt-get update
         sudo apt-get install -y docker-engine
-        .
-
 
     ::
 
         sudo gpasswd -a $USER docker
         sudo service docker restart
         sudo su $USER
-        .
 
     ::
 
         . $HOME/miniconda/bin/activate tethys
         tethys docker init -d
         tethys docker start -c postgis
+        echo 'wating for databases to startup...'; sleep 5
         tethys manage syncdb
         tethys manage createsuperuser
-        .
