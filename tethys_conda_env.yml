@@ -30,7 +30,7 @@ dependencies:
 - wheel=0.29.0
 - zlib=1.2.8
 - pycrypto=2.6.1
-- django>=1.9.5
+- django=1.9*
 - paste>=1.7.5.1,<1.7.6.0
 - psycopg2>=2.6,<2.7
 - sqlalchemy>=1.0.1,<1.1.0
