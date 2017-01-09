@@ -35,6 +35,7 @@ dependencies:
 - psycopg2>=2.6,<2.7
 - sqlalchemy>=1.0.1,<1.1.0
 - requests>=2.7.0,<2.8.0
+- uwsgi=2.0*
 - pip:
     - django-gravatar2>=1.4.0,<1.5.0
     - django-bootstrap3>=5.1.1,<6.3.0
