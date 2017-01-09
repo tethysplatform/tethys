@@ -1,16 +1,17 @@
 ***************************************
-Production Installation on Ubuntu 14.04
+Production Installation on Ubuntu 16.04
 ***************************************
 
-**Last Updated:** August 11, 2015
+**Last Updated:** January 5, 2017
 
 This article will provide an overview of how to install Tethys Portal in a production setup ready to host apps. The recommended deployment platform for Python web projects is to use `WSGI <http://www.wsgi.org/>`_. The easiest and most stable way to deploy a WSGI application is with the `modwsgi <https://code.google.com/p/modwsgi/>`_ extension for the `Apache Server <http://httpd.apache.org/>`_. These instructions are optimized for Ubuntu 14.04 using Apache and modwsgi, though installation on other Linux distributions will be similar.
 
 1. Install Tethys Portal
 ========================
 
-Follow the default :doc:`../installation/linux` instructions to install Tethys Portal with the following considerations
+Follow the default :doc:`../installation/ubuntu16` instructions to install Tethys Portal with the following considerations
 
+* Make sure to checkout the correct branch. The master branch provides the latest stable release.
 * Assign strong passwords to the database users.
 * Create a new settings file, do not use the same file that you have been using in development.
 * Optionally, Follow the :doc:`./distributed` instructions to install Docker and the components of the software suite on separate servers.
