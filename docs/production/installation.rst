@@ -261,11 +261,12 @@ a. Create a simlink to the `tethys_nginx.conf` file in the `/etc/nginx/sites-ena
 
     sudo ln -s /usr/lib/tethys/src/tethys_portal/tethys_nginx.conf /etc/nginx/sites-enabled/
 
-b. Enable the Tethys uWSGI configuration as a system service:
+b. Enable the Tethys uWSGI configuration as a system service and then start the service:
 
 ::
 
     sudo systemctl enable /usr/lib/tethys/src/tethys_portal/tethys.uwsgi.service
+    sudo systemctl start tethys.uwsgi.service
 
 c. Finally, restart Nginx:
 
