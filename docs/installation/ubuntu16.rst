@@ -71,7 +71,7 @@ b. Create a Conda environment with the Tethys dependencies and install Tethys in
 
     The Tethys virtual environment must remain active for the entire installation. If you need to logout or close the terminal in the middle of the installation, you will need to reactivate the virtual environment. To activate the environment you first need to add the miniconda `bin` directory to your path::
 
-        export PATH="$HOME/miniconda/bin:$PATH"
+        export PATH="/opt/miniconda/bin:$PATH"
 
     Then you can activate the tethys environment by executing the following command (don't forget the dot)::
 
@@ -79,7 +79,7 @@ b. Create a Conda environment with the Tethys dependencies and install Tethys in
 
     If you get tired of going through these steps to activate your environment, you can add an alias to your ``.bashrc`` file::
 
-        echo "alias t='. $HOME/miniconda/bin/activate tethys'" >> ~/.bashrc
+        echo "alias t='. /opt/miniconda/bin/activate tethys'" >> ~/.bashrc
 
     Execute the ``.bashrc`` file to effect the changes. (This file is automatically executed when a new terminal is opened)::
 
@@ -130,7 +130,7 @@ e. The last command logged you into the docker group, which provided you with a 
 
   ::
 
-    export PATH="$HOME/miniconda/bin:$PATH"
+    export PATH="/opt/miniconda/bin:$PATH"
     . activate tethys
 
 4. Install Tethys Software Suite Docker Containers
@@ -257,7 +257,7 @@ Open `<http://localhost:8000/>`_ in a new tab in your web browser and you should
 
     Whenever you need to start the Tethys development server you must (1) activate the environment, (2) start the dockers, and (3) start the server. To facilitate these steps you can add another alias to your ``.bashrc`` file::
 
-        echo "alias tstart='. $HOME/miniconda/bin/activate tethys; tethys docker start; tethys manage start'" >> ~/.bashrc
+        echo "alias tstart='. /opt/miniconda/bin/activate tethys; tethys docker start; tethys manage start'" >> ~/.bashrc
 
     Now to start the development server all you need to do is type::
 
@@ -293,16 +293,13 @@ You are now ready to configure your Tethys Platform installation using the web a
         sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
         echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list
         sudo apt-get update
-        sudo apt-get install -y docker-engine
-        .
-
-    ::
-
-        sudo gpasswd -a $USER docker
-        sudo service docker restart
-        sg docker -c "tethys docker init -d"
-        sg docker -c "tethys docker start -c postgis"
-        echo 'wating for databases to startup...'; sleep 5
-        tethys manage syncdb
+        sudo apt-get install -y docker-engine &&
+        sudo gpasswd -a $USER docker &&
+        sudo service docker restart &&
+        sg docker -c "tethys docker init -d" &&
+        sg docker -c "tethys docker start -c postgis" &&
+        echo 'wating for databases to startup...'; sleep 10 &&
+        tethys manage syncdb &&
         tethys manage createsuperuser
-        .
+        tethys manage start
+
