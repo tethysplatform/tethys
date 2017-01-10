@@ -16,9 +16,22 @@ Follow the default :doc:`../installation/ubuntu16` instructions to install Tethy
 * Create a new settings file, do not use the same file that you have been using in development.
 * Optionally, Follow the :doc:`./distributed` instructions to install Docker and the components of the software suite on separate servers.
 
+2. Install Nginx
+================
+
+Install Nginx to act as a proxy server for Tethys:
+
+::
+
+    sudo apt-get install -y nginx vim
+
+.. note::
+
+    The previous command also installs the command line text editor `vim`, which is used in the following instructions to edit various files. If you prefer a different editor then you can replace ``vim`` with your preferred editor.
+
 .. _setup_email_capabilities:
 
-2. Setup Email Capabilities
+3. Setup Email Capabilities
 ===========================
 
 Tethys Platform provides a mechanism for resetting forgotten passwords that requires email capabilities, for which we recommend using Postfix. Install Postfix as follows:
@@ -59,7 +72,7 @@ Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` 
 
 Django must be configured to use the postfix server. The next section will describe the Django settings that must be configured for the email server to work. For an excellent guide on setting up Postfix on Ubuntu, refer to `How To Install and Setup Postfix on Ubuntu 14.04 <https://www.digitalocean.com/community/tutorials/how-to-install-and-setup-postfix-on-ubuntu-14-04>`_.
 
-3. Set Secure Settings
+4. Set Secure Settings
 ======================
 
 Several settings need to be modified in the :file:`settings.py` module to make the installation ready for a production environment. The internet is a hostile environment and you need to take every precaution to make sure your Tethys Platform installation is secure. Django provides a `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ that points out critical settings. You should review this checklist carefully before launching your site. As a minimum do the following:
@@ -131,7 +144,7 @@ Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` 
 
     Review the `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ carefully.
 
-4. Make Directories for Static Files, Workspaces, and TethysCluster
+5. Make Directories for Static Files, Workspaces, and TethysCluster
 ===================================================================
 
 When running Tethys Platform in development mode, the static files are automatically served by the development server. In a production environment the static files will need to be collected into one location and Nginx or another server will need to be configured to serve these files (see `Deployment Checklist: STATIC_ROOT <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#static-root-and-static-url>`_). Optionally, the app workspaces can also be collected into one location. Since Nginx will be serving Tethys Portal under the user (www-data) the TethysCluster home directory also needs to be created:
@@ -145,34 +158,27 @@ When running Tethys Platform in development mode, the static files are automatic
     The static and workspaces directories can be created at any location, however, if they are created at a different location than listed above the Nginx configuration file and the Tethys settings file will need to be updated to point at the correct location.
 
 
-5. Install Nginx
-================
-
-Install Nginx to act as a proxy server for Tethys:
-
-::
-
-    sudo apt-get install -y nginx
-
 6. Update the Nginx Configuration File
 ======================================
 
-Open the Tethys Nginx configuration file with your favorite text editor:
+Open the Tethys Nginx configuration file using ``vim`` or another text editor:
 
 ::
 
     vim /usr/lib/tethys/src/tethys_portal/tethys_nginx.conf
 
-Update the following line with the IP address or fully qualified domain name of your server:
+Press :kbd:`i` to start editing and update the following line with the IP address or fully qualified domain name of your server:
 
 ::
 
     server_name 127.0.0.1 localhost; # substitute your machine's IP address or FQDN
 
+Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` to save changes and exit.
+
 7. Update the uWSGI Configuration File (Optional)
 =================================================
 
-Open the Tethys uWSGI configuration and customize the configuration. (See the `uWSGI documentation <http://uwsgi-docs.readthedocs.io/en/latest/index.html>`_ for more information about configuration):
+Open the Tethys uWSGI configuration and customize to your liking. (See the `uWSGI documentation <http://uwsgi-docs.readthedocs.io/en/latest/index.html>`_ for more information about configuration):
 
 ::
 
@@ -258,6 +264,7 @@ a. Create a simlink to the `tethys_nginx.conf` file in the `/etc/nginx/sites-ena
 b. Enable the Tethys uWSGI configuration as a system service:
 
 ::
+
     sudo systemctl enable /usr/lib/tethys/src/tethys_portal/tethys.uwsgi.service
 
 c. Finally, restart Nginx:
@@ -276,4 +283,9 @@ c. Finally, restart Nginx:
     4. Reload the apache server using ``sudo systemctl restart nginx``.
 
     For more information see: :doc:`./app_installation`.
+
+Troubleshooting
+===============
+
+Here we try to provide some guidance on some of the most commonly encountered issues. If you are experiencing problems and can't find a solution here then please post a question on the `Tethys Platform Forum <https://groups.google.com/forum/#!forum/tethysplatform>`_.
 
