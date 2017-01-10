@@ -22,8 +22,9 @@ a. Installers can be found on the `Miniconda website <http://conda.pydata.org/mi
   ::
 
     wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
-    bash ~/miniconda.sh -b -p $HOME/miniconda
-    export PATH="$HOME/miniconda/bin:$PATH"
+    sudo bash ~/miniconda.sh -b -p /opt/miniconda
+    sudo chmod o+w /opt/miniconda/pkgs
+    export PATH="/opt/miniconda/bin:$PATH"
 
 2. Clone the Tethys Platform Repository
 ---------------------------------------
@@ -269,11 +270,16 @@ You are now ready to configure your Tethys Platform installation using the web a
 
 .. tip::
 
-    If you are already familiar with all of the installation steps and just need to quickly install Tethys with the default settings, then you can just copy and paste the following command blocks in succession into your terminal::
+    If you are already familiar with all of the installation steps and just need to quickly install Tethys with the default settings, then you can just copy and paste the following command blocks in succession into your terminal. It is recommended that you first cache your `sudo` password by running a sudo command such as::
+
+        sudo apt
+
+    ::
 
         wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
-        bash ~/miniconda.sh -b -p $HOME/miniconda
-        export PATH="$HOME/miniconda/bin:$PATH"
+        sudo bash ~/miniconda.sh -b -p /opt/miniconda
+        sudo chmod o+w /opt/miniconda/pkgs
+        export PATH="/opt/miniconda/bin:$PATH"
         conda install --yes git
         sudo mkdir -p /usr/lib/tethys
         sudo chown $USER /usr/lib/tethys
@@ -288,18 +294,15 @@ You are now ready to configure your Tethys Platform installation using the web a
         echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list
         sudo apt-get update
         sudo apt-get install -y docker-engine
+        .
 
     ::
 
         sudo gpasswd -a $USER docker
         sudo service docker restart
-        sudo su $USER
-
-    ::
-
-        . $HOME/miniconda/bin/activate tethys
-        tethys docker init -d
-        tethys docker start -c postgis
+        sg docker -c "tethys docker init -d"
+        sg docker -c "tethys docker start -c postgis"
         echo 'wating for databases to startup...'; sleep 5
         tethys manage syncdb
         tethys manage createsuperuser
+        .
