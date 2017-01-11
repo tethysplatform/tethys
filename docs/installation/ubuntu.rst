@@ -1,12 +1,21 @@
-****************************
-Installation on Ubuntu 16.04
-****************************
+*****************************
+Installation on 64-bit Ubuntu
+*****************************
 
 **Last Updated:** January 5, 2017
 
 .. warning::
 
-    These installation instructions have been tested for Ubuntu 16.04 only. It is likely that you will encounter problems if you try to use these instructions on any other Linux distribution (e.g. RedHat, CentOS) or even other versions of Ubuntu.
+    Tethys Platform relies on `Docker <https://docs.docker.com/engine/installation/linux/ubuntulinux/>`_ , which is only supported on the following versions of 64-bit Ubuntu:
+
+        * Ubuntu Xenial 16.04 (LTS)
+        * Ubuntu Wily 15.10
+        * Ubuntu Trusty 14.04 (LTS)
+        * Ubuntu Precise 12.04 (LTS)
+
+    It is likely that you will encounter problems if you try to use these instructions on any other Linux distribution (e.g. RedHat, CentOS).
+
+    (These installation instructions have only been tested for Ubuntu 16.04 and 14.04)
 
 .. tip::
 
@@ -23,8 +32,9 @@ a. Installers can be found on the `Miniconda website <http://conda.pydata.org/mi
 
     wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
     sudo bash ~/miniconda.sh -b -p /opt/miniconda
-    sudo chmod o+w /opt/miniconda/pkgs
+    sudo chmod -R o+w /opt/miniconda/
     export PATH="/opt/miniconda/bin:$PATH"
+    conda config --prepend channels conda-forge
 
 2. Clone the Tethys Platform Repository
 ---------------------------------------
@@ -105,7 +115,7 @@ b. Add the Docker repository to APT sources:
 
   ::
 
-    echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list
+    echo "deb https://apt.dockerproject.org/repo ubuntu-$(lsb_release -c | awk '{print $2}') main" | sudo tee /etc/apt/sources.list.d/docker.list
   
 c. Update APT sources again and install Docker engine:
 
@@ -270,29 +280,33 @@ You are now ready to configure your Tethys Platform installation using the web a
 
 .. tip::
 
-    If you are already familiar with all of the installation steps and just need to quickly install Tethys with the default settings, then you can just copy and paste the following command blocks in succession into your terminal. It is recommended that you first cache your `sudo` password by running a sudo command such as::
+    If you are already familiar with all of the installation steps and just need to quickly install Tethys with the default settings, then you can use these condensed commands to perform the installation in one step. It is recommended that you first cache your `sudo` password by running a sudo command such as::
 
         sudo apt
 
+    Copy this entire command block and paste it into your terminal:
     ::
 
-        wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
-        sudo bash ~/miniconda.sh -b -p /opt/miniconda
-        sudo chmod o+w /opt/miniconda/pkgs
-        export PATH="/opt/miniconda/bin:$PATH"
-        conda install --yes git
-        sudo mkdir -p /usr/lib/tethys
-        sudo chown $USER /usr/lib/tethys
-        git clone https://github.com/tethysplatform/tethys /usr/lib/tethys/src
-        cd /usr/lib/tethys/src
-        git checkout conda_env
-        conda env create -f tethys_conda_env.yml
-        . activate tethys
-        python setup.py develop
-        tethys gen settings -d /usr/lib/tethys/src/tethys_apps
-        sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-        echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" | sudo tee /etc/apt/sources.list.d/docker.list
-        sudo apt-get update
+        echo "alias t='. /opt/miniconda/bin/activate tethys'" >> ~/.bashrc &&
+        echo "alias tstart='. /opt/miniconda/bin/activate tethys; tethys docker start; tethys manage start'" >> ~/.bashrc &&
+        . ~/.bashrc &&
+        wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh &&
+        sudo bash ~/miniconda.sh -b -p /opt/miniconda &&
+        sudo chmod -R o+w /opt/miniconda/ &&
+        export PATH="/opt/miniconda/bin:$PATH" &&
+        conda install --yes git &&
+        sudo mkdir -p /usr/lib/tethys &&
+        sudo chown $USER /usr/lib/tethys &&
+        git clone https://github.com/tethysplatform/tethys /usr/lib/tethys/src &&
+        cd /usr/lib/tethys/src &&
+        git checkout dev &&
+        conda env create -f tethys_conda_env.yml &&
+        . activate tethys &&
+        python setup.py develop &&
+        tethys gen settings -d /usr/lib/tethys/src/tethys_apps &&
+        sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D &&
+        echo "deb https://apt.dockerproject.org/repo ubuntu-$(lsb_release -c | awk '{print $2}') main" | sudo tee /etc/apt/sources.list.d/docker.list &&
+        sudo apt-get update &&
         sudo apt-get install -y docker-engine &&
         sudo gpasswd -a $USER docker &&
         sudo service docker restart &&
@@ -300,6 +314,15 @@ You are now ready to configure your Tethys Platform installation using the web a
         sg docker -c "tethys docker start -c postgis" &&
         echo 'wating for databases to startup...'; sleep 10 &&
         tethys manage syncdb &&
-        tethys manage createsuperuser
-        tethys manage start
+        tethys manage createsuperuser &&
+        newgrp docker
 
+    The last command logs you into a new shell so you will need to activate the tethys environment again. You can use one of the aliases that were created to activate the environment or to start the server::
+
+        # to activate the environment run:
+        t
+
+    ::
+
+        # to activate the environment, start all the dockers and start the development server run:
+        tstart
