@@ -4,10 +4,22 @@
 
 {% block title %}- Gizmo Showcase{% endblock %}
 
+{% block import_gizmos %}
+  {% import_gizmo_dependency bokeh_view %}
+{% endblock %}
+
 {% block styles %}
   {{ block.super }}
   <link href="{% static 'tethys_gizmos/vendor/prism/prism.css' %}" rel="stylesheet" />
   <link href="{% static 'tethys_gizmos/css/gizmo_showcase.css' %}" rel="stylesheet" />
+  {% gizmo_dependencies global_css %}
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.dataTables.min.css">
+{% endblock %}
+
+{% block global_scripts %}
+  {{ block.super }}
+  {% gizmo_dependencies global_js %}
+  <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
 {% endblock %}
 
 {% block bodytag %}data-spy="scroll" data-target="#showcase_nav_list" style="position: relative;"{% endblock %}
@@ -46,7 +58,16 @@
             <a href="#table_view_docs">Table View</a>
           </li>
           <li>
+            <a href="#datatable_view_docs">DataTable View</a>
+          </li>
+          <li>
             <a href="#plot_view_docs">Plot View</a>
+          </li>
+          <li>
+            <a href="#plotly_view_docs">Plotly View</a>
+          </li>
+          <li>
+            <a href="#bokeh_view_docs">Bokeh View</a>
           </li>
           <li>
             <a href="#map_view_docs">Map View</a>
@@ -107,28 +128,22 @@ def my_view(request):
         <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} load tethys_gizmos {% templatetag closeblock %}</code></pre>
 
         <p>
-          Then, use the <b>gizmo</b> tag to insert the date picker anywhere in your template. Pass the name of the gizmo
-          and the options dictionary that you passed to the template from your view as arguments:
+          Then, use the <b>gizmo</b> tag to insert the date picker anywhere in your template. Pass the the options dictionary 
+          that you passed to the template from your view as arguments:
         </p>
 
-        <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} gizmo date_picker date_picker_options {% templatetag closeblock %}</code></pre>
+        <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} gizmo date_picker_options {% templatetag closeblock %}</code></pre>
 
         <p>
           All together your template may look something like this:
         </p>
 
-        <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} load tethys_gizmos {% templatetag closeblock %}
+        <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} extends "tethys_apps/app_base.html" {% templatetag closeblock %}
+{% templatetag openblock %} load staticfiles tethys_gizmos {% templatetag closeblock %}
 
-&lt;html&gt;
-    &lt;head&gt;
-        ...
-    &lt;/head&gt;
-    &lt;body&gt;
-        ...
-        {% templatetag openblock %} gizmo date_picker date_picker_options {% templatetag closeblock %}
-        ...
-    &lt;/body&gt;
-&lt;/html&gt;</code></pre>
+{% templatetag openblock %}  block app_content {% templatetag closeblock %}
+  {% templatetag openblock %} gizmo date_picker_options {% templatetag closeblock %}
+{% templatetag openblock %}  endblock {% templatetag closeblock %}</code></pre>
 
         <h3>How it Works</h3>
 
@@ -158,7 +173,7 @@ def my_view(request):
         <div class="example">
           <div class="demo">
             {% gizmo button single_button %}
-            {% gizmo button_group horizontal_buttons %}
+            {% gizmo horizontal_buttons %}
             {% gizmo button_group vertical_buttons %}
           </div>
         </div>
@@ -179,7 +194,7 @@ def my_view(request):
 
         <div class="example">
           <div class="demo">
-            {% gizmo date_picker date_picker %}
+            {% gizmo date_picker %}
             {% gizmo date_picker date_picker_error %}
           </div>
         </div>
@@ -201,7 +216,7 @@ def my_view(request):
         <div class="example">
           <div class="demo">
             {% gizmo range_slider slider1 %}
-            {% gizmo range_slider slider2 %}
+            {% gizmo slider2 %}
           </div>
         </div>
       </div>
@@ -222,9 +237,10 @@ def my_view(request):
         <div class="example">
           <div class="demo">
             {% gizmo select_input select_input2 %}
-            {% gizmo select_input select_input2_multiple %}
-            {% gizmo select_input select_input_multiple %}
+            {% gizmo select_input2_multiple %}
             {% gizmo select_input select_input2_error %}
+            {% gizmo select_input %}
+            {% gizmo select_input_multiple %}
           </div>
         </div>
       </div>
@@ -245,7 +261,7 @@ def my_view(request):
         <div class="example">
           <div class="demo">
             {% gizmo text_input text_input %}
-            {% gizmo text_input text_error_input %}
+            {% gizmo text_error_input %}
           </div>
         </div>
       </div>
@@ -266,7 +282,7 @@ def my_view(request):
         <div class="example">
           <div class="demo">
             {% gizmo toggle_switch toggle_switch %}
-            {% gizmo toggle_switch toggle_switch_styled %}
+            {% gizmo toggle_switch_styled %}
             {% gizmo toggle_switch toggle_switch_disabled %}
           </div>
         </div>
@@ -307,7 +323,31 @@ def my_view(request):
         <div class="example">
           <div class="demo">
             {% gizmo table_view table_view %}
+          </div>
+          <div class="demo">
             {% gizmo table_view table_view_edit %}
+          </div>
+        </div>
+      </div>
+
+      {# DataTable View --------------------------------------------------------------------------------------------------#}
+      <a id="datatable_view_docs" class="anchor"></a>
+      <div class="docs-section">
+        <h2>DataTable View</h2>
+        <p>DataTable views can be used to display, search, and sort tabular data.
+           Many of the DataTable options are supported and can be added by using
+           the name of the input value for DataTables. For more information about
+           DataTables, see the <a target="_blank" href="https://datatables.net">
+           DataTables website</a></p>
+        <p>
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/datatable_view.html">DataTable View</a>.
+        </p>
+        <div class="example">
+          <div class="demo">
+            {% gizmo datatable_view datatable_default %}
+          </div>
+          <div class="demo">
+            {% gizmo datatable_view datatable_with_extension %}
           </div>
         </div>
       </div>
@@ -331,70 +371,101 @@ def my_view(request):
         </div>
         <div class="example">
           <div class="demo">
-            {% gizmo plot_view line_plot_view %}
+            {% gizmo line_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-            {% gizmo highcharts_plot_view scatter_plot_view %}
+            {% gizmo scatter_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo highcharts_plot_view web_plot %}
+          {% gizmo web_plot %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo highcharts_plot_view pie_plot_view %}
+          {% gizmo pie_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo highcharts_plot_view bar_plot_view %}
+          {% gizmo bar_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo highcharts_plot_view timeseries_plot %}
+          {% gizmo timeseries_plot %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo highcharts_plot_view area_range_plot %}
+          {% gizmo area_range_plot %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo highcharts_plot_view custom_plot %}
+          {% gizmo d3_line_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo plot_view d3_line_plot_view %}
+          {% gizmo d3_pie_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo plot_view d3_pie_plot_view %}
+          {% gizmo d3_scatter_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo plot_view d3_scatter_plot_view %}
+          {% gizmo d3_bar_plot_view %}
           </div>
         </div>
         <div class="example">
           <div class="demo">
-          {% gizmo plot_view d3_bar_plot_view %}
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-          {% gizmo plot_view d3_timeseries_plot_view %}
+          {% gizmo d3_timeseries_plot_view %}
           </div>
         </div>
 
+      </div>
+
+      {# Plotly View --------------------------------------------------------------------------------------------------#}
+      <a id="plotly_view_docs" class="anchor"></a>
+      <div class="docs-section">
+        <h2>Plotly View</h2>
+        <p>Plotly views can be used to create interactive charts using the Plotly
+           python library. For more information about
+           Plotly, see the <a target="_blank" href="https://plot.ly/python">
+           Plotly website</a></p>
+        <p>
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/plotly_view.html">Plotly View</a>.
+        </p>
+        <div class="example">
+          <div class="demo">
+            {% gizmo plotly_view my_plotly_view %}
+          </div>
+        </div>
+      </div>
+
+      {# Bokeh View --------------------------------------------------------------------------------------------------#}
+      <a id="bokeh_view_docs" class="anchor"></a>
+      <div class="docs-section">
+        <h2>Bokeh View</h2>
+        <p>Bokeh views can be used to create charts using the Bokeh
+           python library. For more information about
+           Bokeh, see the <a target="_blank" href="http://bokeh.pydata.org">
+           Bokeh website</a></p>
+        <p>
+          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/bokeh_view.html">Bokeh View</a>.
+        </p>
+        <div class="example">
+          <div class="demo">
+            {% gizmo bokeh_view my_bokeh_view %}
+          </div>
+        </div>
       </div>
 
       {# Map View ----------------------------------------------------------------------------------------------------#}
@@ -419,7 +490,7 @@ def my_view(request):
       <div class="docs-section">
         <h2>Google Map View</h2>
         <p>
-          The Google Map View is similar to Map View, but it is powered by Google Maps 3. It has the drawing library enabled to allow geospatial user input.
+          The Google Map View is powered by Google Maps 3. It has the drawing library enabled to allow geospatial user input.
           An optional background dataset can be specified for reference, but only the shapes drawn by the user are returned (see
           <a href="#retrieving_shapes">Retrieving Shapes</a> section).
         </p>
@@ -433,7 +504,7 @@ def my_view(request):
             Google Maps API is not free and open source and it is only free to use under certain conditions. Please familiarize yourself with <a href="https://developers.google.com/maps/licensing" target="_blank">Google Maps API Licensing</a> before using it.
           </p>
         </div>
-        <p>Click <a href="{% url 'gizmos:editable_map' %}">here</a> for demo on a separate page.</p>
+        <p>Click <a href="{% url 'gizmos:google_map_view' %}">here</a> for demo on a separate page.</p>
         <div class="example">
           <div class="demo">
           <!-- Flash Message -->

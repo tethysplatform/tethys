@@ -824,7 +824,7 @@ var TETHYS_PLOT_VIEW = (function() {
 	};
 
 	initHighChartsPlot = function(element) {
-        var plot_type = $(this).attr('data-type');
+        var plot_type = $(element).attr('data-type');
         if ($(element).attr('data-json')) {
             var json_string, json;
 

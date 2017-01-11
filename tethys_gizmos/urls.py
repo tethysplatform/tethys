@@ -23,8 +23,7 @@ ajax_urls = [
 
 urlpatterns = [
     url(r'^$', gizmo_showcase_views.index, name='showcase'),
-    url(r'^editable-map/$', gizmo_showcase_views.editable_map, name='editable_map'),
-    url(r'^google-map/$', gizmo_showcase_views.google_map, name='google_map'),
+    url(r'^google-map-view/$', gizmo_showcase_views.google_map_view, name='google_map_view'),
     url(r'^map-view', gizmo_showcase_views.map_view, name='map_view'),
     url(r'^(?P<job_id>[\d.@+-]+)/results$', gizmo_showcase_views.jobs_table_results, name='results'),
     url(r'^sample-jobs$', gizmo_showcase_views.create_sample_jobs, name='sample_jobs'),

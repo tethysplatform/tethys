@@ -15,8 +15,10 @@ from text_input import *
 from toggle_switch import *
 from message_box import *
 from table_view import *
-from highcharts_plot_view import *
 from map_view import *
-from google_map import *
+from google_map_view import *
 from jobs_table import *
 from plot_view import *
+from plotly_view import PlotlyView
+from bokeh_view import BokehView
+from datatable_view import DataTableView
