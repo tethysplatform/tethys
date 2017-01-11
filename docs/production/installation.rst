@@ -4,7 +4,7 @@ Production Installation on Ubuntu 16.04
 
 **Last Updated:** January 5, 2017
 
-This article will provide an overview of how to install Tethys Portal in a production setup ready to host apps. The recommended deployment platform for Python web projects is to use `WSGI <http://www.wsgi.org/>`_. The easiest and most stable way to deploy a WSGI application is with the `modwsgi <https://code.google.com/p/modwsgi/>`_ extension for the `Apache Server <http://httpd.apache.org/>`_. These instructions are optimized for Ubuntu 14.04 using Apache and modwsgi, though installation on other Linux distributions will be similar.
+This article will provide an overview of how to install Tethys Portal in a production setup ready to host apps. The recommended deployment platform for Python web projects is to use `WSGI <http://www.wsgi.org/>`_. The easiest way to deploy a WSGI application with conda is with `uWSGI <https://uwsgi-docs.readthedocs.io/en/latest/>`_ and Nginx. These instructions are optimized for Ubuntu 16.04 using Nginx and uWSGI, though installation on other Linux distributions will be similar.
 
 1. Install Tethys Portal
 ========================
@@ -21,7 +21,7 @@ Follow the default :doc:`../installation/ubuntu16` instructions to install Tethy
 
 Install Nginx to act as a proxy server for Tethys:
 
-::
+.. code-block:: bash
 
     sudo apt-get install -y nginx vim
 
@@ -38,7 +38,7 @@ Tethys Platform provides a mechanism for resetting forgotten passwords that requ
 
 ::
 
-    $ sudo apt-get install postfix
+    sudo apt-get install postfix
 
 When prompted select "Internet Site". You will then be prompted to enter you Fully Qualified Domain Name (FQDN) for your server. This is the domain name of the server you are installing Tethys Platform on. For example:
 
@@ -50,7 +50,7 @@ Next, configure Postfix by opening its configuration file:
 
 ::
 
-    $ sudo vim /etc/postfix/main.cf
+    sudo vim /etc/postfix/main.cf
 
 Press :kbd:`i` to start editing, find the `myhostname` parameter, and change it to point at your FQDN:
 
@@ -68,7 +68,7 @@ Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` 
 
 ::
 
-    $ sudo service postfix restart
+    sudo service postfix restart
 
 Django must be configured to use the postfix server. The next section will describe the Django settings that must be configured for the email server to work. For an excellent guide on setting up Postfix on Ubuntu, refer to `How To Install and Setup Postfix on Ubuntu 14.04 <https://www.digitalocean.com/community/tutorials/how-to-install-and-setup-postfix-on-ubuntu-14-04>`_.
 
@@ -197,7 +197,7 @@ Download and install any apps that you want to host using this installation of T
     (tethys) $ python setup.py install
     (tethys) $ exit
 
-.. note::
+.. tip::
 
     If you get the following error when you try to activate the tethys environment::
 
