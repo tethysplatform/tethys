@@ -63,21 +63,22 @@ Now near the top of the template where the Gizmo will be inserted, load the ``te
 
     {% load tethys_gizmos %}
 
-3. Insert the Gizmo
+
+4. Insert the Gizmo
 -------------------
 
-The ``gizmo`` tag is used to insert the date picker anywhere in the template. The ``gizmo`` tag accepts two arguments: the name of the Gizmo to insert and a dictionary of configuration options for the Gizmo:
+The ``gizmo`` tag is used to insert the date picker anywhere in the template. The ``gizmo`` tag accepts a Gizmo object of configuration options for the Gizmo:
 
 ::
 
-    {% gizmo <name> <options> %}
+    {% gizmo <options> %}
 
 
 For this example, the ``date_picker`` Gizmo is inserted and the ``date_picker_options`` object that was defined in the controller and passed to the template is provided:
 
 ::
 
-    {% gizmo date_picker date_picker_options %}
+    {% gizmo date_picker_options %}
 
 Rendered Gizmo
 ==============
@@ -115,19 +116,50 @@ Inserts a Gizmo at the location of the tag.
 
 *Parameters*:
 
-* **name** (string or literal) - The name of the Gizmo to insert as either a string (e.g.: "date_picker") or a literal (e.g.: date_picker).
 * **options** (dict) - The configuration options for the Gizmo. The options are Gizmo specific. See the Gizmo Showcase documentation for descriptions of the options that are available.
 
-*Examples*:
+*Example*:
 
 ::
 
-    # With literal for name parameter
-    {% gizmo date_picker date_picker_options %}
+    {% gizmo date_picker_options %}
 
-    # With string for name parameter
-    {% gizmo "date_picker" date_picker_options %}
+**import_gizmo_dependency**
+---------------------------
 
+Tells the ``gizmo_dependencies`` to load in the dependencies for the gizmo.
+This tag must be in the ``import_gizmos`` block. This is useful for loading
+the dependencies into the page for a gizmo if you plan on loading the gizmos 
+using AJAX after the initial page load.
+
+*Parameters*:
+
+* **name** (string or literal) - The name of the Gizmo to insert as either a string (e.g.: "date_picker") or a literal (e.g.: date_picker).
+
+.. note:: You can get the name of the gizmo through the *gizmo_name* attribute of the gizmo object.
+
+
+*Controller Example*:
+
+::
+
+    from tethys_sdk.gizmos import DatePicker
+
+    def example_controller(request):
+        """
+        Example of a controller that defines options for a Template Gizmo.
+        """
+        context = {'date_picker_name': DatePicker.gizmo_name}
+
+        return render(request, 'path/to/my/template.html', context)
+
+*Template Example*:
+
+::
+
+    {% block import_gizmos %}
+        {% import_gizmo_dependency date_picker_name %}
+    {% endblock %}
 
 **gizmo_dependencies**
 ----------------------
@@ -136,7 +168,7 @@ Inserts the CSS and JavaScript dependencies at the location of the tag. This tag
 
 *Parameters*:
 
-* **type** (string or literal, optional) - The type of dependency to import. This parameter can be used to include the CSS and JavaScript dependencies at different locations in the template. Valid values include "css" for CSS dependencies or "js" for JavaScript dependencies.
+* **type** (string or literal, optional) - The type of dependency to import. This parameter can be used to include the CSS and JavaScript dependencies at different locations in the template. Valid values include "css" for CSS dependencies, "global_css" for CSS library dependencies, "js" for JavaScript dependencies, and "global_js" for JavaScript library dependencies.
 
 *Examples*:
 
@@ -146,9 +178,11 @@ Inserts the CSS and JavaScript dependencies at the location of the tag. This tag
     {% gizmo_dependencies %}
 
     # CSS only
+    {% gizmo_dependencies global_css %}
     {% gizmo_dependencies css %}
 
     # JavaScript only
+    {% gizmo_dependencies global_js %}
     {% gizmo_dependencies js %}
 
 .. _gizmo_options:
@@ -169,7 +203,10 @@ This section provides explanations of each of the Gizmo Options Objects availabl
    gizmos/toggle_switch
    gizmos/message_box
    gizmos/table_view
+   gizmos/datatable_view
    gizmos/plot_view
+   gizmos/plotly_view
+   gizmos/bokeh_view
    gizmos/map_view
    gizmos/google_map
    gizmos/jobs_table
