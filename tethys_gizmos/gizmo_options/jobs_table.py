@@ -9,6 +9,7 @@
 ********************************************************************************
 """
 from .base import TethysGizmoOptions
+import datetime
 import logging
 log = logging.getLogger('tethys.tethys_gizmos.gizmo_options.jobs_table')
 
@@ -34,10 +35,11 @@ class JobsTable(TethysGizmoOptions):
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
         refresh_interval(int): The refresh interval for the runtime and status fields in milliseconds. Default is 5000.
 
-    Controller Example
+    Example
 
     ::
 
+        # CONTROLLER
         from tethys_apps.sdk.gizmos import JobsTable
 
         jobs_table_options = JobsTable(
@@ -49,21 +51,13 @@ class JobsTable(TethysGizmoOptions):
                                        condensed=False,
                                        results_url='app_name:results_controller',
                                      )
-        context = {
-                    'jobs_table_options': jobs_table_options,
-                  }
 
-    Template Example
+        # TEMPLATE
 
-    ::
-
-        {% load tethys_gizmos %}
-
-        {% gizmo jobs_table_options %}
+        {% gizmo jobs_table jobs_table_options %}
 
     """
-    gizmo_name = "jobs_table"
-    
+
     def __init__(self, jobs, column_fields, status_actions=True, run_btn=True, delete_btn=True, results_url='',
                  hover=False, striped=False, bordered=False, condensed=False, attributes={}, classes='',
                  refresh_interval=5000, delay_loading_status=True):
@@ -123,12 +117,3 @@ class JobsTable(TethysGizmoOptions):
             rows.append(row_values)
             column_names.append(column_name)
         return rows
-
-    @staticmethod
-    def get_gizmo_js():
-        """
-        JavaScript specific to gizmo to be placed in the 
-        {% block scripts %} block
-        """
-        return ('tethys_gizmos/js/jobs_table.js',)
-

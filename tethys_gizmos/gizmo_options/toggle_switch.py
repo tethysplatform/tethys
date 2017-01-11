@@ -16,7 +16,7 @@ class ToggleSwitch(TethysGizmoOptions):
     """
     Toggle switches can be used as an alternative to check boxes for boolean or binomial input. Toggle switches are implemented using the excellent `Bootstrap Switch reference <http://www.bootstrap-switch.org/>`_ project.
 
-    Attributes:
+    Attributes
         display_text(str): Display text for the label that accompanies switch
         name(str, required): Name of the input element that will be used for form submission
         on_label(str): Text that appears in the "on" position of the switch
@@ -30,10 +30,11 @@ class ToggleSwitch(TethysGizmoOptions):
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
-    Controller Example
+    Example
 
     ::
 
+        # CONTROLLER
         from tethys_sdk.gizmos import ToggleSwitch
 
         toggle_switch = ToggleSwitch(display_text='Defualt Toggle',
@@ -59,23 +60,14 @@ class ToggleSwitch(TethysGizmoOptions):
                                               disabled=True,
                                               error='Here is my error text')
 
-        context = {
-                    'toggle_switch': toggle_switch,
-                    'toggle_switch_styled': toggle_switch_styled,
-                    'toggle_switch_disabled': toggle_switch_disabled,
-                  }
+        # TEMPLATE
 
-    Template Example
-
-    ::
-
-        {% gizmo toggle_switch %}
-        {% gizmo toggle_switch_styled %}
-        {% gizmo toggle_switch_disabled %}
+        {% gizmo toggle_switch toggle_switch %}
+        {% gizmo toggle_switch toggle_switch_styled %}
+        {% gizmo toggle_switch toggle_switch_disabled %}
 
     """
-    gizmo_name = "toggle_switch"
-    
+
     def __init__(self, name, display_text='', on_label='ON', off_label='OFF', on_style='primary', off_style='default',
                  size='regular', initial=False, disabled=False, error='', attributes={}, classes=''):
         """
@@ -94,27 +86,3 @@ class ToggleSwitch(TethysGizmoOptions):
         self.initial = initial
         self.disabled = disabled
         self.error = error
-
-    @staticmethod
-    def get_vendor_js():
-        """
-        JavaScript vendor libraries to be placed in the 
-        {% block global_scripts %} block
-        """
-        return ('tethys_gizmos/vendor/bootstrap_switch/dist/js/bootstrap-switch.min.js',)
-
-    @staticmethod
-    def get_vendor_css():
-        """
-        CSS vendor libraries to be placed in the 
-        {% block styles %} block
-        """
-        return ('tethys_gizmos/vendor/bootstrap_switch/dist/css/bootstrap3/bootstrap-switch.min.css',)
-
-    @staticmethod
-    def get_gizmo_js():
-        """
-        JavaScript specific to gizmo to be placed in the 
-        {% block scripts %} block
-        """
-        return ('tethys_gizmos/js/toggle_switch.js',)
