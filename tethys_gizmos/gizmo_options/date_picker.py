@@ -38,11 +38,9 @@ class DatePicker(TethysGizmoOptions):
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
-    Example
+    Controller Example
 
     ::
-
-        # CONTROLLER
 
         from tethys_sdk.gizmos import DatePicker
 
@@ -62,12 +60,22 @@ class DatePicker(TethysGizmoOptions):
                                        disabled=True,
                                        error='Here is my error text.')
 
-        # TEMPLATE
+        context = {
+                    'date_picker': date_picker,
+                    'date_picker_error': date_picker_error,
+                  }
 
-        {% gizmo date_picker date_picker %}
-        {% gizmo date_picker date_picker_error %}
+    Template Example
+
+    ::
+
+        {% load tethys_gizmos %}
+
+        {% gizmo date_picker %}
+        {% gizmo date_picker_error %}
 
     """
+    gizmo_name = "date_picker"
 
     def __init__(self, name, display_text='', autoclose=False, calendar_weeks=False, clear_button=False,
                  days_of_week_disabled='', end_date='', format='', min_view_mode='days', multidate=1, start_date='',
@@ -98,7 +106,19 @@ class DatePicker(TethysGizmoOptions):
         self.disabled = disabled
         self.error = error
 
-
-
-
-
+            
+    @staticmethod
+    def get_vendor_css():
+        """
+        JavaScript vendor libraries to be placed in the 
+        {% block global_scripts %} block
+        """
+        return ('tethys_gizmos/vendor/bootstrap_datepicker/css/datepicker3.css',)
+        
+    @staticmethod
+    def get_vendor_js():
+        """
+        JavaScript vendor libraries to be placed in the 
+        {% block global_scripts %} block
+        """
+        return ('tethys_gizmos/vendor/bootstrap_datepicker/js/bootstrap_datepicker.js',)
