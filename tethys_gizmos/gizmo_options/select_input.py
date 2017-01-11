@@ -28,66 +28,48 @@ class SelectInput(TethysGizmoOptions):
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
-    Controller Example
+    Example
 
     ::
 
+        # CONTROLLER
         from tethys_sdk.gizmos import SelectInput
 
         select_input2 = SelectInput(display_text='Select2',
-                                    name='select2',
+                                    name='select1',
                                     multiple=False,
                                     options=[('One', '1'), ('Two', '2'), ('Three', '3')],
-                                    initial=['Three'])
-    
+                                    initial=['Three'],
+                                    original=['Two'])
+
         select_input2_multiple = SelectInput(display_text='Select2 Multiple',
-                                             name='select21',
+                                             name='select2',
                                              multiple=True,
                                              options=[('One', '1'), ('Two', '2'), ('Three', '3')],
-                                             initial=['Two', 'One'])
-    
-        select_input2_error = SelectInput(display_text='Select2 Disabled',
-                                          name='select22',
-                                          multiple=False,
-                                          options=[('One', '1'), ('Two', '2'), ('Three', '3')],
-                                          disabled=True,
-                                          error='Here is my error text')
-    
-        select_input = SelectInput(display_text='Select',
-                                   name='select1',
-                                   multiple=False,
-                                   original=True,
-                                   options=[('One', '1'), ('Two', '2'), ('Three', '3')],
-                                   initial=['Three'])
-    
+                                             initial=['1', '2'])
+
         select_input_multiple = SelectInput(display_text='Select Multiple',
-                                            name='select11',
+                                            name='select2.1',
                                             multiple=True,
                                             original=True,
                                             options=[('One', '1'), ('Two', '2'), ('Three', '3')])
 
+        select_input2_error = SelectInput(display_text='Select2 Disabled',
+                                          name='select3',
+                                          multiple=False,
+                                          options=[('One', '1'), ('Two', '2'), ('Three', '3')],
+                                          disabled=True,
+                                          error='Here is my error text')
 
-        context = {
-                    'select_input2': select_input2,
-                    'select_input2_multiple': select_input2_multiple,
-                    'select_input2_error': select_input2_error,
-                    'select_input': select_input,
-                    'select_input_multiple': select_input_multiple,
-                  }
+        # TEMPLATE
 
-    Template Example
-
-    ::
-
-        {% gizmo select_input2 %}
-        {% gizmo select_input2_multiple %}
-        {% gizmo select_input2_error %}
-        {% gizmo select_input %}
-        {% gizmo select_input_multiple %}
+        {% gizmo select_input select_input2 %}
+        {% gizmo select_input select_input2_multiple %}
+        {% gizmo select_input select_input_multiple %}
+        {% gizmo select_input select_input2_error %}
 
     """
-    gizmo_name = "select_input"
-    
+
     def __init__(self, name, display_text='', initial=[], multiple=False, original=False, options='', disabled=False, error='',
                  attributes={}, classes=''):
         """
@@ -105,27 +87,3 @@ class SelectInput(TethysGizmoOptions):
         self.options = options
         self.disabled = disabled
         self.error = error
-
-    @staticmethod
-    def get_vendor_js():
-        """
-        JavaScript vendor libraries to be placed in the 
-        {% block global_scripts %} block
-        """
-        return ('tethys_gizmos/vendor/select2_4.0.2/js/select2.full.min.js',)
-
-    @staticmethod
-    def get_vendor_css():
-        """
-        CSS vendor libraries to be placed in the 
-        {% block styles %} block
-        """
-        return ('tethys_gizmos/vendor/select2_4.0.2/css/select2.min.css',)
-
-    @staticmethod
-    def get_gizmo_js():
-        """
-        JavaScript specific to gizmo to be placed in the 
-        {% block scripts %} block
-        """
-        return ('tethys_gizmos/js/select_input.js',)

@@ -2,7 +2,7 @@
 
 {% load staticfiles tethys_gizmos %}
 
-{% block title %}- Gizmos - Map View{% endblock %}
+{% block title %}- Gizmos - Google Map{% endblock %}
 
 {% block styles %}
 	{{ block.super }}
@@ -17,12 +17,8 @@
 
 {% block primary_content %}
   <div class="gizmo-page-wrapper">
-    <h2>Map View</h2>
-    <form action="" method="post">
-      {% csrf_token %}
-      {% gizmo map_view map_view %}
-      <input type="submit" name="submit">
-    </form>
+    <h2>Google Map</h2>
+    {% gizmo google_map google_map %}
   </div>
 {% endblock %}
 
