@@ -11,6 +11,7 @@ channels:
 
 dependencies:
 - python=2.7.12
+- bokeh=0.12*
 - cffi=1.7.0
 - cryptography=1.5
 - enum34=1.1.6
@@ -19,6 +20,7 @@ dependencies:
 - libffi=3.2.1
 - openssl=1.0.2h
 - pip=9.0*
+- plotly=1.12*
 - pyasn1=0.1.9
 - pycparser=2.14
 - pyopenssl=16.0.0
