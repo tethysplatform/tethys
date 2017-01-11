@@ -2,7 +2,7 @@
 GeoServer Docker
 ****************
 
-**Last Updated:** August 15, 2016
+**Last Updated:** December 10, 2016
 
 Features
 ========
@@ -76,7 +76,7 @@ Use these instructions to migrate the data in a GeoServer 2.7.0 Docker to a newe
       $ docker rename tethys_geoserver tethys_geoserver_bak
       $ docker ps -a
 
-3. Pull new docker container (must have upgraded to Tethys Platform version 1.4.0, which is on dev)
+3. Pull new docker container (only in Tethys versions 1.4.0+)
 
   ::
 
