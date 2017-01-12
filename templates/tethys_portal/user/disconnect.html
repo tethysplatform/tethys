@@ -28,8 +28,12 @@
               <p>Are you sure you want to disconnect your LinkedIn account?</p>
             {% elif 'facebook' in provider %}
               <p>Are you sure you want to disconnect your Facebook account?</p>
-            {% elif 'hydroshare' in provider %}
+            {% elif 'hydroshare' == provider %}
               <p>Are you sure you want to disconnect your HydroShare account?</p>
+            {% elif 'hydroshare_beta' == provider %}
+              <p>Are you sure you want to disconnect your HydroShare-beta account?</p>
+            {% elif 'hydroshare_playground' == provider %}
+              <p>Are you sure you want to disconnect your HydroShare-playground account?</p>
             {% endif %}
 
             {% csrf_token %}
