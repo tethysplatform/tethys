@@ -10,6 +10,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+from captcha.fields import CaptchaField
 
 class LoginForm(forms.Form):
     username = forms.RegexField(label='', max_length=30,
@@ -26,7 +27,7 @@ class LoginForm(forms.Form):
                                    attrs={'placeholder': 'Password'}
                                )
     )
-
+    captcha = CaptchaField()
 
 class RegisterForm(forms.ModelForm):
     """
@@ -61,6 +62,8 @@ class RegisterForm(forms.ModelForm):
     password2 = forms.CharField(label='',
                                 widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password'}),
     )
+
+    captcha = CaptchaField()
 
     class Meta:
         model = User

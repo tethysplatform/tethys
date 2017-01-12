@@ -59,6 +59,7 @@ urlpatterns = [
     url(r'^$', tethys_portal_home.home, name='home'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include(account_urls, namespace='accounts')),
+    url(r'^captcha/', include('captcha.urls')),
     url(r'^oauth2/', include('social.apps.django_app.urls', namespace='social')),
     url(r'^user/(?P<username>[\w.@+-]+)/', include(user_urls, namespace='user')),
     url(r'^apps/', include('tethys_apps.urls')),
