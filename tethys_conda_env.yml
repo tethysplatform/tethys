@@ -20,6 +20,7 @@ dependencies:
 - libffi=3.2.1
 - openssl=1.0.2h
 - pip=9.0*
+- pillow=3.4.2
 - plotly=1.12*
 - pyasn1=0.1.9
 - pycparser=2.14
@@ -43,6 +44,7 @@ dependencies:
     - django-bootstrap3>=5.1.1,<6.3.0
     - django-model-utils>=2.4,<2.5
     - django-guardian>=1.4.4,<1.5.0
+    - django-simple-captcha>=0.5.3,<0.5.4
     - django-termsandconditions>=1.1.9,<1.2.0
     - PasteScript>=2.0*
     - geoalchemy2>=0.2.4,<0.3.0
@@ -56,4 +58,3 @@ dependencies:
     - python_social_auth==0.2.14
     - selenium>=3.0.0,<3.0.2
     - coverage>=4.0,<4.2
-
