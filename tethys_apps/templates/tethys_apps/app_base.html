@@ -89,7 +89,7 @@
     {% endcomment %}
 
     {% block styles %}
-      <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" />
+      <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
       <link href="{% static 'tethys_apps/css/app_base.css' %}" rel="stylesheet" />
       {% if tethys_app.enable_feedback %}
         <link href="{% static 'tethys_apps/css/feedback.css' %}" rel="stylesheet" />
@@ -99,7 +99,7 @@
 
     {% block global_scripts %}
       <script src="//code.jquery.com/jquery-2.2.4.min.js" type="text/javascript"></script>
-      <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" type="text/javascript"></script>
+      <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" type="text/javascript"></script>
       {% gizmo_dependencies global_js %}
     {% endblock %}
   </head>
@@ -189,6 +189,21 @@
         {% endblock %}
       </div>
     {% endblock %}
+
+
+    {% comment "after_app_content explanation" %}
+      Use this block for adding elements after the app content such as
+      bootstrap modals.
+
+      Example:
+        {% block after_app_content %}
+            {% gizmo my_modal %}
+        {% endblock %}
+    {% endcomment %}
+
+    {% block after_app_content %}
+    {% endblock %}
+
     {% block terms-of-service-override %}
       {% show_terms_if_not_agreed %}
     {% endblock %}
