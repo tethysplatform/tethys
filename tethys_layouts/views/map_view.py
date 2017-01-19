@@ -29,67 +29,21 @@ class MapViewLayoutController(TethysLayoutController):
     min_zoom = 2
     max_zoom = 18
     initial_zoom = 3.5
+    basemap = 'OpenStreetMap'
+    input_data_format = 'GeoJSON'
+
+    def build_controls(self, request, *args, **kwargs):
+        """
+        Build and return the list of controls that are enabled on the map.
+        """
+        default_controls = ['ZoomSlider', 'Rotate']
+        return default_controls
 
     def build_layers(self, request, *args, **kwargs):
         """
         Build and return the MVLayers for then underlying MapView Gizmo.
         """
-        map_layers = []
-        # Define GeoJSON layer
-        geojson_object = {
-            'type': 'FeatureCollection',
-            'crs': {
-                'type': 'name',
-                'properties': {
-                    'name': 'EPSG:3857'
-                }
-            },
-            'features': [
-                {
-                    'type': 'Feature',
-                    'geometry': {
-                        'type': 'Point',
-                        'coordinates': [0, 0]
-                    }
-                },
-                {
-                    'type': 'Feature',
-                    'geometry': {
-                        'type': 'LineString',
-                        'coordinates': [[4e6, -2e6], [8e6, 2e6]]
-                    }
-                },
-                {
-                    'type': 'Feature',
-                    'geometry': {
-                        'type': 'Polygon',
-                        'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
-                    }
-                }
-            ]
-        }
-
-        geojson_layer = MVLayer(source='GeoJSON',
-                                options=geojson_object,
-                                legend_title='Test GeoJSON',
-                                legend_extent=[-46.7, -48.5, 74, 59],
-                                legend_classes=[
-                                    MVLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)',
-                                                  stroke='#3d9dcd'),
-                                    MVLegendClass('line', 'Lines', stroke='#3d9dcd')
-                                ])
-
-        map_layers.append(geojson_layer)
-
-        # Tiled ArcGIS REST Layer
-        arc_gis_layer = MVLayer(source='TileArcGISRest',
-                                options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' +
-                                                'Specialty/ESRI_StateCityHighway_USA/MapServer'},
-                                legend_title='ESRI USA Highway',
-                                legend_extent=[-173, 17, -65, 72])
-
-        map_layers.append(arc_gis_layer)
-        return map_layers
+        return []
 
     def build_mvdraw(self, request, *args, **kwargs):
         """
@@ -98,7 +52,7 @@ class MapViewLayoutController(TethysLayoutController):
         mvdraw = MVDraw(
             controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
             initial='Point',
-            output_format='WKT'
+            output_format=self.input_data_format
         )
         return mvdraw
 
@@ -122,12 +76,10 @@ class MapViewLayoutController(TethysLayoutController):
         map_view_gizmo = MapView(
             height='600px',
             width='100%',
-            controls=['ZoomSlider', 'Rotate', 'FullScreen',
-                      {'MousePosition': {'projection': 'EPSG:4326'}},
-                      {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
+            controls=self.build_controls(request, args, kwargs),
             layers=self.build_layers(request, args, kwargs),
             view=self.build_mvview(request, args, kwargs),
-            basemap='OpenStreetMap',
+            basemap=self.basemap,
             draw=self.build_mvdraw(request, args, kwargs),
             legend=self.legend
         )
@@ -137,9 +89,7 @@ class MapViewLayoutController(TethysLayoutController):
         """
         Handle a save event from the map.
         """
-        success = True
-        # Do nothing by default
-        return success
+        return False
 
     def get(self, request, *args, **kwargs):
         """
@@ -148,15 +98,19 @@ class MapViewLayoutController(TethysLayoutController):
         # Get context
         context = self.get_context_data(**kwargs)
 
-        request_type = request.GET.get('type', None)
-
-        if request_type == 'on-save':
-            success = self.on_save(request, args, kwargs)
-            return JsonResponse({'success': success})
-        elif request_type == 'on-delete':
-            # do stuff
-            return JsonResponse({'success': True})
-
         # Add to context
         context['map_view_gizmo'] = self.build_map_view(request, args, kwargs)
         return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handle Post Requests
+        """
+        # Get request type
+        event = request.POST.get('event', None)
+
+        if event == 'on-save':
+            success = self.on_save(request, args, kwargs)
+            return JsonResponse({'success': success})
+
+        return JsonResponse({'success': False})
