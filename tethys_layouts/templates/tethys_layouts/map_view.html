@@ -3,12 +3,15 @@
 
 {% block app_navigation %}
   {{ block.super }}
+  {% block override_controls %}
   <a id="save-btn" class="btn btn-default">Save</a>
+  {% endblock %}
 {% endblock %}
 
 {% block app_content %}
   <div id="map-wrapper">
     {% gizmo map_view map_view_gizmo %}
+    {% csrf_token %}
   </div>
 {% endblock %}
 
