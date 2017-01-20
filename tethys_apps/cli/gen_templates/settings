@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from sys import argv
 
 from django.contrib.messages import constants as message_constants
 
@@ -30,6 +31,13 @@ DEBUG = True
 # List those who should be notified of an error when DEBUG = False as a tuple of (name, email address).
 # i.e.: ADMINS = (('John', 'john@example.com'), ('Mary', 'mary@example.com'))
 ADMINS = ()
+
+# Force users to re-login after the browser has been closed.
+# If changed, delete all django_session table entries from the tethys_default database to ensure updated behavior
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Detect if being executed in the Django testing environment.
+TESTING = len(argv) > 1 and argv[1] == 'test'
 
 # See https://docs.djangoproject.com/en/1.8/topics/logging/#configuring-logging for more logging configuration options.
 LOGGING = {
