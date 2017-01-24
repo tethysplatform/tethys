@@ -1744,8 +1744,19 @@ var TETHYS_MAP_VIEW = (function() {
           }
         }
 
-        // Generate cql_filter
-        cql_filter = '&cql_filter=' + attribute_name + '=%27' + attribute_value + '%27';
+        // Check for multiple attribute values contained in single string
+        if (attribute_value.indexOf(',') !== -1){
+          attribute_value = attribute_value.split(',');
+          // Generate cql_filter for multi-value queries
+          // Assumes multi-values enter function as one string with commas separating the values
+          cql_filter = '&cql_filter=' + attribute_name + '=%27' + attribute_value[0] + '%27';
+          for (var i = 1; i < attribute_value.length; i++) {
+            cql_filter += ' OR ' + attribute_name + '=%27' + attribute_value[i] + '%27';
+          }
+        } else {
+          // Generate cql_filter for single value queries
+          cql_filter = '&cql_filter=' + attribute_name + '=%27' + attribute_value + '%27';
+        }
 
         // Create callback url
         url = wms_url.replace('wms', 'wfs')
