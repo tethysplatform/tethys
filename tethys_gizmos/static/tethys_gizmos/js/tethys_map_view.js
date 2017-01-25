@@ -274,11 +274,8 @@ var TETHYS_MAP_VIEW = (function() {
     // Constants
 ////////////////////////////////////////// Color of annotation tools and Button Spacing ////////////////////////////////
     var VALID_GEOMETRY_TYPES = ['Polygon', 'Point', 'LineString', 'Box'];
-//    var INITIAL_FILL_COLOR = 'rgba(255, 255, 255, 0.2)',
     var INITIAL_FILL_COLOR = m_draw_options.fill_color,
-//        INITIAL_STROKE_COLOR = '#ffcc33',
         INITIAL_STROKE_COLOR = m_draw_options.line_color,
-//        INITIAL_POINT_FILL_COLOR = '#ffcc33',
         INITIAL_POINT_FILL_COLOR = m_draw_options.point_color,
         BUTTON_SPACING = 30,
         BUTTON_OFFSET_UNITS = 'px';
