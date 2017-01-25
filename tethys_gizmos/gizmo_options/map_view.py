@@ -353,7 +353,7 @@ class MVLayer(SecondaryGizmoOptions):
         legend_classes (list): A list of MVLegendClass objects.
         legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
-        tethys_toc (bool): If true the layer will be included in the Table of Contents gizmo
+        tethys_data (dict): Dictionary representation of layer data
 
     Example
 
