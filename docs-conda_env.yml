@@ -1,7 +1,9 @@
-# tethys_conda_env.yml
-# Configuration file for creating a Conda Environment with dependencies needed for Tethys Platform.
-# Create the environment by running the following command (after installing Miniconda):
-#   $ conda env create -f tethys_env.yml
+# docs-conda_env.yml
+# Configuration file for creating a Conda Environment with dependencies
+# needed to build the documentation for Tethys Platform.
+# Create the environment by running the following command
+# (after installing Miniconda):
+#   $ conda env create -f docs-conda_env.yml
 
 name: tethys
 
