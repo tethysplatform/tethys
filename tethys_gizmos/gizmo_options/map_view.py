@@ -300,9 +300,9 @@ class MVDraw(SecondaryGizmoOptions):
         controls(list, required): List of drawing controls to add to the map. Valid options are 'Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon' and 'Box'.
         initial(str, required): Drawing control to be enabled initially. Must be included in the controls list.
         output_format(str): Format to output to the hidden text area. Either 'WKT' (for Well Known Text format) or 'GeoJSON'. Defaults to 'GeoJSON'
-        lineColor(str): User control for customizing the stroke color of annotation objects
-        fillColor(str): User control for customizing the fill color of polygons (suggest rgba format for setting transparency)
-        pointColor(str): User control for customizing the color of points
+        line_color(str): User control for customizing the stroke color of annotation objects
+        fill_color(str): User control for customizing the fill color of polygons (suggest rgba format for setting transparency)
+        point_color(str): User control for customizing the color of points
 
     Example
 
