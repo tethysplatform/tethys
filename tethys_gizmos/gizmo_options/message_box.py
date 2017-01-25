@@ -52,8 +52,10 @@ class MessageBox(TethysGizmoOptions):
         {% load tethys_gizmos %}
 
         <a href="#sampleModal" role="button" class="btn btn-success" data-toggle="modal">Show Message Box</a>
-        {% gizmo message_box %}
 
+        {% block after_app_content %}
+            {% gizmo message_box %}
+        {% endblock %}
     """
     gizmo_name = "message_box"
 
