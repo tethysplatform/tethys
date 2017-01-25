@@ -9,7 +9,8 @@
 """
 from django import forms
 from django.contrib.auth.models import User
-
+from django.contrib.auth.password_validation import validate_password
+from captcha.fields import CaptchaField
 
 class LoginForm(forms.Form):
     username = forms.RegexField(label='', max_length=30,
@@ -26,7 +27,7 @@ class LoginForm(forms.Form):
                                    attrs={'placeholder': 'Password'}
                                )
     )
-
+    captcha = CaptchaField(label='')
 
 class RegisterForm(forms.ModelForm):
     """
@@ -61,6 +62,8 @@ class RegisterForm(forms.ModelForm):
     password2 = forms.CharField(label='',
                                 widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password'}),
     )
+
+    captcha = CaptchaField(label='')
 
     class Meta:
         model = User
@@ -100,6 +103,7 @@ class RegisterForm(forms.ModelForm):
                 self.error_messages['password_mismatch'],
                 code='password_mismatch',
             )
+        validate_password(password2)
         return password2
 
     def save(self, commit=True):
@@ -159,20 +163,20 @@ class UserPasswordChangeForm(forms.Form):
                                    widget=forms.PasswordInput(
                                        attrs={'placeholder': 'Old Password',
                                               'autofocus': 'autofocus'}
+                                   ),
                                    )
-    )
 
     new_password1 = forms.CharField(label="",
                                     widget=forms.PasswordInput(
                                         attrs={'placeholder': 'New Password'}
+                                    ),
                                     )
-    )
 
     new_password2 = forms.CharField(label="",
                                     widget=forms.PasswordInput(
                                         attrs={'placeholder': 'Confirm New Password'}
+                                    ),
                                     )
-    )
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
@@ -199,6 +203,7 @@ class UserPasswordChangeForm(forms.Form):
                     self.error_messages['password_mismatch'],
                     code='password_mismatch',
                 )
+        validate_password(password2)
         return password2
 
     def save(self, commit=True):
