@@ -24,11 +24,12 @@ var ESRI_MAP = (function() {
 
     //Objects
     var public_interface,				// Object returned by the module
-        m_map,							// The map
+        m_map,                          // The map
+        m_view,
         m_base_map_options,
         m_view_options,
         m_layers_options,
-		m_layer_extent;
+        m_layer_extent;
 
     //Selectors
     var m_map_target;
@@ -38,7 +39,7 @@ var ESRI_MAP = (function() {
      *                    PRIVATE METHOD DECLARATIONS
      *************************************************************************/
         //Initialization Methods
-    var parse_options,esri_base_map_init, esri_layers_init, esri_view_init,esri_initialize_all;
+    var parse_options,esri_base_map_init, esri_layers_init, esri_view_init,esri_legend_init,esri_legend_actions_init,esri_initialize_all;
 
     // Utility Methods
     var is_defined;
@@ -72,12 +73,12 @@ var ESRI_MAP = (function() {
             "esri/views/MapView",
             "esri/layers/FeatureLayer",
             "dojo/domReady!"
-        ], function(Map, MapView, FeatureLayer) {
+        ], function(Map, MapView) {
             m_map = new Map({
                 basemap: m_base_map_options
             });
 
-            var view = new MapView({
+            m_view = new MapView({
                 container: m_map_target,  // Reference to the DOM node that will contain the view
                 map: m_map,
                 zoom:4,
@@ -95,19 +96,47 @@ var ESRI_MAP = (function() {
 
                 current_layer = m_layers_options[i];
                 if(current_layer.type == 'FeatureLayer'){
-                	require(["esri/layers/FeatureLayer","esri/Map"],function (FeatureLayer) {
-						layer = new FeatureLayer({
-                        url: current_layer.url
-                    });
-						m_map.add(layer);
-						layer.then(function(){
-							m_layer_extent = layer.fullExtent;
-							view.goTo(layer.fullExtent);
-						});
-                    });
+                    require(["esri/layers/FeatureLayer"],function (FeatureLayer) {
+                        layer = new FeatureLayer({
+                            url: current_layer.url
+                        });
+                        m_map.add(layer);
 
-
+                    });
                 }
+
+                if(current_layer.type == 'MapImageLayer'){
+                    require(["esri/layers/MapImageLayer"],function (MapImageLayer) {
+                        layer = new MapImageLayer({
+                            portalItem:{
+                                id: current_layer.url
+                            }
+                        });
+                        m_map.add(layer);
+                    });
+                }
+
+                if(current_layer.type == 'VectorTileLayer'){
+                    require(["esri/layers/VectorTileLayer"],function (VectorTileLayer) {
+                        layer = new VectorTileLayer({
+                            url: current_layer.url
+                        });
+                        m_map.add(layer);
+                    });
+                }
+
+                if(current_layer.type == 'ImageryLayer'){
+                    require(["esri/layers/ImageryLayer"],function (ImageryLayer) {
+                        layer = new ImageryLayer({
+                            url: current_layer.url,
+                            format: "jpgpng"
+                        });
+                        m_map.add(layer);
+                    });
+                }
+
+
+
             }
         }
 
@@ -127,39 +156,81 @@ var ESRI_MAP = (function() {
             view_obj =  JSON.parse(view_json);
 
             if('center' in view_obj && 'zoom' in view_obj){
-                if(view_obj['scene'] === false){
                     require([
                         "esri/views/MapView",
+                        "esri/widgets/LayerList",
                         "dojo/domReady!"
                     ], function(MapView) {
-                        var view = new MapView({
+                        m_view = new MapView({
                             container: m_map_target,  // Reference to the DOM node that will contain the view
                             map: m_map,
                             zoom:view_obj['zoom'],
                             center: view_obj['center']
                         });
 
-						esri_layers_init();
-                    });
+                        esri_layers_init();
 
-                }
-                if(view_obj['scene'] === true){
-                    require([
-                        "esri/views/SceneView",
-                        "dojo/domReady!"
-                    ], function(SceneView) {
-                        var view = new SceneView({
-                            container: m_map_target,  // Reference to the DOM node that will contain the view
-                            map: m_map,
-                            zoom:view_obj['zoom'],
-                            center: view_obj['center']// References the map object created in step 3
-                        });
 
                     });
-                }
+
 
 
             }
+        }
+    };
+
+    esri_legend_init = function(){
+        require([
+            "esri/views/MapView",
+            "esri/widgets/LayerList",
+            "dojo/domReady!"],function (MapView,LayerList) {
+            m_view.then(function() {
+                var layerList = new LayerList({
+                    view: m_view
+                });
+                layerList.on("trigger-action",function(event){
+
+                    var id = event.action.id;
+
+
+                });
+                // Add widget to the top right corner of the view
+                m_view.ui.add(layerList, "top-right");
+            });
+        });
+
+    };
+
+    esri_legend_actions_init = function(event){
+
+        var item = event.item;
+
+        if (item.title) {
+
+          // An array of objects defining actions to place in the LayerList.
+          // By making this array two-dimensional, you can separate similar
+          // actions into separate groups with a breaking line.
+
+          return [
+            [{
+              title: "Go to full extent",
+              className: "esri-icon-zoom-out-fixed",
+              id: "full-extent"
+            }, {
+              title: "Layer information",
+              className: "esri-icon-description",
+              id: "information"
+            }],
+            [{
+              title: "Increase opacity",
+              className: "esri-icon-up",
+              id: "increase-opacity"
+            }, {
+              title: "Decrease opacity",
+              className: "esri-icon-down",
+              id: "decrease-opacity"
+            }]
+          ];
         }
     };
 
@@ -172,6 +243,9 @@ var ESRI_MAP = (function() {
 
         esri_view_init();
 
+        esri_legend_init();
+
+        //esri_legend_init();
 
     };
 
@@ -184,13 +258,13 @@ var ESRI_MAP = (function() {
     /************************************************************************
      *                        DEFINE PUBLIC INTERFACE
      *************************************************************************/
-	/*
-	 * Library object that contains public facing functions of the package.
-	 * This is the object that is returned by the library wrapper function.
-	 * See below.
-	 * NOTE: The functions in the public interface have access to the private
-	 * functions of the library because of JavaScript function scope.
-	 */
+    /*
+     * Library object that contains public facing functions of the package.
+     * This is the object that is returned by the library wrapper function.
+     * See below.
+     * NOTE: The functions in the public interface have access to the private
+     * functions of the library because of JavaScript function scope.
+     */
     public_interface = {
 
     };
