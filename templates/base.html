@@ -60,6 +60,21 @@
       <link rel="shortcut icon" href="{% if site_globals.favicon %}{{ site_globals.favicon }}{% else %}/static/tethys_portal/images/default_favicon.png{% endif %}" />
     {% endblock %}
 
+    {% comment "import_gizmos explanation" %}
+      The import_gizmos block allows you register gizmos to be added to your
+      page so that the dependencies load properly.
+
+      Example:
+
+        {% block import_gizmos %}
+          {% import_gizmo_dependency map_view %}
+        {% endblock %}
+
+    {% endcomment %}
+
+    {% block import_gizmos %}
+    {% endblock %}
+
     {% comment "styles explanation" %}
       The styles block allows you to add additional stylesheets to the page in
       the same way as the meta block. Use block.super to include the default

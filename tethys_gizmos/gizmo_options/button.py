@@ -22,11 +22,9 @@ class ButtonGroup(TethysGizmoOptions):
         attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
-    Example
+    Controller Example
 
     ::
-
-        # CONTROLLER
 
         from tethys_sdk.gizmos import Button, ButtonGroup
 
@@ -55,12 +53,23 @@ class ButtonGroup(TethysGizmoOptions):
                              style='primary')
         vertical_buttons = ButtonGroup(buttons=[edit_button, info_button, apps_button], vertical=True)
 
-        # TEMPLATE
+        context = {
+                    'horizontal_buttons': horizontal_buttons,
+                    'vertical_buttons': vertical_buttons,
+                  }
 
-        {% gizmo button_group horizontal_buttons %}
-        {% gizmo button_group vertical_buttons %}
+
+    Template Example
+
+    ::
+
+        {% load tethys_gizmos %}
+
+        {% gizmo horizontal_buttons %}
+        {% gizmo vertical_buttons %}
 
     """
+    gizmo_name = "button_group"
 
     def __init__(self, buttons, vertical=False, attributes='', classes=''):
         """
@@ -86,11 +95,9 @@ class Button(TethysGizmoOptions):
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
-    Example:
+    Controller Example
 
     ::
-
-        # CONTROLLER
 
         from tethys_sdk.gizmos import Button
 
@@ -100,10 +107,19 @@ class Button(TethysGizmoOptions):
                                attributes={"onclick": "alert(this.name);"},
                                submit=True)
 
-        # TEMPLATE
+        context = {
+                    'single_button': single_button,
+                  }
 
-        {% gizmo button single_button %}
+    Template Example
+
+    ::
+
+        {% load tethys_gizmos %}
+
+        {% gizmo single_button %}
     """
+    gizmo_name = "button"
 
     def __init__(self, display_text='', name='', style='', icon='', href='',
                  submit=False, disabled=False, attributes={}, classes=''):

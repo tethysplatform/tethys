@@ -17,4 +17,4 @@ def home(request):
     if hasattr(settings, 'BYPASS_TETHYS_HOME_PAGE') and settings.BYPASS_TETHYS_HOME_PAGE:
         return redirect('app_library')
 
-    return render(request, 'tethys_portal/home.html', {})
+    return render(request, 'tethys_portal/home.html', { "ENABLE_OPEN_SIGNUP": settings.ENABLE_OPEN_SIGNUP, })
