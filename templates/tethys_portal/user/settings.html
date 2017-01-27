@@ -66,9 +66,11 @@
 {% block social_parameters %}
   <ul>
     <li><span class="parameter">Connected:</span>
+      {{association.provider}}
       {% if user.username == context_user.username %}
         {% if backends.associated %}
           <div class="social-label-container">
+
             {% if user.has_usable_password or backends.associated|length > 1 %}
               {% for association in backends.associated %}
                 {% if 'linkedin' in association.provider %}
@@ -77,8 +79,12 @@
                   <a href="{% url 'user:disconnect' user.username 'google-oauth2' association.id %}"><span class="label label-google">Disconnect Google</span></a>
                 {% elif 'facebook' in association.provider %}
                   <a href="{% url 'user:disconnect' user.username 'facebook' association.id %}"><span class="label label-facebook">Disconnect Facebook</span></a>
-                {% elif 'hydroshare' in association.provider %}
+                {% elif 'hydroshare' == association.provider %}
                   <a href="{% url 'user:disconnect' user.username 'hydroshare' association.id %}"><span class="label label-hydroshare">Disconnect HydroShare</span></a>
+                {% elif 'hydroshare_beta' == association.provider %}
+                  <a href="{% url 'user:disconnect' user.username 'hydroshare_beta' association.id %}"><span class="label label-hydroshare">Disconnect HydroShare-beta</span></a>
+                {% elif 'hydroshare_playground' == association.provider %}
+                  <a href="{% url 'user:disconnect' user.username 'hydroshare_playground' association.id %}"><span class="label label-hydroshare">Disconnect HydroShare-playground</span></a>
                 {% endif %}
               {% endfor %}
             {% else %}
@@ -89,8 +95,12 @@
                   <span class="label label-google">Google</span>
                 {% elif 'facebook' in backend.provider %}
                   <span class="label label-facebook">Facebook</span>
-                {% elif 'hydroshare' in backend.provider %}
+                {% elif 'hydroshare' == backend.provider %}
                   <span class="label label-hydroshare">HydroShare</span>
+                {% elif 'hydroshare_beta' == backend.provider %}
+                  <span class="label label-hydroshare">HydroShare-beta</span>
+                {% elif 'hydroshare_playground' == backend.provider %}
+                  <span class="label label-hydroshare">HydroShare-playground</span>
                 {% endif %}
               {% endfor %}
             {% endif %}
@@ -113,8 +123,12 @@
                 <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}"><span class="label label-google">Connect Google</span></a>
               {% elif 'facebook' in backend %}
                 <a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}"><span class="label label-facebook">Connect Facebook</span></a>
-              {% elif 'hydroshare' in backend %}
+              {% elif 'hydroshare' == backend %}
                 <a href="{% url 'social:begin' 'hydroshare' %}?next={{ request.path }}"><span class="label label-hydroshare">Connect HydroShare</span></a>
+              {% elif 'hydroshare_beta' == backend %}
+                <a href="{% url 'social:begin' 'hydroshare_beta' %}?next={{ request.path }}"><span class="label label-hydroshare">Connect HydroShare-beta</span></a>
+              {% elif 'hydroshare_playground' == backend %}
+                <a href="{% url 'social:begin' 'hydroshare_playground' %}?next={{ request.path }}"><span class="label label-hydroshare">Connect HydroShare-playground</span></a>
               {% endif %}
             {% endfor %}
           </div>
@@ -166,6 +180,5 @@
     </div>
   </form>
 {% endblock %}
-
 
 
