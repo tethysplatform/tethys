@@ -60,15 +60,12 @@ class EMView(SecondaryGizmoOptions):
        ::
 
            view_options = EMView(
-               projection='EPSG:4326',
                center=[-100, 40],
                zoom=3.5,
-               maxZoom=18,
-               minZoom=2
            )
 
        """
-    def __init__(self, center, zoom,scene=False):
+    def __init__(self, center, zoom):
         """
         Constructor
         """
@@ -77,7 +74,7 @@ class EMView(SecondaryGizmoOptions):
 
         self.center = center
         self.zoom = zoom
-        self.scene = scene
+
 
 class EMLayer(SecondaryGizmoOptions):
 
