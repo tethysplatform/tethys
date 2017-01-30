@@ -136,7 +136,6 @@ var ESRI_MAP = (function() {
                 }
 
 
-
             }
         }
 
@@ -201,38 +200,6 @@ var ESRI_MAP = (function() {
 
     };
 
-    esri_legend_actions_init = function(event){
-
-        var item = event.item;
-
-        if (item.title) {
-
-          // An array of objects defining actions to place in the LayerList.
-          // By making this array two-dimensional, you can separate similar
-          // actions into separate groups with a breaking line.
-
-          return [
-            [{
-              title: "Go to full extent",
-              className: "esri-icon-zoom-out-fixed",
-              id: "full-extent"
-            }, {
-              title: "Layer information",
-              className: "esri-icon-description",
-              id: "information"
-            }],
-            [{
-              title: "Increase opacity",
-              className: "esri-icon-up",
-              id: "increase-opacity"
-            }, {
-              title: "Decrease opacity",
-              className: "esri-icon-down",
-              id: "decrease-opacity"
-            }]
-          ];
-        }
-    };
 
     esri_initialize_all = function(){
         m_map_target = 'esri_map_view';
@@ -244,8 +211,6 @@ var ESRI_MAP = (function() {
         esri_view_init();
 
         esri_legend_init();
-
-        //esri_legend_init();
 
     };
 
