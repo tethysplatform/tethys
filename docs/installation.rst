@@ -13,12 +13,3 @@ This section describes how to install Tethys Platform. Installation instructions
     installation/ubuntu
     installation/web_admin_setup
     installation/update
-
-
-
-
-
-
-
-
-
