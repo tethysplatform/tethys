@@ -839,6 +839,7 @@ def index(request):
         condensed=False,
         results_url='gizmos:results',
         refresh_interval=10000,
+        delete_btn=True,
     )
 
     # Define the context object
