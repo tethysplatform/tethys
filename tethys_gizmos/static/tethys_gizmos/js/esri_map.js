@@ -39,7 +39,7 @@ var ESRI_MAP = (function() {
      *                    PRIVATE METHOD DECLARATIONS
      *************************************************************************/
         //Initialization Methods
-    var parse_options,esri_base_map_init, esri_layers_init, esri_view_init,esri_legend_init,esri_legend_actions_init,esri_initialize_all;
+    var parse_options,esri_base_map_init, esri_layers_init, esri_view_init,esri_legend_init,esri_initialize_all;
 
     // Utility Methods
     var is_defined;
