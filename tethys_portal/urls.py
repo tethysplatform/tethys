@@ -65,6 +65,7 @@ urlpatterns = [
     url(r'^update-job-status/(?P<job_id>[\w-]+)/$', tethys_apps_views.update_job_status, name='update_job_status'),
     url(r'^terms/', include('termsandconditions.urls')),
     url(r'session_security/', include('session_security.urls')),
+    url(r'^silk/', include('silk.urls', namespace='silk')),
     #url(r'^error/', include(development_error_urls)),
 ]
 

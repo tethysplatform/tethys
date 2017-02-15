@@ -1,5 +1,4 @@
 from django.test import TestCase
-from app_base import TethysAppBase
 from django.test import Client
 from os import environ, unsetenv
 
@@ -53,17 +52,18 @@ class TethysTestCase(TestCase):
         Return:
             None
         """
+        set_testing_environment(True)
+
+        from app_base import TethysAppBase
         if not issubclass(app_class, TethysAppBase):
             raise TypeError('The app_class argument was not of the correct type. '
                             'It must be a class that inherits from <TethysAppBase>.')
 
         for store in app_class().persistent_stores():
-            test_store_name = 'test_{0}'.format(store.name)
+            if app_class.persistent_store_exists(store.name):
+                app_class.destroy_persistent_store(store.name)
 
-            if app_class.persistent_store_exists(test_store_name):
-                TethysTestCase.destroy_test_persistent_stores_for_app(app_class)
-
-            create_store_success = app_class.create_persistent_store(test_store_name, spatial=store.spatial)
+            create_store_success = app_class.create_persistent_store(store.name, spatial=store.spatial)
 
             error = False
             if create_store_success:
@@ -97,13 +97,19 @@ class TethysTestCase(TestCase):
         Return:
             None
         """
+        set_testing_environment(True)
+
+        from app_base import TethysAppBase
         if not issubclass(app_class, TethysAppBase):
             raise TypeError('The app_class argument was not of the correct type. '
                             'It must be a class that inherits from <TethysAppBase>.')
 
         for store in app_class().persistent_stores():
-            test_store_name = 'test_{0}'.format(store.name)
-            app_class.destroy_persistent_store(test_store_name)
+            app_class.destroy_persistent_store(store.name)
+
+        # Handle destroying any additional stores created manually during testing
+        for store in app_class().list_persistent_stores():
+            app_class.destroy_persistent_store(store)
 
     @staticmethod
     def create_test_user(username, password, email=None):
@@ -146,10 +152,14 @@ class TethysTestCase(TestCase):
         return Client()
 
 
-def set_testing(val):
+def set_testing_environment(val):
     if val:
         environ['TETHYS_TESTING_IN_PROGRESS'] = 'true'
     else:
         environ['TETHYS_TESTING_IN_PROGRESS'] = ''
         del environ['TETHYS_TESTING_IN_PROGRESS']
         unsetenv('TETHYS_TESTING_IN_PROGRESS')
+
+
+def is_testing_environment():
+    return environ.get('TETHYS_TESTING_IN_PROGRESS')
