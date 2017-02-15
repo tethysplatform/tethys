@@ -14,6 +14,7 @@ class ESRIMap(TethysGizmoOptions):
         basemap(string, required): Basemap layer. Values=[streets,satellite,hybrid,topo,gray,dark-gray,oceans,national-geographic,terrain,osm,dark-gray-vector,gray-vector,street-vector,topo-vector,streets-night-vector,streets-relief-vector,streets-navigation-vector]
         zoom(string,required): Zoom Level of the Basemap.
         view(EMView): An EVView object specifying the initial view or extent for the map
+
     Example
 
     ::
@@ -113,11 +114,13 @@ class EMLayer(SecondaryGizmoOptions):
     ::
 
     #Define ArcGIS FeatureLayer
+
     esri_feature_layer = EMLayer(type='FeatureLayer', url='http://geoserver.byu.edu/arcgis/rest/services/Alabama_Flood/Flood_45/MapServer/0')
 
     #Define ArcGIS ImageLayer
+
     esri_image_layer = EMLayer(type='ImageryLayer', url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer')
-    
+
     """
     def __init__(self,type,url):
         """
