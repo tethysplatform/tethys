@@ -8,4 +8,4 @@
 ********************************************************************************
 """
 # DO NOT ERASE
-from tethys_apps.base.testing import TethysTestCase, set_testing
+from tethys_apps.base.testing import TethysTestCase, set_testing_environment
