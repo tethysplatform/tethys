@@ -19,6 +19,7 @@ from sqlalchemy import create_engine
 
 from tethys_apps.base.workspace import TethysWorkspace
 from tethys_apps.base.handoff import HandoffManager
+from tethys_apps.base.testing import is_testing_environment
 
 
 class TethysAppBase(object):
@@ -428,9 +429,10 @@ class TethysAppBase(object):
 
         """
         # If testing environment, the engine for the "test" version of the persistent store engine should be generated
-        if os.environ.get('TETHYS_TESTING_IN_PROGRESS'):
-            test_store_name = 'test_{0}'.format(persistent_store_name)
-            persistent_store_name = test_store_name
+        if is_testing_environment():
+            if 'test_' not in persistent_store_name:
+                test_store_name = 'test_{0}'.format(persistent_store_name)
+                persistent_store_name = test_store_name
 
         # Create the unique store name
         app_name = cls.package
@@ -474,6 +476,17 @@ class TethysAppBase(object):
                 engine = MyFirstApp.get_persistent_store_engine('example_db')
 
         """
+        if cls.persistent_store_exists(persistent_store_name):
+            raise NameError('Database with name "{0}" for app "{1}" already exists.'.format(
+                persistent_store_name,
+                cls.package
+            ))
+
+        if is_testing_environment():
+            if 'test_' not in persistent_store_name:
+                test_store_name = 'test_{0}'.format(persistent_store_name)
+                persistent_store_name = test_store_name
+
         # Get database manager url from the config
         database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
         database_manager_name = database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager'
@@ -489,12 +502,6 @@ class TethysAppBase(object):
         # Compose db name
         full_db_name = '_'.join((cls.package, persistent_store_name))
         engine = create_engine(database_manager_url)
-
-        if cls.persistent_store_exists(persistent_store_name):
-            raise NameError('Database with name "{0}" for app "{1}" already exists.'.format(
-                persistent_store_name,
-                cls.package
-            ))
 
         # Cannot create databases in a transaction: connect and commit to close transaction
         create_connection = engine.connect()
@@ -568,6 +575,11 @@ class TethysAppBase(object):
                 persistent_store_name,
                 cls.package
             ))
+
+        if is_testing_environment():
+            if 'test_' not in persistent_store_name:
+                test_store_name = 'test_{0}'.format(persistent_store_name)
+                persistent_store_name = test_store_name
 
         super_db = settings.TETHYS_DATABASES['tethys_super']
 
@@ -665,7 +677,14 @@ class TethysAppBase(object):
 
         persistent_stores = []
         for existing_db in existing_dbs:
-            persistent_stores.append(existing_db.name.replace(cls.package + '_', ''))
+            add_db_to_list = True
+
+            if is_testing_environment():
+                if 'test_' not in existing_db.name:
+                    add_db_to_list = False
+
+            if add_db_to_list:
+                persistent_stores.append(existing_db.name.replace(cls.package + '_', ''))
 
         return persistent_stores
 
@@ -693,6 +712,12 @@ class TethysAppBase(object):
                 engine = MyFirstApp.get_persistent_store_engine('example_db')
 
         """
+
+        if is_testing_environment():
+            if 'test_' not in persistent_store_name:
+                test_store_name = 'test_{0}'.format(persistent_store_name)
+                persistent_store_name = test_store_name
+
         # Get database manager url from the config
         database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
         database_manager_name = database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager'

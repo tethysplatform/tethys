@@ -117,7 +117,6 @@ def permission_required(*args, **kwargs):
                         pass_permission_test = False
                         break
 
-
             if not pass_permission_test:
                 if not raise_exception:
                     # If user is authenticated...
