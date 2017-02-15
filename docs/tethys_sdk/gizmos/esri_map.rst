@@ -1,8 +1,8 @@
 .. _esri-map:
-
 ********
 ESRI Map
 ********
+**Last Updated:** February 15, 2017
 
 .. autoclass:: tethys_sdk.gizmos.ESRIMap
 
