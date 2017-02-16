@@ -78,6 +78,8 @@ INSTALLED_APPS = (
     'social.apps.django_app.default',
     'guardian',
     'captcha',
+    'rest_framework',
+    'rest_framework.authtoken',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -90,6 +92,15 @@ MIDDLEWARE_CLASSES = (
     'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
 )
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
+
 AUTHENTICATION_BACKENDS = (
 #    'tethys_services.backends.hydroshare.HydroShareOAuth2',
 #    'social.backends.linkedin.LinkedinOAuth2',
@@ -97,6 +108,7 @@ AUTHENTICATION_BACKENDS = (
 #    'social.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
+#   'tethys_services.backends.tokenauth.TokenBackend',
 )
 
 # Password validation
