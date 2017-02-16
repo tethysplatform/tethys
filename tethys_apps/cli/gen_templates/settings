@@ -43,15 +43,30 @@ TESTING = len(argv) > 1 and argv[1] == 'test'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s,%(message)s'
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/var/www/tethys/log/tethys_metrics.log',
+            'formatter': 'verbose',
         },
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'WARNING'),
+        },
+        'metrics_logger': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
         },
     },
 }
@@ -88,6 +103,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
+    'tethys_portal.middleware.MetricsTracking',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -281,6 +297,7 @@ SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = ''
 ## HydroShare
 SOCIAL_AUTH_HYDROSHARE_KEY = ''
 SOCIAL_AUTH_HYDROSHARE_SECRET = ''
+
 
 # Django Guardian Settings
 ANONYMOUS_USER_ID = -1
