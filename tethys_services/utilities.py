@@ -14,7 +14,7 @@ from owslib.wps import WebProcessingService
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
-from social.exceptions import AuthAlreadyAssociated, AuthException
+from social_core.exceptions import AuthAlreadyAssociated, AuthException
 
 from tethys_apps.base.app_base import TethysAppBase
 from .models import DatasetService as DsModel, SpatialDatasetService as SdsModel, WebProcessingService as WpsModel
