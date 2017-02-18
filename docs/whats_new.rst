@@ -25,16 +25,15 @@ HydroShare OAuth Backend and Helper Function
 
 See: :doc:`tethys_portal/social_auth`
 
-New Map View Features
----------------------
+Map View
+--------
 
+* Updated OpenLayers libraries to version 4.0.1
 * Can configure styling of MVDraw layer
 * New editable attribute for MVLayers to lock layers from being edited
 * Added data attribute to MVLayer to allow passing custom attributes with layers for use in custom JavaScript
 
-TODO
-
-See:
+See: :doc:`tethys_sdk/gizmos/map_view`
 
 Esri Map View
 -------------
