@@ -4,9 +4,14 @@
 
 {% block title %}- Gizmos - Map View{% endblock %}
 
+{% block global_scripts %}
+    {{ block.super }}
+    {% gizmo_dependencies global_js %}
+{% endblock %}
+
 {% block styles %}
 	{{ block.super }}
-	<link rel="stylesheet" href="{% static 'tethys_gizmos/vendor/prism/prism.css' %}" type="text/css" />
+    {% gizmo_dependencies global_css %}
   <link rel="stylesheet" href="{% static 'tethys_gizmos/css/gizmo_showcase.css' %}" type="text/css" />
   <style>
     #content {
