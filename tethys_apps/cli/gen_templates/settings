@@ -75,7 +75,7 @@ INSTALLED_APPS = (
     'tethys_gizmos',
     'tethys_services',
     'tethys_compute',
-    'social.apps.django_app.default',
+    'social_django',
     'guardian',
     'captcha',
 )
@@ -92,9 +92,9 @@ MIDDLEWARE_CLASSES = (
 
 AUTHENTICATION_BACKENDS = (
 #    'tethys_services.backends.hydroshare.HydroShareOAuth2',
-#    'social.backends.linkedin.LinkedinOAuth2',
-#    'social.backends.google.GoogleOAuth2',
-#    'social.backends.facebook.FacebookOAuth2',
+#    'social_core.backends.linkedin.LinkedinOAuth2',
+#    'social_core.backends.google.GoogleOAuth2',
+#    'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
@@ -189,8 +189,8 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
-                'social.apps.django_app.context_processors.backends',
-                'social.apps.django_app.context_processors.login_redirect',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
                 'tethys_config.context_processors.tethys_global_settings_context',
                 'tethys_apps.context_processors.tethys_apps_context',
                 'tethys_gizmos.context_processors.tethys_gizmos_context'
