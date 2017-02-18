@@ -28,6 +28,10 @@ See: :doc:`tethys_portal/social_auth`
 New Map View Features
 ---------------------
 
+* Can configure styling of MVDraw layer
+* New editable attribute for MVLayers to lock layers from being edited
+* Added data attribute to MVLayer to allow passing custom attributes with layers for use in custom JavaScript
+
 TODO
 
 See:
