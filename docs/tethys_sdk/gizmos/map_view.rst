@@ -44,7 +44,7 @@ For advanced features, the JavaScript API can be used to interact with the OpenL
 TETHYS_MAP_VIEW.getMap()
 ++++++++++++++++++++++++
 
-This method returns the OpenLayers map object. You can use the `OpenLayers Map API version 3.10.1 <http://openlayers.org/en/v3.10.1/apidoc/ol.Map.html>`_ to perform operations on this object such as adding layers and custom controls.
+This method returns the OpenLayers map object. You can use the `OpenLayers Map API version 4.0.1 <http://openlayers.org/en/v4.0.1/apidoc/ol.Map.html>`_ to perform operations on this object such as adding layers and custom controls.
 
 ::
 
@@ -58,7 +58,7 @@ This method returns the OpenLayers map object. You can use the `OpenLayers Map A
 
 .. caution::
 
-    The Map View Gizmo is powered by OpenLayers version 3.10.1. When referring to the OpenLayers documentation, ensure that you are browsing the correct version of documentation (see the URL of the documentation page).
+    The Map View Gizmo is powered by OpenLayers version 4.0.1. When referring to the OpenLayers documentation, ensure that you are browsing the correct version of documentation (see the URL of the documentation page).
 
 TETHYS_MAP_VIEW.updateLegend()
 ++++++++++++++++++++++++++++++
