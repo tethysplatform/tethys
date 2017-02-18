@@ -1,0 +1,28 @@
+#inner-app-content {
+  padding: 0;
+}
+
+#app-content-wrapper #app-content {
+  height: 100%;
+  padding-bottom: 0;
+}
+
+#map-view-wrapper {
+  height: 100%;
+}
+
+.ol-zoom-extent {
+  top: 270px!important;
+}
+
+.ol-zoomslider {
+  left: 9px!important;
+}
+
+.ol-zoomslider-thumb {
+  margin-left: 1px!important;
+}
+
+#app-content-wrapper #app-content #app-navigation .nav {
+  height: auto;
+}

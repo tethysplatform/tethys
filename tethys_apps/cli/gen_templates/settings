@@ -75,6 +75,7 @@ INSTALLED_APPS = (
     'tethys_gizmos',
     'tethys_services',
     'tethys_compute',
+    'tethys_layouts',
     'social.apps.django_app.default',
     'guardian',
     'captcha',
