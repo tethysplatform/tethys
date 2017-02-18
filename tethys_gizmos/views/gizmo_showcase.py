@@ -1074,6 +1074,7 @@ def map_view(request):
 
     geojson_layer = MVLayer(source='GeoJSON',
                             options=geojson_object,
+                            editable=False,
                             legend_title='Test GeoJSON',
                             legend_extent=[-46.7, -48.5, 74, 59],
                             legend_classes=[
