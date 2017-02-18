@@ -842,17 +842,6 @@ def index(request):
         delete_btn=True,
     )
 
-    #ESRI Map Gizmo
-    esri_map_view = EMView(center=[-100, 40], zoom=4)
-    esri_layer = EMLayer(type='FeatureLayer',
-                         url='http://geoserver.byu.edu/arcgis/rest/services/gaugeviewer/AHPS_gauges/MapServer/0')
-
-    vector_tile = EMLayer(type='ImageryLayer',
-                          url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer')
-
-    esri_map = ESRIMap(height='400px', width='100%', basemap='topo', view=esri_map_view,
-                       layers=[vector_tile, esri_layer])
-
     # Define the context object
     context = {'docs_endpoint': docs_endpoint,
                'single_button': single_button,
@@ -886,7 +875,6 @@ def index(request):
                'flash_message': flash_message,
                'jobs_table_options': jobs_table_options,
                'map_view_options': map_view_options,
-               "esri_map":esri_map,
                'scatter_plot_view': scatter_plot_view,
                'pie_plot_view': pie_plot_view,
                'd3_pie_plot_view': d3_pie_plot_view,
@@ -1143,22 +1131,6 @@ def map_view(request):
 
     return render(request, 'tethys_gizmos/gizmo_showcase/map_view.html', context)
 
-@login_required()
-def esri_map(request):
-
-    esri_map_view = EMView(center=[-100, 40], zoom=4)
-    esri_layer = EMLayer(type='FeatureLayer',
-                         url='http://geoserver.byu.edu/arcgis/rest/services/gaugeviewer/AHPS_gauges/MapServer/0')
-
-    vector_tile = EMLayer(type='ImageryLayer',
-                          url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer')
-
-    esri_map = ESRIMap(height='400px', width='100%', basemap='topo', view=esri_map_view,
-                              layers=[vector_tile, esri_layer])
-
-    context = {"esri_map":esri_map}
-
-    return render(request,'tethys_gizmos/gizmo_showcase/esri_map.html',context)
 
 def jobs_table_results(request, job_id):
     return redirect(reverse('gizmos:showcase') + '#jobs_table_docs')
