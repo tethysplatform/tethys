@@ -1032,7 +1032,7 @@ def map_view(request):
     drawing_options = MVDraw(
         controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
         initial='Point',
-        output_format='WKT'
+        output_format='GeoJSON'
     )
 
     # Define GeoJSON layer
