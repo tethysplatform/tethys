@@ -309,6 +309,7 @@ var TETHYS_MAP_VIEW = (function() {
 
       // Add drawing layer legend properites
       m_drawing_layer.tethys_legend_title = 'Drawing Layer';
+      m_drawing_layer.tethys_editable = true;
 
       // Add drawing layer to the map
       m_map.addLayer(m_drawing_layer);
@@ -1928,7 +1929,7 @@ var TETHYS_MAP_VIEW = (function() {
       m_map.getView().fit(map_extent, m_map.getSize());
     },
 
-    overrideSelectionStyler(geometry_type, styler) {
+    overrideSelectionStyler: function(geometry_type, styler) {
       if (!in_array(geometry_type, ['points', 'lines', 'polygons'])) {
         console.log('Warning: "' + geometry_type +'" is not a valid value for the geometry_type argument. Must be one of: "points", "lines", or "polygons"');
         return;
