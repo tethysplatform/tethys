@@ -22,4 +22,3 @@ from plot_view import *
 from plotly_view import PlotlyView
 from bokeh_view import BokehView
 from datatable_view import DataTableView
-from esri_map import *
