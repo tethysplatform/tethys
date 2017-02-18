@@ -28,20 +28,31 @@ class UrlMapBase(object):
           controller (str): Dot-notation path to the controller.
           regex (str or iterable, optional): Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
         """
+        # Initialize
+        self.controller_func = None
+        self.controller_path = None
+
         # Validate
         if regex and (not isinstance(regex, basestring) and not isinstance(regex, tuple) and not isinstance(regex, list)):
             raise ValueError('Value for "regex" must be either a string, list, or tuple.')
 
+        if (callable(controller) or isinstance(controller, basestring)) and (not isinstance(controller, (tuple, list))):
+            if isinstance(controller, basestring):
+                self.controller = '.'.join(['tethys_apps.tethysapp', controller])
+            else:
+                self.controller = controller
+        else:
+            raise ValueError('Value for "controller" must either be the path to a controller function or a callable.')
+
         self.name = name
         self.url = django_url_preprocessor(url, self.root_url, regex)
-        self.controller = '.'.join(['tethys_apps.tethysapp', controller])
         self.custom_match_regex = regex
 
     def __repr__(self):
         """
         String representation
         """
-        return '<UrlMap: name={0}, url={1}, controller={2}>'.format(self.name, self.url, self.controller)
+        return '<UrlMap: name={0}, url={1}, controller={2}>'.format(self.name, self.url, self.controller_path)
 
 
 def url_map_maker(root_url):
