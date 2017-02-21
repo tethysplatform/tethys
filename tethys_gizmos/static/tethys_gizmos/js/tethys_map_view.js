@@ -272,10 +272,11 @@ var TETHYS_MAP_VIEW = (function() {
   ol_drawing_init = function()
   {
     // Constants
+////////////////////////////////////////// Color of annotation tools and Button Spacing ////////////////////////////////
     var VALID_GEOMETRY_TYPES = ['Polygon', 'Point', 'LineString', 'Box'];
-    var INITIAL_FILL_COLOR = 'rgba(255, 255, 255, 0.2)',
-        INITIAL_STROKE_COLOR = '#ffcc33',
-        INITIAL_POINT_FILL_COLOR = '#ffcc33',
+    var INITIAL_FILL_COLOR = m_draw_options.fill_color,
+        INITIAL_STROKE_COLOR = m_draw_options.line_color,
+        INITIAL_POINT_FILL_COLOR = m_draw_options.point_color,
         BUTTON_SPACING = 30,
         BUTTON_OFFSET_UNITS = 'px';
 
@@ -336,7 +337,8 @@ var TETHYS_MAP_VIEW = (function() {
         pan_control = new DrawingControl({
           control_type: 'Pan',
           left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-          active: false
+          active: false,
+          control_id: "tethys_pan"
         });
 
         button_left_offset += BUTTON_SPACING;
@@ -349,7 +351,8 @@ var TETHYS_MAP_VIEW = (function() {
           modify_control = new DrawingControl({
             control_type: 'Modify',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-            active: false
+            active: false,
+            control_id: "tethys_modify"
           });
 
 
@@ -364,7 +367,8 @@ var TETHYS_MAP_VIEW = (function() {
           modify_control = new DrawingControl({
             control_type: 'Delete',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-            active: false
+            active: false,
+            control_id: "tethys_delete"
           });
 
 
@@ -380,7 +384,8 @@ var TETHYS_MAP_VIEW = (function() {
           drag_feature_control = new DrawingControl({
             control_type: 'Drag',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-            active: false
+            active: false,
+            control_id: "tethys_move"
           });
 
           button_left_offset += BUTTON_SPACING;
@@ -408,7 +413,8 @@ var TETHYS_MAP_VIEW = (function() {
             new_control = new DrawingControl({
               control_type: current_control_type,
               left_offset: offset_string,
-              active: is_initial
+              active: is_initial,
+              control_id: "draw_" + current_control_type
             });
 
             m_map.addControl(new_control);
@@ -572,6 +578,8 @@ var TETHYS_MAP_VIEW = (function() {
           layer.tethys_legend_classes = current_layer.legend_classes;
           layer.tethys_legend_extent = current_layer.legend_extent;
           layer.tethys_legend_extent_projection = current_layer.legend_extent_projection;
+          layer.tethys_editable = current_layer.editable;
+          layer.tethys_data = current_layer.data;
 
           // Add layer to the map
           m_map.addLayer(layer);
@@ -891,7 +899,13 @@ var TETHYS_MAP_VIEW = (function() {
     selected_features = null;
 
     // Create select interaction
-    m_modify_select_interaction = new ol.interaction.Select();
+    m_modify_select_interaction = new ol.interaction.Select({
+        layers: function(layer){
+            if (layer.tethys_editable){
+                return layer
+            }
+        },
+    });
     m_map.addInteraction(m_modify_select_interaction);
 
     // Get selected features
@@ -1710,6 +1724,8 @@ var TETHYS_MAP_VIEW = (function() {
   /***********************************
    * Class Implementations
    ***********************************/
+///////////////////////////////////////// This is the place to play with the button locations //////////////////////////
+
   DrawingControl = function(opt_options) {
     var options,
         button,
@@ -1738,6 +1754,7 @@ var TETHYS_MAP_VIEW = (function() {
     button_wrapper = document.createElement('div');
     button_wrapper.className = 'tethys-map-view-draw-control ol-unselectable ol-control';
     button_wrapper.style.left = options.left_offset;
+    button_wrapper.setAttribute('id',options.control_id);
     button_wrapper.appendChild(button);
 
     // Create action handler
@@ -1791,6 +1808,9 @@ var TETHYS_MAP_VIEW = (function() {
 
     var feature = map.forEachFeatureAtPixel(event.pixel,
         function(feature, layer) {
+          if (layer.tethys_editable === false){
+            return false;
+          }
           return feature;
         });
 
@@ -1870,7 +1890,7 @@ var TETHYS_MAP_VIEW = (function() {
     var map = event.map;
     var feature = map.forEachFeatureAtPixel(event.pixel,
         function(feature, layer) {
-            if (layer instanceof ol.layer.Vector) {
+            if (layer.tethys_editable && layer instanceof ol.layer.Vector) {
                 layer.getSource().removeFeature(feature);
             };
         });
