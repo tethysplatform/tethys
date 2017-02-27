@@ -25,7 +25,11 @@ var TETHYS_SELECT_INPUT = (function() {
  	var initSelectInput;
 
  	initSelectInput = function(tag) {
-        $(tag).select2();
+ 	    $(tag).each(function(){
+            var options = $(this).data('select2-options');
+            $(this).select2(options);
+ 	    });
+
  	};
 
 	/************************************************************************
