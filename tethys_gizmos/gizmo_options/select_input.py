@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 from .base import TethysGizmoOptions
+import json
 
 __all__ = ['SelectInput']
 
@@ -21,6 +22,7 @@ class SelectInput(TethysGizmoOptions):
         name(str, required): Name of the input element that will be used for form submission
         multiple(bool): If True, select input will be a multi-select
         original(bool): If True, `Select2 reference <http://ivaynberg.github.io/select2/>`_ functionality will be turned off
+        select2_options (dict): Select2 options that will be passed when initializing the select2.
         options(list): List of tuples that represent the options and values of the select input
         initial(list or str): List of keys or values that represent the initial selected values or a string representing a singular initial selected value.
         disabled(bool): Disabled state of the select input
@@ -38,7 +40,9 @@ class SelectInput(TethysGizmoOptions):
                                     name='select2',
                                     multiple=False,
                                     options=[('One', '1'), ('Two', '2'), ('Three', '3')],
-                                    initial=['Three'])
+                                    initial=['Three'],
+                                    select2_options={'placeholder': 'Select a number',
+                                                     'allowClear': True})
     
         select_input2_multiple = SelectInput(display_text='Select2 Multiple',
                                              name='select21',
@@ -88,7 +92,8 @@ class SelectInput(TethysGizmoOptions):
     """
     gizmo_name = "select_input"
     
-    def __init__(self, name, display_text='', initial=[], multiple=False, original=False, options='', disabled=False, error='',
+    def __init__(self, name, display_text='', initial=[], multiple=False, original=False,
+                 select2_options=None, options='', disabled=False, error='',
                  attributes={}, classes=''):
         """
         Constructor
@@ -102,6 +107,8 @@ class SelectInput(TethysGizmoOptions):
         self.initial = initial
         self.multiple = multiple
         self.original = original
+        self.placeholder = False if select2_options is None else 'placeholder' in select2_options
+        self.select2_options = json.dumps(select2_options)
         self.options = options
         self.disabled = disabled
         self.error = error

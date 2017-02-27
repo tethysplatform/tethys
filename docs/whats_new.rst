@@ -50,6 +50,7 @@ TODO
 
 * New way to call them
 * New load dependencies Method
+* Updated select_gizmo to allow Select2 options to be passed in.
 
 See:
 
