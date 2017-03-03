@@ -1666,7 +1666,7 @@ var TETHYS_MAP_VIEW = (function() {
     }
 
     for (var i = 0; i < m_selectable_wms_layers.length; i++) {
-      var source, wms_url, url, layer, layer_name, geometry_attribute;
+      var source, wms_url, url, layer, layer_params, layer_name, layer_view_params, geometry_attribute;
       var bbox, cql_filter;
 
       // Don't select if not visible
@@ -1685,7 +1685,9 @@ var TETHYS_MAP_VIEW = (function() {
       bbox = bbox.replace('{{maxx}}', x + tolerance);
       bbox = bbox.replace('{{maxy}}', y + tolerance);
       cql_filter = '&CQL_FILTER=BBOX(' + geometry_attribute + '%2C' + bbox + '%2C%27EPSG%3A3857%27)';
-      layer_name = source.getParams().LAYERS;
+      layer_params = source.getParams();
+      layer_name = layer_params.LAYERS;
+      layer_view_params = layer_params.VIEWPARAMS ? layer_params.VIEWPARAMS : '';
 
       if (source instanceof ol.source.ImageWMS) {
         wms_url = source.getUrl();
@@ -1703,6 +1705,7 @@ var TETHYS_MAP_VIEW = (function() {
           + '&VERSION=2.0.0'
           + '&REQUEST=GetFeature'
           + '&TYPENAMES=' + layer_name
+          + '&VIEWPARAMS=' + layer_view_params
           + '&OUTPUTFORMAT=text/javascript'
           + '&FORMAT_OPTIONS=callback:TETHYS_MAP_VIEW.jsonResponseHandler;'
           + '&SRSNAME=' + DEFAULT_PROJECTION
