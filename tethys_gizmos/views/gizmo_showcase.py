@@ -126,7 +126,9 @@ def index(request):
                                 name='select2',
                                 multiple=False,
                                 options=[('One', '1'), ('Two', '2'), ('Three', '3')],
-                                initial=['Three'])
+                                initial=['Three'],
+                                select2_options={'placeholder': 'Select a number',
+                                                 'allowClear': True})
 
     select_input2_multiple = SelectInput(display_text='Select2 Multiple',
                                          name='select21',
