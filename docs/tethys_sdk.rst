@@ -11,7 +11,7 @@ is included in the SDK:
 
 .. toctree::
    :maxdepth: 2
-   
+
    tethys_sdk/app_class
    tethys_sdk/templating
    tethys_sdk/gizmos
@@ -24,8 +24,7 @@ is included in the SDK:
    tethys_sdk/jobs
    tethys_sdk/workspaces
    tethys_sdk/handoff
+   tethys_sdk/rest_api
    tethys_sdk/permissions
    tethys_sdk/tethys_cli
    tethys_sdk/testing
-
-
