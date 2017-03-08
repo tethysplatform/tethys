@@ -129,7 +129,7 @@ Inserts a Gizmo at the location of the tag.
 
 Tells the ``gizmo_dependencies`` to load in the dependencies for the gizmo.
 This tag must be in the ``import_gizmos`` block. This is useful for loading
-the dependencies into the page for a gizmo if you plan on loading the gizmos 
+the dependencies into the page for a gizmo if you plan on loading the gizmos
 using AJAX after the initial page load.
 
 *Parameters*:
@@ -208,5 +208,6 @@ This section provides explanations of each of the Gizmo Options Objects availabl
    gizmos/plotly_view
    gizmos/bokeh_view
    gizmos/map_view
+   gizmos/esri_map
    gizmos/google_map
    gizmos/jobs_table
