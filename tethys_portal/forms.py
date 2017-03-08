@@ -7,10 +7,10 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from captcha.fields import CaptchaField
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
-from captcha.fields import CaptchaField
 
 class LoginForm(forms.Form):
     username = forms.RegexField(label='', max_length=30,
