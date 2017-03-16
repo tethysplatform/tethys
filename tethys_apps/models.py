@@ -8,8 +8,10 @@
 ********************************************************************************
 """
 from django.db import models
+from model_utils.managers import InheritanceManager
 from tethys_compute.utilities import ListField
-
+from tethys_services.models import (DatasetService, SpatialDatasetService,
+                                    WebProcessingService)
 
 class TethysApp(models.Model):
     """
@@ -46,4 +48,86 @@ class TethysApp(models.Model):
     def __unicode__(self):
         return unicode(self.name)
 
+    def add_settings(self, setting_list):
+        """
+        Associate setting with app in database
+        """
+        if setting_list is not None:
+            for setting in setting_list:
+                setting.tethys_app = self
+                setting.save()
 
+    @property
+    def settings(self):
+        return self.settings_set.select_subclasses()
+
+    @property
+    def custom_settings(self):
+        return self.settings_set \
+                .select_subclasses('customtethysappsetting')
+
+    @property
+    def dataset_service_settings(self):
+        return self.settings_set \
+                .select_subclasses('datasetservicesetting')
+
+    @property
+    def spatial_dataset_services_settings(self):
+        return self.settings_set \
+                .select_subclasses('spatialdatasetservicesetting')
+
+    @property
+    def wps_services_settings(self):
+        return self.settings_set \
+                .select_subclasses('webprocessingservicesetting')
+
+
+class TethysAppSetting(models.Model):
+    """
+    DB Model for Tethys App Settings
+    """
+    objects = InheritanceManager()
+
+    tethys_app = models.ForeignKey(TethysApp, on_delete=models.CASCADE,
+                                   related_name='settings_set')
+    name = models.CharField(max_length=200, default='')
+    description = models.TextField(max_length=1000, blank=True, default='')
+    required = models.BooleanField(default=True)
+
+
+class CustomTethysAppSetting(TethysAppSetting):
+    '''
+    DB Model for Tethys App General Setting
+    '''
+    value = models.CharField(max_length=1024, default='')
+
+
+class DatasetServiceSetting(TethysAppSetting):
+    '''
+    DB Model for Tethys App DatasetService Setting
+    '''
+    CKAN = DatasetService.CKAN
+    HYSROSHARE = DatasetService.HYDROSHARE
+
+    dataset_service = models.ForeignKey(DatasetService, blank=False, null=True)
+    engine = models.CharField(max_length=200,
+                              choices=DatasetService.ENGINE_CHOICES,
+                              default=DatasetService.CKAN)
+
+class SpatialDatasetServiceSetting(TethysAppSetting):
+    '''
+    DB Model for Tethys App SpatialDatasetService Setting
+    '''
+    GEOSERVER = SpatialDatasetService.GEOSERVER
+
+    spatial_dataset_service = models.ForeignKey(SpatialDatasetService, blank=False, null=True)
+    engine = models.CharField(max_length=200,
+                              choices=SpatialDatasetService.ENGINE_CHOICES,
+                              default=SpatialDatasetService.GEOSERVER)
+
+
+class WebProcessingServiceSetting(TethysAppSetting):
+    '''
+    DB Model for Tethys App WebProcessingService Setting
+    '''
+    web_processing_service = models.ForeignKey(WebProcessingService, blank=False, null=True)
