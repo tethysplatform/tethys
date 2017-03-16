@@ -16,7 +16,6 @@ from django.conf import settings
 
 from sqlalchemy import create_engine
 
-
 from tethys_apps.base.workspace import TethysWorkspace
 from tethys_apps.base.handoff import HandoffManager
 
@@ -77,7 +76,7 @@ class TethysAppBase(object):
 
                 url_maps = (UrlMap(name='home',
                                    url='my-first-app',
-                                   controller='my_first_app.controllers.home'
+                                   controller='my_first_app.controllers.home',
                                    ),
                 )
 
@@ -105,7 +104,7 @@ class TethysAppBase(object):
 
                 stores = (PersistentStore(name='example_db',
                                           initializer='init_stores:init_example_db',
-                                          spatial=True
+                                          spatial=True,
                         ),
                 )
 
@@ -113,60 +112,90 @@ class TethysAppBase(object):
         """
         return None
 
-    def dataset_services(self):
+    def general_settings(self):
+        """
+        Use this method to define custom settings for use in your app.
+
+        Returns:
+          iterable: A list or tuple of ``GeneralSetting`` objects.
+
+        **Example:**
+
+        ::
+
+            from tethys_sdk.settings import GeneralSetting
+            def general_settings(self):
+                \"""
+                Example general_settings method.
+                \"""
+                general_settings = (GeneralSetting(
+                                           name='example',
+                                           description='dataset service for app to use',
+                                           required=True,
+                                    ),
+                )
+
+                return general_settings
+        """
+        return None
+
+    def dataset_services_settings(self):
         """
         Use this method to define dataset service connections for use in your app.
 
         Returns:
-          iterable: A list or tuple of ``DatasetService`` objects.
+          iterable: A list or tuple of ``DatasetServiceSetting`` objects.
 
         **Example:**
 
         ::
 
-            def dataset_services(self):
+            from tethys_sdk.settings import DatasetServiceSetting
+            def dataset_services_settings(self):
                 \"""
-                Example dataset_services method.
+                Example dataset_services_settings method.
                 \"""
-                dataset_services = (DatasetService(name='example',
-                                                   type='ckan',
-                                                   endpoint='http://www.example.com/api/3/action',
-                                                   apikey='a-R3llY-n1Ce-@Pi-keY'
-                                                   ),
+                dataset_services_settings = (DatasetServiceSetting(
+                                                   name='example',
+                                                   description='dataset service for app to use',
+                                                   engine='ckan',
+                                                   required=True,
+                                             ),
                 )
 
-                return dataset_services
+                return dataset_services_settings
         """
         return None
 
-    def spatial_dataset_services(self):
+    def spatial_dataset_services_settings(self):
         """
         Use this method to define spatial dataset service connections for use in your app.
 
         Returns:
-          iterable: A list or tuple of ``SpatialDatasetService`` objects.
+          iterable: A list or tuple of ``SpatialDatasetServiceSetting`` objects.
 
         **Example:**
 
         ::
 
-            def spatial_dataset_services(self):
+            from tethys_sdk.settings import SpatialDatasetServiceSetting
+            def spatial_dataset_services_settings(self):
                 \"""
-                Example spatial_dataset_services method.
+                Example spatial_dataset_services_settings method.
                 \"""
-                spatial_dataset_services = (SpatialDatasetService(name='example',
-                                                                  type='geoserver',
-                                                                  endpoint='http://www.example.com/geoserver/rest',
-                                                                  username='admin',
-                                                                  password='geoserver'
-                                                                  ),
+                spatial_dataset_services_settings = (SpatialDatasetServiceSetting(
+                                                       name='example',
+                                                       description='spatial dataset service for app to use',
+                                                       engine='geoserver',
+                                                       required=True,
+                                                      ),
                 )
 
-                return spatial_dataset_services
+                return spatial_dataset_services_settings
         """
         return None
 
-    def wps_services(self):
+    def wps_services_settings(self):
         """
         Use this method to define web processing service connections for use in your app.
 
@@ -177,18 +206,87 @@ class TethysAppBase(object):
 
         ::
 
+            from tethys_sdk.settings import WebProcessingServiceSetting
             def wps_services(self):
                 \"""
                 Example wps_services method.
                 \"""
-                wps_services = (WpsService(name='example',
-                                           endpoint='http://www.example.com/wps/WebProcessingService'
-                                           ),
+                wps_services = (WebProcessingServiceSetting(name='example',
+                                                            description='WPS service for app to use',
+                                                            required=True,
+                                                            ),
                 )
 
                 return wps_services
         """
         return None
+
+    @classmethod
+    def get_custom_setting(self, name):
+        '''
+        Retrieves general for app
+        '''
+        from tethys_apps.models import TethysApp
+        db_app = TethysApp.objects.get(package=self.package)
+        custom_settings = db_app.custom_settings
+        custom_setting = custom_settings.objects.get(name=name)
+        return custom_setting.value
+
+    @classmethod
+    def get_dataset_service(cls, name, request=None, as_endpoint=False,
+                            as_engine=False):
+        '''
+        Retrieves dataset engine for app
+        '''
+        from tethys_apps.models import TethysApp
+        app = cls()
+        db_app = TethysApp.objects.get(package=app.package)
+        dataset_services_settings = db_app.dataset_services_settings
+        dataset_services_settings = dataset_services_settings.get(name=name)
+        dataset_service = dataset_services_settings.dataset_service
+        if as_endpoint:
+            return dataset_service.endpoint
+        elif as_engine:
+            return dataset_service.get_engine(request=request)
+        return dataset_service
+
+    @classmethod
+    def get_spatial_dataset_service(cls, name, as_endpoint=False, as_wms=False,
+                                    as_wfs=False, as_engine=False):
+        '''
+        Retrieves spatial dataset engine for app
+        '''
+        from tethys_apps.models import TethysApp
+        app = cls()
+        db_app = TethysApp.objects.get(package=app.package)
+        spatial_dataset_services_settings = db_app.spatial_dataset_services_settings
+        spatial_dataset_service_setting = spatial_dataset_services_settings.get(name=name)
+        spatial_dataset_service = spatial_dataset_service_setting.spatial_dataset_service
+        if as_endpoint:
+            return spatial_dataset_service.endpoint
+        elif as_wms:
+            return spatial_dataset_service.endpoint.split('/rest')[0] + '/wms'
+        elif as_wfs:
+            return spatial_dataset_service.endpoint.split('/rest')[0] + '/ows'
+        elif as_engine:
+            return spatial_dataset_service.get_engine()
+        return spatial_dataset_service
+
+    @classmethod
+    def get_wps_service(cls, name, as_endpoint=False, as_engine=False):
+        '''
+        Retrieves wps engine for app
+        '''
+        from tethys_apps.models import TethysApp
+        db_app = TethysApp.objects.get(package=self.package)
+        wps_services_settings = db_app.wps_services_settings
+        wps_service_setting = wps_services_settings.objects.get(name=name)
+        wps_service = wps_service_setting.web_processing_service
+        if as_endpoint:
+            return wps_service.endpoint
+        elif as_engine:
+            return wps_service.get_engine()
+        return wps_service
 
     def handoff_handlers(self):
         """

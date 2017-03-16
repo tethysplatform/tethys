@@ -337,6 +337,17 @@ def sync_tethys_app_db():
                 )
                 app.save()
 
+                # additional settings
+                app.add_settings(installed_app.general_settings())
+                # dataset services
+                app.add_settings(installed_app.dataset_services_settings())
+                # spatial dataset services
+                app.add_settings(installed_app.spatial_dataset_services_settings())
+                # wps settings
+                app.add_settings(installed_app.wps_services_settings())
+
+                app.save()
+
             # If the app is in the database, update developer-first attributes
             elif len(db_apps) == 1:
                 db_app = db_apps[0]
@@ -384,4 +395,3 @@ def get_active_app(request=None, url=None):
             except MultipleObjectsReturned:
                 tethys_log.warning('Multiple apps found with root url "{0}".'.format(app_root_url))
     return app
-
