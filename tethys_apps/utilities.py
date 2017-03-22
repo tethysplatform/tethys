@@ -338,7 +338,7 @@ def sync_tethys_app_db():
                 app.save()
 
                 # additional settings
-                app.add_settings(installed_app.general_settings())
+                app.add_settings(installed_app.custom_settings())
                 # dataset services
                 app.add_settings(installed_app.dataset_services_settings())
                 # spatial dataset services
