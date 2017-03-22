@@ -112,7 +112,7 @@ class TethysAppBase(object):
         """
         return None
 
-    def general_settings(self):
+    def custom_settings(self):
         """
         Use this method to define custom settings for use in your app.
 
@@ -123,19 +123,19 @@ class TethysAppBase(object):
 
         ::
 
-            from tethys_sdk.settings import GeneralSetting
-            def general_settings(self):
+            from tethys_sdk.settings import CustomTethysAppSetting
+            def custom_settings(self):
                 \"""
                 Example general_settings method.
                 \"""
-                general_settings = (GeneralSetting(
+                custom_settings = (CustomTethysAppSetting(
                                            name='example',
                                            description='dataset service for app to use',
                                            required=True,
                                     ),
                 )
 
-                return general_settings
+                return custom_settings
         """
         return None
 
