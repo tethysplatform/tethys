@@ -229,7 +229,7 @@ class TethysAppBase(object):
         from tethys_apps.models import TethysApp
         db_app = TethysApp.objects.get(package=self.package)
         custom_settings = db_app.custom_settings
-        custom_setting = custom_settings.objects.get(name=name)
+        custom_setting = custom_settings.get(name=name)
         return custom_setting.value
 
     @classmethod
