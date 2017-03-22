@@ -851,8 +851,6 @@ class CondorWorkflowNode(models.Model):
     noop = models.BooleanField(default=False)
     done = models.BooleanField(default=False)
 
-    objects = InheritanceManager()
-
     @abstractproperty
     def type(self):
         pass
