@@ -11,7 +11,8 @@ from django.db import models
 from model_utils.managers import InheritanceManager
 from tethys_compute.utilities import ListField
 from tethys_services.models import (DatasetService, SpatialDatasetService,
-                                    WebProcessingService)
+                                    WebProcessingService, PersistentStoreService)
+
 
 class TethysApp(models.Model):
     """
@@ -81,6 +82,11 @@ class TethysApp(models.Model):
         return self.settings_set \
                 .select_subclasses('webprocessingservicesetting')
 
+    @property
+    def persistent_store_services_settings(self):
+        return self.settings_set \
+            .select_subclasses('persistentstoreservicesetting')
+
 
 class TethysAppSetting(models.Model):
     """
@@ -96,16 +102,16 @@ class TethysAppSetting(models.Model):
 
 
 class CustomTethysAppSetting(TethysAppSetting):
-    '''
+    """
     DB Model for Tethys App General Setting
-    '''
+    """
     value = models.CharField(max_length=1024, default='')
 
 
 class DatasetServiceSetting(TethysAppSetting):
-    '''
+    """
     DB Model for Tethys App DatasetService Setting
-    '''
+    """
     CKAN = DatasetService.CKAN
     HYSROSHARE = DatasetService.HYDROSHARE
 
@@ -114,10 +120,11 @@ class DatasetServiceSetting(TethysAppSetting):
                               choices=DatasetService.ENGINE_CHOICES,
                               default=DatasetService.CKAN)
 
+
 class SpatialDatasetServiceSetting(TethysAppSetting):
-    '''
+    """
     DB Model for Tethys App SpatialDatasetService Setting
-    '''
+    """
     GEOSERVER = SpatialDatasetService.GEOSERVER
 
     spatial_dataset_service = models.ForeignKey(SpatialDatasetService, blank=False, null=True)
@@ -127,7 +134,14 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
 
 
 class WebProcessingServiceSetting(TethysAppSetting):
-    '''
+    """
     DB Model for Tethys App WebProcessingService Setting
-    '''
+    """
     web_processing_service = models.ForeignKey(WebProcessingService, blank=False, null=True)
+
+
+class PersistentStoreServiceSetting(TethysAppSetting):
+    """
+    DB Model for Tethys App PersistentStoreService Setting
+    """
+    persistent_store_service = models.ForeignKey(PersistentStoreService, blank=False, null=True)
