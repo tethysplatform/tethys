@@ -9,12 +9,13 @@
 """
 from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
-from tethys_services.models import DatasetService
+# from tethys_services.models import DatasetService
 from tethys_apps.models import (TethysApp,
                                 CustomTethysAppSetting,
                                 DatasetServiceSetting,
                                 SpatialDatasetServiceSetting,
-                                WebProcessingServiceSetting)
+                                WebProcessingServiceSetting,
+                                PersistentStoreServiceSetting)
 
 
 class TethysAppSettingInline(admin.TabularInline):
@@ -24,10 +25,12 @@ class TethysAppSettingInline(admin.TabularInline):
     def has_add_permission(self, request):
         return False
 
+
 class CustomTethysAppSettingInline(TethysAppSettingInline):
     readonly_fields = ('name', 'description', 'required')
     fields = ('name', 'description', 'value', 'required')
     model = CustomTethysAppSetting
+
 
 class DatasetServiceSettingInline(TethysAppSettingInline):
     readonly_fields = ('name', 'description', 'required', 'engine')
@@ -43,15 +46,24 @@ class DatasetServiceSettingInline(TethysAppSettingInline):
 #        return super(DatasetServiceSettingInline, self) \
 #            .formfield_for_foreignkey(db_field, request, **kwargs)
 
+
 class SpatialDatasetServiceSettingInline(TethysAppSettingInline):
     readonly_fields = ('name', 'description', 'required', 'engine')
     fields = ('name', 'description', 'spatial_dataset_service', 'engine', 'required')
     model = SpatialDatasetServiceSetting
 
+
 class WebProcessingServiceSettingInline(TethysAppSettingInline):
     readonly_fields = ('name', 'description', 'required')
     fields = ('name', 'description', 'web_processing_service', 'required')
     model = WebProcessingServiceSetting
+
+
+class PersistentStoreServiceSettingInline(TethysAppSettingInline):
+    readonly_fields = ('name', 'description', 'required')
+    fields = ('name', 'description', 'persistent_store_service', 'required')
+    model = PersistentStoreServiceSetting
+
 
 class TethysAppAdmin(GuardedModelAdmin):
     readonly_fields = ('package',)
@@ -59,7 +71,8 @@ class TethysAppAdmin(GuardedModelAdmin):
     inlines = [CustomTethysAppSettingInline,
                DatasetServiceSettingInline,
                SpatialDatasetServiceSettingInline,
-               WebProcessingServiceSettingInline]
+               WebProcessingServiceSettingInline,
+               PersistentStoreServiceSettingInline]
 
     def has_delete_permission(self, request, obj=None):
         return False
