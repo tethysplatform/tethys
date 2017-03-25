@@ -9,13 +9,14 @@
 """
 from django.db import models
 from django.core.exceptions import (ObjectDoesNotExist, ValidationError)
-from owslib.wps import WebProcessingService
+from owslib.wps import WebProcessingService as WPS
 from social_core.exceptions import AuthException
 from tethys_dataset_services.valid_engines import VALID_ENGINES, VALID_SPATIAL_ENGINES
 from tethys_dataset_services.engines import (CkanDatasetEngine,
                                              GeoServerSpatialDatasetEngine,
                                              HydroShareDatasetEngine)
 from urllib2 import HTTPError, URLError
+
 
 def validate_url(value):
     """
@@ -54,6 +55,14 @@ def validate_wps_service_endpoint(value):
 
     if '/wps/WebProcessingService' not in value:
         raise ValidationError('Invalid Endpoint: 52 North WPS endpoints follow the pattern "http://example.com/wps/WebProcessingService".')
+
+
+def validate_persistent_store_port(value):
+    """
+    Validator for persistent store service ports
+    """
+    if value < 1024 or value > 65535:
+        raise ValidationError('Invalid Port: Persistent Store ports must be an integer between 1024 and 65535.')
 
 
 class DatasetService(models.Model):
@@ -149,6 +158,7 @@ class SpatialDatasetService(models.Model):
                                              username=self.username,
                                              password=self.password)
 
+
 class WebProcessingService(models.Model):
     """
     ORM for Web Processing Services settings.
@@ -201,10 +211,45 @@ class WebProcessingService(models.Model):
         Returns:
           (owslib.wps.WebProcessingService): A owslib.wps.WebProcessingService object.
         """
-        wps = WebProcessingService(self.endpoint,
-                                   username=self.username,
-                                   password=self.password,
-                                   verbose=False,
-                                   skip_caps=True)
+        wps = WPS(self.endpoint,
+                  username=self.username,
+                  password=self.password,
+                  verbose=False,
+                  skip_caps=True)
 
         return self.activate(wps=wps)
+
+
+class PersistentStoreService(models.Model):
+    """
+    ORM for Persistent Store Service settings.
+    """
+    name = models.CharField(max_length=30, unique=True)
+    host = models.CharField(max_length=1024, default='localhost')
+    port = models.IntegerField(default=5432, validators=[validate_persistent_store_port,])
+    username = models.CharField(max_length=100, blank=True)
+    password = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        verbose_name = 'Persistent Store Service'
+        verbose_name_plural = 'Persistent Store Services'
+
+    def __unicode__(self):
+        return self.name
+
+    def get_engine(self):
+        """
+        Returns a Persistent Store engine
+        """
+        from sqlalchemy import create_engine
+        from sqlalchemy.engine.url import URL
+
+        url = URL(
+            drivername='postgresql',
+            host=self.host,
+            port=self.port,
+            username=self.username,
+            password=self.password,
+        )
+
+        return create_engine(bind=url)
