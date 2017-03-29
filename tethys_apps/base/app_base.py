@@ -103,7 +103,7 @@ class TethysAppBase(object):
                 \"""
 
                 stores = (PersistentStore(name='example_db',
-                                          initializer='init_stores:init_example_db',
+                                          initializer='my_first_app.init_stores.init_example_db',
                                           spatial=True,
                         ),
                 )
