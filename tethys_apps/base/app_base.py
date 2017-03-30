@@ -13,11 +13,13 @@ import sys
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 
 from sqlalchemy import create_engine
 
 from tethys_apps.base.workspace import TethysWorkspace
 from tethys_apps.base.handoff import HandoffManager
+from tethys_apps.exceptions import TethysAppSettingDoesNotExist
 
 
 class TethysAppBase(object):
@@ -84,40 +86,12 @@ class TethysAppBase(object):
         """
         raise NotImplementedError()
 
-    def persistent_stores(self):
-        """
-        Define this method to register persistent store databases for your app. You may define up to 5 persistent stores for an app.
-
-        Returns:
-          iterable: A list or tuple of ``PersistentStore`` objects. A persistent store database will be created for each object returned.
-
-        **Example:**
-
-        ::
-
-            from tethys_sdk.stores import PersistentStore
-
-            def persistent_stores(self):
-                \"""
-                Example persistent_stores method.
-                \"""
-
-                stores = (PersistentStore(name='example_db',
-                                          initializer='init_stores:init_example_db',
-                                          spatial=True,
-                        ),
-                )
-
-                return stores
-        """
-        return None
-
     def custom_settings(self):
         """
         Use this method to define custom settings for use in your app.
 
         Returns:
-          iterable: A list or tuple of ``GeneralSetting`` objects.
+          iterable: A list or tuple of ``CustomTethysAppSetting`` objects.
 
         **Example:**
 
@@ -128,14 +102,45 @@ class TethysAppBase(object):
                 \"""
                 Example general_settings method.
                 \"""
-                custom_settings = (CustomTethysAppSetting(
-                                           name='example',
-                                           description='dataset service for app to use',
-                                           required=True,
-                                    ),
+                custom_settings = (
+                    CustomTethysAppSetting(
+                           name='example',
+                           description='dataset service for app to use',
+                           required=True,
+                    ),
                 )
 
                 return custom_settings
+        """
+        return None
+
+    def persistent_store_service_settings(self):
+        """
+        Define this method to define a persistent store service connections for your app.
+
+        Returns:
+          iterable: A list or tuple of ``PersistentStoreServiceSettings`` objects. A persistent store database will be created for each object returned.
+
+        **Example:**
+
+        ::
+
+            from tethys_sdk.settings import PersistentStoreServiceSetting
+
+            def persistent_stores(self):
+                \"""
+                Example persistent_store_service_settings method.
+                \"""
+
+                stores = (
+                    PersistentStoreServiceSetting(
+                        name='example_db',
+                        initializer='init_stores:init_example_db',
+                        spatial=True,
+                    ),
+                )
+
+                return stores
         """
         return None
 
@@ -155,12 +160,13 @@ class TethysAppBase(object):
                 \"""
                 Example dataset_services_settings method.
                 \"""
-                dataset_services_settings = (DatasetServiceSetting(
-                                                   name='example',
-                                                   description='dataset service for app to use',
-                                                   engine='ckan',
-                                                   required=True,
-                                             ),
+                dataset_services_settings = (
+                    DatasetServiceSetting(
+                        name='example',
+                        description='dataset service for app to use',
+                        engine='ckan',
+                        required=True,
+                    ),
                 )
 
                 return dataset_services_settings
@@ -183,12 +189,13 @@ class TethysAppBase(object):
                 \"""
                 Example spatial_dataset_services_settings method.
                 \"""
-                spatial_dataset_services_settings = (SpatialDatasetServiceSetting(
-                                                       name='example',
-                                                       description='spatial dataset service for app to use',
-                                                       engine='geoserver',
-                                                       required=True,
-                                                      ),
+                spatial_dataset_services_settings = (
+                    SpatialDatasetServiceSetting(
+                        name='example',
+                        description='spatial dataset service for app to use',
+                        engine='geoserver',
+                        required=True,
+                    ),
                 )
 
                 return spatial_dataset_services_settings
@@ -211,10 +218,12 @@ class TethysAppBase(object):
                 \"""
                 Example wps_services method.
                 \"""
-                wps_services = (WebProcessingServiceSetting(name='example',
-                                                            description='WPS service for app to use',
-                                                            required=True,
-                                                            ),
+                wps_services = (
+                    WebProcessingServiceSetting(
+                        name='example',
+                        description='WPS service for app to use',
+                        required=True,
+                    ),
                 )
 
                 return wps_services
@@ -223,26 +232,33 @@ class TethysAppBase(object):
 
     @classmethod
     def get_custom_setting(self, name):
-        '''
+        """
         Retrieves general for app
-        '''
+        """
         from tethys_apps.models import TethysApp
         db_app = TethysApp.objects.get(package=self.package)
         custom_settings = db_app.custom_settings
-        custom_setting = custom_settings.get(name=name)
+        try:
+            custom_setting = custom_settings.get(name=name)
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist('CustomTethysAppSetting named "{0}" does not exist.'.format(name))
+
         return custom_setting.value
 
     @classmethod
     def get_dataset_service(cls, name, request=None, as_endpoint=False,
                             as_engine=False):
-        '''
+        """
         Retrieves dataset engine for app
-        '''
+        """
         from tethys_apps.models import TethysApp
         app = cls()
         db_app = TethysApp.objects.get(package=app.package)
         dataset_services_settings = db_app.dataset_services_settings
-        dataset_services_settings = dataset_services_settings.get(name=name)
+        try:
+            dataset_services_settings = dataset_services_settings.get(name=name)
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist('DatasetServiceSetting named "{0}" does not exist.'.format(name))
         dataset_service = dataset_services_settings.dataset_service
         if as_endpoint:
             return dataset_service.endpoint
@@ -253,14 +269,18 @@ class TethysAppBase(object):
     @classmethod
     def get_spatial_dataset_service(cls, name, as_endpoint=False, as_wms=False,
                                     as_wfs=False, as_engine=False):
-        '''
+        """
         Retrieves spatial dataset engine for app
-        '''
+        """
         from tethys_apps.models import TethysApp
         app = cls()
         db_app = TethysApp.objects.get(package=app.package)
         spatial_dataset_services_settings = db_app.spatial_dataset_services_settings
-        spatial_dataset_service_setting = spatial_dataset_services_settings.get(name=name)
+        try:
+            spatial_dataset_service_setting = spatial_dataset_services_settings.get(name=name)
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist('SpatialDatasetServiceSetting named "{0}" does not exist.'.format(name))
+
         spatial_dataset_service = spatial_dataset_service_setting.spatial_dataset_service
         if as_endpoint:
             return spatial_dataset_service.endpoint
@@ -274,13 +294,16 @@ class TethysAppBase(object):
 
     @classmethod
     def get_wps_service(cls, name, as_endpoint=False, as_engine=False):
-        '''
+        """
         Retrieves wps engine for app
-        '''
+        """
         from tethys_apps.models import TethysApp
-        db_app = TethysApp.objects.get(package=self.package)
+        db_app = TethysApp.objects.get(package=cls.package)
         wps_services_settings = db_app.wps_services_settings
-        wps_service_setting = wps_services_settings.objects.get(name=name)
+        try:
+            wps_service_setting = wps_services_settings.objects.get(name=name)
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist('WebProcessingServiceSetting named "{0}" does not exist.'.format(name))
         wps_service = wps_service_setting.web_processing_service
         if as_endpoint:
             return wps_service.endpoint
@@ -599,12 +622,12 @@ class TethysAppBase(object):
         create_connection = engine.connect()
 
         # Create db
-        create_db_statement = '''
+        create_db_statement = """
                               CREATE DATABASE {0}
                               WITH OWNER {1}
                               TEMPLATE template0
                               ENCODING 'UTF8'
-                              '''.format(full_db_name, database_manager_name)
+                              """.format(full_db_name, database_manager_name)
 
         # Close transaction first and then execute
         create_connection.execute('commit')
