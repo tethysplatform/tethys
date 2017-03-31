@@ -14,6 +14,8 @@ from tethys_services.models import (DatasetService, SpatialDatasetService,
                                     WebProcessingService, PersistentStoreService)
 
 
+from tethys_apps.base.persistent_store import TethysFunctionExtractor
+
 class TethysApp(models.Model):
     """
     DB Model for Tethys Apps
@@ -99,6 +101,24 @@ class TethysAppSetting(models.Model):
     name = models.CharField(max_length=200, default='')
     description = models.TextField(max_length=1000, blank=True, default='')
     required = models.BooleanField(default=True)
+    initializer = models.CharField(max_length=1000, default='')
+
+    @property
+    def initializer_function(self):
+        """
+        The function pointed to by the initializer attribute.
+
+        Returns:
+            A handle to a Python function that will initialize the database or None if function is not valid.
+        """
+        func_ext = TethysFunctionExtractor(self.initializer)
+        return func_ext.function
+
+    def initialize(self, first_time):
+        """
+        Initialize the setting
+        """
+        self.initializer_function(first_time)
 
 
 class CustomTethysAppSetting(TethysAppSetting):
@@ -107,6 +127,12 @@ class CustomTethysAppSetting(TethysAppSetting):
     """
     value = models.CharField(max_length=1024, default='')
 
+    def initialize(self, first_time):
+        """
+        Initialize the setting
+        """
+        if first_time:
+            self.value = self.initializer
 
 class DatasetServiceSetting(TethysAppSetting):
     """

@@ -86,6 +86,34 @@ class TethysAppBase(object):
         """
         raise NotImplementedError()
 
+    def persistent_stores(self):
+        """
+        Define this method to register persistent store databases for your app. You may define up to 5 persistent stores for an app.
+
+        Returns:
+          iterable: A list or tuple of ``PersistentStore`` objects. A persistent store database will be created for each object returned.
+
+        **Example:**
+
+        ::
+
+            from tethys_sdk.stores import PersistentStore
+
+            def persistent_stores(self):
+                \"""
+                Example persistent_stores method.
+                \"""
+
+                stores = (PersistentStore(name='example_db',
+                                          initializer='my_first_app.init_stores.init_example_db',
+                                          spatial=True,
+                        ),
+                )
+
+                return stores
+        """
+        return None
+
     def custom_settings(self):
         """
         Use this method to define custom settings for use in your app.
