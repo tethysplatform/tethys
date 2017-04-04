@@ -28,10 +28,9 @@ class TethysFunctionExtractor(object):
         self._valid = None
         self._function = None
 
-        if not isinstance(path, basestring):
-            if path.callable():
-                self.valid = True  # TODO should we ensure that function is part of the app?
-                self.function = path
+        if callable(path):
+            self._valid = True  # TODO should we ensure that function is part of the app?
+            self._function = path
 
     @property
     def valid(self):
