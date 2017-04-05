@@ -23,7 +23,7 @@ fi
 # TODO make these commandline options
 TETHYS_DB_PORT=5435
 CONDA_HOME="${TETHYS_HOME}/miniconda"
-BRANCH=dev
+BRANCH=test_install_scripts
 
 TETHYS_SUPER_USER=admin
 TETHYS_SUPER_USER_EMAIL=''
@@ -40,18 +40,17 @@ export PATH="${CONDA_HOME}/bin:$PATH"
 
 # clone Tethys repo
 conda install --yes git
-git clone https://github.com/tethysplatform/tethys "${TETHYS_HOME}/src"
+git clone https://github.com/sdc50/tethys.git "${TETHYS_HOME}/src"
 cd "${TETHYS_HOME}/src"
 git checkout ${BRANCH}
 
 # create conda env and install Tethys
-conda env create -f tethys_conda_env.yml
+conda env create -f environment_py2.yml
 . activate tethys
 python setup.py develop
 tethys gen settings -d "${TETHYS_HOME}/src/tethys_apps"
 
 # Setup local database
-conda install --yes -c conda-forge postgresql
 initdb  -U postgres -D "${TETHYS_HOME}/psql/data"
 pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" -l "${TETHYS_HOME}/psql/logfile" start -o "-p ${TETHYS_DB_PORT}"
 echo 'wating for databases to startup...'; sleep 10
