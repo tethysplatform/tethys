@@ -30,6 +30,7 @@ dependencies:
 - pillow
 - plotly=1.12*
 - postgresql
+- pycrypto
 - uwsgi
 - pip:
     - django-gravatar2

@@ -1,8 +1,14 @@
 #!/bin/bash
 
+USAGE=""
+
+set -e  # exit on error
+
 # prompt for sudo
 sudo echo "Starting Tethys Installation..."
 
+
+# Set platform specific default options
 if [ "$(uname)" = "Linux" ]
 then
     TETHYS_HOME="/usr/lib/tethys"
@@ -20,14 +26,83 @@ else
     exit 1
 fi
 
-# TODO make these commandline options
+# Set default options
 TETHYS_DB_PORT=5435
-CONDA_HOME="${TETHYS_HOME}/miniconda"
-BRANCH=test_install_scripts
+BRANCH=dev
 
 TETHYS_SUPER_USER=admin
 TETHYS_SUPER_USER_EMAIL=''
 TETHYS_SUPER_USER_PASS=pass
+
+# parse command line options
+set_option_value ()
+{
+    local __option_key="$1"
+    value="$2"
+    if [[ $value == -* ]]
+    then
+        echo ${USAGE}
+        exit 1
+    fi
+    eval $__option_key="$value"
+}
+while [[ $# -gt 1 ]]
+do
+key="$1"
+
+case $key in
+    -t|--tethys-home)
+    set_option_value TETHYS_HOME "$2"
+    shift # past argument
+    ;;
+    -p|--port)
+    set_option_value TETHYS_PORT "$2"
+    shift # past argument
+    ;;
+    -b|--branch)
+    set_option_value BRANCH "$2"
+    shift # past argument
+    ;;
+    -c|--conda-home)
+    set_option_value TETHYS_DB_PORT "$2"
+    ;;
+    -D|--db-port)
+    set_option_value TETHYS_SUPER_USER "$2"
+    ;;
+    -S|--superuser)
+    set_option_value TETHYS_SUPER_USER "$2"
+    ;;
+    -E|--superuser-email)
+    set_option_value TETHYS_SUPER_USER_EMAIL "$2"
+    ;;
+    -P|--superuser-pass)
+    set_option_value TETHYS_SUPER_USER_PASS "$2"
+    ;;
+    --install-docker)
+    if [ "$(uname)" = "Linux" ]
+    then
+        INSTALL_DOCKER="$2"
+    else
+        echo 'Automatic installation of Docker is not supported on $(uname). Ignoring option $key.'
+    fi
+    ;;
+    -h|--help)
+    echo ${USAGE}
+    exit 0
+    ;;
+    *) # unknown option
+    echo 'Ignoring unrecognized option: $key'
+    ;;
+esac
+shift # past argument or value
+done
+
+# set CONDA_HOME relative to TETHYS_HOME if not already set
+if [ -z ${CONDA_HOME} ]
+then
+    CONDA_HOME="${TETHYS_HOME}/miniconda"
+fi
+
 
 sudo mkdir -p ${TETHYS_HOME}
 sudo chown ${USER} ${TETHYS_HOME}
@@ -98,7 +173,5 @@ then
      sudo gpasswd -a ${USER} docker
      sudo service docker restart
      sg docker -c "tethys docker init -d"
-     sg docker -c "tethys docker start -c postgis"
-     echo 'wating for databases to startup...'; sleep 10
      newgrp docker
 fi
