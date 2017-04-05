@@ -158,6 +158,11 @@
   -ms-transition: height 0.2s ease-in;
   transition: height 0.2s ease-in;
 }
+.tethys-map-view-legend .legend-content .legend-items .legend-item .tethys-mvlegendimage.open {
+  height: 100%;
+}
+
+
 .tethys-map-view-legend .legend-content .legend-items .legend-item .tethys-legend-dropdown ul {
   list-style: none;
   border-top: 1px #dddddd solid;
