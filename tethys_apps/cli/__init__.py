@@ -261,7 +261,7 @@ def tethys_command():
                             help='Password for the Tethys Database server to be set in the settings file.')
     gen_parser.add_argument('--db-port', dest='db_port',
                             help='Port for the Tethys Database server to be set in the settings file.')
-    gen_parser.set_defaults(func=generate_command, allowed_host='', db_username='tethys_default',
+    gen_parser.set_defaults(func=generate_command, allowed_host=None, db_username='tethys_default',
                             db_password='pass', db_port=5436,)
 
     # Setup start server command
