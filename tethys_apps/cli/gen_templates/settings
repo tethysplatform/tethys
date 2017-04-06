@@ -148,7 +148,7 @@ DATABASES = {
         'USER': 'tethys_default',
         'PASSWORD': 'pass',
         'HOST': '127.0.0.1',
-        'PORT': '5435'
+        'PORT': '{{ db_port }}'
     }
 }
 
