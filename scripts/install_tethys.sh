@@ -60,7 +60,7 @@ set_option_value ()
     fi
     eval $__option_key="$value"
 }
-while [[ $# ]]
+while [[ $# -gt 0 ]]
 do
 key="$1"
 
@@ -146,7 +146,7 @@ git checkout ${BRANCH}
 conda env create -f environment_py2.yml
 . activate tethys
 python setup.py develop
-tethys gen settings -d "${TETHYS_HOME}/src/tethys_apps"
+tethys gen settings -d "${TETHYS_HOME}/src/tethys_apps" -p ${TETHYS_DB_PORT}
 
 # Setup local database
 initdb  -U postgres -D "${TETHYS_HOME}/psql/data"
@@ -174,6 +174,8 @@ echo "alias tstartdb=tethys_start_db" >> ${ACTIVATE_SCRIPT}
 echo "alias tethys_stop_db='pg_ctl -U postgres -D \${TETHYS_HOME}/psql/data stop'" >> ${ACTIVATE_SCRIPT}
 echo "alias tstopdb=tethys_stop_db" >> ${ACTIVATE_SCRIPT}
 echo "alias tms='tethys manage start -p 127.0.0.1:\${TETHYS_PORT}'" >> ${ACTIVATE_SCRIPT}
+
+. ${ACTIVATE_SCRIPT}
 
 echo "unset TETHYS_HOME" >> ${DEACTIVATE_SCRIPT}
 echo "unset TETHYS_PORT" >> ${DEACTIVATE_SCRIPT}
@@ -207,4 +209,3 @@ fi
 set +e
 set +x
 . ~/${BASH_PROFILE}
-. ${ACTIVATE_SCRIPT}
