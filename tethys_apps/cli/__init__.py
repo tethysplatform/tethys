@@ -253,7 +253,16 @@ def tethys_command():
                                                    'creation of supporting files.')
     gen_parser.add_argument('type', help='The type of object to generate.', choices=VALID_GEN_OBJECTS)
     gen_parser.add_argument('-d', '--directory', help='Destination directory for the generated object.')
-    gen_parser.set_defaults(func=generate_command)
+    gen_parser.add_argument('--allowed-host', dest='allowed_host',
+                            help='Hostname or IP address to add to allowed hosts in the settings file.')
+    gen_parser.add_argument('--db-username', dest='db_username',
+                            help='Username for the Tethys Database server to be set in the settings file.')
+    gen_parser.add_argument('--db-password', dest='db_password',
+                            help='Password for the Tethys Database server to be set in the settings file.')
+    gen_parser.add_argument('--db-port', dest='db_port',
+                            help='Port for the Tethys Database server to be set in the settings file.')
+    gen_parser.set_defaults(func=generate_command, allowed_host='', db_username='tethys_default',
+                            db_password='pass', db_port=5436,)
 
     # Setup start server command
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
