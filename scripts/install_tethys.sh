@@ -169,7 +169,7 @@ export PATH="${CONDA_HOME}/bin:$PATH"
 
 # clone Tethys repo
 conda install --yes git
-git clone https://github.com/sdc50/tethys.git "${TETHYS_HOME}/src"
+git clone https://github.com/tethysplatform/tethys.git "${TETHYS_HOME}/src"
 cd "${TETHYS_HOME}/src"
 git checkout ${BRANCH}
 
@@ -177,7 +177,13 @@ git checkout ${BRANCH}
 conda env create -f environment_py2.yml
 . activate tethys
 python setup.py develop
-tethys gen settings -d "${TETHYS_HOME}/src/tethys_apps" --allowed-host ${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT}
+
+# only pass --allowed-hosts option to gen settings command if it is not the default
+if [ ${ALLOWED_HOST} != "127.0.0.1" ]
+then
+    ALLOWED_HOST_OPT="--allowed-host ${ALLOWED_HOST}"
+fi
+tethys gen settings -d "${TETHYS_HOME}/src/tethys_apps" ${ALLOWED_HOST_OPT} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT}
 
 # Setup local database
 initdb  -U postgres -D "${TETHYS_HOME}/psql/data"
