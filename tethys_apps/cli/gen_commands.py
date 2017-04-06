@@ -52,7 +52,8 @@ def generate_command(args):
 
         # Generate context variables
         secret_key = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(50)])
-        context.update({'secret_key': secret_key})
+        context.update({'secret_key': secret_key,
+                        'db_port': args.db_port})
         print('Generating new settings.py file...')
 
     if args.type == GEN_APACHE_OPTION:
