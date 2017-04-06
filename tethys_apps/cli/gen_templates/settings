@@ -56,7 +56,7 @@ LOGGING = {
     },
 }
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['{{ allowed_host }}']
 
 # Application definition
 
@@ -144,11 +144,11 @@ WSGI_APPLICATION = 'tethys_portal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'tethys_default',
-        'USER': 'tethys_default',
-        'PASSWORD': 'pass',
+        'NAME': '{{ db_username }}',
+        'USER': '{{ db_username }}',
+        'PASSWORD': '{{ db_password }}',
         'HOST': '127.0.0.1',
-        'PORT': '5435'
+        'PORT': '{{ db_port }}'
     }
 }
 
