@@ -114,7 +114,7 @@ class TethysAppBase(object):
         """
         return None
 
-    def persistent_store_service_settings(self):
+    def persistent_store_settings(self):
         """
         Define this method to define a persistent store service connections for your app.
 
@@ -134,15 +134,16 @@ class TethysAppBase(object):
 
                 stores = (
                     PersistentStoreServiceSetting(
-                        name='example_db',
-                        initializer='init_stores:init_example_db',
-                        spatial=True,
+                        name='example_ps_service',
+                        description='',
+                        engine='postgres',
+                        required=True
                     ),
                 )
 
                 return stores
         """
-        return None
+        return None, None
 
     def dataset_services_settings(self):
         """
