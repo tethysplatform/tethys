@@ -346,7 +346,9 @@ def sync_tethys_app_db():
                 # wps settings
                 app.add_settings(installed_app.wps_services_settings())
                 # persistent stores
-                #app.add_settings(installed_app.persistent_store_settings())
+                ps_connections, ps_databases = installed_app.persistent_store_settings()
+                app.add_settings(ps_connections)
+                app.add_settings(ps_databases)
                 # TODO: Figure this out
                 app.save()
 
