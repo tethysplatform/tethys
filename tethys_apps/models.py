@@ -16,6 +16,7 @@ from tethys_services.models import (DatasetService, SpatialDatasetService,
 
 from tethys_apps.base.persistent_store import TethysFunctionExtractor
 
+
 class TethysApp(models.Model):
     """
     DB Model for Tethys Apps
@@ -103,6 +104,9 @@ class TethysAppSetting(models.Model):
     required = models.BooleanField(default=True)
     initializer = models.CharField(max_length=1000, default='')
 
+    def __unicode__(self):
+        return self.name
+
     @property
     def initializer_function(self):
         """
@@ -133,6 +137,7 @@ class CustomTethysAppSetting(TethysAppSetting):
         """
         if first_time:
             self.value = self.initializer
+
 
 class DatasetServiceSetting(TethysAppSetting):
     """
@@ -166,8 +171,16 @@ class WebProcessingServiceSetting(TethysAppSetting):
     web_processing_service = models.ForeignKey(WebProcessingService, blank=False, null=True)
 
 
-class PersistentStoreServiceSetting(TethysAppSetting):
+class PersistentStoreConnectionSetting(TethysAppSetting):
     """
     DB Model for Tethys App PersistentStoreService Setting
     """
     persistent_store_service = models.ForeignKey(PersistentStoreService, blank=False, null=True)
+
+
+class PersistentStoreDatabaseSetting(TethysAppSetting):
+    """
+    DB Model for Tethys App PersistentStoreDatabase Setting
+    """
+    spatial = models.BooleanField(default=False)
+    connection = models.ForeignKey(PersistentStoreConnectionSetting, blank=False, null=True)
