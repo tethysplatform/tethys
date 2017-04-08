@@ -15,10 +15,13 @@ from tethys_apps.models import (TethysApp,
                                 DatasetServiceSetting,
                                 SpatialDatasetServiceSetting,
                                 WebProcessingServiceSetting,
-                                PersistentStoreServiceSetting)
+                                PersistentStoreConnectionSetting,
+                                PersistentStoreDatabaseSetting)
 
 
 class TethysAppSettingInline(admin.TabularInline):
+    template = 'admin/tabular.html'
+
     def has_delete_permission(self, request, obj=None):
         return False
 
@@ -59,10 +62,16 @@ class WebProcessingServiceSettingInline(TethysAppSettingInline):
     model = WebProcessingServiceSetting
 
 
-class PersistentStoreServiceSettingInline(TethysAppSettingInline):
+class PersistentStoreConnectionSettingInline(TethysAppSettingInline):
     readonly_fields = ('name', 'description', 'required')
     fields = ('name', 'description', 'persistent_store_service', 'required')
-    model = PersistentStoreServiceSetting
+    model = PersistentStoreConnectionSetting
+
+
+class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
+    readonly_fields = ('name', 'description', 'required', 'spatial')
+    fields = ('name', 'description', 'spatial', 'connection', 'required')
+    model = PersistentStoreDatabaseSetting
 
 
 class TethysAppAdmin(GuardedModelAdmin):
@@ -72,7 +81,8 @@ class TethysAppAdmin(GuardedModelAdmin):
                DatasetServiceSettingInline,
                SpatialDatasetServiceSettingInline,
                WebProcessingServiceSettingInline,
-               PersistentStoreServiceSettingInline]
+               PersistentStoreConnectionSettingInline,
+               PersistentStoreDatabaseSettingInline]
 
     def has_delete_permission(self, request, obj=None):
         return False
