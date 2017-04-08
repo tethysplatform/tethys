@@ -261,3 +261,6 @@ input[type=submit][name=_save]:hover {
 #settingscategory_form .inline-group .tabular .module tbody td p {
   font-size: 12px;
 }
+#settingscategory_form .inline-group .tabular tr.has_original td {
+  padding-top: 8px;
+}
