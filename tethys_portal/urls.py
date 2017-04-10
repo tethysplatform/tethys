@@ -69,7 +69,7 @@ urlpatterns = [
     # url(r'^error/', include(development_error_urls)),
 ]
 
-if settings.DEBUG:
+if settings.DEBUG and 'silk' in settings.INSTALLED_APPS:
     urlpatterns.append(url(r'^silk/', include('silk.urls', namespace='silk')))
 
 handler400 = tethys_portal_error.handler_400
