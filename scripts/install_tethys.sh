@@ -5,7 +5,7 @@ USAGE="USAGE: . install_tethys.sh [options]\n
 OPTIONS:\n
     -t, --tethys-home <PATH>            path for tethys home directory. Default is /usr/lib/tethys on Linux and /Library/Applicaiton/tethys on Mac OS.\n
     -a, --allowed-host <HOST>           hostname or IP address on which to server tethys. Default is 127.0.0.1.\n
-    -p, --port <PORT>                   port on which to server tethys. Default is 8000 on Linux and 8001 on Mac OS.\n
+    -p, --port <PORT>                   port on which to server tethys. Default is 8000.\n
     -b, --branch <BRANCH_NAME>          repository branch to checkout. Default is 'dev'.\n
     -c, --conda-home <PATH>             path to conda home directory. Default is \${TETHYS_HOME}/miniconda.\n
     --db-username <USERNAME>            username that the tethys database server will use. Default is 'tethys_default'.\n
@@ -14,8 +14,8 @@ OPTIONS:\n
     -S, --superuser <USERNAME>          Tethys super user name. Default is 'admin'.\n
     -E, --superuser-email <EMAIL>       Tethys super user email. Default is ''.\n
     -P, --superuser-pass <PASSWORD>     Tethys super user password. Default is 'pass'.\n
-    --install-docker                    Flag to include Docker installation as part of the install script (Ubuntu only).\n
-    --docker-options <OPTIONS>          Command line options to pass to the `tethys docker init` call if --install-docker is used. Default is '-d'.\n
+    --install-docker                    Flag to include Docker installation as part of the install script (Linux only).\n
+    --docker-options <OPTIONS>          Command line options to pass to the 'tethys docker init' call if --install-docker is used. Default is \"'-d'\".\n
     -x                                  Flag to turn on shell command echoing.\n
     -h, --help                          Print this help information.\n
 "
@@ -33,13 +33,11 @@ then
     TETHYS_HOME="/usr/lib/tethys"
     MINICONDA_URL="wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O"
     BASH_PROFILE=".bashrc"
-    TETHYS_PORT=8000
 elif [ "$(uname)" = "Darwin" ]  # i.e. MacOSX
 then
     TETHYS_HOME="/Library/Application/tethys"
     MINICONDA_URL="curl https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o"
     BASH_PROFILE=".bash_profile"
-    TETHYS_PORT=8001
 else
     echo $(uname) is not a supported operating system.
     exit
@@ -47,6 +45,7 @@ fi
 
 # Set default options
 ALLOWED_HOST='127.0.0.1'
+TETHYS_PORT=8000
 TETHYS_DB_USERNAME='tethys_default'
 TETHYS_DB_PASSWORD='pass'
 TETHYS_DB_PORT=5436
@@ -223,6 +222,8 @@ echo "unalias tethys_stop_db" >> ${DEACTIVATE_SCRIPT}
 echo "unalias tstopdb" >> ${DEACTIVATE_SCRIPT}
 echo "unalias tms" >> ${DEACTIVATE_SCRIPT}
 
+
+
 echo "# Tethys Platform" >> ~/${BASH_PROFILE}
 echo "alias t='. ${CONDA_HOME}/bin/activate tethys'" >> ~/${BASH_PROFILE}
 
@@ -231,21 +232,90 @@ echo "Tethys installation complete!"
 # Install Docker (if flag is set)
 set +e  # don't exit on error anymore
 
-if [ "$(uname)" = "Linux" -a "${INSTALL_DOCKER}" = "true" ]
-then
-    echo "Installing Docker..."
-    . activate tethys # activate tethys environment
-    sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-    echo "deb https://apt.dockerproject.org/repo ubuntu-$(lsb_release -c | awk '{print $2}') main" | sudo tee /etc/apt/sources.list.d/docker.list
-    sudo apt-get update
-    sudo apt-get install -y docker-engine
+installation_warning(){
+    echo "WARNING: installing docker on $1 is not officially supported by the Tethys install script. Attempting to install with $2 script."
+}
+
+finalize_docker_install(){
+    sudo groupadd docker
     sudo gpasswd -a ${USER} docker
-    sudo service docker restart
-    sg docker -c "tethys docker init ${DOCKER_OPTIONS}"
-    set +x
+    # sg docker -c "tethys docker init ${DOCKER_OPTIONS}"
+    sg docker -c "tethys docker status"
+    sg docker -c "docker run hello-world"
     echo "Docker installation finished!"
     echo "You must re-login for Docker permissions to be activated."
-    echo "(Alternatively you can run `newgrp docker`)"
+    echo "(Alternatively you can run 'newgrp docker')"
+}
+
+ubuntu_docker_install(){
+    LINUX_DISTRIBUTION=$(uname -n)
+    if [ ${LINUX_DISTRIBUTION} != "ubuntu" ]
+    then
+        installation_warning ${LINUX_DISTRIBUTION} "Ubuntu"
+    fi
+
+    wget -qO- https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+    sudo apt-get update
+    sudo apt-get install -y docker-ce
+
+    finalize_docker_install
+}
+
+centos_docker_install(){
+    if [ ${LINUX_DISTRIBUTION} != "centos" ]
+    then
+        installation_warning ${LINUX_DISTRIBUTION} "CentOS"
+    fi
+
+    sudo yum -y install yum-utils
+    sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    sudo yum makecache fast
+    sudo yum -y install docker-ce
+    sudo systemctl start docker
+
+    finalize_docker_install
+}
+
+fedora_docker_install(){
+    if [ ${LINUX_DISTRIBUTION} != "fedora" ]
+    then
+        installation_warning ${LINUX_DISTRIBUTION} "Fedora"
+    fi
+
+    sudo dnf -y install -y dnf-plugins-core
+    sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+    sudo dnf makecache fast
+    sudo dnf -y install docker-ce
+    sudo systemctl start docker
+
+    finalize_docker_install
+}
+
+if [ "$(uname)" = "Linux" -a "${INSTALL_DOCKER}" = "true" ]
+then
+    LINUX_DISTRIBUTION=$(python -c "import platform; print(platform.linux_distribution(full_distribution_name=0)[0])")
+    echo "Installing Docker..."
+    case ${LINUX_DISTRIBUTION} in
+        debian)
+            ubuntu_docker_install
+        ;;
+        ubuntu)
+            ubuntu_docker_install
+        ;;
+        centos)
+            centos_docker_install
+        ;;
+        redhat)
+            centos_docker_install
+        ;;
+        fedora)
+            fedora_docker_install
+        ;;
+        *)
+        #https://docs.docker.com/engine/installation/
+        ;;
+    esac
 fi
 
 # execute profile to activate new alias
