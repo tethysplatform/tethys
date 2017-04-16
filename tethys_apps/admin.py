@@ -61,7 +61,8 @@ class WebProcessingServiceSettingInline(TethysAppSettingInline):
     fields = ('name', 'description', 'web_processing_service', 'required')
     model = WebProcessingServiceSetting
 
-
+#TODO: Figure out how to initialize persistent stores with button in admin
+# Consider: https://medium.com/@hakibenita/how-to-add-custom-action-buttons-to-django-admin-8d266f5b0d41
 class PersistentStoreConnectionSettingInline(TethysAppSettingInline):
     readonly_fields = ('name', 'description', 'required')
     fields = ('name', 'description', 'persistent_store_service', 'required')
@@ -70,7 +71,7 @@ class PersistentStoreConnectionSettingInline(TethysAppSettingInline):
 
 class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
     readonly_fields = ('name', 'description', 'required', 'spatial')
-    fields = ('name', 'description', 'spatial', 'connection', 'required')
+    fields = ('name', 'description', 'spatial', 'persistent_store_service', 'required')
     model = PersistentStoreDatabaseSetting
 
 
