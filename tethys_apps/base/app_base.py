@@ -15,11 +15,9 @@ from django.utils.functional import SimpleLazyObject
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
-from sqlalchemy import create_engine
-
 from tethys_apps.base.workspace import TethysWorkspace
 from tethys_apps.base.handoff import HandoffManager
-from tethys_apps.exceptions import TethysAppSettingDoesNotExist
+from tethys_apps.exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
 
 class TethysAppBase(object):
@@ -49,6 +47,12 @@ class TethysAppBase(object):
     tags = ''
     enable_feedback = False
     feedback_emails = []
+
+    def __unicode__(self):
+        """
+        String representation
+        """
+        return '<TethysApp: {0}>'.format(self.name)
 
     def __repr__(self):
         """
@@ -143,7 +147,8 @@ class TethysAppBase(object):
 
                 return stores
         """
-        return None, None
+        #TODO: REDO THIS DOCUMENTATION
+        return None
 
     def dataset_services_settings(self):
         """
@@ -231,86 +236,7 @@ class TethysAppBase(object):
         """
         return None
 
-    @classmethod
-    def get_custom_setting(self, name):
-        """
-        Retrieves general for app
-        """
-        from tethys_apps.models import TethysApp
-        db_app = TethysApp.objects.get(package=self.package)
-        custom_settings = db_app.custom_settings
-        try:
-            custom_setting = custom_settings.get(name=name)
-        except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('CustomTethysAppSetting named "{0}" does not exist.'.format(name))
 
-        return custom_setting.value
-
-    @classmethod
-    def get_dataset_service(cls, name, request=None, as_endpoint=False,
-                            as_engine=False):
-        """
-        Retrieves dataset engine for app
-        """
-        from tethys_apps.models import TethysApp
-        app = cls()
-        db_app = TethysApp.objects.get(package=app.package)
-        dataset_services_settings = db_app.dataset_services_settings
-        try:
-            dataset_services_settings = dataset_services_settings.get(name=name)
-        except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('DatasetServiceSetting named "{0}" does not exist.'.format(name))
-        dataset_service = dataset_services_settings.dataset_service
-        if as_endpoint:
-            return dataset_service.endpoint
-        elif as_engine:
-            return dataset_service.get_engine(request=request)
-        return dataset_service
-
-    @classmethod
-    def get_spatial_dataset_service(cls, name, as_endpoint=False, as_wms=False,
-                                    as_wfs=False, as_engine=False):
-        """
-        Retrieves spatial dataset engine for app
-        """
-        from tethys_apps.models import TethysApp
-        app = cls()
-        db_app = TethysApp.objects.get(package=app.package)
-        spatial_dataset_services_settings = db_app.spatial_dataset_services_settings
-        try:
-            spatial_dataset_service_setting = spatial_dataset_services_settings.get(name=name)
-        except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('SpatialDatasetServiceSetting named "{0}" does not exist.'.format(name))
-
-        spatial_dataset_service = spatial_dataset_service_setting.spatial_dataset_service
-        if as_endpoint:
-            return spatial_dataset_service.endpoint
-        elif as_wms:
-            return spatial_dataset_service.endpoint.split('/rest')[0] + '/wms'
-        elif as_wfs:
-            return spatial_dataset_service.endpoint.split('/rest')[0] + '/ows'
-        elif as_engine:
-            return spatial_dataset_service.get_engine()
-        return spatial_dataset_service
-
-    @classmethod
-    def get_wps_service(cls, name, as_endpoint=False, as_engine=False):
-        """
-        Retrieves wps engine for app
-        """
-        from tethys_apps.models import TethysApp
-        db_app = TethysApp.objects.get(package=cls.package)
-        wps_services_settings = db_app.wps_services_settings
-        try:
-            wps_service_setting = wps_services_settings.objects.get(name=name)
-        except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('WebProcessingServiceSetting named "{0}" does not exist.'.format(name))
-        wps_service = wps_service_setting.web_processing_service
-        if as_endpoint:
-            return wps_service.endpoint
-        elif as_engine:
-            return wps_service.get_engine()
-        return wps_service
 
     def handoff_handlers(self):
         """
@@ -382,15 +308,6 @@ class TethysAppBase(object):
         """
         return None
 
-    @classmethod
-    def get_handoff_manager(cls):
-        """
-        Get the handoff manager for the app.
-        """
-        app = cls()
-        handoff_manager = HandoffManager(app)
-        return handoff_manager
-
     def job_templates(self):
         """
         Use this method to define job templates to easily create and submit jobs in your app.
@@ -426,6 +343,17 @@ class TethysAppBase(object):
                 return job_templates
         """
         return None
+
+    @classmethod
+    def get_handoff_manager(cls):
+        """
+        Get the handoff manager for the app.
+        """
+        app = cls()
+        handoff_manager = HandoffManager(app)
+        return handoff_manager
+
+
 
     @classmethod
     def get_job_manager(cls):
@@ -529,57 +457,307 @@ class TethysAppBase(object):
         return TethysWorkspace(workspace_directory)
 
     @classmethod
-    def get_persistent_store_engine(cls, persistent_store_name):
+    def get_custom_setting(self, name):
         """
-        Creates an SQLAlchemy engine object for the app and persistent store given.
+        Retrieves general for app
+        """
+        from tethys_apps.models import TethysApp
+        db_app = TethysApp.objects.get(package=self.package)
+        custom_settings = db_app.custom_settings
+        try:
+            custom_setting = custom_settings.get(name=name)
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist('CustomTethysAppSetting named "{0}" does not exist.'.format(name))
+
+        return custom_setting.value
+
+    @classmethod
+    def get_dataset_service(cls, name, request=None, as_endpoint=False,
+                            as_engine=False):
+        """
+        Retrieves dataset engine for app
+        """
+        from tethys_apps.models import TethysApp
+        app = cls()
+        db_app = TethysApp.objects.get(package=app.package)
+        dataset_services_settings = db_app.dataset_services_settings
+        try:
+            dataset_services_settings = dataset_services_settings.get(name=name)
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist('DatasetServiceSetting named "{0}" does not exist.'.format(name))
+        dataset_service = dataset_services_settings.dataset_service
+        if as_endpoint:
+            return dataset_service.endpoint
+        elif as_engine:
+            return dataset_service.get_engine(request=request)
+        return dataset_service
+
+    @classmethod
+    def get_spatial_dataset_service(cls, name, as_endpoint=False, as_wms=False,
+                                    as_wfs=False, as_engine=False):
+        """
+        Retrieves spatial dataset engine for app
+        """
+        from tethys_apps.models import TethysApp
+        app = cls()
+        db_app = TethysApp.objects.get(package=app.package)
+        spatial_dataset_services_settings = db_app.spatial_dataset_services_settings
+        try:
+            spatial_dataset_service_setting = spatial_dataset_services_settings.get(name=name)
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist('SpatialDatasetServiceSetting named "{0}" does not exist.'.format(name))
+
+        spatial_dataset_service = spatial_dataset_service_setting.spatial_dataset_service
+        if as_endpoint:
+            return spatial_dataset_service.endpoint
+        elif as_wms:
+            return spatial_dataset_service.endpoint.split('/rest')[0] + '/wms'
+        elif as_wfs:
+            return spatial_dataset_service.endpoint.split('/rest')[0] + '/ows'
+        elif as_engine:
+            return spatial_dataset_service.get_engine()
+        return spatial_dataset_service
+
+    @classmethod
+    def get_wps_service(cls, name, as_endpoint=False, as_engine=False):
+        """
+        Retrieves wps engine for app
+        """
+        from tethys_apps.models import TethysApp
+        db_app = TethysApp.objects.get(package=cls.package)
+        wps_services_settings = db_app.wps_services_settings
+        try:
+            wps_service_setting = wps_services_settings.objects.get(name=name)
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist('WebProcessingServiceSetting named "{0}" does not exist.'.format(name))
+        wps_service = wps_service_setting.web_processing_service
+        if as_endpoint:
+            return wps_service.endpoint
+        elif as_engine:
+            return wps_service.get_engine()
+        return wps_service
+
+    @classmethod
+    def get_persistent_store_connection(cls, name, as_url=False):
+        """
+        Creates an SQLAlchemy Engine or URL object for the named persistent store connection.
 
         Args:
-          persistent_store_name(string): Name of the persistent store for which to retrieve the engine.
+          name(string): Name of the persistent store database for which to retrieve the engine.
+          as_url(bool): Return SQLAlchemy URL object instead of engine object if True. Defaults to False.
 
         Returns:
-          object: An SQLAlchemy engine object for the persistent store requested.
+          sqlalchemy.Engine or sqlalchemy.URL: An SQLAlchemy Engine or URL object for the persistent store requested.
 
 
         **Example:**
 
         ::
 
-            from .app import MyFirstApp
+            from my_first_app.app import MyFirstApp as app
 
-            engine = MyFirstApp.get_persistent_store_engine('example_db')
+            engine = app.get_persistent_store_connection('primary')
+            url = app.get_persistent_store_database('primary', as_url=True
 
         """
-        # If testing environment, the engine for the "test" version of the persistent store should be fetched
-        if hasattr(settings, 'TESTING') and settings.TESTING:
-            test_store_name = 'test_{0}'.format(persistent_store_name)
-            persistent_store_name = test_store_name
+        from tethys_apps.models import TethysApp
+        db_app = TethysApp.objects.get(package=cls.package)
+        ps_connection_settings = db_app.persistent_store_connection_settings
 
-        # Create the unique store name
-        app_name = cls.package
-        unique_store_name = '_'.join([app_name, persistent_store_name])
+        try:
+            ps_connection_setting = ps_connection_settings.get(name=name)
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting named "{0}" does not exist.'.format(name))
 
-        # The database manager database user is the owner of all the app databases.
-        database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
+        ps_connection_service = ps_connection_setting.persistent_store_service
 
-        # Assemble url for persistent store with that name
-        persistent_store_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager',
-                                                                         database_manager_db['PASSWORD'] if 'PASSWORD' in database_manager_db else 'pass',
-                                                                         database_manager_db['HOST'] if 'HOST' in database_manager_db else '127.0.0.1',
-                                                                         database_manager_db['PORT'] if 'PORT' in database_manager_db else '5435',
-                                                                         unique_store_name)
+        # Validate connection service
+        if ps_connection_service is None:
+            raise TethysAppSettingNotAssigned('Cannot create engine or url for PersistentStoreConnection "{0}" for app '
+                                              '"{1}": no PersistentStoreService assigned.'.format(name, db_app.package))
+
+        if as_url:
+            return ps_connection_service.get_url()
 
         # Return SQLAlchemy Engine
-        return create_engine(persistent_store_url)
-
+        return ps_connection_service.get_engine()
 
     @classmethod
-    def create_persistent_store(cls, persistent_store_name, spatial=False):
+    def get_persistent_store_database(cls, name, as_url=False):
+        """
+        Creates an SQLAlchemy Engine or URL object for the app and persistent store given.
+
+        Args:
+          name(string): Name of the persistent store database for which to retrieve the engine.
+          as_url(bool): Return SQLAlchemy URL object instead of engine object if True. Defaults to False.
+
+        Returns:
+          sqlalchemy.Engine or sqlalchemy.URL: An SQLAlchemy Engine or URL object for the persistent store requested.
+
+
+        **Example:**
+
+        ::
+
+            from my_first_app.app import MyFirstApp as app
+
+            engine = app.get_persistent_store_database('example_db')
+            url = app.get_persistent_store_database('example_db', as_url=True)
+
+        """
+        from tethys_apps.models import TethysApp
+        db_app = TethysApp.objects.get(package=cls.package)
+        ps_database_settings = db_app.persistent_store_database_settings
+        try:
+            ps_database_setting = ps_database_settings.get(name=name)
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(name))
+
+        # Get the assigned connection setting
+        ps_connection_service = ps_database_setting.persistent_store_service
+
+        # Validate connection service
+        if ps_connection_service is None:
+            raise TethysAppSettingNotAssigned('Cannot create engine or url for PersistentStoreDatabase "{0}" for app '
+                                              '"{1}": no PersistentStoreService found.'.format(name, db_app.package))
+
+        # If testing environment, the engine for the "test" version of the persistent store should be fetched
+        if hasattr(settings, 'TESTING') and settings.TESTING:
+            name = 'test_{0}'.format(name)
+
+        # Derive the unique store name
+        unique_store_name = '_'.join([db_app.package, name])
+
+        # Add database (only temporary, not persisted on connection service object)
+        ps_connection_service.database = unique_store_name
+
+        if as_url:
+            return ps_connection_service.get_url()
+
+        # Return SQLAlchemy Engine
+        return ps_connection_service.get_engine()
+
+    @classmethod
+    def create_persistent_store(cls, db_name, connection_name, spatial=False):
         """
         Creates a new persistent store database for this app.
 
         Args:
-          persistent_store_name(string): Name of the persistent store that will be created.
+          db_name(string): Name of the persistent store that will be created.
+          connection_name(string): Name of persistent store connection.
           spatial(bool): Enable spatial extension on the database being created.
+
+        Returns:
+          bool: True if successful.
+
+
+        **Example:**
+
+        ::
+
+            from my_first_app.app import MyFirstApp as app
+
+            result = app.create_persistent_store('example_db', 'primary')
+
+            if result:
+                engine = app.get_persistent_store_engine('example_db')
+
+        """
+        # Validate
+        if cls.persistent_store_exists(db_name):
+            raise NameError('Database with name "{0}" for app "{1}" already exists.'.format(
+                db_name,
+                cls.package
+            ))
+            return False
+
+        # Get named persistent store service connection
+        from tethys_apps.models import TethysApp
+        from tethys_apps.models import PersistentStoreDatabaseSetting
+        db_app = TethysApp.objects.get(package=cls.package)
+
+        # Get connection service
+        ps_connection_settings = db_app.persistent_store_connection_settings
+
+        try:
+            ps_connection_setting = ps_connection_settings.get(name=connection_name)
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist(
+                'PersistentStoreConnectionSetting named "{0}" does not exist.'.format(connection_name))
+
+        ps_connection_service = ps_connection_setting.persistent_store_service
+
+        # Create new PersistentStoreDatabaseSetting
+        new_db_setting = PersistentStoreDatabaseSetting(
+            name=db_name,
+            description='',
+            required=True,
+            initializer='',
+            spatial=spatial
+        )
+
+        new_db_setting.persistent_store_service = ps_connection_service
+        db_app.add_settings((new_db_setting,))
+
+        # Compose full name spaced db name
+        full_db_name = '_'.join((db_app.package, db_name))
+
+        # Get engine for new database
+        engine = ps_connection_service.get_engine()
+
+        # Cannot create databases in a transaction: connect and commit to close transaction
+        create_connection = engine.connect()
+
+        # Create db
+        # TODO: Can I create spatial using a template?
+        # Options are:
+        # 1. Use CREATE EXTENSION on existing database - requires superuser
+        #    Problem: all spatial databases would be required to have superuser connections = vulnerability
+        #    Possible Solution: still require super user in settings.py and use this user for creating stores
+        #                       access to the store would be dictated by the connection specified when created
+        # 2. Use a template that has postgis extension enabled - superuser not required
+        #    Problem: no default postgis template is provided, needs to be provided in database, requiring special
+        #             setup of databases used by persistent stores. Template db cannot be connected to.
+        #    Possible Solution: Provide template in Docker and/or provide instructions for preparing database for
+        #                       use as persistent store. Maybe provide script that creates template?
+        create_db_statement = """
+                              CREATE DATABASE {0}
+                              WITH OWNER {1}
+                              TEMPLATE template0
+                              ENCODING 'UTF8'
+                              """.format(full_db_name, engine.url.username)
+
+        # Close transaction first by committing and then execute statement
+        create_connection.execute('commit')
+        create_connection.execute(create_db_statement)
+        create_connection.close()
+
+        # Enable PostGIS extension
+        if spatial:
+            # Connect to new database
+            ps_connection_service.database = full_db_name
+            extension_engine = ps_connection_service.get_engine()
+            extension_connection = extension_engine.connect()
+
+            # Notify user
+            enable_postgis_statement = 'CREATE EXTENSION IF NOT EXISTS postgis'
+
+            # Execute postgis statement
+            extension_connection.execute(enable_postgis_statement)
+            extension_connection.close()
+
+        # Save database entry
+        db_app.save()
+
+        return True
+
+    @classmethod
+    def destroy_persistent_store(cls, name):
+        """
+        Destroys (drops) a persistent store database from this app.
+
+        Args:
+          name(string): Name of the persistent store that will be created.
 
         Returns:
           bool: True if successful.
@@ -591,122 +769,41 @@ class TethysAppBase(object):
 
             from .app import MyFirstApp
 
-            result = MyFirstApp.create_persistent_store('example_db')
+            result = MyFirstApp.destroy_persistent_store('example_db')
 
             if result:
-                engine = MyFirstApp.get_persistent_store_engine('example_db')
+                # App database 'example_db' was successfuly destroyed and no longer exists
+                pass
 
         """
-        # Get database manager url from the config
-        database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
-        database_manager_name = database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager'
-
-        database_manager_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
-            database_manager_name,
-            database_manager_db['PASSWORD'] if 'PASSWORD' in database_manager_db else 'pass',
-            database_manager_db['HOST'] if 'HOST' in database_manager_db else '127.0.0.1',
-            database_manager_db['PORT'] if 'PORT' in database_manager_db else '5435',
-            database_manager_db['NAME'] if 'NAME' in database_manager_db else 'tethys_db_manager'
-        )
-
-        # Compose db name
-        full_db_name = '_'.join((cls.package, persistent_store_name))
-        engine = create_engine(database_manager_url)
-
-        if cls.persistent_store_exists(persistent_store_name):
-            raise NameError('Database with name "{0}" for app "{1}" already exists.'.format(
-                persistent_store_name,
-                cls.package
-            ))
-
-        # Cannot create databases in a transaction: connect and commit to close transaction
-        create_connection = engine.connect()
-
-        # Create db
-        create_db_statement = """
-                              CREATE DATABASE {0}
-                              WITH OWNER {1}
-                              TEMPLATE template0
-                              ENCODING 'UTF8'
-                              """.format(full_db_name, database_manager_name)
-
-        # Close transaction first and then execute
-        create_connection.execute('commit')
-        create_connection.execute(create_db_statement)
-        create_connection.close()
-
-        # Enable PostGIS extension
-        if spatial:
-            # Get URL for Tethys Superuser to enable extensions
-            super_db = settings.TETHYS_DATABASES['tethys_super']
-
-            new_db_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
-                super_db['USER'] if 'USER' in super_db else 'tethys_super',
-                super_db['PASSWORD'] if 'PASSWORD' in super_db else 'pass',
-                super_db['HOST'] if 'HOST' in super_db else '127.0.0.1',
-                super_db['PORT'] if 'PORT' in super_db else '5435',
-                full_db_name
-            )
-
-            # Connect to new database
-            new_db_engine = create_engine(new_db_url)
-            new_db_connection = new_db_engine.connect()
-
-            # Notify user
-            enable_postgis_statement = 'CREATE EXTENSION IF NOT EXISTS postgis'
-
-            # Execute postgis statement
-            new_db_connection.execute(enable_postgis_statement)
-            new_db_connection.close()
-
-        return True
-
-    @classmethod
-    def destroy_persistent_store(cls, persistent_store_name):
-        """
-                Destroys (drops) a persistent store database from this app.
-
-                Args:
-                  persistent_store_name(string): Name of the persistent store that will be created.
-
-                Returns:
-                  bool: True if successful.
-
-
-                **Example:**
-
-                ::
-
-                    from .app import MyFirstApp
-
-                    result = MyFirstApp.destroy_persistent_store('example_db')
-
-                    if result:
-                        # App database 'example_db' was successfuly destroyed and no longer exists
-                        pass
-
-                """
-        if not cls.persistent_store_exists(persistent_store_name):
+        if not cls.persistent_store_exists(name):
             raise NameError('Database with name "{0}" for app "{1}" does not exists.'.format(
-                persistent_store_name,
+                name,
                 cls.package
             ))
 
-        super_db = settings.TETHYS_DATABASES['tethys_super']
+        from tethys_apps.models import TethysApp
+        db_app = TethysApp.objects.get(package=cls.package)
+        ps_database_settings = db_app.persistent_store_database_settings
+        try:
+            ps_database_setting = ps_database_settings.get(name=name)
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist(
+                'PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(name))
 
-        super_db_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
-            super_db['USER'] if 'USER' in super_db else 'tethys_super',
-            super_db['PASSWORD'] if 'PASSWORD' in super_db else 'pass',
-            super_db['HOST'] if 'HOST' in super_db else '127.0.0.1',
-            super_db['PORT'] if 'PORT' in super_db else '5435',
-            super_db['NAME'] if 'NAME' in super_db else 'tethys_super'
-        )
+        # Get the assigned connection setting
+        ps_connection_service = ps_database_setting.persistent_store_service
+
+        # Validate connection service
+        if ps_connection_service is None:
+            raise TethysAppSettingNotAssigned('Cannot create engine or url for PersistentStoreDatabase "{0}" for app '
+                                              '"{1}": no PersistentStoreService found.'.format(name, db_app.package))
 
         # Compose db name
-        full_db_name = '_'.join((cls.package, persistent_store_name))
+        full_db_name = '_'.join((db_app.package, name))
 
         # Create db engine
-        engine = create_engine(super_db_url)
+        engine = ps_connection_service.get_engine()
 
         # Create db
         drop_db_statement = 'DROP DATABASE IF EXISTS {0}'.format(full_db_name)
@@ -739,66 +836,64 @@ class TethysAppBase(object):
         finally:
             drop_connection.close()
 
+        # Remove the database setting
+        ps_database_setting.delete()
+
         return True
 
     @classmethod
-    def list_persistent_stores(cls):
+    def list_persistent_store_databases(cls):
         """
-        Returns a list of existing persistent stores for this app.
+        Returns a list of existing persistent store databases for this app.
 
         Returns:
-          list: A list of persistent store names.
+          list: A list of persistent store database names.
 
 
         **Example:**
 
         ::
 
-            from .app import MyFirstApp
+            from my_first_app.app import MyFirstApp as app
 
-            persistent_stores = MyFirstApp.list_persistent_stores()
+            ps_databases = app.list_persistent_store_databases()
 
         """
-        # Get database manager url from the config
-        database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
-        database_manager_name = database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager'
-
-        database_manager_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
-            database_manager_name,
-            database_manager_db['PASSWORD'] if 'PASSWORD' in database_manager_db else 'pass',
-            database_manager_db['HOST'] if 'HOST' in database_manager_db else '127.0.0.1',
-            database_manager_db['PORT'] if 'PORT' in database_manager_db else '5435',
-            database_manager_db['NAME'] if 'NAME' in database_manager_db else 'tethys_db_manager'
-        )
-
-        # Check conflicting database with name
-        engine = create_engine(database_manager_url)
-
-        # Cannot create databases in a transaction: connect and commit to close transaction
-        connection = engine.connect()
-
-        existing_dbs_statement = "SELECT d.datname as name " \
-                                 "FROM pg_catalog.pg_database d " \
-                                 "LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid " \
-                                 "WHERE d.datname LIKE '" + cls.package + "_%%' " \
-                                 "ORDER BY 1;"
-
-        existing_dbs = connection.execute(existing_dbs_statement)
-        connection.close()
-
-        persistent_stores = []
-        for existing_db in existing_dbs:
-            persistent_stores.append(existing_db.name.replace(cls.package + '_', ''))
-
-        return persistent_stores
+        from tethys_apps.models import TethysApp
+        db_app = TethysApp.objects.get(package=cls.package)
+        ps_database_settings = db_app.persistent_store_database_settings
+        return [ps_database_setting.name for ps_database_setting in ps_database_settings]
 
     @classmethod
-    def persistent_store_exists(cls, persistent_store_name):
+    def list_persistent_store_connections(cls):
+        """
+        Returns a list of existing persistent store connections for this app.
+
+        Returns:
+          list: A list of persistent store connection names.
+
+
+        **Example:**
+
+        ::
+
+            from my_first_app.app import MyFirstApp as app
+
+            ps_connections = app.list_persistent_store_connections()
+
+        """
+        from tethys_apps.models import TethysApp
+        db_app = TethysApp.objects.get(package=cls.package)
+        ps_connection_settings = db_app.persistent_store_connection_settings
+        return [ps_connection_setting.name for ps_connection_setting in ps_connection_settings]
+
+    @classmethod
+    def persistent_store_exists(cls, name):
         """
         Returns True if a persistent store with the given name exists for this app.
 
         Args:
-          persistent_store_name(string): Name of the persistent store that will be created.
+          name(string): Name of the persistent store that will be created.
 
         Returns:
           bool: True if persistent store exists.
@@ -816,35 +911,47 @@ class TethysAppBase(object):
                 engine = MyFirstApp.get_persistent_store_engine('example_db')
 
         """
-        # Get database manager url from the config
-        database_manager_db = settings.TETHYS_DATABASES['tethys_db_manager']
-        database_manager_name = database_manager_db['USER'] if 'USER' in database_manager_db else 'tethys_db_manager'
+        from tethys_apps.models import TethysApp
+        db_app = TethysApp.objects.get(package=cls.package)
+        ps_database_settings = db_app.persistent_store_database_settings
+        try:
+            # If it exists return True
+            ps_database_setting = ps_database_settings.get(name=name)
+        except ObjectDoesNotExist:
+            # Else return False
+            return False
 
-        database_manager_url = 'postgresql://{0}:{1}@{2}:{3}/{4}'.format(
-            database_manager_name,
-            database_manager_db['PASSWORD'] if 'PASSWORD' in database_manager_db else 'pass',
-            database_manager_db['HOST'] if 'HOST' in database_manager_db else '127.0.0.1',
-            database_manager_db['PORT'] if 'PORT' in database_manager_db else '5435',
-            database_manager_db['NAME'] if 'NAME' in database_manager_db else 'tethys_db_manager'
-        )
+        # Get the assigned connection setting
+        ps_connection_service = ps_database_setting.persistent_store_service
 
-        # Compose db name
-        full_db_name = '_'.join((cls.package, persistent_store_name))
-        engine = create_engine(database_manager_url)
+        # Validate connection service
+        if ps_connection_service is None:
+            raise TethysAppSettingNotAssigned(
+                'Cannot create engine or url for PersistentStoreDatabase "{0}" for app '
+                '"{1}": no PersistentStoreService found.'.format(name, db_app.package))
 
-        # Cannot create databases in a transaction: connect and commit to close transaction
-        connection = engine.connect()
+        # Database setting existing doesn't mean the database exists necessarily,
+        # Attempt to connect to database to verify that it exists.
+        # Derive the unique store name
+        unique_store_name = '_'.join([db_app.package, name])
 
-        existing_dbs_statement = "SELECT d.datname as name " \
-                                 "FROM pg_catalog.pg_database d " \
-                                 "LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid " \
-                                 "WHERE d.datname = '{0}';".format(full_db_name)
+        # Add database (only temporary, not persisted on connection service object)
+        ps_connection_service.database = unique_store_name
 
-        existing_dbs = connection.execute(existing_dbs_statement)
+        # Get engine
+        engine = ps_connection_service.get_engine()
+
+        try:
+
+            # Attempt to connect
+            connection = engine.connect()
+
+        except Exception:
+            # Orphaned connection, can be caused by database being deleted but corresponding setting not being deleted.
+            # Remove orphaned db setting entries
+            ps_database_setting.delete()
+            return False
+
+        # Able to connect means it exists in db
         connection.close()
-
-        for existing_db in existing_dbs:
-            if existing_db.name == full_db_name:
-                return True
-
-        return False
+        return True
