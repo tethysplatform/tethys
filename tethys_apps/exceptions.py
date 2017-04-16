@@ -11,3 +11,7 @@
 
 class TethysAppSettingDoesNotExist(Exception):
     pass
+
+
+class TethysAppSettingNotAssigned(Exception):
+    pass
