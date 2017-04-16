@@ -52,7 +52,7 @@ class WebProcessingServiceForm(ModelForm):
 class PersistentStoreServiceForm(ModelForm):
     class Meta:
         model = PersistentStoreService
-        fields = ('name', 'host', 'port', 'username', 'password')
+        fields = ('name', 'engine', 'host', 'port', 'username', 'password')
         widgets = {
             'password': PasswordInput(),
         }
@@ -87,7 +87,7 @@ class PersistentStoreServiceAdmin(admin.ModelAdmin):
     Admin model for Persistent Store Service Model
     """
     form = PersistentStoreServiceForm
-    fields = ('name', 'host', 'port', 'username', 'password')
+    fields = ('name', 'engine', 'host', 'port', 'username', 'password')
 
 
 admin.site.register(DatasetService, DatasetServiceAdmin)

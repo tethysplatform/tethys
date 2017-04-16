@@ -224,11 +224,16 @@ class PersistentStoreService(models.Model):
     """
     ORM for Persistent Store Service settings.
     """
+    ENGINE_CHOICES = (
+        ('postgresql', 'PostgreSQL'),
+    )
     name = models.CharField(max_length=30, unique=True)
-    host = models.CharField(max_length=1024, default='localhost')
-    port = models.IntegerField(default=5432, validators=[validate_persistent_store_port,])
+    host = models.CharField(max_length=255, default='localhost')
+    port = models.IntegerField(default=5435, validators=[validate_persistent_store_port])
     username = models.CharField(max_length=100, blank=True)
     password = models.CharField(max_length=100, blank=True)
+    engine = models.CharField(max_length=50, default='postgresql', choices=ENGINE_CHOICES)
+    database = None  #: temporary property for creating engines and URLs with database, but not persisted in database.
 
     class Meta:
         verbose_name = 'Persistent Store Service'
@@ -242,14 +247,20 @@ class PersistentStoreService(models.Model):
         Returns a Persistent Store engine
         """
         from sqlalchemy import create_engine
-        from sqlalchemy.engine.url import URL
+        url = self.get_url()
+        return create_engine(url)
 
+    def get_url(self):
+        """
+        Returns a Persistent Store URL
+        """
+        from sqlalchemy.engine.url import URL
         url = URL(
-            drivername='postgresql',
+            drivername=self.engine,
             host=self.host,
             port=self.port,
             username=self.username,
             password=self.password,
+            database=self.database
         )
-
-        return create_engine(bind=url)
+        return url
