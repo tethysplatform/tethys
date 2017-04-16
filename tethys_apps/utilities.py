@@ -337,19 +337,17 @@ def sync_tethys_app_db():
                 )
                 app.save()
 
-                # additional settings
+                # custom settings
                 app.add_settings(installed_app.custom_settings())
-                # dataset services
+                # dataset services settings
                 app.add_settings(installed_app.dataset_services_settings())
-                # spatial dataset services
+                # spatial dataset services settings
                 app.add_settings(installed_app.spatial_dataset_services_settings())
                 # wps settings
                 app.add_settings(installed_app.wps_services_settings())
-                # persistent stores
-                ps_connections, ps_databases = installed_app.persistent_store_settings()
-                app.add_settings(ps_connections)
-                app.add_settings(ps_databases)
-                # TODO: Figure this out
+                # persistent store settings
+                app.add_settings(installed_app.persistent_store_settings())
+
                 app.save()
 
             # If the app is in the database, update developer-first attributes
