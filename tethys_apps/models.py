@@ -65,6 +65,7 @@ class TethysApp(models.Model):
     def settings(self):
         return self.settings_set.select_subclasses()
 
+    # TODO: These properties are not filtering correctly, they are returning all app settings.
     @property
     def custom_settings(self):
         return self.settings_set \
@@ -86,9 +87,14 @@ class TethysApp(models.Model):
                 .select_subclasses('webprocessingservicesetting')
 
     @property
-    def persistent_store_services_settings(self):
+    def persistent_store_connection_settings(self):
         return self.settings_set \
-            .select_subclasses('persistentstoreservicesetting')
+            .select_subclasses('persistentstoreconnectionsetting')
+
+    @property
+    def persistent_store_database_settings(self):
+        return self.settings_set \
+            .select_subclasses('persistentstoredatabasesetting')
 
 
 class TethysAppSetting(models.Model):
@@ -103,6 +109,7 @@ class TethysAppSetting(models.Model):
     description = models.TextField(max_length=1000, blank=True, default='')
     required = models.BooleanField(default=True)
     initializer = models.CharField(max_length=1000, default='')
+    initialized = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name
@@ -183,4 +190,4 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
     DB Model for Tethys App PersistentStoreDatabase Setting
     """
     spatial = models.BooleanField(default=False)
-    connection = models.ForeignKey(PersistentStoreConnectionSetting, blank=False, null=True)
+    persistent_store_service = models.ForeignKey(PersistentStoreService, blank=False, null=True)
