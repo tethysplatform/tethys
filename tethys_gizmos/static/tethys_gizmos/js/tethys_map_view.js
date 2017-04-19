@@ -1222,7 +1222,7 @@ var TETHYS_MAP_VIEW = (function() {
                     '<ul>' +
                       '<li><span class="legend-class-symbol">' + legend_class.value + '</span>' +
                           '<span class="legend-class-value"><img src="' + legend_class.image_url + '"></span>' +
-                        '</li>' +
+                      '</li>' +
                     '</ul>' +
                     '</div>';
         } else if (legend_class.LEGEND_TYPE === "mvlegend") {
@@ -1242,15 +1242,15 @@ var TETHYS_MAP_VIEW = (function() {
               //TODO: ADD IMPLEMENTATION FOR RASTER
             }
 
-            html += '</svg></span><span class="legend-class-value">' + legend_class.value + '</span></li>';
+            html += '</svg></span><span class="legend-class-value">' + legend_class.value + '</span>';
         }
       }
 
-      html += '</ul></div>';
+      html += '</li>';
     }
 
     // Close li.legend-item
-    html += '</li>';
+    html += '</ul></div>';
 
     // Append to the legend items
     $(m_legend_items).append(html);
