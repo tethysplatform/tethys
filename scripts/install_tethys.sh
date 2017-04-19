@@ -3,14 +3,14 @@
 USAGE="USAGE: . install_tethys.sh [options]\n
 \n
 OPTIONS:\n
-    -t, --tethys-home <PATH>            path for tethys home directory. Default is /usr/lib/tethys on Linux and /Library/Applicaiton/tethys on Mac OS.\n
-    -a, --allowed-host <HOST>           hostname or IP address on which to server tethys. Default is 127.0.0.1.\n
-    -p, --port <PORT>                   port on which to server tethys. Default is 8000.\n
-    -b, --branch <BRANCH_NAME>          repository branch to checkout. Default is 'dev'.\n
-    -c, --conda-home <PATH>             path to conda home directory. Default is \${TETHYS_HOME}/miniconda.\n
-    --db-username <USERNAME>            username that the tethys database server will use. Default is 'tethys_default'.\n
-    --db-password <PASSWORD>            password that the tethys database server will use. Default is 'pass'.\n
-    --db-port <PORT>                    port that the tethys database server will use. Default is 5436.\n
+    -t, --tethys-home <PATH>            Path for tethys home directory. Default is /usr/lib/tethys on Linux and /Library/Applicaiton/tethys on Mac OS.\n
+    -a, --allowed-host <HOST>           Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
+    -p, --port <PORT>                   Port on which to serve tethys. Default is 8000.\n
+    -b, --branch <BRANCH_NAME>          Branch to checkout from version control. Default is 'dev'.\n
+    -c, --conda-home <PATH>             Path to conda home directory where Miniconda will be installed. Default is \${TETHYS_HOME}/miniconda.\n
+    --db-username <USERNAME>            Username that the tethys database server will use. Default is 'tethys_default'.\n
+    --db-password <PASSWORD>            Password that the tethys database server will use. Default is 'pass'.\n
+    --db-port <PORT>                    Port that the tethys database server will use. Default is 5436.\n
     -S, --superuser <USERNAME>          Tethys super user name. Default is 'admin'.\n
     -E, --superuser-email <EMAIL>       Tethys super user email. Default is ''.\n
     -P, --superuser-pass <PASSWORD>     Tethys super user password. Default is 'pass'.\n
