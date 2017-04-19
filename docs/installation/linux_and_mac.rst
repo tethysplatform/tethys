@@ -36,21 +36,21 @@ For Systems with `curl` (e.g. Mac OSX, and RedHat derivatives like CentOS or Fed
     Each option is also descriped here:
 
         * `-t, --tethys-home <PATH>`:
-                path for tethys home directory. Default is /usr/lib/tethys on Linux and /Library/Applicaiton/tethys on Mac OS.
+                Path for tethys home directory. Default is /usr/lib/tethys on Linux and /Library/Applicaiton/tethys on Mac OS.
         * `-a, --allowed-host <HOST>`:
-                hostname or IP address on which to server tethys. Default is 127.0.0.1.
+                Hostname or IP address on which to serve Tethys. Default is 127.0.0.1.
         * `-p, --port <PORT>`:
-                port on which to server tethys. Default is 8000.
+                Port on which to serve Tethys. Default is 8000.
         * `-b, --branch <BRANCH_NAME>`:
-                repository branch to checkout. Default is 'dev'.
+                Branch to checkout from version control. Default is 'dev'.
         * `-c, --conda-home <PATH>`:
-                path to conda home directory. Default is ${TETHYS_HOME}/miniconda.
+                Path to conda home directory where Miniconda will be installed. Default is ${TETHYS_HOME}/miniconda.
         * `--db-username <USERNAME>`:
-                username that the tethys database server will use. Default is 'tethys_default'.
+                Username that the tethys database server will use. Default is 'tethys_default'.
         * `--db-password <PASSWORD>`:
-                password that the tethys database server will use. Default is 'pass'.
+                Password that the tethys database server will use. Default is 'pass'.
         * `--db-port <PORT>`:
-                port that the tethys database server will use. Default is 5436.
+                Port that the tethys database server will use. Default is 5436.
         * `-S, --superuser <USERNAME>`:
                 Tethys super user name. Default is 'admin'.
         * `-E, --superuser-email <EMAIL>`:
@@ -81,7 +81,7 @@ or simply just::
 
 .. tip::
 
-    The installation script adds several environmental variables and aliases to help make using Tethys easier. Most of them are active only while the tethys conda environment is activated, however one alias to activate the tethys conda environment was added to your `.bashrc` or `bash_profile` file in your home directory and should be available from the terminal:
+    The installation script adds several environmental variables and aliases to help make using Tethys easier. Most of them are active only while the tethys conda environment is activated, however one alias to activate the tethys conda environment was added to your `.bashrc` or `bash_profile` file in your home directory and should be available from any terminal session:
 
      - `t`: Alias to activate the tethys conda environment. It is a shortcut for the command `source <CONDA_HOME>/bin/activate tethys` where <CONDA_HOME> is the value of the `--conda-home` option that was passed to the install script.
 
