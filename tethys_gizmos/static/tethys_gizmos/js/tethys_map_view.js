@@ -1218,7 +1218,7 @@ var TETHYS_MAP_VIEW = (function() {
 
         html += '<li class="legend-class ' + legend_class.type + '">';
         if (legend_class.LEGEND_TYPE === "mvlegendimage") {
-            html += '<div class="tethys-legend-dropdown tethys-mvlegendimage">' +
+            html += '<div class="tethys-mvlegendimage tethys-legend-dropdown">' +
                     '<ul>' +
                       '<li><span class="legend-class-symbol">' + legend_class.value + '</span>' +
                           '<span class="legend-class-value"><img src="' + legend_class.image_url + '"></span>' +
