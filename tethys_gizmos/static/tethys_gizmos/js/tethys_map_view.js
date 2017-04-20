@@ -1724,7 +1724,10 @@ var TETHYS_MAP_VIEW = (function() {
     }
   };
 
-  select_features_by_attribute =  function(layer_name, attribute_name, attribute_value, zoom_on_selection=true) {
+  select_features_by_attribute =  function(layer_name, attribute_name, attribute_value, zoom_on_selection) {
+    if (typeof zoom_on_selection === 'undefined') {
+        zoom_on_selection = true;
+    }
     for (var i = 0; i < m_selectable_wms_layers.length; i++) {
       var source, wms_url, url, layer;
       var cql_filter;
@@ -2037,7 +2040,7 @@ var TETHYS_MAP_VIEW = (function() {
       m_map.getView().fit(map_extent, m_map.getSize());
     },
 
-    overrideSelectionStyler(geometry_type, styler) {
+    overrideSelectionStyler: function(geometry_type, styler) {
       if (!in_array(geometry_type, ['points', 'lines', 'polygons'])) {
         console.log('Warning: "' + geometry_type +'" is not a valid value for the geometry_type argument. Must be one of: "points", "lines", or "polygons"');
         return;
