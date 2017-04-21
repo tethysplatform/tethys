@@ -65,35 +65,34 @@ class TethysApp(models.Model):
     def settings(self):
         return self.settings_set.select_subclasses()
 
-    # TODO: These properties are not filtering correctly, they are returning all app settings.
     @property
     def custom_settings(self):
-        return self.settings_set \
+        return self.settings_set.exclude(customtethysappsetting__isnull=True) \
                 .select_subclasses('customtethysappsetting')
 
     @property
     def dataset_service_settings(self):
-        return self.settings_set \
+        return self.settings_set.exclude(datasetservicesetting__isnull=True) \
                 .select_subclasses('datasetservicesetting')
 
     @property
     def spatial_dataset_services_settings(self):
-        return self.settings_set \
+        return self.settings_set.exclude(spatialdatasetservicesetting__isnull=True) \
                 .select_subclasses('spatialdatasetservicesetting')
 
     @property
     def wps_services_settings(self):
-        return self.settings_set \
+        return self.settings_set.exclude(webprocessingservicesetting__isnull=True) \
                 .select_subclasses('webprocessingservicesetting')
 
     @property
     def persistent_store_connection_settings(self):
-        return self.settings_set \
+        return self.settings_set.exclude(persistentstoreconnectionsetting__isnull=True) \
             .select_subclasses('persistentstoreconnectionsetting')
 
     @property
     def persistent_store_database_settings(self):
-        return self.settings_set \
+        return self.settings_set.exclude(persistentstoredatabasesetting__isnull=True) \
             .select_subclasses('persistentstoredatabasesetting')
 
 

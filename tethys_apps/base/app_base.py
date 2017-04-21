@@ -101,15 +101,16 @@ class TethysAppBase(object):
 
         ::
 
-            from tethys_sdk.settings import CustomTethysAppSetting
+            from tethys_sdk.app_settings import CustomTethysAppSetting
+
             def custom_settings(self):
                 \"""
-                Example general_settings method.
+                Example custom_settings method.
                 \"""
                 custom_settings = (
                     CustomTethysAppSetting(
                            name='example',
-                           description='dataset service for app to use',
+                           description='custom setting for this app.',
                            required=True,
                     ),
                 )
@@ -457,12 +458,12 @@ class TethysAppBase(object):
         return TethysWorkspace(workspace_directory)
 
     @classmethod
-    def get_custom_setting(self, name):
+    def get_custom_setting(cls, name):
         """
         Retrieves general for app
         """
         from tethys_apps.models import TethysApp
-        db_app = TethysApp.objects.get(package=self.package)
+        db_app = TethysApp.objects.get(package=cls.package)
         custom_settings = db_app.custom_settings
         try:
             custom_setting = custom_settings.get(name=name)
