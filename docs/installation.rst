@@ -10,7 +10,8 @@ This section describes how to install Tethys Platform. Installation instructions
     :maxdepth: 1
 
     installation/system_requirements
-    installation/ubuntu
+    installation/linux_and_mac
+    installation/windows
     installation/web_admin_setup
     installation/update
 
