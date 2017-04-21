@@ -195,7 +195,7 @@ class MapView(TethysGizmoOptions):
 
     """
     gizmo_name = "map_view"
-    
+
     def __init__(self, height='100%', width='100%', basemap='OpenStreetMap', view={'center': [-100, 40], 'zoom': 2},
                  controls=[], layers=[], draw=None, legend=False, attributes={}, classes='', disable_basemap=False,
                  feature_selection=None):
@@ -219,7 +219,7 @@ class MapView(TethysGizmoOptions):
     @staticmethod
     def get_vendor_js():
         """
-        JavaScript vendor libraries to be placed in the 
+        JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
         openlayers_library = 'tethys_gizmos/vendor/openlayers/ol.js'
@@ -230,7 +230,7 @@ class MapView(TethysGizmoOptions):
     @staticmethod
     def get_gizmo_js():
         """
-        JavaScript specific to gizmo to be placed in the 
+        JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
         return ('tethys_gizmos/js/gizmo_utilities.js',
@@ -239,7 +239,7 @@ class MapView(TethysGizmoOptions):
     @staticmethod
     def get_vendor_css():
         """
-        CSS vendor libraries to be placed in the 
+        CSS vendor libraries to be placed in the
         {% block styles %} block
         """
         return ('tethys_gizmos/vendor/openlayers/ol.css',)
@@ -247,10 +247,10 @@ class MapView(TethysGizmoOptions):
     @staticmethod
     def get_gizmo_css():
         """
-        CSS specific to gizmo to be placed in the 
-        {% block content_dependent_styles %} block      
+        CSS specific to gizmo to be placed in the
+        {% block content_dependent_styles %} block
         """
-        return ('tethys_gizmos/css/tethys_map_view.css',)
+        return ('tethys_gizmos/css/tethys_map_view.min.css',)
 
 
 class MVView(SecondaryGizmoOptions):
@@ -527,7 +527,7 @@ class MVLegendClass(SecondaryGizmoOptions):
 
         # Initialize super class
         super(MVLegendClass, self).__init__()
-        
+
         self.LEGEND_TYPE = 'mvlegend'
         self.POINT_TYPE = 'point'
         self.LINE_TYPE = 'line'
@@ -571,7 +571,7 @@ class MVLegendClass(SecondaryGizmoOptions):
                 raise ValueError('Argument "ramp" must be specified for MVLegendClass of type "raster".')
         else:
             raise ValueError('Invalid type specified: {0}.'.format(type))
-           
+
 
 class MVLegendImageClass(SecondaryGizmoOptions):
     """
@@ -617,9 +617,9 @@ class MVLegendGeoServerImageClass(MVLegendImageClass):
 
     ::
 
-        image_class = MVLegendGeoServerImageClass(value='Cities', 
-                                                  geoserver_url='http://localhost:8181/geoserver', 
-                                                  style='green', 
+        image_class = MVLegendGeoServerImageClass(value='Cities',
+                                                  geoserver_url='http://localhost:8181/geoserver',
+                                                  style='green',
                                                   layer='rivers',
                                                   width=20,
                                                   height=10)
@@ -633,6 +633,6 @@ class MVLegendGeoServerImageClass(MVLegendImageClass):
                     "STYLE={1}&FORMAT=image/png&WIDTH={2}&HEIGHT={3}&" \
                     "LEGEND_OPTIONS=forceRule:true&" \
                     "LAYER={4}".format(geoserver_url, style, width, height, layer)
-                    
+
         # Initialize super class
         super(MVLegendGeoServerImageClass, self).__init__(value, image_url)
