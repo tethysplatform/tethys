@@ -6,8 +6,8 @@ What's New
 
 Refer to this article for information about each new release of Tethys Platform.
 
-Release 1.5.0
-=============
+Release |version|
+=================
 
 Install With Miniconda
 ----------------------
