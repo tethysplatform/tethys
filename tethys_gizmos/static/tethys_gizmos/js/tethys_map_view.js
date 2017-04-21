@@ -334,7 +334,7 @@ var TETHYS_MAP_VIEW = (function() {
       }
 
       switch_interaction(initial_drawing_mode);
-      
+
       // Add drawing controls to the map
       if (is_defined(m_draw_options.controls)) {
         var pan_control;
@@ -672,25 +672,25 @@ var TETHYS_MAP_VIEW = (function() {
           style: default_selected_feature_styler,
         });
         m_points_selected_layer.setMap(m_map);
-    
+
         m_lines_selected_layer = new ol.layer.Vector({
           source: new ol.source.Vector(),
           style: default_selected_feature_styler,
         });
         m_lines_selected_layer.setMap(m_map);
-    
+
         m_polygons_selected_layer = new ol.layer.Vector({
           source: new ol.source.Vector(),
           style: default_selected_feature_styler,
         });
         m_polygons_selected_layer.setMap(m_map);
-    
+
         // Bind the to the map onclick event
         m_map.on('singleclick', map_clicked);
     }
   };
 
-  ol_selection_interaction_init = function() 
+  ol_selection_interaction_init = function()
   {
     m_select_interaction = null;
     // Create new selection interaction
@@ -699,7 +699,7 @@ var TETHYS_MAP_VIEW = (function() {
         m_select_interaction = new ol.interaction.Select({
                                     layers: m_selectable_layers,
                                 });
-    
+
         // Add new drawing interaction to map
         m_map.addInteraction(m_select_interaction);
     }
@@ -728,7 +728,7 @@ var TETHYS_MAP_VIEW = (function() {
 
       m_map.setView(new ol.View(view_obj));
     }
-    
+
     //function to change size of the map when the map element size changes
     $map_element.changeSize(function($this){
       m_map.updateSize();
@@ -1218,34 +1218,39 @@ var TETHYS_MAP_VIEW = (function() {
 
         html += '<li class="legend-class ' + legend_class.type + '">';
         if (legend_class.LEGEND_TYPE === "mvlegendimage") {
-          html += '<span class="legend-class-symbol">' + legend_class.value + '</span>' +
-                  '<span class="legend-class-value"><img src="' + legend_class.image_url + '"></span></li>';
+            html += '<div class="tethys-mvlegendimage tethys-legend-dropdown">' +
+                    '<ul>' +
+                      '<li><span class="legend-class-symbol">' + legend_class.value + '</span>' +
+                          '<span class="legend-class-value"><img src="' + legend_class.image_url + '"></span>' +
+                      '</li>' +
+                    '</ul>' +
+                    '</div>';
         } else if (legend_class.LEGEND_TYPE === "mvlegend") {
             html += '<span class="legend-class-symbol"><svg>';
             if (legend_class.type === legend_class.POINT_TYPE) {
               html += '<circle cx="10" cy="10" r="25%" fill="' + legend_class.fill + '"/>';
             }
-    
+
             else if (legend_class.type === legend_class.LINE_TYPE) {
               html += '<polyline points="19 1, 1 6, 19 14, 1 19" stroke="' + legend_class.stroke + '" fill="transparent" stroke-width="2"/>';
             }
-    
+
             else if (legend_class.type === legend_class.POLYGON_TYPE) {
               html += '<polygon points="1 10, 5 3, 13 1, 19 9, 14 19, 9 13" stroke="' + legend_class.stroke + '" fill="' + legend_class.fill + '" stroke-width="2"/>';
             }
             else if (legend_class.type === legend_class.RASTER_TYPE) {
               //TODO: ADD IMPLEMENTATION FOR RASTER
             }
-    
-            html += '</svg></span><span class="legend-class-value">' + legend_class.value + '</span></li>';
+
+            html += '</svg></span><span class="legend-class-value">' + legend_class.value + '</span>';
         }
       }
 
-      html += '</ul></div>';
+      html += '</li>';
     }
 
     // Close li.legend-item
-    html += '</li>';
+    html += '</ul></div>';
 
     // Append to the legend items
     $(m_legend_items).append(html);
@@ -1828,7 +1833,7 @@ var TETHYS_MAP_VIEW = (function() {
 
     return !!feature;
   };
-  
+
   // Handle drag feature
   DragFeatureInteraction.prototype.handleDragEvent = function(event) {
     var map = event.map;
@@ -1955,7 +1960,7 @@ var TETHYS_MAP_VIEW = (function() {
       if (m_polygons_selected_layer) {
         m_polygons_selected_layer.getSource().clear();
       }
-      
+
       if (m_select_interaction) {
         m_select_interaction.getFeatures().clear();
       }
