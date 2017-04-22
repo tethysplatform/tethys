@@ -7,29 +7,22 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import logging
 import os
 import sys
 import traceback
-import logging
-from collections import OrderedDict as SortedDict, Iterable
+from collections import OrderedDict as SortedDict
 
 from django.conf.urls import url
-from django.contrib.auth.models import Permission, Group
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.staticfiles import utils
 from django.contrib.staticfiles.finders import BaseFinder
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files.storage import FileSystemStorage
 from django.utils._os import safe_join
-from guardian.shortcuts import assign_perm, remove_perm, get_perms
-
 from tethys_apps import tethys_log
-from tethys_apps.base import permissions
 from tethys_apps.app_harvester import SingletonAppHarvester
-
-# Other dependency imports DO NOT ERASE
+from tethys_apps.base import permissions
 from tethys_apps.models import TethysApp
-from tethys_services.utilities import get_dataset_engine
 
 log = logging.getLogger('tethys.tethys_apps.utilities')
 
@@ -38,6 +31,10 @@ def register_app_permissions():
     """
     Register and sync the app permissions.
     """
+    from guardian.shortcuts import assign_perm, remove_perm, get_perms
+    from django.contrib.contenttypes.models import ContentType
+    from django.contrib.auth.models import Permission, Group
+
     # Get the apps
     harvester = SingletonAppHarvester()
     apps = harvester.apps
