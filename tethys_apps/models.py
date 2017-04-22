@@ -8,13 +8,13 @@
 ********************************************************************************
 """
 from django.db import models
+from django.core.exceptions import ValidationError
 from model_utils.managers import InheritanceManager
 from tethys_compute.utilities import ListField
 from tethys_services.models import (DatasetService, SpatialDatasetService,
                                     WebProcessingService, PersistentStoreService)
 
-
-from tethys_apps.base.persistent_store import TethysFunctionExtractor
+from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 
 class TethysApp(models.Model):
@@ -67,8 +67,8 @@ class TethysApp(models.Model):
 
     @property
     def custom_settings(self):
-        return self.settings_set.exclude(customtethysappsetting__isnull=True) \
-                .select_subclasses('customtethysappsetting')
+        return self.settings_set.exclude(customsetting__isnull=True) \
+                .select_subclasses('customsetting')
 
     @property
     def dataset_service_settings(self):
@@ -131,11 +131,63 @@ class TethysAppSetting(models.Model):
         self.initializer_function(first_time)
 
 
-class CustomTethysAppSetting(TethysAppSetting):
+class CustomSetting(TethysAppSetting):
     """
     DB Model for Tethys App General Setting
     """
-    value = models.CharField(max_length=1000, default='')
+    TYPE_STRING = 'STRING'
+    TYPE_INTEGER = 'INTEGER'
+    TYPE_FLOAT = 'FLOAT'
+    TYPE_BOOLEAN = 'BOOLEAN'
+    VALID_TYPES = (TYPE_STRING, TYPE_INTEGER, TYPE_FLOAT, TYPE_BOOLEAN)
+    VALID_BOOL_STRINGS = ('true', 'false', 'yes', 'no', 't', 'f', 'y', 'n', '1', '0')
+    TRUTHY_BOOL_STRINGS = ('true', 'yes', 't', 'y', '1')
+    TYPE_CHOICES = (
+        (TYPE_STRING, 'String'),
+        (TYPE_INTEGER, 'Integer'),
+        (TYPE_FLOAT, 'Float'),
+        (TYPE_BOOLEAN, 'Boolean'),
+    )
+    value = models.CharField(max_length=1000, blank=True)
+    type = models.CharField(max_length=200, choices=TYPE_CHOICES, default=TYPE_STRING)
+
+    def clean(self):
+        """
+        Validate prior to saving changes.
+        """
+        if self.value == '' and self.required:
+            raise ValidationError('Required.')
+
+        if self.value != '' and self.type == self.TYPE_FLOAT:
+            try:
+                float(self.value)
+            except:
+                raise ValidationError('Value must be a float.')
+
+        elif self.value != '' and self.type == self.TYPE_INTEGER:
+            try:
+                int(self.value)
+            except:
+                raise ValidationError('Value must be an integer.')
+
+        elif self.value != '' and self.type == self.TYPE_BOOLEAN:
+            if self.value.lower() not in self.VALID_BOOL_STRINGS:
+                raise ValidationError('Value must be a boolean.')
+
+    def get_value(self):
+        """
+        Get the value, automatically casting it to the correct type.
+        """
+        if self.value == '':
+            return None
+        elif self.type == self.TYPE_STRING:
+            return self.value
+        elif self.type == self.TYPE_FLOAT:
+            return float(self.value)
+        elif self.type == self.TYPE_INTEGER:
+            return int(self.value)
+        elif self.type == self.TYPE_BOOLEAN:
+            return self.value.lower() in self.TRUTHY_BOOL_STRINGS
 
     def initialize(self, first_time):
         """
@@ -152,10 +204,17 @@ class DatasetServiceSetting(TethysAppSetting):
     CKAN = DatasetService.CKAN
     HYSROSHARE = DatasetService.HYDROSHARE
 
-    dataset_service = models.ForeignKey(DatasetService, blank=False, null=True)
+    dataset_service = models.ForeignKey(DatasetService, blank=True, null=True)
     engine = models.CharField(max_length=200,
                               choices=DatasetService.ENGINE_CHOICES,
                               default=DatasetService.CKAN)
+
+    def clean(self):
+        """
+        Validate prior to saving changes.
+        """
+        if not self.dataset_service and self.required:
+            raise ValidationError('Required.')
 
 
 class SpatialDatasetServiceSetting(TethysAppSetting):
@@ -164,24 +223,45 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
     """
     GEOSERVER = SpatialDatasetService.GEOSERVER
 
-    spatial_dataset_service = models.ForeignKey(SpatialDatasetService, blank=False, null=True)
+    spatial_dataset_service = models.ForeignKey(SpatialDatasetService, blank=True, null=True)
     engine = models.CharField(max_length=200,
                               choices=SpatialDatasetService.ENGINE_CHOICES,
                               default=SpatialDatasetService.GEOSERVER)
+
+    def clean(self):
+        """
+        Validate prior to saving changes.
+        """
+        if not self.spatial_dataset_service and self.required:
+            raise ValidationError('Required.')
 
 
 class WebProcessingServiceSetting(TethysAppSetting):
     """
     DB Model for Tethys App WebProcessingService Setting
     """
-    web_processing_service = models.ForeignKey(WebProcessingService, blank=False, null=True)
+    web_processing_service = models.ForeignKey(WebProcessingService, blank=True, null=True)
+
+    def clean(self):
+        """
+        Validate prior to saving changes.
+        """
+        if not self.web_processing_service and self.required:
+            raise ValidationError('Required.')
 
 
 class PersistentStoreConnectionSetting(TethysAppSetting):
     """
     DB Model for Tethys App PersistentStoreService Setting
     """
-    persistent_store_service = models.ForeignKey(PersistentStoreService, blank=False, null=True)
+    persistent_store_service = models.ForeignKey(PersistentStoreService, blank=True, null=True)
+
+    def clean(self):
+        """
+        Validate prior to saving changes.
+        """
+        if not self.persistent_store_service and self.required:
+            raise ValidationError('Required.')
 
 
 class PersistentStoreDatabaseSetting(TethysAppSetting):
@@ -189,4 +269,12 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
     DB Model for Tethys App PersistentStoreDatabase Setting
     """
     spatial = models.BooleanField(default=False)
-    persistent_store_service = models.ForeignKey(PersistentStoreService, blank=False, null=True)
+    persistent_store_service = models.ForeignKey(PersistentStoreService, blank=True, null=True)
+
+    def clean(self):
+        """
+        Validate prior to saving changes.
+        """
+        if not self.persistent_store_service and self.required:
+            raise ValidationError('Required.')
+
