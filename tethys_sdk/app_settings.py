@@ -7,7 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from tethys_apps.models import (CustomTethysAppSetting,
+from tethys_apps.models import (CustomSetting,
                                 DatasetServiceSetting,
                                 SpatialDatasetServiceSetting,
                                 WebProcessingServiceSetting,

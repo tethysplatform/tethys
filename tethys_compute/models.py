@@ -31,7 +31,7 @@ from tethys_compute import (TETHYSCLUSTER_CFG_FILE,
                             TETHYSCLUSTER_AZURE_CFG_FILE,
                             TETHYSCLUSTER_AZURE_CFG_TEMPLATE)
 from tethys_compute.utilities import DictionaryField, ListField
-from tethys_apps.base.persistent_store import TethysFunctionExtractor
+from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 from tethyscluster import config as tethyscluster_config
 from tethyscluster.sshutils import get_certificate_fingerprint
