@@ -58,7 +58,8 @@ def scaffold_command(args):
     process = ['paster', 'create', '-t', 'tethys_app_scaffold', project_name]
     subprocess.call(process)
 
-
+# TODO: Create a 'tethys list' command that lists all installed apps.
+# TODO: Remove app from database on uninstall
 def uninstall_command(args):
     """
     Uninstall an app command.

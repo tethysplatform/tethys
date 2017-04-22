@@ -89,26 +89,27 @@ class TethysAppBase(object):
                 return url_maps
         """
         raise NotImplementedError()
-
+#
+    # TODO: ADD SETTING LINK TO TOP OF APP WHEN LOGGED IN AS STAFF
     def custom_settings(self):
         """
         Use this method to define custom settings for use in your app.
 
         Returns:
-          iterable: A list or tuple of ``CustomTethysAppSetting`` objects.
+          iterable: A list or tuple of ``CustomSetting`` objects.
 
         **Example:**
 
         ::
 
-            from tethys_sdk.app_settings import CustomTethysAppSetting
+            from tethys_sdk.app_settings import CustomSetting
 
             def custom_settings(self):
                 \"""
                 Example custom_settings method.
                 \"""
                 custom_settings = (
-                    CustomTethysAppSetting(
+                    CustomSetting(
                            name='example',
                            description='custom setting for this app.',
                            required=True,
@@ -470,7 +471,7 @@ class TethysAppBase(object):
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('CustomTethysAppSetting named "{0}" does not exist.'.format(name))
 
-        return custom_setting.value
+        return custom_setting.get_value()
 
     @classmethod
     def get_dataset_service(cls, name, request=None, as_endpoint=False,
@@ -710,7 +711,6 @@ class TethysAppBase(object):
         create_connection = engine.connect()
 
         # Create db
-        # TODO: Can I create spatial using a template?
         # Options are:
         # 1. Use CREATE EXTENSION on existing database - requires superuser
         #    Problem: all spatial databases would be required to have superuser connections = vulnerability
