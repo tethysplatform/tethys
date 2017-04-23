@@ -17,7 +17,7 @@ from tethys_apps.models import (TethysApp,
                                 PersistentStoreConnectionSetting,
                                 PersistentStoreDatabaseSetting)
 
-
+# TODO: Fix CSS for validation on settings inlines (i.e.: required/type validation feedback text)
 class TethysAppSettingInline(admin.TabularInline):
     template = 'admin/tabular.html'
 
@@ -64,6 +64,10 @@ class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
     readonly_fields = ('name', 'description', 'required', 'spatial')
     fields = ('name', 'description', 'spatial', 'persistent_store_service', 'required')
     model = PersistentStoreDatabaseSetting
+
+    def get_queryset(self, request):
+        qs = super(PersistentStoreDatabaseSettingInline, self).get_queryset(request)
+        return qs.filter(dynamic=False)
 
 
 class TethysAppAdmin(GuardedModelAdmin):

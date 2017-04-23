@@ -59,7 +59,6 @@ def scaffold_command(args):
     subprocess.call(process)
 
 # TODO: Create a 'tethys list' command that lists all installed apps.
-# TODO: Remove app from database on uninstall
 def uninstall_command(args):
     """
     Uninstall an app command.
@@ -105,6 +104,8 @@ def uninstall_command(args):
         subprocess.Popen(process, stderr=subprocess.STDOUT, stdout=subprocess.PIPE).communicate()[0]
     except KeyboardInterrupt:
         pass
+
+    # TODO: Remove app from database on uninstall
 
     print('App "{0}" successfully uninstalled.'.format(app_with_prefix))
 
