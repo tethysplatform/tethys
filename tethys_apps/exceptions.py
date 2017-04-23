@@ -15,3 +15,11 @@ class TethysAppSettingDoesNotExist(Exception):
 
 class TethysAppSettingNotAssigned(Exception):
     pass
+
+
+class PersistentStoreDoesNotExist(Exception):
+    pass
+
+
+class PersistentStoreExists(Exception):
+    pass
