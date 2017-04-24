@@ -1,24 +1,22 @@
 @ECHO OFF
 
-SET CWD=%~dp1
-
 IF %ERRORLEVEL% NEQ 0 (SET ERRORLEVEL=0)
 
 :: Set defaults
+SET CWD=%~dp1
 SET ALLOWED_HOST=127.0.0.1
 SET TETHYS_HOME=C:%HOMEPATH%\tethys
 SET TETHYS_PORT=8000
 SET TETHYS_DB_USERNAME=tethys_default
 SET TETHYS_DB_PASSWORD=pass
 SET TETHYS_DB_PORT=5436
+SET CONDA_HOME=
 SET CONDA_EXE=miniconda.exe
 SET CONDA_ENV_NAME=tethys
 SET BRANCH=dev
 SET TETHYS_SUPER_USER=admin
 SET "TETHYS_SUPER_USER_EMAIL="
 SET TETHYS_SUPER_USER_PASS=pass
-
-SET CONDA_HOME=
 SET ECHO_COMMANDS=
 
 :loop
@@ -262,8 +260,8 @@ ECHO @ECHO OFF>> %ACTIVATE_SCRIPT%
 ECHO SET TETHYS_HOME=%TETHYS_HOME%>> %ACTIVATE_SCRIPT%
 ECHO SET TETHYS_PORT=%TETHYS_PORT%>> %ACTIVATE_SCRIPT%
 ECHO SET TETHYS_DB_PORT=%TETHYS_DB_PORT%>> %ACTIVATE_SCRIPT%
-ECHO DOSKEY tethys_start_db=pg_ctl -U postgres -D ^%%TETHYS_HOME%%\psql\data -l ^%%TETHYS_HOME%%\psql\logfile start -o "-p ^%%TETHYS_DB_PORT%%" >> %ACTIVATE_SCRIPT%
-ECHO DOSKEY tstartdb=pg_ctl -U postgres -D ^%%TETHYS_HOME%%\psql\data -l ^%%TETHYS_HOME%%\psql\logfile start -o "-p ^%%TETHYS_DB_PORT%%" >> %ACTIVATE_SCRIPT%
+ECHO DOSKEY tethys_start_db=pg_ctl -U postgres -D ^%%TETHYS_HOME%%\psql\data -l ^%%TETHYS_HOME%%\psql\logfile start -o "-p %%TETHYS_DB_PORT%%" >> %ACTIVATE_SCRIPT%
+ECHO DOSKEY tstartdb=pg_ctl -U postgres -D ^%%TETHYS_HOME%%\psql\data -l ^%%TETHYS_HOME%%\psql\logfile start -o "-p %%TETHYS_DB_PORT%%" >> %ACTIVATE_SCRIPT%
 ECHO DOSKEY tethys_stop_db=pg_ctl -U postgres -D ^%%TETHYS_HOME%%\psql\data stop >> %ACTIVATE_SCRIPT%
 ECHO DOSKEY tstopdb=pg_ctl -U postgres -D ^%%TETHYS_HOME%%\psql\data stop >> %ACTIVATE_SCRIPT%
 ECHO DOSKEY tms=tethys manage start -p %ALLOWED_HOST%:^%%TETHYS_PORT%% >> %ACTIVATE_SCRIPT%
