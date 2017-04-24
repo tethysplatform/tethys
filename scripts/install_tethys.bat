@@ -213,8 +213,7 @@ IF %ERRORLEVEL% NEQ 0 (
 
 :: create conda env and install Tethys
 ECHO Setting up the tethys environment...
-:: TODO change path of environment yaml!!!
-conda env create -n %CONDA_ENV_NAME% -f C:\tethys\environment_py2.yml
+conda env create -n %CONDA_ENV_NAME% -f environment_py2.yml
 CALL activate %CONDA_ENV_NAME%
 python setup.py develop
 
