@@ -189,7 +189,7 @@ then
     echo "Using existing Miniconda installation..."
 else
     echo "Installing Miniconda..."
-    wget ${MINICONDA_URL} -O "${TETHYS_HOME}/miniconda.sh" || echo -using curl instead; curl ${MINICONDA_URL} -o "${TETHYS_HOME}/miniconda.sh"
+    wget ${MINICONDA_URL} -O "${TETHYS_HOME}/miniconda.sh" || (echo -using curl instead; curl ${MINICONDA_URL} -o "${TETHYS_HOME}/miniconda.sh")
     bash "${TETHYS_HOME}/miniconda.sh" -b -p "${CONDA_HOME}"
 fi
 export PATH="${CONDA_HOME}/bin:$PATH"
@@ -256,7 +256,7 @@ echo "unalias tms" >> ${DEACTIVATE_SCRIPT}
 
 
 echo "# Tethys Platform" >> ~/${BASH_PROFILE}
-echo "alias t='. ${CONDA_HOME}/bin/activate tethys'" >> ~/${BASH_PROFILE}
+echo "alias t='. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}'" >> ~/${BASH_PROFILE}
 
 echo "Tethys installation complete!"
 
@@ -277,14 +277,13 @@ finalize_docker_install(){
 }
 
 ubuntu_docker_install(){
-    LINUX_DISTRIBUTION=$(uname -n)
     if [ ${LINUX_DISTRIBUTION} != "ubuntu" ]
     then
         installation_warning ${LINUX_DISTRIBUTION} "Ubuntu"
     fi
 
-    wget -qO- https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+    wget -qO- https://download.docker.com/${LINUX_DISTRIBUTION}/ubuntu/gpg | sudo apt-key add -
+    echo "deb [arch=amd64] https://download.docker.com/${LINUX_DISTRIBUTION}/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
     sudo apt-get update
     sudo apt-get install -y docker-ce
 
