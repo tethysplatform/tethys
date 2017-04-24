@@ -30,6 +30,7 @@ dependencies:
 - plotly=1.12*
 - postgresql
 - pycrypto
+- pyopenssl
 - pip:
     - django-gravatar2
     - django-bootstrap3
