@@ -162,6 +162,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 %ECHO_COMMANDS%
+ECHO Starting Tethys Installation...
 
 :: Make tethys directory and resolve relative paths
 MKDIR %TETHYS_HOME%
@@ -180,12 +181,11 @@ IF NOT DEFINED CONDA_HOME (
 :: first see if Miniconda is already installed
 IF EXIST "%CONDA_HOME%\Scripts\activate" (
     ECHO Using existing Miniconda installation...
-    CALL %CONDA_HOME%\Scripts\activate
 ) ELSE (
     ECHO Installing Miniconda...
     START /wait "" %CONDA_EXE% /InstallationType=JustMe /RegisterPython=0 /S /D=%CONDA_HOME%
-    CALL %CONDA_HOME%\Scripts\activate
 )
+CALL %CONDA_HOME%\Scripts\activate
 
 IF EXIST "%CWD%%CONDA_HOME%" (
     :: CONDA_HOME is a relative path so make it absolute
@@ -210,7 +210,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 :: create conda env and install Tethys
-ECHO Setting up the tethys environment...
+ECHO Setting up the %CONDA_ENV_NAME% environment...
 conda env create -n %CONDA_ENV_NAME% -f environment_py2.yml
 CALL activate %CONDA_ENV_NAME%
 python setup.py develop
@@ -219,7 +219,7 @@ IF NOT "%ALLOWED_HOST%"=="127.0.0.1" (
     SET ALLOWED_HOST_OPT=--allowed-host %ALLOWED_HOST%
 )
 
-tethys gen settings -d "%TETHYS_HOME%\src\tethys_apps" --db-username %TETHYS_DB_USERNAME% --db-password %TETHYS_DB_PASSWORD% --db-port %TETHYS_DB_PORT%
+tethys gen settings -d "%TETHYS_HOME%\src\tethys_apps" %ALLOWED_HOST_OPT% --db-username %TETHYS_DB_USERNAME% --db-password %TETHYS_DB_PASSWORD% --db-port %TETHYS_DB_PORT%
 
 IF %ERRORLEVEL% NEQ 0 (
     ECHO Error occured while setting up the %CONDA_ENV_NAME% environment.
@@ -249,7 +249,7 @@ IF %ERRORLEVEL% NEQ 0 (
     EXIT /B %ERRORLEVEL%
 )
 
-:: Create environment activate scripts
+:: Create environment activate/deactivate scripts
 SET ACTIVATE_DIR=%CONDA_HOME%\envs\%CONDA_ENV_NAME%\etc\conda\activate.d
 SET DEACTIVATE_DIR=%CONDA_HOME%\envs\%CONDA_ENV_NAME%\etc\conda\deactivate.d
 MKDIR %ACTIVATE_DIR% %DEACTIVATE_DIR%
@@ -283,7 +283,7 @@ IF %ERRORLEVEL% NEQ 0 (
     EXIT /B %ERRORLEVEL%
 )
 
-ECHO Successfully installed Tethys Platform!
+ECHO Tethys installation complete!
 
 EXIT /B %ERRORLEVEL%
 
@@ -292,7 +292,7 @@ EXIT /B %ERRORLEVEL%
 ECHO USAGE: install_tethys.bat [options]
 ECHO.
 ECHO OPTIONS:
-ECHO     -t, --tethys-home [PATH]            Path for tethys home directory. Default is 'C:\tehtys'.
+ECHO     -t, --tethys-home [PATH]            Path for tethys home directory. Default is 'C:\%HOMEPATH%\tehtys'.
 ECHO     -a, --allowed-host [HOST]           Hostname or IP address on which to serve tethys. Default is 127.0.0.1.
 ECHO     -p, --port [PORT]                   Port on which to serve tethys. Default is 8000.
 ECHO     -b, --branch [BRANCH_NAME]          Branch to checkout from version control. Default is 'dev'.
