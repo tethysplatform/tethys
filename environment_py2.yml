@@ -11,8 +11,7 @@ channels:
 
 dependencies:
 - python=2.7*
-- azure=0.10.0
-- django=1.9.12
+- django=1.9.*
 - django-filter
 - djangorestframework
 - bokeh
@@ -31,7 +30,6 @@ dependencies:
 - plotly=1.12*
 - postgresql
 - pycrypto
-- uwsgi
 - pip:
     - django-gravatar2
     - django-bootstrap3
