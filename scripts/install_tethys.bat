@@ -162,6 +162,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 %ECHO_COMMANDS%
+
 ECHO Starting Tethys Installation...
 
 :: Make tethys directory and resolve relative paths
@@ -282,6 +283,13 @@ IF %ERRORLEVEL% NEQ 0 (
     ECHO Error occured while creating activate scripts.
     EXIT /B %ERRORLEVEL%
 )
+
+SET TETHYS_CMD=%TETHYS_HOME%\tethys_cmd.bat
+ECHO @ECHO OFF>> %TETHYS_CMD%
+ECHO %CONDA_HOME%\Scripts\activate %CONDA_ENV_NAME% >> %TETHYS_CMD%
+ECHO CD %TETHYS_HOME% >> %TETHYS_CMD%
+ECHO CMD /K
+
 
 ECHO Tethys installation complete!
 
