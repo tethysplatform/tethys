@@ -3,7 +3,7 @@
 USAGE="USAGE: . install_tethys.sh [options]\n
 \n
 OPTIONS:\n
-    -t, --tethys-home <PATH>            Path for tethys home directory. Default is /usr/lib/tethys on Linux and /Library/Applicaiton/tethys on Mac OS.\n
+    -t, --tethys-home <PATH>            Path for tethys home directory. Default is ~/tethys.\n
     -a, --allowed-host <HOST>           Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
     -p, --port <PORT>                   Port on which to serve tethys. Default is 8000.\n
     -b, --branch <BRANCH_NAME>          Branch to checkout from version control. Default is 'dev'.\n
@@ -36,12 +36,10 @@ then
     then
         LINUX_DISTRIBUTION=$(python -c "import platform; print(platform.linux_distribution(full_distribution_name=0)[0])")
     fi
-#    TETHYS_HOME="/usr/lib/tethys"
     MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
     BASH_PROFILE=".bashrc"
 elif [ "$(uname)" = "Darwin" ]  # i.e. MacOSX
 then
-#    TETHYS_HOME="/Library/Application/tethys"
     MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
     BASH_PROFILE=".bash_profile"
 else
@@ -57,7 +55,7 @@ TETHYS_DB_USERNAME='tethys_default'
 TETHYS_DB_PASSWORD='pass'
 TETHYS_DB_PORT=5436
 CONDA_ENV_NAME='tethys'
-BRANCH=dev
+BRANCH='dev'
 
 TETHYS_SUPER_USER='admin'
 TETHYS_SUPER_USER_EMAIL=''
@@ -180,7 +178,6 @@ fi
 echo "Starting Tethys Installation..."
 
 mkdir -p ${TETHYS_HOME}
-#sudo chown ${USER} ${TETHYS_HOME}
 
 # install miniconda
 # first see if Miniconda is already installed
@@ -276,14 +273,15 @@ finalize_docker_install(){
     echo "(Alternatively you can run 'newgrp docker')"
 }
 
-ubuntu_docker_install(){
-    if [ ${LINUX_DISTRIBUTION} != "ubuntu" ]
+ubuntu_debian_docker_install(){
+    if [ ${LINUX_DISTRIBUTION} != "ubuntu" ] && [ ${LINUX_DISTRIBUTION} != "debian" ]
     then
         installation_warning ${LINUX_DISTRIBUTION} "Ubuntu"
     fi
 
-    wget -qO- https://download.docker.com/${LINUX_DISTRIBUTION}/ubuntu/gpg | sudo apt-key add -
-    echo "deb [arch=amd64] https://download.docker.com/${LINUX_DISTRIBUTION}/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+    sudo apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common
+    curl -fsSL https://download.docker.com/linux/${LINUX_DISTRIBUTION}/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/${LINUX_DISTRIBUTION} $(lsb_release -cs) stable"
     sudo apt-get update
     sudo apt-get install -y docker-ce
 
@@ -328,10 +326,10 @@ then
 
     case ${LINUX_DISTRIBUTION} in
         debian)
-            ubuntu_docker_install
+            ubuntu_debian_docker_install
         ;;
         ubuntu)
-            ubuntu_docker_install
+            ubuntu_debian_docker_install
         ;;
         centos)
             centos_docker_install
