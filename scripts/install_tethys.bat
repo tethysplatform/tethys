@@ -11,9 +11,10 @@ SET TETHYS_DB_USERNAME=tethys_default
 SET TETHYS_DB_PASSWORD=pass
 SET TETHYS_DB_PORT=5436
 SET CONDA_HOME=
-SET CONDA_EXE=miniconda.exe
+SET CONDA_EXE=Miniconda3-latest-Windows-x86_64.exe
 SET CONDA_ENV_NAME=tethys
-SET BRANCH=dev
+SET BRANCH=master
+
 SET TETHYS_SUPER_USER=admin
 SET "TETHYS_SUPER_USER_EMAIL="
 SET TETHYS_SUPER_USER_PASS=pass
@@ -266,6 +267,7 @@ ECHO DOSKEY tstartdb=pg_ctl -U postgres -D ^%%TETHYS_HOME%%\psql\data -l ^%%TETH
 ECHO DOSKEY tethys_stop_db=pg_ctl -U postgres -D ^%%TETHYS_HOME%%\psql\data stop >> %ACTIVATE_SCRIPT%
 ECHO DOSKEY tstopdb=pg_ctl -U postgres -D ^%%TETHYS_HOME%%\psql\data stop >> %ACTIVATE_SCRIPT%
 ECHO DOSKEY tms=tethys manage start -p %ALLOWED_HOST%:^%%TETHYS_PORT%% >> %ACTIVATE_SCRIPT%
+ECHO tethys_start_db >> %ACTIVATE_SCRIPT%
 
 CALL %ACTIVATE_SCRIPT%
 
@@ -278,6 +280,7 @@ ECHO DOSKEY tstartdb= >> %DEACTIVATE_SCRIPT%
 ECHO DOSKEY tethys_stop_db= >> %DEACTIVATE_SCRIPT%
 ECHO DOSKEY tstopdb= >> %DEACTIVATE_SCRIPT%
 ECHO DOSKEY tms= >> %DEACTIVATE_SCRIPT%
+ECHO tethys_stop_db >> %DEACTIVATE_SCRIPT%
 
 IF %ERRORLEVEL% NEQ 0 (
     ECHO Error occured while creating activate scripts.
@@ -286,9 +289,8 @@ IF %ERRORLEVEL% NEQ 0 (
 
 SET TETHYS_CMD=%TETHYS_HOME%\tethys_cmd.bat
 ECHO @ECHO OFF>> %TETHYS_CMD%
-ECHO %CONDA_HOME%\Scripts\activate %CONDA_ENV_NAME% >> %TETHYS_CMD%
 ECHO CD %TETHYS_HOME% >> %TETHYS_CMD%
-ECHO CMD /K
+ECHO CMD /K %CONDA_HOME%\Scripts\activate %CONDA_ENV_NAME% >> %TETHYS_CMD%
 
 
 ECHO Tethys installation complete!
@@ -303,9 +305,10 @@ ECHO OPTIONS:
 ECHO     -t, --tethys-home [PATH]            Path for tethys home directory. Default is 'C:\%HOMEPATH%\tehtys'.
 ECHO     -a, --allowed-host [HOST]           Hostname or IP address on which to serve tethys. Default is 127.0.0.1.
 ECHO     -p, --port [PORT]                   Port on which to serve tethys. Default is 8000.
-ECHO     -b, --branch [BRANCH_NAME]          Branch to checkout from version control. Default is 'dev'.
+ECHO     -b, --branch [BRANCH_NAME]          Branch to checkout from version control. Default is 'master'.
 ECHO     -c, --conda-home [PATH]             Path to conda home directory where Miniconda will be installed. Default is ^%%TETHYS_HOME%%\miniconda.
-ECHO     -C, --conda-exe [PATH]              Path to Miniconda installer executable. Default is '.\miniconda.exe'.
+ECHO     -C, --conda-exe [PATH]              Path to Miniconda installer executable. Default is '.\Miniconda3-latest-Windows-x86_64.exe'.
+ECHO     -n, --conda-env-name [NAME]         Name for tethys conda environment. Default is 'tethys'.
 ECHO     --db-username [USERNAME]            Username that the tethys database server will use. Default is 'tethys_default'.
 ECHO     --db-password [PASSWORD]            Password that the tethys database server will use. Default is 'pass'.
 ECHO     --db-port [PORT]                    Port that the tethys database server will use. Default is 5436.
