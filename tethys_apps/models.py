@@ -7,10 +7,12 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import sqlalchemy
 from django.db import models
 from django.core.exceptions import ValidationError
 from model_utils.managers import InheritanceManager
-from tethys_apps.exceptions import TethysAppSettingNotAssigned
+from tethys_apps.exceptions import TethysAppSettingNotAssigned, PersistentStorePermissionError, \
+    PersistentStoreInitializerError
 from tethys_compute.utilities import ListField
 from tethys_services.models import (DatasetService, SpatialDatasetService,
                                     WebProcessingService, PersistentStoreService)
@@ -432,6 +434,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
             self.drop_persistent_store_database()
             self.initialized = False
             self.save()
+            db_exists = False
 
         # -------------------------------------------------------------------------------------------------------------#
         # 2. Create the database if it does not already exist
@@ -456,8 +459,14 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
             # Close transaction first and then execute
             create_connection.execute('commit')
-            create_connection.execute(create_db_statement)
-            create_connection.close()
+            try:
+                create_connection.execute(create_db_statement)
+            except sqlalchemy.exc.ProgrammingError:
+                raise PersistentStorePermissionError('Database user "{0}" has insufficient permissions to create '
+                                                     'the persistent store database "{1}": must have CREATE DATABASES '
+                                                     'permission at a minimum.'.format(url.username, self.name))
+            finally:
+                create_connection.close()
 
         # -------------------------------------------------------------------------------------------------------------#
         # 3. Enable PostGIS extension
@@ -475,17 +484,27 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
             enable_postgis_statement = 'CREATE EXTENSION IF NOT EXISTS postgis'
 
             # Execute postgis statement
-            new_db_connection.execute(enable_postgis_statement)
-            new_db_connection.close()
+            try:
+                new_db_connection.execute(enable_postgis_statement)
+            except sqlalchemy.exc.ProgrammingError:
+                raise PersistentStorePermissionError('Database user "{0}" has insufficient permissions to enable '
+                                                     'spatial extension on persistent store database "{1}": must be a '
+                                                     'superuser.'.format(url.username, self.name))
+            finally:
+                new_db_connection.close()
 
         # -------------------------------------------------------------------------------------------------------------#
         # 4. Run initialization function
         # -------------------------------------------------------------------------------------------------------------#
         if self.initializer:
-            if force_first_time:
-                self.initializer_function(self.get_engine(), True)
-            else:
-                self.initializer_function(self.get_engine(), not self.initialized)
+            try:
+                if force_first_time:
+                    self.initializer_function(self.get_engine(), True)
+                else:
+                    self.initializer_function(self.get_engine(), not self.initialized)
+            except Exception as e:
+                print(type(e))
+                raise PersistentStoreInitializerError()
 
         # Update initialization
         self.initialized = True
