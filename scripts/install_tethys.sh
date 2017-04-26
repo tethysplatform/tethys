@@ -3,11 +3,12 @@
 USAGE="USAGE: . install_tethys.sh [options]\n
 \n
 OPTIONS:\n
-    -t, --tethys-home <PATH>            Path for tethys home directory. Default is /usr/lib/tethys on Linux and /Library/Applicaiton/tethys on Mac OS.\n
+    -t, --tethys-home <PATH>            Path for tethys home directory. Default is ~/tethys.\n
     -a, --allowed-host <HOST>           Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
     -p, --port <PORT>                   Port on which to serve tethys. Default is 8000.\n
-    -b, --branch <BRANCH_NAME>          Branch to checkout from version control. Default is 'dev'.\n
-    -c, --conda-home <PATH>             Path to conda home directory where Miniconda will be installed. Default is \${TETHYS_HOME}/miniconda.\n
+    -b, --branch <BRANCH_NAME>          Branch to checkout from version control. Default is 'master'.\n
+    -c, --conda-home <PATH>             Path where Miniconda will be installed, or to an existing installation of Miniconda. Default is \${TETHYS_HOME}/miniconda.\n
+    -n, --conda-env-name <NAME>         Name for tethys conda environment. Default is 'tethys'.
     --db-username <USERNAME>            Username that the tethys database server will use. Default is 'tethys_default'.\n
     --db-password <PASSWORD>            Password that the tethys database server will use. Default is 'pass'.\n
     --db-port <PORT>                    Port that the tethys database server will use. Default is 5436.\n
@@ -30,13 +31,16 @@ set -e  # exit on error
 # Set platform specific default options
 if [ "$(uname)" = "Linux" ]
 then
-    TETHYS_HOME="/usr/lib/tethys"
-    MINICONDA_URL="wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O"
+    LINUX_DISTRIBUTION=$(uname -n)
+    if [ "${LINUX_DISTRIBUTION}" = "localhost.localdomain" ]
+    then
+        LINUX_DISTRIBUTION=$(python -c "import platform; print(platform.linux_distribution(full_distribution_name=0)[0])")
+    fi
+    MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
     BASH_PROFILE=".bashrc"
 elif [ "$(uname)" = "Darwin" ]  # i.e. MacOSX
 then
-    TETHYS_HOME="/Library/Application/tethys"
-    MINICONDA_URL="curl https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o"
+    MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
     BASH_PROFILE=".bash_profile"
 else
     echo $(uname) is not a supported operating system.
@@ -45,11 +49,13 @@ fi
 
 # Set default options
 ALLOWED_HOST='127.0.0.1'
+TETHYS_HOME=~/tethys
 TETHYS_PORT=8000
 TETHYS_DB_USERNAME='tethys_default'
 TETHYS_DB_PASSWORD='pass'
 TETHYS_DB_PORT=5436
-BRANCH=dev
+CONDA_ENV_NAME='tethys'
+BRANCH='master'
 
 TETHYS_SUPER_USER='admin'
 TETHYS_SUPER_USER_EMAIL=''
@@ -91,6 +97,10 @@ case $key in
     ;;
     -c|--conda-home)
     set_option_value CONDA_HOME "$2"
+    shift # past argument
+    ;;
+    -n|--conda-env-name)
+    set_option_value CONDA_ENV_NAME "$2"
     shift # past argument
     ;;
     --db-username)
@@ -142,10 +152,21 @@ esac
 shift # past argument or value
 done
 
+
+if [[ "${TETHYS_HOME}" != /* ]]
+then
+    # path is relative so make it absoulte
+    TETHYS_HOME="${PWD}/${TETHYS_HOME}"
+fi
+
 # set CONDA_HOME relative to TETHYS_HOME if not already set
 if [ -z ${CONDA_HOME} ]
 then
     CONDA_HOME="${TETHYS_HOME}/miniconda"
+elif [[ "${CONDA_HOME}" != /* ]]
+then
+    # path is relative so make it absoulte
+    CONDA_HOME="${PWD}/${CONDA_HOME}"
 fi
 
 if [ -n "${ECHO_COMMANDS}" ]
@@ -153,28 +174,34 @@ then
     set -x # echo commands as they are executed
 fi
 
-# prompt for sudo
-echo "Tethys installation requires some commands to be run with sudo. Please enter password:"
-sudo echo "Starting Tethys Installation..."
 
-sudo mkdir -p ${TETHYS_HOME}
-sudo chown ${USER} ${TETHYS_HOME}
+echo "Starting Tethys Installation..."
+
+mkdir -p ${TETHYS_HOME}
 
 # install miniconda
-${MINICONDA_URL} "${TETHYS_HOME}/miniconda.sh"
-sudo bash "${TETHYS_HOME}/miniconda.sh" -b -p "${CONDA_HOME}"
-sudo chmod -R o+w "${CONDA_HOME}"
+# first see if Miniconda is already installed
+if [ -f "${CONDA_HOME}/bin/activate" ]
+then
+    echo "Using existing Miniconda installation..."
+else
+    echo "Installing Miniconda..."
+    wget ${MINICONDA_URL} -O "${TETHYS_HOME}/miniconda.sh" || (echo -using curl instead; curl ${MINICONDA_URL} -o "${TETHYS_HOME}/miniconda.sh")
+    bash "${TETHYS_HOME}/miniconda.sh" -b -p "${CONDA_HOME}"
+fi
 export PATH="${CONDA_HOME}/bin:$PATH"
 
 # clone Tethys repo
+echo "Cloning the Tethys Platform repo..."
 conda install --yes git
 git clone https://github.com/tethysplatform/tethys.git "${TETHYS_HOME}/src"
 cd "${TETHYS_HOME}/src"
 git checkout ${BRANCH}
 
 # create conda env and install Tethys
-conda env create -f environment_py2.yml
-. activate tethys
+echo "Setting up the ${CONDA_ENV_NAME} environment..."
+conda env create -n ${CONDA_ENV_NAME} -f environment_py2.yml
+. activate ${CONDA_ENV_NAME}
 python setup.py develop
 
 # only pass --allowed-hosts option to gen settings command if it is not the default
@@ -185,6 +212,7 @@ fi
 tethys gen settings -d "${TETHYS_HOME}/src/tethys_apps" ${ALLOWED_HOST_OPT} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT}
 
 # Setup local database
+echo "Setting up the Tethys database..."
 initdb  -U postgres -D "${TETHYS_HOME}/psql/data"
 pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" -l "${TETHYS_HOME}/psql/logfile" start -o "-p ${TETHYS_DB_PORT}"
 echo "wating for databases to startup..."; sleep 10
@@ -195,9 +223,9 @@ createdb -U postgres -p ${TETHYS_DB_PORT} -O ${TETHYS_DB_USERNAME} ${TETHYS_DB_U
 tethys manage syncdb
 echo "from django.contrib.auth.models import User; User.objects.create_superuser('${TETHYS_SUPER_USER}', '${TETHYS_SUPER_USER_EMAIL}', '${TETHYS_SUPER_USER_PASS}')" | python manage.py shell
 
-# setup shortcuts and aliases
-ACTIVATE_DIR="${CONDA_HOME}/envs/tethys/etc/conda/activate.d"
-DEACTIVATE_DIR="${CONDA_HOME}/envs/tethys/etc/conda/deactivate.d"
+# Create environment activate/deactivate scripts
+ACTIVATE_DIR="${CONDA_HOME}/envs/${CONDA_ENV_NAME}/etc/conda/activate.d"
+DEACTIVATE_DIR="${CONDA_HOME}/envs/${CONDA_ENV_NAME}/etc/conda/deactivate.d"
 mkdir -p ${ACTIVATE_DIR} ${DEACTIVATE_DIR}
 ACTIVATE_SCRIPT="${ACTIVATE_DIR}/tethys-activate.sh"
 DEACTIVATE_SCRIPT="${DEACTIVATE_DIR}/tethys-deactivate.sh"
@@ -210,6 +238,7 @@ echo "alias tstartdb=tethys_start_db" >> ${ACTIVATE_SCRIPT}
 echo "alias tethys_stop_db='pg_ctl -U postgres -D \${TETHYS_HOME}/psql/data stop'" >> ${ACTIVATE_SCRIPT}
 echo "alias tstopdb=tethys_stop_db" >> ${ACTIVATE_SCRIPT}
 echo "alias tms='tethys manage start -p ${ALLOWED_HOST}:\${TETHYS_PORT}'" >> ${ACTIVATE_SCRIPT}
+echo "tethys_start_db" >> ${ACTIVATE_SCRIPT}
 
 . ${ACTIVATE_SCRIPT}
 
@@ -221,11 +250,12 @@ echo "unalias tstartdb" >> ${DEACTIVATE_SCRIPT}
 echo "unalias tethys_stop_db" >> ${DEACTIVATE_SCRIPT}
 echo "unalias tstopdb" >> ${DEACTIVATE_SCRIPT}
 echo "unalias tms" >> ${DEACTIVATE_SCRIPT}
+echo "tethys_stop_db" >> ${DEACTIVATE_SCRIPT}
 
 
 
 echo "# Tethys Platform" >> ~/${BASH_PROFILE}
-echo "alias t='. ${CONDA_HOME}/bin/activate tethys'" >> ~/${BASH_PROFILE}
+echo "alias t='. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}'" >> ~/${BASH_PROFILE}
 
 echo "Tethys installation complete!"
 
@@ -239,23 +269,22 @@ installation_warning(){
 finalize_docker_install(){
     sudo groupadd docker
     sudo gpasswd -a ${USER} docker
-    # sg docker -c "tethys docker init ${DOCKER_OPTIONS}"
-    sg docker -c "tethys docker status"
-    sg docker -c "docker run hello-world"
+    sg docker -c "tethys docker init ${DOCKER_OPTIONS}"
     echo "Docker installation finished!"
     echo "You must re-login for Docker permissions to be activated."
     echo "(Alternatively you can run 'newgrp docker')"
 }
 
-ubuntu_docker_install(){
-    LINUX_DISTRIBUTION=$(uname -n)
-    if [ ${LINUX_DISTRIBUTION} != "ubuntu" ]
+ubuntu_debian_docker_install(){
+    if [ ${LINUX_DISTRIBUTION} != "ubuntu" ] && [ ${LINUX_DISTRIBUTION} != "debian" ]
     then
         installation_warning ${LINUX_DISTRIBUTION} "Ubuntu"
     fi
 
-    wget -qO- https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+    sudo apt-get update
+    sudo apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
+    curl -fsSL https://download.docker.com/linux/${LINUX_DISTRIBUTION}/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/${LINUX_DISTRIBUTION} $(lsb_release -cs) stable"
     sudo apt-get update
     sudo apt-get install -y docker-ce
 
@@ -292,16 +321,18 @@ fedora_docker_install(){
     finalize_docker_install
 }
 
-if [ "$(uname)" = "Linux" -a "${INSTALL_DOCKER}" = "true" ]
+if [ -n ${LINUX_DISTRIBUTION} -a "${INSTALL_DOCKER}" = "true" ]
 then
-    LINUX_DISTRIBUTION=$(python -c "import platform; print(platform.linux_distribution(full_distribution_name=0)[0])")
-    echo "Installing Docker..."
+    # prompt for sudo
+    echo "Docker installation requires some commands to be run with sudo. Please enter password:"
+    sudo echo "Installing Docker..."
+
     case ${LINUX_DISTRIBUTION} in
         debian)
-            ubuntu_docker_install
+            ubuntu_debian_docker_install
         ;;
         ubuntu)
-            ubuntu_docker_install
+            ubuntu_debian_docker_install
         ;;
         centos)
             centos_docker_install
@@ -313,7 +344,7 @@ then
             fedora_docker_install
         ;;
         *)
-        #https://docs.docker.com/engine/installation/
+            echo "Automated Docker installation on ${LINUX_DISTRIBUTION} is not supported. Please see https://docs.docker.com/engine/installation/ for more information on installing Docker."
         ;;
     esac
 fi
