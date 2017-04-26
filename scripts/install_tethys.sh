@@ -6,7 +6,7 @@ OPTIONS:\n
     -t, --tethys-home <PATH>            Path for tethys home directory. Default is ~/tethys.\n
     -a, --allowed-host <HOST>           Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
     -p, --port <PORT>                   Port on which to serve tethys. Default is 8000.\n
-    -b, --branch <BRANCH_NAME>          Branch to checkout from version control. Default is 'dev'.\n
+    -b, --branch <BRANCH_NAME>          Branch to checkout from version control. Default is 'master'.\n
     -c, --conda-home <PATH>             Path where Miniconda will be installed, or to an existing installation of Miniconda. Default is \${TETHYS_HOME}/miniconda.\n
     -n, --conda-env-name <NAME>         Name for tethys conda environment. Default is 'tethys'.
     --db-username <USERNAME>            Username that the tethys database server will use. Default is 'tethys_default'.\n
@@ -55,7 +55,7 @@ TETHYS_DB_USERNAME='tethys_default'
 TETHYS_DB_PASSWORD='pass'
 TETHYS_DB_PORT=5436
 CONDA_ENV_NAME='tethys'
-BRANCH='dev'
+BRANCH='master'
 
 TETHYS_SUPER_USER='admin'
 TETHYS_SUPER_USER_EMAIL=''
@@ -238,6 +238,7 @@ echo "alias tstartdb=tethys_start_db" >> ${ACTIVATE_SCRIPT}
 echo "alias tethys_stop_db='pg_ctl -U postgres -D \${TETHYS_HOME}/psql/data stop'" >> ${ACTIVATE_SCRIPT}
 echo "alias tstopdb=tethys_stop_db" >> ${ACTIVATE_SCRIPT}
 echo "alias tms='tethys manage start -p ${ALLOWED_HOST}:\${TETHYS_PORT}'" >> ${ACTIVATE_SCRIPT}
+echo "tethys_start_db" >> ${ACTIVATE_SCRIPT}
 
 . ${ACTIVATE_SCRIPT}
 
@@ -249,6 +250,7 @@ echo "unalias tstartdb" >> ${DEACTIVATE_SCRIPT}
 echo "unalias tethys_stop_db" >> ${DEACTIVATE_SCRIPT}
 echo "unalias tstopdb" >> ${DEACTIVATE_SCRIPT}
 echo "unalias tms" >> ${DEACTIVATE_SCRIPT}
+echo "tethys_stop_db" >> ${DEACTIVATE_SCRIPT}
 
 
 
@@ -279,7 +281,8 @@ ubuntu_debian_docker_install(){
         installation_warning ${LINUX_DISTRIBUTION} "Ubuntu"
     fi
 
-    sudo apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common
+    sudo apt-get update
+    sudo apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
     curl -fsSL https://download.docker.com/linux/${LINUX_DISTRIBUTION}/gpg | sudo apt-key add -
     sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/${LINUX_DISTRIBUTION} $(lsb_release -cs) stable"
     sudo apt-get update
