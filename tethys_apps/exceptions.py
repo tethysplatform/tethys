@@ -23,3 +23,11 @@ class PersistentStoreDoesNotExist(Exception):
 
 class PersistentStoreExists(Exception):
     pass
+
+
+class PersistentStorePermissionError(Exception):
+    pass
+
+
+class PersistentStoreInitializerError(Exception):
+    pass

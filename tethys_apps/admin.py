@@ -61,8 +61,8 @@ class PersistentStoreConnectionSettingInline(TethysAppSettingInline):
 
 
 class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
-    readonly_fields = ('name', 'description', 'required', 'spatial')
-    fields = ('name', 'description', 'spatial', 'persistent_store_service', 'required')
+    readonly_fields = ('name', 'description', 'required', 'spatial', 'initialized')
+    fields = ('name', 'description', 'spatial', 'initialized', 'persistent_store_service', 'required')
     model = PersistentStoreDatabaseSetting
 
     def get_queryset(self, request):
