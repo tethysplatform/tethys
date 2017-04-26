@@ -13,14 +13,16 @@ Use these instructions to install a development environment on Mac OSX or Linux 
 1. Download and Run the Installation Script
 -------------------------------------------
 
-For systems with `wget` (e.g. Debian derivatives like Ubuntu):
+Run the following commands from a terminal to download and run the Tethys Platform install script.
+
+For systems with `wget` (most Linux distributions):
 
 .. parsed-literal::
 
       $ wget \https://raw.githubusercontent.com/tethysplatform/tethys/|branch|/scripts/install_tethys.sh
       $ . install_tethys.sh
 
-For Systems with `curl` (e.g. Mac OSX, and RedHat derivatives like CentOS or Fedora):
+For Systems with `curl` (e.g. Mac OSX and CentOS):
 
 .. parsed-literal::
 
@@ -36,15 +38,17 @@ For Systems with `curl` (e.g. Mac OSX, and RedHat derivatives like CentOS or Fed
     Each option is also descriped here:
 
         * `-t, --tethys-home <PATH>`:
-                Path for tethys home directory. Default is /usr/lib/tethys on Linux and /Library/Applicaiton/tethys on Mac OS.
+                Path for tethys home directory. Default is ~/tethys.
         * `-a, --allowed-host <HOST>`:
                 Hostname or IP address on which to serve Tethys. Default is 127.0.0.1.
         * `-p, --port <PORT>`:
                 Port on which to serve Tethys. Default is 8000.
         * `-b, --branch <BRANCH_NAME>`:
-                Branch to checkout from version control. Default is 'dev'.
+                Branch to checkout from version control. Default is 'master'.
         * `-c, --conda-home <PATH>`:
                 Path to conda home directory where Miniconda will be installed. Default is ${TETHYS_HOME}/miniconda.
+        * `-n, --conda-env-name <NAME>`:
+                Name for tethys conda environment. Default is 'tethys'.
         * `--db-username <USERNAME>`:
                 Username that the tethys database server will use. Default is 'tethys_default'.
         * `--db-password <PASSWORD>`:
@@ -61,6 +65,9 @@ For Systems with `curl` (e.g. Mac OSX, and RedHat derivatives like CentOS or Fed
                 Flag to include Docker installation as part of the install script (Linux only). See `2. Install Docker (OPTIONAL)`_ for more details.
         * `--docker-options <OPTIONS>`:
                 Command line options to pass to the `tethys docker init` call if --install-docker is used. Default is "'-d'".
+                .. tip::
+
+                    Note that the value for the `--docker-options` option must have nested quotes. For example "'-d -c geoserver'" or '"-d -c geoserver"'.
         * `-x`:
                 Flag to turn on shell command echoing.
         * `-h, --help`:
@@ -68,10 +75,10 @@ For Systems with `curl` (e.g. Mac OSX, and RedHat derivatives like CentOS or Fed
 
     Here is an example of calling the installation script with customized options::
 
-        $ . install_tethys.sh -t ~/tethys -a localhost -p 8005 -c ~/tethys/conda --db-username tethys_db_user --db-password db_user_pass --db-port 5437 -S tethys -E email@example.com -P tpass
+        $ . install_tethys.sh -t ~/Workspace/tethys -a localhost -p 8005 -c ~/miniconda3 --db-username tethys_db_user --db-password db_user_pass --db-port 5437 -S tethys -E email@example.com -P tpass
 
 
-The installation script may take several minutes to run. Once it is completed you can start the Tethys development server by running::
+The installation script may take several minutes to run. Once it is completed the new conda environment will be left activated so you can start the Tethys development server by running::
 
     (tethys) $ tethys manage start
 
@@ -107,16 +114,15 @@ or simply just::
      - `tms`:
             An alias to start the Tethys development server. It calls the command `tethys manage start -p <HOST>:${TETHYS_PORT}` where `<HOST>` is the value of the `--allowed-host` option that was passed to the install script and `${TETHYS_PORT}` is the value of the environmental variable which is set from the `--port` option of the install script.
 
-    After restarting your machine there are three steps to get the Tethys development server running again:
+     When you start up a new terminal there are three steps to get the Tethys development server running again:
 
-        1. Activate the tethys conda environment
-        2. Start the tethys database server
-        3. start the development server
+        1. Activate the Tethys conda environment
+        2. Start the Tethys database server
+        3. start the Tethys development server
 
-    Using the supplied aliases this can be done with the following commands::
+    For convenience the Tethys database server is started automatically when the tethys conda environment is activated, and it is stopped when the environment is deactivated. So, using the supplied aliases, starting the Tethys development server from a fresh terminal can be done with the following two commands::
 
         $ t
-        (tethys) $ tstartdb
         (tethys) $ tms
 
 Congratulations! You now have Tethys Platform running a in a development server on your machine. Tethys Platform provides a web interface that is called the Tethys Portal. You can access your Tethys Portal by opening `<http://localhost:8000/>`_ (or if you provided custom host and port options to the install script then it will be `<HOST>:<PORT>`) in a new tab in your web browser.
