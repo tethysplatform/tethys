@@ -15,13 +15,11 @@
        {% endif %}
      {% endfor %}
      {% if inline_admin_formset.formset.can_delete %}<th>{% trans "Delete?" %}</th>{% endif %}
+     {% if not inline_admin_formset.formset.is_valid %}<th>{% trans "Errors" %}</th>{% endif %}
      </tr></thead>
 
      <tbody>
      {% for inline_admin_form in inline_admin_formset %}
-        {% if inline_admin_form.form.non_field_errors %}
-        <tr><td colspan="{{ inline_admin_form|cell_count }}">{{ inline_admin_form.form.non_field_errors }}</td></tr>
-        {% endif %}
         <tr class="form-row {% cycle "row1" "row2" %} {% if inline_admin_form.original or inline_admin_form.show_url %}has_original{% endif %}{% if forloop.last %} empty-form{% endif %}"
              id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
         <td class="original">
@@ -55,6 +53,11 @@
         {% endfor %}
         {% if inline_admin_formset.formset.can_delete %}
           <td class="delete">{% if inline_admin_form.original %}{{ inline_admin_form.deletion_field.field }}{% endif %}</td>
+        {% endif %}
+        {% if inline_admin_form.form.non_field_errors %}
+          <td class="field-form-errors" colspan="{{ inline_admin_form|cell_count }}">{{ inline_admin_form.form.non_field_errors }}</td>
+        {% elif not inline_admin_formset.formset.is_valid %}
+          <td colspan="{{ inline_admin_form|cell_count }}"></td>
         {% endif %}
         </tr>
      {% endfor %}
