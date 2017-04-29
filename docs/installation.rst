@@ -12,6 +12,7 @@ This section describes how to install Tethys Platform. Installation instructions
     installation/system_requirements
     installation/linux_and_mac
     installation/windows
+    installation/platform_settings
     installation/web_admin_setup
     installation/update
 

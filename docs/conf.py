@@ -70,9 +70,9 @@ copyright = u'2014, Nathan Swain'
 # built documents.
 #
 # The short X.Y version.
-version = pbr.version.VersionInfo('tethys').version_string()
+version = pbr.version.VersionInfo('tethys_platform').version_string()
 # The full version, including alpha/beta/rc tags.
-release = pbr.version.VersionInfo('tethys').version_string_with_vcs()
+release = pbr.version.VersionInfo('tethys_platform').version_string_with_vcs()
 
 # A string of reStructuredText that will be included at the end of every source
 # file that is read. This is the right place to add substitutions that should be
