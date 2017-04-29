@@ -19,7 +19,7 @@ from tethys_apps.models import (TethysApp,
 
 # TODO: Fix CSS for validation on settings inlines (i.e.: required/type validation feedback text)
 class TethysAppSettingInline(admin.TabularInline):
-    template = 'admin/tabular.html'
+    template = 'tethys_portal/admin/edit_inline/tabular.html'
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -74,11 +74,11 @@ class TethysAppAdmin(GuardedModelAdmin):
     readonly_fields = ('package',)
     fields = ('package', 'name', 'description', 'tags', 'enabled', 'show_in_apps_library', 'enable_feedback')
     inlines = [CustomSettingInline,
+               PersistentStoreConnectionSettingInline,
+               PersistentStoreDatabaseSettingInline,
                DatasetServiceSettingInline,
                SpatialDatasetServiceSettingInline,
-               WebProcessingServiceSettingInline,
-               PersistentStoreConnectionSettingInline,
-               PersistentStoreDatabaseSettingInline]
+               WebProcessingServiceSettingInline]
 
     def has_delete_permission(self, request, obj=None):
         return False
