@@ -198,19 +198,18 @@ As of Tethys Platform 1.3.0, three methods were added to the app class that allo
 API Documentation
 =================
 
+.. automethod:: tethys_sdk.base.TethysAppBase.persistent_store_settings
 
-.. automethod:: tethys_sdk.base.TethysAppBase.get_persistent_store_engine
+.. automethod:: tethys_sdk.base.TethysAppBase.get_persistent_store_connection
 
-.. automethod:: tethys_sdk.base.TethysAppBase.persistent_stores
+.. automethod:: tethys_sdk.base.TethysAppBase.get_persistent_store_database
 
-.. automethod:: tethys_sdk.base.TethysAppBase.create_persistent_store
+.. automethod:: tethys_sdk.base.TethysAppBase.list_persistent_store_connections
 
-.. automethod:: tethys_sdk.base.TethysAppBase.list_persistent_stores
+.. automethod:: tethys_sdk.base.TethysAppBase.list_persistent_store_databases
 
 .. automethod:: tethys_sdk.base.TethysAppBase.persistent_store_exists
 
-.. autoclass:: tethys_sdk.stores.PersistentStore
+.. automethod:: tethys_sdk.base.TethysAppBase.create_persistent_store
 
-
-
-
+.. automethod:: tethys_sdk.base.TethysAppBase.drop_persistent_store

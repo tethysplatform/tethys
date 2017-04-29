@@ -16,7 +16,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from tethys_apps.base.workspace import TethysWorkspace
 from tethys_apps.base.handoff import HandoffManager
-from tethys_apps.exceptions import TethysAppSettingDoesNotExist, PersistentStoreDoesNotExist, PersistentStoreExists
+from tethys_apps.exceptions import TethysAppSettingDoesNotExist
 
 
 class TethysAppBase(object):
@@ -121,7 +121,7 @@ class TethysAppBase(object):
 
     def persistent_store_settings(self):
         """
-        Override this method to define a persistent store service connections and databases for your app.
+        Override this method to define a persistent store service connections and databases for your app. See :doc:`./persistent_store` for more details.
 
         Returns:
           iterable: A list or tuple of ``PersistentStoreDatabaseSetting`` or ``PersistentStoreConnectionSetting`` objects. See: :doc:`./persistent_store` for more details.
@@ -237,7 +237,7 @@ class TethysAppBase(object):
         """
         return None
 
-    def wps_services_settings(self):
+    def web_processing_services_settings(self):
         """
         Override this method to define web processing service connections for use in your app. See: :doc:`./web_processing_services` for more details.
 
@@ -397,7 +397,7 @@ class TethysAppBase(object):
     @classmethod
     def get_user_workspace(cls, user):
         """
-        Get the file workspace (directory) for the given User.
+        Get the file workspace (directory) for the given User. See :doc:`./workspaces` for more details.
 
         Args:
           user(User or HttpRequest): User or request object.
@@ -450,7 +450,7 @@ class TethysAppBase(object):
     @classmethod
     def get_app_workspace(cls):
         """
-        Get the file workspace (directory) for the app.
+        Get the file workspace (directory) for the app. See :doc:`./workspaces` for more details.
 
         Returns:
           tethys_apps.base.TethysWorkspace: An object representing the workspace.
@@ -494,7 +494,7 @@ class TethysAppBase(object):
             name(str): The name of the CustomSetting as defined in the app.py.
 
         Returns:
-            type: Value of the CustomSetting or None if no value assigned.
+            var: Value of the CustomSetting or None if no value assigned.
         """
         from tethys_apps.models import TethysApp
         db_app = TethysApp.objects.get(package=cls.package)
@@ -587,7 +587,7 @@ class TethysAppBase(object):
         return spatial_dataset_service
 
     @classmethod
-    def get_wps_service(cls, name, as_public_endpoint=False, as_endpoint=False, as_engine=False):
+    def get_web_processing_service(cls, name, as_public_endpoint=False, as_endpoint=False, as_engine=False):
         """
         Retrieves web processing service engine assigned to named WebProcessingServiceSetting for the app.
 
