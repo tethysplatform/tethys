@@ -346,6 +346,27 @@ input[type=submit] {
   }
 }
 
-.inline-group .tabular tr.has_original td {
-  padding-top: 8px;
+.inline-group {
+  .tabular {
+    fieldset {
+      table {
+        tbody {
+          tr {
+            &.form-row {
+              td {
+                padding-top: 8px;
+
+                &.field-form-errors {
+                  margin: 2px 0;
+                  padding: 2px 3px;
+                  vertical-align: middle;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
+
