@@ -308,22 +308,23 @@ HydroShare
     At step 3:
 
     a. Append the following classes in ``AUTHENTICATION_BACKENDS`` settings:
-      hydroshare-beta:
-        ``tethys_services.backends.hydroshare_beta.HydroShareBetaOAuth2``
-      hydroshare-playground:
-        ``tethys_services.backends.hydroshare_playground.HydroSharePlaygroundOAuth2``
+
+        hydroshare-beta:
+          ``tethys_services.backends.hydroshare_beta.HydroShareBetaOAuth2``
+        hydroshare-playground:
+          ``tethys_services.backends.hydroshare_playground.HydroSharePlaygroundOAuth2``
 
     b. Assign the ``Client ID`` and ``Client Secret`` to the following variables:
 
-      hydroshare-beta:
-        ``SOCIAL_AUTH_HYDROSHARE_BETA_KEY``
+        hydroshare-beta:
+          ``SOCIAL_AUTH_HYDROSHARE_BETA_KEY``
 
-        ``SOCIAL_AUTH_HYDROSHARE_BETA_SECRET``
+          ``SOCIAL_AUTH_HYDROSHARE_BETA_SECRET``
 
-      hydroshare-playground:
-        ``SOCIAL_AUTH_HYDROSHARE_PLAYGROUND_KEY``
+        hydroshare-playground:
+          ``SOCIAL_AUTH_HYDROSHARE_PLAYGROUND_KEY``
 
-        ``SOCIAL_AUTH_HYDROSHARE_PLAYGROUND_SECRET``
+          ``SOCIAL_AUTH_HYDROSHARE_PLAYGROUND_SECRET``
 
     Note: To prevent any unexpected behavior in section (4), a Tethys account SHOULD NOT be associated with multiple HydroShare social accounts.
 

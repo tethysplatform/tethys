@@ -145,3 +145,10 @@ HTCondor                               :doc:`./tethys_sdk/compute` and          
 CKAN, HydroShare                       :doc:`./tethys_sdk/dataset_services`             Flat File Storage
 =====================================  ===============================================  ============================================
 
+References
+==========
+
+.. toctree::
+   :maxdepth: 1
+
+   software_suite/geoserver

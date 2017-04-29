@@ -341,7 +341,7 @@ def sync_tethys_app_db():
                 # spatial dataset services settings
                 app.add_settings(installed_app.spatial_dataset_services_settings())
                 # wps settings
-                app.add_settings(installed_app.wps_services_settings())
+                app.add_settings(installed_app.web_processing_services_settings())
                 # persistent store settings
                 app.add_settings(installed_app.persistent_store_settings())
 

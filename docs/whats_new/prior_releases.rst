@@ -15,7 +15,7 @@ App Permissions
 * There is now a formalized mechanism for creating permissions for apps.
 * It includes a `permission_required` decorator for controllers and a `has_permission` method for checking permissions within controllers.
 
-See: :doc:`tethys_sdk/permissions`
+See: :doc:`../tethys_sdk/permissions`
 
 Tags for Apps
 -------------
@@ -50,7 +50,7 @@ GeoServer
    * `GDAL WCS Output <http://docs.geoserver.org/2.8.x/en/user/community/gdal/index.html>`_
    * `Image Pyramid <http://docs.geoserver.org/2.8.x/en/user/tutorials/imagepyramid/imagepyramid.html>`_
 
-See: :doc:`software_suite/geoserver`
+See: :doc:`../software_suite/geoserver`
 
 Tethys Docker CLI
 -----------------
@@ -69,7 +69,7 @@ Select2 Gizmo
 * If you are using advanced features of Select2, you will likely need to migrate some of your code.
 * Refer to `<https://select2.github.io/announcements-4.0.html#migrating-from-select2-35>`_ for migration help.
 
-See: :doc:`tethys_sdk/gizmos/select_input`
+See: :doc:`../tethys_sdk/gizmos/select_input`
 
 MapView Gizmo
 -------------
@@ -79,14 +79,14 @@ MapView Gizmo
 * MVLayer Select Features now supports selection of vector layers in addition to the WMS Layers.
 * Added support for images in the legend including support for GeoServer GetLegendGraphic requests.
 
-See: :doc:`tethys_sdk/gizmos/map_view`
+See: :doc:`../tethys_sdk/gizmos/map_view`
 
 PlotView Gizmo
 --------------
 
 * New JavaScript API endpoints for initializing PlotViews dynamically.
 
-See: :doc:`tethys_sdk/gizmos/plot_view`
+See: :doc:`../tethys_sdk/gizmos/plot_view`
 
 Workflow Job Type
 -----------------
@@ -95,7 +95,7 @@ Workflow Job Type
 * The hierarchical relationships are defined as parent-child relationships between jobs.
 * As part of this addition the original Condor Job type was refactored and, while backwards compatibility is maintained in version 1.4, several aspects of how job templates are defined have been deprecated.
 
-See: :doc:`tethys_sdk/jobs/condor_workflow_type`
+See: :doc:`../tethys_sdk/jobs/condor_workflow_type`
 
 Testing Framework
 -----------------
@@ -105,14 +105,12 @@ Testing Framework
 * Persistent stores is supported in testing.
 * Tethys App Scaffold now includes testing module with example test code.
 
-See: :doc:`tethys_sdk/testing` and :ref:`tethys_cli_testing`
+See: :doc:`../tethys_sdk/testing` and :ref:`tethys_cli_testing`
 
 Installation
 ------------
 
 * Installation Instructions for Ubuntu 16.04
-
-See: :doc:`installation/ubuntu16`
 
 Bug Fixes
 ---------

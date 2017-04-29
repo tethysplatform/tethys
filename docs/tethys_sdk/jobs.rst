@@ -234,6 +234,10 @@ API Documentation
 
 .. autoclass:: tethys_sdk.jobs.JobTemplate
 
-.. autoclass:: tethys_sdk.jobs.BasicJobTemplate
+References
+==========
 
-.. autoclass:: tethys_sdk.jobs.CondorJobTemplate
+.. toctree::
+   :maxdepth: 1
+
+   jobs/condor_job_description
