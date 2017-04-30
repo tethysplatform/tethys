@@ -187,7 +187,7 @@ Persistent store management is handled via the :command:`syncstores` command pro
 
     $ tethys syncstores my_first_app
 
-This command would create all the non-existent persistent stores that are registered for ``my_first_app`` and run the initialization functions for them. This is the most basic usage of the :command:`syncstores` command. A detailed description of the :command:`syncstores` command can be found in the :doc:`./tethys_cli` documentation.
+This command would create all the non-existent persistent stores that are registered for ``my_first_app`` and run the initialization functions for them. This is the most basic usage of the :command:`syncstores` command. A detailed description of the :command:`syncstores` command can be found in the :doc:`../tethys_cli` documentation.
 
 
 Dynamic Persistent Store Provisioning

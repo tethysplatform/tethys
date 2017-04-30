@@ -337,11 +337,11 @@ def sync_tethys_app_db():
                 # custom settings
                 app.add_settings(installed_app.custom_settings())
                 # dataset services settings
-                app.add_settings(installed_app.dataset_services_settings())
+                app.add_settings(installed_app.dataset_service_settings())
                 # spatial dataset services settings
-                app.add_settings(installed_app.spatial_dataset_services_settings())
+                app.add_settings(installed_app.spatial_dataset_service_settings())
                 # wps settings
-                app.add_settings(installed_app.web_processing_services_settings())
+                app.add_settings(installed_app.web_processing_service_settings())
                 # persistent store settings
                 app.add_settings(installed_app.persistent_store_settings())
 

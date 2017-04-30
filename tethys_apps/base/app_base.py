@@ -72,27 +72,29 @@ class TethysAppBase(object):
 
             from tethys_sdk.base import url_map_maker
 
-            def url_maps(self):
-                \"""
-                Example url_maps method.
-                \"""
-                # Create UrlMap class that is bound to the root url.
-                UrlMap = url_map_maker(self.root_url)
+            class MyFirstApp(TethysAppBase):
 
-                url_maps = (UrlMap(name='home',
-                                   url='my-first-app',
-                                   controller='my_first_app.controllers.home',
-                                   ),
-                )
+                def url_maps(self):
+                    \"""
+                    Example url_maps method.
+                    \"""
+                    # Create UrlMap class that is bound to the root url.
+                    UrlMap = url_map_maker(self.root_url)
 
-                return url_maps
+                    url_maps = (UrlMap(name='home',
+                                       url='my-first-app',
+                                       controller='my_first_app.controllers.home',
+                                       ),
+                    )
+
+                    return url_maps
         """
         raise NotImplementedError()
 
     # TODO: ADD SETTING LINK TO TOP OF APP WHEN LOGGED IN AS STAFF
     def custom_settings(self):
         """
-        Override this method to define custom settings for use in your app. See: :doc:`./app_settings` for more details.
+        Override this method to define custom settings for use in your app.
 
         Returns:
           iterable: A list or tuple of ``CustomSetting`` objects.
@@ -103,28 +105,49 @@ class TethysAppBase(object):
 
             from tethys_sdk.app_settings import CustomSetting
 
-            def custom_settings(self):
-                \"""
-                Example custom_settings method.
-                \"""
-                custom_settings = (
-                    CustomSetting(
-                           name='example',
-                           description='custom setting for this app.',
-                           required=True,
-                    ),
-                )
+            class MyFirstApp(TethysAppBase):
 
-                return custom_settings
+                def custom_settings(self):
+                    \"""
+                    Example custom_settings method.
+                    \"""
+                    custom_settings = (
+                        CustomSetting(
+                            name='default_name',
+                            type=CustomSetting.TYPE_STRING
+                            description='Default model name.',
+                            required=True
+                        ),
+                        CustomSetting(
+                            name='max_count',
+                            type=CustomSetting.TYPE_INTEGER,
+                            description='Maximum allowed count in a method.',
+                            required=False
+                        ),
+                        CustomSetting(
+                            name='change_factor',
+                            type=CustomSetting.TYPE_FLOAT,
+                            description='Change factor that is applied to some process.',
+                            required=True
+                        ),
+                        CustomSetting(
+                            name='enable_feature',
+                            type=CustomSetting.TYPE_BOOLEAN,
+                            description='Enable this feature when True.',
+                            required=True
+                        )
+                    )
+
+                    return custom_settings
         """
         return None
 
     def persistent_store_settings(self):
         """
-        Override this method to define a persistent store service connections and databases for your app. See :doc:`./persistent_store` for more details.
+        Override this method to define a persistent store service connections and databases for your app.
 
         Returns:
-          iterable: A list or tuple of ``PersistentStoreDatabaseSetting`` or ``PersistentStoreConnectionSetting`` objects. See: :doc:`./persistent_store` for more details.
+          iterable: A list or tuple of ``PersistentStoreDatabaseSetting`` or ``PersistentStoreConnectionSetting`` objects.
 
         **Example:**
 
@@ -132,49 +155,51 @@ class TethysAppBase(object):
 
             from tethys_sdk.app_settings import PersistentStoreDatabaseSetting, PersistentStoreConnectionSetting
 
-            def persistent_store_settings(self):
-                \"""
-                Example persistent_store_settings method.
-                \"""
+            class MyFirstApp(TethysAppBase):
 
-                ps_settings = (
-                    # Connection only, no database
-                    PersistentStoreConnectionSetting(
-                        name='primary',
-                        description='Connection with superuser role needed.',
-                        required=True
-                    ),
-                    # Connection only, no database
-                    PersistentStoreConnectionSetting(
-                        name='creator',
-                        description='Create database role only.',
-                        required=False
-                    ),
-                    # Spatial database
-                    PersistentStoreDatabaseSetting(
-                        name='spatial_db',
-                        description='for storing important stuff',
-                        required=True,
-                        initializer='appsettings.init_stores.init_spatial_db',
-                        spatial=True,
-                    ),
-                    # Non-spatial database
-                    PersistentStoreDatabaseSetting(
-                        name='temp_db',
-                        description='for storing temporary stuff',
-                        required=False,
-                        initializer='appsettings.init_stores.init_temp_db',
-                        spatial=False,
+                def persistent_store_settings(self):
+                    \"""
+                    Example persistent_store_settings method.
+                    \"""
+
+                    ps_settings = (
+                        # Connection only, no database
+                        PersistentStoreConnectionSetting(
+                            name='primary',
+                            description='Connection with superuser role needed.',
+                            required=True
+                        ),
+                        # Connection only, no database
+                        PersistentStoreConnectionSetting(
+                            name='creator',
+                            description='Create database role only.',
+                            required=False
+                        ),
+                        # Spatial database
+                        PersistentStoreDatabaseSetting(
+                            name='spatial_db',
+                            description='for storing important spatial stuff',
+                            required=True,
+                            initializer='appsettings.init_stores.init_spatial_db',
+                            spatial=True,
+                        ),
+                        # Non-spatial database
+                        PersistentStoreDatabaseSetting(
+                            name='temp_db',
+                            description='for storing temporary stuff',
+                            required=False,
+                            initializer='appsettings.init_stores.init_temp_db',
+                            spatial=False,
+                        )
                     )
-                )
 
-                return ps_settings
+                    return ps_settings
         """
         return None
 
-    def dataset_services_settings(self):
+    def dataset_service_settings(self):
         """
-        Override this method to define dataset service connections for use in your app. See: :doc:`./dataset_services` for more details.
+        Override this method to define dataset service connections for use in your app.
 
         Returns:
           iterable: A list or tuple of ``DatasetServiceSetting`` objects.
@@ -185,31 +210,34 @@ class TethysAppBase(object):
 
             from tethys_sdk.app_settings import DatasetServiceSetting
 
-            def dataset_services_settings(self):
-                \"""
-                Example dataset_services_settings method.
-                \"""
-                ds_settings = (
-                    DatasetServiceSetting(
-                        name='primary_ckan',
-                        description='Primary CKAN service for app to use.',
-                        engine='ckan',
-                        required=True,
-                    ),
-                    DatasetServiceSetting(
-                        name='hydroshare',
-                        description='HydroShare service for app to use.',
-                        engine='hydroshare',
-                        required=False
-                )
+            class MyFirstApp(TethysAppBase):
 
-                return ds_settings
+                def dataset_service_settings(self):
+                    \"""
+                    Example dataset_service_settings method.
+                    \"""
+                    ds_settings = (
+                        DatasetServiceSetting(
+                            name='primary_ckan',
+                            description='Primary CKAN service for app to use.',
+                            engine=DatasetServiceSetting.CKAN,
+                            required=True,
+                        ),
+                        DatasetServiceSetting(
+                            name='hydroshare',
+                            description='HydroShare service for app to use.',
+                            engine=DatasetServiceSetting.HYDROSHARE,
+                            required=False
+                        )
+                    )
+
+                    return ds_settings
         """
         return None
 
-    def spatial_dataset_services_settings(self):
+    def spatial_dataset_service_settings(self):
         """
-        Override this method to define spatial dataset service connections for use in your app. See: :doc:`./spatial_dataset_services` for more details.
+        Override this method to define spatial dataset service connections for use in your app.
 
         Returns:
           iterable: A list or tuple of ``SpatialDatasetServiceSetting`` objects.
@@ -220,26 +248,28 @@ class TethysAppBase(object):
 
             from tethys_sdk.app_settings import SpatialDatasetServiceSetting
 
-            def spatial_dataset_services_settings(self):
-                \"""
-                Example spatial_dataset_services_settings method.
-                \"""
-                sds_settings = (
-                    SpatialDatasetServiceSetting(
-                        name='example',
-                        description='spatial dataset service for app to use',
-                        engine='geoserver',
-                        required=True,
-                    ),
-                )
+            class MyFirstApp(TethysAppBase):
 
-                return sds_settings
+                def spatial_dataset_service_settings(self):
+                    \"""
+                    Example spatial_dataset_service_settings method.
+                    \"""
+                    sds_settings = (
+                        SpatialDatasetServiceSetting(
+                            name='primary_geoserver',
+                            description='spatial dataset service for app to use',
+                            engine=SpatialDatasetServiceSetting.GEOSERVER,
+                            required=True,
+                        ),
+                    )
+
+                    return sds_settings
         """
         return None
 
-    def web_processing_services_settings(self):
+    def web_processing_service_settings(self):
         """
-        Override this method to define web processing service connections for use in your app. See: :doc:`./web_processing_services` for more details.
+        Override this method to define web processing service connections for use in your app.
 
         Returns:
           iterable: A list or tuple of ``WebProcessingServiceSetting`` objects.
@@ -250,25 +280,27 @@ class TethysAppBase(object):
 
             from tethys_sdk.app_settings import WebProcessingServiceSetting
 
-            def wps_services(self):
-                \"""
-                Example wps_services method.
-                \"""
-                wps_services = (
-                    WebProcessingServiceSetting(
-                        name='example',
-                        description='WPS service for app to use',
-                        required=True,
-                    ),
-                )
+            class MyFirstApp(TethysAppBase):
 
-                return wps_services
+                def web_processing_service_settings(self):
+                    \"""
+                    Example wps_services method.
+                    \"""
+                    wps_services = (
+                        WebProcessingServiceSetting(
+                            name='primary_52n',
+                            description='WPS service for app to use',
+                            required=True,
+                        ),
+                    )
+
+                    return wps_services
         """
         return None
 
     def handoff_handlers(self):
         """
-        Override this method to define handoff handlers for use in your app. See: :doc:`./handoff` for more details.
+        Override this method to define handoff handlers for use in your app.
 
         Returns:
           iterable: A list or tuple of ``HandoffHandler`` objects.
@@ -279,24 +311,26 @@ class TethysAppBase(object):
 
             from tethys_sdk.handoff import HandoffHandler
 
-            def handoff_handlers(self):
-                \"""
-                Example handoff_handlers method.
-                \"""
-                handoff_handlers = (
-                    HandoffHandlers(
-                        name='example',
-                        handler='my_first_app.controllers.my_handler'
-                    ),
-                )
+            class MyFirstApp(TethysAppBase):
 
-                return handoff_handlers
+                def handoff_handlers(self):
+                    \"""
+                    Example handoff_handlers method.
+                    \"""
+                    handoff_handlers = (
+                        HandoffHandlers(
+                            name='example',
+                            handler='my_first_app.controllers.my_handler'
+                        ),
+                    )
+
+                    return handoff_handlers
         """
         return None
 
     def permissions(self):
         """
-        Override this method to define permissions for your app. See: :doc:`./permissions` for more details.
+        Override this method to define permissions for your app.
 
         Returns:
           iterable: A list or tuple of ``Permission`` or ``PermissionGroup`` objects.
@@ -307,41 +341,43 @@ class TethysAppBase(object):
 
             from tethys_sdk.permissions import Permission, PermissionGroup
 
-            def permissions(self):
-                \"""
-                Example permissions method.
-                \"""
-                # Viewer Permissions
-                view_map = Permission(
-                    name='view_map',
-                    description='View map'
-                )
+            class MyFirstApp(TethysAppBase):
 
-                delete_projects = Permission(
-                    name='delete_projects',
-                    description='Delete projects'
-                )
+                def permissions(self):
+                    \"""
+                    Example permissions method.
+                    \"""
+                    # Viewer Permissions
+                    view_map = Permission(
+                        name='view_map',
+                        description='View map'
+                    )
 
-                create_projects = Permission(
-                    name='create_projects',
-                    description='Create projects'
-                )
+                    delete_projects = Permission(
+                        name='delete_projects',
+                        description='Delete projects'
+                    )
 
-                admin = PermissionGroup(
-                    name='admin',
-                    permissions=(delete_projects, create_projects)
-                )
+                    create_projects = Permission(
+                        name='create_projects',
+                        description='Create projects'
+                    )
+
+                    admin = PermissionGroup(
+                        name='admin',
+                        permissions=(delete_projects, create_projects)
+                    )
 
 
-                permissions = (admin, view_map)
+                    permissions = (admin, view_map)
 
-                return permissions
+                    return permissions
         """
         return None
 
     def job_templates(self):
         """
-        Override this method to define job templates to easily create and submit jobs in your app. See: :doc:`./jobs` for more details.
+        Override this method to define job templates to easily create and submit jobs in your app.
 
         Returns:
             iterable: A list or tuple of ``JobTemplate`` objects.
@@ -353,25 +389,27 @@ class TethysAppBase(object):
             from tethys_sdk.jobs import CondorJobTemplate
             from tethys_sdk.compute import list_schedulers
 
-            def job_templates(cls):
-                \"""
-                Example job_templates method.
-                \"""
-                my_scheduler = list_schedulers()[0]
+            class MyFirstApp(TethysAppBase):
 
-                job_templates = (CondorJobTemplate(name='example',
-                                                   parameters={'executable': '$(APP_WORKSPACE)/example_exe.py',
-                                                               'condorpy_template_name': 'vanilla_transfer_files',
-                                                               'attributes': {'transfer_input_files': ('../input_1.in', '../input_2.in'),
-                                                                              'transfer_output_files': ('example_output1.out', 'example_output2.out'),
-                                                                             },
-                                                               'scheduler': my_scheduler,
-                                                               'remote_input_files': ('$(APP_WORKSPACE)/example_exe.py', '$(APP_WORKSPACE)/input_1.in', '$(USER_WORKSPACE)/input_2.in'),
-                                                              }
-                                                  ),
-                                )
+                def job_templates(cls):
+                    \"""
+                    Example job_templates method.
+                    \"""
+                    my_scheduler = list_schedulers()[0]
 
-                return job_templates
+                    job_templates = (CondorJobTemplate(name='example',
+                                                       parameters={'executable': '$(APP_WORKSPACE)/example_exe.py',
+                                                                   'condorpy_template_name': 'vanilla_transfer_files',
+                                                                   'attributes': {'transfer_input_files': ('../input_1.in', '../input_2.in'),
+                                                                                  'transfer_output_files': ('example_output1.out', 'example_output2.out'),
+                                                                                 },
+                                                                   'scheduler': my_scheduler,
+                                                                   'remote_input_files': ('$(APP_WORKSPACE)/example_exe.py', '$(APP_WORKSPACE)/input_1.in', '$(USER_WORKSPACE)/input_2.in'),
+                                                                  }
+                                                      ),
+                                    )
+
+                    return job_templates
         """
         return None
 
@@ -397,7 +435,7 @@ class TethysAppBase(object):
     @classmethod
     def get_user_workspace(cls, user):
         """
-        Get the file workspace (directory) for the given User. See :doc:`./workspaces` for more details.
+        Get the file workspace (directory) for the given User.
 
         Args:
           user(User or HttpRequest): User or request object.
@@ -450,7 +488,7 @@ class TethysAppBase(object):
     @classmethod
     def get_app_workspace(cls):
         """
-        Get the file workspace (directory) for the app. See :doc:`./workspaces` for more details.
+        Get the file workspace (directory) for the app.
 
         Returns:
           tethys_apps.base.TethysWorkspace: An object representing the workspace.
@@ -494,7 +532,16 @@ class TethysAppBase(object):
             name(str): The name of the CustomSetting as defined in the app.py.
 
         Returns:
-            var: Value of the CustomSetting or None if no value assigned.
+            variable: Value of the CustomSetting or None if no value assigned.
+
+        **Example:**
+
+        ::
+
+            from my_first_app.app import MyFirstApp as app
+
+            max_count = app.get_custom_setting('max_count')
+
         """
         from tethys_apps.models import TethysApp
         db_app = TethysApp.objects.get(package=cls.package)
@@ -520,6 +567,15 @@ class TethysAppBase(object):
 
         Returns:
             DatasetService: DatasetService assigned to setting if no other options are specified.
+
+        **Example:**
+
+        ::
+
+            from my_first_app.app import MyFirstApp as app
+
+            ckan_engine = app.get_dataset_service('primary_ckan', as_engine=True)
+
         """
         from tethys_apps.models import TethysApp
         app = cls()
@@ -559,6 +615,15 @@ class TethysAppBase(object):
 
         Returns:
             SpatialDatasetService: SpatialDatasetService assigned to setting if no other options are specified.
+
+        **Example:**
+
+        ::
+
+            from my_first_app.app import MyFirstApp as app
+
+            geoserver_engine = app.get_spatial_dataset_engine('primary_geoserver', as_engine=True)
+
         """
         from tethys_apps.models import TethysApp
         app = cls()
@@ -599,6 +664,15 @@ class TethysAppBase(object):
 
         Returns:
             WpsService: WpsService assigned to setting if no other options are specified.
+
+        **Example:**
+
+        ::
+
+            from my_first_app.app import MyFirstApp as app
+
+            wps_engine = app.get_web_processing_service('primary_52n')
+
         """
         from tethys_apps.models import TethysApp
         db_app = TethysApp.objects.get(package=cls.package)
@@ -638,8 +712,8 @@ class TethysAppBase(object):
 
             from my_first_app.app import MyFirstApp as app
 
-            engine = app.get_persistent_store_connection('primary')
-            url = app.get_persistent_store_database('primary', as_url=True)
+            conn_engine = app.get_persistent_store_connection('primary')
+            conn_url = app.get_persistent_store_connection('primary', as_url=True)
 
         """
         from tethys_apps.models import TethysApp
@@ -672,8 +746,8 @@ class TethysAppBase(object):
 
             from my_first_app.app import MyFirstApp as app
 
-            engine = app.get_persistent_store_database('example_db')
-            url = app.get_persistent_store_database('example_db', as_url=True)
+            db_engine = app.get_persistent_store_database('example_db')
+            db_url = app.get_persistent_store_database('example_db', as_url=True)
 
         """
         from tethys_apps.models import TethysApp

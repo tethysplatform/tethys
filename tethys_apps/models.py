@@ -582,7 +582,48 @@ class TethysAppSetting(models.Model):
 
 class CustomSetting(TethysAppSetting):
     """
-    DB Model for Tethys App General Setting
+    Used to define a Custom Setting.
+
+    Attributes:
+        name(str): Unique name used to identify the setting.
+        type(enum): The type of the custom setting. Either CustomSetting.TYPE_STRING, CustomSetting.TYPE_INTEGER, CustomSetting.TYPE_FLOAT, CustomSetting.TYPE_BOOLEAN
+        description(str): Short description of the setting.
+        required(bool): A value will be required if True.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.app_settings import CustomSetting
+
+        default_name_setting = CustomSetting(
+            name='default_name',
+            type=CustomSetting.TYPE_STRING
+            description='Default model name.',
+            required=True
+        )
+
+        max_count_setting = CustomSetting(
+            name='max_count',
+            type=CustomSetting.TYPE_INTEGER,
+            description='Maximum allowed count in a method.',
+            required=False
+        )
+
+        change_factor_setting = CustomSetting(
+            name='change_factor',
+            type=CustomSetting.TYPE_FLOAT,
+            description='Change factor that is applied to some process.',
+            required=True
+        )
+
+        enable_feature_setting = CustomSetting(
+            name='enable_feature',
+            type=CustomSetting.TYPE_BOOLEAN,
+            description='Enable this feature when True.',
+            required=True
+        )
+
     """
     TYPE_STRING = 'STRING'
     TYPE_INTEGER = 'INTEGER'
@@ -648,10 +689,37 @@ class CustomSetting(TethysAppSetting):
 
 class DatasetServiceSetting(TethysAppSetting):
     """
-    DB Model for Tethys App DatasetService Setting
+    Used to define a Dataset Service Setting.
+
+    Attributes:
+        name(str): Unique name used to identify the setting.
+        description(str): Short description of the setting.
+        engine(enum): Either DatasetServiceSetting.CKAN or DatasetServiceSetting.HYDROSHARE
+        required(bool): A value will be required if True.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.app_settings import DatasetServiceSetting
+
+        primary_ckan_setting = DatasetServiceSetting(
+            name='primary_ckan',
+            description='Primary CKAN service for app to use.',
+            engine=DatasetServiceSetting.CKAN,
+            required=True,
+        )
+
+        hydroshare_setting = DatasetServiceSetting(
+            name='hydroshare',
+            description='HydroShare service for app to use.',
+            engine=DatasetServiceSetting.HYDROSHARE,
+            required=False
+        )
+
     """
     CKAN = DatasetService.CKAN
-    HYSROSHARE = DatasetService.HYDROSHARE
+    HYDROSHARE = DatasetService.HYDROSHARE
 
     dataset_service = models.ForeignKey(DatasetService, blank=True, null=True)
     engine = models.CharField(max_length=200,
@@ -668,7 +736,27 @@ class DatasetServiceSetting(TethysAppSetting):
 
 class SpatialDatasetServiceSetting(TethysAppSetting):
     """
-    DB Model for Tethys App SpatialDatasetService Setting
+    Used to define a Spatial Dataset Service Setting.
+
+    Attributes:
+        name(str): Unique name used to identify the setting.
+        description(str): Short description of the setting.
+        engine(enum): Only SpatialDatasetServiceSetting.GEOSERVER at this time.
+        required(bool): A value will be required if True.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.app_settings import SpatialDatasetServiceSetting
+
+        primary_geoserver_setting = SpatialDatasetServiceSetting(
+            name='primary_geoserver',
+            description='spatial dataset service for app to use',
+            engine=SpatialDatasetServiceSetting.GEOSERVER,
+            required=True,
+        )
+
     """
     GEOSERVER = SpatialDatasetService.GEOSERVER
 
@@ -687,7 +775,25 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
 
 class WebProcessingServiceSetting(TethysAppSetting):
     """
-    DB Model for Tethys App WebProcessingService Setting
+    Used to define a Web Processing Service Setting.
+
+    Attributes:
+        name(str): Unique name used to identify the setting.
+        description(str): Short description of the setting.
+        required(bool): A value will be required if True.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.app_settings import WebProcessingServiceSetting
+
+        primary_52n_setting = WebProcessingServiceSetting(
+            name='primary_52n',
+            description='WPS service for app to use',
+            required=True,
+        )
+
     """
     web_processing_service = models.ForeignKey(WebProcessingService, blank=True, null=True)
 
@@ -701,7 +807,25 @@ class WebProcessingServiceSetting(TethysAppSetting):
 
 class PersistentStoreConnectionSetting(TethysAppSetting):
     """
-    DB Model for Tethys App PersistentStoreService Setting
+    Used to define a Peristent Store Connection Setting.
+
+    Attributes:
+        name(str): Unique name used to identify the setting.
+        description(str): Short description of the setting.
+        required(bool): A value will be required if True.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.app_settings import PersistentStoreConnectionSetting
+
+        primary_db_conn_setting = PersistentStoreConnectionSetting(
+            name='primary',
+            description='Connection with superuser role needed.',
+            required=True
+        )
+
     """
     persistent_store_service = models.ForeignKey(PersistentStoreService, blank=True, null=True)
 
@@ -732,7 +856,36 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
 
 class PersistentStoreDatabaseSetting(TethysAppSetting):
     """
-    DB Model for Tethys App PersistentStoreDatabase Setting
+    Used to define a Peristent Store Database Setting.
+
+    Attributes:
+        name(str): Unique name used to identify the setting.
+        description(str): Short description of the setting.
+        initializer(str): Dot-notation path to function used to initialize the database.
+        spatial(bool): Enable the PostGIS extension on the database during creation when True.
+        required(bool): A value will be required if True.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.app_settings import PersistentStoreDatabaseSetting
+
+        spatial_db_setting = PersistentStoreDatabaseSetting(
+            name='spatial_db',
+            description='for storing important spatial stuff',
+            required=True,
+            initializer='appsettings.init_stores.init_spatial_db',
+            spatial=True,
+        ),
+
+        temp_db_setting = PersistentStoreDatabaseSetting(
+            name='temp_db',
+            description='for storing temporary stuff',
+            required=False,
+            initializer='appsettings.init_stores.init_temp_db',
+            spatial=False,
+        )
     """
     spatial = models.BooleanField(default=False)
     dynamic = models.BooleanField(default=False)

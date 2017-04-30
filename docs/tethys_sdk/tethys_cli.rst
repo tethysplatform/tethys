@@ -116,7 +116,7 @@ This command contains several subcommands that are used to help manage Tethys Pl
 syncstores <app_name, app_name...> [options]
 --------------------------------------------
 
-Management command for Persistent Stores. To learn more about persistent stores see :doc:`./persistent_store`.
+Management command for Persistent Stores. To learn more about persistent stores see :doc:`./tethys_services/persistent_store`.
 
 **Arguments:**
 
