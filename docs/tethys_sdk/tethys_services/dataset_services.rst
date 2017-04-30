@@ -42,21 +42,21 @@ Registering new dataset services is performed through the System Admin Settings.
 1. Login to your Tethys Platform instance as an administrator.
 2. Select "Site Admin" from the user drop down menu.
 
-  .. figure:: ../images/site_admin/select_site_admin.png
+  .. figure:: ../../images/site_admin/select_site_admin.png
       :width: 600px
       :align: center
 
 
 3. Select "Dataset Services" from the "Tethys Services" section.
 
-  .. figure:: ../images/site_admin/home.png
+  .. figure:: ../../images/site_admin/home.png
       :width: 600px
       :align: center
 
 
 4. Select an existing Dataset Service configuration from the list to edit it OR click on the "Add Dataset Service" button to create a new one.
 
-  .. figure:: ../images/site_admin/dataset_services.png
+  .. figure:: ../../images/site_admin/dataset_services.png
       :width: 600px
       :align: center
 
@@ -75,7 +75,7 @@ Registering new dataset services is performed through the System Admin Settings.
 
   When you are done, the form should look similar to this:
 
-  .. figure:: ../images/site_admin/dataset_service_edit.png
+  .. figure:: ../../images/site_admin/dataset_service_edit.png
       :width: 600px
       :align: center
 
