@@ -1729,7 +1729,7 @@ var TETHYS_MAP_VIEW = (function() {
         zoom_on_selection = true;
     }
     for (var i = 0; i < m_selectable_wms_layers.length; i++) {
-      var source, wms_url, url, layer;
+      var source, wms_url, url, layer, source_params, layer_view_params;
       var cql_filter;
       m_zoom_on_selection = zoom_on_selection;
 
@@ -1739,7 +1739,8 @@ var TETHYS_MAP_VIEW = (function() {
       // Check for undefined source or non-WMS layers before proceeding
       source = layer.getSource();
       if (!(source && 'getGetFeatureInfoUrl' in source)) { continue; }
-      if (source.getParams().LAYERS == layer_name) {
+      source_params = source.getParams();
+      if (source_params.LAYERS == layer_name) {
         if (source instanceof ol.source.ImageWMS) {
           wms_url = source.getUrl();
         }
@@ -1764,12 +1765,15 @@ var TETHYS_MAP_VIEW = (function() {
           cql_filter = '&cql_filter=' + attribute_name + '=%27' + attribute_value + '%27';
         }
 
+        layer_view_params = source_params.VIEWPARAMS ? source_params.VIEWPARAMS : '';
+
         // Create callback url
         url = wms_url.replace('wms', 'wfs')
               + '?SERVICE=wfs'
               + '&VERSION=2.0.0'
               + '&REQUEST=GetFeature'
               + '&TYPENAMES=' + layer_name
+              + '&VIEWPARAMS=' + layer_view_params
               + '&OUTPUTFORMAT=text/javascript'
               + '&FORMAT_OPTIONS=callback:TETHYS_MAP_VIEW.jsonResponseHandler;'
               + '&SRSNAME=' + DEFAULT_PROJECTION
