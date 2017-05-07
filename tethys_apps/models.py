@@ -124,7 +124,7 @@ class TethysAppSetting(models.Model):
         Returns:
             A handle to a Python function that will initialize the database or None if function is not valid.
         """
-        func_ext = TethysFunctionExtractor(self.initializer)
+        func_ext = TethysFunctionExtractor(self.initializer, throw=True)
         return func_ext.function
 
     def initialize(self):
@@ -153,6 +153,7 @@ class CustomSetting(TethysAppSetting):
         (TYPE_BOOLEAN, 'Boolean'),
     )
     value = models.CharField(max_length=1000, blank=True)
+    default_value = models.CharField(max_length=1000, blank=True)
     type = models.CharField(max_length=200, choices=TYPE_CHOICES, default=TYPE_STRING)
 
     def clean(self):
@@ -1102,7 +1103,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                     self.initializer_function(self.get_engine(), not self.initialized)
             except Exception as e:
                 print(type(e))
-                raise PersistentStoreInitializerError()
+                raise PersistentStoreInitializerError(e)
 
         # Update initialization
         self.initialized = True
