@@ -56,7 +56,7 @@ class Command(BaseCommand):
 
         # Execute only on apps given
         else:
-            target_apps = TethysApp.objects.get(package=app_names)
+            target_apps = TethysApp.objects.filter(package__in=app_names)
 
             # Verify all apps included in target apps
             target_app_names = [a.package for a in target_apps]

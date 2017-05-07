@@ -7,15 +7,16 @@ class TethysFunctionExtractor(object):
     """
     PATH_PREFIX = 'tethys_apps.tethysapp'
 
-    def __init__(self, path, prefix=PATH_PREFIX):
+    def __init__(self, path, prefix=PATH_PREFIX, throw=False):
         self.path = path
         self.prefix = prefix
+        self._throw = throw
         self._valid = None
         self._function = None
 
         if not isinstance(path, basestring):
             if path.callable():
-                self.valid = True  # TODO should we ensure that function is part of the app?
+                self.valid = True
                 self.function = path
 
     @property
@@ -46,8 +47,10 @@ class TethysFunctionExtractor(object):
                 # Import module
                 module = __import__(full_module_path, fromlist=[function_name])
 
-            except (ValueError, ImportError):
+            except (ValueError, ImportError) as e:
                 self._valid = False
+                if self._throw:
+                    raise e
             else:
                 # Get the function
                 self._function = getattr(module, function_name)
