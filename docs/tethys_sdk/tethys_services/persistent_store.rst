@@ -2,29 +2,30 @@
 Persistent Stores API
 *********************
 
-**Last Updated:** January 19, 2016
+**Last Updated:** May 2017
 
 
-The Persistent Store API streamlines the use of SQL databases in Tethys apps. Using this API, you can provision up to 5 SQL databases for your app. The databases that will be created are `PostgreSQL <http://www.postgresql.org/>`_ databases. Currently, no other databases are supported.
+The Persistent Store API streamlines the use of SQL databases in Tethys apps. Using this API, you can provision SQL databases for your app. The databases that will be created are `PostgreSQL <http://www.postgresql.org/>`_ databases. Currently, no other databases are supported.
 
 The process of creating a new persistent database can be summarized in the following steps:
 
-1. register a new persistent store in the :term:`app configuration file`,
-2. create a data model to define the table structure of the database,
-3. write a persistent store initialization function, and
-4. use the Tethys command line interface to create the persistent store.
+1. create a new PersistentStoreDatabaseSetting in the :term:`app configuration file`,
+2. assign a PersistentStoreService to the PersistentStoreDatabaseSetting from the admin pages.
+3. create a data model to define the table structure of the database,
+4. write a persistent store initialization function, and
+5. use the Tethys command line interface to create the persistent store.
 
 More detailed descriptions of each step of the persistent store process will be discussed in this article.
 
-Persistent Store Registration
-=============================
+Persistent Store Settings
+=========================
 
-Registering new :term:`persistent stores` is accomplished by adding the ``persistent_stores()`` method to your :term:`app class`, which is located in your :term:`app configuration file` (:file:`app.py`). This method should return a list or tuple of ``PersistentStore`` objects. For example:
+Registering new :term:`persistent stores` is accomplished by adding the ``persistent_store_settings()`` method to your :term:`app class`, which is located in your :term:`app configuration file` (:file:`app.py`). This method should return a list or tuple of ``PersistentStoreDatabaseSetting`` and/or ``PersistentStoreConnectionSetting`` objects. For example:
 
 ::
 
-    from tethys_sdk.base import TethysAppBase, url_map_maker
-    from tethys_sdk.stores import PersistentStore
+    from tethys_sdk.base import TethysAppBase
+    from tethys_sdk.app_settings import PersistentStoreDatabaseSetting
 
 
     class MyFirstApp(TethysAppBase):
@@ -33,16 +34,17 @@ Registering new :term:`persistent stores` is accomplished by adding the ``persis
         """
         ...
 
-        def persistent_stores(self):
-            """
-            Add one or more persistent stores
-            """
-            stores = (PersistentStore(name='example_db',
-                                      initializer='my_first_app.init_stores.init_example_db'
-                    ),
+        def persistent_store_settings(self):
+            ps_settings = (
+                PersistentStoreDatabaseSetting(
+                    name='example_db',
+                    description='Primary database for my_first_app.',
+                    initializer='my_first_app.init_stores.init_example_db',
+                    required=True
+                ),
             )
 
-            return stores
+            return ps_settings
 
 .. caution::
 
@@ -50,7 +52,54 @@ Registering new :term:`persistent stores` is accomplished by adding the ``persis
 
 In this example, a database called "example_db" would be created for this app. It would be initialized by a function called "init_example_db", which is located in a Python module called :file:`init_stores.py`. Notice that the path to the initializer function is given using dot notation (e.g.: ``'foo.bar.function'``).
 
-Databases follow a specific naming convention that is a combination of the app name and the name that is provided during registration. For example, the database for the example above may have a name "my_first_app_example_db". To register another database, add another ``Persistent Store`` object to the tuple that is returned by the ``persistent_stores()`` method.
+Persistent store databases follow a specific naming convention that is a combination of the app name and the name that is provided during registration. For example, the database for the example above may have a name "my_first_app_example_db". To register another database, add another ``PersistentStoreDatabaseSetting`` object to the tuple that is returned by the ``persistent_store_settings()`` method.
+
+Assign Persistent Store Service
+===============================
+
+The ``PersistentStoreDatabaseSetting`` can be thought of as a socket for a connection to a database. Before we can do anything with the ``PersistentStoreDatabaseSetting`` we need to "plug in" or assign a ``PersistentStoreService`` to the setting. The ``PersistentStoreService`` contains the connection information and can be used by multiple apps. Assigning a ``PersistentStoreService`` is done through the Admin Interface of Tethys Portal as follows:
+
+1. Create ``PersistentStoreService`` if one does not already exist
+
+    a. Access the Admin interface of Tethys Portal by clicking on the drop down menu next to your user name and selecting the "Site Admin" option.
+
+    b. Scroll to the **Tethys Service** section of the Admin Interface and select the link titled **Persistent Store Services**.
+
+    c. Click on the **Add Persistent Store Services** button.
+
+    d. Fill in the connection information to the database server.
+
+    e. Press the **Save** button to save the new ``PersistentStoreService``.
+
+.. tip::
+
+    You do not need to create a new ``PersistentStoreService`` for each ``PersistentStoreDatabaseSetting`` or each app. Apps and ``PersistentStoreDatabaseSettings`` can share ``PersistentStoreServices``.
+
+2. Navigate to App Settings Page
+
+    a. Return to the Home page of the Admin Interface using the **Home** link in the breadcrumbs or as you did in step 1a.
+
+    b. Scroll to the **Tethys Apps** section of the Admin Interface and select the **Installed Apps** linke.
+
+    c. Select the link for your app from the list of installed apps.
+
+
+
+3. Assign ``PersistentStoreService`` to the appropriate ``PersistentStoreDatabaseSetting``
+
+    a. Scroll to the **Persistent Store Database Settings** section and locate the ``PersistentStoreDatabaseSetting``.
+
+    .. note::
+
+        If you don't see the ``PersistentStoreDatabaseSetting`` in the list, uninstall the app and reinstall it again.
+
+    b. Assign the appropriate ``PersistentStoreService`` to your ``PersistentStoreDatabaseSettng`` using the drop down menu in the **Persistent Store Service** column.
+
+    c. Press the **Save** button at the bottom of the page to save your changes.
+
+.. note::
+
+    During development you will assign the ``PersistentStoreService`` setting yourself. However, when the app is installed in production, this steps is performed by the portal administrator upon installing your app, which may or may not be yourself.
 
 Data Model Definition
 =====================
@@ -63,18 +112,19 @@ The tables for a persistent store should be defined using an SQLAlchemy data mod
     from sqlalchemy import Column, Integer, Float
     from sqlalchemy.orm import sessionmaker
 
-    from .app import MyFirstApp
+    from .app import MyFirstApp as app
 
     # DB Engine, sessionmaker, and base
-    engine = MyFirstApp.get_persistent_store_engine('example_db')
+    engine = app.get_persistent_store_database('example_db')
     SessionMaker = sessionmaker(bind=engine)
     Base = declarative_base()
 
+
     # SQLAlchemy ORM definition for the stream_gages table
     class StreamGage (Base):
-        '''
+        """
         Example SQLAlchemy DB Model
-        '''
+        """
         __tablename__ = 'stream_gages'
 
         # Columns
@@ -103,11 +153,11 @@ The columns of tables defined using SQLAlchemy classes are defined by properties
 Engine Object
 -------------
 
-Anytime you wish to retrieve data from a persistent store database, you will need to connect to it. In SQLAlchemy, the connection to a database is provided via ``engine`` objects. You can retrieve the SQLAlchemy ``engine`` object for a persistent store database using the ``get_persistent_store_engine()`` method of the :term:`app class` provided by the Persistent Store API. The example above shows how the ``get_persistent_store_engine()`` function should be used. Provide the name of the persistent store to the function and it will return the ``engine`` object for that store.
+Anytime you wish to retrieve data from a persistent store database, you will need to connect to it. In SQLAlchemy, the connection to a database is provided via ``engine`` objects. You can retrieve the SQLAlchemy ``engine`` object for a persistent store database using the ``get_persistent_store_database()`` method of the :term:`app class` provided by the Persistent Store API. The example above shows how the ``get_persistent_store_engine()`` function should be used. Provide the name of the persistent store to the function and it will return the ``engine`` object for that store.
 
 .. note::
 
-    Although the full name of the persistent store database follows the app-database naming convention described in `Persistent Store Registration`_, you need only use the name you provided during registration to retrieve the engine using ``get_persistent_store_engine()``.
+    Although the full name of the persistent store database follows the app-database naming convention described in `Persistent Store Settings`_, you need only use the name you provided when you created the setting to retrieve the engine using ``get_persistent_store_database()``.
 
 Session Object
 --------------
@@ -123,9 +173,11 @@ The code for initializing a persistent store database should be defined in an in
 
 ::
 
-    from .model import engine, SessionMaker, Base, StreamGage
+    from sqlalchemy.orm import sessionmaker
+    from .model import Base, StreamGage
 
-    def init_example_db(first_time):
+
+    def init_example_db(engine, first_time):
         """
         An example persistent store initializer function
         """
@@ -135,13 +187,13 @@ The code for initializing a persistent store database should be defined in an in
         # Initial data
         if first_time:
             # Make session
+            SessionMaker = sessionmaker(bind=engine)
             session = SessionMaker()
 
             # Gage 1
             gage1 = StreamGage(latitude=40.23812952992122,
                                longitude=-111.69585227966309,
                                value=1)
-
 
             session.add(gage1)
 
@@ -193,7 +245,9 @@ This command would create all the non-existent persistent stores that are regist
 Dynamic Persistent Store Provisioning
 =====================================
 
-As of Tethys Platform 1.3.0, three methods were added to the app class that allow apps to create persistent stores at run time, list existing persistent stores, and check if a given persistent store exists. See the API documentation below for details.
+As of Tethys Platform 1.3.0, methods were added to the app class that allow apps to create persistent stores dynamically at run time, list existing persistent stores, and check if a given persistent store exists. See the API documentation below for details.
+
+# TODO: Add more documentation here about PersistentStoreConnectionSettings
 
 API Documentation
 =================
