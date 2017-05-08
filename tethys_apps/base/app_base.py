@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import logging
 import os
 import sys
 
@@ -19,6 +20,7 @@ from tethys_apps.base.handoff import HandoffManager
 from tethys_apps.exceptions import (TethysAppSettingDoesNotExist,
                                     TethysAppSettingNotAssigned)
 
+tethys_log = logging.getLogger('tethys.app_base')
 
 class TethysAppBase(object):
     """
@@ -762,7 +764,7 @@ class TethysAppBase(object):
             engine = ps_database_setting.get_engine(as_url=as_url)
         except TethysAppSettingNotAssigned as ex:
             engine = None
-            print(ex)
+            tethys_log.warn(ex)
         return engine
 
     @classmethod
