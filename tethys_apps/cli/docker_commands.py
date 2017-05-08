@@ -10,10 +10,8 @@
 
 import curses
 import subprocess
-from pprint import pprint
 from subprocess import PIPE
 import os
-import sys
 import json
 import getpass
 from exceptions import OSError
@@ -358,7 +356,7 @@ def log_pull_stream(stream):
 
                 if current_id is None:
                     # save messages to print after docker images are pulled
-                    messages_to_print.append(current_status)
+                    messages_to_print.append(current_status.strip())
                 else:
                     # use curses window to properly display progress
                     if current_status not in STATUSES:  # Assume this is the header
