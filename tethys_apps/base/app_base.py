@@ -16,7 +16,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from tethys_apps.base.workspace import TethysWorkspace
 from tethys_apps.base.handoff import HandoffManager
-from tethys_apps.exceptions import TethysAppSettingDoesNotExist
+from tethys_apps.exceptions import (TethysAppSettingDoesNotExist,
+                                    TethysAppSettingNotAssigned)
 
 
 class TethysAppBase(object):
@@ -628,10 +629,10 @@ class TethysAppBase(object):
         from tethys_apps.models import TethysApp
         app = cls()
         db_app = TethysApp.objects.get(package=app.package)
-        spatial_dataset_services_settings = db_app.spatial_dataset_services_settings
+        spatial_dataset_service_settings = db_app.spatial_dataset_service_settings
 
         try:
-            spatial_dataset_service_setting = spatial_dataset_services_settings.get(name=name)
+            spatial_dataset_service_setting = spatial_dataset_service_settings.get(name=name)
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('SpatialDatasetServiceSetting named "{0}" does not exist.'.format(name))
 
@@ -757,8 +758,12 @@ class TethysAppBase(object):
             ps_database_setting = ps_database_settings.get(name=name)
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(name))
-
-        return ps_database_setting.get_engine(as_url=as_url)
+        try:
+            engine = ps_database_setting.get_engine(as_url=as_url)
+        except TethysAppSettingNotAssigned as ex:
+            engine = None
+            print(ex)
+        return engine
 
     @classmethod
     def create_persistent_store(cls, db_name, connection_name, spatial=False, initializer='', refresh=False,
