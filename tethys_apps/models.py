@@ -79,7 +79,7 @@ class TethysApp(models.Model):
                 .select_subclasses('datasetservicesetting')
 
     @property
-    def spatial_dataset_services_settings(self):
+    def spatial_dataset_service_settings(self):
         return self.settings_set.exclude(spatialdatasetservicesetting__isnull=True) \
                 .select_subclasses('spatialdatasetservicesetting')
 
@@ -525,7 +525,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                 .select_subclasses('datasetservicesetting')
 
     @property
-    def spatial_dataset_services_settings(self):
+    def spatial_dataset_service_settings(self):
         return self.settings_set.exclude(spatialdatasetservicesetting__isnull=True) \
                 .select_subclasses('spatialdatasetservicesetting')
 
