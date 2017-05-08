@@ -14,6 +14,7 @@ import sys
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
 from django.core.exceptions import ObjectDoesNotExist
+from sqlalchemy.orm import sessionmaker
 
 from tethys_apps.base.workspace import TethysWorkspace
 from tethys_apps.base.handoff import HandoffManager
@@ -49,6 +50,8 @@ class TethysAppBase(object):
     tags = ''
     enable_feedback = False
     feedback_emails = []
+
+    _session_maker = sessionmaker()
 
     def __unicode__(self):
         """
@@ -760,12 +763,31 @@ class TethysAppBase(object):
             ps_database_setting = ps_database_settings.get(name=name)
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(name))
-        try:
-            engine = ps_database_setting.get_engine(as_url=as_url)
-        except TethysAppSettingNotAssigned as ex:
-            engine = None
-            tethys_log.warn(ex)
-        return engine
+
+        return ps_database_setting.get_engine(as_url=as_url)
+
+    @classmethod
+    def get_session(cls, name):
+        """
+        Gets an SQLAlchemy session object for the named persistent store database given.
+
+        Args:
+          name(string): Name of the PersistentStoreConnectionSetting as defined in app.py.
+
+        Returns:
+          sqlalchemy.sessionmaker: An SQLAlchemy sessionmaker object for the persistent store requested.
+
+
+        **Example:**
+
+        ::
+
+            from my_first_app.app import MyFirstApp as app
+
+            SessionMaker = app.get_session('example_db')
+        """
+        cls._session_maker.configure(bind=cls.get_persistent_store_database(name))
+        return cls._session_maker()
 
     @classmethod
     def create_persistent_store(cls, db_name, connection_name, spatial=False, initializer='', refresh=False,
