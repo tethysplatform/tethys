@@ -152,24 +152,6 @@ DATABASES = {
     }
 }
 
-# Tethys App Persistent Stores Settings
-TETHYS_DATABASES = {
-    'tethys_db_manager': {
-        'NAME': 'tethys_db_manager',
-        'USER': 'tethys_db_manager',
-        'PASSWORD': 'pass',
-        'HOST': '127.0.0.1',
-        'PORT': '5435'
-    },
-    'tethys_super': {
-        'NAME': 'tethys_super',
-        'USER': 'tethys_super',
-        'PASSWORD': 'pass',
-        'HOST': '127.0.0.1',
-        'PORT': '5435'
-    }
-}
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 

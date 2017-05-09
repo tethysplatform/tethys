@@ -66,7 +66,6 @@ def manage_command(args):
     # Define the process to be run
     primary_process = None
 
-
     if args.command == MANAGE_START:
         if args.port:
             primary_process = ['python', manage_path, 'runserver', args.port]

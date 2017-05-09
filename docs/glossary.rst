@@ -39,7 +39,7 @@ Glossary
 
     persistent store
     persistent stores
-        A persistent store is a database that can be automatically created for an app. See :doc:`./tutorials/getting_started/model` tutorial and the :doc:`./tethys_sdk/persistent_store` for more information about persistent stores.
+        A persistent store is a database that can be automatically created for an app. See :doc:`./tutorials/getting_started/model` tutorial and the :doc:`./tethys_sdk/tethys_services/persistent_store` for more information about persistent stores.
 
     resource
     resources
@@ -55,7 +55,7 @@ Glossary
 
     dataset service
     dataset services
-        A dataset service is a web service external to Tethys Platform that can be used to store and publish file-based datasets (e.g.: text files, Excel files, zip archives, other model files). See the :doc:`./tethys_sdk/dataset_services` for more information.
+        A dataset service is a web service external to Tethys Platform that can be used to store and publish file-based datasets (e.g.: text files, Excel files, zip archives, other model files). See the :doc:`./tethys_sdk/tethys_services/dataset_services` for more information.
 
     virtual environment
     Python virtual environment
