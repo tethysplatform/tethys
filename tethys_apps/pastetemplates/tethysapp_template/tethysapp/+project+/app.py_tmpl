@@ -24,13 +24,18 @@ class {{proper_no_spaces}}(TethysAppBase):
         """
         UrlMap = url_map_maker(self.root_url)
 
-        url_maps = (UrlMap(name='home',
-                           url='{{project_url}}',
-                           controller='{{project}}.controllers.home'),
-                    # This is an example UrlMap for a REST API endpoint
-                    # UrlMap(name='api_get_data',
-                    #        url='{{project_url}}/api/get_data',
-                    #        controller='{{project}}.api.get_data'),
+        url_maps = (
+            UrlMap(
+                name='home',
+                url='{{project_url}}',
+                controller='{{project}}.controllers.home'
+            ),
+            # This is an example UrlMap for a REST API endpoint
+            # UrlMap(
+            #     name='api_get_data',
+            #     url='{{project_url}}/api/get_data',
+            #     controller='{{project}}.api.get_data'
+            # ),
         )
 
         return url_maps
