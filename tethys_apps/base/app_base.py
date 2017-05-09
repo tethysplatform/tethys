@@ -7,17 +7,21 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import logging
 import os
 import sys
 
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
 from django.core.exceptions import ObjectDoesNotExist
+from sqlalchemy.orm import sessionmaker
 
 from tethys_apps.base.workspace import TethysWorkspace
 from tethys_apps.base.handoff import HandoffManager
-from tethys_apps.exceptions import TethysAppSettingDoesNotExist
+from tethys_apps.exceptions import (TethysAppSettingDoesNotExist,
+                                    TethysAppSettingNotAssigned)
 
+tethys_log = logging.getLogger('tethys.app_base')
 
 class TethysAppBase(object):
     """
@@ -46,6 +50,8 @@ class TethysAppBase(object):
     tags = ''
     enable_feedback = False
     feedback_emails = []
+
+    _session_maker = sessionmaker()
 
     def __unicode__(self):
         """
@@ -628,10 +634,10 @@ class TethysAppBase(object):
         from tethys_apps.models import TethysApp
         app = cls()
         db_app = TethysApp.objects.get(package=app.package)
-        spatial_dataset_services_settings = db_app.spatial_dataset_services_settings
+        spatial_dataset_service_settings = db_app.spatial_dataset_service_settings
 
         try:
-            spatial_dataset_service_setting = spatial_dataset_services_settings.get(name=name)
+            spatial_dataset_service_setting = spatial_dataset_service_settings.get(name=name)
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('SpatialDatasetServiceSetting named "{0}" does not exist.'.format(name))
 
@@ -759,6 +765,29 @@ class TethysAppBase(object):
             raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(name))
 
         return ps_database_setting.get_engine(as_url=as_url)
+
+    @classmethod
+    def get_session(cls, name):
+        """
+        Gets an SQLAlchemy session object for the named persistent store database given.
+
+        Args:
+          name(string): Name of the PersistentStoreConnectionSetting as defined in app.py.
+
+        Returns:
+          sqlalchemy.sessionmaker: An SQLAlchemy sessionmaker object for the persistent store requested.
+
+
+        **Example:**
+
+        ::
+
+            from my_first_app.app import MyFirstApp as app
+
+            SessionMaker = app.get_session('example_db')
+        """
+        cls._session_maker.configure(bind=cls.get_persistent_store_database(name))
+        return cls._session_maker()
 
     @classmethod
     def create_persistent_store(cls, db_name, connection_name, spatial=False, initializer='', refresh=False,
