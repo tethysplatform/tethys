@@ -1,4 +1,5 @@
 .. _esri-map:
+
 ********
 ESRI Map
 ********
@@ -13,5 +14,5 @@ EMLayer
 
 EMView
 ------
-
+s
 .. autoclass:: tethys_sdk.gizmos.EMView

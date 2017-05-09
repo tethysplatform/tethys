@@ -9,5 +9,4 @@
 """
 
 # DO NOT ERASE
-
 from tethys_apps.base.workspace import TethysWorkspace

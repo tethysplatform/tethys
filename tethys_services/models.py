@@ -8,8 +8,14 @@
 ********************************************************************************
 """
 from django.db import models
-from django.core.exceptions import ValidationError
+from django.core.exceptions import (ObjectDoesNotExist, ValidationError)
+from owslib.wps import WebProcessingService as WPS
+from social_core.exceptions import AuthException
 from tethys_dataset_services.valid_engines import VALID_ENGINES, VALID_SPATIAL_ENGINES
+from tethys_dataset_services.engines import (CkanDatasetEngine,
+                                             GeoServerSpatialDatasetEngine,
+                                             HydroShareDatasetEngine)
+from urllib2 import HTTPError, URLError
 
 
 def validate_url(value):
@@ -51,6 +57,14 @@ def validate_wps_service_endpoint(value):
         raise ValidationError('Invalid Endpoint: 52 North WPS endpoints follow the pattern "http://example.com/wps/WebProcessingService".')
 
 
+def validate_persistent_store_port(value):
+    """
+    Validator for persistent store service ports
+    """
+    if value < 1024 or value > 65535:
+        raise ValidationError('Invalid Port: Persistent Store ports must be an integer between 1024 and 65535.')
+
+
 class DatasetService(models.Model):
     """
     ORM for Dataset Service settings.
@@ -80,6 +94,36 @@ class DatasetService(models.Model):
     def __unicode__(self):
         return self.name
 
+    def get_engine(self, request=None):
+        """
+        Retrives dataset service engine
+        """
+        # Get Token for HydroShare interactions
+        if self.engine == self.HYDROSHARE:
+            # Constants
+            HYDROSHARE_OAUTH_PROVIDER_NAME = 'hydroshare'
+            user = request.user
+
+            try:
+                # social = user.social_auth.get(provider='google-oauth2')
+                social = user.social_auth.get(provider=HYDROSHARE_OAUTH_PROVIDER_NAME)
+                apikey = social.extra_data['access_token']
+            except ObjectDoesNotExist:
+                # User is not associated with that provider
+                # Need to prompt for association
+                raise AuthException("HydroShare authentication required. To automate the authentication prompt decorate "
+                                    "your controller function with the @ensure_oauth('hydroshare') decorator.")
+
+            return HydroShareDatasetEngine(endpoint=self.endpoint,
+                                           username=self.username,
+                                           password=self.password,
+                                           apikey=self.apikey)
+
+        return CkanDatasetEngine(endpoint=self.endpoint,
+                                 username=self.username,
+                                 password=self.password,
+                                 apikey=self.apikey)
+
 
 class SpatialDatasetService(models.Model):
     """
@@ -106,6 +150,14 @@ class SpatialDatasetService(models.Model):
     def __unicode__(self):
         return self.name
 
+    def get_engine(self):
+        """
+        Retrives GeoServer engine
+        """
+        return GeoServerSpatialDatasetEngine(endpoint=self.endpoint,
+                                             username=self.username,
+                                             password=self.password)
+
 
 class WebProcessingService(models.Model):
     """
@@ -123,3 +175,92 @@ class WebProcessingService(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def activate(self, wps):
+        """
+        Activate a WebProcessingService object by calling getcapabilities() on it and handle errors appropriately.
+
+        Args:
+          wps (owslib.wps.WebProcessingService): A owslib.wps.WebProcessingService object.
+
+        Returns:
+          (owslib.wps.WebProcessingService): Returns an activated WebProcessingService object or None if it is invalid.
+        """
+        # Initialize the object with get capabilities call
+        try:
+            wps.getcapabilities()
+        except HTTPError as e:
+            if e.code == 404:
+                e.msg = 'The WPS service could not be found at given endpoint "{0}" for site WPS service ' \
+                        'named "{1}". Check the configuration of the WPS service in your ' \
+                        'settings.py.'.format(self.endpoint, self.name)
+                raise e
+            else:
+                raise e
+        except URLError as e:
+            return None
+        except:
+            raise
+
+        return wps
+
+    def get_engine(self):
+        """
+        Get the wps engine.
+
+        Returns:
+          (owslib.wps.WebProcessingService): A owslib.wps.WebProcessingService object.
+        """
+        wps = WPS(self.endpoint,
+                  username=self.username,
+                  password=self.password,
+                  verbose=False,
+                  skip_caps=True)
+
+        return self.activate(wps=wps)
+
+
+class PersistentStoreService(models.Model):
+    """
+    ORM for Persistent Store Service settings.
+    """
+    ENGINE_CHOICES = (
+        ('postgresql', 'PostgreSQL'),
+    )
+    name = models.CharField(max_length=30, unique=True)
+    host = models.CharField(max_length=255, default='localhost')
+    port = models.IntegerField(default=5435, validators=[validate_persistent_store_port])
+    username = models.CharField(max_length=100, blank=True)
+    password = models.CharField(max_length=100, blank=True)
+    engine = models.CharField(max_length=50, default='postgresql', choices=ENGINE_CHOICES)
+    database = None  #: temporary property for creating engines and URLs with database, but not persisted in database.
+
+    class Meta:
+        verbose_name = 'Persistent Store Service'
+        verbose_name_plural = 'Persistent Store Services'
+
+    def __unicode__(self):
+        return self.name
+
+    def get_engine(self):
+        """
+        Returns a Persistent Store engine
+        """
+        from sqlalchemy import create_engine
+        url = self.get_url()
+        return create_engine(url)
+
+    def get_url(self):
+        """
+        Returns a Persistent Store URL
+        """
+        from sqlalchemy.engine.url import URL
+        url = URL(
+            drivername=self.engine,
+            host=self.host,
+            port=self.port,
+            username=self.username,
+            password=self.password,
+            database=self.database
+        )
+        return url

@@ -59,21 +59,21 @@ Registering new spatial dataset services is performed using the System Admin Set
 1. Login to your Tethys Platform instance as an administrator.
 2. Select "Site Admin" from the user drop down menu.
 
-  .. figure:: ../images/site_admin/select_site_admin.png
+  .. figure:: ../../images/site_admin/select_site_admin.png
       :width: 600px
       :align: center
 
 
 3. Select "Spatial Dataset Services" from the "Tethys Services" section.
 
-  .. figure:: ../images/site_admin/home.png
+  .. figure:: ../../images/site_admin/home.png
       :width: 600px
       :align: center
 
 
 4. Select an existing Spatial Dataset Service configuration from the list to edit it OR click on the "Add Spatial Dataset Service" button to create a new one.
 
-  .. figure:: ../images/site_admin/spatial_dataset_services.png
+  .. figure:: ../../images/site_admin/spatial_dataset_services.png
       :width: 600px
       :align: center
 
@@ -94,7 +94,7 @@ Registering new spatial dataset services is performed using the System Admin Set
 
   When you are done, your Spatial Dataset Service configuration should look similar to this:
 
-  .. figure:: ../images/site_admin/spatial_dataset_service_edit.png
+  .. figure:: ../../images/site_admin/spatial_dataset_service_edit.png
       :width: 600px
       :align: center
 

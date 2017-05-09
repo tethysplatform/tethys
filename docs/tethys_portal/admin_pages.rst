@@ -53,7 +53,7 @@ The ``AnonymousUser`` can be used to assign permissions and permission groups to
 Manage Tethys Services
 ======================
 
-The administrator pages provide a simple mechanism for linking to the other services of Tethys Platform. Use the ``Spatial Dataset Services`` link to connect your Tethys Portal to GeoServer, the ``Dataset Services`` link to connect to CKAN instances or HydroShare, or the ``Web Processing Services`` link to connect to WPS instances. For detailed instructions on how to perform each of these tasks, refer to the :doc:`../tethys_sdk/spatial_dataset_services`, :doc:`../tethys_sdk/dataset_services`, and :doc:`../tethys_sdk/web_processing_services` documentation, respectively.
+The administrator pages provide a simple mechanism for linking to the other services of Tethys Platform. Use the ``Spatial Dataset Services`` link to connect your Tethys Portal to GeoServer, the ``Dataset Services`` link to connect to CKAN instances or HydroShare, or the ``Web Processing Services`` link to connect to WPS instances. For detailed instructions on how to perform each of these tasks, refer to the :doc:`../tethys_sdk/tethys_services/spatial_dataset_services`, :doc:`../tethys_sdk/tethys_services/dataset_services`, and :doc:`../tethys_sdk/tethys_services/web_processing_services` documentation, respectively.
 
 .. _tethys_portal_terms_and_conditions:
 
