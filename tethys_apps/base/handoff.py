@@ -13,7 +13,7 @@ from django.shortcuts import redirect
 from django.http import HttpResponseBadRequest
 
 import tethys_apps
-from tethys_apps.base.persistent_store import TethysFunctionExtractor
+from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 
 class HandoffManager(object):

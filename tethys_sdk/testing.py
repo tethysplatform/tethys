@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-* Name: stores.py
+* Name: testing.py
 * Author: Shawn Crawley
 * Created On: 18 November 2016
 * Copyright: (c) Brigham Young University 2016

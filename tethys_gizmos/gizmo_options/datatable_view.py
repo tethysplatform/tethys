@@ -16,7 +16,7 @@ class DataTableView(TethysGizmoOptions):
     """
     Table views can be used to display tabular data. The table view gizmo can be configured to have columns that are editable. When used in this capacity, embed the table view in a form with a submit button.
     
-    .. info:: The current version of DataTables in Tethys Platform is 1.10.12.
+    .. note:: The current version of DataTables in Tethys Platform is 1.10.12.
 
     Attributes:
         rows(tuple or list, required): A list/tuple of lists/tuples representing each row in the table.

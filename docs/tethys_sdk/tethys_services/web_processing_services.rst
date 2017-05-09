@@ -4,7 +4,7 @@ Web Processing Services API
 
 **Last Updated:** May 13, 2015
 
-Web Processing Services (WPS) are web services that can be used perform geoprocessing and other processing activities for apps. The Open Geospatial Consortium (OGC) has created the `WPS interface standard <http://www.opengeospatial.org/standards/wps>`_ that provides rules for how inputs and outputs for processing services should be handled. Using the Web Processing Services API, you will be able to provide processing capabilities for your apps using any service that conforms to the OGC WPS standard. For convenience, the 52 North WPS is provided as part of the Tethys Platform software suite. Refer to the :doc:`../installation` documentation to learn how to install Tethys Platform with 52 North WPS enabled.
+Web Processing Services (WPS) are web services that can be used perform geoprocessing and other processing activities for apps. The Open Geospatial Consortium (OGC) has created the `WPS interface standard <http://www.opengeospatial.org/standards/wps>`_ that provides rules for how inputs and outputs for processing services should be handled. Using the Web Processing Services API, you will be able to provide processing capabilities for your apps using any service that conforms to the OGC WPS standard. For convenience, the 52 North WPS is provided as part of the Tethys Platform software suite. Refer to the :doc:`../../installation` documentation to learn how to install Tethys Platform with 52 North WPS enabled.
 
 Configuring WPS Services
 ========================
@@ -19,7 +19,7 @@ Sitewide configuration is performed using the System Admin Settings.
 1. Login to your Tethys Platform instance as an administrator.
 2. Select "Site Admin" from the user drop down menu.
 
-  .. figure:: ../images/site_admin/select_site_admin.png
+  .. figure:: ../../images/site_admin/select_site_admin.png
       :width: 600px
       :align: center
 
@@ -27,14 +27,14 @@ Sitewide configuration is performed using the System Admin Settings.
 3. Select "Web Processing Services" from the "Tethys Services" section.
 
 
-  .. figure:: ../images/site_admin/home.png
+  .. figure:: ../../images/site_admin/home.png
       :width: 600px
       :align: center
 
 
 4. Select an existing Web Processing Service configuration from the list to edit it OR click on the "Add Web Processing Service" button to create a new one.
 
-  .. figure:: ../images/site_admin/wps_services.png
+  .. figure:: ../../images/site_admin/wps_services.png
       :width: 600px
       :align: center
 
@@ -46,7 +46,7 @@ Sitewide configuration is performed using the System Admin Settings.
 
 If authentication is required, specify the username and password.
 
-  .. figure:: ../images/site_admin/wps_service_edit.png
+  .. figure:: ../../images/site_admin/wps_service_edit.png
       :width: 600px
       :align: center
 
@@ -121,24 +121,24 @@ Tethys Platform provides a developer tool that can be used to browse the sitewid
 
 2. Select the tool titled "Web Processing Services".
 
-  .. figure:: ../images/wps_tool/developer_tools_wps.png
+  .. figure:: ../../images/wps_tool/developer_tools_wps.png
       :width: 600px
       :align: center
 
 3. Select a WPS service from the list of services that are linked with your Tethys Instance. If no WPS services are linked to your Tethys instance, follow the steps in Sitewide Configuration, above, to setup a WPS service.
 
-  .. figure:: ../images/wps_tool/wps_tool_services.png
+  .. figure:: ../../images/wps_tool/wps_tool_services.png
       :width: 600px
       :align: center
 
 4. Select the process you wish to view.
 
-  .. figure:: ../images/wps_tool/wps_tool_processes.png
+  .. figure:: ../../images/wps_tool/wps_tool_processes.png
       :width: 600px
       :align: center
 
 A description of the process and the inputs and outputs will be displayed.
 
-  .. figure:: ../images/wps_tool/wps_tool_buffer.png
+  .. figure:: ../../images/wps_tool/wps_tool_buffer.png
       :width: 600px
       :align: center

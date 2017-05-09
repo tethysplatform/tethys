@@ -106,7 +106,7 @@ class TethysTestCase(TestCase):
 
         for store in app_class().persistent_stores():
             test_store_name = 'test_{0}'.format(store.name)
-            app_class.destroy_persistent_store(test_store_name)
+            app_class.drop_persistent_store(test_store_name)
 
     @staticmethod
     def create_test_user(username, password, email=None):
