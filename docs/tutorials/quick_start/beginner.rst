@@ -8,6 +8,8 @@ App Basics: Beginner
 
    UNDER CONSTRUCTION
 
+Concepts
+========
 
 * MVC
 * Templating API
@@ -15,15 +17,6 @@ App Basics: Beginner
 * App Base Class API
 * URL Maps
 * Simple Gizmos API
-
-Narrative
-* Introduce MVC concepts and show files in app project that coorespond
-* Open Home Template and explain templating API / Django Templating Language
-* Open Controller file and explain controller
-* Open app base class and explain purpose
-* Add empty map to home page
-* Create new template, controller, and url map to be used for adding new dams to inventory
-* Create "Add Dam" button in actions area that opens new page
 
 Model View Controller
 =====================
@@ -52,7 +45,7 @@ Twitter Bootstrap...
 JQuery...
 Intro to Gizmo tags... :doc:`../../tethys_sdk/gizmos`
 
-Open ``templates/dam_inventory/home.html`` and replace it's contents with the following:
+1. Open ``templates/dam_inventory/home.html`` and replace it's contents with the following:
 
 ::
 
@@ -67,13 +60,11 @@ Open ``templates/dam_inventory/home.html`` and replace it's contents with the fo
       {% gizmo add_dam_button %}
     {% endblock %}
 
-Define Gizmos in Home Controller
-================================
-
 Intro to controllers...
-Intro to Gizmo options objects... :doc:``../../tethys_sdk/gizmos/map_view` and :doc:`../../tethys_sdk/gizmos/button`
 
-Define the ``dam_inventory_map`` and ``add_dam_button`` gizmos in your home controller. Open ``controllers.py`` and change the ``home`` controller function as follows:
+Intro to Gizmo options objects... :doc:`../../tethys_sdk/gizmos/map_view` and :doc:`../../tethys_sdk/gizmos/button`
+
+2. Define the ``dam_inventory_map`` and ``add_dam_button`` gizmos in your home controller. Open ``controllers.py`` and change the ``home`` controller function as follows:
 
 ::
 
@@ -113,7 +104,7 @@ Define the ``dam_inventory_map`` and ``add_dam_button`` gizmos in your home cont
 Add Dam Page
 ============
 
-Create a new file ``templates/dam_inventory/add_dam.html`` and add the follow contents:
+1. Create a new file ``templates/dam_inventory/add_dam.html`` and add the follow contents:
 
 ::
 
@@ -123,10 +114,8 @@ Create a new file ``templates/dam_inventory/add_dam.html`` and add the follow co
       <h1>Add Dam</h1>
     {% endblock %}
 
-Add Dam Controller
-==================
 
-Create a new controller function called ``add_dam`` at the bottom of the ``controllers.py``:
+2. Create a new controller function called ``add_dam`` at the bottom of the ``controllers.py``:
 
 ::
 
@@ -139,12 +128,10 @@ Create a new controller function called ``add_dam`` at the bottom of the ``contr
         context = {}
         return render(request, 'dam_inventory/add_dam.html', context)
 
-Add Dam URL Map
-===============
 
 Intro to URL Maps...
 
-Create a new URL Map for the ``add_dam`` controller in the ``url_maps`` method of App Class in ``app.py``:
+3. Create a new URL Map for the ``add_dam`` controller in the ``url_maps`` method of App Class in ``app.py``:
 
 ::
 
@@ -171,12 +158,9 @@ Create a new URL Map for the ``add_dam`` controller in the ``url_maps`` method o
 
         return url_maps
 
-Link to Add Dam Page
-====================
-
 Intro to linking...
 
-Modify the ``add_dam_button`` to link to the newly created page:
+4. Modify the ``add_dam_button`` to link to the newly created page:
 
 ::
 
@@ -199,7 +183,7 @@ Modify the ``add_dam_button`` to link to the newly created page:
 Add Buttons to Add Dam Page
 ===========================
 
-Modify the ``template/dam_inventory/add_dam.html`` to add ``Add`` and ``Cancel`` buttons to the app actions area:
+1. Modify the ``template/dam_inventory/add_dam.html`` to add ``Add`` and ``Cancel`` buttons to the app actions area:
 
 ::
 
@@ -215,7 +199,7 @@ Modify the ``template/dam_inventory/add_dam.html`` to add ``Add`` and ``Cancel``
       {% gizmo cancel_button %}
     {% endblock %}
 
-Define the ``Add`` and ``Cancel`` button gizmos in the ``add_app`` controller:
+2. Define the ``Add`` and ``Cancel`` button gizmos in the ``add_app`` controller:
 
 ::
 
@@ -250,7 +234,7 @@ Add Navigation
 
 Intro to base.html template...
 
-Open ``templates/dam_inventory/base.html`` and replace the ``app_navigation_items`` block:
+1. Open ``templates/dam_inventory/base.html`` and replace the ``app_navigation_items`` block:
 
 ::
 
@@ -261,10 +245,7 @@ Open ``templates/dam_inventory/base.html`` and replace the ``app_navigation_item
     {% endblock %}
 
 
-Dynamic Active Link in Navigation
-=================================
-
-Modify ``app_navigation_items`` block in ``templates/dam_inventory/base.html``:
+2. Modify ``app_navigation_items`` block in ``templates/dam_inventory/base.html``:
 
 ::
 

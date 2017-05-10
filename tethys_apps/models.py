@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 import sqlalchemy
+import logging
 from django.db import models
 from django.core.exceptions import ValidationError
 from model_utils.managers import InheritanceManager
@@ -1020,6 +1021,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         """
         Provision all persistent stores for all apps or for only the app name given.
         """
+        log = logging.getLogger('tethys')
         # Connection engine
         url = self.get_engine(with_db=False, as_url=True)
         engine = self.get_engine(with_db=False)
@@ -1040,10 +1042,10 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         # -------------------------------------------------------------------------------------------------------------#
         if not db_exists:
             # Provide Update for User
-            # self.stdout.write('Creating database "{0}" for app "{1}"...'.format(
-            #     self.name,
-            #     self.tethys_app.package
-            # ))
+            log.info('Creating database "{0}" for app "{1}"...'.format(
+                self.name,
+                self.tethys_app.package
+            ))
 
             # Cannot create databases in a transaction: connect and commit to close transaction
             create_connection = engine.connect()
@@ -1075,10 +1077,10 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
             new_db_connection = engine.connect()
 
             # Notify user
-            # self.stdout.write('Enabling PostGIS on database "{0}" for app "{1}"...'.format(
-            #     self.name,
-            #     self.tethys_app.package,
-            # ))
+            log.info('Enabling PostGIS on database "{0}" for app "{1}"...'.format(
+                self.name,
+                self.tethys_app.package,
+            ))
 
             enable_postgis_statement = 'CREATE EXTENSION IF NOT EXISTS postgis'
 
@@ -1096,6 +1098,11 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         # 4. Run initialization function
         # -------------------------------------------------------------------------------------------------------------#
         if self.initializer:
+            log.info('Initializing PostGIS on database "{0}" for app "{1}" with initializer "{2}"...'.format(
+                self.name,
+                self.tethys_app.package,
+                self.initializer
+            ))
             try:
                 if force_first_time:
                     self.initializer_function(self.get_engine(), True)

@@ -4,7 +4,7 @@ Command Line Interface
 
 **Last Updated:** November 18, 2014
 
-The Tethys Command Line Interface (CLI) provides several commands that are used for managing Tethys Platform and Tethys apps. The :term:`Python virtual environment` must be activated to use the command line tools. This can be done using the following command:
+The Tethys Command Line Interface (CLI) provides several commands that are used for managing Tethys Platform and Tethys apps. The :term:`Python conda environment` must be activated to use the command line tools. This can be done using the following command:
 
 ::
 

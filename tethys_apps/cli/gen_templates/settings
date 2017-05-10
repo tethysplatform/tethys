@@ -53,6 +53,10 @@ LOGGING = {
             'handlers': ['console'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'WARNING'),
         },
+        'tethys': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        }
     },
 }
 
