@@ -8,22 +8,14 @@ App Basics: Intermediate
 
    UNDER CONSTRUCTION
 
+Concepts
+========
+
 * Advanced Gizmos API (Plotting and Mapping) - Hard code data / empty
 * Custom App Settings API (control default color of points on map?)
 * HTML Forms and Getting Input from users - use map in form for input
 * Navigation Links
 * Workspaces API (Write data submitted to file temporarily?)
-
-Narrative
-* Create HTML Form on "Add Dam" page using gizmos w/out map initially
-* Illustrate how to submit form and extract data on server
-* Save data to a json file for now in the User Workspace
-* Add Map to new dam form with only point input enabled and show how spatial data is serialized
-* Add spatial data to json that is written
-* Create a new page that lists all data in table form
-* Add navigation links to get back to home and to table form
-* Add dams in files to the map
-* Plot something? Hydrograph creator?
 
 Start From Beginner Solution
 ============================
@@ -58,7 +50,7 @@ Add Dam Form
 
 Intro to user input and HTML forms...
 
-Add a form to the Add Dam page by modifying the ``templates/dam_inventory/add_dam.html`` template as follows:
+1. Add a form to the Add Dam page by modifying the ``templates/dam_inventory/add_dam.html`` template as follows:
 
 ::
 
@@ -81,10 +73,7 @@ Add a form to the Add Dam page by modifying the ``templates/dam_inventory/add_da
       {% gizmo cancel_button %}
     {% endblock %}
 
-Define Form Gizmos
-==================
-
-Define the form gizmos and change the Add button to a submit button for the Add Dam form in the ``add_dam`` controller:
+2. Define the form gizmos and change the Add button to a submit button for the Add Dam form in the ``add_dam`` controller:
 
 ::
 
@@ -214,10 +203,10 @@ Change to the ``add_dam`` controller to handle the form data (write to file for 
 Write Data To File
 ==================
 
-Intro to model...
-Intro to workspaces API...
+Intro to model concept...
+Intro to workspaces API... :doc:`../../tethys_sdk/workspaces`
 
-Open ``model.py`` and add this function:
+1. Open ``model.py`` and add this function:
 
 ::
 
@@ -258,7 +247,7 @@ Open ``model.py`` and add this function:
         with open(file_path, 'w') as f:
             f.write(dam_json)
 
-Modify controller to use the new ``add_new_dam`` model function:
+2. Modify controller to use the new ``add_new_dam`` model function:
 
 ::
 
@@ -314,35 +303,37 @@ Open ``models.py`` and add a model method for listing the dams called ``list_dam
 Create List View Page
 =====================
 
-Add a new template ``templates/dam_inventory/list_dams.html`` with the following contents:
+1. Add a new template ``templates/dam_inventory/list_dams.html`` with the following contents:
 
-{% extends "dam_inventory/base.html" %}
+::
 
-{% block app_content %}
-  <h1>Dams</h1>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Owner</th>
-        <th>River</th>
-        <th>Date Built</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for dam in dams %}
-        <tr>
-          <td>{{ dam.name }}</td>
-          <td>{{ dam.owner }}</td>
-          <td>{{ dam.river }}</td>
-          <td>{{ dam.date_built }}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-{% endblock %}
+    {% extends "dam_inventory/base.html" %}
 
-Create a new controller function in ``controllers.py`` called ``list_dams``:
+    {% block app_content %}
+      <h1>Dams</h1>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Owner</th>
+            <th>River</th>
+            <th>Date Built</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for dam in dams %}
+            <tr>
+              <td>{{ dam.name }}</td>
+              <td>{{ dam.owner }}</td>
+              <td>{{ dam.river }}</td>
+              <td>{{ dam.date_built }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endblock %}
+
+2. Create a new controller function in ``controllers.py`` called ``list_dams``:
 
 ::
 
@@ -362,7 +353,7 @@ Create a new controller function in ``controllers.py`` called ``list_dams``:
 
 
 
-Create a new URL Map in the ``app.py`` for the new ``list_dams`` controller:
+3. Create a new URL Map in the ``app.py`` for the new ``list_dams`` controller:
 
 ::
 
@@ -398,7 +389,7 @@ Create a new URL Map in the ``app.py`` for the new ``list_dams`` controller:
 
             return url_maps
 
-Open ``templates/dam_inventory/base.html`` and add navigation links for the List View page:
+4. Open ``templates/dam_inventory/base.html`` and add navigation links for the List View page:
 
 ::
 
@@ -416,7 +407,7 @@ Open ``templates/dam_inventory/base.html`` and add navigation links for the List
 Add Map Input to Add Dam Form
 =============================
 
-Use a Map View Gizmo to capture spatial input. Open ``templates/dam_inventory/add_dam.html`` and add the ``location_input`` gizmo to the form:
+1. Use a Map View Gizmo to capture spatial input. Open ``templates/dam_inventory/add_dam.html`` and add the ``location_input`` gizmo to the form:
 
 ::
 
@@ -444,7 +435,7 @@ Use a Map View Gizmo to capture spatial input. Open ``templates/dam_inventory/ad
       {% gizmo cancel_button %}
     {% endblock %}
 
-Add the definition of the ``location_input`` gizmo and validation code to the ``add_dam`` controller in ``controllers.py``:
+2. Add the definition of the ``location_input`` gizmo and validation code to the ``add_dam`` controller in ``controllers.py``:
 
 ::
 
@@ -517,7 +508,7 @@ Add the definition of the ``location_input`` gizmo and validation code to the ``
 
         return render(request, 'dam_inventory/add_dam.html', context)
 
-Modify the ``add_new_dam`` Model Method to store spatial data:
+3. Modify the ``add_new_dam`` Model Method to store spatial data:
 
 ::
 
@@ -559,7 +550,7 @@ Modify the ``add_new_dam`` Model Method to store spatial data:
 Show Dams on the Map on the Home Page
 =====================================
 
-IMPORTANT: Delete all ``json`` files in the ``workspace/app_workspace/dams`` directory and create new entries using the Add Dam page.
+**IMPORTANT**: Delete all ``json`` files in the ``workspace/app_workspace/dams`` directory and create new entries using the Add Dam page.
 
 Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
 
@@ -646,6 +637,4 @@ Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
         }
 
         return render(request, 'dam_inventory/home.html', context)
-
-
 

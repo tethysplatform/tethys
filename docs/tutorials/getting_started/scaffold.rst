@@ -26,7 +26,7 @@ The final command from the code block above is provided by the Tethys :doc:`../.
 
 The commands you entered did the following tasks:
 
-1. activated the Tethys :term:`Python virtual environment`,
+1. activated the Tethys :term:`Python conda environment`,
 2. created a new directory called "tethysdev" in your home directory,
 3. changed your working directory into the :file:`tethysdev` directory, and
 4. executed the :command:`tethys scaffold` command to create the new app.
@@ -36,7 +36,7 @@ In a file browser change into your :file:`Home` directory and open the :file:`te
 Development Installation
 ========================
 
-Now that you have a new Tethys app project, you need to install the app into Tethys Platform. In a terminal, change into the :file:`tethysapp-my_first_app` directory and execute the :command:`python setup.py develop` command. Be sure to activate the Tethys :term:`Python virtual environment` if it is not already activated (see line 1 of the first code block):
+Now that you have a new Tethys app project, you need to install the app into Tethys Platform. In a terminal, change into the :file:`tethysapp-my_first_app` directory and execute the :command:`python setup.py develop` command. Be sure to activate the Tethys :term:`Python conda environment` if it is not already activated (see line 1 of the first code block):
 
 ::
 
