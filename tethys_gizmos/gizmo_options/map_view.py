@@ -311,10 +311,10 @@ class MVDraw(SecondaryGizmoOptions):
         drawing_options = MVDraw(
             controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
             initial='Point',
-            output_format='WKT',
-            lineColor='#663399',
-            fillColor='rgba(255,255,255,0.2)',
-            pointColor='#663399'
+            output_format='GeoJSON',
+            line_color='#663399',
+            fill_color='rgba(255,255,255,0.2)',
+            point_color='#663399'
         )
 
     """
