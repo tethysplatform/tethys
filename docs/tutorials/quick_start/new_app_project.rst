@@ -4,6 +4,10 @@ Create a New Tethys App Project
 
 **Last Updated:** May 2017
 
+.. warning::
+
+   UNDER CONSTRUCTION
+
 Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../../supplementary/app_project`).
 
 .. tip::

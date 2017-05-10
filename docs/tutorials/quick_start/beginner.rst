@@ -4,6 +4,10 @@ App Basics: Beginner
 
 **Last Updated:** May 2017
 
+.. warning::
+
+   UNDER CONSTRUCTION
+
 
 * MVC
 * Templating API
@@ -160,7 +164,7 @@ Create a new URL Map for the ``add_dam`` controller in the ``url_maps`` method o
             ),
             UrlMap(
                 name='add_dam',
-                url='dam-inventory/add-dam',
+                url='dam-inventory/dams/add',
                 controller='dam_inventory.controllers.add_dam'
             )
         )
