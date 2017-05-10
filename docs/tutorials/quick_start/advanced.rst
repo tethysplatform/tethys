@@ -4,6 +4,10 @@ App Basics: Advanced
 
 **Last Updated:** May 2017
 
+.. warning::
+
+   UNDER CONSTRUCTION
+
 * Tethys Services API
 * Model and PersistentStores API
 * JavaScript with Gizmos - dynamic pop-ups and selection
