@@ -59,8 +59,8 @@ class TethysAppTemplate(Template):
         PREFIX_NO_DASH = 'tethysapp'
 
         if not vars['project'].startswith(PREFIX):
-            print('\nError: Expected the project name to start with "{0}". Please add the "{0}" '
-                  'as a prefix and try again'.format(PREFIX))
+            print(('\nError: Expected the project name to start with "{0}". Please add the "{0}" '
+                  'as a prefix and try again'.format(PREFIX)))
             sys.exit(1)
 
         # Validate project name
@@ -78,13 +78,13 @@ class TethysAppTemplate(Template):
             if project_warning_regex.match(project):
                 before = project
                 project = project.replace('-', '_')
-                print('\nWarning: Dashes in project name "{0}" have been replaced ' \
-                      'with underscores "{1}"'.format(before, project))
+                print(('\nWarning: Dashes in project name "{0}" have been replaced ' \
+                      'with underscores "{1}"'.format(before, project)))
 
             # Otherwise, throw error
             else:
-                print('\nError: Invalid characters in project name "{0}". Only letters, numbers, and underscores ' \
-                      '(no dashes) allowed after the "tethysapp-" prefix.'.format(project))
+                print(('\nError: Invalid characters in project name "{0}". Only letters, numbers, and underscores ' \
+                      '(no dashes) allowed after the "tethysapp-" prefix.'.format(project)))
                 sys.exit(1)
 
         vars['project'] = project
@@ -100,7 +100,7 @@ class TethysAppTemplate(Template):
             proper_name_error_regex = re.compile(r'^[a-zA-Z0-9\s]+$')
             proper_name_warn_regex = re.compile(r'^[a-zA-Z0-9-\s_\"\']+$')
 
-            print vars['proper_name']
+            print(vars['proper_name'])
 
             if not proper_name_error_regex.match(vars['proper_name']):
 
@@ -111,12 +111,12 @@ class TethysAppTemplate(Template):
                     vars['proper_name'] = vars['proper_name'].replace('-', ' ')
                     vars['proper_name'] = vars['proper_name'].replace('"', '')
                     vars['proper_name'] = vars['proper_name'].replace("'", "")
-                    print('\nWarning: Illegal characters were detected in proper name "{0}". They have replaced or '
-                          'removed with valid characters: "{1}"'.format(before, vars['proper_name']))
+                    print(('\nWarning: Illegal characters were detected in proper name "{0}". They have replaced or '
+                          'removed with valid characters: "{1}"'.format(before, vars['proper_name'])))
                 # Otherwise, throw error
                 else:
-                    print('\nError: Invalid characters in proper name "{0}". Only letters and numbers and spaces'
-                          'allowed.'.format(vars['proper_name']))
+                    print(('\nError: Invalid characters in proper name "{0}". Only letters and numbers and spaces'
+                          'allowed.'.format(vars['proper_name'])))
                     sys.exit(1)
 
         # Derive the proper_no_spaces variable (used for the name of the App class)

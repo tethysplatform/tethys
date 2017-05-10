@@ -182,7 +182,7 @@ def generate_app_url_patterns():
                     app_url_patterns[app_namespace] = []
 
                 # Create django url object
-                if isinstance(url_map.controller, basestring):
+                if isinstance(url_map.controller, str):
                     controller_parts = url_map.controller.split('.')
                     module_name = '.'.join(controller_parts[:-1])
                     function_name = controller_parts[-1]
@@ -195,7 +195,7 @@ def generate_app_url_patterns():
                         sys.exit(1)
                     try:
                         controller_function = getattr(module, function_name)
-                    except AttributeError, e:
+                    except AttributeError as e:
                         error_msg = 'The following error occurred while tyring to access the controller function ' \
                                     '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
                         log.error(error_msg)

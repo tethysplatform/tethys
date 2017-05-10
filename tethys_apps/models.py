@@ -54,7 +54,7 @@ class TethysApp(models.Model):
         verbose_name_plural = 'Installed Apps'
 
     def __unicode__(self):
-        return unicode(self.name)
+        return str(self.name)
 
     def add_settings(self, setting_list):
         """
@@ -505,7 +505,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                 else:
                     self.initializer_function(self.get_engine(), not self.initialized)
             except Exception as e:
-                print(type(e))
+                print((type(e)))
                 raise PersistentStoreInitializerError()
 
         # Update initialization
@@ -1109,7 +1109,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                 else:
                     self.initializer_function(self.get_engine(), not self.initialized)
             except Exception as e:
-                print(type(e))
+                print((type(e)))
                 raise PersistentStoreInitializerError(e)
 
         # Update initialization

@@ -31,7 +31,7 @@ def _run_install(self):
     destination_dir = os.path.join(tethysapp_dir, self.app_package)
 
     # Notify user
-    print('Copying App Package: {0} to {1}'.format(self.app_package_dir, destination_dir))
+    print(('Copying App Package: {0} to {1}'.format(self.app_package_dir, destination_dir)))
 
     # Copy files
     try:
@@ -62,7 +62,7 @@ def _run_develop(self):
     destination_dir = os.path.join(tethysapp_dir, self.app_package)
 
     # Notify user
-    print('Creating Symbolic Link to App Package: {0} to {1}'.format(self.app_package_dir, destination_dir))
+    print(('Creating Symbolic Link to App Package: {0} to {1}'.format(self.app_package_dir, destination_dir)))
 
     # Create symbolic link
     try:

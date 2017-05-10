@@ -69,10 +69,8 @@ def make_contrib(superclass, func=None):
 
 # code for DictionaryField was taken from https://djangosnippets.org/snippets/1979/
 
-class DictionaryField(models.Field):
+class DictionaryField(models.Field, metaclass=SubfieldBase):
     description = _("Dictionary object")
-
-    __metaclass__ = SubfieldBase
 
     def get_internal_type(self):
         return "TextField"
@@ -82,7 +80,7 @@ class DictionaryField(models.Field):
             return None
         elif value == "":
             return {}
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             try:
                 return dict(json.loads(value))
             except (ValueError, TypeError):
@@ -99,7 +97,7 @@ class DictionaryField(models.Field):
     def get_prep_value(self, value):
         if not value:
             return ""
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             return value
         else:
             return json.dumps(value)
@@ -117,10 +115,8 @@ class DictionaryField(models.Field):
         defaults.update(kwargs)
         return super(DictionaryField, self).formfield(**defaults)
 
-class ListField(models.Field):
+class ListField(models.Field, metaclass=SubfieldBase):
     description = _("List object")
-
-    __metaclass__ = SubfieldBase
 
     def get_internal_type(self):
         return "TextField"
@@ -130,7 +126,7 @@ class ListField(models.Field):
             return None
         elif value == "":
             return []
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             try:
                 return json.loads(value)
             except (ValueError, TypeError) as e:
@@ -148,7 +144,7 @@ class ListField(models.Field):
     def get_prep_value(self, value):
         if not value:
             return ""
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             return value
         else:
             return json.dumps(value)

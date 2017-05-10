@@ -7,7 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from hydroshare import HydroShareOAuth2
+from .hydroshare import HydroShareOAuth2
 
 class HydroSharePlaygroundOAuth2(HydroShareOAuth2):
 

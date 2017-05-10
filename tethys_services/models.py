@@ -15,7 +15,7 @@ from tethys_dataset_services.valid_engines import VALID_ENGINES, VALID_SPATIAL_E
 from tethys_dataset_services.engines import (CkanDatasetEngine,
                                              GeoServerSpatialDatasetEngine,
                                              HydroShareDatasetEngine)
-from urllib2 import HTTPError, URLError
+from urllib.error import HTTPError, URLError
 
 
 def validate_url(value):

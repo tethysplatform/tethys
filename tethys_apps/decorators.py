@@ -7,7 +7,7 @@
 * License: 
 ********************************************************************************
 """
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
@@ -85,7 +85,7 @@ def permission_required(*args, **kwargs):
     raise_exception = kwargs.pop('raise_exception', False)
 
     for arg in args:
-        if not isinstance(arg, basestring):
+        if not isinstance(arg, str):
             raise ValueError("Arguments must be a string and the name of a permission for the app.")
 
     perms = args

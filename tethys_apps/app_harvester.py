@@ -12,7 +12,7 @@ import os
 import inspect
 
 from tethys_apps.base import TethysAppBase
-from terminal_colors import TerminalColors
+from .terminal_colors import TerminalColors
 
 
 class SingletonAppHarvester(object):
@@ -28,7 +28,7 @@ class SingletonAppHarvester(object):
         Searches the apps package for apps
         """
         # Notify user harvesting is taking place
-        print(TerminalColors.BLUE + 'Loading Tethys Apps...' + TerminalColors.ENDC)
+        print((TerminalColors.BLUE + 'Loading Tethys Apps...' + TerminalColors.ENDC))
 
         # List the apps packages in directory
         apps_dir = os.path.join(os.path.dirname(__file__), 'tethysapp')
@@ -113,4 +113,4 @@ class SingletonAppHarvester(object):
         self.apps = valid_app_instance_list
 
         # Update user
-        print('Tethys Apps Loaded: {0}'.format(' '.join(loaded_apps)))
+        print(('Tethys Apps Loaded: {0}'.format(' '.join(loaded_apps))))

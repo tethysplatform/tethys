@@ -23,7 +23,7 @@ class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
                     return redirect('user:settings', username=request.user.username)
             elif isinstance(exception, social_exceptions.AuthAlreadyAssociated):
                 blurb = 'The {0} account you tried to connect to has already been associated with another account.'
-                print(exception.backend.name)
+                print((exception.backend.name))
                 if 'google' in exception.backend.name:
                     blurb = blurb.format('Google')
                 elif 'linkedin' in exception.backend.name:

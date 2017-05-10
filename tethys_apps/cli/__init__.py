@@ -53,7 +53,7 @@ def scaffold_command(args):
     if PREFIX not in project_name:
         project_name = '{0}-{1}'.format(PREFIX, project_name)
 
-    print('INFO: Initializing tethys app project with name "{0}".\n'.format(project_name))
+    print(('INFO: Initializing tethys app project with name "{0}".\n'.format(project_name)))
 
     process = ['paster', 'create', '-t', 'tethys_app_scaffold', project_name]
     subprocess.call(process)
@@ -71,7 +71,7 @@ def uninstall_command(args):
         app_name = app_name[prefix_length:]
 
     if app_name not in installed_apps:
-        print('WARNING: App with name "{0}" cannot be uninstalled, because it is not installed.'.format(app_name))
+        print(('WARNING: App with name "{0}" cannot be uninstalled, because it is not installed.'.format(app_name)))
         exit(0)
 
     app_with_prefix = '{0}-{1}'.format(PREFIX, app_name)
@@ -80,10 +80,10 @@ def uninstall_command(args):
     valid_inputs = ('y', 'n', 'yes', 'no')
     no_inputs = ('n', 'no')
 
-    overwrite_input = raw_input('Are you sure you want to uninstall "{0}"? (y/n): '.format(app_with_prefix)).lower()
+    overwrite_input = input('Are you sure you want to uninstall "{0}"? (y/n): '.format(app_with_prefix)).lower()
 
     while overwrite_input not in valid_inputs:
-        overwrite_input = raw_input('Invalid option. Are you sure you want to '
+        overwrite_input = input('Invalid option. Are you sure you want to '
                                     'uninstall "{0}"? (y/n): '.format(app_with_prefix)).lower()
 
     if overwrite_input in no_inputs:
@@ -107,7 +107,7 @@ def uninstall_command(args):
 
     # TODO: Remove app from database on uninstall
 
-    print('App "{0}" successfully uninstalled.'.format(app_with_prefix))
+    print(('App "{0}" successfully uninstalled.'.format(app_with_prefix)))
 
 
 def docker_command(args):
@@ -153,14 +153,14 @@ def syncstores_command(args):
     if args.refresh:
         valid_inputs = ('y', 'n', 'yes', 'no')
         no_inputs = ('n', 'no')
-        proceed = raw_input('{1}WARNING:{2} You have specified the database refresh option. This will drop all of the '
+        proceed = input('{1}WARNING:{2} You have specified the database refresh option. This will drop all of the '
                             'databases for the following apps: {0}. This could result in significant data loss and '
                             'cannot be undone. Do you wish to continue? (y/n): '.format(', '.join(args.app),
                                                                                         TerminalColors.WARNING,
                                                                                         TerminalColors.ENDC)).lower()
 
         while proceed not in valid_inputs:
-            proceed = raw_input('Invalid option. Do you wish to continue? (y/n): ').lower()
+            proceed = input('Invalid option. Do you wish to continue? (y/n): ').lower()
 
         if proceed not in no_inputs:
             process.extend(['-r'])

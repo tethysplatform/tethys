@@ -25,7 +25,7 @@ import tethys_sdk.gizmos
 
 # MAP THE GIZMO NAME TO GIZMO OBJECT
 GIZMO_NAME_MAP = {}
-for name, cls in tethys_sdk.gizmos.__dict__.items():
+for name, cls in list(tethys_sdk.gizmos.__dict__.items()):
     if(hasattr(cls, "gizmo_name")):
         GIZMO_NAME_MAP[cls.gizmo_name] = cls
 

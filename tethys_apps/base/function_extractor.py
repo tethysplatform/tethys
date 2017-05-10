@@ -14,7 +14,7 @@ class TethysFunctionExtractor(object):
         self._valid = None
         self._function = None
 
-        if not isinstance(path, basestring):
+        if not isinstance(path, str):
             if path.callable():
                 self.valid = True
                 self.function = path

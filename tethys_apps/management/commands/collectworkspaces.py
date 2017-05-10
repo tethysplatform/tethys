@@ -38,9 +38,9 @@ class Command(BaseCommand):
         installed_apps = get_installed_tethys_apps()
 
         # Provide feedback to user
-        print('INFO: Moving workspace directories of apps to "{0}" and linking back.'.format(workspaces_root))
+        print(('INFO: Moving workspace directories of apps to "{0}" and linking back.'.format(workspaces_root)))
 
-        for app, path in installed_apps.iteritems():
+        for app, path in installed_apps.items():
             # Check for both variants of the static directory (public and static)
             workspaces_path = os.path.join(path, 'workspaces')
             workspaces_root_path = os.path.join(workspaces_root, app)
@@ -65,5 +65,5 @@ class Command(BaseCommand):
                 # Create appropriate symbolic link
                 if os.path.isdir(workspaces_root_path):
                     os.symlink(workspaces_root_path, workspaces_path)
-                    print('INFO: Successfully linked "workspaces" directory to TETHYS_WORKSPACES_ROOT for app "{0}".'.format(app))
+                    print(('INFO: Successfully linked "workspaces" directory to TETHYS_WORKSPACES_ROOT for app "{0}".'.format(app)))
 
