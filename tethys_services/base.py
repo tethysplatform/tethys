@@ -27,13 +27,13 @@ class DatasetService:
             self.engine = VALID_ENGINES[type]
         else:
             if len(VALID_ENGINES) > 2:
-                comma_separated_types = ', '.join('"{0}"'.format(t) for t in VALID_ENGINES.keys()[:-1])
-                last_type = '"{0}"'.format(VALID_ENGINES.keys()[-1])
+                comma_separated_types = ', '.join('"{0}"'.format(t) for t in list(VALID_ENGINES.keys())[:-1])
+                last_type = '"{0}"'.format(list(VALID_ENGINES.keys())[-1])
                 valid_types_string = '{0}, and {1}'.format(comma_separated_types, last_type)
             elif len(VALID_ENGINES) == 2:
-                valid_types_string = '"{0}" and "{1}"'.format(VALID_ENGINES.keys()[0], VALID_ENGINES.keys()[1])
+                valid_types_string = '"{0}" and "{1}"'.format(list(VALID_ENGINES.keys())[0], list(VALID_ENGINES.keys())[1])
             else:
-                valid_types_string = '"{0}"'.format(VALID_ENGINES.keys()[0])
+                valid_types_string = '"{0}"'.format(list(VALID_ENGINES.keys())[0])
 
             raise ValueError('The value "{0}" is not a valid for argument "type" of DatasetService. Valid values for '
                              '"type" argument include {1}.'.format(type, valid_types_string))
@@ -69,13 +69,13 @@ class SpatialDatasetService:
             self.engine = VALID_SPATIAL_ENGINES[type]
         else:
             if len(VALID_SPATIAL_ENGINES) > 2:
-                comma_separated_types = ', '.join('"{0}"'.format(t) for t in VALID_SPATIAL_ENGINES.keys()[:-1])
-                last_type = '"{0}"'.format(VALID_SPATIAL_ENGINES.keys()[-1])
+                comma_separated_types = ', '.join('"{0}"'.format(t) for t in list(VALID_SPATIAL_ENGINES.keys())[:-1])
+                last_type = '"{0}"'.format(list(VALID_SPATIAL_ENGINES.keys())[-1])
                 valid_types_string = '{0}, and {1}'.format(comma_separated_types, last_type)
             elif len(VALID_SPATIAL_ENGINES) == 2:
-                valid_types_string = '"{0}" and "{1}"'.format(VALID_SPATIAL_ENGINES.keys()[0], VALID_SPATIAL_ENGINES.keys()[1])
+                valid_types_string = '"{0}" and "{1}"'.format(list(VALID_SPATIAL_ENGINES.keys())[0], list(VALID_SPATIAL_ENGINES.keys())[1])
             else:
-                valid_types_string = '"{0}"'.format(VALID_SPATIAL_ENGINES.keys()[0])
+                valid_types_string = '"{0}"'.format(list(VALID_SPATIAL_ENGINES.keys())[0])
 
             raise ValueError('The value "{0}" is not a valid for argument "type" of SpatialDatasetService. Valid values for '
                              '"type" argument include {1}.'.format(type, valid_types_string))

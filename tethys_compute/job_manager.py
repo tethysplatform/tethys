@@ -97,7 +97,7 @@ class JobManager(object):
         """
         try:
             template = self.job_templates[template_name]
-        except KeyError, e:
+        except KeyError as e:
             raise KeyError('A job template with name %s was not defined' % (template_name,))
         user_workspace = self.app.get_user_workspace(user)
         kwrgs = dict(name=name, user=user, label=self.label, workspace=user_workspace.path)
@@ -167,7 +167,7 @@ class JobManager(object):
 
         def replace_in_value(value):
             value_type = type(value)
-            if value_type in TYPE_DICT.keys():
+            if value_type in list(TYPE_DICT.keys()):
                 replace_func = TYPE_DICT[value_type]
                 new_value = replace_func(value)
                 return new_value
@@ -180,7 +180,7 @@ class JobManager(object):
 
         def replace_in_dict(dict_value):
             new_dict_value = dict()
-            for key, value in dict_value.iteritems():
+            for key, value in dict_value.items():
                 new_dict_value[key] = replace_in_value(value)
             return new_dict_value
 
@@ -199,7 +199,7 @@ class JobManager(object):
                     }
 
         new_parameters = dict()
-        for parameter, value in parameters.iteritems():
+        for parameter, value in parameters.items():
             new_value = replace_in_value(value)
             new_parameters[parameter] = new_value
         return new_parameters

@@ -29,7 +29,7 @@ class UrlMapBase(object):
           regex (str or iterable, optional): Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
         """
         # Validate
-        if regex and (not isinstance(regex, basestring) and not isinstance(regex, tuple) and not isinstance(regex, list)):
+        if regex and (not isinstance(regex, str) and not isinstance(regex, tuple) and not isinstance(regex, list)):
             raise ValueError('Value for "regex" must be either a string, list, or tuple.')
 
         self.name = name
@@ -80,7 +80,7 @@ def django_url_preprocessor(url, root_url, custom_regex=None):
 
             # Determine expression to use
             # String case
-            if isinstance(custom_regex, basestring):
+            if isinstance(custom_regex, str):
                 expression = custom_regex
             # List or tuple case
             elif (isinstance(custom_regex, list) or isinstance(custom_regex, tuple)) and len(custom_regex) > 0:

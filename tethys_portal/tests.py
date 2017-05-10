@@ -40,4 +40,4 @@ class LoginTestCase(TestCase):
         response = self.client.post(action_url, form_data)
 
         self.assertEqual(response.status_code, 200)
-        print(response.context)
+        print((response.context))

@@ -40,7 +40,7 @@ def get_manage_path(args):
 
         # Throw error if path is not valid
         if not os.path.isfile(manage_path):
-            print('ERROR: Can\'t open file "{0}", no such file.'.format(manage_path))
+            print(('ERROR: Can\'t open file "{0}", no such file.'.format(manage_path)))
             exit(1)
 
     elif not os.path.isfile(manage_path):

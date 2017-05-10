@@ -51,7 +51,7 @@ def generate_command(args):
         template = Template(open(template_path).read())
 
         # Generate context variables
-        secret_key = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(50)])
+        secret_key = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(50)])
         context.update({'secret_key': secret_key,
                         'allowed_host': args.allowed_host,
                         'db_username': args.db_username,
@@ -74,7 +74,7 @@ def generate_command(args):
         if os.path.isdir(args.directory):
             destination_dir = args.directory
         else:
-            print('ERROR: "{0}" is not a valid directory.'.format(destination_dir))
+            print(('ERROR: "{0}" is not a valid directory.'.format(destination_dir)))
             exit(1)
 
     destination_path = os.path.join(destination_dir, destination_file)
@@ -84,14 +84,14 @@ def generate_command(args):
         valid_inputs = ('y', 'n', 'yes', 'no')
         no_inputs = ('n', 'no')
 
-        overwrite_input = raw_input('WARNING: "{0}" already exists. '
+        overwrite_input = input('WARNING: "{0}" already exists. '
                                     'Overwrite? (y/n): '.format(destination_file)).lower()
 
         while overwrite_input not in valid_inputs:
-            overwrite_input = raw_input('Invalid option. Overwrite? (y/n): ').lower()
+            overwrite_input = input('Invalid option. Overwrite? (y/n): ').lower()
 
         if overwrite_input in no_inputs:
-            print('Generation of "{0}" cancelled.'.format(destination_file))
+            print(('Generation of "{0}" cancelled.'.format(destination_file)))
             exit(0)
 
     # Render template and write to file

@@ -26,7 +26,7 @@ class TethysGizmoOptions(dict):
         # Dictionary magic
         self.__dict__ = self
 
-        if isinstance(attributes, basestring):
+        if isinstance(attributes, str):
             # 'key="value" key2="value with spaces"'
             pattern = '(\w+)='
             pairs = re.split(pattern, attributes)

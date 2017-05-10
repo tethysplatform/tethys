@@ -38,9 +38,9 @@ class Command(BaseCommand):
         installed_apps = get_installed_tethys_apps()
 
         # Provide feedback to user
-        print('INFO: Linking static and public directories of apps to "{0}".'.format(static_root))
+        print(('INFO: Linking static and public directories of apps to "{0}".'.format(static_root)))
 
-        for app, path in installed_apps.iteritems():
+        for app, path in installed_apps.items():
             # Check for both variants of the static directory (public and static)
             public_path = os.path.join(path, 'public')
             static_path = os.path.join(path, 'static')
@@ -61,9 +61,9 @@ class Command(BaseCommand):
             # Create appropriate symbolic link
             if os.path.isdir(public_path):
                 os.symlink(public_path, static_root_path)
-                print('INFO: Successfully linked public directory to STATIC_ROOT for app "{0}".'.format(app))
+                print(('INFO: Successfully linked public directory to STATIC_ROOT for app "{0}".'.format(app)))
 
             elif os.path.isdir(static_path):
                 os.symlink(static_path, static_root_path)
-                print('INFO: Successfully linked static directory to STATIC_ROOT for app "{0}".'.format(app))
+                print(('INFO: Successfully linked static directory to STATIC_ROOT for app "{0}".'.format(app)))
 

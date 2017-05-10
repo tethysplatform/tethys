@@ -1,6 +1,7 @@
 from django.test import TestCase
-from app_base import TethysAppBase
+from .app_base import TethysAppBase
 from django.test import Client
+import collections
 
 
 class TethysTestCase(TestCase):
@@ -20,7 +21,7 @@ class TethysTestCase(TestCase):
     def tearDown(self):
         child_tearDown = getattr(self, 'tear_down', None)
         if child_tearDown:
-            if callable(child_tearDown):
+            if isinstance(child_tearDown, collections.Callable):
                 self.tear_down()
 
     def set_up(self):
