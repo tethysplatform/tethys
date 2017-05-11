@@ -30,12 +30,12 @@ You will be prompted to enter metadata about your app such as, proper name, vers
 
 The commands you entered did the following tasks:
 
-1. activated the Tethys :term:`Python conda environment`,
+1. activated the Tethys :term:`Python conda environment` and started the primary database for Tethys Portal,
 2. created a new directory called "tethysdev" in your home directory,
 3. changed your working directory into the :file:`tethysdev` directory, and
 4. executed the :command:`tethys scaffold` command to create the new app.
 
-In a file browser change into your :file:`Home` directory and open the :file:`tethysdev` directory. If the scaffolding worked, you should see a directory called :file:`tethysapp-dam_inventory`. All of the source code for your app is located in this directory. Open the :file:`tethysapp-dam_inventory` and explore the contents. The main directory of your app project, :file:`dam_inventory`, is located within a namespace directory called :file:`tethysapp`. Each part of the app project will be explained throughout these tutorials. For more information about the app project structure, see :doc:`../../supplementary/app_project`.
+In a file browser change into your :file:`Home` directory and open the :file:`tethysdev` directory. If the scaffolding worked, you should see a directory called :file:`tethysapp-dam_inventory`. All of the source code for your app is located in this directory. For more information about the app project structure, see :doc:`../../supplementary/app_project`.
 
 Development Installation
 ========================
@@ -90,8 +90,11 @@ For convenience, all paths in the following tutorials will be given relative to 
 
 ::
 
-    # Relative App Package Directory Notation
-    dam_inventory/controllers.py
+    # This path:
+    ~/tethysdev/tethysapp-dam_inventory/tethysapp/dam_inventory/controllers.py
+
+    # Will be referred to as:
+    controllers.py
 
 .. tip::
 
