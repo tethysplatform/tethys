@@ -71,6 +71,18 @@ Plotly and Bokeh Gizmos
 
 See:
 
+Commandline Interface
+---------------------
+
+* Added ``tethys list`` command that lists installed apps.
+
+See: :ref:`tethys_list_cmd`
+
+Bugs
+----
+
+* Fixed issue where ``tethys uninstall <app>`` command was not uninstalling fully.
+
 
 
 Prior Release Notes

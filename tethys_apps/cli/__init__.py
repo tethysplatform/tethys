@@ -11,7 +11,6 @@
 import argparse
 import subprocess
 import os
-import shutil
 import webbrowser
 
 from tethys_apps.terminal_colors import TerminalColors
@@ -58,7 +57,7 @@ def scaffold_command(args):
     process = ['paster', 'create', '-t', 'tethys_app_scaffold', project_name]
     subprocess.call(process)
 
-# TODO: Create a 'tethys list' command that lists all installed apps.
+
 def uninstall_command(args):
     """
     Uninstall an app command.
@@ -71,6 +70,16 @@ def uninstall_command(args):
         subprocess.call(process)
     except KeyboardInterrupt:
         pass
+
+
+def list_apps_command(args):
+    """
+    List installed apps.
+    """
+    installed_apps = get_installed_tethys_apps()
+
+    for app in installed_apps:
+        print(app)
 
 
 def docker_command(args):
@@ -254,6 +263,10 @@ def tethys_command():
     uninstall_parser = subparsers.add_parser('uninstall', help='Uninstall an app.')
     uninstall_parser.add_argument('app', help='Name of the app to uninstall.')
     uninstall_parser.set_defaults(func=uninstall_command)
+
+    # Setup list command
+    list_parser = subparsers.add_parser('list', help='List installed apps.')
+    list_parser.set_defaults(func=list_apps_command)
 
     # Sync stores command
     syncstores_parser = subparsers.add_parser('syncstores', help='Management command for App Persistent Stores.')
