@@ -10,7 +10,8 @@
 try:
     import curses
 except:
-    pass
+    pass  # curses not available on Windows
+import platform
 import subprocess
 from subprocess import PIPE
 import os
@@ -331,86 +332,99 @@ def log_pull_stream(stream):
     Handle the printing of pull statuses
     """
 
-    TERMINAL_STATUSES = ['Already exists', 'Download complete', 'Pull complete']
-    PROGRESS_STATUSES = ['Downloading', 'Extracting']
-    STATUSES = TERMINAL_STATUSES + PROGRESS_STATUSES + ['Pulling fs layer', 'Waiting', 'Verifying Checksum']
-
-    NUMBER_OF_HEADER_ROWS = 2
-
-    header_rows = list()
-    message_log = list()
-    progress_messages = dict()
-    messages_to_print = list()
-
-    # prepare console for curses window printing
-    stdscr = curses.initscr()
-    curses.noecho()
-    curses.cbreak()
-
-    try:
+    if platform.system() == 'Windows':  # i.e. can't uses curses
         for block in stream:
             lines = [l for l in block.split('\r\n') if l]
             for line in lines:
                 json_line = json.loads(line)
-                current_id = json_line['id'] if 'id' in json_line else None
+                current_id = "{}:".format(json_line['id']) if 'id' in json_line else ''
                 current_status = json_line['status'] if 'status' in json_line else ''
                 current_progress = json_line['progress'] if 'progress' in json_line else ''
 
-                if current_id is None:
-                    # save messages to print after docker images are pulled
-                    messages_to_print.append(current_status.strip())
-                else:
-                    # use curses window to properly display progress
-                    if current_status not in STATUSES:  # Assume this is the header
-                        header_rows.append(current_status)
-                        header_rows.append('-' * len(current_status))
+                print("{id}{status} {progress}".format(id=current_id, status=current_status,
+                                                   progress=current_progress))
+    else:
 
-                    elif current_status in PROGRESS_STATUSES:
-                            # add messages with progress to dictionary to print at the bottom of the screen
-                            progress_messages[current_id] = {'id': current_id, 'status': current_status,
-                                                             'progress': current_progress}
+        TERMINAL_STATUSES = ['Already exists', 'Download complete', 'Pull complete']
+        PROGRESS_STATUSES = ['Downloading', 'Extracting']
+        STATUSES = TERMINAL_STATUSES + PROGRESS_STATUSES + ['Pulling fs layer', 'Waiting', 'Verifying Checksum']
+
+        NUMBER_OF_HEADER_ROWS = 2
+
+        header_rows = list()
+        message_log = list()
+        progress_messages = dict()
+        messages_to_print = list()
+
+        # prepare console for curses window printing
+        stdscr = curses.initscr()
+        curses.noecho()
+        curses.cbreak()
+
+        try:
+            for block in stream:
+                lines = [l for l in block.split('\r\n') if l]
+                for line in lines:
+                    json_line = json.loads(line)
+                    current_id = json_line['id'] if 'id' in json_line else None
+                    current_status = json_line['status'] if 'status' in json_line else ''
+                    current_progress = json_line['progress'] if 'progress' in json_line else ''
+
+                    if current_id is None:
+                        # save messages to print after docker images are pulled
+                        messages_to_print.append(current_status.strip())
                     else:
-                        # add all other messages to list to show above progress messages
-                        message_log.append("{id}: {status} {progress}".format(id=current_id, status=current_status,
-                                                                           progress=current_progress))
+                        # use curses window to properly display progress
+                        if current_status not in STATUSES:  # Assume this is the header
+                            header_rows.append(current_status)
+                            header_rows.append('-' * len(current_status))
 
-                        # remove messages from progress that have completed
-                        if current_id in progress_messages:
-                            del progress_messages[current_id]
+                        elif current_status in PROGRESS_STATUSES:
+                                # add messages with progress to dictionary to print at the bottom of the screen
+                                progress_messages[current_id] = {'id': current_id, 'status': current_status,
+                                                                 'progress': current_progress}
+                        else:
+                            # add all other messages to list to show above progress messages
+                            message_log.append("{id}: {status} {progress}".format(id=current_id, status=current_status,
+                                                                               progress=current_progress))
 
-                    # update window
+                            # remove messages from progress that have completed
+                            if current_id in progress_messages:
+                                del progress_messages[current_id]
 
-                    # row/column calculations for proper display on screen
-                    maxy, maxx = stdscr.getmaxyx()
-                    number_of_rows, number_of_columns = maxy, maxx
+                        # update window
 
-                    current_progress_messages = sorted(progress_messages.values(),
-                                                       key=lambda message: STATUSES.index(message['status']))
+                        # row/column calculations for proper display on screen
+                        maxy, maxx = stdscr.getmaxyx()
+                        number_of_rows, number_of_columns = maxy, maxx
 
-                    # row/column calculations for proper display on screen
-                    number_of_progress_rows = len(current_progress_messages)
-                    number_of_message_rows = number_of_rows - number_of_progress_rows - NUMBER_OF_HEADER_ROWS
+                        current_progress_messages = sorted(progress_messages.values(),
+                                                           key=lambda message: STATUSES.index(message['status']))
 
-                    # slice messages to only those that will fit on the screen
-                    current_messages = [''] * number_of_message_rows + message_log
-                    current_messages = current_messages[-number_of_message_rows:]
+                        # row/column calculations for proper display on screen
+                        number_of_progress_rows = len(current_progress_messages)
+                        number_of_message_rows = number_of_rows - number_of_progress_rows - NUMBER_OF_HEADER_ROWS
 
-                    rows = header_rows + current_messages + ['{id}: {status} {progress}'.format(**current_message)
-                                                             for current_message in current_progress_messages]
+                        # slice messages to only those that will fit on the screen
+                        current_messages = [''] * number_of_message_rows + message_log
+                        current_messages = current_messages[-number_of_message_rows:]
 
-                    for row, message in enumerate(rows):
-                        message += ' ' * number_of_columns
-                        message = message[:number_of_columns - 1]
-                        stdscr.addstr(row, 0, message)
+                        rows = header_rows + current_messages + ['{id}: {status} {progress}'.format(**current_message)
+                                                                 for current_message in current_progress_messages]
 
-                    stdscr.refresh()
+                        for row, message in enumerate(rows):
+                            message += ' ' * number_of_columns
+                            message = message[:number_of_columns - 1]
+                            stdscr.addstr(row, 0, message)
 
-    finally:  # always reset console to normal regardless of success or failure
-        curses.echo()
-        curses.nocbreak()
-        curses.endwin()
+                        stdscr.refresh()
 
-    print('\n'.join(messages_to_print))
+        finally:  # always reset console to normal regardless of success or failure
+            curses.echo()
+            curses.nocbreak()
+            curses.endwin()
+
+        print('\n'.join(messages_to_print))
 
 
 def get_docker_container_dicts(docker_client):
