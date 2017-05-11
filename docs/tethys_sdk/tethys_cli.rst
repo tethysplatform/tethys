@@ -154,8 +154,21 @@ Management command for Persistent Stores. To learn more about persistent stores 
     # Refresh all persistent store databases for an app
     $ tethys syncstores my_first_app -r
 
+.. _tethys_list_cmd:
+
+list
+----
+
+Use this command to list all installed apps.
+
+**Examples:**
+
+::
+
+    $ tethys list
+
 uninstall <app>
---------------------------------------------
+---------------
 
 Use this command to uninstall apps.
 
