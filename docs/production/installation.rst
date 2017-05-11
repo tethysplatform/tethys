@@ -9,7 +9,7 @@ This article will provide an overview of how to install Tethys Portal in a produ
 1. Install Tethys Portal
 ========================
 
-Follow the default :doc:`../installation/ubuntu16` instructions to install Tethys Portal with the following considerations
+Follow the default :doc:`../installation/linux_and_mac` instructions to install Tethys Portal with the following considerations
 
 * Make sure to checkout the correct branch. The master branch provides the latest stable release.
 * Assign strong passwords to the database users.

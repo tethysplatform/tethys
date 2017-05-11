@@ -1,6 +1,7 @@
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 
-__all__ = ['ESRIMap','EMView','EMLayer']
+__all__ = ['ESRIMap', 'EMView', 'EMLayer']
+
 
 class ESRIMap(TethysGizmoOptions):
     """
@@ -130,4 +131,3 @@ class EMLayer(SecondaryGizmoOptions):
         super(EMLayer,self).__init__()
         self.type = type
         self.url = url
-
