@@ -8,11 +8,10 @@
 ********************************************************************************
 """
 
+import curses
 import subprocess
-from pprint import pprint
 from subprocess import PIPE
 import os
-import sys
 import json
 import getpass
 from exceptions import OSError
@@ -329,45 +328,87 @@ def log_pull_stream(stream):
     """
     Handle the printing of pull statuses
     """
-    # Experimental printing
-    previous_id = ''
-    previous_message = ''
 
-    for line in stream:
-        json_line = json.loads(line)
-        current_id = json_line['id'] if 'id' in json_line else ''
-        current_status = json_line['status'] if 'status' in json_line else ''
+    TERMINAL_STATUSES = ['Already exists', 'Download complete', 'Pull complete']
+    PROGRESS_STATUSES = ['Downloading', 'Extracting']
+    STATUSES = TERMINAL_STATUSES + PROGRESS_STATUSES + ['Pulling fs layer', 'Waiting', 'Verifying Checksum']
 
-        # Update prompt
-        backspaces = '\b' * len(previous_message)
-        spaces = ' ' * len(previous_message)
-        current_message = '\n{0}: {1}'.format(current_id, current_status)
+    NUMBER_OF_HEADER_ROWS = 2
 
-        if current_status == 'Downloading' or current_status == 'Extracting':
-            current_message = '{0} {1}'.format(current_message, json_line['progress'])
+    header_rows = list()
+    message_log = list()
+    progress_messages = dict()
+    messages_to_print = list()
 
-        # Handle no id case
-        if not current_id:
-            sys.stdout.write('\n{0}'.format(current_status))
+    # prepare console for curses window printing
+    stdscr = curses.initscr()
+    curses.noecho()
+    curses.cbreak()
 
-        # Overwrite current line if id is the same
-        elif current_id == previous_id:
-            sys.stdout.write(backspaces)
-            sys.stdout.write(spaces)
-            sys.stdout.write(backspaces)
-            sys.stdout.write(current_message.strip())
+    try:
+        for block in stream:
+            lines = [l for l in block.split('\r\n') if l]
+            for line in lines:
+                json_line = json.loads(line)
+                current_id = json_line['id'] if 'id' in json_line else None
+                current_status = json_line['status'] if 'status' in json_line else ''
+                current_progress = json_line['progress'] if 'progress' in json_line else ''
 
-        # Start new line
-        else:
-            sys.stdout.write(current_message)
+                if current_id is None:
+                    # save messages to print after docker images are pulled
+                    messages_to_print.append(current_status.strip())
+                else:
+                    # use curses window to properly display progress
+                    if current_status not in STATUSES:  # Assume this is the header
+                        header_rows.append(current_status)
+                        header_rows.append('-' * len(current_status))
 
-        # Flush to out
-        sys.stdout.flush()
+                    elif current_status in PROGRESS_STATUSES:
+                            # add messages with progress to dictionary to print at the bottom of the screen
+                            progress_messages[current_id] = {'id': current_id, 'status': current_status,
+                                                             'progress': current_progress}
+                    else:
+                        # add all other messages to list to show above progress messages
+                        message_log.append("{id}: {status} {progress}".format(id=current_id, status=current_status,
+                                                                           progress=current_progress))
 
-        # Save state
-        previous_message = current_message
-        previous_id = current_id
-    print()
+                        # remove messages from progress that have completed
+                        if current_id in progress_messages:
+                            del progress_messages[current_id]
+
+                    # update window
+
+                    # row/column calculations for proper display on screen
+                    maxy, maxx = stdscr.getmaxyx()
+                    number_of_rows, number_of_columns = maxy, maxx
+
+                    current_progress_messages = sorted(progress_messages.values(),
+                                                       key=lambda message: STATUSES.index(message['status']))
+
+                    # row/column calculations for proper display on screen
+                    number_of_progress_rows = len(current_progress_messages)
+                    number_of_message_rows = number_of_rows - number_of_progress_rows - NUMBER_OF_HEADER_ROWS
+
+                    # slice messages to only those that will fit on the screen
+                    current_messages = [''] * number_of_message_rows + message_log
+                    current_messages = current_messages[-number_of_message_rows:]
+
+                    rows = header_rows + current_messages + ['{id}: {status} {progress}'.format(**current_message)
+                                                             for current_message in current_progress_messages]
+
+                    for row, message in enumerate(rows):
+                        message += ' ' * number_of_columns
+                        message = message[:number_of_columns - 1]
+                        stdscr.addstr(row, 0, message)
+
+                    stdscr.refresh()
+
+    finally:  # always reset console to normal regardless of success or failure
+        curses.echo()
+        curses.nocbreak()
+        curses.endwin()
+
+    print('\n'.join(messages_to_print))
 
 
 def get_docker_container_dicts(docker_client):
