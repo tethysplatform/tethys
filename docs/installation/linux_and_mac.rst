@@ -19,14 +19,14 @@ For systems with `wget` (most Linux distributions):
 
 .. parsed-literal::
 
-      wget \https://github.com/tethysplatform/tethys/raw/|branch|/scripts/install_tethys.sh
+      wget :install_tethys:`sh`
       . install_tethys.sh -b |branch|
 
 For Systems with `curl` (e.g. Mac OSX and CentOS):
 
 .. parsed-literal::
 
-      curl \https://github.com/tethysplatform/tethys/raw/|branch|/scripts/install_tethys.sh -o ./install_tethys.sh
+      curl :install_tethys:`sh` -o ./install_tethys.sh
       . install_tethys.sh -b |branch|
 
 .. note::
@@ -63,11 +63,19 @@ For Systems with `curl` (e.g. Mac OSX and CentOS):
                 Tethys super user password. Default is 'pass'.
         * `--install-docker`:
                 Flag to include Docker installation as part of the install script (Linux only). See `2. Install Docker (OPTIONAL)`_ for more details.
-        * `--docker-options <OPTIONS>`:
-                Command line options to pass to the `tethys docker init` call if --install-docker is used. Default is "'-d'".
+        * `--install-docker-only`:
+                Flag to skip the Tethys installation and only install run the Docker installation. Tethys must already be installed (Linux only).
+
                 .. tip::
 
-                    Note that the value for the `--docker-options` option must have nested quotes. For example "'-d -c geoserver'" or '"-d -c geoserver"'.
+                    If conda home is not in the default location then the `--conda-home` options must also be specified with this option.
+
+        * `--docker-options <OPTIONS>`:
+                Command line options to pass to the `tethys docker init` call if --install-docker is used. Default is "'-d'".
+
+                .. tip::
+
+                    The value for the `--docker-options` option must have nested quotes. For example "'-d -c geoserver'" or '"-d -c geoserver"'.
         * `-x`:
                 Flag to turn on shell command echoing.
         * `-h, --help`:
