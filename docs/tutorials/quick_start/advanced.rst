@@ -49,14 +49,14 @@ If you have not already started the development server, start it now:
 Configure App to Use a Custom Setting
 =====================================
 
-Intro to App Settings... :doc:``../../tethys_sdk/app_settings``
+Intro to App Settings... :doc:`../../tethys_sdk/app_settings`
 
 
 
 Configure App to Use a Persistent Store Database
 ================================================
 
-Intro to persistent stores... :doc:``../../tethys_sdk/tethys_services/persistent_store``
+Intro to persistent stores... :doc:`../../tethys_sdk/tethys_services/persistent_store`
 
 1. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by adding the ``persistent_store_settings`` method to your app class:
 
@@ -436,7 +436,7 @@ Use JavaScript APIs to Create Dynamic Pop-Ups
 Create Permissions Groups
 =========================
 
-Intro to permissions... :doc:``../../tethys_sdk/permissions``
+Intro to permissions... :doc:`../../tethys_sdk/permissions`
 
 1. Define permissions for the app by adding the ``permissions`` method to the app class in the ``app.py``:
 
