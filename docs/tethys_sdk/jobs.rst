@@ -90,9 +90,10 @@ All job types also have the following read-only attributes:
         - 'Complete'
         - 'Error'
         - 'Aborted'
-        - 'Various'*
-        - 'Various-Complete'*
-        *used for job types with multiple sub-jobs (e.g. CondorWorkflow).
+        - 'Various'\*
+        - 'Various-Complete'\*
+
+        \*used for job types with multiple sub-jobs (e.g. CondorWorkflow).
 
 .. note::
     Job template classes may support passing in job attributes as additional arguments. See the documentation for each job type for a list of acceptable parameters for each template class add if additional arguments are supported.
@@ -233,6 +234,10 @@ API Documentation
 
 .. autoclass:: tethys_sdk.jobs.JobTemplate
 
-.. autoclass:: tethys_sdk.jobs.BasicJobTemplate
+References
+==========
 
-.. autoclass:: tethys_sdk.jobs.CondorJobTemplate
+.. toctree::
+   :maxdepth: 1
+
+   jobs/condor_job_description
