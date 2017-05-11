@@ -167,7 +167,7 @@ IF %ERRORLEVEL% NEQ 0 (
 ECHO Starting Tethys Installation...
 
 :: Make tethys directory and resolve relative paths
-MKDIR %TETHYS_HOME%
+MKDIR "%TETHYS_HOME%"
 
 IF EXIST "%CWD%%TETHYS_HOME%" (
     :: TETHYS_HOME is a relative path so make it absolute
@@ -177,6 +177,15 @@ IF EXIST "%CWD%%TETHYS_HOME%" (
 :: set CONDA_HOME relative to TETHYS_HOME if not already set
 IF NOT DEFINED CONDA_HOME (
     SET CONDA_HOME=%TETHYS_HOME%\miniconda
+) ELSE IF EXIST "%CWD%%CONDA_HOME%" (
+    :: TETHYS_HOME is a relative path so make it absolute
+    SET CONDA_HOME=%CWD%%CONDA_HOME%
+)
+
+:: check if CONDA_HOME has spaces
+IF NOT "%CONDA_HOME%"=="%CONDA_HOME: =%" (
+    ECHO ERROR: Miniconda cannot be installed in a path with spaces. Please specify a different conda home path using the '--conda-home' option.
+    EXIT /B 1
 )
 
 :: Install miniconda
@@ -187,7 +196,7 @@ IF EXIST "%CONDA_HOME%\Scripts\activate" (
     ECHO Installing Miniconda...
     START /wait "" %CONDA_EXE% /InstallationType=JustMe /RegisterPython=0 /S /D=%CONDA_HOME%
 )
-CALL %CONDA_HOME%\Scripts\activate
+CALL "%CONDA_HOME%\Scripts\activate"
 
 IF EXIST "%CWD%%CONDA_HOME%" (
     :: CONDA_HOME is a relative path so make it absolute
@@ -254,33 +263,39 @@ IF %ERRORLEVEL% NEQ 0 (
 :: Create environment activate/deactivate scripts
 SET ACTIVATE_DIR=%CONDA_HOME%\envs\%CONDA_ENV_NAME%\etc\conda\activate.d
 SET DEACTIVATE_DIR=%CONDA_HOME%\envs\%CONDA_ENV_NAME%\etc\conda\deactivate.d
-MKDIR %ACTIVATE_DIR% %DEACTIVATE_DIR%
+MKDIR "%ACTIVATE_DIR%" "%DEACTIVATE_DIR%"
 SET ACTIVATE_SCRIPT=%ACTIVATE_DIR%\tethys-activate.bat
 SET DEACTIVATE_SCRIPT=%DEACTIVATE_DIR%\tethys-deactivate.bat
 
-ECHO @ECHO OFF>> %ACTIVATE_SCRIPT%
-ECHO SET TETHYS_HOME=%TETHYS_HOME%>> %ACTIVATE_SCRIPT%
-ECHO SET TETHYS_PORT=%TETHYS_PORT%>> %ACTIVATE_SCRIPT%
-ECHO SET TETHYS_DB_PORT=%TETHYS_DB_PORT%>> %ACTIVATE_SCRIPT%
-ECHO DOSKEY tethys_start_db=pg_ctl -U postgres -D ^%%TETHYS_HOME%%\psql\data -l ^%%TETHYS_HOME%%\psql\logfile start -o "-p %%TETHYS_DB_PORT%%" >> %ACTIVATE_SCRIPT%
-ECHO DOSKEY tstartdb=pg_ctl -U postgres -D ^%%TETHYS_HOME%%\psql\data -l ^%%TETHYS_HOME%%\psql\logfile start -o "-p %%TETHYS_DB_PORT%%" >> %ACTIVATE_SCRIPT%
-ECHO DOSKEY tethys_stop_db=pg_ctl -U postgres -D ^%%TETHYS_HOME%%\psql\data stop >> %ACTIVATE_SCRIPT%
-ECHO DOSKEY tstopdb=pg_ctl -U postgres -D ^%%TETHYS_HOME%%\psql\data stop >> %ACTIVATE_SCRIPT%
-ECHO DOSKEY tms=tethys manage start -p %ALLOWED_HOST%:^%%TETHYS_PORT%% >> %ACTIVATE_SCRIPT%
-ECHO tethys_start_db >> %ACTIVATE_SCRIPT%
+ECHO @ECHO OFF>> "%ACTIVATE_SCRIPT%"
+ECHO SET TETHYS_HOME=%TETHYS_HOME%>> "%ACTIVATE_SCRIPT%"
+ECHO SET TETHYS_PORT=%TETHYS_PORT%>> "%ACTIVATE_SCRIPT%"
+ECHO SET TETHYS_DB_PORT=%TETHYS_DB_PORT%>> "%ACTIVATE_SCRIPT%"
+ECHO DOSKEY tethys_start_db=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" -l "%%TETHYS_HOME%%\psql\logfile" start -o "-p %%TETHYS_DB_PORT%%" >> "%ACTIVATE_SCRIPT%"
+ECHO DOSKEY tstartdb=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" -l "%%TETHYS_HOME%%\psql\logfile" start -o "-p %%TETHYS_DB_PORT%%" >>"%ACTIVATE_SCRIPT%"
+ECHO DOSKEY tethys_stop_db=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" stop >>"%ACTIVATE_SCRIPT%"
+ECHO DOSKEY tstopdb=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" stop >> "%ACTIVATE_SCRIPT%"
+ECHO DOSKEY tms=tethys manage start -p %ALLOWED_HOST%:^%%TETHYS_PORT%% >> "%ACTIVATE_SCRIPT%"
 
-CALL %ACTIVATE_SCRIPT%
+PUSHD .\
+CD %ACTIVATE_DIR%
+CALL tethys-activate.bat
+POPD
 
-ECHO @ECHO OFF>> %DEACTIVATE_SCRIPT%
-ECHO SET TETHYS_HOME=>> %DEACTIVATE_SCRIPT%
-ECHO SET TETHYS_DB_PORT=>> %DEACTIVATE_SCRIPT%
-ECHO SET TETHYS_PORT=>> %DEACTIVATE_SCRIPT%
-ECHO DOSKEY tethys_start_db= >> %DEACTIVATE_SCRIPT%
-ECHO DOSKEY tstartdb= >> %DEACTIVATE_SCRIPT%
-ECHO DOSKEY tethys_stop_db= >> %DEACTIVATE_SCRIPT%
-ECHO DOSKEY tstopdb= >> %DEACTIVATE_SCRIPT%
-ECHO DOSKEY tms= >> %DEACTIVATE_SCRIPT%
-ECHO tethys_stop_db >> %DEACTIVATE_SCRIPT%
+ECHO ECHO Starting Tethys Database Server... >> "%ACTIVATE_SCRIPT%"
+ECHO pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" -l "^%%TETHYS_HOME%%\psql\logfile" start -o "-p %%TETHYS_DB_PORT%%" >> "%ACTIVATE_SCRIPT%"
+
+ECHO @ECHO OFF>> "%DEACTIVATE_SCRIPT%"
+ECHO ECHO Stopping Tethys Database Server... >> "%DEACTIVATE_SCRIPT%"
+ECHO pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" stop >> "%DEACTIVATE_SCRIPT%"
+ECHO SET TETHYS_HOME=>> "%DEACTIVATE_SCRIPT%"
+ECHO SET TETHYS_DB_PORT=>> "%DEACTIVATE_SCRIPT%"
+ECHO SET TETHYS_PORT=>> "%DEACTIVATE_SCRIPT%"
+ECHO DOSKEY tethys_start_db= >> "%DEACTIVATE_SCRIPT%"
+ECHO DOSKEY tstartdb= >> "%DEACTIVATE_SCRIPT%"
+ECHO DOSKEY tethys_stop_db= >> "%DEACTIVATE_SCRIPT%"
+ECHO DOSKEY tstopdb= >> "%DEACTIVATE_SCRIPT%"
+ECHO DOSKEY tms= >> "%DEACTIVATE_SCRIPT%"
 
 IF %ERRORLEVEL% NEQ 0 (
     ECHO Error occured while creating activate scripts.
@@ -288,10 +303,9 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 SET TETHYS_CMD=%TETHYS_HOME%\tethys_cmd.bat
-ECHO @ECHO OFF>> %TETHYS_CMD%
-ECHO CD %TETHYS_HOME% >> %TETHYS_CMD%
-ECHO CMD /K %CONDA_HOME%\Scripts\activate %CONDA_ENV_NAME% >> %TETHYS_CMD%
-
+ECHO @ECHO OFF>> "%TETHYS_CMD%"
+ECHO CD %TETHYS_HOME% >> "%TETHYS_CMD%"
+ECHO CMD /K %CONDA_HOME%\Scripts\activate %CONDA_ENV_NAME% >> "%TETHYS_CMD%"
 
 ECHO Tethys installation complete!
 
