@@ -32,26 +32,17 @@ def get_manage_path(args):
     Validate user defined manage path, use default, or throw error
     """
     # Determine path to manage.py file
-    manage_path = os.path.join(DEFAULT_INSTALLATION_DIRECTORY, 'manage.py')
+    tethys_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    manage_path = os.path.join(tethys_dir, 'manage.py')
 
     # Check for path option
-    if args.manage:
+    if hasattr(args, 'manage'):
         manage_path = args.manage
 
-        # Throw error if path is not valid
-        if not os.path.isfile(manage_path):
-            print('ERROR: Can\'t open file "{0}", no such file.'.format(manage_path))
-            exit(1)
-
-    elif not os.path.isfile(manage_path):
-        # Try the development path version
-        manage_path = os.path.join(DEVELOPMENT_DIRECTORY, 'manage.py')
-
-        # Throw error if default path is not valid
-        if not os.path.isfile(manage_path):
-            print('ERROR: Cannot find the "manage.py" file at the default location. Try using the "--manage"'
-                  'option to provide the path to the location of the "manage.py" file.')
-            exit(1)
+    # Throw error if path is not valid
+    if not os.path.isfile(manage_path):
+        print('ERROR: Can\'t open file "{0}", no such file.'.format(manage_path))
+        exit(1)
 
     return manage_path
 
