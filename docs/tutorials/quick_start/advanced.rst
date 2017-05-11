@@ -433,19 +433,6 @@ Use JavaScript APIs to Create Dynamic Pop-Ups
     {% endblock %}
 
 
-Add Flood Hydrograph Model
-==========================
-
-
-
-
-Add Flood Hydrograph Form
-=========================
-
-Add Flood Hydrograph Plot
-=========================
-
-
 Create Permissions Groups
 =========================
 
@@ -572,22 +559,22 @@ Intro to permissions... :doc:``../../tethys_sdk/permissions``
     c. Scroll to the **Authentication and Authorization** section.
     d. Select the **Users** link.
     e. Press the **Add User** button.
-    d. Enter "di_admin" as the username and enter a password. Take note of the password for later.
-    f. Press the **Save** button.
-    e. Scroll down to the **Groups** section.
-    f. Select the **dam_inventory:admin** group and press the right arrow to add the user to that group.
+    f. Enter "di_admin" as the username and enter a password. Take note of the password for later.
     g. Press the **Save** button.
-    h. Repeat steps e-f for user named "di_viewer". DO NOT add "di_viewer" user to any groups.
-    i. Press the **Save** button.
+    h. Scroll down to the **Groups** section.
+    i. Select the **dam_inventory:admin** group and press the right arrow to add the user to that group.
+    j. Press the **Save** button.
+    k. Repeat steps e-f for user named "di_viewer". DO NOT add "di_viewer" user to any groups.
+    l. Press the **Save** button.
 
 6. Log in each user. If the permission has been applied correctly, "di_viewer" should not be able to see the Add Dam link and should be redirected if the Add Dam view is linked to directly. "di_admin" should be able to add dams.
 
-Narrative
-* Introduce Tethys Services API
-* Refactor to use PersistentStores API, rather than JSON files
-* Add hydrograph table
-* Create form for uploading hydrograph files and show how to use that on server and load into database
-* Plot hydrographs
-* Use JavaScript APIs to create dynamic pop-ups that show attributes of dam when clicked on
-* Use CSS to make map fit full screen
-* Create two permissions groups: viewers and admins -- only allow admins to add new dams
+
+Add Flood Hydrograph Model
+==========================
+
+Add Flood Hydrograph Form
+=========================
+
+Add Flood Hydrograph Plot
+=========================
