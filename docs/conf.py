@@ -47,7 +47,7 @@ django.setup()
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinxcontrib.napoleon']
+extensions = ['sphinx.ext.autodoc', 'sphinxcontrib.napoleon', 'sphinx.ext.extlinks', 'sphinx.ext.todo']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -78,6 +78,7 @@ release = pbr.version.VersionInfo('tethys_platform').version_string_with_vcs()
 # file that is read. This is the right place to add substitutions that should be
 # available in every file.
 branch = pbr.git._run_git_command(['rev-parse', '--abbrev-ref', 'HEAD'], pbr.git._get_git_directory())
+branch = 'dev' if branch == 'HEAD' else branch
 rst_epilog = """
 .. |branch| replace:: {branch}
 """.format(branch=branch)
@@ -238,6 +239,11 @@ latex_documents = [
 # If true, show page references after internal links.
 #latex_show_pagerefs = False
 
+# markup to shorten external links (see: http://www.sphinx-doc.org/en/stable/ext/extlinks.html)
+install_tethys_link = 'https://raw.githubusercontent.com/tethysplatform/tethys/{}/scripts/install_tethys.%s'.format(branch)
+extlinks = {'install_tethys': (install_tethys_link, None),
+            }
+
 # If true, show URL addresses after external links.
 #latex_show_urls = False
 
@@ -293,3 +299,10 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # otherwise, readthedocs.org uses their theme by default, so no need to specify it
+
+
+# If this is True, todo and todolist produce output, else they produce nothing. The default is False.
+todo_include_todos = True
+
+#If this is True, todo emits a warning for each TODO entries. The default is False.
+todo_emit_warnings = True
