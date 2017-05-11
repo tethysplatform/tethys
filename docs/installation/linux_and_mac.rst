@@ -19,15 +19,15 @@ For systems with `wget` (most Linux distributions):
 
 .. parsed-literal::
 
-      $ wget \https://raw.githubusercontent.com/tethysplatform/tethys/|branch|/scripts/install_tethys.sh
-      $ . install_tethys.sh
+      wget \https://github.com/tethysplatform/tethys/raw/|branch|/scripts/install_tethys.sh
+      . install_tethys.sh -b |branch|
 
 For Systems with `curl` (e.g. Mac OSX and CentOS):
 
 .. parsed-literal::
 
-      $ curl \https://raw.githubusercontent.com/tethysplatform/tethys/|branch|/scripts/install_tethys.sh -o ./install_tethys.sh
-      $ . install_tethys.sh
+      curl \https://github.com/tethysplatform/tethys/raw/|branch|/scripts/install_tethys.sh -o ./install_tethys.sh
+      . install_tethys.sh -b |branch|
 
 .. note::
 
