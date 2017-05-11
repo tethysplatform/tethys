@@ -37,7 +37,7 @@ def get_manage_path(args):
 
     # Check for path option
     if hasattr(args, 'manage'):
-        manage_path = args.manage
+        manage_path = args.manage or manage_path
 
     # Throw error if path is not valid
     if not os.path.isfile(manage_path):
