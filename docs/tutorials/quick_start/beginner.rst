@@ -1,6 +1,6 @@
-********************
-App Basics: Beginner
-********************
+*************************
+App Development: Beginner
+*************************
 
 **Last Updated:** May 2017
 
