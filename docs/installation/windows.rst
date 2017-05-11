@@ -10,16 +10,20 @@ Use these instructions to install a development environment on Windows systems.
 1. Download the Installation Script and the Miniconda Installation Executable
 -----------------------------------------------------------------------------
 
-a. Download the Tethys installation batch script by right clicking on the following link and selecting `Save link as...`: `<https://github.com/tethysplatform/tethys/raw/dev/scripts/install_tethys.bat>`_
+a. Download the Tethys installation batch script by right clicking on the following link and selecting `Save link as...`: `<https://github.com/tethysplatform/tethys/raw/|branch|/scripts/install_tethys.bat>`_
 
 
-b. Download the Miniconda installer from Conda site or by clicking on the following link: `<https://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86_64.exe>`_
+b. Download the Miniconda installer from the `Conda site <https://conda.io/miniconda.html>`_ or by clicking on the following link: `<https://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86_64.exe>`_
 
 
 2. Run the Tethys Installation Batch Script
 -------------------------------------------
 
-As long as the :file:`install_tethys.bat` and the :file:`Miniconda3-latest-Windows-x86_64.exe` files are in the same directory you can simply double click the :file:`install_tethys.bat` to perform a default installation. To pass in custom options to the installation scrip you must run the script for the command prompt.
+As long as the :file:`install_tethys.bat` and the :file:`Miniconda3-latest-Windows-x86_64.exe` files are in the same directory you can simply double click the :file:`install_tethys.bat` to perform a default installation. To pass in custom options to the installation scrip you must run the script for the command prompt:
+
+.. parsed-literal::
+
+    install_tethys.bat -b |branch|
 
 .. note::
 
