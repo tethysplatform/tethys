@@ -17,7 +17,7 @@ from tethys_apps.models import (TethysApp,
                                 PersistentStoreConnectionSetting,
                                 PersistentStoreDatabaseSetting)
 
-# TODO: Fix CSS for validation on settings inlines (i.e.: required/type validation feedback text)
+
 class TethysAppSettingInline(admin.TabularInline):
     template = 'tethys_portal/admin/edit_inline/tabular.html'
 
