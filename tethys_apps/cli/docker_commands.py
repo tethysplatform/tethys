@@ -7,8 +7,10 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-
-import curses
+try:
+    import curses
+except:
+    pass
 import subprocess
 from subprocess import PIPE
 import os
