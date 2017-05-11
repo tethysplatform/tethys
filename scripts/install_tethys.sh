@@ -225,13 +225,15 @@ then
     echo "Setting up the Tethys database..."
     initdb  -U postgres -D "${TETHYS_HOME}/psql/data"
     pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" -l "${TETHYS_HOME}/psql/logfile" start -o "-p ${TETHYS_DB_PORT}"
-    echo "wating for databases to startup..."; sleep 10
+    echo "Waiting for databases to startup..."; sleep 10
     psql -U postgres -p ${TETHYS_DB_PORT} --command "CREATE USER ${TETHYS_DB_USERNAME} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '${TETHYS_DB_PASSWORD}';"
     createdb -U postgres -p ${TETHYS_DB_PORT} -O ${TETHYS_DB_USERNAME} ${TETHYS_DB_USERNAME} -E utf-8 -T template0
 
     # Initialze Tethys database
     tethys manage syncdb
     echo "from django.contrib.auth.models import User; User.objects.create_superuser('${TETHYS_SUPER_USER}', '${TETHYS_SUPER_USER_EMAIL}', '${TETHYS_SUPER_USER_PASS}')" | python manage.py shell
+    pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" stop
+    . deactivate
 
     # Create environment activate/deactivate scripts
     ACTIVATE_DIR="${CONDA_HOME}/envs/${CONDA_ENV_NAME}/etc/conda/activate.d"
@@ -248,9 +250,6 @@ then
     echo "alias tethys_stop_db='pg_ctl -U postgres -D \${TETHYS_HOME}/psql/data stop'" >> ${ACTIVATE_SCRIPT}
     echo "alias tstopdb=tethys_stop_db" >> ${ACTIVATE_SCRIPT}
     echo "alias tms='tethys manage start -p ${ALLOWED_HOST}:\${TETHYS_PORT}'" >> ${ACTIVATE_SCRIPT}
-
-    . ${ACTIVATE_SCRIPT}
-
     echo "echo 'Starting Tethys Database Server...'" >> ${ACTIVATE_SCRIPT}
     echo "pg_ctl -U postgres -D \${TETHYS_HOME}/psql/data -l \${TETHYS_HOME}/psql/logfile start -o \"-p \${TETHYS_DB_PORT}\"" >> ${ACTIVATE_SCRIPT}
 
@@ -269,6 +268,8 @@ then
     echo "alias t='. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}'" >> ~/${BASH_PROFILE}
 
     echo "Tethys installation complete!"
+    echo
+    echo "NOTE: to enable the new alias 't' which activates the tethys environment you must run '. ~/${BASH_PROFILE}'"
 
 fi
 
@@ -284,13 +285,14 @@ finalize_docker_install(){
     sudo gpasswd -a ${USER} docker
     . ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}
     sg docker -c "tethys docker init ${DOCKER_OPTIONS}"
+    . deactivate
     echo "Docker installation finished!"
     echo "You must re-login for Docker permissions to be activated."
     echo "(Alternatively you can run 'newgrp docker')"
 }
 
 ubuntu_debian_docker_install(){
-    if [ ${LINUX_DISTRIBUTION} != "ubuntu" ] && [ ${LINUX_DISTRIBUTION} != "debian" ]
+    if [ "${LINUX_DISTRIBUTION}" != "ubuntu" ] && [ ${LINUX_DISTRIBUTION} != "debian" ]
     then
         installation_warning ${LINUX_DISTRIBUTION} "Ubuntu"
     fi
@@ -306,7 +308,7 @@ ubuntu_debian_docker_install(){
 }
 
 centos_docker_install(){
-    if [ ${LINUX_DISTRIBUTION} != "centos" ]
+    if [ "${LINUX_DISTRIBUTION}" != "centos" ]
     then
         installation_warning ${LINUX_DISTRIBUTION} "CentOS"
     fi
@@ -321,7 +323,7 @@ centos_docker_install(){
 }
 
 fedora_docker_install(){
-    if [ ${LINUX_DISTRIBUTION} != "fedora" ]
+    if [ "${LINUX_DISTRIBUTION}" != "fedora" ]
     then
         installation_warning ${LINUX_DISTRIBUTION} "Fedora"
     fi
@@ -335,7 +337,7 @@ fedora_docker_install(){
     finalize_docker_install
 }
 
-if [ -n ${LINUX_DISTRIBUTION} -a "${INSTALL_DOCKER}" = "true" ]
+if [ -n "${LINUX_DISTRIBUTION}" -a "${INSTALL_DOCKER}" = "true" ]
 then
     # prompt for sudo
     echo "Docker installation requires some commands to be run with sudo. Please enter password:"
@@ -363,6 +365,8 @@ then
     esac
 fi
 
-# execute profile to activate new alias
-set +x
-. ~/${BASH_PROFILE}
+on_exit(){
+    set +e
+    set +x
+}
+trap on_exit EXIT

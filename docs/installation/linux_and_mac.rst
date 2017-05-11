@@ -20,14 +20,14 @@ For systems with `wget` (most Linux distributions):
 .. parsed-literal::
 
       wget :install_tethys:`sh`
-      . install_tethys.sh -b |branch|
+      bash install_tethys.sh -b |branch|
 
 For Systems with `curl` (e.g. Mac OSX and CentOS):
 
 .. parsed-literal::
 
       curl :install_tethys:`sh` -o ./install_tethys.sh
-      . install_tethys.sh -b |branch|
+      bash install_tethys.sh -b |branch|
 
 .. note::
 
@@ -86,12 +86,24 @@ For Systems with `curl` (e.g. Mac OSX and CentOS):
         $ . install_tethys.sh -t ~/Workspace/tethys -a localhost -p 8005 -c ~/miniconda3 --db-username tethys_db_user --db-password db_user_pass --db-port 5437 -S tethys -E email@example.com -P tpass
 
 
-The installation script may take several minutes to run. Once it is completed the new conda environment will be left activated so you can start the Tethys development server by running::
+The installation script may take several minutes to run. Once it is completed you will need to activate the new conda environment so you can start the Tethys development server. This is most easily done using an alias created by the install script. To enable the alias you need to open a new terminal or re-run the :file:`.bashrc` (Linux) or :file:`.bash_profile` (Mac) file.
 
+For Linux::
+
+    $ . ~/.bashrc
+
+For Mac::
+
+    $ . ~/.bash_profile
+
+ You can then activate the Tethys conda environment and start the Tethys development server by running::
+
+    $ t
     (tethys) $ tethys manage start
 
 or simply just::
 
+    $ t
     (tethys) $ tms
 
 .. tip::

@@ -18,7 +18,7 @@ from .docker_commands import *
 from .manage_commands import (manage_command, get_manage_path, run_process,
                               MANAGE_START, MANAGE_SYNCDB,
                               MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
-                              MANAGE_COLLECT, MANAGE_CREATESUPERUSER, DEFAULT_INSTALLATION_DIRECTORY)
+                              MANAGE_COLLECT, MANAGE_CREATESUPERUSER, TETHYS_SRC_DIRECTORY)
 from .gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
 from tethys_apps.helpers import get_installed_tethys_apps
 
@@ -159,7 +159,7 @@ def test_command(args):
     args.manage = False
     # Get the path to manage.py
     manage_path = get_manage_path(args)
-    tests_path = os.path.join(DEFAULT_INSTALLATION_DIRECTORY, 'tests')
+    tests_path = os.path.join(TETHYS_SRC_DIRECTORY, 'tests')
 
     # Define the process to be run
     primary_process = ['python', manage_path, 'test']
