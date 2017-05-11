@@ -15,8 +15,13 @@ from model_utils.managers import InheritanceManager
 from tethys_apps.exceptions import TethysAppSettingNotAssigned, PersistentStorePermissionError, \
     PersistentStoreInitializerError
 from tethys_compute.utilities import ListField
-from tethys_services.models import (DatasetService, SpatialDatasetService,
-                                    WebProcessingService, PersistentStoreService)
+
+try:
+    from tethys_services.models import (DatasetService, SpatialDatasetService,
+                                        WebProcessingService, PersistentStoreService)
+except RuntimeError as e:
+    print(e)
+
 
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
