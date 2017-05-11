@@ -9,12 +9,23 @@ Refer to this article for information about each new release of Tethys Platform.
 Release |version|
 =================
 
-Install With Miniconda
-----------------------
+Powered by Miniconda Environment
+--------------------------------
 
 TODO
 
 See:
+
+App Settings
+------------
+
+* Developers can create App Settings, which are configured in the admin interface of the Tethys Portal.
+* Types of settings that can be created include Custom Settings, Persistent Store Settings, Dataset Service Settings, Spatial Dataset Service Settings, and Web Processing Service Settings.
+* The way Tethys Services are allocated to apps is now done through App Settings.
+* All apps using the Persistent Stores APIs, Dataset Services APIs, or Web Processing Services APIs prior to version 2.0.0 will need to be refactored to use the new App settings approach.
+
+See: :doc:`./tethys_sdk/app_settings`
+
 
 HydroShare OAuth Backend and Helper Function
 --------------------------------------------
