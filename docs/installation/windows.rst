@@ -10,7 +10,7 @@ Use these instructions to install a development environment on Windows systems.
 1. Download the Installation Script and the Miniconda Installation Executable
 -----------------------------------------------------------------------------
 
-a. Download the Tethys installation batch script by right clicking on the following link and selecting `Save link as...`: `<https://github.com/tethysplatform/tethys/raw/|branch|/scripts/install_tethys.bat>`_
+a. Download the Tethys installation batch script by right clicking on the following link and selecting `Save link as...`: :install_tethys:`install_tethys.bat <bat>`
 
 
 b. Download the Miniconda installer from the `Conda site <https://conda.io/miniconda.html>`_ or by clicking on the following link: `<https://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86_64.exe>`_
