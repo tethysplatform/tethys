@@ -42,7 +42,12 @@ As long as the :file:`install_tethys.bat` and the :file:`Miniconda3-latest-Windo
         * `-b, --branch <BRANCH_NAME>`:
                 Branch to checkout from version control. Default is 'master'.
         * `-c, --conda-home <PATH>`:
-                Path to conda home directory where Miniconda will be installed. Default is ${TETHYS_HOME}/miniconda.
+                Path to conda home directory where Miniconda will be installed, or to an existing installation of Miniconda. Default is %TETHYS_HOME%\miniconda.
+
+                .. tip::
+
+                    The conda home path cannot contain spaces. If the the tethys home path contains spaces then the `--conda-home` option must be specified and point to a path without spaces.
+
         * `-C, --conda-exe <PATH>`:
                 Path to Miniconda installer executable. Default is '.\Miniconda3-latest-Windows-x86_64.exe'.
         * `-n, --conda-env-name <NAME>`:

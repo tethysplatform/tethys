@@ -37,10 +37,20 @@ then
     LINUX_DISTRIBUTION=${LINUX_DISTRIBUTION,,}
     MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
     BASH_PROFILE=".bashrc"
+    resolve_relative_path ()
+    {
+        local __path_var="$1"
+        eval $__path_var="'$(readlink -f $2)'"
+    }
 elif [ "$(uname)" = "Darwin" ]  # i.e. MacOSX
 then
     MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
     BASH_PROFILE=".bash_profile"
+    resolve_relative_path ()
+    {
+        local __path_var="$1"
+        eval $__path_var="'$(python -c "import os; print(os.path.abspath('$2'))")'"
+    }
 else
     echo $(uname) is not a supported operating system.
     exit
@@ -160,22 +170,18 @@ esac
 shift # past argument or value
 done
 
-
-if [[ "${TETHYS_HOME}" != /* ]]
-then
-    # path is relative so make it absoulte
-    TETHYS_HOME="${PWD}/${TETHYS_HOME}"
-fi
+# resolve relative paths
+resolve_relative_path TETHYS_HOME ${TETHYS_HOME}
 
 # set CONDA_HOME relative to TETHYS_HOME if not already set
 if [ -z ${CONDA_HOME} ]
 then
     CONDA_HOME="${TETHYS_HOME}/miniconda"
-elif [[ "${CONDA_HOME}" != /* ]]
-then
-    # path is relative so make it absoulte
-    CONDA_HOME="${PWD}/${CONDA_HOME}"
+else
+    resolve_relative_path CONDA_HOME ${CONDA_HOME}
 fi
+
+
 
 if [ -n "${ECHO_COMMANDS}" ]
 then
@@ -183,11 +189,11 @@ then
 fi
 
 
-if [ -z ${SKIP_TETHYS_INSTALL} ]
+if [ -z "${SKIP_TETHYS_INSTALL}" ]
 then
     echo "Starting Tethys Installation..."
 
-    mkdir -p ${TETHYS_HOME}
+    mkdir -p "${TETHYS_HOME}"
 
     # install miniconda
     # first see if Miniconda is already installed
@@ -197,7 +203,10 @@ then
     else
         echo "Installing Miniconda..."
         wget ${MINICONDA_URL} -O "${TETHYS_HOME}/miniconda.sh" || (echo -using curl instead; curl ${MINICONDA_URL} -o "${TETHYS_HOME}/miniconda.sh")
-        bash "${TETHYS_HOME}/miniconda.sh" -b -p "${CONDA_HOME}"
+        pushd ./
+        cd "${TETHYS_HOME}"
+        bash miniconda.sh -b -p "${CONDA_HOME}"
+        popd
     fi
     export PATH="${CONDA_HOME}/bin:$PATH"
 
@@ -238,31 +247,31 @@ then
     # Create environment activate/deactivate scripts
     ACTIVATE_DIR="${CONDA_HOME}/envs/${CONDA_ENV_NAME}/etc/conda/activate.d"
     DEACTIVATE_DIR="${CONDA_HOME}/envs/${CONDA_ENV_NAME}/etc/conda/deactivate.d"
-    mkdir -p ${ACTIVATE_DIR} ${DEACTIVATE_DIR}
+    mkdir -p "${ACTIVATE_DIR}" "${DEACTIVATE_DIR}"
     ACTIVATE_SCRIPT="${ACTIVATE_DIR}/tethys-activate.sh"
     DEACTIVATE_SCRIPT="${DEACTIVATE_DIR}/tethys-deactivate.sh"
 
-    echo "export TETHYS_HOME='${TETHYS_HOME}'" >> ${ACTIVATE_SCRIPT}
-    echo "export TETHYS_PORT='${TETHYS_PORT}'" >> ${ACTIVATE_SCRIPT}
-    echo "export TETHYS_DB_PORT='${TETHYS_DB_PORT}'" >> ${ACTIVATE_SCRIPT}
-    echo "alias tethys_start_db='pg_ctl -U postgres -D \${TETHYS_HOME}/psql/data -l \${TETHYS_HOME}/psql/logfile start -o \"-p \${TETHYS_DB_PORT}\"'" >> ${ACTIVATE_SCRIPT}
-    echo "alias tstartdb=tethys_start_db" >> ${ACTIVATE_SCRIPT}
-    echo "alias tethys_stop_db='pg_ctl -U postgres -D \${TETHYS_HOME}/psql/data stop'" >> ${ACTIVATE_SCRIPT}
-    echo "alias tstopdb=tethys_stop_db" >> ${ACTIVATE_SCRIPT}
-    echo "alias tms='tethys manage start -p ${ALLOWED_HOST}:\${TETHYS_PORT}'" >> ${ACTIVATE_SCRIPT}
-    echo "echo 'Starting Tethys Database Server...'" >> ${ACTIVATE_SCRIPT}
-    echo "pg_ctl -U postgres -D \${TETHYS_HOME}/psql/data -l \${TETHYS_HOME}/psql/logfile start -o \"-p \${TETHYS_DB_PORT}\"" >> ${ACTIVATE_SCRIPT}
+    echo "export TETHYS_HOME='${TETHYS_HOME}'" >> "${ACTIVATE_SCRIPT}"
+    echo "export TETHYS_PORT='${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
+    echo "export TETHYS_DB_PORT='${TETHYS_DB_PORT}'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_start_db='pg_ctl -U postgres -D \"\${TETHYS_HOME}/psql/data\" -l \"\${TETHYS_HOME}/psql/logfile\" start -o \"-p \${TETHYS_DB_PORT}\"'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tstartdb=tethys_start_db" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_stop_db='pg_ctl -U postgres -D \"\${TETHYS_HOME}/psql/data\" stop'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tstopdb=tethys_stop_db" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tms='tethys manage start -p ${ALLOWED_HOST}:\${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
+    echo "echo 'Starting Tethys Database Server...'" >> "${ACTIVATE_SCRIPT}"
+    echo "pg_ctl -U postgres -D \"\${TETHYS_HOME}/psql/data\" -l \"\${TETHYS_HOME}/psql/logfile\" start -o \"-p \${TETHYS_DB_PORT}\"" >> "${ACTIVATE_SCRIPT}"
 
-    echo "echo 'Stopping Tethys Database Server...'" >> ${DEACTIVATE_SCRIPT}
-    echo "pg_ctl -U postgres -D \${TETHYS_HOME}/psql/data stop" >> ${DEACTIVATE_SCRIPT}
-    echo "unset TETHYS_HOME" >> ${DEACTIVATE_SCRIPT}
-    echo "unset TETHYS_PORT" >> ${DEACTIVATE_SCRIPT}
-    echo "unset TETHYS_DB_PORT" >> ${DEACTIVATE_SCRIPT}
-    echo "unalias tethys_start_db" >> ${DEACTIVATE_SCRIPT}
-    echo "unalias tstartdb" >> ${DEACTIVATE_SCRIPT}
-    echo "unalias tethys_stop_db" >> ${DEACTIVATE_SCRIPT}
-    echo "unalias tstopdb" >> ${DEACTIVATE_SCRIPT}
-    echo "unalias tms" >> ${DEACTIVATE_SCRIPT}
+    echo "echo 'Stopping Tethys Database Server...'" >> "${DEACTIVATE_SCRIPT}"
+    echo "pg_ctl -U postgres -D \"\${TETHYS_HOME}/psql/data\" stop" >> "${DEACTIVATE_SCRIPT}"
+    echo "unset TETHYS_HOME" >> "${DEACTIVATE_SCRIPT}"
+    echo "unset TETHYS_PORT" >> "${DEACTIVATE_SCRIPT}"
+    echo "unset TETHYS_DB_PORT" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tethys_start_db" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tstartdb" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tethys_stop_db" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tstopdb" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tms" >> "${DEACTIVATE_SCRIPT}"
 
     echo "# Tethys Platform" >> ~/${BASH_PROFILE}
     echo "alias t='. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}'" >> ~/${BASH_PROFILE}
