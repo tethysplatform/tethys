@@ -4,6 +4,10 @@ Spatial Dataset Services API
 
 **Last Updated:** July 17, 2015
 
+.. warning::
+
+   UNDER CONSTRUCTION
+
 Spatial dataset services are web services that can be used to store and publish file-based :term:`spatial datasets` (e.g.: Shapefile and GeoTiff). The spatial datasets published using spatial dataset services are made available in a variety of formats, many of which or more web friendly than the native format (e.g.: PNG, JPEG, GeoJSON, and KML). Tethys app developers can use this Spatial Dataset Services API to store and access :term:` spatial datasets` for use in their apps and publish any resulting :term:`datasets` their apps may produce.
 
 Powered by GeoServer

@@ -65,7 +65,7 @@ If you are using the Docker containers, start up your :doc:`../../software_suite
 
 ::
 
-	$ tethys docker start -c geoserver
+	(tethys) $ tethys docker start -c geoserver
 
 Otherwise ensure that you have GeoServer installed and running. Refer to the `GeoServer Installation Guide <http://docs.geoserver.org/stable/en/user/installation/>`_ for system specific instructions.
 
@@ -110,7 +110,7 @@ Assign the "primary_geoserver" Spatial Dataset Service to the "main_geoserver" s
 GeoServer Web Admin Interface
 =============================
 
-Explore the GeoServer web admin interface by visiting link: `<http://<host>:<port>/geoserver/web/>`_.
+Explore the GeoServer web admin interface by visiting link: `<http://\<host\>:\<port\>/geoserver/web/>`_.
 
 
 Download Test Files
