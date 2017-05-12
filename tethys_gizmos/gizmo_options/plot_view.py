@@ -291,6 +291,8 @@ class PolarPlot(PlotViewBase):
         super(PolarPlot, self).__init__(height=height, width=width, engine=engine)
 
         chart = kwargs.pop('chart', None)
+        x_axis = kwargs.pop('x_axis', None)
+        y_axis = kwargs.pop('y_axis', None)
 
         if not chart:
             chart = {
@@ -298,17 +300,19 @@ class PolarPlot(PlotViewBase):
                 'type': 'line'
             }
 
-        x_axis = {
-            'categories': categories,
-            'tickmarkPlacement': 'on',
-            'lineWidth': 0
-        }
+        if not x_axis:
+            x_axis = {
+                'categories': categories,
+                'tickmarkPlacement': 'on',
+                'lineWidth': 0
+            }
 
-        y_axis = {
-            'gridLineInterpolation': 'polygon',
-            'lineWidth': 0,
-            'min': 0
-        }
+        if not y_axis:
+            y_axis = {
+                'gridLineInterpolation': 'polygon',
+                'lineWidth': 0,
+                'min': 0
+            }
 
         # Initialize super class
         self.plot_object = PlotObject(chart=chart, title=title, subtitle=subtitle, series=series,
@@ -554,6 +558,7 @@ class BarPlot(PlotViewBase):
         categories(list): A list of category titles, one for each bar.
         axis_title(str): Title of the axis.
         axis_units(str): Units of the axis.
+        y_min(int,float): Minimum value of y axis.
 
     **Controller Example**
 
@@ -604,7 +609,8 @@ class BarPlot(PlotViewBase):
     """
 
     def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='',
-                 horizontal=False, categories=[], axis_title='', axis_units='', group_tools=True, **kwargs):
+                 horizontal=False, categories=[], axis_title='', axis_units='', group_tools=True,
+                 y_min=0, **kwargs):
         """
         Constructor
         """
@@ -612,6 +618,7 @@ class BarPlot(PlotViewBase):
         super(BarPlot, self).__init__(height=height, width=width, engine=engine)
 
         chart = kwargs.pop('chart', None)
+        y_axis = kwargs.pop('y_axis', None)
 
         if not chart:
             if not horizontal:
@@ -641,21 +648,22 @@ class BarPlot(PlotViewBase):
             'crosshair': True
         }
 
-        if axis_units:
-            y_axis = {
-                'min': 0,
-                'title': {
-                    'text': '{0} ({1})'.format(axis_title, axis_units)
+        if not y_axis:
+            if axis_units:
+                y_axis = {
+                    'min': y_min,
+                    'title': {
+                        'text': '{0} ({1})'.format(axis_title, axis_units)
+                    }
                 }
-            }
 
-        else:
-            y_axis = {
-                'min': 0,
-                'title': {
-                    'text': axis_title
+            else:
+                y_axis = {
+                    'min': y_min,
+                    'title': {
+                        'text': axis_title
+                    }
                 }
-            }
 
         if group_tools:
             tooltip_format = {
@@ -743,7 +751,7 @@ class TimeSeries(PlotViewBase):
     """
 
     def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='', y_axis_title='',
-                 y_axis_units='', **kwargs):
+                 y_axis_units='', y_min=0, **kwargs):
         """
         Constructor
         """
@@ -751,6 +759,8 @@ class TimeSeries(PlotViewBase):
         super(TimeSeries, self).__init__(height=height, width=width, engine=engine)
 
         chart = kwargs.pop('chart', None)
+        x_axis = kwargs.pop('x_axis', None)
+        y_axis = kwargs.pop('y_axis', None)
 
         if not chart:
             chart = {
@@ -758,17 +768,18 @@ class TimeSeries(PlotViewBase):
                 'zoomType': 'x'
             }
 
-        x_axis = {
-            #'maxZoom': 30 * 24 * 3600000,
-            'type': 'datetime'
-        }
+        if not x_axis:
+            x_axis = {
+                'type': 'datetime'
+            }
 
-        y_axis = {
-            'title': {
-                'text': '{0} ({1})'.format(y_axis_title, y_axis_units)
-            },
-            'min': 0
-        }
+        if not y_axis:
+            y_axis = {
+                'title': {
+                    'text': '{0} ({1})'.format(y_axis_title, y_axis_units)
+                },
+                'min': y_min
+            }
 
         tooltip_format = {
             'pointFormat': '{point.y} %s' % (y_axis_units)
@@ -875,20 +886,24 @@ class AreaRange(PlotViewBase):
         super(AreaRange, self).__init__(height=height, width=width, engine=engine)
 
         chart = kwargs.pop('chart', None)
+        x_axis = kwargs.pop('x_axis', None)
+        y_axis = kwargs.pop('y_axis', None)
 
         if not chart:
             chart = {
             }
 
-        x_axis = {
-            'type': 'datetime'
-        }
-
-        y_axis = {
-            'title': {
-                'text': '{0} ({1})'.format(y_axis_title, y_axis_units)
+        if not x_axis:
+            x_axis = {
+                'type': 'datetime'
             }
-        }
+
+        if not y_axis:
+            y_axis = {
+                'title': {
+                    'text': '{0} ({1})'.format(y_axis_title, y_axis_units)
+                }
+            }
 
         tooltip_format = {
             'crosshairs': True,
