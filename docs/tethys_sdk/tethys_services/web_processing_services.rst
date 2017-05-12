@@ -4,6 +4,10 @@ Web Processing Services API
 
 **Last Updated:** May 13, 2015
 
+.. warning::
+
+   UNDER CONSTRUCTION
+
 Web Processing Services (WPS) are web services that can be used perform geoprocessing and other processing activities for apps. The Open Geospatial Consortium (OGC) has created the `WPS interface standard <http://www.opengeospatial.org/standards/wps>`_ that provides rules for how inputs and outputs for processing services should be handled. Using the Web Processing Services API, you will be able to provide processing capabilities for your apps using any service that conforms to the OGC WPS standard. For convenience, the 52 North WPS is provided as part of the Tethys Platform software suite. Refer to the :doc:`../../installation` documentation to learn how to install Tethys Platform with 52 North WPS enabled.
 
 Configuring WPS Services
