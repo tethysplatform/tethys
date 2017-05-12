@@ -245,7 +245,7 @@ Intro to base.html template...
     {% endblock %}
 
 
-2. Modify ``app_navigation_items`` block in ``templates/dam_inventory/base.html``:
+2. Modify ``app_navigation_items`` block in ``templates/dam_inventory/base.html`` to dynamically highlight active link:
 
 ::
 

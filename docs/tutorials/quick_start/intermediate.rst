@@ -77,6 +77,8 @@ Intro to user input and HTML forms...
 
 ::
 
+    from tethys_sdk.gizmos import MapView, Button, TextInput, DatePicker, SelectInput
+
     @login_required()
     def add_dam(request):
         """
@@ -93,7 +95,7 @@ Intro to user input and HTML forms...
             name='owner',
             multiple=False,
             options=[('Reclamation', 'Reclamation'), ('Army Corp', 'Army Corp'), ('Other', 'Other')],
-            initial=['reclamation']
+            initial=['Reclamation']
         )
 
         river_input = TextInput(
@@ -183,13 +185,17 @@ Change to the ``add_dam`` controller to handle the form data (write to file for 
                 has_errors = True
                 name_error = 'Name is required.'
 
+            if not owner:
+                has_errors = True
+                owner_error = 'Owner is required.'
+
             if not river:
                 has_errors = True
-                river_error = 'Required.'
+                river_error = 'River is required.'
 
             if not date_built:
                 has_errors = True
-                date_error = 'Required.'
+                date_error = 'Date Built is required.'
 
             if not has_errors:
                 # Do stuff here
@@ -197,7 +203,41 @@ Change to the ``add_dam`` controller to handle the form data (write to file for 
 
             messages.error(request, "Please fix errors.")
 
-        # Define form gizmos'
+        # Define form gizmos
+        name_input = TextInput(
+            display_text='Name',
+            name='name',
+            initial=name,
+            error=name_error
+        )
+
+        owner_input = SelectInput(
+            display_text='Owner',
+            name='owner',
+            multiple=False,
+            options=[('Reclamation', 'Reclamation'), ('Army Corp', 'Army Corp'), ('Other', 'Other')],
+            initial=owner,
+            error=owner_error
+        )
+
+        river_input = TextInput(
+            display_text='River',
+            name='river',
+            placeholder='e.g.: Mississippi River',
+            initial=river,
+            error=river_error
+        )
+
+        date_built = DatePicker(
+            name='date-built',
+            display_text='Date Built',
+            autoclose=True,
+            format='MM d, yyyy',
+            start_view='decade',
+            today_button=True,
+            initial=date_built,
+            error=date_error
+        )
         ...
 
 Write Data To File
@@ -293,6 +333,10 @@ Open ``models.py`` and add a model method for listing the dams called ``list_dam
 
         # Open each file and convert contents to python objects
         for dam_json in os.listdir(dams_dir):
+            # Make sure we are only looking at json files
+            if '.json' not in dam_json:
+                continue
+
             dam_json_path = os.path.join(dams_dir, dam_json)
             with open(dam_json_path, 'r') as f:
                 dam_dict = json.loads(f.readlines()[0])
