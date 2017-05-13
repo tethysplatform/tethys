@@ -700,13 +700,14 @@ class TethysAppBase(object):
         return wps_service
 
     @classmethod
-    def get_persistent_store_connection(cls, name, as_url=False):
+    def get_persistent_store_connection(cls, name, as_url=False, as_sessionmaker=False):
         """
         Gets an SQLAlchemy Engine or URL object for the named persistent store connection.
 
         Args:
           name(string): Name of the PersistentStoreConnectionSetting as defined in app.py.
           as_url(bool): Return SQLAlchemy URL object instead of engine object if True. Defaults to False.
+          as_sessionmaker(bool): Returns SessionMaker class bound to the engine if True.  Defaults to False.
 
         Returns:
           sqlalchemy.Engine or sqlalchemy.URL: An SQLAlchemy Engine or URL object for the persistent store requested.
@@ -720,6 +721,8 @@ class TethysAppBase(object):
 
             conn_engine = app.get_persistent_store_connection('primary')
             conn_url = app.get_persistent_store_connection('primary', as_url=True)
+            SessionMaker = app.get_persistent_store_database('primary', as_sessionmaker=True)
+            session = SessionMaker()
 
         """
         from tethys_apps.models import TethysApp
@@ -731,16 +734,17 @@ class TethysAppBase(object):
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting named "{0}" does not exist.'.format(name))
 
-        return ps_connection_setting.get_engine(as_url=as_url)
+        return ps_connection_setting.get_engine(as_url=as_url, as_sessionmaker=as_sessionmaker)
 
     @classmethod
-    def get_persistent_store_database(cls, name, as_url=False):
+    def get_persistent_store_database(cls, name, as_url=False, as_sessionmaker=False):
         """
         Gets an SQLAlchemy Engine or URL object for the named persistent store database given.
 
         Args:
           name(string): Name of the PersistentStoreConnectionSetting as defined in app.py.
           as_url(bool): Return SQLAlchemy URL object instead of engine object if True. Defaults to False.
+          as_sessionmaker(bool): Returns SessionMaker class bound to the engine if True.  Defaults to False.
 
         Returns:
           sqlalchemy.Engine or sqlalchemy.URL: An SQLAlchemy Engine or URL object for the persistent store requested.
@@ -754,6 +758,8 @@ class TethysAppBase(object):
 
             db_engine = app.get_persistent_store_database('example_db')
             db_url = app.get_persistent_store_database('example_db', as_url=True)
+            SessionMaker = app.get_persistent_store_database('example_db', as_sessionmaker=True)
+            session = SessionMaker()
 
         """
         from tethys_apps.models import TethysApp
@@ -764,7 +770,7 @@ class TethysAppBase(object):
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(name))
 
-        return ps_database_setting.get_engine(as_url=as_url)
+        return ps_database_setting.get_engine(as_url=as_url, as_sessionmaker=as_sessionmaker)
 
     @classmethod
     def get_session(cls, name):

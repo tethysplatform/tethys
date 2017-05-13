@@ -110,13 +110,8 @@ The tables for a persistent store should be defined using an SQLAlchemy data mod
 
     from sqlalchemy.ext.declarative import declarative_base
     from sqlalchemy import Column, Integer, Float
-    from sqlalchemy.orm import sessionmaker
-
-    from .app import MyFirstApp as app
 
     # DB Engine, sessionmaker, and base
-    engine = app.get_persistent_store_database('example_db')
-    SessionMaker = sessionmaker(bind=engine)
     Base = declarative_base()
 
 

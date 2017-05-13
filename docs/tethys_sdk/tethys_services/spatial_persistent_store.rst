@@ -8,15 +8,15 @@ Persistent store databases can support spatial data types. The spatial capabilit
 
 The following article details the the spatial capabilities of persistent stores in Tethys Platform. This article builds on the concepts and ideas introduced in the :doc:`./persistent_store` documentation. Please review it before continuing.
 
-Register Spatial Persistent Store
----------------------------------
+Spatial Persistent Store Settings
+=================================
 
-Registering spatially enabled persistent stores follows the same process as registering normal persistent stores. The only difference is that you will set the ``spatial`` attribute of the ``PersistentStore`` object to ``True``:
+Registering spatially enabled persistent stores is the same process as registering normal persistent stores. The only difference is that you will set the ``spatial`` attribute of the ``PersistentStoreDatabaseSetting`` object to ``True``:
 
 ::
 
-    from tethys_sdk.base import TethysAppBase, url_map_maker
-    from tethys_sdk.stores import PersistentStore
+    from tethys_sdk.base import TethysAppBase
+    from tethys_sdk.app_settings import PersistentStoreDatabaseSetting
 
 
     class MyFirstApp(TethysAppBase):
@@ -25,17 +25,18 @@ Registering spatially enabled persistent stores follows the same process as regi
         """
         ...
 
-        def persistent_stores(self):
-            """
-            Add one or more persistent stores
-            """
-            stores = (PersistentStore(name='spatial_db',
-                                      initializer='my_first_app.init_stores.init_spatial_db',
-                                      spatial=True
-                    ),
+        def persistent_store_settings(self):
+            ps_settings = (
+                PersistentStoreDatabaseSetting(
+                    name='spatial_db',
+                    description='Primary spatially enabled database for my_first_app.',
+                    initializer='my_first_app.init_stores.init_example_db',
+                    required=True,
+                    spatial=True
+                ),
             )
 
-            return stores
+            return ps_settings
 
 .. caution::
 
@@ -44,7 +45,7 @@ Registering spatially enabled persistent stores follows the same process as regi
 Adding Spatial Columns to Model
 -------------------------------
 
-Working with the ``raster``, ``geometry``, and ``geography`` column types provided by PostGIS is not supported natively in SQLAlchemy. For this, Tethys Platform provides the `GeoAlchemy2 <https://geoalchemy-2.readthedocs.org/en/latest/index.html>`_, which extends SQLAlchemy to support spatial columns and database functions. A data model that uses a ``geometry`` column type to store the points for stream gages may look like this:
+Working with the ``raster``, ``geometry``, and ``geography`` column types provided by PostGIS is not supported natively in SQLAlchemy. Tethys Platform includes `GeoAlchemy2 <https://geoalchemy-2.readthedocs.org/en/latest/index.html>`_, which extends SQLAlchemy to support spatial columns and database functions. The following example illustrates how a data model could be developed using SQLAlchemy and GeoAlchemy2:
 
 ::
 
@@ -54,38 +55,29 @@ Working with the ``raster``, ``geometry``, and ``geography`` column types provid
 
     from geoalchemy2 import Geometry
 
-    from .app import MyFirstApp
-
     # Spatial DB Engine, sessiomaker, and base
-    spatial_engine = MyFirstApp.get_persistent_store_engine('spatial_db')
-    SpatialSessionMaker = sessionmaker(bind=spatial_engine)
-    SpatialBase = declarative_base()
+    Base = declarative_base()
 
     # SQLAlchemy ORM definition for the spatial_stream_gages table
-    class SpatialStreamGage(SpatialBase):
+    class SpatialStreamGage(Base):
         """
         Example of SQLAlchemy spatial DB model
         """
-        __tablename__ = 'spatial_stream_gages'
+        __tablename__ = 'stream_gages'
 
         # Columns
         id = Column(Integer, primary_key=True)
         value = Column(Integer)
-        geom = Column(Geometry('POINT'))
+        geometry = Column(Geometry('POINT'))
 
         def __init__(self, latitude, longitude, value):
             """
             Constructor for a gage
             """
-            self.geom = 'SRID=4326;POINT({0} {1})'.format(longitude, latitude)
+            self.geometry = 'SRID=4326;POINT({0} {1})'.format(longitude, latitude)
             self.value = value
 
-This data model is very similar to the data model defined in the :doc:`./persistent_store` documentation. Rather than using ``Float`` columns to store the latitude and longitude coordinates, the spatial data model uses a GeoAlchemy2 ``Geometry`` column called "geom". Notice that the constructor (``__init__.py``) takes the ``latitude`` and ``longitude`` provided and sets the value of the ``geom`` column to a string with a special format called `Well Known Text <http://en.wikipedia.org/wiki/Well-known_text>`_. This is a common pattern when working with GeoAlchemy2 columns.
-
-.. important::
-
-    This article only briefly introduces the concepts of working with GeoAlchemy2. It is highly recommended that you complete the `GeoAlchemy ORM <https://geoalchemy-2.readthedocs.org/en/latest/orm_tutorial.html>`_ tutorial.
-
+This data model is very similar to the data model defined in the :doc:`./persistent_store` documentation. Rather than using ``Float`` columns to store the latitude and longitude coordinates, the spatial data model uses a GeoAlchemy2 ``Geometry`` column called "geometry". Notice that the constructor (``__init__.py``) takes the ``latitude`` and ``longitude`` provided and sets the value of the ``geometry`` column to a string with a special format called `Well Known Text <http://en.wikipedia.org/wiki/Well-known_text>`_. This is a common pattern when working with GeoAlchemy2 columns.
 
 Initialization Function
 -----------------------
@@ -94,32 +86,37 @@ Initializing spatial persistent stores is performed in exactly the same way as n
 
 ::
 
-    from .model import spatial_engine, SpatialSessionMaker, SpatialBase, SpatialStreamGage
+    from sqlalchemy.orm import sessionmaker
+    from .model import Base, SpatialStreamGage
 
-    def init_spatial_db(first_time):
+    def init_spatial_db(engine, first_time):
         """
         An example persistent store initializer function
         """
         # Create tables
-        SpatialBase.metadata.create_all(spatial_engine)
+        Base.metadata.create_all(engine)
 
         # Initial data
         if first_time:
             # Make session
-            session = SpatialSessionMaker()
+            SessionMaker = sessionmaker(bind=engine)
+            session = SessionMaker()
 
             # Gage 1
-            gage1 = SpatialStreamGage(latitude=40.23812952992122,
-                                      longitude=-111.69585227966309,
-                                      value=1)
-
+            gage1 = SpatialStreamGage(
+                latitude=40.23812952992122,
+                longitude=-111.69585227966309,
+                value=1
+            )
 
             session.add(gage1)
 
             # Gage 2
-            gage2 = SpatialStreamGage(latitude=40.238784729316215,
-                                      longitude=-111.7101001739502,
-                                      value=2)
+            gage2 = SpatialStreamGage(
+                latitude=40.238784729316215,
+                longitude=-111.7101001739502,
+                value=2
+            )
 
             session.add(gage2)
 
