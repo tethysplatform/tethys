@@ -186,7 +186,7 @@ class TethysAppBase(object):
                             name='spatial_db',
                             description='for storing important spatial stuff',
                             required=True,
-                            initializer='appsettings.init_stores.init_spatial_db',
+                            initializer='appsettings.model.init_spatial_db',
                             spatial=True,
                         ),
                         # Non-spatial database
@@ -194,7 +194,7 @@ class TethysAppBase(object):
                             name='temp_db',
                             description='for storing temporary stuff',
                             required=False,
-                            initializer='appsettings.init_stores.init_temp_db',
+                            initializer='appsettings.model.init_temp_db',
                             spatial=False,
                         )
                     )
@@ -887,7 +887,7 @@ class TethysAppBase(object):
 
             from my_first_app.app import MyFirstApp as app
 
-            result = app.destroy_persistent_store('example_db')
+            result = app.drop_persistent_store('example_db')
 
             if result:
                 # App database 'example_db' was successfully destroyed and no longer exists
