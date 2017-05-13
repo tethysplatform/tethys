@@ -29,7 +29,7 @@ class ESRIMap(TethysGizmoOptions):
 
         # TEMPLATE
 
-        {% gizmo esri_map_view esri_map_view_options %}
+        {% gizmo esri_map_view_options %}
 
     """
     gizmo_name = "esri_map"
