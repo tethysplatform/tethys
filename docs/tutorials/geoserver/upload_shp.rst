@@ -29,7 +29,7 @@ Replace the contents of the existing :file:`home.html` template with:
 Handle File Upload in Home Controller
 =====================================
 
-Add these imports to the top of the :file:`controllers.py` module:
+Replace the contents of :file:`controllers.py` module with the following:
 
 ::
 
@@ -46,9 +46,6 @@ Add these imports to the top of the :file:`controllers.py` module:
     WORKSPACE = 'geoserver_app'
     GEOSERVER_URI = 'http://www.example.com/geoserver-app'
 
-Modify the ``home()`` controller so that it can handle the file upload event like so:
-
-::
 
     @login_required
     def home(request):

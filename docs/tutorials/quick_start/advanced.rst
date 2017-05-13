@@ -71,7 +71,6 @@ Intro to persistent stores... :doc:`../../tethys_sdk/tethys_services/persistent_
         Tethys app class for Dam Inventory.
         """
         ...
-
         def persistent_store_settings(self):
             """
             Define Persistent Store Settings.
@@ -470,7 +469,7 @@ Intro to permissions... :doc:`../../tethys_sdk/permissions`
 
             return permissions
 
- 2. Protect the Add Dam view with the ``add_dams`` permission by adding the ``permission_required`` decorator to the ``add_dams`` controller:
+2. Protect the Add Dam view with the ``add_dams`` permission by adding the ``permission_required`` decorator to the ``add_dams`` controller:
 
 ::
 
@@ -499,8 +498,7 @@ Intro to permissions... :doc:`../../tethys_sdk/permissions`
         ...
 
         context = {
-            'dam_inventory_map': dam_inventory_map,
-            'add_dam_button': add_dam_button,
+            ...
             'can_add_dams': has_permission(request, 'add_dams')
         }
 
@@ -515,14 +513,7 @@ Intro to permissions... :doc:`../../tethys_sdk/permissions`
         ...
 
         context = {
-            'location_input': location_input,
-            'location_error': location_error,
-            'name_input': name_input,
-            'owner_input': owner_input,
-            'river_input': river_input,
-            'date_built_input': date_built,
-            'add_button': add_button,
-            'cancel_button': cancel_button,
+            ...
             'can_add_dams': has_permission(request, 'add_dams')
         }
 
@@ -536,7 +527,7 @@ Intro to permissions... :doc:`../../tethys_sdk/permissions`
         """
         dams = get_all_dams()
         context = {
-            'dams': dams,
+            ...
             'can_add_dams': has_permission(request, 'add_dams')
         }
         return render(request, 'dam_inventory/list_dams.html', context)
@@ -551,6 +542,16 @@ Intro to permissions... :doc:`../../tethys_sdk/permissions`
       <li class="{% if request.path == list_dam_url %}active{% endif %}"><a href="{{ list_dam_url }}">Dams</a></li>
       {% if can_add_dams %}
       <li class="{% if request.path == add_dam_url %}active{% endif %}"><a href="{{ add_dam_url }}">Add Dam</a></li>
+      {% endif %}
+    {% endblock %}
+
+5. Use the ``can_add_dams`` method to show or hide the "Add Dam" button on the home page:
+
+::
+
+    {% block app_actions %}
+      {% if can_add_dams %}
+        {% gizmo add_dam_button %}
       {% endif %}
     {% endblock %}
 
