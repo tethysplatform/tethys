@@ -2,18 +2,13 @@
 Spatial Dataset Services API
 ****************************
 
-**Last Updated:** July 17, 2015
+**Last Updated:** May 2017
 
-.. warning::
+Spatial dataset services are web services that can be used to store and publish file-based :term:`spatial datasets` (e.g.: Shapefile and GeoTiff). The spatial datasets published using spatial dataset services are made available in a variety of formats, many of which or more web friendly than the native format (e.g.: PNG, JPEG, GeoJSON, and KML).
 
-   UNDER CONSTRUCTION
+One example of a spatial dataset service is `GeoServer <http://geoserver.org/>`_, which is capable of storing and serving vector and raster datasets in several popular formats including Shapefiles, GeoTiff, ArcGrid and others. GeoServer serves the data in a variety of formats via the `Open Geospatial Consortium (OGC) <http://www.opengeospatial.org/>`_ standards including `Web Feature Service (WFS) <http://www.opengeospatial.org/standards/wfs>`_, `Web Map Service (WMS) <http://www.opengeospatial.org/standards/wms>`_, and `Web Coverage Service (WCS) <http://www.opengeospatial.org/standards/wcs>`_.
 
-Spatial dataset services are web services that can be used to store and publish file-based :term:`spatial datasets` (e.g.: Shapefile and GeoTiff). The spatial datasets published using spatial dataset services are made available in a variety of formats, many of which or more web friendly than the native format (e.g.: PNG, JPEG, GeoJSON, and KML). Tethys app developers can use this Spatial Dataset Services API to store and access :term:` spatial datasets` for use in their apps and publish any resulting :term:`datasets` their apps may produce.
-
-Powered by GeoServer
-====================
-
-`GeoServer <http://geoserver.org/>`_ powers the Spatial Dataset Service capabilities of Tethys Platform. It is capable of storing and serving vector and raster datasets in several popular formats including Shapefiles, GeoTiff, ArcGrid and others. GeoServer serves the data in a variety of formats via the `Open Geospatial Consortium (OGC) <http://www.opengeospatial.org/>`_ standards including `Web Feature Service (WFS) <http://www.opengeospatial.org/standards/wfs>`_, `Web Map Service (WMS) <http://www.opengeospatial.org/standards/wms>`_, and `Web Coverage Service (WCS) <http://www.opengeospatial.org/standards/wcs>`_.
+Tethys app developers can use this Spatial Dataset Services API to store and access :term:` spatial datasets` for use in their apps and publish any resulting :term:`datasets` their apps may produce.
 
 Key Concepts
 ============
@@ -55,59 +50,86 @@ All ``SpatialDatasetEngine`` objects implement a minimum set of base methods. Ho
     spatial_dataset_service/base_reference
     spatial_dataset_service/geoserver_reference
 
-Register New Spatial Dataset Services
-=====================================
 
-Registering new spatial dataset services is performed using the System Admin Settings.
+Spatial Dataset Service Settings
+================================
 
-1. Login to your Tethys Platform instance as an administrator.
-2. Select "Site Admin" from the user drop down menu.
+Using dataset services in your app is accomplished by adding the ``spatial_dataset_service_settings()`` method to your :term:`app class`, which is located in your :term:`app configuration file` (:file:`app.py`). This method should return a list or tuple of ``SpatialDatasetServiceSetting``. For example:
 
-  .. figure:: ../../images/site_admin/select_site_admin.png
-      :width: 600px
-      :align: center
+::
+
+    from tethys_sdk.app_settings import SpatialDatasetServiceSetting
+
+    class MyFirstApp(TethysAppBase):
+        """
+        Tethys App Class for My First App.
+        """
+        ...
+        def spatial_dataset_service_settings(self):
+            """
+            Example spatial_dataset_service_settings method.
+            """
+            sds_settings = (
+                SpatialDatasetServiceSetting(
+                    name='primary_geoserver',
+                    description='spatial dataset service for app to use',
+                    engine=SpatialDatasetServiceSetting.GEOSERVER,
+                    required=True,
+                ),
+            )
+
+            return sds_settings
+
+.. caution::
+
+    The ellipsis in the code block above indicates code that is not shown for brevity. **DO NOT COPY VERBATIM**.
+
+Assign Spatial Dataset Service
+==============================
+
+The ``SpatialDatasetServiceSetting`` can be thought of as a socket for a connection to a ``SpatialDatasetService``. Before we can do anything with the ``SpatialDatasetServiceSetting`` we need to "plug in" or assign a ``SpatialDatasetService`` to the setting. The ``SpatialDatasetService`` contains the connection information and can be used by multiple apps. Assigning a ``SpatialDatasetService`` is done through the Admin Interface of Tethys Portal as follows:
+
+1. Create ``SpatialDatasetService`` if one does not already exist
+
+    a. Access the Admin interface of Tethys Portal by clicking on the drop down menu next to your user name and selecting the "Site Admin" option.
+
+    b. Scroll to the **Tethys Service** section of the Admin Interface and select the link titled **Spatial Dataset Services**.
+
+    c. Click on the **Add Spatial Dataset Service** button.
+
+    d. Fill in the connection information to the database server.
+
+    e. Press the **Save** button to save the new ``SpatialDatasetService``.
+
+    .. tip::
+
+        You do not need to create a new ``SpatialDatasetService`` for each ``SpatialDatasetServiceSetting`` or each app. Apps and ``SpatialDatasetServiceSettings`` can share ``DatasetServices``.
+
+2. Navigate to App Settings Page
+
+    a. Return to the Home page of the Admin Interface using the **Home** link in the breadcrumbs or as you did in step 1a.
+
+    b. Scroll to the **Tethys Apps** section of the Admin Interface and select the **Installed Apps** linke.
+
+    c. Select the link for your app from the list of installed apps.
 
 
-3. Select "Spatial Dataset Services" from the "Tethys Services" section.
 
-  .. figure:: ../../images/site_admin/home.png
-      :width: 600px
-      :align: center
+3. Assign ``SpatialDatasetService`` to the appropriate ``SpatialDatasetServiceSetting``
 
+    a. Scroll to the **Spatial Dataset Services Settings** section and locate the ``SpatialDatasetServiceSetting``.
 
-4. Select an existing Spatial Dataset Service configuration from the list to edit it OR click on the "Add Spatial Dataset Service" button to create a new one.
+    .. note::
 
-  .. figure:: ../../images/site_admin/spatial_dataset_services.png
-      :width: 600px
-      :align: center
+        If you don't see the ``SpatialDatasetServiceSetting`` in the list, uninstall the app and reinstall it again.
 
-5. Give the Spatial Dataset Service configuration a name, select an appropriate engine, specify the endpoint, and provide a username and password. The name of the configuration must be unique, because it is used to retrieve the Spatial Dataset Service connection object. The endpoint is a URL pointing to the GeoServer REST endpoint. This endpoint can be for **any** GeoServer. If you want to use the built-in GeoServer installation, you can obtain the endpoint by running ``tethys docker ip`` in a terminal:
+    b. Assign the appropriate ``SpatialDatasetService`` to your ``SpatialDatasetServiceSetting`` using the drop down menu in the **Spatial Dataset Service** column.
 
-  ::
-
-    $ tethys docker ip
-    ...
-
-    GeoServer:
-      Host: localhost
-      Port: 8181
-      Endpoint: http://localhost:8181/geoserver/rest
-
-    ...
-
-
-  When you are done, your Spatial Dataset Service configuration should look similar to this:
-
-  .. figure:: ../../images/site_admin/spatial_dataset_service_edit.png
-      :width: 600px
-      :align: center
-
-6. Press "Save" to save the Dataset Service configuration.
-
+    c. Press the **Save** button at the bottom of the page to save your changes.
 
 .. note::
 
-  Prior to version Tethys Platform 1.1.0, it was possible to register spatial dataset services using a mechanism in the :term:`app configuration file`. This mechanism has been deprecated due to security concerns.
+    During development you will assign the ``SpatialDatasetService`` setting yourself. However, when the app is installed in production, this steps is performed by the portal administrator upon installing your app, which may or may not be yourself.
 
 Working with Spatial Dataset Services
 =====================================
@@ -118,21 +140,13 @@ After spatial dataset services have been properly configured, you can use the se
 1. Get a Spatial Dataset Engine
 -------------------------------
 
-The Spatial Dataset Services API provides a convenience function called ``get_spatial_dataset_engine``. To retrieve and engine for a sitewide configuration, call ``get_spatial_dataset_engine`` with the name of the configuration::
+Call the ``get_spatial_dataset_service()`` method of the app class to get a ``SpatialDatasetEngine``::
 
-  from tethys_sdk.services import get_spatial_dataset_engine
+    from my_first_app.app import MyFirstApp as app
 
-  dataset_engine = get_dataset_engine(name='example')
+    geoserver_engine = app.get_spatial_dataset_engine('primary_geoserver', as_engine=True)
 
-It will return the first service with a matching name or raise an exception if the service cannot be found with the given name. Alternatively, you may retrieve a list of all the spatial dataset engine objects that are registered using the ``list_spatial_dataset_engines`` function:
-
-::
-
-  from tethys_sdk.services import list_spatial_dataset_engines
-
-  dataset_engines = list_spatial_dataset_engines()
-
-You can also create a ``SpatialDatasetEngine`` object directly without using the convenience function. This can be useful if you want to vary the credentials for dataset access frequently (e.g.: using user specific credentials). Simply import it and instantiate it with valid credentials::
+You can also create a ``SpatialDatasetEngine`` object directly. This can be useful if you want to vary the credentials for dataset access frequently (e.g.: using user specific credentials)::
 
   from tethys_dataset_services.engines import GeoServerSpatialDatasetEngine
 
@@ -149,27 +163,26 @@ After you have a ``SpatialDatasetEngine`` object, simply call the desired method
 
 Consider the following example for uploading a shapefile to spatial dataset services:
 
-
 ::
 
-  from tethys_sdk.services import get_spatial_dataset_engine
+    from my_first_app.app import MyFirstApp as app
 
-  # First get an engine
-  engine = get_spatial_dataset_engine(name='example')
+    # First get an engine
+    engine = app.get_spatial_dataset_engine('primary_geoserver', as_engine=True)
 
-  # Create a workspace named after our app
-  engine.create_workspace(workspace_id='my_app', uri='http://www.example.com/apps/my-app')
+    # Create a workspace named after our app
+    engine.create_workspace(workspace_id='my_app', uri='http://www.example.com/apps/my-app')
 
-  # Path to shapefile base for foo.shp, side cars files (e.g.: .shx, .dbf) will be
-  # gathered in addition to the .shp file.
-  shapefile_base = '/path/to/foo'
+    # Path to shapefile base for foo.shp, side cars files (e.g.: .shx, .dbf) will be
+    # gathered in addition to the .shp file.
+    shapefile_base = '/path/to/foo'
 
-  # Notice the workspace in the store_id parameter
-  result = dataset_engine.create_shapefile_resource(store_id='my_app:foo', shapefile_base=shapefile_base)
+    # Notice the workspace in the store_id parameter
+    result = dataset_engine.create_shapefile_resource(store_id='my_app:foo', shapefile_base=shapefile_base)
 
-  # Check if it was successful
-  if not result['success']:
-      raise
+    # Check if it was successful
+    if not result['success']:
+        raise
 
 
 A new shapefile Data Store will be created called 'foo' in workspace 'my_app' and a resource will be created for the shapefile called 'foo'. A layer will also automatically be configured for the new shapefile resource.

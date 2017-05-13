@@ -30,7 +30,7 @@ Registering spatially enabled persistent stores is the same process as registeri
                 PersistentStoreDatabaseSetting(
                     name='spatial_db',
                     description='Primary spatially enabled database for my_first_app.',
-                    initializer='my_first_app.init_stores.init_example_db',
+                    initializer='my_first_app.model.init_spatial_db',
                     required=True,
                     spatial=True
                 ),

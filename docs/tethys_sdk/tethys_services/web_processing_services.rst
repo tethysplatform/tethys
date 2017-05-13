@@ -2,64 +2,87 @@
 Web Processing Services API
 ***************************
 
-**Last Updated:** May 13, 2015
+**Last Updated:** May 2017
 
-.. warning::
+Web Processing Services (WPS) are web services that can be used perform geoprocessing and other processing activities for apps. The Open Geospatial Consortium (OGC) has created the `WPS interface standard <http://www.opengeospatial.org/standards/wps>`_ that provides rules for how inputs and outputs for processing services should be formatted. Using the Web Processing Services API, you will be able to provide processing capabilities for your apps using any service that conforms to the OGC WPS standard. For convenience, the 52 North WPS is provided as part of the Tethys Platform software suite.
 
-   UNDER CONSTRUCTION
+Web Processing Service Settings
+===============================
 
-Web Processing Services (WPS) are web services that can be used perform geoprocessing and other processing activities for apps. The Open Geospatial Consortium (OGC) has created the `WPS interface standard <http://www.opengeospatial.org/standards/wps>`_ that provides rules for how inputs and outputs for processing services should be handled. Using the Web Processing Services API, you will be able to provide processing capabilities for your apps using any service that conforms to the OGC WPS standard. For convenience, the 52 North WPS is provided as part of the Tethys Platform software suite. Refer to the :doc:`../../installation` documentation to learn how to install Tethys Platform with 52 North WPS enabled.
+Using web processing services in your app is accomplised by adding the ``web_processing_service_settings()`` method to your :term:`app class`, which is located in your :term:`app configuration file` (:file:`app.py`). This method should return a list or tuple of ``WebProcessingServiceSetting`` objects. For example:
 
-Configuring WPS Services
-========================
+::
 
-Before you can start using WPS services in your apps, you will need link your Tethys Platform to a valid WPS. This can be done either at a sitewide level or at an app specific level. When a WPS is configured at the sitewide level, all apps that are installed on that Tethys Platform instance will be able to access the WPS. When installed at an app specific level, the WPS will only be accessible to the app that it is linked to. The following sections will describe how to configure a WPS to be used at both of these levels.
+      from tethys_sdk.app_settings import WebProcessingServiceSetting
 
-Register New WPS Service
-------------------------
+      class MyFirstApp(TethysAppBase):
+          """
+          Tethys App Class for My First App.
+          """
+          ...
+          def web_processing_service_settings(self):
+              """
+              Example wps_services method.
+              """
+              wps_services = (
+                  WebProcessingServiceSetting(
+                      name='primary_52n',
+                      description='WPS service for app to use',
+                      required=True,
+                  ),
+              )
 
-Sitewide configuration is performed using the System Admin Settings.
+              return wps_services
 
-1. Login to your Tethys Platform instance as an administrator.
-2. Select "Site Admin" from the user drop down menu.
+.. caution::
 
-  .. figure:: ../../images/site_admin/select_site_admin.png
-      :width: 600px
-      :align: center
+    The ellipsis in the code block above indicates code that is not shown for brevity. **DO NOT COPY VERBATIM**.
+
+Assign Web Processing Service
+-----------------------------
+
+The ``WebProcessingServiceSetting`` can be thought of as a socket for a connection to a WPS. Before we can do anything with the ``WebProcessingServiceSetting`` we need to "plug in" or assign a ``WebProcessingService`` to the setting. The ``WebProcessingService`` contains the connection information and can be used by multiple apps. Assigning a ``WebProcessingService`` is done through the Admin Interface of Tethys Portal as follows:
+
+1. Create ``WebProcessingService`` if one does not already exist
+
+    a. Access the Admin interface of Tethys Portal by clicking on the drop down menu next to your user name and selecting the "Site Admin" option.
+
+    b. Scroll to the **Tethys Service** section of the Admin Interface and select the link titled **Web Processing Services**.
+
+    c. Click on the **Add Web Processing Services** button.
+
+    d. Fill in the connection information to the WPS server.
+
+    e. Press the **Save** button to save the new ``WebProcessingService``.
+
+    .. tip::
+
+        You do not need to create a new ``WebProcessingService`` for each ``WebProcessingServiceSetting`` or each app. Apps and ``WebProcessingServiceSettings`` can share ``WebProcessingServices``.
+
+2. Navigate to App Settings Page
+
+    a. Return to the Home page of the Admin Interface using the **Home** link in the breadcrumbs or as you did in step 1a.
+
+    b. Scroll to the **Tethys Apps** section of the Admin Interface and select the **Installed Apps** linke.
+
+    c. Select the link for your app from the list of installed apps.
 
 
-3. Select "Web Processing Services" from the "Tethys Services" section.
+3. Assign ``WebProcessingService`` to the appropriate ``WebProcessingServiceSetting``
 
+    a. Scroll to the **Web Processing Service Settings** section and locate the ``WebProcessingServiceSetting``.
 
-  .. figure:: ../../images/site_admin/home.png
-      :width: 600px
-      :align: center
+    .. tip::
 
+        If you don't see the ``WebProcessingServiceSetting`` in the list, uninstall the app and reinstall it again.
 
-4. Select an existing Web Processing Service configuration from the list to edit it OR click on the "Add Web Processing Service" button to create a new one.
+    b. Assign the appropriate ``WebProcessingService`` to your ``WebProcessingServiceSetting`` using the drop down menu in the **Web Processing Service** column.
 
-  .. figure:: ../../images/site_admin/wps_services.png
-      :width: 600px
-      :align: center
-
-5. Give the Web Processing Service configuration a name and specify the endpoint. The name must be unique, because it is used to connect to the WPS. The endpoint is a URL pointing to the WPS. For example, the endpoint for the 52 North WPS demo server would be:
-
-  ::
-
-    http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService
-
-If authentication is required, specify the username and password.
-
-  .. figure:: ../../images/site_admin/wps_service_edit.png
-      :width: 600px
-      :align: center
-
-6. Press "Save" to save the WPS configuration.
-
+    c. Press the **Save** button at the bottom of the page to save your changes.
 
 .. note::
 
-  Prior to version Tethys Platform 1.1.0, it was possible to register WPS services using a mechanism in the :term:`app configuration file`. This mechanism has been deprecated due to security concerns.
+    During development you will assign the ``WebProcessingService`` setting yourself. However, when the app is installed in production, this steps is performed by the portal administrator upon installing your app, which may or may not be yourself.
 
 Working with WPS Services in Apps
 =================================
@@ -69,23 +92,15 @@ The Web Processing Service API is powered by `OWSLib <http://geopython.github.io
 Get a WPS Engine
 ----------------
 
-Anytime you wish to use a WPS service in an app, you will need to obtain an ``owslib.wps.WebProcessingService`` engine object. The Web Processing Service API provides a convenience function for retrieving ``owslib.wps.WebProcessingService`` engine objects called ``get_wps_service_engine``. Basic usage involves calling the function with the name of the WPS service that you wish to use. For example:
+Anytime you wish to use a WPS service in an app, you will need to obtain an ``owslib.wps.WebProcessingService`` engine object. This can be done by calling the ``get_web_processing_service()`` method of the app class:
 
 ::
 
-  from tethys_sdk.services import get_wps_service_engine
+    from my_first_app.app import MyFirstApp as app
 
-  wps_engine = get_wps_service_engine(name='example')
+    wps_engine = app.get_web_processing_service('primary_52n', as_engine=True)
 
-Alternatively, you may retrieve a list of all the dataset engine objects that are registered using the ``list_wps_service_engines`` function:
-
-::
-
-  from tethys_sdk.services import list_wps_service_engines
-
-  wps_engines = list_wps_service_engines()
-
-You can also create an ``owslib.wps.WebProcessingService`` engine object directly without using the convenience function. This can be useful if you want to vary the credentials for WPS service access frequently (e.g.: using user specific credentials).
+Alternatively, you can create an ``owslib.wps.WebProcessingService`` engine object directly without using the convenience function. This can be useful if you want to vary the credentials for WPS service access frequently (e.g.: to provide user specific credentials).
 
 ::
 

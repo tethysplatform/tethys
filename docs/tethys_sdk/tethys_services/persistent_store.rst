@@ -4,7 +4,6 @@ Persistent Stores API
 
 **Last Updated:** May 2017
 
-
 The Persistent Store API streamlines the use of SQL databases in Tethys apps. Using this API, you can provision SQL databases for your app. The databases that will be created are `PostgreSQL <http://www.postgresql.org/>`_ databases. Currently, no other databases are supported.
 
 The process of creating a new persistent database can be summarized in the following steps:
@@ -20,7 +19,7 @@ More detailed descriptions of each step of the persistent store process will be 
 Persistent Store Settings
 =========================
 
-Registering new :term:`persistent stores` is accomplished by adding the ``persistent_store_settings()`` method to your :term:`app class`, which is located in your :term:`app configuration file` (:file:`app.py`). This method should return a list or tuple of ``PersistentStoreDatabaseSetting`` and/or ``PersistentStoreConnectionSetting`` objects. For example:
+Using :term:`persistent stores` in your app is accomplished by adding the ``persistent_store_settings()`` method to your :term:`app class`, which is located in your :term:`app configuration file` (:file:`app.py`). This method should return a list or tuple of ``PersistentStoreDatabaseSetting`` and/or ``PersistentStoreConnectionSetting`` objects. For example:
 
 ::
 
@@ -39,7 +38,7 @@ Registering new :term:`persistent stores` is accomplished by adding the ``persis
                 PersistentStoreDatabaseSetting(
                     name='example_db',
                     description='Primary database for my_first_app.',
-                    initializer='my_first_app.init_stores.init_example_db',
+                    initializer='my_first_app.model.init_example_db',
                     required=True
                 ),
             )
@@ -71,9 +70,9 @@ The ``PersistentStoreDatabaseSetting`` can be thought of as a socket for a conne
 
     e. Press the **Save** button to save the new ``PersistentStoreService``.
 
-.. tip::
+    .. tip::
 
-    You do not need to create a new ``PersistentStoreService`` for each ``PersistentStoreDatabaseSetting`` or each app. Apps and ``PersistentStoreDatabaseSettings`` can share ``PersistentStoreServices``.
+        You do not need to create a new ``PersistentStoreService`` for each ``PersistentStoreDatabaseSetting`` or each app. Apps and ``PersistentStoreDatabaseSettings`` can share ``PersistentStoreServices``.
 
 2. Navigate to App Settings Page
 
@@ -93,7 +92,7 @@ The ``PersistentStoreDatabaseSetting`` can be thought of as a socket for a conne
 
         If you don't see the ``PersistentStoreDatabaseSetting`` in the list, uninstall the app and reinstall it again.
 
-    b. Assign the appropriate ``PersistentStoreService`` to your ``PersistentStoreDatabaseSettng`` using the drop down menu in the **Persistent Store Service** column.
+    b. Assign the appropriate ``PersistentStoreService`` to your ``PersistentStoreDatabaseSetting`` using the drop down menu in the **Persistent Store Service** column.
 
     c. Press the **Save** button at the bottom of the page to save your changes.
 
@@ -241,8 +240,6 @@ Dynamic Persistent Store Provisioning
 =====================================
 
 As of Tethys Platform 1.3.0, methods were added to the app class that allow apps to create persistent stores dynamically at run time, list existing persistent stores, and check if a given persistent store exists. See the API documentation below for details.
-
-# TODO: Add more documentation here about PersistentStoreConnectionSettings
 
 API Documentation
 =================
