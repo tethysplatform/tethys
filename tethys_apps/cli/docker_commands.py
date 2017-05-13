@@ -627,7 +627,7 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                 mount_data_dir = validate_choice_cli_input(mount_data_dir, ['y', 'n'], 'y')
 
                 if mount_data_dir.lower() == 'y':
-                    default_mount_location = '/usr/lib/tethys/geoserver/data'
+                    default_mount_location = os.path.expanduser('~/tethys/geoserver/data')
                     gs_data_volume = '/var/geoserver/data'
                     mount_location = raw_input('Specify location to bind data directory '
                                                '[{0}]: '.format(default_mount_location))
