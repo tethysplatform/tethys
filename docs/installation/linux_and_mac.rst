@@ -20,20 +20,20 @@ For systems with `wget` (most Linux distributions):
 .. parsed-literal::
 
       wget :install_tethys:`sh`
-      . install_tethys.sh -b |branch|
+      bash install_tethys.sh -b |branch|
 
 For Systems with `curl` (e.g. Mac OSX and CentOS):
 
 .. parsed-literal::
 
       curl :install_tethys:`sh` -o ./install_tethys.sh
-      . install_tethys.sh -b |branch|
+      bash install_tethys.sh -b |branch|
 
 .. note::
 
     You can customize your tethys installation by passing command line options to the installation script. The available options can be listed by running::
 
-         $ . install_tethys.sh --help
+         $ bash install_tethys.sh --help
 
     Each option is also descriped here:
 
@@ -46,7 +46,12 @@ For Systems with `curl` (e.g. Mac OSX and CentOS):
         * `-b, --branch <BRANCH_NAME>`:
                 Branch to checkout from version control. Default is 'master'.
         * `-c, --conda-home <PATH>`:
-                Path to conda home directory where Miniconda will be installed. Default is ${TETHYS_HOME}/miniconda.
+                Path to conda home directory where Miniconda will be installed, or to an existing installation of Miniconda. Default is ${TETHYS_HOME}/miniconda.
+
+                .. tip::
+
+                    The conda home path cannot contain spaces. If the the tethys home path contains spaces then the `--conda-home` option must be specified and point to a path without spaces.
+
         * `-n, --conda-env-name <NAME>`:
                 Name for tethys conda environment. Default is 'tethys'.
         * `--db-username <USERNAME>`:
@@ -83,15 +88,27 @@ For Systems with `curl` (e.g. Mac OSX and CentOS):
 
     Here is an example of calling the installation script with customized options::
 
-        $ . install_tethys.sh -t ~/Workspace/tethys -a localhost -p 8005 -c ~/miniconda3 --db-username tethys_db_user --db-password db_user_pass --db-port 5437 -S tethys -E email@example.com -P tpass
+        $ bash install_tethys.sh -t ~/Workspace/tethys -a localhost -p 8005 -c ~/miniconda3 --db-username tethys_db_user --db-password db_user_pass --db-port 5437 -S tethys -E email@example.com -P tpass
 
 
-The installation script may take several minutes to run. Once it is completed the new conda environment will be left activated so you can start the Tethys development server by running::
+The installation script may take several minutes to run. Once it is completed you will need to activate the new conda environment so you can start the Tethys development server. This is most easily done using an alias created by the install script. To enable the alias you need to open a new terminal or re-run the :file:`.bashrc` (Linux) or :file:`.bash_profile` (Mac) file.
 
+For Linux::
+
+    $ . ~/.bashrc
+
+For Mac::
+
+    $ . ~/.bash_profile
+
+ You can then activate the Tethys conda environment and start the Tethys development server by running::
+
+    $ t
     (tethys) $ tethys manage start
 
 or simply just::
 
+    $ t
     (tethys) $ tms
 
 .. tip::
