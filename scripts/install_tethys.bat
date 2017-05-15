@@ -1,9 +1,9 @@
 @ECHO OFF
+SETLOCAL ENABLEDELAYEDEXPANSION
 
 IF %ERRORLEVEL% NEQ 0 (SET ERRORLEVEL=0)
 
 :: Set defaults
-SET CWD=%~dp1
 SET ALLOWED_HOST=127.0.0.1
 SET TETHYS_HOME=C:%HOMEPATH%\tethys
 SET TETHYS_PORT=8000
@@ -150,7 +150,7 @@ IF NOT "%1"=="" (
         GOTO :usage
         SET OPTION_RECOGNIZED=TRUE
     )
-    IF "%OPTION_RECOGNIZED%"=="FALSE" (
+    IF "!OPTION_RECOGNIZED!"=="FALSE" (
         ECHO Ignoring unrecognized option: %1
     )
     SHIFT
@@ -162,46 +162,71 @@ IF %ERRORLEVEL% NEQ 0 (
     EXIT /B %ERRORLEVEL%
 )
 
-%ECHO_COMMANDS%
+SET CEANUP=
 
-ECHO Starting Tethys Installation...
+:: Resolve relative paths
+IF NOT EXIST "!TETHYS_HOME!" (
+    MKDIR "!TETHYS_HOME!"
+    SET CLEANUP=TRUE
+)
 
-:: Make tethys directory and resolve relative paths
-MKDIR "%TETHYS_HOME%"
-
-IF EXIST "%CWD%%TETHYS_HOME%" (
+IF EXIST "!CD!\!TETHYS_HOME!" (
     :: TETHYS_HOME is a relative path so make it absolute
-    SET TETHYS_HOME=%CWD%%TETHYS_HOME%
+    PUSHD .\
+    CD "!TETHYS_HOME!"
+    SET TETHYS_HOME=!CD!
+    POPD
+)
+
+IF "!CLEANUP!"=="TRUE" (
+    RMDIR "!TETHYS_HOME!"
+    SET CLEANUP=
 )
 
 :: set CONDA_HOME relative to TETHYS_HOME if not already set
 IF NOT DEFINED CONDA_HOME (
-    SET CONDA_HOME=%TETHYS_HOME%\miniconda
-) ELSE IF EXIST "%CWD%%CONDA_HOME%" (
-    :: TETHYS_HOME is a relative path so make it absolute
-    SET CONDA_HOME=%CWD%%CONDA_HOME%
+    SET CONDA_HOME=!TETHYS_HOME!\miniconda
+) ELSE (
+    IF NOT EXIST "!CONDA_HOME!" (
+        MKDIR "!CONDA_HOME!"
+        SET CLEANUP=TRUE
+    )
+    echo "!CD!\!CONDA_HOME!"
+    IF EXIST "!CD!\!CONDA_HOME!" (
+        :: CONDA_HOME is a relative path so make it absolute
+        PUSHD .\
+        CD "!CONDA_HOME!"
+        SET CONDA_HOME=!CD!
+        POPD
+    )
+
+    IF "!CLEANUP!"=="TRUE" (
+        RMDIR "!CONDA_HOME!"
+    )
 )
 
 :: check if CONDA_HOME has spaces
-IF NOT "%CONDA_HOME%"=="%CONDA_HOME: =%" (
-    ECHO ERROR: Miniconda cannot be installed in a path with spaces. Please specify a different conda home path using the '--conda-home' option.
+IF NOT "!CONDA_HOME!"=="!CONDA_HOME: =!" (
+    ECHO ERROR: Miniconda cannot be installed at "!CONDA_HOME!" becuase it contains spaces. Please specify a different conda home path using the '--conda-home' option.
     EXIT /B 1
 )
 
+!ECHO_COMMANDS!
+
+ECHO Starting Tethys Installation...
+
+:: Make tethys directory
+MKDIR "!TETHYS_HOME!"
+
 :: Install miniconda
 :: first see if Miniconda is already installed
-IF EXIST "%CONDA_HOME%\Scripts\activate" (
+IF EXIST "!CONDA_HOME!\Scripts\activate" (
     ECHO Using existing Miniconda installation...
 ) ELSE (
     ECHO Installing Miniconda...
-    START /wait "" %CONDA_EXE% /InstallationType=JustMe /RegisterPython=0 /S /D=%CONDA_HOME%
+    START /wait "" !CONDA_EXE! /InstallationType=JustMe /RegisterPython=0 /S /D=!CONDA_HOME!
 )
-CALL "%CONDA_HOME%\Scripts\activate"
-
-IF EXIST "%CWD%%CONDA_HOME%" (
-    :: CONDA_HOME is a relative path so make it absolute
-    SET CONDA_HOME=%CWD%%CONDA_HOME%
-)
+CALL "!CONDA_HOME!\Scripts\activate"
 
 IF %ERRORLEVEL% NEQ 0 (
     ECHO Error occured while attempting to install Miniconda.
@@ -211,9 +236,9 @@ IF %ERRORLEVEL% NEQ 0 (
 :: clone Tethys repo
 ECHO Cloning the Tethys Platform repo...
 conda install --yes git
-git clone https://github.com/tethysplatform/tethys "%TETHYS_HOME%\src"
-CD "%TETHYS_HOME%\src"
-git checkout %BRANCH%
+git clone https://github.com/tethysplatform/tethys "!TETHYS_HOME!\src"
+CD "!TETHYS_HOME!\src"
+git checkout !BRANCH!
 
 IF %ERRORLEVEL% NEQ 0 (
     ECHO Error occured while cloning the tethys repo.
@@ -221,30 +246,30 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 :: create conda env and install Tethys
-ECHO Setting up the %CONDA_ENV_NAME% environment...
-conda env create -n %CONDA_ENV_NAME% -f environment_py2.yml
-CALL activate %CONDA_ENV_NAME%
+ECHO Setting up the !CONDA_ENV_NAME! environment...
+conda env create -n !CONDA_ENV_NAME! -f environment_py2.yml
+CALL activate !CONDA_ENV_NAME!
 python setup.py develop
 
-IF NOT "%ALLOWED_HOST%"=="127.0.0.1" (
-    SET ALLOWED_HOST_OPT=--allowed-host %ALLOWED_HOST%
+IF NOT "!ALLOWED_HOST!"=="127.0.0.1" (
+    SET ALLOWED_HOST_OPT=--allowed-host !ALLOWED_HOST!
 )
 
-tethys gen settings -d "%TETHYS_HOME%\src\tethys_apps" %ALLOWED_HOST_OPT% --db-username %TETHYS_DB_USERNAME% --db-password %TETHYS_DB_PASSWORD% --db-port %TETHYS_DB_PORT%
+tethys gen settings -d "!TETHYS_HOME!\src\tethys_apps" !ALLOWED_HOST_OPT! --db-username !TETHYS_DB_USERNAME! --db-password !TETHYS_DB_PASSWORD! --db-port !TETHYS_DB_PORT!
 
 IF %ERRORLEVEL% NEQ 0 (
-    ECHO Error occured while setting up the %CONDA_ENV_NAME% environment.
+    ECHO Error occured while setting up the !CONDA_ENV_NAME! environment.
     EXIT /B %ERRORLEVEL%
 )
 
 :: Setup local database
 ECHO Setting up the Tethys database...
-initdb  -U postgres -D "%TETHYS_HOME%\psql\data"
-pg_ctl -U postgres -D "%TETHYS_HOME%\psql\data" -l "%TETHYS_HOME%\psql\logfile" start -o "-p %TETHYS_DB_PORT%"
-ECHO wating for databases to startup...
+initdb  -U postgres -D "!TETHYS_HOME!\psql\data"
+pg_ctl -U postgres -D "!TETHYS_HOME!\psql\data" -l "!TETHYS_HOME!\psql\logfile" start -o "-p !TETHYS_DB_PORT!"
+ECHO Waiting for databases to startup...
 TIMEOUT 10 /NOBREAK
-psql -U postgres -p %TETHYS_DB_PORT% --command "CREATE USER %TETHYS_DB_USERNAME% WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '%TETHYS_DB_PASSWORD%';"
-createdb -U postgres -p %TETHYS_DB_PORT% -O %TETHYS_DB_USERNAME% -E utf-8 -T template0 %TETHYS_DB_USERNAME%
+psql -U postgres -p !TETHYS_DB_PORT! --command "CREATE USER !TETHYS_DB_USERNAME! WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '!TETHYS_DB_PASSWORD!';"
+createdb -U postgres -p !TETHYS_DB_PORT! -O !TETHYS_DB_USERNAME! -E utf-8 -T template0 !TETHYS_DB_USERNAME!
 
 IF %ERRORLEVEL% NEQ 0 (
     ECHO Error occured while setting up the tethys database.
@@ -253,7 +278,9 @@ IF %ERRORLEVEL% NEQ 0 (
 
 :: Initialze Tethys database
 tethys manage syncdb
-ECHO from django.contrib.auth.models import User; User.objects.create_superuser('%TETHYS_SUPER_USER%', '%TETHYS_SUPER_USER_EMAIL%', '%TETHYS_SUPER_USER_PASS%') | python manage.py shell
+ECHO from django.contrib.auth.models import User; User.objects.create_superuser('!TETHYS_SUPER_USER!', '!TETHYS_SUPER_USER_EMAIL!', '!TETHYS_SUPER_USER_PASS!') | python manage.py shell
+ECHO Stopping database server...
+pg_ctl -U postgres -D "!TETHYS_HOME!\psql\data" stop
 
 IF %ERRORLEVEL% NEQ 0 (
     ECHO Error occured while initializing the database.
@@ -261,53 +288,49 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 :: Create environment activate/deactivate scripts
-SET ACTIVATE_DIR=%CONDA_HOME%\envs\%CONDA_ENV_NAME%\etc\conda\activate.d
-SET DEACTIVATE_DIR=%CONDA_HOME%\envs\%CONDA_ENV_NAME%\etc\conda\deactivate.d
-MKDIR "%ACTIVATE_DIR%" "%DEACTIVATE_DIR%"
+SET ACTIVATE_DIR=!CONDA_HOME!\envs\!CONDA_ENV_NAME!\etc\conda\activate.d
+SET DEACTIVATE_DIR=!CONDA_HOME!\envs\!CONDA_ENV_NAME!\etc\conda\deactivate.d
+MKDIR "!ACTIVATE_DIR!" "!DEACTIVATE_DIR!"
 SET ACTIVATE_SCRIPT=%ACTIVATE_DIR%\tethys-activate.bat
-SET DEACTIVATE_SCRIPT=%DEACTIVATE_DIR%\tethys-deactivate.bat
+SET DEACTIVATE_SCRIPT=!DEACTIVATE_DIR!\tethys-deactivate.bat
 
-ECHO @ECHO OFF>> "%ACTIVATE_SCRIPT%"
-ECHO SET TETHYS_HOME=%TETHYS_HOME%>> "%ACTIVATE_SCRIPT%"
-ECHO SET TETHYS_PORT=%TETHYS_PORT%>> "%ACTIVATE_SCRIPT%"
-ECHO SET TETHYS_DB_PORT=%TETHYS_DB_PORT%>> "%ACTIVATE_SCRIPT%"
-ECHO DOSKEY tethys_start_db=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" -l "%%TETHYS_HOME%%\psql\logfile" start -o "-p %%TETHYS_DB_PORT%%" >> "%ACTIVATE_SCRIPT%"
-ECHO DOSKEY tstartdb=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" -l "%%TETHYS_HOME%%\psql\logfile" start -o "-p %%TETHYS_DB_PORT%%" >>"%ACTIVATE_SCRIPT%"
-ECHO DOSKEY tethys_stop_db=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" stop >>"%ACTIVATE_SCRIPT%"
-ECHO DOSKEY tstopdb=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" stop >> "%ACTIVATE_SCRIPT%"
-ECHO DOSKEY tms=tethys manage start -p %ALLOWED_HOST%:^%%TETHYS_PORT%% >> "%ACTIVATE_SCRIPT%"
+ECHO @ECHO OFF>> "!ACTIVATE_SCRIPT!"
+ECHO SET TETHYS_HOME=!TETHYS_HOME!>> "!ACTIVATE_SCRIPT!"
+ECHO SET TETHYS_PORT=!TETHYS_PORT!>> "!ACTIVATE_SCRIPT!"
+ECHO SET TETHYS_DB_PORT=!TETHYS_DB_PORT!>> "!ACTIVATE_SCRIPT!"
+ECHO DOSKEY tethys_start_db=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" -l "%%TETHYS_HOME%%\psql\logfile" start -o "-p %%TETHYS_DB_PORT%%" >> "!ACTIVATE_SCRIPT!"
+ECHO DOSKEY tstartdb=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" -l "%%TETHYS_HOME%%\psql\logfile" start -o "-p %%TETHYS_DB_PORT%%" >>"!ACTIVATE_SCRIPT!"
+ECHO DOSKEY tethys_stop_db=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" stop >>"!ACTIVATE_SCRIPT!"
+ECHO DOSKEY tstopdb=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" stop >> "!ACTIVATE_SCRIPT!"
+ECHO DOSKEY tms=tethys manage start -p !ALLOWED_HOST!:%%TETHYS_PORT%% >> "!ACTIVATE_SCRIPT!"
+ECHO ECHO Starting Tethys Database Server... >> "!ACTIVATE_SCRIPT!"
+ECHO pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" -l "%%TETHYS_HOME%%\psql\logfile" start -o "-p %%TETHYS_DB_PORT%%" >> "!ACTIVATE_SCRIPT!"
 
-PUSHD .\
-CD %ACTIVATE_DIR%
-CALL tethys-activate.bat
-POPD
-
-ECHO ECHO Starting Tethys Database Server... >> "%ACTIVATE_SCRIPT%"
-ECHO pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" -l "^%%TETHYS_HOME%%\psql\logfile" start -o "-p %%TETHYS_DB_PORT%%" >> "%ACTIVATE_SCRIPT%"
-
-ECHO @ECHO OFF>> "%DEACTIVATE_SCRIPT%"
-ECHO ECHO Stopping Tethys Database Server... >> "%DEACTIVATE_SCRIPT%"
-ECHO pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" stop >> "%DEACTIVATE_SCRIPT%"
-ECHO SET TETHYS_HOME=>> "%DEACTIVATE_SCRIPT%"
-ECHO SET TETHYS_DB_PORT=>> "%DEACTIVATE_SCRIPT%"
-ECHO SET TETHYS_PORT=>> "%DEACTIVATE_SCRIPT%"
-ECHO DOSKEY tethys_start_db= >> "%DEACTIVATE_SCRIPT%"
-ECHO DOSKEY tstartdb= >> "%DEACTIVATE_SCRIPT%"
-ECHO DOSKEY tethys_stop_db= >> "%DEACTIVATE_SCRIPT%"
-ECHO DOSKEY tstopdb= >> "%DEACTIVATE_SCRIPT%"
-ECHO DOSKEY tms= >> "%DEACTIVATE_SCRIPT%"
+ECHO @ECHO OFF>> "!DEACTIVATE_SCRIPT!"
+ECHO ECHO Stopping Tethys Database Server... >> "!DEACTIVATE_SCRIPT!"
+ECHO pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" stop >> "!DEACTIVATE_SCRIPT!"
+ECHO SET TETHYS_HOME=>> "!DEACTIVATE_SCRIPT!"
+ECHO SET TETHYS_DB_PORT=>> "!DEACTIVATE_SCRIPT!"
+ECHO SET TETHYS_PORT=>> "!DEACTIVATE_SCRIPT!"
+ECHO DOSKEY tethys_start_db= >> "!DEACTIVATE_SCRIPT!"
+ECHO DOSKEY tstartdb= >> "!DEACTIVATE_SCRIPT!"
+ECHO DOSKEY tethys_stop_db= >> "!DEACTIVATE_SCRIPT!"
+ECHO DOSKEY tstopdb= >> "!DEACTIVATE_SCRIPT!"
+ECHO DOSKEY tms= >> "!DEACTIVATE_SCRIPT!"
 
 IF %ERRORLEVEL% NEQ 0 (
     ECHO Error occured while creating activate scripts.
     EXIT /B %ERRORLEVEL%
 )
 
-SET TETHYS_CMD=%TETHYS_HOME%\tethys_cmd.bat
-ECHO @ECHO OFF>> "%TETHYS_CMD%"
-ECHO CD %TETHYS_HOME% >> "%TETHYS_CMD%"
-ECHO CMD /K %CONDA_HOME%\Scripts\activate %CONDA_ENV_NAME% >> "%TETHYS_CMD%"
+SET TETHYS_CMD=!TETHYS_HOME!\tethys_cmd.bat
+ECHO @ECHO OFF>> "!TETHYS_CMD!"
+ECHO CD !TETHYS_HOME! >> "!TETHYS_CMD!"
+ECHO CMD /K !CONDA_HOME!\Scripts\activate !CONDA_ENV_NAME! >> "!TETHYS_CMD!"
 
-ECHO Tethys installation complete!
+ECHO Tethys installation complete^^!
+ECHO.
+ECHO To open a new command prompt with the !CONDA_ENV_NAME! environment activated double click the file "!TETHYS_CMD!"
 
 EXIT /B %ERRORLEVEL%
 
@@ -320,7 +343,7 @@ ECHO     -t, --tethys-home [PATH]            Path for tethys home directory. Def
 ECHO     -a, --allowed-host [HOST]           Hostname or IP address on which to serve tethys. Default is 127.0.0.1.
 ECHO     -p, --port [PORT]                   Port on which to serve tethys. Default is 8000.
 ECHO     -b, --branch [BRANCH_NAME]          Branch to checkout from version control. Default is 'master'.
-ECHO     -c, --conda-home [PATH]             Path to conda home directory where Miniconda will be installed. Default is ^%%TETHYS_HOME%%\miniconda.
+ECHO     -c, --conda-home [PATH]             Path to conda home directory where Miniconda will be installed. Default is %%TETHYS_HOME%%\miniconda.
 ECHO     -C, --conda-exe [PATH]              Path to Miniconda installer executable. Default is '.\Miniconda3-latest-Windows-x86_64.exe'.
 ECHO     -n, --conda-env-name [NAME]         Name for tethys conda environment. Default is 'tethys'.
 ECHO     --db-username [USERNAME]            Username that the tethys database server will use. Default is 'tethys_default'.
@@ -332,4 +355,4 @@ ECHO     -P, --superuser-pass [PASSWORD]     Tethys super user password. Default
 ECHO     -x                                  Flag to echo all commands.
 ECHO     -h, --help                          Print this help information.
 
-EXIT /B 0 
+EXIT /B 0

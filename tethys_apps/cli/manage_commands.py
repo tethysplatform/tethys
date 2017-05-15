@@ -11,14 +11,9 @@
 import os
 import subprocess
 
-#/usr/lib/tethys/src/tethys_apps/cli
 CURRENT_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-#/usr/lib/tethys
-TETHYS_MAIN_DIR = os.sep.join(CURRENT_SCRIPT_DIR.split(os.sep)[:-3])
-#/usr/lib/tethys/src
-DEFAULT_INSTALLATION_DIRECTORY = os.path.join(TETHYS_MAIN_DIR,'src')
-#/usr/lib/tethys/tethys
-DEVELOPMENT_DIRECTORY = os.path.join(TETHYS_MAIN_DIR,'tethys')
+TETHYS_HOME = os.sep.join(CURRENT_SCRIPT_DIR.split(os.sep)[:-3])
+TETHYS_SRC_DIRECTORY = os.sep.join(CURRENT_SCRIPT_DIR.split(os.sep)[:-2])
 MANAGE_START = 'start'
 MANAGE_SYNCDB = 'syncdb'
 MANAGE_COLLECTSTATIC = 'collectstatic'
@@ -32,8 +27,7 @@ def get_manage_path(args):
     Validate user defined manage path, use default, or throw error
     """
     # Determine path to manage.py file
-    tethys_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    manage_path = os.path.join(tethys_dir, 'manage.py')
+    manage_path = os.path.join(TETHYS_SRC_DIRECTORY, 'manage.py')
 
     # Check for path option
     if hasattr(args, 'manage'):
