@@ -504,7 +504,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         Returns True if the persistent store database exists.
         """
         # Get the database engine
-        engine = self.get_engine()
+        engine = self.get_engine(with_db=True)
         namespaced_name = self.get_namespaced_persistent_store_name()
 
         # Cannot create databases in a transaction: connect and commit to close transaction
@@ -666,9 +666,9 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
             ))
             try:
                 if force_first_time:
-                    self.initializer_function(self.get_engine(), True)
+                    self.initializer_function(self.get_engine(with_db=True), True)
                 else:
-                    self.initializer_function(self.get_engine(), not self.initialized)
+                    self.initializer_function(self.get_engine(with_db=True), not self.initialized)
             except Exception as e:
                 print(type(e))
                 raise PersistentStoreInitializerError(e)
