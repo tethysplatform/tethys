@@ -476,7 +476,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
         return '_'.join((self.tethys_app.package, safe_name))
 
-    def get_engine(self, with_db=True, as_url=False, as_sessionmaker=True):
+    def get_engine(self, with_db=False, as_url=False, as_sessionmaker=False):
         """
         Get the SQLAlchemy engine from the connected persistent store service
         """
@@ -504,7 +504,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         Returns True if the persistent store database exists.
         """
         # Get the database engine
-        engine = self.get_engine(with_db=False)
+        engine = self.get_engine()
         namespaced_name = self.get_namespaced_persistent_store_name()
 
         # Cannot create databases in a transaction: connect and commit to close transaction
