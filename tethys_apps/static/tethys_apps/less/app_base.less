@@ -11,11 +11,11 @@
 
 // Characteristic Variables
 @app-nav-width: 300px;
-@app-content-padding: 50px;
+@app-content-padding: 15px;
 @app-primary-color: #1b95dc;
-@app-header-height: 100px;
+@app-header-height: 50px;
 @app-header-height-max-width-500: 60px;
-@app-actions-height: 82px;
+@app-actions-height: 50px;
 
 // Transition Variables
 @header-transition-duration: 0.4s;
@@ -43,6 +43,7 @@ body {
     width: 100%;
     z-index: 100;
     margin-top: -@app-header-height;
+    box-shadow: 0 0 4px rgba(0,0,0,.14), 0 4px 8px rgba(0,0,0,.28);
 
     &.show-header {
       margin-top: 0;
@@ -56,13 +57,12 @@ body {
       position: absolute;
       top: 0;
       left: 0;
-      padding: 20px;
       z-index: 100;
-      margin-left: 30px;
-      padding: 10px;
+      margin-left: 40px;
+      padding: 7px;
 
       img {
-        height: 80px;
+        height: 35px;
         border-radius: 50%;
         background: @app-primary-color;
       }
@@ -73,9 +73,10 @@ body {
 
       .app-title {
         display: block;
-        padding: 20px 0;
-        padding-left: 130px;
-        font-size: 40px;
+        padding: 7px 0;
+        padding-left: 52px;
+        font-size: 25px;
+        letter-spacing: 1px;
         color: white;
         font-weight: 300;
         .font-smoothing();
@@ -89,17 +90,18 @@ body {
 
     .exit-button {
       float: right;
-      margin-right: 50px;
-      margin-top: 26px;
+      margin: 9px 0;
+      margin-right: 15px;
 
       a {
         display: block;
-        padding: 10px 20px;
+        padding: 2px 8px;
         border-radius: 5px;
         background: rgba(255, 255, 255, 0.1);
         color: #ffffff;
         font-size: 20px;
-        font-weight: 400;
+        font-weight: 300;
+        letter-spacing: 1px;
         .font-smoothing();
 
         &:hover {
@@ -111,28 +113,31 @@ body {
 
     .toggle-nav {
       display: block;
-      height: 40px;
-      width: 15px;
+      height: 32px;
+      width: 34px;
       float: left;
       padding: 10px;
-      padding-left: 0;
-      margin: 30px 0;
-      margin-right: 5px;
-      border-radius: 0 5px 5px 0;
+      margin: 9px 5px;
+      border-radius: 50%;
 
       div {
-        height: 3px;
-        background-color: #ffffff;
-        margin-bottom: 5px;
-        border-radius: 5px;
+        height: 2px;
+        background-color: #eeeeee;
+        margin-bottom: 3px;
 
         &:last-child {
           margin-bottom: 0;
         }
       }
 
-      &:hover {
+      &:active {
         background: rgba(0,0,0,0.3);
+      }
+
+      &:hover {
+        div {
+          background: #ffffff;
+        }
       }
     }
   }
@@ -177,10 +182,10 @@ body {
       height: 100%;
       background: #efefef;
       padding: 0 15px;
-      padding-top: 100px;
+      padding-top: @app-header-height;
 
       .nav {
-        padding: 20px 0;
+        padding: 0;
         padding-bottom: 40px;
         height: 100%;
         overflow: auto;
@@ -191,9 +196,10 @@ body {
 
         li {
           a {
+            font-size: 13px;
             color: @app-primary-color;
 
-            &:hover {;
+            &:hover {
               background: #ffffff;
               text-decoration: none;
             }
@@ -202,7 +208,7 @@ body {
           &.title {
             padding: 10px 15px;
             padding-top: 15px;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 500;
             color: #444444;
             -webkit-font-smoothing: antialiased;
@@ -229,7 +235,7 @@ body {
       height: @app-actions-height;
       bottom: 0;
       right: 0;
-      padding: 20px @app-content-padding;
+      padding: 8px @app-content-padding;
 
       .separator {
         border-top: 1px solid #DDDDDD;
@@ -239,7 +245,6 @@ body {
       .btn {
         float: right;
         margin-left: 10px;
-        padding: 10px 20px;
       }
 
       .btn-group {
@@ -373,20 +378,8 @@ body {
 @media (max-width: 700px) {
   #app-header {
     .tethys-app-header {
-      .icon-wrapper {
-        padding: 20px;
-        padding-left: 0px;
-
-        img {
-          height: 60px;
-        }
-      }
-
       .app-title-wrapper {
         .app-title {
-          padding: 29px 0;
-          padding-left: 100px;
-          font-size: 30px;
           width: 350px;
         }
       }
@@ -397,44 +390,32 @@ body {
 @media (max-width: 500px) {
   #app-header {
     .tethys-app-header {
-      height: @app-header-height-max-width-500;
-
-      .toggle-nav {
-        margin: 10px;
-        margin-left: 0;
-      }
-
       .icon-wrapper {
-        padding: 10px;
-        padding-left: 0;
+        display: none;
 
         img {
-          height:40px;
+          display: none;
         }
       }
 
       .app-title-wrapper {
         .app-title {
-          padding: 13px 0;
-          padding-left: 65px;
-          font-size: 24px;
+          padding-left: 0;
           width: 230px;
-        }
-      }
-
-      .exit-button {
-        margin-right: 20px;
-        margin-top: 10px;
-
-        a {
-          padding: 6px 15px;
         }
       }
     }
   }
-  #app-content-wrapper {
-    #app-content {
-      padding-top: @app-header-height-max-width-500;
+}
+
+@media (max-width: 400px) {
+  #app-header {
+    .tethys-app-header {
+      .app-title-wrapper {
+        .app-title {
+          width: 200px;
+        }
+      }
     }
   }
 }
