@@ -54,16 +54,3 @@ label:after {
 .status-col.span-two{
   min-width: 165px;
 }
-
-/* Styles for modal adjustments */
-.modal {
-  padding-right: 300px;
-}
-
-.modal-dialog {
-  top: 150px;
-}
-
-.modal-backdrop {
-  display: none;
-}

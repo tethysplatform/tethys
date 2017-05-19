@@ -314,6 +314,9 @@ body {
   height: 100%;
   padding: 20px 15px 10px 15px;
 }
+.modal-dialog {
+  top: 150px;
+}
 @media (max-width: 1900px) {
   #app-header .tethys-app-header .app-title-wrapper .app-title {
     width: 1500px;
