@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from past.builtins import basestring
 
 DEFAULT_EXPRESSION = '[0-9A-Za-z-_.]+'
 

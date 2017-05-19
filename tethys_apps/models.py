@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from builtins import str as text
 import sqlalchemy
 import logging
 from django.db import models
@@ -60,7 +61,7 @@ class TethysApp(models.Model):
         verbose_name_plural = 'Installed Apps'
 
     def __unicode__(self):
-        return unicode(self.name)
+        return text(self.name)
 
     def add_settings(self, setting_list):
         """

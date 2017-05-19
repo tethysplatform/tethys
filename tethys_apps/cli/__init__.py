@@ -9,6 +9,7 @@
 """
 # Commandline interface for Tethys
 import argparse
+from builtins import input
 import subprocess
 import os
 import webbrowser
@@ -125,14 +126,14 @@ def syncstores_command(args):
     if args.refresh:
         valid_inputs = ('y', 'n', 'yes', 'no')
         no_inputs = ('n', 'no')
-        proceed = raw_input('{1}WARNING:{2} You have specified the database refresh option. This will drop all of the '
-                            'databases for the following apps: {0}. This could result in significant data loss and '
-                            'cannot be undone. Do you wish to continue? (y/n): '.format(', '.join(args.app),
-                                                                                        TerminalColors.WARNING,
-                                                                                        TerminalColors.ENDC)).lower()
+        proceed = input('{1}WARNING:{2} You have specified the database refresh option. This will drop all of the '
+                        'databases for the following apps: {0}. This could result in significant data loss and '
+                        'cannot be undone. Do you wish to continue? (y/n): '.format(', '.join(args.app),
+                                                                                    TerminalColors.WARNING,
+                                                                                    TerminalColors.ENDC)).lower()
 
         while proceed not in valid_inputs:
-            proceed = raw_input('Invalid option. Do you wish to continue? (y/n): ').lower()
+            proceed = input('Invalid option. Do you wish to continue? (y/n): ').lower()
 
         if proceed not in no_inputs:
             process.extend(['-r'])

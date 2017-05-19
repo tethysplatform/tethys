@@ -16,12 +16,12 @@ from django.utils.functional import SimpleLazyObject
 from django.core.exceptions import ObjectDoesNotExist
 from sqlalchemy.orm import sessionmaker
 
-from tethys_apps.base.workspace import TethysWorkspace
-from tethys_apps.base.handoff import HandoffManager
-from tethys_apps.exceptions import (TethysAppSettingDoesNotExist,
-                                    TethysAppSettingNotAssigned)
+from .workspace import TethysWorkspace
+from .handoff import HandoffManager
+from ..exceptions import TethysAppSettingDoesNotExist
 
 tethys_log = logging.getLogger('tethys.app_base')
+
 
 class TethysAppBase(object):
     """

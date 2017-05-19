@@ -12,7 +12,7 @@ import os
 import inspect
 
 from tethys_apps.base import TethysAppBase
-from terminal_colors import TerminalColors
+from .terminal_colors import TerminalColors
 
 
 class SingletonAppHarvester(object):
@@ -37,14 +37,14 @@ class SingletonAppHarvester(object):
         # Harvest App Instances
         self._harvest_app_instances(app_packages_list)
         
-    def __new__(self):
+    def __new__(cls):
         """
         Make App Harvester a Singleton
         """
-        if not self._instance:
-            self._instance = super(SingletonAppHarvester, self).__new__(self)
+        if not cls._instance:
+            cls._instance = super(SingletonAppHarvester, cls).__new__(cls)
             
-        return self._instance
+        return cls._instance
 
     @staticmethod
     def _validate_app(app):
