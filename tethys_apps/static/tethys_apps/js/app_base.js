@@ -184,6 +184,9 @@ var TETHYS_APP_BASE = (function() {
           $(app_content_selector).addClass('with-transition');
         }
 
+        // Hide tooltips
+        $('.tooltip').tooltip('hide');
+
         // Hide by removing "show" classes
         $(app_header_selector).removeClass('show-header');
         $(app_content_selector).removeClass('show-app-content');
@@ -281,6 +284,9 @@ var TETHYS_APP_BASE = (function() {
 
       // Perform responsive check
       check_responsive();
+
+      // Initialize tooltips
+      $('[data-toggle="tooltip"]').tooltip();
 
   });
 
