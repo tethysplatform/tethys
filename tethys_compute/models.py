@@ -35,7 +35,7 @@ from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 from tethyscluster import config as tethyscluster_config
 from tethyscluster.sshutils import get_certificate_fingerprint
-from condorpy import Job, Workflow, Node, Templates, logger as condorpy_logger
+from condorpy import Job, Workflow, Node, Templates
 
 
 class SettingsCategory(models.Model):
@@ -204,9 +204,12 @@ class Cluster(models.Model):
             #TODO try this code
             # import socket
             # host_ip socket.gethostbyname(socket.gethostname())
-
-            import urllib2, json
-            json_response = urllib2.urlopen('http://ip.jsontest.com/').read()
+            try:
+                from urllib2 import urlopen
+            except ImportError:
+                from urllib.request import urlopen
+            import json
+            json_response = urlopen('http://ip.jsontest.com/').read()
             host_ip = json.loads(json_response)['ip']
             return host_ip
 
@@ -557,7 +560,7 @@ class CondorBase(TethysJob):
                 running_statuses = statuses['Unexpanded'] + statuses['Idle'] + statuses['Running']
                 if not running_statuses:
                     condor_status = 'Various-Complete'
-        except Exception, e:
+        except Exception as e:
             # raise e
             condor_status = 'Submission_err'
         self._status = self.STATUS_MAP[condor_status]
@@ -695,8 +698,8 @@ def condor_job_pre_delete(sender, instance, using, **kwargs):
     try:
         instance.condor_object.close_remote()
         shutil.rmtree(instance.initial_dir)
-    except Exception, e:
-        log.exception(e.message)
+    except Exception as e:
+        log.exception(str(e))
 
 
 class CondorPyWorkflow(models.Model):
@@ -813,8 +816,8 @@ def condor_workflow_pre_delete(sender, instance, using, **kwargs):
     try:
         instance.condor_object.close_remote()
         shutil.rmtree(instance.workspace)
-    except Exception, e:
-        log.exception(e.message)
+    except Exception as e:
+        log.exception(str(e))
 
 
 class CondorWorkflowNode(models.Model):
