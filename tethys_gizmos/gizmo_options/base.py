@@ -9,6 +9,8 @@
 """
 import re
 
+from past.builtins import basestring
+
 class TethysGizmoOptions(dict):
     """
     Base class for Tethys Gizmo Options objects.
