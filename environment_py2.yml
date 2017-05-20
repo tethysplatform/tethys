@@ -15,6 +15,7 @@ dependencies:
 - django-filter
 - djangorestframework
 - bokeh
+- future
 - paste
 - psycopg2
 - sqlalchemy
