@@ -72,7 +72,7 @@ def make_contrib(superclass, func=None):
 
 # code for DictionaryField was taken from https://djangosnippets.org/snippets/1979/
 
-class DictionaryField(with_metaclass(models.Field, SubfieldBase)):
+class DictionaryField(with_metaclass(SubfieldBase, models.Field)):
     description = _("Dictionary object")
 
     def get_internal_type(self):
@@ -118,7 +118,8 @@ class DictionaryField(with_metaclass(models.Field, SubfieldBase)):
         defaults.update(kwargs)
         return super(DictionaryField, self).formfield(**defaults)
 
-class ListField(with_metaclass(models.Field, SubfieldBase)):
+
+class ListField(with_metaclass(SubfieldBase, models.Field)):
     description = _("List object")
 
     def get_internal_type(self):
@@ -134,7 +135,7 @@ class ListField(with_metaclass(models.Field, SubfieldBase)):
                 return json.loads(value)
             except (ValueError, TypeError) as e:
                 raise e
-                #raise exceptions.ValidationError(self.error_messages['invalid value for json: %s' % value])
+                # raise exceptions.ValidationError(self.error_messages['invalid value for json: %s' % value])
 
         if isinstance(value, list):
             return value
