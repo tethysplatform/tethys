@@ -18,7 +18,6 @@ from subprocess import PIPE
 import os
 import json
 import getpass
-from exceptions import OSError
 from functools import cmp_to_key
 from docker.utils import kwargs_from_env, compare_version, create_host_config
 from docker.client import Client as DockerClient
