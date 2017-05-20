@@ -39,7 +39,6 @@ dependencies:
     - django-simple-captcha
     - django-termsandconditions
     - tethys_dataset_services
-    - condorpy
+    # - condorpy
     - PasteScript
-    - TethysCluster
     - social-auth-app-django
