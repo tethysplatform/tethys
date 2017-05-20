@@ -111,26 +111,28 @@
         {% block app_header_override %}
           <div id="app-header" class="clearfix">
             <div class="tethys-app-header" style="background: {{ tethys_app.color|default:'#1b95dc' }};">
-              {% block app-navigation-toggle-override %}
-                <a href="javascript:void(0);" class="toggle-nav">
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                </a>
-              {% endblock %}
-              {% block app_icon_override %}
-                <div class="icon-wrapper">
-                  {% block app_icon %}<img src="{% static tethys_app.icon %}">{% endblock %}
-                </div>
-              {% endblock %}
-              {% block app_title_override %}
-                <div class="app-title-wrapper">
-                  <span class="app-title">{% block app_title %}{{ tethys_app.name }}{% endblock %}</span>
-                </div>
-              {% endblock %}
+              <div id="nav-title-wrapper">
+                  {% block app-navigation-toggle-override %}
+                    <a href="javascript:void(0);" class="toggle-nav">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </a>
+                  {% endblock %}
+                  {% block app_icon_override %}
+                    <div class="icon-wrapper">
+                      {% block app_icon %}<img src="{% static tethys_app.icon %}">{% endblock %}
+                    </div>
+                  {% endblock %}
+                  {% block app_title_override %}
+                    <div class="app-title-wrapper">
+                      <span class="app-title">{% block app_title %}{{ tethys_app.name }}{% endblock %}</span>
+                    </div>
+                  {% endblock %}
+              </div>
 
               {% block header_buttons_override %}
-              <div id="header-buttons-parent">
+              <div id="header-buttons-wrapper">
                   {% block header_buttons %}
                   {% endblock %}
                   {% block settings_button_override %}
