@@ -88,43 +88,56 @@ body {
       }
     }
 
-    .header-button {
+    #header-buttons-parent {
       float: right;
-      margin: 9.5px 0;
-      margin-right: 15px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: 50px;
 
-      a {
-        display: block;
-        padding: 2px 8px;
-        border-radius: 5px;
-        background: rgba(255, 255, 255, 0.1);
-        color: #ffffff;
-        font-size: 18px;
-        font-weight: 400;
-        .font-smoothing();
+      .header-button {
+        margin-right: 15px;
 
-        &:hover {
-          background: rgba(0, 0, 0, 0.1);
-          text-decoration: none;
+        a {
+          display: block;
+          padding: 2px 8px;
+          border-radius: 5px;
+          background: rgba(255, 255, 255, 0.1);
+          color: #ffffff;
+          font-size: 18px;
+          font-weight: 400;
+          .font-smoothing();
+
+          &:hover {
+            background: rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+          }
         }
-      }
-    }
+        &.exit-button {
+          a {
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1;
+            padding: 3px 11px 8px;
+          }
+        }
 
-    .exit-button {
+        &.settings-button {
+          a {
+            .glyphicon {
+              line-height: unset;
+            }
+          }
+        }
 
+        &.glyphicon-button {
+          a {
+            height: 31px;
 
-      a {
-        font-size: 20px;
-        font-weight: 600;
-        line-height: 1;
-        padding: 3px 11px 8px;
-      }
-    }
-
-    .settings-button {
-      a {
-        .glyphicon {
-          line-height: unset;
+            .glyphicon {
+              line-height: unset;
+            }
+          }
         }
       }
     }
@@ -311,7 +324,7 @@ body {
 
 // Styles for modal adjustments
 .modal-dialog {
-  top: 75px;
+  top: 25px;
 }
 
 @media (max-width: 1900px) {

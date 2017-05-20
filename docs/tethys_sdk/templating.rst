@@ -325,6 +325,26 @@ Override the app title element in the header.
 
     {% block app_title %}My App Title{% endblock %}
 
+header_buttons_override
+-----------------------
+
+Override all the header buttons on the right-hand side of the header (settings button, exit button, and header buttons).
+
+header_buttons
+--------------
+
+Use this block to add custom buttons to the app header. Use an anchor/link tag for the button and wrap it in a ``div`` with the class ``header-button``. For buttons with the Bootstrap glyphicons, add the <``glyphicon-button`` class to the wrapper element as well.
+
+*Example:*
+
+::
+
+    {% block header_buttons %}
+      <div class="header-button glyphicon-button">
+        <a href="{% url my_first_app:another_page %}"><span class="glyphicon glyphicon-question-sign"></span></a>
+      </div>
+    {% endblock %}
+
 exit_button_override
 --------------------
 
