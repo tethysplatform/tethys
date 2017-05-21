@@ -230,7 +230,7 @@ then
     . activate ${CONDA_ENV_NAME}
     python setup.py develop
 
-    if [ '$(PYTHON_VERSION}' = '3' ]
+    if [ '$PYTHON_VERSION' == '3' ]
     then
         git clone https://github.com/tethysplatform/condorpy.git '${TETHYS_HOME}/condorpy'
         cd '${TETHYS_HOME}/condorpy'
