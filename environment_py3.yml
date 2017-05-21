@@ -40,5 +40,7 @@ dependencies:
     - django-termsandconditions
     - tethys_dataset_services
     # - condorpy
+    # Need to install 'remote_utils' branch on
+    # https://github.com/tethysplatform/condorpy
     - PasteScript
     - social-auth-app-django
