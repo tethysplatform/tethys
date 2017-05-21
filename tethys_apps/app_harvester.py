@@ -32,7 +32,7 @@ class SingletonAppHarvester(object):
 
         # List the apps packages in directory
         apps_dir = os.path.join(os.path.dirname(__file__), 'tethysapp')
-        app_packages_list = os.listdir(apps_dir)
+        app_packages_list = [app_package for app_package in os.listdir(apps_dir) if app_package != '__pycache__']
 
         # Harvest App Instances
         self._harvest_app_instances(app_packages_list)
