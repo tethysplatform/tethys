@@ -9,6 +9,7 @@ OPTIONS:\n
     -b, --branch <BRANCH_NAME>          Branch to checkout from version control. Default is 'master'.\n
     -c, --conda-home <PATH>             Path where Miniconda will be installed, or to an existing installation of Miniconda. Default is \${TETHYS_HOME}/miniconda.\n
     -n, --conda-env-name <NAME>         Name for tethys conda environment. Default is 'tethys'.
+    --python-version <PYTHON_VERSION>   Main python version to install tethys environment into (2 or 3). Default is 2.\n
     --db-username <USERNAME>            Username that the tethys database server will use. Default is 'tethys_default'.\n
     --db-password <PASSWORD>            Password that the tethys database server will use. Default is 'pass'.\n
     --db-port <PORT>                    Port that the tethys database server will use. Default is 5436.\n
@@ -64,6 +65,7 @@ TETHYS_DB_USERNAME='tethys_default'
 TETHYS_DB_PASSWORD='pass'
 TETHYS_DB_PORT=5436
 CONDA_ENV_NAME='tethys'
+PYTHON_VERSION='2'
 BRANCH='master'
 
 TETHYS_SUPER_USER='admin'
@@ -110,6 +112,10 @@ case $key in
     ;;
     -n|--conda-env-name)
     set_option_value CONDA_ENV_NAME "$2"
+    shift # past argument
+    ;;
+    --python-version)
+    set_option_value PYTHON_VERSION "$2"
     shift # past argument
     ;;
     --db-username)
@@ -219,9 +225,19 @@ then
 
     # create conda env and install Tethys
     echo "Setting up the ${CONDA_ENV_NAME} environment..."
-    conda env create -n ${CONDA_ENV_NAME} -f environment_py2.yml
+    conda_file="environment_py$PYTHON_VERSION.yml"
+    conda env create -n ${CONDA_ENV_NAME} -f ${conda_file}
     . activate ${CONDA_ENV_NAME}
     python setup.py develop
+
+    if [ '$(PYTHON_VERSION}' = '3' ]
+    then
+        git clone https://github.com/tethysplatform/condorpy.git '${TETHYS_HOME}/condorpy'
+        cd '${TETHYS_HOME}/condorpy'
+        git checkout remote_utils
+        python setup.py develop
+        cd '${TETHYS_HOME}/src'
+    fi
 
     # only pass --allowed-hosts option to gen settings command if it is not the default
     if [ ${ALLOWED_HOST} != "127.0.0.1" ]
