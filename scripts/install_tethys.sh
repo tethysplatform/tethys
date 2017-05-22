@@ -225,18 +225,18 @@ then
 
     # create conda env and install Tethys
     echo "Setting up the ${CONDA_ENV_NAME} environment..."
-    conda_file="environment_py$PYTHON_VERSION.yml"
-    conda env create -n ${CONDA_ENV_NAME} -f ${conda_file}
+    conda env create -n ${CONDA_ENV_NAME} -f "environment_py${PYTHON_VERSION}.yml"
     . activate ${CONDA_ENV_NAME}
     python setup.py develop
 
-    if [ '$PYTHON_VERSION' == '3' ]
+    if [ $PYTHON_VERSION == '3' ]
     then
-        git clone https://github.com/tethysplatform/condorpy.git '${TETHYS_HOME}/condorpy'
-        cd '${TETHYS_HOME}/condorpy'
+        echo "Cloning condorpy repo ..."
+        git clone https://github.com/tethysplatform/condorpy.git "${TETHYS_HOME}/condorpy"
+        cd "${TETHYS_HOME}/condorpy"
         git checkout remote_utils
         python setup.py develop
-        cd '${TETHYS_HOME}/src'
+        cd "${TETHYS_HOME}/src"
     fi
 
     # only pass --allowed-hosts option to gen settings command if it is not the default
