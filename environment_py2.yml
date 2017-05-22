@@ -41,5 +41,4 @@ dependencies:
     - django-termsandconditions
     - tethys_dataset_services
     - condorpy
-    - TethysCluster
     - social-auth-app-django
