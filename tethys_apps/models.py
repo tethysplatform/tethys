@@ -543,7 +543,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         ))
 
         # Get the database engine
-        engine = self.get_engine(with_db=False)
+        engine = self.get_engine()
 
         # Connection
         drop_connection = engine.connect()
