@@ -392,7 +392,7 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
         if not self.persistent_store_service and self.required:
             raise ValidationError('Required.')
 
-    def get_engine(self, as_url=False, as_sessionmaker=True):
+    def get_engine(self, as_url=False, as_sessionmaker=False):
         """
         Get the SQLAlchemy engine from the connected persistent store service
         """
@@ -505,7 +505,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         Returns True if the persistent store database exists.
         """
         # Get the database engine
-        engine = self.get_engine(with_db=True)
+        engine = self.get_engine()
         namespaced_name = self.get_namespaced_persistent_store_name()
 
         # Cannot create databases in a transaction: connect and commit to close transaction
@@ -585,8 +585,8 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         log = logging.getLogger('tethys')
 
         # Connection engine
-        url = self.get_engine(with_db=False, as_url=True)
-        engine = self.get_engine(with_db=False)
+        url = self.get_engine(as_url=True)
+        engine = self.get_engine()
         namespaced_ps_name = self.get_namespaced_persistent_store_name()
         db_exists = self.persistent_store_database_exists()
 
