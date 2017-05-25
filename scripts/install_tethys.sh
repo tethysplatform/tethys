@@ -229,16 +229,6 @@ then
     . activate ${CONDA_ENV_NAME}
     python setup.py develop
 
-    if [ $PYTHON_VERSION == '3' ]
-    then
-        echo "Cloning condorpy repo ..."
-        git clone https://github.com/tethysplatform/condorpy.git "${TETHYS_HOME}/condorpy"
-        cd "${TETHYS_HOME}/condorpy"
-        git checkout remote_utils
-        python setup.py develop
-        cd "${TETHYS_HOME}/src"
-    fi
-
     # only pass --allowed-hosts option to gen settings command if it is not the default
     if [ ${ALLOWED_HOST} != "127.0.0.1" ]
     then

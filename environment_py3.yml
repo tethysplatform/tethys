@@ -39,8 +39,6 @@ dependencies:
     - django-simple-captcha
     - django-termsandconditions
     - tethys_dataset_services
-    # - condorpy
-    # Need to install 'remote_utils' branch on
-    # https://github.com/tethysplatform/condorpy
+    - condorpy
     - PasteScript
     - social-auth-app-django
