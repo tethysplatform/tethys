@@ -637,9 +637,9 @@ def index(request):
     )
 
     # Plotly View
-    x = [datetime(year=2013, month=10, day=04),
-         datetime(year=2013, month=11, day=05),
-         datetime(year=2013, month=12, day=06)]
+    x = [datetime(year=2013, month=10, day=4),
+         datetime(year=2013, month=11, day=5),
+         datetime(year=2013, month=12, day=6)]
     
     my_plotly_view = PlotlyView([go.Scatter(x=x, y=[1, 3, 6])])
     

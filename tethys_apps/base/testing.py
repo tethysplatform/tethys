@@ -1,5 +1,5 @@
 from django.test import TestCase
-from app_base import TethysAppBase
+from .app_base import TethysAppBase
 from django.test import Client
 
 

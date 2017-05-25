@@ -26,14 +26,15 @@ class DatasetService:
             self.type = type
             self.engine = VALID_ENGINES[type]
         else:
+            engine_key_list = list(VALID_ENGINES)
             if len(VALID_ENGINES) > 2:
-                comma_separated_types = ', '.join('"{0}"'.format(t) for t in VALID_ENGINES.keys()[:-1])
-                last_type = '"{0}"'.format(VALID_ENGINES.keys()[-1])
+                comma_separated_types = ', '.join('"{0}"'.format(t) for t in engine_key_list[:-1])
+                last_type = '"{0}"'.format(engine_key_list[-1])
                 valid_types_string = '{0}, and {1}'.format(comma_separated_types, last_type)
             elif len(VALID_ENGINES) == 2:
-                valid_types_string = '"{0}" and "{1}"'.format(VALID_ENGINES.keys()[0], VALID_ENGINES.keys()[1])
+                valid_types_string = '"{0}" and "{1}"'.format(engine_key_list[0], engine_key_list[1])
             else:
-                valid_types_string = '"{0}"'.format(VALID_ENGINES.keys()[0])
+                valid_types_string = '"{0}"'.format(engine_key_list[0])
 
             raise ValueError('The value "{0}" is not a valid for argument "type" of DatasetService. Valid values for '
                              '"type" argument include {1}.'.format(type, valid_types_string))
@@ -68,24 +69,27 @@ class SpatialDatasetService:
             self.type = type
             self.engine = VALID_SPATIAL_ENGINES[type]
         else:
+            spatial_engine_key_list = list(VALID_SPATIAL_ENGINES)
             if len(VALID_SPATIAL_ENGINES) > 2:
-                comma_separated_types = ', '.join('"{0}"'.format(t) for t in VALID_SPATIAL_ENGINES.keys()[:-1])
-                last_type = '"{0}"'.format(VALID_SPATIAL_ENGINES.keys()[-1])
+                comma_separated_types = ', '.join('"{0}"'.format(t) for t in spatial_engine_key_list[:-1])
+                last_type = '"{0}"'.format(spatial_engine_key_list[-1])
                 valid_types_string = '{0}, and {1}'.format(comma_separated_types, last_type)
             elif len(VALID_SPATIAL_ENGINES) == 2:
-                valid_types_string = '"{0}" and "{1}"'.format(VALID_SPATIAL_ENGINES.keys()[0], VALID_SPATIAL_ENGINES.keys()[1])
+                valid_types_string = '"{0}" and "{1}"'.format(spatial_engine_key_list[0], spatial_engine_key_list[1])
             else:
-                valid_types_string = '"{0}"'.format(VALID_SPATIAL_ENGINES.keys()[0])
+                valid_types_string = '"{0}"'.format(spatial_engine_key_list[0])
 
-            raise ValueError('The value "{0}" is not a valid for argument "type" of SpatialDatasetService. Valid values for '
-                             '"type" argument include {1}.'.format(type, valid_types_string))
+            raise ValueError('The value "{0}" is not a valid for argument "type" of SpatialDatasetService.'
+                             ' Valid values for "type" argument include {1}.'.format(type, valid_types_string))
 
         self.endpoint = endpoint
         self.apikey = apikey
         self.username = username
         self.password = password
 
-        print('DEPRECATION WARNING: Storing connection credentials for Spatial Dataset Services in the app.py is a security leak. App configuration for Spatial Dataset Services will be deprecated in version 1.2.')
+        print('DEPRECATION WARNING: Storing connection credentials for Spatial Dataset Services '
+              'in the app.py is a security leak. App configuration for Spatial Dataset Services '
+              'will be deprecated in version 1.2.')
 
     def __repr__(self):
         """
