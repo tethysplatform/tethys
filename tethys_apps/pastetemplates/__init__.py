@@ -100,7 +100,7 @@ class TethysAppTemplate(Template):
             proper_name_error_regex = re.compile(r'^[a-zA-Z0-9\s]+$')
             proper_name_warn_regex = re.compile(r'^[a-zA-Z0-9-\s_\"\']+$')
 
-            print vars['proper_name']
+            print(vars['proper_name'])
 
             if not proper_name_error_regex.match(vars['proper_name']):
 

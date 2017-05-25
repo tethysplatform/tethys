@@ -7,13 +7,16 @@
 * License: 
 ********************************************************************************
 """
-from urlparse import urlparse
+try:
+    from urlparse import urlparse
+except ImportError:
+    from urllib.parse import urlparse
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.utils.functional import wraps
-from tethys_apps.utilities import get_active_app
+from past.builtins import basestring
 from tethys_portal.views import error as tethys_portal_error
 from tethys_apps.base import has_permission
 

@@ -1,3 +1,6 @@
+from past.builtins import basestring
+
+
 class TethysFunctionExtractor(object):
     """
     Base class for PersistentStore and HandoffHandler that returns a function handle from a string path to the function.
