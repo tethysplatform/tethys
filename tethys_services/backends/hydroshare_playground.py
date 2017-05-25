@@ -7,10 +7,10 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from hydroshare import HydroShareOAuth2
+from .hydroshare import HydroShareOAuth2
+
 
 class HydroSharePlaygroundOAuth2(HydroShareOAuth2):
-
     # override necessary settings
     auth_server_hostname = "playground.hydroshare.org"
     name = 'hydroshare_playground'

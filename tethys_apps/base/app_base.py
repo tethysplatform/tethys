@@ -16,12 +16,12 @@ from django.utils.functional import SimpleLazyObject
 from django.core.exceptions import ObjectDoesNotExist
 from sqlalchemy.orm import sessionmaker
 
-from tethys_apps.base.workspace import TethysWorkspace
-from tethys_apps.base.handoff import HandoffManager
-from tethys_apps.exceptions import (TethysAppSettingDoesNotExist,
-                                    TethysAppSettingNotAssigned)
+from .workspace import TethysWorkspace
+from .handoff import HandoffManager
+from ..exceptions import TethysAppSettingDoesNotExist
 
 tethys_log = logging.getLogger('tethys.app_base')
+
 
 class TethysAppBase(object):
     """
@@ -770,7 +770,7 @@ class TethysAppBase(object):
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(name))
 
-        return ps_database_setting.get_engine(as_url=as_url, as_sessionmaker=as_sessionmaker)
+        return ps_database_setting.get_engine(with_db=True, as_url=as_url, as_sessionmaker=as_sessionmaker)
 
     @classmethod
     def get_session(cls, name):
@@ -792,6 +792,7 @@ class TethysAppBase(object):
 
             SessionMaker = app.get_session('example_db')
         """
+
         cls._session_maker.configure(bind=cls.get_persistent_store_database(name))
         return cls._session_maker()
 

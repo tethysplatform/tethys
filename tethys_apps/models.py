@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from builtins import str as text
 import sqlalchemy
 import logging
 from django.db import models
@@ -60,7 +61,7 @@ class TethysApp(models.Model):
         verbose_name_plural = 'Installed Apps'
 
     def __unicode__(self):
-        return unicode(self.name)
+        return text(self.name)
 
     def add_settings(self, setting_list):
         """
@@ -391,7 +392,7 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
         if not self.persistent_store_service and self.required:
             raise ValidationError('Required.')
 
-    def get_engine(self, as_url=False, as_sessionmaker=True):
+    def get_engine(self, as_url=False, as_sessionmaker=False):
         """
         Get the SQLAlchemy engine from the connected persistent store service
         """
@@ -504,7 +505,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         Returns True if the persistent store database exists.
         """
         # Get the database engine
-        engine = self.get_engine(with_db=True)
+        engine = self.get_engine()
         namespaced_name = self.get_namespaced_persistent_store_name()
 
         # Cannot create databases in a transaction: connect and commit to close transaction
@@ -542,7 +543,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         ))
 
         # Get the database engine
-        engine = self.get_engine(with_db=False)
+        engine = self.get_engine()
 
         # Connection
         drop_connection = engine.connect()
@@ -584,8 +585,8 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         log = logging.getLogger('tethys')
 
         # Connection engine
-        url = self.get_engine(with_db=False, as_url=True)
-        engine = self.get_engine(with_db=False)
+        url = self.get_engine(as_url=True)
+        engine = self.get_engine()
         namespaced_ps_name = self.get_namespaced_persistent_store_name()
         db_exists = self.persistent_store_database_exists()
 

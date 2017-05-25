@@ -7,8 +7,8 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-
 from tethys_compute.models import Scheduler
+
 
 def list_schedulers():
     """
@@ -19,6 +19,7 @@ def list_schedulers():
     """
     schedulers = Scheduler.objects.all()
     return schedulers
+
 
 def get_scheduler(name):
     """
@@ -33,6 +34,7 @@ def get_scheduler(name):
     schedulers = Scheduler.objects.filter(name=name)
     if schedulers:
         return schedulers[0]
+
 
 def create_scheduler(name, host, username=None, password=None, private_key_path=None, private_key_pass=None):
     """

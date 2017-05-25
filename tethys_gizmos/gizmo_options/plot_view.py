@@ -93,7 +93,7 @@ class PlotObject(TethysGizmoOptions):
             self.tooltip = tooltip_format
 
         # add any other attributes the user wants
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             setattr(self, key, value)
 
 

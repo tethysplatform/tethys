@@ -106,7 +106,7 @@ class DataTableView(TethysGizmoOptions):
         self.column_names = column_names
         self.footer = footer
         self.datatable_options = {}        
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             data_name = re.sub("([a-z])([A-Z])","\g<1>-\g<2>",key).lower()
             self.datatable_options[data_name] = dumps(value)
             
