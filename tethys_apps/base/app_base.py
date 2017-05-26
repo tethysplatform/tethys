@@ -97,7 +97,6 @@ class TethysAppBase(object):
         """
         raise NotImplementedError()
 
-    # TODO: ADD SETTING LINK TO TOP OF APP WHEN LOGGED IN AS STAFF
     def custom_settings(self):
         """
         Override this method to define custom settings for use in your app.
