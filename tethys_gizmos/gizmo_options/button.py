@@ -101,15 +101,83 @@ class Button(TethysGizmoOptions):
 
         from tethys_sdk.gizmos import Button
 
-        # Single Button
-        single_button = Button(display_text='Click Me',
-                               name='click_me_name',
-                               attributes={"onclick": "alert(this.name);"},
-                               submit=True)
+        # Single Buttons
+        map_button = Button(
+            display_text='',
+            name='map-button',
+            icon='glyphicon glyphicon-globe',
+            style='info',
+            attributes={
+                'data-toggle':'tooltip',
+                'data-placement':'top',
+                'title':'Map'
+            }
+        )
+
+        save_button = Button(
+            display_text='',
+            name='save-button',
+            icon='glyphicon glyphicon-floppy-disk',
+            style='success',
+            attributes={
+                'data-toggle':'tooltip',
+                'data-placement':'top',
+                'title':'Save'
+            }
+        )
+
+        edit_button = Button(
+            display_text='',
+            name='edit-button',
+            icon='glyphicon glyphicon-edit',
+            style='warning',
+            attributes={
+                'data-toggle':'tooltip',
+                'data-placement':'top',
+                'title':'Edit'
+            }
+        )
+
+        remove_button = Button(
+            display_text='',
+            name='remove-button',
+            icon='glyphicon glyphicon-remove',
+            style='danger',
+            attributes={
+                'data-toggle':'tooltip',
+                'data-placement':'top',
+                'title':'Remove'
+            }
+        )
+
+        previous_button = Button(
+            display_text='Previous',
+            name='previous-button',
+            attributes={
+                'data-toggle':'tooltip',
+                'data-placement':'top',
+                'title':'Previous'
+            }
+        )
+
+        next_button = Button(
+            display_text='Next',
+            name='next-button',
+            attributes={
+                'data-toggle':'tooltip',
+                'data-placement':'top',
+                'title':'Next'
+            }
+        )
 
         context = {
-                    'single_button': single_button,
-                  }
+            'map_button': map_button,
+            'save_button': save_button,
+            'edit_button': edit_button,
+            'remove_button': remove_button,
+            'previous_button': previous_button,
+            'next_button': next_button
+        }
 
     Template Example
 
@@ -117,7 +185,12 @@ class Button(TethysGizmoOptions):
 
         {% load tethys_gizmos %}
 
-        {% gizmo single_button %}
+        {% gizmo map_button %}
+        {% gizmo save_button %}
+        {% gizmo edit_button %}
+        {% gizmo remove_button %}
+        {% gizmo previous_button %}
+        {% gizmo next_button %}
     """
     gizmo_name = "button"
 

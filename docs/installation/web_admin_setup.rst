@@ -147,8 +147,31 @@ d. Select the appropriate engine and provide an endpoint to the Dataset Service.
 
 e. Press "Save" to save the Dataset Service configuration.
 
+5. Link to Persistent Store Services
+------------------------------------
+
+Optionally, you may wish to link to external Persistent Store Services such as PostgreSQL. Persistent Store Services can be used by apps as data stores and data sources. See :doc:`../tethys_sdk/tethys_services/persistent_store` documentation for how to use Persistent Store Services in apps. Complete the following steps for each service you wish to link to:
+
+a. Select "Persistent Store Services" from the options listed on the Tethys Portal Admin Console.
+
+b. Click on the "Add Persistent Store Service" button to create a new link to the persistent store service.
+
+  .. figure:: ../images/site_admin/persistent_store_services.png
+      :width: 600px
+      :align: center
+
+c. Provide a unique name for the persistent store service.
+
+d. Select the appropriate engine and provide an endpoint, enter the host and port, and the username and password of the database user that will be used to authenticate with the service. When you are done you will have something similar to this:
+
+  .. figure:: ../images/site_admin/persistent_store_service_edit.png
+    :width: 600px
+    :align: center
+
+e. Press "Save" to save the Persistent Store Service configuration.
+
 
 What's Next?
 ------------
 
-Head over to :doc:`../tutorials/getting_started` and create your first app. You can also check out the :doc:`../tethys_sdk` documentation to familiarize yourself with all the features that are available.
+Head over to :doc:`../tutorials/quick_start` and create your first app. You can also check out the :doc:`../tethys_sdk` documentation to familiarize yourself with all the features that are available.
