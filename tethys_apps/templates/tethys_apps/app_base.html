@@ -90,7 +90,7 @@
 
     {% block styles %}
       <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
-      <link href="{% static 'tethys_apps/css/app_base.css' %}" rel="stylesheet" />
+      <link href="{% static 'tethys_apps/css/app_base.min.css' %}" rel="stylesheet" />
       {% if tethys_app.enable_feedback %}
         <link href="{% static 'tethys_apps/css/feedback.css' %}" rel="stylesheet" />
       {% endif %}
@@ -111,27 +111,43 @@
         {% block app_header_override %}
           <div id="app-header" class="clearfix">
             <div class="tethys-app-header" style="background: {{ tethys_app.color|default:'#1b95dc' }};">
-              {% block app-navigation-toggle-override %}
-                <a href="javascript:void(0);" class="toggle-nav">
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                </a>
-              {% endblock %}
-              {% block app_icon_override %}
-                <div class="icon-wrapper">
-                  {% block app_icon %}<img src="{% static tethys_app.icon %}">{% endblock %}
-                </div>
-              {% endblock %}
-              {% block app_title_override %}
-                <div class="app-title-wrapper">
-                  <span class="app-title">{% block app_title %}{{ tethys_app.name }}{% endblock %}</span>
-                </div>
-              {% endblock %}
-              {% block exit_button_override %}
-                <div class="exit-button">
-                  <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');">Exit</a>
-                </div>
+              <div id="nav-title-wrapper">
+                  {% block app-navigation-toggle-override %}
+                    <a href="javascript:void(0);" class="toggle-nav">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </a>
+                  {% endblock %}
+                  {% block app_icon_override %}
+                    <div class="icon-wrapper">
+                      {% block app_icon %}<img src="{% static tethys_app.icon %}">{% endblock %}
+                    </div>
+                  {% endblock %}
+                  {% block app_title_override %}
+                    <div class="app-title-wrapper">
+                      <span class="app-title">{% block app_title %}{{ tethys_app.name }}{% endblock %}</span>
+                    </div>
+                  {% endblock %}
+              </div>
+
+              {% block header_buttons_override %}
+              <div id="header-buttons-wrapper">
+                  {% block header_buttons %}
+                  {% endblock %}
+                  {% block settings_button_override %}
+                      {% if request.user.is_staff %}
+                      <div class="header-button settings-button">
+                        <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('/admin/tethys_apps/tethysapp/{{ tethys_app.id }}/change/');" data-toggle="tooltip" data-placement="bottom" title="Settings"><span class="glyphicon glyphicon-cog"></span></a>
+                      </div>
+                      {%  endif %}
+                  {% endblock %}
+                  {% block exit_button_override %}
+                    <div class="header-button exit-button">
+                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');"data-toggle="tooltip" data-placement="bottom" title="Exit">&times;</a>
+                    </div>
+                  {% endblock %}
+              </div>
               {% endblock %}
             </div>
           </div>
