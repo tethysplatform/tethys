@@ -11,7 +11,7 @@ channels:
 
 dependencies:
 - python=2.7*
-- django=1.9.*
+- django=1.11.*
 - django-filter
 - djangorestframework
 - bokeh
