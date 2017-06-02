@@ -579,9 +579,6 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                          'TETHYS_SUPER_PASS': tethys_super_pass}
         )
 
-    else:
-        print("PostGIS Docker container already installed: skipping.")
-
     # GeoServer
     if GEOSERVER_CONTAINER in containers_to_create or force:
         print("\nInstalling the GeoServer Docker container...")
@@ -697,8 +694,6 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                 name=GEOSERVER_CONTAINER,
                 image=GEOSERVER_IMAGE
             )
-    else:
-        print("GeoServer Docker container already installed: skipping.")
 
     # 52 North WPS
     if N52WPS_CONTAINER in containers_to_create or force:
@@ -799,10 +794,7 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                          'PASSWORD': password}
         )
 
-    else:
-        print("52 North WPS Docker container already installed: skipping.")
-
-    print("\nThe Docker containers have been successfully installed.")
+    print("Finished installing Docker containers.")
 
 
 def start_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
