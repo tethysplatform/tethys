@@ -1562,7 +1562,7 @@ var TETHYS_MAP_VIEW = (function() {
         'multiselect' in m_feature_selection_options &&
         m_feature_selection_options.multiselect &&
         ol.events.condition.shiftKeyOnly(event)) {
-      multiselect = true;
+        multiselect = true;
     }
 
     // Clear current selection
@@ -1571,7 +1571,6 @@ var TETHYS_MAP_VIEW = (function() {
       m_lines_selected_layer.getSource().clear();
       m_polygons_selected_layer.getSource().clear();
     }
-
     if (selected_features_changed) {
       selected_features_changed(m_points_selected_layer, m_lines_selected_layer, m_polygons_selected_layer);
     }
@@ -1608,7 +1607,6 @@ var TETHYS_MAP_VIEW = (function() {
         }
       }
 
-
       url = wms_url.replace('wms', 'wfs')
           + '?SERVICE=wfs'
           + '&VERSION=2.0.0'
@@ -1617,8 +1615,12 @@ var TETHYS_MAP_VIEW = (function() {
           + '&OUTPUTFORMAT=text/javascript'
           + '&FORMAT_OPTIONS=callback:TETHYS_MAP_VIEW.jsonResponseHandler;'
           + '&SRSNAME=' + DEFAULT_PROJECTION
-          + cql_filter
-          + '#multiselect:' + multiselect;
+          + cql_filter;
+
+      if (!multiselect)
+      {
+        url += '&COUNT=1';
+      }
       urls.push(url);
     }
 
