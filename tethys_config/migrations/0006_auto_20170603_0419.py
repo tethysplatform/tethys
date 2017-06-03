@@ -18,10 +18,8 @@ def settings14to20(apps, schema_editor):
     all_settings = Setting.objects.all()
 
     for setting in all_settings:
-        print(setting.content)
         setting.content = setting.content.replace('/static/', '')
         setting.content = setting.content.replace('static/', '')
-        print(setting.content)
         setting.save()
 
 
