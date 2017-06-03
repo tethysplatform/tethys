@@ -51,8 +51,6 @@ class TethysAppBase(object):
     enable_feedback = False
     feedback_emails = []
 
-    _session_maker = sessionmaker()
-
     def __unicode__(self):
         """
         String representation
