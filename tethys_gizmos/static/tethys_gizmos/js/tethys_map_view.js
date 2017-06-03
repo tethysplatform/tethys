@@ -442,12 +442,13 @@ var TETHYS_MAP_VIEW = (function() {
     var GEOJSON = 'GeoJSON',
         KML = 'KML';
 
-    var TILE_SOURCES = ['TileDebug', 'TileImage', 'TileUTFGrid', 'Stamen', 'TileArcGISRest', 'Zoomify', 'XYZ', 'WMTS',
-                        'TileWMS'];
+    var TILE_SOURCES = ['TileDebug', 'TileUTFGrid', 'UrlTile', 'TileImage', 'VectorTile', 'BingMaps', 'TileArcGISRest',
+                        'TileJSON', 'TileWMS', 'WMTS', 'XYZ', 'Zoomify', 'CartoDB', 'OSM', 'Stamen'];
 
-    var IMAGE_SOURCES = ['ImageCanvas', 'ImageMapGuide', 'ImageStatic', 'ImageVector', 'ImageWMS'];
+    var IMAGE_SOURCES = ['ImageArcGISRest', 'ImageCanvas', 'ImageMapGuide', 'ImageStatic', 'ImageWMS', 'ImageVector',
+                         'Raster'];
 
-    var VECTOR_SOURCES = ['GeoJSON', 'KML', 'GPX', 'IGC', 'OSMXML', 'TopoJSON', 'ServerVector', 'TileVector'];
+    var VECTOR_SOURCES = ['GeoJSON', 'KML', 'Vector', 'Cluster'];
 
     if (is_defined(m_layers_options)) {
       for (var i = m_layers_options.length; i--; ) {
