@@ -4,7 +4,7 @@ Command Line Interface
 
 **Last Updated:** November 18, 2014
 
-The Tethys Command Line Interface (CLI) provides several commands that are used for managing Tethys Platform and Tethys apps. The :term:`Python virtual environment` must be activated to use the command line tools. This can be done using the following command:
+The Tethys Command Line Interface (CLI) provides several commands that are used for managing Tethys Platform and Tethys apps. The :term:`Python conda environment` must be activated to use the command line tools. This can be done using the following command:
 
 ::
 
@@ -116,7 +116,7 @@ This command contains several subcommands that are used to help manage Tethys Pl
 syncstores <app_name, app_name...> [options]
 --------------------------------------------
 
-Management command for Persistent Stores. To learn more about persistent stores see :doc:`./persistent_store`.
+Management command for Persistent Stores. To learn more about persistent stores see :doc:`./tethys_services/persistent_store`.
 
 **Arguments:**
 
@@ -154,8 +154,21 @@ Management command for Persistent Stores. To learn more about persistent stores 
     # Refresh all persistent store databases for an app
     $ tethys syncstores my_first_app -r
 
+.. _tethys_list_cmd:
+
+list
+----
+
+Use this command to list all installed apps.
+
+**Examples:**
+
+::
+
+    $ tethys list
+
 uninstall <app>
---------------------------------------------
+---------------
 
 Use this command to uninstall apps.
 

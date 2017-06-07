@@ -9,9 +9,9 @@
 """
 # Commandline interface for Tethys
 import argparse
+from builtins import input
 import subprocess
 import os
-import shutil
 import webbrowser
 
 from tethys_apps.terminal_colors import TerminalColors
@@ -19,7 +19,7 @@ from .docker_commands import *
 from .manage_commands import (manage_command, get_manage_path, run_process,
                               MANAGE_START, MANAGE_SYNCDB,
                               MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
-                              MANAGE_COLLECT, MANAGE_CREATESUPERUSER, DEFAULT_INSTALLATION_DIRECTORY)
+                              MANAGE_COLLECT, MANAGE_CREATESUPERUSER, TETHYS_SRC_DIRECTORY)
 from .gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
 from tethys_apps.helpers import get_installed_tethys_apps
 
@@ -63,49 +63,24 @@ def uninstall_command(args):
     """
     Uninstall an app command.
     """
+    # Get the path to manage.py
+    manage_path = get_manage_path(args)
     app_name = args.app
-    installed_apps = get_installed_tethys_apps()
-
-    if PREFIX in app_name:
-        prefix_length = len(PREFIX) + 1
-        app_name = app_name[prefix_length:]
-
-    if app_name not in installed_apps:
-        print('WARNING: App with name "{0}" cannot be uninstalled, because it is not installed.'.format(app_name))
-        exit(0)
-
-    app_with_prefix = '{0}-{1}'.format(PREFIX, app_name)
-
-    # Confirm
-    valid_inputs = ('y', 'n', 'yes', 'no')
-    no_inputs = ('n', 'no')
-
-    overwrite_input = raw_input('Are you sure you want to uninstall "{0}"? (y/n): '.format(app_with_prefix)).lower()
-
-    while overwrite_input not in valid_inputs:
-        overwrite_input = raw_input('Invalid option. Are you sure you want to '
-                                    'uninstall "{0}"? (y/n): '.format(app_with_prefix)).lower()
-
-    if overwrite_input in no_inputs:
-        print('Uninstall cancelled by user.')
-        exit(0)
-
+    process = ['python', manage_path, 'tethys_app_uninstall', app_name]
     try:
-        # Remove directory
-        shutil.rmtree(installed_apps[app_name])
-    except OSError:
-        # Remove symbolic link
-        os.remove(installed_apps[app_name])
-
-    # Uninstall using pip
-    process = ['pip', 'uninstall', '-y', '{0}-{1}'.format(PREFIX, app_name)]
-
-    try:
-        subprocess.Popen(process, stderr=subprocess.STDOUT, stdout=subprocess.PIPE).communicate()[0]
+        subprocess.call(process)
     except KeyboardInterrupt:
         pass
 
-    print('App "{0}" successfully uninstalled.'.format(app_with_prefix))
+
+def list_apps_command(args):
+    """
+    List installed apps.
+    """
+    installed_apps = get_installed_tethys_apps()
+
+    for app in installed_apps:
+        print(app)
 
 
 def docker_command(args):
@@ -151,14 +126,14 @@ def syncstores_command(args):
     if args.refresh:
         valid_inputs = ('y', 'n', 'yes', 'no')
         no_inputs = ('n', 'no')
-        proceed = raw_input('{1}WARNING:{2} You have specified the database refresh option. This will drop all of the '
-                            'databases for the following apps: {0}. This could result in significant data loss and '
-                            'cannot be undone. Do you wish to continue? (y/n): '.format(', '.join(args.app),
-                                                                                        TerminalColors.WARNING,
-                                                                                        TerminalColors.ENDC)).lower()
+        proceed = input('{1}WARNING:{2} You have specified the database refresh option. This will drop all of the '
+                        'databases for the following apps: {0}. This could result in significant data loss and '
+                        'cannot be undone. Do you wish to continue? (y/n): '.format(', '.join(args.app),
+                                                                                    TerminalColors.WARNING,
+                                                                                    TerminalColors.ENDC)).lower()
 
         while proceed not in valid_inputs:
-            proceed = raw_input('Invalid option. Do you wish to continue? (y/n): ').lower()
+            proceed = input('Invalid option. Do you wish to continue? (y/n): ').lower()
 
         if proceed not in no_inputs:
             process.extend(['-r'])
@@ -185,7 +160,7 @@ def test_command(args):
     args.manage = False
     # Get the path to manage.py
     manage_path = get_manage_path(args)
-    tests_path = os.path.join(DEFAULT_INSTALLATION_DIRECTORY, 'tests')
+    tests_path = os.path.join(TETHYS_SRC_DIRECTORY, 'tests')
 
     # Define the process to be run
     primary_process = ['python', manage_path, 'test']
@@ -253,7 +228,16 @@ def tethys_command():
                                                    'creation of supporting files.')
     gen_parser.add_argument('type', help='The type of object to generate.', choices=VALID_GEN_OBJECTS)
     gen_parser.add_argument('-d', '--directory', help='Destination directory for the generated object.')
-    gen_parser.set_defaults(func=generate_command)
+    gen_parser.add_argument('--allowed-host', dest='allowed_host',
+                            help='Hostname or IP address to add to allowed hosts in the settings file.')
+    gen_parser.add_argument('--db-username', dest='db_username',
+                            help='Username for the Tethys Database server to be set in the settings file.')
+    gen_parser.add_argument('--db-password', dest='db_password',
+                            help='Password for the Tethys Database server to be set in the settings file.')
+    gen_parser.add_argument('--db-port', dest='db_port',
+                            help='Port for the Tethys Database server to be set in the settings file.')
+    gen_parser.set_defaults(func=generate_command, allowed_host=None, db_username='tethys_default',
+                            db_password='pass', db_port=5436,)
 
     # Setup start server command
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
@@ -280,6 +264,10 @@ def tethys_command():
     uninstall_parser = subparsers.add_parser('uninstall', help='Uninstall an app.')
     uninstall_parser.add_argument('app', help='Name of the app to uninstall.')
     uninstall_parser.set_defaults(func=uninstall_command)
+
+    # Setup list command
+    list_parser = subparsers.add_parser('list', help='List installed apps.')
+    list_parser.set_defaults(func=list_apps_command)
 
     # Sync stores command
     syncstores_parser = subparsers.add_parser('syncstores', help='Management command for App Persistent Stores.')
