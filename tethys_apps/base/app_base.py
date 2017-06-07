@@ -821,20 +821,7 @@ class TethysAppBase(object):
 
             from my_first_app.app import MyFirstApp as app
 
-<<<<<<< HEAD
-        persistent_stores = []
-        for existing_db in existing_dbs:
-            add_db_to_list = True
-
-            if is_testing_environment():
-                if 'test_' not in existing_db.name:
-                    add_db_to_list = False
-
-            if add_db_to_list:
-                persistent_stores.append(existing_db.name.replace(cls.package + '_', ''))
-=======
             result = app.create_persistent_store('example_db', 'primary')
->>>>>>> upstream/dev
 
             if result:
                 engine = app.get_persistent_store_engine('example_db')
