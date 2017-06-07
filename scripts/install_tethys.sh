@@ -333,6 +333,7 @@ centos_docker_install(){
     sudo yum makecache fast
     sudo yum -y install docker-ce
     sudo systemctl start docker
+    sudo systemctl enable docker
 
     finalize_docker_install
 }
@@ -348,6 +349,7 @@ fedora_docker_install(){
     sudo dnf makecache fast
     sudo dnf -y install docker-ce
     sudo systemctl start docker
+    sudo systemctl enable docker
 
     finalize_docker_install
 }
