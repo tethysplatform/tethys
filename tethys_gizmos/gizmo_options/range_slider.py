@@ -32,7 +32,6 @@ class RangeSlider(TethysGizmoOptions):
 
     ::
 
-        # CONTROLLER
         from tethys_sdk.gizmos import RangeSlider
 
         slider1 = RangeSlider(display_text='Slider 1',
@@ -51,13 +50,21 @@ class RangeSlider(TethysGizmoOptions):
                               disabled=True,
                               error='Incorrect, please choose another value.')
 
-        # TEMPLATE
+        context = {
+                    'slider1': slider1,
+                    'slider2': slider2,
+                  }
 
-        {% gizmo range_slider slider1 %}
-        {% gizmo range_slider slider2 %}
+    Template Example
+
+    ::
+
+        {% gizmo slider1 %}
+        {% gizmo slider2 %}
 
     """
-
+    gizmo_name = "range_slider"
+    
     def __init__(self, name, min, max, initial, step, disabled=False, display_text='', error='', attributes={}, classes=''):
         """
         Constructor
@@ -73,3 +80,11 @@ class RangeSlider(TethysGizmoOptions):
         self.disabled = disabled
         self.display_text = display_text
         self.error = error
+
+    @staticmethod
+    def get_gizmo_js():
+        """
+        JavaScript specific to gizmo to be placed in the 
+        {% block scripts %} block
+        """
+        return ('tethys_gizmos/js/range_slider.js',)

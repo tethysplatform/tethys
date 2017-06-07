@@ -50,28 +50,13 @@ Running Tests
 -------------
 To run any tests at an app level:
 
-1. Open a terminal
-2. Enter the Tethys Platform python environment:
-    ``$ . /usr/lib/tethys/bin/activate``
-3. In settings.py make sure that the tethys_default database user is set to tethys_super:
-::
+    1. Open a terminal
+    2. Enter the Tethys Platform python environment:
+        ``$ . /usr/lib/tethys/bin/activate``
+    3. Enter app-level ``tethys test`` command.
+        ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name(required)>.<folder_name>.<file_name>.<class_name>.<function_name>``
 
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'tethys_default',
-            'USER': 'tethys_super',
-            'PASSWORD': 'pass',
-            'HOST': '127.0.0.1',
-            'PORT': '5435'
-        }
-    }
-
-4. Enter app-level ``tethys test`` command.
-    ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name(required)>.<folder_name>.<file_name>.<class_name>.<function_name> [-c/C]``
-    Where ``-c`` tracks code coverage and prints out a report in the terminal, and ``-C`` does opens the report as an interactive HTML page in your browser
-
-More specifically:
+    More specifically:
 
 To run all tests across an app:
     Test command: ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name>``

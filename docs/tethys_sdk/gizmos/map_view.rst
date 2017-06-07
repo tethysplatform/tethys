@@ -44,7 +44,7 @@ For advanced features, the JavaScript API can be used to interact with the OpenL
 TETHYS_MAP_VIEW.getMap()
 ++++++++++++++++++++++++
 
-This method returns the OpenLayers map object. You can use the `OpenLayers Map API version 3.10.1 <http://openlayers.org/en/v3.10.1/apidoc/ol.Map.html>`_ to perform operations on this object such as adding layers and custom controls.
+This method returns the OpenLayers map object. You can use the `OpenLayers Map API version 4.0.1 <http://openlayers.org/en/v4.0.1/apidoc/ol.Map.html>`_ to perform operations on this object such as adding layers and custom controls.
 
 ::
 
@@ -58,7 +58,7 @@ This method returns the OpenLayers map object. You can use the `OpenLayers Map A
 
 .. caution::
 
-    The Map View Gizmo is powered by OpenLayers version 3.10.1. When referring to the OpenLayers documentation, ensure that you are browsing the correct version of documentation (see the URL of the documentation page).
+    The Map View Gizmo is powered by OpenLayers version 4.0.1. When referring to the OpenLayers documentation, ensure that you are browsing the correct version of documentation (see the URL of the documentation page).
 
 TETHYS_MAP_VIEW.updateLegend()
 ++++++++++++++++++++++++++++++
@@ -211,27 +211,15 @@ This method is intended for initializing a map generated from an AJAX request.
 
 .. note::
 
-    In order to use this, you will either need to use a MapView gizmo or import the JavaScript/CSS libraries
-    in the main html template page. 
+    In order to use this, you will either need to use a MapView gizmo or import
+    the JavaScript/CSS libraries in the main html template page using the 
+    ``register_gizmo_dependency`` tag in the ``register_gizmos`` block. 
 
     For example:
     ::
 
-        {% block styles %}
-          {{ block.super }}
-          <link rel="stylesheet" href="/static/tethys_gizmos/vendor/openlayers/ol.css"" type="text/css">
-        {% endblock %}
-
-        {% block global_scripts %}
-          {{ block.super }}
-          <script src="/static/tethys_gizmos/vendor/openlayers/ol.js" type="text/javascript"></script>
-        {% endblock %}
-
-        ...
-
-        {% block scripts %}
-          {{ block.super }}
-          <script src="/static/tethys_gizmos/js/tethys_map_view.js" type="text/javascript"></script>
+        {% block import_gizmos %}
+            {% import_gizmo_dependency map_view %}
         {% endblock %}
 
 Four elements are required:
@@ -287,7 +275,7 @@ Four elements are required:
 
     {% load tethys_gizmos %}
 
-    {% gizmo map_view map_options %}
+    {% gizmo map_options %}
 
 
 4) The AJAX call in the javascript

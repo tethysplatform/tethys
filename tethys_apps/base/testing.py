@@ -1,4 +1,5 @@
 from django.test import TestCase
+from .app_base import TethysAppBase
 from django.test import Client
 from os import environ, unsetenv
 
@@ -54,7 +55,6 @@ class TethysTestCase(TestCase):
         """
         set_testing_environment(True)
 
-        from app_base import TethysAppBase
         if not issubclass(app_class, TethysAppBase):
             raise TypeError('The app_class argument was not of the correct type. '
                             'It must be a class that inherits from <TethysAppBase>.')
@@ -99,17 +99,13 @@ class TethysTestCase(TestCase):
         """
         set_testing_environment(True)
 
-        from app_base import TethysAppBase
         if not issubclass(app_class, TethysAppBase):
             raise TypeError('The app_class argument was not of the correct type. '
                             'It must be a class that inherits from <TethysAppBase>.')
 
         for store in app_class().persistent_stores():
-            app_class.destroy_persistent_store(store.name)
-
-        # Handle destroying any additional stores created manually during testing
-        for store in app_class().list_persistent_stores():
-            app_class.destroy_persistent_store(store)
+            test_store_name = 'test_{0}'.format(store.name)
+            app_class.drop_persistent_store(test_store_name)
 
     @staticmethod
     def create_test_user(username, password, email=None):

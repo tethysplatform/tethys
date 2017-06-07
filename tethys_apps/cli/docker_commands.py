@@ -7,15 +7,17 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-
+try:
+    import curses
+except:
+    pass  # curses not available on Windows
+from builtins import input
+import platform
 import subprocess
-from pprint import pprint
 from subprocess import PIPE
 import os
-import sys
 import json
 import getpass
-from exceptions import OSError
 from functools import cmp_to_key
 from docker.utils import kwargs_from_env, compare_version, create_host_config
 from docker.client import Client as DockerClient
@@ -106,15 +108,15 @@ def validate_numeric_cli_input(value, default=None, max=None):
             prompt = add_max_to_prompt(prompt, max)
             prompt = add_default_to_prompt(prompt, default)
             prompt = close_prompt(prompt)
-            value = raw_input(prompt)
+            value = input(prompt)
             continue
 
         if max is not None:
             if float(value) > max:
                 if default is not None:
-                    value = raw_input('Maximum allowed value is {0} [{1}]: '.format(max, default))
+                    value = input('Maximum allowed value is {0} [{1}]: '.format(max, default))
                 else:
-                    value = raw_input('Maximum allowed value is {0}: '.format(max))
+                    value = input('Maximum allowed value is {0}: '.format(max))
                 continue
         valid = True
     return value
@@ -131,7 +133,7 @@ def validate_choice_cli_input(value, choices, default=None):
         prompt = 'Please provide a valid option'
         prompt = add_default_to_prompt(prompt, default, choices)
         prompt = close_prompt(prompt)
-        value = raw_input(prompt)
+        value = input(prompt)
 
     return value
 
@@ -153,7 +155,7 @@ def validate_directory_cli_input(value, default=None):
                 prompt = 'Please provide a valid directory'
                 prompt = add_default_to_prompt(prompt, default)
                 prompt = close_prompt(prompt)
-                value = raw_input(prompt)
+                value = input(prompt)
                 continue
 
         valid = True
@@ -329,45 +331,100 @@ def log_pull_stream(stream):
     """
     Handle the printing of pull statuses
     """
-    # Experimental printing
-    previous_id = ''
-    previous_message = ''
 
-    for line in stream:
-        json_line = json.loads(line)
-        current_id = json_line['id'] if 'id' in json_line else ''
-        current_status = json_line['status'] if 'status' in json_line else ''
+    if platform.system() == 'Windows':  # i.e. can't uses curses
+        for block in stream:
+            lines = [l for l in block.split('\r\n') if l]
+            for line in lines:
+                json_line = json.loads(line)
+                current_id = "{}:".format(json_line['id']) if 'id' in json_line else ''
+                current_status = json_line['status'] if 'status' in json_line else ''
+                current_progress = json_line['progress'] if 'progress' in json_line else ''
 
-        # Update prompt
-        backspaces = '\b' * len(previous_message)
-        spaces = ' ' * len(previous_message)
-        current_message = '\n{0}: {1}'.format(current_id, current_status)
+                print("{id}{status} {progress}".format(id=current_id, status=current_status,
+                                                   progress=current_progress))
+    else:
 
-        if current_status == 'Downloading' or current_status == 'Extracting':
-            current_message = '{0} {1}'.format(current_message, json_line['progress'])
+        TERMINAL_STATUSES = ['Already exists', 'Download complete', 'Pull complete']
+        PROGRESS_STATUSES = ['Downloading', 'Extracting']
+        STATUSES = TERMINAL_STATUSES + PROGRESS_STATUSES + ['Pulling fs layer', 'Waiting', 'Verifying Checksum']
 
-        # Handle no id case
-        if not current_id:
-            sys.stdout.write('\n{0}'.format(current_status))
+        NUMBER_OF_HEADER_ROWS = 2
 
-        # Overwrite current line if id is the same
-        elif current_id == previous_id:
-            sys.stdout.write(backspaces)
-            sys.stdout.write(spaces)
-            sys.stdout.write(backspaces)
-            sys.stdout.write(current_message.strip())
+        header_rows = list()
+        message_log = list()
+        progress_messages = dict()
+        messages_to_print = list()
 
-        # Start new line
-        else:
-            sys.stdout.write(current_message)
+        # prepare console for curses window printing
+        stdscr = curses.initscr()
+        curses.noecho()
+        curses.cbreak()
 
-        # Flush to out
-        sys.stdout.flush()
+        try:
+            for block in stream:
+                lines = [l for l in block.split('\r\n') if l]
+                for line in lines:
+                    json_line = json.loads(line)
+                    current_id = json_line['id'] if 'id' in json_line else None
+                    current_status = json_line['status'] if 'status' in json_line else ''
+                    current_progress = json_line['progress'] if 'progress' in json_line else ''
 
-        # Save state
-        previous_message = current_message
-        previous_id = current_id
-    print()
+                    if current_id is None:
+                        # save messages to print after docker images are pulled
+                        messages_to_print.append(current_status.strip())
+                    else:
+                        # use curses window to properly display progress
+                        if current_status not in STATUSES:  # Assume this is the header
+                            header_rows.append(current_status)
+                            header_rows.append('-' * len(current_status))
+
+                        elif current_status in PROGRESS_STATUSES:
+                                # add messages with progress to dictionary to print at the bottom of the screen
+                                progress_messages[current_id] = {'id': current_id, 'status': current_status,
+                                                                 'progress': current_progress}
+                        else:
+                            # add all other messages to list to show above progress messages
+                            message_log.append("{id}: {status} {progress}".format(id=current_id, status=current_status,
+                                                                               progress=current_progress))
+
+                            # remove messages from progress that have completed
+                            if current_id in progress_messages:
+                                del progress_messages[current_id]
+
+                        # update window
+
+                        # row/column calculations for proper display on screen
+                        maxy, maxx = stdscr.getmaxyx()
+                        number_of_rows, number_of_columns = maxy, maxx
+
+                        current_progress_messages = sorted(progress_messages.values(),
+                                                           key=lambda message: STATUSES.index(message['status']))
+
+                        # row/column calculations for proper display on screen
+                        number_of_progress_rows = len(current_progress_messages)
+                        number_of_message_rows = number_of_rows - number_of_progress_rows - NUMBER_OF_HEADER_ROWS
+
+                        # slice messages to only those that will fit on the screen
+                        current_messages = [''] * number_of_message_rows + message_log
+                        current_messages = current_messages[-number_of_message_rows:]
+
+                        rows = header_rows + current_messages + ['{id}: {status} {progress}'.format(**current_message)
+                                                                 for current_message in current_progress_messages]
+
+                        for row, message in enumerate(rows):
+                            message += ' ' * number_of_columns
+                            message = message[:number_of_columns - 1]
+                            stdscr.addstr(row, 0, message)
+
+                        stdscr.refresh()
+
+        finally:  # always reset console to normal regardless of success or failure
+            curses.echo()
+            curses.nocbreak()
+            curses.endwin()
+
+        print('\n'.join(messages_to_print))
 
 
 def get_docker_container_dicts(docker_client):
@@ -538,11 +595,11 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                 print("The GeoServer docker can be configured to run in a clustered mode (multiple instances of "
                       "GeoServer running in the docker container) for better performance.\n")
 
-                enabled_nodes = raw_input('Number of GeoServer Instances Enabled (max 4) [1]: ')
+                enabled_nodes = input('Number of GeoServer Instances Enabled (max 4) [1]: ')
                 environment['ENABLED_NODES'] = validate_numeric_cli_input(enabled_nodes, 1, 4)
 
                 max_rest_nodes = enabled_nodes if enabled_nodes else 1
-                rest_nodes = raw_input('Number of GeoServer Instances with REST API Enabled (max {0}) [1]: '.format(
+                rest_nodes = input('Number of GeoServer Instances with REST API Enabled (max {0}) [1]: '.format(
                     max_rest_nodes))
                 environment['REST_NODES'] = validate_numeric_cli_input(rest_nodes, 1, max_rest_nodes)
 
@@ -550,44 +607,44 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                       "becoming overwhelmed. This can be done automatically based on a number of processors or each "
                       "limit can be set explicitly.\n")
 
-                flow_control_mode = raw_input('Would you like to specify number of Processors (c) OR set '
-                                              'limits explicitly (e) [C/e]: ')
+                flow_control_mode = input('Would you like to specify number of Processors (c) OR set '
+                                          'limits explicitly (e) [C/e]: ')
                 flow_control_mode = validate_choice_cli_input(flow_control_mode, ['c', 'e'], 'c')
 
                 if flow_control_mode.lower() == 'c':
-                    num_cores = raw_input('Number of Processors [4]: ')
+                    num_cores = input('Number of Processors [4]: ')
                     environment['NUM_CORES'] = validate_numeric_cli_input(num_cores, '4')
 
                 else:
-                    max_ows_global = raw_input('Maximum number of simultaneous OGC web service requests '
-                                               '(e.g.: WMS, WCS, WFS) [100]: ')
+                    max_ows_global = input('Maximum number of simultaneous OGC web service requests '
+                                            '(e.g.: WMS, WCS, WFS) [100]: ')
                     environment['MAX_OWS_GLOBAL'] = validate_numeric_cli_input(max_ows_global, '100')
 
-                    max_wms_getmap = raw_input('Maximum number of simultaneous GetMap requests [8]: ')
+                    max_wms_getmap = input('Maximum number of simultaneous GetMap requests [8]: ')
                     environment['MAX_WMS_GETMAP'] = validate_numeric_cli_input(max_wms_getmap, '8')
 
-                    max_ows_gwc = raw_input('Maximum number of simultaneous GeoWebCache tile renders [16]: ')
+                    max_ows_gwc = input('Maximum number of simultaneous GeoWebCache tile renders [16]: ')
                     environment['MAX_OWS_GWC'] = validate_numeric_cli_input(max_ows_gwc, '16')
 
-                max_timeout = raw_input('Maximum request timeout in seconds [60]: ')
+                max_timeout = input('Maximum request timeout in seconds [60]: ')
                 environment['MAX_TIMEOUT'] = validate_numeric_cli_input(max_timeout, '60')
 
-                max_memory = raw_input('Maximum memory to allocate to each GeoServer instance in MB '
-                                       '(max 4096) [1024]: ')
+                max_memory = input('Maximum memory to allocate to each GeoServer instance in MB '
+                                   '(max 4096) [1024]: ')
                 max_memory = validate_numeric_cli_input(max_memory, '1024', max='4096')
                 environment['MAX_MEMORY'] = max_memory
-                min_memory = raw_input('Minimum memory to allocate to each GeoServer instance in MB '
-                                       '(max {0}) [{0}]: '.format(max_memory))
+                min_memory = input('Minimum memory to allocate to each GeoServer instance in MB '
+                                   '(max {0}) [{0}]: '.format(max_memory))
                 environment['MIN_MEMORY'] = validate_numeric_cli_input(min_memory, max_memory, max=int(max_memory))
 
-                mount_data_dir = raw_input('Bind the GeoServer data directory to the host? [Y/n]: ')
+                mount_data_dir = input('Bind the GeoServer data directory to the host? [Y/n]: ')
                 mount_data_dir = validate_choice_cli_input(mount_data_dir, ['y', 'n'], 'y')
 
                 if mount_data_dir.lower() == 'y':
-                    default_mount_location = '/usr/lib/tethys/geoserver/data'
+                    default_mount_location = os.path.expanduser('~/tethys/geoserver/data')
                     gs_data_volume = '/var/geoserver/data'
-                    mount_location = raw_input('Specify location to bind data directory '
-                                               '[{0}]: '.format(default_mount_location))
+                    mount_location = input('Specify location to bind data directory '
+                                           '[{0}]: '.format(default_mount_location))
                     mount_location = validate_directory_cli_input(mount_location, default_mount_location)
                     host_config = create_host_config(
                         binds=[
@@ -665,47 +722,47 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
             print("Provide contact information for the 52 North Web Processing Service or press enter to accept the "
                   "defaults shown in square brackets: ")
 
-            name = raw_input('Name [NONE]: ')
+            name = input('Name [NONE]: ')
             if name == '':
                 name = 'NONE'
 
-            position = raw_input('Position [NONE]: ')
+            position = input('Position [NONE]: ')
             if position == '':
                 position = 'NONE'
 
-            address = raw_input('Address [NONE]: ')
+            address = input('Address [NONE]: ')
             if address == '':
                 address = 'NONE'
 
-            city = raw_input('City [NONE]: ')
+            city = input('City [NONE]: ')
             if city == '':
                 city = 'NONE'
 
-            state = raw_input('State [NONE]: ')
+            state = input('State [NONE]: ')
             if state == '':
                 state = 'NONE'
 
-            country = raw_input('Country [NONE]: ')
+            country = input('Country [NONE]: ')
             if country == '':
                 country = 'NONE'
 
-            postal_code = raw_input('Postal Code [NONE]: ')
+            postal_code = input('Postal Code [NONE]: ')
             if postal_code == '':
                 postal_code = 'NONE'
 
-            email = raw_input('Email [NONE]: ')
+            email = input('Email [NONE]: ')
             if email == '':
                 email = 'NONE'
 
-            phone = raw_input('Phone [NONE]: ')
+            phone = input('Phone [NONE]: ')
             if phone == '':
                 phone = 'NONE'
 
-            fax = raw_input('Fax [NONE]: ')
+            fax = input('Fax [NONE]: ')
             if fax == '':
                 fax = 'NONE'
 
-            username = raw_input('Admin Username [wps]: ')
+            username = input('Admin Username [wps]: ')
 
             if username == '':
                 username = 'wps'

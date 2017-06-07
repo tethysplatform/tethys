@@ -1,0 +1,14 @@
+{% load staticfiles tethys_gizmos %}
+
+
+<div id="esri_map_view_outer_container">
+    <div id="esri_map_wrapper" style="height: {{ height|default:'100%' }}; width:{{ width|default:'100%'}};">
+        <div id="esri_map_view" style="width: 100%; height:100%; position: relative;"
+             {% if basemap %}data-esri-base-map="{{ basemap|jsonify }}"{% endif %}
+             {% if view %}data-esri-view="{{ view|jsonify }}"{% endif %}
+             {% if layers %}data-esri-layers="{{ layers|jsonify }}"{% endif %}></div>
+    </div>
+</div> <!-- end outerContainer -->
+
+
+

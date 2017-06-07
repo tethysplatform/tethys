@@ -2,7 +2,7 @@
 App Templating API
 ******************
 
-**Last Updated:** November 24, 2014
+**Last Updated:** May 2017
 
 The pages of a Tethys app are created using the Django template language. This provides an overview of important Django templating concepts and introduces the base templates that are provided to make templating easier.
 
@@ -193,6 +193,19 @@ Add content before the stylesheets such as rss feeds and favicons. Use ``block.s
       <link rel="shortcut icon" href="/path/to/favicon.ico" />
     {% endblock %}
 
+import_gizmos
+-------------
+
+The import_gizmos block allows you register gizmos to be added to your page so that the dependencies load properly.
+
+*Example:*
+
+::
+
+    {% block import_gizmos %}
+      {% import_gizmo_dependency map_view %}
+    {% endblock %}
+
 styles
 ------
 
@@ -312,6 +325,26 @@ Override the app title element in the header.
 
     {% block app_title %}My App Title{% endblock %}
 
+header_buttons_override
+-----------------------
+
+Override all the header buttons on the right-hand side of the header (settings button, exit button, and header buttons).
+
+header_buttons
+--------------
+
+Use this block to add custom buttons to the app header. Use an anchor/link tag for the button and wrap it in a ``div`` with the class ``header-button``. For buttons with the Bootstrap glyphicons, add the <``glyphicon-button`` class to the wrapper element as well.
+
+*Example:*
+
+::
+
+    {% block header_buttons %}
+      <div class="header-button glyphicon-button">
+        <a href="{% url my_first_app:another_page %}"><span class="glyphicon glyphicon-question-sign"></span></a>
+      </div>
+    {% endblock %}
+
 exit_button_override
 --------------------
 
@@ -365,6 +398,19 @@ Add content to the app content area. This should be the primary block used to ad
 
     {% block app_content %}
       <p>Content for my app.</p>
+    {% endblock %}
+
+after_app_content
+-----------------
+
+Use this block for adding elements after the app content such as Bootstrap modals (Bootstrap modals will not work properly if they are placed in the main ``app_content`` block).
+
+*Example:*
+
+::
+
+    {% block after_app_content %}
+      {% gizmo my_modal %}
     {% endblock %}
 
 app_actions_override

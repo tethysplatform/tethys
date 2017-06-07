@@ -10,7 +10,7 @@
 from django.contrib import admin
 from django.forms import Textarea
 from django.db import models
-from tethys_compute.models import Cluster, SettingsCategory, Setting, Scheduler, TethysJob
+from tethys_compute.models import SettingsCategory, Setting, Scheduler, TethysJob
 # Register your models here.
 
 
@@ -30,6 +30,7 @@ class SettingInline(admin.TabularInline):
     def has_add_permission(self, request):
         return False
 
+
 @admin.register(SettingsCategory)
 class SettingCategoryAdmin(admin.ModelAdmin):
     fields = ('name',)
@@ -41,34 +42,6 @@ class SettingCategoryAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
-
-@admin.register(Cluster)
-class ClusterAdmin(admin.ModelAdmin):
-    list_display = ['name', 'size', 'status', 'cloud_provider']
-    list_display_links = ('name', 'size')
-
-    def get_form(self, request, obj=None, **kwargs):
-        self.fieldsets = [
-            ['General', {'fields': []}],
-            ['Advanced Options', {
-                # 'classes':('collapse',),
-                'fields': ['_cloud_provider',
-                           ('_master_image_id',
-                           '_master_instance_type'),
-                           ('_node_image_id',
-                           '_node_instance_type')]
-            }],
-        ]
-        fields = self.fieldsets[0][1]['fields']
-        advanced_options = self.fieldsets[1][1]['fields']
-        if obj is None:
-            self.readonly_fields = ['_cloud_provider']
-            fields[:] = ['_name', '_size']
-        else:
-            self.readonly_fields = ['_name', '_cloud_provider', '_status', '_master_instance_type', '_master_image_id']
-            fields[:] = ['_name', '_size', '_status']
-            advanced_options.pop(1)
-        return super(ClusterAdmin, self).get_form(request, obj, **kwargs)
 
 
 @admin.register(Scheduler)
