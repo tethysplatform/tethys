@@ -51,8 +51,6 @@ class TethysAppBase(object):
     enable_feedback = False
     feedback_emails = []
 
-    _session_maker = sessionmaker()
-
     def __unicode__(self):
         """
         String representation
@@ -770,30 +768,6 @@ class TethysAppBase(object):
             raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(name))
 
         return ps_database_setting.get_engine(with_db=True, as_url=as_url, as_sessionmaker=as_sessionmaker)
-
-    @classmethod
-    def get_session(cls, name):
-        """
-        Gets an SQLAlchemy session object for the named persistent store database given.
-
-        Args:
-          name(string): Name of the PersistentStoreConnectionSetting as defined in app.py.
-
-        Returns:
-          sqlalchemy.sessionmaker: An SQLAlchemy sessionmaker object for the persistent store requested.
-
-
-        **Example:**
-
-        ::
-
-            from my_first_app.app import MyFirstApp as app
-
-            SessionMaker = app.get_session('example_db')
-        """
-
-        cls._session_maker.configure(bind=cls.get_persistent_store_database(name))
-        return cls._session_maker()
 
     @classmethod
     def create_persistent_store(cls, db_name, connection_name, spatial=False, initializer='', refresh=False,
