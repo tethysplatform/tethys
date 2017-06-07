@@ -17,16 +17,18 @@ class {{proper_no_spaces}}(TethysAppBase):
     enable_feedback = False
     feedback_emails = []
 
-        
     def url_maps(self):
         """
         Add controllers
         """
         UrlMap = url_map_maker(self.root_url)
 
-        url_maps = (UrlMap(name='home',
-                           url='{{project_url}}',
-                           controller='{{project}}.controllers.home'),
+        url_maps = (
+            UrlMap(
+                name='home',
+                url='{{project_url}}',
+                controller='{{project}}.controllers.home'
+            ),
         )
 
         return url_maps

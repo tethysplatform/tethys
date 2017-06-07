@@ -11,8 +11,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
-
 from django.contrib import messages
+from rest_framework.authtoken.models import Token
 
 from tethys_portal.forms import UserSettingsForm, UserPasswordChangeForm
 
@@ -25,7 +25,11 @@ def profile(request, username=None):
     # However, the template will hide certain information if the username is not the same
     # as the username of the user that is accessing the page.
     context_user = User.objects.get(username=username)
-    context = {'context_user': context_user}
+    user_token, token_created = Token.objects.get_or_create(user=context_user)
+    context = {
+                'context_user': context_user,
+                'user_token': user_token.key
+               }
     return render(request, 'tethys_portal/user/profile.html', context)
 
 @login_required()

@@ -43,14 +43,14 @@ class TethysAppTemplate(Template):
     ]
 
     # Default colors from flatuicolors.com
-    default_colors = ('#2ecc71',    # Emerald
-                      '#3498db',    # Peter River
-                      '#34495e',    # Wet Asphalt
-                      '#9b59b6',    # Amethyst
-                      '#e67e22',    # Carrot
-                      '#f1c40f',    # Sun Flower
-                      '#e74c3c',    # Alizarin
-                      '#1abc9c',    # Turquoise
+    default_colors = ('#27ae60',    # Nephritis
+                      '#2980b9',    # Belize Hole
+                      '#2c3e50',    # Midnight Blue
+                      '#8e44ad',    # Wisteria
+                      '#d35400',    # Pumpkin
+                      '#f39c12',    # Orange
+                      '#c0392b',    # Pomegranate
+                      '#16a085',    # Green Sea
     )
 
     def check_vars(self, vars, cmd):
@@ -100,7 +100,7 @@ class TethysAppTemplate(Template):
             proper_name_error_regex = re.compile(r'^[a-zA-Z0-9\s]+$')
             proper_name_warn_regex = re.compile(r'^[a-zA-Z0-9-\s_\"\']+$')
 
-            print vars['proper_name']
+            print(vars['proper_name'])
 
             if not proper_name_error_regex.match(vars['proper_name']):
 
