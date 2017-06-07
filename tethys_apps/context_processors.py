@@ -25,6 +25,7 @@ def tethys_apps_context(request):
 
     if app is not None:
         context['tethys_app'] = {
+            'id': app.id,
             'name': app.name,
             'index': app.index,
             'icon': app.icon,

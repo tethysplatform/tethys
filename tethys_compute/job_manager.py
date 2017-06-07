@@ -10,7 +10,6 @@
 import re
 from abc import abstractmethod
 import logging
-from exceptions import DeprecationWarning
 import warnings
 
 from django.core.urlresolvers import reverse
@@ -97,7 +96,7 @@ class JobManager(object):
         """
         try:
             template = self.job_templates[template_name]
-        except KeyError, e:
+        except KeyError as e:
             raise KeyError('A job template with name %s was not defined' % (template_name,))
         user_workspace = self.app.get_user_workspace(user)
         kwrgs = dict(name=name, user=user, label=self.label, workspace=user_workspace.path)

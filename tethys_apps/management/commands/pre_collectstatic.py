@@ -40,7 +40,7 @@ class Command(BaseCommand):
         # Provide feedback to user
         print('INFO: Linking static and public directories of apps to "{0}".'.format(static_root))
 
-        for app, path in installed_apps.iteritems():
+        for app, path in installed_apps.items():
             # Check for both variants of the static directory (public and static)
             public_path = os.path.join(path, 'public')
             static_path = os.path.join(path, 'static')

@@ -2,7 +2,7 @@
 Spatial Input
 *************
 
-**Last Updated:** September 30, 2016
+**Last Updated:** May 2017
 
 
 Spatial Input Page UrlMap
@@ -12,9 +12,11 @@ Add a new ``UrlMap`` to the ``url_maps`` method of the :file:`app.py` module:
 
 ::
 
-    UrlMap(name='draw',
-           url='geoserver-app/draw',
-           controller='geoserver_app.controllers.draw'),
+    UrlMap(
+        name='draw',
+        url='geoserver-app/draw',
+        controller='geoserver_app.controllers.draw'
+    ),
 
 Spatial Input Controller
 ========================
@@ -25,18 +27,17 @@ Add a new controller to the :file:`controller.py` module:
 
     @login_required
     def draw(request):
-        
-        user = request.user
         drawing_options = MVDraw(
-            controls=['Modify', 'Move', 'Point', 
-                      'LineString', 'Polygon', 'Box'],
+            controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
             initial='Polygon'
         )
 
-        map_options = MapView(height='450px',
-                              width='100%',
-                              layers=[],
-                              draw=drawing_options)
+        map_options = MapView(
+            height='450px',
+            width='100%',
+            layers=[],
+            draw=drawing_options
+        )
 
         geometry = ''
 
@@ -65,7 +66,7 @@ Create a new :file:`draw.html` template in your template directory and add the f
             <p>{{ geometry }}</p>
         {% endif %}
 
-        <form action="" method="post">
+        <form method="post">
             {% csrf_token %} 
             {% gizmo map_view map_options %}
             <input name="submit" type="submit">
@@ -82,9 +83,12 @@ Replace the ``app_navigation_items`` block of the :file:`base.html` template wit
 
     {% block app_navigation_items %}
       <li class="title">App Navigation</li>
-      <li><a href="{% url 'geoserver_app:home' %}">Upload Shapefile</a></li>
-      <li><a href="{% url 'geoserver_app:map' %}">GeoServer Layers</a></li>
-      <li><a href="{% url 'geoserver_app:draw' %}">Draw</a></li>
+      {% url 'geoserver_app:home' as home_url %}
+      {% url 'geoserver_app:map' as map_url %}
+      {% url 'geoserver_app:draw' as draw_url %}
+      <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Upload Shapefile</a></li>
+      <li class="{% if request.path == map_url %}active{% endif %}"><a href="{{ map_url }}">GeoServer Layers</a></li>
+      <li class="{% if request.path == draw_url %}active{% endif %}"><a href="{{ draw_url }}">Draw</a></li>
     {% endblock %}
 
 

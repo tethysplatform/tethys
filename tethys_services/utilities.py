@@ -7,14 +7,17 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from urllib2 import HTTPError, URLError
+try:
+    from urllib2 import HTTPError, URLError
+except ImportError:
+    from urllib.error import HTTPError, URLError
 from functools import wraps
 
 from owslib.wps import WebProcessingService
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
-from social.exceptions import AuthAlreadyAssociated, AuthException
+from social_core.exceptions import AuthAlreadyAssociated, AuthException
 
 from tethys_apps.base.app_base import TethysAppBase
 from .models import DatasetService as DsModel, SpatialDatasetService as SdsModel, WebProcessingService as WpsModel
@@ -34,7 +37,7 @@ def ensure_oauth2(provider):
             engine = get_dataset_engine('default_hydroshare', request=request)
             return render(request, 'my_template.html', {})
 
-    Note that calling get_dataset_engine for a hydroshare dataset engine will throw an error 
+    Note that calling get_dataset_engine for a hydroshare dataset engine will throw an error
     if it is not called in a function that is decorated with the ensure_oauth2 decorator.
     """
     def decorator(function):
@@ -425,5 +428,3 @@ def get_wps_service_engine(name, app_class=None):
 
     raise NameError('Could not find wps service with name "{0}". Please check that a wps service with that name '
                     'exists in the admin console or in your app.py.'.format(name))
-
-

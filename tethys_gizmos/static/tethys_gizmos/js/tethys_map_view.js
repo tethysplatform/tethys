@@ -384,6 +384,7 @@ var TETHYS_MAP_VIEW = (function() {
   ol_drawing_init = function()
   {
     // Constants
+////////////////////////////////////////// Color of annotation tools and Button Spacing ////////////////////////////////
     var VALID_GEOMETRY_TYPES = ['Polygon', 'Point', 'LineString', 'Box'];
     var INITIAL_FILL_COLOR = 'rgba(255, 255, 255, 0.2)',
         INITIAL_STROKE_COLOR = '#ffcc33',
@@ -396,6 +397,12 @@ var TETHYS_MAP_VIEW = (function() {
         initial_drawing_mode = 'Point';
 
     if (is_defined(m_draw_options)) {
+
+      // Customize styles
+      INITIAL_FILL_COLOR = m_draw_options.fill_color,
+      INITIAL_STROKE_COLOR = m_draw_options.line_color,
+      INITIAL_POINT_FILL_COLOR = m_draw_options.point_color,
+
       // Initialize the drawing layer
       m_drawing_source = new ol.source.Vector({wrapX: false});
 
@@ -420,6 +427,7 @@ var TETHYS_MAP_VIEW = (function() {
 
       // Add drawing layer legend properites
       m_drawing_layer.tethys_legend_title = 'Drawing Layer';
+      m_drawing_layer.tethys_editable = true;
 
       // Add drawing layer to the map
       m_map.addLayer(m_drawing_layer);
@@ -438,7 +446,7 @@ var TETHYS_MAP_VIEW = (function() {
       }
 
       switch_interaction(initial_drawing_mode);
-      
+
       // Add drawing controls to the map
       if (is_defined(m_draw_options.controls)) {
         var pan_control;
@@ -448,7 +456,8 @@ var TETHYS_MAP_VIEW = (function() {
         pan_control = new DrawingControl({
           control_type: 'Pan',
           left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-          active: false
+          active: false,
+          control_id: "tethys_pan"
         });
 
         button_left_offset += BUTTON_SPACING;
@@ -461,7 +470,8 @@ var TETHYS_MAP_VIEW = (function() {
           modify_control = new DrawingControl({
             control_type: 'Modify',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-            active: false
+            active: false,
+            control_id: "tethys_modify"
           });
 
 
@@ -476,7 +486,8 @@ var TETHYS_MAP_VIEW = (function() {
           modify_control = new DrawingControl({
             control_type: 'Delete',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-            active: false
+            active: false,
+            control_id: "tethys_delete"
           });
 
 
@@ -492,7 +503,8 @@ var TETHYS_MAP_VIEW = (function() {
           drag_feature_control = new DrawingControl({
             control_type: 'Drag',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-            active: false
+            active: false,
+            control_id: "tethys_move"
           });
 
           button_left_offset += BUTTON_SPACING;
@@ -520,7 +532,8 @@ var TETHYS_MAP_VIEW = (function() {
             new_control = new DrawingControl({
               control_type: current_control_type,
               left_offset: offset_string,
-              active: is_initial
+              active: is_initial,
+              control_id: "draw_" + current_control_type
             });
 
             m_map.addControl(new_control);
@@ -541,12 +554,13 @@ var TETHYS_MAP_VIEW = (function() {
     var GEOJSON = 'GeoJSON',
         KML = 'KML';
 
-    var TILE_SOURCES = ['TileDebug', 'TileImage', 'TileUTFGrid', 'Stamen', 'TileArcGISRest', 'Zoomify', 'XYZ', 'WMTS',
-                        'TileWMS'];
+    var TILE_SOURCES = ['TileDebug', 'TileUTFGrid', 'UrlTile', 'TileImage', 'VectorTile', 'BingMaps', 'TileArcGISRest',
+                        'TileJSON', 'TileWMS', 'WMTS', 'XYZ', 'Zoomify', 'CartoDB', 'OSM', 'Stamen'];
 
-    var IMAGE_SOURCES = ['ImageCanvas', 'ImageMapGuide', 'ImageStatic', 'ImageVector', 'ImageWMS'];
+    var IMAGE_SOURCES = ['ImageArcGISRest', 'ImageCanvas', 'ImageMapGuide', 'ImageStatic', 'ImageWMS', 'ImageVector',
+                         'Raster'];
 
-    var VECTOR_SOURCES = ['GeoJSON', 'KML', 'GPX', 'IGC', 'OSMXML', 'TopoJSON', 'ServerVector', 'TileVector'];
+    var VECTOR_SOURCES = ['GeoJSON', 'KML', 'Vector', 'Cluster'];
 
     if (is_defined(m_layers_options)) {
       for (var i = m_layers_options.length; i--; ) {
@@ -684,6 +698,8 @@ var TETHYS_MAP_VIEW = (function() {
           layer.tethys_legend_classes = current_layer.legend_classes;
           layer.tethys_legend_extent = current_layer.legend_extent;
           layer.tethys_legend_extent_projection = current_layer.legend_extent_projection;
+          layer.tethys_editable = current_layer.editable;
+          layer.tethys_data = current_layer.data;
 
           // Add layer to the map
           m_map.addLayer(layer);
@@ -769,25 +785,25 @@ var TETHYS_MAP_VIEW = (function() {
           style: default_selected_feature_styler,
         });
         m_points_selected_layer.setMap(m_map);
-    
+
         m_lines_selected_layer = new ol.layer.Vector({
           source: new ol.source.Vector(),
           style: default_selected_feature_styler,
         });
         m_lines_selected_layer.setMap(m_map);
-    
+
         m_polygons_selected_layer = new ol.layer.Vector({
           source: new ol.source.Vector(),
           style: default_selected_feature_styler,
         });
         m_polygons_selected_layer.setMap(m_map);
-    
+
         // Bind the to the map onclick event
         m_map.on('singleclick', map_clicked);
     }
   };
 
-  ol_selection_interaction_init = function() 
+  ol_selection_interaction_init = function()
   {
     m_select_interaction = null;
     // Create new selection interaction
@@ -796,7 +812,7 @@ var TETHYS_MAP_VIEW = (function() {
         m_select_interaction = new ol.interaction.Select({
                                     layers: m_selectable_layers,
                                 });
-    
+
         // Add new drawing interaction to map
         m_map.addInteraction(m_select_interaction);
     }
@@ -825,7 +841,7 @@ var TETHYS_MAP_VIEW = (function() {
 
       m_map.setView(new ol.View(view_obj));
     }
-    
+
     //function to change size of the map when the map element size changes
     $map_element.changeSize(function($this){
       m_map.updateSize();
@@ -1006,7 +1022,13 @@ var TETHYS_MAP_VIEW = (function() {
     selected_features = null;
 
     // Create select interaction
-    m_modify_select_interaction = new ol.interaction.Select();
+    m_modify_select_interaction = new ol.interaction.Select({
+        layers: function(layer){
+            if (layer.tethys_editable){
+                return layer
+            }
+        },
+    });
     m_map.addInteraction(m_modify_select_interaction);
 
     // Get selected features
@@ -1312,34 +1334,39 @@ var TETHYS_MAP_VIEW = (function() {
 
         html += '<li class="legend-class ' + legend_class.type + '">';
         if (legend_class.LEGEND_TYPE === "mvlegendimage") {
-          html += '<span class="legend-class-symbol">' + legend_class.value + '</span>' +
-                  '<span class="legend-class-value"><img src="' + legend_class.image_url + '"></span></li>';
+            html += '<div class="tethys-mvlegendimage tethys-legend-dropdown">' +
+                    '<ul>' +
+                      '<li><span class="legend-class-symbol">' + legend_class.value + '</span>' +
+                          '<span class="legend-class-value"><img src="' + legend_class.image_url + '"></span>' +
+                      '</li>' +
+                    '</ul>' +
+                    '</div>';
         } else if (legend_class.LEGEND_TYPE === "mvlegend") {
             html += '<span class="legend-class-symbol"><svg>';
             if (legend_class.type === legend_class.POINT_TYPE) {
               html += '<circle cx="10" cy="10" r="25%" fill="' + legend_class.fill + '"/>';
             }
-    
+
             else if (legend_class.type === legend_class.LINE_TYPE) {
               html += '<polyline points="19 1, 1 6, 19 14, 1 19" stroke="' + legend_class.stroke + '" fill="transparent" stroke-width="2"/>';
             }
-    
+
             else if (legend_class.type === legend_class.POLYGON_TYPE) {
               html += '<polygon points="1 10, 5 3, 13 1, 19 9, 14 19, 9 13" stroke="' + legend_class.stroke + '" fill="' + legend_class.fill + '" stroke-width="2"/>';
             }
             else if (legend_class.type === legend_class.RASTER_TYPE) {
               //TODO: ADD IMPLEMENTATION FOR RASTER
             }
-    
-            html += '</svg></span><span class="legend-class-value">' + legend_class.value + '</span></li>';
+
+            html += '</svg></span><span class="legend-class-value">' + legend_class.value + '</span>';
         }
       }
 
-      html += '</ul></div>';
+      html += '</li>';
     }
 
     // Close li.legend-item
-    html += '</li>';
+    html += '</ul></div>';
 
     // Append to the legend items
     $(m_legend_items).append(html);
@@ -1651,7 +1678,7 @@ var TETHYS_MAP_VIEW = (function() {
         'multiselect' in m_feature_selection_options &&
         m_feature_selection_options.multiselect &&
         ol.events.condition.shiftKeyOnly(event)) {
-      multiselect = true;
+        multiselect = true;
     }
 
     // Clear current selection
@@ -1660,7 +1687,6 @@ var TETHYS_MAP_VIEW = (function() {
       m_lines_selected_layer.getSource().clear();
       m_polygons_selected_layer.getSource().clear();
     }
-
     if (selected_features_changed) {
       selected_features_changed(m_points_selected_layer, m_lines_selected_layer, m_polygons_selected_layer);
     }
@@ -1699,7 +1725,6 @@ var TETHYS_MAP_VIEW = (function() {
         }
       }
 
-
       url = wms_url.replace('wms', 'wfs')
           + '?SERVICE=wfs'
           + '&VERSION=2.0.0'
@@ -1709,8 +1734,12 @@ var TETHYS_MAP_VIEW = (function() {
           + '&OUTPUTFORMAT=text/javascript'
           + '&FORMAT_OPTIONS=callback:TETHYS_MAP_VIEW.jsonResponseHandler;'
           + '&SRSNAME=' + DEFAULT_PROJECTION
-          + cql_filter
-          + '#multiselect:' + multiselect;
+          + cql_filter;
+
+      if (!multiselect)
+      {
+        url += '&COUNT=1';
+      }
       urls.push(url);
     }
 
@@ -1846,6 +1875,8 @@ var TETHYS_MAP_VIEW = (function() {
   /***********************************
    * Class Implementations
    ***********************************/
+///////////////////////////////////////// This is the place to play with the button locations //////////////////////////
+
   DrawingControl = function(opt_options) {
     var options,
         button,
@@ -1874,6 +1905,7 @@ var TETHYS_MAP_VIEW = (function() {
     button_wrapper = document.createElement('div');
     button_wrapper.className = 'tethys-map-view-draw-control ol-unselectable ol-control';
     button_wrapper.style.left = options.left_offset;
+    button_wrapper.setAttribute('id',options.control_id);
     button_wrapper.appendChild(button);
 
     // Create action handler
@@ -1927,6 +1959,9 @@ var TETHYS_MAP_VIEW = (function() {
 
     var feature = map.forEachFeatureAtPixel(event.pixel,
         function(feature, layer) {
+          if (layer.tethys_editable === false){
+            return false;
+          }
           return feature;
         });
 
@@ -1937,7 +1972,7 @@ var TETHYS_MAP_VIEW = (function() {
 
     return !!feature;
   };
-  
+
   // Handle drag feature
   DragFeatureInteraction.prototype.handleDragEvent = function(event) {
     var map = event.map;
@@ -2006,7 +2041,7 @@ var TETHYS_MAP_VIEW = (function() {
     var map = event.map;
     var feature = map.forEachFeatureAtPixel(event.pixel,
         function(feature, layer) {
-            if (layer instanceof ol.layer.Vector) {
+            if (layer.tethys_editable && layer instanceof ol.layer.Vector) {
                 layer.getSource().removeFeature(feature);
             };
         });
@@ -2064,7 +2099,7 @@ var TETHYS_MAP_VIEW = (function() {
       if (m_polygons_selected_layer) {
         m_polygons_selected_layer.getSource().clear();
       }
-      
+
       if (m_select_interaction) {
         m_select_interaction.getFeatures().clear();
       }

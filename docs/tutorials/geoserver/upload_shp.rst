@@ -2,7 +2,7 @@
 Upload Shapefile
 ****************
 
-**Last Updated:** September 30, 2016
+**Last Updated:** May 2017
 
 Add Form to Home Page
 =====================
@@ -29,7 +29,7 @@ Replace the contents of the existing :file:`home.html` template with:
 Handle File Upload in Home Controller
 =====================================
 
-Add these imports to the top of the :file:`controllers.py` module:
+Replace the contents of :file:`controllers.py` module with the following:
 
 ::
 
@@ -40,15 +40,12 @@ Add these imports to the top of the :file:`controllers.py` module:
     from django.contrib.auth.decorators import login_required
 
     from tethys_sdk.gizmos import *
-    from tethys_sdk.services import get_spatial_dataset_engine
+    from .app import GeoserverApp as app
 
 
     WORKSPACE = 'geoserver_app'
     GEOSERVER_URI = 'http://www.example.com/geoserver-app'
 
-Modify the ``home()`` controller so that it can handle the file upload event like so:
-
-::
 
     @login_required
     def home(request):
@@ -56,7 +53,7 @@ Modify the ``home()`` controller so that it can handle the file upload event lik
         Controller for the app home page.
         """
         # Retrieve a geoserver engine
-        geoserver_engine = get_spatial_dataset_engine(name='default')
+        geoserver_engine = app.get_spatial_dataset_service(name='main_geoserver', as_engine=True)
 
         # Check for workspace and create workspace for app if it doesn't exist
         response = geoserver_engine.list_workspaces()
@@ -65,8 +62,7 @@ Modify the ``home()`` controller so that it can handle the file upload event lik
             workspaces = response['result']
 
             if WORKSPACE not in workspaces:
-                response = geoserver_engine.create_workspace(workspace_id=WORKSPACE, 
-                                                             uri=GEOSERVER_URI)
+                geoserver_engine.create_workspace(workspace_id=WORKSPACE, uri=GEOSERVER_URI)
 
         # Case where the form has been submitted
         if request.POST and 'submit' in request.POST:
@@ -78,11 +74,10 @@ Modify the ``home()`` controller so that it can handle the file upload event lik
                 # Upload shapefile
                 store = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(6))
                 store_id = WORKSPACE + ':' + store
-                response = geoserver_engine.create_shapefile_resource(
-                            store_id=store_id,
-                            shapefile_upload=file_list,
-                            overwrite=True,
-                            debug=True
+                geoserver_engine.create_shapefile_resource(
+                    store_id=store_id,
+                    shapefile_upload=file_list,
+                    overwrite=True
                 )
 
         context = {}

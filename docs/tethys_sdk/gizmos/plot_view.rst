@@ -63,25 +63,17 @@ This method initializes a chart generated from an AJAX request. An example is de
 
 .. note::
 
-    In order to use this, you will either need to use a PlotView gizmo or import the JavaScript libraries
-    in the main html template page. 
+    In order to use this, you will either need to use a ``PlotView`` gizmo on
+    the main page or register the dependencies in the main html template page
+    using the ``import_gizmo_dependency`` tag with the ``plot_view`` name
+    in the ``import_gizmos`` block.
 
     For example:
     ::
 
-        {% block global_scripts %}
-          {{ block.super }}
-          <script src="/static/tethys_gizmos/vendor/highcharts/js/highcharts.js" type="text/javascript"></script>
-          <script src="/static/tethys_gizmos/vendor/highcharts/js/highcharts-more.js" type="text/javascript"></script>
+        {% block import_gizmos %}
+            {% import_gizmo_dependency plot_view %}
         {% endblock %}
-
-        ...
-
-        {% block scripts %}
-          {{ block.super }}
-          <script src="/static/tethys_gizmos/js/plot_view.js" type="text/javascript"></script>
-        {% endblock %}
-
 
 Four elements are required:
 
@@ -93,31 +85,24 @@ Four elements are required:
         """
         Controller for the hydrograph ajax request.
         """
-        hydrograph = ... #insert data here
 
-        ...
-
-        # Configure the Hydrograph Plot View
+        # add a plot view gizmo
         flood_plot = TimeSeries(
-            title='Flood Hydrograph',
-            y_axis_title='Flow',
-            y_axis_units='cms',
-            series=[
-               {
-                   'name': 'Flood Hydrograph',
-                   'color': '#0066ff',
-                   'data': hydrograph,
-               },
-            ],
-            width='500px',
-            height='500px'
+                        ...
         )
 
         context = {'flood_plot': flood_plot}
 
         return render(request, 'dam_break/hydrograph_ajax.html', context)
 
-2) A url map to the controller in app.py
+2) A template for with the tethys gizmo (e.g. hydrograph_ajax.html)
+::
+
+    {% load tethys_gizmos %}
+
+    {% gizmo flood_plot %}
+
+3) A url map to the controller in app.py
 ::
 
     ...
@@ -126,12 +111,6 @@ Four elements are required:
                controller='dam_break.controllers.hydrograph_ajax'),
     ...
 
-3) A template for with the tethys gizmo (e.g. hydrograph_ajax.html)
-::
-
-    {% load tethys_gizmos %}
-
-    {% gizmo highcharts_plot_view flood_plot %}
 
 
 4) The AJAX call in the javascript
@@ -146,6 +125,9 @@ Four elements are required:
                 'peak_flow': 500, //example data to pass to the controller
             },
             success: function(data) {
+                // add plot to page
+                $("#plot_view_div").html(data);
+
                 //Initialize Plot
                 TETHYS_PLOT_VIEW.initHighChartsPlot($('.highcharts-plot'));
             }

@@ -8,16 +8,5 @@ Tethys Platform is a growing Open Source project and we are always looking for d
 
 Resources:
 
-    * `Tethys Forum <https://groups.google.com/forum/#!forum/>`_
-    * `Tethys Development Wiki <https://github.com/tethysplatform/tethys/wiki>`_
-
-
-
-
-
-
-
-
-
-
-
+    * `Tethys Forum <https://groups.google.com/forum/#!forum/>`__
+    * `Tethys Development Wiki <https://github.com/tethysplatform/tethys/wiki>`__

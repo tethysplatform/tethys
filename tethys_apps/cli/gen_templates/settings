@@ -55,10 +55,14 @@ LOGGING = {
             'handlers': ['console'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'WARNING'),
         },
+        'tethys': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        }
     },
 }
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [{% if allowed_host %}'{{ allowed_host }}'{% endif %}]
 
 # Application definition
 
@@ -77,9 +81,12 @@ INSTALLED_APPS = (
     'tethys_gizmos',
     'tethys_services',
     'tethys_compute',
-    'social.apps.django_app.default',
+    'social_django',
     'guardian',
     'session_security'
+    'captcha',
+    'rest_framework',
+    'rest_framework.authtoken',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -93,14 +100,41 @@ MIDDLEWARE_CLASSES = (
     'session_security.middleware.SessionSecurityMiddleware',
 )
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
+
 AUTHENTICATION_BACKENDS = (
 #    'tethys_services.backends.hydroshare.HydroShareOAuth2',
-#    'social.backends.linkedin.LinkedinOAuth2',
-#    'social.backends.google.GoogleOAuth2',
-#    'social.backends.facebook.FacebookOAuth2',
+#    'social_core.backends.linkedin.LinkedinOAuth2',
+#    'social_core.backends.google.GoogleOAuth2',
+#    'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
+
+# Password validation
+# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
+
+# AUTH_PASSWORD_VALIDATORS = [
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+#     },
+# ]
 
 # Terms and conditions settings
 ACCEPT_TERMS_PATH = '/terms/accept/'
@@ -118,29 +152,11 @@ WSGI_APPLICATION = 'tethys_portal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'tethys_default',
-        'USER': 'tethys_default',
-        'PASSWORD': 'pass',
+        'NAME': '{{ db_username }}',
+        'USER': '{{ db_username }}',
+        'PASSWORD': '{{ db_password }}',
         'HOST': '127.0.0.1',
-        'PORT': '5435'
-    }
-}
-
-# Tethys App Persistent Stores Settings
-TETHYS_DATABASES = {
-    'tethys_db_manager': {
-        'NAME': 'tethys_db_manager',
-        'USER': 'tethys_db_manager',
-        'PASSWORD': 'pass',
-        'HOST': '127.0.0.1',
-        'PORT': '5435'
-    },
-    'tethys_super': {
-        'NAME': 'tethys_super',
-        'USER': 'tethys_super',
-        'PASSWORD': 'pass',
-        'HOST': '127.0.0.1',
-        'PORT': '5435'
+        'PORT': '{{ db_port }}'
     }
 }
 
@@ -174,8 +190,8 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
-                'social.apps.django_app.context_processors.backends',
-                'social.apps.django_app.context_processors.login_redirect',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
                 'tethys_config.context_processors.tethys_global_settings_context',
                 'tethys_apps.context_processors.tethys_apps_context',
                 'tethys_gizmos.context_processors.tethys_gizmos_context'
