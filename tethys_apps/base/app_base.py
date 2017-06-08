@@ -19,6 +19,7 @@ from sqlalchemy.orm import sessionmaker
 from .workspace import TethysWorkspace
 from .handoff import HandoffManager
 from ..exceptions import TethysAppSettingDoesNotExist
+from .testing import is_testing_environment
 
 tethys_log = logging.getLogger('tethys.app_base')
 
@@ -629,8 +630,6 @@ class TethysAppBase(object):
 
             geoserver_engine = app.get_spatial_dataset_engine('primary_geoserver', as_engine=True)
 
-            if result:
-                engine = MyFirstApp.get_persistent_store_engine('example_db')
 
         """
         from tethys_apps.models import TethysApp
@@ -731,6 +730,11 @@ class TethysAppBase(object):
         db_app = TethysApp.objects.get(package=cls.package)
         ps_connection_settings = db_app.persistent_store_connection_settings
 
+        if is_testing_environment():
+            if 'tethys-testing_' not in name:
+                test_store_name = 'tethys-testing_{0}'.format(name)
+                name = test_store_name
+
         try:
             ps_connection_setting = ps_connection_settings.get(name=name)
         except ObjectDoesNotExist:
@@ -766,6 +770,12 @@ class TethysAppBase(object):
         from tethys_apps.models import TethysApp
         db_app = TethysApp.objects.get(package=cls.package)
         ps_database_settings = db_app.persistent_store_database_settings
+
+        if is_testing_environment():
+            if 'tethys-testing_' not in name:
+                test_store_name = 'tethys-testing_{0}'.format(name)
+                name = test_store_name
+
         try:
             ps_database_setting = ps_database_settings.get(name=name)
         except ObjectDoesNotExist:
@@ -835,6 +845,11 @@ class TethysAppBase(object):
         # Get connection service
         ps_connection_settings = db_app.persistent_store_connection_settings
 
+        if is_testing_environment():
+            if 'tethys-testing_' not in connection_name:
+                test_store_name = 'test_{0}'.format(connection_name)
+                connection_name = test_store_name
+
         try:
             ps_connection_setting = ps_connection_settings.get(name=connection_name)
         except ObjectDoesNotExist:
@@ -902,6 +917,11 @@ class TethysAppBase(object):
         db_app = TethysApp.objects.get(package=cls.package)
         ps_database_settings = db_app.persistent_store_database_settings
 
+        if is_testing_environment():
+            if 'tethys-testing_' not in name:
+                test_store_name = 'tethys-testing_{0}'.format(name)
+                name = test_store_name
+
         try:
             ps_database_setting = ps_database_settings.get(name=name)
         except ObjectDoesNotExist:
@@ -943,7 +963,8 @@ class TethysAppBase(object):
             ps_database_settings = ps_database_settings.filter(persistentstoredatabasesetting__dynamic=True)
         elif static_only:
             ps_database_settings = ps_database_settings.filter(persistentstoredatabasesetting__dynamic=False)
-        return [ps_database_setting.name for ps_database_setting in ps_database_settings]
+        return [ps_database_setting.name for ps_database_setting in ps_database_settings
+                if 'tethys-testing_' not in ps_database_setting.name]
 
     @classmethod
     def list_persistent_store_connections(cls):
@@ -966,7 +987,8 @@ class TethysAppBase(object):
         from tethys_apps.models import TethysApp
         db_app = TethysApp.objects.get(package=cls.package)
         ps_connection_settings = db_app.persistent_store_connection_settings
-        return [ps_connection_setting.name for ps_connection_setting in ps_connection_settings]
+        return [ps_connection_setting.name for ps_connection_setting in ps_connection_settings
+                if 'tethys-testing_' not in ps_database_setting.name]
 
     @classmethod
     def persistent_store_exists(cls, name):
@@ -995,6 +1017,12 @@ class TethysAppBase(object):
         from tethys_apps.models import TethysApp
         db_app = TethysApp.objects.get(package=cls.package)
         ps_database_settings = db_app.persistent_store_database_settings
+
+        if is_testing_environment():
+            if 'tethys-testing_' not in name:
+                test_store_name = 'tethys-testing_{0}'.format(name)
+                name = test_store_name
+
         try:
             # If it exists return True
             ps_database_setting = ps_database_settings.get(name=name)
