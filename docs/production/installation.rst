@@ -16,10 +16,17 @@ Follow the default :doc:`../installation/linux_and_mac` instructions to install 
 * Create a new settings file, do not use the same file that you have been using in development.
 * Optionally, Follow the :doc:`./distributed` instructions to install Docker and the components of the software suite on separate servers.
 
-2. Install Nginx
-================
+2. Install Nginx and uWSGI
+==========================
 
-Install Nginx to act as a proxy server for Tethys:
+For compatibility with the conda environment it is recommended that uWSGI be used to serve Tethys as a WSGI application. Nginx is then used a a proxy server.
+
+First, install uwsgi with conda::
+
+    $ t
+    (tethys) $ conda install -c conda-forge uwsgi
+
+Next, install Nginx to act as a proxy server for Tethys:
 
 .. code-block:: bash
 
@@ -29,9 +36,48 @@ Install Nginx to act as a proxy server for Tethys:
 
     The previous command also installs the command line text editor `vim`, which is used in the following instructions to edit various files. If you prefer a different editor then you can replace ``vim`` with your preferred editor.
 
+3. Generate Production Settings
+===============================
+
+A new :file:`settings.py` file should be generated specifically for a production environment. Ensure that the following options are specified when generating a production settings file::
+
+    (tethys) $ tethys gen settings --production -d "${TETHYS_HOME}/src/tethys_apps" --allowed-host <ALLOWED_HOST_OPT> --db-username <TETHYS_DB_USERNAME> --db-password <TETHYS_DB_PASSWORD> --db-port <TETHYS_DB_PORT>
+
+.. note::
+
+    The parameters indicated with angle brackets `<>` should be replaced with appropriate values for your production server.
+
+The internet is a hostile environment and you need to take every precaution to make sure your Tethys Platform installation is secure. Django provides a `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ that points out critical settings. You should review this checklist carefully before launching your site.
+
+Open the :file:`settings.py` module for editing using ``vim`` or another text editor:
+
+::
+
+    sudo vim $TETHYS_HOME/src/tethys_apps/settings.py
+
+Press :kbd:`i` to start editing and change settings as necessary for your production environment. Some settings you may want to customize include:
+
+a. Secret Key
+
+  Create a new ``SECRET_KEY`` for the production installation of Tethys Platform. Do not use the same key you used during development and keep the key a secret. Take care not to store the :file:`settings.py` file with the production secret key in a repository. Django outlines several suggestions for making the secret key more secure in the `Deployment Checklist: SECRET_KEY <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#secret-key>`_ documentation.
+
+b. Social authentication settings
+
+  If you wish to enable social authentication capabilities in your Tethys Portal, follow the :doc:`../tethys_portal/social_auth` instructions.
+
+c. Email settings
+
+    If you would like to enable resetting passwords then an email server needs to be configured. See the next section for details.
+
+Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` to save changes and exit.
+
+.. important::
+
+    Review the `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ carefully.
+
 .. _setup_email_capabilities:
 
-3. Setup Email Capabilities
+4. Setup Email Capabilities
 ===========================
 
 Tethys Platform provides a mechanism for resetting forgotten passwords that requires email capabilities, for which we recommend using Postfix. Install Postfix as follows:
@@ -70,52 +116,7 @@ Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` 
 
     sudo service postfix restart
 
-Django must be configured to use the postfix server. The next section will describe the Django settings that must be configured for the email server to work. For an excellent guide on setting up Postfix on Ubuntu, refer to `How To Install and Setup Postfix on Ubuntu 14.04 <https://www.digitalocean.com/community/tutorials/how-to-install-and-setup-postfix-on-ubuntu-14-04>`_.
-
-4. Set Secure Settings
-======================
-
-Several settings need to be modified in the :file:`settings.py` module to make the installation ready for a production environment. The internet is a hostile environment and you need to take every precaution to make sure your Tethys Platform installation is secure. Django provides a `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ that points out critical settings. You should review this checklist carefully before launching your site. As a minimum do the following:
-
-Open the :file:`settings.py` module for editing using ``vim`` or another text editor:
-
-::
-
-    sudo vim /usr/lib/tethys/src/tethys_apps/settings.py
-
-Press :kbd:`i` to start editing and change the following settings:
-
-a. Create new secret key
-
-  Create a new ``SECRET_KEY`` for the production installation of Tethys Platform. Do not use the same key you used during development and keep the key a secret. Take care not to store the :file:`settings.py` file with the production secret key in a repository. Django outlines several suggestions for making the secret key more secure in the `Deployment Checklist: SECRET_KEY <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#secret-key>`_ documentation.
-
-b. Turn off debugging
-
-  Turn off the debugging settings by changing ``DEBUG`` and ``TEMPLATE_DEBUG`` to ``False``. **You must never turn on debugging in a production environment.**
-
-  ::
-
-      DEBUG = False
-
-c. Set the allowed hosts
-
-  Allowed hosts must be set to a suitable value, usually a list of the names and aliases of the server that you are hosting Tethys Portal on (e.g.: "www.example.com"). Django will not work without a value set for the ``ALLOWED_HOSTS`` parameter when debugging is turned of. See the `Deployment Checklist: ALLOWED_HOSTS <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#allowed-hosts>`_ for more information.
-
-  ::
-
-      ALLOWED_HOSTS = ['www.example.com']
-
-d. Set the static root directory
-
-  You must set the ``STATIC_ROOT`` settings to tell Django where to collect all of the static files. Set this setting to the directory that was created in the previous step (:file:`/var/www/tethys/static`). See the `Deployment Checklist: STATIC_ROOT <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#static-root-and-static-url>`_ for more details.
-
-  ::
-
-      STATIC_ROOT = '/var/www/tethys/static'
-
-e. Set email settings
-
-  Several email settings need to be configured for the forget password functionality to work properly. The following exampled illustrates how to setup email using the Postfix installation from above:
+Several email settings need to be configured for the forget password functionality to work properly. The following exampled illustrates how to setup email in the :file:`settings.py` file.
 
   ::
 
@@ -127,53 +128,39 @@ e. Set email settings
       EMAIL_USE_TLS = False
       DEFAULT_FROM_EMAIL = 'Example <noreply@exmaple.com>'
 
-  For more information about setting up email capabilities for Tethys Platform, refer to the `Sending email <https://docs.djangoproject.com/en/1.8/topics/email/>`_ documentation.
+For more information about setting up email capabilities for Tethys Platform, refer to the `Sending email <https://docs.djangoproject.com/en/1.8/topics/email/>`_ documentation.
 
-d. Setup social authentication
-
-  If you wish to enable social authentication capabilities in your Tethys Portal, follow the :doc:`../tethys_portal/social_auth` instructions.
-
-e. Configure workspaces (optional)
-
-  If you would like all of the app workspace directories to be aggregated to a central location, create the directory and then specify it using the ``TETHYS_WORKSPACES_ROOT`` setting.
+For an excellent guide on setting up Postfix on Ubuntu, refer to `How To Install and Setup Postfix on Ubuntu 14.04 <https://www.digitalocean.com/community/tutorials/how-to-install-and-setup-postfix-on-ubuntu-14-04>`_.
 
 
-Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` to save changes and exit.
+5. Make Directories for Static Files and Workspaces
+===================================================
 
-.. important::
+When running Tethys Platform in development mode, the static files are automatically served by the development server. In a production environment the static files will need to be collected into one location and Nginx or another server will need to be configured to serve these files (see `Deployment Checklist: STATIC_ROOT <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#static-root-and-static-url>`_). Optionally, the app workspaces can also be collected into one location::
 
-    Review the `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ carefully.
-
-5. Make Directories for Static Files, Workspaces, and TethysCluster
-===================================================================
-
-When running Tethys Platform in development mode, the static files are automatically served by the development server. In a production environment the static files will need to be collected into one location and Nginx or another server will need to be configured to serve these files (see `Deployment Checklist: STATIC_ROOT <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#static-root-and-static-url>`_). Optionally, the app workspaces can also be collected into one location. Since Nginx will be serving Tethys Portal under the user (www-data) the TethysCluster home directory also needs to be created:
-
-::
-
-    sudo mkdir /var/www/.tethyscluster && sudo mkdir -p /var/www/tethys/static && sudo mkdir -p /var/www/tethys/workspaces
-    sudo chown -R $USER /var/www/tethys/
+    sudo mkdir -p $TETHYS_HOME/static && sudo mkdir -p $TETHYS_HOME/workspaces
 
 .. note::
     The static and workspaces directories can be created at any location, however, if they are created at a different location than listed above the Nginx configuration file and the Tethys settings file will need to be updated to point at the correct location.
 
 
-6. Update the Nginx Configuration File
-======================================
+6. Generate the Nginx and uWSGI Configuration Files
+===================================================
 
-Open the Tethys Nginx configuration file using ``vim`` or another text editor:
+.. note::
+
+    Values from the :file:`settings.py` file are used when generating these server configuration files. Be sure that the following values are properly configured before generating the configuration files:
+
+    * `ALLOWED_HOSTS`
+    * `STATIC_ROOT`
+    * `TETHYS_WORKSPACES_ROOT`
 
 ::
 
-    vim /usr/lib/tethys/src/tethys_portal/tethys_nginx.conf
-
-Press :kbd:`i` to start editing and update the following line with the IP address or fully qualified domain name of your server:
-
-::
-
-    server_name 127.0.0.1 localhost; # substitute your machine's IP address or FQDN
-
-Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` to save changes and exit.
+    (tethys) $ cd $TETHYS_HOME/src/tethys_portal
+    (tethys) $ tethys gen nginx
+    (tethys) $ tethys gen uwsgi_settings
+    (tethys) $ tethys gen uwsgi_service
 
 7. Update the uWSGI Configuration File (Optional)
 =================================================
@@ -182,7 +169,7 @@ Open the Tethys uWSGI configuration and customize to your liking. (See the `uWSG
 
 ::
 
-    vim /usr/lib/tethys/src/tethys_portal/tethys_uwsgi.yml
+    vim $TETHYS_HOME/src/tethys_portal/tethys_uwsgi.yml
 
 8. Install Apps
 ===============
@@ -196,16 +183,6 @@ Download and install any apps that you want to host using this installation of T
     (tethys) $ cd /path/to/tethysapp-my_first_app
     (tethys) $ python setup.py install
     (tethys) $ exit
-
-.. tip::
-
-    If you get the following error when you try to activate the tethys environment::
-
-        bash: activate: No such file or directory
-
-    It probably means that miniconda is not in your path. You can add miniconda to your path by running::
-
-        export PATH="/opt/miniconda/bin:$PATH"
 
 9. Collect Static Files
 =======================
@@ -227,7 +204,7 @@ If you configured a workspaces directory with the ``TETHYS_WORKSPACES_ROOT`` set
 ::
 
              $ sudo su
-             $ . /usr/lib/tethys/bin/activate
+             $ . $TETHYS_HOME/bin/activate
     (tethys) $ tethys manage collectworkspaces
     (tethys) $ exit
 
@@ -248,7 +225,7 @@ When you are finished installing Tethys Portal, change the ownership of the sour
 
 ::
 
-    sudo chown -R www-data:www-data /usr/lib/tethys/src /var/www/tethys /var/www/.tethyscluster
+    sudo chown -R www-data:www-data $TETHYS_HOME/src $TETHYS_HOME/static $TETHYS_HOME/workspaces
 
 13. Enable Site and Restart Server
 ==================================
@@ -259,13 +236,13 @@ a. Create a simlink to the `tethys_nginx.conf` file in the `/etc/nginx/sites-ena
 
 ::
 
-    sudo ln -s /usr/lib/tethys/src/tethys_portal/tethys_nginx.conf /etc/nginx/sites-enabled/
+    sudo ln -s $TETHYS_HOME/src/tethys_portal/tethys_nginx.conf /etc/nginx/sites-enabled/
 
 b. Enable the Tethys uWSGI configuration as a system service and then start the service:
 
 ::
 
-    sudo systemctl enable /usr/lib/tethys/src/tethys_portal/tethys.uwsgi.service
+    sudo systemctl enable $TETHYS_HOME/src/tethys_portal/tethys.uwsgi.service
     sudo systemctl start tethys.uwsgi.service
 
 c. Finally, restart Nginx:

@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = '{{ secret_key }}'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = {% if production %}False{% else %}True{% endif %}
 
 # List those who should be notified of an error when DEBUG = False as a tuple of (name, email address).
 # i.e.: ADMINS = (('John', 'john@example.com'), ('Mary', 'mary@example.com'))
@@ -216,10 +216,10 @@ STATICFILES_FINDERS = (
 )
 
 # Uncomment the next line for production installation
-#STATIC_ROOT = '/var/www/tethys/static'
+{% if not production %}#{% endif %}STATIC_ROOT = '{{ server_user_home }}/static'
 
 # Tethys Workspaces
-#TETHYS_WORKSPACES_ROOT = '/var/www/tethys/workspaces'
+{% if not production %}#{% endif %}TETHYS_WORKSPACES_ROOT = '{{ server_user_home }}/workspaces'
 
 # Messaging settings
 MESSAGE_TAGS = {message_constants.DEBUG: 'alert-danger',

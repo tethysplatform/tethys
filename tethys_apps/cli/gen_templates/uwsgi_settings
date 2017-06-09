@@ -7,19 +7,18 @@ uwsgi:
     # Tethys's wsgi file
     module: wsgi
     # absolute path to the conda environment
-    home:   /opt/miniconda/envs/tethys
+    home:   {{ conda_home }}/envs/{{ conda_env_name }}
     
     # process-related settings
     # master
     master: true
-    pidfile: /run/uwsgi/tethys.pid
+    pidfile2: /run/uwsgi/tethys.pid
     # maximum number of worker processes
     processes:  10
-    # the socket (use the full path to be safe)
+    # the socket file with correct permissions
     socket: /run/uwsgi/tethys.sock
-    # ... with appropriate permissions - may be needed
-    chmod-socket: 666
+    chmod-socket: 600
     # clear environment on exit
     vacuum: true
     # log to file
-    logger: file:/var/log/uwsgi/tethys.log
+    logto2: /var/log/uwsgi/tethys.log
