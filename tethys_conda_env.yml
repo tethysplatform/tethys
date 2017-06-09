@@ -60,5 +60,6 @@ dependencies:
     - TethysCluster>=0.1.5,<0.2.0
     - selenium>=3.0.0,<3.0.2
     - coverage>=4.0,<4.2
+    - django-session-security>=2.4.0,<2.5.0
     - social-auth-core==1.2.0
     - social-auth-app-django==1.1.0

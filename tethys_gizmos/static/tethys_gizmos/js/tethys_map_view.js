@@ -81,8 +81,8 @@ var TETHYS_MAP_VIEW = (function() {
    *                       PRIVATE METHOD DECLARATIONS
    *************************************************************************/
   // Initialization Methods
-   var ol_base_map_init, ol_controls_init, ol_drawing_init, ol_layers_init, ol_legend_init, ol_map_init,
-       ol_selection_interaction_init, ol_wms_feature_selection_init, ol_view_init, parse_options,
+   var ol_base_map_init, ol_base_map_switcher_init, ol_controls_init, ol_drawing_init, ol_layers_init, ol_legend_init,
+       ol_map_init, ol_selection_interaction_init, ol_wms_feature_selection_init, ol_view_init, parse_options,
        ol_initialize_all;
 
   // Drawing Methods
@@ -123,10 +123,9 @@ var TETHYS_MAP_VIEW = (function() {
   ol_base_map_init = function()
   {
     // Constants
-    var OPEN_STEET_MAP = 'OpenStreetMap',
+    var OPEN_STREET_MAP = 'OpenStreetMap',
         BING = 'Bing',
         MAP_QUEST = 'MapQuest';
-
 
     // Declarations
     var base_map_layer;
@@ -141,54 +140,167 @@ var TETHYS_MAP_VIEW = (function() {
     });
 
     if (is_defined(m_base_map_options)) {
-      if (typeof m_base_map_options === 'string') {
-        if (m_base_map_options === OPEN_STEET_MAP) {
-          // Initialize default open street map layer
-          base_map_layer = new ol.layer.Tile({
-            source: new ol.source.OSM()
-          });
+      var base_map_options = Array.isArray(m_base_map_options) ? m_base_map_options : [m_base_map_options]
+      var first_flag = true;
+      base_map_options.forEach(function (base_map_option) {
+        var label;
+        var visible = false;
+        if (first_flag) {
+          visible = true;
+          first_flag = false;
+        }
+        if (typeof base_map_option === 'string') {
+          if (base_map_option === OPEN_STREET_MAP) {
+            // Initialize default open street map layer
+            base_map_layer = new ol.layer.Tile({
+              source: new ol.source.OSM(),
+              visible: visible
+            });
+          } else if (base_map_option === BING) {
+            // Initialize default bing layer
 
-        } else if (m_base_map_options === BING) {
-          // Initialize default bing layer
+          } else if (base_map_option === MAP_QUEST) {
+            // Initialize default map quest layer
+            base_map_layer = new ol.layer.Tile({
+              source: new ol.source.MapQuest({layer: 'sat'}),
+              visible: visible
+            });
+          }
+          // Add legend attributes
+          base_map_layer.tethys_legend_title = 'Basemap: ' + base_map_option;
 
-        } else if (m_base_map_options === MAP_QUEST) {
-          // Initialize default map quest layer
-          base_map_layer = new ol.layer.Tile({
-            source: new ol.source.MapQuest({layer: 'sat'})
-          });
+        } else if (typeof base_map_option === 'object') {
 
+          if (OPEN_STREET_MAP in base_map_option) {
+            // Initialize custom open street map layer
+            base_map_layer = new ol.layer.Tile({
+              source: new ol.source.OSM(base_map_option[OPEN_STREET_MAP]),
+              visible: visible
+            });
+
+            if (base_map_option[OPEN_STREET_MAP].hasOwnProperty('label')) {
+              label = base_map_option[OPEN_STREET_MAP].label;
+            } else {
+              label = OPEN_STREET_MAP;
+            }
+            // Add legend attributes
+            base_map_layer.tethys_legend_title = 'Basemap: ' + label;
+
+          } else if (BING in base_map_option) {
+            // Initialize custom bing layer
+            base_map_layer = new ol.layer.Tile({
+              preload: Infinity,
+              source: new ol.source.BingMaps(base_map_option[BING]),
+              visible: visible
+            });
+
+            if (base_map_option[BING].hasOwnProperty('label')) {
+              label = base_map_option[BING].label;
+            } else {
+              label = BING + '-' + base_map_option[BING]['imagerySet'];
+            }
+            // Add legend attributes
+            base_map_layer.tethys_legend_title = 'Basemap: ' + label;
+
+          } else if (MAP_QUEST in base_map_option) {
+            // Initialize custom map quest layer
+            base_map_layer = new ol.layer.Tile({
+              source: new ol.source.MapQuest(base_map_option[MAP_QUEST]),
+              visible: visible
+            });
+
+            if (base_map_option[MAP_QUEST].hasOwnProperty('label')) {
+              label = base_map_option[MAP_QUEST].label;
+            } else {
+              label = MAP_QUEST;
+            }
+            // Add legend attributes
+            base_map_layer.tethys_legend_title = 'Basemap: ' + label;
+          }
         }
 
-      } else if (typeof m_base_map_options === 'object') {
+        // Add the base map to layers
+        m_map.addLayer(base_map_layer);
+      });
+    }
+  }
 
-        if (OPEN_STEET_MAP in m_base_map_options) {
-          // Initialize custom open street map layer
-          base_map_layer = new ol.layer.Tile({
-            source: new ol.source.OSM(m_base_map_options[OPEN_STEET_MAP])
-          });
+  // Initialize the base map switcher
+  ol_base_map_switcher_init = function () {
+    // Constants
+    var OPEN_STREET_MAP = 'OpenStreetMap',
+        BING = 'Bing',
+        MAP_QUEST = 'MapQuest';
 
-        } else if (BING in m_base_map_options) {
-          // Initialize custom bing layer
-          base_map_layer = new ol.layer.Tile({
-            preload: Infinity,
-            source: new ol.source.BingMaps(m_base_map_options[BING])
-          });
+    if (is_defined(m_base_map_options)) {
+      var base_map_options = Array.isArray(m_base_map_options) ? m_base_map_options : [m_base_map_options]
+      if (base_map_options.length >= 1) {
+        var $map_element = $('#' + m_map_target);
+        var html = '<span class="dropdown" id="basemap_dropdown_container">' +
+                   '<button class="btn btn-sm btn-default dropdown-toggle" type="button" id="basemap_dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
+                   'Base Map <span class="caret"></span>' +
+                   '</button>' +
+                   '<ul class="dropdown-menu">' +
+                   '<li class="basemap-option" value="None">None <span class="current-basemap-label"></span></li>';
+        var first_flag = true;
+        base_map_options.forEach(function (base_map_option) {
+          var val;
+          if (typeof base_map_option === 'string') {
+            val = base_map_option;
+          } else {
+            if (OPEN_STREET_MAP in base_map_option) {
+              val = base_map_option[OPEN_STREET_MAP].hasOwnProperty('label') ? base_map_option[OPEN_STREET_MAP].label : OPEN_STREET_MAP;
+            } else if (BING in base_map_option) {
+              val = base_map_option[BING].hasOwnProperty('label') ? base_map_option[BING].label : BING + '-' + base_map_option[BING]['imagerySet'];
+            } else if (MAP_QUEST in base_map_option) {
+              val = base_map_option[MAP_QUEST].hasOwnProperty('label') ? base_map_option[MAP_QUEST].label : MAP_QUEST;
+            }
+          }
 
-        } else if (MAP_QUEST in m_base_map_options) {
-          // Initialize custom map quest layer
-          base_map_layer = new ol.layer.Tile({
-            source: new ol.source.MapQuest(m_base_map_options[MAP_QUEST])
+          if (first_flag) {
+            html += '<li class="basemap-option selected-basemap-option" value="' + val + '">' + val + ' <span class="current-basemap-label"> (Current)</span></li>';
+            first_flag = false;
+          } else {
+            html += '<li class="basemap-option" value="' + val + '">' + val + ' <span class="current-basemap-label"></span></li>';
+          }
+        });
+
+        html += '</ul></span>'
+
+        $(html).insertBefore($map_element);
+
+//        var offset = $map_element.position();
+//
+//        $('#basemap_dropdown_container').css({
+//          'position': 'relative',
+//          'top': offset.top + 40 + 'px',
+//          'left': offset.left + 52 + 'px',
+//          'z-index': 1000
+//        });
+
+        // The function fired when a different basemap is selected from the drop-down
+        var change_basemap = function () {
+          var selected_base_map = $(this).attr('value');
+          var base_map_label = 'Basemap: ' + selected_base_map;
+
+          $('.current-basemap-label').text('');
+          $('.basemap-option').removeClass('selected-basemap-option');
+          $(this).addClass('selected-basemap-option');
+          $($(this).children()[0]).text(' (Current)');
+
+          m_map.getLayers().forEach(function (layer) {
+            if (layer.tethys_legend_title.indexOf('Basemap') !== -1) {
+                layer.setVisible(layer.tethys_legend_title === base_map_label);
+            }
           });
-        }
+        };
+
+        // Listen for the basemap change event
+        $('.basemap-option').on('click', change_basemap);
+
       }
     }
-
-    // Add legend attributes
-    base_map_layer.tethys_legend_title = 'Basemap';
-
-    // Add the base map to layers
-    m_map.addLayer(base_map_layer);
-  };
+  }
 
   // Initialize the controls
   ol_controls_init = function()
@@ -811,6 +923,9 @@ var TETHYS_MAP_VIEW = (function() {
 
     // Initialize Base Map
     ol_base_map_init();
+
+    // Initialize Base Map Switcher
+    ol_base_map_switcher_init();
 
     // Initialize Layers
     ol_layers_init();
@@ -1577,7 +1692,7 @@ var TETHYS_MAP_VIEW = (function() {
     }
 
     for (var i = 0; i < m_selectable_wms_layers.length; i++) {
-      var source, wms_url, url, layer, layer_name, geometry_attribute;
+      var source, wms_url, url, layer, layer_params, layer_name, layer_view_params, geometry_attribute;
       var bbox, cql_filter;
 
       // Don't select if not visible
@@ -1596,7 +1711,9 @@ var TETHYS_MAP_VIEW = (function() {
       bbox = bbox.replace('{{maxx}}', x + tolerance);
       bbox = bbox.replace('{{maxy}}', y + tolerance);
       cql_filter = '&CQL_FILTER=BBOX(' + geometry_attribute + '%2C' + bbox + '%2C%27EPSG%3A3857%27)';
-      layer_name = source.getParams().LAYERS;
+      layer_params = source.getParams();
+      layer_name = layer_params.LAYERS;
+      layer_view_params = layer_params.VIEWPARAMS ? layer_params.VIEWPARAMS : '';
 
       if (source instanceof ol.source.ImageWMS) {
         wms_url = source.getUrl();
@@ -1613,6 +1730,7 @@ var TETHYS_MAP_VIEW = (function() {
           + '&VERSION=2.0.0'
           + '&REQUEST=GetFeature'
           + '&TYPENAMES=' + layer_name
+          + '&VIEWPARAMS=' + layer_view_params
           + '&OUTPUTFORMAT=text/javascript'
           + '&FORMAT_OPTIONS=callback:TETHYS_MAP_VIEW.jsonResponseHandler;'
           + '&SRSNAME=' + DEFAULT_PROJECTION
@@ -1635,9 +1753,12 @@ var TETHYS_MAP_VIEW = (function() {
     }
   };
 
-  select_features_by_attribute =  function(layer_name, attribute_name, attribute_value, zoom_on_selection=true) {
+  select_features_by_attribute =  function(layer_name, attribute_name, attribute_value, zoom_on_selection) {
+    if (typeof zoom_on_selection === 'undefined') {
+        zoom_on_selection = true;
+    }
     for (var i = 0; i < m_selectable_wms_layers.length; i++) {
-      var source, wms_url, url, layer;
+      var source, wms_url, url, layer, source_params, layer_view_params;
       var cql_filter;
       m_zoom_on_selection = zoom_on_selection;
 
@@ -1647,7 +1768,8 @@ var TETHYS_MAP_VIEW = (function() {
       // Check for undefined source or non-WMS layers before proceeding
       source = layer.getSource();
       if (!(source && 'getGetFeatureInfoUrl' in source)) { continue; }
-      if (source.getParams().LAYERS == layer_name) {
+      source_params = source.getParams();
+      if (source_params.LAYERS == layer_name) {
         if (source instanceof ol.source.ImageWMS) {
           wms_url = source.getUrl();
         }
@@ -1658,8 +1780,21 @@ var TETHYS_MAP_VIEW = (function() {
           }
         }
 
-        // Generate cql_filter
-        cql_filter = '&cql_filter=' + attribute_name + '=%27' + attribute_value + '%27';
+        // Check for multiple attribute values contained in single string
+        if (attribute_value.indexOf(',') !== -1){
+          attribute_value = attribute_value.split(',');
+          // Generate cql_filter for multi-value queries
+          // Assumes multi-values enter function as one string with commas separating the values
+          cql_filter = '&cql_filter=' + attribute_name + '=%27' + attribute_value[0] + '%27';
+          for (var i = 1; i < attribute_value.length; i++) {
+            cql_filter += ' OR ' + attribute_name + '=%27' + attribute_value[i] + '%27';
+          }
+        } else {
+          // Generate cql_filter for single value queries
+          cql_filter = '&cql_filter=' + attribute_name + '=%27' + attribute_value + '%27';
+        }
+
+        layer_view_params = source_params.VIEWPARAMS ? source_params.VIEWPARAMS : '';
 
         // Create callback url
         url = wms_url.replace('wms', 'wfs')
@@ -1667,6 +1802,7 @@ var TETHYS_MAP_VIEW = (function() {
               + '&VERSION=2.0.0'
               + '&REQUEST=GetFeature'
               + '&TYPENAMES=' + layer_name
+              + '&VIEWPARAMS=' + layer_view_params
               + '&OUTPUTFORMAT=text/javascript'
               + '&FORMAT_OPTIONS=callback:TETHYS_MAP_VIEW.jsonResponseHandler;'
               + '&SRSNAME=' + DEFAULT_PROJECTION

@@ -1,6 +1,7 @@
 from django.test import TestCase
 from .app_base import TethysAppBase
 from django.test import Client
+from os import environ, unsetenv
 
 
 class TethysTestCase(TestCase):
@@ -10,7 +11,7 @@ class TethysTestCase(TestCase):
     inheriting from this class must begin with the word "test" or it will not be executed during testing.
     """
     def setUp(self):
-        # Resets the apps database and app permissions (workaround since Django's testing framework refreshses the
+        # Resets the apps database and app permissions (workaround since Django's testing framework refreshes the
         # core db after each individual test)
         from tethys_apps.utilities import sync_tethys_app_db, register_app_permissions
         sync_tethys_app_db()
@@ -18,10 +19,7 @@ class TethysTestCase(TestCase):
         self.set_up()
 
     def tearDown(self):
-        child_tearDown = getattr(self, 'tear_down', None)
-        if child_tearDown:
-            if callable(child_tearDown):
-                self.tear_down()
+        self.tear_down()
 
     def set_up(self):
         """
@@ -37,8 +35,8 @@ class TethysTestCase(TestCase):
     def tear_down(self):
         """
         This method is to be overridden by the custom test case classes that inherit from the TethysTestCase class and
-        is used to perform any tear down that is applicable to every test function that is defined within the custom test
-        class. It is often used in conjunction with the "set_up" function to tear down what was setup therein.
+        is used to perform any tear down that is applicable to every test function that is defined within the custom
+        test class. It is often used in conjunction with the "set_up" function to tear down what was setup therein.
 
         Return:
             None
@@ -55,17 +53,17 @@ class TethysTestCase(TestCase):
         Return:
             None
         """
+        set_testing_environment(True)
+
         if not issubclass(app_class, TethysAppBase):
             raise TypeError('The app_class argument was not of the correct type. '
                             'It must be a class that inherits from <TethysAppBase>.')
 
-        for store in app_class().persistent_stores():
-            test_store_name = 'test_{0}'.format(store.name)
+        for store in app_class().list_persistent_store_databases(static_only=True):
+            if app_class.persistent_store_exists(store.name):
+                app_class.drop_persistent_store(store.name)
 
-            if app_class.persistent_store_exists(test_store_name):
-                TethysTestCase.destroy_test_persistent_stores_for_app(app_class)
-
-            create_store_success = app_class.create_persistent_store(test_store_name, spatial=store.spatial)
+            create_store_success = app_class.create_persistent_store(store.name, spatial=store.spatial)
 
             error = False
             if create_store_success:
@@ -80,7 +78,6 @@ class TethysTestCase(TestCase):
                                 pass
                             else:
                                 error = True
-                                raise SystemError('The test store was not able to be created')
                     else:
                         error = True
                         break
@@ -100,12 +97,14 @@ class TethysTestCase(TestCase):
         Return:
             None
         """
+        set_testing_environment(True)
+
         if not issubclass(app_class, TethysAppBase):
             raise TypeError('The app_class argument was not of the correct type. '
                             'It must be a class that inherits from <TethysAppBase>.')
 
-        for store in app_class().persistent_stores():
-            test_store_name = 'test_{0}'.format(store.name)
+        for store in app_class().list_persistent_store_databases(static_only=True):
+            test_store_name = 'tethys-testing_{0}'.format(store.name)
             app_class.drop_persistent_store(test_store_name)
 
     @staticmethod
@@ -147,3 +146,16 @@ class TethysTestCase(TestCase):
             Client object
         """
         return Client()
+
+
+def set_testing_environment(val):
+    if val:
+        environ['TETHYS_TESTING_IN_PROGRESS'] = 'true'
+    else:
+        environ['TETHYS_TESTING_IN_PROGRESS'] = ''
+        del environ['TETHYS_TESTING_IN_PROGRESS']
+        unsetenv('TETHYS_TESTING_IN_PROGRESS')
+
+
+def is_testing_environment():
+    return environ.get('TETHYS_TESTING_IN_PROGRESS')
