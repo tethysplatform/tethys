@@ -11,6 +11,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.views import password_reset, password_reset_done, password_reset_confirm, \
     password_reset_complete
+from django.conf import settings
 admin.autodiscover()
 
 # ensure at least staff users logged in before accessing admin login page
@@ -68,8 +69,12 @@ urlpatterns = [
     url(r'^handoff/(?P<app_name>[\w-]+)/(?P<handler_name>[\w-]+)/$', tethys_apps_views.handoff, name='handoff'),
     url(r'^update-job-status/(?P<job_id>[\w-]+)/$', tethys_apps_views.update_job_status, name='update_job_status'),
     url(r'^terms/', include('termsandconditions.urls')),
-    #url(r'^error/', include(development_error_urls)),
+    url(r'session_security/', include('session_security.urls')),
+    # url(r'^error/', include(development_error_urls)),
 ]
+
+if settings.DEBUG and 'silk' in settings.INSTALLED_APPS:
+    urlpatterns.append(url(r'^silk/', include('silk.urls', namespace='silk')))
 
 handler400 = tethys_portal_error.handler_400
 handler403 = tethys_portal_error.handler_403
