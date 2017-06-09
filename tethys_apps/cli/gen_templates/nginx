@@ -9,7 +9,7 @@ server {
     # the port your site will be served on
     listen      80;
     # the domain name it will serve for
-    server_name 127.0.0.1 localhost; # substitute your machine's IP address or FQDN
+    server_name {{ hostname }}; # substitute your machine's IP address or FQDN
     charset     utf-8;
 
     # max upload size
@@ -18,11 +18,11 @@ server {
     # Tethys Workspaces
     location /workspaces  {
 	internal;
-        alias /var/www/tethys/workspaces;  # your Tethys workspaces files - amend as required
+        alias {{ workspaces_root }};  # your Tethys workspaces files - amend as required
     }
 
     location /static {
-        alias /var/www/tethys/static; # your Tethys static files - amend as required
+        alias {{ static_root }}; # your Tethys static files - amend as required
     }
 
     # Finally, send all non-media requests to the Django server.
