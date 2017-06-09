@@ -70,5 +70,5 @@ And so forth... Thus, you can hone in on the exact tests that you want to run.
 
 API Documentation
 -----------------
-.. autoclass:: tethys_apps.base.testing.TethysTestCase
+.. autoclass:: tethys_apps.base.testing.testing.TethysTestCase
     :members: set_up, tear_down, create_test_user, create_test_superuser, get_test_client, create_test_persistent_stores_for_app, destroy_test_persistent_stores_for_app
