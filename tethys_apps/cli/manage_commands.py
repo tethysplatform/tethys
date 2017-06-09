@@ -10,7 +10,8 @@
 
 import os
 import subprocess
-from tethys_apps.base.testing import set_testing_environment
+
+from tethys_apps.base.testing.environment import set_testing_environment
 
 CURRENT_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 TETHYS_HOME = os.sep.join(CURRENT_SCRIPT_DIR.split(os.sep)[:-3])
