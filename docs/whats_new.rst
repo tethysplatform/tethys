@@ -46,6 +46,7 @@ Map View
 * Can configure styling of MVDraw layer
 * New editable attribute for MVLayers to lock layers from being edited
 * Added data attribute to MVLayer to allow passing custom attributes with layers for use in custom JavaScript
+* A basemap switcher tool is now enabled on the map with the capability to configure multiple basemaps, including turning the basemap off.
 
 See: :doc:`tethys_sdk/gizmos/map_view`
 
@@ -86,6 +87,15 @@ HydroShare OAuth Backend and Helper Function
 * Update python-social-auth to 0.2.21.
 
 See: :doc:`tethys_portal/social_auth`
+
+Security
+--------
+
+* Sessions will now timeout and log user out after period of inactivity.
+* When user closes browser, they are automatically logged out now.
+* Expiration times can be configured in settings.
+
+See: :doc:`installation/platform_settings`
 
 Bugs
 ----
