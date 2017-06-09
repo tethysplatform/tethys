@@ -22,7 +22,7 @@ class MapView(TethysGizmoOptions):
     Attributes:
         height(str): Height of the map element. Any valid css unit of length (e.g.: '500px'). Defaults to '520px'.
         width(str): Width of the map element. Any valid css unit of length (e.g.: '100%'). Defaults to '100%'.
-        basemap(str or dict): The base map to dispaly: either OpenStreetMap, MapQuest, or a Bing map. Valid values for the string option are: 'OpenStreetMap' and 'MapQuest'. If you wish to configure the base map with options, you must use the dictionary form. The dictionary form is required to use a Bing map, because an API key must be passed as an option. See below for more detail.
+        basemap(str, dict or a list of strings and/or dicts): The base maps to display: choose from OpenStreetMap, MapQuest, or a Bing map. Valid values for the string option are: 'OpenStreetMap' and 'MapQuest'. If you wish to configure the base map with options, you must use the dictionary form. The dictionary form is required to use a Bing map, because an API key must be passed as an option. See below for more detail. A basemap switcher will automatically be provided if a list of more than one basemap is included.
         view(MVView): An MVView object specifying the initial view or extent for the map.
         controls(list): A list of controls to add to the map. The list can be a list of strings or a list of dictionaries. Valid controls are ZoomSlider, Rotate, FullScreen, ScaleLine, ZoomToExtent, and 'MousePosition'. See below for more detail.
         layers(list): A list of MVLayer objects.
