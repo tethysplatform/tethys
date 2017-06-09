@@ -1,6 +1,6 @@
 {% extends "page.html" %}
 
-{% load admin_static %}{% load firstof from future %}
+{% load admin_static %}
 
 {% block title %}{% endblock %}
 {% block styles %}
@@ -9,7 +9,7 @@
   <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "admin/css/ie.css" %}{% endblock %}" /><![endif]-->
   {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
   {{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static '/static/tethys_portal/css/admin_tweaks.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'tethys_portal/css/admin_tweaks.css' %}" />
   <style>
     .module caption {
       background-color: {{ site_globals.primary_color|default:'#0a62a9' }};
