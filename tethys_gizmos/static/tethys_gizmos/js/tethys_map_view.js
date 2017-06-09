@@ -393,7 +393,7 @@ var TETHYS_MAP_VIEW = (function() {
         BUTTON_OFFSET_UNITS = 'px';
 
     var controls_added = [],
-        button_left_offset = 50,
+        button_left_offset = 136,
         initial_drawing_mode = 'Point';
 
     if (is_defined(m_draw_options)) {
