@@ -1,7 +1,8 @@
-from django.test import TestCase
-from .app_base import TethysAppBase
 from django.test import Client
-from os import environ, unsetenv
+from django.test import TestCase
+
+from tethys_apps.base.app_base import TethysAppBase
+from tethys_apps.base.testing.environment import set_testing_environment
 
 
 class TethysTestCase(TestCase):
@@ -148,14 +149,3 @@ class TethysTestCase(TestCase):
         return Client()
 
 
-def set_testing_environment(val):
-    if val:
-        environ['TETHYS_TESTING_IN_PROGRESS'] = 'true'
-    else:
-        environ['TETHYS_TESTING_IN_PROGRESS'] = ''
-        del environ['TETHYS_TESTING_IN_PROGRESS']
-        unsetenv('TETHYS_TESTING_IN_PROGRESS')
-
-
-def is_testing_environment():
-    return environ.get('TETHYS_TESTING_IN_PROGRESS')

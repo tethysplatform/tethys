@@ -39,6 +39,7 @@ dependencies:
     - django-guardian
     - django-simple-captcha
     - django-termsandconditions
+    - django-session-security
     - tethys_dataset_services
     - condorpy
     - social-auth-app-django

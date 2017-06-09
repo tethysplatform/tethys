@@ -11,15 +11,14 @@ import logging
 import os
 import sys
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
-from django.core.exceptions import ObjectDoesNotExist
-from sqlalchemy.orm import sessionmaker
 
-from .workspace import TethysWorkspace
+from tethys_apps.base.testing.environment import is_testing_environment
 from .handoff import HandoffManager
+from .workspace import TethysWorkspace
 from ..exceptions import TethysAppSettingDoesNotExist
-from .testing import is_testing_environment
 
 tethys_log = logging.getLogger('tethys.app_base')
 

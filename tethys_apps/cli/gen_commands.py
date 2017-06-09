@@ -17,8 +17,12 @@ from django.conf import settings
 
 __all__ = ['GEN_APACHE_OPTION', 'GEN_APACHE_OPTION', 'generate_command']
 
-# Initialize settings
-settings.configure()
+# Initialize settings with templates variable to allow gen to work properly
+settings.configure(TEMPLATES=[
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    }
+])
 import django
 django.setup()
 
