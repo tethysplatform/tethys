@@ -43,7 +43,8 @@ Map View
 --------
 
 * Updated OpenLayers libraries to version 4.0
-* Can configure styling of MVDraw layer
+* Fixes to make MapView compatible with Internet Explorer
+* Can configure styling of MVDraw overlay layer
 * New editable attribute for MVLayers to lock layers from being edited
 * Added data attribute to MVLayer to allow passing custom attributes with layers for use in custom JavaScript
 * A basemap switcher tool is now enabled on the map with the capability to configure multiple basemaps, including turning the basemap off.
