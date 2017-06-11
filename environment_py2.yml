@@ -20,7 +20,6 @@ dependencies:
 - psycopg2
 - sqlalchemy
 - requests
-- PasteScript
 - selenium
 - coverage
 - docker-py<1.10
