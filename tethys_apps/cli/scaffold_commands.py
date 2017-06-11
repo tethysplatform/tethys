@@ -1,14 +1,27 @@
+from builtins import *
 import os
 import re
 import logging
 import random
-from builtins import *
+import shutil
 
+from django.template import Template, Context
+
+# Constants
 APP_PREFIX = 'tethysapp'
 EXTENSION_PREFIX = 'tethysext'
+SCAFFOLD_TEMPLATES_DIR = 'scaffold_templates'
+EXTENSION_TEMPLATES_DIR = 'extension_templates'
+APP_TEMPLATES_DIR = 'app_templates'
+TEMPLATE_SUFFIX = '_tmpl'
+APP_PATH = os.path.join(os.path.dirname(__file__), SCAFFOLD_TEMPLATES_DIR, APP_TEMPLATES_DIR)
+EXTENSION_PATH = os.path.join(os.path.dirname(__file__), SCAFFOLD_TEMPLATES_DIR, EXTENSION_TEMPLATES_DIR)
 
 
 def proper_name_validator(value, default):
+    """
+    Validate proper_name user input.
+    """
     # Check for default
     if value == default:
         return True, value
@@ -34,7 +47,10 @@ def proper_name_validator(value, default):
     return True, value
 
 
-def theme_color_validator(value, default):
+def get_random_color():
+    """
+    Generate a random color.
+    """
     # Default colors from flatuicolors.com
     default_colors = (
         '#27ae60',  # Nephritis
@@ -47,9 +63,16 @@ def theme_color_validator(value, default):
         '#16a085',  # Green Sea
     )
 
+    return random.choice(default_colors)
+
+
+def theme_color_validator(value, default):
+    """
+    Validate theme_color user input.
+    """
     # Generate random color if default option provided
     if value == default:
-        return True, random.choice(default_colors)
+        return True, get_random_color()
 
     # Validate hexadecimal if provided
     try:
@@ -64,21 +87,27 @@ def theme_color_validator(value, default):
         return False, value
 
 
+def render_path(path, context):
+    """
+    Replace variables in path with values.
+    """
+    # Check for tokens delineated by "+" (e.g.: +variable+)
+    if '+' not in path:
+        return path
+
+    for token, value in context.items():
+        path = path.replace('+' + token + '+', value)
+    return path
+
+
 def scaffold_command(args):
     """
     Create a new Tethys app projects in the current directory.
     """
     # Log
     log = logging.getLogger('tethys')
-    log.setLevel(logging.DEBUG)
+    # log.setLevel(logging.DEBUG)
     log.debug('Command args: {}'.format(args))
-
-    # Constants
-    SCAFFOLD_TEMPLATES_DIR = 'scaffold_templates'
-    EXTENSION_TEMPLATES_DIR = 'extension_templates'
-    APP_TEMPLATES_DIR = 'app_templates'
-    APP_PATH = os.path.join(os.path.dirname(__file__), SCAFFOLD_TEMPLATES_DIR, APP_TEMPLATES_DIR)
-    EXTENSION_PATH = os.path.join(os.path.dirname(__file__), SCAFFOLD_TEMPLATES_DIR, EXTENSION_TEMPLATES_DIR)
 
     # Get template dirs
     log.debug('APP_PATH: {}'.format(APP_PATH))
@@ -105,12 +134,6 @@ def scaffold_command(args):
     # Validate project name
     project_name = args.name
 
-    # Only underscores
-    if '-' in project_name:
-        before = project_name
-        project_name = project_name.replace('-', '_')
-        log.info('Dash ("-") characters changed to underscores ("_").')
-
     # Only lowercase
     contains_uppers = False
     for letter in project_name:
@@ -121,7 +144,8 @@ def scaffold_command(args):
     if contains_uppers:
         before = project_name
         project_name = project_name.lower()
-        log.info('Uppercase characters changed to lowercase.')
+        print('Warning: Uppercase characters in project name "{0}" '
+              'changed to lowercase: "{1}".'.format(before, project_name))
 
     # Check for valid characters name
     project_error_regex = re.compile(r'^[a-zA-Z0-9_]+$')
@@ -142,20 +166,17 @@ def scaffold_command(args):
             exit(1)
 
     # Project name derivatives
-    if is_extension:
-        project_dir = '{0}-{1}'.format(EXTENSION_PREFIX, project_name)
-    else:
-        project_dir = '{0}-{1}'.format(APP_PREFIX, project_name)
-
+    project_dir = '{0}-{1}'.format(EXTENSION_PREFIX if is_extension else APP_PREFIX, project_name)
     split_project_name = project_name.split('_')
     title_case_project_name = [x.title() for x in split_project_name]
     default_proper_name = ' '.join(title_case_project_name)
     app_class_name = ''.join(title_case_project_name)
+    default_theme_color = get_random_color()
 
-    print('Initializing tethys app project with name "{0}".'.format(project_dir))
+    print('Creating new Tethys project named "{0}".'.format(project_dir))
 
     # Get metadata from user
-    metadata = (
+    metadata_input = (
         {
             'name': 'proper_name',
             'prompt': 'Proper name for the app (e.g.: "My First App")',
@@ -169,9 +190,9 @@ def scaffold_command(args):
             'validator': None
         },
         {
-            'name': 'theme_color',
+            'name': 'color',
             'prompt': 'App theme color (e.g.: "#27AE60")',
-            'default': 'random',
+            'default': default_theme_color,
             'validator': theme_color_validator
         },
         {
@@ -202,43 +223,114 @@ def scaffold_command(args):
     )
 
     # Build up template context
-    template_context = dict(
-        project=project_name,
-        project_dir=project_dir,
-        project_url=project_name.replace('_', '-'),
-        app_class_name=app_class_name
-    )
+    context = {
+        'project': project_name,
+        'project_dir': project_dir,
+        'project_url': project_name.replace('_', '-'),
+        'app_class_name': app_class_name,
+        'proper_name': default_proper_name,
+        'description': '',
+        'color': default_theme_color,
+        'tags': '',
+        'author': '',
+        'author_email': '',
+        'license_name': ''
+    }
 
-    for item in metadata:
-        valid = False
-        value = item['default']
+    if not args.use_defaults:
+        # Collect metadata input from user
+        for item in metadata_input:
+            valid = False
+            response = item['default']
 
-        while not valid:
+            while not valid:
+                try:
+                    response = input('{0} ["{1}"]: '.format(item['prompt'], item['default'])) or item['default']
+                except (KeyboardInterrupt, SystemExit):
+                    print('\nScaffolding cancelled.')
+                    exit(1)
+
+                if callable(item['validator']):
+                    valid, response = item['validator'](response, item['default'])
+                else:
+                    valid = True
+
+                if not valid:
+                    print('Invalid response: {}'.format(response))
+
+            context[item['name']] = response
+
+    log.debug('Template context: {}'.format(context))
+
+    # Create root directory
+    project_root = os.path.join(os.getcwd(), project_dir)
+    log.debug('Project root path: {}'.format(project_root))
+
+    if os.path.isdir(project_root):
+        if not args.overwrite:
+            valid = False
+            negative_choices = ['n', 'no', '']
+            valid_choices = ['y', 'n', 'yes', 'no']
+            default = 'y'
+            response = ''
+
+            while not valid:
+                try:
+                    response = input('Directory "{}" already exists. '
+                                     'Would you like to overwrite it? [Y/n]: '.format(project_root)) or default
+                except (KeyboardInterrupt, SystemExit):
+                    print('\nScaffolding cancelled.')
+                    exit(1)
+
+                if response.lower() in valid_choices:
+                    valid = True
+
+            if response.lower() in negative_choices:
+                print('Scaffolding cancelled.')
+                exit(0)
+
+        try:
+            shutil.rmtree(project_root)
+        except OSError:
+            print('Error: Unable to overwrite "{}". Please remove the directory and try again.'.format(project_root))
+            exit(1)
+
+    # Walk the template directory, creating the templates and directories in the new project as we go
+    template_context = Context(context)
+
+    for curr_template_root, dirs, template_files in os.walk(template_root):
+        # print(curr_template_root, dirs, files)
+        curr_project_root = curr_template_root.replace(template_root, project_root)
+        curr_project_root = render_path(curr_project_root, context)
+
+        # Create Root Directory
+        os.makedirs(curr_project_root)
+        print('Created: "{}"'.format(curr_project_root))
+
+        # Create Files
+        for template_file in template_files:
+            template_file_path = os.path.join(curr_template_root, template_file)
+            project_file = template_file.replace(TEMPLATE_SUFFIX, '')
+            project_file_path = os.path.join(curr_project_root, project_file)
+            template = None
+
+            # Load the template
+            log.debug('Loading template: "{}"'.format(template_file_path))
+
             try:
-                value = input('{0} ["{1}"]: '.format(item['prompt'], item['default'])) or item['default']
-            except (KeyboardInterrupt, SystemExit):
-                print('\nScaffolding cancelled.')
-                exit(1)
+                with open(template_file_path, 'r') as tfp:
+                    template = Template(tfp.read())
+            except UnicodeDecodeError:
+                with open(template_file_path, 'br') as tfp:
+                    with open(project_file_path, 'bw') as pfp:
+                        pfp.write(tfp.read())
+                continue
 
-            if callable(item['validator']):
-                valid, value = item['validator'](value, item['default'])
-            else:
-                valid = True
+            # Render template if loaded
+            log.debug('Rendering template: "{}"'.format(template_file_path))
+            if template:
+                with open(project_file_path, 'w') as pfp:
+                    pfp.write(template.render(template_context))
+                print('Created: "{}"'.format(project_file_path))
 
-            if not valid:
-                print('Invalid value: {0}'.format(value))
-
-        template_context[item['name']] = value
-
-    log.debug('Template context: {0}'.format(template_context))
-
-
-    # TODO: Create Context
-    # TODO: Create Root Directory in CWD
-    # TODO: Copy Directories and Files into Root Directory
-    # TODO: Check for directory template tags and rename accordingly from context
-    # TODO: Create all files passing through template engine
-
-
-
-
+    print('Successfully scaffolded new project "{}"'.format(project_name))

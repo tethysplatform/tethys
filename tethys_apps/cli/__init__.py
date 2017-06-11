@@ -193,6 +193,10 @@ def tethys_command():
                                               'letters, numbers, and underscores allowed.')
     scaffold_parser.add_argument('-t', '--template', dest='template', help="Name of app template to use.")
     scaffold_parser.add_argument('-e', '--extension', dest='extension', help="Name of extension template to use.")
+    scaffold_parser.add_argument('-d', '--defaults', dest='use_defaults', action='store_true',
+                                 help="Run command, accepting default values automatically.")
+    scaffold_parser.add_argument('-o', '--overwrite', dest='overwrite', action="store_true",
+                                 help="Attempt to overwrite project automatically if it already exists.")
     scaffold_parser.set_defaults(func=scaffold_command, template='default', extension=None)
 
     # Setup generate command
