@@ -4,9 +4,9 @@ from setuptools import setup, find_packages
 from tethys_apps.app_installation import custom_develop_command, custom_install_command
 
 ### Apps Definition ###
-app_package = '{{ project }}'
+app_package = '{{project}}'
 release_package = 'tethysapp-' + app_package
-app_class = '{{project}}.app:{{proper_no_spaces}}'
+app_class = '{{project}}.app:{{app_class_name}}'
 app_package_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tethysapp', app_package)
 
 ### Python Dependencies ###
@@ -14,15 +14,15 @@ dependencies = []
 
 setup(
     name=release_package,
-    version={{repr(version or '0.0')}},
-    tags={{repr(tags) or ''}},
-    description={{repr(description) or ''}},
+    version='0.0.1',
+    tags='{{tags|default:''}}',
+    description='{{description|default:''}}',
     long_description='',
     keywords='',
-    author={{repr(author or '')}},
-    author_email={{repr(author_email or '')}},
-    url={{repr(url or '')}},
-    license={{repr(license_name or '')}},
+    author='{{author|default:''}}',
+    author_email='{{author_email|default:''}}',
+    url='',
+    license='{{license_name|default:''}}',
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     namespace_packages=['tethysapp', 'tethysapp.' + app_package],
     include_package_data=True,

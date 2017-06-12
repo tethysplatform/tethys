@@ -1,0 +1,42 @@
+{% templatetag openblock %} extends "tethys_apps/app_base.html" {% templatetag closeblock %}
+
+{% templatetag openblock %} load staticfiles {% templatetag closeblock %}
+
+{% templatetag openblock %} block title {% templatetag closeblock %}{% templatetag openvariable %} tethys_app.name {% templatetag closevariable %}{% templatetag openblock %} endblock {% templatetag closeblock %}
+
+{% templatetag openblock %} block app_icon {% templatetag closeblock %}
+  {% templatetag opencomment %} The path you provided in your app.py is accessible through the tethys_app.icon context variable {% templatetag closecomment %}
+  <img src="{% templatetag openblock %} static tethys_app.icon {% templatetag closeblock %}">
+{% templatetag openblock %} endblock {% templatetag closeblock %}
+
+{% templatetag opencomment %} The name you provided in your app.py is accessible through the tethys_app.name context variable {% templatetag closecomment %}
+{% templatetag openblock %} block app_title {% templatetag closeblock %}{% templatetag openvariable %} tethys_app.name {% templatetag closevariable %}{% templatetag openblock %} endblock {% templatetag closeblock %}
+
+{% templatetag openblock %} block app_navigation_items {% templatetag closeblock %}
+  <li class="title">App Navigation</li>
+  <li class="active"><a href="">Home</a></li>
+  <li><a href="">Jobs</a></li>
+  <li><a href="">Results</a></li>
+  <li class="title">Steps</li>
+  <li><a href="">1. The First Step</a></li>
+  <li><a href="">2. The Second Step</a></li>
+  <li><a href="">3. The Third Step</a></li>
+  <li class="separator"></li>
+  <li><a href="">Get Started</a></li>
+{% templatetag openblock %} endblock {% templatetag closeblock %}
+
+{% templatetag openblock %} block app_content {% templatetag closeblock %}
+{% templatetag openblock %} endblock {% templatetag closeblock %}
+
+{% templatetag openblock %} block app_actions {% templatetag closeblock %}
+{% templatetag openblock %} endblock {% templatetag closeblock %}
+
+{% templatetag openblock %} block content_dependent_styles {% templatetag closeblock %}
+  {% templatetag openvariable %} block.super }{{ "}" }}
+  <link href="{% templatetag openblock %} static '{{project}}/css/main.css' {% templatetag closeblock %}" rel="stylesheet"/>
+{% templatetag openblock %} endblock {% templatetag closeblock %}
+
+{% templatetag openblock %} block scripts {% templatetag closeblock %}
+  {% templatetag openvariable %} block.super }{{ "}" }}
+  <script src="{% templatetag openblock %} static '{{project}}/js/main.js' {% templatetag closeblock %}" type="text/javascript"></script>
+{% templatetag openblock %} endblock {% templatetag closeblock %}
