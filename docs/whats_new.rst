@@ -69,8 +69,10 @@ Commandline Interface
 ---------------------
 
 * Added ``tethys list`` command that lists installed apps.
+* Completely overhauled scaffold command that works cross platform and no long depends on paste.
+* New options for scaffold command that allow automatically accepting the defaults and overwriting project if it already exists.
 
-See: :ref:`tethys_list_cmd`
+See: :ref:`tethys_list_cmd` and :ref:`tethys_scaffold_cmd`
 
 Templating API
 --------------
