@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.test import Client
-from os import environ, unsetenv
+from environment import set_testing_environment
+from ..app_base import TethysAppBase
 
 
 class TethysTestCase(TestCase):
@@ -54,7 +55,6 @@ class TethysTestCase(TestCase):
         """
         set_testing_environment(True)
 
-        from app_base import TethysAppBase
         if not issubclass(app_class, TethysAppBase):
             raise TypeError('The app_class argument was not of the correct type. '
                             'It must be a class that inherits from <TethysAppBase>.')
@@ -99,7 +99,6 @@ class TethysTestCase(TestCase):
         """
         set_testing_environment(True)
 
-        from app_base import TethysAppBase
         if not issubclass(app_class, TethysAppBase):
             raise TypeError('The app_class argument was not of the correct type. '
                             'It must be a class that inherits from <TethysAppBase>.')
@@ -150,16 +149,3 @@ class TethysTestCase(TestCase):
             Client object
         """
         return Client()
-
-
-def set_testing_environment(val):
-    if val:
-        environ['TETHYS_TESTING_IN_PROGRESS'] = 'true'
-    else:
-        environ['TETHYS_TESTING_IN_PROGRESS'] = ''
-        del environ['TETHYS_TESTING_IN_PROGRESS']
-        unsetenv('TETHYS_TESTING_IN_PROGRESS')
-
-
-def is_testing_environment():
-    return environ.get('TETHYS_TESTING_IN_PROGRESS')
