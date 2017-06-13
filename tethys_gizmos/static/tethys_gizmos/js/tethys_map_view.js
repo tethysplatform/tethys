@@ -449,6 +449,16 @@ var TETHYS_MAP_VIEW = (function() {
 
     var VECTOR_SOURCES = ['GeoJSON', 'KML', 'GPX', 'IGC', 'OSMXML', 'TopoJSON', 'ServerVector', 'TileVector'];
 
+    var STYLE_MAP = {
+        'fill'  : ol.style.Fill,
+        'stroke': ol.style.Stroke,
+        'text'  : ol.style.Text,
+    };
+
+    var STYLE_IMAGE_MAP = {
+        'circle': ol.style.Circle,
+    };
+
     if (is_defined(m_layers_options)) {
       for (var i = m_layers_options.length; i--; ) {
         var current_layer,
@@ -457,6 +467,28 @@ var TETHYS_MAP_VIEW = (function() {
         current_layer = m_layers_options[i];
         // Extract layer_options
         if ('layer_options' in current_layer && current_layer.layer_options) {
+          if ('style' in current_layer.layer_options) {
+            var style_options = current_layer.layer_options.style;
+            if ('image' in style_options) {
+                var image_options = current_layer.layer_options.style.image;
+                for (var ikey in image_options) {
+                    if (image_options.hasOwnProperty(ikey)) {
+                        if (ikey in STYLE_IMAGE_MAP) {
+                            for (var ckey in image_options[ikey]) {
+                                if (image_options[ikey].hasOwnProperty(ckey)) {
+                                    if (ckey in STYLE_MAP)
+                                    {
+                                        current_layer.layer_options.style.image[ikey][ckey] = new STYLE_MAP[ckey](image_options[ikey][ckey]);
+                                    }
+                                }
+                            }
+                            current_layer.layer_options.style.image = new STYLE_IMAGE_MAP[ikey](image_options[ikey]);
+                        }
+                    }
+                }
+            }
+            current_layer.layer_options.style = new ol.style.Style(current_layer.layer_options.style);
+          }
           current_layer_layer_options = current_layer.layer_options;
         } else {
           current_layer_layer_options = {};
