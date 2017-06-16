@@ -298,6 +298,8 @@ def sync_tethys_app_db():
     """
     Sync installed apps with database.
     """
+    from django.conf import settings
+
     # Get the harvester
     harvester = SingletonAppHarvester()
 
@@ -356,6 +358,26 @@ def sync_tethys_app_db():
                 db_app.root_url = installed_app.root_url
                 db_app.color = installed_app.color
                 db_app.save()
+
+                if hasattr(settings, 'DEBUG') and settings.DEBUG:
+                    db_app.name = installed_app.name
+                    db_app.description = installed_app.description
+                    db_app.tags = installed_app.tags
+                    db_app.enable_feedback = installed_app.enable_feedback
+                    db_app.feedback_emails = installed_app.feedback_emails
+                    db_app.save()
+
+                    # custom settings
+                    db_app.add_settings(installed_app.custom_settings())
+                    # dataset services settings
+                    db_app.add_settings(installed_app.dataset_service_settings())
+                    # spatial dataset services settings
+                    db_app.add_settings(installed_app.spatial_dataset_service_settings())
+                    # wps settings
+                    db_app.add_settings(installed_app.web_processing_service_settings())
+                    # persistent store settings
+                    db_app.add_settings(installed_app.persistent_store_settings())
+                    db_app.save()
 
             # More than one instance of the app in db... (what to do here?)
             elif len(db_apps) >= 2:

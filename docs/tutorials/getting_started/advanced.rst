@@ -581,3 +581,16 @@ Add Flood Hydrograph Form
 
 Add Flood Hydrograph Plot
 =========================
+
+X. Solution
+===========
+
+This concludes the Advanced Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
+
+::
+
+    $ mkdir ~/tethysdev
+    $ cd ~/tethysdev
+    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    $ cd tethysapp-dam_inventory
+    $ git checkout advanced-solution

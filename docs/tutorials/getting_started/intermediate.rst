@@ -682,3 +682,15 @@ Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
 
         return render(request, 'dam_inventory/home.html', context)
 
+X. Solution
+===========
+
+This concludes the Intermediate Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
+
+::
+
+    $ mkdir ~/tethysdev
+    $ cd ~/tethysdev
+    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    $ cd tethysapp-dam_inventory
+    $ git checkout intermediate-solution
