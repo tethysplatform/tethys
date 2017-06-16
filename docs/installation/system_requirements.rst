@@ -12,7 +12,7 @@ Use these guidelines as a starting point for installing Tethys Platform as a sta
 
 .. caution::
 
-  The stand alone configuration should be used primarily for development purposes. It is not recommended that you use a stand alone configuration for production installations. See the :doc:`../production` documentation for system requirements of a production installation.
+  The stand alone configuration should be used primarily for development purposes. It is not recommended that you use a stand alone configuration for production installations. See the :doc:`./production` documentation for system requirements of a production installation.
 
 
 

@@ -43,7 +43,7 @@ To assign a singluar app permission to a user, return to the administrator dashb
 
 .. note::
 
-	Since assigning the individual app permissions is so difficult, we highly recommend that you use the app permission groups to group app permissions and then assign the permission groups to the users using the ``Change User`` page.
+    Since assigning the individual app permissions is so difficult, we highly recommend that you use the app permission groups to group app permissions and then assign the permission groups to the users using the ``Change User`` page.
 
 Anonymous User
 --------------
@@ -79,7 +79,7 @@ When a new document becomes active, users will be presented with a modal prompti
 Manage Computing Resources
 ==========================
 
-Computing resources can be managed using the ``Tethys Compute`` admin pages. Powered, by TethysCluster <http://www.tethysplatform.org/TethysCluster/>`_, these pages allow Tethys Portal administrators to spin up clusters of computing resources on either the Amazon or Microsoft Azure commercial clouds, and link local computing clusters that are managed with HTCondor. These computational These computational resources are accessed in apps through the :doc:`../tethys_sdk/jobs` and the :doc:`../tethys_sdk/compute`. For more detailed documentation refer to the links below.
+Computing resources can be managed using the ``Tethys Compute`` admin pages, which Tethys Portal to link to computing clusters that are managed with HTCondor either locally or on the Cloud. These computational resources are accessed in apps through the :doc:`../tethys_sdk/jobs` and the :doc:`../tethys_sdk/compute`. For more detailed documentation refer to the links below.
 
 .. toctree::
    :maxdepth: 2
