@@ -1,6 +1,6 @@
-*****************************
-App Development: Intermediate
-*****************************
+*********************
+Intermediate Concepts
+*********************
 
 **Last Updated:** May 2017
 
