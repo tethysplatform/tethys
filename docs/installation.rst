@@ -7,7 +7,7 @@ Installation
 This section describes how to install Tethys Platform. Installation instructions are provided for Ubuntu.
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
 
     installation/system_requirements
     installation/linux_and_mac
@@ -15,6 +15,8 @@ This section describes how to install Tethys Platform. Installation instructions
     installation/platform_settings
     installation/web_admin_setup
     installation/update
+    installation/production
+
 
 
 
