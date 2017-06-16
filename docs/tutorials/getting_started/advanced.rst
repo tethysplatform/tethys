@@ -1,6 +1,6 @@
-*************************
-App Development: Advanced
-*************************
+*****************
+Advanced Concepts
+*****************
 
 **Last Updated:** May 2017
 
