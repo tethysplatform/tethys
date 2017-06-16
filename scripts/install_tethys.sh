@@ -6,7 +6,7 @@ OPTIONS:\n
     -t, --tethys-home <PATH>            Path for tethys home directory. Default is ~/tethys.\n
     -a, --allowed-host <HOST>           Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
     -p, --port <PORT>                   Port on which to serve tethys. Default is 8000.\n
-    -b, --branch <BRANCH_NAME>          Branch to checkout from version control. Default is 'master'.\n
+    -b, --branch <BRANCH_NAME>          Branch to checkout from version control. Default is 'release'.\n
     -c, --conda-home <PATH>             Path where Miniconda will be installed, or to an existing installation of Miniconda. Default is \${TETHYS_HOME}/miniconda.\n
     -n, --conda-env-name <NAME>         Name for tethys conda environment. Default is 'tethys'.
     --python-version <PYTHON_VERSION>   Main python version to install tethys environment into (2 or 3). Default is 2.\n
@@ -16,11 +16,10 @@ OPTIONS:\n
     -S, --superuser <USERNAME>          Tethys super user name. Default is 'admin'.\n
     -E, --superuser-email <EMAIL>       Tethys super user email. Default is ''.\n
     -P, --superuser-pass <PASSWORD>     Tethys super user password. Default is 'pass'.\n
+    --skip-tethys-install               Flag to skip the Tethys installation so that the Docker installation or production installation can be added to an existing Tethys installation.\n
     --install-docker                    Flag to include Docker installation as part of the install script (Linux only).\n
-    --install-docker-only               Flag to skip the Tethys installation and only run the Docker installation. Tethys must already be installed (Linux only).\n
     --docker-options <OPTIONS>          Command line options to pass to the 'tethys docker init' call if --install-docker is used. Default is \"'-d'\".\n
     --production                        Flag to install Tethys in a production configuration.\n
-    --production-only                   Flag to skip the normal Tethys installation and only install the production configuration. Tethys must already be installed (Linux only).\n
     --configure-selinux                 Flag to perform configuration of SELinux for production installation. (Linux only).\n
     -x                                  Flag to turn on shell command echoing.\n
     -h, --help                          Print this help information.\n
@@ -69,7 +68,7 @@ TETHYS_DB_PASSWORD='pass'
 TETHYS_DB_PORT=5436
 CONDA_ENV_NAME='tethys'
 PYTHON_VERSION='2'
-BRANCH='master'
+BRANCH='release'
 
 TETHYS_SUPER_USER='admin'
 TETHYS_SUPER_USER_EMAIL=''
@@ -145,19 +144,13 @@ case $key in
     set_option_value TETHYS_SUPER_USER_PASS "$2"
     shift # past argument
     ;;
+    --skip-tethys-install)
+        SKIP_TETHYS_INSTALL="true"
+    ;;
     --install-docker)
     if [ "$(uname)" = "Linux" ]
     then
         INSTALL_DOCKER="true"
-    else
-        echo Automatic installation of Docker is not supported on $(uname). Ignoring option $key.
-    fi
-    ;;
-    --install-docker-only)
-    if [ "$(uname)" = "Linux" ]
-    then
-        INSTALL_DOCKER="true"
-        SKIP_TETHYS_INSTALL="true"
     else
         echo Automatic installation of Docker is not supported on $(uname). Ignoring option $key.
     fi
@@ -170,15 +163,6 @@ case $key in
     if [ "$(uname)" = "Linux" ]
     then
         PRODUCTION="true"
-    else
-        echo Automatic production installation is not supported on $(uname). Ignoring option $key.
-    fi
-    ;;
-    --production-only)
-    if [ "$(uname)" = "Linux" ]
-    then
-        PRODUCTION="true"
-        SKIP_TETHYS_INSTALL="true"
     else
         echo Automatic production installation is not supported on $(uname). Ignoring option $key.
     fi
@@ -221,6 +205,12 @@ if [ -n "${ECHO_COMMANDS}" ]
 then
     set -x # echo commands as they are executed
 fi
+
+# Set paths for environment activate/deactivate scripts
+ACTIVATE_DIR="${CONDA_HOME}/envs/${CONDA_ENV_NAME}/etc/conda/activate.d"
+DEACTIVATE_DIR="${CONDA_HOME}/envs/${CONDA_ENV_NAME}/etc/conda/deactivate.d"
+ACTIVATE_SCRIPT="${ACTIVATE_DIR}/tethys-activate.sh"
+DEACTIVATE_SCRIPT="${DEACTIVATE_DIR}/tethys-deactivate.sh"
 
 
 if [ -z "${SKIP_TETHYS_INSTALL}" ]
@@ -278,12 +268,9 @@ then
     pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" stop
     . deactivate
 
+
     # Create environment activate/deactivate scripts
-    ACTIVATE_DIR="${CONDA_HOME}/envs/${CONDA_ENV_NAME}/etc/conda/activate.d"
-    DEACTIVATE_DIR="${CONDA_HOME}/envs/${CONDA_ENV_NAME}/etc/conda/deactivate.d"
     mkdir -p "${ACTIVATE_DIR}" "${DEACTIVATE_DIR}"
-    ACTIVATE_SCRIPT="${ACTIVATE_DIR}/tethys-activate.sh"
-    DEACTIVATE_SCRIPT="${DEACTIVATE_DIR}/tethys-deactivate.sh"
 
     echo "export TETHYS_HOME='${TETHYS_HOME}'" >> "${ACTIVATE_SCRIPT}"
     echo "export TETHYS_PORT='${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
@@ -295,11 +282,8 @@ then
     echo "alias tethys_stop_db='pg_ctl -U postgres -D \"\${TETHYS_HOME}/psql/data\" stop'" >> "${ACTIVATE_SCRIPT}"
     echo "alias tstopdb=tethys_stop_db" >> "${ACTIVATE_SCRIPT}"
     echo "alias tms='tethys manage start -p ${ALLOWED_HOST}:\${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
-    echo "echo 'Starting Tethys Database Server...'" >> "${ACTIVATE_SCRIPT}"
-    echo "pg_ctl -U postgres -D \"\${TETHYS_HOME}/psql/data\" -l \"\${TETHYS_HOME}/psql/logfile\" start -o \"-p \${TETHYS_DB_PORT}\"" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tstart='tstartdb; tms'" >> "${ACTIVATE_SCRIPT}"
 
-    echo "echo 'Stopping Tethys Database Server...'" >> "${DEACTIVATE_SCRIPT}"
-    echo "pg_ctl -U postgres -D \"\${TETHYS_HOME}/psql/data\" stop" >> "${DEACTIVATE_SCRIPT}"
     echo "unset TETHYS_HOME" >> "${DEACTIVATE_SCRIPT}"
     echo "unset TETHYS_PORT" >> "${DEACTIVATE_SCRIPT}"
     echo "unset TETHYS_DB_PORT" >> "${DEACTIVATE_SCRIPT}"
@@ -310,6 +294,7 @@ then
     echo "unalias tethys_stop_db" >> "${DEACTIVATE_SCRIPT}"
     echo "unalias tstopdb" >> "${DEACTIVATE_SCRIPT}"
     echo "unalias tms" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tstart" >> "${DEACTIVATE_SCRIPT}"
 
     echo "# Tethys Platform" >> ~/${BASH_PROFILE}
     echo "alias t='. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}'" >> ~/${BASH_PROFILE}
@@ -520,6 +505,22 @@ then
     sudo systemctl restart nginx
     set +x
     . deactivate
+
+    echo "export NGINX_USER='${NGINX_USER}'" >> "${ACTIVATE_SCRIPT}"
+    echo "export NGINX_HOME='${NGINX_HOME}'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_user_own='sudo chown -R \${USER} \"\${TETHYS_HOME}/src\" \${NGINX_HOME}/tethys'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tuo=tethys_user_own" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_server_own='sudo chown -R \${NGINX_USER}:\${NGINX_USER} \"\${TETHYS_HOME}/src\" \${NGINX_HOME}/tethys'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tso=tethys_server_own" >> "${ACTIVATE_SCRIPT}"
+    echo "alias trestart=tso; sudo systemctl restart tethys.uwsgi.service;  sudo systemctl restart nginx" >> "${ACTIVATE_SCRIPT}"
+
+    echo "unset NGINX_USER" >> "${DEACTIVATE_SCRIPT}"
+    echo "unset NGINX_HOME" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tethys_user_own" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tuo" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tethys_server_own" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tso" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias trestart" >> "${DEACTIVATE_SCRIPT}"
 fi
 
 on_exit(){
