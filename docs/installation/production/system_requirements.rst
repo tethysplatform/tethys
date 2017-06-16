@@ -13,7 +13,7 @@ Tethys Platform is composed of several software components, each of which has th
 * HTCondor
 * CKAN
 
-.. figure:: ../images/tethys_deploy_stack.png
+.. figure:: ../../images/tethys_deploy_stack.png
       :width: 600px
 
       **Figure 1.** Tethys Platform consists of several software components that should be hosted on separate servers in a production environment.
