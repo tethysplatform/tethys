@@ -1,36 +1,28 @@
-*************************
-App Development: Beginner
-*************************
+*****************
+Beginner Concepts
+*****************
 
 **Last Updated:** May 2017
 
-.. warning::
+This tutorial introduces important concepts for first-time or beginner Tethys developers.
 
-   UNDER CONSTRUCTION
+1. App Class
+============
 
-Concepts
-========
+a. Open ``app.py`` in your favorite Python IDE or text editor. The app class, located in ``app.py`` is the primary configuration file for Tethys apps. All app classes inherit from the class ``TethysAppBase``.
 
-* MVC
-* Templating API
-* Controllers
-* App Base Class API
-* URL Maps
-* Simple Gizmos API
-
-Model View Controller
-=====================
-
-Tethys apps are developed using the :term:`Model View Controller` (MVC) software architecture pattern. Following the MVC pattern will make your app project easier to develop and maintain in the future. Most of the code in your app will fall into one of the three MVC categories. The Model represents the data of your app, the View is composed of the representation of the data, and the Controller consists of the logic to prepare the data for the view and any other logic your app needs. In the next few tutorials, you will be introduced to how the MVC development paradigm is used to develop Tethys apps. For more information about MVC, see :doc:`../../supplementary/key_concepts`.
-
-App Class
-=========
+b. Change the
 
 * Open app.py
 * Change color of app
 * Add custom app icon
 
 :doc:`../../tethys_sdk/app_class`
+
+Model View Controller
+=====================
+
+Tethys apps are developed using the :term:`Model View Controller` (MVC) software architecture pattern. Following the MVC pattern will make your app project easier to develop and maintain in the future. Most of the code in your app will fall into one of the three MVC categories. The Model represents the data of your app, the View is composed of the representation of the data, and the Controller consists of the logic to prepare the data for the view and any other logic your app needs. In the next few tutorials, you will be introduced to how the MVC development paradigm is used to develop Tethys apps. For more information about MVC, see :doc:`../../supplementary/key_concepts`.
 
 App Admin Settings
 ==================
