@@ -367,6 +367,11 @@ def sync_tethys_app_db():
                     db_app.feedback_emails = installed_app.feedback_emails
                     db_app.save()
 
+                    # TODO: SYNC SETTINGS WITHOUT DUPLICATING WHEN IN DEBUG
+                    # TODO: GET VALUES OF SETTINGS
+                    # TODO: DELETE SETTINGS
+                    # TODO: REGENERATE SETTINGS
+                    # TODO: ASSIGN VALUES TO SETTINGS THAT EXISTED BEFORE
                     # custom settings
                     db_app.add_settings(installed_app.custom_settings())
                     # dataset services settings
