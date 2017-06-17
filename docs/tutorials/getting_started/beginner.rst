@@ -4,7 +4,17 @@ Beginner Concepts
 
 **Last Updated:** June 2017
 
-This tutorial introduces important concepts for first-time or beginner Tethys developers.
+This tutorial introduces important concepts for first-time or beginner Tethys developers. The topics covered include:
+
+* The App Class
+* Model View Controller
+* Introduction to the View
+* Django Template Language
+* Introduction to the Controller
+* Templating Gizmos
+* Custom Styles and CSS
+* Linking Between Pages
+* App Navigation
 
 1. App Class
 ============
@@ -74,12 +84,12 @@ Tethys apps are developed using the :term:`Model View Controller` (MVC) software
 For more information about the MVC pattern, see :doc:`../../supplementary/key_concepts`.
 
 
-a. Views
---------
+4. Views
+========
 
 Views for Tethys apps are constructed using the standard web programming tools: HTML, JavaScript, and CSS. Additionally, Tethys Platform provides the Django Python templating language allowing you to insert Python code into your HTML documents. The result is dynamic, reusable templates for the web pages of your app.
 
-i. Open ``templates/dam_inventory/home.html`` and replace it's contents with the following:
+a. Open ``templates/dam_inventory/home.html`` and replace it's contents with the following:
 
 ::
 
@@ -94,32 +104,29 @@ i. Open ``templates/dam_inventory/home.html`` and replace it's contents with the
       {% gizmo add_dam_button %}
     {% endblock %}
 
-
-Django TemplateLanguage
-+++++++++++++++++++++++
-
-If you are familiar with HTML, the contents of this file may seem strange. That's because the file is actually a Django template, which contains special syntax (i.e.: ``{% ... %}`` and ``{{ ... }}`` to make the template dynamic. Django templates can contain variables, filters, and tags.
-
-**Variables.** Variables are denoted by double curly brace syntax like this: ``{{ variable }}``. Template variables are replaced by the value of the variable. Dot notation can be used access attributes of a variable, keys of dictionaries, and items in lists: ``{{ my_object.attribute }}`` , ``{{ my_dict.key }}``, and ``{{ my_list.3 }}``.
-
-**Filters.** Variables can be modified by filters which look like this: ``{{ variable|filter:argument }}``. Filters perform modifying functions on variable output such as formatting dates, formatting numbers, changing the letter case, and concatenating multiple variables.
-
-**Tags.** Tags use curly-brace-percent-sign syntax like this: ``{% tag %}``. Tags perform many different functions including creating text, controlling flow, or loading external information to be used in the app. Some commonly used tags include ``for``, ``if``, ``block``, and ``extends``.
-
-**Blocks.** The block tags in the Tethys templates coorespond with different areas in the app. For example, any HTML written inside the ``app_content`` block will render in the app content area of the app.
-
 .. tip::
 
-    For a better explanation of variables, filters and tags, see the :doc:`../../tethys_sdk/templating`.
+    Django TemplateLanguage
+    -----------------------
 
-b. Controllers
---------------
+    If you are familiar with HTML, the contents of this file may seem strange. That's because the file is actually a Django template, which contains special syntax (i.e.: ``{% ... %}`` and ``{{ ... }}`` to make the template dynamic. Django templates can contain variables, filters, and tags.
 
-This ``home.html`` template used a Tethys template tag, ``gizmo``, to insert a map and a button with only one line of code: ``{% gizmo dam_inventory_map %}``. Gizmo tags require one argument, an object that defines the options for the gizmo. These gizmo options must be defined in the controller for that view.
+    **Variables.** Variables are denoted by double curly brace syntax like this: ``{{ variable }}``. Template variables are replaced by the value of the variable. Dot notation can be used access attributes of a variable, keys of dictionaries, and items in lists: ``{{ my_object.attribute }}`` , ``{{ my_dict.key }}``, and ``{{ my_list.3 }}``.
 
-i. Open ``controllers.py``.
+    **Filters.** Variables can be modified by filters which look like this: ``{{ variable|filter:argument }}``. Filters perform modifying functions on variable output such as formatting dates, formatting numbers, changing the letter case, and concatenating multiple variables.
 
-ii. Define the ``dam_inventory_map`` and ``add_dam_button`` gizmos in your home controller. Open ``controllers.py`` and change the ``home`` controller function as follows:
+    **Tags.** Tags use curly-brace-percent-sign syntax like this: ``{% tag %}``. Tags perform many different functions including creating text, controlling flow, or loading external information to be used in the app. Some commonly used tags include ``for``, ``if``, ``block``, and ``extends``.
+
+    **Blocks.** The block tags in the Tethys templates coorespond with different areas in the app. For example, any HTML written inside the ``app_content`` block will render in the app content area of the app.
+
+    For a better explanation of the Django Template Language and the blocks available in Tethys apps see the :doc:`../../tethys_sdk/templating`.
+
+5. Controllers
+==============
+
+Controllers consist of a Python function that takes a ``request`` object as an argument. The ``request`` object contains all the information about the incoming request including any data being passed to the server, information about the user that is logged in, and the HTTP headers. Each controller function is associated with one view or template. Any variable assigned to the ``context`` variable in a controller becomes a variable on the template specified in the ``render`` function.
+
+a. Open ``controllers.py`` and define the ``dam_inventory_map`` and ``add_dam_button`` gizmos in your home controller. Open ``controllers.py`` and change the ``home`` controller function as follows:
 
 ::
 
@@ -156,11 +163,16 @@ ii. Define the ``dam_inventory_map`` and ``add_dam_button`` gizmos in your home 
 
         return render(request, 'dam_inventory/home.html', context)
 
-Any variable assigned to the ``context`` variable in a controller becomes a variable on the template specified in the ``render`` function. In this case we created the options objects for the two gizmos on the ``home.html`` template.
+.. tip::
 
-For more details on the Map View or Button Gizmos see: :doc:`../../tethys_sdk/gizmos/map_view` and :doc:`../../tethys_sdk/gizmos/button` For more information about Gizmos in general see the :doc:`../../tethys_sdk/gizmos`.
+    Gizmos
+    ------
 
-4. Custom Styles
+    The ``home.html`` template used a Tethys template tag, ``gizmo``, to insert a map and a button with only one line of code: ``{% gizmo dam_inventory_map %}``. Gizmo tags require one argument, an object that defines the options for the gizmo. These gizmo options must be defined in the controller for that view. In the example above we define the options objects for the two gizmos on the ``home.html`` template and pass them to the template through the context dictionary.
+
+    For more details on the Map View or Button Gizmos see: :doc:`../../tethys_sdk/gizmos/map_view` and :doc:`../../tethys_sdk/gizmos/button` For more information about Gizmos in general see the :doc:`../../tethys_sdk/gizmos`.
+
+6. Custom Styles
 ================
 
 It would look nicer if the map gizmo filled the entire app content area. To do this, we will need to add custom CSS or style rules to remove the padding around the ``inner-app-content`` area.
@@ -171,6 +183,10 @@ a. Create a new file ``public/css/map.css`` and add the following contents:
 
     #inner-app-content {
         padding: 0;
+    }
+
+    #app-content, #inner-app-content, #map_view_outer_container {
+        height: 100%;
     }
 
 b. Load the styles on the ``templates/dam_inventory/home.html`` template by adding a link to the ``public/css/map.css`` to it. To do this add ``staticfiles`` to the load statement at the top of the template and add the ``styles`` block to the end of the file:
@@ -190,7 +206,7 @@ b. Load the styles on the ``templates/dam_inventory/home.html`` template by addi
 
     Don't forget the ``{{ block.super }}``! The ``{{ block.super }}`` statement loads all previously loaded styles in this block. If you forget the ``{{ block.super }}``, it will result in a broken page with no styles applied.
 
-5. Create a New Page
+7. Create a New Page
 ====================
 
 Creating a new page in your app consists of three steps: (1) create a new template, (2) add a new controller to ``controllers.py``, and (3) add a new ``UrlMap`` to the ``app.py``.
@@ -248,7 +264,7 @@ c. Create a new URL Map for the ``add_dam`` controller in the ``url_maps`` metho
 
 A ``UrlMap`` is an object that maps a URL for your app to controller function that should handle requests to that URL.
 
-6. Link to New Page
+8. Link to New Page
 ===================
 
 You can access the new page of your app simply be entering the URL `<http://localhost:8000/apps/dam-inventory/dams/add/>`_ into the address bar of your browser. However, you can also link to the page from another page using a button.
@@ -273,7 +289,7 @@ a. Modify the ``add_dam_button`` on the Home page to link to the newly created p
             href=reverse('dam_inventory:add_dam')
         )
 
-7. Build Out New Page
+9. Build Out New Page
 =====================
 
 a. Modify the ``template/dam_inventory/add_dam.html`` with a title in the app content area and add ``Add`` and ``Cancel`` buttons to the app actions area:
@@ -322,8 +338,8 @@ b. Define the options for the ``Add`` and ``Cancel`` button gizmos in the ``add_
         return render(request, 'dam_inventory/add_dam.html', context)
 
 
-8. Add Navigation
-=================
+10. Add Navigation
+==================
 
 Now that there are two pages in the app, we should modify the app navigation to have links to the **Home** and **Add Dam** pages.
 
@@ -351,17 +367,15 @@ b. Modify ``app_navigation_items`` block in ``templates/dam_inventory/base.html`
       <li class="{% if request.path == add_dam_url %}active{% endif %}"><a href="{{ add_dam_url }}">Add Dam</a></li>
     {% endblock %}
 
-The ``url`` tag can be used in templates to lookup URLs using the name of the UrlMap, namespaced by the app package name (i.e.: ``namespace:url_map_name``). We assign the urls to two variables, ``home_url`` and ``add_dam_url``, using the ``as`` operator in the ``url`` tag. Then we wrap the ``active`` class of each navigation link in an ``if`` tag. If the expression given to an ``if`` tag evaluates to true, then the content of the ``if`` tag is rendered, otherwise it is left blank. In this case the result is that the ``active`` class is only added to link of the page we are visiting.
+The ``url`` tag is used in templates to lookup URLs using the name of the UrlMap, namespaced by the app package name (i.e.: ``namespace:url_map_name``). We assign the urls to two variables, ``home_url`` and ``add_dam_url``, using the ``as`` operator in the ``url`` tag. Then we wrap the ``active`` class of each navigation link in an ``if`` tag. If the expression given to an ``if`` tag evaluates to true, then the content of the ``if`` tag is rendered, otherwise it is left blank. In this case the result is that the ``active`` class is only added to link of the page we are visiting.
 
-9. Solution
-===========
+11. Solution
+============
 
 This concludes the Beginner Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
 
 ::
 
-    $ mkdir ~/tethysdev
-    $ cd ~/tethysdev
     $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     $ cd tethysapp-dam_inventory
     $ git checkout beginner-solution
