@@ -4,10 +4,20 @@ Intermediate Concepts
 
 **Last Updated:** June 2017
 
-This tutorial introduces important concepts for intermediate Tethys developers.
+This tutorial introduces important concepts for intermediate Tethys developers. The topics covered include:
 
-0. Start From Beginner Solution
-===============================
+* HTML Forms and User Input
+* Handling Form Submissions in Controllers
+* Form Validation Pattern
+* Introduction to the Model
+* File IO and Workspaces
+* Intermediate Template Gizmos
+* Review of Model View Controller
+* Spatial Inputs in Forms
+* Rendering Spatial Data on the Map View Gizmo
+
+0. Start From Beginner Solution (Optional)
+==========================================
 
 If you wish to use the solution of the last tutorial as a starting point:
 
@@ -16,13 +26,11 @@ If you wish to use the solution of the last tutorial as a starting point:
     $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     $ cd tethysapp-dam_inventory
     $ git checkout beginner-solution
-    $ t
-    (tethys)$ python setup.py develop
 
 1. Forms and User Input
 =======================
 
-HTML forms are the primary mechanism for retrieving input from users of your app. In the next few sections, you'll learn how to create forms in your template and process the data submitted through the form in your controller. We'll create a form for adding new dams to the inventory.
+HTML forms are the primary mechanism for obtaining input from users of your app. In the next few sections, you'll learn how to create forms in the template and process the data submitted through the form in the controller. For this example, we'll create a form for adding new dams to the inventory.
 
 a. Add a form to the Add Dam page by modifying the ``templates/dam_inventory/add_dam.html`` template as follows:
 
@@ -47,11 +55,11 @@ a. Add a form to the Add Dam page by modifying the ``templates/dam_inventory/add
       {% gizmo add_button %}
     {% endblock %}
 
-The form is composed of the the HTML ``<form>`` tag and several input gizmos. We'll use the add_button gizmo to submit the form. Also note the use of the ``csrf_token`` tag in the form. This is a security precaution that is required to be included in all the forms of your app (see the `Cross Site Forgery protection <https://docs.djangoproject.com/en/1.11/ref/contrib/csrf/>`_ article in the Django documentation for more details).
+The form is composed of the the HTML ``<form>`` tag and various input gizmos inside it. We'll use the ``add_button`` gizmo to submit the form. Also note the use of the ``csrf_token`` tag in the form. This is a security precaution that is required to be included in all the forms of your app (see the `Cross Site Forgery protection <https://docs.djangoproject.com/en/1.11/ref/contrib/csrf/>`_ article in the Django documentation for more details).
 
-Also note that the method attribute of the ``<form>`` element is set to ``post``. This means the form will use the HTTP method called POST to submit the data to the server. For an introduction to HTTP methods, see `The Definitive Guide to GET vs POST <http://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post>`_.
+Also note that the ``method`` attribute of the ``<form>`` element is set to ``post``. This means the form will use the POST HTTP method to submit and transmit the data to the server. For an introduction to HTTP methods, see `The Definitive Guide to GET vs POST <http://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post>`_.
 
-b. Define the options for the form gizmos in the controller and change the Add button to a submit button for the Add Dam form in the ``add_dam`` controller:
+b. Define the options for the form gizmos in the controller and change the ``add_button`` gizmo to be a submit button for the form in the ``add_dam`` controller:
 
 ::
 
@@ -121,24 +129,9 @@ b. Define the options for the form gizmos in the controller and change the Add b
 2. Handle Form Submission
 =========================
 
-At this point the form will be functional, but the controller is not doing anything with the data when the user submits the form. In this section we'll implement a pattern for handling the form submission and validating the form. Here is the outline for the pattern:
+At this point the form will be functional, but the app is not doing anything with the data when the user submits the form. In this section we'll implement a pattern for handling the form submission and validating the form.
 
-Form Validation Pattern
------------------------
-
-1. **define a "value" variable for each input in the form and assign it the initial value for the input**
-2. **define an "error" variable for each input to handle error messages and initially set them to the empty string**
-3. **check to see if the form is submitted and if the form has been submitted:**
-    a. extract the value of each input from the GET or POST parameters and overwrite the appropriate value variable from step 1
-    b. validate the value of each input, assigning an error message (if any) to the appropriate error variable from step 2 for each input with errors.
-    c. if there are no errors, save or process the data, and then redirect to a different page
-    d. if there are errors continue on and re-render from with error messages
-4. **define all gizmos and variables used to populate the form:**
-    a. pass the value variable created in step 1 to the ``initial`` argument of the corresponding gizmo
-    b. pass the error variable created in step 2 to the ``error`` argument of the corresponding gizmo
-5. **render the page, passing all gizmos to the template through the context**
-
-a. Change to the ``add_dam`` controller to handle the form data using the form validation pattern:
+a. Change the ``add_dam`` controller to handle the form data using the form validation pattern:
 
 ::
 
@@ -231,10 +224,26 @@ a. Change to the ``add_dam`` controller to handle the form data using the form v
         )
         ...
 
+.. tip::
+
+    **Form Validation Pattern**: The example above implements a common pattern for handling and validating form input. Generally, the steps are:
+
+    1. **define a "value" variable for each input in the form and assign it the initial value for the input**
+    2. **define an "error" variable for each input to handle error messages and initially set them to the empty string**
+    3. **check to see if the form is submitted and if the form has been submitted:**
+        a. extract the value of each input from the GET or POST parameters and overwrite the appropriate value variable from step 1
+        b. validate the value of each input, assigning an error message (if any) to the appropriate error variable from step 2 for each input with errors.
+        c. if there are no errors, save or process the data, and then redirect to a different page
+        d. if there are errors continue on and re-render from with error messages
+    4. **define all gizmos and variables used to populate the form:**
+        a. pass the value variable created in step 1 to the ``initial`` argument of the corresponding gizmo
+        b. pass the error variable created in step 2 to the ``error`` argument of the corresponding gizmo
+    5. **render the page, passing all gizmos to the template through the context**
+
 3. Create the Model and File IO
 ===============================
 
-Now that we are able to get information about new dams to add to the dam inventory from the user, we need to persist the data to some sort of database. In other words, we need to create the Model for the app.
+Now that we are able to get information about new dams to add to the dam inventory from the user, we need to persist the data to some sort of database. It's time to create the Model for the app.
 
 In this tutorial we will start with a file database model to illustrate how to work with files in Tethys apps. In the :doc:`./advanced` tutorial we will convert this file database model to an SQL database model. Here is an overview of the file-based model:
 
@@ -259,7 +268,7 @@ The files will be stored in the **app workspace**, a directory within the app fo
 
     File database models can be problematic for web applications, especially in a production environment. We recommend using and SQL or other database that can handle concurrent requests and heavy traffic.
 
-a. Open ``model.py`` and add the ``add_new_dam`` function:
+a. Open ``model.py`` and add an new function called ``add_new_dam``:
 
 ::
 
@@ -329,7 +338,7 @@ b. Modify ``add_dam`` controller to use the new ``add_new_dam`` model function t
 4. Develop Table View Page
 ==========================
 
-Now that we are persisting the data in our make-shift inventory database, let's create useful views of the data in our inventory. First, we'll create a new page that lists all of the dams in our inventory database in a table. The first step is to create a new Model function that will return a list of dams.
+Now that the data is being persisted in our make-shift inventory database, let's create useful views of the data in our inventory. First, we'll create a new page that lists all of the dams in our inventory database in a table, which will provide a good review of Model View Controller:
 
 a. Open ``models.py`` and add a model method for listing the dams called ``get_all_dams``:
 
@@ -460,6 +469,15 @@ e. Open ``templates/dam_inventory/base.html`` and add navigation links for the L
       <li class="{% if request.path == list_dam_url %}active{% endif %}"><a href="{{ list_dam_url }}">Dams</a></li>
       <li class="{% if request.path == add_dam_url %}active{% endif %}"><a href="{{ add_dam_url }}">Add Dam</a></li>
     {% endblock %}
+
+.. tip::
+
+    **New Page Pattern**: Adding new pages is an exercise of the Model View Controller pattern. Generally, the steps are:
+
+    * Modify the model as necessary to support the data for the new page
+    * Create a new HTML template
+    * Create a new controller function
+    * Add a new ``UrlMap`` in ``app.py``
 
 
 5. Spatial Input with Forms
@@ -616,6 +634,8 @@ e. Create several new entries using the updated Add Dam form.
 
 Finally, we'll add logic to the home controller to display all of the dams in our dam inventory on the map.
 
+################# TODO: Style the points on the map #################
+
 a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
 
 ::
@@ -662,7 +682,18 @@ a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
         dams_layer = MVLayer(
             source='GeoJSON',
             options=dams_feature_collection,
-            legend_title='Dams'
+            legend_title='Dams',
+            layer_options={
+                'style': {
+                    'image': {
+                        'circle': {
+                            'radius': 5,
+                            'fill': {'color':  '#3d9dcd'},
+                            'stroke': {'color': '#ffffff', 'width': 0},
+                        }
+                    }
+                }
+            }
         )
 
         # Define view centered on dam locations
