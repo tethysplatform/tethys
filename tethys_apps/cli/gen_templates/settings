@@ -220,10 +220,10 @@ STATICFILES_FINDERS = (
 )
 
 # Uncomment the next line for production installation
-{% if not production %}#{% endif %}STATIC_ROOT = '{{ server_user_home }}/static'
+{% if not production %}#{% endif %}STATIC_ROOT = '{{ tethys_home }}/static'
 
 # Tethys Workspaces
-{% if not production %}#{% endif %}TETHYS_WORKSPACES_ROOT = '{{ server_user_home }}/workspaces'
+{% if not production %}#{% endif %}TETHYS_WORKSPACES_ROOT = '{{ tethys_home }}/workspaces'
 
 # Messaging settings
 MESSAGE_TAGS = {message_constants.DEBUG: 'alert-danger',
