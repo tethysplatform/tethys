@@ -2,7 +2,7 @@
 New Tethys App Project
 **********************
 
-**Last Updated:** May 2017
+**Last Updated:** June 2017
 
 Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../../supplementary/app_project`).
 
@@ -10,8 +10,8 @@ Tethys Platform provides an easy way to create new app projects called a scaffol
 
    You will need to use the command line/terminal to manage your app and run the development server. See the :doc:`../../supplementary/terminal_quick_guide` article for some tips if you are new to command line.
 
-Generate Scaffold
-=================
+1. Generate Scaffold
+====================
 
 To generate a new app using the scaffold, open a terminal, press :kbd:`CTRL-C` to stop the development server if it is still running, and execute the following commands:
 
@@ -43,8 +43,8 @@ You will be prompted to enter metadata about your app such as, proper name, vers
 
 In a file browser change into your :file:`Home` directory and open the :file:`tethysdev` directory. If the scaffolding worked, you should see a directory called :file:`tethysapp-dam_inventory`. All of the source code for your app is located in this directory. For more information about the app project structure, see :doc:`../../supplementary/app_project`.
 
-Development Installation
-========================
+2. Development Installation
+===========================
 
 Now that you have a new Tethys app project, you need to install the app on your development Tethys Portal. In a terminal, change into the :file:`tethysapp-dam_inventory` directory and execute the :command:`python setup.py develop` command. Be sure to activate the Tethys :term:`Python conda environment` if it is not already activated (see line 1 of the first code block):
 
@@ -67,8 +67,8 @@ Now that you have a new Tethys app project, you need to install the app on your 
     Windows Users: If you get an error when running ``python setup.py develop``, then you have insufficient permissions to install your app in development mode. Either try opening the ``tethys_cmd.bat`` as an administrator and run the commands again, or run ``python setup.py install``. The disadvantage to this method is that each time you want Tethys to reflect changes to your app code, you will need to run ``python setup.py install`` again.
 
 
-View Your New App
-=================
+3. View Your New App
+====================
 
 Use start up the development server:
 
@@ -109,8 +109,8 @@ Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser. If all has gone well
 
 
 
-App Project Paths
-=================
+4. App Project Paths
+====================
 
 Throughout the tutorial, you will be asked to open various files. Most of the files will be located in your :term:`app package` directory which shares the name of your app: "dam_inventory". If you generated your scaffold exactly as above, this directory will be located at the following path:
 
