@@ -122,7 +122,7 @@ def generate_command(args):
                         'db_username': args.db_username,
                         'db_password': args.db_password,
                         'db_port': args.db_port,
-                        'server_user_home': nginx_home,
+                        'tethys_home': TETHYS_HOME,
                         'production': args.production,
                         })
 
