@@ -19,7 +19,7 @@ This tutorial introduces intermediate concepts for Tethys developers. The topics
 0. Start From Beginner Solution (Optional)
 ==========================================
 
-If you wish to use the solution of the last tutorial as a starting point:
+If you wish to use the beginner solution of the last tutorial as a starting point:
 
 ::
 
@@ -32,7 +32,7 @@ If you wish to use the solution of the last tutorial as a starting point:
 
 HTML forms are the primary mechanism for obtaining input from users of your app. In the next few sections, you'll learn how to create forms in the template and process the data submitted through the form in the controller. For this example, we'll create a form for adding new dams to the inventory.
 
-a. Add a form to the Add Dam page by modifying the ``templates/dam_inventory/add_dam.html`` template as follows:
+a. Add a form to the Add Dam page by modifying the ``/templates/dam_inventory/add_dam.html`` template as follows:
 
 ::
 
@@ -249,6 +249,7 @@ In this tutorial we will start with a file database model to illustrate how to w
 
 * One text file will be created per dam
 * The name of the file will be the id of the dam (e.g.: *a1e26591-d6bb-4194-b4a7-1222fe0195fd.json*)
+* The files will be stored in the **app workspace** (a directory provided by the app for storing files).
 * Each file will contain a single JSON object with the following structure:
 
     ::
@@ -262,7 +263,10 @@ In this tutorial we will start with a file database model to illustrate how to w
         }
 
 
-The files will be stored in the **app workspace**, a directory within the app for storing files. For more information on file workspaces see the :doc:`../../tethys_sdk/workspaces`.
+
+.. tip::
+
+    For more information on file workspaces see the :doc:`../../tethys_sdk/workspaces`.
 
 .. warning::
 
@@ -370,7 +374,7 @@ a. Open ``models.py`` and add a model method for listing the dams called ``get_a
 
         return dams
 
-b. Add a new template ``templates/dam_inventory/list_dams.html`` with the following contents:
+b. Add a new template ``/templates/dam_inventory/list_dams.html`` with the following contents:
 
 ::
 
@@ -417,9 +421,6 @@ c. Create a new controller function in ``controllers.py`` called ``list_dams``:
         context = {'dams': dams}
         return render(request, 'dam_inventory/list_dams.html', context)
 
-
-
-
 d. Create a new URL Map in the ``app.py`` for the new ``list_dams`` controller:
 
 ::
@@ -456,7 +457,7 @@ d. Create a new URL Map in the ``app.py`` for the new ``list_dams`` controller:
 
             return url_maps
 
-e. Open ``templates/dam_inventory/base.html`` and add navigation links for the List View page:
+e. Open ``/templates/dam_inventory/base.html`` and add navigation links for the List View page:
 
 ::
 
@@ -485,7 +486,7 @@ e. Open ``templates/dam_inventory/base.html`` and add navigation links for the L
 
 In this section, we'll add a Map View gizmo to the Add Dam form to allow users to provide the location of the dam as another attribute.
 
-a. Open ``templates/dam_inventory/add_dam.html`` and add the ``location_input`` gizmo to the form:
+a. Open ``/templates/dam_inventory/add_dam.html`` and add the ``location_input`` gizmo to the form:
 
 ::
 

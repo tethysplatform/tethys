@@ -18,7 +18,7 @@ This tutorial introduces advanced concepts for Tethys developers. The topics cov
 0. Start From Intermediate Solution (Optional)
 ==============================================
 
-If you wish to use the solution as a starting point:
+If you wish to use the intermediate solution as a starting point:
 
 ::
 
@@ -26,21 +26,12 @@ If you wish to use the solution as a starting point:
     $ cd tethysapp-dam_inventory
     $ git checkout intermediate-solution
 
-1. Use a Custom Setting
-=======================
-
-Intro to App Settings... :doc:`../../tethys_sdk/app_settings`
-
-
-
-
-
-2. Persistent Store Database
+1. Persistent Store Database
 ============================
 
-Intro to persistent stores... :doc:`../../tethys_sdk/tethys_services/persistent_store`
+In the :doc:`./intermediate` tutorial we implemented a file-based database as the persisting mechanism for the app. However, simple file based databases typically don't perform well in a web application environment, because of the possibility of many concurrent requests trying to access the file. In this section we'll refactor the Model to use an SQL database, rather than files.
 
-a. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by adding the ``persistent_store_settings`` method to your app class:
+a. Create a ``PersistentStoreDatabaseSetting``, which can be assigned a connection to the database. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by adding the ``persistent_store_settings`` method to your app class:
 
 ::
 
@@ -67,7 +58,9 @@ a. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by ad
             return ps_settings
 
 
-b. Refactor the dams model to use the Persistent Store Database instead of the JSON files (``models.py``):
+Next, we need to define the tables of the database. Tethys provides the library SQLAlchemy as an interface with SQL databases. SQLAlchemy provides an Object Relational Mapper (ORM) API, which allows data models to be defined using Python and an object-oriented approach. In other words, you are able to harness the power of SQL databases without writing SQL. As a primer to SQLAlchemy ORM, we highly recommend you complete the `Object Relational Tutorial <http://docs.sqlalchemy.org/en/latest/orm/tutorial.html>`_.
+
+b. Define a table called ``dams`` by creating a new class in ``model.py`` called ``Dam``:
 
 ::
 
@@ -97,6 +90,19 @@ b. Refactor the dams model to use the Persistent Store Database instead of the J
         river = Column(String)
         date_built = Column(String)
 
+.. tip::
+
+    **SQLAlchemy Data Models**: Each class in an SQLAlchemy data model defines a table in the database. The model you defined above consists of a single table called "dams", as denoted by the ``__tablename__`` property of the ``Dam`` class. The ``Dam`` class inherits from a ``Base`` class that we created in the previous lines from the ``declarative_base`` function. This inheritance notifies SQLAlchemy that the ``Dam`` class is part of the data model.
+
+    The class defines seven other properties that are instances of SQLAlchemy ``Column`` class: *id*, *latitude*, *longitude*, *name*, *owner*, *river*, *date_built*. These properties define the columns of the "dams" table. The column type and options are defined by the arguments passed to the ``Column`` class. For example, the *latitude* column is of type ``Float`` while the *id* column is of type ``Integer``. The ``id`` column is flagged as the primary key for the table. IDs will be generated for each object when they are committed.
+
+    This class is not only used to define the tables for your persistent store, it is also used to create new entries and query the database.
+
+    For more information on Persistent Stores, see: :doc:`../../tethys_sdk/tethys_services/persistent_store`.
+
+c. Refactor the ``add_new_dam`` and ``get_all_dams`` functions in ``model.py`` to use the SQL database instead of the files:
+
+::
 
     def add_new_dam(location, name, owner, river, date_built):
         """
@@ -146,13 +152,18 @@ b. Refactor the dams model to use the Persistent Store Database instead of the J
 
         return dams
 
+d. Create a new function called ``init_primary_db`` at the bottom of ``model.py``. This function is used to initialize the data database by creating the tables and adding any initial data.
+
+::
 
     def init_primary_db(engine, first_time):
         """
         Initializer for the primary database.
         """
+        # Create all the tables
         Base.metadata.create_all(engine)
 
+        # Add data
         if first_time:
             # Make session
             Session = sessionmaker(bind=engine)
@@ -185,7 +196,7 @@ b. Refactor the dams model to use the Persistent Store Database instead of the J
 
 
 
-c. Refactor ``home`` controller in ``controllers.py`` to use new model objects:
+e. Refactor ``home`` controller in ``controllers.py`` to use new model objects:
 
 ::
 
@@ -223,7 +234,7 @@ c. Refactor ``home`` controller in ``controllers.py`` to use new model objects:
 
         ...
 
-d. Add **Persistent Store Service** to Tethys Portal:
+f. Add **Persistent Store Service** to Tethys Portal:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
@@ -235,7 +246,7 @@ d. Add **Persistent Store Service** to Tethys Portal:
 
     The username and password for the persistent store service must be a superuser to use spatial persistent stores.
 
-e. Assign **Persistent Store Service** to Dam Inventory App:
+g. Assign **Persistent Store Service** to Dam Inventory App:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
@@ -244,17 +255,71 @@ e. Assign **Persistent Store Service** to Dam Inventory App:
     e. Scroll down to the **Persistent Store Database Settings** section.
     f. Assign the **Persistent Store Service** that you created in Step 4 to the **primary_db**.
 
-f. Execute **syncstores** command to initialize Persistent Store database:
+h. Execute **syncstores** command to initialize Persistent Store database:
 
     ::
 
         (tethys) $ tethys syncstores dam_inventory
 
+2. Use Custom Settings
+======================
+
+In the :doc:`./beginner` tutorial, we created a custom setting named `max_dams`. In this section, we'll show you how to use the custom setting in one of your controllers.
+
+a. Modify the `add_dam` controller, such that it won't add a new dam if the `max_dams` limit has been reached:
+
+::
+
+    from .model import add_new_dam, get_all_dams, Dam
+    from .app import DamInventory as app
+
+    ...
+
+    @login_required()
+    def add_dam(request):
+        """
+        Controller for the Add Dam page.
+        """
+
+        ...
+
+        # Handle form submission
+        if request.POST and 'add-button' in request.POST:
+
+            ...
+
+            if not has_errors:
+                # Get value of max_dams custom setting
+                max_dams = app.get_custom_setting('max_dams')
+
+                # Query database for count of dams
+                Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+                session = Session()
+                num_dams = session.query(Dam).count()
+
+                # Only add the dam if we have not exceed max_dams
+                if num_dams < max_dams:
+                    add_new_dam(location=location, name=name, owner=owner, river=river, date_built=date_built)
+                else:
+                    messages.warning(request, 'Unable to add dam "{0}", because the inventory is full.'.format(name))
+                return redirect(reverse('dam_inventory:home'))
+
+            messages.error(request, "Please fix errors.")
+
+        ...
+
+
+.. tip::
+
+    For more information on app settings, see :doc:`../../tethys_sdk/app_settings`.
+
 
 3. Use JavaScript APIs
 ======================
 
-a. Modify MVLayer in ``home`` controller to make the layer selectable:
+JavaScript is the programming language that is used to program web browsers. You can use JavaScript in you Tethys apps to enrich the user experience and add dynamic effects. Many of the Tethys Gizmos include JavaScript APIs to allow you to access the underlying JavaScript objects and library to customize them. In this section, we'll use the JavaScript API of the Map View gizmo to add pop-ups to the map whenever the users clicks on one of the dams.
+
+a. Modify the MVLayer in the ``home`` controller to make the layer selectable:
 
 ::
 
@@ -264,62 +329,25 @@ a. Modify MVLayer in ``home`` controller to make the layer selectable:
         source='GeoJSON',
         options=dams_feature_collection,
         legend_title='Dams',
+        layer_options={
+            'style': {
+                'image': {
+                    'circle': {
+                        'radius': 10,
+                        'fill': {'color':  '#d84e1f'},
+                        'stroke': {'color': '#ffffff', 'width': 1},
+                    }
+                }
+            }
+        },
         feature_selection=True
     )
 
     ...
 
-b. Create a new file called ``map.js`` in the ``public/js/`` directory and add the following contents:
 
-::
 
-    $(function()
-    {
-        // Get the Select Interaction
-        var select_interaction = TETHYS_MAP_VIEW.getSelectInteraction();
-
-        // When selected, call function to display properties
-        select_interaction.getFeatures().on('change:length', function(e)
-        {
-
-            if (e.target.getArray().length > 0)
-            {
-                // this means there is at least 1 feature selected
-                var selected_feature = e.target.item(0); // 1st feature in Collection in the case of multi-select
-
-                console.log(selected_feature.get('name'));
-                console.log(selected_feature.get('owner'));
-                console.log(selected_feature.get('river'));
-                console.log(selected_feature.get('date_built'));
-
-            }
-        });
-    });
-
-c. Open ``templates/dam_inventory/home.html``, load the ``staticfiles`` module and add the ``map.js`` script to the page:
-
-::
-
-    {% extends "dam_inventory/base.html" %}
-    {% load tethys_gizmos staticfiles %}
-
-    ...
-
-    {% block scripts %}
-      {{ block.super }}
-      <script src="{% static 'dam_inventory/js/map.js' %}" type="text/javascript"></script>
-    {% endblock %}
-
-d. Add a new element to the ``app_content`` area of the page with an id of ``popup``:
-
-::
-
-    {% block app_content %}
-      {% gizmo dam_inventory_map %}
-      <div id="popup"></div>
-    {% endblock %}
-
-e. Modify the ``public/js/map.js`` script to add the pop-up to the map when a point is selected and display the properties of that point:
+b. Create a new file called ``/public/js/map.js`` and add the following contents:
 
 ::
 
@@ -388,42 +416,44 @@ e. Modify the ``public/js/map.js`` script to add the pop-up to the map when a po
         });
     });
 
-
-f. Add Custom CSS to style the pop-up. Create a new file ``public/css/map.css`` and add the following contentss:
+c. Open ``/templates/dam_inventory/home.html``, add a new ``div`` element to the ``app_content`` area of the page with an id ``popup``, and load the ``map.js`` script to the bottom of the page:
 
 ::
+
+    ...
+
+    {% block app_content %}
+      {% gizmo dam_inventory_map %}
+      <div id="popup"></div>
+    {% endblock %}
+
+    ...
+
+    {% block scripts %}
+      {{ block.super }}
+      <script src="{% static 'dam_inventory/js/map.js' %}" type="text/javascript"></script>
+    {% endblock %}
+
+d. Open ``public/css/map.css`` and add the following contents:
+
+::
+
+    ...
 
     .popover-content {
         width: 240px;
     }
 
-    #inner-app-content {
-        padding: 0;
-    }
-
-    #app-content, #inner-app-content, #map_view_outer_container {
-        height: 100%;
-    }
-
-g. Add ``public/css/map.css`` to the ``templates/dam_inventory/home.html`` file:
-
-::
-
-
-    {% block styles %}
-        {{ block.super }}
-        <link href="{% static 'dam_inventory/css/map.css' %}" rel="stylesheet"/>
-    {% endblock %}
-
-
 4. App Permissions
 ==================
 
-Intro to permissions... :doc:`../../tethys_sdk/permissions`
+By default, any user logged into the app can access any part of it. You may want to restrict access to certain areas of the app to privileged users. This can be done using the :doc:`../../tethys_sdk/permissions`. Let's modify the app so that only admin users of the app can add dams to the app.
 
 a. Define permissions for the app by adding the ``permissions`` method to the app class in the ``app.py``:
 
 ::
+
+    ...
 
     from tethys_sdk.permissions import Permission, PermissionGroup
 
@@ -451,7 +481,7 @@ a. Define permissions for the app by adding the ``permissions`` method to the ap
 
             return permissions
 
-b. Protect the Add Dam view with the ``add_dams`` permission by adding the ``permission_required`` decorator to the ``add_dams`` controller:
+b. Protect the Add Dam view with the ``add_dams`` permission by replacing the ``login_required`` decorator with the ``permission_required`` decorator to the ``add_dams`` controller:
 
 ::
 
@@ -514,7 +544,7 @@ c. Add a context variable called ``can_add_dams`` to the context of each control
         }
         return render(request, 'dam_inventory/list_dams.html', context)
 
-d. Use the ``can_add_dams`` method to show or hide the navigation link to the Add Dam View. Modify ``templates/dam_inventory/base.html``:
+d. Use the ``can_add_dams`` variable to determine whether to show or hide the navigation link to the Add Dam View in ``base.html``:
 
 ::
 
@@ -527,7 +557,7 @@ d. Use the ``can_add_dams`` method to show or hide the navigation link to the Ad
       {% endif %}
     {% endblock %}
 
-e. Use the ``can_add_dams`` method to show or hide the "Add Dam" button on the home page:
+e. Use the ``can_add_dams`` variable to determine whether to show or hide the "Add Dam" button in ``home.html``:
 
 ::
 
@@ -537,22 +567,26 @@ e. Use the ``can_add_dams`` method to show or hide the "Add Dam" button on the h
       {% endif %}
     {% endblock %}
 
-f. Superusers have all permissions. To test the permissions, create two new users: one with the ``admin`` permissions group and one without it. Then login with these users:
+f. The ``admin`` user of Tethys is a superuser and has all permissions. To test the permissions, create two new users: one with the ``admin`` permissions group and one without it. Then login with these users:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
     c. Scroll to the **Authentication and Authorization** section.
     d. Select the **Users** link.
     e. Press the **Add User** button.
-    f. Enter "di_admin" as the username and enter a password. Take note of the password for later.
+    f. Enter "diadmin" as the username and enter a password. Take note of the password for later.
     g. Press the **Save** button.
     h. Scroll down to the **Groups** section.
     i. Select the **dam_inventory:admin** group and press the right arrow to add the user to that group.
     j. Press the **Save** button.
-    k. Repeat steps e-f for user named "di_viewer". DO NOT add "di_viewer" user to any groups.
+    k. Repeat steps e-f for user named "diviewer". DO NOT add "diviewer" user to any groups.
     l. Press the **Save** button.
 
-g. Log in each user. If the permission has been applied correctly, "di_viewer" should not be able to see the Add Dam link and should be redirected if the Add Dam view is linked to directly. "di_admin" should be able to add dams.
+g. Log in each user. If the permission has been applied correctly, "diviewer" should not be able to see the Add Dam link and should be redirected if the Add Dam view is linked to directly. "diadmin" should be able to add dams.
+
+.. tip::
+
+    For more details on Permissions, see: :doc:`../../tethys_sdk/permissions`.
 
 5. Persistent Store Related Tables
 ==================================

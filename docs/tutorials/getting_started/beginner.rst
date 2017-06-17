@@ -25,7 +25,9 @@ b. Change the theme color of your app by changing the value of the ``color`` pro
 
 c. You can also change the icon of your app. Find a new image online and save it in the ``public/images/`` directory of your app. Then change the value of the ``icon`` property of the ``DamInventory`` class to match the name of the image.
 
-For more details about the app class, see the :doc:`../../tethys_sdk/app_class`.
+.. tip::
+
+    For more details about the app class, see the :doc:`../../tethys_sdk/app_class`.
 
 .. warning::
 
@@ -74,14 +76,18 @@ c. Save changes to ``app.py`` then restart your development server (press ``CTRL
 
 d. Navigate to the settings page of your app and scroll down to the **Custom Settings** section and you should see an entry for the ``max_dams`` settings. Enter a value and save changes to the setting. You will learn how to use this custom setting in the app later on in the tutorial.
 
-For more information about app settings, see the :doc:`../../tethys_sdk/app_settings`.
+.. tip::
+
+    For more information about app settings, see the :doc:`../../tethys_sdk/app_settings`.
 
 3. Model View Controller
 ========================
 
 Tethys apps are developed using the :term:`Model View Controller` (MVC) software architecture pattern. Model refers to the data model and associated code, View refers to the representations of the data, and Controller refers of the code that coordinates data from the Model for rendering in the View. In Tethys apps, the Model is usually an SQL database or files and the code for accessing them, the Views are most often the templates or HTML files, and Controllers are implemented as Python functions.
 
-For more information about the MVC pattern, see :doc:`../../supplementary/key_concepts`.
+.. tip::
+
+    For more information about the MVC pattern, see :doc:`../../supplementary/key_concepts`.
 
 
 4. Views
@@ -89,7 +95,7 @@ For more information about the MVC pattern, see :doc:`../../supplementary/key_co
 
 Views for Tethys apps are constructed using the standard web programming tools: HTML, JavaScript, and CSS. Additionally, Tethys Platform provides the Django Python templating language allowing you to insert Python code into your HTML documents. The result is dynamic, reusable templates for the web pages of your app.
 
-a. Open ``templates/dam_inventory/home.html`` and replace it's contents with the following:
+a. Open ``/templates/dam_inventory/home.html`` and replace it's contents with the following:
 
 ::
 
@@ -106,10 +112,7 @@ a. Open ``templates/dam_inventory/home.html`` and replace it's contents with the
 
 .. tip::
 
-    Django TemplateLanguage
-    -----------------------
-
-    If you are familiar with HTML, the contents of this file may seem strange. That's because the file is actually a Django template, which contains special syntax (i.e.: ``{% ... %}`` and ``{{ ... }}`` to make the template dynamic. Django templates can contain variables, filters, and tags.
+    **Django TemplateLanguage**: If you are familiar with HTML, the contents of this file may seem strange. That's because the file is actually a Django template, which contains special syntax (i.e.: ``{% ... %}`` and ``{{ ... }}`` to make the template dynamic. Django templates can contain variables, filters, and tags.
 
     **Variables.** Variables are denoted by double curly brace syntax like this: ``{{ variable }}``. Template variables are replaced by the value of the variable. Dot notation can be used access attributes of a variable, keys of dictionaries, and items in lists: ``{{ my_object.attribute }}`` , ``{{ my_dict.key }}``, and ``{{ my_list.3 }}``.
 
@@ -165,10 +168,7 @@ a. Open ``controllers.py`` and define the ``dam_inventory_map`` and ``add_dam_bu
 
 .. tip::
 
-    Gizmos
-    ------
-
-    The ``home.html`` template used a Tethys template tag, ``gizmo``, to insert a map and a button with only one line of code: ``{% gizmo dam_inventory_map %}``. Gizmo tags require one argument, an object that defines the options for the gizmo. These gizmo options must be defined in the controller for that view. In the example above we define the options objects for the two gizmos on the ``home.html`` template and pass them to the template through the context dictionary.
+    **Gizmos**: The ``home.html`` template used a Tethys template tag, ``gizmo``, to insert a map and a button with only one line of code: ``{% gizmo dam_inventory_map %}``. Gizmo tags require one argument, an object that defines the options for the gizmo. These gizmo options must be defined in the controller for that view. In the example above we define the options objects for the two gizmos on the ``home.html`` template and pass them to the template through the context dictionary.
 
     For more details on the Map View or Button Gizmos see: :doc:`../../tethys_sdk/gizmos/map_view` and :doc:`../../tethys_sdk/gizmos/button` For more information about Gizmos in general see the :doc:`../../tethys_sdk/gizmos`.
 
@@ -177,7 +177,7 @@ a. Open ``controllers.py`` and define the ``dam_inventory_map`` and ``add_dam_bu
 
 It would look nicer if the map gizmo filled the entire app content area. To do this, we will need to add custom CSS or style rules to remove the padding around the ``inner-app-content`` area.
 
-a. Create a new file ``public/css/map.css`` and add the following contents:
+a. Create a new file ``/public/css/map.css`` and add the following contents:
 
 ::
 
@@ -189,7 +189,7 @@ a. Create a new file ``public/css/map.css`` and add the following contents:
         height: 100%;
     }
 
-b. Load the styles on the ``templates/dam_inventory/home.html`` template by adding a link to the ``public/css/map.css`` to it. To do this add ``staticfiles`` to the load statement at the top of the template and add the ``styles`` block to the end of the file:
+b. Load the styles on the ``/templates/dam_inventory/home.html`` template by adding a link to the ``public/css/map.css`` to it. To do this add ``staticfiles`` to the load statement at the top of the template and add the ``styles`` block to the end of the file:
 
 ::
 
@@ -211,7 +211,7 @@ b. Load the styles on the ``templates/dam_inventory/home.html`` template by addi
 
 Creating a new page in your app consists of three steps: (1) create a new template, (2) add a new controller to ``controllers.py``, and (3) add a new ``UrlMap`` to the ``app.py``.
 
-a. Create a new file ``templates/dam_inventory/add_dam.html`` and add the following contents:
+a. Create a new file ``/templates/dam_inventory/add_dam.html`` and add the following contents:
 
 ::
 
@@ -343,7 +343,7 @@ b. Define the options for the ``Add`` and ``Cancel`` button gizmos in the ``add_
 
 Now that there are two pages in the app, we should modify the app navigation to have links to the **Home** and **Add Dam** pages.
 
-a. Open ``templates/dam_inventory/base.html`` and replace the ``app_navigation_items`` block:
+a. Open ``/templates/dam_inventory/base.html`` and replace the ``app_navigation_items`` block:
 
 ::
 
@@ -355,7 +355,7 @@ a. Open ``templates/dam_inventory/base.html`` and replace the ``app_navigation_i
 
 Notice that the **Home** link in the app navigation is always highlighed, even if you are on the **Add Dam** page. The highlight is controlled by adding the ``active`` class to the appropriate navigation link. We can get the navigation to highlight appropriately using the following pattern.
 
-b. Modify ``app_navigation_items`` block in ``templates/dam_inventory/base.html`` to dynamically highlight active link:
+b. Modify ``app_navigation_items`` block in ``/templates/dam_inventory/base.html`` to dynamically highlight active link:
 
 ::
 
