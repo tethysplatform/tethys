@@ -226,7 +226,7 @@ then
         echo "Using existing Miniconda installation..."
     else
         echo "Installing Miniconda..."
-        wget ${MINICONDA_URL} -O "${TETHYS_HOME}/miniconda.sh" || (echo -using curl instead; curl ${MINICONDA_URL} -o "${TETHYS_HOME}/miniconda.sh")
+        wget ${MINICONDA_URL} -O "${TETHYS_HOME}/miniconda.sh" 2>/dev/null || (echo -using curl instead; curl ${MINICONDA_URL} -o "${TETHYS_HOME}/miniconda.sh")
         pushd ./
         cd "${TETHYS_HOME}"
         bash miniconda.sh -b -p "${CONDA_HOME}"
@@ -479,6 +479,7 @@ then
     esac
 
     . ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}
+    tstartdb
     conda install -c conda-forge uwsgi -y
     tethys gen settings --production --allowed-host=${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite
     tethys gen nginx --overwrite
@@ -487,7 +488,7 @@ then
     NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')
     NGINX_GROUP=${NGINX_USER}
     NGINX_HOME=$(grep ${NGINX_USER} /etc/passwd | awk -F':' '{print $6}')
-    sudo mkdir -p ${NGINX_HOME}/tethys/static ${NGINX_HOME}/tethys/workspaces
+    sudo mkdir -p ${TETHYS_HOME}/tethys/static ${TETHYS_HOME}/tethys/workspaces ${TETHYS_HOME}/tethys/apps
     sudo chown -R ${USER} ${TETHYS_HOME}/src ${NGINX_HOME}
     tethys manage collectall --noinput
     sudo mkdir /var/log/uwsgi

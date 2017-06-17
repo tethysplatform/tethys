@@ -14,13 +14,6 @@ During the production installation any Tethys related files were change to be ow
     $ t
     (tethys) $ tethys_user_own
 
-2. Create a Directory for App Source
-====================================
-
-Create a directory on your server that will store the source code for the apps that are installed on your server. For example::
-
-    (tethys) $ sudo mkdir -p $TETHYS_HOME/apps/
-
 3. Download App Source Code
 ===========================
 
@@ -38,7 +31,7 @@ You will need to copy the source code of the app to the server. There are many m
 
 Execute the setup script (:file:`setup.py`) with the ``install`` command to make Python aware of the app and install any of its dependencies::
 
-    (tethys) $ cd cd $TETHYS_HOME/apps//apps/tethysapp-my_first_app
+    (tethys) $ cd cd $TETHYS_HOME/apps/tethysapp-my_first_app
     (tethys) $ python setup.py install
 
 5. Collect and Static Files and Workspaces
@@ -62,6 +55,10 @@ Restart uWSGI and Nginx services to effect the changes::
 
     $ sudo systemctl restart tethys.uwsgi.service
     $ sudo systemctl restart nginx
+
+.. tip::
+
+    Use the alias `trestart` as a shortcut to doing both steps 6 and 7.
 
 8. Configure App Settings
 =========================
