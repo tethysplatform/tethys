@@ -593,10 +593,152 @@ g. Log in each user. If the permission has been applied correctly, "diviewer" sh
 
 Add Flood Hydrograph table
 
-6. Add Flood Hydrograph Page
-============================
+a. Define two new tables to ``models.py`` for storing the hydrograph and hydrograph points. Also, establish relationships between the tables. Each dam will have only one hydrograph and each hydrograph can have multiple hydrograph points.
+
+::
+
+    from sqlalchemy import Column, Integer, Float, String, DateTime, ForeignKey
+    from sqlalchemy.orm import sessionmaker, relationship
+
+    ...
+
+    class Dam(Base):
+        """
+        SQLAlchemy Dam DB Model
+        """
+        ...
+
+        # Relationships
+        hydrograph = relationship('Hydrograph', back_populates='dam', uselist=False)
+
+
+    class Hydrograph(Base):
+        """
+        SQLAlchemy Hydrograph DB Model
+        """
+        __tablename__ = 'hydrographs'
+
+        # Columns
+        id = Column(Integer, primary_key=True)
+        dam_id = Column(ForeignKey('dams.id'))
+
+        # Relationships
+        dam = relationship('Dam', back_populates='hydrograph')
+        points = relationship('HydrographPoint', back_populates='hydrograph')
+
+
+    class HydrographPoint(Base):
+        """
+        SQLAlchemy Hydrograph Point DB Model
+        """
+        __tablename__ = 'hydrograph_points'
+
+        # Columns
+        id = Column(Integer, primary_key=True)
+        hydrograph_id = Column(ForeignKey('hydrographs.id'))
+        datetime = Column(DateTime)
+        flow = Column(Float)
+
+        # Relationships
+        hydrograph = relationship('Hydrograph', back_populates='points')
+
+b. Execute **syncstores** command again to add the new tables to the database:
+
+    ::
+
+        (tethys) $ tethys syncstores dam_inventory
+
+
+6. File Upload
+==============
 
 CSV File Upload
+Create new page for uploading the hydrograph.
+
+a. New Template
+
+::
+
+    {% extends "dam_inventory/base.html" %}
+    {% load tethys_gizmos %}
+
+    {% block app_content %}
+      <h1>Add Hydrograph</h1>
+      <form id="add-hydrograph-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <p>Select a file to upload. File should be a csv with two columns: time and flow.</p>
+        <input type="file" name="file">
+      </form>
+    {% endblock %}
+
+    {% block app_actions %}
+      {% gizmo cancel_button %}
+      {% gizmo add_button %}
+    {% endblock %}
+
+b. New Controller
+
+::
+
+
+
+c. New UrlMap
+
+::
+
+    class DamInventory(TethysAppBase):
+        """
+        Tethys app class for Dam Inventory.
+        """
+
+        ...
+
+        def url_maps(self):
+            """
+            Add controllers
+            """
+            UrlMap = url_map_maker(self.root_url)
+
+            url_maps = (
+                UrlMap(
+                    name='home',
+                    url='dam-inventory',
+                    controller='dam_inventory.controllers.home'
+                ),
+                UrlMap(
+                    name='add_dam',
+                    url='dam-inventory/dams/add',
+                    controller='dam_inventory.controllers.add_dam'
+                ),
+                UrlMap(
+                    name='dams',
+                    url='dam-inventory/dams',
+                    controller='dam_inventory.controllers.list_dams'
+                ),
+                UrlMap(
+                    name='add_hydrograph',
+                    url='dam-inventory/hydrographs/add',
+                    controller='dam_inventory.controllers.add_hydrograph'
+                )
+            )
+
+            return url_maps
+
+d. Update navigation
+
+::
+
+    {% block app_navigation_items %}
+      <li class="title">App Navigation</li>
+      ...
+      {% url 'dam_inventory:add_hydrograph' as add_hydrograph_url %}
+      ...
+      <li class="{% if request.path == add_hydrograph_url %}active{% endif %}"><a href="{{ add_dam_url }}">Add Hydrograph</a></li>
+    {% endblock %}
+
+e. Test upload with these files:
+
+:download:`Sample Hydrograph CSVs <./hydrographs.zip>`
 
 7. Plot Flood Hydrograph Page
 =============================
