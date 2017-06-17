@@ -129,6 +129,25 @@ class MapView(TethysGizmoOptions):
           ]
         }
 
+        # Define GeoJSON point layer
+        geojson_point_object = {
+          'type': 'FeatureCollection',
+          'crs': {
+            'type': 'name',
+            'properties': {
+              'name': 'EPSG:3857'
+            }
+          },
+          'features': [
+            {
+              'type': 'Feature',
+              'geometry': {
+                'type': 'Point',
+                'coordinates': [0, 0]
+              }
+            },
+          ]
+        }
         geojson_layer = MVLayer(source='GeoJSON',
                                 options=geojson_object,
                                 legend_title='Test GeoJSON',
@@ -136,6 +155,23 @@ class MapView(TethysGizmoOptions):
                                 legend_classes=[
                                     MVLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
                                     MVLegendClass('line', 'Lines', stroke='#3d9dcd')
+                                ])
+
+        geojson_point_layer = MVLayer(source='GeoJSON',
+                                options=geojson_point_object,
+                                legend_title='Test GeoJSON',
+                                legend_extent=[-46.7, -48.5, 74, 59],
+                                legend_classes=[
+                                    MVLegendClass('line', 'Lines', stroke='#3d9dcd')
+                                layer_options={'style': {'image':
+                                                         {'circle': {'radius': 5,
+                                                                     'fill': {'color': #3d9dcd},
+                                                                     'stroke': {'color': '#ffffff' ,
+                                                                                'width': 0},
+                                                                     }
+                                                          }
+                                                     }
+                                           }
                                 ])
 
         # Define GeoServer Layer
@@ -174,7 +210,7 @@ class MapView(TethysGizmoOptions):
                 controls=['ZoomSlider', 'Rotate', 'FullScreen',
                           {'MousePosition': {'projection': 'EPSG:4326'}},
                           {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
-                layers=[geojson_layer, geoserver_layer, kml_layer, arc_gis_layer],
+                layers=[geojson_layer, geojson_point_layer, geoserver_layer, kml_layer, arc_gis_layer],
                 view=view_options,
                 basemap='OpenStreetMap',
                 draw=drawing_options,
