@@ -2,7 +2,7 @@
 Getting Started
 ***************
 
-**Last Updated:** May 2017
+**Last Updated:** June 2017
 
 This tutorial will walk you through the steps of setting up a new Tethys App project using Tethys Platform. If you have not already installed Tethys Platform, follow the :doc:`../installation` documentation and then return.
 
@@ -11,7 +11,6 @@ You will need to use the command line/terminal to manage your app and run the de
 .. toctree::
    :maxdepth: 1
 
-   getting_started/tethys_dev_env
    getting_started/new_app_project
    getting_started/beginner
    getting_started/intermediate
