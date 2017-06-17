@@ -2,7 +2,7 @@
 Beginner Concepts
 *****************
 
-**Last Updated:** May 2017
+**Last Updated:** June 2017
 
 This tutorial introduces important concepts for first-time or beginner Tethys developers.
 
@@ -95,8 +95,8 @@ i. Open ``templates/dam_inventory/home.html`` and replace it's contents with the
     {% endblock %}
 
 
-Django Templating Language
-++++++++++++++++++++++++++
+Django TemplateLanguage
++++++++++++++++++++++++
 
 If you are familiar with HTML, the contents of this file may seem strange. That's because the file is actually a Django template, which contains special syntax (i.e.: ``{% ... %}`` and ``{{ ... }}`` to make the template dynamic. Django templates can contain variables, filters, and tags.
 
@@ -160,7 +160,37 @@ Any variable assigned to the ``context`` variable in a controller becomes a vari
 
 For more details on the Map View or Button Gizmos see: :doc:`../../tethys_sdk/gizmos/map_view` and :doc:`../../tethys_sdk/gizmos/button` For more information about Gizmos in general see the :doc:`../../tethys_sdk/gizmos`.
 
-4. Create a New Page
+4. Custom Styles
+================
+
+It would look nicer if the map gizmo filled the entire app content area. To do this, we will need to add custom CSS or style rules to remove the padding around the ``inner-app-content`` area.
+
+a. Create a new file ``public/css/map.css`` and add the following contents:
+
+::
+
+    #inner-app-content {
+        padding: 0;
+    }
+
+b. Load the styles on the ``templates/dam_inventory/home.html`` template by adding a link to the ``public/css/map.css`` to it. To do this add ``staticfiles`` to the load statement at the top of the template and add the ``styles`` block to the end of the file:
+
+::
+
+    {% load tethys_gizmos staticfiles %}
+
+    ...
+
+    {% block styles %}
+        {{ block.super }}
+        <link href="{% static 'dam_inventory/css/map.css' %}" rel="stylesheet"/>
+    {% endblock %}
+
+.. important::
+
+    Don't forget the ``{{ block.super }}``! The ``{{ block.super }}`` statement loads all previously loaded styles in this block. If you forget the ``{{ block.super }}``, it will result in a broken page with no styles applied.
+
+5. Create a New Page
 ====================
 
 Creating a new page in your app consists of three steps: (1) create a new template, (2) add a new controller to ``controllers.py``, and (3) add a new ``UrlMap`` to the ``app.py``.
@@ -218,7 +248,7 @@ c. Create a new URL Map for the ``add_dam`` controller in the ``url_maps`` metho
 
 A ``UrlMap`` is an object that maps a URL for your app to controller function that should handle requests to that URL.
 
-5. Link to New Page
+6. Link to New Page
 ===================
 
 You can access the new page of your app simply be entering the URL `<http://localhost:8000/apps/dam-inventory/dams/add/>`_ into the address bar of your browser. However, you can also link to the page from another page using a button.
@@ -243,7 +273,7 @@ a. Modify the ``add_dam_button`` on the Home page to link to the newly created p
             href=reverse('dam_inventory:add_dam')
         )
 
-6. Build Out New Page
+7. Build Out New Page
 =====================
 
 a. Modify the ``template/dam_inventory/add_dam.html`` with a title in the app content area and add ``Add`` and ``Cancel`` buttons to the app actions area:
@@ -258,8 +288,8 @@ a. Modify the ``template/dam_inventory/add_dam.html`` with a title in the app co
     {% endblock %}
 
     {% block app_actions %}
-      {% gizmo add_button %}
       {% gizmo cancel_button %}
+      {% gizmo add_button %}
     {% endblock %}
 
 b. Define the options for the ``Add`` and ``Cancel`` button gizmos in the ``add_app`` controller in ``controllers.py``:
@@ -292,7 +322,7 @@ b. Define the options for the ``Add`` and ``Cancel`` button gizmos in the ``add_
         return render(request, 'dam_inventory/add_dam.html', context)
 
 
-7. Add Navigation
+8. Add Navigation
 =================
 
 Now that there are two pages in the app, we should modify the app navigation to have links to the **Home** and **Add Dam** pages.
@@ -323,7 +353,7 @@ b. Modify ``app_navigation_items`` block in ``templates/dam_inventory/base.html`
 
 The ``url`` tag can be used in templates to lookup URLs using the name of the UrlMap, namespaced by the app package name (i.e.: ``namespace:url_map_name``). We assign the urls to two variables, ``home_url`` and ``add_dam_url``, using the ``as`` operator in the ``url`` tag. Then we wrap the ``active`` class of each navigation link in an ``if`` tag. If the expression given to an ``if`` tag evaluates to true, then the content of the ``if`` tag is rendered, otherwise it is left blank. In this case the result is that the ``active`` class is only added to link of the page we are visiting.
 
-8. Solution
+9. Solution
 ===========
 
 This concludes the Beginner Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
