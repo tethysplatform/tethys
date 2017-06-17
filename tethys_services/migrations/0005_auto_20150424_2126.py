@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from itertools import izip
+
+try:
+    from itertools import izip as zip
+except ImportError:
+    pass
 
 from django.db import migrations, connection
 from django.db.utils import ProgrammingError, InternalError
@@ -17,7 +21,7 @@ def query_to_dicts(query_string, *query_args):
         row = cursor.fetchone()
         if row is None:
             break
-        row_dict = dict(izip(col_names, row))
+        row_dict = dict(zip(col_names, row))
         yield row_dict
     return
 

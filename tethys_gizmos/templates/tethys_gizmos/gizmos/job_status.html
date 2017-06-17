@@ -1,50 +1,48 @@
-<div data-toggle="tooltip" title="{{ job.status }}" align="left">
-  {% if job.status == 'Complete' and results_url %}
+<div data-toggle="tooltip" title="{{ job_status }}" align="left">
+  {% if job_status == 'Complete' and results_url %}
     <a class='btn btn-primary btn-xs' href="{% url results_url job_id=job.id %}">View Results</a>
-  {% elif job.status == 'Various-Complete' and results_url %}
+  {% elif job_status == 'Various-Complete' and results_url %}
     <a class='btn btn-danger btn-xs' title='Complete with Errors' href="{% url results_url job_id=job.id %}">View Results</a>
-  {% elif job.status == 'Pending' and run %}
+  {% elif job_status == 'Pending' and run %}
     <a data-job-id="{{ job.id }}" class='btn btn-success btn-xs btn-job-run' href="javascript:void(0)">Run</a>
-  {% elif job.status == 'Various' %}
+  {% elif job_status == 'Various' %}
     <div class="progress" style="margin-bottom: 0;">
-      <div class="progress-bar progress-bar progress-bar" role="progressbar" title="Aborted" aria-valuenow="{{ job.statuses.Aborted }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job.statuses.Aborted }}%; background-color: #555555;">
-        <span class="sr-only">{{ job.statuses.Aborted }}% Aborted</span>
+      <div class="progress-bar progress-bar progress-bar" role="progressbar" title="Aborted" aria-valuenow="{{ job_statuses.Aborted }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Aborted }}%; background-color: #555555;">
+        <span class="sr-only">{{ job_statuses.Aborted }}% Aborted</span>
       </div>
-      <div class="progress-bar progress-bar-danger progress-bar" role="progressbar" title="Error" aria-valuenow="{{ job.statuses.Error }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job.statuses.Error }}%">
-        <span class="sr-only">{{ job.statuses.Error }}% Error</span>
+      <div class="progress-bar progress-bar-danger progress-bar" role="progressbar" title="Error" aria-valuenow="{{ job_statuses.Error }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Error }}%">
+        <span class="sr-only">{{ job_statuses.Error }}% Error</span>
       </div>
-      <div class="progress-bar progress-bar-success progress-bar" role="progressbar" title="Complete" aria-valuenow="{{ job.statuses.Complete }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job.statuses.Complete }}%">
-        <span class="sr-only">{{ job.statuses.Complete }}% Complete</span>
+      <div class="progress-bar progress-bar-success progress-bar" role="progressbar" title="Complete" aria-valuenow="{{ job_statuses.Completed }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Completed }}%">
+        <span class="sr-only">{{ job_statuses.Completed }}% Complete</span>
       </div>
-      <div class="progress-bar progress-bar-info progress-bar-striped active" title="Running" role="progressbar" aria-valuenow="{{ job.statuses.Running }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job.statuses.Running }}%">
-        <span class="sr-only">{{ job.statuses.Running }}% Running</span>
+      <div class="progress-bar progress-bar-info progress-bar-striped active" title="Running" role="progressbar" aria-valuenow="{{ job_statuses.Running }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Running }}%">
+        <span class="sr-only">{{ job_statuses.Running }}% Running</span>
       </div>
     </div>
-  {% elif job.status == 'Running' %}
+  {% elif job_status == 'Running' %}
     <div class="progress" style="margin-bottom: 0;">
       <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" title="Running" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
         <span class="sr-only">100% Complete</span>
       </div>
-      </div>
     </div>
-  {% elif job.status == 'Submitted' %}
+  {% elif job_status == 'Submitted' %}
     <div class="progress" style="margin-bottom: 0;">
       <div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
         <span class="sr-only">100% Complete</span>
       </div>
-      </div>
     </div>
-  {% elif job.status == 'Error' %}
+  {% elif job_status == 'Error' %}
     <img src="/static/tethys_gizmos/images/job_error.png" height="20px" width="20px" />
     <span style="vertical-align: middle;">
-      {{ job.status }}
+      {{ job_status }}
     </span>
-  {% elif job.status == 'Aborted' %}
+  {% elif job_status == 'Aborted' %}
     <img src="/static/tethys_gizmos/images/job_aborted.png" height="20px" width="20px" />
     <span style="vertical-align: middle;">
-      {{ job.status }}
+      {{ job_status }}
     </span>
   {% else %}
-    {{ job.status }}
+    {{ job_status }}
   {% endif %}
 </div>

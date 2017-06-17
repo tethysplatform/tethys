@@ -1,0 +1,7 @@
+conda:
+    file: tethys_conda_env.yml
+python:
+    version: 2
+    pip_install: true
+    extra_requirements:
+        - docs

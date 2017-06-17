@@ -18,7 +18,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 requires = []
 
-version = '1.3.0'
+version = '2.0.0.alpha'
 
 setup(
     name='tethys_platform',
@@ -28,9 +28,9 @@ setup(
     license='BSD 2-Clause License',
     description='Primary Tethys Platform Django Site Project',
     long_description=README,
-    url='http://tethys.ci-water.org/',
+    url='http://tethysplatform.org/',
     author='Nathan Swain',
-    author_email='nathan.swain@byu.net',
+    author_email='nswain@aquaveo.com',
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
@@ -43,9 +43,18 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
-    entry_points = {
+    entry_points={
         'console_scripts': ['tethys=tethys_apps.cli:tethys_command',],
         'paste.paster_create_template': ['tethys_app_scaffold=tethys_apps.pastetemplates:TethysAppTemplate',],
     },
     install_requires=requires,
+    extras_require={
+        'tests': [],
+        'docs': [
+            'sphinx',
+            'sphinx_rtd_theme',
+            'sphinxcontrib-napoleon',
+            'pbr',
+        ]
+    },
 )

@@ -2,7 +2,7 @@
 Advanced Concepts
 *****************
 
-**Last Updated:** May 20, 2015
+**Last Updated:** September 29, 2016
 
 The purpose of this tutorial will be to introduce some advanced concepts in Tethys app development. In the map page you created in the previous tutorials, you are able to view all of the stream gages on a map concurrently. In this tutorial you will add the ability to view individual stream gages on the map page. This will involve creating a new url map, new controller, and some modifications to the map template. This exercise will also serve as a good review of MVC development in Tethys Platform.
 
@@ -12,18 +12,6 @@ New URL Map and URL Variables
 You can add variables to your URLs to make your controllers and web pages more dynamic. URL variables are denoted by single curly braces in the URL string like this: ``/example/url/{variable}``. Open the :file:`my_first_app/app.py` file in a text editor. Modify the ``url_maps()`` method by adding a new ``UrlMap`` object named "map_single" with a URL variable called "id". Your ``url_maps()`` method should look like this when you are done:
 
 ::
-
-    class MyFirstApp(TethysAppBase):
-        """
-        Tethys App Class for My First App.
-        """
-
-        name = 'My First App'
-        index = 'my_first_app:home'
-        icon = 'my_first_app/images/icon.gif'
-        package = 'my_first_app'
-        root_url = 'my-first-app'
-        color = '#3498db'
 
         def url_maps(self):
             """
@@ -44,17 +32,6 @@ You can add variables to your URLs to make your controllers and web pages more d
 
             return url_maps
 
-        def persistent_stores(self):
-            """
-            Add one or more persistent stores
-            """
-            stores = (PersistentStore(name='stream_gage_db',
-                                      initializer='init_stores:init_stream_gage_db',
-                                      spatial=True
-                    ),
-            )
-
-            return stores
 
 .. note::
 
@@ -67,6 +44,7 @@ Notice that the ``map_single`` ``UrlMap`` object points to a controller named "m
 
 ::
 
+    @login_required
     def map_single(request, id):
         """
         Controller for map page.

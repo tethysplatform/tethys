@@ -11,11 +11,12 @@
 
 // Characteristic Variables
 @app-nav-width: 300px;
-@app-content-padding: 50px;
+@app-content-padding: 15px;
 @app-primary-color: #1b95dc;
-@app-header-height: 100px;
+@app-header-height: 50px;
 @app-header-height-max-width-500: 60px;
-@app-actions-height: 82px;
+@app-header-title-max-offset: 400px;
+@app-actions-height: 50px;
 
 // Transition Variables
 @header-transition-duration: 0.4s;
@@ -38,11 +39,17 @@ body {
 #app-header {
   .tethys-app-header {
     position: fixed;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
     background: @app-primary-color;
     height: @app-header-height;
     width: 100%;
     z-index: 100;
     margin-top: -@app-header-height;
+    box-shadow: 0 0 4px rgba(0,0,0,.14), 0 4px 8px rgba(0,0,0,.28);
 
     &.show-header {
       margin-top: 0;
@@ -52,87 +59,121 @@ body {
       .transition(margin @header-transition-duration @header-transition-type);
     }
 
-    .icon-wrapper {
-      position: absolute;
-      top: 0;
-      left: 0;
-      padding: 20px;
-      z-index: 100;
-      margin-left: 30px;
-      padding: 10px;
+    #nav-title-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: @app-header-height;
 
-      img {
-        height: 80px;
+      .toggle-nav {
+        display: block;
+        height: 32px;
+        width: 34px;
+        padding: 10px;
+        margin: 0 5px;
         border-radius: 50%;
-        background: @app-primary-color;
-      }
-    }
 
-    .app-title-wrapper {
-      float: left;
+        div {
+          height: 2px;
+          background-color: #eeeeee;
+          margin-bottom: 3px;
 
-      .app-title {
-        display: block;
-        padding: 20px 0;
-        padding-left: 130px;
-        font-size: 40px;
-        color: white;
-        font-weight: 300;
-        .font-smoothing();
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
 
-        width: 1700px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-
-    .exit-button {
-      float: right;
-      margin-right: 50px;
-      margin-top: 26px;
-
-      a {
-        display: block;
-        padding: 10px 20px;
-        border-radius: 5px;
-        background: rgba(255, 255, 255, 0.1);
-        color: #ffffff;
-        font-size: 20px;
-        font-weight: 400;
-        .font-smoothing();
+        &:active {
+          background: rgba(0,0,0,0.3);
+        }
 
         &:hover {
-          background: rgba(0, 0, 0, 0.1);
-          text-decoration: none;
+          div {
+            background: #ffffff;
+          }
+        }
+      }
+
+      .icon-wrapper {
+        z-index: 100;
+
+        img {
+          height: 35px;
+          border-radius: 50%;
+          background: @app-primary-color;
+        }
+      }
+
+      .app-title-wrapper {
+
+        .app-title {
+          display: inline-block;
+          padding-left: 10px;
+          font-size: 25px;
+
+          letter-spacing: 1px;
+          color: white;
+          font-weight: 300;
+
+          max-width: 1500px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
     }
 
-    .toggle-nav {
-      display: block;
-      height: 40px;
-      width: 15px;
-      float: left;
-      padding: 10px;
-      padding-left: 0;
-      margin: 30px 0;
-      margin-right: 5px;
-      border-radius: 0 5px 5px 0;
+    #header-buttons-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: @app-header-height;
 
-      div {
-        height: 3px;
-        background-color: #ffffff;
-        margin-bottom: 5px;
-        border-radius: 5px;
+      .header-button {
+        margin-right: 15px;
 
-        &:last-child {
-          margin-bottom: 0;
+        a {
+          display: block;
+          padding: 2px 8px;
+          border-radius: 5px;
+          background: rgba(255, 255, 255, 0.1);
+          color: #ffffff;
+          font-size: 18px;
+          font-weight: 400;
+          .font-smoothing();
+
+          &:hover {
+            background: rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+          }
         }
-      }
 
-      &:hover {
-        background: rgba(0,0,0,0.3);
+        &.exit-button {
+          a {
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1;
+            padding: 3px 11px 8px;
+          }
+        }
+
+        &.settings-button {
+          a {
+            .glyphicon {
+              line-height: unset;
+            }
+          }
+        }
+
+        &.glyphicon-button {
+          a {
+            height: 31px;
+
+            .glyphicon {
+              line-height: unset;
+            }
+          }
+        }
       }
     }
   }
@@ -163,7 +204,6 @@ body {
       opacity: 1;
     }
 
-
     &.with-transition {
       .transition(visibility @app-content-transition-duration @app-content-transition-type @app-content-transition-delay);
       .transition(opacity @app-content-transition-duration @app-content-transition-type @app-content-transition-delay);
@@ -177,10 +217,10 @@ body {
       height: 100%;
       background: #efefef;
       padding: 0 15px;
-      padding-top: 100px;
+      padding-top: @app-header-height;
 
       .nav {
-        padding: 20px 0;
+        padding: 0;
         padding-bottom: 40px;
         height: 100%;
         overflow: auto;
@@ -191,9 +231,10 @@ body {
 
         li {
           a {
+            font-size: 13px;
             color: @app-primary-color;
 
-            &:hover {;
+            &:hover {
               background: #ffffff;
               text-decoration: none;
             }
@@ -202,7 +243,7 @@ body {
           &.title {
             padding: 10px 15px;
             padding-top: 15px;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 500;
             color: #444444;
             -webkit-font-smoothing: antialiased;
@@ -229,31 +270,19 @@ body {
       height: @app-actions-height;
       bottom: 0;
       right: 0;
-      padding: 20px @app-content-padding;
+      padding: 0 @app-content-padding;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
 
-      .separator {
-        border-top: 1px solid #DDDDDD;
-        margin-bottom: 20px;
-      }
-
-      .btn {
-        float: right;
+      .btn-group, .btn {
         margin-left: 10px;
-        padding: 10px 20px;
-      }
-
-      .btn-group {
-        float: right;
-        margin-left: 10px;
-      }
-
-      .btn-toolbar {
-        float: right;
+        flex-shrink: 0;
       }
 
       #app-actions-spacer {
         height: 42px;
-        float: left;
       }
     }
   }
@@ -286,12 +315,19 @@ body {
   padding: 20px @app-content-padding 10px @app-content-padding;
 }
 
+// Styles for modal adjustments
+.modal-dialog {
+  top: 25px;
+}
+
 @media (max-width: 1900px) {
   #app-header {
     .tethys-app-header {
-      .app-title-wrapper {
-        .app-title {
-          width: 1500px;
+      #nav-title-wrapper {
+        .app-title-wrapper {
+          .app-title {
+            max-width: 1900px - @app-header-title-max-offset;
+          }
         }
       }
     }
@@ -301,9 +337,11 @@ body {
 @media (max-width: 1700px) {
   #app-header {
     .tethys-app-header {
-      .app-title-wrapper {
-        .app-title {
-          width: 1300px;
+      #nav-title-wrapper {
+        .app-title-wrapper {
+          .app-title {
+            max-width: 1700px - @app-header-title-max-offset;
+          }
         }
       }
     }
@@ -313,9 +351,11 @@ body {
 @media (max-width: 1500px) {
   #app-header {
     .tethys-app-header {
-      .app-title-wrapper {
-        .app-title {
-          width: 1100px;
+      #nav-title-wrapper {
+        .app-title-wrapper {
+          .app-title {
+            max-width: 1500px - @app-header-title-max-offset;
+          }
         }
       }
     }
@@ -325,9 +365,11 @@ body {
 @media (max-width: 1300px) {
   #app-header {
     .tethys-app-header {
-      .app-title-wrapper {
-        .app-title {
-          width: 900px;
+      #nav-title-wrapper {
+        .app-title-wrapper {
+          .app-title {
+            max-width: 1300px - @app-header-title-max-offset;
+          }
         }
       }
     }
@@ -337,9 +379,11 @@ body {
 @media (max-width: 1100px) {
   #app-header {
     .tethys-app-header {
-      .app-title-wrapper {
-        .app-title {
-          width: 700px;
+      #nav-title-wrapper {
+        .app-title-wrapper {
+          .app-title {
+            max-width: 1100px - @app-header-title-max-offset;
+          }
         }
       }
     }
@@ -349,9 +393,11 @@ body {
 @media (max-width: 900px) {
   #app-header {
     .tethys-app-header {
-      .app-title-wrapper {
-        .app-title {
-          width: 500px;
+      #nav-title-wrapper {
+        .app-title-wrapper {
+          .app-title {
+            max-width: 900px - @app-header-title-max-offset;
+          }
         }
       }
     }
@@ -373,21 +419,11 @@ body {
 @media (max-width: 700px) {
   #app-header {
     .tethys-app-header {
-      .icon-wrapper {
-        padding: 20px;
-        padding-left: 0px;
-
-        img {
-          height: 60px;
-        }
-      }
-
-      .app-title-wrapper {
-        .app-title {
-          padding: 29px 0;
-          padding-left: 100px;
-          font-size: 30px;
-          width: 350px;
+      #nav-title-wrapper {
+        .app-title-wrapper {
+          .app-title {
+            max-width: 700px - @app-header-title-max-offset;
+          }
         }
       }
     }
@@ -397,44 +433,13 @@ body {
 @media (max-width: 500px) {
   #app-header {
     .tethys-app-header {
-      height: @app-header-height-max-width-500;
-
-      .toggle-nav {
-        margin: 10px;
-        margin-left: 0;
-      }
-
-      .icon-wrapper {
-        padding: 10px;
-        padding-left: 0;
-
-        img {
-          height:40px;
+      #nav-title-wrapper {
+        .app-title-wrapper {
+          .app-title {
+            display: none;
+          }
         }
       }
-
-      .app-title-wrapper {
-        .app-title {
-          padding: 13px 0;
-          padding-left: 65px;
-          font-size: 24px;
-          width: 230px;
-        }
-      }
-
-      .exit-button {
-        margin-right: 20px;
-        margin-top: 10px;
-
-        a {
-          padding: 6px 15px;
-        }
-      }
-    }
-  }
-  #app-content-wrapper {
-    #app-content {
-      padding-top: @app-header-height-max-width-500;
     }
   }
 }

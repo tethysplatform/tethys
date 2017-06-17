@@ -97,7 +97,7 @@ HTCondor provides a way to make use of the idle computing power that is already 
 
 .. note::
 
-    To learn more, read the :doc:`./tethys_sdk/cloud_computing`.
+    To learn more, read the :doc:`./tethys_sdk/jobs` and the :doc:`./tethys_sdk/compute`.
 
 
 Acknowledgements

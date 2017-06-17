@@ -1,8 +1,8 @@
-***********************
-Upgrade from 1.2 to 1.3
-***********************
+********************
+Upgrade to |version|
+********************
 
-**Last Updated:** December 21, 2015
+**Last Updated:** December 10, 2016
 
 1. Pull Repository
 ==================
@@ -72,6 +72,16 @@ Start the database docker if not already started and apply any changes to the da
              $ . /usr/lib/tethys/bin/activate
     (tethys) $ tethys docker start -c postgis
     (tethys) $ tethys manage syncdb
+
+.. note::
+
+    For migration errors use:
+
+    ::
+
+        $ cd ~/usr/lib/tethys/src
+        $ python manage.py makemigrations --merge
+        $ tethys manage syncdb
 
 6. Collect Static Files
 =======================

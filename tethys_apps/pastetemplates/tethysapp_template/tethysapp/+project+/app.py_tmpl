@@ -12,20 +12,23 @@ class {{proper_no_spaces}}(TethysAppBase):
     package = '{{project}}'
     root_url = '{{project_url}}'
     color = '{{color}}'
-    description = 'Place a brief description of your app here.'
+    description = {{repr(description) or 'Place a brief description of your app here.'}}
+    tags = '{{tags}}'
     enable_feedback = False
     feedback_emails = []
 
-        
     def url_maps(self):
         """
         Add controllers
         """
         UrlMap = url_map_maker(self.root_url)
 
-        url_maps = (UrlMap(name='home',
-                           url='{{project_url}}',
-                           controller='{{project}}.controllers.home'),
+        url_maps = (
+            UrlMap(
+                name='home',
+                url='{{project_url}}',
+                controller='{{project}}.controllers.home'
+            ),
         )
 
         return url_maps

@@ -226,24 +226,35 @@ HydroShare
 
   You will need a HydroShare account to register your Tethys Portal with HydroShare. To create an account, visit `https://www.hydroshare.org <https://www.hydroshare.org>`_.
 
-2. Create a HydroShare Application
+2. Create and setup a HydroShare Application
 
   a. Navigate to `https://www.hydroshare.org/o/applications/register/ <https://www.hydroshare.org/o/applications/register/>`_.
-  b. See Step 4 for instructions on Redirect URIs.
-  c. Fill out the form and press ``Save``.
 
-3. Note the ``Client ID`` and ``Client Secret`` for Step 5.
+  b. Name: Give this OAuth app a name. It is recommended to use the domain of your Tethys Portal instance as the name, like: www.my-tethys-portal.com
 
-4. Setup OAuth
+  c. Client id:  Leave unchanged. Note this value for step 3.
 
-  a. Add the call back URLs under the Redirect URIs section. For example, if my Tethys Portal was located at the domain ``www.example.org``:
+  d. Client secret: Leave unchanged. Note this value for step 3.
 
-    ::
+  e. Client type: Select "Confidential".
 
-        https://www.example.org/oauth2/complete/hydroshare/
-        http://localhost:8000/oauth2/complete/hydroshare/
+  f. Authorization grant type: Select "Authorzation code".
 
-5. Open  ``settings.py`` script located in :file:`/usr/lib/tethys/src/tethys_apps/settings.py`
+  g. Redirect uris: Add the call back URLs. The protocol (http or https) that matches your Tethys Portal settings should be included in this url. For example:
+
+  ::
+
+      if your Tethys Portal was located at the domain ``https://www.my-tethys-portal.com``:
+          https://www.my-tethys-portal.com/oauth2/complete/hydroshare/
+
+      if your Tethys Portal was on a local development machine:
+          http://localhost:8000/oauth2/complete/hydroshare/
+          or
+          http://127.0.0.1:8000/oauth2/complete/hydroshare/
+
+  h. Press the "Save" button.
+
+3. Open  ``settings.py`` script located in :file:`/usr/lib/tethys/src/tethys_apps/settings.py`
 
   Add the ``social.backends.hydroshare.HydroShareOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
 
@@ -261,6 +272,61 @@ HydroShare
 
       SOCIAL_AUTH_HYDROSHARE_KEY = '...'
       SOCIAL_AUTH_HYDROSHARE_SECRET = '...'
+
+4. Work with HydroShare in your app
+
+  Once user has logged in Tethys through HydroShare OAuth, your app is ready to retrieve data from HydroShare on behalf of this HydroShare user using HydroShare REST API Client (hs_restclient).
+  A helper function is provided to make this integration smoother.
+
+  ::
+
+      # import helper function
+      from tethys_services.backends.hs_restclient_helper import get_oauth_hs
+
+      # your controller function
+      def home(request)
+
+          # put codes in a 'try..except...' statement
+          try:
+              # pass in request object
+              hs = get_oauth_hs(request)
+
+              # your logic goes here. For example: list all HydroShare resources
+              for resource in hs.getResourceList():
+                  print(resource)
+
+          except Exception as e:
+              # handle exceptions
+              pass
+
+5. (Optional) Link to a testing HydroShare instance
+
+    The production HydroShare is located at `https://www.hydroshare.org/ <https://www.hydroshare.org/>`_. In some cases you may want to link your Tethys Portal to a testing HydroShare instance, like `hydroshare-beta <https://beta.hydroshare.org/>`_.
+    Tethys already provides OAuth backends for `hydroshare-beta <https://beta.hydroshare.org/>`_ and `hydroshare-playground <https://playground.hydroshare.org/>`_.
+    To activate them, you need to go through steps 1-3 for each backend (replace www.hydroshare.org with the testing domain urls accordingly).
+
+    At step 3:
+
+    a. Append the following classes in ``AUTHENTICATION_BACKENDS`` settings:
+
+        hydroshare-beta:
+          ``tethys_services.backends.hydroshare_beta.HydroShareBetaOAuth2``
+        hydroshare-playground:
+          ``tethys_services.backends.hydroshare_playground.HydroSharePlaygroundOAuth2``
+
+    b. Assign the ``Client ID`` and ``Client Secret`` to the following variables:
+
+        hydroshare-beta:
+          ``SOCIAL_AUTH_HYDROSHARE_BETA_KEY``
+
+          ``SOCIAL_AUTH_HYDROSHARE_BETA_SECRET``
+
+        hydroshare-playground:
+          ``SOCIAL_AUTH_HYDROSHARE_PLAYGROUND_KEY``
+
+          ``SOCIAL_AUTH_HYDROSHARE_PLAYGROUND_SECRET``
+
+    Note: To prevent any unexpected behavior in section (4), a Tethys account SHOULD NOT be associated with multiple HydroShare social accounts.
 
 References
 ++++++++++
@@ -319,8 +385,3 @@ Social authentication requires Tethys Platform 1.2.0 or later. If you are using 
     ## HydroShare
     SOCIAL_AUTH_HYDROSHARE_KEY = ''
     SOCIAL_AUTH_HYDROSHARE_SECRET = ''
-
-
-
-
-
