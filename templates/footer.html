@@ -6,12 +6,23 @@
   footer.site-footer .tethys-attribution {
     color: {{ site_globals.primary_text_color|default:'#ffffff' }};
   }
+  .documents-wrapper .document-link {
+    color: {{ site_globals.primary_text_color|default:'#eeeeff' }};
+  }
+  .documents-wrapper .document-link:hover {
+    color: {{ site_globals.primary_text_color|default:'#ffffff' }};
+  }
 </style>
 <footer id="site-footer" class="site-footer" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
   {% block footer_content %}
 
     <div class="copyright-wrapper">
       <span class="copyright">{{ site_globals.footer_copyright|default:"Copyright © 2015 Your Organization"}}</span>
+    </div>
+    <div class="documents-wrapper">
+      {% for document in site_globals.documents %}
+      <a class="document-link" href="{% url 'tc_view_specific_version_page' document.slug document.version_number %}">{{ document.name }}</a>
+      {% endfor %}
     </div>
     <div class="tethys-attribution">
       <span class="powered-by-tethys">Powered by <a href="http://www.tethysplatform.org"><img src="/static/tethys_portal/images/tethys-logo-25.png"> Tethys Platform</a></span>

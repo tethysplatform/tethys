@@ -15,6 +15,8 @@ from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
+import plotly.graph_objs as go
+from bokeh.plotting import figure as bokeh_figure
 from requests.exceptions import ConnectionError
 
 from tethys_sdk.gizmos import *
@@ -121,30 +123,39 @@ def index(request):
 
     # Select Input
     select_input2 = SelectInput(display_text='Select2',
-                                name='select1',
+                                name='select2',
                                 multiple=False,
                                 options=[('One', '1'), ('Two', '2'), ('Three', '3')],
                                 initial=['Three'],
-                                original=['Two'])
+                                select2_options={'placeholder': 'Select a number',
+                                                 'allowClear': True})
 
     select_input2_multiple = SelectInput(display_text='Select2 Multiple',
-                                         name='select2',
+                                         name='select21',
                                          multiple=True,
                                          options=[('One', '1'), ('Two', '2'), ('Three', '3')],
                                          initial=['Two', 'One'])
 
-    select_input_multiple = SelectInput(display_text='Select Multiple',
-                                        name='select2.1',
-                                        multiple=True,
-                                        original=True,
-                                        options=[('One', '1'), ('Two', '2'), ('Three', '3')])
-
     select_input2_error = SelectInput(display_text='Select2 Disabled',
-                                      name='select3',
+                                      name='select22',
                                       multiple=False,
                                       options=[('One', '1'), ('Two', '2'), ('Three', '3')],
                                       disabled=True,
                                       error='Here is my error text')
+
+    select_input = SelectInput(display_text='Select',
+                               name='select1',
+                               multiple=False,
+                               original=True,
+                               options=[('One', '1'), ('Two', '2'), ('Three', '3')],
+                               initial=['Three'])
+
+    select_input_multiple = SelectInput(display_text='Select Multiple',
+                                        name='select11',
+                                        multiple=True,
+                                        original=True,
+                                        options=[('One', '1'), ('Two', '2'), ('Three', '3')])
+
 
     # Text Input
     text_input = TextInput(display_text='Text',
@@ -305,6 +316,7 @@ def index(request):
     scatter_plot_view = ScatterPlot(
         width='500px',
         height='500px',
+        engine='highcharts',
         title='Scatter Plot',
         subtitle='Scatter Plot',
         x_axis_title='Height',
@@ -331,6 +343,7 @@ def index(request):
     web_plot = PolarPlot(
         width='500px',
         height='500px',
+        engine='highcharts',
         title='Polar Chart',
         subtitle='Polar Chart',
         pane={
@@ -357,6 +370,7 @@ def index(request):
     pie_plot_view = PiePlot(
         width='500px',
         height='500px',
+        engine='highcharts',
         title='Pie Chart',
         subtitle='Pie Chart',
         series=[{
@@ -397,6 +411,7 @@ def index(request):
     bar_plot_view = BarPlot(
         width='500px',
         height='500px',
+        engine='highcharts',
         title='Bar Chart',
         subtitle='Bar Chart',
         vertical=False,
@@ -448,6 +463,7 @@ def index(request):
     timeseries_plot = TimeSeries(
         width='500px',
         height='500px',
+        engine='highcharts',
         title='Irregular Timeseries Plot',
         y_axis_title='Snow depth',
         y_axis_units='m',
@@ -598,6 +614,7 @@ def index(request):
     area_range_plot = AreaRange(
         width='500px',
         height='500px',
+        engine='highcharts',
         title='July Temperatures',
         y_axis_title='Temperature',
         y_axis_units='*C',
@@ -619,109 +636,19 @@ def index(request):
         }]
     )
 
-    # Heat Map
-    # sales_data = [
-    #     [0, 0, 10], [0, 1, 19], [0, 2, 8], [0, 3, 24], [0, 4, 67], [1, 0, 92],
-    #     [1, 1, 58], [1, 2, 78], [1, 3, 117], [1, 4, 48], [2, 0, 35], [2, 1, 15],
-    #     [2, 2, 123], [2, 3, 64], [2, 4, 52], [3, 0, 72], [3, 1, 132], [3, 2, 114],
-    #     [3, 3, 19], [3, 4, 16], [4, 0, 38], [4, 1, 5], [4, 2, 8], [4, 3, 117],
-    #     [4, 4, 115], [5, 0, 88], [5, 1, 32], [5, 2, 12], [5, 3, 6], [5, 4, 120],
-    #     [6, 0, 13], [6, 1, 44], [6, 2, 88], [6, 3, 98], [6, 4, 96], [7, 0, 31],
-    #     [7, 1, 1], [7, 2, 82], [7, 3, 32], [7, 4, 30], [8, 0, 85], [8, 1, 97],
-    #     [8, 2, 123], [8, 3, 64], [8, 4, 84], [9, 0, 47], [9, 1, 114], [9, 2, 31],
-    #     [9, 3, 48], [9, 4, 91]
-    # ]
-    #
-    # heat_map_object = HighChartsHeatMap(
-    #     title='Sales per employee per weekday',
-    #     x_categories=['Alexander', 'Marie', 'Maximilian', 'Sophia', 'Lukas', 'Maria', 'Leon', 'Anna', 'Tim', 'Laura'],
-    #     y_categories=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-    #     tooltip_phrase_one='sold',
-    #     tooltip_phrase_two='items on',
-    #     colorAxis={
-    #         'min': 0,
-    #         'minColor': '#FFFFFF',
-    #         'maxColor': 'Highcharts.getOptions().colors[0]'
-    #     },
-    #     legend={
-    #         'align': 'right',
-    #         'layout': 'vertical',
-    #         'margin': 0,
-    #         'verticalAlign': 'top',
-    #         'y': 25,
-    #         'symbolHeight': 280
-    #     },
-    #     series=[{
-    #         'name': 'Sales per employee',
-    #         'borderWidth': 1,
-    #         'data': sales_data,
-    #         'dataLabels': {
-    #             'enabled': True,
-    #             'color': '#000000'
-    #         }
-    #     }]
-    # )
-    #
-    # heat_map_plot = PlotView(highcharts_object=heat_map_object,
-    #                          width='500px',
-    #                          height='500px')
+    # Plotly View
+    x = [datetime(year=2013, month=10, day=4),
+         datetime(year=2013, month=11, day=5),
+         datetime(year=2013, month=12, day=6)]
+    
+    my_plotly_view = PlotlyView([go.Scatter(x=x, y=[1, 3, 6])])
+    
+    #TODO: Add pandas example when pandas is included with Tethys Platform
 
-    # Custom Plot
-    custom_plot_dictionary = {
-        'chart': {
-            'type': 'columnrange',
-            'inverted': True
-        },
-        'title': {
-            'text': 'Temperature variation by month'
-        },
-        'subtitle': {
-            'text': 'Observed in Vik i Sogn, Norway, 2009'
-        },
-        'xAxis': {
-            'categories': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-        },
-        'yAxis': {
-            'title': {
-                'text': 'Temperature ( °C )'
-            }
-        },
-        'tooltip': {
-            'valueSuffix': '°C'
-        },
-        'plotOptions': {
-            'columnrange': {
-                'dataLabels': {
-                    'enabled': True,
-                    'formatter': "function () {return this.y + '°C';}"
-                }
-            }
-        },
-        'legend': {
-            'enabled': False
-        },
-        'series': [{
-            'name': 'Temperatures',
-            'data': [
-                [-9.7, 9.4],
-                [-8.7, 6.5],
-                [-3.5, 9.4],
-                [-1.4, 19.9],
-                [0.0, 22.6],
-                [2.9, 29.5],
-                [9.2, 30.7],
-                [7.3, 26.5],
-                [4.4, 18.0],
-                [-3.1, 11.4],
-                [-5.2, 10.4],
-                [-13.5, 9.8]
-            ]
-        }]
-    }
-
-    custom_plot = PlotView(highcharts_object=custom_plot_dictionary,
-                           width='500px',
-                           height='500px')
+    # Bokeh View
+    plot = bokeh_figure(plot_height=300)
+    plot.circle([1,2], [3,4])
+    my_bokeh_view = BokehView(plot, height="300px")
 
     # Table View
     table_view = TableView(column_names=('Name', 'Age', 'Job'),
@@ -744,6 +671,22 @@ def index(request):
                                 editable_columns=(False, 'ageInput', 'jobInput'),
                                 row_ids=[21, 25, 31])
 
+    # DataTable View
+    datatable_default = DataTableView(column_names=('Name', 'Age', 'Job'),
+                                      rows=[('Bill', 30, 'contractor'),
+                                            ('Fred', 18, 'programmer'),
+                                            ('Bob', 26, 'boss')],
+                                      searching=False,
+                                      orderClasses=False,
+                                      lengthMenu=[ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+                                      )
+
+    datatable_with_extension = DataTableView(column_names=('Name', 'Age', 'Job'),
+                                             rows=[('Bill', 30, 'contractor'),
+                                                   ('Fred', 18, 'programmer'),
+                                                   ('Bob', 26, 'boss')],
+                                             colReorder=True,
+                                             )
 
     # Message Box
     message_box = MessageBox(name='sampleModal',
@@ -771,24 +714,6 @@ def index(request):
         # Display the JSON as flash message
         flash_message = geometry_string
 
-    # Fetchclimate
-    fetchclimate_array = FetchClimateMap(
-        url_parameter=FetchClimateURLParameter(serverUrl='http://fetchclimate2.cloudapp.net'),
-        variable_parameters=FetchClimateVariableParameters(variables={
-            'prate': [423, 432, 426, 424],
-            'elev': []
-        }),
-        grid_parameters=FetchClimateGridParameters(
-            title='Provo Canyon Watershed',
-            boundingBox=[40.308836, 40.381579, -111.654462, -111.550778],
-            gridResolution=[25, 25]
-        ),
-        point_parameters=FetchClimatePointParameters(
-            title='Clyde Building',
-            location=[40.246942, -111.647971]
-        )
-    )
-
     # Map View
     # Define view options
     view_options = MVView(
@@ -801,7 +726,7 @@ def index(request):
 
     # Define drawing options
     drawing_options = MVDraw(
-        controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
+        controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
         initial='Point',
         output_format='WKT'
     )
@@ -900,7 +825,10 @@ def index(request):
                                           }],
                                layers=map_layers,
                                view=view_options,
-                               basemap='OpenStreetMap',
+                               basemap=['OpenStreetMap',
+                                        {'OpenStreetMap': {'url': 'http://tile.stamen.com/watercolor/{z}/{x}/{y}.jpg',
+                                                           'label': 'Watercolor'}
+                                         }],
                                draw=drawing_options,
                                legend=True)
 
@@ -916,7 +844,19 @@ def index(request):
         condensed=False,
         results_url='gizmos:results',
         refresh_interval=10000,
+        delete_btn=True,
     )
+
+    #ESRI Map Gizmo
+    esri_map_view = EMView(center=[-100, 40], zoom=4)
+    esri_layer = EMLayer(type='FeatureLayer',
+                         url='http://geoserver.byu.edu/arcgis/rest/services/gaugeviewer/AHPS_gauges/MapServer/0')
+
+    vector_tile = EMLayer(type='ImageryLayer',
+                          url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer')
+
+    esri_map = ESRIMap(height='400px', width='100%', basemap='topo', view=esri_map_view,
+                       layers=[vector_tile, esri_layer])
 
     # Define the context object
     context = {'docs_endpoint': docs_endpoint,
@@ -929,8 +869,9 @@ def index(request):
                'slider2': slider2,
                'select_input2': select_input2,
                'select_input2_multiple': select_input2_multiple,
-               'select_input_multiple': select_input_multiple,
                'select_input2_error': select_input2_error,
+               'select_input': select_input,
+               'select_input_multiple': select_input_multiple,
                'text_input': text_input,
                'text_error_input': text_error_input,
                'toggle_switch': toggle_switch,
@@ -939,14 +880,18 @@ def index(request):
                'line_plot_view': line_plot_view,
                'web_plot': web_plot,
                'timeseries_plot': timeseries_plot,
+               'my_plotly_view': my_plotly_view,
+               'my_bokeh_view': my_bokeh_view,
                'table_view': table_view,
                'table_view_edit': table_view_edit,
+               'datatable_default': datatable_default,
+               'datatable_with_extension': datatable_with_extension,
                'message_box': message_box,
                'google_map_view': google_map_view,
                'flash_message': flash_message,
-               'fetchclimate_array': fetchclimate_array,
                'jobs_table_options': jobs_table_options,
                'map_view_options': map_view_options,
+               "esri_map":esri_map,
                'scatter_plot_view': scatter_plot_view,
                'pie_plot_view': pie_plot_view,
                'd3_pie_plot_view': d3_pie_plot_view,
@@ -957,7 +902,6 @@ def index(request):
                'bar_plot_view': bar_plot_view,
                'area_range_plot': area_range_plot,
                # 'heat_map_plot': heat_map_plot,
-               'custom_plot': custom_plot,
                }
 
     return render(request, 'tethys_gizmos/gizmo_showcase/index.html', context)
@@ -1021,74 +965,57 @@ def swap_overlays(request):
 
 
 @login_required()
-def editable_map(request):
+def google_map_view(request):
     """
     Place to display editable google map in an isolated environment
     """
 
     # Editable Google Map
-    google_map_view = {'height': '600px',
-                       'width': '100%',
-                       'reference_kml_action': reverse('gizmos:get_kml'),
-                       'drawing_types_enabled': ['POLYGONS', 'POINTS', 'POLYLINES', 'BOXES'],
-                       'initial_drawing_mode': 'BOXES',
-                       'input_overlays': {"type": "GeometryCollection",
-                                          "geometries": [
-                                              {"type": "Point",
-                                               "coordinates": [40.629197012613545, -111.5123462677002],
-                                               "properties": {"id": 1, "value": 1}},
-                                              {"type": "Polygon",
-                                               "coordinates": [[40.63193284946615, -111.50153160095215],
-                                                               [40.617210120505035, -111.50101661682129],
-                                                               [40.623594711231775, -111.48625373840332],
-                                                               [40.63193284946615, -111.49123191833496]],
-                                               "properties": {"id": 2, "value": 2}},
-                                              {"type": "LineString",
-                                               "coordinates": [[40.65003865742191, -111.49123191833496],
-                                                               [40.635319920747456, -111.49088859558105],
-                                                               [40.64912697157757, -111.48127555847168],
-                                                               [40.634668574229735, -111.48024559020996]],
-                                               "properties": {"id": 3, "value": 3}},
-                                              {"type": "BoundingBox",
-                                               "bounds": [-111.54521942138672, 40.597792003905454, -111.46625518798828,
-                                                          40.66449372533465],
-                                               "properties": {"id": 4, "value": 4}
-                                               }
-                                          ]},
-                       'output_format': 'WKT'
-                       }
+    google_map_view = GoogleMapView(height='600px',
+                                    width='100%',
+                                    reference_kml_action=reverse('gizmos:get_kml'),
+                                    drawing_types_enabled=['POLYGONS', 'POINTS', 'POLYLINES', 'BOXES'],
+                                    initial_drawing_mode='BOXES',
+                                    input_overlays={"type": "GeometryCollection",
+                                              "geometries": [
+                                                  {"type": "Point",
+                                                   "coordinates": [40.629197012613545, -111.5123462677002],
+                                                   "properties": {"id": 1, "value": 1}},
+                                                  {"type": "Polygon",
+                                                   "coordinates": [[40.63193284946615, -111.50153160095215],
+                                                                   [40.617210120505035, -111.50101661682129],
+                                                                   [40.623594711231775, -111.48625373840332],
+                                                                   [40.63193284946615, -111.49123191833496]],
+                                                   "properties": {"id": 2, "value": 2}},
+                                                  {"type": "LineString",
+                                                   "coordinates": [[40.65003865742191, -111.49123191833496],
+                                                                   [40.635319920747456, -111.49088859558105],
+                                                                   [40.64912697157757, -111.48127555847168],
+                                                                   [40.634668574229735, -111.48024559020996]],
+                                                   "properties": {"id": 3, "value": 3}},
+                                                  {"type": "BoundingBox",
+                                                   "bounds": [-111.54521942138672, 40.597792003905454, -111.46625518798828,
+                                                              40.66449372533465],
+                                                   "properties": {"id": 4, "value": 4}
+                                                   }
+                                                   ]
+                                               },
+                                    output_format='WKT',
+                                    )
 
     if ('editable_map_submit' in request.POST) and (request.POST['geometry']):
         # Some example code showing how you can decode the JSON into python
         # data structures.
         geometry_string = request.POST['geometry']
         geometry_json = json.loads(geometry_string)
-        google_map_view['input_overlays'] = geometry_json
+        google_map_view.input_overlays = geometry_json
 
         # Display the JSON as flash message
         messages.info(request, geometry_string)
 
     context = {'google_map_view': google_map_view}
 
-    return render(request, 'tethys_gizmos/gizmo_showcase/editable_map.html', context)
-
-
-@login_required()
-def google_map(request):
-    """
-    Place to display google map view in an isoloted environment
-    """
-    # Google Map
-    google_map = {'height': '600px',
-                  'width': '100%',
-                  'kml_service': reverse('gizmos:get_kml')}
-
-    messages.warning(request,
-                     'WARNING: The "google_map" gizmo has been deprecated and may lose support in future releases of Tethys Platform.')
-
-    context = {'google_map': google_map}
-
-    return render(request, 'tethys_gizmos/gizmo_showcase/google_map.html', context)
+    return render(request, 'tethys_gizmos/gizmo_showcase/google_map_view.html', context)
 
 
 @login_required()
@@ -1108,9 +1035,9 @@ def map_view(request):
 
     # Define drawing options
     drawing_options = MVDraw(
-        controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
+        controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
         initial='Point',
-        output_format='WKT'
+        output_format='GeoJSON'
     )
 
     # Define GeoJSON layer
@@ -1152,6 +1079,7 @@ def map_view(request):
 
     geojson_layer = MVLayer(source='GeoJSON',
                             options=geojson_object,
+                            editable=False,
                             legend_title='Test GeoJSON',
                             legend_extent=[-46.7, -48.5, 74, 59],
                             legend_classes=[
@@ -1221,43 +1149,22 @@ def map_view(request):
 
     return render(request, 'tethys_gizmos/gizmo_showcase/map_view.html', context)
 
-
 @login_required()
-def fetchclimate_map(request):
-    """
-    Place to show off the new map view
-    """
-    fetchclimate_map = FetchClimateMap(
-        url_parameter=FetchClimateURLParameter(serverUrl='http://fetchclimate2.cloudapp.net'),
-        variable_parameters=FetchClimateVariableParameters(variables={
-            'prate': [423, 432, 426, 424],
-            'elev': []
-        }),
-        map_parameters=FetchClimateMapParameters(
-            css={'height': '600px',
-                 'width': '100%'},
-            map_data=FetchClimateMapData(
-                drawing_types_enabled=['RECTANGLE', 'POINTS'],
-                initial_drawing_mode='RECTANGLE',
-                max_num_grids=2
-            )
-        ),
-        grid_parameters=FetchClimateGridParameters(
-            title='Provo Canyon Watershed',
-            boundingBox=[40.308836, 40.381579, -111.654462, -111.550778],
-            gridResolution=[25, 25]
-        ),
-        point_parameters=FetchClimatePointParameters(
-            title='Clyde Building',
-            location=[40.246942, -111.647971],
-        ),
-        plot_parameters=FetchClimatePlotParameters(dimensions={'width': 500, 'height': 350})
-    )
+def esri_map(request):
 
-    context = {'fetchclimate_map': fetchclimate_map}
+    esri_map_view = EMView(center=[-100, 40], zoom=4)
+    esri_layer = EMLayer(type='FeatureLayer',
+                         url='http://geoserver.byu.edu/arcgis/rest/services/gaugeviewer/AHPS_gauges/MapServer/0')
 
-    return render(request, 'tethys_gizmos/gizmo_showcase/fetchclimate_map.html', context)
+    vector_tile = EMLayer(type='ImageryLayer',
+                          url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer')
 
+    esri_map = ESRIMap(height='400px', width='100%', basemap='topo', view=esri_map_view,
+                              layers=[vector_tile, esri_layer])
+
+    context = {"esri_map":esri_map}
+
+    return render(request,'tethys_gizmos/gizmo_showcase/esri_map.html',context)
 
 def jobs_table_results(request, job_id):
     return redirect(reverse('gizmos:showcase') + '#jobs_table_docs')

@@ -2,7 +2,7 @@
 Software Suite
 **************
 
-**Last Updated:** May 19, 2015
+**Last Updated:** May 18, 2016
 
 The Software Suite is the component of Tethys Platform that provides access to resources and functionality that are commonly required to develop water resources web apps. The primary motivation of creating the Tethys Software Suite was overcome the hurdle associated with selecting a GIS software stack to support spatial capabilities in apps. Some of the more specialized needs for water resources app development arise from the spatial data components of the models that are used in the apps. Distributed hydrologic models, for example, are parameterized using raster or vector layers such as land use maps, digital elevation models, and rainfall intensity grids.
 
@@ -22,7 +22,7 @@ Spatial Database Storage
 
 Tethys Software Suite includes the `PostgreSQL <http://www.postgresql.org/>`_ database with `PostGIS <http://postgis.net/>`_, a spatial database extension, to provide spatial data storage capabilities for Tethys web apps. PostGIS adds spatial column types including raster, geometry, and geography. The extension also provides database functions for basic analysis of GIS objects.
 
-To use a PostgreSQL database in your app use the :doc:`./tethys_sdk/persistent_store`. To use a spatially enabled database with PostGIS use the :doc:`./tethys_sdk/spatial_persistent_store`.
+To use a PostgreSQL database in your app use the :doc:`./tethys_sdk/tethys_services/persistent_store`. To use a spatially enabled database with PostGIS use the :doc:`./tethys_sdk/tethys_services/spatial_persistent_store`.
 
 Map Publishing
 ==============
@@ -31,9 +31,9 @@ Map Publishing
    :width: 200px
    :align: right
 
-Tethys Software Suite provides `GeoServer <http://geoserver.org/>`_ for publishing spatial data as web services. GeoServer is used to publish common spatial files such as Shapefiles and GeoTIFFs in web-friendly formats like GeoJSON and images.
+Tethys Software Suite provides `GeoServer <http://geoserver.org/>`_ for publishing spatial data as web services. GeoServer is used to publish common spatial files such as Shapefiles and GeoTIFFs in web-friendly formats.
 
-To use the map publishing capabilities of GeoServer in your app use the :doc:`./tethys_sdk/spatial_dataset_services`.
+To use the map publishing capabilities of GeoServer in your app refer to the :doc:`./software_suite/geoserver` documentation and use the :doc:`./tethys_sdk/tethys_services/spatial_dataset_services`.
 
 Geoprocessing
 =============
@@ -46,7 +46,7 @@ Geoprocessing
 
 The PostGIS extension, included in the software suite, can also provide geoprocessing capabilities on data that is stored in a spatially-enabled database. PostGIS includes SQL geoprocessing functions for splicing, dicing, morphing, reclassifying, and collecting/unioning raster and vector types. It also includes functions for vectorizing rasters, clipping rasters with vectors, and running stats on rasters by geometric region.
 
-To use 52°North WPS or other WPS geoprocessing services in your app use the :doc:`./tethys_sdk/web_processing_services`.
+To use 52°North WPS or other WPS geoprocessing services in your app use the :doc:`./tethys_sdk/tethys_services/web_processing_services`.
 
 Visualization
 =============
@@ -84,7 +84,7 @@ Distributed Computing
 
 To facilitate the large-scale computing that is often required by water resources applications, Tethys Software Suite leverages the computing management middleware `HTCondor <http://research.cs.wisc.edu/htcondor/>`_. HTCondor is both a resource management and a job scheduling software.
 
-To use the HTCondor and the computing capabilities in your app use the :doc:`./tethys_sdk/cloud_computing`.
+To use the HTCondor and the computing capabilities in your app use the :doc:`./tethys_sdk/jobs` and the :doc:`./tethys_sdk/compute`.
 
 
 File Dataset Storage
@@ -104,7 +104,7 @@ Tethys Software Suite does not include software for handling flat file storage. 
 
 `HydroShare <http://hydroshare.cuahsi.org/>`_ is an online hydrologic model and data sharing portal being developed by CUAHSI. It builds on the sharing capabilities of CUAHSI’s Hydrologic Information System by adding support for sharing models and using social media functionality.
 
-To use a CKAN instance for flat file storage in your app use the :doc:`./tethys_sdk/dataset_services`. HydroShare is not fully supported at this time, but when it is you will use the :doc:`./tethys_sdk/dataset_services` to access HydroShare resources.
+To use a CKAN instance for flat file storage in your app use the :doc:`./tethys_sdk/tethys_services/dataset_services`. HydroShare is not fully supported at this time, but when it is you will use the :doc:`./tethys_sdk/tethys_services/dataset_services` to access HydroShare resources.
 
 Docker Installation
 ===================
@@ -132,15 +132,23 @@ SDK Relationships
 
 Tethys Platform provides a software development kit (SDK) that provides application programming interfaces (APIs) for interacting with each of the software included in teh Software Suite. The appropriate APIs are referenced in each section above, but a summary table of the relationship between the Software Suite and the SDK is provided as a reference.
 
-=====================================  ===============================================  ============================================
-Software                               API                                              Functionality
-=====================================  ===============================================  ============================================
-PostgreSQL                             :doc:`./tethys_sdk/persistent_store`             SQL Database Storage
-PostGIS                                :doc:`./tethys_sdk/spatial_persistent_store`     Spatial Database Storage and Geoprocessing
-GeoServer                              :doc:`./tethys_sdk/spatial_dataset_services`     Spatial File Publishing
-52° North WPS                          :doc:`./tethys_sdk/web_processing_services`      Geoprocessing Services
-OpenLayers, Google Maps, HighCharts    :doc:`./tethys_sdk/gizmos`                       Spatial and Tabular Visualization
-HTCondor                               :doc:`./tethys_sdk/cloud_computing`              Computing and Job Management
-CKAN, HydroShare                       :doc:`./tethys_sdk/dataset_services`             Flat File Storage
-=====================================  ===============================================  ============================================
+=====================================  ===============================================================  ============================================
+Software                               API                                                              Functionality
+=====================================  ===============================================================  ============================================
+PostgreSQL                             :doc:`./tethys_sdk/tethys_services/persistent_store`             SQL Database Storage
+PostGIS                                :doc:`./tethys_sdk/tethys_services/spatial_persistent_store`     Spatial Database Storage and Geoprocessing
+GeoServer                              :doc:`./tethys_sdk/tethys_services/spatial_dataset_services`     Spatial File Publishing
+52° North WPS                          :doc:`./tethys_sdk/tethys_services/web_processing_services`      Geoprocessing Services
+OpenLayers, Google Maps, HighCharts    :doc:`./tethys_sdk/gizmos`                                       Spatial and Tabular Visualization
+HTCondor                               :doc:`./tethys_sdk/compute` and                                  Computing and Job Management
+                                       :doc:`./tethys_sdk/jobs`
+CKAN, HydroShare                       :doc:`./tethys_sdk/tethys_services/dataset_services`             Flat File Storage
+=====================================  ===============================================================  ============================================
 
+References
+==========
+
+.. toctree::
+   :maxdepth: 1
+
+   software_suite/geoserver

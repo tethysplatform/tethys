@@ -8,20 +8,21 @@
 ********************************************************************************
 """
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
+from django.conf import settings
 
-__all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer', 'MVLegendClass']
+__all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer', 'MVLegendClass', 'MVLegendImageClass', 'MVLegendGeoServerImageClass']
 
 
 class MapView(TethysGizmoOptions):
     """
-    The Map View gizmo can be used to produce interactive maps of spatial data. It is powered by OpenLayers 3, a free and open source pure javascript mapping library. It supports layers in a variety of different formats including WMS, Tiled WMS, GeoJSON, KML, and ArcGIS REST. It includes drawing capabilities and the ability to create a legend for the layers included in the map.
+    The Map View gizmo can be used to produce interactive maps of spatial data. It is powered by OpenLayers 4, a free and open source pure javascript mapping library. It supports layers in a variety of different formats including WMS, Tiled WMS, GeoJSON, KML, and ArcGIS REST. It includes drawing capabilities and the ability to create a legend for the layers included in the map.
 
     Shapes that are drawn on the map by users can be retrieved from the map via a hidden text field named 'geometry' and it is updated every time the map is changed. The text in the text field is a string representation of JSON. The geometry definition contained in this JSON can be formatted as either GeoJSON or Well Known Text. This can be configured via the output_format option of the MVDraw object. If the Map View is embedded in a form, the geometry that is drawn on the map will automatically be submitted with the rest of the form via the hidden text field.
 
     Attributes:
         height(str): Height of the map element. Any valid css unit of length (e.g.: '500px'). Defaults to '520px'.
         width(str): Width of the map element. Any valid css unit of length (e.g.: '100%'). Defaults to '100%'.
-        basemap(str or dict): The base map to dispaly: either OpenStreetMap, MapQuest, or a Bing map. Valid values for the string option are: 'OpenStreetMap' and 'MapQuest'. If you wish to configure the base map with options, you must use the dictionary form. The dictionary form is required to use a Bing map, because an API key must be passed as an option. See below for more detail.
+        basemap(str, dict or a list of strings and/or dicts): The base maps to display: choose from OpenStreetMap, MapQuest, or a Bing map. Valid values for the string option are: 'OpenStreetMap' and 'MapQuest'. If you wish to configure the base map with options, you must use the dictionary form. The dictionary form is required to use a Bing map, because an API key must be passed as an option. See below for more detail. A basemap switcher will automatically be provided if a list of more than one basemap is included.
         view(MVView): An MVView object specifying the initial view or extent for the map.
         controls(list): A list of controls to add to the map. The list can be a list of strings or a list of dictionaries. Valid controls are ZoomSlider, Rotate, FullScreen, ScaleLine, ZoomToExtent, and 'MousePosition'. See below for more detail.
         layers(list): A list of MVLayer objects.
@@ -45,9 +46,9 @@ class MapView(TethysGizmoOptions):
 
     There are three base maps supported by the Map View gizmo: OpenStreetMap, Bing, and MapQuest. Use the following links to learn about the additional options you can configure the base maps with:
 
-    * Bing: `ol.source.BingMaps <http://openlayers.org/en/v3.10.1/apidoc/ol.source.BingMaps.html>`_
-    * MapQuest: `ol.source.MapQuest <http://openlayers.org/en/v3.10.1/apidoc/ol.source.MapQuest.html>`_
-    * OpenStreetMap: `ol.source.OSM <http://openlayers.org/en/v3.10.1/apidoc/ol.source.OSM.html>`_
+    * Bing: `ol.source.BingMaps <http://openlayers.org/en/v4.0.1/apidoc/ol.source.BingMaps.html>`_
+    * MapQuest: `ol.source.MapQuest <http://openlayers.org/en/v4.0.1/apidoc/ol.source.MapQuest.html>`_
+    * OpenStreetMap: `ol.source.OSM <http://openlayers.org/en/v4.0.1/apidoc/ol.source.OSM.html>`_
 
     ::
 
@@ -57,12 +58,12 @@ class MapView(TethysGizmoOptions):
 
     Use the following links to learn about options for the different controls:
 
-    * FullScreen: `ol.control.FullScreen <http://openlayers.org/en/v3.10.1/apidoc/ol.control.FullScreen.html>`_
-    * MousePosition: `ol.control.MousePosition <http://openlayers.org/en/v3.10.1/apidoc/ol.control.MousePosition.html>`_
-    * Rotate: `ol.control.Rotate <http://openlayers.org/en/v3.10.1/apidoc/ol.control.Rotate.html>`_
-    * ScaleLine: `ol.control.ScaleLine <http://openlayers.org/en/v3.10.1/apidoc/ol.control.ScaleLine.html>`_
-    * ZoomSlider: `ol.control.ZoomSlider <http://openlayers.org/en/v3.10.1/apidoc/ol.control.ZoomSlider.html>`_
-    * ZoomToExtent: `ol.control.ZoomToExtent <http://openlayers.org/en/v3.10.1/apidoc/ol.control.ZoomToExtent.html>`_
+    * FullScreen: `ol.control.FullScreen <http://openlayers.org/en/v4.0.1/apidoc/ol.control.FullScreen.html>`_
+    * MousePosition: `ol.control.MousePosition <http://openlayers.org/en/v4.0.1/apidoc/ol.control.MousePosition.html>`_
+    * Rotate: `ol.control.Rotate <http://openlayers.org/en/v4.0.1/apidoc/ol.control.Rotate.html>`_
+    * ScaleLine: `ol.control.ScaleLine <http://openlayers.org/en/v4.0.1/apidoc/ol.control.ScaleLine.html>`_
+    * ZoomSlider: `ol.control.ZoomSlider <http://openlayers.org/en/v4.0.1/apidoc/ol.control.ZoomSlider.html>`_
+    * ZoomToExtent: `ol.control.ZoomToExtent <http://openlayers.org/en/v4.0.1/apidoc/ol.control.ZoomToExtent.html>`_
 
     **Feature Selection**
 
@@ -72,11 +73,10 @@ class MapView(TethysGizmoOptions):
     * sensitivity: Integer value that adjust the feature selection sensitivity. Defaults to 2.
 
 
-    Example
+    Controller Example
 
     ::
 
-        # CONTROLLER
         from tethys_sdk.gizmos import MapView, MVDraw, MVView, MVLayer, MVLegendClass
 
         # Define view options
@@ -90,7 +90,7 @@ class MapView(TethysGizmoOptions):
 
         # Define drawing options
         drawing_options = MVDraw(
-            controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
+            controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
             initial='Point',
             output_format='WKT'
         )
@@ -181,11 +181,20 @@ class MapView(TethysGizmoOptions):
                 legend=True
         )
 
-        # TEMPLATE
+        context = {
+                    'map_view_options': map_view_options,
+                  }
 
-        {% gizmo map_view map_view_options %}
+    Template Example
+
+    ::
+
+        {% load tethys_gizmos %}
+
+        {% gizmo map_view_options %}
 
     """
+    gizmo_name = "map_view"
 
     def __init__(self, height='100%', width='100%', basemap='OpenStreetMap', view={'center': [-100, 40], 'zoom': 2},
                  controls=[], layers=[], draw=None, legend=False, attributes={}, classes='', disable_basemap=False,
@@ -206,6 +215,42 @@ class MapView(TethysGizmoOptions):
         self.legend = legend
         self.disable_basemap = disable_basemap
         self.feature_selection = feature_selection
+
+    @staticmethod
+    def get_vendor_js():
+        """
+        JavaScript vendor libraries to be placed in the
+        {% block global_scripts %} block
+        """
+        openlayers_library = 'tethys_gizmos/vendor/openlayers/ol.js'
+        if settings.DEBUG:
+            openlayers_library = 'tethys_gizmos/vendor/openlayers/ol-debug.js'
+        return (openlayers_library,)
+
+    @staticmethod
+    def get_gizmo_js():
+        """
+        JavaScript specific to gizmo to be placed in the
+        {% block scripts %} block
+        """
+        return ('tethys_gizmos/js/gizmo_utilities.js',
+                'tethys_gizmos/js/tethys_map_view.js')
+
+    @staticmethod
+    def get_vendor_css():
+        """
+        CSS vendor libraries to be placed in the
+        {% block styles %} block
+        """
+        return ('tethys_gizmos/vendor/openlayers/ol.css',)
+
+    @staticmethod
+    def get_gizmo_css():
+        """
+        CSS specific to gizmo to be placed in the
+        {% block content_dependent_styles %} block
+        """
+        return ('tethys_gizmos/css/tethys_map_view.min.css',)
 
 
 class MVView(SecondaryGizmoOptions):
@@ -252,23 +297,29 @@ class MVDraw(SecondaryGizmoOptions):
     MVDraw objects are used to define the drawing options for Map View.
 
     Attributes:
-        controls(list, required): List of drawing controls to add to the map. Valid options are 'Modify', 'Move', 'Point', 'LineString', 'Polygon' and 'Box'.
+        controls(list, required): List of drawing controls to add to the map. Valid options are 'Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon' and 'Box'.
         initial(str, required): Drawing control to be enabled initially. Must be included in the controls list.
         output_format(str): Format to output to the hidden text area. Either 'WKT' (for Well Known Text format) or 'GeoJSON'. Defaults to 'GeoJSON'
+        line_color(str): User control for customizing the stroke color of annotation objects
+        fill_color(str): User control for customizing the fill color of polygons (suggest rgba format for setting transparency)
+        point_color(str): User control for customizing the color of points
 
     Example
 
     ::
 
         drawing_options = MVDraw(
-            controls=['Modify', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
+            controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
             initial='Point',
-            output_format='WKT'
+            output_format='GeoJSON',
+            line_color='#663399',
+            fill_color='rgba(255,255,255,0.2)',
+            point_color='#663399'
         )
 
     """
 
-    def __init__(self, controls, initial, output_format='GeoJSON'):
+    def __init__(self, controls, initial, output_format='GeoJSON',line_color="#ffcc33",fill_color='rgba(255, 255, 255, 0.2)',point_color="#ffcc33"):
         """
         Constructor
         """
@@ -282,6 +333,9 @@ class MVDraw(SecondaryGizmoOptions):
             raise ValueError('Value of "initial" must be contained in the "controls" list.')
         self.initial = initial
         self.output_format = output_format
+        self.fill_color = fill_color
+        self.line_color = line_color
+        self.point_color = point_color
 
 
 class MVLayer(SecondaryGizmoOptions):
@@ -293,11 +347,13 @@ class MVLayer(SecondaryGizmoOptions):
         options (dict, required): A dictionary representation of the OpenLayers options object for ol.source.
         legend_title (str, required): The human readable name of the layer that will be displayed in the legend.
         layer_options (dict): A dictionary representation of the OpenLayers options object for ol.layer.
+        editable (bool): If true the layer will be editable with the tethys_map_view drawing/editing tools.
         feature_selection (bool): Set to True to enable feature selection on this layer. Defaults to False.
         geometry_attribute (str): The name of the attribute in the shapefile that describes the geometry
         legend_classes (list): A list of MVLegendClass objects.
         legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
+        tethys_data (dict): Dictionary representation of layer data
 
     Example
 
@@ -420,8 +476,8 @@ class MVLayer(SecondaryGizmoOptions):
                                 legend_extent=[-173, 17, -65, 72]),
     """
 
-    def __init__(self, source, options, legend_title, layer_options=None, legend_classes=None, legend_extent=None,
-                 legend_extent_projection='EPSG:4326', feature_selection=False, geometry_attribute=None):
+    def __init__(self, source, options, legend_title, layer_options=None, editable=True, legend_classes=None, legend_extent=None,
+                 legend_extent_projection='EPSG:4326', feature_selection=False, geometry_attribute=None, data={}):
         """
         Constructor
         """
@@ -430,16 +486,18 @@ class MVLayer(SecondaryGizmoOptions):
         self.source = source
         self.legend_title = legend_title
         self.options = options
+        self.editable = editable
         self.layer_options = layer_options
         self.legend_classes = legend_classes
         self.legend_extent = legend_extent
         self.legend_extent_projection = legend_extent_projection
         self.feature_selection = feature_selection
         self.geometry_attribute = geometry_attribute
+        self.data = data
 
-        #TODO this should be a log
+        # TODO: this should be a log
         if feature_selection and not geometry_attribute:
-            print "WARNING: geometry_attribute not defined -using default value 'the_geom'"
+            print("WARNING: geometry_attribute not defined -using default value 'the_geom'")
 
 class MVLegendClass(SecondaryGizmoOptions):
     """
@@ -470,6 +528,7 @@ class MVLegendClass(SecondaryGizmoOptions):
         # Initialize super class
         super(MVLegendClass, self).__init__()
 
+        self.LEGEND_TYPE = 'mvlegend'
         self.POINT_TYPE = 'point'
         self.LINE_TYPE = 'line'
         self.POLYGON_TYPE = 'polygon'
@@ -510,5 +569,70 @@ class MVLegendClass(SecondaryGizmoOptions):
                 self.ramp = ramp
             else:
                 raise ValueError('Argument "ramp" must be specified for MVLegendClass of type "raster".')
+        else:
+            raise ValueError('Invalid type specified: {0}.'.format(type))
 
 
+class MVLegendImageClass(SecondaryGizmoOptions):
+    """
+    MVLegendImageClasses are used to define the classes listed in the legend using a pre-generated image.
+
+    Attributes:
+        value (str, required): The value or name of the legend class.
+        image_url (str, required): The url to the legend image.
+
+    Example
+
+    ::
+
+        image_class = MVLegendImageClass(value='Cities',
+                                         image_url='https://upload.wikimedia.org/wikipedia/commons/d/da/The_City_London.jpg'
+                                         )
+    """
+
+    def __init__(self, value, image_url):
+        """
+        Constructor
+        """
+        # Initialize super class
+        super(MVLegendImageClass, self).__init__()
+
+        self.LEGEND_TYPE = 'mvlegendimage'
+        self.value = value
+        self.image_url = image_url
+
+class MVLegendGeoServerImageClass(MVLegendImageClass):
+    """
+    MVLegendGeoServerImageClasses are used to define the classes listed in the legend using the GeoServer generated legend.
+
+    Attributes:
+        value (str, required): The value or name of the legend class.
+        geoserver_url (str, required): The url to your geoserver (e.g. http://localhost:8181/geoserver).
+        style (str, required): The name of the geoserver style (e.g. green).
+        layer (str, required): The name of the geoserver layer (e.g. rivers).
+        width (int): The legend width (default is 20).
+        height (int): The legend height (default is 10).
+
+    Example
+
+    ::
+
+        image_class = MVLegendGeoServerImageClass(value='Cities',
+                                                  geoserver_url='http://localhost:8181/geoserver',
+                                                  style='green',
+                                                  layer='rivers',
+                                                  width=20,
+                                                  height=10)
+    """
+
+    def __init__(self, value, geoserver_url, style, layer, width=20, height=10):
+        """
+        Constructor
+        """
+        image_url = "{0}/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&" \
+                    "STYLE={1}&FORMAT=image/png&WIDTH={2}&HEIGHT={3}&" \
+                    "LEGEND_OPTIONS=forceRule:true&" \
+                    "LAYER={4}".format(geoserver_url, style, width, height, layer)
+
+        # Initialize super class
+        super(MVLegendGeoServerImageClass, self).__init__(value, image_url)

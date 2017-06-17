@@ -2,7 +2,7 @@
 User Input and Forms
 ********************
 
-**Last Updated:** May 20, 2015
+**Last Updated:** September 29, 2016
 
 Eventually you will need to request input from the user, which will involve working with HTML forms. In this tutorial, you'll learn how to create forms in your template and process the data submitted through the form in your controller.
 
@@ -12,18 +12,6 @@ New URL Map
 The form will be created on a new page, which means you will need to create a new URL map and controller. Open your :file:`my_first_app/app.py` and add a new ``UrlMap`` object called "echo_name" to the ``url_maps()`` method of your :term:`app class`. The ``url_maps()`` method of your app class should look like this now:
 
 ::
-
-    class MyFirstApp(TethysAppBase):
-        """
-        Tethys App Class for My First App.
-        """
-
-        name = 'My First App'
-        index = 'my_first_app:home'
-        icon = 'my_first_app/images/icon.gif'
-        package = 'my_first_app'
-        root_url = 'my-first-app'
-        color = '#3498db'
 
         def url_maps(self):
             """
@@ -47,17 +35,6 @@ The form will be created on a new page, which means you will need to create a ne
 
             return url_maps
 
-        def persistent_stores(self):
-            """
-            Add one or more persistent stores
-            """
-            stores = (PersistentStore(name='stream_gage_db',
-                                      initializer='init_stores:init_stream_gage_db',
-                                      spatial=True
-                    ),
-            )
-
-            return stores
 
 New Template
 ============
@@ -101,12 +78,13 @@ Now you need to create the ``echo_name`` controller function. First, add the fol
 
 ::
 
-  ﻿from tethys_gizmos.gizmo_options import TextInput
+  ﻿from tethys_sdk.gizmos import TextInput
 
 Then add the following function to your :file:`my_first_app/controllers.py` file:
 
 ::
 
+    @login_required
     def echo_name(request):
         """
         Controller that will echo the name provided by the user via a form.

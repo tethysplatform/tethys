@@ -4,87 +4,109 @@
 
 {% block title %}- Gizmo Showcase{% endblock %}
 
+{% block import_gizmos %}
+    {% import_gizmo_dependency bokeh_view %}
+    {% import_gizmo_dependency plotly_view %}
+{% endblock %}
+
 {% block styles %}
-  {{ block.super }}
-  <link href="{% static 'tethys_gizmos/vendor/prism/prism.css' %}" rel="stylesheet" />
-  <link href="{% static 'tethys_gizmos/css/gizmo_showcase.css' %}" rel="stylesheet" />
+    {{ block.super }}
+    <link href="{% static 'tethys_gizmos/vendor/prism/prism.css' %}" rel="stylesheet" />
+    <link href="{% static 'tethys_gizmos/css/gizmo_showcase.css' %}" rel="stylesheet" />
+    {% gizmo_dependencies global_css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.dataTables.min.css">
+{% endblock %}
+
+{% block global_scripts %}
+    {{ block.super }}
+    {% gizmo_dependencies global_js %}
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
 {% endblock %}
 
 {% block bodytag %}data-spy="scroll" data-target="#showcase_nav_list" style="position: relative;"{% endblock %}
 
 {% block primary_content %}
-  <div id="gizmo-showcase-wrapper" class="row">
-    {# Navigation ----------------------------------------------------------------------------------------------------#}
-    <div class="col-md-3">
-      <div id="showcase_nav_list" >
-        <ul class="nav nav-list" data-offset="90" data-start-offset="0">
-          <li>
-            <a href="#gizmos_overview">Quick Start</a>
-          </li>
-          <li>
-            <a href="#buttons_docs">Buttons</a>
-          </li>
-          <li>
-            <a href="#date_picker_docs">Date Picker</a>
-          </li>
-          <li>
-            <a href="#range_slider_docs" >Range Slider</a>
-          </li>
-          <li>
-            <a href="#select_input_docs">Select Input</a>
-          </li>
-          <li>
-            <a href="#text_input_docs">Text Input</a>
-          </li>
-          <li>
-            <a href="#toggle_switch_docs">Toggle Switch</a>
-          </li>
-          <li>
-            <a href="#message_box_docs">Message Box</a>
-          </li>
-          <li>
-            <a href="#table_view_docs">Table View</a>
-          </li>
-          <li>
-            <a href="#plot_view_docs">Plot View</a>
-          </li>
-          <li>
-            <a href="#map_view_docs">Map View</a>
-          </li>
-          <li>
-            <a href="#google_map_view_docs">Google Map View</a>
-          </li>
-          <li>
-            <a href="#fetchclimate_docs">FetchClimate</a>
-          </li>
-          <li>
-            <a href="#jobs_table_docs">Jobs Table</a>
-          </li>
-        </ul>
-      </div>
-    </div> {# end col #}
+    <div id="gizmo-showcase-wrapper" class="row">
+        {# Navigation ----------------------------------------------------------------------------------------------------#}
+        <div class="col-md-3">
+            <div id="showcase_nav_list" >
+                <ul class="nav nav-list" data-offset="90" data-start-offset="0">
+                    <li>
+                        <a href="#gizmos_overview">Quick Start</a>
+                    </li>
+                    <li>
+                        <a href="#buttons_docs">Buttons</a>
+                    </li>
+                    <li>
+                        <a href="#date_picker_docs">Date Picker</a>
+                    </li>
+                    <li>
+                        <a href="#range_slider_docs" >Range Slider</a>
+                    </li>
+                    <li>
+                        <a href="#select_input_docs">Select Input</a>
+                    </li>
+                    <li>
+                        <a href="#text_input_docs">Text Input</a>
+                    </li>
+                    <li>
+                        <a href="#toggle_switch_docs">Toggle Switch</a>
+                    </li>
+                    <li>
+                        <a href="#message_box_docs">Message Box</a>
+                    </li>
+                    <li>
+                        <a href="#table_view_docs">Table View</a>
+                    </li>
+                    <li>
+                        <a href="#datatable_view_docs">DataTable View</a>
+                    </li>
+                    <li>
+                        <a href="#plot_view_docs">Plot View</a>
+                    </li>
+                    <li>
+                        <a href="#plotly_view_docs">Plotly View</a>
+                    </li>
+                    <li>
+                        <a href="#bokeh_view_docs">Bokeh View</a>
+                    </li>
+                    <li>
+                        <a href="#map_view_docs">Map View</a>
+                    </li>
+                    <li>
+                        <a href="#google_map_view_docs">Google Map View</a>
+                    </li>
+                    <li>
+                        <a href="#esri_map_view_docs">ESRI Map View</a>
+                    </li>
+                    <li>
+                        <a href="#jobs_table_docs">Jobs Table</a>
+                    </li>
+                </ul>
+            </div>
+        </div> {# end col #}
 
-    {# Content -------------------------------------------------------------------------------------------------------#}
-    <div class="col-md-9">
-      <h1 class="gizmo-showcase-page-heading">Gizmo Showcase</h1>
-      <p>
-        Template Gizmos are building blocks that can be used to create beautiful interactive controls for web apps. Using gizmos,
-        developers can add date-pickers, plots, and maps to their templates with minimal coding. This page provides the
-        documentation developers need to user Gizmos.
-      </p>
+        {# Content -------------------------------------------------------------------------------------------------------#}
+        <div class="col-md-9">
+            <h1 class="gizmo-showcase-page-heading">Gizmo Showcase</h1>
+            <p>
+                Template Gizmos are building blocks that can be used to create beautiful interactive controls for web apps. Using gizmos,
+                developers can add date-pickers, plots, and maps to their templates with minimal coding. This page provides the
+                documentation developers need to user Gizmos.
+            </p>
 
-      {# Quick Start -------------------------------------------------------------------------------------------------#}
-      <a id="gizmos_overview" class="anchor"></a>
-      <div class="docs-section">
-        <h2>Quick Start</h2>
-        <p>
-          What does "minimal coding" mean? Take a look at the following example. Let's say you want to include a date
-          picker in your template using a gizmo. First, import the DatePickerOptions class and initialize a new object
-          with the configuration options for the date picker (more on that later) in your view/controller for the template
-          and add it to the context:
-        </p>
+            {# Quick Start -------------------------------------------------------------------------------------------------#}
+            <a id="gizmos_overview" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Quick Start</h2>
+                <p>
+                    What does "minimal coding" mean? Take a look at the following example. Let's say you want to include a date
+                    picker in your template using a gizmo. First, import the DatePickerOptions class and initialize a new object
+                    with the configuration options for the date picker (more on that later) in your view/controller for the template
+                    and add it to the context:
+                </p>
 
-        <pre class="overview-example-code"><code class="language-python">from tethys_gizmos.gizmo_options import DatePickerOptions
+                <pre class="overview-example-code"><code class="language-python">from tethys_gizmos.gizmo_options import DatePickerOptions
 
 def my_view(request):
     date_picker_options = DatePickerOptions(name='date1',
@@ -101,415 +123,456 @@ def my_view(request):
     return render(request, 'path/to/my/template.html', context)
 </code></pre>
 
-        <p>
-          Next, open the template you intend to add the gizmo to and load the <b>tethys_gizmos</b> library. Be sure to
-          do this somewhere near <u>the top</u> of your template&mdash;before any gizmo occurrences. This only needs to be
-          done once for each template that uses gizmos.
-        </p>
+                <p>
+                    Next, open the template you intend to add the gizmo to and load the <b>tethys_gizmos</b> library. Be sure to
+                    do this somewhere near <u>the top</u> of your template&mdash;before any gizmo occurrences. This only needs to be
+                    done once for each template that uses gizmos.
+                </p>
 
-        <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} load tethys_gizmos {% templatetag closeblock %}</code></pre>
+                <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} load tethys_gizmos {% templatetag closeblock %}</code></pre>
 
-        <p>
-          Then, use the <b>gizmo</b> tag to insert the date picker anywhere in your template. Pass the name of the gizmo
-          and the options dictionary that you passed to the template from your view as arguments:
-        </p>
+                <p>
+                    Then, use the <b>gizmo</b> tag to insert the date picker anywhere in your template. Pass the the options dictionary
+                    that you passed to the template from your view as arguments:
+                </p>
 
-        <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} gizmo date_picker date_picker_options {% templatetag closeblock %}</code></pre>
+                <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} gizmo date_picker_options {% templatetag closeblock %}</code></pre>
 
-        <p>
-          All together your template may look something like this:
-        </p>
+                <p>
+                    All together your template may look something like this:
+                </p>
 
-        <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} load tethys_gizmos {% templatetag closeblock %}
+                <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} extends "tethys_apps/app_base.html" {% templatetag closeblock %}
+{% templatetag openblock %} load staticfiles tethys_gizmos {% templatetag closeblock %}
 
-&lt;html&gt;
-    &lt;head&gt;
-        ...
-    &lt;/head&gt;
-    &lt;body&gt;
-        ...
-        {% templatetag openblock %} gizmo date_picker date_picker_options {% templatetag closeblock %}
-        ...
-    &lt;/body&gt;
-&lt;/html&gt;</code></pre>
+{% templatetag openblock %}  block app_content {% templatetag closeblock %}
+  {% templatetag openblock %} gizmo date_picker_options {% templatetag closeblock %}
+{% templatetag openblock %}  endblock {% templatetag closeblock %}</code></pre>
 
-        <h3>How it Works</h3>
+                <h3>How it Works</h3>
 
-        <p>
-          Gizmos are composed of HTML, JavaScript, and CSS. When the template is rendered, each of the <b>gizmo</b>
-          tags are replaced by the HTML that is needed to render the gizmo. All gizmos accept a Python dictionary
-          with options for configuring the gizmo. This page provides live demos of each gizmo with links to code
-          examples and explanations of the options. The <b>tethys_gizmos</b> library must be loaded at the top of
-          the template to provide the <b>gizmo</b> template tag.
-        </p>
-      </div>
-
-      {# Buttons and Button Groups -----------------------------------------------------------------------------------#}
-      <a id="buttons_docs" class="anchor"></a>
-      <div class="docs-section">
-        <h2>Buttons and Button Groups</h2>
-        <p>
-          The button and button group gizmos can be used to generate a single button or a group of buttons, respectively. Groups of
-          buttons can be stacked horizontally or vertically. This gizmo is a wrapper for <a href="http://getbootstrap.com/">Twitter Bootstrap</a>
-          buttons.
-        </p>
-
-        <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/button.html">Button and Button Group</a>.
-        </p>
-
-        <div class="example">
-          <div class="demo">
-            {% gizmo button single_button %}
-            {% gizmo button_group horizontal_buttons %}
-            {% gizmo button_group vertical_buttons %}
-          </div>
-        </div>
-      </div>
-
-      {# Date Picker -------------------------------------------------------------------------------------------------#}
-      <a id="date_picker_docs" class="anchor"></a>
-      <div class="docs-section">
-        <h2>Date Picker</h2>
-        <p>
-          Date pickers are used to make the input of dates streamlined and easy. Rather than typing the date, the
-          user is presented with a calendar to select the date. This date picker was implemented using
-          <a href="http://bootstrap-datepicker.readthedocs.org/en/release/index.html"  target="_blank">Bootstrap Datepicker</a>.
-        </p>
-        <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/date_picker.html">Date Picker</a>.
-        </p>
-
-        <div class="example">
-          <div class="demo">
-            {% gizmo date_picker date_picker %}
-            {% gizmo date_picker date_picker_error %}
-          </div>
-        </div>
-      </div>
-
-      {# Range Slider ------------------------------------------------------------------------------------------------#}
-      <a id="range_slider_docs" class="anchor"></a>
-      <div class="docs-section">
-        <h2>Range Slider</h2>
-        <p>
-          Sliders can be used to request an input value from a range of possible values.
-          A slider is configured with a dictionary of key-value options.
-          The table below summarizes the options for sliders.
-        </p>
-        <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/range_slider.html">Range Slider</a>.
-        </p>
-
-        <div class="example">
-          <div class="demo">
-            {% gizmo range_slider slider1 %}
-            {% gizmo range_slider slider2 %}
-          </div>
-        </div>
-      </div>
-
-      {# Select Input ------------------------------------------------------------------------------------------------#}
-      <a id="select_input_docs" class="anchor"></a>
-      <div class="docs-section">
-        <h2>Select Input</h2>
-        <p>
-          Select inputs are used to select values from an given set of values. Use this gizmo
-          to create select inputs and multi select inputs. This uses the 
-          <a href="http://ivaynberg.github.io/select2/">Select2</a> functionality.
-        </p>
-        <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/select_input.html">Select Input</a>.
-        </p>
-
-        <div class="example">
-          <div class="demo">
-            {% gizmo select_input select_input2 %}
-            {% gizmo select_input select_input2_multiple %}
-            {% gizmo select_input select_input_multiple %}
-            {% gizmo select_input select_input2_error %}
-          </div>
-        </div>
-      </div>
-
-      {# Text Input --------------------------------------------------------------------------------------------------#}
-      <a id="text_input_docs" class="anchor"></a>
-      <div class="docs-section">
-        <h2>Text Input</h2>
-        <p>
-         The text input gizmo makes it easy to add text inputs to your app
-         that are styled similarly to the other input snippets.
-        </p>
-
-        <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/text_input.html">Text Input</a>.
-        </p>
-
-        <div class="example">
-          <div class="demo">
-            {% gizmo text_input text_input %}
-            {% gizmo text_input text_error_input %}
-          </div>
-        </div>
-      </div>
-
-      {# Toggle Switch -----------------------------------------------------------------------------------------------#}
-      <a id="toggle_switch_docs" class="anchor"></a>
-      <div class="docs-section">
-        <h2>Toggle Switch</h2>
-        <p>
-          Toggle switches can be used as an alternative to check boxes for boolean or binomial input. Toggle
-          switches are implemented using the excellent <a href="http://www.bootstrap-switch.org/">Bootstrap Switch</a> project.
-        </p>
-
-        <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/toggle_switch.html">Toggle Switch</a>.
-        </p>
-
-        <div class="example">
-          <div class="demo">
-            {% gizmo toggle_switch toggle_switch %}
-            {% gizmo toggle_switch toggle_switch_styled %}
-            {% gizmo toggle_switch toggle_switch_disabled %}
-          </div>
-        </div>
-      </div>
-
-      {# Message Box -------------------------------------------------------------------------------------------------#}
-      <a id="message_box_docs" class="anchor"></a>
-      <div class="docs-section">
-        <h2>Message Box</h2>
-        <p>Message box gizmos can be used to display messages to users. These are especially useful for alerts and
-        warning messages. The message box gizmo is implemented using Twitter Bootstrap's modal.</p>
-        <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/message_box.html">Message Box</a>.
-        </p>
-
-        <div class="example">
-          <div class="demo">
-            <a href="#{{ message_box.name }}" role="button" class="btn btn-success" data-toggle="modal">Show Message Box</a>
-            <style>
-              .modal {
-                padding-right: 0!important;
-              }
-            </style>
-            {% gizmo message_box message_box %}
-          </div>
-        </div>
-      </div>
-
-      {# Table View --------------------------------------------------------------------------------------------------#}
-      <a id="table_view_docs" class="anchor"></a>
-      <div class="docs-section">
-        <h2>Table View</h2>
-        <p>Table views can be used to display tabular data. The table view gizmo can be configured to have
-          columns that are editable. When used in this capacity, embed the table view in a form with a submit button.</p>
-        <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/table_view.html">Table View</a>.
-        </p>
-        <div class="example">
-          <div class="demo">
-            {% gizmo table_view table_view %}
-            {% gizmo table_view table_view_edit %}
-          </div>
-        </div>
-      </div>
-
-      {# Plot View ---------------------------------------------------------------------------------------------------#}
-      <a id="plot_view_docs" class="anchor"></a>
-      <div class="docs-section">
-        <h2>Plot View</h2>
-        <p>
-          Plot views can be used to generate interactive plots of tabular data. All of the plots available through this gizmo
-          are powered by the <a href="http://www.highcharts.com/" target="_blank">Highcharts</a> JavaScript library.
-        </p>
-        <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/plot_view.html">Plot View</a>.
-        </p>
-        <div class="alert alert-warning" role="alert">
-          <span class="alert-header">Caution</span>
-          <p>
-            Highcharts is not free and open source, though it can be used for free under certain conditions. Please familiarize yourself with <a href="http://shop.highsoft.com/highcharts.html" target="_blank">Highcharts JS Licensing</a> before using it.
-          </p>
-        </div>
-        <div class="example">
-          <div class="demo">
-            {% gizmo plot_view line_plot_view %}
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-            {% gizmo highcharts_plot_view scatter_plot_view %}
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-          {% gizmo highcharts_plot_view web_plot %}
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-          {% gizmo highcharts_plot_view pie_plot_view %}
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-          {% gizmo highcharts_plot_view bar_plot_view %}
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-          {% gizmo highcharts_plot_view timeseries_plot %}
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-          {% gizmo highcharts_plot_view area_range_plot %}
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-          {% gizmo highcharts_plot_view custom_plot %}
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-          {% gizmo plot_view d3_line_plot_view %}
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-          {% gizmo plot_view d3_pie_plot_view %}
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-          {% gizmo plot_view d3_scatter_plot_view %}
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-          {% gizmo plot_view d3_bar_plot_view %}
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-          {% gizmo plot_view d3_timeseries_plot_view %}
-          </div>
-        </div>
-
-      </div>
-
-      {# Map View ----------------------------------------------------------------------------------------------------#}
-      <a id="map_view_docs" class="anchor"></a>
-      <div class="docs-section">
-        <h2>Map View</h2>
-        <p>The Map View gizmo can be used to visualize maps of spatial data. Map View is powered by <a href="http://openlayers.org/">OpenLayers 3</a>, an open source pure javascript mapping library.</p>
-        <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/map_view.html">Map View</a>.
-        </p>
-        <p><strong>NOTE: Do not create more than one Map View gizmo on a page at any given time.</strong></p>
-        <p>Click <a href="{% url 'gizmos:map_view' %}">here</a> for demo on a separate page.</p>
-        <div class="example">
-          <div class="demo">
-            {% gizmo map_view map_view_options %}
-          </div>
-        </div>
-      </div>
-
-      {# Google Map View -----------------------------------------------------------------------------------------#}
-      <a id="google_map_view_docs" class="anchor"></a>
-      <div class="docs-section">
-        <h2>Google Map View</h2>
-        <p>
-          The Google Map View is similar to Map View, but it is powered by Google Maps 3. It has the drawing library enabled to allow geospatial user input.
-          An optional background dataset can be specified for reference, but only the shapes drawn by the user are returned (see
-          <a href="#retrieving_shapes">Retrieving Shapes</a> section).
-        </p>
-        <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/google_map.html">Google Map View</a>.
-        </p>
-        <p><strong>NOTE: Do not create more than one map on a page at any given time.</strong></p>
-        <div class="alert alert-warning" role="alert">
-          <span class="alert-header">Caution</span>
-          <p>
-            Google Maps API is not free and open source and it is only free to use under certain conditions. Please familiarize yourself with <a href="https://developers.google.com/maps/licensing" target="_blank">Google Maps API Licensing</a> before using it.
-          </p>
-        </div>
-        <p>Click <a href="{% url 'gizmos:editable_map' %}">here</a> for demo on a separate page.</p>
-        <div class="example">
-          <div class="demo">
-          <!-- Flash Message -->
-            {% if flash_message %}
-            <div class="alert alert-info">
-              <button type="button" class="close" data-dismiss="alert">&times;</button>
-              <h5>JSON:</h5>
-              <p>{{ flash_message }}</p>
+                <p>
+                    Gizmos are composed of HTML, JavaScript, and CSS. When the template is rendered, each of the <b>gizmo</b>
+                    tags are replaced by the HTML that is needed to render the gizmo. All gizmos accept a Python dictionary
+                    with options for configuring the gizmo. This page provides live demos of each gizmo with links to code
+                    examples and explanations of the options. The <b>tethys_gizmos</b> library must be loaded at the top of
+                    the template to provide the <b>gizmo</b> template tag.
+                </p>
             </div>
-            {% endif %}
 
-            <form method="post">
-              {% csrf_token %}
-              {% gizmo google_map_view google_map_view %}
-              <button class="btn btn-primary" type="submit" name="editable_map_submit">Submit</button>
-            </form>
-          </div>
-        </div>
-      </div>
+            {# Buttons and Button Groups -----------------------------------------------------------------------------------#}
+            <a id="buttons_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Buttons and Button Groups</h2>
+                <p>
+                    The button and button group gizmos can be used to generate a single button or a group of buttons, respectively. Groups of
+                    buttons can be stacked horizontally or vertically. This gizmo is a wrapper for <a href="http://getbootstrap.com/">Twitter Bootstrap</a>
+                    buttons.
+                </p>
 
-      {# Fetch Climate -----------------------------------------------------------------------------------------------#}
-      <a id="fetchclimate_docs" class="anchor"></a>
-      <div class="docs-section">
-        <h2>FetchClimate</h2>
-        <p>This gizmo can be used to get climate data based off of a bounding box over an area or a point. It is based off of Microsoft Research. See the <a href="http://research.microsoft.com/en-us/projects/fetchclimate/">FetchClimate page</a> for more info.</p>
-        <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/fetchclimate.html">Fetch Climate</a>.
-        </p>
-        <p><strong>NOTE: Do not create more than one map on a page at any given time.</strong></p>
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/button.html">Button and Button Group</a>.
+                </p>
 
-        <div class="example">
-          <div class="demo">
-            <h4>Fetchclimate With Map</h4>
-            <p> Demo cannot be shown on this page because of the demo for the editable google map.
-            Click on button below for live demo.</p>
-            <a class="btn btn-success" href="{% url 'gizmos:fetchclimate_map' %}">Live Demo</a>
-          </div>
-        </div>
-        <div class="example">
-          <div class="demo">
-            <h4>Fetchclimate With Javascript API Output</h4>
-            {% gizmo fetchclimate fetchclimate_array %}
-          </div>
-        </div>
-      </div>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo button single_button %}
+                        {% gizmo horizontal_buttons %}
+                        {% gizmo button_group vertical_buttons %}
+                    </div>
+                </div>
+            </div>
 
-      {# Jobs Table -----------------------------------------------------------------------------------------------#}
-      <a id="jobs_table_docs" class="anchor"></a>
-      <div class="docs-section">
-        <h2>Jobs Table</h2>
-        <p>Description of Jobs Table</p>
-        <p>
-          For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/jobs_table.html">Jobs Table</a>.
-        </p>
+            {# Date Picker -------------------------------------------------------------------------------------------------#}
+            <a id="date_picker_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Date Picker</h2>
+                <p>
+                    Date pickers are used to make the input of dates streamlined and easy. Rather than typing the date, the
+                    user is presented with a calendar to select the date. This date picker was implemented using
+                    <a href="http://bootstrap-datepicker.readthedocs.org/en/release/index.html"  target="_blank">Bootstrap Datepicker</a>.
+                </p>
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/date_picker.html">Date Picker</a>.
+                </p>
 
-        <div class="example">
-          <div class="demo">
-            <h4>Jobs Table</h4>
-            {% gizmo jobs_table jobs_table_options %}
-            {% if not jobs_table_options.jobs %}
-              <a class="btn btn-success" href="{% url 'gizmos:sample_jobs' %}">Create Sample Jobs</a>
-            {% endif %}
-          </div>
-        </div>
-      </div>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo date_picker %}
+                        {% gizmo date_picker date_picker_error %}
+                    </div>
+                </div>
+            </div>
 
-    </div> {# end col #}
-  </div> {# end gizmo-showcase-wrapper #}
+            {# Range Slider ------------------------------------------------------------------------------------------------#}
+            <a id="range_slider_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Range Slider</h2>
+                <p>
+                    Sliders can be used to request an input value from a range of possible values.
+                    A slider is configured with a dictionary of key-value options.
+                    The table below summarizes the options for sliders.
+                </p>
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/range_slider.html">Range Slider</a>.
+                </p>
+
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo range_slider slider1 %}
+                        {% gizmo slider2 %}
+                    </div>
+                </div>
+            </div>
+
+            {# Select Input ------------------------------------------------------------------------------------------------#}
+            <a id="select_input_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Select Input</h2>
+                <p>
+                    Select inputs are used to select values from an given set of values. Use this gizmo
+                    to create select inputs and multi select inputs. This uses the
+                    <a href="http://ivaynberg.github.io/select2/">Select2</a> functionality.
+                </p>
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/select_input.html">Select Input</a>.
+                </p>
+
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo select_input select_input2 %}
+                        {% gizmo select_input2_multiple %}
+                        {% gizmo select_input select_input2_error %}
+                        {% gizmo select_input %}
+                        {% gizmo select_input_multiple %}
+                    </div>
+                </div>
+            </div>
+
+            {# Text Input --------------------------------------------------------------------------------------------------#}
+            <a id="text_input_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Text Input</h2>
+                <p>
+                    The text input gizmo makes it easy to add text inputs to your app
+                    that are styled similarly to the other input snippets.
+                </p>
+
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/text_input.html">Text Input</a>.
+                </p>
+
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo text_input text_input %}
+                        {% gizmo text_error_input %}
+                    </div>
+                </div>
+            </div>
+
+            {# Toggle Switch -----------------------------------------------------------------------------------------------#}
+            <a id="toggle_switch_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Toggle Switch</h2>
+                <p>
+                    Toggle switches can be used as an alternative to check boxes for boolean or binomial input. Toggle
+                    switches are implemented using the excellent <a href="http://www.bootstrap-switch.org/">Bootstrap Switch</a> project.
+                </p>
+
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/toggle_switch.html">Toggle Switch</a>.
+                </p>
+
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo toggle_switch toggle_switch %}
+                        {% gizmo toggle_switch_styled %}
+                        {% gizmo toggle_switch toggle_switch_disabled %}
+                    </div>
+                </div>
+            </div>
+
+            {# Message Box -------------------------------------------------------------------------------------------------#}
+            <a id="message_box_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Message Box</h2>
+                <p>Message box gizmos can be used to display messages to users. These are especially useful for alerts and
+                    warning messages. The message box gizmo is implemented using Twitter Bootstrap's modal.</p>
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/message_box.html">Message Box</a>.
+                </p>
+
+                <div class="example">
+                    <div class="demo">
+                        <a href="#{{ message_box.name }}" role="button" class="btn btn-success" data-toggle="modal">Show Message Box</a>
+                        <style>
+                            .modal {
+                                padding-right: 0!important;
+                            }
+                        </style>
+                        {% gizmo message_box message_box %}
+                    </div>
+                </div>
+            </div>
+
+            {# Table View --------------------------------------------------------------------------------------------------#}
+            <a id="table_view_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Table View</h2>
+                <p>Table views can be used to display tabular data. The table view gizmo can be configured to have
+                    columns that are editable. When used in this capacity, embed the table view in a form with a submit button.</p>
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/table_view.html">Table View</a>.
+                </p>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo table_view table_view %}
+                    </div>
+                    <div class="demo">
+                        {% gizmo table_view table_view_edit %}
+                    </div>
+                </div>
+            </div>
+
+            {# DataTable View --------------------------------------------------------------------------------------------------#}
+            <a id="datatable_view_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>DataTable View</h2>
+                <p>DataTable views can be used to display, search, and sort tabular data.
+                    Many of the DataTable options are supported and can be added by using
+                    the name of the input value for DataTables. For more information about
+                    DataTables, see the <a target="_blank" href="https://datatables.net">
+                        DataTables website</a></p>
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/datatable_view.html">DataTable View</a>.
+                </p>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo datatable_view datatable_default %}
+                    </div>
+                    <div class="demo">
+                        {% gizmo datatable_view datatable_with_extension %}
+                    </div>
+                </div>
+            </div>
+
+            {# Plot View ---------------------------------------------------------------------------------------------------#}
+            <a id="plot_view_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Plot View</h2>
+                <p>
+                    Plot views can be used to generate interactive plots of tabular data. All of the plots available through this gizmo
+                    are powered by the <a href="http://www.highcharts.com/" target="_blank">Highcharts</a> JavaScript library.
+                </p>
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/plot_view.html">Plot View</a>.
+                </p>
+                <div class="alert alert-warning" role="alert">
+                    <span class="alert-header">Caution</span>
+                    <p>
+                        Highcharts is not free and open source, though it can be used for free under certain conditions. Please familiarize yourself with <a href="http://shop.highsoft.com/highcharts.html" target="_blank">Highcharts JS Licensing</a> before using it.
+                    </p>
+                </div>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo line_plot_view %}
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo scatter_plot_view %}
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo web_plot %}
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo pie_plot_view %}
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo bar_plot_view %}
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo timeseries_plot %}
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo area_range_plot %}
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo d3_line_plot_view %}
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo d3_pie_plot_view %}
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo d3_scatter_plot_view %}
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo d3_bar_plot_view %}
+                    </div>
+                </div>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo d3_timeseries_plot_view %}
+                    </div>
+                </div>
+
+            </div>
+
+            {# Plotly View --------------------------------------------------------------------------------------------------#}
+            <a id="plotly_view_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Plotly View</h2>
+                <p>Plotly views can be used to create interactive charts using the Plotly
+                    python library. For more information about
+                    Plotly, see the <a target="_blank" href="https://plot.ly/python">
+                        Plotly website</a></p>
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/plotly_view.html">Plotly View</a>.
+                </p>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo plotly_view my_plotly_view %}
+                    </div>
+                </div>
+            </div>
+
+            {# Bokeh View --------------------------------------------------------------------------------------------------#}
+            <a id="bokeh_view_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Bokeh View</h2>
+                <p>Bokeh views can be used to create charts using the Bokeh
+                    python library. For more information about
+                    Bokeh, see the <a target="_blank" href="http://bokeh.pydata.org">
+                        Bokeh website</a></p>
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/bokeh_view.html">Bokeh View</a>.
+                </p>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo bokeh_view my_bokeh_view %}
+                    </div>
+                </div>
+            </div>
+
+            {# Map View ----------------------------------------------------------------------------------------------------#}
+            <a id="map_view_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Map View</h2>
+                <p>The Map View gizmo can be used to visualize maps of spatial data. Map View is powered by <a href="http://openlayers.org/">OpenLayers 4</a>, an open source pure javascript mapping library.</p>
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/map_view.html">Map View</a>.
+                </p>
+                <p><strong>NOTE: Do not create more than one Map View gizmo on a page at any given time.</strong></p>
+                <p>Click <a href="{% url 'gizmos:map_view' %}">here</a> for demo on a separate page.</p>
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo map_view_options %}
+                    </div>
+                </div>
+            </div>
+
+            {# Google Map View -----------------------------------------------------------------------------------------#}
+            <a id="google_map_view_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Google Map View</h2>
+                <p>
+                    The Google Map View is powered by Google Maps 3. It has the drawing library enabled to allow geospatial user input.
+                    An optional background dataset can be specified for reference, but only the shapes drawn by the user are returned (see
+                    <a href="#retrieving_shapes">Retrieving Shapes</a> section).
+                </p>
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/google_map.html">Google Map View</a>.
+                </p>
+                <p><strong>NOTE: Do not create more than one map on a page at any given time.</strong></p>
+                <div class="alert alert-warning" role="alert">
+                    <span class="alert-header">Caution</span>
+                    <p>
+                        Google Maps API is not free and open source and it is only free to use under certain conditions. Please familiarize yourself with <a href="https://developers.google.com/maps/licensing" target="_blank">Google Maps API Licensing</a> before using it.
+                    </p>
+                </div>
+                <p>Click <a href="{% url 'gizmos:google_map_view' %}">here</a> for demo on a separate page.</p>
+                <div class="example">
+                    <div class="demo">
+                        <!-- Flash Message -->
+                        {% if flash_message %}
+                            <div class="alert alert-info">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <h5>JSON:</h5>
+                                <p>{{ flash_message }}</p>
+                            </div>
+                        {% endif %}
+
+                        <form method="post">
+                            {% csrf_token %}
+                            {% gizmo google_map_view google_map_view %}
+                            <button class="btn btn-primary" type="submit" name="editable_map_submit">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {# ESRI Map View -----------------------------------------------------------------------------------------#}
+            <a id="esri_map_view_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>ESRI Map View</h2>
+                <p>The ESRI Map gizmo can be used to visualize ESRI ArcGIS web maps and layers. ESRI Map is powered by <a href="https://developers.arcgis.com/javascript/">ArcGIS API for Javascript</a>.</p>
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/esri_map.html">ESRI Map</a>.
+                </p>
+{#                <p><strong>NOTE: Do not create more than one ESRI Map gizmo on a page at any given time.</strong></p>#}
+{#                <p>Click <a href="{% url 'gizmos:esri_map' %}">here</a> for demo on a separate page.</p>#}
+                <div class="example">
+                    <div class="demo">
+                        {% gizmo esri_map esri_map %}
+                    </div>
+                </div>
+            </div>
+
+            {# Jobs Table -----------------------------------------------------------------------------------------------#}
+            <a id="jobs_table_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Jobs Table</h2>
+                <p>Description of Jobs Table</p>
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/jobs_table.html">Jobs Table</a>.
+                </p>
+
+                <div class="example">
+                    <div class="demo">
+                        <h4>Jobs Table</h4>
+                        {% gizmo jobs_table jobs_table_options %}
+                        {% if not jobs_table_options.jobs %}
+                            <a class="btn btn-success" href="{% url 'gizmos:sample_jobs' %}">Create Sample Jobs</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div> {# end col #}
+    </div> {# end gizmo-showcase-wrapper #}
 {% endblock %}
 
 {% block scripts %}
-  {% gizmo_dependencies css %}
-  {{ block.super }}
-  <script src="{% static 'tethys_gizmos/vendor/prism/prism.js' %}" type="text/javascript"></script>
-  {% gizmo_dependencies js %}
+    {% gizmo_dependencies css %}
+    {{ block.super }}
+    <script src="{% static 'tethys_gizmos/vendor/prism/prism.js' %}" type="text/javascript"></script>
+    {% gizmo_dependencies js %}
 {% endblock %}

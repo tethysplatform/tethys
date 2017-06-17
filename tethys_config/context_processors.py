@@ -7,17 +7,20 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from .models import Setting
 
 
 def tethys_global_settings_context(request):
     """
     Add the current Tethys app metadata to the template context.
     """
+    from .models import Setting
+    from termsandconditions.models import TermsAndConditions
 
     # Get settings
-    settings = Setting.as_dict()
+    site_globals = Setting.as_dict()
 
-    context = {'site_globals': settings}
+    # Get terms and conditions
+    site_globals.update({'documents': TermsAndConditions.get_active_list(as_dict=False)})
+    context = {'site_globals': site_globals}
 
     return context

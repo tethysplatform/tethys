@@ -2,7 +2,7 @@
 Getting Started
 ***************
 
-**Last Updated:** May 19, 2015
+**Last Updated:** September 29, 2016
 
 The getting started tutorial will walk you through the steps of setting up a new Tethys App project using Tethys Platform. If you have not already installed Tethys Platform, follow the :doc:`../installation` documentation and then return.
 

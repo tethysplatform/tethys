@@ -7,5 +7,11 @@
 *.idea
 *.sqlite3
 *.db
+tethys_apps/settings.py
+tethys_apps/settings.py_bak
 settings.py
 docs/_build
+*~
+tethys_gizmos/static/tethys_gizmos/less/bower_components/*
+.coverage
+tests/coverage_html_report

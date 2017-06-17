@@ -10,7 +10,7 @@
  *                      LIBRARY WRAPPER
  *****************************************************************************/
 
-var TETHYS_D3_PLOT_VIEW = (function() {
+var TETHYS_PLOT_VIEW = (function() {
 	// Wrap the library in a package function
 	"use strict"; // And enable strict mode for this library
 
@@ -823,21 +823,22 @@ var TETHYS_D3_PLOT_VIEW = (function() {
             .text(function (d) { return d.name; });
 	};
 
-	initHighChartsPlot = function(element, plot_type) {
-		if ($(element).attr('data-json')) {
-			var json_string, json;
+	initHighChartsPlot = function(element) {
+        var plot_type = $(element).attr('data-type');
+        if ($(element).attr('data-json')) {
+            var json_string, json;
 
-			// Get string from data-json attribute of element
-			json_string = $(element).attr('data-json');
+            // Get string from data-json attribute of element
+            json_string = $(element).attr('data-json');
 
-			// Parse the json_string with special reviver
-			json = JSON.parse(json_string, functionReviver);
-			$(element).highcharts(json);
-		}
-		else if (plot_type === 'line' || plot_type === 'spline') {
-			initLinePlot(element, plot_type);
-		}
-	};
+            // Parse the json_string with special reviver
+            json = JSON.parse(json_string, functionReviver);
+            $(element).highcharts(json);
+        }
+        else if (plot_type === 'line' || plot_type === 'spline') {
+            initLinePlot(element, plot_type);
+        }
+    };
 
 	/************************************************************************
  	*                            TOP LEVEL CODE
@@ -845,7 +846,9 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 	/*
 	 * Library object that contains public facing functions of the package.
 	 */
-	public_interface = {};
+	public_interface = {
+        initHighChartsPlot: initHighChartsPlot,
+     };
 
 
 	// Initialization: jQuery function that gets called when
@@ -868,8 +871,7 @@ var TETHYS_D3_PLOT_VIEW = (function() {
 
 		// Initialize any plots
 		$('.highcharts-plot').each(function() {
-			var plot_type = $(this).attr('data-type');
-			initHighChartsPlot(this, plot_type);
+			initHighChartsPlot(this);
 		});
 	});
 

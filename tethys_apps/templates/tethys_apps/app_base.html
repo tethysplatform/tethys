@@ -1,4 +1,4 @@
-{% load staticfiles tethys_gizmos %}
+{% load staticfiles tethys_gizmos terms_tags %}
 <!DOCTYPE html>
 
 {# Allows custom attributes to be added to the html tag #}
@@ -60,6 +60,21 @@
       {% if site_globals.favicon %}<link rel="shortcut icon" href="{{ site_globals.favicon }}" />{% endif %}
     {% endblock %}
 
+    {% comment "import_gizmos explanation" %}
+      The import_gizmos block allows you register gizmos to be added to your
+      page so that the dependencies load properly.
+
+      Example:
+
+        {% block import_gizmos %}
+          {% import_gizmo_dependency map_view %}
+        {% endblock %}
+
+    {% endcomment %}
+
+    {% block import_gizmos %}
+    {% endblock %}
+
     {% comment "styles explanation" %}
       The styles block allows you to add additional stylesheets to the page in
       the same way as the meta block. Use block.super to include the default
@@ -74,16 +89,23 @@
     {% endcomment %}
 
     {% block styles %}
-      <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" />
-      <link href="{% static 'tethys_apps/css/app_base.css' %}" rel="stylesheet" />
+      <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+      <link href="{% static 'tethys_apps/css/app_base.min.css' %}" rel="stylesheet" />
       {% if tethys_app.enable_feedback %}
         <link href="{% static 'tethys_apps/css/feedback.css' %}" rel="stylesheet" />
       {% endif %}
+      {% gizmo_dependencies global_css %}
     {% endblock %}
 
     {% block global_scripts %}
-      <script src="//code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
-      <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" type="text/javascript"></script>
+      <script src="//code.jquery.com/jquery-2.2.4.min.js" type="text/javascript"></script>
+      <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" type="text/javascript"></script>
+      {% gizmo_dependencies global_js %}
+    {% endblock %}
+
+    {% block session_timeout_modal %}
+      {% include 'session_security/all.html' %}
+      <link href="{% static 'tethys_portal/css/session_security_override.css' %}"  rel="stylesheet" />
     {% endblock %}
   </head>
 
@@ -94,27 +116,43 @@
         {% block app_header_override %}
           <div id="app-header" class="clearfix">
             <div class="tethys-app-header" style="background: {{ tethys_app.color|default:'#1b95dc' }};">
-              {% block app-navigation-toggle-override %}
-                <a href="javascript:void(0);" class="toggle-nav">
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                </a>
-              {% endblock %}
-              {% block app_icon_override %}
-                <div class="icon-wrapper">
-                  {% block app_icon %}<img src="{% static tethys_app.icon %}">{% endblock %}
-                </div>
-              {% endblock %}
-              {% block app_title_override %}
-                <div class="app-title-wrapper">
-                  <span class="app-title">{% block app_title %}{{ tethys_app.name }}{% endblock %}</span>
-                </div>
-              {% endblock %}
-              {% block exit_button_override %}
-                <div class="exit-button">
-                  <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');">Exit</a>
-                </div>
+              <div id="nav-title-wrapper">
+                  {% block app-navigation-toggle-override %}
+                    <a href="javascript:void(0);" class="toggle-nav">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </a>
+                  {% endblock %}
+                  {% block app_icon_override %}
+                    <div class="icon-wrapper">
+                      {% block app_icon %}<img src="{% static tethys_app.icon %}">{% endblock %}
+                    </div>
+                  {% endblock %}
+                  {% block app_title_override %}
+                    <div class="app-title-wrapper">
+                      <span class="app-title">{% block app_title %}{{ tethys_app.name }}{% endblock %}</span>
+                    </div>
+                  {% endblock %}
+              </div>
+
+              {% block header_buttons_override %}
+              <div id="header-buttons-wrapper">
+                  {% block header_buttons %}
+                  {% endblock %}
+                  {% block settings_button_override %}
+                      {% if request.user.is_staff %}
+                      <div class="header-button settings-button">
+                        <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('/admin/tethys_apps/tethysapp/{{ tethys_app.id }}/change/');" data-toggle="tooltip" data-placement="bottom" title="Settings"><span class="glyphicon glyphicon-cog"></span></a>
+                      </div>
+                      {%  endif %}
+                  {% endblock %}
+                  {% block exit_button_override %}
+                    <div class="header-button exit-button">
+                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');"data-toggle="tooltip" data-placement="bottom" title="Exit">&times;</a>
+                    </div>
+                  {% endblock %}
+              </div>
               {% endblock %}
             </div>
           </div>
@@ -171,6 +209,25 @@
           </div>
         {% endblock %}
       </div>
+    {% endblock %}
+
+    {% comment "after_app_content explanation" %}
+      Use this block for adding elements after the app content such as
+      bootstrap modals.
+
+      Example:
+        {% block after_app_content %}
+            {% gizmo my_modal %}
+        {% endblock %}
+    {% endcomment %}
+
+    {% block after_app_content %}
+    {% block modals %}
+    {% endblock %}
+    {% endblock %}
+
+    {% block terms-of-service-override %}
+      {% show_terms_if_not_agreed %}
     {% endblock %}
 
     {% block page_attributes_override %}

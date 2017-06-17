@@ -1,28 +1,12 @@
-***********************
-Develop Tethys Platform
-***********************
+**********
+Contribute
+**********
 
-**Last Updated:** December 15, 2015
+**Last Updated:** July 13, 2016
 
-This section provides instructions for those wishing to contribute to Tethys Platform development.
+Tethys Platform is a growing Open Source project and we are always looking for developers who wish to contribute and help improve the platform. If you would like to contribute, join the discussion on the `Tethys Forum <https://groups.google.com/forum/#!forum/tethysplatform>`_ and visit the `Tethys Development Wiki <https://github.com/tethysplatform/tethys/wiki>`_ on the Tethys Platform GitHub repository.
 
-.. caution::
+Resources:
 
-  This documentation is meant for those who would like to contribute to the development of Tethys Platform--not for those wishing to develop Tethys Apps. If you want to develop Tethys Apps, please visit the normal installation instructions found here: :doc:`installation`.
-
-.. toctree::
-    :maxdepth: 2
-
-    tethys_development/installation
-    tethys_development/overview
-    tethys_development/docker
-    tethys_development/releases
-
-
-
-
-
-
-
-
-
+    * `Tethys Forum <https://groups.google.com/forum/#!forum/>`__
+    * `Tethys Development Wiki <https://github.com/tethysplatform/tethys/wiki>`__

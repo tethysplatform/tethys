@@ -31,6 +31,16 @@ DEBUG = True
 # i.e.: ADMINS = (('John', 'john@example.com'), ('Mary', 'mary@example.com'))
 ADMINS = ()
 
+# Force user logout once the browser has been closed.
+# If changed, delete all django_session table entries from the tethys_default database to ensure updated behavior
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Warn user of forced logout after indicated number of seconds
+SESSION_SECURITY_WARN_AFTER = 540
+
+# Force user logout after a certain number of seconds
+SESSION_SECURITY_EXPIRE_AFTER = 600
+
 # See https://docs.djangoproject.com/en/1.8/topics/logging/#configuring-logging for more logging configuration options.
 LOGGING = {
     'version': 1,
@@ -45,10 +55,14 @@ LOGGING = {
             'handlers': ['console'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'WARNING'),
         },
+        'tethys': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        }
     },
 }
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [{% if allowed_host %}'{{ allowed_host }}'{% endif %}]
 
 # Application definition
 
@@ -61,12 +75,18 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_gravatar',
     'bootstrap3',
+    'termsandconditions',
     'tethys_config',
     'tethys_apps',
     'tethys_gizmos',
     'tethys_services',
     'tethys_compute',
-    'social.apps.django_app.default',
+    'social_django',
+    'guardian',
+    'session_security'
+    'captcha',
+    'rest_framework',
+    'rest_framework.authtoken',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -77,15 +97,50 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
+    'session_security.middleware.SessionSecurityMiddleware',
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
 
 AUTHENTICATION_BACKENDS = (
 #    'tethys_services.backends.hydroshare.HydroShareOAuth2',
-#    'social.backends.linkedin.LinkedinOAuth2',
-#    'social.backends.google.GoogleOAuth2',
-#    'social.backends.facebook.FacebookOAuth2',
+#    'social_core.backends.linkedin.LinkedinOAuth2',
+#    'social_core.backends.google.GoogleOAuth2',
+#    'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
 )
+
+# Password validation
+# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
+
+# AUTH_PASSWORD_VALIDATORS = [
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+#     },
+# ]
+
+# Terms and conditions settings
+ACCEPT_TERMS_PATH = '/terms/accept/'
+TERMS_EXCLUDE_URL_PREFIX_LIST = {'/admin/', '/oauth2/', '/handoff/', '/accounts/', '/terms/'}
+TERMS_EXCLUDE_URL_LIST = {'/'}
+TERMS_BASE_TEMPLATE = 'page.html'
 
 ROOT_URLCONF = 'tethys_portal.urls'
 
@@ -97,29 +152,11 @@ WSGI_APPLICATION = 'tethys_portal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'tethys_default',
-        'USER': 'tethys_default',
-        'PASSWORD': 'pass',
+        'NAME': '{{ db_username }}',
+        'USER': '{{ db_username }}',
+        'PASSWORD': '{{ db_password }}',
         'HOST': '127.0.0.1',
-        'PORT': '5435'
-    }
-}
-
-# Tethys App Persistent Stores Settings
-TETHYS_DATABASES = {
-    'tethys_db_manager': {
-        'NAME': 'tethys_db_manager',
-        'USER': 'tethys_db_manager',
-        'PASSWORD': 'pass',
-        'HOST': '127.0.0.1',
-        'PORT': '5435'
-    },
-    'tethys_super': {
-        'NAME': 'tethys_super',
-        'USER': 'tethys_super',
-        'PASSWORD': 'pass',
-        'HOST': '127.0.0.1',
-        'PORT': '5435'
+        'PORT': '{{ db_port }}'
     }
 }
 
@@ -153,8 +190,8 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
-                'social.apps.django_app.context_processors.backends',
-                'social.apps.django_app.context_processors.login_redirect',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
                 'tethys_config.context_processors.tethys_global_settings_context',
                 'tethys_apps.context_processors.tethys_apps_context',
                 'tethys_gizmos.context_processors.tethys_gizmos_context'
@@ -245,3 +282,10 @@ SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = ''
 ## HydroShare
 SOCIAL_AUTH_HYDROSHARE_KEY = ''
 SOCIAL_AUTH_HYDROSHARE_SECRET = ''
+
+# Django Guardian Settings
+ANONYMOUS_USER_ID = -1
+# GUARDIAN_RAISE_403 = False  # Mutually exclusive with GUARDIAN_RENDER_403
+# GUARDIAN_RENDER_403 = False  # Mutually exclusive with GUARDIAN_RAISE_403
+# GUARDIAN_TEMPLATE_403 = ''
+# ANONYMOUS_DEFAULT_USERNAME_VALUE = 'anonymous'

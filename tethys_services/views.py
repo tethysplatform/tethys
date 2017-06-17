@@ -10,7 +10,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from utilities import get_wps_service_engine, list_wps_service_engines, abstract_is_link
+from .utilities import get_wps_service_engine, list_wps_service_engines, abstract_is_link
 
 
 @login_required()
