@@ -148,60 +148,73 @@ class MapView(TethysGizmoOptions):
             },
           ]
         }
-        geojson_layer = MVLayer(source='GeoJSON',
-                                options=geojson_object,
-                                legend_title='Test GeoJSON',
-                                legend_extent=[-46.7, -48.5, 74, 59],
-                                legend_classes=[
-                                    MVLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
-                                    MVLegendClass('line', 'Lines', stroke='#3d9dcd')
-                                ])
 
-        geojson_point_layer = MVLayer(source='GeoJSON',
-                                options=geojson_point_object,
-                                legend_title='Test GeoJSON',
-                                legend_extent=[-46.7, -48.5, 74, 59],
-                                legend_classes=[
-                                    MVLegendClass('line', 'Lines', stroke='#3d9dcd')
-                                layer_options={'style': {'image':
-                                                         {'circle': {'radius': 5,
-                                                                     'fill': {'color': #3d9dcd},
-                                                                     'stroke': {'color': '#ffffff' ,
-                                                                                'width': 0},
-                                                                     }
-                                                          }
-                                                     }
-                                           }
-                                ])
+        geojson_layer = MVLayer(
+            source='GeoJSON',
+            options=geojson_object,
+            legend_title='Test GeoJSON',
+            legend_extent=[-46.7, -48.5, 74, 59],
+            legend_classes=[
+                MVLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
+                MVLegendClass('line', 'Lines', stroke='#3d9dcd')
+            ]
+        )
+
+        geojson_point_layer = MVLayer(
+            source='GeoJSON',
+            options=geojson_point_object,
+            legend_title='Test GeoJSON',
+            legend_extent=[-46.7, -48.5, 74, 59],
+            legend_classes=[
+                MVLegendClass('line', 'Lines', stroke='#3d9dcd')
+            ],
+            layer_options={
+                'style': {
+                    'image': {
+                        'circle': {
+                            'radius': 10,
+                            'fill': {'color':  '#d84e1f'},
+                            'stroke': {'color': '#ffffff', 'width': 1},
+                        }
+                    }
+                }
+            }
+        )
 
         # Define GeoServer Layer
-        geoserver_layer = MVLayer(source='ImageWMS',
-                                  options={'url': 'http://192.168.59.103:8181/geoserver/wms',
-                                           'params': {'LAYERS': 'topp:states'},
-                                           'serverType': 'geoserver'},
-                                  legend_title='USA Population',
-                                  legend_extent=[-126, 24.5, -66.2, 49],
-                                  legend_classes=[
-                                      MVLegendClass('polygon', 'Low Density', fill='#00ff00', stroke='#000000'),
-                                      MVLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
-                                      MVLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
-                                  ])
+        geoserver_layer = MVLayer(
+            source='ImageWMS',
+            options={'url': 'http://192.168.59.103:8181/geoserver/wms',
+                   'params': {'LAYERS': 'topp:states'},
+                   'serverType': 'geoserver'},
+            legend_title='USA Population',
+            legend_extent=[-126, 24.5, -66.2, 49],
+            legend_classes=[
+                MVLegendClass('polygon', 'Low Density', fill='#00ff00', stroke='#000000'),
+                MVLegendClass('polygon', 'Medium Density', fill='#ff0000', stroke='#000000'),
+                MVLegendClass('polygon', 'High Density', fill='#0000ff', stroke='#000000')
+            ]
+        )
 
         # Define KML Layer
-        kml_layer = MVLayer(source='KML',
-                            options={'url': '/static/tethys_gizmos/data/model.kml'},
-                            legend_title='Park City Watershed',
-                            legend_extent=[-111.60, 40.57, -111.43, 40.70],
-                            legend_classes=[
-                                MVLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
-                                MVLegendClass('line', 'Stream Network', stroke='#0000ff'),
-                            ])
+        kml_layer = MVLayer(
+            source='KML',
+            options={'url': '/static/tethys_gizmos/data/model.kml'},
+            legend_title='Park City Watershed',
+            legend_extent=[-111.60, 40.57, -111.43, 40.70],
+            legend_classes=[
+                MVLegendClass('polygon', 'Watershed Boundary', fill='#ff8000'),
+                MVLegendClass('line', 'Stream Network', stroke='#0000ff'),
+            ]
+        )
 
         # Tiled ArcGIS REST Layer
-        arc_gis_layer = MVLayer(source='TileArcGISRest',
-                                options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' + 'Specialty/ESRI_StateCityHighway_USA/MapServer'},
-                                legend_title='ESRI USA Highway',
-                                legend_extent=[-173, 17, -65, 72])
+        arc_gis_layer = MVLayer(
+            source='TileArcGISRest',
+            options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' + 'Specialty/ESRI_StateCityHighway_USA/MapServer'},
+            legend_title='ESRI USA Highway',
+            legend_extent=[-173, 17, -65, 72]
+        )
 
         # Define map view options
         map_view_options = MapView(
@@ -217,9 +230,7 @@ class MapView(TethysGizmoOptions):
                 legend=True
         )
 
-        context = {
-                    'map_view_options': map_view_options,
-                  }
+        context = {'map_view_options': map_view_options}
 
     Template Example
 

@@ -4,7 +4,7 @@ Intermediate Concepts
 
 **Last Updated:** June 2017
 
-This tutorial introduces important concepts for intermediate Tethys developers. The topics covered include:
+This tutorial introduces intermediate concepts for Tethys developers. The topics covered include:
 
 * HTML Forms and User Input
 * Handling Form Submissions in Controllers
@@ -634,8 +634,6 @@ e. Create several new entries using the updated Add Dam form.
 
 Finally, we'll add logic to the home controller to display all of the dams in our dam inventory on the map.
 
-################# TODO: Style the points on the map #################
-
 a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
 
 ::
@@ -687,9 +685,9 @@ a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
                 'style': {
                     'image': {
                         'circle': {
-                            'radius': 5,
-                            'fill': {'color':  '#3d9dcd'},
-                            'stroke': {'color': '#ffffff', 'width': 0},
+                            'radius': 10,
+                            'fill': {'color':  '#d84e1f'},
+                            'stroke': {'color': '#ffffff', 'width': 1},
                         }
                     }
                 }
@@ -705,7 +703,7 @@ a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
         view_options = MVView(
             projection='EPSG:4326',
             center=view_center,
-            zoom=6,
+            zoom=4.5,
             maxZoom=18,
             minZoom=2
         )
