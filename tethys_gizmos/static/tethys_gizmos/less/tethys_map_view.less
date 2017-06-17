@@ -4,6 +4,7 @@
  * AUTHOR: Nathan Swain
  * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE: BSD 2-Clause
+ * NOTE: To modify, make sure you use tethys_map_view.less
  *****************************************************************************/
  // Styles for the Tethys Map View
 #map_view_outer_container {
@@ -94,6 +95,14 @@
         background-position: 0 -208px;
       }
     }
+
+    &.delete {
+      background-position: 0 -256px;
+
+      &.active {
+        background-position: 0 -272px;
+      }
+    }
   }
 }
 
@@ -164,6 +173,12 @@
 
           &:hover {
             background: #efefef;
+          }
+        }
+
+        .tethys-mvlegendimage {
+          &.open {
+            height: 100% !important;
           }
         }
 
@@ -252,4 +267,3 @@
     background: rgba(255, 255, 255, 0.9);
   }
 }
-

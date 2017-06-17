@@ -7,8 +7,8 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-
 from tethys_compute.models import Scheduler
+
 
 def list_schedulers():
     """
@@ -19,6 +19,7 @@ def list_schedulers():
     """
     schedulers = Scheduler.objects.all()
     return schedulers
+
 
 def get_scheduler(name):
     """
@@ -33,3 +34,25 @@ def get_scheduler(name):
     schedulers = Scheduler.objects.filter(name=name)
     if schedulers:
         return schedulers[0]
+
+
+def create_scheduler(name, host, username=None, password=None, private_key_path=None, private_key_pass=None):
+    """
+    Creates a new scheduler
+
+    Args:
+        name (str): The name of the scheduler
+        host (str): The hostname or IP address of the scheduler
+        username (str, optional): The username to use when connecting to the scheduler
+        password (str, optional): The password for the username
+        private_key_path (str, optional): The path to the location of the SSH private key file
+        private_key_pass (str, optional): The passphrase for the private key
+
+    Returns:
+        The newly created scheduler
+
+    Note:
+        The newly created scheduler object is not committed to the database.
+    """
+    scheduler = Scheduler(name, host, username, password, private_key_path, private_key_pass)
+    return scheduler

@@ -43,12 +43,19 @@ $.ajaxSetup({
 
 function bind_run_button(btn){
     btn = $(btn);
-    var job_id = $(btn).attr('data-job-id');
+    var job_id = $(btn).data('job-id');
     $(btn).on('click', function () {
         var execute_url = '/developer/gizmos/ajax/' + job_id + '/execute';
         $.ajax({
             url: execute_url
         }).done(function (json) {
+            status_html =
+            '<div class="progress" style="margin-bottom: 0;">' +
+                '<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
+                    '<span class="sr-only">100% Complete</span>' +
+                '</div>' +
+            '</div>'
+            $(btn).parent().html(status_html);
             update_row($('#jobs-table-row-' + job_id));
         });
     });
@@ -56,7 +63,7 @@ function bind_run_button(btn){
 
 function bind_delete_button(btn){
     btn = $(btn);
-    var job_id = $(btn).attr('data-job-id');
+    var job_id = $(btn).data('job-id');
     $(btn).on('click', function(){
         var delete_url = '/developer/gizmos/ajax/' + job_id + '/delete';
         $.ajax({
@@ -79,14 +86,13 @@ function bind_delete_button(btn){
 
 function update_row(table_elem){
     var table = $(table_elem).closest('table');
-    var status_actions = $(table).attr('data-status-actions');
-    var column_fields = $(table).attr('data-column-fields');
-    var run = $(table).attr('data-run');
-    var delete_btn = $(table).attr('data-delete');
-    var results_url = $(table).attr('data-results-url');
-    var refresh_interval = $(table).attr('data-refresh-interval');
-
-    var job_id = $(table_elem).attr('data-job-id');
+    var status_actions = $(table).data('status-actions');
+    var column_fields = $(table).data('column-fields');
+    var run = $(table).data('run');
+    var delete_btn = $(table).data('delete');
+    var results_url = $(table).data('results-url');
+    var refresh_interval = $(table).data('refresh-interval');
+    var job_id = $(table_elem).data('job-id');
     var update_url = '/developer/gizmos/ajax/' + job_id + '/update-row';
     $.ajax({
         method: 'POST',
@@ -103,8 +109,36 @@ function update_row(table_elem){
             });
             status = json.status;
             if(status == 'Running' || status == 'Submitted' || status == 'Various'){
+                var run_time_field = $('#run_time-' + job_id)
                 setTimeout(function(){
                     update_row(table_elem);
+                }, refresh_interval);
+            }
+        }
+    });
+}
+
+
+function update_status(table_elem){
+    var table = $(table_elem).closest('table');
+    var status_actions = $(table).data('status-actions');
+    var run = $(table).data('run');
+    var delete_btn = $(table).data('delete');
+    var results_url = $(table).data('results-url');
+    var refresh_interval = $(table).data('refresh-interval');
+    var job_id = $(table_elem).data('job-id');
+    var update_url = '/developer/gizmos/ajax/' + job_id + '/update-status';
+    $.ajax({
+        method: 'POST',
+        url: update_url,
+        data: {status_actions: status_actions, run: run, delete: delete_btn, results_url: results_url}
+    }).done(function(json){
+        if(json.success){
+            $(table_elem).html(json.html);
+            status = json.status;
+            if(status == 'Running' || status == 'Submitted' || status == 'Various'){
+                setTimeout(function(){
+                    update_status(table_elem);
                 }, refresh_interval);
             }
         }
@@ -120,5 +154,5 @@ $('.btn-job-delete').each(function(){
 });
 
 $('.job-row').each(function(){
-   update_row(this);
+    update_row(this);
 });

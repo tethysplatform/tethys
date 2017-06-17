@@ -9,13 +9,12 @@
 """
 
 import os
-import shutil
 import subprocess
+from tethys_apps.base.testing import set_testing_environment
 
-from tethys_apps.helpers import get_installed_tethys_apps
-
-DEFAULT_INSTALLATION_DIRECTORY = '/usr/lib/tethys/src'
-DEVELOPMENT_DIRECTORY = '/usr/lib/tethys/tethys'
+CURRENT_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+TETHYS_HOME = os.sep.join(CURRENT_SCRIPT_DIR.split(os.sep)[:-3])
+TETHYS_SRC_DIRECTORY = os.sep.join(CURRENT_SCRIPT_DIR.split(os.sep)[:-2])
 MANAGE_START = 'start'
 MANAGE_SYNCDB = 'syncdb'
 MANAGE_COLLECTSTATIC = 'collectstatic'
@@ -29,26 +28,16 @@ def get_manage_path(args):
     Validate user defined manage path, use default, or throw error
     """
     # Determine path to manage.py file
-    manage_path = os.path.join(DEFAULT_INSTALLATION_DIRECTORY, 'manage.py')
+    manage_path = os.path.join(TETHYS_SRC_DIRECTORY, 'manage.py')
 
     # Check for path option
-    if args.manage:
-        manage_path = args.manage
+    if hasattr(args, 'manage'):
+        manage_path = args.manage or manage_path
 
-        # Throw error if path is not valid
-        if not os.path.isfile(manage_path):
-            print('ERROR: Can\'t open file "{0}", no such file.'.format(manage_path))
-            exit(1)
-
-    elif not os.path.isfile(manage_path):
-        # Try the development path version
-        manage_path = os.path.join(DEVELOPMENT_DIRECTORY, 'manage.py')
-
-        # Throw error if default path is not valid
-        if not os.path.isfile(manage_path):
-            print('ERROR: Cannot find the "manage.py" file at the default location. Try using the "--manage"'
-                  'option to provide the path to the location of the "manage.py" file.')
-            exit(1)
+    # Throw error if path is not valid
+    if not os.path.isfile(manage_path):
+        print('ERROR: Can\'t open file "{0}", no such file.'.format(manage_path))
+        exit(1)
 
     return manage_path
 
@@ -70,20 +59,14 @@ def manage_command(args):
             primary_process = ['python', manage_path, 'runserver']
     elif args.command == MANAGE_SYNCDB:
         intermediate_process = ['python', manage_path, 'makemigrations']
-        try:
-            subprocess.call(intermediate_process)
-        except KeyboardInterrupt:
-            pass
+        run_process(intermediate_process)
 
         primary_process = ['python', manage_path, 'migrate']
 
     elif args.command == MANAGE_COLLECTSTATIC:
         # Run pre_collectstatic
         intermediate_process = ['python', manage_path, 'pre_collectstatic']
-        try:
-            subprocess.call(intermediate_process)
-        except KeyboardInterrupt:
-            pass
+        run_process(intermediate_process)
 
         # Setup for main collectstatic
         primary_process = ['python', manage_path, 'collectstatic']
@@ -96,17 +79,11 @@ def manage_command(args):
         # Convenience command to run collectstatic and collectworkspaces
         ## Run pre_collectstatic
         intermediate_process = ['python', manage_path, 'pre_collectstatic']
-        try:
-            subprocess.call(intermediate_process)
-        except KeyboardInterrupt:
-            pass
+        run_process(intermediate_process)
 
         ## Setup for main collectstatic
         intermediate_process = ['python', manage_path, 'collectstatic']
-        try:
-            subprocess.call(intermediate_process)
-        except KeyboardInterrupt:
-            pass
+        run_process(intermediate_process)
 
         ## Run collectworkspaces command
         primary_process = ['python', manage_path, 'collectworkspaces']
@@ -114,9 +91,17 @@ def manage_command(args):
     elif args.command == MANAGE_CREATESUPERUSER:
         primary_process = ['python', manage_path, 'createsuperuser']
 
-    # Call the process with a little trick to ignore the keyboard interrupt error when it happens
     if primary_process:
-        try:
-            subprocess.call(primary_process)
-        except KeyboardInterrupt:
-            pass
+        run_process(primary_process)
+
+
+def run_process(process):
+    # Call the process with a little trick to ignore the keyboard interrupt error when it happens
+    try:
+        if 'test' in process:
+            set_testing_environment(True)
+        subprocess.call(process)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        set_testing_environment(False)
