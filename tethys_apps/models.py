@@ -69,6 +69,11 @@ class TethysApp(models.Model):
         """
         if setting_list is not None:
             for setting in setting_list:
+                # Don't add the same setting twice
+                if self.settings_set.filter(name=setting.name):
+                    return
+
+                # Associate setting with this app
                 setting.tethys_app = self
                 setting.save()
 
