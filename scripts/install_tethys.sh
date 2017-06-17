@@ -479,7 +479,7 @@ then
     esac
 
     . ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}
-    tstartdb
+    pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" -l "${TETHYS_HOME}/psql/logfile" start -o "-p ${TETHYS_DB_PORT}"
     conda install -c conda-forge uwsgi -y
     tethys gen settings --production --allowed-host=${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite
     tethys gen nginx --overwrite
@@ -504,6 +504,7 @@ then
     sudo systemctl enable ${TETHYS_HOME}/src/tethys_portal/tethys.uwsgi.service
     sudo systemctl start tethys.uwsgi.service
     sudo systemctl restart nginx
+    pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" stop
     set +x
     . deactivate
 
