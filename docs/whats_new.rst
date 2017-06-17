@@ -48,6 +48,7 @@ Map View
 * New editable attribute for MVLayers to lock layers from being edited
 * Added data attribute to MVLayer to allow passing custom attributes with layers for use in custom JavaScript
 * A basemap switcher tool is now enabled on the map with the capability to configure multiple basemaps, including turning the basemap off.
+* Added the ability to customize some styles of vector MVLayers.
 
 See: :doc:`tethys_sdk/gizmos/map_view`
 
