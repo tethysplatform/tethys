@@ -1,6 +1,6 @@
 <div class="form-group {% if error %} has-error {% endif %}">
   {% if display_text %}<label class="control-label" for="{{ name }}">{{ display_text }}</label>{% endif %}
-  <div class="input-group">
+  <div class="{% if prepend or icon_prepend or append or icon_append %}input-group{% endif %}">
       {% if prepend %}
         <div class="input-group-addon">{{ prepend }}</div>
       {% elif icon_prepend %}
@@ -8,7 +8,6 @@
       {% endif %}
       <input id="{{ name }}" class="form-control{% if classes %} {{ classes }}{% endif %}"
            name="{{ name }}"
-           type="text"
            {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
            {% if initial %}value="{{ initial }}"{% endif %}
            {% if disabled %}disabled{% endif %}

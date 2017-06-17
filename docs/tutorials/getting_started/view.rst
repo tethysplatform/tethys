@@ -2,7 +2,7 @@
 The View and Templating
 ***********************
 
-**Last Updated:** May 20, 2015
+**Last Updated:** September 29, 2016
 
 In this section the View aspect of MVC will be introduced. The View consists of the representation or visualizations of your app's data and the user interface. Views for Tethys apps are constructed using the standard web programming tools: HTML, JavaScript, and CSS. Additionally, Tethys Platform provides the Django Python templating language allowing you to insert Python code into your HTML documents, similar to how PHP is used. The result is dynamic, reusable templates for the web pages of your app.
 

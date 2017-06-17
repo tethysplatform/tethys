@@ -11,12 +11,16 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.views import password_reset, password_reset_done, password_reset_confirm, \
     password_reset_complete
+from django.conf import settings
 admin.autodiscover()
+
+# ensure at least staff users logged in before accessing admin login page
+from django.contrib.admin.views.decorators import staff_member_required
+admin.site.login = staff_member_required(admin.site.login, redirect_field_name="", login_url='/accounts/login/')
 
 from tethys_portal.views import accounts as tethys_portal_accounts, developer as tethys_portal_developer, \
     error as tethys_portal_error, home as tethys_portal_home, user as tethys_portal_user
 from tethys_apps import views as tethys_apps_views
-
 
 account_urls = [
     url(r'^login/$', tethys_portal_accounts.login_view, name='login'),
@@ -56,14 +60,21 @@ urlpatterns = [
     url(r'^$', tethys_portal_home.home, name='home'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include(account_urls, namespace='accounts')),
-    url(r'^oauth2/', include('social.apps.django_app.urls', namespace='social')),
+    url(r'^captcha/', include('captcha.urls')),
+    url(r'^oauth2/', include('social_django.urls', namespace='social')),
     url(r'^user/(?P<username>[\w.@+-]+)/', include(user_urls, namespace='user')),
     url(r'^apps/', include('tethys_apps.urls')),
     url(r'^developer/', include(developer_urls)),
     url(r'^handoff/(?P<app_name>[\w-]+)/$', tethys_apps_views.handoff_capabilities, name='handoff_capabilities'),
     url(r'^handoff/(?P<app_name>[\w-]+)/(?P<handler_name>[\w-]+)/$', tethys_apps_views.handoff, name='handoff'),
-    #url(r'^error/', include(development_error_urls)),
+    url(r'^update-job-status/(?P<job_id>[\w-]+)/$', tethys_apps_views.update_job_status, name='update_job_status'),
+    url(r'^terms/', include('termsandconditions.urls')),
+    url(r'session_security/', include('session_security.urls')),
+    # url(r'^error/', include(development_error_urls)),
 ]
+
+if settings.DEBUG and 'silk' in settings.INSTALLED_APPS:
+    urlpatterns.append(url(r'^silk/', include('silk.urls', namespace='silk')))
 
 handler400 = tethys_portal_error.handler_400
 handler403 = tethys_portal_error.handler_403

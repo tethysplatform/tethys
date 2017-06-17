@@ -34,6 +34,7 @@ class TethysAppTemplate(Template):
     vars = [
         var('proper_name', 'e.g.: "My First App" for project name "my_first_app"'),
         var('version', 'e.g.: 0.0.1'),
+        var('tags','Tags for filtering your apps. You can add multiple tags with commas. e.g.: "Hydrology","Reference Timeseries"'),
         var('description', 'One-line description of the app'),
         var('author', 'Author name'),
         var('author_email', 'Author email'),
@@ -42,14 +43,14 @@ class TethysAppTemplate(Template):
     ]
 
     # Default colors from flatuicolors.com
-    default_colors = ('#2ecc71',    # Emerald
-                      '#3498db',    # Peter River
-                      '#34495e',    # Wet Asphalt
-                      '#9b59b6',    # Amethyst
-                      '#e67e22',    # Carrot
-                      '#f1c40f',    # Sun Flower
-                      '#e74c3c',    # Alizarin
-                      '#1abc9c',    # Turquoise
+    default_colors = ('#27ae60',    # Nephritis
+                      '#2980b9',    # Belize Hole
+                      '#2c3e50',    # Midnight Blue
+                      '#8e44ad',    # Wisteria
+                      '#d35400',    # Pumpkin
+                      '#f39c12',    # Orange
+                      '#c0392b',    # Pomegranate
+                      '#16a085',    # Green Sea
     )
 
     def check_vars(self, vars, cmd):
@@ -67,6 +68,8 @@ class TethysAppTemplate(Template):
         project_warning_regex = re.compile(r'^[a-zA-Z0-9_-]+$')
 
         project = vars['project'][len(PREFIX):]
+
+
 
         # Only letters, numbers and underscores allowed in app names
         if not project_error_regex.match(project):
@@ -97,7 +100,7 @@ class TethysAppTemplate(Template):
             proper_name_error_regex = re.compile(r'^[a-zA-Z0-9\s]+$')
             proper_name_warn_regex = re.compile(r'^[a-zA-Z0-9-\s_\"\']+$')
 
-            print vars['proper_name']
+            print(vars['proper_name'])
 
             if not proper_name_error_regex.match(vars['proper_name']):
 
@@ -121,7 +124,9 @@ class TethysAppTemplate(Template):
         title_split_proper_name = [x.title() for x in split_proper_name]
         vars['proper_no_spaces'] = ''.join(title_split_proper_name)
 
+
         # Add the color variable to vars
         vars['color'] = random.choice(self.default_colors)
+
 
         return vars

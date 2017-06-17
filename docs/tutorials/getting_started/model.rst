@@ -2,16 +2,16 @@
 The Model and Persistent Stores
 *******************************
 
-**Last Updated:** May 20, 2015
+**Last Updated:** September 29, 2016
 
-In this part of the tutorial you'll learn about the Model component of MVC development for Tethys apps. The Model represents the data of your app and the code used to manage it. The data of your app can take many forms. It can be generated on-the-fly and stored in Python data structures (e.g.: lists, dictionaries, and NumPy arrays), stored in databases, or contained in files via the :doc:`../../tethys_sdk/dataset_services`.
+In this part of the tutorial you'll learn about the Model component of MVC development for Tethys apps. The Model represents the data of your app and the code used to manage it. The data of your app can take many forms. It can be generated on-the-fly and stored in Python data structures (e.g.: lists, dictionaries, and NumPy arrays), stored in databases, or contained in files via the :doc:`../../tethys_sdk/tethys_services/dataset_services`.
 
-In this tutorial you will define your model using the :doc:`../../tethys_sdk/persistent_store` to create a spatially enabled database for your app and you will learn how to use the `SQLAlchemy <http://www.sqlalchemy.org/>`_ object relational mapper (ORM) to create a data model for your app.
+In this tutorial you will define your model using the :doc:`../../tethys_sdk/tethys_services/persistent_store` to create a spatially enabled database for your app and you will learn how to use the `SQLAlchemy <http://www.sqlalchemy.org/>`_ object relational mapper (ORM) to create a data model for your app.
 
 Register a Persistent Store
 ===========================
 
-The Tethys Portal provides the :doc:`../../tethys_sdk/persistent_store` to streamline the use of SQL databases in apps. To register a new :term:`persistent store` database add the ``persistent_stores()`` method to your :term:`app class`, which is located in your :term:`app configuration file`. This method must return a list or tuple of ``PersistentStore`` objects.
+The Tethys Portal provides the :doc:`../../tethys_sdk/tethys_services/persistent_store` to streamline the use of SQL databases in apps. To register a new :term:`persistent store` database add the ``persistent_stores()`` method to your :term:`app class`, which is located in your :term:`app configuration file`. This method must return a list or tuple of ``PersistentStore`` objects.
 
 Open the app configuration file for your app located at :file:`my_first_app/app.py` in your favorite text editor. Import the ``PersistentStore`` object at the top of the file, add the ``persistent_stores()`` method to your app class, and save the changes:
 
@@ -23,7 +23,7 @@ Open the app configuration file for your app located at :file:`my_first_app/app.
 
     class MyFirstApp(TethysAppBase):
         """
-        Tethys App Class for My First App.
+        Tethys app class for My First App.
         """
 
         name = 'My First App'
@@ -31,8 +31,13 @@ Open the app configuration file for your app located at :file:`my_first_app/app.
         icon = 'my_first_app/images/icon.gif'
         package = 'my_first_app'
         root_url = 'my-first-app'
-        color = '#3498db'
+        color = '#e74c3c'
+        description = ''
+        tags = ''
+        enable_feedback = False
+        feedback_emails = []
 
+            
         def url_maps(self):
             """
             Add controllers
@@ -41,8 +46,7 @@ Open the app configuration file for your app located at :file:`my_first_app/app.
 
             url_maps = (UrlMap(name='home',
                                url='my-first-app',
-                               controller='my_first_app.controllers.home'
-                               ),
+                               controller='my_first_app.controllers.home'),
             )
 
             return url_maps
@@ -52,7 +56,7 @@ Open the app configuration file for your app located at :file:`my_first_app/app.
             Add one or more persistent stores
             """
             stores = (PersistentStore(name='stream_gage_db',
-                                      initializer='init_stores:init_stream_gage_db',
+                                      initializer='my_first_app.init_stores.init_stream_gage_db',
                                       spatial=True
                     ),
             )
@@ -63,7 +67,7 @@ A persistent store database will be created for each ``PersistentStore`` object 
 
 .. note::
 
-    Read more about persistent stores in the :doc:`../../tethys_sdk/persistent_store` documentation.
+    Read more about persistent stores in the :doc:`../../tethys_sdk/tethys_services/persistent_store` documentation.
 
 Create an SQLAlchemy Data Model
 ===============================
@@ -192,7 +196,7 @@ Save your changes to :file:`init_stores.py` and close before moving on.
 Register Initialization Function
 ================================
 
-Recall that when you registered the persistent store in your app configuration file, you specified the ``initializer`` function for the persistent store. This argument accepts a string representing the path to the function using dot notation and a colon to delineate the function (e.g.: "foo.bar:function"). Check your :term:`app configuration file` (:file:`app.py`) to ensure the path to the initializer function is correct: ``'init_stores:init_stream_gage_db'``.
+Recall that when you registered the persistent store in your app configuration file, you specified the ``initializer`` function for the persistent store. This argument accepts a string representing the path to the function using dot notation and a colon to delineate the function (e.g.: "app_name.module.function"). Check your :term:`app configuration file` (:file:`app.py`) to ensure the path to the initializer function is correct: ``'my_first_app.init_stores.init_stream_gage_db'``.
 
 Persistent Store Initialization
 ===============================

@@ -208,6 +208,9 @@ thead th {
 .submit-row a.deletelink {
   height: auto;
 }
+.delete-confirmation form .cancel-link {
+  height: auto;
+}
 [type=submit],
 [type=button],
 .button,
@@ -257,4 +260,12 @@ input[type=submit][name=_save]:hover {
 }
 #settingscategory_form .inline-group .tabular .module tbody td p {
   font-size: 12px;
+}
+.inline-group .tabular fieldset table tbody tr.form-row td {
+  padding-top: 8px;
+}
+.inline-group .tabular fieldset table tbody tr.form-row td.field-form-errors {
+  margin: 2px 0;
+  padding: 2px 3px;
+  vertical-align: middle;
 }

@@ -1,9 +1,21 @@
+{% load staticfiles tethys_gizmos %}
+
 {% for column_value in row %}
-  <td>{{ column_value }}</td>
+  {% with col_idx=forloop.counter0 %}
+    <td id="{{ column_fields|return_item:col_idx }}-{{ job.id }}">{{ column_value }}</td>
+  {% endwith %}
 {% endfor %}
 {% if status_actions %}
-  <td id="jobs-table-status-{{ job.id }}" class="job-status" data-job-id="{{ job.id }}">
-    {% include "tethys_gizmos/gizmos/job_status.html" %}
+  <td id="jobs-table-status-{{ job.id }}" class="job-status status-col" data-job-id="{{ job.id }}">
+    {% if delay_loading_status %}
+    <div class="progress" style="margin-bottom: 0;">
+      <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" title="Updating" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%; background-color: #555555;">
+        <span class="sr-only">100% Updating</span>
+      </div>
+    </div>
+    {% else %}
+      {% include "tethys_gizmos/gizmos/job_status.html" %}
+    {% endif %}
   </td>
   {% if delete %}
     <td>

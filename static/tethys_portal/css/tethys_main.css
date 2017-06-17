@@ -288,14 +288,14 @@ a:hover {
   /* .push must be the same height as footer */
   height: 100px;
 }
-@media (max-width: 860px) {
+@media (max-width: 1100px) {
   #site-wrapper {
-    margin-bottom: -100px;
+    margin-bottom: -150px;
   }
   #site-footer,
   #site-wrapper:after {
     /* .push must be the same height as footer */
-    height: 100px;
+    height: 150px;
   }
 }
 /*****************************************************************************
@@ -1864,58 +1864,87 @@ footer.site-footer .tethys-attribution a:hover {
 .copyright-bottom {
   display: none;
 }
-@media (max-width: 860px) {
-  .footer-col > .png-cp-logo {
-    width: 200px;
-    margin-left: -11px;
-  }
-  .footer-col {
-    float: none;
-    font-size: 16px;
-    width: 100%;
-    margin: 0;
-    text-align: center;
-  }
-  .footer-col.one {
-    display: none;
-  }
-  .footer-col.two,
-  .footer-col.three {
-    margin-top: 40px;
-  }
-  .footer-col.three {
-    width: 100%;
-  }
-  .footer-col:last-child {
-    width: 100%;
-    margin-bottom: 40px;
-  }
-  .footer-col h5 {
-    margin-top: 20px;
-  }
-  .copyright-bottom {
-    display: block;
-    position: relative;
-    margin-top: 40px;
-  }
-  .copyright-bottom img {
-    width: 100px;
-  }
-  .copyright-bottom .copyright {
-    margin-top: 40px;
-    font-size: 18px;
-    text-align: center;
-  }
+.documents-wrapper {
+  margin-top: 40px;
+  margin-left: 10px;
+  float: left;
+  font-weight: 300;
 }
-@media (max-width: 800px) {
+.documents-wrapper .document-link {
+  margin: 0 5px;
+  display: inline-block;
+  font-size: 16px;
+  color: #eeeeff;
+}
+.documents-wrapper .document-link:hover {
+  color: #ffffff;
+}
+/*@media (max-width: 1180px) {
+	.footer-col > .png-cp-logo {
+		width: 200px;
+		margin-left: -11px;
+	}
+	
+	.footer-col {
+		float: none;
+		font-size: 16px;
+		width: 100%;
+		margin: 0;
+		text-align: center;
+		
+		&.one {
+			display: none;
+		}
+
+		&.two, &.three {
+			margin-top: 40px;
+		}
+
+		&.three {
+		  width: 100%;
+		}
+		
+		&:last-child {
+			width: 100%;
+			margin-bottom: 40px;
+		}
+		
+		h5 {
+			margin-top: 20px;
+		}
+	}
+
+	.copyright-bottom {
+		display: block;
+		position: relative;
+		margin-top: 40px;
+		
+		img {
+			width: 100px;
+		}
+		
+		.copyright {
+			margin-top: 40px;
+			font-size: 18px;
+			text-align: center;
+		}
+	}
+}*/
+@media (max-width: 1100px) {
   footer.site-footer .tethys-attribution {
     float: none;
-    margin-top: 10px;
+    margin-top: 15px;
     text-align: center;
   }
   .copyright-wrapper {
     float: none;
     margin-top: 22px;
+    text-align: center;
+  }
+  .documents-wrapper {
+    display: block;
+    float: none;
+    margin-top: 15px;
     text-align: center;
   }
 }
