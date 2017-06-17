@@ -2,52 +2,32 @@
 Advanced Concepts
 *****************
 
-**Last Updated:** May 2017
+**Last Updated:** June 2017
 
-.. warning::
+This tutorial introduces advanced concepts for Tethys developers. The topics covered include:
 
-   UNDER CONSTRUCTION
-
-Concepts
-========
 * Tethys Services API
-* Model and PersistentStores API
-* JavaScript with Gizmos - dynamic pop-ups and selection
-* JavaScript AJAX
+* PersistentStores API
+* Gizmo JavaScript APIs
+* JavaScript and AJAX
 * Permissions API
-* Custom Styling - make map fit full screen
 * Advanced HTML forms - File Upload
+* Plot View Gizmos
+* REST API
 
-Start From Intermediate Solution
-================================
+0. Start From Intermediate Solution (Optional)
+==============================================
 
 If you wish to use the solution as a starting point:
 
 ::
 
-    $ mkdir ~/tethysdev
-    $ cd ~/tethysdev
     $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     $ cd tethysapp-dam_inventory
     $ git checkout intermediate-solution
-    $ t
-    (tethys)$ python setup.py develop
 
-Start the Development Server
-============================
-
-If you have not already started the development server, start it now:
-
-::
-
-    (tethys) $ tethys manage start
-
-    OR
-
-    (tethys) $ tms
-
-Configure App to Use a Custom Setting
-=====================================
+1. Use a Custom Setting
+=======================
 
 Intro to App Settings... :doc:`../../tethys_sdk/app_settings`
 
@@ -55,12 +35,12 @@ Intro to App Settings... :doc:`../../tethys_sdk/app_settings`
 
 
 
-Configure App to Use a Persistent Store Database
-================================================
+2. Persistent Store Database
+============================
 
 Intro to persistent stores... :doc:`../../tethys_sdk/tethys_services/persistent_store`
 
-1. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by adding the ``persistent_store_settings`` method to your app class:
+a. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by adding the ``persistent_store_settings`` method to your app class:
 
 ::
 
@@ -87,7 +67,7 @@ Intro to persistent stores... :doc:`../../tethys_sdk/tethys_services/persistent_
             return ps_settings
 
 
-2. Refactor the dams model to use the Persistent Store Database instead of the JSON files (``models.py``):
+b. Refactor the dams model to use the Persistent Store Database instead of the JSON files (``models.py``):
 
 ::
 
@@ -205,7 +185,7 @@ Intro to persistent stores... :doc:`../../tethys_sdk/tethys_services/persistent_
 
 
 
-3. Refactor ``home`` controller in ``controllers.py`` to use new model objects:
+c. Refactor ``home`` controller in ``controllers.py`` to use new model objects:
 
 ::
 
@@ -243,7 +223,7 @@ Intro to persistent stores... :doc:`../../tethys_sdk/tethys_services/persistent_
 
         ...
 
-4. Add **Persistent Store Service** to Tethys Portal:
+d. Add **Persistent Store Service** to Tethys Portal:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
@@ -251,9 +231,11 @@ Intro to persistent stores... :doc:`../../tethys_sdk/tethys_services/persistent_
     d. Click on the **Add Persistent Store Service** button.
     e. Give the **Persistent Store Service** a name and fill out the connection information.
 
-**IMPORTANT**: The username and password for the persistent store service must be a superuser to use spatial persistent stores.
+.. important::
 
-5. Assign **Persistent Store Service** to Dam Inventory App:
+    The username and password for the persistent store service must be a superuser to use spatial persistent stores.
+
+e. Assign **Persistent Store Service** to Dam Inventory App:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
@@ -262,17 +244,17 @@ Intro to persistent stores... :doc:`../../tethys_sdk/tethys_services/persistent_
     e. Scroll down to the **Persistent Store Database Settings** section.
     f. Assign the **Persistent Store Service** that you created in Step 4 to the **primary_db**.
 
-6. Execute **syncstores** command to initialize Persistent Store database:
+f. Execute **syncstores** command to initialize Persistent Store database:
 
-::
+    ::
 
-    (tethys) $ tethys syncstores dam_inventory
+        (tethys) $ tethys syncstores dam_inventory
 
 
-Use JavaScript APIs to Create Dynamic Pop-Ups
-=============================================
+3. Use JavaScript APIs
+======================
 
-1. Modify MVLayer in ``home`` controller to make the layer selectable:
+a. Modify MVLayer in ``home`` controller to make the layer selectable:
 
 ::
 
@@ -287,7 +269,7 @@ Use JavaScript APIs to Create Dynamic Pop-Ups
 
     ...
 
-2. Create a new file called ``map.js`` in the ``public/js/`` directory and add the following contents:
+b. Create a new file called ``map.js`` in the ``public/js/`` directory and add the following contents:
 
 ::
 
@@ -314,7 +296,7 @@ Use JavaScript APIs to Create Dynamic Pop-Ups
         });
     });
 
-3. Open ``templates/dam_inventory/home.html``, load the ``staticfiles`` module and add the ``map.js`` script to the page:
+c. Open ``templates/dam_inventory/home.html``, load the ``staticfiles`` module and add the ``map.js`` script to the page:
 
 ::
 
@@ -328,7 +310,7 @@ Use JavaScript APIs to Create Dynamic Pop-Ups
       <script src="{% static 'dam_inventory/js/map.js' %}" type="text/javascript"></script>
     {% endblock %}
 
-4. Add a new element to the ``app_content`` area of the page with an id of ``popup``:
+d. Add a new element to the ``app_content`` area of the page with an id of ``popup``:
 
 ::
 
@@ -337,7 +319,7 @@ Use JavaScript APIs to Create Dynamic Pop-Ups
       <div id="popup"></div>
     {% endblock %}
 
-5. Modify the ``public/js/map.js`` script to add the pop-up to the map when a point is selected and display the properties of that point:
+e. Modify the ``public/js/map.js`` script to add the pop-up to the map when a point is selected and display the properties of that point:
 
 ::
 
@@ -407,7 +389,7 @@ Use JavaScript APIs to Create Dynamic Pop-Ups
     });
 
 
-6. Add Custom CSS to style the pop-up. Create a new file ``public/css/map.css`` and add the following contentss:
+f. Add Custom CSS to style the pop-up. Create a new file ``public/css/map.css`` and add the following contentss:
 
 ::
 
@@ -423,7 +405,7 @@ Use JavaScript APIs to Create Dynamic Pop-Ups
         height: 100%;
     }
 
-7. Add ``public/css/map.css`` to the ``templates/dam_inventory/home.html`` file:
+g. Add ``public/css/map.css`` to the ``templates/dam_inventory/home.html`` file:
 
 ::
 
@@ -434,12 +416,12 @@ Use JavaScript APIs to Create Dynamic Pop-Ups
     {% endblock %}
 
 
-Create Permissions Groups
-=========================
+4. App Permissions
+==================
 
 Intro to permissions... :doc:`../../tethys_sdk/permissions`
 
-1. Define permissions for the app by adding the ``permissions`` method to the app class in the ``app.py``:
+a. Define permissions for the app by adding the ``permissions`` method to the app class in the ``app.py``:
 
 ::
 
@@ -469,7 +451,7 @@ Intro to permissions... :doc:`../../tethys_sdk/permissions`
 
             return permissions
 
-2. Protect the Add Dam view with the ``add_dams`` permission by adding the ``permission_required`` decorator to the ``add_dams`` controller:
+b. Protect the Add Dam view with the ``add_dams`` permission by adding the ``permission_required`` decorator to the ``add_dams`` controller:
 
 ::
 
@@ -484,7 +466,7 @@ Intro to permissions... :doc:`../../tethys_sdk/permissions`
         """
         ...
 
-3. Add a context variable called ``can_add_dams`` to the context of each controller with the value of the return value of the ``has_permission`` function:
+c. Add a context variable called ``can_add_dams`` to the context of each controller with the value of the return value of the ``has_permission`` function:
 
 ::
 
@@ -532,7 +514,7 @@ Intro to permissions... :doc:`../../tethys_sdk/permissions`
         }
         return render(request, 'dam_inventory/list_dams.html', context)
 
-4. Use the ``can_add_dams`` method to show or hide the navigation link to the Add Dam View. Modify ``templates/dam_inventory/base.html``:
+d. Use the ``can_add_dams`` method to show or hide the navigation link to the Add Dam View. Modify ``templates/dam_inventory/base.html``:
 
 ::
 
@@ -545,7 +527,7 @@ Intro to permissions... :doc:`../../tethys_sdk/permissions`
       {% endif %}
     {% endblock %}
 
-5. Use the ``can_add_dams`` method to show or hide the "Add Dam" button on the home page:
+e. Use the ``can_add_dams`` method to show or hide the "Add Dam" button on the home page:
 
 ::
 
@@ -555,7 +537,7 @@ Intro to permissions... :doc:`../../tethys_sdk/permissions`
       {% endif %}
     {% endblock %}
 
-5. Superusers have all permissions. To test the permissions, create two new users: one with the ``admin`` permissions group and one without it. Then login with these users:
+f. Superusers have all permissions. To test the permissions, create two new users: one with the ``admin`` permissions group and one without it. Then login with these users:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
@@ -570,27 +552,36 @@ Intro to permissions... :doc:`../../tethys_sdk/permissions`
     k. Repeat steps e-f for user named "di_viewer". DO NOT add "di_viewer" user to any groups.
     l. Press the **Save** button.
 
-6. Log in each user. If the permission has been applied correctly, "di_viewer" should not be able to see the Add Dam link and should be redirected if the Add Dam view is linked to directly. "di_admin" should be able to add dams.
+g. Log in each user. If the permission has been applied correctly, "di_viewer" should not be able to see the Add Dam link and should be redirected if the Add Dam view is linked to directly. "di_admin" should be able to add dams.
 
+5. Persistent Store Related Tables
+==================================
 
-Add Flood Hydrograph Model
-==========================
+Add Flood Hydrograph table
 
-Add Flood Hydrograph Form
-=========================
+6. Add Flood Hydrograph Page
+============================
 
-Add Flood Hydrograph Plot
-=========================
+CSV File Upload
 
-X. Solution
+7. Plot Flood Hydrograph Page
+=============================
+
+8. Dynamic Hydrograph Plot in Pop-Ups
+=====================================
+
+9. REST API
 ===========
+
+Create a rest API for adding new dams to dam inventory
+
+10. Solution
+============
 
 This concludes the Advanced Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
 
 ::
 
-    $ mkdir ~/tethysdev
-    $ cd ~/tethysdev
     $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     $ cd tethysapp-dam_inventory
     $ git checkout advanced-solution
