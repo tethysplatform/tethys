@@ -125,8 +125,7 @@ c. Refactor the ``add_new_dam`` and ``get_all_dams`` functions in ``model.py`` t
         )
 
         # Get connection/session to database
-        engine = app.get_persistent_store_database('primary_db')
-        Session = sessionmaker(bind=engine)
+        Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
         session = Session()
 
         # Add the new dam record to the session
@@ -142,8 +141,7 @@ c. Refactor the ``add_new_dam`` and ``get_all_dams`` functions in ``model.py`` t
         Get all persisted dams.
         """
         # Get connection/session to database
-        engine = app.get_persistent_store_database('primary_db')
-        Session = sessionmaker(bind=engine)
+        Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
         session = Session()
 
         # Query for all dam records
@@ -151,6 +149,10 @@ c. Refactor the ``add_new_dam`` and ``get_all_dams`` functions in ``model.py`` t
         session.close()
 
         return dams
+
+.. important::
+
+    Don't forget to close your ``session`` objects when you are done. Eventually you will run out of connections to the database if you don't, which will cause unsightly errors.
 
 d. Create a new function called ``init_primary_db`` at the bottom of ``model.py``. This function is used to initialize the data database by creating the tables and adding any initial data.
 
@@ -400,15 +402,21 @@ b. Create a new file called ``/public/js/map.js`` and add the following contents
 
                 // Clean up last popup and reinitialize
                 $(popup_element).popover('destroy');
-                popup.setPosition(coordinates);
 
-                $(popup_element).popover({
-                  'placement': 'top',
-                  'animation': true,
-                  'html': true,
-                  'content': popup_content
-                });
-                $(popup_element).popover('show');
+                // Delay arbitrarily to wait for previous popover to
+                // be deleted before showing new popover.
+                setTimeout(function() {
+                    popup.setPosition(coordinates);
+
+                    $(popup_element).popover({
+                      'placement': 'top',
+                      'animation': true,
+                      'html': true,
+                      'content': popup_content
+                    });
+
+                    $(popup_element).popover('show');
+                }, 500);
             } else {
                 // remove pop up when selecting nothing on the map
                 $(popup_element).popover('destroy');
@@ -597,7 +605,7 @@ a. Define two new tables to ``models.py`` for storing the hydrograph and hydrogr
 
 ::
 
-    from sqlalchemy import Column, Integer, Float, String, DateTime, ForeignKey
+    from sqlalchemy import Column, Integer, Float, String, ForeignKey
     from sqlalchemy.orm import sessionmaker, relationship
 
     ...
@@ -636,8 +644,8 @@ a. Define two new tables to ``models.py`` for storing the hydrograph and hydrogr
         # Columns
         id = Column(Integer, primary_key=True)
         hydrograph_id = Column(ForeignKey('hydrographs.id'))
-        datetime = Column(DateTime)
-        flow = Column(Float)
+        time = Column(Integer) #: hours
+        flow = Column(Float) #: cfs
 
         # Relationships
         hydrograph = relationship('Hydrograph', back_populates='points')
@@ -655,7 +663,63 @@ b. Execute **syncstores** command again to add the new tables to the database:
 CSV File Upload
 Create new page for uploading the hydrograph.
 
-a. New Template
+a. New Model function
+
+::
+
+    def assign_hydrograph_to_dam(dam_id, hydrograph_file):
+        """
+        Parse hydrograph file and add to database, assigning to appropriate dam.
+        """
+        # Parse file
+        hydro_points = []
+
+        try:
+
+            for line in hydrograph_file:
+                sline = line.split(',')
+
+                try:
+                    time = int(sline[0])
+                    flow = float(sline[1])
+                    hydro_points.append(HydrographPoint(time=time, flow=flow))
+                except ValueError:
+                    continue
+
+            if len(hydro_points) > 0:
+                Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+                session = Session()
+
+                # Get dam object
+                dam = session.query(Dam).get(int(dam_id))
+
+                # Overwrite old hydrograph
+                hydrograph = dam.hydrograph
+
+                # Create new hydrograph if not assigned already
+                if not hydrograph:
+                    hydrograph = Hydrograph()
+                    dam.hydrograph = hydrograph
+
+                # Remove old points if any
+                for hydro_point in hydrograph.points:
+                    session.delete(hydro_point)
+
+                # Assign points to hydrograph
+                hydrograph.points = hydro_points
+
+                # Persist to database
+                session.commit()
+                session.close()
+
+        except Exception as e:
+            # Careful not to hide error. At the very least log it to the console
+            print(e)
+            return False
+
+        return True
+
+b. New Template
 
 ::
 
@@ -663,11 +727,16 @@ a. New Template
     {% load tethys_gizmos %}
 
     {% block app_content %}
-      <h1>Add Hydrograph</h1>
+      <h1>Assign Hydrograph</h1>
+      <p>Select a dam and a hydrograph file to assign to that dam. The file should be a csv with two columns: time (hours) and flow (cfs).</p>
       <form id="add-hydrograph-form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <p>Select a file to upload. File should be a csv with two columns: time and flow.</p>
-        <input type="file" name="file">
+        {% gizmo dam_select_input %}
+        <div class="form-group{% if hydrograph_file_error %} has-error{% endif %}">
+          <label class="control-label">Hydrograph File</label>
+          <input type="file" name="hydrograph-file">
+          {% if hydrograph_file_error %}<p class="help-block">{{ hydrograph_file_error }}</p>{% endif %}
+        </div>
       </form>
     {% endblock %}
 
@@ -676,13 +745,107 @@ a. New Template
       {% gizmo add_button %}
     {% endblock %}
 
-b. New Controller
+
+
+
+
+c. New Controller
 
 ::
 
+    from .model import add_new_dam, get_all_dams, Dam, assign_hydrograph_to_dam
+
+    ...
+
+    @login_required()
+    def assign_hydrograph(request):
+        """
+        Controller for the Add Hydrograph page.
+        """
+        # Get dams from database
+        Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+        session = Session()
+        all_dams = session.query(Dam).all()
+
+        # Defaults
+        dam_select_options = [(dam.name, dam.id) for dam in all_dams]
+        selected_dam = None
+        hydrograph_file = None
+
+        # Errors
+        dam_select_errors = ''
+        hydrograph_file_error = ''
+
+        # Case where the form has been submitted
+        if request.POST and 'add-button' in request.POST:
+            # Get Values
+            has_errors = False
+            selected_dam = request.POST.get('dam-select', None)
+
+            if not selected_dam:
+                has_errors = True
+                dam_select_errors = 'Dam is Required.'
+
+            # Get File
+            if request.FILES and 'hydrograph-file' in request.FILES:
+                # Get a list of the files
+                hydrograph_file = request.FILES.getlist('hydrograph-file')
+
+            if not hydrograph_file and len(hydrograph_file) > 0:
+                has_errors = True
+                hydrograph_file_error = 'Hydrograph File is Required.'
+
+            if not has_errors:
+                # Process file here
+                success = assign_hydrograph_to_dam(selected_dam, hydrograph_file[0])
+
+                # Provide feedback to user
+                if success:
+                    messages.info(request, 'Successfully assigned hydrograph.')
+                else:
+                    messages.info(request, 'Unable to assign hydrograph. Please try again.')
+                return redirect(reverse('dam_inventory:home'))
+
+            messages.error(request, "Please fix errors.")
+
+        dam_select_input = SelectInput(
+            display_text='Dam',
+            name='dam-select',
+            multiple=False,
+            options=dam_select_options,
+            initial=selected_dam,
+            error=dam_select_errors
+        )
+
+        add_button = Button(
+            display_text='Add',
+            name='add-button',
+            icon='glyphicon glyphicon-plus',
+            style='success',
+            attributes={'form': 'add-hydrograph-form'},
+            submit=True
+        )
+
+        cancel_button = Button(
+            display_text='Cancel',
+            name='cancel-button',
+            href=reverse('dam_inventory:home')
+        )
+
+        context = {
+            'dam_select_input': dam_select_input,
+            'hydrograph_file_error': hydrograph_file_error,
+            'add_button': add_button,
+            'cancel_button': cancel_button,
+            'can_add_dams': has_permission(request, 'add_dams')
+        }
+
+        session.close()
+
+        return render(request, 'dam_inventory/assign_hydrograph.html', context)
 
 
-c. New UrlMap
+d. New UrlMap
 
 ::
 
@@ -690,7 +853,6 @@ c. New UrlMap
         """
         Tethys app class for Dam Inventory.
         """
-
         ...
 
         def url_maps(self):
@@ -700,25 +862,13 @@ c. New UrlMap
             UrlMap = url_map_maker(self.root_url)
 
             url_maps = (
+
+                ...
+
                 UrlMap(
-                    name='home',
-                    url='dam-inventory',
-                    controller='dam_inventory.controllers.home'
-                ),
-                UrlMap(
-                    name='add_dam',
-                    url='dam-inventory/dams/add',
-                    controller='dam_inventory.controllers.add_dam'
-                ),
-                UrlMap(
-                    name='dams',
-                    url='dam-inventory/dams',
-                    controller='dam_inventory.controllers.list_dams'
-                ),
-                UrlMap(
-                    name='add_hydrograph',
-                    url='dam-inventory/hydrographs/add',
-                    controller='dam_inventory.controllers.add_hydrograph'
+                    name='assign_hydrograph',
+                    url='dam-inventory/hydrographs/assign',
+                    controller='dam_inventory.controllers.assign_hydrograph'
                 )
             )
 
@@ -731,20 +881,391 @@ d. Update navigation
     {% block app_navigation_items %}
       <li class="title">App Navigation</li>
       ...
-      {% url 'dam_inventory:add_hydrograph' as add_hydrograph_url %}
+      {% url 'dam_inventory:add_hydrograph' as assign_hydrograph_url %}
       ...
-      <li class="{% if request.path == add_hydrograph_url %}active{% endif %}"><a href="{{ add_dam_url }}">Add Hydrograph</a></li>
+      <li class="{% if request.path == assign_hydrograph_url %}active{% endif %}"><a href="{{ assign_hydrograph_url }}">Assign Hydrograph</a></li>
     {% endblock %}
 
-e. Test upload with these files:
+f. Test upload with these files:
 
-:download:`Sample Hydrograph CSVs <./hydrographs.zip>`
+    :download:`Sample Hydrograph CSVs <./hydrographs.zip>`
 
-7. Plot Flood Hydrograph Page
+7. URL Variables and Plotting
 =============================
+
+Create a new page with hydrograph plotted for selected Dam
+
+a. Create Template
+
+::
+
+    {% extends "dam_inventory/base.html" %}
+    {% load tethys_gizmos %}
+
+    {% block app_navigation_items %}
+      <li class="title">App Navigation</li>
+      <li class=""><a href="{% url 'dam_inventory:dams' %}">Back</a></li>
+    {% endblock %}
+
+    {% block app_content %}
+      {% gizmo hydrograph_plot %}
+    {% endblock %}
+
+b. Create ``helpers.py``
+
+::
+
+    from plotly import graph_objs as go
+    from tethys_gizmos.gizmo_options import PlotlyView
+
+    from tethysapp.dam_inventory.app import DamInventory as app
+    from tethysapp.dam_inventory.model import Hydrograph
+
+
+    def create_hydrograph(hydrograph_id, height='520px', width='100%'):
+        """
+        Generates a plotly view of a hydrograph.
+        """
+        # Get objects from database
+        Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+        session = Session()
+        hydrograph = session.query(Hydrograph).get(int(hydrograph_id))
+        dam = hydrograph.dam
+        time = []
+        flow = []
+        for hydro_point in hydrograph.points:
+            time.append(hydro_point.time)
+            flow.append(hydro_point.flow)
+
+        # Build up Plotly plot
+        hydrograph_go = go.Scatter(
+            x=time,
+            y=flow,
+            name='Hydrograph for {0}'.format(dam.name),
+            line={'color': '#0080ff', 'width': 4, 'shape': 'spline'},
+        )
+        data = [hydrograph_go]
+        layout = {
+            'title': 'Hydrograph for {0}'.format(dam.name),
+            'xaxis': {'title': 'Time (hr)'},
+            'yaxis': {'title': 'Flow (cfs)'},
+        }
+        figure = {'data': data, 'layout': layout}
+        hydrograph_plot = PlotlyView(figure, height=height, width=width)
+        session.close()
+        return hydrograph_plot
+
+
+
+
+c. Create Controller
+
+::
+
+    from .helpers import create_hydrograph
+    ...
+
+    @login_required()
+    def hydrograph(request, hydrograph_id=None):
+        """
+        Controller for the Hydrograph Page.
+        """
+        hydrograph_plot = create_hydrograph(hydrograph_id)
+
+        context = {
+            'hydrograph_plot': hydrograph_plot,
+            'can_add_dams': has_permission(request, 'add_dams')
+        }
+        return render(request, 'dam_inventory/hydrograph.html', context)
+
+.. tip::
+
+    For more information about plotting in Tethys apps, see :doc:`../../tethys_sdk/gizmos/plotly_view`, :doc:`../../tethys_sdk/gizmos/bokeh_view`, and :doc:`../../tethys_sdk/gizmos/plot_view`.
+
+
+d. Add UrlMap with URL Variable
+
+::
+
+    class DamInventory(TethysAppBase):
+        """
+        Tethys app class for Dam Inventory.
+        """
+        ...
+
+        def url_maps(self):
+            """
+            Add controllers
+            """
+            UrlMap = url_map_maker(self.root_url)
+
+            url_maps = (
+                ...
+
+                UrlMap(
+                    name='hydrograph',
+                    url='dam-inventory/hydrographs/{hydrograph_id}',
+                    controller='dam_inventory.controllers.hydrograph'
+                )
+            )
+
+            return url_maps
+
+
+e. Link to Hydrograph View from Table View: modify ``list_dams.html``
+
+::
+
+   {% extends "dam_inventory/base.html" %}
+
+    {% block app_content %}
+      <h1>Dams</h1>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Owner</th>
+            <th>River</th>
+            <th>Date Built</th>
+            <th>Hydrograph</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for dam in dams %}
+            <tr>
+              <td>{{ dam.name }}</td>
+              <td>{{ dam.owner }}</td>
+              <td>{{ dam.river }}</td>
+              <td>{{ dam.date_built }}</td>
+              <td>
+                {% if dam.hydrograph %}
+                  <a href="{% url 'dam_inventory:hydrograph' dam.hydrograph.id %}">Hydrograph</a>
+                {% else %}
+                  <a href="{% url 'dam_inventory:assign_hydrograph' %}">Assign</a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endblock %}
+
+f. Modify ``list_dams`` controller:
+
+::
+
+    @login_required()
+    def list_dams(request):
+        """
+        Show all dams in a table view.
+        """
+        # Get connection/session to database
+        Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+        session = Session()
+
+        # Query for all dam records
+        dams = session.query(Dam).all()
+
+        context = {
+            'dams': dams,
+            'can_add_dams': has_permission(request, 'add_dams')
+        }
+
+        response = render(request, 'dam_inventory/list_dams.html', context)
+        session.close()
+        return response
+
+
 
 8. Dynamic Hydrograph Plot in Pop-Ups
 =====================================
+
+Add Hydrographs to pop-ups if they exist.
+
+a. Add Plotly Gizmo dependency to ``home.html``:
+
+::
+
+    {% extends "dam_inventory/base.html" %}
+    {% load tethys_gizmos staticfiles %}
+
+    {% block import_gizmos %}
+      {% import_gizmo_dependency plotly_view %}
+    {% endblock %}
+
+    ...
+
+b. Create a template for the AJAX plot (``hydrograph_ajax.html``)
+
+::
+
+    {% load tethys_gizmos %}
+
+    {% if hydrograph_plot %}
+        {% gizmo hydrograph_plot %}
+    {% endif %}}
+
+c. Create an AJAX controller ``hydrograph_ajax``
+
+::
+
+    @login_required()
+    def hydrograph_ajax(request, dam_id):
+        """
+        Controller for the Hydrograph Page.
+        """
+        # Get dams from database
+        Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+        session = Session()
+        dam = session.query(Dam).get(int(dam_id))
+
+        if dam.hydrograph:
+            hydrograph_plot = create_hydrograph(dam.hydrograph.id, height='300px')
+        else:
+            hydrograph_plot = None
+
+        context = {
+            'hydrograph_plot': hydrograph_plot,
+        }
+
+        session.close()
+        return render(request, 'dam_inventory/hydrograph_ajax.html', context)
+
+d. Create an AJAX UrlMap
+
+::
+
+    class DamInventory(TethysAppBase):
+        """
+        Tethys app class for Dam Inventory.
+        """
+        ...
+
+        def url_maps(self):
+            """
+            Add controllers
+            """
+            UrlMap = url_map_maker(self.root_url)
+
+            url_maps = (
+                ...
+
+                UrlMap(
+                    name='hydrograph_ajax',
+                    url='dam-inventory/hydrographs/{dam_id}/ajax',
+                    controller='dam_inventory.controllers.hydrograph_ajax'
+                )
+            )
+
+            return url_maps
+
+e. Load the plot dynamically using JavaScript and AJAX (modify ``map.js``)
+
+::
+
+    $(function()
+    {
+        // Create new Overlay with the #popup element
+        var popup = new ol.Overlay({
+            element: document.getElementById('popup')
+        });
+
+        // Get the Open Layers map object from the Tethys MapView
+        var map = TETHYS_MAP_VIEW.getMap();
+
+        // Get the Select Interaction from the Tethys MapView
+        var select_interaction = TETHYS_MAP_VIEW.getSelectInteraction();
+
+        // Add the popup overlay to the map
+        map.addOverlay(popup);
+
+        // When selected, call function to display properties
+        select_interaction.getFeatures().on('change:length', function(e)
+        {
+            var popup_element = popup.getElement();
+
+            if (e.target.getArray().length > 0)
+            {
+                // this means there is at least 1 feature selected
+                var selected_feature = e.target.item(0); // 1st feature in Collection
+
+                // Get coordinates of the point to set position of the popup
+                var coordinates = selected_feature.getGeometry().getCoordinates();
+
+                // Load hydrograph dynamically with AJAX
+                $.ajax({
+                    url: '/apps/dam-inventory/hydrographs/' + selected_feature.get('id') + '/ajax/',
+                    method: 'GET',
+                    success: function(plot_html) {
+                        var popup_content = '<div class="dam-popup">' +
+                            '<p><b>' + selected_feature.get('name') + '</b></p>' +
+                            '<table class="table  table-condensed">' +
+                                '<tr>' +
+                                    '<th>Owner:</th>' +
+                                    '<td>' + selected_feature.get('owner') + '</td>' +
+                                '</tr>' +
+                                '<tr>' +
+                                    '<th>River:</th>' +
+                                    '<td>' + selected_feature.get('river') + '</td>' +
+                                '</tr>' +
+                                '<tr>' +
+                                    '<th>Date Built:</th>' +
+                                    '<td>' + selected_feature.get('date_built') + '</td>' +
+                                '</tr>' +
+                            '</table>' +
+                            plot_html +
+                        '</div>';
+
+                        // Clean up last popup and reinitialize
+                        $(popup_element).popover('destroy');
+
+                        // Delay arbitrarily to wait for previous popover to
+                        // be deleted before showing new popover.
+                        setTimeout(function() {
+                            popup.setPosition(coordinates);
+
+                            $(popup_element).popover({
+                              'placement': 'top',
+                              'animation': true,
+                              'html': true,
+                              'content': popup_content
+                            });
+
+                            $(popup_element).popover('show');
+                        }, 500);
+                    }
+                });
+
+            } else {
+                // remove pop up when selecting nothing on the map
+                $(popup_element).popover('destroy');
+            }
+        });
+    });
+
+
+f. Update ``map.css``:
+
+::
+
+    .popover-content {
+        width: 400px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .popover {
+        max-width: none;
+    }
+
+    #inner-app-content {
+        padding: 0;
+    }
+
+    #app-content, #inner-app-content, #map_view_outer_container {
+        height: 100%;
+    }
+
 
 9. REST API
 ===========
