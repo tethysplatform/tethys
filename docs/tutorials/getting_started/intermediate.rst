@@ -342,7 +342,9 @@ b. Modify ``add_dam`` controller to use the new ``add_new_dam`` model function t
 4. Develop Table View Page
 ==========================
 
-########## TODO: IMPLEMENT WITH DATA TABLES VIEW ################
+.. todo::
+
+    Implement with table view rather than raw HTML table
 
 Now that the data is being persisted in our make-shift inventory database, let's create useful views of the data in our inventory. First, we'll create a new page that lists all of the dams in our inventory database in a table, which will provide a good review of Model View Controller:
 
