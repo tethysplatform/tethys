@@ -12,8 +12,8 @@ This tutorial introduces advanced concepts for Tethys developers. The topics cov
 * JavaScript and AJAX
 * Permissions API
 * Advanced HTML forms - File Upload
-* Plot View Gizmos
-* REST API
+* Plotting Gizmos
+
 
 0. Start From Intermediate Solution (Optional)
 ==============================================
@@ -1266,14 +1266,8 @@ f. Update ``map.css``:
         height: 100%;
     }
 
-
-9. REST API
+9. Solution
 ===========
-
-Create a rest API for adding new dams to dam inventory
-
-10. Solution
-============
 
 This concludes the Advanced Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
 
