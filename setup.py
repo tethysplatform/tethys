@@ -45,7 +45,6 @@ setup(
     ],
     entry_points={
         'console_scripts': ['tethys=tethys_apps.cli:tethys_command',],
-        'paste.paster_create_template': ['tethys_app_scaffold=tethys_apps.pastetemplates:TethysAppTemplate',],
     },
     install_requires=requires,
     extras_require={

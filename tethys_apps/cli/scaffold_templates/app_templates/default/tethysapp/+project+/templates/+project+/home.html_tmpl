@@ -1,13 +1,13 @@
-{% extends "{{project}}/base.html" %}
-{% load tethys_gizmos %}
+{% templatetag openblock %} extends "{{project}}/base.html" {% templatetag closeblock %}
+{% templatetag openblock %} load tethys_gizmos {% templatetag closeblock %}
 
-{% block header_buttons %}
+{% templatetag openblock %} block header_buttons {% templatetag closeblock %}
   <div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="Help">
     <a data-toggle="modal" data-target="#help-modal"><span class="glyphicon glyphicon-question-sign"></span></a>
   </div>
-{% endblock %}
+{% templatetag openblock %} endblock {% templatetag closeblock %}
 
-{% block app_content %}
+{% templatetag openblock %} block app_content {% templatetag closeblock %}
   <h1>Welcome to your Tethys App!</h1>
   <p>Take advantage of beautiful typography to organize the content of your app:</p>
   <h1>Heading 1</h1>
@@ -16,10 +16,10 @@
   <h4>Heading 4</h4>
   <h5>Heading 5</h5>
   <h6>Heading 6</h6>
-{% endblock %}
+{% templatetag openblock %} endblock {% templatetag closeblock %}
 
-{# Use the after_app_content block for modals #}
-{% block after_app_content %}
+{% templatetag opencomment %} Use the after_app_content block for modals {% templatetag closecomment %}
+{% templatetag openblock %} block after_app_content {% templatetag closeblock %}
   <!-- Example Modal -->
   <div class="modal fade" id="help-modal" tabindex="-1" role="dialog" aria-labelledby="help-modal-label">
     <div class="modal-dialog" role="document">
@@ -40,12 +40,12 @@
       </div>
     </div>
   </div>
-{% endblock %}
+{% templatetag openblock %} endblock {% templatetag closeblock %}
 
-{% block app_actions %}
-  {% gizmo save_button %}
-  {% gizmo edit_button %}
-  {% gizmo remove_button %}
-  {% gizmo previous_button %}
-  {% gizmo next_button %}
-{% endblock %}
+{% templatetag openblock %} block app_actions {% templatetag closeblock %}
+  {% templatetag openblock %} gizmo save_button {% templatetag closeblock %}
+  {% templatetag openblock %} gizmo edit_button {% templatetag closeblock %}
+  {% templatetag openblock %} gizmo remove_button {% templatetag closeblock %}
+  {% templatetag openblock %} gizmo previous_button {% templatetag closeblock %}
+  {% templatetag openblock %} gizmo next_button {% templatetag closeblock %}
+{% templatetag openblock %} endblock {% templatetag closeblock %}
