@@ -10,16 +10,13 @@
 import os
 import sys
 
+from django.conf import settings
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
-from django.conf import settings
-
 from sqlalchemy import create_engine
-
-
-from tethys_apps.base.workspace import TethysWorkspace
 from tethys_apps.base.handoff import HandoffManager
-from tethys_apps.base.testing import is_testing_environment
+from tethys_apps.base.testing.environment import is_testing_environment
+from tethys_apps.base.workspace import TethysWorkspace
 
 
 class TethysAppBase(object):
