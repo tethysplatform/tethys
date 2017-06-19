@@ -9,13 +9,17 @@
 """
 # Commandline interface for Tethys
 import argparse
-from builtins import input
-import subprocess
 import os
+import subprocess
 import webbrowser
 
+from builtins import input
+
+from tethys_apps.cli.scaffold_commands import scaffold_command
+from tethys_apps.helpers import get_installed_tethys_apps
 from tethys_apps.terminal_colors import TerminalColors
 from .docker_commands import *
+from .gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
 from .manage_commands import (manage_command, get_manage_path, run_process,
                               MANAGE_START, MANAGE_SYNCDB,
                               MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
@@ -220,7 +224,13 @@ def tethys_command():
     scaffold_parser = subparsers.add_parser('scaffold', help='Create a new Tethys app project from a scaffold.')
     scaffold_parser.add_argument('name', help='The name of the new Tethys app project to create. Only lowercase '
                                               'letters, numbers, and underscores allowed.')
-    scaffold_parser.set_defaults(func=scaffold_command)
+    scaffold_parser.add_argument('-t', '--template', dest='template', help="Name of app template to use.")
+    scaffold_parser.add_argument('-e', '--extension', dest='extension', help="Name of extension template to use.")
+    scaffold_parser.add_argument('-d', '--defaults', dest='use_defaults', action='store_true',
+                                 help="Run command, accepting default values automatically.")
+    scaffold_parser.add_argument('-o', '--overwrite', dest='overwrite', action="store_true",
+                                 help="Attempt to overwrite project automatically if it already exists.")
+    scaffold_parser.set_defaults(func=scaffold_command, template='default', extension=None)
 
     # Setup generate command
     gen_parser = subparsers.add_parser('gen', help='Aids the installation of Tethys by automating the '

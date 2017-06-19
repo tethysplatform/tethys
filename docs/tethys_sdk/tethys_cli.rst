@@ -28,6 +28,8 @@ Options
 Commands
 ========
 
+.. _tethys_scaffold_cmd:
+
 scaffold <name>
 ---------------
 
@@ -36,6 +38,13 @@ This command is used to create new Tethys app projects via the scaffold provided
 **Arguments:**
 
 * **name**: The name of the new Tethys app project to create. Only lowercase letters, numbers, and underscores are allowed.
+
+**Optional Arguments:**
+
+* **-t TEMPLATE, --template TEMPLATE**: Name of app template to use.
+* **-e EXTENSION, --extension EXTENSION**: Name of extension template to use [UNDER DEVELOPMENT].
+* **-d, --defaults**: Run command, accepting default values automatically.
+* **-o, --overwrite**: Attempt to overwrite project automatically if it already exists.
 
 **Examples:**
 

@@ -1,56 +1,38 @@
-*****************************
-App Development: Intermediate
-*****************************
+*********************
+Intermediate Concepts
+*********************
 
-**Last Updated:** May 2017
+**Last Updated:** June 2017
 
-.. warning::
+This tutorial introduces intermediate concepts for Tethys developers. The topics covered include:
 
-   UNDER CONSTRUCTION
+* HTML Forms and User Input
+* Handling Form Submissions in Controllers
+* Form Validation Pattern
+* Introduction to the Model
+* File IO and Workspaces
+* Intermediate Template Gizmos
+* Review of Model View Controller
+* Spatial Inputs in Forms
+* Rendering Spatial Data on the Map View Gizmo
 
-Concepts
-========
+0. Start From Beginner Solution (Optional)
+==========================================
 
-* Advanced Gizmos API (Plotting and Mapping) - Hard code data / empty
-* Custom App Settings API (control default color of points on map?)
-* HTML Forms and Getting Input from users - use map in form for input
-* Navigation Links
-* Workspaces API (Write data submitted to file temporarily?)
-
-Start From Beginner Solution
-============================
-
-If you wish to use the solution as a starting point:
+If you wish to use the beginner solution of the last tutorial as a starting point:
 
 ::
 
-    $ mkdir ~/tethysdev
-    $ cd ~/tethysdev
     $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     $ cd tethysapp-dam_inventory
     $ git checkout beginner-solution
-    $ t
-    (tethys)$ python setup.py develop
 
-Start the Development Server
-============================
+1. Forms and User Input
+=======================
 
-If you have not already started the development server, start it now:
+HTML forms are the primary mechanism for obtaining input from users of your app. In the next few sections, you'll learn how to create forms in the template and process the data submitted through the form in the controller. For this example, we'll create a form for adding new dams to the inventory.
 
-::
-
-    (tethys) $ tethys manage start
-
-    OR
-
-    (tethys) $ tms
-
-Add Dam Form
-============
-
-Intro to user input and HTML forms...
-
-1. Add a form to the Add Dam page by modifying the ``templates/dam_inventory/add_dam.html`` template as follows:
+a. Add a form to the Add Dam page by modifying the ``/templates/dam_inventory/add_dam.html`` template as follows:
 
 ::
 
@@ -69,11 +51,15 @@ Intro to user input and HTML forms...
     {% endblock %}
 
     {% block app_actions %}
-      {% gizmo add_button %}
       {% gizmo cancel_button %}
+      {% gizmo add_button %}
     {% endblock %}
 
-2. Define the form gizmos and change the Add button to a submit button for the Add Dam form in the ``add_dam`` controller:
+The form is composed of the the HTML ``<form>`` tag and various input gizmos inside it. We'll use the ``add_button`` gizmo to submit the form. Also note the use of the ``csrf_token`` tag in the form. This is a security precaution that is required to be included in all the forms of your app (see the `Cross Site Forgery protection <https://docs.djangoproject.com/en/1.11/ref/contrib/csrf/>`_ article in the Django documentation for more details).
+
+Also note that the ``method`` attribute of the ``<form>`` element is set to ``post``. This means the form will use the POST HTTP method to submit and transmit the data to the server. For an introduction to HTTP methods, see `The Definitive Guide to GET vs POST <http://blog.teamtreehouse.com/the-definitive-guide-to-get-vs-post>`_.
+
+b. Define the options for the form gizmos in the controller and change the ``add_button`` gizmo to be a submit button for the form in the ``add_dam`` controller:
 
 ::
 
@@ -140,14 +126,12 @@ Intro to user input and HTML forms...
 
         return render(request, 'dam_inventory/add_dam.html', context)
 
-Handle Form Submission
-======================
+2. Handle Form Submission
+=========================
 
-Intro to form validation method...
-Intro to django.contrib.messages...
-Intro to initial and error attributes in gizmos
+At this point the form will be functional, but the app is not doing anything with the data when the user submits the form. In this section we'll implement a pattern for handling the form submission and validating the form.
 
-Change to the ``add_dam`` controller to handle the form data (write to file for now):
+a. Change the ``add_dam`` controller to handle the form data using the form validation pattern:
 
 ::
 
@@ -240,13 +224,55 @@ Change to the ``add_dam`` controller to handle the form data (write to file for 
         )
         ...
 
-Write Data To File
-==================
+.. tip::
 
-Intro to model concept...
-Intro to workspaces API... :doc:`../../tethys_sdk/workspaces`
+    **Form Validation Pattern**: The example above implements a common pattern for handling and validating form input. Generally, the steps are:
 
-1. Open ``model.py`` and add this function:
+    1. **define a "value" variable for each input in the form and assign it the initial value for the input**
+    2. **define an "error" variable for each input to handle error messages and initially set them to the empty string**
+    3. **check to see if the form is submitted and if the form has been submitted:**
+        a. extract the value of each input from the GET or POST parameters and overwrite the appropriate value variable from step 1
+        b. validate the value of each input, assigning an error message (if any) to the appropriate error variable from step 2 for each input with errors.
+        c. if there are no errors, save or process the data, and then redirect to a different page
+        d. if there are errors continue on and re-render from with error messages
+    4. **define all gizmos and variables used to populate the form:**
+        a. pass the value variable created in step 1 to the ``initial`` argument of the corresponding gizmo
+        b. pass the error variable created in step 2 to the ``error`` argument of the corresponding gizmo
+    5. **render the page, passing all gizmos to the template through the context**
+
+3. Create the Model and File IO
+===============================
+
+Now that we are able to get information about new dams to add to the dam inventory from the user, we need to persist the data to some sort of database. It's time to create the Model for the app.
+
+In this tutorial we will start with a file database model to illustrate how to work with files in Tethys apps. In the :doc:`./advanced` tutorial we will convert this file database model to an SQL database model. Here is an overview of the file-based model:
+
+* One text file will be created per dam
+* The name of the file will be the id of the dam (e.g.: *a1e26591-d6bb-4194-b4a7-1222fe0195fd.json*)
+* The files will be stored in the **app workspace** (a directory provided by the app for storing files).
+* Each file will contain a single JSON object with the following structure:
+
+    ::
+
+        {
+          "id": "a1e26591-d6bb-4194-b4a7-1222fe0195fd",
+          "name": "Deer Creek",
+          "owner": "Reclamation",
+          "river": "Provo River",
+          "date_built": "June 16, 2017"
+        }
+
+
+
+.. tip::
+
+    For more information on file workspaces see the :doc:`../../tethys_sdk/workspaces`.
+
+.. warning::
+
+    File database models can be problematic for web applications, especially in a production environment. We recommend using and SQL or other database that can handle concurrent requests and heavy traffic.
+
+a. Open ``model.py`` and add an new function called ``add_new_dam``:
 
 ::
 
@@ -274,8 +300,8 @@ Intro to workspaces API... :doc:`../../tethys_sdk/workspaces`
 
         # Write to file in app_workspace/dams/{{uuid}}.json
         # Make dams dir if it doesn't exist
-        user_workspace = app.get_app_workspace()
-        dams_dir = os.path.join(user_workspace.path, 'dams')
+        app_workspace = app.get_app_workspace()
+        dams_dir = os.path.join(app_workspace.path, 'dams')
         if not os.path.exists(dams_dir):
             os.mkdir(dams_dir)
 
@@ -287,7 +313,9 @@ Intro to workspaces API... :doc:`../../tethys_sdk/workspaces`
         with open(file_path, 'w') as f:
             f.write(dam_json)
 
-2. Modify controller to use the new ``add_new_dam`` model function:
+
+
+b. Modify ``add_dam`` controller to use the new ``add_new_dam`` model function to persist the dam data:
 
 ::
 
@@ -311,10 +339,16 @@ Intro to workspaces API... :doc:`../../tethys_sdk/workspaces`
 
             ...
 
-Create list_dams Model Method
-=============================
+4. Develop Table View Page
+==========================
 
-Open ``models.py`` and add a model method for listing the dams called ``list_dams``:
+.. todo::
+
+    Implement with table view rather than raw HTML table
+
+Now that the data is being persisted in our make-shift inventory database, let's create useful views of the data in our inventory. First, we'll create a new page that lists all of the dams in our inventory database in a table, which will provide a good review of Model View Controller:
+
+a. Open ``models.py`` and add a model method for listing the dams called ``get_all_dams``:
 
 ::
 
@@ -324,8 +358,8 @@ Open ``models.py`` and add a model method for listing the dams called ``list_dam
         """
         # Write to file in app_workspace/dams/{{uuid}}.json
         # Make dams dir if it doesn't exist
-        user_workspace = app.get_app_workspace()
-        dams_dir = os.path.join(user_workspace.path, 'dams')
+        app_workspace = app.get_app_workspace()
+        dams_dir = os.path.join(app_workspace.path, 'dams')
         if not os.path.exists(dams_dir):
             os.mkdir(dams_dir)
 
@@ -344,10 +378,7 @@ Open ``models.py`` and add a model method for listing the dams called ``list_dam
 
         return dams
 
-Create List View Page
-=====================
-
-1. Add a new template ``templates/dam_inventory/list_dams.html`` with the following contents:
+b. Add a new template ``/templates/dam_inventory/list_dams.html`` with the following contents:
 
 ::
 
@@ -377,7 +408,7 @@ Create List View Page
       </table>
     {% endblock %}
 
-2. Create a new controller function in ``controllers.py`` called ``list_dams``:
+c. Create a new controller function in ``controllers.py`` called ``list_dams``:
 
 ::
 
@@ -394,10 +425,7 @@ Create List View Page
         context = {'dams': dams}
         return render(request, 'dam_inventory/list_dams.html', context)
 
-
-
-
-3. Create a new URL Map in the ``app.py`` for the new ``list_dams`` controller:
+d. Create a new URL Map in the ``app.py`` for the new ``list_dams`` controller:
 
 ::
 
@@ -433,7 +461,7 @@ Create List View Page
 
             return url_maps
 
-4. Open ``templates/dam_inventory/base.html`` and add navigation links for the List View page:
+e. Open ``/templates/dam_inventory/base.html`` and add navigation links for the List View page:
 
 ::
 
@@ -447,11 +475,22 @@ Create List View Page
       <li class="{% if request.path == add_dam_url %}active{% endif %}"><a href="{{ add_dam_url }}">Add Dam</a></li>
     {% endblock %}
 
+.. tip::
 
-Add Map Input to Add Dam Form
-=============================
+    **New Page Pattern**: Adding new pages is an exercise of the Model View Controller pattern. Generally, the steps are:
 
-1. Use a Map View Gizmo to capture spatial input. Open ``templates/dam_inventory/add_dam.html`` and add the ``location_input`` gizmo to the form:
+    * Modify the model as necessary to support the data for the new page
+    * Create a new HTML template
+    * Create a new controller function
+    * Add a new ``UrlMap`` in ``app.py``
+
+
+5. Spatial Input with Forms
+===========================
+
+In this section, we'll add a Map View gizmo to the Add Dam form to allow users to provide the location of the dam as another attribute.
+
+a. Open ``/templates/dam_inventory/add_dam.html`` and add the ``location_input`` gizmo to the form:
 
 ::
 
@@ -479,7 +518,7 @@ Add Map Input to Add Dam Form
       {% gizmo cancel_button %}
     {% endblock %}
 
-2. Add the definition of the ``location_input`` gizmo and validation code to the ``add_dam`` controller in ``controllers.py``:
+b. Add the definition of the ``location_input`` gizmo and validation code to the ``add_dam`` controller in ``controllers.py``:
 
 ::
 
@@ -552,7 +591,7 @@ Add Map Input to Add Dam Form
 
         return render(request, 'dam_inventory/add_dam.html', context)
 
-3. Modify the ``add_new_dam`` Model Method to store spatial data:
+c. Modify the ``add_new_dam`` Model Method to store spatial data:
 
 ::
 
@@ -578,8 +617,8 @@ Add Map Input to Add Dam Form
 
         # Write to file in app_workspace/dams/{{uuid}}.json
         # Make dams dir if it doesn't exist
-        user_workspace = app.get_app_workspace()
-        dams_dir = os.path.join(user_workspace.path, 'dams')
+        app_workspace = app.get_app_workspace()
+        dams_dir = os.path.join(app_workspace.path, 'dams')
         if not os.path.exists(dams_dir):
             os.mkdir(dams_dir)
 
@@ -591,12 +630,16 @@ Add Map Input to Add Dam Form
         with open(file_path, 'w') as f:
             f.write(dam_json)
 
-Show Dams on the Map on the Home Page
-=====================================
+d. Navigate to ``workspaces\app_workspace\dams`` and delete all JSON files now that the model has changed, so that all the files will be consistent.
 
-**IMPORTANT**: Delete all ``json`` files in the ``workspace/app_workspace/dams`` directory and create new entries using the Add Dam page.
+e. Create several new entries using the updated Add Dam form.
 
-Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
+6. Render Spatial Data on Map
+=============================
+
+Finally, we'll add logic to the home controller to display all of the dams in our dam inventory on the map.
+
+a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
 
 ::
 
@@ -642,7 +685,18 @@ Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
         dams_layer = MVLayer(
             source='GeoJSON',
             options=dams_feature_collection,
-            legend_title='Dams'
+            legend_title='Dams',
+            layer_options={
+                'style': {
+                    'image': {
+                        'circle': {
+                            'radius': 10,
+                            'fill': {'color':  '#d84e1f'},
+                            'stroke': {'color': '#ffffff', 'width': 1},
+                        }
+                    }
+                }
+            }
         )
 
         # Define view centered on dam locations
@@ -654,7 +708,7 @@ Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
         view_options = MVView(
             projection='EPSG:4326',
             center=view_center,
-            zoom=6,
+            zoom=4.5,
             maxZoom=18,
             minZoom=2
         )
@@ -682,3 +736,15 @@ Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
 
         return render(request, 'dam_inventory/home.html', context)
 
+7. Solution
+===========
+
+This concludes the Intermediate Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
+
+::
+
+    $ mkdir ~/tethysdev
+    $ cd ~/tethysdev
+    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    $ cd tethysapp-dam_inventory
+    $ git checkout intermediate-solution

@@ -21,7 +21,7 @@ The name of a :term:`release package` follows a specific naming convention.The n
 
 The release package must contain a setup script (:file:`setup.py`) and :file:`tethysapp` namespace package at a minimum. This directory would also be a good place to put any accessory files for the app such as a README file or LICENSE file. No code that is required by the app to run should be in this directory.
 
-The setup script to install your app and its dependencies. A basic setup script is generated as part of the scaffolding for a new app project. For more information on writing setup scripts refer to the :doc:`../tutorials/getting_started/distribution` tutorial and this article: `Writing the Setup Script <http://docs.python.org/2/distutils/setupscript.html>`_.
+The setup script to install your app and its dependencies. A basic setup script is generated as part of the scaffolding for a new app project. For more information on writing setup scripts refer to this article: `Writing the Setup Script <http://docs.python.org/2/distutils/setupscript.html>`_.
 
 The :file:`tethysapp` package is a `Python namespace <http://docs.python.org/2/tutorial/classes.html#python-scopes-and-namespaces>`_ package. It provides a way to mimic the production environment during development of the app (i.e.: when the app is installed, it will reside in a namespace package called :file:`tethysapp`). This package contains the :term:`app package`, which has the same name as your app name by convention.
 

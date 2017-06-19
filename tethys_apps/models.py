@@ -69,6 +69,11 @@ class TethysApp(models.Model):
         """
         if setting_list is not None:
             for setting in setting_list:
+                # Don't add the same setting twice
+                if self.settings_set.filter(name=setting.name):
+                    return
+
+                # Associate setting with this app
                 setting.tethys_app = self
                 setting.save()
 
@@ -636,7 +641,8 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         # -------------------------------------------------------------------------------------------------------------#
         if self.spatial:
             # Connect to new database
-            new_db_connection = engine.connect()
+            new_db_engine = self.get_engine(with_db=True)
+            new_db_connection = new_db_engine.connect()
 
             # Notify user
             log.info('Enabling PostGIS on database "{0}" for app "{1}"...'.format(
@@ -660,7 +666,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         # 4. Run initialization function
         # -------------------------------------------------------------------------------------------------------------#
         if self.initializer:
-            log.info('Initializing PostGIS on database "{0}" for app "{1}" with initializer "{2}"...'.format(
+            log.info('Initializing database "{0}" for app "{1}" with initializer "{2}"...'.format(
                 self.name,
                 self.tethys_app.package,
                 self.initializer

@@ -178,4 +178,4 @@ e. Press "Save" to save the Persistent Store Service configuration.
 What's Next?
 ------------
 
-Head over to :doc:`../tutorials/quick_start` and create your first app. You can also check out the :doc:`../tethys_sdk` documentation to familiarize yourself with all the features that are available.
+Head over to :doc:`../tutorials/getting_started` and create your first app. You can also check out the :doc:`../tethys_sdk` documentation to familiarize yourself with all the features that are available.

@@ -4,7 +4,7 @@ from tethys_sdk.testing import TethysTestCase
 # Use if your app has persistent stores that will be tested against.
 # Your app class from app.py must be passed as an argument to the TethysTestCase functions to both
 # create and destroy the temporary persistent stores for your app used during testing
-# from ..app import {{proper_no_spaces}}
+# from ..app import {{app_class_name}}
 
 # Use if you'd like a simplified way to test rendered HTML templates.
 # You likely need to install BeautifulSoup, as it is not included by default in Tethys Platform
@@ -39,11 +39,11 @@ To run any tests:
         To run all tests in this file:
             Test command: "tethys test -f tethys_apps.tethysapp.{{project}}.tests.tests"
 
-        To run tests in the {{proper_no_spaces}}TestCase class:
-            Test command: "tethys test -f tethys_apps.tethysapp.{{project}}.tests.tests.{{proper_no_spaces}}TestCase"
+        To run tests in the {{app_class_name}}TestCase class:
+            Test command: "tethys test -f tethys_apps.tethysapp.{{project}}.tests.tests.{{app_class_name}}TestCase"
 
-        To run only the test_if_tethys_platform_is_great function in the {{proper_no_spaces}}TestCase class:
-            Test command: "tethys test -f tethys_apps.tethysapp.{{project}}.tests.tests.{{proper_no_spaces}}TestCase.test_if_tethys_platform_is_great"
+        To run only the test_if_tethys_platform_is_great function in the {{app_class_name}}TestCase class:
+            Test command: "tethys test -f tethys_apps.tethysapp.{{project}}.tests.tests.{{app_class_name}}TestCase.test_if_tethys_platform_is_great"
 
 To learn more about writing tests, see:
     https://docs.djangoproject.com/en/1.9/topics/testing/overview/#writing-tests
@@ -51,7 +51,7 @@ To learn more about writing tests, see:
 """
 
 
-class {{proper_no_spaces}}TestCase(TethysTestCase):
+class {{app_class_name}}TestCase(TethysTestCase):
     """
     In this class you may define as many functions as you'd like to test different aspects of your app.
     Each function must start with the word "test" for it to be recognized and executed during testing.
@@ -65,7 +65,7 @@ class {{proper_no_spaces}}TestCase(TethysTestCase):
         place that code here. For example, if you are testing against any persistent stores, you should call the
         test database creation function here, like so:
 
-            self.create_test_persistent_stores_for_app({{proper_no_spaces}})
+            self.create_test_persistent_stores_for_app({{app_class_name}})
 
         If you are testing against a controller that check for certain user info, you can create a fake test user and
         get a test client, like so:
@@ -95,7 +95,7 @@ class {{proper_no_spaces}}TestCase(TethysTestCase):
         that took place before execution of the test functions. If you are testing against any persistent
         stores, you should call the test database destruction function from here, like so:
 
-            self.destroy_test_persistent_stores_for_app({{proper_no_spaces}})
+            self.destroy_test_persistent_stores_for_app({{app_class_name}})
 
         NOTE: You do not have to set these functions up here, but if they are not placed here and are needed
         then they must be placed at the very end of your individual test functions. Also, if certain

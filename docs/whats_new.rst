@@ -48,6 +48,7 @@ Map View
 * New editable attribute for MVLayers to lock layers from being edited
 * Added data attribute to MVLayer to allow passing custom attributes with layers for use in custom JavaScript
 * A basemap switcher tool is now enabled on the map with the capability to configure multiple basemaps, including turning the basemap off.
+* Added the ability to customize some styles of vector MVLayers.
 
 See: :doc:`tethys_sdk/gizmos/map_view`
 
@@ -69,8 +70,10 @@ Commandline Interface
 ---------------------
 
 * Added ``tethys list`` command that lists installed apps.
+* Completely overhauled scaffold command that works cross platform and no long depends on paste.
+* New options for scaffold command that allow automatically accepting the defaults and overwriting project if it already exists.
 
-See: :ref:`tethys_list_cmd`
+See: :ref:`tethys_list_cmd` and :ref:`tethys_scaffold_cmd`
 
 Templating API
 --------------
