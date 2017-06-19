@@ -23,7 +23,12 @@ from django.conf import settings
 try:
     __import__(os.environ['DJANGO_SETTINGS_MODULE'])
 except:
-    settings.configure()
+    # Initialize settings with templates variable to allow gen to work properly
+    settings.configure(TEMPLATES=[
+        {
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        }
+    ])
 import django
 django.setup()
 
