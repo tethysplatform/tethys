@@ -10,9 +10,10 @@
 import os
 import shutil
 import subprocess
-
 from setuptools.command.develop import develop
 from setuptools.command.install import install
+from sys import platform as _platform
+import ctypes
 
 
 def get_tethysapp_directory():
@@ -66,12 +67,23 @@ def _run_develop(self):
 
     # Create symbolic link
     try:
-        os.symlink(self.app_package_dir, destination_dir)
-
-    except:
+	os_symlink = getattr(os,"symlink",None)
+	if callable(os_symlink):
+	    os.symlink(self.app_package_dir, destination_dir)
+	else:
+	    def symlink_ms(source,dest):
+		csl = ctypes.windll.kernel32.CreateSymbolicLinkW
+		csl.argtypes = (ctypes.c_wchar_p,ctypes.c_wchar_p,ctypes.c_uint32)
+		csl.restype = ctypes.c_ubyte
+		flags = 1 if os.path.isdir(source) else 0
+		if csl(dest,source.replace('/','\\'),flags) == 0:
+                   raise ctypes.WinError()
+	    os.symlink = symlink_ms(self.app_package_dir, destination_dir)
+    except Exception as e:
+	print e
         try:
             shutil.rmtree(destination_dir)
-        except:
+        except Exception as e:
             os.remove(destination_dir)
 
         os.symlink(self.app_package_dir, destination_dir)
