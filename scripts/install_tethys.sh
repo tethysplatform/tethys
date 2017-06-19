@@ -226,7 +226,7 @@ then
         echo "Using existing Miniconda installation..."
     else
         echo "Installing Miniconda..."
-        wget ${MINICONDA_URL} -O "${TETHYS_HOME}/miniconda.sh" 2>/dev/null || (echo -using curl instead; curl ${MINICONDA_URL} -o "${TETHYS_HOME}/miniconda.sh")
+        wget ${MINICONDA_URL} -O "${TETHYS_HOME}/miniconda.sh" || (echo -using curl instead; curl ${MINICONDA_URL} -o "${TETHYS_HOME}/miniconda.sh")
         pushd ./
         cd "${TETHYS_HOME}"
         bash miniconda.sh -b -p "${CONDA_HOME}"
@@ -414,7 +414,7 @@ enterprise_linux_production_install() {
     sudo systemctl enable nginx
     sudo systemctl start nginx
     sudo firewall-cmd --permanent --zone=public --add-service=http
-    sudo firewall-cmd --permanent --zone=public --add-service=https
+#    sudo firewall-cmd --permanent --zone=public --add-service=https
     sudo firewall-cmd --reload
 
     NGINX_SITES_DIR='conf.d'
@@ -439,11 +439,9 @@ configure_selinux() {
     sudo semanage fcontext -a -t httpd_config_t ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf
     sudo restorecon -v ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf
     sudo semanage fcontext -a -t httpd_sys_content_t "${TETHYS_HOME}(/.*)?"
-    sudo restorecon -R -v ${TETHYS_HOME}
-    sudo semanage fcontext -a -t httpd_sys_content_t "${NGINX_HOME}/tethys/static(/.*)?"
-    sudo restorecon -R -v ${NGINX_HOME}/tethys/static
-    sudo semanage fcontext -a -t httpd_sys_rw_content_t "${NGINX_HOME}/tethys/workspaces(/.*)?"
-    sudo restorecon -R -v ${NGINX_HOME}/tethys/workspaces
+    sudo semanage fcontext -a -t httpd_sys_content_t "${TETHYS_HOME}/static(/.*)?"
+    sudo semanage fcontext -a -t httpd_sys_rw_content_t "${TETHYS_HOME}/workspaces(/.*)?"
+    sudo restorecon -R -v ${TETHYS_HOME} > /dev/null
     echo $'module tethys-selinux-policy 1.0;\nrequire {type httpd_t; type init_t; class unix_stream_socket connectto; }\n#============= httpd_t ==============\nallow httpd_t init_t:unix_stream_socket connectto;' > ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.te
 
     checkmodule -M -m -o ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.mod ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.te
@@ -479,7 +477,8 @@ then
     esac
 
     . ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}
-    tstartdb
+    pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" -l "${TETHYS_HOME}/psql/logfile" start -o "-p ${TETHYS_DB_PORT}"
+    echo "Waiting for databases to startup..."; sleep 5
     conda install -c conda-forge uwsgi -y
     tethys gen settings --production --allowed-host=${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite
     tethys gen nginx --overwrite
@@ -488,9 +487,10 @@ then
     NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')
     NGINX_GROUP=${NGINX_USER}
     NGINX_HOME=$(grep ${NGINX_USER} /etc/passwd | awk -F':' '{print $6}')
-    sudo mkdir -p ${TETHYS_HOME}/tethys/static ${TETHYS_HOME}/tethys/workspaces ${TETHYS_HOME}/tethys/apps
-    sudo chown -R ${USER} ${TETHYS_HOME}/src ${NGINX_HOME}
+    mkdir -p ${TETHYS_HOME}/static ${TETHYS_HOME}/workspaces ${TETHYS_HOME}/apps
+    sudo chown -R ${USER} ${TETHYS_HOME}
     tethys manage collectall --noinput
+    sudo chmod 705 ~
     sudo mkdir /var/log/uwsgi
     sudo touch /var/log/uwsgi/tethys.log
     sudo ln -s ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf /etc/nginx/${NGINX_SITES_DIR}/
@@ -500,7 +500,7 @@ then
         configure_selinux
     fi
 
-    sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_HOME}/src ${NGINX_HOME} /var/log/uwsgi/tethys.log
+    sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_HOME}/src /var/log/uwsgi/tethys.log
     sudo systemctl enable ${TETHYS_HOME}/src/tethys_portal/tethys.uwsgi.service
     sudo systemctl start tethys.uwsgi.service
     sudo systemctl restart nginx
@@ -509,11 +509,12 @@ then
 
     echo "export NGINX_USER='${NGINX_USER}'" >> "${ACTIVATE_SCRIPT}"
     echo "export NGINX_HOME='${NGINX_HOME}'" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tethys_user_own='sudo chown -R \${USER} \"\${TETHYS_HOME}/src\" \${NGINX_HOME}/tethys'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_user_own='sudo chown -R \${USER} \"\${TETHYS_HOME}/src\" \"\${TETHYS_HOME}/static\" \"\${TETHYS_HOME}/workspaces\" \"\${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
     echo "alias tuo=tethys_user_own" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tethys_server_own='sudo chown -R \${NGINX_USER}:\${NGINX_USER} \"\${TETHYS_HOME}/src\" \${NGINX_HOME}/tethys'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_server_own='sudo chown -R \${NGINX_USER}:\${NGINX_USER} \"\${TETHYS_HOME}/src\" \"\${TETHYS_HOME}/static\" \"\${TETHYS_HOME}/workspaces\" \"\${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
     echo "alias tso=tethys_server_own" >> "${ACTIVATE_SCRIPT}"
-    echo "alias trestart=tso; sudo systemctl restart tethys.uwsgi.service;  sudo systemctl restart nginx" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_server_restart='tso; sudo systemctl restart tethys.uwsgi.service; sudo systemctl restart nginx'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tsr=tethys_server_restart" >> "${ACTIVATE_SCRIPT}"
 
     echo "unset NGINX_USER" >> "${DEACTIVATE_SCRIPT}"
     echo "unset NGINX_HOME" >> "${DEACTIVATE_SCRIPT}"
@@ -521,7 +522,8 @@ then
     echo "unalias tuo" >> "${DEACTIVATE_SCRIPT}"
     echo "unalias tethys_server_own" >> "${DEACTIVATE_SCRIPT}"
     echo "unalias tso" >> "${DEACTIVATE_SCRIPT}"
-    echo "unalias trestart" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tethys_server_restart" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias trs" >> "${DEACTIVATE_SCRIPT}"
 fi
 
 on_exit(){
