@@ -63,7 +63,9 @@ b. Define the options for the form gizmos in the controller and change the ``add
 
 ::
 
-    from tethys_sdk.gizmos import MapView, Button, TextInput, DatePicker, SelectInput
+    from tethys_sdk.gizmos import TextInput, DatePicker, SelectInput
+
+    ...
 
     @login_required()
     def add_dam(request):
@@ -135,8 +137,10 @@ a. Change the ``add_dam`` controller to handle the form data using the form vali
 
 ::
 
-    from django.shortcuts import render, redirect
+    from django.shortcuts import redirect
     from django.contrib import messages
+
+    ...
 
     @login_required()
     def add_dam(request):
@@ -272,7 +276,7 @@ In this tutorial we will start with a file database model to illustrate how to w
 
     File database models can be problematic for web applications, especially in a production environment. We recommend using and SQL or other database that can handle concurrent requests and heavy traffic.
 
-a. Open ``model.py`` and add an new function called ``add_new_dam``:
+a. Open ``model.py`` and add a new function called ``add_new_dam``:
 
 ::
 
@@ -321,6 +325,8 @@ b. Modify ``add_dam`` controller to use the new ``add_new_dam`` model function t
 
     from .model import add_new_dam
 
+    ...
+
     @login_required()
     def add_dam(request):
         """
@@ -338,6 +344,10 @@ b. Modify ``add_dam`` controller to use the new ``add_new_dam`` model function t
                 return redirect(reverse('dam_inventory:home'))
 
             ...
+
+c. Use the Add Dam page to add several dams for the Dam Inventory app.
+
+d. Navigate to ``workspaces/app_workspace/dams`` to see the JSON files that are being written.
 
 4. Develop Table View Page
 ==========================
@@ -383,36 +393,19 @@ b. Add a new template ``/templates/dam_inventory/list_dams.html`` with the follo
 ::
 
     {% extends "dam_inventory/base.html" %}
+    {% load tethys_gizmos %}
 
     {% block app_content %}
       <h1>Dams</h1>
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Owner</th>
-            <th>River</th>
-            <th>Date Built</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for dam in dams %}
-            <tr>
-              <td>{{ dam.name }}</td>
-              <td>{{ dam.owner }}</td>
-              <td>{{ dam.river }}</td>
-              <td>{{ dam.date_built }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      {% gizmo dams_table %}
     {% endblock %}
 
 c. Create a new controller function in ``controllers.py`` called ``list_dams``:
 
 ::
 
-    from .model import add_new_dam, get_all_dams
+    from tethys_sdk.gizmos import DataTableView
+    from .model import get_all_dams
 
     ...
 
@@ -422,7 +415,28 @@ c. Create a new controller function in ``controllers.py`` called ``list_dams``:
         Show all dams in a table view.
         """
         dams = get_all_dams()
-        context = {'dams': dams}
+        table_rows = []
+
+        for dam in dams:
+            table_rows.append(
+                (
+                    dam['name'], dam['owner'],
+                    dam['river'], dam['date_built']
+                )
+            )
+
+        dams_table = DataTableView(
+            column_names=('Name', 'Owner', 'River', 'Date Built'),
+            rows=table_rows,
+            searching=False,
+            orderClasses=False,
+            lengthMenu=[ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+        )
+
+        context = {
+            'dams_table': dams_table
+        }
+
         return render(request, 'dam_inventory/list_dams.html', context)
 
 d. Create a new URL Map in the ``app.py`` for the new ``list_dams`` controller:
@@ -442,21 +456,13 @@ d. Create a new URL Map in the ``app.py`` for the new ``list_dams`` controller:
             UrlMap = url_map_maker(self.root_url)
 
             url_maps = (
-                UrlMap(
-                    name='home',
-                    url='dam-inventory',
-                    controller='dam_inventory.controllers.home'
-                ),
-                UrlMap(
-                    name='add_dam',
-                    url='dam-inventory/dams/add',
-                    controller='dam_inventory.controllers.add_dam'
-                ),
+                ...
+
                 UrlMap(
                     name='dams',
                     url='dam-inventory/dams',
                     controller='dam_inventory.controllers.list_dams'
-                )
+                ),
             )
 
             return url_maps
@@ -466,23 +472,14 @@ e. Open ``/templates/dam_inventory/base.html`` and add navigation links for the 
 ::
 
     {% block app_navigation_items %}
-      <li class="title">App Navigation</li>
       {% url 'dam_inventory:home' as home_url %}
       {% url 'dam_inventory:add_dam' as add_dam_url %}
       {% url 'dam_inventory:dams' as list_dam_url %}
+      <li class="title">Navigation</li>
       <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
       <li class="{% if request.path == list_dam_url %}active{% endif %}"><a href="{{ list_dam_url }}">Dams</a></li>
       <li class="{% if request.path == add_dam_url %}active{% endif %}"><a href="{{ add_dam_url }}">Add Dam</a></li>
     {% endblock %}
-
-.. tip::
-
-    **New Page Pattern**: Adding new pages is an exercise of the Model View Controller pattern. Generally, the steps are:
-
-    * Modify the model as necessary to support the data for the new page
-    * Create a new HTML template
-    * Create a new controller function
-    * Add a new ``UrlMap`` in ``app.py``
 
 
 5. Spatial Input with Forms
@@ -522,7 +519,7 @@ b. Add the definition of the ``location_input`` gizmo and validation code to the
 
 ::
 
-    from tethys_sdk.gizmos import MapView, Button, TextInput, DatePicker, SelectInput, MVDraw, MVView
+    from tethys_sdk.gizmos import MVDraw, MVView
 
     ...
 
@@ -630,7 +627,7 @@ c. Modify the ``add_new_dam`` Model Method to store spatial data:
         with open(file_path, 'w') as f:
             f.write(dam_json)
 
-d. Navigate to ``workspaces\app_workspace\dams`` and delete all JSON files now that the model has changed, so that all the files will be consistent.
+d. Navigate to ``workspaces/app_workspace/dams`` and delete all JSON files now that the model has changed, so that all the files will be consistent.
 
 e. Create several new entries using the updated Add Dam form.
 
@@ -643,7 +640,9 @@ a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
 
 ::
 
-    from tethys_sdk.gizmos import MapView, Button, TextInput, DatePicker, SelectInput, MVDraw, MVView, MVLayer
+    from tethys_sdk.gizmos import MVLayer
+
+    ...
 
     @login_required()
     def home(request):
@@ -656,6 +655,7 @@ a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
         lat_list = []
         lng_list = []
 
+        # Define GeoJSON Features
         for dam in dams:
             dam_location = dam.pop('location')
             lat_list.append(dam_location['coordinates'][1])
@@ -671,6 +671,7 @@ a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
 
             features.append(dam_feature)
 
+        # Define GeoJSON FeatureCollection
         dams_feature_collection = {
             'type': 'FeatureCollection',
             'crs': {
@@ -682,6 +683,7 @@ a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
             'features': features
         }
 
+        # Create a Map View Layer
         dams_layer = MVLayer(
             source='GeoJSON',
             options=dams_feature_collection,
