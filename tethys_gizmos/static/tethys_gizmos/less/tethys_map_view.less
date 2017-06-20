@@ -11,6 +11,39 @@
   position: relative;
   height: 100%;
 }
+#basemap_dropdown_container {
+  position: absolute;
+  top: 7px;
+  left: 40px;
+  z-index: 1000;
+  background-color: rgba(255,255,255,.4);
+  border-radius: 4px;
+  padding: 2px;
+
+  .dropdown-menu {
+    background-color: rgba(255,255,255,.4) !important;
+    color: black !important;
+  }
+}
+
+#basemap_dropdown {
+  background-color: rgba(0,60,136,.5);
+  color: white;
+}
+.basemap-option {
+    cursor: pointer;
+    padding: 5px;
+}
+.basemap-option:hover {
+    background-color: rgba(0,94,213,.5);
+    color: white;
+}
+.selected-basemap-option {
+    font-weight: bold;
+}
+.current-basemap-label {
+    font-weight: normal;
+}
 
 .tethys-map-view-draw-control {
   top: 7px;

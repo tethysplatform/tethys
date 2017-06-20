@@ -11,9 +11,10 @@ from django.contrib import admin
 from django.forms import Textarea
 from django.db import models
 from tethys_config.models import SettingsCategory, Setting
+from tethys_apps.admin import TethysAppSettingInline
 
 
-class SettingInline(admin.TabularInline):
+class SettingInline(TethysAppSettingInline):
     fields = ('name', 'content', 'date_modified')
     readonly_fields = ('name', 'date_modified')
     model = Setting
@@ -22,12 +23,6 @@ class SettingInline(admin.TabularInline):
     formfield_overrides = {
         models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols': 65})},
     }
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def has_add_permission(self, request):
-        return False
 
 
 class SettingCategoryAdmin(admin.ModelAdmin):

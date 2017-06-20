@@ -9,54 +9,25 @@
 """
 # Commandline interface for Tethys
 import argparse
-from builtins import input
-import subprocess
 import os
+import subprocess
 import webbrowser
 
+from builtins import input
+
+from tethys_apps.cli.scaffold_commands import scaffold_command
 from tethys_apps.terminal_colors import TerminalColors
 from .docker_commands import *
+from .gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
 from .manage_commands import (manage_command, get_manage_path, run_process,
                               MANAGE_START, MANAGE_SYNCDB,
                               MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
                               MANAGE_COLLECT, MANAGE_CREATESUPERUSER, TETHYS_SRC_DIRECTORY)
-from .gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
+from .gen_commands import VALID_GEN_OBJECTS, generate_command
 from tethys_apps.helpers import get_installed_tethys_apps
 
 # Module level variables
-VALID_GEN_OBJECTS = (GEN_SETTINGS_OPTION, GEN_APACHE_OPTION)
 PREFIX = 'tethysapp'
-
-
-def scaffold_command(args):
-    """
-    Create a new Tethys app projects in the current directory.
-    """
-    project_name = args.name
-
-    # Only underscores
-    if '-' in project_name:
-        project_name = project_name.replace('-', '_')
-        print('INFO: Dash ("-") characters changed to underscores ("_").')
-
-    # Only lowercase
-    contains_uppers = False
-    for letter in project_name:
-        if letter.isupper():
-            contains_uppers = True
-
-    if contains_uppers:
-        project_name = project_name.lower()
-        print('INFO: Uppercase characters changed to lowercase.')
-
-    # Prepend prefix
-    if PREFIX not in project_name:
-        project_name = '{0}-{1}'.format(PREFIX, project_name)
-
-    print('INFO: Initializing tethys app project with name "{0}".\n'.format(project_name))
-
-    process = ['paster', 'create', '-t', 'tethys_app_scaffold', project_name]
-    subprocess.call(process)
 
 
 def uninstall_command(args):
@@ -183,7 +154,7 @@ def test_command(args):
     elif args.unit:
         primary_process.append(os.path.join(tests_path, 'unit_tests'))
     elif args.gui:
-        primary_process.append(os.path.join(tests_path,'gui_tests'))
+        primary_process.append(os.path.join(tests_path, 'gui_tests'))
 
     # print(primary_process)
     run_process(primary_process)
@@ -221,7 +192,13 @@ def tethys_command():
     scaffold_parser = subparsers.add_parser('scaffold', help='Create a new Tethys app project from a scaffold.')
     scaffold_parser.add_argument('name', help='The name of the new Tethys app project to create. Only lowercase '
                                               'letters, numbers, and underscores allowed.')
-    scaffold_parser.set_defaults(func=scaffold_command)
+    scaffold_parser.add_argument('-t', '--template', dest='template', help="Name of app template to use.")
+    scaffold_parser.add_argument('-e', '--extension', dest='extension', help="Name of extension template to use.")
+    scaffold_parser.add_argument('-d', '--defaults', dest='use_defaults', action='store_true',
+                                 help="Run command, accepting default values automatically.")
+    scaffold_parser.add_argument('-o', '--overwrite', dest='overwrite', action="store_true",
+                                 help="Attempt to overwrite project automatically if it already exists.")
+    scaffold_parser.set_defaults(func=scaffold_command, template='default', extension=None)
 
     # Setup generate command
     gen_parser = subparsers.add_parser('gen', help='Aids the installation of Tethys by automating the '
@@ -236,8 +213,12 @@ def tethys_command():
                             help='Password for the Tethys Database server to be set in the settings file.')
     gen_parser.add_argument('--db-port', dest='db_port',
                             help='Port for the Tethys Database server to be set in the settings file.')
+    gen_parser.add_argument('--production', dest='production', action='store_true',
+                            help='Generate a new settings file for a production server.')
+    gen_parser.add_argument('--overwrite', dest='overwrite', action='store_true',
+                            help='Overwrite existing file without prompting.')
     gen_parser.set_defaults(func=generate_command, allowed_host=None, db_username='tethys_default',
-                            db_password='pass', db_port=5436,)
+                            db_password='pass', db_port=5436, production=False, overwrite=False)
 
     # Setup start server command
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
@@ -245,6 +226,7 @@ def tethys_command():
                                choices=[MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT, MANAGE_CREATESUPERUSER])
     manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
     manage_parser.add_argument('-p', '--port', type=str, help='Host and/or port on which to bind the development server.')
+    manage_parser.add_argument('--noinput', action='store_true', help='Pass the --noinput argument to the manage.py command.')
     manage_parser.set_defaults(func=manage_command)
 
     # Setup test command

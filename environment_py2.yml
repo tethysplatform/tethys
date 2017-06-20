@@ -11,7 +11,7 @@ channels:
 
 dependencies:
 - python=2.7*
-- django=1.9.*
+- django=1.11.*
 - django-filter
 - djangorestframework
 - bokeh
@@ -20,7 +20,6 @@ dependencies:
 - psycopg2
 - sqlalchemy
 - requests
-- PasteScript
 - selenium
 - coverage
 - docker-py<1.10
@@ -39,6 +38,7 @@ dependencies:
     - django-guardian
     - django-simple-captcha
     - django-termsandconditions
+    - django-session-security
     - tethys_dataset_services
     - condorpy
     - social-auth-app-django

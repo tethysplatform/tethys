@@ -13,7 +13,8 @@ SET TETHYS_DB_PORT=5436
 SET CONDA_HOME=
 SET CONDA_EXE=Miniconda3-latest-Windows-x86_64.exe
 SET CONDA_ENV_NAME=tethys
-SET BRANCH=master
+SET PYTHON_VERSION=2
+SET BRANCH=release
 
 SET TETHYS_SUPER_USER=admin
 SET "TETHYS_SUPER_USER_EMAIL="
@@ -90,6 +91,11 @@ IF NOT "%1"=="" (
     )
     IF "%1"=="--conda-env-name" (
         SET CONDA_ENV_NAME=%2
+        SHIFT
+        SET OPTION_RECOGNIZED=TRUE
+    )
+    IF "%1"=="--python-version" (
+        SET PYTHON_VERSION=%2
         SHIFT
         SET OPTION_RECOGNIZED=TRUE
     )
@@ -247,7 +253,7 @@ IF %ERRORLEVEL% NEQ 0 (
 
 :: create conda env and install Tethys
 ECHO Setting up the !CONDA_ENV_NAME! environment...
-conda env create -n !CONDA_ENV_NAME! -f environment_py2.yml
+conda env create -n !CONDA_ENV_NAME! -f environment_py!PYTHON_VERSION!.yml
 CALL activate !CONDA_ENV_NAME!
 python setup.py develop
 
@@ -303,12 +309,9 @@ ECHO DOSKEY tstartdb=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" -l "%%TET
 ECHO DOSKEY tethys_stop_db=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" stop >>"!ACTIVATE_SCRIPT!"
 ECHO DOSKEY tstopdb=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" stop >> "!ACTIVATE_SCRIPT!"
 ECHO DOSKEY tms=tethys manage start -p !ALLOWED_HOST!:%%TETHYS_PORT%% >> "!ACTIVATE_SCRIPT!"
-ECHO ECHO Starting Tethys Database Server... >> "!ACTIVATE_SCRIPT!"
-ECHO pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" -l "%%TETHYS_HOME%%\psql\logfile" start -o "-p %%TETHYS_DB_PORT%%" >> "!ACTIVATE_SCRIPT!"
+ECHO DOSKEY tstart=tstartdb & tms >> "!ACTIVATE_SCRIPT!"
 
 ECHO @ECHO OFF>> "!DEACTIVATE_SCRIPT!"
-ECHO ECHO Stopping Tethys Database Server... >> "!DEACTIVATE_SCRIPT!"
-ECHO pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" stop >> "!DEACTIVATE_SCRIPT!"
 ECHO SET TETHYS_HOME=>> "!DEACTIVATE_SCRIPT!"
 ECHO SET TETHYS_DB_PORT=>> "!DEACTIVATE_SCRIPT!"
 ECHO SET TETHYS_PORT=>> "!DEACTIVATE_SCRIPT!"
@@ -317,6 +320,7 @@ ECHO DOSKEY tstartdb= >> "!DEACTIVATE_SCRIPT!"
 ECHO DOSKEY tethys_stop_db= >> "!DEACTIVATE_SCRIPT!"
 ECHO DOSKEY tstopdb= >> "!DEACTIVATE_SCRIPT!"
 ECHO DOSKEY tms= >> "!DEACTIVATE_SCRIPT!"
+ECHO DOSKEY tstart= >> "!DEACTIVATE_SCRIPT!"
 
 IF %ERRORLEVEL% NEQ 0 (
     ECHO Error occured while creating activate scripts.
@@ -342,10 +346,11 @@ ECHO OPTIONS:
 ECHO     -t, --tethys-home [PATH]            Path for tethys home directory. Default is 'C:\%HOMEPATH%\tehtys'.
 ECHO     -a, --allowed-host [HOST]           Hostname or IP address on which to serve tethys. Default is 127.0.0.1.
 ECHO     -p, --port [PORT]                   Port on which to serve tethys. Default is 8000.
-ECHO     -b, --branch [BRANCH_NAME]          Branch to checkout from version control. Default is 'master'.
+ECHO     -b, --branch [BRANCH_NAME]          Branch to checkout from version control. Default is 'release'.
 ECHO     -c, --conda-home [PATH]             Path to conda home directory where Miniconda will be installed. Default is %%TETHYS_HOME%%\miniconda.
 ECHO     -C, --conda-exe [PATH]              Path to Miniconda installer executable. Default is '.\Miniconda3-latest-Windows-x86_64.exe'.
 ECHO     -n, --conda-env-name [NAME]         Name for tethys conda environment. Default is 'tethys'.
+ECHO     --python-version [PYTHON_VERSION]   Main python version to install tethys environment into (2 or 3). Default is 2.
 ECHO     --db-username [USERNAME]            Username that the tethys database server will use. Default is 'tethys_default'.
 ECHO     --db-password [PASSWORD]            Password that the tethys database server will use. Default is 'pass'.
 ECHO     --db-port [PORT]                    Port that the tethys database server will use. Default is 5436.
