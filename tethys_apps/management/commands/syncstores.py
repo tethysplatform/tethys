@@ -8,11 +8,7 @@
 ********************************************************************************
 """
 from django.core.management.base import BaseCommand
-from django.conf import settings
-
-from tethys_apps.app_harvester import SingletonAppHarvester
 from tethys_apps.terminal_colors import TerminalColors
-from sqlalchemy import create_engine
 
 ALL_APPS = 'all'
 
