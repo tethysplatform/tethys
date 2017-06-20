@@ -94,7 +94,7 @@ if on_rtd:
                 branch = commit.split('@')[0].split('/')[-1]
         print(branch)
 
-branch = 'master' if branch == '' else branch
+branch = 'master' if branch == '' or branch == 'HEAD' else branch
 print(branch)
 rst_epilog = """
 .. |branch| replace:: {branch}
