@@ -89,7 +89,6 @@ if on_rtd:
         print(branch)
         branch = branch.split('@')[0].split('/')[-1]
         print(branch)
-
 branch = 'release' if branch == 'HEAD' else branch
 rst_epilog = """
 .. |branch| replace:: {branch}
