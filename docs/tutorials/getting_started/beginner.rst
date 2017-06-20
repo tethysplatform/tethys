@@ -19,11 +19,13 @@ This tutorial introduces important concepts for first-time or beginner Tethys de
 1. App Class
 ============
 
-a. Open ``app.py`` in your favorite Python IDE or text editor. The app class, located in ``app.py`` is the primary configuration file for Tethys apps. All app classes inherit from the ``TethysAppBase`` class.
+The app class, located in ``app.py`` is the primary configuration file for Tethys apps. All app classes inherit from the ``TethysAppBase`` class.
+
+a. Open ``app.py`` in your favorite Python IDE or text editor.
 
 b. Change the theme color of your app by changing the value of the ``color`` property of the ``DamInventory`` class. Use a site like `color-hex <http://www.color-hex.com/>`_ to find an appropriate hexadecimal RGB color.
 
-c. You can also change the icon of your app. Find a new image online and save it in the ``public/images/`` directory of your app. Then change the value of the ``icon`` property of the ``DamInventory`` class to match the name of the image.
+c. You can also change the icon of your app. Find a new image online (square images work best) and save it in the ``public/images/`` directory of your app. Then change the value of the ``icon`` property of the ``DamInventory`` class to match the name of the image.
 
 .. tip::
 
@@ -36,17 +38,21 @@ c. You can also change the icon of your app. Find a new image online and save it
 2. App Settings
 ===============
 
-Other settings for your app can be configured in the app settings. To access the app settings, click on the Settings button (gear icon) at the top right-hand corner of the screen. App settings are stored in a database, meaning they can be changed dynamically by the administrator of your portal. Some app settings, like Name and Description, correspond with properties in the ``app.py`` script.
+Other settings for your app can be configured in the app settings. App settings are stored in a database, meaning they can be changed dynamically by the administrator of your portal. Some app settings, like Name and Description, correspond with properties in the ``app.py`` script.
 
-a. Change the Name and Description of your app by changing their respective values on the app settings page. Press the ``Save`` button, located at the bottom of the app settings page. Then navigate back to your app to see the changes.
+a. To access the app settings, click on the Settings button (gear icon) at the top right-hand corner of your app.
 
-You can also create custom settings for your app that can be configured on the app settings page. This is done in the ``app.py``
+b. Change the Name and Description of your app by changing their respective values on the app settings page. Press the ``Save`` button, located at the bottom of the app settings page. Then navigate back to your app to see the changes.
 
-b. Open the ``app.py`` and add the ``custom_settings()`` method to the ``DamInventory`` class:
+You can also create custom settings for your app that can be configured on the app settings page:
+
+b. Open the ``app.py`` and add the ``custom_settings()`` method to the ``DamInventory`` class. Don't for get to import ``CustomSetting``:
 
     ::
 
         from tethys_sdk.app_settings import CustomSetting
+
+        ...
 
         class DamInventory(TethysAppBase):
             """
@@ -166,6 +172,8 @@ a. Open ``controllers.py`` and define the ``dam_inventory_map`` and ``add_dam_bu
 
         return render(request, 'dam_inventory/home.html', context)
 
+b. Save your changes to ``controllers.py`` and ``home.html`` and refresh the page to view the map.
+
 .. tip::
 
     **Gizmos**: The ``home.html`` template used a Tethys template tag, ``gizmo``, to insert a map and a button with only one line of code: ``{% gizmo dam_inventory_map %}``. Gizmo tags require one argument, an object that defines the options for the gizmo. These gizmo options must be defined in the controller for that view. In the example above we define the options objects for the two gizmos on the ``home.html`` template and pass them to the template through the context dictionary.
@@ -201,6 +209,8 @@ b. Load the styles on the ``/templates/dam_inventory/home.html`` template by add
         {{ block.super }}
         <link href="{% static 'dam_inventory/css/map.css' %}" rel="stylesheet"/>
     {% endblock %}
+
+c. Save your changes to ``map.css`` and ``home.html`` and refresh the page to view the changes. The map should fill the content area now. Notice how the map dynamically resizes if the screen size changes.
 
 .. important::
 
@@ -239,41 +249,47 @@ c. Create a new URL Map for the ``add_dam`` controller in the ``url_maps`` metho
 
 ::
 
-    ...
-
-    def url_maps(self):
+    class DamInventory(TethysAppBase):
         """
-        Add controllers
+        Tethys app class for Dam Inventory.
         """
-        UrlMap = url_map_maker(self.root_url)
+        ...
 
-        url_maps = (
-            UrlMap(
-                name='home',
-                url='dam-inventory',
-                controller='dam_inventory.controllers.home'
-            ),
-            UrlMap(
-                name='add_dam',
-                url='dam-inventory/dams/add',
-                controller='dam_inventory.controllers.add_dam'
+        def url_maps(self):
+            """
+            Add controllers
+            """
+            UrlMap = url_map_maker(self.root_url)
+
+            url_maps = (
+                UrlMap(
+                    name='home',
+                    url='dam-inventory',
+                    controller='dam_inventory.controllers.home'
+                ),
+                UrlMap(
+                    name='add_dam',
+                    url='dam-inventory/dams/add',
+                    controller='dam_inventory.controllers.add_dam'
+                )
             )
-        )
 
-        return url_maps
+            return url_maps
 
 A ``UrlMap`` is an object that maps a URL for your app to controller function that should handle requests to that URL.
+
+d. At this point you should be able to access the new page by entering its URL (`<http://localhost:8000/apps/dam-inventory/dams/add/>`_) into the address bar of your browser. It is not a very exciting page, because it is blank.
 
 8. Link to New Page
 ===================
 
-You can access the new page of your app simply be entering the URL `<http://localhost:8000/apps/dam-inventory/dams/add/>`_ into the address bar of your browser. However, you can also link to the page from another page using a button.
+Finally, you can also link to the page from another page using a button.
 
-a. Modify the ``add_dam_button`` on the Home page to link to the newly created page:
+a. Modify the ``add_dam_button`` on the Home page to link to the newly created page (don't forget the import):
 
 ::
 
-    from django.core.urlresolvers import reverse
+    from django.shortcuts import reverse
 
     ...
 
@@ -308,7 +324,7 @@ a. Modify the ``template/dam_inventory/add_dam.html`` with a title in the app co
       {% gizmo add_button %}
     {% endblock %}
 
-b. Define the options for the ``Add`` and ``Cancel`` button gizmos in the ``add_app`` controller in ``controllers.py``:
+b. Define the options for the ``Add`` and ``Cancel`` button gizmos in the ``add_app`` controller in ``controllers.py``. Also add the variables to the context so they are available to the template:
 
 ::
 
@@ -338,8 +354,8 @@ b. Define the options for the ``Add`` and ``Cancel`` button gizmos in the ``add_
         return render(request, 'dam_inventory/add_dam.html', context)
 
 
-10. Add Navigation
-==================
+10. Customize Navigation
+========================
 
 Now that there are two pages in the app, we should modify the app navigation to have links to the **Home** and **Add Dam** pages.
 
@@ -348,8 +364,9 @@ a. Open ``/templates/dam_inventory/base.html`` and replace the ``app_navigation_
 ::
 
     {% block app_navigation_items %}
-      <li class="title">App Navigation</li>
+      <li class="title">Navigation</li>
       <li class="active"><a href="{% url 'dam_inventory:home' %}">Home</a></li>
+      <li class="title">Actions</li>
       <li class=""><a href="{% url 'dam_inventory:add_dam' %}">Add Dam</a></li>
     {% endblock %}
 
@@ -360,10 +377,11 @@ b. Modify ``app_navigation_items`` block in ``/templates/dam_inventory/base.html
 ::
 
     {% block app_navigation_items %}
-      <li class="title">App Navigation</li>
       {% url 'dam_inventory:home' as home_url %}
       {% url 'dam_inventory:add_dam' as add_dam_url %}
+      <li class="title">Navigation</li>
       <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
+      <li class="title">Actions</li>
       <li class="{% if request.path == add_dam_url %}active{% endif %}"><a href="{{ add_dam_url }}">Add Dam</a></li>
     {% endblock %}
 
