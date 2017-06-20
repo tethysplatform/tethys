@@ -79,13 +79,16 @@ release = pbr.version.VersionInfo('tethys_platform').version_string_with_vcs()
 # available in every file.
 branch = pbr.git._run_git_command(['rev-parse', '--abbrev-ref', 'HEAD'], pbr.git._get_git_directory())
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
-on_rtd = True
 if on_rtd:
     print('BRANCH:', branch)
     print(os.getcwd())
     if os.path.exists('../.git/HEAD'):
         with open('../.git/HEAD', 'r') as head:
-            print(head.readlines())
+            commit_hash = head.readlines()[0][6]
+        branch = pbr.git._run_git_command(['reflog', 'show', '--all', '|', 'grep', commit_hash], pbr.git._get_git_directory())
+        print(branch)
+        branch = branch.split('@')[0].split('/')[-1]
+        print(branch)
 branch = 'release' if branch == 'HEAD' else branch
 rst_epilog = """
 .. |branch| replace:: {branch}
