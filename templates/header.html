@@ -129,7 +129,7 @@
   <header class="site-header">
     <div class="header-logo">
       {% if site_globals.brand_image %}
-        <a class="logo-image" href="/"><img  src="{{ site_globals.brand_image }}"></a>
+        <a class="logo-image" href="/"><img  src="{% static site_globals.brand_image %}"></a>
       {% endif %}
 
       {% if site_globals.brand_text %}

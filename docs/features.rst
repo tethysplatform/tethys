@@ -87,13 +87,7 @@ Tethys Platform includes Python modules that allow you to provision and run comp
 
 **CondorPy enables computing jobs to be created and submitted to a HTCondor computing pool.**
 
-HTCondor provides a way to make use of the idle computing power that is already available in your office. Alternatively, TethysCluster enables you to provision scalable computing resources in the cloud using commercial services like `Amazon AWS <https://aws.amazon.com/free/cloud-computing-free-tier/?sc_channel=PS&sc_campaign=AWS_Free_Tier_2013_T&sc_country=US&sc_publisher=Google&sc_medium=b_test_cloud_computing_e-amazon_computing&sc_content=50999158962&sc_detail=Amazon%20computing&sc_category=aws_cloud_computing&sc_segment=cloud_computing&sc_matchtype=e&s_kwcid=AL!4422!3!50999158962!e!!g!!amazon%20computing&ef_id=U2k10QAAAbgQyF5m:20141124202406:s>`_ and `Microsoft Azure <https://azure.microsoft.com/en-us/>`_.
-
-.. figure:: images/features/computing_tethyscluster.png
-    :width: 600px
-    :align: center
-
-**TethysCluster makes it easy to scale your computing resources using commercial cloud services.**
+HTCondor provides a way to make use of the idle computing power that is already available in your office.
 
 .. note::
 

@@ -11,6 +11,10 @@ The final step required to setup your Tethys Platform is to link it to the softw
 
 The Tethys Portal Admin Console is only accessible to users with administrator rights. When you installed Tethys Platform, you created superuser. Use these credentials to log in for the first time.
 
+.. tip::
+
+    When installing Tethys with the installation script the superuser credentials would have been specified with the `-S` or `--superuser` and the `-P` or `--superuser-pass` options. If you did not specify these options then the default username and password is `admin` and `pass`.
+
 a. Use the "Log In" link on the Tethys Portal homepage to log in as an administrator.
 
   .. figure:: ../images/site_admin/log_in.png
@@ -174,4 +178,4 @@ e. Press "Save" to save the Persistent Store Service configuration.
 What's Next?
 ------------
 
-Head over to :doc:`../tutorials/quick_start` and create your first app. You can also check out the :doc:`../tethys_sdk` documentation to familiarize yourself with all the features that are available.
+Head over to :doc:`../tutorials/getting_started` and create your first app. You can also check out the :doc:`../tethys_sdk` documentation to familiarize yourself with all the features that are available.
