@@ -16,7 +16,6 @@ import webbrowser
 from builtins import input
 
 from tethys_apps.cli.scaffold_commands import scaffold_command
-from tethys_apps.helpers import get_installed_tethys_apps
 from tethys_apps.terminal_colors import TerminalColors
 from .docker_commands import *
 from .gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
@@ -29,37 +28,6 @@ from tethys_apps.helpers import get_installed_tethys_apps
 
 # Module level variables
 PREFIX = 'tethysapp'
-
-
-def scaffold_command(args):
-    """
-    Create a new Tethys app projects in the current directory.
-    """
-    project_name = args.name
-
-    # Only underscores
-    if '-' in project_name:
-        project_name = project_name.replace('-', '_')
-        print('INFO: Dash ("-") characters changed to underscores ("_").')
-
-    # Only lowercase
-    contains_uppers = False
-    for letter in project_name:
-        if letter.isupper():
-            contains_uppers = True
-
-    if contains_uppers:
-        project_name = project_name.lower()
-        print('INFO: Uppercase characters changed to lowercase.')
-
-    # Prepend prefix
-    if PREFIX not in project_name:
-        project_name = '{0}-{1}'.format(PREFIX, project_name)
-
-    print('INFO: Initializing tethys app project with name "{0}".\n'.format(project_name))
-
-    process = ['paster', 'create', '-t', 'tethys_app_scaffold', project_name]
-    subprocess.call(process)
 
 
 def uninstall_command(args):

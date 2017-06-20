@@ -1,5 +1,5 @@
 conda:
-    file: tethys_conda_env.yml
+    file: environment_py2.yml
 python:
     version: 2
     pip_install: true
