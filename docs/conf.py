@@ -79,7 +79,6 @@ release = pbr.version.VersionInfo('tethys_platform').version_string_with_vcs()
 # available in every file.
 branch = pbr.git._run_git_command(['rev-parse', '--abbrev-ref', 'HEAD'], pbr.git._get_git_directory())
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
-on_rtd = True
 if on_rtd:
     print('BRANCH:', branch)
     print(os.getcwd())
