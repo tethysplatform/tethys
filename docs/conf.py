@@ -87,9 +87,11 @@ if on_rtd:
         with open('../.git/HEAD', 'r') as head:
             commit_hash = head.readlines()[0][:7]
             print(commit_hash)
-        branch = pbr.git._run_git_command(['reflog', 'show', '--all', '|', 'grep', commit_hash], pbr.git._get_git_directory())
-        print(branch)
-        branch = branch.split('@')[0].split('/')[-1]
+        commits = pbr.git._run_git_command(['reflog', 'show', '--all'], pbr.git._get_git_directory()).split('\n')
+        print(commits)
+        for commit in commits:
+            if commit.startswith(commit_hash):
+                branch = commit.split('@')[0].split('/')[-1]
         print(branch)
 
 branch = 'master' if branch == '' else branch
