@@ -117,7 +117,4 @@ Download and install any apps that you want to host using this installation of T
 
 .. todo::
 
-    Troubleshooting
-    ===============
-
-    Here we try to provide some guidance on some of the most commonly encountered issues. If you are experiencing problems and can't find a solution here then please post a question on the `Tethys Platform Forum <https://groups.google.com/forum/#!forum/tethysplatform>`_.
+    **Troubleshooting**: Here we try to provide some guidance on some of the most commonly encountered issues. If you are experiencing problems and can't find a solution here then please post a question on the `Tethys Platform Forum <https://groups.google.com/forum/#!forum/tethysplatform>`_.

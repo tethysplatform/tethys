@@ -2,7 +2,11 @@
 Upgrade to |version|
 ********************
 
-**Last Updated:** December 10, 2016
+**Last Updated:** June 2017
+
+.. warning::
+
+    UNDER CONSTRUCTION: Pardon our dust, this documentation has not been updated yet. These instructions will NOT work. We apologize for the inconvenience.
 
 1. Get the Latest Version
 =========================
