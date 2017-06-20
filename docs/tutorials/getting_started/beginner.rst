@@ -271,7 +271,7 @@ c. Create a new URL Map for the ``add_dam`` controller in the ``url_maps`` metho
                     name='add_dam',
                     url='dam-inventory/dams/add',
                     controller='dam_inventory.controllers.add_dam'
-                )
+                ),
             )
 
             return url_maps
@@ -279,6 +279,15 @@ c. Create a new URL Map for the ``add_dam`` controller in the ``url_maps`` metho
 A ``UrlMap`` is an object that maps a URL for your app to controller function that should handle requests to that URL.
 
 d. At this point you should be able to access the new page by entering its URL (`<http://localhost:8000/apps/dam-inventory/dams/add/>`_) into the address bar of your browser. It is not a very exciting page, because it is blank.
+
+.. tip::
+
+    **New Page Pattern**: Adding new pages is an exercise of the Model View Controller pattern. Generally, the steps are:
+
+    * Modify the model as necessary to support the data for the new page
+    * Create a new HTML template
+    * Create a new controller function
+    * Add a new ``UrlMap`` in ``app.py``
 
 8. Link to New Page
 ===================
@@ -366,7 +375,6 @@ a. Open ``/templates/dam_inventory/base.html`` and replace the ``app_navigation_
     {% block app_navigation_items %}
       <li class="title">Navigation</li>
       <li class="active"><a href="{% url 'dam_inventory:home' %}">Home</a></li>
-      <li class="title">Actions</li>
       <li class=""><a href="{% url 'dam_inventory:add_dam' %}">Add Dam</a></li>
     {% endblock %}
 
@@ -381,7 +389,6 @@ b. Modify ``app_navigation_items`` block in ``/templates/dam_inventory/base.html
       {% url 'dam_inventory:add_dam' as add_dam_url %}
       <li class="title">Navigation</li>
       <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
-      <li class="title">Actions</li>
       <li class="{% if request.path == add_dam_url %}active{% endif %}"><a href="{{ add_dam_url }}">Add Dam</a></li>
     {% endblock %}
 
