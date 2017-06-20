@@ -2,7 +2,7 @@
 Tethys Platform Settings
 ************************
 
-.. info::
+.. note::
 
     COMING SOON: An explanation of all the settings in setting.py!
 
