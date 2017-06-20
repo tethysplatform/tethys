@@ -11,12 +11,11 @@ channels:
 
 dependencies:
 - python=3.*
-- django=1.9.*
+- django=1.11.*
 - django-filter
 - djangorestframework
 - bokeh
 - future
-- paste
 - psycopg2
 - sqlalchemy
 - requests
@@ -38,6 +37,7 @@ dependencies:
     - django-guardian
     - django-simple-captcha
     - django-termsandconditions
+    - django-session-security
     - tethys_dataset_services
     - condorpy
     - PasteScript
