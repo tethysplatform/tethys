@@ -78,7 +78,22 @@ release = pbr.version.VersionInfo('tethys_platform').version_string_with_vcs()
 # file that is read. This is the right place to add substitutions that should be
 # available in every file.
 branch = pbr.git._run_git_command(['rev-parse', '--abbrev-ref', 'HEAD'], pbr.git._get_git_directory())
-branch = 'dev' if branch == 'HEAD' else branch
+on_rtd = os.environ.get('READTHEDOCS') == 'True'
+on_rtd = True
+if on_rtd:
+    print('BRANCH:', branch)
+    print(os.getcwd())
+    if os.path.exists('../.git/HEAD'):
+        with open('../.git/HEAD', 'r') as head:
+            commit_hash = head.readlines()[0][:7]
+            print(commit_hash)
+        branch = pbr.git._run_git_command(['reflog', 'show', '--all', '|', 'grep', commit_hash], pbr.git._get_git_directory())
+        print(branch)
+        branch = branch.split('@')[0].split('/')[-1]
+        print(branch)
+
+branch = 'master' if branch == '' else branch
+print(branch)
 rst_epilog = """
 .. |branch| replace:: {branch}
 """.format(branch=branch)
