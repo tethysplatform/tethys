@@ -12,33 +12,33 @@ channels:
 dependencies:
 - python=2.7*
 - django=1.11.*
-- django-filter
-- djangorestframework
-- bokeh
-- future
-- paste
-- psycopg2
-- sqlalchemy
-- requests
-- selenium
-- coverage
+- django-filter=1.0*
+- djangorestframework=3.6*
+- bokeh=0.12*
+- future=0.16*
+- paste=2.0*
+- psycopg2=2.7*
+- sqlalchemy=1.1*
+- requests=2.18*
+- selenium=3.4*
+- coverage=4.4*
 - docker-py<1.10
-- geoalchemy2
-- owslib
-- pip
-- pillow
+- geoalchemy2=0.4*
+- owslib=0.14*
+- pip=9.0*
+- pillow=4.1*
 - plotly=1.12*
-- postgresql
-- pycrypto
-- pyopenssl
+- postgresql=9.5*
+- pycrypto=2.6*
+- pyopenssl=16.2*
 - pip:
-    - django-gravatar2
-    - django-bootstrap3
-    - django-model-utils
-    - django-guardian
-    - django-simple-captcha
-    - django-termsandconditions
-    - django-session-security
-    - tethys_dataset_services
-    - condorpy
-    - social-auth-app-django
+    - django-gravatar2=1.4*
+    - django-bootstrap3=8.2*
+    - django-model-utils=3.0*
+    - django-guardian=1.4*
+    - django-simple-captcha=0.5*
+    - django-termsandconditions=1.1*
+    - django-session-security=2.5*
+    - tethys_dataset_services=1.6*
+    - condorpy=0.3*
+    - social-auth-app-django=1.2*
