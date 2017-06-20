@@ -31,7 +31,7 @@ If you wish to use the intermediate solution as a starting point:
 
 In the :doc:`./intermediate` tutorial we implemented a file-based database as the persisting mechanism for the app. However, simple file based databases typically don't perform well in a web application environment, because of the possibility of many concurrent requests trying to access the file. In this section we'll refactor the Model to use an SQL database, rather than files.
 
-a. Create a ``PersistentStoreDatabaseSetting``, which can be assigned a connection to the database. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by adding the ``persistent_store_settings`` method to your app class:
+a. Open the ``app.py`` and define a new ``PersistentStoreDatabaseSetting`` by adding the ``persistent_store_settings`` method to your app class:
 
 ::
 
@@ -58,7 +58,7 @@ a. Create a ``PersistentStoreDatabaseSetting``, which can be assigned a connecti
             return ps_settings
 
 
-Next, we need to define the tables of the database. Tethys provides the library SQLAlchemy as an interface with SQL databases. SQLAlchemy provides an Object Relational Mapper (ORM) API, which allows data models to be defined using Python and an object-oriented approach. In other words, you are able to harness the power of SQL databases without writing SQL. As a primer to SQLAlchemy ORM, we highly recommend you complete the `Object Relational Tutorial <http://docs.sqlalchemy.org/en/latest/orm/tutorial.html>`_.
+Tethys provides the library SQLAlchemy as an interface with SQL databases. SQLAlchemy provides an Object Relational Mapper (ORM) API, which allows data models to be defined using Python and an object-oriented approach. With SQLAlchemy, you can harness the power of SQL databases without writing SQL. As a primer to SQLAlchemy ORM, we highly recommend you complete the `Object Relational Tutorial <http://docs.sqlalchemy.org/en/latest/orm/tutorial.html>`_.
 
 b. Define a table called ``dams`` by creating a new class in ``model.py`` called ``Dam``:
 
@@ -196,8 +196,6 @@ d. Create a new function called ``init_primary_db`` at the bottom of ``model.py`
             session.commit()
             session.close()
 
-
-
 e. Refactor ``home`` controller in ``controllers.py`` to use new model objects:
 
 ::
@@ -236,7 +234,29 @@ e. Refactor ``home`` controller in ``controllers.py`` to use new model objects:
 
         ...
 
-f. Add **Persistent Store Service** to Tethys Portal:
+f. Refactor the ``list_dams`` controller to use the new model objects:
+
+::
+
+    @login_required()
+    def list_dams(request):
+        """
+        Show all dams in a table view.
+        """
+        dams = get_all_dams()
+        table_rows = []
+
+        for dam in dams:
+            table_rows.append(
+                (
+                    dam.name, dam.owner,
+                    dam.river, dam.date_built
+                )
+            )
+
+        ...
+
+g. Add **Persistent Store Service** to Tethys Portal:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
@@ -248,7 +268,7 @@ f. Add **Persistent Store Service** to Tethys Portal:
 
     The username and password for the persistent store service must be a superuser to use spatial persistent stores.
 
-g. Assign **Persistent Store Service** to Dam Inventory App:
+h. Assign **Persistent Store Service** to Dam Inventory App:
 
     a. Go to Tethys Portal Home in a web browser (e.g. http://localhost:8000/apps/)
     b. Select **Site Admin** from the drop down next to your username.
@@ -257,7 +277,7 @@ g. Assign **Persistent Store Service** to Dam Inventory App:
     e. Scroll down to the **Persistent Store Database Settings** section.
     f. Assign the **Persistent Store Service** that you created in Step 4 to the **primary_db**.
 
-h. Execute **syncstores** command to initialize Persistent Store database:
+i. Execute **syncstores** command to initialize Persistent Store database:
 
     ::
 
@@ -272,7 +292,7 @@ a. Modify the `add_dam` controller, such that it won't add a new dam if the `max
 
 ::
 
-    from .model import add_new_dam, get_all_dams, Dam
+    from .model import Dam
     from .app import DamInventory as app
 
     ...
@@ -304,6 +324,7 @@ a. Modify the `add_dam` controller, such that it won't add a new dam if the `max
                     add_new_dam(location=location, name=name, owner=owner, river=river, date_built=date_built)
                 else:
                     messages.warning(request, 'Unable to add dam "{0}", because the inventory is full.'.format(name))
+
                 return redirect(reverse('dam_inventory:home'))
 
             messages.error(request, "Please fix errors.")
@@ -328,20 +349,9 @@ a. Modify the MVLayer in the ``home`` controller to make the layer selectable:
     ...
 
     dams_layer = MVLayer(
-        source='GeoJSON',
-        options=dams_feature_collection,
-        legend_title='Dams',
-        layer_options={
-            'style': {
-                'image': {
-                    'circle': {
-                        'radius': 10,
-                        'fill': {'color':  '#d84e1f'},
-                        'stroke': {'color': '#ffffff', 'width': 1},
-                    }
-                }
-            }
-        },
+
+        ...
+
         feature_selection=True
     )
 
@@ -508,7 +518,7 @@ c. Add a context variable called ``can_add_dams`` to the context of each control
 
 ::
 
-    from tethys_sdk.permissions import permission_required, has_permission
+    from tethys_sdk.permissions import has_permission
 
     @login_required()
     def home(request):
@@ -596,6 +606,10 @@ g. Log in each user. If the permission has been applied correctly, "diviewer" sh
 
     For more details on Permissions, see: :doc:`../../tethys_sdk/permissions`.
 
+.. todo::
+
+    Split into another tutorial here?
+
 5. Persistent Store Related Tables
 ==================================
 
@@ -605,8 +619,8 @@ a. Define two new tables to ``models.py`` for storing the hydrograph and hydrogr
 
 ::
 
-    from sqlalchemy import Column, Integer, Float, String, ForeignKey
-    from sqlalchemy.orm import sessionmaker, relationship
+    from sqlalchemy import ForeignKey
+    from sqlalchemy.orm import relationship
 
     ...
 
@@ -644,8 +658,8 @@ a. Define two new tables to ``models.py`` for storing the hydrograph and hydrogr
         # Columns
         id = Column(Integer, primary_key=True)
         hydrograph_id = Column(ForeignKey('hydrographs.id'))
-        time = Column(Integer) #: hours
-        flow = Column(Float) #: cfs
+        time = Column(Integer)  #: hours
+        flow = Column(Float)  #: cfs
 
         # Relationships
         hydrograph = relationship('Hydrograph', back_populates='points')
@@ -719,7 +733,7 @@ a. New Model function
 
         return True
 
-b. New Template
+b. New Template: ``assign_hydrograph.html``
 
 ::
 
@@ -753,7 +767,7 @@ c. New Controller
 
 ::
 
-    from .model import add_new_dam, get_all_dams, Dam, assign_hydrograph_to_dam
+    from .model import assign_hydrograph_to_dam
 
     ...
 
@@ -869,7 +883,7 @@ d. New UrlMap
                     name='assign_hydrograph',
                     url='dam-inventory/hydrographs/assign',
                     controller='dam_inventory.controllers.assign_hydrograph'
-                )
+                ),
             )
 
             return url_maps
@@ -881,7 +895,7 @@ d. Update navigation
     {% block app_navigation_items %}
       <li class="title">App Navigation</li>
       ...
-      {% url 'dam_inventory:add_hydrograph' as assign_hydrograph_url %}
+      {% url 'dam_inventory:assign_hydrograph' as assign_hydrograph_url %}
       ...
       <li class="{% if request.path == assign_hydrograph_url %}active{% endif %}"><a href="{{ assign_hydrograph_url }}">Assign Hydrograph</a></li>
     {% endblock %}
@@ -895,7 +909,7 @@ f. Test upload with these files:
 
 Create a new page with hydrograph plotted for selected Dam
 
-a. Create Template
+a. Create Template ``hydrograph.html``
 
 ::
 
@@ -963,10 +977,11 @@ c. Create Controller
 ::
 
     from .helpers import create_hydrograph
+
     ...
 
     @login_required()
-    def hydrograph(request, hydrograph_id=None):
+    def hydrograph(request, hydrograph_id):
         """
         Controller for the Hydrograph Page.
         """
@@ -1006,74 +1021,18 @@ d. Add UrlMap with URL Variable
                     name='hydrograph',
                     url='dam-inventory/hydrographs/{hydrograph_id}',
                     controller='dam_inventory.controllers.hydrograph'
-                )
+                ),
             )
 
             return url_maps
 
-
-e. Link to Hydrograph View from Table View: modify ``list_dams.html``
-
-::
-
-   {% extends "dam_inventory/base.html" %}
-
-    {% block app_content %}
-      <h1>Dams</h1>
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Owner</th>
-            <th>River</th>
-            <th>Date Built</th>
-            <th>Hydrograph</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for dam in dams %}
-            <tr>
-              <td>{{ dam.name }}</td>
-              <td>{{ dam.owner }}</td>
-              <td>{{ dam.river }}</td>
-              <td>{{ dam.date_built }}</td>
-              <td>
-                {% if dam.hydrograph %}
-                  <a href="{% url 'dam_inventory:hydrograph' dam.hydrograph.id %}">Hydrograph</a>
-                {% else %}
-                  <a href="{% url 'dam_inventory:assign_hydrograph' %}">Assign</a>
-                {% endif %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% endblock %}
-
-f. Modify ``list_dams`` controller:
+e. Modify ``list_dams`` controller:
 
 ::
 
-    @login_required()
-    def list_dams(request):
-        """
-        Show all dams in a table view.
-        """
-        # Get connection/session to database
-        Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
-        session = Session()
+    .. todo::
 
-        # Query for all dam records
-        dams = session.query(Dam).all()
-
-        context = {
-            'dams': dams,
-            'can_add_dams': has_permission(request, 'add_dams')
-        }
-
-        response = render(request, 'dam_inventory/list_dams.html', context)
-        session.close()
-        return response
+        Find a way to get links into data tables view
 
 
 
@@ -1102,8 +1061,8 @@ b. Create a template for the AJAX plot (``hydrograph_ajax.html``)
     {% load tethys_gizmos %}
 
     {% if hydrograph_plot %}
-        {% gizmo hydrograph_plot %}
-    {% endif %}}
+      {% gizmo hydrograph_plot %}
+    {% endif %}
 
 c. Create an AJAX controller ``hydrograph_ajax``
 
@@ -1154,7 +1113,7 @@ d. Create an AJAX UrlMap
                     name='hydrograph_ajax',
                     url='dam-inventory/hydrographs/{dam_id}/ajax',
                     controller='dam_inventory.controllers.hydrograph_ajax'
-                )
+                ),
             )
 
             return url_maps
