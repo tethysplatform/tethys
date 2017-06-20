@@ -28,7 +28,6 @@ Contents
    software_suite
    tethys_sdk
    tethys_portal
-   production
    repos
    tethys_development
    supplementary

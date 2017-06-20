@@ -40,7 +40,7 @@ As long as the :file:`install_tethys.bat` and the :file:`Miniconda3-latest-Windo
         * `-p, --port <PORT>`:
                 Port on which to serve Tethys. Default is 8000.
         * `-b, --branch <BRANCH_NAME>`:
-                Branch to checkout from version control. Default is 'master'.
+                Branch to checkout from version control. Default is 'release'.
         * `-c, --conda-home <PATH>`:
                 Path to conda home directory where Miniconda will be installed, or to an existing installation of Miniconda. Default is %TETHYS_HOME%\miniconda.
 
@@ -52,6 +52,8 @@ As long as the :file:`install_tethys.bat` and the :file:`Miniconda3-latest-Windo
                 Path to Miniconda installer executable. Default is '.\Miniconda3-latest-Windows-x86_64.exe'.
         * `-n, --conda-env-name <NAME>`:
                 Name for tethys conda environment. Default is 'tethys'.
+        * `--python-version <PYTHON_VERSION>`:
+                Main python version to install tethys environment into (2 or 3). Default is 2.
         * `--db-username <USERNAME>`:
                 Username that the tethys database server will use. Default is 'tethys_default'.
         * `--db-password <PASSWORD>`:
@@ -88,25 +90,27 @@ or simply just::
 
     The following environmental variables are available once the tethys conda environment is activated:
 
-     - `TETHYS_HOME`:
+    - `TETHYS_HOME`:
             The directory where the Tethys source code and other Tethys resources are. It is set from the value of the `--tethys-home` option that was passed to the install script.
-     - `TETHYS_PORT`:
+    - `TETHYS_PORT`:
             The port that the Tethys development server will be served on. Set from the `--port` option.
-     - `TETHYS_DB_PORT`:
+    - `TETHYS_DB_PORT`:
             The port that the Tethys local database server is running on. Set from the `--db-port` option.
 
     Also, the following aliases are available:
 
-     - `tethys_start_db`:
+    - `tethys_start_db`:
             Starts the local Tethys database server
-     - `tstartdb`:
+    - `tstartdb`:
             Another alias for `tethys_start_db`
-     - `tethys_stop_db`:
+    - `tethys_stop_db`:
             Stops the localTethys database server
-     - `tstopdb`:
+    - `tstopdb`:
             Another alias for `tethys_stop_db`
-     - `tms`:
+    - `tms`:
             An alias to start the Tethys development server. It calls the command `tethys manage start -p <HOST>:${TETHYS_PORT}` where `<HOST>` is the value of the `--allowed-host` option that was passed to the install script and `${TETHYS_PORT}` is the value of the environmental variable which is set from the `--port` option of the install script.
+    - `tstart`:
+            Combines the `tethys_start_db` and the `tms` commands.
 
      When you start up a new terminal there are three steps to get the Tethys development server running again:
 
@@ -114,14 +118,19 @@ or simply just::
         2. Start the Tethys database server
         3. start the Tethys development server
 
-    For convenience the Tethys database server is started automatically when the tethys conda environment is activated, and it is stopped when the environment is deactivated. So, using the supplied aliases, starting the Tethys development server can be done by running the :file:`tethys_cmd.bat` file and then executing the following command::
+    Using the supplied aliases, starting the Tethys development server can be done by running the :file:`tethys_cmd.bat` file and then executing the following command::
 
-        (tethys) > tms
+        (tethys) > tstart
 
 Congratulations! You now have Tethys Platform running a in a development server on your machine. Tethys Platform provides a web interface that is called the Tethys Portal. You can access your Tethys Portal by opening `<http://localhost:8000/>`_ (or if you provided custom host and port options to the install script then it will be `<HOST>:<PORT>`) in a new tab in your web browser.
 
 .. figure:: ../images/tethys_portal_landing.png
     :width: 650px
+
+To log in, use the credentials that you specified with the `-S` or `--superuser` and the `-P` or `--superuser-pass` options. If you did not specify these options then the default credentials are:
+
+    * username: `admin`
+    * password:  `pass`
 
 
 2. Install Docker (OPTIONAL)

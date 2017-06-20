@@ -44,7 +44,7 @@ For Systems with `curl` (e.g. Mac OSX and CentOS):
         * `-p, --port <PORT>`:
                 Port on which to serve Tethys. Default is 8000.
         * `-b, --branch <BRANCH_NAME>`:
-                Branch to checkout from version control. Default is 'master'.
+                Branch to checkout from version control. Default is 'release'.
         * `-c, --conda-home <PATH>`:
                 Path to conda home directory where Miniconda will be installed, or to an existing installation of Miniconda. Default is ${TETHYS_HOME}/miniconda.
 
@@ -54,6 +54,8 @@ For Systems with `curl` (e.g. Mac OSX and CentOS):
 
         * `-n, --conda-env-name <NAME>`:
                 Name for tethys conda environment. Default is 'tethys'.
+        * `--python-version <PYTHON_VERSION>`:
+                Main python version to install tethys environment into (2 or 3). Default is 2.
         * `--db-username <USERNAME>`:
                 Username that the tethys database server will use. Default is 'tethys_default'.
         * `--db-password <PASSWORD>`:
@@ -66,14 +68,15 @@ For Systems with `curl` (e.g. Mac OSX and CentOS):
                 Tethys super user email. Default is ''.
         * `-P, --superuser-pass <PASSWORD>`:
                 Tethys super user password. Default is 'pass'.
-        * `--install-docker`:
-                Flag to include Docker installation as part of the install script (Linux only). See `2. Install Docker (OPTIONAL)`_ for more details.
-        * `--install-docker-only`:
-                Flag to skip the Tethys installation and only install run the Docker installation. Tethys must already be installed (Linux only).
+        * `--skip-tethys-install`:
+                Flag to skip the Tethys installation so that the Docker installation or production installation can be added to an existing Tethys installation.
 
                 .. tip::
 
                     If conda home is not in the default location then the `--conda-home` options must also be specified with this option.
+
+        * `--install-docker`:
+                Flag to include Docker installation as part of the install script (Linux only). See `2. Install Docker (OPTIONAL)`_ for more details.
 
         * `--docker-options <OPTIONS>`:
                 Command line options to pass to the `tethys docker init` call if --install-docker is used. Default is "'-d'".
@@ -81,6 +84,10 @@ For Systems with `curl` (e.g. Mac OSX and CentOS):
                 .. tip::
 
                     The value for the `--docker-options` option must have nested quotes. For example "'-d -c geoserver'" or '"-d -c geoserver"'.
+        * `--production`
+                Flag to install Tethys in a production configuration.
+        * `--configure-selinux`
+                Flag to perform configuration of SELinux for production installation. (Linux only).
         * `-x`:
                 Flag to turn on shell command echoing.
         * `-h, --help`:
@@ -89,7 +96,6 @@ For Systems with `curl` (e.g. Mac OSX and CentOS):
     Here is an example of calling the installation script with customized options::
 
         $ bash install_tethys.sh -t ~/Workspace/tethys -a localhost -p 8005 -c ~/miniconda3 --db-username tethys_db_user --db-password db_user_pass --db-port 5437 -S tethys -E email@example.com -P tpass
-
 
 The installation script may take several minutes to run. Once it is completed you will need to activate the new conda environment so you can start the Tethys development server. This is most easily done using an alias created by the install script. To enable the alias you need to open a new terminal or re-run the :file:`.bashrc` (Linux) or :file:`.bash_profile` (Mac) file.
 
@@ -115,29 +121,46 @@ or simply just::
 
     The installation script adds several environmental variables and aliases to help make using Tethys easier. Most of them are active only while the tethys conda environment is activated, however one alias to activate the tethys conda environment was added to your `.bashrc` or `bash_profile` file in your home directory and should be available from any terminal session:
 
-     - `t`: Alias to activate the tethys conda environment. It is a shortcut for the command `source <CONDA_HOME>/bin/activate tethys` where <CONDA_HOME> is the value of the `--conda-home` option that was passed to the install script.
+    - `t`: Alias to activate the tethys conda environment. It is a shortcut for the command `source <CONDA_HOME>/bin/activate tethys` where <CONDA_HOME> is the value of the `--conda-home` option that was passed to the install script.
 
     The following environmental variables are available once the tethys conda environment is activated:
 
-     - `TETHYS_HOME`:
+    - `TETHYS_HOME`:
             The directory where the Tethys source code and other Tethys resources are. It is set from the value of the `--tethys-home` option that was passed to the install script.
-     - `TETHYS_PORT`:
+    - `TETHYS_PORT`:
             The port that the Tethys development server will be served on. Set from the `--port` option.
-     - `TETHYS_DB_PORT`:
+    - `TETHYS_DB_PORT`:
             The port that the Tethys local database server is running on. Set from the `--db-port` option.
 
     Also, the following aliases are available:
 
-     - `tethys_start_db`:
+    - `tethys_start_db`:
             Starts the local Tethys database server
-     - `tstartdb`:
+    - `tstartdb`:
             Another alias for `tethys_start_db`
-     - `tethys_stop_db`:
+    - `tethys_stop_db`:
             Stops the localTethys database server
-     - `tstopdb`:
+    - `tstopdb`:
             Another alias for `tethys_stop_db`
-     - `tms`:
+    - `tms`:
             An alias to start the Tethys development server. It calls the command `tethys manage start -p <HOST>:${TETHYS_PORT}` where `<HOST>` is the value of the `--allowed-host` option that was passed to the install script and `${TETHYS_PORT}` is the value of the environmental variable which is set from the `--port` option of the install script.
+    - `tstart`:
+            Combines the `tethys_start_db` and the `tms` commands.
+
+    When installing Tethys in production mode the following additional environmental variables and aliases are added:
+
+    - `NGINX_USER`:
+            The name of the Nginx user.
+    - `NGINX_HOME`:
+            The home directory of the Nginx user.
+    - `tethys_user_own`:
+            Changes ownership of relevant files to the current user by running the command `sudo chown -R ${USER} ${TETHYS_HOME}/src ${NGINX_HOME}/tethys`.
+    - `tuo`:
+            Another alias for `tethys_user_own`
+    - `tethys_server_own`:
+            Reverses the effects of `tethys_user_own` by changing ownership back to the Nginx user.
+    - `tso`:
+            Another alias for `tethys_server_own`
 
      When you start up a new terminal there are three steps to get the Tethys development server running again:
 
@@ -145,15 +168,21 @@ or simply just::
         2. Start the Tethys database server
         3. start the Tethys development server
 
-    For convenience the Tethys database server is started automatically when the tethys conda environment is activated, and it is stopped when the environment is deactivated. So, using the supplied aliases, starting the Tethys development server from a fresh terminal can be done with the following two commands::
+    Using the supplied aliases, starting the Tethys development server from a fresh terminal can be done with the following two commands::
 
         $ t
-        (tethys) $ tms
+        (tethys) $ tstart
 
 Congratulations! You now have Tethys Platform running a in a development server on your machine. Tethys Platform provides a web interface that is called the Tethys Portal. You can access your Tethys Portal by opening `<http://localhost:8000/>`_ (or if you provided custom host and port options to the install script then it will be `<HOST>:<PORT>`) in a new tab in your web browser.
 
 .. figure:: ../images/tethys_portal_landing.png
     :width: 650px
+
+
+To log in, use the credentials that you specified with the `-S` or `--superuser` and the `-P` or `--superuser-pass` options. If you did not specify these options then the default credentials are:
+
+    * username: `admin`
+    * password:  `pass`
 
 
 2. Install Docker (OPTIONAL)
