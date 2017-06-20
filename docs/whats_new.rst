@@ -20,6 +20,41 @@ Powered by Miniconda Environment
 
 See: `Miniconda <https://conda.io/miniconda.html>`_ and `Conda <https://conda.io/docs/>`_
 
+Cross Platform Support
+----------------------
+
+* Develop natively on Windows, Mac, or Linux!
+* No more virtual machines.
+* Be careful with your paths.
+
+See: :doc:`installation`
+
+Installation Scripts
+--------------------
+
+* Completely automated installation of Tethys
+* Scripts provided for Mac, Linux, and Windows.
+
+See: :doc:`installation`
+
+Python 3
+--------
+
+* Experimental Python 3 Support in 2.0.0
+* Tethys Dataset Services is not completely Python 3 compatible
+* Use ``--python-version 3`` option on the installation script
+* Python 2 support will be dropped in version 2.1
+
+See: :doc:`installation`
+
+Templating API
+--------------
+
+* Leaner, updated theme for app base template.
+* New ``header_buttons`` block for adding custom buttons to app header.
+
+See: :doc:`tethys_sdk/templating`
+
 App Settings
 ------------
 
@@ -29,6 +64,23 @@ App Settings
 * All apps using the Persistent Stores APIs, Dataset Services APIs, or Web Processing Services APIs prior to version 2.0.0 will need to be refactored to use the new App settings approach.
 
 See: :doc:`./tethys_sdk/app_settings`
+
+Commandline Interface
+---------------------
+
+* Added ``tethys list`` command that lists installed apps.
+* Completely overhauled scaffold command that works cross-platform.
+* New options for scaffold command that allow automatically accepting the defaults and overwriting project if it already exists.
+
+See: :ref:`tethys_list_cmd` and :ref:`tethys_scaffold_cmd`
+
+Tutorials
+---------
+
+* Brand new Getting Started Tutorial
+* Demonstration of most Tethys SDK APIs
+
+See: :doc:`./tutorials/getting_started`
 
 Gizmos
 ------
@@ -59,29 +111,28 @@ Esri Map View
 
 See: :doc:`tethys_sdk/gizmos/esri_map`
 
-Plotly and Bokeh Gizmos
------------------------
+Plotly View and Bokeh View Gizmos
+---------------------------------
 
 * True open source options for plotting in Tethys
 
 See: :doc:`tethys_sdk/gizmos/bokeh_view` and :doc:`tethys_sdk/gizmos/plotly_view`
 
-Commandline Interface
+DataTable View Gizmos
 ---------------------
 
-* Added ``tethys list`` command that lists installed apps.
-* Completely overhauled scaffold command that works cross platform and no long depends on paste.
-* New options for scaffold command that allow automatically accepting the defaults and overwriting project if it already exists.
+* Interactive table gizmo based on Data Tables.
 
-See: :ref:`tethys_list_cmd` and :ref:`tethys_scaffold_cmd`
+See: :doc:`tethys_sdk/gizmos/datatable_view`
 
-Templating API
---------------
+Security
+--------
 
-* Leaner, updated theme for app base template.
-* New ``header_buttons`` block for adding custom buttons to app header.
+* Sessions will now timeout and log user out after period of inactivity.
+* When user closes browser, they are automatically logged out now.
+* Expiration times can be configured in settings.
 
-See: :doc:`tethys_sdk/templating`
+See: :doc:`installation/platform_settings`
 
 HydroShare OAuth Backend and Helper Function
 --------------------------------------------
@@ -92,14 +143,7 @@ HydroShare OAuth Backend and Helper Function
 
 See: :doc:`tethys_portal/social_auth`
 
-Security
---------
 
-* Sessions will now timeout and log user out after period of inactivity.
-* When user closes browser, they are automatically logged out now.
-* Expiration times can be configured in settings.
-
-See: :doc:`installation/platform_settings`
 
 Bugs
 ----
