@@ -261,7 +261,7 @@ IF NOT "!ALLOWED_HOST!"=="127.0.0.1" (
     SET ALLOWED_HOST_OPT=--allowed-host !ALLOWED_HOST!
 )
 
-tethys gen settings -d "!TETHYS_HOME!\src\tethys_apps" !ALLOWED_HOST_OPT! --db-username !TETHYS_DB_USERNAME! --db-password !TETHYS_DB_PASSWORD! --db-port !TETHYS_DB_PORT!
+tethys gen settings !ALLOWED_HOST_OPT! --db-username !TETHYS_DB_USERNAME! --db-password !TETHYS_DB_PASSWORD! --db-port !TETHYS_DB_PORT!
 
 IF %ERRORLEVEL% NEQ 0 (
     ECHO Error occured while setting up the !CONDA_ENV_NAME! environment.
@@ -309,7 +309,7 @@ ECHO DOSKEY tstartdb=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" -l "%%TET
 ECHO DOSKEY tethys_stop_db=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" stop >>"!ACTIVATE_SCRIPT!"
 ECHO DOSKEY tstopdb=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" stop >> "!ACTIVATE_SCRIPT!"
 ECHO DOSKEY tms=tethys manage start -p !ALLOWED_HOST!:%%TETHYS_PORT%% >> "!ACTIVATE_SCRIPT!"
-ECHO DOSKEY tstart=tstartdb & tms >> "!ACTIVATE_SCRIPT!"
+ECHO DOSKEY tstart=pg_ctl -U postgres -D "%%TETHYS_HOME%%\psql\data" -l "%%TETHYS_HOME%%\psql\logfile" start -o "-p %%TETHYS_DB_PORT%%" $T tethys manage start -p !ALLOWED_HOST!:%%TETHYS_PORT%% >> "!ACTIVATE_SCRIPT!"
 
 ECHO @ECHO OFF>> "!DEACTIVATE_SCRIPT!"
 ECHO SET TETHYS_HOME=>> "!DEACTIVATE_SCRIPT!"
