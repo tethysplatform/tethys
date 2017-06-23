@@ -298,15 +298,144 @@ then
 
     echo "# Tethys Platform" >> ~/${BASH_PROFILE}
     echo "alias t='. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}'" >> ~/${BASH_PROFILE}
-
-    echo "Tethys installation complete!"
-    echo
-    echo "NOTE: to enable the new alias 't' which activates the tethys environment you must run '. ~/${BASH_PROFILE}'"
-
 fi
 
 # Install Docker (if flag is set)
 set +e  # don't exit on error anymore
+
+# Rename some variables for reference after deactivating tethys environment.
+TETHYS_CONDA_HOME=${CONDA_HOME}
+TETHYS_CONDA_ENV_NAME=${CONDA_ENV_NAME}
+
+#  Install Production configuration if flag is set
+
+ubuntu_debian_production_install() {
+    sudo apt update
+    sudo apt install -y nginx
+    sudo rm /etc/nginx/sites-enabled/default
+    NGINX_SITES_DIR='sites-enabled'
+}
+
+enterprise_linux_production_install() {
+    sudo yum install nginx -y
+    sudo systemctl enable nginx
+    sudo systemctl start nginx
+    sudo firewall-cmd --permanent --zone=public --add-service=http
+#    sudo firewall-cmd --permanent --zone=public --add-service=https
+    sudo firewall-cmd --reload
+
+    NGINX_SITES_DIR='conf.d'
+}
+
+redhat_production_install() {
+    VERSION=$(python -c "import platform; print(platform.platform().split('-')[-2][0])")
+    sudo bash -c "echo $'[nginx]\nname=nginx repo\nbaseurl=http://nginx.org/packages/rhel/${VERSION}/\$basearch/\ngpgcheck=0\nenabled=1' > /etc/yum.repos.d/nginx.repo"
+    enterprise_linux_production_install
+}
+
+centos_production_install() {
+    PLATFORM=${LINUX_DISTRIBUTION}
+    VERSION=$(python -c "import platform; print(platform.platform().split('-')[-2][0])")
+    sudo bash -c "echo $'[nginx]\nname=nginx repo\nbaseurl=http://nginx.org/packages/${PLATFORM}/${VERSION}/\$basearch/\ngpgcheck=0\nenabled=1' > /etc/yum.repos.d/nginx.repo"
+    sudo yum install epel-release -y
+    enterprise_linux_production_install
+}
+
+configure_selinux() {
+    sudo yum install setroubleshoot -y
+    sudo semanage fcontext -a -t httpd_config_t ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf
+    sudo restorecon -v ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf
+    sudo semanage fcontext -a -t httpd_sys_content_t "${TETHYS_HOME}(/.*)?"
+    sudo semanage fcontext -a -t httpd_sys_content_t "${TETHYS_HOME}/static(/.*)?"
+    sudo semanage fcontext -a -t httpd_sys_rw_content_t "${TETHYS_HOME}/workspaces(/.*)?"
+    sudo restorecon -R -v ${TETHYS_HOME} > /dev/null
+    echo $'module tethys-selinux-policy 1.0;\nrequire {type httpd_t; type init_t; class unix_stream_socket connectto; }\n#============= httpd_t ==============\nallow httpd_t init_t:unix_stream_socket connectto;' > ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.te
+
+    checkmodule -M -m -o ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.mod ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.te
+    semodule_package -o ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.pp -m ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.mod
+    sudo semodule -i ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.pp
+}
+
+if [ -n "${LINUX_DISTRIBUTION}" -a "${PRODUCTION}" = "true" ]
+then
+    # prompt for sudo
+    echo "Production installation requires some commands to be run with sudo. Please enter password:"
+    sudo echo "Installing Tethys Production Server..."
+
+    case ${LINUX_DISTRIBUTION} in
+        debian)
+            ubuntu_debian_production_install
+        ;;
+        ubuntu)
+            ubuntu_debian_production_install
+        ;;
+        centos)
+            centos_production_install
+        ;;
+        redhat)
+            redhat_production_install
+        ;;
+        fedora)
+            enterprise_linux_production_install
+        ;;
+        *)
+            echo "Automated production installation on ${LINUX_DISTRIBUTION} is not supported."
+        ;;
+    esac
+
+
+    . ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}
+    pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" -l "${TETHYS_HOME}/psql/logfile" start -o "-p ${TETHYS_DB_PORT}"
+    echo "Waiting for databases to startup..."; sleep 5
+    conda install -c conda-forge uwsgi -y
+    tethys gen settings --production --allowed-host=${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite
+    tethys gen nginx --overwrite
+    tethys gen uwsgi_settings --overwrite
+    tethys gen uwsgi_service --overwrite
+    NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')
+    NGINX_GROUP=${NGINX_USER}
+    NGINX_HOME=$(grep ${NGINX_USER} /etc/passwd | awk -F':' '{print $6}')
+    mkdir -p ${TETHYS_HOME}/static ${TETHYS_HOME}/workspaces ${TETHYS_HOME}/apps
+    sudo chown -R ${USER} ${TETHYS_HOME}
+    tethys manage collectall --noinput
+    sudo chmod 705 ~
+    sudo mkdir /var/log/uwsgi
+    sudo touch /var/log/uwsgi/tethys.log
+    sudo ln -s ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf /etc/nginx/${NGINX_SITES_DIR}/
+
+    if [ -n "${SELINUX}" ]
+    then
+        configure_selinux
+    fi
+
+    sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_HOME}/src /var/log/uwsgi/tethys.log
+    sudo systemctl enable ${TETHYS_HOME}/src/tethys_portal/tethys.uwsgi.service
+    sudo systemctl start tethys.uwsgi.service
+    sudo systemctl restart nginx
+    set +x
+    . deactivate
+
+    echo "export NGINX_USER='${NGINX_USER}'" >> "${ACTIVATE_SCRIPT}"
+    echo "export NGINX_HOME='${NGINX_HOME}'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_user_own='sudo chown -R \${USER} \"\${TETHYS_HOME}/src\" \"\${TETHYS_HOME}/static\" \"\${TETHYS_HOME}/workspaces\" \"\${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tuo=tethys_user_own" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_server_own='sudo chown -R \${NGINX_USER}:\${NGINX_USER} \"\${TETHYS_HOME}/src\" \"\${TETHYS_HOME}/static\" \"\${TETHYS_HOME}/workspaces\" \"\${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tso=tethys_server_own" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_server_restart='tso; sudo systemctl restart tethys.uwsgi.service; sudo systemctl restart nginx'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tsr=tethys_server_restart" >> "${ACTIVATE_SCRIPT}"
+
+    echo "unset NGINX_USER" >> "${DEACTIVATE_SCRIPT}"
+    echo "unset NGINX_HOME" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tethys_user_own" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tuo" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tethys_server_own" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tso" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tethys_server_restart" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias trs" >> "${DEACTIVATE_SCRIPT}"
+fi
+
+
+# Install Docker (if flag is set
 
 installation_warning(){
     echo "WARNING: installing docker on $1 is not officially supported by the Tethys install script. Attempting to install with $2 script."
@@ -315,7 +444,7 @@ installation_warning(){
 finalize_docker_install(){
     sudo groupadd docker
     sudo gpasswd -a ${USER} docker
-    . ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}
+    . ${TETHYS_CONDA_HOME}/bin/activate ${TETHYS_CONDA_ENV_NAME}
     sg docker -c "tethys docker init ${DOCKER_OPTIONS}"
     . deactivate
     echo "Docker installation finished!"
@@ -400,130 +529,11 @@ then
 fi
 
 
-
-
-ubuntu_debian_production_install() {
-    sudo apt update
-    sudo apt install -y nginx
-    sudo rm /etc/nginx/sites-enabled/default
-    NGINX_SITES_DIR='sites-enabled'
-}
-
-enterprise_linux_production_install() {
-    sudo yum install nginx -y
-    sudo systemctl enable nginx
-    sudo systemctl start nginx
-    sudo firewall-cmd --permanent --zone=public --add-service=http
-#    sudo firewall-cmd --permanent --zone=public --add-service=https
-    sudo firewall-cmd --reload
-
-    NGINX_SITES_DIR='conf.d'
-}
-
-redhat_production_install() {
-    VERSION=$(python -c "import platform; print(platform.platform().split('-')[-2][0])")
-    sudo bash -c "echo $'[nginx]\nname=nginx repo\nbaseurl=http://nginx.org/packages/rhel/${VERSION}/\$basearch/\ngpgcheck=0\nenabled=1' > /etc/yum.repos.d/nginx.repo"
-    enterprise_linux_production_install
-}
-
-centos_production_install() {
-    PLATFORM=${LINUX_DISTRIBUTION}
-    VERSION=$(python -c "import platform; print(platform.platform().split('-')[-2][0])")
-    sudo bash -c "echo $'[nginx]\nname=nginx repo\nbaseurl=http://nginx.org/packages/${PLATFORM}/${VERSION}/\$basearch/\ngpgcheck=0\nenabled=1' > /etc/yum.repos.d/nginx.repo"
-    sudo yum install epel-release -y
-    enterprise_linux_production_install
-}
-
-configure_selinux() {
-    sudo yum install setroubleshoot -y
-    sudo semanage fcontext -a -t httpd_config_t ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf
-    sudo restorecon -v ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf
-    sudo semanage fcontext -a -t httpd_sys_content_t "${TETHYS_HOME}(/.*)?"
-    sudo semanage fcontext -a -t httpd_sys_content_t "${TETHYS_HOME}/static(/.*)?"
-    sudo semanage fcontext -a -t httpd_sys_rw_content_t "${TETHYS_HOME}/workspaces(/.*)?"
-    sudo restorecon -R -v ${TETHYS_HOME} > /dev/null
-    echo $'module tethys-selinux-policy 1.0;\nrequire {type httpd_t; type init_t; class unix_stream_socket connectto; }\n#============= httpd_t ==============\nallow httpd_t init_t:unix_stream_socket connectto;' > ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.te
-
-    checkmodule -M -m -o ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.mod ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.te
-    semodule_package -o ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.pp -m ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.mod
-    sudo semodule -i ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.pp
-}
-
-if [ -n "${LINUX_DISTRIBUTION}" -a "${PRODUCTION}" = "true" ]
+if [ -z "${SKIP_TETHYS_INSTALL}" ]
 then
-    # prompt for sudo
-    echo "Production installation requires some commands to be run with sudo. Please enter password:"
-    sudo echo "Installing Tethys Production Server..."
-
-    case ${LINUX_DISTRIBUTION} in
-        debian)
-            ubuntu_debian_production_install
-        ;;
-        ubuntu)
-            ubuntu_debian_production_install
-        ;;
-        centos)
-            centos_production_install
-        ;;
-        redhat)
-            redhat_production_install
-        ;;
-        fedora)
-            enterprise_linux_production_install
-        ;;
-        *)
-            echo "Automated production installation on ${LINUX_DISTRIBUTION} is not supported."
-        ;;
-    esac
-
-    . ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}
-    pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" -l "${TETHYS_HOME}/psql/logfile" start -o "-p ${TETHYS_DB_PORT}"
-    echo "Waiting for databases to startup..."; sleep 5
-    conda install -c conda-forge uwsgi -y
-    tethys gen settings --production --allowed-host=${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite
-    tethys gen nginx --overwrite
-    tethys gen uwsgi_settings --overwrite
-    tethys gen uwsgi_service --overwrite
-    NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')
-    NGINX_GROUP=${NGINX_USER}
-    NGINX_HOME=$(grep ${NGINX_USER} /etc/passwd | awk -F':' '{print $6}')
-    mkdir -p ${TETHYS_HOME}/static ${TETHYS_HOME}/workspaces ${TETHYS_HOME}/apps
-    sudo chown -R ${USER} ${TETHYS_HOME}
-    tethys manage collectall --noinput
-    sudo chmod 705 ~
-    sudo mkdir /var/log/uwsgi
-    sudo touch /var/log/uwsgi/tethys.log
-    sudo ln -s ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf /etc/nginx/${NGINX_SITES_DIR}/
-
-    if [ -n "${SELINUX}" ]
-    then
-        configure_selinux
-    fi
-
-    sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_HOME}/src /var/log/uwsgi/tethys.log
-    sudo systemctl enable ${TETHYS_HOME}/src/tethys_portal/tethys.uwsgi.service
-    sudo systemctl start tethys.uwsgi.service
-    sudo systemctl restart nginx
-    set +x
-    . deactivate
-
-    echo "export NGINX_USER='${NGINX_USER}'" >> "${ACTIVATE_SCRIPT}"
-    echo "export NGINX_HOME='${NGINX_HOME}'" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tethys_user_own='sudo chown -R \${USER} \"\${TETHYS_HOME}/src\" \"\${TETHYS_HOME}/static\" \"\${TETHYS_HOME}/workspaces\" \"\${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tuo=tethys_user_own" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tethys_server_own='sudo chown -R \${NGINX_USER}:\${NGINX_USER} \"\${TETHYS_HOME}/src\" \"\${TETHYS_HOME}/static\" \"\${TETHYS_HOME}/workspaces\" \"\${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tso=tethys_server_own" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tethys_server_restart='tso; sudo systemctl restart tethys.uwsgi.service; sudo systemctl restart nginx'" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tsr=tethys_server_restart" >> "${ACTIVATE_SCRIPT}"
-
-    echo "unset NGINX_USER" >> "${DEACTIVATE_SCRIPT}"
-    echo "unset NGINX_HOME" >> "${DEACTIVATE_SCRIPT}"
-    echo "unalias tethys_user_own" >> "${DEACTIVATE_SCRIPT}"
-    echo "unalias tuo" >> "${DEACTIVATE_SCRIPT}"
-    echo "unalias tethys_server_own" >> "${DEACTIVATE_SCRIPT}"
-    echo "unalias tso" >> "${DEACTIVATE_SCRIPT}"
-    echo "unalias tethys_server_restart" >> "${DEACTIVATE_SCRIPT}"
-    echo "unalias trs" >> "${DEACTIVATE_SCRIPT}"
+    echo "Tethys installation complete!"
+    echo
+    echo "NOTE: to enable the new alias 't' which activates the tethys environment you must run '. ~/${BASH_PROFILE}'"
 fi
 
 on_exit(){
