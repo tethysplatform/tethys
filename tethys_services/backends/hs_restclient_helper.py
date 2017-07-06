@@ -2,7 +2,10 @@ import logging
 import time
 import hs_restclient as hs_r
 from django.conf import settings
-from social.apps.django_app.utils import load_strategy
+## tethys 1.4
+#from social.apps.django_app.utils import load_strategy
+# tethys 2.0
+from social_django.utils import load_strategy
 
 logger = logging.getLogger(__name__)
 
@@ -12,11 +15,15 @@ def get_oauth_hs(request):
     error_msg_head = "Failed to initialize hs object: "
 
     try:
+        # loop through all social_auth_obj associated with this user to find "hydroshare" login
         for social_auth_obj in request.user.social_auth.all():
-            backend_instance = social_auth_obj.get_backend_instance()
+            strategy = load_strategy()
+            backend_instance = social_auth_obj.get_backend_instance(strategy)
             backend_name = backend_instance.name
             logger.debug("Found oauth backend: {0}".format(backend_name))
+            print backend_name
 
+            # find hydroshare backend
             if "hydroshare" in backend_name.lower():
                 user_id = social_auth_obj.extra_data['id']
                 auth_server_hostname = backend_instance.auth_server_hostname
@@ -24,7 +31,7 @@ def get_oauth_hs(request):
                 client_secret = getattr(settings, "SOCIAL_AUTH_{0}_SECRET".format(backend_name.upper()), 'None')
 
                 if hs is None:
-
+                    # refresh token if expired
                     refresh_user_token(social_auth_obj)
 
                     auth = hs_r.HydroShareAuthOAuth2(client_id, client_secret, token=social_auth_obj.extra_data)
