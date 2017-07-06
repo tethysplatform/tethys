@@ -21,7 +21,6 @@ def get_oauth_hs(request):
             backend_instance = social_auth_obj.get_backend_instance(strategy)
             backend_name = backend_instance.name
             logger.debug("Found oauth backend: {0}".format(backend_name))
-            print backend_name
 
             # find hydroshare backend
             if "hydroshare" in backend_name.lower():
