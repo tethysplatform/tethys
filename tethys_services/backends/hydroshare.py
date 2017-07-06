@@ -9,7 +9,10 @@
 """
 from datetime import datetime
 import time
-from social.backends.oauth import BaseOAuth2
+## tethys 1.4
+#from social.backends.oauth import BaseOAuth2
+# tethys 2.0
+from social_core.backends.oauth import BaseOAuth2
 
 class HydroShareOAuth2(BaseOAuth2):
     """
