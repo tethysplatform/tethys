@@ -694,7 +694,7 @@ def condor_job_pre_save(sender, instance, raw, using, update_fields, **kwargs):
 def condor_job_pre_delete(sender, instance, using, **kwargs):
     try:
         instance.condor_object.close_remote()
-        shutil.rmtree(instance.initial_dir)
+        shutil.rmtree(instance.initial_dir, ignore_errors=True)
     except Exception, e:
         log.exception(e.message)
 
@@ -812,7 +812,7 @@ def condor_workflow_pre_save(sender, instance, raw, using, update_fields, **kwar
 def condor_workflow_pre_delete(sender, instance, using, **kwargs):
     try:
         instance.condor_object.close_remote()
-        shutil.rmtree(instance.workspace)
+        shutil.rmtree(instance.workspace, ignore_errors=True)
     except Exception, e:
         log.exception(e.message)
 
