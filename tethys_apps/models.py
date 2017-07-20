@@ -630,8 +630,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
             create_connection.execute('commit')
             try:
                 create_connection.execute(create_db_statement)
-            except sqlalchemy.exc.ProgrammingError as e:
-                print e
+            except sqlalchemy.exc.ProgrammingError:
                 raise PersistentStorePermissionError('Database user "{0}" has insufficient permissions to create '
                                                      'the persistent store database "{1}": must have CREATE DATABASES '
                                                      'permission at a minimum.'.format(url.username, self.name))
