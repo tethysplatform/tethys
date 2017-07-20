@@ -730,7 +730,8 @@ class TethysAppBase(object):
         try:
             ps_connection_setting = ps_connection_settings.get(name=name)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting named "{0}" does not exist.'.format(name))
+            raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting named "{0}" does not exist.'
+                                               .format(name))
 
         return ps_connection_setting.get_engine(as_url=as_url, as_sessionmaker=as_sessionmaker)
 
@@ -781,7 +782,7 @@ class TethysAppBase(object):
 
         Args:
           db_name(string): Name of the persistent store that will be created.
-          connection_name(string|None): Name of persistent store connection, or None if creating a test copy of an existing persistent (only while in the testing environment)
+          connection_name(string|None): Name of persistent store connection or None if creating a test copy of an existing persistent store (only while in the testing environment)
           spatial(bool): Enable spatial extension on the database being created when True. Connection must have superuser role. Defaults to False.
           initializer(string): Dot-notation path to initializer function (e.g.: 'my_first_app.models.init_db').
           refresh(bool): Drop database if it exists and create again when True. Defaults to False.
