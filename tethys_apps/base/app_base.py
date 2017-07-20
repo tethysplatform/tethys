@@ -828,7 +828,7 @@ class TethysAppBase(object):
                 ps_setting = ps_database_settings.get(name=db_name)
             else:
                 ps_setting = ps_connection_settings.get(name=connection_name)
-        except ObjectDoesNotExist as e:
+        except ObjectDoesNotExist:
             if connection_name is None:
                 raise TethysAppSettingDoesNotExist(
                     'PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(db_name))
