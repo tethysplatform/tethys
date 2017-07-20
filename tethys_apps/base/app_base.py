@@ -698,7 +698,7 @@ class TethysAppBase(object):
         return wps_service
 
     @classmethod
-    def get_persistent_store_connection(cls, name, for_db=False, as_url=False, as_sessionmaker=False):
+    def get_persistent_store_connection(cls, name, as_url=False, as_sessionmaker=False):
         """
         Gets an SQLAlchemy Engine or URL object for the named persistent store connection.
 
@@ -725,11 +725,7 @@ class TethysAppBase(object):
         """
         from tethys_apps.models import TethysApp
         db_app = TethysApp.objects.get(package=cls.package)
-
-        if for_db:
-            ps_connection_settings = db_app.persistent_store_database_settings
-        else:
-            ps_connection_settings = db_app.persistent_store_connection_settings
+        ps_connection_settings = db_app.persistent_store_connection_settings
 
         try:
             ps_connection_setting = ps_connection_settings.get(name=name)
