@@ -15,8 +15,10 @@ import traceback
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
+from django.conf.urls import url
 
 from tethys_apps.base.testing.environment import is_testing_environment
+from tethys_apps.base import permissions
 from .handoff import HandoffManager
 from .workspace import TethysWorkspace
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
@@ -52,6 +54,9 @@ class TethysAppBase(object):
     enable_feedback = False
     feedback_emails = []
 
+    def __init__(self):
+        self._url_patterns = None
+
     def __unicode__(self):
         """
         String representation
@@ -63,6 +68,57 @@ class TethysAppBase(object):
         String representation
         """
         return '<TethysApp: {0}>'.format(self.name)
+
+    @property
+    def url_patterns(self):
+        """
+        Generate the url pattern lists for  app and namespace them accordingly.
+        """
+
+        if self._url_patterns is None:
+
+            app_url_patterns = dict()
+
+            if hasattr(self, 'url_maps'):
+                url_maps = self.url_maps()
+            else:
+                url_maps = []
+
+            for url_map in url_maps:
+                app_root = self.root_url
+                app_namespace = app_root.replace('-', '_')
+
+                if app_namespace not in app_url_patterns:
+                    app_url_patterns[app_namespace] = []
+
+                # Create django url object
+                if isinstance(url_map.controller, basestring):
+                    controller_parts = url_map.controller.split('.')
+                    module_name = '.'.join(controller_parts[:-1])
+                    function_name = controller_parts[-1]
+                    try:
+                        module = __import__(module_name, fromlist=[function_name])
+                    except:
+                        error_msg = 'The following error occurred while trying to import the controller function ' \
+                                    '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
+                        tethys_log.error(error_msg)
+                        raise
+                    try:
+                        controller_function = getattr(module, function_name)
+                    except AttributeError as e:
+                        error_msg = 'The following error occurred while tyring to access the controller function ' \
+                                    '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
+                        tethys_log.error(error_msg)
+                        raise
+                else:
+                    controller_function = url_map.controller
+                django_url = url(url_map.url, controller_function, name=url_map.name)
+
+                # Append to namespace list
+                app_url_patterns[app_namespace].append(django_url)
+            self._url_patterns = app_url_patterns
+
+        return self._url_patterns
 
     def url_maps(self):
         """
@@ -378,6 +434,129 @@ class TethysAppBase(object):
                     return permissions
         """
         return None
+
+    def register_app_permissions(self):
+        """
+        Register and sync the app permissions.
+        """
+        from guardian.shortcuts import assign_perm, remove_perm, get_perms
+        from django.contrib.contenttypes.models import ContentType
+        from django.contrib.auth.models import Permission, Group
+        from tethys_apps.models import TethysApp
+
+        perms = self.permissions()
+        app_permissions = dict()
+        app_groups = dict()
+
+        # Name spaced prefix for app permissions
+        # e.g. my_first_app:view_things
+        # e.g. my_first_app | View things
+        perm_codename_prefix = self.package + ':'
+        perm_name_prefix = self.package + ' | '
+
+        if perms is not None:
+            # Thing is either a Permission or a PermissionGroup object
+
+            for thing in perms:
+                # Permission Case
+                if isinstance(thing, permissions.Permission):
+                    # Name space the permissions and add it to the list
+                    permission_codename = perm_codename_prefix + thing.name
+                    permission_name = perm_name_prefix + thing.description
+                    app_permissions[permission_codename] = permission_name
+
+                # PermissionGroup Case
+                elif isinstance(thing, permissions.PermissionGroup):
+                    # Record in dict of groups
+                    group_permissions = []
+                    group_name = perm_codename_prefix + thing.name
+
+                    for perm in thing.permissions:
+                        # Name space the permissions and add it to the list
+                        permission_codename = perm_codename_prefix + perm.name
+                        permission_name = perm_name_prefix + perm.description
+                        app_permissions[permission_codename] = permission_name
+                        group_permissions.append(permission_codename)
+
+                    # Store all groups for all apps
+                    app_groups[group_name] = {'permissions': group_permissions, 'app_package': self.package}
+
+        # Get the TethysApp content type
+        tethys_content_type = ContentType.objects.get(
+            app_label='tethys_apps',
+            model='tethysapp'
+        )
+
+        # Remove any permissions that no longer exist
+        db_app_permissions = Permission.objects.filter(content_type=tethys_content_type).all()
+
+        for db_app_permission in db_app_permissions:
+            # Delete the permission if the permission is no longer required by an app
+            if db_app_permission.codename not in app_permissions:
+                db_app_permission.delete()
+
+        # Create permissions that need to be created
+        for perm in app_permissions:
+            # Create permission if it doesn't exist
+            try:
+                # If permission exists, update it
+                p = Permission.objects.get(codename=perm)
+
+                p.name = app_permissions[perm]
+                p.content_type = tethys_content_type
+                p.save()
+
+            except Permission.DoesNotExist:
+                p = Permission(
+                    name=app_permissions[perm],
+                    codename=perm,
+                    content_type=tethys_content_type
+                )
+                p.save()
+
+        # Remove any groups that no longer exist
+        db_groups = Group.objects.all()
+        db_apps = TethysApp.objects.all()
+        db_app_names = [db_app.package for db_app in db_apps]
+
+        for db_group in db_groups:
+            db_group_name_parts = db_group.name.split(':')
+
+            # Only perform maintenance on groups that belong to Tethys Apps
+            if (len(db_group_name_parts) > 1) and (db_group_name_parts[0] in db_app_names):
+
+                # Delete groups that is no longer required by an app
+                if db_group.name not in app_groups:
+                    db_group.delete()
+
+        # Create groups that need to be created
+        for group in app_groups:
+            # Look up the app
+            db_app = TethysApp.objects.get(package=app_groups[group]['app_package'])
+
+            # Create group if it doesn't exist
+            try:
+                # If it exists, update the permissions assigned to it
+                g = Group.objects.get(name=group)
+
+                # Get the permissions for the group and remove all of them
+                perms = get_perms(g, db_app)
+
+                for p in perms:
+                    remove_perm(p, g, db_app)
+
+                # Assign the permission to the group and the app instance
+                for p in app_groups[group]['permissions']:
+                    assign_perm(p, g, db_app)
+
+            except Group.DoesNotExist:
+                # Create a new group
+                g = Group(name=group)
+                g.save()
+
+                # Assign the permission to the group and the app instance
+                for p in app_groups[group]['permissions']:
+                    assign_perm(p, g, db_app)
 
     def job_templates(self):
         """
@@ -750,7 +929,7 @@ class TethysAppBase(object):
           name(string): Name of the PersistentStoreConnectionSetting as defined in app.py.
           as_url(bool): Return SQLAlchemy URL object instead of engine object if True. Defaults to False.
           as_sessionmaker(bool): Returns SessionMaker class bound to the engine if True.  Defaults to False.
-        
+
         Returns:
           sqlalchemy.Engine or sqlalchemy.URL: An SQLAlchemy Engine or URL object for the persistent store requested.
 
@@ -1009,6 +1188,83 @@ class TethysAppBase(object):
         # Check if it exists
         ps_database_setting.persistent_store_database_exists()
         return True
+
+    def sync_with_tethys_db(self):
+        """
+        Sync installed apps with database.
+        """
+        from django.conf import settings
+        from tethys_apps.models import TethysApp
+
+        try:
+            # Make pass to add apps to db that are newly installed
+            # Query to see if installed app is in the database
+            db_apps = TethysApp.objects.\
+                filter(package__exact=self.package).all()
+
+            # If the app is not in the database, then add it
+            if len(db_apps) == 0:
+                db_app = TethysApp(
+                    name=self.name,
+                    package=self.package,
+                    description=self.description,
+                    enable_feedback=self.enable_feedback,
+                    feedback_emails=self.feedback_emails,
+                    index=self.index,
+                    icon=self.icon,
+                    root_url=self.root_url,
+                    color=self.color,
+                    tags=self.tags
+                )
+                db_app.save()
+
+                # custom settings
+                db_app.add_settings(self.custom_settings())
+                # dataset services settings
+                db_app.add_settings(self.dataset_service_settings())
+                # spatial dataset services settings
+                db_app.add_settings(self.spatial_dataset_service_settings())
+                # wps settings
+                db_app.add_settings(self.web_processing_service_settings())
+                # persistent store settings
+                db_app.add_settings(self.persistent_store_settings())
+
+                db_app.save()
+
+            # If the app is in the database, update developer-first attributes
+            elif len(db_apps) == 1:
+                db_app = db_apps[0]
+                db_app.index = self.index
+                db_app.icon = self.icon
+                db_app.root_url = self.root_url
+                db_app.color = self.color
+                db_app.save()
+
+                if hasattr(settings, 'DEBUG') and settings.DEBUG:
+                    db_app.name = self.name
+                    db_app.description = self.description
+                    db_app.tags = self.tags
+                    db_app.enable_feedback = self.enable_feedback
+                    db_app.feedback_emails = self.feedback_emails
+                    db_app.save()
+
+                    # custom settings
+                    db_app.add_settings(self.custom_settings())
+                    # dataset services settings
+                    db_app.add_settings(self.dataset_service_settings())
+                    # spatial dataset services settings
+                    db_app.add_settings(self.spatial_dataset_service_settings())
+                    # wps settings
+                    db_app.add_settings(self.web_processing_service_settings())
+                    # persistent store settings
+                    db_app.add_settings(self.persistent_store_settings())
+                    db_app.save()
+
+            # More than one instance of the app in db... (what to do here?)
+            elif len(db_apps) >= 2:
+                pass
+        except Exception as e:
+            tethys_log.error(e)
 
     @classmethod
     def _log_tethys_app_setting_not_assigned_errror(cls, setting_type, setting_name):

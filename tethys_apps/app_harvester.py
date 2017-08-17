@@ -10,9 +10,16 @@
 
 import os
 import inspect
+import logging
+
+from django.db.utils import ProgrammingError
+from django.core.exceptions import ObjectDoesNotExist
 
 from tethys_apps.base import TethysAppBase
+
 from .terminal_colors import TerminalColors
+
+tethys_log = logging.getLogger('tethys.' + __name__)
 
 
 class SingletonAppHarvester(object):
@@ -80,37 +87,74 @@ class SingletonAppHarvester(object):
                 # Create the path to the app module in the custom app package
                 app_module_name = '.'.join(['tethys_apps.tethysapp', app_package, 'app'])
 
-                # Import the app.py module from the custom app package programmatically
-                # (e.g.: apps.apps.<custom_package>.app)
-                app_module = __import__(app_module_name, fromlist=[''])
-                
-                for name, obj in inspect.getmembers(app_module):
-                    # Retrieve the members of the app_module and iterate through
-                    # them to find the the class that inherits from AppBase.
-                    try:
-                        # issubclass() will fail if obj is not a class
-                        if (issubclass(obj, TethysAppBase)) and (obj is not TethysAppBase):
-                            # Assign a handle to the class
-                            _appClass = getattr(app_module, name)
+                try:
+                    # Import the app.py module from the custom app package programmatically
+                    # (e.g.: apps.apps.<custom_package>.app)
+                    app_module = __import__(app_module_name, fromlist=[''])
 
-                            # Instantiate app and validate
-                            app_instance = _appClass()
-                            validated_app_instance = self._validate_app(app_instance)
 
-                            # compile valid apps
-                            if validated_app_instance:
-                                valid_app_instance_list.append(validated_app_instance)
+                    for name, obj in inspect.getmembers(app_module):
+                        # Retrieve the members of the app_module and iterate through
+                        # them to find the the class that inherits from AppBase.
+                        try:
+                            # issubclass() will fail if obj is not a class
+                            if (issubclass(obj, TethysAppBase)) and (obj is not TethysAppBase):
+                                # Assign a handle to the class
+                                _appClass = getattr(app_module, name)
 
-                                # Notify user that the app has been loaded
-                                loaded_apps.append(app_package)
+                                # Instantiate app and validate
+                                app_instance = _appClass()
+                                validated_app_instance = self._validate_app(app_instance)
 
-                    except TypeError:
-                        '''DO NOTHING'''
-                    except:
-                        raise
+                                # sync app with Tethys db
+                                app_instance.sync_with_tethys_db()
+
+                                # validate app url patterns
+                                app_instance.url_patterns
+
+                                # register app permissions
+                                try:
+                                    app_instance.register_app_permissions()
+                                except (ProgrammingError, ObjectDoesNotExist) as e:
+                                    tethys_log.error(e)
+
+                                # compile valid apps
+                                if validated_app_instance:
+                                    valid_app_instance_list.append(validated_app_instance)
+
+                                    # Notify user that the app has been loaded
+                                    loaded_apps.append(app_package)
+
+                        except TypeError:
+                            '''DO NOTHING'''
+                except:
+                    tethys_log.exception(
+                        'App {0} not loaded because of the following error:'.format(app_package))
+                    continue
 
         # Save valid apps
         self.apps = valid_app_instance_list
 
+        self.sync_tethys_app_db()
+
         # Update user
-        print('Tethys Apps Loaded: {0}'.format(' '.join(loaded_apps)))
+        print(TerminalColors.BLUE + 'Tethys Apps Loaded: '
+              + TerminalColors.ENDC + '{0}'.format(' '.join(loaded_apps)) + '\n')
+
+    def sync_tethys_app_db(self):
+        """
+        Sync installed apps with database.
+        """
+        from tethys_apps.models import TethysApp
+
+        try:
+            # Make pass to remove apps that were uninstalled
+            db_apps = TethysApp.objects.all()
+            installed_app_packages = [app.package for app in self.apps]
+
+            for db_apps in db_apps:
+                if db_apps.package not in installed_app_packages:
+                    db_apps.delete()
+
+        except Exception as e:
+            tethys_log.error(e)
