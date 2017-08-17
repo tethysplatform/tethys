@@ -12,7 +12,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf.urls import url, include
 from tethys_apps.utilities import generate_app_url_patterns, sync_tethys_app_db, register_app_permissions
 from tethys_apps.views import library, send_beta_feedback_email
-from tethys_apps import tethys_log
+import logging
+
+tethys_log = logging.getLogger('tethys.' + __name__)
 
 # Sync the tethys apps database
 sync_tethys_app_db()

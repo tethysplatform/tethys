@@ -10,6 +10,7 @@
 import logging
 import os
 import sys
+import traceback
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
@@ -552,7 +553,8 @@ class TethysAppBase(object):
         try:
             custom_setting = custom_settings.get(name=name)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('CustomTethysAppSetting named "{0}" does not exist.'.format(name))
+            cls._log_tethys_app_setting_does_not_exist_errror('CustomTethysAppSetting', name)
+            return
 
         return custom_setting.get_value()
 
@@ -588,7 +590,8 @@ class TethysAppBase(object):
         try:
             dataset_services_settings = dataset_services_settings.get(name=name)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('DatasetServiceSetting named "{0}" does not exist.'.format(name))
+            cls._log_tethys_app_setting_does_not_exist_errror('DatasetServiceSetting', name)
+            return
 
         dataset_service = dataset_services_settings.dataset_service
 
@@ -637,7 +640,8 @@ class TethysAppBase(object):
         try:
             spatial_dataset_service_setting = spatial_dataset_service_settings.get(name=name)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('SpatialDatasetServiceSetting named "{0}" does not exist.'.format(name))
+            cls._log_tethys_app_setting_does_not_exist_errror('SpatialDatasetServiceSetting', name)
+            return
 
         spatial_dataset_service = spatial_dataset_service_setting.spatial_dataset_service
 
@@ -684,7 +688,9 @@ class TethysAppBase(object):
         try:
             wps_service_setting = wps_services_settings.objects.get(name=name)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('WebProcessingServiceSetting named "{0}" does not exist.'.format(name))
+            cls._log_tethys_app_setting_does_not_exist_errror('WebProcessingServiceSetting', name)
+            return
+
         wps_service = wps_service_setting.web_processing_service
 
         if not wps_service:
@@ -735,7 +741,8 @@ class TethysAppBase(object):
         try:
             ps_connection_setting = ps_connection_settings.get(name=name)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting named "{0}" does not exist.'.format(name))
+            cls._log_tethys_app_setting_does_not_exist_errror('PersistentStoreConnectionSetting', name)
+            return
 
         return ps_connection_setting.get_engine(as_url=as_url, as_sessionmaker=as_sessionmaker)
 
@@ -748,7 +755,7 @@ class TethysAppBase(object):
           name(string): Name of the PersistentStoreConnectionSetting as defined in app.py.
           as_url(bool): Return SQLAlchemy URL object instead of engine object if True. Defaults to False.
           as_sessionmaker(bool): Returns SessionMaker class bound to the engine if True.  Defaults to False.
-        
+
         Returns:
           sqlalchemy.Engine or sqlalchemy.URL: An SQLAlchemy Engine or URL object for the persistent store requested.
 
@@ -776,7 +783,8 @@ class TethysAppBase(object):
         try:
             ps_database_setting = ps_database_settings.get(name=name)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(name))
+            cls._log_tethys_app_setting_does_not_exist_errror('PersistentStoreDatabaseSetting', name)
+            return
 
         return ps_database_setting.get_engine(with_db=True, as_url=as_url, as_sessionmaker=as_sessionmaker)
 
@@ -826,8 +834,8 @@ class TethysAppBase(object):
         try:
             ps_connection_setting = ps_connection_settings.get(name=connection_name)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist(
-                'PersistentStoreConnectionSetting named "{0}" does not exist.'.format(connection_name))
+            cls._log_tethys_app_setting_does_not_exist_errror('PersistentStoreConnectionSetting', connection_name)
+            return
 
         ps_service = ps_connection_setting.persistent_store_service
 
@@ -1006,3 +1014,21 @@ class TethysAppBase(object):
         # Check if it exists
         ps_database_setting.persistent_store_database_exists()
         return True
+
+    @classmethod
+    def _log_tethys_app_setting_does_not_exist_errror(cls, setting_type, setting_name):
+        '''
+        Logs useful traceback and message without actually raising an exception when an attempt
+        to access a non-existent setting is made.
+
+        Args:
+            settings_type (str, required):
+                Name of specific settings class (e.g. CustomTethysAppSetting, PersistentStoreDatabaseSetting etc).
+            setting_name (str, required):
+                Name attribute of the setting.
+        '''
+        tethys_log.error('Tethys app setting does not exist.\nTraceback (most recent call last):\n{0}' \
+                         'TethysAppSettingDoesNotExist: {1} named "{2}" does not exist. ' \
+                         'Have you run syncstores for the {3} app?'.format(
+            traceback.format_stack(limit=3)[0], setting_type, setting_name, cls.name)
+        )

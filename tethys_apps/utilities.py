@@ -20,12 +20,11 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files.storage import FileSystemStorage
 from django.utils._os import safe_join
 from past.builtins import basestring
-from tethys_apps import tethys_log
 from tethys_apps.app_harvester import SingletonAppHarvester
 from tethys_apps.base import permissions
 from tethys_apps.models import TethysApp
 
-log = logging.getLogger('tethys.tethys_apps.utilities')
+tethys_log = logging.getLogger('tethys.' + __name__)
 
 
 def register_app_permissions():
@@ -192,14 +191,14 @@ def generate_app_url_patterns():
                     except ImportError:
                         error_msg = 'The following error occurred while trying to import the controller function ' \
                                     '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
-                        log.error(error_msg)
+                        tethys_log.error(error_msg)
                         sys.exit(1)
                     try:
                         controller_function = getattr(module, function_name)
                     except AttributeError as e:
                         error_msg = 'The following error occurred while tyring to access the controller function ' \
                                     '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
-                        log.error(error_msg)
+                        tethys_log.error(error_msg)
                         sys.exit(1)
                 else:
                     controller_function = url_map.controller
@@ -383,7 +382,7 @@ def sync_tethys_app_db():
             elif len(db_apps) >= 2:
                 continue
     except Exception as e:
-        log.error(e)
+        tethys_log.error(e)
 
 
 def get_active_app(request=None, url=None):
