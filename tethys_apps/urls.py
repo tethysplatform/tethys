@@ -10,7 +10,9 @@
 from django.conf.urls import url, include
 from tethys_apps.utilities import get_app_url_patterns
 from tethys_apps.views import library, send_beta_feedback_email
-from tethys_apps import tethys_log
+import logging
+
+tethys_log = logging.getLogger('tethys.' + __name__)
 
 urlpatterns = [
     url(r'^$', library, name='app_library'),
