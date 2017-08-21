@@ -120,6 +120,11 @@ class TethysAppBase(object):
 
         return self._url_patterns
 
+    @property
+    def db_app(self):
+        from tethys_apps.models import TethysApp
+        return TethysApp.objects.get(package=self.package)
+
     def url_maps(self):
         """
         Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically.
@@ -731,10 +736,11 @@ class TethysAppBase(object):
         custom_settings = db_app.custom_settings
         try:
             custom_setting = custom_settings.get(name=name)
+            return custom_setting.get_value()
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('CustomTethysAppSetting named "{0}" does not exist.'.format(name))
+            raise TethysAppSettingDoesNotExist('CustomTethysAppSetting', name, cls.name)
 
-        return custom_setting.get_value()
+
 
     @classmethod
     def get_dataset_service(cls, name, as_public_endpoint=False, as_endpoint=False,
@@ -766,21 +772,11 @@ class TethysAppBase(object):
         dataset_services_settings = db_app.dataset_services_settings
 
         try:
-            dataset_services_settings = dataset_services_settings.get(name=name)
+            dataset_services_setting = dataset_services_settings.get(name=name)
+            dataset_services_setting.get_value(as_public_endpoint=as_public_endpoint, as_endpoint=as_endpoint,
+                                               as_engine=as_engine)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('DatasetServiceSetting named "{0}" does not exist.'.format(name))
-
-        dataset_service = dataset_services_settings.dataset_service
-
-        if not dataset_service:
-            return None
-        elif as_engine:
-            return dataset_service.get_engine()
-        elif as_endpoint:
-            return dataset_service.endpoint
-        elif as_public_endpoint:
-            return dataset_service.public_endpoint
-        return dataset_service
+            raise TethysAppSettingDoesNotExist('DatasetServiceSetting', name, cls.name)
 
     @classmethod
     def get_spatial_dataset_service(cls, name, as_public_endpoint=False, as_endpoint=False, as_wms=False,
@@ -816,24 +812,10 @@ class TethysAppBase(object):
 
         try:
             spatial_dataset_service_setting = spatial_dataset_service_settings.get(name=name)
+            spatial_dataset_service_setting.get_value(as_public_endpoint=as_public_endpoint, as_endpoint=as_endpoint,
+                                                      as_wms=as_wms, as_wfs=as_wfs, as_engine=as_engine)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('SpatialDatasetServiceSetting named "{0}" does not exist.'.format(name))
-
-        spatial_dataset_service = spatial_dataset_service_setting.spatial_dataset_service
-
-        if not spatial_dataset_service:
-            return None
-        elif as_engine:
-            return spatial_dataset_service.get_engine()
-        elif as_wms:
-            return spatial_dataset_service.endpoint.split('/rest')[0] + '/wms'
-        elif as_wfs:
-            return spatial_dataset_service.endpoint.split('/rest')[0] + '/ows'
-        elif as_endpoint:
-            return spatial_dataset_service.endpoint
-        elif as_public_endpoint:
-            return spatial_dataset_service.public_endpoint
-        return spatial_dataset_service
+            raise TethysAppSettingDoesNotExist('SpatialDatasetServiceSetting', name, cls.name)
 
     @classmethod
     def get_web_processing_service(cls, name, as_public_endpoint=False, as_endpoint=False, as_engine=False):
@@ -863,22 +845,13 @@ class TethysAppBase(object):
         wps_services_settings = db_app.wps_services_settings
         try:
             wps_service_setting = wps_services_settings.objects.get(name=name)
+            return wps_service_setting.get_value(as_public_endpoint=as_public_endpoint,
+                                                 as_endpoint=as_endpoint, as_engine=as_engine)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('WebProcessingServiceSetting named "{0}" does not exist.'.format(name))
-        wps_service = wps_service_setting.web_processing_service
-
-        if not wps_service:
-            return None
-        elif as_engine:
-            return wps_service.get_engine()
-        elif as_endpoint:
-            return wps_service.endpoint
-        elif as_public_endpoint:
-            return wps_service.pubic_endpoint
-        return wps_service
+            raise TethysAppSettingDoesNotExist('WebProcessingServiceSetting', name, cls.name)
 
     @classmethod
-    def get_persistent_store_connection(cls, name, as_url=False, as_sessionmaker=False):
+    def get_persistent_store_connection(cls, name, as_url=False, as_sessionmaker=False, as_engine=True):
         """
         Gets an SQLAlchemy Engine or URL object for the named persistent store connection.
 
@@ -914,9 +887,9 @@ class TethysAppBase(object):
 
         try:
             ps_connection_setting = ps_connection_settings.get(name=name)
-            return ps_connection_setting.get_engine(as_url=as_url, as_sessionmaker=as_sessionmaker)
+            return ps_connection_setting.get_value(as_url=as_url, as_sessionmaker=as_sessionmaker, as_engine=as_engine)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting named "{0}" does not exist.'.format(name))
+            raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting', name, cls.name)
         except TethysAppSettingNotAssigned:
             cls._log_tethys_app_setting_not_assigned_errror('PersistentStoreConnectionSetting', name)
 
@@ -956,11 +929,12 @@ class TethysAppBase(object):
 
         try:
             ps_database_setting = ps_database_settings.get(name=name)
-            return ps_database_setting.get_engine(with_db=True, as_url=as_url, as_sessionmaker=as_sessionmaker)
+            return ps_database_setting.get_value(with_db=True, as_url=as_url, as_sessionmaker=as_sessionmaker,
+                                                 as_engine=True)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(name))
+            raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting', name, cls.name)
         except TethysAppSettingNotAssigned:
-            cls._log_tethys_app_setting_not_assigned_errror('PersistentStoreDatabaseSetting', name)
+            cls._log_tethys_app_setting_not_assigned_errror('PersistentStoreConnectionSetting', name)
 
     @classmethod
     def create_persistent_store(cls, db_name, connection_name, spatial=False, initializer='', refresh=False,
@@ -1008,8 +982,7 @@ class TethysAppBase(object):
         try:
             ps_connection_setting = ps_connection_settings.get(name=connection_name)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist(
-                'PersistentStoreConnectionSetting named "{0}" does not exist.'.format(connection_name))
+            raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting', connection_name, cls.name)
 
         ps_service = ps_connection_setting.persistent_store_service
 
@@ -1283,4 +1256,3 @@ class TethysAppBase(object):
                         'Please visit the setting page for the app {3} and assign all required settings.'
                         .format(traceback.format_stack(limit=3)[0], setting_type, setting_name, cls.name)
                         )
-
