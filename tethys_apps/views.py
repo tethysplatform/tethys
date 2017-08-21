@@ -27,8 +27,18 @@ def library(request):
     # Retrieve the app harvester
     apps = TethysApp.objects.all()
 
+    configured_apps = list()
+    unconfigured_apps = list()
+
+    for app in apps:
+        if app.configured:
+            configured_apps.append(app)
+        else:
+            if request.user.is_staff:
+                unconfigured_apps.append(app)
+
     # Define the context object
-    context = {'apps': apps}
+    context = {'apps': {'configured': configured_apps, 'unconfigured': unconfigured_apps}}
 
     return render(request, 'tethys_apps/app_library.html', context)
 
