@@ -111,6 +111,16 @@ class TethysApp(models.Model):
         return self.settings_set.exclude(persistentstoredatabasesetting__isnull=True) \
             .select_subclasses('persistentstoredatabasesetting')
 
+    @property
+    def configured(self):
+        for setting in [s for s in self.settings if s.required]:
+            try:
+                if setting.get_value() is None:
+                    return False
+            except TethysAppSettingNotAssigned:
+                return False
+        return True
+
 
 class TethysAppSetting(models.Model):
     """
@@ -146,6 +156,9 @@ class TethysAppSetting(models.Model):
         """
         self.initializer_function(self.initialized)
         self.initialized = True
+
+    def get_value(self, *args, **kwargs):
+        raise NotImplementedError()
 
 
 class CustomSetting(TethysAppSetting):
@@ -237,14 +250,18 @@ class CustomSetting(TethysAppSetting):
         Get the value, automatically casting it to the correct type.
         """
         if self.value == '':
-            return None
-        elif self.type == self.TYPE_STRING:
+            return None  # TODO Why don't we raise a NotAssigned error here?
+
+        if self.type == self.TYPE_STRING:
             return self.value
-        elif self.type == self.TYPE_FLOAT:
+
+        if self.type == self.TYPE_FLOAT:
             return float(self.value)
-        elif self.type == self.TYPE_INTEGER:
+
+        if self.type == self.TYPE_INTEGER:
             return int(self.value)
-        elif self.type == self.TYPE_BOOLEAN:
+
+        if self.type == self.TYPE_BOOLEAN:
             return self.value.lower() in self.TRUTHY_BOOL_STRINGS
 
 
@@ -294,6 +311,22 @@ class DatasetServiceSetting(TethysAppSetting):
         if not self.dataset_service and self.required:
             raise ValidationError('Required.')
 
+    def get_value(self, as_public_endpoint=False, as_endpoint=False, as_engine=False):
+
+        if not self.dataset_service:
+            return None  # TODO Why don't we raise a NotAssigned error here?
+
+        # TODO order here manters. Is this the order we want?
+        if as_engine:
+            return self.dataset_service.get_engine()
+
+        if as_endpoint:
+            return self.dataset_service.endpoint
+
+        if as_public_endpoint:
+            return self.dataset_service.public_endpoint
+
+        return self.dataset_service
 
 class SpatialDatasetServiceSetting(TethysAppSetting):
     """
@@ -333,6 +366,29 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
         if not self.spatial_dataset_service and self.required:
             raise ValidationError('Required.')
 
+    def get_value(self, as_public_endpoint=False, as_endpoint=False, as_wms=False,
+                                    as_wfs=False, as_engine=False):
+
+        if not self.spatial_dataset_service:
+            return None  # TODO Why don't we raise a NotAssigned error here?
+
+        # TODO order here manters. Is this the order we want?
+        if as_engine:
+            return self.spatial_dataset_service.get_engine()
+
+        if as_wms:
+            return self.spatial_dataset_service.endpoint.split('/rest')[0] + '/wms'
+
+        if as_wfs:
+            return self.spatial_dataset_service.endpoint.split('/rest')[0] + '/ows'
+
+        if as_endpoint:
+            return self.spatial_dataset_service.endpoint
+
+        if as_public_endpoint:
+            return self.spatial_dataset_service.public_endpoint
+
+        return self.spatial_dataset_service
 
 class WebProcessingServiceSetting(TethysAppSetting):
     """
@@ -364,6 +420,24 @@ class WebProcessingServiceSetting(TethysAppSetting):
         """
         if not self.web_processing_service and self.required:
             raise ValidationError('Required.')
+
+    def get_value(self, as_public_endpoint=False, as_endpoint=False, as_engine=False):
+        wps_service = self.web_processing_service
+
+        if not wps_service:
+            return None  # TODO Why don't we raise a NotAssigned error here?
+
+        # TODO order here manters. Is this the order we want?
+        if as_engine:
+            return wps_service.get_engine()
+
+        if as_endpoint:
+            return wps_service.endpoint
+
+        if as_public_endpoint:
+            return wps_service.pubic_endpoint
+
+        return wps_service
 
 
 class PersistentStoreConnectionSetting(TethysAppSetting):
@@ -397,7 +471,7 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
         if not self.persistent_store_service and self.required:
             raise ValidationError('Required.')
 
-    def get_engine(self, as_url=False, as_sessionmaker=False):
+    def get_value(self, as_url=False, as_sessionmaker=False, as_engine=False):
         """
         Get the SQLAlchemy engine from the connected persistent store service
         """
@@ -408,6 +482,9 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
             raise TethysAppSettingNotAssigned('Cannot create engine or url for PersistentStoreConnection "{0}" for app '
                                               '"{1}": no PersistentStoreService found.'.format(self.name,
                                                                                                self.tethys_app.package))
+        # TODO order here manters. Is this the order we want?
+        if as_engine:
+            return ps_service.get_engine()
 
         if as_sessionmaker:
             return sessionmaker(bind=ps_service.get_engine())
@@ -415,7 +492,7 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
         if as_url:
             return ps_service.get_url()
 
-        return ps_service.get_engine()
+        return ps_service
 
 
 class PersistentStoreDatabaseSetting(TethysAppSetting):
@@ -482,7 +559,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
         return '_'.join((self.tethys_app.package, safe_name))
 
-    def get_engine(self, with_db=False, as_url=False, as_sessionmaker=False):
+    def get_value(self, with_db=False, as_url=False, as_sessionmaker=False, as_engine=True):
         """
         Get the SQLAlchemy engine from the connected persistent store service
         """
@@ -493,7 +570,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
             raise TethysAppSettingNotAssigned('Cannot create engine or url for PersistentStoreDatabase "{0}" for app '
                                               '"{1}": no PersistentStoreService found.'.format(self.name,
                                                                                                self.tethys_app.package))
-
+        # TODO order here manters. Is this the order we want?
         if with_db:
             ps_service.database = self.get_namespaced_persistent_store_name()
 
@@ -503,14 +580,17 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         if as_url:
             return ps_service.get_url()
 
-        return ps_service.get_engine()
+        if as_engine:
+            return ps_service.get_engine()
+
+        return ps_service
 
     def persistent_store_database_exists(self):
         """
         Returns True if the persistent store database exists.
         """
         # Get the database engine
-        engine = self.get_engine()
+        engine = self.get_value(as_engine=True)
         namespaced_name = self.get_namespaced_persistent_store_name()
 
         # Cannot create databases in a transaction: connect and commit to close transaction
@@ -548,7 +628,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         ))
 
         # Get the database engine
-        engine = self.get_engine()
+        engine = self.get_value(as_engine=True)
 
         # Connection
         drop_connection = engine.connect()
@@ -590,8 +670,8 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         log = logging.getLogger('tethys')
 
         # Connection engine
-        url = self.get_engine(as_url=True)
-        engine = self.get_engine()
+        url = self.get_value(as_url=True)
+        engine = self.get_value(as_engine=True)
         namespaced_ps_name = self.get_namespaced_persistent_store_name()
         db_exists = self.persistent_store_database_exists()
 
@@ -641,7 +721,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         # -------------------------------------------------------------------------------------------------------------#
         if self.spatial:
             # Connect to new database
-            new_db_engine = self.get_engine(with_db=True)
+            new_db_engine = self.get_value(with_db=True, as_engine=True)
             new_db_connection = new_db_engine.connect()
 
             # Notify user
@@ -673,9 +753,9 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
             ))
             try:
                 if force_first_time:
-                    self.initializer_function(self.get_engine(with_db=True), True)
+                    self.initializer_function(self.get_value(with_db=True, as_engine=True), True)
                 else:
-                    self.initializer_function(self.get_engine(with_db=True), not self.initialized)
+                    self.initializer_function(self.get_value(with_db=True, as_engine=True), not self.initialized)
             except Exception as e:
                 print(type(e))
                 raise PersistentStoreInitializerError(e)
