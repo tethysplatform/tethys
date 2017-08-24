@@ -125,7 +125,8 @@ var TETHYS_MAP_VIEW = (function() {
     // Constants
     var OPEN_STREET_MAP = 'OpenStreetMap',
         BING = 'Bing',
-        MAP_QUEST = 'MapQuest';
+        MAP_QUEST = 'MapQuest',
+        STAMEN = 'Stamen';
 
     // Declarations
     var base_map_layer;
@@ -164,6 +165,14 @@ var TETHYS_MAP_VIEW = (function() {
             base_map_layer = new ol.layer.Tile({
               source: new ol.source.MapQuest({layer: 'sat'}),
               visible: visible
+            });
+          } else if (base_map_option === STAMEN) {
+            // Initialize default open street map layer
+            base_map_layer = new ol.layer.Tile({
+                source: new ol.source.Stamen({
+                  layer: 'terrain',
+                }),
+                visible: visible
             });
           }
           // Add legend attributes
@@ -213,6 +222,23 @@ var TETHYS_MAP_VIEW = (function() {
               label = base_map_option[MAP_QUEST].label;
             } else {
               label = MAP_QUEST;
+            }
+            // Add legend attributes
+            base_map_layer.tethys_legend_title = 'Basemap: ' + label;
+
+          } else if (STAMEN in base_map_option) {
+            // Initialize custom map quest layer
+            base_map_layer = new ol.layer.Tile({
+              source: new ol.source.Stamen({
+                layer: 'watercolor',
+              }),
+              visible: visible
+            });
+
+            if (base_map_option[STAMEN].hasOwnProperty('label')) {
+              label = base_map_option[STAMEN].label;
+            } else {
+              label = STAMEN;
             }
             // Add legend attributes
             base_map_layer.tethys_legend_title = 'Basemap: ' + label;
@@ -289,8 +315,10 @@ var TETHYS_MAP_VIEW = (function() {
           $($(this).children()[0]).text(' (Current)');
 
           m_map.getLayers().forEach(function (layer) {
-            if (layer.tethys_legend_title.indexOf('Basemap') !== -1) {
+            if (layer.hasOwnProperty('tethys_legend_title')) {
+              if (layer.tethys_legend_title.indexOf('Basemap') !== -1) {
                 layer.setVisible(layer.tethys_legend_title === base_map_label);
+              }
             }
           });
         };
