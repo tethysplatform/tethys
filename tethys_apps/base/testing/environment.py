@@ -3,10 +3,6 @@ from os import environ, unsetenv
 TESTING_DB_FLAG = 'tethys-testing_'
 
 
-def is_testing_environment():
-    return environ.get('TETHYS_TESTING_IN_PROGRESS')
-
-
 def set_testing_environment(val):
     if val:
         environ['TETHYS_TESTING_IN_PROGRESS'] = 'true'
@@ -23,3 +19,7 @@ def get_test_db_name(orig_name):
         test_db_name = orig_name
 
     return test_db_name
+
+
+def is_testing_environment():
+    return environ.get('TETHYS_TESTING_IN_PROGRESS')
