@@ -15,12 +15,8 @@ from tethys_apps.base.testing.environment import set_testing_environment
 
 #/usr/lib/tethys/src/tethys_apps/cli
 CURRENT_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-#/usr/lib/tethys
-TETHYS_MAIN_DIR = os.sep.join(CURRENT_SCRIPT_DIR.split(os.sep)[:-3])
-#/usr/lib/tethys/src
-DEFAULT_INSTALLATION_DIRECTORY = os.path.join(TETHYS_MAIN_DIR,'src')
-#/usr/lib/tethys/tethys
-DEVELOPMENT_DIRECTORY = os.path.join(TETHYS_MAIN_DIR,'tethys')
+TETHYS_HOME = os.sep.join(CURRENT_SCRIPT_DIR.split(os.sep)[:-3])
+TETHYS_SRC_DIRECTORY = os.sep.join(CURRENT_SCRIPT_DIR.split(os.sep)[:-2])
 MANAGE_START = 'start'
 MANAGE_SYNCDB = 'syncdb'
 MANAGE_COLLECTSTATIC = 'collectstatic'
@@ -34,26 +30,16 @@ def get_manage_path(args):
     Validate user defined manage path, use default, or throw error
     """
     # Determine path to manage.py file
-    manage_path = os.path.join(DEFAULT_INSTALLATION_DIRECTORY, 'manage.py')
+    manage_path = os.path.join(TETHYS_SRC_DIRECTORY, 'manage.py')
 
     # Check for path option
-    if args.manage:
-        manage_path = args.manage
+    if hasattr(args, 'manage'):
+        manage_path = args.manage or manage_path
 
-        # Throw error if path is not valid
-        if not os.path.isfile(manage_path):
-            print('ERROR: Can\'t open file "{0}", no such file.'.format(manage_path))
-            exit(1)
-
-    elif not os.path.isfile(manage_path):
-        # Try the development path version
-        manage_path = os.path.join(DEVELOPMENT_DIRECTORY, 'manage.py')
-
-        # Throw error if default path is not valid
-        if not os.path.isfile(manage_path):
-            print('ERROR: Cannot find the "manage.py" file at the default location. Try using the "--manage"'
-                  'option to provide the path to the location of the "manage.py" file.')
-            exit(1)
+    # Throw error if path is not valid
+    if not os.path.isfile(manage_path):
+        print('ERROR: Can\'t open file "{0}", no such file.'.format(manage_path))
+        exit(1)
 
     return manage_path
 
@@ -67,7 +53,6 @@ def manage_command(args):
 
     # Define the process to be run
     primary_process = None
-
 
     if args.command == MANAGE_START:
         if args.port:
@@ -88,6 +73,9 @@ def manage_command(args):
         # Setup for main collectstatic
         primary_process = ['python', manage_path, 'collectstatic']
 
+        if args.noinput:
+            primary_process.append('--noinput')
+
     elif args.command == MANAGE_COLLECTWORKSPACES:
         # Run collectworkspaces command
         primary_process = ['python', manage_path, 'collectworkspaces']
@@ -100,6 +88,10 @@ def manage_command(args):
 
         ## Setup for main collectstatic
         intermediate_process = ['python', manage_path, 'collectstatic']
+
+        if args.noinput:
+            intermediate_process.append('--noinput')
+
         run_process(intermediate_process)
 
         ## Run collectworkspaces command
@@ -107,6 +99,7 @@ def manage_command(args):
 
     elif args.command == MANAGE_CREATESUPERUSER:
         primary_process = ['python', manage_path, 'createsuperuser']
+
 
     if primary_process:
         run_process(primary_process)

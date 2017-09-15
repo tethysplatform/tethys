@@ -43,7 +43,7 @@ $.ajaxSetup({
 
 function bind_run_button(btn){
     btn = $(btn);
-    var job_id = $(btn).attr('data-job-id');
+    var job_id = $(btn).data('job-id');
     $(btn).on('click', function () {
         var execute_url = '/developer/gizmos/ajax/' + job_id + '/execute';
         $.ajax({
@@ -63,7 +63,7 @@ function bind_run_button(btn){
 
 function bind_delete_button(btn){
     btn = $(btn);
-    var job_id = $(btn).attr('data-job-id');
+    var job_id = $(btn).data('job-id');
     $(btn).on('click', function(){
         var delete_url = '/developer/gizmos/ajax/' + job_id + '/delete';
         $.ajax({
@@ -86,13 +86,13 @@ function bind_delete_button(btn){
 
 function update_row(table_elem){
     var table = $(table_elem).closest('table');
-    var status_actions = $(table).attr('data-status-actions');
-    var column_fields = $(table).attr('data-column-fields');
-    var run = $(table).attr('data-run');
-    var delete_btn = $(table).attr('data-delete');
-    var results_url = $(table).attr('data-results-url');
-    var refresh_interval = $(table).attr('data-refresh-interval');
-    var job_id = $(table_elem).attr('data-job-id');
+    var status_actions = $(table).data('status-actions');
+    var column_fields = $(table).data('column-fields');
+    var run = $(table).data('run');
+    var delete_btn = $(table).data('delete');
+    var results_url = $(table).data('results-url');
+    var refresh_interval = $(table).data('refresh-interval');
+    var job_id = $(table_elem).data('job-id');
     var update_url = '/developer/gizmos/ajax/' + job_id + '/update-row';
     $.ajax({
         method: 'POST',
@@ -121,12 +121,12 @@ function update_row(table_elem){
 
 function update_status(table_elem){
     var table = $(table_elem).closest('table');
-    var status_actions = $(table).attr('data-status-actions');
-    var run = $(table).attr('data-run');
-    var delete_btn = $(table).attr('data-delete');
-    var results_url = $(table).attr('data-results-url');
-    var refresh_interval = $(table).attr('data-refresh-interval');
-    var job_id = $(table_elem).attr('data-job-id');
+    var status_actions = $(table).data('status-actions');
+    var run = $(table).data('run');
+    var delete_btn = $(table).data('delete');
+    var results_url = $(table).data('results-url');
+    var refresh_interval = $(table).data('refresh-interval');
+    var job_id = $(table_elem).data('job-id');
     var update_url = '/developer/gizmos/ajax/' + job_id + '/update-status';
     $.ajax({
         method: 'POST',

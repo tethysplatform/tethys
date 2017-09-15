@@ -4,7 +4,7 @@ Command Line Interface
 
 **Last Updated:** November 18, 2014
 
-The Tethys Command Line Interface (CLI) provides several commands that are used for managing Tethys Platform and Tethys apps. The :term:`Python virtual environment` must be activated to use the command line tools. This can be done using the following command:
+The Tethys Command Line Interface (CLI) provides several commands that are used for managing Tethys Platform and Tethys apps. The :term:`Python conda environment` must be activated to use the command line tools. This can be done using the following command:
 
 ::
 
@@ -28,6 +28,8 @@ Options
 Commands
 ========
 
+.. _tethys_scaffold_cmd:
+
 scaffold <name>
 ---------------
 
@@ -36,6 +38,13 @@ This command is used to create new Tethys app projects via the scaffold provided
 **Arguments:**
 
 * **name**: The name of the new Tethys app project to create. Only lowercase letters, numbers, and underscores are allowed.
+
+**Optional Arguments:**
+
+* **-t TEMPLATE, --template TEMPLATE**: Name of app template to use.
+* **-e EXTENSION, --extension EXTENSION**: Name of extension template to use [UNDER DEVELOPMENT].
+* **-d, --defaults**: Run command, accepting default values automatically.
+* **-o, --overwrite**: Attempt to overwrite project automatically if it already exists.
 
 **Examples:**
 
@@ -116,7 +125,7 @@ This command contains several subcommands that are used to help manage Tethys Pl
 syncstores <app_name, app_name...> [options]
 --------------------------------------------
 
-Management command for Persistent Stores. To learn more about persistent stores see :doc:`./persistent_store`.
+Management command for Persistent Stores. To learn more about persistent stores see :doc:`./tethys_services/persistent_store`.
 
 **Arguments:**
 
@@ -154,8 +163,21 @@ Management command for Persistent Stores. To learn more about persistent stores 
     # Refresh all persistent store databases for an app
     $ tethys syncstores my_first_app -r
 
+.. _tethys_list_cmd:
+
+list
+----
+
+Use this command to list all installed apps.
+
+**Examples:**
+
+::
+
+    $ tethys list
+
 uninstall <app>
---------------------------------------------
+---------------
 
 Use this command to uninstall apps.
 

@@ -83,6 +83,20 @@
     <div class="profile-section">
       <div class="row">
         <div class="col-md-2 col-md-offset-2 profile-section-header">
+          <h3>API Key</h3>
+        </div>
+        <div class="col-md-8 profile-parameters">
+          <ul>
+            <li><span class="parameter">Token:</span><span class="value">{{ user_token }}</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h5> </h5>
+    <div class="profile-section">
+      <div class="row">
+        <div class="col-md-2 col-md-offset-2 profile-section-header">
           <h3>Gravatar</h3>
         </div>
         <div class="col-md-8 profile-parameters">
@@ -115,8 +129,12 @@
                         <span class="label label-google">Google</span>
                       {% elif 'facebook' in backend.provider %}
                         <span class="label label-facebook">Facebook</span>
-                      {% elif 'hydroshare' in backend.provider %}
+                      {% elif 'hydroshare' == backend.provider %}
                         <span class="label label-hydroshare">HydroShare</span>
+                      {% elif 'hydroshare_beta' == backend.provider %}
+                        <span class="label label-hydroshare">HydroShare-beta</span>
+                      {% elif 'hydroshare_playground' == backend.provider %}
+                        <span class="label label-hydroshare">HydroShare-playground</span>
                       {% endif %}
                     {% endfor %}
                   </div>
@@ -138,8 +156,12 @@
                         <span class="label label-google">Google</span>
                       {% elif 'facebook' in backend %}
                         <span class="label label-facebook">Facebook</span>
-                      {% elif 'hydroshare' in backend %}
+                      {% elif 'hydroshare' == backend %}
                         <span class="label label-hydroshare">HydroShare</span>
+                      {% elif 'hydroshare_beta' == backend %}
+                        <span class="label label-hydroshare">HydroShare-beta</span>
+                      {% elif 'hydroshare_playground' == backend %}
+                        <span class="label label-hydroshare">HydroShare-playground</span>
                       {% endif %}
                     {% endfor %}
                   </div>

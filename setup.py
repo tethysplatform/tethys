@@ -18,7 +18,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 requires = []
 
-version = '1.5.0'
+version = '2.0.0.alpha'
 
 setup(
     name='tethys_platform',
@@ -43,9 +43,17 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
-    entry_points = {
+    entry_points={
         'console_scripts': ['tethys=tethys_apps.cli:tethys_command',],
-        'paste.paster_create_template': ['tethys_app_scaffold=tethys_apps.pastetemplates:TethysAppTemplate',],
     },
     install_requires=requires,
+    extras_require={
+        'tests': [],
+        'docs': [
+            'sphinx',
+            'sphinx_rtd_theme',
+            'sphinxcontrib-napoleon',
+            'pbr',
+        ]
+    },
 )
