@@ -2,7 +2,7 @@ from django.test import Client
 from django.test import TestCase
 
 from tethys_apps.base.app_base import TethysAppBase
-from tethys_apps.base.testing.environment import set_testing_environment
+from tethys_apps.base.testing.environment import is_testing_environment, get_test_db_name
 
 
 class TethysTestCase(TestCase):
@@ -54,38 +54,27 @@ class TethysTestCase(TestCase):
         Return:
             None
         """
-        set_testing_environment(True)
+        from tethys_apps.models import TethysApp
+
+        if not is_testing_environment():
+            raise EnvironmentError('This function will only execute properly if executed in the testing environment.')
 
         if not issubclass(app_class, TethysAppBase):
             raise TypeError('The app_class argument was not of the correct type. '
                             'It must be a class that inherits from <TethysAppBase>.')
 
-        for store in app_class().list_persistent_store_databases(static_only=True):
-            if app_class.persistent_store_exists(store.name):
-                app_class.drop_persistent_store(store.name)
+        db_app = TethysApp.objects.get(package=app_class.package)
 
-            create_store_success = app_class.create_persistent_store(store.name, spatial=store.spatial)
+        ps_database_settings = db_app.persistent_store_database_settings
+        for db_setting in ps_database_settings:
+            create_store_success = app_class.create_persistent_store(db_name=db_setting.name,
+                                                                     connection_name=None,
+                                                                     spatial=db_setting.spatial,
+                                                                     initializer=db_setting.initializer,
+                                                                     refresh=True,
+                                                                     force_first_time=True)
 
-            error = False
-            if create_store_success:
-                retry_counter = 0
-                while True:
-                    if retry_counter < 5:
-                        try:
-                            store.initializer_function(True)
-                            break
-                        except Exception as e:
-                            if 'terminating connection due to administrator command' in str(e):
-                                pass
-                            else:
-                                error = True
-                    else:
-                        error = True
-                        break
-            else:
-                error = True
-
-            if error:
+            if not create_store_success:
                 raise SystemError('The test store was not able to be created')
 
     @staticmethod
@@ -98,15 +87,16 @@ class TethysTestCase(TestCase):
         Return:
             None
         """
-        set_testing_environment(True)
+        if not is_testing_environment():
+            raise EnvironmentError('This function will only execute properly if executed in the testing environment.')
 
         if not issubclass(app_class, TethysAppBase):
             raise TypeError('The app_class argument was not of the correct type. '
                             'It must be a class that inherits from <TethysAppBase>.')
 
-        for store in app_class().list_persistent_store_databases(static_only=True):
-            test_store_name = 'tethys-testing_{0}'.format(store.name)
-            app_class.drop_persistent_store(test_store_name)
+        for db_name in app_class.list_persistent_store_databases(static_only=True):
+            test_db_name = get_test_db_name(db_name)
+            app_class.drop_persistent_store(test_db_name)
 
     @staticmethod
     def create_test_user(username, password, email=None):
@@ -147,5 +137,3 @@ class TethysTestCase(TestCase):
             Client object
         """
         return Client()
-
-
