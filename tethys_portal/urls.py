@@ -14,10 +14,13 @@ from django.contrib.auth.views import password_reset, password_reset_done, passw
 from django.conf import settings
 admin.autodiscover()
 
+# ensure at least staff users logged in before accessing admin login page
+from django.contrib.admin.views.decorators import staff_member_required
+admin.site.login = staff_member_required(admin.site.login, redirect_field_name="", login_url='/accounts/login/')
+
 from tethys_portal.views import accounts as tethys_portal_accounts, developer as tethys_portal_developer, \
     error as tethys_portal_error, home as tethys_portal_home, user as tethys_portal_user
 from tethys_apps import views as tethys_apps_views
-
 
 account_urls = [
     url(r'^login/$', tethys_portal_accounts.login_view, name='login'),
@@ -57,7 +60,8 @@ urlpatterns = [
     url(r'^$', tethys_portal_home.home, name='home'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include(account_urls, namespace='accounts')),
-    url(r'^oauth2/', include('social.apps.django_app.urls', namespace='social')),
+    url(r'^captcha/', include('captcha.urls')),
+    url(r'^oauth2/', include('social_django.urls', namespace='social')),
     url(r'^user/(?P<username>[\w.@+-]+)/', include(user_urls, namespace='user')),
     url(r'^apps/', include('tethys_apps.urls')),
     url(r'^developer/', include(developer_urls)),

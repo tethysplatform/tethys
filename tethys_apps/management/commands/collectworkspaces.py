@@ -40,7 +40,7 @@ class Command(BaseCommand):
         # Provide feedback to user
         print('INFO: Moving workspace directories of apps to "{0}" and linking back.'.format(workspaces_root))
 
-        for app, path in installed_apps.iteritems():
+        for app, path in installed_apps.items():
             # Check for both variants of the static directory (public and static)
             workspaces_path = os.path.join(path, 'workspaces')
             workspaces_root_path = os.path.join(workspaces_root, app)

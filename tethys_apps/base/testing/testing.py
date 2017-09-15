@@ -1,4 +1,3 @@
-from django.test import TestCase
 from django.test import Client
 from environment import set_testing_environment
 from ..app_base import TethysAppBase
@@ -59,9 +58,9 @@ class TethysTestCase(TestCase):
             raise TypeError('The app_class argument was not of the correct type. '
                             'It must be a class that inherits from <TethysAppBase>.')
 
-        for store in app_class().persistent_stores():
+        for store in app_class().list_persistent_store_databases(static_only=True):
             if app_class.persistent_store_exists(store.name):
-                app_class.destroy_persistent_store(store.name)
+                app_class.drop_persistent_store(store.name)
 
             create_store_success = app_class.create_persistent_store(store.name, spatial=store.spatial)
 
@@ -103,12 +102,9 @@ class TethysTestCase(TestCase):
             raise TypeError('The app_class argument was not of the correct type. '
                             'It must be a class that inherits from <TethysAppBase>.')
 
-        for store in app_class().persistent_stores():
-            app_class.destroy_persistent_store(store.name)
-
-        # Handle destroying any additional stores created manually during testing
-        for store in app_class().list_persistent_stores():
-            app_class.destroy_persistent_store(store)
+        for store in app_class().list_persistent_store_databases(static_only=True):
+            test_store_name = 'tethys-testing_{0}'.format(store.name)
+            app_class.drop_persistent_store(test_store_name)
 
     @staticmethod
     def create_test_user(username, password, email=None):

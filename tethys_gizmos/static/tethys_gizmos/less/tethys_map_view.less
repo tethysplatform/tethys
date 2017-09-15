@@ -4,11 +4,45 @@
  * AUTHOR: Nathan Swain
  * COPYRIGHT: (c) Brigham Young University 2014
  * LICENSE: BSD 2-Clause
+ * NOTE: To modify, make sure you use tethys_map_view.less
  *****************************************************************************/
  // Styles for the Tethys Map View
 #map_view_outer_container {
   position: relative;
   height: 100%;
+}
+#basemap_dropdown_container {
+  position: absolute;
+  top: 7px;
+  left: 40px;
+  z-index: 1000;
+  background-color: rgba(255,255,255,.4);
+  border-radius: 4px;
+  padding: 2px;
+
+  .dropdown-menu {
+    background-color: rgba(255,255,255,.4) !important;
+    color: black !important;
+  }
+}
+
+#basemap_dropdown {
+  background-color: rgba(0,60,136,.5);
+  color: white;
+}
+.basemap-option {
+    cursor: pointer;
+    padding: 5px;
+}
+.basemap-option:hover {
+    background-color: rgba(0,94,213,.5);
+    color: white;
+}
+.selected-basemap-option {
+    font-weight: bold;
+}
+.current-basemap-label {
+    font-weight: normal;
 }
 
 .tethys-map-view-draw-control {
@@ -175,6 +209,12 @@
           }
         }
 
+        .tethys-mvlegendimage {
+          &.open {
+            height: 100% !important;
+          }
+        }
+
         .tethys-legend-dropdown {
           height: 0;
           overflow: hidden;
@@ -260,4 +300,3 @@
     background: rgba(255, 255, 255, 0.9);
   }
 }
-
