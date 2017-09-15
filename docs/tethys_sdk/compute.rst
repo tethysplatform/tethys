@@ -56,8 +56,6 @@ App-specific schedulers can be created with the ``create_scheduler`` function.
 API Documentation
 =================
 
-.. autofunction:: tethys_sdk.compute.get_cluster_manager
-
 .. autofunction:: tethys_sdk.compute.list_schedulers
 
 .. autofunction:: tethys_sdk.compute.get_scheduler

@@ -43,7 +43,7 @@ To assign a singluar app permission to a user, return to the administrator dashb
 
 .. note::
 
-	Since assigning the individual app permissions is so difficult, we highly recommend that you use the app permission groups to group app permissions and then assign the permission groups to the users using the ``Change User`` page.
+    Since assigning the individual app permissions is so difficult, we highly recommend that you use the app permission groups to group app permissions and then assign the permission groups to the users using the ``Change User`` page.
 
 Anonymous User
 --------------
@@ -53,7 +53,7 @@ The ``AnonymousUser`` can be used to assign permissions and permission groups to
 Manage Tethys Services
 ======================
 
-The administrator pages provide a simple mechanism for linking to the other services of Tethys Platform. Use the ``Spatial Dataset Services`` link to connect your Tethys Portal to GeoServer, the ``Dataset Services`` link to connect to CKAN instances or HydroShare, or the ``Web Processing Services`` link to connect to WPS instances. For detailed instructions on how to perform each of these tasks, refer to the :doc:`../tethys_sdk/spatial_dataset_services`, :doc:`../tethys_sdk/dataset_services`, and :doc:`../tethys_sdk/web_processing_services` documentation, respectively.
+The administrator pages provide a simple mechanism for linking to the other services of Tethys Platform. Use the ``Spatial Dataset Services`` link to connect your Tethys Portal to GeoServer, the ``Dataset Services`` link to connect to CKAN instances or HydroShare, or the ``Web Processing Services`` link to connect to WPS instances. For detailed instructions on how to perform each of these tasks, refer to the :doc:`../tethys_sdk/tethys_services/spatial_dataset_services`, :doc:`../tethys_sdk/tethys_services/dataset_services`, and :doc:`../tethys_sdk/tethys_services/web_processing_services` documentation, respectively.
 
 .. _tethys_portal_terms_and_conditions:
 
@@ -79,7 +79,7 @@ When a new document becomes active, users will be presented with a modal prompti
 Manage Computing Resources
 ==========================
 
-Computing resources can be managed using the ``Tethys Compute`` admin pages. Powered, by TethysCluster <http://www.tethysplatform.org/TethysCluster/>`_, these pages allow Tethys Portal administrators to spin up clusters of computing resources on either the Amazon or Microsoft Azure commercial clouds, and link local computing clusters that are managed with HTCondor. These computational These computational resources are accessed in apps through the :doc:`../tethys_sdk/jobs` and the :doc:`../tethys_sdk/compute`. For more detailed documentation refer to the links below.
+Computing resources can be managed using the ``Tethys Compute`` admin pages, which Tethys Portal to link to computing clusters that are managed with HTCondor either locally or on the Cloud. These computational resources are accessed in apps through the :doc:`../tethys_sdk/jobs` and the :doc:`../tethys_sdk/compute`. For more detailed documentation refer to the links below.
 
 .. toctree::
    :maxdepth: 2

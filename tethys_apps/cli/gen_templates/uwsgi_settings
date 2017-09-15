@@ -1,0 +1,24 @@
+# tethys_uwsgi.yml file
+
+uwsgi:
+    # Tethys-related settings
+    # absolute path to the base directory (%d is the path to this file)
+    chdir:  %d
+    # Tethys's wsgi file
+    module: wsgi
+    # absolute path to the conda environment
+    home:   {{ conda_home }}/envs/{{ conda_env_name }}
+    
+    # process-related settings
+    # master
+    master: true
+    pidfile2: /run/uwsgi/tethys.pid
+    # maximum number of worker processes
+    processes:  10
+    # the socket file with correct permissions
+    socket: /run/uwsgi/tethys.sock
+    chmod-socket: 600
+    # clear environment on exit
+    vacuum: true
+    # log to file
+    logto2: /var/log/uwsgi/tethys.log

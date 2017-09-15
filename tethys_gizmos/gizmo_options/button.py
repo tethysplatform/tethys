@@ -22,11 +22,9 @@ class ButtonGroup(TethysGizmoOptions):
         attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
-    Example
+    Controller Example
 
     ::
-
-        # CONTROLLER
 
         from tethys_sdk.gizmos import Button, ButtonGroup
 
@@ -55,12 +53,23 @@ class ButtonGroup(TethysGizmoOptions):
                              style='primary')
         vertical_buttons = ButtonGroup(buttons=[edit_button, info_button, apps_button], vertical=True)
 
-        # TEMPLATE
+        context = {
+                    'horizontal_buttons': horizontal_buttons,
+                    'vertical_buttons': vertical_buttons,
+                  }
 
-        {% gizmo button_group horizontal_buttons %}
-        {% gizmo button_group vertical_buttons %}
+
+    Template Example
+
+    ::
+
+        {% load tethys_gizmos %}
+
+        {% gizmo horizontal_buttons %}
+        {% gizmo vertical_buttons %}
 
     """
+    gizmo_name = "button_group"
 
     def __init__(self, buttons, vertical=False, attributes='', classes=''):
         """
@@ -86,24 +95,104 @@ class Button(TethysGizmoOptions):
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
-    Example:
+    Controller Example
 
     ::
 
-        # CONTROLLER
-
         from tethys_sdk.gizmos import Button
 
-        # Single Button
-        single_button = Button(display_text='Click Me',
-                               name='click_me_name',
-                               attributes={"onclick": "alert(this.name);"},
-                               submit=True)
+        # Single Buttons
+        map_button = Button(
+            display_text='',
+            name='map-button',
+            icon='glyphicon glyphicon-globe',
+            style='info',
+            attributes={
+                'data-toggle':'tooltip',
+                'data-placement':'top',
+                'title':'Map'
+            }
+        )
 
-        # TEMPLATE
+        save_button = Button(
+            display_text='',
+            name='save-button',
+            icon='glyphicon glyphicon-floppy-disk',
+            style='success',
+            attributes={
+                'data-toggle':'tooltip',
+                'data-placement':'top',
+                'title':'Save'
+            }
+        )
 
-        {% gizmo button single_button %}
+        edit_button = Button(
+            display_text='',
+            name='edit-button',
+            icon='glyphicon glyphicon-edit',
+            style='warning',
+            attributes={
+                'data-toggle':'tooltip',
+                'data-placement':'top',
+                'title':'Edit'
+            }
+        )
+
+        remove_button = Button(
+            display_text='',
+            name='remove-button',
+            icon='glyphicon glyphicon-remove',
+            style='danger',
+            attributes={
+                'data-toggle':'tooltip',
+                'data-placement':'top',
+                'title':'Remove'
+            }
+        )
+
+        previous_button = Button(
+            display_text='Previous',
+            name='previous-button',
+            attributes={
+                'data-toggle':'tooltip',
+                'data-placement':'top',
+                'title':'Previous'
+            }
+        )
+
+        next_button = Button(
+            display_text='Next',
+            name='next-button',
+            attributes={
+                'data-toggle':'tooltip',
+                'data-placement':'top',
+                'title':'Next'
+            }
+        )
+
+        context = {
+            'map_button': map_button,
+            'save_button': save_button,
+            'edit_button': edit_button,
+            'remove_button': remove_button,
+            'previous_button': previous_button,
+            'next_button': next_button
+        }
+
+    Template Example
+
+    ::
+
+        {% load tethys_gizmos %}
+
+        {% gizmo map_button %}
+        {% gizmo save_button %}
+        {% gizmo edit_button %}
+        {% gizmo remove_button %}
+        {% gizmo previous_button %}
+        {% gizmo next_button %}
     """
+    gizmo_name = "button"
 
     def __init__(self, display_text='', name='', style='', icon='', href='',
                  submit=False, disabled=False, attributes={}, classes=''):

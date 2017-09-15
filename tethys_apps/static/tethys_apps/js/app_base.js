@@ -53,8 +53,6 @@ var TETHYS_APP_BASE = (function() {
         if ($(wrapper_selector).hasClass('show-nav')) {
             // Do things on Nav Close
             $(wrapper_selector).removeClass('show-nav');
-            $(toggle_nav_selector).css('width', '20px');
-            $(toggle_nav_selector).css('margin-right', '0');
 
             // Toggle cookie
             docCookies.setItem(tethys_nav_cookie_key, nav_out_value, null, apps_library_url);
@@ -62,8 +60,6 @@ var TETHYS_APP_BASE = (function() {
         } else {
             // Do thing on Nav Open
             $(wrapper_selector).addClass('show-nav');
-            $(toggle_nav_selector).css('width', '15px');
-            $(toggle_nav_selector).css('margin-right', '5px');
 
             // Toggle cookie
             docCookies.setItem(tethys_nav_cookie_key, nav_in_value, null, apps_library_url);
@@ -188,6 +184,9 @@ var TETHYS_APP_BASE = (function() {
           $(app_content_selector).addClass('with-transition');
         }
 
+        // Hide tooltips
+        $('.tooltip').tooltip('hide');
+
         // Hide by removing "show" classes
         $(app_header_selector).removeClass('show-header');
         $(app_content_selector).removeClass('show-app-content');
@@ -285,6 +284,9 @@ var TETHYS_APP_BASE = (function() {
 
       // Perform responsive check
       check_responsive();
+
+      // Initialize tooltips
+      $('[data-toggle="tooltip"]').tooltip();
 
   });
 

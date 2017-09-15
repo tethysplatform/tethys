@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-from . import initialize_settings, clear_settings
+from tethys_compute.migrations import initialize_settings, clear_settings
 
 class Migration(migrations.Migration):
 

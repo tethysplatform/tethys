@@ -13,11 +13,14 @@ from django import forms
 from django.core import exceptions
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from future.utils import with_metaclass
+from past.builtins import basestring
 
 # TODO this should be refactored so it doesn't rely on the depricated code which I've copied here from the Django source
 # see https://code.djangoproject.com/ticket/26807
 
 # deprecated code copied from: https://github.com/django/django/blob/stable/1.9.x/django/db/models/fields/subclassing.py
+
 
 class SubfieldBase(type):
     """
@@ -69,10 +72,8 @@ def make_contrib(superclass, func=None):
 
 # code for DictionaryField was taken from https://djangosnippets.org/snippets/1979/
 
-class DictionaryField(models.Field):
+class DictionaryField(with_metaclass(SubfieldBase, models.Field)):
     description = _("Dictionary object")
-
-    __metaclass__ = SubfieldBase
 
     def get_internal_type(self):
         return "TextField"
@@ -117,10 +118,9 @@ class DictionaryField(models.Field):
         defaults.update(kwargs)
         return super(DictionaryField, self).formfield(**defaults)
 
-class ListField(models.Field):
-    description = _("List object")
 
-    __metaclass__ = SubfieldBase
+class ListField(with_metaclass(SubfieldBase, models.Field)):
+    description = _("List object")
 
     def get_internal_type(self):
         return "TextField"
@@ -135,7 +135,7 @@ class ListField(models.Field):
                 return json.loads(value)
             except (ValueError, TypeError) as e:
                 raise e
-                #raise exceptions.ValidationError(self.error_messages['invalid value for json: %s' % value])
+                # raise exceptions.ValidationError(self.error_messages['invalid value for json: %s' % value])
 
         if isinstance(value, list):
             return value

@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 from .base import TethysGizmoOptions
+import json
 
 __all__ = ['SelectInput']
 
@@ -21,6 +22,7 @@ class SelectInput(TethysGizmoOptions):
         name(str, required): Name of the input element that will be used for form submission
         multiple(bool): If True, select input will be a multi-select
         original(bool): If True, `Select2 reference <http://ivaynberg.github.io/select2/>`_ functionality will be turned off
+        select2_options (dict): Select2 options that will be passed when initializing the select2.
         options(list): List of tuples that represent the options and values of the select input
         initial(list or str): List of keys or values that represent the initial selected values or a string representing a singular initial selected value.
         disabled(bool): Disabled state of the select input
@@ -28,49 +30,70 @@ class SelectInput(TethysGizmoOptions):
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
-    Example
+    Controller Example
 
     ::
 
-        # CONTROLLER
         from tethys_sdk.gizmos import SelectInput
 
         select_input2 = SelectInput(display_text='Select2',
-                                    name='select1',
+                                    name='select2',
                                     multiple=False,
                                     options=[('One', '1'), ('Two', '2'), ('Three', '3')],
                                     initial=['Three'],
-                                    original=['Two'])
-
+                                    select2_options={'placeholder': 'Select a number',
+                                                     'allowClear': True})
+    
         select_input2_multiple = SelectInput(display_text='Select2 Multiple',
-                                             name='select2',
+                                             name='select21',
                                              multiple=True,
                                              options=[('One', '1'), ('Two', '2'), ('Three', '3')],
-                                             initial=['1', '2'])
-
-        select_input_multiple = SelectInput(display_text='Select Multiple',
-                                            name='select2.1',
-                                            multiple=True,
-                                            original=True,
-                                            options=[('One', '1'), ('Two', '2'), ('Three', '3')])
-
+                                             initial=['Two', 'One'])
+    
         select_input2_error = SelectInput(display_text='Select2 Disabled',
-                                          name='select3',
+                                          name='select22',
                                           multiple=False,
                                           options=[('One', '1'), ('Two', '2'), ('Three', '3')],
                                           disabled=True,
                                           error='Here is my error text')
+    
+        select_input = SelectInput(display_text='Select',
+                                   name='select1',
+                                   multiple=False,
+                                   original=True,
+                                   options=[('One', '1'), ('Two', '2'), ('Three', '3')],
+                                   initial=['Three'])
+    
+        select_input_multiple = SelectInput(display_text='Select Multiple',
+                                            name='select11',
+                                            multiple=True,
+                                            original=True,
+                                            options=[('One', '1'), ('Two', '2'), ('Three', '3')])
 
-        # TEMPLATE
 
-        {% gizmo select_input select_input2 %}
-        {% gizmo select_input select_input2_multiple %}
-        {% gizmo select_input select_input_multiple %}
-        {% gizmo select_input select_input2_error %}
+        context = {
+                    'select_input2': select_input2,
+                    'select_input2_multiple': select_input2_multiple,
+                    'select_input2_error': select_input2_error,
+                    'select_input': select_input,
+                    'select_input_multiple': select_input_multiple,
+                  }
+
+    Template Example
+
+    ::
+
+        {% gizmo select_input2 %}
+        {% gizmo select_input2_multiple %}
+        {% gizmo select_input2_error %}
+        {% gizmo select_input %}
+        {% gizmo select_input_multiple %}
 
     """
-
-    def __init__(self, name, display_text='', initial=[], multiple=False, original=False, options='', disabled=False, error='',
+    gizmo_name = "select_input"
+    
+    def __init__(self, name, display_text='', initial=[], multiple=False, original=False,
+                 select2_options=None, options='', disabled=False, error='',
                  attributes={}, classes=''):
         """
         Constructor
@@ -84,6 +107,32 @@ class SelectInput(TethysGizmoOptions):
         self.initial = initial
         self.multiple = multiple
         self.original = original
+        self.placeholder = False if select2_options is None else 'placeholder' in select2_options
+        self.select2_options = json.dumps(select2_options)
         self.options = options
         self.disabled = disabled
         self.error = error
+
+    @staticmethod
+    def get_vendor_js():
+        """
+        JavaScript vendor libraries to be placed in the 
+        {% block global_scripts %} block
+        """
+        return ('tethys_gizmos/vendor/select2_4.0.2/js/select2.full.min.js',)
+
+    @staticmethod
+    def get_vendor_css():
+        """
+        CSS vendor libraries to be placed in the 
+        {% block styles %} block
+        """
+        return ('tethys_gizmos/vendor/select2_4.0.2/css/select2.min.css',)
+
+    @staticmethod
+    def get_gizmo_js():
+        """
+        JavaScript specific to gizmo to be placed in the 
+        {% block scripts %} block
+        """
+        return ('tethys_gizmos/js/select_input.js',)

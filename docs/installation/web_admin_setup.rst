@@ -11,6 +11,10 @@ The final step required to setup your Tethys Platform is to link it to the softw
 
 The Tethys Portal Admin Console is only accessible to users with administrator rights. When you installed Tethys Platform, you created superuser. Use these credentials to log in for the first time.
 
+.. tip::
+
+    When installing Tethys with the installation script the superuser credentials would have been specified with the `-S` or `--superuser` and the `-P` or `--superuser-pass` options. If you did not specify these options then the default username and password is `admin` and `pass`.
+
 a. Use the "Log In" link on the Tethys Portal homepage to log in as an administrator.
 
   .. figure:: ../images/site_admin/log_in.png
@@ -35,7 +39,7 @@ You will now see the Tethys Portal Web Admin Console. The Web Admin console can 
 2. Link to 52 North WPS Docker
 ------------------------------
 
-The built in 52 North Web Processing Service (WPS) is provided as one mechanism for Geoprocessing in apps. It exposes the GRASS GIS and Sextante geoprocessing libraries as web services. See :doc:`../tethys_sdk/web_processing_services` documentation for more details about how to use 52 North WPS processing in apps. Complete the following steps to link Tethys with the 52 North WPS:
+The built in 52 North Web Processing Service (WPS) is provided as one mechanism for Geoprocessing in apps. It exposes the GRASS GIS and Sextante geoprocessing libraries as web services. See :doc:`../tethys_sdk/tethys_services/web_processing_services` documentation for more details about how to use 52 North WPS processing in apps. Complete the following steps to link Tethys with the 52 North WPS:
 
 a. Select "Web Processing Services" from the options listed on the Tethys Portal Admin Console.
 
@@ -75,7 +79,7 @@ e. Press "Save" to save the WPS configuration.
 3.  Link to GeoServer
 ---------------------
 
-Tethys Platform provides GeoServer as a built-in Spatial Dataset Service. Spatial Dataset Services can be used by apps to publish Shapefiles and other spatial files as web resources. See :doc:`../tethys_sdk/spatial_dataset_services` documentation for how to use Spatial Dataset Services in apps. To link your Tethys Platform to the built-in GeoServer or an external Spatial Dataset Service, complete the following steps:
+Tethys Platform provides GeoServer as a built-in Spatial Dataset Service. Spatial Dataset Services can be used by apps to publish Shapefiles and other spatial files as web resources. See :doc:`../tethys_sdk/tethys_services/spatial_dataset_services` documentation for how to use Spatial Dataset Services in apps. To link your Tethys Platform to the built-in GeoServer or an external Spatial Dataset Service, complete the following steps:
 
 a. Select "Spatial Dataset Services" from the options listed on the Tethys Portal Admin Console.
 
@@ -117,7 +121,7 @@ f. Press "Save" to save the Spatial Dataset Service configuration.
 4. Link to Dataset Services
 ---------------------------
 
-Optionally, you may wish to link to external Dataset Services such as CKAN and HydroShare. Dataset Services can be used by apps as data stores and data sources. See :doc:`../tethys_sdk/dataset_services` documentation for how to use Dataset Services in apps. Complete the following steps for each dataset service you wish to link to:
+Optionally, you may wish to link to external Dataset Services such as CKAN and HydroShare. Dataset Services can be used by apps as data stores and data sources. See :doc:`../tethys_sdk/tethys_services/dataset_services` documentation for how to use Dataset Services in apps. Complete the following steps for each dataset service you wish to link to:
 
 a. Select "Dataset Services" from the options listed on the Tethys Portal Admin Console.
 
@@ -146,6 +150,29 @@ d. Select the appropriate engine and provide an endpoint to the Dataset Service.
       When linking Tethys to a CKAN dataset service, an API Key is required. All user accounts are issued an API key. To access the API Key log into the CKAN site where you have an account and browse to your user profiles. The API key will be listed as a private attribute of your user profile.
 
 e. Press "Save" to save the Dataset Service configuration.
+
+5. Link to Persistent Store Services
+------------------------------------
+
+Optionally, you may wish to link to external Persistent Store Services such as PostgreSQL. Persistent Store Services can be used by apps as data stores and data sources. See :doc:`../tethys_sdk/tethys_services/persistent_store` documentation for how to use Persistent Store Services in apps. Complete the following steps for each service you wish to link to:
+
+a. Select "Persistent Store Services" from the options listed on the Tethys Portal Admin Console.
+
+b. Click on the "Add Persistent Store Service" button to create a new link to the persistent store service.
+
+  .. figure:: ../images/site_admin/persistent_store_services.png
+      :width: 600px
+      :align: center
+
+c. Provide a unique name for the persistent store service.
+
+d. Select the appropriate engine and provide an endpoint, enter the host and port, and the username and password of the database user that will be used to authenticate with the service. When you are done you will have something similar to this:
+
+  .. figure:: ../images/site_admin/persistent_store_service_edit.png
+    :width: 600px
+    :align: center
+
+e. Press "Save" to save the Persistent Store Service configuration.
 
 
 What's Next?

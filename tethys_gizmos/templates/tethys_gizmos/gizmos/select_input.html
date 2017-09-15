@@ -10,7 +10,13 @@
         {% for key, value in attributes.items %}
             {{ key }}="{{ value }}"
         {% endfor %}
+    {% endif %}
+    {% if select2_options %}
+      data-select2-options="{{ select2_options }}"
     {% endif %}>
+    {% if placeholder %}
+        <option></option>
+    {% endif %}
     {% for option, value in options %}
       {% if initial_is_iterable %}
         {% if option in initial or value in initial %}

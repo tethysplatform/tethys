@@ -2,7 +2,7 @@
 Map GeoServer Layers
 ********************
 
-**Last Updated:** September 30, 2016
+**Last Updated:** May 2017
 
 
 Map Page UrlMap
@@ -12,9 +12,11 @@ Add a new ``UrlMap`` to the ``url_maps`` method of the :file:`app.py` module:
 
 ::
 
-    UrlMap(name='map',
-           url='geoserver-app/map',
-           controller='geoserver_app.controllers.map'),
+    UrlMap(
+        name='map',
+        url='geoserver-app/map',
+        controller='geoserver_app.controllers.map'
+    ),
 
 
 Map Page Controller
@@ -29,7 +31,7 @@ Add a new controller to the :file:`controller.py` module:
         """
         Controller for the map page
         """
-        geoserver_engine = get_spatial_dataset_engine(name='default')
+        geoserver_engine = app.get_spatial_dataset_service(name='main_geoserver', as_engine=True)
 
         options = []
 
@@ -39,10 +41,12 @@ Add a new controller to the :file:`controller.py` module:
             for layer in response['result']:
                 options.append((layer.title(), layer))
 
-        select_options = SelectInput(display_text='Choose Layer',
-                                     name='layer',
-                                     multiple=False,
-                                     options=options)
+        select_options = SelectInput(
+            display_text='Choose Layer',
+            name='layer',
+            multiple=False,
+            options=options
+        )
 
         map_layers = []
 
@@ -52,9 +56,11 @@ Add a new controller to the :file:`controller.py` module:
 
             geoserver_layer = MVLayer(
                 source='ImageWMS',
-                options={'url': 'http://localhost:8181/geoserver/wms',
-                       'params': {'LAYERS': selected_layer},
-                       'serverType': 'geoserver'},
+                options={
+                    'url': 'http://localhost:8181/geoserver/wms',
+                    'params': {'LAYERS': selected_layer},
+                    'serverType': 'geoserver'
+                },
                 legend_title=legend_title,
                 legend_extent=[-114, 36.5, -109, 42.5],
                 legend_classes=[
@@ -72,11 +78,13 @@ Add a new controller to the :file:`controller.py` module:
             minZoom=2
         )
 
-        map_options = MapView(height='500px',
-                              width='100%',
-                              layers=map_layers,
-                              legend=True,
-                              view=view_options)
+        map_options = MapView(
+            height='500px',
+            width='100%',
+            layers=map_layers,
+            legend=True,
+            view=view_options
+        )
 
         context = {'map_options': map_options,
                    'select_options': select_options}
@@ -95,12 +103,12 @@ Create a new :file:`map.html` template in your template directory and add the fo
 
     {% block app_content %}
         <h1>GeoServer Layers</h1>
-        <form action="" method="post">
+        <form method="post">
             {% csrf_token %}
             {% gizmo select_input select_options %}
             <input name="submit" type="submit" value="Update" class="btn btn-default">
         </form> 
-        {% gizmo map_view map_options %}
+        {% gizmo map_options %}
     {% endblock %}
 
 
