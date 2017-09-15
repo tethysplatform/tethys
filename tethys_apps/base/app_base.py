@@ -961,7 +961,7 @@ class TethysAppBase(object):
         db_app = TethysApp.objects.get(package=cls.package)
         ps_connection_settings = db_app.persistent_store_connection_settings
         return [ps_connection_setting.name for ps_connection_setting in ps_connection_settings
-                if TESTING_DB_FLAG not in ps_database_setting.name]
+                if TESTING_DB_FLAG not in ps_connection_setting.name]
 
     @classmethod
     def persistent_store_exists(cls, name):
