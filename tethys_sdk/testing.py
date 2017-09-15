@@ -9,4 +9,4 @@
 """
 # DO NOT ERASE
 from tethys_apps.base.testing.testing import TethysTestCase
-from tethys_apps.base.testing.environment import  set_testing_environment, is_testing_environment
+from tethys_apps.base.testing.environment import  set_testing_environment, is_testing_environment, get_test_db_name
