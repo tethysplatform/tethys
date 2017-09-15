@@ -17,6 +17,7 @@ from tethys_apps.exceptions import TethysAppSettingNotAssigned, PersistentStoreP
     PersistentStoreInitializerError
 from tethys_compute.utilities import ListField
 from sqlalchemy.orm import sessionmaker
+from tethys_sdk.testing import is_testing_environment, get_test_db_name
 
 try:
     from tethys_services.models import (DatasetService, SpatialDatasetService,
@@ -477,8 +478,8 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         safe_name = self.name.lower().replace(' ', '_')
 
         # If testing environment, the engine for the "test" version of the persistent store should be fetched
-        if hasattr(settings, 'TESTING') and settings.TESTING:
-            safe_name = 'test_{0}'.format(safe_name)
+        if is_testing_environment():
+            safe_name = get_test_db_name(safe_name)
 
         return '_'.join((self.tethys_app.package, safe_name))
 
@@ -556,7 +557,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         namespaced_ps_name = self.get_namespaced_persistent_store_name()
 
         # Drop db
-        drop_db_statement = 'DROP DATABASE IF EXISTS {0}'.format(namespaced_ps_name)
+        drop_db_statement = 'DROP DATABASE IF EXISTS "{0}"'.format(namespaced_ps_name)
 
         try:
             drop_connection = engine.connect()
@@ -619,7 +620,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
             # Create db
             create_db_statement = '''
-                                  CREATE DATABASE {0}
+                                  CREATE DATABASE "{0}"
                                   WITH OWNER {1}
                                   TEMPLATE template0
                                   ENCODING 'UTF8'
