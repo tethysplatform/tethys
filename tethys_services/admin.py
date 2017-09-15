@@ -9,7 +9,7 @@
 """
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
-from .models import DatasetService, SpatialDatasetService, WebProcessingService
+from .models import DatasetService, SpatialDatasetService, WebProcessingService, PersistentStoreService
 from django.forms import ModelForm, PasswordInput
 
 
@@ -37,6 +37,27 @@ class SpatialDatasetServiceForm(ModelForm):
         }
 
 
+class WebProcessingServiceForm(ModelForm):
+    class Meta:
+        model = WebProcessingService
+        fields = ('name', 'endpoint', 'public_endpoint', 'username', 'password')
+        widgets = {
+            'password': PasswordInput(),
+        }
+        labels = {
+            'public_endpoint': _('Public Endpoint')
+        }
+
+
+class PersistentStoreServiceForm(ModelForm):
+    class Meta:
+        model = PersistentStoreService
+        fields = ('name', 'engine', 'host', 'port', 'username', 'password')
+        widgets = {
+            'password': PasswordInput(),
+        }
+
+
 class DatasetServiceAdmin(admin.ModelAdmin):
     """
     Admin model for Web Processing Service Model
@@ -53,18 +74,6 @@ class SpatialDatasetServiceAdmin(admin.ModelAdmin):
     fields = ('name', 'engine', 'endpoint', 'public_endpoint', 'apikey', 'username', 'password')
 
 
-class WebProcessingServiceForm(ModelForm):
-    class Meta:
-        model = WebProcessingService
-        fields = ('name', 'endpoint', 'public_endpoint', 'username', 'password')
-        widgets = {
-            'password': PasswordInput(),
-        }
-        labels = {
-            'public_endpoint': _('Public Endpoint')
-        }
-
-
 class WebProcessingServiceAdmin(admin.ModelAdmin):
     """
     Admin model for Web Processing Service Model
@@ -73,6 +82,15 @@ class WebProcessingServiceAdmin(admin.ModelAdmin):
     fields = ('name', 'endpoint', 'public_endpoint', 'username', 'password')
 
 
+class PersistentStoreServiceAdmin(admin.ModelAdmin):
+    """
+    Admin model for Persistent Store Service Model
+    """
+    form = PersistentStoreServiceForm
+    fields = ('name', 'engine', 'host', 'port', 'username', 'password')
+
+
 admin.site.register(DatasetService, DatasetServiceAdmin)
 admin.site.register(SpatialDatasetService, SpatialDatasetServiceAdmin)
 admin.site.register(WebProcessingService, WebProcessingServiceAdmin)
+admin.site.register(PersistentStoreService, PersistentStoreServiceAdmin)

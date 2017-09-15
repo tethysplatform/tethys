@@ -12,9 +12,9 @@ def execute(request, job_id):
         job.execute()
         success = True
         message = ''
-    except Exception, e:
+    except Exception as e:
         success = False
-        message = e.message
+        message = str(e)
         log.error('The following error occurred when executing job %s: %s', job_id, message)
     return JsonResponse({'success': success, 'message': message})
 
@@ -25,16 +25,16 @@ def delete(request, job_id):
         job.delete()
         success = True
         message = ''
-    except Exception, e:
+    except Exception as e:
         success = True
-        message = e.message
+        message = str(e)
         log.error('The following error occurred when deleting job %s: %s', job_id, message)
     return JsonResponse({'success': success, 'message': message})
 
 
 def update_row(request, job_id):
     try:
-        data = {key: val for key, val in request.POST.iteritems()}
+        data = {key: _parse_value(val) for key, val in request.POST.items()}
         filter_string = data.pop('column_fields')
         filters = [f.strip('\'\" ') for f in filter_string.strip('()').split(',')]
         job = TethysJob.objects.get_subclass(id=job_id)
@@ -54,8 +54,8 @@ def update_row(request, job_id):
 
         success = True
         html = render_to_string('tethys_gizmos/gizmos/job_row.html', data)
-    except Exception, e:
-        log.error('The following error occurred when updating row for job %s: %s', job_id, e.message)
+    except Exception as e:
+        log.error('The following error occurred when updating row for job %s: %s', job_id, str(e))
         success = False
         status = None
         html = None
@@ -65,7 +65,7 @@ def update_row(request, job_id):
 
 def update_status(request, job_id):
     try:
-        data = request.POST.dict()
+        data = {key: _parse_value(val) for key, val in request.POST.items()}
         job = TethysJob.objects.get_subclass(id=job_id)
         status = job.status
         statuses = None
@@ -80,10 +80,19 @@ def update_status(request, job_id):
 
         success = True
         html = render_to_string('tethys_gizmos/gizmos/job_status.html', data)
-    except Exception, e:
-        log.error('The following error occurred when updating status for job %s: %s', job_id, e.message)
+    except Exception as e:
+        log.error('The following error occurred when updating status for job %s: %s', job_id, str(e))
         success = False
         status = None
         html = None
 
     return JsonResponse({'success': success, 'status': status, 'html': html})
+
+
+def _parse_value(val):
+    if val == 'True':
+        return True
+    elif val == 'False':
+        return False
+    else:
+        return val
