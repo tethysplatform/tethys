@@ -13,6 +13,7 @@ OPTIONS:\n
     --db-username <USERNAME>            Username that the tethys database server will use. Default is 'tethys_default'.\n
     --db-password <PASSWORD>            Password that the tethys database server will use. Default is 'pass'.\n
     --db-port <PORT>                    Port that the tethys database server will use. Default is 5436.\n
+    --db-create				Create DB and User
     -S, --superuser <USERNAME>          Tethys super user name. Default is 'admin'.\n
     -E, --superuser-email <EMAIL>       Tethys super user email. Default is ''.\n
     -P, --superuser-pass <PASSWORD>     Tethys super user password. Default is 'pass'.\n
@@ -132,6 +133,10 @@ case $key in
     set_option_value TETHYS_DB_HOST "$2"
     shift # past argument
     ;;
+    --db-create)
+    set_option_value TETHYS_DB_CREATE "true"
+    shift # past argument
+    ;;
     -S|--superuser)
     set_option_value TETHYS_SUPER_USER "$2"
     shift # past argument
@@ -195,7 +200,9 @@ then
     # Setup local database
     echo "Setting up the Tethys database..."
     echo "Waiting for databases to startup... (Waiting 60 seconds)"; sleep 60
-    if psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} -t -c '\du' | cut -d \| -f 1 | grep -qw '${TETHYS_DB_USERNAME}'; then
+    # if psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} -t -c '\du' | cut -d \| -f 1 | grep -qw '${TETHYS_DB_USERNAME}'; then
+    if [ ${TETHYS_DB_CREATE} == "true" ] 
+    then
       echo "Username '${TETHYS_DB_USERNAME}' already exists in the database"
     else
       echo "Creating username and database"
