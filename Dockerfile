@@ -26,7 +26,6 @@ RUN pwd \
          --conda-home $TETHYSBUILD_CONDA_HOME \
          --conda-env-name $TETHYSBUILD_CONDA_ENV_NAME \
 
-
 # Make port 8000 available to the outside world
 EXPOSE 8000
 
@@ -34,7 +33,6 @@ EXPOSE 8000
 ENV PATH ${TETHYSBUILD_CONDA_HOME:-/usr/lib/tethys/miniconda}/envs/tethys/bin:$PATH
 
 # Install Tethys
-
 CMD echo Stating Tethys Setup \
     && bash setup_tethys.sh \
          -b ${TETHYSBUILD_BRANCH:-release} \
@@ -44,7 +42,6 @@ CMD echo Stating Tethys Setup \
          --db-password ${TETHYSBUILD_DB_PASSWORD:-pass} \
          --db-host ${TETHYSBUILD_DB_HOST:-127.0.0.1} \
          --db-port ${TETHYSBUILD_DB_PORT:-5432} \
-         --db-create "true" \
          --superuser ${TETHYSBUILD_SUPERUSER:-tethys_super} \
          --superuser-pass ${TETHYSBUILD_SUPERUSER_PASS:-admin} \
          --tethys-home ${TETHYSBUILD_TETHYS_HOME:-/usr/lib/tethys} \
