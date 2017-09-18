@@ -5,7 +5,6 @@ WORKDIR /usr/lib/tethys
 
 # Add files to docker image
 ADD docker/install_tethys.sh /usr/lib/tethys/install_tethys.sh
-ADD docker/setup_tethys.sh /usr/lib/tethys/setup_tethys.sh
 ADD . /usr/lib/tethys/src
 
 # Arguments
@@ -25,6 +24,8 @@ RUN pwd \
          --tethys-home $TETHYSBUILD_TETHYS_HOME \
          --conda-home $TETHYSBUILD_CONDA_HOME \
          --conda-env-name $TETHYSBUILD_CONDA_ENV_NAME \
+
+ADD docker/setup_tethys.sh /usr/lib/tethys/setup_tethys.sh
 
 # Make port 8000 available to the outside world
 EXPOSE 8000
