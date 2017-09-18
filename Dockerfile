@@ -44,6 +44,7 @@ CMD echo Stating Tethys Setup \
          --db-password ${TETHYSBUILD_DB_PASSWORD:-pass} \
          --db-host ${TETHYSBUILD_DB_HOST:-127.0.0.1} \
          --db-port ${TETHYSBUILD_DB_PORT:-5432} \
+         --db-create "true" \
          --superuser ${TETHYSBUILD_SUPERUSER:-tethys_super} \
          --superuser-pass ${TETHYSBUILD_SUPERUSER_PASS:-admin} \
          --tethys-home ${TETHYSBUILD_TETHYS_HOME:-/usr/lib/tethys} \
