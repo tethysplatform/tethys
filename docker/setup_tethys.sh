@@ -229,7 +229,7 @@ then
     # initdb  -U postgres -D "${TETHYS_HOME}/psql/data"
     # pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" -l "${TETHYS_HOME}/psql/logfile" start -o "-p ${TETHYS_DB_PORT}"
     echo "Waiting for databases to startup..."; sleep 30
-    echo if [[ $(psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} --command "SELECT 1 FROM pg_roles WHERE rolname='${TETHYS_DB_USERNAME}'" | grep -q 1) -ne 0 ]]; then 
+    echo "if [[ $(psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} --command "SELECT 1 FROM pg_roles WHERE rolname='${TETHYS_DB_USERNAME}'" | grep -q 1) -ne 0 ]]; then "
     if [[ $(psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} --command "SELECT 1 FROM pg_roles WHERE rolname='${TETHYS_DB_USERNAME}'" | grep -q 1) -ne 0 ]]; then 
       psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} --command "CREATE USER ${TETHYS_DB_USERNAME} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '${TETHYS_DB_PASSWORD}';"
       createdb -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} -O ${TETHYS_DB_USERNAME} ${TETHYS_DB_USERNAME} -E utf-8 -T template0
