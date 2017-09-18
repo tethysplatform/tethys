@@ -16,12 +16,7 @@ OPTIONS:\n
     -S, --superuser <USERNAME>          Tethys super user name. Default is 'admin'.\n
     -E, --superuser-email <EMAIL>       Tethys super user email. Default is ''.\n
     -P, --superuser-pass <PASSWORD>     Tethys super user password. Default is 'pass'.\n
-    --skip-tethys-install               Flag to skip the Tethys installation so that the Docker installation or production installation can be added to an existing Tethys installation.\n
-    --install-docker                    Flag to include Docker installation as part of the install script (Linux only).\n
-    --docker-options <OPTIONS>          Command line options to pass to the 'tethys docker init' call if --install-docker is used. Default is \"'-d'\".\n
     --production                        Flag to install Tethys in a production configuration.\n
-    --configure-selinux                 Flag to perform configuration of SELinux for production installation. (Linux only).\n
-    -x                                  Flag to turn on shell command echoing.\n
     -h, --help                          Print this help information.\n
 "
 
@@ -149,36 +144,9 @@ case $key in
     set_option_value TETHYS_SUPER_USER_PASS "$2"
     shift # past argument
     ;;
-    --skip-tethys-install)
-        SKIP_TETHYS_INSTALL="true"
-    ;;
-    --install-docker)
-    if [ "$(uname)" = "Linux" ]
-    then
-        INSTALL_DOCKER="true"
-    else
-        echo Automatic installation of Docker is not supported on $(uname). Ignoring option $key.
-    fi
-    ;;
     --docker-options)
     set_option_value DOCKER_OPTIONS "$2"
     shift # past argument
-    ;;
-    --production)
-    if [ "$(uname)" = "Linux" ]
-    then
-        PRODUCTION="true"
-    else
-        echo Automatic production installation is not supported on $(uname). Ignoring option $key.
-    fi
-    ;;
-    --configure-selinux)
-    if [ "$(uname)" = "Linux" ]
-    then
-        SELINUX="true"
-    else
-        echo SELinux confiuration is not supported on $(uname). Ignoring option $key.
-    fi
     ;;
     -x)
     ECHO_COMMANDS="true"
@@ -226,10 +194,11 @@ then
     sed -i -e "s/127.0.0.1/${TETHYS_DB_HOST}/g" /usr/lib/tethys/src/tethys_portal/settings.py
     # Setup local database
     echo "Setting up the Tethys database..."
-    # initdb  -U postgres -D "${TETHYS_HOME}/psql/data"
-    # pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" -l "${TETHYS_HOME}/psql/logfile" start -o "-p ${TETHYS_DB_PORT}"
-    echo "Waiting for databases to startup..."; sleep 30
-    if [[ $(psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} --command "SELECT 1 FROM pg_roles WHERE rolname='${TETHYS_DB_USERNAME}'" | grep -q 1) -ne 0 ]]; then 
+    echo "Waiting for databases to startup... (Waiting 60 seconds)"; sleep 60
+    if psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} -t -c '\du' | cut -d \| -f 1 | grep -qw '${TETHYS_DB_USERNAME}'; then
+      echo "Username '${TETHYS_DB_USERNAME}' already exists in the database"
+    else
+      echo "Creating username and database"
       psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} --command "CREATE USER ${TETHYS_DB_USERNAME} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '${TETHYS_DB_PASSWORD}';"
       createdb -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} -O ${TETHYS_DB_USERNAME} ${TETHYS_DB_USERNAME} -E utf-8 -T template0
     fi
@@ -405,100 +374,6 @@ then
     echo "unalias tso" >> "${DEACTIVATE_SCRIPT}"
     echo "unalias tethys_server_restart" >> "${DEACTIVATE_SCRIPT}"
     echo "unalias trs" >> "${DEACTIVATE_SCRIPT}"
-fi
-
-
-# Install Docker (if flag is set
-
-installation_warning(){
-    echo "WARNING: installing docker on $1 is not officially supported by the Tethys install script. Attempting to install with $2 script."
-}
-
-finalize_docker_install(){
-    sudo groupadd docker
-    sudo gpasswd -a ${USER} docker
-    . ${TETHYS_CONDA_HOME}/bin/activate ${TETHYS_CONDA_ENV_NAME}
-    sg docker -c "tethys docker init ${DOCKER_OPTIONS}"
-    . deactivate
-    echo "Docker installation finished!"
-    echo "You must re-login for Docker permissions to be activated."
-    echo "(Alternatively you can run 'newgrp docker')"
-}
-
-ubuntu_debian_docker_install(){
-    if [ "${LINUX_DISTRIBUTION}" != "ubuntu" ] && [ ${LINUX_DISTRIBUTION} != "debian" ]
-    then
-        installation_warning ${LINUX_DISTRIBUTION} "Ubuntu"
-    fi
-
-    sudo apt-get update
-    sudo apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
-    curl -fsSL https://download.docker.com/linux/${LINUX_DISTRIBUTION}/gpg | sudo apt-key add -
-    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/${LINUX_DISTRIBUTION} $(lsb_release -cs) stable"
-    sudo apt-get update
-    sudo apt-get install -y docker-ce
-
-    finalize_docker_install
-}
-
-centos_docker_install(){
-    if [ "${LINUX_DISTRIBUTION}" != "centos" ]
-    then
-        installation_warning ${LINUX_DISTRIBUTION} "CentOS"
-    fi
-
-    sudo yum -y install yum-utils
-    sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-    sudo yum makecache fast
-    sudo yum -y install docker-ce
-    sudo systemctl start docker
-    sudo systemctl enable docker
-
-    finalize_docker_install
-}
-
-fedora_docker_install(){
-    if [ "${LINUX_DISTRIBUTION}" != "fedora" ]
-    then
-        installation_warning ${LINUX_DISTRIBUTION} "Fedora"
-    fi
-
-    sudo dnf -y install -y dnf-plugins-core
-    sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-    sudo dnf makecache fast
-    sudo dnf -y install docker-ce
-    sudo systemctl start docker
-    sudo systemctl enable docker
-
-    finalize_docker_install
-}
-
-if [ -n "${LINUX_DISTRIBUTION}" -a "${INSTALL_DOCKER}" = "true" ]
-then
-    # prompt for sudo
-    echo "Docker installation requires some commands to be run with sudo. Please enter password:"
-    sudo echo "Installing Docker..."
-
-    case ${LINUX_DISTRIBUTION} in
-        debian)
-            ubuntu_debian_docker_install
-        ;;
-        ubuntu)
-            ubuntu_debian_docker_install
-        ;;
-        centos)
-            centos_docker_install
-        ;;
-        redhat)
-            centos_docker_install
-        ;;
-        fedora)
-            fedora_docker_install
-        ;;
-        *)
-            echo "Automated Docker installation on ${LINUX_DISTRIBUTION} is not supported. Please see https://docs.docker.com/engine/installation/ for more information on installing Docker."
-        ;;
-    esac
 fi
 
 
