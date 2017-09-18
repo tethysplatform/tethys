@@ -214,7 +214,10 @@ then
     # Initialze Tethys database
     cd /usr/lib/tethys/src
     tethys manage syncdb
-    echo "from django.contrib.auth.models import User; User.objects.create_superuser('${TETHYS_SUPER_USER}', '${TETHYS_SUPER_USER_EMAIL}', '${TETHYS_SUPER_USER_PASS}')" | python manage.py shell
+    if [ ${TETHYS_DB_CREATE} == "true" ]
+    then
+      echo "from django.contrib.auth.models import User; User.objects.create_superuser('${TETHYS_SUPER_USER}', '${TETHYS_SUPER_USER_EMAIL}', '${TETHYS_SUPER_USER_PASS}')" | python manage.py shell
+    fi
     # pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" stop
     . deactivate
 
