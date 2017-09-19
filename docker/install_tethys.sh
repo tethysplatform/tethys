@@ -244,7 +244,7 @@ then
     conda install --yes git
     # git clone ${TETHYS_REPO} "${TETHYS_HOME}/src"
     cd "${TETHYS_HOME}/src"
-    git checkout ${BRANCH}
+    # git checkout ${BRANCH}
 
     # create conda env and install Tethys
     echo "Setting up the ${CONDA_ENV_NAME} environment..."
