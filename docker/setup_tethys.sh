@@ -67,6 +67,7 @@ TETHYS_DB_USERNAME='tethys_default'
 TETHYS_DB_PASSWORD='pass'
 TETHYS_DB_HOST='127.0.0.1'
 TETHYS_DB_PORT=5436
+TETHYS_DB_CREATE=0
 CONDA_ENV_NAME='tethys'
 PYTHON_VERSION='2'
 BRANCH='release'
@@ -135,6 +136,10 @@ case $key in
     ;;
     --db-host)
     set_option_value TETHYS_DB_HOST "$2"
+    shift # past argument
+    ;;
+    --db-create)
+    set_option_value TETHYS_DB_CREATE "$2"
     shift # past argument
     ;;
     -S|--superuser)
@@ -229,8 +234,9 @@ then
     # initdb  -U postgres -D "${TETHYS_HOME}/psql/data"
     # pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" -l "${TETHYS_HOME}/psql/logfile" start -o "-p ${TETHYS_DB_PORT}"
     echo "Waiting for databases to startup..."; sleep 30
-    echo "if [[ $(psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} --command "SELECT 1 FROM pg_roles WHERE rolname='${TETHYS_DB_USERNAME}'" | grep -q 1) -ne 0 ]]; then "
-    if [[ $(psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} --command "SELECT 1 FROM pg_roles WHERE rolname='${TETHYS_DB_USERNAME}'" | grep -q 1 && echo $?) -ne 0 ]]; then 
+    # if [[ $(psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} --command "SELECT 1 FROM pg_roles WHERE rolname='${TETHYS_DB_USERNAME}'" | grep -q 1 && echo $?) -ne 0 ]]; then 
+    if [[ "${TETHYS_DB_CREATE}" -ne '0' ]]; then
+      echo "Creating DB User and Password"
       psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} --command "CREATE USER ${TETHYS_DB_USERNAME} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '${TETHYS_DB_PASSWORD}';"
       createdb -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} -O ${TETHYS_DB_USERNAME} ${TETHYS_DB_USERNAME} -E utf-8 -T template0
     fi
@@ -238,7 +244,7 @@ then
     # Initialze Tethys database
     cd /usr/lib/tethys/src
     tethys manage syncdb
-    if [[ $(psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} --command "SELECT 1 FROM pg_roles WHERE rolname='${TETHYS_DB_USERNAME}'" | grep -q 1) -ne 0 ]]; then 
+    if [[ "${TETHYS_DB_CREATE}" -ne '0' ]]; then
       echo "from django.contrib.auth.models import User; User.objects.create_superuser('${TETHYS_SUPER_USER}', '${TETHYS_SUPER_USER_EMAIL}', '${TETHYS_SUPER_USER_PASS}')" | python manage.py shell
     fi
     # pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" stop

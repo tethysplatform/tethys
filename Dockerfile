@@ -23,9 +23,11 @@ RUN pwd \
          --python-version $TETHYSBUILD_PY_VERSION \
          --tethys-home $TETHYSBUILD_TETHYS_HOME \
          --conda-home $TETHYSBUILD_CONDA_HOME \
-         --conda-env-name $TETHYSBUILD_CONDA_ENV_NAME \
+         --conda-env-name $TETHYSBUILD_CONDA_ENV_NAME 
+
 
 ADD docker/setup_tethys.sh /usr/lib/tethys/setup_tethys.sh
+
 
 # Make port 8000 available to the outside world
 EXPOSE 8000
@@ -43,6 +45,7 @@ CMD echo Stating Tethys Setup \
          --db-password ${TETHYSBUILD_DB_PASSWORD:-pass} \
          --db-host ${TETHYSBUILD_DB_HOST:-127.0.0.1} \
          --db-port ${TETHYSBUILD_DB_PORT:-5432} \
+         --db-create ${TETHYSBUILD_DB_CREATE:-0} \
          --superuser ${TETHYSBUILD_SUPERUSER:-tethys_super} \
          --superuser-pass ${TETHYSBUILD_SUPERUSER_PASS:-admin} \
          --tethys-home ${TETHYSBUILD_TETHYS_HOME:-/usr/lib/tethys} \
