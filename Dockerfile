@@ -27,7 +27,9 @@ RUN pwd \
 
 
 ADD docker/setup_tethys.sh /usr/lib/tethys/setup_tethys.sh
-
+ADD aquaveo_static/images/aquaveo_favicon.ico /usr/lib/tethys/src/static/tethys_portal/images/default_favicon.png
+ADD aquaveo_static/images/aquaveo_logo.png /usr/lib/tethys/src/static/tethys_portal/images/tethys-logo-75.png
+ADD aqauveo_static/tethys_main.css /usr/lib/tethys/src/static/tethys_portal/css/tethys_main.css
 
 # Make port 8000 available to the outside world
 EXPOSE 8000
@@ -50,6 +52,8 @@ CMD echo Stating Tethys Setup \
          --superuser-pass ${TETHYSBUILD_SUPERUSER_PASS:-admin} \
          --tethys-home ${TETHYSBUILD_TETHYS_HOME:-/usr/lib/tethys} \
          --conda-home ${TETHYSBUILD_CONDA_HOME:-/usr/lib/tethys/miniconda} \
+         --production \
+    && sed 's/BYPASS_TETHYS_HOME = False/BYPASS_TETHYS_HOME = True/' /usr/lib/tethys/src/tethys_portal/settings.py > /usr/lib/tethys/src/tethys_portal/settings.py \
     && echo Setup Complete \
     && cd ${TETHYSBUILD_TETHYS_HOME:-/usr/lib/tethys}/src \
     && echo Source Directory: $PWD \
