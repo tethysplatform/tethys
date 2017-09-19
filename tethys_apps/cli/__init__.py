@@ -23,6 +23,12 @@ from .manage_commands import (manage_command, get_manage_path, run_process,
                               MANAGE_START, MANAGE_SYNCDB,
                               MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
                               MANAGE_COLLECT, MANAGE_CREATESUPERUSER, TETHYS_SRC_DIRECTORY)
+from .services_commands import (SERVICES_CREATE, SERVICES_CREATE_PERSISTENT, SERVICES_CREATE_SPATIAL, SERVICES_LINK,
+                                services_create_persistent_command, services_create_spatial_command,
+                                services_list_command, services_remove_persistent_command,
+                                services_remove_spatial_command)
+from .link_commands import link_command
+from .app_settings_commands import app_settings_list_command
 from .gen_commands import VALID_GEN_OBJECTS, generate_command
 from tethys_apps.helpers import get_installed_tethys_apps
 
@@ -228,6 +234,104 @@ def tethys_command():
     manage_parser.add_argument('-p', '--port', type=str, help='Host and/or port on which to bind the development server.')
     manage_parser.add_argument('--noinput', action='store_true', help='Pass the --noinput argument to the manage.py command.')
     manage_parser.set_defaults(func=manage_command)
+
+    # Setup services command
+    services_parser = subparsers.add_parser('services', help='Services commands for Tethys Platform.')
+    services_subparsers = services_parser.add_subparsers(title='Commands')
+
+    # SERVICES REMOVE COMMANDS
+    services_remove_parser = services_subparsers.add_parser('remove', help='Remove a Tethys Service.')
+    services_remove_subparsers = services_remove_parser.add_subparsers(title='Service Type')
+
+    # REMOVE PERSISTENT SERVICE COMMAND
+    services_remove_persistent = services_remove_subparsers.add_parser('persistent',
+                                                                       help='Remove a Persistent Store Service.')
+    services_remove_persistent.add_argument('service_id', help='The ID of the service that you are removing.')
+    services_remove_persistent.add_argument('-a', '--authenticate', required=False, type=str,
+                                            help='The superuser credentials needed to perform this command in the form '
+                                                 '"<username>" or "<username>:<password>". '
+                                                 'You will be prompted for unprovided parts.')
+    services_remove_persistent.set_defaults(func=services_remove_persistent_command)
+
+    # REMOVE SPATIAL SERVICE COMMAND
+    services_remove_spatial = services_remove_subparsers.add_parser('spatial',
+                                                                    help='Remove a Spatial Dataset Service.')
+    services_remove_spatial.add_argument('service_id', help='The ID of the service that you are removing.')
+    services_remove_spatial.add_argument('-a', '--authenticate', required=False, type=str,
+                                         help='The superuser credentials needed to perform this command in the form '
+                                              '"<username>" or "<username>:<password>". '
+                                              'You will be prompted for unprovided parts.')
+
+    services_remove_spatial.set_defaults(func=services_remove_spatial_command)
+
+    # SERVICES CREATE COMMANDS
+    services_create_parser = services_subparsers.add_parser('create', help='Create a Tethys Service.')
+    services_create_subparsers = services_create_parser.add_subparsers(title='Service Type')
+
+    # CREATE PERSISTENT STORE SERVICE COMMAND
+    services_create_ps = services_create_subparsers.add_parser('persistent',
+                                                               help='Create a Persistent Store Service.')
+    services_create_ps.add_argument('-n', '--name', required=True, help='The name of the Service', type=str)
+    services_create_ps.add_argument('-c', '--connection', required=True, type=str,
+                                    help='The connection of the Service in the form '
+                                         '"<username>:<password>@<host>:<port>"')
+    services_create_ps.add_argument('-a', '--authenticate', required=False, type=str,
+                                    help='The superuser credentials needed to perform this command in the form '
+                                         '"<username>" or "<username>:<password>". '
+                                         'You will be prompted for unprovided parts.')
+    services_create_ps.set_defaults(func=services_create_persistent_command)
+
+    # CREATE SPATIAL DATASET SERVICE COMMAND
+    services_create_sd = services_create_subparsers.add_parser('spatial',
+                                                               help='Create a Spatial Dataset Service.')
+    services_create_sd.add_argument('-n', '--name', required=True, help='The name of the Service', type=str)
+    services_create_sd.add_argument('-c', '--connection', required=True, type=str,
+                                    help='The connection of the Service in the form '
+                                         '"<username>:<password>@<protocol>//<host>:<port>"')
+    services_create_sd.add_argument('-p', '--public-endpoint', required=False, type=str,
+                                    help='The public-facing endpoint, if different than what was provided with the '
+                                         '--connection argument, of the form "<host>:<port>"')
+    services_create_sd.add_argument('-k', '--apikey', required=False, type=str,
+                                    help='The API key, if any, required to establish a connection.')
+    services_create_sd.add_argument('-a', '--authenticate', required=False, type=str,
+                                    help='The superuser credentials needed to perform this command in the form '
+                                         '"<username>" or "<username>:<password>". '
+                                         'You will be prompted for unprovided parts.')
+    services_create_sd.set_defaults(func=services_create_spatial_command)
+
+    # LIST SERVICES COMMAND
+    services_list_parser = services_subparsers.add_parser('list', help='List all existing Tethys Services.')
+    group = services_list_parser.add_mutually_exclusive_group()
+    group.add_argument('-p', '--persistent', action='store_true', help='Only list Persistent Store Services.')
+    group.add_argument('-s', '--spatial', action='store_true', help='Only list Spatial Dataset Services.')
+    services_list_parser.add_argument('-a', '--authenticate', required=False, type=str,
+                                      help='The superuser credentials needed to perform this command in the form '
+                                           '"<username>" or "<username>:<password>". '
+                                           'You will be prompted for unprovided parts.')
+    services_list_parser.set_defaults(func=services_list_command)
+
+    # Setup app_settings command
+    app_settings_parser = subparsers.add_parser('app_settings', help='Interact with Tethys App Settings.')
+    app_settings_subparsers = app_settings_parser.add_subparsers(title='Options')
+    app_settings_list_parser = app_settings_subparsers.add_parser('list', help='List all settings for a specified app')
+    app_settings_list_parser.add_argument('app', help='The app ("<app_package>") to list the Settings for.')
+    app_settings_list_parser.add_argument('-a', '--authenticate', required=False, type=str,
+                                          help='The superuser credentials needed to perform this command in the form '
+                                               '"<username>" or "<username>:<password>". '
+                                               'You will be prompted for unprovided parts.')
+    app_settings_list_parser.set_defaults(func=app_settings_list_command)
+
+    # Setup link command
+
+    # LINK SERVICE WITH APP COMMAND
+    link_parser = subparsers.add_parser('link', help='Link a Service to a Tethys app Setting.')
+    link_parser.add_argument('service', help='Service to link to a target app. Of the form '
+                                             '"<spatial|persistent>:<service_id|service_name>" '
+                                             '(i.e. "persistent_connection:super_conn")')
+    link_parser.add_argument('setting', help='Setting of an app with which to link the specified service.'
+                                             'Of the form "<app_package>:<setting_type (ps_database|ps_connection|ds_spatial)>'
+                                             '<setting_id|setting_name>" (i.e. "epanet:database:epanet_2")')
+    link_parser.set_defaults(func=link_command)
 
     # Setup test command
     test_parser = subparsers.add_parser('test', help='Testing commands for Tethys Platform.')
