@@ -96,6 +96,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'tethys_exception.exception_handler.ErrorMiddleware',
     'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
 )
