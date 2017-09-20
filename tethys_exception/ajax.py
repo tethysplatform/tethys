@@ -8,7 +8,7 @@
     License: BSD 3-Clause
 """
 class TethysError(Exception):
-    """This is an exception for database errors."""
+    """This is an exception for Tethys Platform ajax errors."""
     __prepend__ = "Tethys"
     
     @property
