@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""exception_handler.py
+"""ajax.py
 
     This is for handling ajax exceptions.
 
@@ -7,9 +7,6 @@
     Created: September 20, 2017
     License: BSD 3-Clause
 """
-from django.http import HttpResponseBadRequest
-
-
 class TethysError(Exception):
     """This is an exception for database errors."""
     __prepend__ = "Tethys"
@@ -57,12 +54,4 @@ class UploadError(TethysError):
     __prepend__ = "Upload"
     pass
 
-
-class ErrorMiddleware(object):
-    def process_exception(self, request, exception):
-        """
-        This processes the exeption of the request.
-        """
-        if isinstance(exception, TethysError):
-            return HttpResponseBadRequest(exception.ajax_error_message)
 
