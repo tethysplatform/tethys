@@ -78,7 +78,10 @@ def manage_command(args):
 
     elif args.command == MANAGE_COLLECTWORKSPACES:
         # Run collectworkspaces command
-        primary_process = ['python', manage_path, 'collectworkspaces']
+        if args.force:
+            primary_process = ['python', manage_path, 'collectworkspaces', '--force']
+        else:
+            primary_process = ['python', manage_path, 'collectworkspaces']
 
     elif args.command == MANAGE_COLLECT:
         # Convenience command to run collectstatic and collectworkspaces
