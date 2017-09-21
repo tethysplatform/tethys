@@ -1,19 +1,20 @@
 from cli_helpers import console_superuser_required
 from django.core.exceptions import ObjectDoesNotExist
-from tethys_apps.models import (TethysApp, PersistentStoreConnectionSetting, PersistentStoreDatabaseSetting,
-                                SpatialDatasetServiceSetting)
 
 from .cli_colors import *
-
-setting_type_dict = {
-    PersistentStoreConnectionSetting: 'ps_connection',
-    PersistentStoreDatabaseSetting: 'ps_database',
-    SpatialDatasetServiceSetting: 'ds_spatial'
-}
 
 
 @console_superuser_required
 def app_settings_list_command(args):
+    from tethys_apps.models import (TethysApp, PersistentStoreConnectionSetting, PersistentStoreDatabaseSetting,
+                                    SpatialDatasetServiceSetting)
+
+    setting_type_dict = {
+        PersistentStoreConnectionSetting: 'ps_connection',
+        PersistentStoreDatabaseSetting: 'ps_database',
+        SpatialDatasetServiceSetting: 'ds_spatial'
+    }
+
     app_package = args.app
     try:
         app = TethysApp.objects.get(package=app_package)
