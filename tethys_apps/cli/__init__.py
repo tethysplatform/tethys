@@ -229,10 +229,14 @@ def tethys_command():
     # Setup start server command
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
     manage_parser.add_argument('command', help='Management command to run.',
-                               choices=[MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT, MANAGE_CREATESUPERUSER])
+                               choices=[MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
+                                        MANAGE_COLLECT, MANAGE_CREATESUPERUSER])
     manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
     manage_parser.add_argument('-p', '--port', type=str, help='Host and/or port on which to bind the development server.')
     manage_parser.add_argument('--noinput', action='store_true', help='Pass the --noinput argument to the manage.py command.')
+    manage_parser.add_argument('-f', '--force', required=False, action='store_true',
+                               help='Used only with {} to force the overwrite the app directory into its collect-to '
+                                    'location.')
     manage_parser.set_defaults(func=manage_command)
 
     # Setup services command
