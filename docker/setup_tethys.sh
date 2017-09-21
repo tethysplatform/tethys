@@ -35,9 +35,10 @@ set -e  # exit on error
 # Set platform specific default options
 if [ "$(uname)" = "Linux" ]
 then
-    # LINUX_DISTRIBUTION=$(lsb_release -is) || LINUX_DISTRIBUTION=$(python -c "import platform; print(platform.linux_distribution(full_distribution_name=0)[0])")
+    LINUX_DISTRIBUTION=$(lsb_release -is) || LINUX_DISTRIBUTION=$(python -c "import platform; print(platform.linux_distribution(full_distribution_name=0)[0])")
     # convert to lower case
-    # LINUX_DISTRIBUTION=${LINUX_DISTRIBUTION,,}
+    echo "Linux Distribution: ${LINUX_DISTRIBUTION}"
+    LINUX_DISTRIBUTION=${LINUX_DISTRIBUTION,,}
     MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
     BASH_PROFILE=".bashrc"
     resolve_relative_path ()
@@ -228,14 +229,16 @@ then
     echo "Starting Tethys Setup..."
     . ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}
     tethys gen settings ${ALLOWED_HOST_OPT} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT}
-    sed -i -e "s/127.0.0.1/${TETHYS_DB_HOST}/g" /usr/lib/tethys/src/tethys_portal/settings.py
+    sed -i -e "s/'HOST': '127.0.0.1',/'HOST': '${TETHYSBUILD_DB_HOST}',/g" /usr/lib/tethys/src/tethys_portal/settings.py 
+    sed -i -e 's/BYPASS_TETHYS_HOME = False/BYPASS_TETHYS_HOME = True/g' /usr/lib/tethys/src/tethys_portal/settings.py
+    # sed -i -e "s/127.0.0.1/${TETHYS_DB_HOST}/g" /usr/lib/tethys/src/tethys_portal/settings.py
     # Setup local database
     echo "Setting up the Tethys database..."
     # initdb  -U postgres -D "${TETHYS_HOME}/psql/data"
     # pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" -l "${TETHYS_HOME}/psql/logfile" start -o "-p ${TETHYS_DB_PORT}"
     echo "Waiting for databases to startup..."; sleep 30
-    # if [[ $(psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} --command "SELECT 1 FROM pg_roles WHERE rolname='${TETHYS_DB_USERNAME}'" | grep -q 1 && echo $?) -ne 0 ]]; then 
-    if [[ "${TETHYS_DB_CREATE}" -ne '0' ]]; then
+    if [[ $(psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} --command "SELECT 1 FROM pg_roles WHERE rolname='${TETHYS_DB_USERNAME}'" | grep -q 1 && echo $?) -ne 0 ]]; then 
+    # if [[ "${TETHYS_DB_CREATE}" -ne '0' ]]; then
       echo "Creating DB User and Password"
       psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} --command "CREATE USER ${TETHYS_DB_USERNAME} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '${TETHYS_DB_PASSWORD}';"
       createdb -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} -O ${TETHYS_DB_USERNAME} ${TETHYS_DB_USERNAME} -E utf-8 -T template0
@@ -244,7 +247,8 @@ then
     # Initialze Tethys database
     cd /usr/lib/tethys/src
     tethys manage syncdb
-    if [[ "${TETHYS_DB_CREATE}" -ne '0' ]]; then
+    if [[ $(psql -U postgres -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} --command "SELECT 1 FROM pg_roles WHERE rolname='${TETHYS_DB_USERNAME}'" | grep -q 1 && echo $?) -ne 0 ]]; then 
+    # if [[ "${TETHYS_DB_CREATE}" -ne '0' ]]; then
       echo "from django.contrib.auth.models import User; User.objects.create_superuser('${TETHYS_SUPER_USER}', '${TETHYS_SUPER_USER_EMAIL}', '${TETHYS_SUPER_USER_PASS}')" | python manage.py shell
     fi
     # pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" stop
@@ -292,57 +296,56 @@ TETHYS_CONDA_ENV_NAME=${CONDA_ENV_NAME}
 #  Install Production configuration if flag is set
 
 ubuntu_debian_production_install() {
-    sudo apt update
-    sudo apt install -y nginx
-    sudo rm /etc/nginx/sites-enabled/default
+    apt update
+    apt install -y nginx
+    rm /etc/nginx/sites-enabled/default
     NGINX_SITES_DIR='sites-enabled'
 }
 
 enterprise_linux_production_install() {
-    sudo yum install nginx -y
-    sudo systemctl enable nginx
-    sudo systemctl start nginx
-    sudo firewall-cmd --permanent --zone=public --add-service=http
-#    sudo firewall-cmd --permanent --zone=public --add-service=https
-    sudo firewall-cmd --reload
+    yum install nginx -y
+    systemctl enable nginx
+    systemctl start nginx
+    firewall-cmd --permanent --zone=public --add-service=http
+#    firewall-cmd --permanent --zone=public --add-service=https
+    firewall-cmd --reload
 
     NGINX_SITES_DIR='conf.d'
 }
 
 redhat_production_install() {
     VERSION=$(python -c "import platform; print(platform.platform().split('-')[-2][0])")
-    sudo bash -c "echo $'[nginx]\nname=nginx repo\nbaseurl=http://nginx.org/packages/rhel/${VERSION}/\$basearch/\ngpgcheck=0\nenabled=1' > /etc/yum.repos.d/nginx.repo"
+    bash -c "echo $'[nginx]\nname=nginx repo\nbaseurl=http://nginx.org/packages/rhel/${VERSION}/\$basearch/\ngpgcheck=0\nenabled=1' > /etc/yum.repos.d/nginx.repo"
     enterprise_linux_production_install
 }
 
 centos_production_install() {
     PLATFORM=${LINUX_DISTRIBUTION}
     VERSION=$(python -c "import platform; print(platform.platform().split('-')[-2][0])")
-    sudo bash -c "echo $'[nginx]\nname=nginx repo\nbaseurl=http://nginx.org/packages/${PLATFORM}/${VERSION}/\$basearch/\ngpgcheck=0\nenabled=1' > /etc/yum.repos.d/nginx.repo"
-    sudo yum install epel-release -y
+    bash -c "echo $'[nginx]\nname=nginx repo\nbaseurl=http://nginx.org/packages/${PLATFORM}/${VERSION}/\$basearch/\ngpgcheck=0\nenabled=1' > /etc/yum.repos.d/nginx.repo"
+    yum install epel-release -y
     enterprise_linux_production_install
 }
 
 configure_selinux() {
-    sudo yum install setroubleshoot -y
-    sudo semanage fcontext -a -t httpd_config_t ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf
-    sudo restorecon -v ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf
-    sudo semanage fcontext -a -t httpd_sys_content_t "${TETHYS_HOME}(/.*)?"
-    sudo semanage fcontext -a -t httpd_sys_content_t "${TETHYS_HOME}/static(/.*)?"
-    sudo semanage fcontext -a -t httpd_sys_rw_content_t "${TETHYS_HOME}/workspaces(/.*)?"
-    sudo restorecon -R -v ${TETHYS_HOME} > /dev/null
+    yum install setroubleshoot -y
+    semanage fcontext -a -t httpd_config_t ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf
+    restorecon -v ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf
+    semanage fcontext -a -t httpd_sys_content_t "${TETHYS_HOME}(/.*)?"
+    semanage fcontext -a -t httpd_sys_content_t "${TETHYS_HOME}/static(/.*)?"
+    semanage fcontext -a -t httpd_sys_rw_content_t "${TETHYS_HOME}/workspaces(/.*)?"
+    restorecon -R -v ${TETHYS_HOME} > /dev/null
     echo $'module tethys-selinux-policy 1.0;\nrequire {type httpd_t; type init_t; class unix_stream_socket connectto; }\n#============= httpd_t ==============\nallow httpd_t init_t:unix_stream_socket connectto;' > ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.te
 
     checkmodule -M -m -o ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.mod ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.te
     semodule_package -o ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.pp -m ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.mod
-    sudo semodule -i ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.pp
+    semodule -i ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.pp
 }
 
 if [ -n "${LINUX_DISTRIBUTION}" -a "${PRODUCTION}" = "true" ]
 then
     # prompt for sudo
-    echo "Production installation requires some commands to be run with sudo. Please enter password:"
-    sudo echo "Installing Tethys Production Server..."
+    echo "Installing Tethys Production Server..."
 
     case ${LINUX_DISTRIBUTION} in
         debian)
@@ -378,22 +381,22 @@ then
     NGINX_GROUP=${NGINX_USER}
     NGINX_HOME=$(grep ${NGINX_USER} /etc/passwd | awk -F':' '{print $6}')
     mkdir -p ${TETHYS_HOME}/static ${TETHYS_HOME}/workspaces ${TETHYS_HOME}/apps
-    sudo chown -R ${USER} ${TETHYS_HOME}
+    chown -R ${USER} ${TETHYS_HOME}
     tethys manage collectall --noinput
-    sudo chmod 705 ~
-    sudo mkdir /var/log/uwsgi
-    sudo touch /var/log/uwsgi/tethys.log
-    sudo ln -s ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf /etc/nginx/${NGINX_SITES_DIR}/
+    chmod 705 ~
+    mkdir /var/log/uwsgi
+    touch /var/log/uwsgi/tethys.log
+    ln -s ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf /etc/nginx/${NGINX_SITES_DIR}/
 
     if [ -n "${SELINUX}" ]
     then
         configure_selinux
     fi
 
-    sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_HOME}/src /var/log/uwsgi/tethys.log
-    sudo systemctl enable ${TETHYS_HOME}/src/tethys_portal/tethys.uwsgi.service
-    sudo systemctl start tethys.uwsgi.service
-    sudo systemctl restart nginx
+    chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_HOME}/src /var/log/uwsgi/tethys.log
+    systemctl enable ${TETHYS_HOME}/src/tethys_portal/tethys.uwsgi.service
+    systemctl start tethys.uwsgi.service
+    systemctl restart nginx
     set +x
     . deactivate
 
@@ -422,93 +425,6 @@ fi
 installation_warning(){
     echo "WARNING: installing docker on $1 is not officially supported by the Tethys install script. Attempting to install with $2 script."
 }
-
-finalize_docker_install(){
-    sudo groupadd docker
-    sudo gpasswd -a ${USER} docker
-    . ${TETHYS_CONDA_HOME}/bin/activate ${TETHYS_CONDA_ENV_NAME}
-    sg docker -c "tethys docker init ${DOCKER_OPTIONS}"
-    . deactivate
-    echo "Docker installation finished!"
-    echo "You must re-login for Docker permissions to be activated."
-    echo "(Alternatively you can run 'newgrp docker')"
-}
-
-ubuntu_debian_docker_install(){
-    if [ "${LINUX_DISTRIBUTION}" != "ubuntu" ] && [ ${LINUX_DISTRIBUTION} != "debian" ]
-    then
-        installation_warning ${LINUX_DISTRIBUTION} "Ubuntu"
-    fi
-
-    sudo apt-get update
-    sudo apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
-    curl -fsSL https://download.docker.com/linux/${LINUX_DISTRIBUTION}/gpg | sudo apt-key add -
-    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/${LINUX_DISTRIBUTION} $(lsb_release -cs) stable"
-    sudo apt-get update
-    sudo apt-get install -y docker-ce
-
-    finalize_docker_install
-}
-
-centos_docker_install(){
-    if [ "${LINUX_DISTRIBUTION}" != "centos" ]
-    then
-        installation_warning ${LINUX_DISTRIBUTION} "CentOS"
-    fi
-
-    sudo yum -y install yum-utils
-    sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-    sudo yum makecache fast
-    sudo yum -y install docker-ce
-    sudo systemctl start docker
-    sudo systemctl enable docker
-
-    finalize_docker_install
-}
-
-fedora_docker_install(){
-    if [ "${LINUX_DISTRIBUTION}" != "fedora" ]
-    then
-        installation_warning ${LINUX_DISTRIBUTION} "Fedora"
-    fi
-
-    sudo dnf -y install -y dnf-plugins-core
-    sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-    sudo dnf makecache fast
-    sudo dnf -y install docker-ce
-    sudo systemctl start docker
-    sudo systemctl enable docker
-
-    finalize_docker_install
-}
-
-if [ -n "${LINUX_DISTRIBUTION}" -a "${INSTALL_DOCKER}" = "true" ]
-then
-    # prompt for sudo
-    echo "Docker installation requires some commands to be run with sudo. Please enter password:"
-    sudo echo "Installing Docker..."
-
-    case ${LINUX_DISTRIBUTION} in
-        debian)
-            ubuntu_debian_docker_install
-        ;;
-        ubuntu)
-            ubuntu_debian_docker_install
-        ;;
-        centos)
-            centos_docker_install
-        ;;
-        redhat)
-            centos_docker_install
-        ;;
-        fedora)
-            fedora_docker_install
-        ;;
-        *)
-            echo "Automated Docker installation on ${LINUX_DISTRIBUTION} is not supported. Please see https://docs.docker.com/engine/installation/ for more information on installing Docker."
-        ;;
-    esac
-fi
 
 
 if [ -z "${SKIP_TETHYS_INSTALL}" ]
