@@ -1,7 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from django.forms.models import model_to_dict
-from tethys_services.models import SpatialDatasetService, PersistentStoreService
 
 from .cli_colors import *
 from .cli_helpers import console_superuser_required, add_geoserver_rest_to_endpoint
@@ -23,6 +22,7 @@ def services_create_persistent_command(args):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
     """
+    from tethys_services.models import PersistentStoreService
     name = None
 
     try:
@@ -52,6 +52,7 @@ def services_create_persistent_command(args):
 
 @console_superuser_required
 def services_remove_persistent_command(args):
+    from tethys_services.models import PersistentStoreService
     persistent_service_id = None
 
     try:
@@ -84,6 +85,7 @@ def services_create_spatial_command(args):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
     """
+    from tethys_services.models import SpatialDatasetService
     name = None
 
     try:
@@ -128,6 +130,7 @@ def services_create_spatial_command(args):
 
 @console_superuser_required
 def services_remove_spatial_command(args):
+    from tethys_services.models import SpatialDatasetService
     spatial_service_id = None
 
     try:
@@ -160,6 +163,7 @@ def services_list_command(args):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
     """
+    from tethys_services.models import SpatialDatasetService, PersistentStoreService
     list_persistent = False
     list_spatial = False
 
