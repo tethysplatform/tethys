@@ -1,31 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
-from tethys_apps.models import TethysApp
-from tethys_sdk.app_settings import (SpatialDatasetServiceSetting, PersistentStoreConnectionSetting,
-                                     PersistentStoreDatabaseSetting)
-from tethys_services.models import (SpatialDatasetService, PersistentStoreService)
 
 from .cli_colors import *
 from .cli_helpers import console_superuser_required
-
-service_type_to_model_dict = {
-    'spatial': SpatialDatasetService,
-    'persistent': PersistentStoreService
-}
-
-setting_type_to_link_model_dict = {
-    'ps_database': {
-        'setting_model': PersistentStoreDatabaseSetting,
-        'service_field': 'persistent_store_service'
-    },
-    'ps_connection': {
-        'setting_model': PersistentStoreConnectionSetting,
-        'service_field': 'persistent_store_service'
-    },
-    'ds_spatial': {
-        'setting_model': SpatialDatasetServiceSetting,
-        'service_field': 'spatial_dataset_service'
-    }
-}
 
 
 @console_superuser_required
@@ -33,6 +9,31 @@ def link_command(args):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
     """
+    from tethys_apps.models import TethysApp
+    from tethys_sdk.app_settings import (SpatialDatasetServiceSetting, PersistentStoreConnectionSetting,
+                                         PersistentStoreDatabaseSetting)
+    from tethys_services.models import (SpatialDatasetService, PersistentStoreService)
+
+    service_type_to_model_dict = {
+        'spatial': SpatialDatasetService,
+        'persistent': PersistentStoreService
+    }
+
+    setting_type_to_link_model_dict = {
+        'ps_database': {
+            'setting_model': PersistentStoreDatabaseSetting,
+            'service_field': 'persistent_store_service'
+        },
+        'ps_connection': {
+            'setting_model': PersistentStoreConnectionSetting,
+            'service_field': 'persistent_store_service'
+        },
+        'ds_spatial': {
+            'setting_model': SpatialDatasetServiceSetting,
+            'service_field': 'spatial_dataset_service'
+        }
+    }
+
     try:
         service = args.service
         setting = args.setting
