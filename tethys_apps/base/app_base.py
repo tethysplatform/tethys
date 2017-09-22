@@ -1011,7 +1011,7 @@ class TethysAppBase(object):
         return True
 
     @classmethod
-    def _log_tethys_app_setting_not_assigned_errror(cls, setting_type, setting_name):
+    def _log_tethys_app_setting_not_assigned_error(cls, setting_type, setting_name):
         """
         Logs useful traceback and message without actually raising an exception when an attempt
         to access a non-existent setting is made.
