@@ -172,6 +172,7 @@ def scaffold_command(args):
     default_proper_name = ' '.join(title_case_project_name)
     app_class_name = ''.join(title_case_project_name)
     default_theme_color = get_random_color()
+    project_process = project_name.replace('_', '').lower()
 
     print('Creating new Tethys project named "{0}".'.format(project_dir))
 
@@ -227,6 +228,7 @@ def scaffold_command(args):
         'project': project_name,
         'project_dir': project_dir,
         'project_url': project_name.replace('_', '-'),
+        'project_process': project_process,
         'app_class_name': app_class_name,
         'proper_name': default_proper_name,
         'description': '',
@@ -298,6 +300,7 @@ def scaffold_command(args):
     # Walk the template directory, creating the templates and directories in the new project as we go
     template_context = Context(context)
 
+    print ("template_root: {0}".format(template_root))
     for curr_template_root, dirs, template_files in os.walk(template_root):
         # print(curr_template_root, dirs, files)
         curr_project_root = curr_template_root.replace(template_root, project_root)
@@ -312,6 +315,7 @@ def scaffold_command(args):
             template_file_path = os.path.join(curr_template_root, template_file)
             project_file = template_file.replace(TEMPLATE_SUFFIX, '')
             project_file_path = os.path.join(curr_project_root, project_file)
+            project_file_path = render_path(project_file_path, context)
             template = None
 
             # Load the template
