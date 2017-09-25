@@ -22,7 +22,10 @@ RUN pwd \
          --python-version 2 \
          --tethys-home /usr/lib/tethys \
          --conda-home /usr/lib/tethys/miniconda \
-         --conda-env-name tethys
+         --conda-env-name tethys \
+    && mkdir /usr/lib/tethys/workspaces
+
+VOLUME ["/usr/lib/tethys/workspaces"]
 
 
 ADD docker/setup_tethys.sh /usr/lib/tethys/setup_tethys.sh
@@ -52,7 +55,6 @@ CMD echo Stating Tethys Setup \
          --tethys-home ${TETHYSBUILD_TETHYS_HOME:-/usr/lib/tethys} \
          --conda-home ${TETHYSBUILD_CONDA_HOME:-/usr/lib/tethys/miniconda} \
          --production \
-    && sed 's/BYPASS_TETHYS_HOME = False/BYPASS_TETHYS_HOME = True/' /usr/lib/tethys/src/tethys_portal/settings.py > /usr/lib/tethys/src/tethys_portal/settings.py \
     && echo Setup Complete \
     && cd ${TETHYSBUILD_TETHYS_HOME:-/usr/lib/tethys}/src \
     && echo Source Directory: $PWD \
