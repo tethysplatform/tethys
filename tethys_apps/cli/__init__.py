@@ -251,21 +251,12 @@ def tethys_command():
     services_remove_persistent = services_remove_subparsers.add_parser('persistent',
                                                                        help='Remove a Persistent Store Service.')
     services_remove_persistent.add_argument('service_id', help='The ID of the service that you are removing.')
-    services_remove_persistent.add_argument('-a', '--authenticate', required=False, type=str,
-                                            help='The superuser credentials needed to perform this command in the form '
-                                                 '"<username>" or "<username>:<password>". '
-                                                 'You will be prompted for unprovided parts.')
     services_remove_persistent.set_defaults(func=services_remove_persistent_command)
 
     # REMOVE SPATIAL SERVICE COMMAND
     services_remove_spatial = services_remove_subparsers.add_parser('spatial',
                                                                     help='Remove a Spatial Dataset Service.')
     services_remove_spatial.add_argument('service_id', help='The ID of the service that you are removing.')
-    services_remove_spatial.add_argument('-a', '--authenticate', required=False, type=str,
-                                         help='The superuser credentials needed to perform this command in the form '
-                                              '"<username>" or "<username>:<password>". '
-                                              'You will be prompted for unprovided parts.')
-
     services_remove_spatial.set_defaults(func=services_remove_spatial_command)
 
     # SERVICES CREATE COMMANDS
@@ -279,10 +270,6 @@ def tethys_command():
     services_create_ps.add_argument('-c', '--connection', required=True, type=str,
                                     help='The connection of the Service in the form '
                                          '"<username>:<password>@<host>:<port>"')
-    services_create_ps.add_argument('-a', '--authenticate', required=False, type=str,
-                                    help='The superuser credentials needed to perform this command in the form '
-                                         '"<username>" or "<username>:<password>". '
-                                         'You will be prompted for unprovided parts.')
     services_create_ps.set_defaults(func=services_create_persistent_command)
 
     # CREATE SPATIAL DATASET SERVICE COMMAND
@@ -297,10 +284,6 @@ def tethys_command():
                                          '--connection argument, of the form "<host>:<port>"')
     services_create_sd.add_argument('-k', '--apikey', required=False, type=str,
                                     help='The API key, if any, required to establish a connection.')
-    services_create_sd.add_argument('-a', '--authenticate', required=False, type=str,
-                                    help='The superuser credentials needed to perform this command in the form '
-                                         '"<username>" or "<username>:<password>". '
-                                         'You will be prompted for unprovided parts.')
     services_create_sd.set_defaults(func=services_create_spatial_command)
 
     # LIST SERVICES COMMAND
@@ -308,10 +291,6 @@ def tethys_command():
     group = services_list_parser.add_mutually_exclusive_group()
     group.add_argument('-p', '--persistent', action='store_true', help='Only list Persistent Store Services.')
     group.add_argument('-s', '--spatial', action='store_true', help='Only list Spatial Dataset Services.')
-    services_list_parser.add_argument('-a', '--authenticate', required=False, type=str,
-                                      help='The superuser credentials needed to perform this command in the form '
-                                           '"<username>" or "<username>:<password>". '
-                                           'You will be prompted for unprovided parts.')
     services_list_parser.set_defaults(func=services_list_command)
 
     # Setup app_settings command
@@ -319,10 +298,6 @@ def tethys_command():
     app_settings_subparsers = app_settings_parser.add_subparsers(title='Options')
     app_settings_list_parser = app_settings_subparsers.add_parser('list', help='List all settings for a specified app')
     app_settings_list_parser.add_argument('app', help='The app ("<app_package>") to list the Settings for.')
-    app_settings_list_parser.add_argument('-a', '--authenticate', required=False, type=str,
-                                          help='The superuser credentials needed to perform this command in the form '
-                                               '"<username>" or "<username>:<password>". '
-                                               'You will be prompted for unprovided parts.')
     app_settings_list_parser.set_defaults(func=app_settings_list_command)
 
     # Setup link command
