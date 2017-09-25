@@ -52,7 +52,6 @@ args in the build arg table can be used here as well)
 |TETHYSBUILD_DB_PASSWORD   | Password for Database      | pass          |
 |TETHYSBUILD_DB_HOST       | IPAddress for Database host| 127.0.0.1     |
 |TETHYSBUILD_DB_PORT       | Port on Database host      | 5432          |
-|TETHYSBUILD_DB_CREATE     | Create Database Users (0/1)| 0             |
 |TETHYSBUILD_SUPERUSER     | Tethys Superuser           | tethys_super  |
 |TETHYSBUILD_SUPERUSER_PASS| Tethys Superuser Password  | admin         |
 
