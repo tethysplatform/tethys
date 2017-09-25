@@ -229,8 +229,9 @@ then
     echo "Starting Tethys Setup..."
     . ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}
     tethys gen settings ${ALLOWED_HOST_OPT} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT}
-    sed -i -e "s/'HOST': '127.0.0.1',/'HOST': '${TETHYSBUILD_DB_HOST}',/g" /usr/lib/tethys/src/tethys_portal/settings.py 
+    sed -i -e "s/'HOST': '127.0.0.1',/'HOST': '${TETHYSBUILD_DB_HOST}',/g" /usr/lib/tethys/src/tethys_portal/settings.py
     sed -i -e 's/BYPASS_TETHYS_HOME = False/BYPASS_TETHYS_HOME = True/g' /usr/lib/tethys/src/tethys_portal/settings.py
+    sed -i -e "s/#TETHYS_WORKSPACES_ROOT = '\/var\/www\/tethys\/static\/workspaces'/TETHYS_WORKSPACES_ROOT = '\/usr\/lib\/tethys\/workspaces'/g" /usr/lib/tethys/src/tethys_portal/settings.py
     # sed -i -e "s/127.0.0.1/${TETHYS_DB_HOST}/g" /usr/lib/tethys/src/tethys_portal/settings.py
     # Setup local database
     echo "Setting up the Tethys database..."
