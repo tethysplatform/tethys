@@ -3,7 +3,7 @@ from django.db.utils import IntegrityError
 from django.forms.models import model_to_dict
 
 from .cli_colors import *
-from .cli_helpers import console_superuser_required, add_geoserver_rest_to_endpoint
+from .cli_helpers import add_geoserver_rest_to_endpoint
 
 SERVICES_CREATE = 'create'
 SERVICES_CREATE_PERSISTENT = 'persistent'
@@ -17,7 +17,6 @@ class FormatError(Exception):
         Exception.__init__(self)
 
 
-@console_superuser_required
 def services_create_persistent_command(args):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
@@ -50,7 +49,6 @@ def services_create_persistent_command(args):
             p.write('Persistent Store Service with name "{0}" already exists. Command aborted.'.format(name))
 
 
-@console_superuser_required
 def services_remove_persistent_command(args):
     from tethys_services.models import PersistentStoreService
     persistent_service_id = None
@@ -80,7 +78,6 @@ def services_remove_persistent_command(args):
             p.write('A Persistent Store Service with ID/Name "{0}" does not exist.'.format(persistent_service_id))
 
 
-@console_superuser_required
 def services_create_spatial_command(args):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
@@ -128,7 +125,6 @@ def services_create_spatial_command(args):
             p.write('Spatial Dataset Service with name "{0}" already exists. Command aborted.'.format(name))
 
 
-@console_superuser_required
 def services_remove_spatial_command(args):
     from tethys_services.models import SpatialDatasetService
     spatial_service_id = None
@@ -158,7 +154,6 @@ def services_remove_spatial_command(args):
             p.write('A Persistent Store Service with ID/Name "{0}" does not exist.'.format(spatial_service_id))
 
 
-@console_superuser_required
 def services_list_command(args):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
