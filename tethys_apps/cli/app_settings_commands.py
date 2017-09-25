@@ -1,10 +1,8 @@
-from cli_helpers import console_superuser_required
 from django.core.exceptions import ObjectDoesNotExist
 
 from .cli_colors import *
 
 
-@console_superuser_required
 def app_settings_list_command(args):
     from tethys_apps.models import (TethysApp, PersistentStoreConnectionSetting, PersistentStoreDatabaseSetting,
                                     SpatialDatasetServiceSetting)
