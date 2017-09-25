@@ -1,10 +1,8 @@
 from django.core.exceptions import ObjectDoesNotExist
 
 from .cli_colors import *
-from .cli_helpers import console_superuser_required
 
 
-@console_superuser_required
 def link_command(args):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
