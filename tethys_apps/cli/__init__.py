@@ -21,7 +21,7 @@ from .docker_commands import *
 from .gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
 from .manage_commands import (manage_command, get_manage_path, run_process,
                               MANAGE_START, MANAGE_SYNCDB,
-                              MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
+                              MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_SYNCAPPS,
                               MANAGE_COLLECT, MANAGE_CREATESUPERUSER, TETHYS_SRC_DIRECTORY)
 from .services_commands import (SERVICES_CREATE, SERVICES_CREATE_PERSISTENT, SERVICES_CREATE_SPATIAL, SERVICES_LINK,
                                 services_create_persistent_command, services_create_spatial_command,
@@ -230,7 +230,7 @@ def tethys_command():
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
     manage_parser.add_argument('command', help='Management command to run.',
                                choices=[MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
-                                        MANAGE_COLLECT, MANAGE_CREATESUPERUSER])
+                                        MANAGE_COLLECT, MANAGE_CREATESUPERUSER, MANAGE_SYNCAPPS])
     manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
     manage_parser.add_argument('-p', '--port', type=str, help='Host and/or port on which to bind the development server.')
     manage_parser.add_argument('--noinput', action='store_true', help='Pass the --noinput argument to the manage.py command.')
@@ -308,7 +308,7 @@ def tethys_command():
                                              '"<spatial|persistent>:<service_id|service_name>" '
                                              '(i.e. "persistent_connection:super_conn")')
     link_parser.add_argument('setting', help='Setting of an app with which to link the specified service.'
-                                             'Of the form "<app_package>:<setting_type (ps_database|ps_connection|ds_spatial)>'
+                                             'Of the form "<app_package>:<setting_type (ps_database|ps_connection|ds_spatial)>:'
                                              '<setting_id|setting_name>" (i.e. "epanet:database:epanet_2")')
     link_parser.set_defaults(func=link_command)
 
