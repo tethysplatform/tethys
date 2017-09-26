@@ -29,6 +29,7 @@ from .services_commands import (SERVICES_CREATE, SERVICES_CREATE_PERSISTENT, SER
                                 services_remove_spatial_command)
 from .link_commands import link_command
 from .app_settings_commands import app_settings_list_command
+from .scheduler_commands import scheduler_create_command, schedulers_list_command, schedulers_remove_command
 from .gen_commands import VALID_GEN_OBJECTS, generate_command
 from tethys_apps.helpers import get_installed_tethys_apps
 
@@ -239,6 +240,37 @@ def tethys_command():
                                     'location.')
     manage_parser.set_defaults(func=manage_command)
 
+    # Setup scheduler command
+    scheduler_parser = subparsers.add_parser('schedulers', help='Scheduler commands for Tethys Platform.')
+    scheduler_subparsers = scheduler_parser.add_subparsers(title='Commands')
+
+    # SCHEDULERS CREATE COMMAND
+    schedulers_create = scheduler_subparsers.add_parser('create', help='Create a Scheduler that can be '
+                                                                      'accessed by Tethys Apps.')
+    schedulers_create.add_argument('-n', '--name', required=True, help='A unique name for the Scheduler', type=str)
+    schedulers_create.add_argument('-e', '--endpoint', required=True, type=str,
+                                  help='The endpoint of the service in the form <protocol>//<host>"')
+    schedulers_create.add_argument('-u', '--username', required=True, help='The username to connect to the host with',
+                                  type=str)
+    group = schedulers_create.add_mutually_exclusive_group(required=True)
+    group.add_argument('-p', '--password', required=False, type=str,
+                       help='The password associated with the provided username')
+    group.add_argument('-f', '--private-key-path', required=False, help='The path to the private ssh key file',
+                       type=str)
+    schedulers_create.add_argument('-k', '--private-key-pass', required=False, type=str,
+                                  help='The password to the private ssh key file')
+
+    schedulers_create.set_defaults(func=scheduler_create_command)
+
+    # SCHEDULERS LIST COMMAND
+    schedulers_list = scheduler_subparsers.add_parser('list', help='List the existing Schedulers.')
+    schedulers_list.set_defaults(func=schedulers_list_command)
+
+    # SCHEDULERS REMOVE COMMAND
+    schedulers_remove = scheduler_subparsers.add_parser('remove', help='Remove a Scheduler.')
+    schedulers_remove.add_argument('scheduler_name', help='The unique name of the Scheduler that you are removing.')
+    schedulers_remove.set_defaults(func=schedulers_remove_command)
+
     # Setup services command
     services_parser = subparsers.add_parser('services', help='Services commands for Tethys Platform.')
     services_subparsers = services_parser.add_subparsers(title='Commands')
@@ -250,13 +282,15 @@ def tethys_command():
     # REMOVE PERSISTENT SERVICE COMMAND
     services_remove_persistent = services_remove_subparsers.add_parser('persistent',
                                                                        help='Remove a Persistent Store Service.')
-    services_remove_persistent.add_argument('service_id', help='The ID of the service that you are removing.')
+    services_remove_persistent.add_argument('service_uid', help='The ID or name of the Persistent Store Service '
+                                                                'that you are removing.')
     services_remove_persistent.set_defaults(func=services_remove_persistent_command)
 
     # REMOVE SPATIAL SERVICE COMMAND
     services_remove_spatial = services_remove_subparsers.add_parser('spatial',
                                                                     help='Remove a Spatial Dataset Service.')
-    services_remove_spatial.add_argument('service_id', help='The ID of the service that you are removing.')
+    services_remove_spatial.add_argument('service_uid', help='The ID or name of the Spatial Dataset Service '
+                                                             'that you are removing.')
     services_remove_spatial.set_defaults(func=services_remove_spatial_command)
 
     # SERVICES CREATE COMMANDS
@@ -266,7 +300,7 @@ def tethys_command():
     # CREATE PERSISTENT STORE SERVICE COMMAND
     services_create_ps = services_create_subparsers.add_parser('persistent',
                                                                help='Create a Persistent Store Service.')
-    services_create_ps.add_argument('-n', '--name', required=True, help='The name of the Service', type=str)
+    services_create_ps.add_argument('-n', '--name', required=True, help='A unique name for the Service', type=str)
     services_create_ps.add_argument('-c', '--connection', required=True, type=str,
                                     help='The connection of the Service in the form '
                                          '"<username>:<password>@<host>:<port>"')
@@ -275,7 +309,7 @@ def tethys_command():
     # CREATE SPATIAL DATASET SERVICE COMMAND
     services_create_sd = services_create_subparsers.add_parser('spatial',
                                                                help='Create a Spatial Dataset Service.')
-    services_create_sd.add_argument('-n', '--name', required=True, help='The name of the Service', type=str)
+    services_create_sd.add_argument('-n', '--name', required=True, help='A unique name for the Service', type=str)
     services_create_sd.add_argument('-c', '--connection', required=True, type=str,
                                     help='The connection of the Service in the form '
                                          '"<username>:<password>@<protocol>//<host>:<port>"')
