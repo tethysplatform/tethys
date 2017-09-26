@@ -23,6 +23,7 @@ MANAGE_COLLECTSTATIC = 'collectstatic'
 MANAGE_COLLECTWORKSPACES = 'collectworkspaces'
 MANAGE_COLLECT = 'collectall'
 MANAGE_CREATESUPERUSER = 'createsuperuser'
+MANAGE_SYNCAPPS = 'syncapps'
 
 
 def get_manage_path(args):
@@ -102,7 +103,9 @@ def manage_command(args):
 
     elif args.command == MANAGE_CREATESUPERUSER:
         primary_process = ['python', manage_path, 'createsuperuser']
-
+    elif args.command == MANAGE_SYNCAPPS:
+        from tethys_apps.utilities import sync_tethys_app_db
+        sync_tethys_app_db()
 
     if primary_process:
         run_process(primary_process)
