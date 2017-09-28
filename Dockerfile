@@ -17,16 +17,14 @@ ADD . /usr/lib/tethys/src
 # Run Scripts to Get Files
 RUN pwd \
     && apt-get update \
-    && apt-get install -y wget bzip2 git \
+    && apt-get --assume-yes install wget bzip2 git nginx \
     && bash install_tethys.sh \
          --python-version 2 \
          --tethys-home /usr/lib/tethys \
-         --conda-home /usr/lib/tethys/miniconda \
          --conda-env-name tethys \
     && mkdir /usr/lib/tethys/workspaces
 
 VOLUME ["/usr/lib/tethys/workspaces"]
-
 
 ADD docker/setup_tethys.sh /usr/lib/tethys/setup_tethys.sh
 ADD aquaveo_static/images/aquaveo_favicon.ico /usr/lib/tethys/src/static/tethys_portal/images/default_favicon.png
@@ -40,23 +38,4 @@ EXPOSE 80
 ENV PATH ${TETHYSBUILD_CONDA_HOME:-/usr/lib/tethys/miniconda}/envs/tethys/bin:$PATH
 
 # Install Tethys
-CMD echo Stating Tethys Setup \
-    && bash setup_tethys.sh \
-         -b ${TETHYSBUILD_BRANCH:-release} \
-         --allowed-host ${TETHYSBUILD_ALLOWED_HOST:-127.0.0.1} \
-         --python-version ${TETHYSBUILD_PY_VERSION:-2} \
-         --db-username ${TETHYSBUILD_DB_USERNAME:-tethys_default} \
-         --db-password ${TETHYSBUILD_DB_PASSWORD:-pass} \
-         --db-host ${TETHYSBUILD_DB_HOST:-127.0.0.1} \
-         --db-port ${TETHYSBUILD_DB_PORT:-5432} \
-         --db-create ${TETHYSBUILD_DB_CREATE:-0} \
-         --superuser ${TETHYSBUILD_SUPERUSER:-tethys_super} \
-         --superuser-pass ${TETHYSBUILD_SUPERUSER_PASS:-admin} \
-         --tethys-home ${TETHYSBUILD_TETHYS_HOME:-/usr/lib/tethys} \
-         --conda-home ${TETHYSBUILD_CONDA_HOME:-/usr/lib/tethys/miniconda} \
-         --production \
-    && echo Setup Complete \
-    && cd ${TETHYSBUILD_TETHYS_HOME:-/usr/lib/tethys}/src \
-    && echo Source Directory: $PWD \
-    && echo Starting Tethys on ${TETHYSBUILD_ALLOWED_HOST:-0.0.0.0}:${TETHYSBUILD_HOST_PORT:-8000} \
-    && tethys manage start -p ${TETHYSBUILD_DOCKER_IP:-0.0.0.0}:${TETHYSBUILD_HOST_PORT:-8000}
+CMD echo Error: Not a Standalone Docker
