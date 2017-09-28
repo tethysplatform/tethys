@@ -1,36 +1,9 @@
-from django.core.exceptions import ObjectDoesNotExist
-
-from .cli_colors import *
-
-
 def link_command(args):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
     """
-    from tethys_apps.models import TethysApp
-    from tethys_sdk.app_settings import (SpatialDatasetServiceSetting, PersistentStoreConnectionSetting,
-                                         PersistentStoreDatabaseSetting)
-    from tethys_services.models import (SpatialDatasetService, PersistentStoreService)
-
-    service_type_to_model_dict = {
-        'spatial': SpatialDatasetService,
-        'persistent': PersistentStoreService
-    }
-
-    setting_type_to_link_model_dict = {
-        'ps_database': {
-            'setting_model': PersistentStoreDatabaseSetting,
-            'service_field': 'persistent_store_service'
-        },
-        'ps_connection': {
-            'setting_model': PersistentStoreConnectionSetting,
-            'service_field': 'persistent_store_service'
-        },
-        'ds_spatial': {
-            'setting_model': SpatialDatasetServiceSetting,
-            'service_field': 'spatial_dataset_service'
-        }
-    }
+    from ..utilities import link_service_to_app_setting
+    from .cli_colors import pretty_output, FG_RED
 
     try:
         service = args.service
@@ -59,55 +32,15 @@ def link_command(args):
                     '\nCommand aborted.')
             exit(1)
 
-        service_model = service_type_to_model_dict[service_type]
+        success = link_service_to_app_setting(service_type, service_uid, setting_app_package, setting_type, setting_uid)
 
-        try:
-            try:
-                service_uid = int(service_uid)
-                service = service_model.objects.get(pk=service_uid)
-            except ValueError:
-                service = service_model.objects.get(name=service_uid)
-        except ObjectDoesNotExist:
-            with pretty_output(FG_RED) as p:
-                p.write('A {0} with ID/Name "{1}" does not exist.'.format(str(service_model), service_uid))
+        if not success:
             exit(1)
 
-        app = None
-        try:
-            app = TethysApp.objects.get(package=setting_app_package)
-        except ObjectDoesNotExist:
-            with pretty_output(FG_RED) as p:
-                p.write('The app you specified ("{0}") does not exist.'.format(setting_app_package))
-            exit(1)
-
-        linked_setting_model_dict = None
-        try:
-            linked_setting_model_dict = setting_type_to_link_model_dict[setting_type]
-        except KeyError:
-            with pretty_output(FG_RED) as p:
-                p.write('The setting_type you specified ("{0}") does not exist.'
-                        '\nChoose from: "ps_database|ps_connection|ds_spatial"'.format(setting_type))
-            exit(1)
-
-        linked_setting_model = linked_setting_model_dict['setting_model']
-        linked_service_field = linked_setting_model_dict['service_field']
-
-        try:
-            try:
-                setting_uid = int(setting_uid)
-                setting = linked_setting_model.objects.get(tethys_app=app, pk=setting_uid)
-            except ValueError:
-                setting = linked_setting_model.objects.get(tethys_app=app, name=setting_uid)
-        except ObjectDoesNotExist:
-            with pretty_output(FG_RED) as p:
-                p.write('A {0} with ID/Name "{1}" does not exist.'.format(str(linked_setting_model), setting_uid))
-            exit(1)
-
-        setattr(setting, linked_service_field, service)
-
-        setting.save()
+        exit(0)
 
     except Exception as e:
         print e
         with pretty_output(FG_RED) as p:
             p.write('An unexpected error occurred. Please try again.')
+        exit(1)
