@@ -28,7 +28,8 @@ from .services_commands import (SERVICES_CREATE, SERVICES_CREATE_PERSISTENT, SER
                                 services_list_command, services_remove_persistent_command,
                                 services_remove_spatial_command)
 from .link_commands import link_command
-from .app_settings_commands import app_settings_list_command
+from .app_settings_commands import (app_settings_list_command, app_settings_create_ps_database_command,
+                                    app_settings_remove_command)
 from .scheduler_commands import scheduler_create_command, schedulers_list_command, schedulers_remove_command
 from .gen_commands import VALID_GEN_OBJECTS, generate_command
 from tethys_apps.helpers import get_installed_tethys_apps
@@ -240,64 +241,63 @@ def tethys_command():
                                     'location.')
     manage_parser.set_defaults(func=manage_command)
 
-    # Setup scheduler command
+    # SCHEDULERS COMMANDS
     scheduler_parser = subparsers.add_parser('schedulers', help='Scheduler commands for Tethys Platform.')
     scheduler_subparsers = scheduler_parser.add_subparsers(title='Commands')
 
-    # SCHEDULERS CREATE COMMAND
+    # tethys schedulers create
     schedulers_create = scheduler_subparsers.add_parser('create', help='Create a Scheduler that can be '
-                                                                      'accessed by Tethys Apps.')
+                                                                       'accessed by Tethys Apps.')
     schedulers_create.add_argument('-n', '--name', required=True, help='A unique name for the Scheduler', type=str)
     schedulers_create.add_argument('-e', '--endpoint', required=True, type=str,
-                                  help='The endpoint of the service in the form <protocol>//<host>"')
+                                   help='The endpoint of the service in the form <protocol>//<host>"')
     schedulers_create.add_argument('-u', '--username', required=True, help='The username to connect to the host with',
-                                  type=str)
+                                   type=str)
     group = schedulers_create.add_mutually_exclusive_group(required=True)
     group.add_argument('-p', '--password', required=False, type=str,
                        help='The password associated with the provided username')
     group.add_argument('-f', '--private-key-path', required=False, help='The path to the private ssh key file',
                        type=str)
     schedulers_create.add_argument('-k', '--private-key-pass', required=False, type=str,
-                                  help='The password to the private ssh key file')
-
+                                   help='The password to the private ssh key file')
     schedulers_create.set_defaults(func=scheduler_create_command)
 
-    # SCHEDULERS LIST COMMAND
+    # tethys schedulers list
     schedulers_list = scheduler_subparsers.add_parser('list', help='List the existing Schedulers.')
     schedulers_list.set_defaults(func=schedulers_list_command)
 
-    # SCHEDULERS REMOVE COMMAND
+    # tethys schedulers remove
     schedulers_remove = scheduler_subparsers.add_parser('remove', help='Remove a Scheduler.')
     schedulers_remove.add_argument('scheduler_name', help='The unique name of the Scheduler that you are removing.')
     schedulers_remove.set_defaults(func=schedulers_remove_command)
 
-    # Setup services command
+    # SERVICES COMMANDS
     services_parser = subparsers.add_parser('services', help='Services commands for Tethys Platform.')
     services_subparsers = services_parser.add_subparsers(title='Commands')
 
-    # SERVICES REMOVE COMMANDS
+    # tethys services remove
     services_remove_parser = services_subparsers.add_parser('remove', help='Remove a Tethys Service.')
     services_remove_subparsers = services_remove_parser.add_subparsers(title='Service Type')
 
-    # REMOVE PERSISTENT SERVICE COMMAND
+    # tethys services remove persistent
     services_remove_persistent = services_remove_subparsers.add_parser('persistent',
                                                                        help='Remove a Persistent Store Service.')
     services_remove_persistent.add_argument('service_uid', help='The ID or name of the Persistent Store Service '
                                                                 'that you are removing.')
     services_remove_persistent.set_defaults(func=services_remove_persistent_command)
 
-    # REMOVE SPATIAL SERVICE COMMAND
+    # tethys services remove spatial
     services_remove_spatial = services_remove_subparsers.add_parser('spatial',
                                                                     help='Remove a Spatial Dataset Service.')
     services_remove_spatial.add_argument('service_uid', help='The ID or name of the Spatial Dataset Service '
                                                              'that you are removing.')
     services_remove_spatial.set_defaults(func=services_remove_spatial_command)
 
-    # SERVICES CREATE COMMANDS
+    # tethys services create
     services_create_parser = services_subparsers.add_parser('create', help='Create a Tethys Service.')
     services_create_subparsers = services_create_parser.add_subparsers(title='Service Type')
 
-    # CREATE PERSISTENT STORE SERVICE COMMAND
+    # tethys services create persistent
     services_create_ps = services_create_subparsers.add_parser('persistent',
                                                                help='Create a Persistent Store Service.')
     services_create_ps.add_argument('-n', '--name', required=True, help='A unique name for the Service', type=str)
@@ -306,7 +306,7 @@ def tethys_command():
                                          '"<username>:<password>@<host>:<port>"')
     services_create_ps.set_defaults(func=services_create_persistent_command)
 
-    # CREATE SPATIAL DATASET SERVICE COMMAND
+    # tethys services create spatial
     services_create_sd = services_create_subparsers.add_parser('spatial',
                                                                help='Create a Spatial Dataset Service.')
     services_create_sd.add_argument('-n', '--name', required=True, help='A unique name for the Service', type=str)
@@ -320,24 +320,59 @@ def tethys_command():
                                     help='The API key, if any, required to establish a connection.')
     services_create_sd.set_defaults(func=services_create_spatial_command)
 
-    # LIST SERVICES COMMAND
+    # tethys services list
     services_list_parser = services_subparsers.add_parser('list', help='List all existing Tethys Services.')
     group = services_list_parser.add_mutually_exclusive_group()
     group.add_argument('-p', '--persistent', action='store_true', help='Only list Persistent Store Services.')
     group.add_argument('-s', '--spatial', action='store_true', help='Only list Spatial Dataset Services.')
     services_list_parser.set_defaults(func=services_list_command)
 
-    # Setup app_settings command
+    # APP_SETTINGS COMMANDS
     app_settings_parser = subparsers.add_parser('app_settings', help='Interact with Tethys App Settings.')
     app_settings_subparsers = app_settings_parser.add_subparsers(title='Options')
+
+    # tethys app_settings list
     app_settings_list_parser = app_settings_subparsers.add_parser('list', help='List all settings for a specified app')
     app_settings_list_parser.add_argument('app', help='The app ("<app_package>") to list the Settings for.')
     app_settings_list_parser.set_defaults(func=app_settings_list_command)
 
-    # Setup link command
+    # tethys app_settings create
+    app_settings_create_cmd = app_settings_subparsers.add_parser('create', help='Create a Setting for an app.')
 
-    # LINK SERVICE WITH APP COMMAND
+    asc_subparsers = app_settings_create_cmd.add_subparsers(title='Create Options')
+    app_settings_create_cmd.add_argument('-a', '--app', required=True,
+                                         help='The app ("<app_package>") to create the Setting for.')
+    app_settings_create_cmd.add_argument('-n', '--name', required=True, help='The name of the Setting to create.')
+    app_settings_create_cmd.add_argument('-d', '--description', required=False,
+                                         help='A description for the Setting to create.')
+    app_settings_create_cmd.add_argument('-r', '--required', required=False, action='store_true',
+                                         help='Include this flag if the Setting is required for the app.')
+    app_settings_create_cmd.add_argument('-i', '--initializer', required=False,
+                                         help='The function that initializes the PersistentStoreSetting database.')
+    app_settings_create_cmd.add_argument('-z', '--initialized', required=False, action='store_true',
+                                         help='Include this flag if the database is already initialized.')
+
+    # tethys app_settings create ps_database
+    app_settings_create_psdb_cmd = asc_subparsers.add_parser('ps_database',
+                                                             help='Create a PersistentStoreDatabaseSetting')
+    app_settings_create_psdb_cmd.add_argument('-s', '--spatial', required=False, action='store_true',
+                                              help='Include this flag if the database requires spatial capabilities.')
+    app_settings_create_psdb_cmd.add_argument('-y', '--dynamic', action='store_true', required=False,
+                                              help='Include this flag if the database should be considered to be '
+                                                   'dynamically created.')
+    app_settings_create_psdb_cmd.set_defaults(func=app_settings_create_ps_database_command)
+
+    # tethys app_settings remove
+    app_settings_remove_cmd = app_settings_subparsers.add_parser('remove', help='Remove a Setting for an app.')
+    app_settings_remove_cmd.add_argument('app', help='The app ("<app_package>") to remove the Setting from.')
+    app_settings_remove_cmd.add_argument('-n', '--name', help='The name of the Setting to remove.', required=True)
+    app_settings_remove_cmd.add_argument('-f', '--force', action='store_true', help='Force removal without confirming.')
+    app_settings_remove_cmd.set_defaults(func=app_settings_remove_command)
+
+    # LINK COMMANDS
     link_parser = subparsers.add_parser('link', help='Link a Service to a Tethys app Setting.')
+
+    # tethys link
     link_parser.add_argument('service', help='Service to link to a target app. Of the form '
                                              '"<spatial|persistent>:<service_id|service_name>" '
                                              '(i.e. "persistent_connection:super_conn")')
