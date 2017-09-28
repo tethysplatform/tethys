@@ -72,3 +72,36 @@ def app_settings_list_command(args):
         print e
         with pretty_output(FG_RED) as p:
             p.write('Something went wrong. Please try again.')
+
+
+def app_settings_create_ps_database_command(args):
+    from ..utilities import create_ps_database_setting
+    app_package = args.app
+    setting_name = args.name
+    setting_description = args.description
+    required = args.required
+    initializer = args.initializer
+    initialized = args.initialized
+    spatial = args.spatial
+    dynamic = args.dynamic
+
+    success = create_ps_database_setting(app_package, setting_name, setting_description or '', required, initializer or '',
+                                         initialized, spatial, dynamic)
+
+    if not success:
+        exit(1)
+
+    exit(0)
+
+
+def app_settings_remove_command(args):
+    from ..utilities import remove_ps_database_setting
+    app_package = args.app
+    setting_name = args.name
+    force = args.force
+    success = remove_ps_database_setting(app_package, setting_name, force)
+
+    if not success:
+        exit(1)
+
+    exit(0)
