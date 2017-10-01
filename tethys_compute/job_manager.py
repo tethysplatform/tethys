@@ -281,7 +281,7 @@ class CondorJobTemplate(JobTemplate):
         # TODO job_description will be required when parameters is fully deprecated
         if job_description:
             parameters['remote_input_files'] = job_description.remote_input_files
-            parameters['_attributes'] = job_description.attributes
+            parameters['attributes'] = job_description.attributes
         else:
             msg = 'The job_description argument was not defined in the job_template {0}. ' \
                   'This argument will be required in version 1.5 of Tethys.'.format(name)
