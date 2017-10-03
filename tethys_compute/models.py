@@ -251,6 +251,9 @@ class CondorBase(TethysJob):
                                         self.scheduler.private_key_path,
                                         self.scheduler.private_key_pass
                                         )
+            # save remote_id if it's not already saved, and then make sure the condor_object's remote_id is in sync
+            self.remote_id = self.remote_id or condor_object._remote_id
+            condor_object._remote_id = self.remote_id
         return condor_object
 
     @abstractproperty
