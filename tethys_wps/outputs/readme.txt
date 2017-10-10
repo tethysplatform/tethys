@@ -1,0 +1,1 @@
+This folder is used to store wps results. Please do not remove this readme file.
