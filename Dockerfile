@@ -25,6 +25,7 @@ RUN pwd \
     && mkdir /usr/lib/tethys/workspaces
 
 VOLUME ["/usr/lib/tethys/workspaces"]
+VOLUME ["/usr/lib/tethys/keys"]
 
 ADD docker/setup_tethys.sh /usr/lib/tethys/setup_tethys.sh
 ADD aquaveo_static/images/aquaveo_favicon.ico /usr/lib/tethys/src/static/tethys_portal/images/default_favicon.png
