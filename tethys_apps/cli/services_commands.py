@@ -54,7 +54,7 @@ def services_remove_persistent_command(args):
     persistent_service_id = None
 
     try:
-        persistent_service_id = args.service_id
+        persistent_service_id = args.service_uid
 
         try:
             persistent_service_id = int(persistent_service_id)
@@ -130,7 +130,7 @@ def services_remove_spatial_command(args):
     spatial_service_id = None
 
     try:
-        spatial_service_id = args.service_id
+        spatial_service_id = args.service_uid
 
         try:
             spatial_service_id = int(spatial_service_id)
