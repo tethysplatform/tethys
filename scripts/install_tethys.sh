@@ -240,6 +240,9 @@ then
     git clone https://github.com/tethysplatform/tethys.git "${TETHYS_HOME}/src"
     cd "${TETHYS_HOME}/src"
     git checkout ${BRANCH}
+    # install pywps and termcolor
+    pip install -e git+https://github.com/xhqiao89/pywps.git@tethys_fix#egg=pywps-dev
+    conda install termcolor
 
     # create conda env and install Tethys
     echo "Setting up the ${CONDA_ENV_NAME} environment..."
