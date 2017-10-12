@@ -5,6 +5,7 @@ WORKDIR /usr/lib/tethys
 
 # Add files to docker image
 ADD docker/install_tethys.sh /usr/lib/tethys/install_tethys.sh
+ADD docker/run_tethys.sh /usr/lib/tethys/run_tethys.sh
 ADD . /usr/lib/tethys/src
 
 # Arguments
@@ -38,4 +39,4 @@ EXPOSE 80
 ENV PATH ${TETHYSBUILD_CONDA_HOME:-/usr/lib/tethys/miniconda}/envs/tethys/bin:$PATH
 
 # Install Tethys
-CMD echo Error: Not a Standalone Docker
+CMD bash /usr/lib/tethys/run_tethys.sh
