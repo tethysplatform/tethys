@@ -220,6 +220,7 @@ sed -i -e "s/#TETHYS_WORKSPACES_ROOT = '\/var\/www\/tethys\/static\/workspaces'/
 
 sed -i -e 's/SESSION_SECURITY_WARN_AFTER = 840/SESSION_SECURITY_WARN_AFTER = 25 * 60/g' /usr/lib/tethys/src/tethys_portal/settings.py
 sed -i -e 's/SESSION_SECURITY_EXPIRE_AFTER = 900/SESSION_SECURITY_EXPIRE_AFTER = 30 * 60/g' /usr/lib/tethys/src/tethys_portal/settings.py
+echo "PUBLIC_HOST = \"${TETHYSBUILD_PUBLIC_HOST}\"" >> /usr/lib/tethys/src/tethys_portal/settings.py
 
 # DB ROLLS/ETC
 if [[ $(psql -U postgres -h ${TETHYS_DB_HOST} -p  ${TETHYS_DB_PORT} --command ""; echo $?) -ne 0 ]]; then # Check if postgres has a password
