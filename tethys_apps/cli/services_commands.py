@@ -55,6 +55,7 @@ def services_remove_persistent_command(args):
 
     try:
         persistent_service_id = args.service_uid
+        force = args.force
 
         try:
             persistent_service_id = int(persistent_service_id)
@@ -62,20 +63,29 @@ def services_remove_persistent_command(args):
         except ValueError:
             service = PersistentStoreService.objects.get(name=persistent_service_id)
 
-        proceed = raw_input('Are you sure you want to delete this Persistent Store Service? [y/n]: ')
-        while proceed not in ['y', 'n', 'Y', 'N']:
-            proceed = raw_input('Please enter either "y" or "n": ')
-
-        if proceed in ['y', 'Y']:
+        if force:
             service.delete()
             with pretty_output(FG_GREEN) as p:
                 p.write('Successfully removed Persistent Store Service {0}!'.format(persistent_service_id))
+            exit(0)
         else:
-            with pretty_output(FG_RED) as p:
-                p.write('Aborted. Persistent Store Service not removed.')
+            proceed = raw_input('Are you sure you want to delete this Persistent Store Service? [y/n]: ')
+            while proceed not in ['y', 'n', 'Y', 'N']:
+                proceed = raw_input('Please enter either "y" or "n": ')
+
+            if proceed in ['y', 'Y']:
+                service.delete()
+                with pretty_output(FG_GREEN) as p:
+                    p.write('Successfully removed Persistent Store Service {0}!'.format(persistent_service_id))
+                exit(0)
+            else:
+                with pretty_output(FG_RED) as p:
+                    p.write('Aborted. Persistent Store Service not removed.')
+                exit(1)
     except ObjectDoesNotExist:
         with pretty_output(FG_RED) as p:
             p.write('A Persistent Store Service with ID/Name "{0}" does not exist.'.format(persistent_service_id))
+        exit(1)
 
 
 def services_create_spatial_command(args):
@@ -131,6 +141,7 @@ def services_remove_spatial_command(args):
 
     try:
         spatial_service_id = args.service_uid
+        force = args.force
 
         try:
             spatial_service_id = int(spatial_service_id)
@@ -138,20 +149,29 @@ def services_remove_spatial_command(args):
         except ValueError:
             service = SpatialDatasetService.objects.get(name=spatial_service_id)
 
-        proceed = raw_input('Are you sure you want to delete this Persistent Store Service? [y/n]: ')
-        while proceed not in ['y', 'n', 'Y', 'N']:
-            proceed = raw_input('Please enter either "y" or "n": ')
-
-        if proceed in ['y', 'Y']:
+        if force:
             service.delete()
             with pretty_output(FG_GREEN) as p:
-                p.write('Successfully removed Persistent Store Service {0}!'.format(spatial_service_id))
+                p.write('Successfully removed Spatial Dataset Service {0}!'.format(persistent_service_id))
+            exit(0)
         else:
-            with pretty_output(FG_RED) as p:
-                p.write('Aborted. Persistent Store Service not removed.')
+            proceed = raw_input('Are you sure you want to delete this Persistent Store Service? [y/n]: ')
+            while proceed not in ['y', 'n', 'Y', 'N']:
+                proceed = raw_input('Please enter either "y" or "n": ')
+
+            if proceed in ['y', 'Y']:
+                service.delete()
+                with pretty_output(FG_GREEN) as p:
+                    p.write('Successfully removed Spatial Dataset Service {0}!'.format(spatial_service_id))
+                exit(0)
+            else:
+                with pretty_output(FG_RED) as p:
+                    p.write('Aborted. Spatial Dataset Service not removed.')
+                exit(1)
     except ObjectDoesNotExist:
         with pretty_output(FG_RED) as p:
-            p.write('A Persistent Store Service with ID/Name "{0}" does not exist.'.format(spatial_service_id))
+            p.write('A Spatial Dataset Service with ID/Name "{0}" does not exist.'.format(spatial_service_id))
+        exit(1)
 
 
 def services_list_command(args):

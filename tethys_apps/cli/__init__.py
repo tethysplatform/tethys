@@ -269,6 +269,7 @@ def tethys_command():
     # tethys schedulers remove
     schedulers_remove = scheduler_subparsers.add_parser('remove', help='Remove a Scheduler.')
     schedulers_remove.add_argument('scheduler_name', help='The unique name of the Scheduler that you are removing.')
+    schedulers_remove.add_argument('-f', '--force', action='store_true', help='Force removal without confirming.')
     schedulers_remove.set_defaults(func=schedulers_remove_command)
 
     # SERVICES COMMANDS
@@ -284,6 +285,8 @@ def tethys_command():
                                                                        help='Remove a Persistent Store Service.')
     services_remove_persistent.add_argument('service_uid', help='The ID or name of the Persistent Store Service '
                                                                 'that you are removing.')
+    services_remove_persistent.add_argument('-f', '--force', action='store_true',
+                                            help='Force removal without confirming.')
     services_remove_persistent.set_defaults(func=services_remove_persistent_command)
 
     # tethys services remove spatial
@@ -291,6 +294,7 @@ def tethys_command():
                                                                     help='Remove a Spatial Dataset Service.')
     services_remove_spatial.add_argument('service_uid', help='The ID or name of the Spatial Dataset Service '
                                                              'that you are removing.')
+    services_remove_spatial.add_argument('-f', '--force', action='store_true', help='Force removal without confirming.')
     services_remove_spatial.set_defaults(func=services_remove_spatial_command)
 
     # tethys services create
