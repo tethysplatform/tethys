@@ -247,9 +247,9 @@ then
     . activate ${CONDA_ENV_NAME}
     python setup.py develop
 
-    # install pywps and termcolor
+    # install pywps and termcolor in Tethys
     pip install -e git+https://github.com/xhqiao89/pywps.git@tethys_fix#egg=pywps-dev
-    conda install termcolor
+    conda install -y termcolor
 
     # only pass --allowed-hosts option to gen settings command if it is not the default
     if [ ${ALLOWED_HOST} != "127.0.0.1" ]
