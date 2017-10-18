@@ -240,15 +240,16 @@ then
     git clone https://github.com/tethysplatform/tethys.git "${TETHYS_HOME}/src"
     cd "${TETHYS_HOME}/src"
     git checkout ${BRANCH}
-    # install pywps and termcolor
-    pip install -e git+https://github.com/xhqiao89/pywps.git@tethys_fix#egg=pywps-dev
-    conda install termcolor
 
     # create conda env and install Tethys
     echo "Setting up the ${CONDA_ENV_NAME} environment..."
     conda env create -n ${CONDA_ENV_NAME} -f "environment_py${PYTHON_VERSION}.yml"
     . activate ${CONDA_ENV_NAME}
     python setup.py develop
+
+    # install pywps and termcolor
+    pip install -e git+https://github.com/xhqiao89/pywps.git@tethys_fix#egg=pywps-dev
+    conda install termcolor
 
     # only pass --allowed-hosts option to gen settings command if it is not the default
     if [ ${ALLOWED_HOST} != "127.0.0.1" ]
