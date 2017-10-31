@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:2
+FROM python:2-slim-stretch
 
 WORKDIR /usr/lib/tethys
 
