@@ -6,6 +6,7 @@ FROM python:2-slim-stretch
 ###############
 ENV  TETHYS_HOME="/usr/lib/tethys" \
      TETHYS_PORT=80 \
+     TETHYS_PUBLIC_HOST="172.17.0.1" \
      TETHYS_DB_USERNAME="tethys_default" \
      TETHYS_DB_PASSWORD="pass" \
      TETHYS_DB_HOST="172.17.0.1" \
