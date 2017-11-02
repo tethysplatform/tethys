@@ -6,31 +6,29 @@ FROM python:2-slim-stretch
 #####################
 
 # Tethys
-ENV TETHYS_HOME "/usr/lib/tethys"
-ENV TETHYS_PORT 80
-ENV TETHYS_DB_USERNAME 'tethys_default'
-ENV TETHYS_DB_PASSWORD 'pass'
-ENV TETHYS_DB_HOST '172.17.0.1'
-ENV TETHYS_DB_PORT 5432
-ENV TETHYS_SUPER_USER 'admin'
-ENV TETHYS_SUPER_USER_EMAIL ''
-ENV TETHYS_SUPER_USER_PASS 'pass'
-ENV TETHYS_CONDA_HOME ${CONDA_HOME}
-ENV TETHYS_CONDA_ENV_NAME ${CONDA_ENV_NAME}
+ENV  TETHYS_HOME="/usr/lib/tethys" \
+     TETHYS_PORT=80 \
+     TETHYS_DB_USERNAME='tethys_default' \
+     TETHYS_DB_PASSWORD='pass' \
+     TETHYS_DB_HOST='172.17.0.1' \
+     TETHYS_DB_PORT=5432 \
+     TETHYS_SUPER_USER='admin' \
+     TETHYS_SUPER_USER_EMAIL='' \
+     TETHYS_SUPER_USER_PASS='pass' \
+     TETHYS_CONDA_HOME=${CONDA_HOME} \
+     TETHYS_CONDA_ENV_NAME=${CONDA_ENV_NAME} 
 
 # Misc
-ENV ALLOWED_HOST 127.0.0.1
-ENV BASH_PROFILE ".bashrc"
-ENV CONDA_HOME "${TETHYS_HOME}/miniconda"
-ENV CONDA_ENV_NAME tethys
-ENV MINICONDA_URL "https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
-ENV PYTHON_VERSION 2
-
-# Set paths for environment activate/deactivate scripts
-ENV ACTIVATE_DIR "${CONDA_HOME}/envs/${CONDA_ENV_NAME}/etc/conda/activate.d"
-ENV DEACTIVATE_DIR "${CONDA_HOME}/envs/${CONDA_ENV_NAME}/etc/conda/deactivate.d"
-ENV ACTIVATE_SCRIPT "${ACTIVATE_DIR}/tethys-activate.sh"
-ENV DEACTIVATE_SCRIPT "${DEACTIVATE_DIR}/tethys-deactivate.sh"
+ENV  ALLOWED_HOST=127.0.0.1 \
+     BASH_PROFILE=".bashrc" \
+     CONDA_HOME="${TETHYS_HOME}/miniconda" \
+     CONDA_ENV_NAME=tethys \
+     MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh" \
+     PYTHON_VERSION=2 \
+     ACTIVATE_DIR="${CONDA_HOME}/envs/${CONDA_ENV_NAME}/etc/conda/activate.d" \
+     DEACTIVATE_DIR="${CONDA_HOME}/envs/${CONDA_ENV_NAME}/etc/conda/deactivate.d" \
+     ACTIVATE_SCRIPT="${ACTIVATE_DIR}/tethys-activate.sh" \
+     DEACTIVATE_SCRIPT="${DEACTIVATE_DIR}/tethys-deactivate.sh" 
 
 
 #########
@@ -56,7 +54,7 @@ RUN bash ${TETHYS_HOME}/miniconda.sh -b -p "${CONDA_HOME}"
 # Setup Conda Environment
 ADD environment_py2.yml ${TETHYS_HOME}/src/
 WORKDIR ${TETHYS_HOME}/src
-RUN ${CONDA_HOME}/bin/conda env create -n "${CONDA_ENV_NAME}" -f "environment_py${PYTHON_VERSION}.yml"
+RUN ${CONDA_HOME}/bin/conda env create -n "${CONDA_    _NAME}" -f="environment_py${PYTHON_VERSION}.yml" \
 
 ###########
 # INSTALL #
@@ -74,7 +72,7 @@ ADD tethys_services ${TETHYS_HOME}/src/
 ADD *.py ${TETHYS_HOME}/src/
 
 # Run Installer
-RUN . ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
+RUN . ${CONDA_HOME}/bin/activate ${CONDA_    _NAME}=\ \
   ; python setup.py develop \
   ; conda install -c conda-forge uwsgi -y \
   ; mkdir ${TETHYS_HOME}/workspaces
@@ -84,6 +82,15 @@ ADD static ${TETHYS_HOME}/src/
 ADD aquaveo_static/images/aquaveo_favicon.ico ${TETHYS_HOME}/src/static/tethys_portal/images/default_favicon.png
 ADD aquaveo_static/images/aquaveo_logo.png ${TETHYS_HOME}/src/static/tethys_portal/images/tethys-logo-75.png
 ADD aquaveo_static/tethys_main.css ${TETHYS_HOME}/src/static/tethys_portal/css/tethys_main.css
+
+# Generate Inital Settings Files
+RUN . ${CONDA_HOME}/bin/activate ${CONDA_    _NAME}=\ \
+  ; tethys gen settings --production --allowed-host=${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite \
+  ; sed -i -e "s/#TETHYS_WORKSPACES_ROOT = '\/var\/www\/tethys\/static\/workspaces'/TETHYS_WORKSPACES_ROOT = '\/usr\/lib\/tethys\/workspaces'/g" ${TETHYS_HOME}/src/tethys_portal/settings.py \
+  ; tethys gen nginx --overwrite \
+  ; tethys gen uwsgi_settings --overwrite \
+  ; tethys gen uwsgi_service --overwrite
+
 
 # Give NGINX Permission
 RUN NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}') \
@@ -97,9 +104,9 @@ RUN apt-get -y remove wget gcc \
   ; apt-get -y clean
 
 #########################
-# CONFIGURE ENVIRONMENT #
+# CONFIGURE  ENVIRONMENT#
 #########################
-ENV PATH ${CONDA_HOME}/miniconda}/envs/tethys/bin:$PATH
+ENV PATH ${CONDA_HOME}/miniconda}/envs/tethys/bin:$PATH 
 VOLUME ["${TETHYS_HOME}/workspaces", "${TETHYS_HOME}/keys"]
 EXPOSE 80
 
