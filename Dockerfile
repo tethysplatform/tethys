@@ -12,25 +12,20 @@ ENV  TETHYS_HOME="/usr/lib/tethys" \
      TETHYS_DB_PORT=5432 \
      TETHYS_SUPER_USER="admin" \
      TETHYS_SUPER_USER_EMAIL="" \
-     TETHYS_SUPER_USER_PASS="pass" \
-     TETHYS_CONDA_HOME=${CONDA_HOME} \
-     TETHYS_CONDA_ENV_NAME=${CONDA_ENV_NAME} \
-     ALLOWED_HOST=127.0.0.1 \
+     TETHYS_SUPER_USER_PASS="pass" 
+# Misc
+ENV  ALLOWED_HOST=127.0.0.1 \
      BASH_PROFILE=".bashrc" \
      CONDA_HOME="${TETHYS_HOME}/miniconda" \
      CONDA_ENV_NAME=tethys \
      MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh" \
-     PYTHON_VERSION=2 \
-     ACTIVATE_DIR="${CONDA_HOME}/envs/${CONDA_ENV_NAME}/etc/conda/activate.d" \
-     DEACTIVATE_DIR="${CONDA_HOME}/envs/${CONDA_ENV_NAME}/etc/conda/deactivate.d" \
-     ACTIVATE_SCRIPT="${ACTIVATE_DIR}/tethys-activate.sh" \
-     DEACTIVATE_SCRIPT="${DEACTIVATE_DIR}/tethys-deactivate.sh" 
-
+     PYTHON_VERSION=2 
 
 #########
 # SETUP #
 #########
 RUN mkdir -p "${TETHYS_HOME}/src"
+WORKDIR ${TETHYS_HOME}
 
 # Speed up APT installs
 RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
@@ -110,5 +105,6 @@ EXPOSE 80
 ########
 # RUN! #
 ########
+WORKDIR ${TETHYS_HOME}
 CMD echo "Sleeping Forever"
 CMD while [ 1 ]; do sleep 1; done
