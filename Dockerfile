@@ -16,10 +16,10 @@ ENV  TETHYS_HOME="/usr/lib/tethys" \
      TETHYS_SUPER_USER_EMAIL='' \
      TETHYS_SUPER_USER_PASS='pass' \
      TETHYS_CONDA_HOME=${CONDA_HOME} \
-     TETHYS_CONDA_ENV_NAME=${CONDA_ENV_NAME} 
+     TETHYS_CONDA_ENV_NAME=${CONDA_ENV_NAME} \
 
 # Misc
-ENV  ALLOWED_HOST=127.0.0.1 \
+     ALLOWED_HOST=127.0.0.1 \
      BASH_PROFILE=".bashrc" \
      CONDA_HOME="${TETHYS_HOME}/miniconda" \
      CONDA_ENV_NAME=tethys \
@@ -54,7 +54,7 @@ RUN bash ${TETHYS_HOME}/miniconda.sh -b -p "${CONDA_HOME}"
 # Setup Conda Environment
 ADD environment_py2.yml ${TETHYS_HOME}/src/
 WORKDIR ${TETHYS_HOME}/src
-RUN ${CONDA_HOME}/bin/conda env create -n "${CONDA_    _NAME}" -f="environment_py${PYTHON_VERSION}.yml" \
+RUN ${CONDA_HOME}/bin/conda env create -n "${CONDA_ENV_NAME}" -f "environment_py${PYTHON_VERSION}.yml"
 
 ###########
 # INSTALL #
@@ -72,7 +72,7 @@ ADD tethys_services ${TETHYS_HOME}/src/
 ADD *.py ${TETHYS_HOME}/src/
 
 # Run Installer
-RUN . ${CONDA_HOME}/bin/activate ${CONDA_    _NAME}=\ \
+RUN . ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; python setup.py develop \
   ; conda install -c conda-forge uwsgi -y \
   ; mkdir ${TETHYS_HOME}/workspaces
@@ -84,8 +84,8 @@ ADD aquaveo_static/images/aquaveo_logo.png ${TETHYS_HOME}/src/static/tethys_port
 ADD aquaveo_static/tethys_main.css ${TETHYS_HOME}/src/static/tethys_portal/css/tethys_main.css
 
 # Generate Inital Settings Files
-RUN . ${CONDA_HOME}/bin/activate ${CONDA_    _NAME}=\ \
-  ; tethys gen settings --production --allowed-host=${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite \
+RUN . ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
+  ; tethys gen settings --production --allowed-host ${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite \
   ; sed -i -e "s/#TETHYS_WORKSPACES_ROOT = '\/var\/www\/tethys\/static\/workspaces'/TETHYS_WORKSPACES_ROOT = '\/usr\/lib\/tethys\/workspaces'/g" ${TETHYS_HOME}/src/tethys_portal/settings.py \
   ; tethys gen nginx --overwrite \
   ; tethys gen uwsgi_settings --overwrite \
@@ -106,7 +106,7 @@ RUN apt-get -y remove wget gcc \
 #########################
 # CONFIGURE  ENVIRONMENT#
 #########################
-ENV PATH ${CONDA_HOME}/miniconda}/envs/tethys/bin:$PATH 
+ENV PATH ${CONDA_HOME}/miniconda/envs/tethys/bin:$PATH 
 VOLUME ["${TETHYS_HOME}/workspaces", "${TETHYS_HOME}/keys"]
 EXPOSE 80
 
