@@ -1,7 +1,5 @@
-{%- set ACTIVATE_DIR = salt['environ.get']('ACTIVATE_DIR') -%}
-{%- set DEACTIVATE_DIR = salt['environ.get']('DEACTIVATE_DIR') -%}
-{%- set ACTIVATE_SCRIPT = salt['environ.get']('ACTIVATE_SCRIPT') -%}
-{%- set DEACTIVATE_SCRIPT = salt['environ.get']('DEACTIVATE_SCRIPT') -%}
+{%- set ACTIVATE_DIR = salt['environ.get']('CONDA_HOME')/envs/salt['environ.get']('CONDA_ENV_NAME')/etc/conda/activate.d -%}
+{%- set DEACTIVATE_DIR = salt['environ.get']('CONDA_HOME')/envs/salt['environ.get']('CONDA_ENV_NAME')/etc/conda/deactivate.d -%}
 {%- set TETHYS_HOME = salt['environ.get']('TETHYS_HOME') -%}
 {%- set TETHYS_DB_USERNAME = salt['environ.get']('TETHYS_DB_USERNAME') -%}
 {%- set TETHYS_DB_PASSWORD = salt['environ.get']('TETHYS_DB_PASSWORD') -%}
@@ -16,33 +14,29 @@
 {%- set BLERG = salt['environ.get']('BLERG') -%}
 {%- set BLERG = salt['environ.get']('BLERG') -%}
 
-ACTIVATE_DIR:
+ACTIVATE:
   file.directory:
     - name: {{ ACTIVATE_DIR }}
     - makedirs: True
+  file.managed:
+    - name: {{ ACTIVATE_DIR/tethys-activate.sh }}
+    - source: "salt://setup/files/activate.jinja"
+    - template: jinja
 
-DEACTIVATE_DIR:
+DEACTIVATE:
   file.directory:
     - name: {{ DEACTIVATE_DIR }}
     - makedirs: True
+  file.managed:
+    - name: {{ DEACTIVATE_DIR/tethys-deactivate.sh }}
+    - source: "salt://setup/files/deactivate.jinja"
+    - template: jinja
 
 ~/.bashrc:
   file.append:
     - text: |
       # Tethys Platform
       alias t='. {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }}
-
-ACTIVATE_SCRIPT:
-  file.managed:
-    - name: {{ ACTIVATE_SCRIPT }}
-    - source: "salt://setup/files/activate.jinja"
-    - template: jinja
-
-DEACTIVATE_SCRIPT:
-  file.managed:
-    - name: {{ DEACTIVATE_SCRIPT }}
-    - source: "salt://setup/files/deactivate.jinja"
-    - template: jinja
 
 Generate Tethys Settings:
   cmd.run:
