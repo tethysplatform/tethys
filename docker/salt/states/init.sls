@@ -1,5 +1,3 @@
-{%- set ACTIVATE_DIR = salt['environ.get']('CONDA_HOME')/envs/salt['environ.get']('CONDA_ENV_NAME')/etc/conda/activate.d -%}
-{%- set DEACTIVATE_DIR = salt['environ.get']('CONDA_HOME')/envs/salt['environ.get']('CONDA_ENV_NAME')/etc/conda/deactivate.d -%}
 {%- set TETHYS_HOME = salt['environ.get']('TETHYS_HOME') -%}
 {%- set TETHYS_DB_USERNAME = salt['environ.get']('TETHYS_DB_USERNAME') -%}
 {%- set TETHYS_DB_PASSWORD = salt['environ.get']('TETHYS_DB_PASSWORD') -%}
@@ -9,28 +7,6 @@
 {%- set TETHYS_SUPER_USER = salt['environ.get']('TETHYS_SUPER_USER') -%}
 {%- set TETHYS_SUPER_USER_PASS = salt['environ.get']('TETHYS_SUPER_USER_PASS') -%}
 {%- set TETHYS_SUPER_USER_EMAIL = salt['environ.get']('TETHYS_SUPER_USER_EMAIL') -%}
-{%- set BLERG = salt['environ.get']('BLERG') -%}
-{%- set BLERG = salt['environ.get']('BLERG') -%}
-{%- set BLERG = salt['environ.get']('BLERG') -%}
-{%- set BLERG = salt['environ.get']('BLERG') -%}
-
-ACTIVATE:
-  file.directory:
-    - name: {{ ACTIVATE_DIR }}
-    - makedirs: True
-  file.managed:
-    - name: {{ ACTIVATE_DIR/tethys-activate.sh }}
-    - source: "salt://setup/files/activate.jinja"
-    - template: jinja
-
-DEACTIVATE:
-  file.directory:
-    - name: {{ DEACTIVATE_DIR }}
-    - makedirs: True
-  file.managed:
-    - name: {{ DEACTIVATE_DIR/tethys-deactivate.sh }}
-    - source: "salt://setup/files/deactivate.jinja"
-    - template: jinja
 
 ~/.bashrc:
   file.append:
@@ -100,11 +76,22 @@ Prepare Database:
 Create Super User:
   cmd.run:
     - name: |
-    echo "from django.contrib.auth.models import User; User.objects.create_superuser('{{ TETHYS_SUPER_USER }}', '{{ TETHYS_SUPER_USER_EMAIL }}', '{{ TETHYS_SUPER_USER_PASS }}')" | python manage.py shell
+    echo "from django.contrib.auth.models import User; User.objects.create_superuser('{{ TETHYS_SUPER_USER }}', '{{ TETHYS_SUPER_USER_EMAIL }}', '{{ TETHYS_SUPER_USER_PASS }}') if (len(User.objects.filter(username='{{ TETHYS_SUPER_USER }}') == 0)" | python manage.py shell
     - cwd: {{ TETHYS_HOME }}
 
 Link NGINX Config:
   file.symlink:
     - name: /etc/nginx/sites-enabled
     - target: ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf
+
+
+uwsgi:
+  cmd.run:
+    - name: {{ TETHYS_HOME }}/miniconda/envs/tethys/bin/uwsgi --yaml /usr/lib/tethys/src/tethys_portal/tethys_uwsgi.yml --uid www-data --gid www-data
+    - bg: True
+    - ignore_timeout: True
+
+nginx:
+  service.running:
+    - name: nginx
 
