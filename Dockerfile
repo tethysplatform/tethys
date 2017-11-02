@@ -102,9 +102,16 @@ ENV PATH ${CONDA_HOME}/miniconda/envs/tethys/bin:$PATH
 VOLUME ["${TETHYS_HOME}/workspaces", "${TETHYS_HOME}/keys"]
 EXPOSE 80
 
+
+###############
+# SET UP SALT #
+###############
+ADD docker/salt/config /etc/salt/minion
+ADD docker/salt/states /srv/salt/
+
 ########
 # RUN! #
 ########
 WORKDIR ${TETHYS_HOME}
-CMD echo "Sleeping Forever"
-CMD while [ 1 ]; do sleep 1; done
+CMD salt-call --local state.apply
+CMD tail -qF /var/log/nginx/* /var/log/uwsgi/*
