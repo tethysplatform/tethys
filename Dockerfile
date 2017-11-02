@@ -1,24 +1,20 @@
 # Use an official Python runtime as a parent image
 FROM python:2-slim-stretch
 
-#####################
-# Default Variables #
-#####################
-
-# Tethys
+###############
+# ENVIRONMENT #
+###############
 ENV  TETHYS_HOME="/usr/lib/tethys" \
      TETHYS_PORT=80 \
-     TETHYS_DB_USERNAME='tethys_default' \
-     TETHYS_DB_PASSWORD='pass' \
-     TETHYS_DB_HOST='172.17.0.1' \
+     TETHYS_DB_USERNAME="tethys_default" \
+     TETHYS_DB_PASSWORD="pass" \
+     TETHYS_DB_HOST="172.17.0.1" \
      TETHYS_DB_PORT=5432 \
-     TETHYS_SUPER_USER='admin' \
-     TETHYS_SUPER_USER_EMAIL='' \
-     TETHYS_SUPER_USER_PASS='pass' \
+     TETHYS_SUPER_USER="admin" \
+     TETHYS_SUPER_USER_EMAIL="" \
+     TETHYS_SUPER_USER_PASS="pass" \
      TETHYS_CONDA_HOME=${CONDA_HOME} \
      TETHYS_CONDA_ENV_NAME=${CONDA_ENV_NAME} \
-
-# Misc
      ALLOWED_HOST=127.0.0.1 \
      BASH_PROFILE=".bashrc" \
      CONDA_HOME="${TETHYS_HOME}/miniconda" \
@@ -60,22 +56,23 @@ RUN ${CONDA_HOME}/bin/conda env create -n "${CONDA_ENV_NAME}" -f "environment_py
 # INSTALL #
 ###########
 # ADD files from repo
-ADD resources ${TETHYS_HOME}/src/
-ADD templates ${TETHYS_HOME}/src/
-ADD tethys_apps ${TETHYS_HOME}/src/
-ADD tethys_compute ${TETHYS_HOME}/src/
-ADD tethys_config ${TETHYS_HOME}/src/
-ADD tethys_gizmos ${TETHYS_HOME}/src/
-ADD tethys_portal ${TETHYS_HOME}/src/
-ADD tethys_sdk ${TETHYS_HOME}/src/
-ADD tethys_services ${TETHYS_HOME}/src/
+ADD resources ${TETHYS_HOME}/src/resources/
+ADD templates ${TETHYS_HOME}/src/templates/
+ADD tethys_apps ${TETHYS_HOME}/src/tethys_apps/
+ADD tethys_compute ${TETHYS_HOME}/src/tethys_compute/
+ADD tethys_config ${TETHYS_HOME}/src/tethys_config/
+ADD tethys_gizmos ${TETHYS_HOME}/src/tethys_gizmos/
+ADD tethys_portal ${TETHYS_HOME}/src/tethys_portal/
+ADD tethys_sdk ${TETHYS_HOME}/src/tethys_sdk/
+ADD tethys_services ${TETHYS_HOME}/src/tethys_services/
+ADD README.rst ${TETHYS_HOME}/src/
 ADD *.py ${TETHYS_HOME}/src/
 
 # Run Installer
-RUN . ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
+RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; python setup.py develop \
   ; conda install -c conda-forge uwsgi -y \
-  ; mkdir ${TETHYS_HOME}/workspaces
+  ; mkdir ${TETHYS_HOME}/workspaces'
 
 # Add static files
 ADD static ${TETHYS_HOME}/src/
@@ -84,17 +81,17 @@ ADD aquaveo_static/images/aquaveo_logo.png ${TETHYS_HOME}/src/static/tethys_port
 ADD aquaveo_static/tethys_main.css ${TETHYS_HOME}/src/static/tethys_portal/css/tethys_main.css
 
 # Generate Inital Settings Files
-RUN . ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
+RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; tethys gen settings --production --allowed-host ${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite \
-  ; sed -i -e "s/#TETHYS_WORKSPACES_ROOT = '\/var\/www\/tethys\/static\/workspaces'/TETHYS_WORKSPACES_ROOT = '\/usr\/lib\/tethys\/workspaces'/g" ${TETHYS_HOME}/src/tethys_portal/settings.py \
+  ; sed -i -e "s:#TETHYS_WORKSPACES_ROOT = .*$:TETHYS_WORKSPACES_ROOT = \"/usr/lib/tethys/workspaces\":" ${TETHYS_HOME}/src/tethys_portal/settings.py \
   ; tethys gen nginx --overwrite \
   ; tethys gen uwsgi_settings --overwrite \
-  ; tethys gen uwsgi_service --overwrite
+  ; tethys gen uwsgi_service --overwrite'
 
 
 # Give NGINX Permission
-RUN NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}') \
-    find ${TETHYS_HOME} ! -user ${NGINX_USER} -print0 | xargs -0 -I{} chown ${NGINX_USER}: {}
+RUN export NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}') \
+  ; find ${TETHYS_HOME} ! -user ${NGINX_USER} -print0 | xargs -0 -I{} chown ${NGINX_USER}: {}
 
 ############
 # CLEAN UP #
