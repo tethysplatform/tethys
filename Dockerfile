@@ -37,8 +37,8 @@ ENV  TETHYS_HOME="/usr/lib/tethys" \
 RUN mkdir -p "${TETHYS_HOME}/src"
 
 # Speed up APT installs
-RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup
-RUN echo "Acquire::http {No-Cache=True;};" > /etc/apt/apt.conf.d/no-cache
+RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
+  ; echo "Acquire::http {No-Cache=True;};" > /etc/apt/apt.conf.d/no-cache
 
 # Install APT packages
 RUN apt-get update && apt-get -y install wget \
@@ -48,8 +48,8 @@ RUN apt-get update && apt-get -y install bzip2 git nginx gcc salt-minion
 RUN rm -f /etc/nginx/sites-enabled/default
 
 # Install Miniconda
-RUN wget ${MINICONDA_URL} -O "${TETHYS_HOME}/miniconda.sh" 
-RUN bash ${TETHYS_HOME}/miniconda.sh -b -p "${CONDA_HOME}" 
+RUN wget ${MINICONDA_URL} -O "${TETHYS_HOME}/miniconda.sh" \
+ && bash ${TETHYS_HOME}/miniconda.sh -b -p "${CONDA_HOME}" 
 
 # Setup Conda Environment
 ADD environment_py2.yml ${TETHYS_HOME}/src/
