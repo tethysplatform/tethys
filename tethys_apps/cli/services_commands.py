@@ -152,7 +152,7 @@ def services_remove_spatial_command(args):
         if force:
             service.delete()
             with pretty_output(FG_GREEN) as p:
-                p.write('Successfully removed Spatial Dataset Service {0}!'.format(persistent_service_id))
+                p.write('Successfully removed Spatial Dataset Service {0}!'.format(spatial_service_id))
             exit(0)
         else:
             proceed = raw_input('Are you sure you want to delete this Persistent Store Service? [y/n]: ')
