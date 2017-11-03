@@ -1,3 +1,1 @@
-
 file_client: local
-postgres.bins_dir: /usr/lib/tethys/miniconda/envs/tethys/bin
