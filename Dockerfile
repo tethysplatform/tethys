@@ -83,7 +83,7 @@ RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; tethys gen nginx --overwrite \
   ; tethys gen uwsgi_settings --overwrite \
   ; tethys gen uwsgi_service --overwrite \
-  ; tethys manage collectall --noinput'
+  ; python manage.py collectstatic'
 
 
 # Give NGINX Permission
