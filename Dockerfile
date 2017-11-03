@@ -36,7 +36,7 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
 RUN apt-get update && apt-get -y install wget \
  && wget -O - https://repo.saltstack.com/apt/debian/9/amd64/latest/SALTSTACK-GPG-KEY.pub | apt-key add - \
  && echo "deb http://repo.saltstack.com/apt/debian/9/amd64/latest stretch main" > /etc/apt/sources.list.d/saltstack.list
-RUN apt-get update && apt-get -y install bzip2 git nginx gcc salt-minion
+RUN apt-get update && apt-get -y install bzip2 git nginx gcc salt-minion procps
 RUN rm -f /etc/nginx/sites-enabled/default
 
 # Install Miniconda
@@ -71,7 +71,7 @@ RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; mkdir ${TETHYS_HOME}/workspaces'
 
 # Add static files
-ADD static ${TETHYS_HOME}/src/
+ADD static ${TETHYS_HOME}/src/static/
 ADD aquaveo_static/images/aquaveo_favicon.ico ${TETHYS_HOME}/src/static/tethys_portal/images/default_favicon.png
 ADD aquaveo_static/images/aquaveo_logo.png ${TETHYS_HOME}/src/static/tethys_portal/images/tethys-logo-75.png
 ADD aquaveo_static/tethys_main.css ${TETHYS_HOME}/src/static/tethys_portal/css/tethys_main.css
@@ -104,22 +104,17 @@ VOLUME ["${TETHYS_HOME}/workspaces", "${TETHYS_HOME}/keys"]
 EXPOSE 80
 
 
-###############
-# SET UP SALT #
-###############
-ADD docker/salt/config /etc/salt/minion
-ADD docker/salt/states /srv/salt/
+###############*
+# COPY IN SALT #
+###############*
+ADD docker/salt/ /srv/salt/
+ADD docker/run.sh ${TETHYS_HOME}/
 
 ########
 # RUN! #
 ########
 WORKDIR ${TETHYS_HOME}
 # Create Salt configuration based on ENVs
-CMD echo "file_client: local" > /etc/salt/minion \
-  ; echo "postgres.host: '${TETHYS_DB_HOST}'" >> /etc/salt/minion \
-  ; echo "postgres.port: '${TETHYS_DB_PORT}'" >> /etc/salt/minion \
-  ; echo "postgres.user: '${TETHYS_DB_USERNAME}'" >> /etc/salt/minion \
-  ; echo "postgres.pass: '${TETHYS_DB_PASSWORD}'" >> /etc/salt/minion \
-  ; echo "postgres.bins_dir: '${CONDA_HOME}/envs/${CONDA_ENV_NAME}/bin'" >> /etc/salt/minion 
-CMD salt-call --local state.apply
-CMD tail -qF /var/log/nginx/* /var/log/uwsgi/*
+CMD bash run.sh
+HEALTHCHECK --start-period=240s \
+  CMD ps $(cat $(grep 'pid .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')) > /dev/null && ps $(cat $(grep 'pidfile2: .*' src/tethys_portal/tethys_uwsgi.yml | awk '{print $1}')) > /dev/null;
