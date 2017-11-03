@@ -62,9 +62,10 @@ Generate_uwsgi_service:
   cmd.run:
     - name: {{ TETHYS_BIN_DIR }}/tethys gen uwsgi_service --overwrite
 
-/run/uwsgi:
-  file.directory:
+/run/uwsgi/tethys.pid:
+  file.managed:
     - user: {{ NGINX_USER }}
+    - replace: False
     - makedirs: True
 
 /var/log/uwsgi/tethys.log:
