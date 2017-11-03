@@ -117,4 +117,4 @@ WORKDIR ${TETHYS_HOME}
 # Create Salt configuration based on ENVs
 CMD bash run.sh
 HEALTHCHECK --start-period=240s \
-  CMD ps $(cat $(grep 'pid .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')) > /dev/null && ps $(cat $(grep 'pidfile2: .*' src/tethys_portal/tethys_uwsgi.yml | awk '{print $1}')) > /dev/null;
+  CMD ps $(cat $(grep 'pid .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')) > /dev/null && ps $(cat $(grep 'pidfile2: .*' src/tethys_portal/tethys_uwsgi.yml | awk '{print $2}')) > /dev/null;
