@@ -114,5 +114,11 @@ ADD docker/salt/states /srv/salt/
 # RUN! #
 ########
 WORKDIR ${TETHYS_HOME}
+# Tell Salt how to connect to the DB
+CMD echo "postgres.host: '${TETHYS_DB_HOST}'" >> /etc/salt/minion \
+  ; echo "postgres.port: '${TETHYS_DB_PORT}'" >> /etc/salt/minion \
+  ; echo "postgres.user: '${TETHYS_DB_USERNAME}'" >> /etc/salt/minion \
+  ; echo "postgres.pass: '${TETHYS_DB_PASSWORD}'" >> /etc/salt/minion \
+  ; echo "postgres.bins_dir: '${CONDA_HOME}/envs/${CONDA_ENV_NAME}/bin'" >> /etc/salt/minion 
 CMD salt-call --local state.apply
 CMD tail -qF /var/log/nginx/* /var/log/uwsgi/*
