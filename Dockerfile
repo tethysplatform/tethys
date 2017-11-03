@@ -67,8 +67,8 @@ ADD *.py ${TETHYS_HOME}/src/
 # Run Installer
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; python setup.py develop \
-  ; conda install -c conda-forge uwsgi -y \
-  ; mkdir ${TETHYS_HOME}/workspaces'
+  ; conda install -c conda-forge uwsgi -y'
+RUN mkdir ${TETHYS_HOME}/workspaces ${TETHYS_HOME}/apps ${TETHYS_HOME}/static
 
 # Add static files
 ADD static ${TETHYS_HOME}/src/static/
@@ -82,7 +82,8 @@ RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; sed -i -e "s:#TETHYS_WORKSPACES_ROOT = .*$:TETHYS_WORKSPACES_ROOT = \"/usr/lib/tethys/workspaces\":" ${TETHYS_HOME}/src/tethys_portal/settings.py \
   ; tethys gen nginx --overwrite \
   ; tethys gen uwsgi_settings --overwrite \
-  ; tethys gen uwsgi_service --overwrite'
+  ; tethys gen uwsgi_service --overwrite \
+  ; tethys manage collectall --noinput'
 
 
 # Give NGINX Permission
