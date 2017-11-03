@@ -26,6 +26,7 @@ echo "postgres.bins_dir: '${CONDA_HOME}/envs/${CONDA_ENV_NAME}/bin'" >> /etc/sal
 # Apply States
 echo_status "Enforcing start state... (This might take a bit)"
 salt-call --local state.apply
+echo_status "Fixing permissions"
 find ${TETHYS_HOME} ! -user ${NGINX_USER} -print0 | xargs -0 -I{} chown ${NGINX_USER}: {}
 echo_status "Done!"
 
