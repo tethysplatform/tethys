@@ -151,8 +151,10 @@ def test_command(args):
         os.environ['TETHYS_TEST_DIR'] = tests_path
         if args.file and app_package_tag in args.file:
             app_package_parts = args.file.split(app_package_tag)
-            app_package = app_package_tag + app_package_parts[1].split('.')[0]
-            config_opt = '--source={0}'.format(app_package)
+            app_name = app_package_parts[1].split('.')[0]
+            core_app_package = '{}{}'.format(app_package_tag, app_name)
+            app_package = 'tethysapp.{}'.format(app_name)
+            config_opt = '--source={},{}'.format(core_app_package, app_package)
         else:
             config_opt = '--rcfile={0}'.format(os.path.join(tests_path, 'coverage.cfg'))
         primary_process = ['coverage', 'run', config_opt, manage_path, 'test']
