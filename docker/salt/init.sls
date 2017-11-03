@@ -87,9 +87,9 @@ Prepare_Database:
 
 Create_Super_User:
   cmd.run:
-    - name: >
-      echo "from django.contrib.auth.models import User; if (len(User.objects.filter(username='{{ TETHYS_SUPER_USER }}')) == 0): User.objects.create_superuser('{{ TETHYS_SUPER_USER }}', '{{ TETHYS_SUPER_USER_EMAIL }}', '{{ TETHYS_SUPER_USER_PASS }}')" | {{TETHYS_BIN_DIR }}/python manage.py shell
+    - name: "{{TETHYS_BIN_DIR }}/python {{ TETHYS_HOME }}/src/manage.py shell -c \"from django.contrib.auth.models import User;\nif (len(User.objects.filter(username='{{ TETHYS_SUPER_USER }}')) == 0):\n\tUser.objects.create_superuser('{{ TETHYS_SUPER_USER }}', '{{ TETHYS_SUPER_USER_EMAIL }}', '{{ TETHYS_SUPER_USER_PASS }}')\""
     - cwd: {{ TETHYS_HOME }}/src
+    - shell: /bin/bash 
 
 Link_NGINX_Config:
   file.symlink:
