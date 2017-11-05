@@ -1,7 +1,27 @@
-# Tethys Core Docker
+# Docker Support Files
 
-This project houses the docker file and scripts needed to make the tethyscore 
-docker.
+This project houses the docker file and scripts needed to make usable docker image.
+
+### Environment
+
+| Argument              | Description                 |Phase| Default                 |
+|-----------------------|-----------------------------|-----|-------------------------|
+|ALLOWED_HOST           | Django Setting              |Run  |127.0.0.1                |
+|BASH_PROFILE           | Where to create aliases     |Run  |.bashrc                  |
+|CONDA_HOME             | Path to Conda Home Dir      |Build|${TETHYS_HOME}/miniconda”|
+|CONDA_ENV_NAME         | Name of Conda environ       |Build|tethys                   |
+|MINICONDA_URL          | URL of conda install script |Build|“https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh”|
+|PYTHON_VERSION         | Version of Python to use    |Build|2                        |
+|TETHYS_HOME            | Path to Tethys Home Dir     |Build|/usr/lib/tethys          |
+|TETHYS_PORT            | Port for external web access|Run  |80                       |
+|TETHYS_PUBLIC_HOST     |                             |?    |172.17.0.1               |
+|TETHYS_DB_USERNAME     | Postgres connection username|Run  |tethys_default           |
+|TETHYS_DB_PASSWORD     | Postgres connection password|Run  |pass                     |
+|TETHYS_DB_HOST         | Postgres connection address |Run  |172.17.0.1               |
+|TETHYS_DB_PORT         | Postgres connection Port    |Run  |5432                     |
+|TETHYS_SUPER_USER      | Default superuser username  |Run  |admin                    |
+|TETHYS_SUPER_USER_EMAIL| Default superuser email     |Run  |“”                       |
+|TETHYS_SUPER_USER_PASS | Default superuser password  |Run  |pass                     |
 
 ### Building the Docker
 To build the docker use the following commands in the terminal after
