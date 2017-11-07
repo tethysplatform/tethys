@@ -85,6 +85,10 @@ Prepare_Database:
     - name: . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && {{ TETHYS_BIN_DIR }}/tethys manage syncdb
     - shell: /bin/bash
 
+Sync_Stores:
+  cmd.run:
+    - name: {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && {{ TETHYS_BIN_DIR }}/tethys syncstores all
+
 Create_Super_User:
   cmd.run:
     - name: "{{TETHYS_BIN_DIR }}/python {{ TETHYS_HOME }}/src/manage.py shell -c \"from django.contrib.auth.models import User;\nif (len(User.objects.filter(username='{{ TETHYS_SUPER_USER }}')) == 0):\n\tUser.objects.create_superuser('{{ TETHYS_SUPER_USER }}', '{{ TETHYS_SUPER_USER_EMAIL }}', '{{ TETHYS_SUPER_USER_PASS }}')\""
