@@ -36,7 +36,7 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
 RUN apt-get update && apt-get -y install wget \
  && wget -O - https://repo.saltstack.com/apt/debian/9/amd64/latest/SALTSTACK-GPG-KEY.pub | apt-key add - \
  && echo "deb http://repo.saltstack.com/apt/debian/9/amd64/latest stretch main" > /etc/apt/sources.list.d/saltstack.list
-RUN apt-get update && apt-get -y install bzip2 git nginx gcc salt-minion procps
+RUN apt-get update && apt-get -y install bzip2 git nginx gcc salt-minion procps pv
 RUN rm -f /etc/nginx/sites-enabled/default
 
 # Install Miniconda
@@ -88,7 +88,7 @@ RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
 
 # Give NGINX Permission
 RUN export NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}') \
-  ; find ${TETHYS_HOME} ! -user ${NGINX_USER} -print0 | xargs -0 -I{} chown ${NGINX_USER}: {}
+  ; find ${TETHYS_HOME} ! -user ${NGINX_USER} -print0 | pv | xargs -0 -I{} chown ${NGINX_USER}: {}
 
 ############
 # CLEAN UP #
