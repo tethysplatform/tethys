@@ -57,7 +57,7 @@
     {% endcomment %}
 
     {% block links %}
-      {% if site_globals.favicon %}<link rel="shortcut icon" href="{{ site_globals.favicon }}" />{% endif %}
+      {% if site_globals.favicon %}<link rel="shortcut icon" href="{% if site_globals.favicon %}{% static site_globals.favicon %}{% else %}{% static 'tethys_portal/images/default_favicon.png' %}{% endif %}" />{% endif %}
     {% endblock %}
 
     {% comment "import_gizmos explanation" %}
