@@ -88,6 +88,7 @@ Prepare_Database:
 Sync_Stores:
   cmd.run:
     - name: . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && {{ TETHYS_BIN_DIR }}/tethys syncstores all
+    - shell: /bin/bash
 
 Create_Super_User:
   cmd.run:
