@@ -10,6 +10,7 @@
 import logging
 import os
 import sys
+import traceback
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
@@ -18,7 +19,7 @@ from django.utils.functional import SimpleLazyObject
 from tethys_apps.base.testing.environment import is_testing_environment
 from .handoff import HandoffManager
 from .workspace import TethysWorkspace
-from ..exceptions import TethysAppSettingDoesNotExist
+from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
 tethys_log = logging.getLogger('tethys.app_base')
 
@@ -734,10 +735,11 @@ class TethysAppBase(object):
 
         try:
             ps_connection_setting = ps_connection_settings.get(name=name)
+            return ps_connection_setting.get_engine(as_url=as_url, as_sessionmaker=as_sessionmaker)
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting named "{0}" does not exist.'.format(name))
-
-        return ps_connection_setting.get_engine(as_url=as_url, as_sessionmaker=as_sessionmaker)
+        except TethysAppSettingNotAssigned:
+            cls._log_tethys_app_setting_not_assigned_errror('PersistentStoreConnectionSetting', name)
 
     @classmethod
     def get_persistent_store_database(cls, name, as_url=False, as_sessionmaker=False):
@@ -775,10 +777,11 @@ class TethysAppBase(object):
 
         try:
             ps_database_setting = ps_database_settings.get(name=name)
+            return ps_database_setting.get_engine(with_db=True, as_url=as_url, as_sessionmaker=as_sessionmaker)
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(name))
-
-        return ps_database_setting.get_engine(with_db=True, as_url=as_url, as_sessionmaker=as_sessionmaker)
+        except TethysAppSettingNotAssigned:
+            cls._log_tethys_app_setting_not_assigned_errror('PersistentStoreDatabaseSetting', name)
 
     @classmethod
     def create_persistent_store(cls, db_name, connection_name, spatial=False, initializer='', refresh=False,
@@ -961,7 +964,7 @@ class TethysAppBase(object):
         db_app = TethysApp.objects.get(package=cls.package)
         ps_connection_settings = db_app.persistent_store_connection_settings
         return [ps_connection_setting.name for ps_connection_setting in ps_connection_settings
-                if 'tethys-testing_' not in ps_database_setting.name]
+                if 'tethys-testing_' not in ps_connection_setting.name]
 
     @classmethod
     def persistent_store_exists(cls, name):
@@ -1006,3 +1009,22 @@ class TethysAppBase(object):
         # Check if it exists
         ps_database_setting.persistent_store_database_exists()
         return True
+
+    @classmethod
+    def _log_tethys_app_setting_not_assigned_error(cls, setting_type, setting_name):
+        """
+        Logs useful traceback and message without actually raising an exception when an attempt
+        to access a non-existent setting is made.
+
+        Args:
+            settings_type (str, required):
+                Name of specific settings class (e.g. CustomTethysAppSetting, PersistentStoreDatabaseSetting etc).
+            setting_name (str, required):
+                Name attribute of the setting.
+        """
+        tethys_log.warn('Tethys app setting is not assigned.\nTraceback (most recent call last):\n{0} '
+                        'TethysAppSettingNotAssigned: {1} named "{2}" has not been assigned. '
+                        'Please visit the setting page for the app {3} and assign all required settings.'
+                        .format(traceback.format_stack(limit=3)[0], setting_type, setting_name, cls.name)
+                        )
+
