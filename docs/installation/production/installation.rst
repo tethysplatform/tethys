@@ -109,19 +109,8 @@ For more information about setting up email capabilities for Tethys Platform, re
 For an excellent guide on setting up Postfix on Ubuntu, refer to `How To Install and Setup Postfix on Ubuntu 14.04 <https://www.digitalocean.com/community/tutorials/how-to-install-and-setup-postfix-on-ubuntu-14-04>`_.
 
 
-4. Install Apps
-===============
-
-Download and install any apps that you want to host using this installation of Tethys Platform. For more information see: :doc:`./app_installation`.
-
-
-.. todo::
-
-    **Troubleshooting**: Here we try to provide some guidance on some of the most commonly encountered issues. If you are experiencing problems and can't find a solution here then please post a question on the `Tethys Platform Forum <https://groups.google.com/forum/#!forum/tethysplatform>`_.
-
-
-5. Setup SSL (https) on the Tethys Portal and Geoserver
-=======================================================
+4. Setup SSL (https) on the Tethys and Geoserver (Recommended)
+==============================================================
 
 SSL is the standard  technology for establishing a secured connection between a web server and a browser. In order to create a secured connection, an SSL certificate and key are needed. An SSL certificate is simply a paragraph with letters and numbers that acts similar to a password. When users visit your website via https this certificate is verified and if it matches, then a connecton is established. An SSL certificate can be self-signed, or purchased from a Certificate Authority. Some of the top certificate authorities include: Digicert, VertiSign, GeoTrust, Comodo, Thawte, GoDaddy, and Nework Solutions. If your instance of Tethys is part of a larger organization, contact your IT to determine if an agreement with one of these authorities already exists.
 
@@ -170,7 +159,7 @@ The file should look something like this:
 
 If you need your site to be accessible through both secured (https) and non-secured (http) connections, you will need a server block for each type of connection. Otherwise just edit the existing block.
 
-Make a copy of the existing non-secured server block and paste it below the original. Then add the lines in bold below:
+Make a copy of the existing non-secured server block and paste it below the original. Then modify it as shown below:
 
 ::
 
@@ -209,12 +198,12 @@ Make a copy of the existing non-secured server block and paste it below the orig
 
 .. Note::
 
-    SSL works on port 443, hence the server block abouve listens on 443 instead of 80
+    SSL works on port 443, hence the server block above listens on 443 instead of 80
 
 Geoserver SSL
 -------------
 
-A secured server can only communicate with other secured servers. Therefore to allow the secured Tethys Portal to communicate with Geoserver, the latter needs to be secured as well. To do this, place the following location block   within your server block.
+A secured server can only communicate with other secured servers. Therefore to allow the secured Tethys Portal to communicate with Geoserver, the latter needs to be secured as well. To do this, add the following location at the end of your server block.
 ::
 
     server {
@@ -254,7 +243,7 @@ A secured server can only communicate with other secured servers. Therefore to a
           proxy_pass http://127.0.0.1:8181/geoserver;
     }
 
-Finally, go to your Geoserver web interface (http://domain-name:8181/geoserver/web), sign in, and set the **Proxy Base URL** in Global settings to:
+Next, go to your Geoserver web interface (http://domain-name:8181/geoserver/web), sign in, and set the **Proxy Base URL** in Global settings to:
 ::
 
     https://<domain-name>/geoserver
@@ -270,7 +259,7 @@ Finally, restart uWSGI and Nginx services to effect the changes::
 
 .. tip::
 
-    Use the alias `trestart` as a shortcut to doing both steps 6 and 7.
+    Use the alias `trestart` as a shortcut to doing the final step.
 
 
 The portal should now be accessible from: https://domain-name
@@ -280,4 +269,16 @@ Geoserver should now be accessible from: https://domain-name/geoserver
 .. Note::
 
     Notice that the Geoserver port (8181) is not necessary once the proxy is configured
+
+
+5. Install Apps
+===============
+
+Download and install any apps that you want to host using this installation of Tethys Platform. For more information see: :doc:`./app_installation`.
+
+
+.. todo::
+
+    **Troubleshooting**: Here we try to provide some guidance on some of the most commonly encountered issues. If you are experiencing problems and can't find a solution here then please post a question on the `Tethys Platform Forum <https://groups.google.com/forum/#!forum/tethysplatform>`_.
+
 
