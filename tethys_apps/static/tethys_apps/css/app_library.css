@@ -131,6 +131,9 @@ body {
   border-radius: 5px;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1);
 }
+#app-list .app-container.unconfigured {
+  background: #666666;
+}
 #app-list .app-container .app-icon img {
   width: 170px;
   margin: 15px;
@@ -146,6 +149,9 @@ body {
   border-radius: 0 0 5px 5px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+#app-list .app-container.unconfigured .app-title {
+  color: #ffffff;
 }
 #app-list .app-container .app-help-icon {
   position: absolute;
