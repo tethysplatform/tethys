@@ -24,7 +24,7 @@
     </div>
   </div>
   <div class="app-library-wrapper clearfix">
-    {% if apps %}
+    {% if apps.configured or apps.unconfigured %}
         <div class="container" align="center">
           <div class="row">
             <div class="col-sm-12 col-xs-12">
@@ -45,7 +45,7 @@
             </div>
           </div>
       <div id="app-list" class="isotopeContainer">
-        {% for app in apps %}
+        {% for app in apps.configured %}
           {% if app.show_in_apps_library and app.enabled %}
           <a class="app-container isotopeSelector {{ app|get_tag_class }}" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '{% url app.index %}');" data-app-theme-color="{{ app.color }}">
             <div class="app-icon">
@@ -64,6 +64,24 @@
             <div class="app-help-close hidden">X</div>
           </a>
           {% endif %}
+        {% endfor %}
+        {% for app in apps.unconfigured %}
+          <a class="app-container isotopeSelector {{ app|get_tag_class }} unconfigured" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '/admin/tethys_apps/tethysapp/{{ app.id }}/change/');" data-app-theme-color="{{ app.color }}">
+            <div class="app-icon">
+              <img {% if app.icon %}src="{% static app.icon %}"{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} />
+            </div>
+            <div class="app-title" data-app-theme-color="{{ app.color }}">
+              <span>{{ app.name }}</span>
+            </div>
+            <div class="color-effect" data-app-theme-color="{{ app.color }}"></div>
+            <div class="app-help-icon">
+                <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+            </div>
+            <div class="app-help-info hidden">
+                <p>{% if app.description %}{{ app.description }}{% else %}{% endif %}</p>
+            </div>
+            <div class="app-help-close hidden">X</div>
+          </a>
         {% endfor %}
       </div>
     {% else %}
