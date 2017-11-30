@@ -10,6 +10,7 @@
 import os
 import shutil
 import subprocess
+import warnings
 
 from django.core.management.base import BaseCommand
 from tethys_apps.helpers import get_installed_tethys_apps
@@ -35,7 +36,7 @@ class Command(BaseCommand):
             app_name = app_name[prefix_length:]
 
         if app_name not in installed_apps:
-            self.stdout.write('WARNING: App with name "{0}" cannot be uninstalled, because it is not installed.'.format(app_name))
+            warnings.warn('WARNING: App with name "{0}" cannot be uninstalled, because it is not installed.'.format(app_name))
             exit(0)
 
         app_with_prefix = '{0}-{1}'.format(PREFIX, app_name)
@@ -56,8 +57,11 @@ class Command(BaseCommand):
 
         # Remove app from database
         from tethys_apps.models import TethysApp
-        db_app = TethysApp.objects.get(package=app_name)
-        db_app.delete()
+        try:
+            db_app = TethysApp.objects.get(package=app_name)
+            db_app.delete()
+        except TethysApp.DoesNotExist:
+            warnings.warn('WARNING: The app was not found in the database.')
 
         try:
             # Remove directory
