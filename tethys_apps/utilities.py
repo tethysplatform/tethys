@@ -9,23 +9,18 @@
 """
 import logging
 import os
-import sys
-import traceback
 from collections import OrderedDict as SortedDict
 
-from django.conf.urls import url
 from django.contrib.staticfiles import utils
 from django.contrib.staticfiles.finders import BaseFinder
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files.storage import FileSystemStorage
 from django.utils._os import safe_join
-from past.builtins import basestring
-from tethys_apps import tethys_log
 from tethys_apps.app_harvester import SingletonAppHarvester
 from tethys_apps.base import permissions
 from tethys_apps.models import TethysApp
 
-log = logging.getLogger('tethys.tethys_apps.utilities')
+tethys_log = logging.getLogger('tethys.' + __name__)
 
 
 def register_app_permissions():
@@ -156,7 +151,7 @@ def register_app_permissions():
                 assign_perm(p, g, db_app)
 
 
-def generate_app_url_patterns():
+def get_app_url_patterns():
     """
     Generate the url pattern lists for each app and namespace them accordingly.
     """
@@ -167,46 +162,7 @@ def generate_app_url_patterns():
     app_url_patterns = dict()
 
     for app in apps:
-        if hasattr(app, 'url_maps'):
-            url_maps = app.url_maps()
-        elif hasattr(app, 'controllers'):
-            url_maps = app.controllers()
-        else:
-            url_maps = None
-
-        if url_maps:
-            for url_map in url_maps:
-                app_root = app.root_url
-                app_namespace = app_root.replace('-', '_')
-
-                if app_namespace not in app_url_patterns:
-                    app_url_patterns[app_namespace] = []
-
-                # Create django url object
-                if isinstance(url_map.controller, basestring):
-                    controller_parts = url_map.controller.split('.')
-                    module_name = '.'.join(controller_parts[:-1])
-                    function_name = controller_parts[-1]
-                    try:
-                        module = __import__(module_name, fromlist=[function_name])
-                    except ImportError:
-                        error_msg = 'The following error occurred while trying to import the controller function ' \
-                                    '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
-                        log.error(error_msg)
-                        sys.exit(1)
-                    try:
-                        controller_function = getattr(module, function_name)
-                    except AttributeError as e:
-                        error_msg = 'The following error occurred while tyring to access the controller function ' \
-                                    '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
-                        log.error(error_msg)
-                        sys.exit(1)
-                else:
-                    controller_function = url_map.controller
-                django_url = url(url_map.url, controller_function, name=url_map.name)
-
-                # Append to namespace list
-                app_url_patterns[app_namespace].append(django_url)
+        app_url_patterns.update(app.url_patterns)
 
     return app_url_patterns
 
@@ -292,98 +248,6 @@ class TethysAppsStaticFinder(BaseFinder):
             storage = self.storages[root]
             for path in utils.get_files(storage, ignore_patterns):
                 yield path, storage
-
-
-def sync_tethys_app_db():
-    """
-    Sync installed apps with database.
-    """
-    from django.conf import settings
-
-    # Get the harvester
-    harvester = SingletonAppHarvester()
-
-    try:
-        # Make pass to remove apps that were uninstalled
-        db_apps = TethysApp.objects.all()
-        installed_app_packages = [app.package for app in harvester.apps]
-
-        for db_apps in db_apps:
-            if db_apps.package not in installed_app_packages:
-                db_apps.delete()
-
-        # Make pass to add apps to db that are newly installed
-        installed_apps = harvester.apps
-
-        for installed_app in installed_apps:
-            # Query to see if installed app is in the database
-            db_apps = TethysApp.objects.\
-                filter(package__exact=installed_app.package).\
-                all()
-
-            # If the app is not in the database, then add it
-            if len(db_apps) == 0:
-                app = TethysApp(
-                    name=installed_app.name,
-                    package=installed_app.package,
-                    description=installed_app.description,
-                    enable_feedback=installed_app.enable_feedback,
-                    feedback_emails=installed_app.feedback_emails,
-                    index=installed_app.index,
-                    icon=installed_app.icon,
-                    root_url=installed_app.root_url,
-                    color=installed_app.color,
-                    tags=installed_app.tags
-                )
-                app.save()
-
-                # custom settings
-                app.add_settings(installed_app.custom_settings())
-                # dataset services settings
-                app.add_settings(installed_app.dataset_service_settings())
-                # spatial dataset services settings
-                app.add_settings(installed_app.spatial_dataset_service_settings())
-                # wps settings
-                app.add_settings(installed_app.web_processing_service_settings())
-                # persistent store settings
-                app.add_settings(installed_app.persistent_store_settings())
-
-                app.save()
-
-            # If the app is in the database, update developer-first attributes
-            elif len(db_apps) == 1:
-                db_app = db_apps[0]
-                db_app.index = installed_app.index
-                db_app.icon = installed_app.icon
-                db_app.root_url = installed_app.root_url
-                db_app.color = installed_app.color
-                db_app.save()
-
-                if hasattr(settings, 'DEBUG') and settings.DEBUG:
-                    db_app.name = installed_app.name
-                    db_app.description = installed_app.description
-                    db_app.tags = installed_app.tags
-                    db_app.enable_feedback = installed_app.enable_feedback
-                    db_app.feedback_emails = installed_app.feedback_emails
-                    db_app.save()
-
-                    # custom settings
-                    db_app.add_settings(installed_app.custom_settings())
-                    # dataset services settings
-                    db_app.add_settings(installed_app.dataset_service_settings())
-                    # spatial dataset services settings
-                    db_app.add_settings(installed_app.spatial_dataset_service_settings())
-                    # wps settings
-                    db_app.add_settings(installed_app.web_processing_service_settings())
-                    # persistent store settings
-                    db_app.add_settings(installed_app.persistent_store_settings())
-                    db_app.save()
-
-            # More than one instance of the app in db... (what to do here?)
-            elif len(db_apps) >= 2:
-                continue
-    except Exception as e:
-        log.error(e)
 
 
 def get_active_app(request=None, url=None):
