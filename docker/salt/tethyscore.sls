@@ -20,24 +20,28 @@
 Generate_Tethys_Settings:
   cmd.run:
     - name: {{ TETHYS_BIN_DIR }}/tethys gen settings --production --allowed-host={{ ALLOWED_HOST }} --db-username {{ TETHYS_DB_USERNAME }} --db-password {{ TETHYS_DB_PASSWORD }} --db-port {{ TETHYS_DB_PORT }} --overwrite
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Edit_Tethys_Settings_File_(HOST):
   file.replace:
     - name: {{ TETHYS_HOME }}/src/tethys_portal/settings.py
     - pattern: "'HOST': '127.0.0.1'"
     - repl: "'HOST': '{{ TETHYS_DB_HOST }}'"
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Edit_Tethys_Settings_File_(HOME_PAGE):
   file.replace:
     - name: {{ TETHYS_HOME }}/src/tethys_portal/settings.py
     - pattern: "BYPASS_TETHYS_HOME_PAGE = False"
     - repl: "BYPASS_TETHYS_HOME_PAGE = True"
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Edit_Tethys_Settings_File_(SESSION_WARN):
   file.replace:
     - name: {{ TETHYS_HOME }}/src/tethys_portal/settings.py
     - pattern: "SESSION_SECURITY_WARN_AFTER = 840"
     - repl: "SESSION_SECURITY_WARN_AFTER = 25 * 60"
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Edit_Tethys_Settings_File_(SESSION_EXPIRE):
   file.replace:
@@ -49,18 +53,22 @@ Edit_Tethys_Settings_File_(PUBLIC_HOST):
   file.append:
     - name: {{ TETHYS_HOME }}/src/tethys_portal/settings.py
     - text: "PUBLIC_HOST = \"{{ TETHYS_PUBLIC_HOST }}\""
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Generate_NGINX_Settings:
   cmd.run:
     - name: {{ TETHYS_BIN_DIR }}/tethys gen nginx --overwrite
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Generate_uwsgi_Settings:
   cmd.run:
     - name: {{ TETHYS_BIN_DIR }}/tethys gen uwsgi_settings --overwrite
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Generate_uwsgi_service:
   cmd.run:
     - name: {{ TETHYS_BIN_DIR }}/tethys gen uwsgi_service --overwrite
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 /run/uwsgi/tethys.pid:
   file.managed:
@@ -79,16 +87,20 @@ Prepare_Database:
     - name: {{ TETHYS_DB_USERNAME }}
     - password: {{ TETHYS_DB_PASSWORD }}
     - login: True
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
   postgres_database.present:
     - name: {{ TETHYS_DB_USERNAME }}
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
   cmd.run:
     - name: . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && {{ TETHYS_BIN_DIR }}/tethys manage syncdb
     - shell: /bin/bash
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Sync_Stores:
   cmd.run:
     - name: . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && {{ TETHYS_BIN_DIR }}/tethys syncstores all
     - shell: /bin/bash
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Create_Super_User:
   cmd.run:
@@ -100,6 +112,13 @@ Link_NGINX_Config:
   file.symlink:
     - name: /etc/nginx/sites-enabled/tethys_nginx.conf
     - target: {{ TETHYS_HOME }}/src/tethys_portal/tethys_nginx.conf
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+
+Flag_Complete_Tethys_Setup:
+  cmd.run:
+    - name: touch /usr/lib/tethys/setup_complete
+    - shell: /bin/bash
+
 
 
 
