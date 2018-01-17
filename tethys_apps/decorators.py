@@ -123,7 +123,7 @@ def permission_required(*args, **kwargs):
             if not pass_permission_test:
                 if not raise_exception:
                     # If user is authenticated...
-                    if request.user.is_authenticated():
+                    if request.user.is_authenticated:
                         # User feedback
                         messages.add_message(request, messages.WARNING, message)
 
