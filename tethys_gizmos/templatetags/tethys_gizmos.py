@@ -180,8 +180,13 @@ class TethysGizmoIncludeNode(TethysGizmoIncludeDependency):
             return t.render(resolved_options)
 
         except:
-            if settings.TEMPLATE_DEBUG:
-                raise
+            print'WHOOPS'
+            if hasattr(settings, 'TEMPLATES'):
+                for template_settings in settings.TEMPLATES:
+                    if 'OPTIONS' in template_settings and \
+                       'debug' in template_settings['OPTIONS'] and \
+                        template_settings['OPTIONS']['debug']:
+                        raise
             return ''
 
         
