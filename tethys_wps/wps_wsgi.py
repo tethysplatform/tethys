@@ -20,10 +20,13 @@ def wps_wsgi(request):
     pywps_cfg_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"pywps.cfg")
 
     #service = Service(processes, ['/usr/lib/tethys/src/tethys_wps/pywps.cfg'])
+    #service object is callable. Return xml_response for getcapbilities and describeprocess requests, return WPSResponse for execute request
     service = Service(processes, [pywps_cfg_path])
+    # convert django httprequest to werkzeug request
     request_werkzeug = Request_Werkzeug(copy.copy(request.META))
     response_werkzeug = service(request_werkzeug)
     if type(response_werkzeug) is WPSResponse:
+        # if return WPSResponse object, call WPSResponse to return xml_response
         response_werkzeug=response_werkzeug(copy.copy(request.META))
 
     return HttpResponse(response_werkzeug.response, content_type='text/xml')
