@@ -81,11 +81,11 @@ def services_remove_persistent_command(args):
             else:
                 with pretty_output(FG_RED) as p:
                     p.write('Aborted. Persistent Store Service not removed.')
-                exit(1)
+                exit(0)
     except ObjectDoesNotExist:
         with pretty_output(FG_RED) as p:
             p.write('A Persistent Store Service with ID/Name "{0}" does not exist.'.format(persistent_service_id))
-        exit(1)
+        exit(0)
 
 
 def services_create_spatial_command(args):
@@ -167,11 +167,11 @@ def services_remove_spatial_command(args):
             else:
                 with pretty_output(FG_RED) as p:
                     p.write('Aborted. Spatial Dataset Service not removed.')
-                exit(1)
+                exit(0)
     except ObjectDoesNotExist:
         with pretty_output(FG_RED) as p:
             p.write('A Spatial Dataset Service with ID/Name "{0}" does not exist.'.format(spatial_service_id))
-        exit(1)
+        exit(0)
 
 
 def services_list_command(args):
