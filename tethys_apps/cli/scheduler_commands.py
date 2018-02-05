@@ -16,7 +16,7 @@ def scheduler_create_command(args):
     if existing_scheduler:
         with pretty_output(FG_RED) as p:
             p.write('A Scheduler with name "{}" already exists. Command aborted.'.format(name))
-        exit(1)
+        exit(0)
 
     scheduler = Scheduler(
         name=name,
@@ -66,7 +66,7 @@ def schedulers_remove_command(args):
     except ObjectDoesNotExist:
         with pretty_output(FG_RED) as p:
             p.write('Scheduler with name "{}" does not exist.\nCommand aborted.'.format(name))
-        exit(1)
+        exit(0)
 
     if force:
         scheduler.delete()
