@@ -69,8 +69,10 @@ def settings(request, username=None):
         form = UserSettingsForm(instance=request_user)
 
     # Create template context object
+    user_token, token_created = Token.objects.get_or_create(user=request_user)
     context = {'form': form,
-               'context_user': request.user}
+               'context_user': request.user,
+               'user_token': user_token.key}
 
     return render(request, 'tethys_portal/user/settings.html', context)
 
