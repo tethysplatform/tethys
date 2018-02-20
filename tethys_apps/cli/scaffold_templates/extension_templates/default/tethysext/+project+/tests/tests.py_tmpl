@@ -30,20 +30,20 @@ To run any tests:
             }
         }
     4. Enter tethys test command.
-       The general form is: "tethys test -f tethys_apps.tethysapp.<app_name>.<folder_name>.<file_name>.<class_name>.<function_name>"
+       The general form is: "tethys test -f tethys_apps.tethysext.<app_name>.<folder_name>.<file_name>.<class_name>.<function_name>"
        See below for specific examples
 
         To run all tests across this app:
-            Test command: "tethys test -f tethys_apps.tethysapp.{{project}}"
+            Test command: "tethys test -f tethys_apps.tethysext.{{project}}"
 
         To run all tests in this file:
-            Test command: "tethys test -f tethys_apps.tethysapp.{{project}}.tests.tests"
+            Test command: "tethys test -f tethys_apps.tethysext.{{project}}.tests.tests"
 
         To run tests in the {{class_name}}TestCase class:
-            Test command: "tethys test -f tethys_apps.tethysapp.{{project}}.tests.tests.{{class_name}}TestCase"
+            Test command: "tethys test -f tethys_apps.tethysext.{{project}}.tests.tests.{{class_name}}TestCase"
 
         To run only the test_if_tethys_platform_is_great function in the {{class_name}}TestCase class:
-            Test command: "tethys test -f tethys_apps.tethysapp.{{project}}.tests.tests.{{class_name}}TestCase.test_if_tethys_platform_is_great"
+            Test command: "tethys test -f tethys_apps.tethysext.{{project}}.tests.tests.{{class_name}}TestCase.test_if_tethys_platform_is_great"
 
 To learn more about writing tests, see:
     https://docs.djangoproject.com/en/1.9/topics/testing/overview/#writing-tests
