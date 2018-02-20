@@ -7,21 +7,40 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
+from builtins import *
 
 import os
 import inspect
 
-from tethys_apps.base import TethysAppBase
+from tethys_apps.base import TethysAppBase, TethysExtensionBase
 from .terminal_colors import TerminalColors
 
 
-class SingletonAppHarvester(object):
+class SingletonHarvester(object):
     """
     Collects information for initiating apps
     """
-
+    extensions = []
     apps = []
     _instance = None
+
+    IGNORE_MODULES = ['__builtins__', '__file__', 'pkg_resources', '__package__', '__path__', '__name__', '__doc__']
+
+    def harvest_extensions(self):
+        """
+        Searches for and loads Tethys extensions.
+        """
+        print(TerminalColors.BLUE + 'Loading Tethys Extensions...' + TerminalColors.ENDC)
+        try:
+            import tethysext
+            tethys_extensions = {module_name: module_obj.__name__
+                                 for module_name, module_obj in tethysext.__dict__.items()
+                                 if module_name not in self.IGNORE_MODULES}
+            self._harvest_extension_instances(tethys_extensions)
+        except:
+            '''DO NOTHING'''
 
     def harvest_apps(self):
         """
@@ -42,9 +61,21 @@ class SingletonAppHarvester(object):
         Make App Harvester a Singleton
         """
         if not cls._instance:
-            cls._instance = super(SingletonAppHarvester, cls).__new__(cls)
+            cls._instance = super(SingletonHarvester, cls).__new__(cls)
             
         return cls._instance
+
+    @staticmethod
+    def _validate_extension(extension):
+        """
+        Validate the given extension.
+        Args:
+            extension(module_obj): ext module object of the Tethys extension.
+
+        Returns:
+            module_obj or None: returns validated module object or None if not valid.
+        """
+        return extension
 
     @staticmethod
     def _validate_app(app):
@@ -65,6 +96,52 @@ class SingletonAppHarvester(object):
             app.color = ''
 
         return app
+
+    def _harvest_extension_instances(self, extension_packages):
+        """
+        Locate the extension class, instantiate it, and save for later use.
+
+        Arg:
+            extension_packages(dict<name, extension_package>): Dictionary where keys are the name of the extension and value is the extension package module object.
+        """
+        valid_ext_instances = []
+        loaded_extensions = []
+
+        for extension_name, extension_package in extension_packages.items():
+
+            # Import the "ext" module from the extension package
+            ext_module = __import__(extension_package + ".ext", fromlist=[''])
+
+            # Retrieve the members of the ext_module and iterate through
+            # them to find the the class that inherits from TethysExtensionBase.
+            for name, obj in inspect.getmembers(ext_module):
+                try:
+                    # issubclass() will fail if obj is not a class
+                    if (issubclass(obj, TethysExtensionBase)) and (obj is not TethysExtensionBase):
+                        # Assign a handle to the class
+                        ExtensionClass = getattr(ext_module, name)
+
+                        # Instantiate app and validate
+                        ext_instance = ExtensionClass()
+                        validated_ext_instance = self._validate_extension(ext_instance)
+
+                        # compile valid apps
+                        if validated_ext_instance:
+                            valid_ext_instances.append(validated_ext_instance)
+
+                            # Notify user that the app has been loaded
+                            loaded_extensions.append(extension_name)
+
+                except TypeError:
+                    '''DO NOTHING'''
+                except:
+                    raise
+
+        # Save valid apps
+        self.extensions = valid_ext_instances
+
+        # Update user
+        print('Tethys Extensions Loaded: {0}'.format(', '.join(loaded_extensions)))
 
     def _harvest_app_instances(self, app_packages_list):
         """
@@ -113,4 +190,4 @@ class SingletonAppHarvester(object):
         self.apps = valid_app_instance_list
 
         # Update user
-        print('Tethys Apps Loaded: {0}'.format(' '.join(loaded_apps)))
+        print('Tethys Apps Loaded: {0}'.format(', '.join(loaded_apps)))

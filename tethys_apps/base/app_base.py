@@ -23,45 +23,14 @@ from ..exceptions import TethysAppSettingDoesNotExist
 tethys_log = logging.getLogger('tethys.app_base')
 
 
-class TethysAppBase(object):
+class TethysBase(object):
     """
-    Base class used to define the app class for Tethys apps.
-
-    Attributes:
-      name (string): Name of the app.
-      index (string): Lookup term for the index URL of the app.
-      icon (string): Location of the image to use for the app icon.
-      package (string): Name of the app package.
-      root_url (string): Root URL of the app.
-      color (string): App theme color as RGB hexadecimal.
-      description (string): Description of the app.
-      tag (string): A string for filtering apps.
-      enable_feedback (boolean): Shows feedback button on all app pages.
-      feedback_emails (list): A list of emails corresponding to where submitted feedback forms are sent.
-
+    Abstract base class of app and extension classes.
     """
     name = ''
-    index = ''
-    icon = ''
     package = ''
     root_url = ''
-    color = ''
     description = ''
-    tags = ''
-    enable_feedback = False
-    feedback_emails = []
-
-    def __unicode__(self):
-        """
-        String representation
-        """
-        return '<TethysApp: {0}>'.format(self.name)
-
-    def __repr__(self):
-        """
-        String representation
-        """
-        return '<TethysApp: {0}>'.format(self.name)
 
     def url_maps(self):
         """
@@ -94,6 +63,92 @@ class TethysAppBase(object):
                     return url_maps
         """
         raise NotImplementedError()
+
+class TethysExtensionBase(TethysBase):
+    """
+    Base class used to define the extension class for Tethys extensions.
+    """
+
+    def __unicode__(self):
+        """
+        String representation
+        """
+        return '<TethysExtension: {0}>'.format(self.name)
+
+    def __repr__(self):
+        """
+        String representation
+        """
+        return '<TethysExtension: {0}>'.format(self.name)
+
+    def url_maps(self):
+        """
+        Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically.
+
+        Returns:
+          iterable: A list or tuple of ``UrlMap`` objects.
+
+        **Example:**
+
+        ::
+
+            from tethys_sdk.base import url_map_maker
+
+            class MyFirstApp(TethysAppBase):
+
+                def url_maps(self):
+                    \"""
+                    Example url_maps method.
+                    \"""
+                    # Create UrlMap class that is bound to the root url.
+                    UrlMap = url_map_maker(self.root_url)
+
+                    url_maps = (UrlMap(name='home',
+                                       url='my-first-app',
+                                       controller='my_first_app.controllers.home',
+                                       ),
+                    )
+
+                    return url_maps
+        """
+
+
+
+class TethysAppBase(TethysBase):
+    """
+    Base class used to define the app class for Tethys apps.
+
+    Attributes:
+      name (string): Name of the app.
+      index (string): Lookup term for the index URL of the app.
+      icon (string): Location of the image to use for the app icon.
+      package (string): Name of the app package.
+      root_url (string): Root URL of the app.
+      color (string): App theme color as RGB hexadecimal.
+      description (string): Description of the app.
+      tag (string): A string for filtering apps.
+      enable_feedback (boolean): Shows feedback button on all app pages.
+      feedback_emails (list): A list of emails corresponding to where submitted feedback forms are sent.
+
+    """
+    index = ''
+    icon = ''
+    color = ''
+    tags = ''
+    enable_feedback = False
+    feedback_emails = []
+
+    def __unicode__(self):
+        """
+        String representation
+        """
+        return '<TethysApp: {0}>'.format(self.name)
+
+    def __repr__(self):
+        """
+        String representation
+        """
+        return '<TethysApp: {0}>'.format(self.name)
 
     def custom_settings(self):
         """

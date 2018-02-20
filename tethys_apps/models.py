@@ -113,6 +113,27 @@ class TethysApp(models.Model):
             .select_subclasses('persistentstoredatabasesetting')
 
 
+class TethysExtension(models.Model):
+    """
+    DB Model for Tethys Extension
+    """
+    # The package is enforced to be unique by the file system
+    package = models.CharField(max_length=200, unique=True, default='')
+
+    # Portal admin first attributes
+    name = models.CharField(max_length=200, default='')
+    description = models.TextField(max_length=1000, blank=True, default='')
+
+    # Developer first attributes
+    root_url = models.CharField(max_length=200, default='')
+
+    # Portal admin only attributes
+    enabled = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return text(self.name)
+
+
 class TethysAppSetting(models.Model):
     """
     DB Model for Tethys App Settings
