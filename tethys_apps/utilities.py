@@ -21,7 +21,7 @@ from django.core.files.storage import FileSystemStorage
 from django.utils._os import safe_join
 from past.builtins import basestring
 from tethys_apps import tethys_log
-from tethys_apps.app_harvester import SingletonAppHarvester
+from tethys_apps.harvester import SingletonHarvester
 from tethys_apps.base import permissions
 from tethys_apps.models import TethysApp
 
@@ -37,7 +37,7 @@ def register_app_permissions():
     from django.contrib.auth.models import Permission, Group
 
     # Get the apps
-    harvester = SingletonAppHarvester()
+    harvester = SingletonHarvester()
     apps = harvester.apps
     all_app_permissions = {}
     all_groups = {}
@@ -162,7 +162,7 @@ def generate_app_url_patterns():
     """
 
     # Get controllers list from app harvester
-    harvester = SingletonAppHarvester()
+    harvester = SingletonHarvester()
     apps = harvester.apps
     app_url_patterns = dict()
 
@@ -301,7 +301,7 @@ def sync_tethys_app_db():
     from django.conf import settings
 
     # Get the harvester
-    harvester = SingletonAppHarvester()
+    harvester = SingletonHarvester()
 
     try:
         # Make pass to remove apps that were uninstalled

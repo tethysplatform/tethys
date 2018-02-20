@@ -13,7 +13,7 @@ except ImportError:
     from urllib.parse import urlparse
 
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import redirect
 from django.utils.functional import wraps
 from past.builtins import basestring
