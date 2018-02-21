@@ -211,30 +211,37 @@ def generate_url_patterns():
     return url_patterns
 
 
-def get_directories_in_tethys_apps(directory_names, with_app_name=False):
+def get_directories_in_tethys(directory_names, with_app_name=False):
     # Determine the tethysapp directory
     tethysapp_dir = safe_join(os.path.abspath(os.path.dirname(__file__)), 'tethysapp')
+    tethys_dirs = [tethysapp_dir]
+    try:
+        import tethysext
+        tethys_dirs.append(os.path.abspath(os.path.dirname(tethysext.__file__)))
+    except ImportError:
+        pass
 
-    # Assemble a list of tethysapp directories
-    tethysapp_contents = os.listdir(tethysapp_dir)
-    tethysapp_match_dirs = []
+    match_dirs = []
+    for tethys_dir in tethys_dirs:
+        # Assemble a list of tethysapp directories
+        tethysdir_contents = os.listdir(tethys_dir)
 
-    for item in tethysapp_contents:
-        item_path = safe_join(tethysapp_dir, item)
+        for item in tethysdir_contents:
+            item_path = safe_join(tethys_dir, item)
 
-        # Check each directory combination
-        for directory_name in directory_names:
-            # Only check directories
-            if os.path.isdir(item_path):
-                match_dir = safe_join(item_path, directory_name)
+            # Check each directory combination
+            for directory_name in directory_names:
+                # Only check directories
+                if os.path.isdir(item_path):
+                    match_dir = safe_join(item_path, directory_name)
 
-                if match_dir not in tethysapp_match_dirs and os.path.isdir(match_dir):
-                    if not with_app_name:
-                        tethysapp_match_dirs.append(match_dir)
-                    else:
-                        tethysapp_match_dirs.append((item, match_dir))
+                    if match_dir not in match_dirs and os.path.isdir(match_dir):
+                        if not with_app_name:
+                            match_dirs.append(match_dir)
+                        else:
+                            match_dirs.append((item, match_dir))
 
-    return tethysapp_match_dirs
+    return match_dirs
 
 
 class TethysAppsStaticFinder(BaseFinder):
@@ -245,7 +252,7 @@ class TethysAppsStaticFinder(BaseFinder):
 
     def __init__(self, apps=None, *args, **kwargs):
         # List of locations with static files
-        self.locations = get_directories_in_tethys_apps(('static', 'public'), with_app_name=True)
+        self.locations = get_directories_in_tethys(('static', 'public'), with_app_name=True)
 
         # Maps dir paths to an appropriate storage instance
         self.storages = SortedDict()

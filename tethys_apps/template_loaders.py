@@ -15,7 +15,7 @@ from django.template import TemplateDoesNotExist, Origin
 from django.template.loaders.base import Loader as BaseLoader
 from django.utils._os import safe_join
 
-from tethys_apps.utilities import get_directories_in_tethys_apps
+from tethys_apps.utilities import get_directories_in_tethys
 
 
 class TethysAppsTemplateLoader(BaseLoader):
@@ -42,7 +42,7 @@ class TethysAppsTemplateLoader(BaseLoader):
         one of the template_dirs it is excluded from the result set.
         """
         if not template_dirs:
-            template_dirs = get_directories_in_tethys_apps(('templates',))
+            template_dirs = get_directories_in_tethys(('templates',))
         for template_dir in template_dirs:
             try:
                 name = safe_join(template_dir, template_name)
@@ -63,7 +63,7 @@ class TethysAppsTemplateLoader(BaseLoader):
 #     Custom Django template loader for tethys apps
 #     """
 #     # Search for the template in the list of template directories
-#     tethysapp_template_dirs = get_directories_in_tethys_apps(('templates',))
+#     tethysapp_template_dirs = get_directories_in_tethys(('templates',))
 #
 #     template = None
 #
