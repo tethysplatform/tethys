@@ -14,8 +14,8 @@ class TethysTestCase(TestCase):
     def setUp(self):
         # Resets the apps database and app permissions (workaround since Django's testing framework refreshes the
         # core db after each individual test)
-        from tethys_apps.utilities import sync_tethys_app_db, register_app_permissions
-        sync_tethys_app_db()
+        from tethys_apps.utilities import sync_tethys_db, register_app_permissions
+        sync_tethys_db()
         register_app_permissions()
         self.set_up()
 

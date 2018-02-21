@@ -130,6 +130,10 @@ class TethysExtension(models.Model):
     # Portal admin only attributes
     enabled = models.BooleanField(default=True)
 
+    class Meta:
+        verbose_name = 'Tethys Extension'
+        verbose_name_plural = 'Installed Extensions'
+
     def __unicode__(self):
         return text(self.name)
 

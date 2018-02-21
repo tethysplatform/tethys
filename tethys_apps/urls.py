@@ -10,12 +10,12 @@
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf.urls import url, include
-from tethys_apps.utilities import generate_app_url_patterns, sync_tethys_app_db, register_app_permissions
+from tethys_apps.utilities import generate_app_url_patterns, sync_tethys_db, register_app_permissions
 from tethys_apps.views import library, send_beta_feedback_email
 from tethys_apps import tethys_log
 
 # Sync the tethys apps database
-sync_tethys_app_db()
+sync_tethys_db()
 
 urlpatterns = [
     url(r'^$', library, name='app_library'),
