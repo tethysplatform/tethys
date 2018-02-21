@@ -156,31 +156,31 @@ def register_app_permissions():
                 assign_perm(p, g, db_app)
 
 
-def generate_app_url_patterns():
+def generate_url_patterns():
     """
     Generate the url pattern lists for each app and namespace them accordingly.
     """
 
     # Get controllers list from app harvester
     harvester = SingletonHarvester()
-    apps = harvester.apps
-    app_url_patterns = dict()
+    apps_and_extensions = harvester.apps + harvester.extensions
+    url_patterns = dict()
 
-    for app in apps:
-        if hasattr(app, 'url_maps'):
-            url_maps = app.url_maps()
-        elif hasattr(app, 'controllers'):
-            url_maps = app.controllers()
+    for app_or_extension in apps_and_extensions:
+        if hasattr(app_or_extension, 'url_maps'):
+            url_maps = app_or_extension.url_maps()
+        elif hasattr(app_or_extension, 'controllers'):
+            url_maps = app_or_extension.controllers()
         else:
             url_maps = None
 
         if url_maps:
             for url_map in url_maps:
-                app_root = app.root_url
-                app_namespace = app_root.replace('-', '_')
+                root_url = app_or_extension.root_url
+                namespace = root_url.replace('-', '_')
 
-                if app_namespace not in app_url_patterns:
-                    app_url_patterns[app_namespace] = []
+                if namespace not in url_patterns:
+                    url_patterns[namespace] = []
 
                 # Create django url object
                 if isinstance(url_map.controller, basestring):
@@ -206,9 +206,9 @@ def generate_app_url_patterns():
                 django_url = url(url_map.url, controller_function, name=url_map.name)
 
                 # Append to namespace list
-                app_url_patterns[app_namespace].append(django_url)
+                url_patterns[namespace].append(django_url)
 
-    return app_url_patterns
+    return url_patterns
 
 
 def get_directories_in_tethys_apps(directory_names, with_app_name=False):
