@@ -23,7 +23,7 @@ from past.builtins import basestring
 from tethys_apps import tethys_log
 from tethys_apps.harvester import SingletonHarvester
 from tethys_apps.base import permissions
-from tethys_apps.models import TethysApp
+from tethys_apps.models import TethysApp, TethysExtension
 
 log = logging.getLogger('tethys.tethys_apps.utilities')
 
@@ -294,12 +294,10 @@ class TethysAppsStaticFinder(BaseFinder):
                 yield path, storage
 
 
-def sync_tethys_app_db():
+def sync_tethys_db():
     """
-    Sync installed apps with database.
+    Sync installed apps and extensions with database.
     """
-    from django.conf import settings
-
     # Get the harvester
     harvester = SingletonHarvester()
 
@@ -312,78 +310,134 @@ def sync_tethys_app_db():
             if db_apps.package not in installed_app_packages:
                 db_apps.delete()
 
+        # Make pass to remove extensions that were uninstalled
+        db_extensions = TethysExtension.objects.all()
+        installed_extension_packages = [extension.package for extension in harvester.extensions]
+
+        for db_extensions in db_extensions:
+            if db_extensions.package not in installed_extension_packages:
+                db_extensions.delete()
+
         # Make pass to add apps to db that are newly installed
+        installed_extensions = harvester.extensions
         installed_apps = harvester.apps
 
+
         for installed_app in installed_apps:
-            # Query to see if installed app is in the database
-            db_apps = TethysApp.objects. \
-                filter(package__exact=installed_app.package). \
-                all()
+            # map extension to db
+            map_app_to_db(installed_app)
 
-            # If the app is not in the database, then add it
-            if len(db_apps) == 0:
-                app = TethysApp(
-                    name=installed_app.name,
-                    package=installed_app.package,
-                    description=installed_app.description,
-                    enable_feedback=installed_app.enable_feedback,
-                    feedback_emails=installed_app.feedback_emails,
-                    index=installed_app.index,
-                    icon=installed_app.icon,
-                    root_url=installed_app.root_url,
-                    color=installed_app.color,
-                    tags=installed_app.tags
-                )
-                app.save()
-
-                # custom settings
-                app.add_settings(installed_app.custom_settings())
-                # dataset services settings
-                app.add_settings(installed_app.dataset_service_settings())
-                # spatial dataset services settings
-                app.add_settings(installed_app.spatial_dataset_service_settings())
-                # wps settings
-                app.add_settings(installed_app.web_processing_service_settings())
-                # persistent store settings
-                app.add_settings(installed_app.persistent_store_settings())
-
-                app.save()
-
-            # If the app is in the database, update developer-first attributes
-            elif len(db_apps) == 1:
-                db_app = db_apps[0]
-                db_app.index = installed_app.index
-                db_app.icon = installed_app.icon
-                db_app.root_url = installed_app.root_url
-                db_app.color = installed_app.color
-                db_app.save()
-
-                if hasattr(settings, 'DEBUG') and settings.DEBUG:
-                    db_app.name = installed_app.name
-                    db_app.description = installed_app.description
-                    db_app.tags = installed_app.tags
-                    db_app.enable_feedback = installed_app.enable_feedback
-                    db_app.feedback_emails = installed_app.feedback_emails
-                    db_app.save()
-
-                    # custom settings
-                    db_app.add_settings(installed_app.custom_settings())
-                    # dataset services settings
-                    db_app.add_settings(installed_app.dataset_service_settings())
-                    # spatial dataset services settings
-                    db_app.add_settings(installed_app.spatial_dataset_service_settings())
-                    # wps settings
-                    db_app.add_settings(installed_app.web_processing_service_settings())
-                    # persistent store settings
-                    db_app.add_settings(installed_app.persistent_store_settings())
-                    db_app.save()
-
-            # More than one instance of the app in db... (what to do here?)
-            elif len(db_apps) >= 2:
-                continue
+        for installed_extension in installed_extensions:
+            # map extension to db
+            map_extension_to_db(installed_extension)
     except Exception as e:
         log.error(e)
+
+
+def map_app_to_db(installed_app):
+    """
+    Sync installed apps with database.
+    """
+    from django.conf import settings
+
+    # Query to see if installed app is in the database
+    db_apps = TethysApp.objects. \
+        filter(package__exact=installed_app.package). \
+        all()
+
+    # If the app is not in the database, then add it
+    if len(db_apps) == 0:
+        app = TethysApp(
+            name=installed_app.name,
+            package=installed_app.package,
+            description=installed_app.description,
+            enable_feedback=installed_app.enable_feedback,
+            feedback_emails=installed_app.feedback_emails,
+            index=installed_app.index,
+            icon=installed_app.icon,
+            root_url=installed_app.root_url,
+            color=installed_app.color,
+            tags=installed_app.tags
+        )
+        app.save()
+
+        # custom settings
+        app.add_settings(installed_app.custom_settings())
+        # dataset services settings
+        app.add_settings(installed_app.dataset_service_settings())
+        # spatial dataset services settings
+        app.add_settings(installed_app.spatial_dataset_service_settings())
+        # wps settings
+        app.add_settings(installed_app.web_processing_service_settings())
+        # persistent store settings
+        app.add_settings(installed_app.persistent_store_settings())
+
+        app.save()
+
+    # If the app is in the database, update developer-first attributes
+    elif len(db_apps) == 1:
+        db_app = db_apps[0]
+        db_app.index = installed_app.index
+        db_app.icon = installed_app.icon
+        db_app.root_url = installed_app.root_url
+        db_app.color = installed_app.color
+        db_app.save()
+
+        if hasattr(settings, 'DEBUG') and settings.DEBUG:
+            db_app.name = installed_app.name
+            db_app.description = installed_app.description
+            db_app.tags = installed_app.tags
+            db_app.enable_feedback = installed_app.enable_feedback
+            db_app.feedback_emails = installed_app.feedback_emails
+            db_app.save()
+
+            # custom settings
+            db_app.add_settings(installed_app.custom_settings())
+            # dataset services settings
+            db_app.add_settings(installed_app.dataset_service_settings())
+            # spatial dataset services settings
+            db_app.add_settings(installed_app.spatial_dataset_service_settings())
+            # wps settings
+            db_app.add_settings(installed_app.web_processing_service_settings())
+            # persistent store settings
+            db_app.add_settings(installed_app.persistent_store_settings())
+            db_app.save()
+
+
+def map_extension_to_db(installed_extension):
+    """
+    A function to map extension to the db
+
+    Args:
+        installed_extension(TethysExtension): extension to be mapped to db
+    """
+    from django.conf import settings
+
+    # Query to see if installed extension is in the database
+    db_extensions = TethysExtension.objects. \
+        filter(package__exact=installed_extension.package). \
+        all()
+
+    # If the extension is not in the database, then add it
+    if len(db_extensions) == 0:
+        extension = TethysExtension(
+            name=installed_extension.name,
+            package=installed_extension.package,
+            description=installed_extension.description,
+            root_url=installed_extension.root_url,
+        )
+        extension.save()
+
+    # If the extension is in the database, update developer-first attributes
+    elif len(db_extensions) == 1:
+        db_extension = db_extensions[0]
+        db_extension.root_url = installed_extension.root_url
+        db_extension.save()
+
+        if hasattr(settings, 'DEBUG') and settings.DEBUG:
+            db_extension.name = installed_extension.name
+            db_extension.description = installed_extension.description
+            db_extension.save()
 
 
 def get_active_app(request=None, url=None):
