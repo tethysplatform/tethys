@@ -226,7 +226,7 @@ def get_directories_in_tethys(directory_names, with_app_name=False):
     # Determine the directories of tethys extensions
     harvester = SingletonHarvester()
 
-    for extension_module in harvester.extension_modules:
+    for _, extension_module in harvester.extension_modules.items():
         try:
             extension_module = __import__(extension_module, fromlist=[''])
             potential_dirs.append(extension_module.__path__[0])
