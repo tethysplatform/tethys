@@ -11,13 +11,9 @@ import logging
 import os
 import sys
 import traceback
-from collections import OrderedDict as SortedDict
 
 from django.conf.urls import url
-from django.contrib.staticfiles import utils
-from django.contrib.staticfiles.finders import BaseFinder
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.core.files.storage import FileSystemStorage
 from django.utils._os import safe_join
 from past.builtins import basestring
 from tethys_apps import tethys_log
@@ -212,93 +208,46 @@ def generate_url_patterns():
 
 
 def get_directories_in_tethys(directory_names, with_app_name=False):
-    # Determine the tethysapp directory
+    """
+    # Locate given directories in tethys apps and extensions.
+    Args:
+        directory_names: directory to get path to.
+        with_app_name: inlcud the app name if True.
+
+    Returns:
+        list: list of paths to directories in apps and extensions.
+    """
+    # Determine the directories of tethys apps directory
     tethysapp_dir = safe_join(os.path.abspath(os.path.dirname(__file__)), 'tethysapp')
-    tethys_dirs = [tethysapp_dir]
-    try:
-        import tethysext
-        tethys_dirs.append(os.path.abspath(os.path.dirname(tethysext.__file__)))
-    except ImportError:
-        pass
+    tethysapp_contents = os.walk(tethysapp_dir).next()[1]
+    potential_dirs = [safe_join(tethysapp_dir, item) for item in tethysapp_contents]
 
+
+    # Determine the directories of tethys extensions
+    harvester = SingletonHarvester()
+
+    for extension_module in harvester.extension_modules:
+        try:
+            extension_module = __import__(extension_module, fromlist=[''])
+            potential_dirs.append(extension_module.__path__[0])
+        except (ImportError, AttributeError, IndexError):
+            pass
+
+    # Check each directory combination
     match_dirs = []
-    for tethys_dir in tethys_dirs:
-        # Assemble a list of tethysapp directories
-        tethysdir_contents = os.listdir(tethys_dir)
+    for potential_dir in potential_dirs:
+        for directory_name in directory_names:
+            # Only check directories
+            if os.path.isdir(potential_dir):
+                match_dir = safe_join(potential_dir, directory_name)
 
-        for item in tethysdir_contents:
-            item_path = safe_join(tethys_dir, item)
-
-            # Check each directory combination
-            for directory_name in directory_names:
-                # Only check directories
-                if os.path.isdir(item_path):
-                    match_dir = safe_join(item_path, directory_name)
-
-                    if match_dir not in match_dirs and os.path.isdir(match_dir):
-                        if not with_app_name:
-                            match_dirs.append(match_dir)
-                        else:
-                            match_dirs.append((item, match_dir))
+                if match_dir not in match_dirs and os.path.isdir(match_dir):
+                    if not with_app_name:
+                        match_dirs.append(match_dir)
+                    else:
+                        match_dirs.append((os.path.basename(potential_dir), match_dir))
 
     return match_dirs
-
-
-class TethysAppsStaticFinder(BaseFinder):
-    """
-    A static files finder that looks in each app in the tethysapp directory for static files.
-    This finder search for static files in a directory called 'public' or 'static'.
-    """
-
-    def __init__(self, apps=None, *args, **kwargs):
-        # List of locations with static files
-        self.locations = get_directories_in_tethys(('static', 'public'), with_app_name=True)
-
-        # Maps dir paths to an appropriate storage instance
-        self.storages = SortedDict()
-
-        for prefix, root in self.locations:
-            filesystem_storage = FileSystemStorage(location=root)
-            filesystem_storage.prefix = prefix
-            self.storages[root] = filesystem_storage
-
-        super(TethysAppsStaticFinder, self).__init__(*args, **kwargs)
-
-    def find(self, path, all=False):
-        """
-        Looks for files in the Tethys apps static or public directories
-        """
-        matches = []
-        for prefix, root in self.locations:
-            matched_path = self.find_location(root, path, prefix)
-            if matched_path:
-                if not all:
-                    return matched_path
-                matches.append(matched_path)
-        return matches
-
-    def find_location(self, root, path, prefix=None):
-        """
-        Finds a requested static file in a location, returning the found
-        absolute path (or ``None`` if no match).
-        """
-        if prefix:
-            prefix = '%s%s' % (prefix, os.sep)
-            if not path.startswith(prefix):
-                return None
-            path = path[len(prefix):]
-        path = safe_join(root, path)
-        if os.path.exists(path):
-            return path
-
-    def list(self, ignore_patterns):
-        """
-        List all files in all locations.
-        """
-        for prefix, root in self.locations:
-            storage = self.storages[root]
-            for path in utils.get_files(storage, ignore_patterns):
-                yield path, storage
 
 
 def sync_tethys_db():

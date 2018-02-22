@@ -199,7 +199,7 @@ TEMPLATES = [
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader',
-                'tethys_apps.template_loaders.TethysAppsTemplateLoader'
+                'tethys_apps.template_loaders.TethysTemplateLoader'
             ],
             'debug': DEBUG
         }
@@ -216,7 +216,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'tethys_apps.utilities.TethysAppsStaticFinder'
+    'tethys_apps.static_finders.TethysStaticFinder'
 )
 
 # Uncomment the next line for production installation
