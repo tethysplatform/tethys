@@ -300,7 +300,7 @@ Management commands for running tests for Tethys Platform and Tethys Apps. See :
 .. _tethys_cli_app_settings:
 
 app_settings <app_name>
----------------
+-----------------------
 
 This command is used to list the Persistent Store and Spatial Dataset Settings that an app has requested.
 
@@ -322,7 +322,7 @@ This command is used to list the Persistent Store and Spatial Dataset Settings t
 .. _tethys_cli_services:
 
 services <subcommand> [<subsubcommand> | options]
----------------
+-------------------------------------------------
 
 This command is used to interact with Tethys Services from the command line, rather than the App Admin interface.
 
@@ -386,7 +386,7 @@ This command is used to interact with Tethys Services from the command line, rat
 .. _tethys_cli_link:
 
 link <service_identifier> <app_setting_identifier>
----------------
+--------------------------------------------------
 
 This command is used to link a Tethys Service with a TethysApp Setting
 
@@ -411,7 +411,7 @@ This command is used to link a Tethys Service with a TethysApp Setting
 .. _tethys_cli_schedulers:
 
 schedulers <subcommand>
----------------
+-----------------------
 
 This command is used to interact with Schedulers from the command line, rather than through the App Admin interface
 
