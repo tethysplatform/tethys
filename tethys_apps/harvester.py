@@ -13,6 +13,7 @@ from builtins import *
 
 import os
 import inspect
+import pkgutil
 
 from tethys_apps.base import TethysAppBase, TethysExtensionBase
 from .terminal_colors import TerminalColors
@@ -23,6 +24,7 @@ class SingletonHarvester(object):
     Collects information for initiating apps
     """
     extensions = []
+    extension_modules = []
     apps = []
     _instance = None
 
@@ -32,12 +34,13 @@ class SingletonHarvester(object):
         """
         Searches for and loads Tethys extensions.
         """
-        print(TerminalColors.BLUE + 'Loading Tethys Extensions...' + TerminalColors.ENDC)
         try:
             import tethysext
-            tethys_extensions = {module_name: module_obj.__name__
-                                 for module_name, module_obj in tethysext.__dict__.items()
-                                 if module_name not in self.IGNORE_MODULES}
+            tethys_extensions = dict()
+            for _, modname, ispkg in pkgutil.iter_modules(tethysext.__path__):
+                if ispkg:
+                    tethys_extensions[modname] = 'tethysext.{}'.format(modname)
+
             self._harvest_extension_instances(tethys_extensions)
         except:
             '''DO NOTHING'''
@@ -105,6 +108,7 @@ class SingletonHarvester(object):
             extension_packages(dict<name, extension_package>): Dictionary where keys are the name of the extension and value is the extension package module object.
         """
         valid_ext_instances = []
+        valid_extension_modules = []
         loaded_extensions = []
 
         for extension_name, extension_package in extension_packages.items():
@@ -128,6 +132,7 @@ class SingletonHarvester(object):
                         # compile valid apps
                         if validated_ext_instance:
                             valid_ext_instances.append(validated_ext_instance)
+                            valid_extension_modules.append(extension_package)
 
                             # Notify user that the app has been loaded
                             loaded_extensions.append(extension_name)
@@ -139,6 +144,7 @@ class SingletonHarvester(object):
 
         # Save valid apps
         self.extensions = valid_ext_instances
+        self.extension_modules = valid_extension_modules
 
         # Update user
         print('Tethys Extensions Loaded: {0}'.format(', '.join(loaded_extensions)))
