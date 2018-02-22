@@ -85,12 +85,12 @@ This command contains several subcommands that are used to help manage Tethys Pl
 
 **Arguments:**
 
-* **subcommand**: The management command to run. Either "start", "syncdb", or "collectstatic".
+* **subcommand**: The management command to run.
 
     * *start*: Start the Django development server. Wrapper for ``manage.py runserver``.
     * *syncdb*: Initialize the database during installation. Wrapper for ``manage.py syncdb``.
-    * *syncapps*: Sync installed apps with the TethysApp database.
-    * *collectstatic*: Link app static/public directories to STATIC_ROOT directory and then run Django's collectstatic command. Preprocessor and wrapper for ``manage.py collectstatic``.
+    * *sync*: Sync installed apps and extensions with the TethysApp database.
+    * *collectstatic*: Link app and extension static/public directories to STATIC_ROOT directory and then run Django's collectstatic command. Preprocessor and wrapper for ``manage.py collectstatic``.
     * *collectworkspaces*: Link app workspace directories to TETHYS_WORKSPACES_ROOT directory.
     * *collectall*: Convenience command for running both *collectstatic* and *collectworkspaces*.
     * *superuser*: Create a new superuser/website admin for your Tethys Portal.
@@ -112,7 +112,7 @@ This command contains several subcommands that are used to help manage Tethys Pl
     $ tethys manage syncdb
 
     # Sync installed apps with the TethysApp database.
-    $ tethys manage syncapps
+    $ tethys manage sync
 
     # Collect static files
     $ tethys manage collectstatic
@@ -172,7 +172,7 @@ Management command for Persistent Stores. To learn more about persistent stores 
 list
 ----
 
-Use this command to list all installed apps.
+Use this command to list all installed apps and extensions.
 
 **Examples:**
 
@@ -183,11 +183,14 @@ Use this command to list all installed apps.
 uninstall <app>
 ---------------
 
-Use this command to uninstall apps.
+Use this command to uninstall apps and extensions.
 
 **Arguments:**
 
-* **app**: Name the app to uninstall.
+* **name**: Name the app or extension to uninstall.
+
+**Optional Arguments:**
+* **-e, --extension**: Flag used to indicate that the item being uninstalled is an extension.
 
 **Examples:**
 
@@ -195,6 +198,9 @@ Use this command to uninstall apps.
 
     # Uninstall my_first_app
     $ tethys uninstall my_first_app
+
+    # Uninstall extension
+    $ tethys uninstall -e my_extension
 
 .. _tethys_cli_docker:
 

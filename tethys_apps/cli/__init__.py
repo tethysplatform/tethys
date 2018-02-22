@@ -21,7 +21,7 @@ from .docker_commands import *
 from .gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
 from .manage_commands import (manage_command, get_manage_path, run_process,
                               MANAGE_START, MANAGE_SYNCDB,
-                              MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_SYNCAPPS,
+                              MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_SYNC,
                               MANAGE_COLLECT, MANAGE_CREATESUPERUSER, TETHYS_SRC_DIRECTORY)
 from .services_commands import (SERVICES_CREATE, SERVICES_CREATE_PERSISTENT, SERVICES_CREATE_SPATIAL, SERVICES_LINK,
                                 services_create_persistent_command, services_create_spatial_command,
@@ -32,7 +32,7 @@ from .app_settings_commands import (app_settings_list_command, app_settings_crea
                                     app_settings_remove_command)
 from .scheduler_commands import scheduler_create_command, schedulers_list_command, schedulers_remove_command
 from .gen_commands import VALID_GEN_OBJECTS, generate_command
-from tethys_apps.helpers import get_installed_tethys_apps
+from tethys_apps.helpers import get_installed_tethys_apps, get_installed_tethys_extensions
 
 # Module level variables
 PREFIX = 'tethysapp'
@@ -54,14 +54,22 @@ def uninstall_command(args):
         pass
 
 
-def list_apps_command(args):
+def list_command(args):
     """
     List installed apps.
     """
     installed_apps = get_installed_tethys_apps()
+    installed_extensions = get_installed_tethys_extensions()
 
-    for app in installed_apps:
-        print(app)
+    if installed_apps:
+        print('Apps:')
+        for item in installed_apps:
+            print('  {}'.format(item))
+
+    if installed_extensions:
+        print('Extensions:')
+        for item in installed_extensions:
+            print('  {}'.format(item))
 
 
 def docker_command(args):
@@ -236,7 +244,7 @@ def tethys_command():
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
     manage_parser.add_argument('command', help='Management command to run.',
                                choices=[MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
-                                        MANAGE_COLLECT, MANAGE_CREATESUPERUSER, MANAGE_SYNCAPPS])
+                                        MANAGE_COLLECT, MANAGE_CREATESUPERUSER, MANAGE_SYNC])
     manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
     manage_parser.add_argument('-p', '--port', type=str, help='Host and/or port on which to bind the development server.')
     manage_parser.add_argument('--noinput', action='store_true', help='Pass the --noinput argument to the manage.py command.')
@@ -410,8 +418,8 @@ def tethys_command():
     uninstall_parser.set_defaults(func=uninstall_command)
 
     # Setup list command
-    list_parser = subparsers.add_parser('list', help='List installed apps.')
-    list_parser.set_defaults(func=list_apps_command)
+    list_parser = subparsers.add_parser('list', help='List installed apps and extensions.')
+    list_parser.set_defaults(func=list_command)
 
     # Sync stores command
     syncstores_parser = subparsers.add_parser('syncstores', help='Management command for App Persistent Stores.')
