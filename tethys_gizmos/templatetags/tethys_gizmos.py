@@ -10,6 +10,7 @@
 import os
 import json
 import time
+import inspect
 from datetime import datetime
 from django.conf import settings
 from django import template
@@ -19,15 +20,35 @@ from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.serializers.json import DjangoJSONEncoder
 
 from plotly.offline.offline import get_plotlyjs
+from tethys_apps.harvester import SingletonHarvester
 
 from ..gizmo_options.base import TethysGizmoOptions
 import tethys_sdk.gizmos
 
-# MAP THE GIZMO NAME TO GIZMO OBJECT
+GIZMO_NAME_PROPERTY = 'gizmo_name'
 GIZMO_NAME_MAP = {}
+EXTENSION_PATH_MAP = {}
+
+# Add gizmos to GIZMO_NAME_MAP
 for name, cls in tethys_sdk.gizmos.__dict__.items():
-    if(hasattr(cls, "gizmo_name")):
+    if inspect.isclass(cls) and issubclass(cls, TethysGizmoOptions) and hasattr(cls, GIZMO_NAME_PROPERTY):
         GIZMO_NAME_MAP[cls.gizmo_name] = cls
+
+
+# Add extension gizmos to the GIZMO_NAME_MAP
+harvester = SingletonHarvester()
+extension_modules = harvester.extension_modules
+
+for module_name, extension_module in extension_modules.items():
+    try:
+        gizmo_module = __import__('{}.gizmos'.format(extension_module), fromlist=[''])
+        for name, cls in gizmo_module.__dict__.items():
+            if inspect.isclass(cls) and issubclass(cls, TethysGizmoOptions) and hasattr(cls, GIZMO_NAME_PROPERTY):
+                GIZMO_NAME_MAP[cls.gizmo_name] = cls
+                gizmo_module_path = gizmo_module.__path__[0]
+                EXTENSION_PATH_MAP[cls.gizmo_name] = os.path.abspath(os.path.dirname(gizmo_module_path))
+    except ImportError:
+        continue
 
 register = template.Library()
 
@@ -161,18 +182,25 @@ class TethysGizmoIncludeNode(TethysGizmoIncludeDependency):
 
         try:
             if self.gizmo_name is None or self.gizmo_name not in GIZMO_NAME_MAP:
-                if hasattr(resolved_options, "gizmo_name"):
+                if hasattr(resolved_options, GIZMO_NAME_PROPERTY):
                     self._load_gizmo_name(resolved_options.gizmo_name)
                 else:
                     raise TemplateSyntaxError('A valid gizmo name is required for this input format.')
                 
             self._load_gizmos_rendered(context)
-            # Determine path to gizmo template
-            gizmo_templates_root = os.path.join('tethys_gizmos', 'gizmos')
+
+            # Derive path to gizmo template
+            if self.gizmo_name not in EXTENSION_PATH_MAP:
+                # Determine path to gizmo template
+                gizmo_templates_root = os.path.join('tethys_gizmos', 'gizmos')
+
+            else:
+                gizmo_templates_root = os.path.join(EXTENSION_PATH_MAP[self.gizmo_name], 'templates', 'gizmos')
+
             gizmo_file_name = '{0}.html'.format(self.gizmo_name)
             template_name = os.path.join(gizmo_templates_root, gizmo_file_name)
 
-            # reset gizmo_name incase Node is rendered with different options
+            # reset gizmo_name in case Node is rendered with different options
             self._load_gizmo_name(None)
 
             # Retrieve the gizmo template and render
@@ -307,7 +335,7 @@ class TethysGizmoDependenciesNode(template.Node):
             for dict_element in context:
                 for key in dict_element:
                     resolved_options = template.Variable(key).resolve(context)
-                    if hasattr(resolved_options, "gizmo_name"):
+                    if hasattr(resolved_options, GIZMO_NAME_PROPERTY):
                         if resolved_options.gizmo_name not in context['gizmos_rendered']:
                             context['gizmos_rendered'].append(resolved_options.gizmo_name)
 
