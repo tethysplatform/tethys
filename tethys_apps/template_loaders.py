@@ -3,7 +3,7 @@
 * Name: template_loaders.py
 * Author: swainn
 * Created On: December 14, 2015
-* Copyright: (c) Aquaveo 2015
+* Copyright:
 * License: 
 ********************************************************************************
 """
@@ -18,7 +18,7 @@ from django.utils._os import safe_join
 from tethys_apps.utilities import get_directories_in_tethys
 
 
-class TethysAppsTemplateLoader(BaseLoader):
+class TethysTemplateLoader(BaseLoader):
     """
     Custom Django template loader for tethys apps
     """
@@ -56,28 +56,3 @@ class TethysAppsTemplateLoader(BaseLoader):
                 template_name=template_name,
                 loader=self,
             )
-
-#
-# def tethys_apps_template_loader(template_name, template_dirs=None):
-#     """
-#     Custom Django template loader for tethys apps
-#     """
-#     # Search for the template in the list of template directories
-#     tethysapp_template_dirs = get_directories_in_tethys(('templates',))
-#
-#     template = None
-#
-#     for template_dir in tethysapp_template_dirs:
-#         template_path = safe_join(template_dir, template_name)
-#
-#         try:
-#             template = open(template_path).read(), template_name
-#             break
-#         except IOError:
-#             pass
-#
-#     # If the template is still None, raise the exception
-#     if not template:
-#         raise TemplateDoesNotExist(template_name)
-#
-#     return template
