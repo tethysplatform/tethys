@@ -24,11 +24,10 @@ class SingletonHarvester(object):
     Collects information for initiating apps
     """
     extensions = []
-    extension_modules = []
+    extension_modules = {}
     apps = []
     _instance = None
 
-    IGNORE_MODULES = ['__builtins__', '__file__', 'pkg_resources', '__package__', '__path__', '__name__', '__doc__']
 
     def harvest_extensions(self):
         """
@@ -108,7 +107,7 @@ class SingletonHarvester(object):
             extension_packages(dict<name, extension_package>): Dictionary where keys are the name of the extension and value is the extension package module object.
         """
         valid_ext_instances = []
-        valid_extension_modules = []
+        valid_extension_modules = {}
         loaded_extensions = []
 
         for extension_name, extension_package in extension_packages.items():
@@ -132,7 +131,7 @@ class SingletonHarvester(object):
                         # compile valid apps
                         if validated_ext_instance:
                             valid_ext_instances.append(validated_ext_instance)
-                            valid_extension_modules.append(extension_package)
+                            valid_extension_modules[extension_name] = extension_package
 
                             # Notify user that the app has been loaded
                             loaded_extensions.append(extension_name)
