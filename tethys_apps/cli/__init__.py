@@ -44,8 +44,10 @@ def uninstall_command(args):
     """
     # Get the path to manage.py
     manage_path = get_manage_path(args)
-    app_name = args.app
-    process = ['python', manage_path, 'tethys_app_uninstall', app_name]
+    item_name = args.app_or_extension
+    process = ['python', manage_path, 'tethys_app_uninstall', item_name]
+    if args.is_extension:
+        process.append('-e')
     try:
         subprocess.call(process)
     except KeyboardInterrupt:
@@ -402,7 +404,9 @@ def tethys_command():
 
     # Setup uninstall command
     uninstall_parser = subparsers.add_parser('uninstall', help='Uninstall an app.')
-    uninstall_parser.add_argument('app', help='Name of the app to uninstall.')
+    uninstall_parser.add_argument('app_or_extension', help='Name of the app or extension to uninstall.')
+    uninstall_parser.add_argument('-e', '--extension', dest='is_extension', default=False, action='store_true',
+                                  help='Flag to denote an extension is being uninstalled')
     uninstall_parser.set_defaults(func=uninstall_command)
 
     # Setup list command
