@@ -35,6 +35,7 @@ class SingletonHarvester(object):
         """
         try:
             import tethysext
+            print(TerminalColors.BLUE + 'Loading Tethys Extensions...' + TerminalColors.ENDC)
             tethys_extensions = dict()
             for _, modname, ispkg in pkgutil.iter_modules(tethysext.__path__):
                 if ispkg:
