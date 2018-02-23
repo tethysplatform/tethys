@@ -12,6 +12,6 @@ Tethys Extensions provide a way for app developers to extend Tethys Platform and
    extensions/scaffold
    extensions/structure
    extensions/templates_and_static_files
-   extensions/models
    extensions/url_maps
+   extensions/models
    extensions/custom_gizmos
