@@ -14,6 +14,7 @@ from setuptools.command.develop import develop
 from setuptools.command.install import install
 from sys import platform as _platform
 import ctypes
+from termcolor import colored
 
 
 def get_tethysapp_directory():
@@ -21,6 +22,12 @@ def get_tethysapp_directory():
     Return the absolute path to the tethysapp directory.
     """
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), 'tethysapp')
+
+def get_tethys_processes_directory():
+    """
+    Return the absolute path to the tethys_wps directory.
+    """
+    return os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), 'tethys_wps/processes')
 
 
 def _run_install(self):
@@ -80,13 +87,39 @@ def _run_develop(self):
                    raise ctypes.WinError()
 	    os.symlink = symlink_ms(self.app_package_dir, destination_dir)
     except Exception as e:
-	print e
+	print(e)
         try:
             shutil.rmtree(destination_dir)
         except Exception as e:
             os.remove(destination_dir)
 
         os.symlink(self.app_package_dir, destination_dir)
+
+    # Get tethys app wps process file path
+    app_process_name = self.app_package.replace('_', '').lower()
+    app_process_file = app_process_name + '_process.py'
+    app_process_full_path = os.path.join(self.app_package_dir, app_process_file)
+
+    if os.path.exists(app_process_full_path):
+        try:
+            # Get tethys pywps processes folder and __init__ file path
+            tethys_wps_processes_dir = get_tethys_processes_directory()
+            pywps_destination_path = os.path.join(tethys_wps_processes_dir, app_process_file)
+
+            # Copy the process file
+            print('Creating Symbolic Link to WPS processes folder: {0} to {1}'.format(app_process_full_path,
+                                                                                      pywps_destination_path))
+            os.symlink(app_process_full_path, pywps_destination_path)
+
+        except:
+            try:
+                shutil.rmtree(pywps_destination_path)
+            except:
+                os.remove(pywps_destination_path)
+
+            os.symlink(app_process_full_path, pywps_destination_path)
+    else:
+        print(colored("Notice: no WPS process file found in this project.", color='red'))
 
     # Install dependencies
     for dependency in self.dependencies:

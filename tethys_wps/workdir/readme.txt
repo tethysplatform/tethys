@@ -1,0 +1,1 @@
+This folder is used to store all temporary files. Please do not remove this readme file.

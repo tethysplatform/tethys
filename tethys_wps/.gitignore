@@ -1,0 +1,5 @@
+outputs
+workdir
+processes
+pywps.log
+__init__.py

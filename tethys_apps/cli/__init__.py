@@ -12,6 +12,8 @@ import argparse
 import os
 import subprocess
 import webbrowser
+from termcolor import colored
+import importlib
 
 from builtins import input
 
@@ -29,6 +31,145 @@ from tethys_apps.helpers import get_installed_tethys_apps
 # Module level variables
 PREFIX = 'tethysapp'
 
+def get_tethys_processes_directory():
+    """
+    Return the absolute path to the tethys_wps directory.
+    """
+    return os.path.join(
+        os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'tethys_wps/processes')
+
+
+def CheckIdentifierExist(name):
+    """
+    Check if the service identifier already be used
+    """
+    identifiers = []
+    import tethys_wps.processes
+    import inspect
+    for m in inspect.getmembers(tethys_wps.processes, inspect.isclass):
+        identifiers.append(m[0])
+
+    if name in identifiers:
+        return True
+    else:
+        return False
+
+
+def wps_command(args):
+
+    """
+    Public WPS service from a Tethys app
+    """
+    # Get tethys pywps processes folder
+    tethys_wps_processes_dir = get_tethys_processes_directory()
+    # Get __init__ file path in tethys pywps processes folder
+    pywps_init_file_path = os.path.join(tethys_wps_processes_dir, '__init__.py')
+
+    if args.command == 'list':
+
+        from os import listdir
+        from os.path import isfile, join
+        from pywps import Process
+
+        all_processes = []
+        publish_processes = []
+
+        print(colored("Published WPS services: ", color='green'))
+        import tethys_wps.processes
+        import inspect
+        for m in inspect.getmembers(tethys_wps.processes, inspect.isclass):
+            print(m[0])
+            publish_processes.append(m[0])
+
+        print(colored("Unpublished WPS services: ", color='yellow'))
+        for f in listdir(tethys_wps_processes_dir):
+            if isfile(join(tethys_wps_processes_dir, f)):
+                if f.endswith(".py"):
+                    if not f.startswith("_"):
+                        module = importlib.import_module("tethys_wps.processes." + f.split('.')[0])
+                        for m in inspect.getmembers(module, inspect.isclass):
+                            if issubclass(m[1], Process) and m[0] != 'Process':
+                                all_processes.append(m[0])
+        for item in all_processes:
+            if item not in publish_processes:
+                print(item)
+
+
+    if args.command == 'publish':
+        appname_input = raw_input('Please provide your Tethys App name: ')
+
+        if "tethysapp" not in appname_input:
+            process_appname = appname_input
+        else:
+            process_appname = appname_input.replace("tethysapp-", "")
+        print(process_appname)
+
+        # Get tethys app wps process file path
+        app_process_name = process_appname.replace('-', '').replace('_', '').lower()
+        process_file_name = app_process_name + '_process.py'
+        process_symbol_file_path = os.path.join(tethys_wps_processes_dir, process_file_name)
+
+        if os.path.exists(process_symbol_file_path):
+
+            identifier_inputs = raw_input('Please provide your process identifier (separate with comma if multiple): ')
+            identifier_array = identifier_inputs.split(',')
+
+            for name in identifier_array:
+                try:
+                    # Check if the identifier conflicts with any servive on the server
+                    exit = CheckIdentifierExist(name)
+                    if exit:
+                        print(colored(
+                            "Error: Identifier " + name + " already exists on Tethys WPS Server. Please rename it.",
+                            color='red'))
+                    else:
+                        # Check if the identifier valid
+                        f = open(pywps_init_file_path, 'ab')
+                        good = True
+                        try:
+                            module = importlib.import_module("tethys_wps.processes." + app_process_name + "_process")
+                            my_class = getattr(module, name)
+                            instance = my_class()
+                        except Exception as ex:
+                            good = False
+                            print(colored("Error: Invalid indentifier: " + name + ". Please check your inputs.",
+                                          color='red'))
+                            print(ex)
+                        if good:
+                            f.write("from " + app_process_name + "_process import " + name + '\n')
+                            print(colored("Process " + name + " has been successfully published.", color='green'))
+                        f.close()
+                except Exception as ex:
+                    print(ex)
+        else:
+            print(colored("Notice: no WPS process file found.", color='red'))
+
+
+    if args.command == 'remove':
+
+        identifier_input = raw_input('Please provide your process identifier to remove: ')
+
+        try:
+            # Check if the identifier conflicts with any servive on the server
+            exit = CheckIdentifierExist(identifier_input)
+            if not exit:
+                print(colored(
+                    "Error: Identifier " + identifier_input + " not exist on Tethys WPS Server.", color='red'))
+            else:
+                f = open(pywps_init_file_path, 'rb')
+                output = []
+                for line in f:
+                    if line.split(' ')[-1].strip() != identifier_input:
+                       output.append(line)
+                f.close()
+                f = open(pywps_init_file_path, 'w')
+                f.writelines(output)
+                f.close()
+                print(colored(
+                    "Process " + identifier_input + " has been successfully removed.", color='green'))
+        except Exception as ex:
+            print(ex)
+
 
 def uninstall_command(args):
     """
@@ -40,6 +181,32 @@ def uninstall_command(args):
     process = ['python', manage_path, 'tethys_app_uninstall', app_name]
     try:
         subprocess.call(process)
+        # Remove WPS process
+        tethys_pywps_processes_dir = os.path.join(
+            os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'tethys_wps/processes/')
+
+        if "tethysapp-" in app_name:
+             app_name_noprefix = app_name.replace("tethysapp-", "")
+        else:
+            app_name_noprefix = app_name
+
+        app_process_file_path = os.path.join(tethys_pywps_processes_dir, app_name_noprefix.replace('_', '').lower() + '_process.py')
+        pywps_init_file_path = os.path.join(tethys_pywps_processes_dir, '__init__.py')
+
+        # remove process file
+        if os.path.exists(app_process_file_path):
+            os.remove(app_process_file_path)
+            # modify init file
+            app_process_name = app_name_noprefix.replace('_', '').lower() + '_process'
+            f = open(pywps_init_file_path, 'rb')
+            output = []
+            for line in f:
+                if not app_process_name in line:
+                    output.append(line)
+            f.close()
+            f = open(pywps_init_file_path, 'w')
+            f.writelines(output)
+            f.close()
     except KeyboardInterrupt:
         pass
 
@@ -288,6 +455,13 @@ def tethys_command():
                                dest='boot2docker',
                                help="Stop boot2docker on container stop. Only applicable to stop command.")
     docker_parser.set_defaults(func=docker_command)
+
+    # Setup wps command
+    wps_parser = subparsers.add_parser('wps', help='Publish WPS service from Tethys app.')
+    wps_parser.add_argument('command',
+                            help='"publish": publish WPS service(s). "list": list published and unpublished processes. "remove": remove a WPS service.',
+                            choices=['publish', 'list', 'remove'])
+    wps_parser.set_defaults(func=wps_command)
 
     # Parse the args and call the default function
     args = parser.parse_args()
