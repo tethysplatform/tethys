@@ -73,7 +73,7 @@ For the custom select input gizmo, create a new python module in the ``gizmos`` 
             constructor
             """
             # Initialize parent
-            super(TethysGizmoOptions, self).__init__(**kwargs)
+            super(CustomSelectInput, self).__init__(**kwargs)
 
             # Initialize Attributes
             self.name = name
@@ -187,7 +187,7 @@ Modify the gizmo options class to include these dependencies:
             constructor
             """
             # Initialize parent
-            super(TethysGizmoOptions, self).__init__(**kwargs)
+            super(CustomSelectInput, self).__init__(**kwargs)
 
             # Initialize Attributes
             self.name = name
