@@ -20,6 +20,7 @@ The sturcture of a freshly scaffolded extension should looks something like this
     |-- tethysext/
     |   |-- my_first_extension/
     |   |   |-- gizmos/
+    |   |   |   |-- __init__.py
     |   |   |-- public/
     |   |   |   |-- js/
     |   |   |   |   |-- main.js
