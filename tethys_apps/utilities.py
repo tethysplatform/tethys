@@ -18,7 +18,7 @@ from django.utils._os import safe_join
 from past.builtins import basestring
 from tethys_apps import tethys_log
 from tethys_apps.harvester import SingletonHarvester
-from tethys_apps.base import permissions
+from tethys_apps.base import permissions, TethysExtensionBase
 from tethys_apps.models import TethysApp, TethysExtension
 
 log = logging.getLogger('tethys.tethys_apps.utilities')
@@ -159,50 +159,75 @@ def generate_url_patterns():
 
     # Get controllers list from app harvester
     harvester = SingletonHarvester()
-    apps_and_extensions = harvester.apps + harvester.extensions
+    apps = harvester.apps
+    extensions = harvester.extensions
+    app_url_patterns = dict()
+    extension_url_patterns = dict()
+
+    for app in apps:
+        app_url_patterns.update(get_django_urls_for(app))
+
+    for extension in extensions:
+        extension_url_patterns.update(get_django_urls_for(extension))
+
+    return app_url_patterns, extension_url_patterns
+
+
+def get_django_urls_for(app_or_extension):
+    """
+    Get all UrlMaps from the app or extension given and convert to django urls.
+
+    Args:
+        app_or_extension(TethysApp or TethysExtension): TethysApp or TethysExtension instance.
+
+    Returns:
+        dictionary<namespace, django url object>: django urls grouped by namespace.
+    """
+    is_extension = isinstance(app_or_extension, TethysExtensionBase)
     url_patterns = dict()
 
-    for app_or_extension in apps_and_extensions:
-        if hasattr(app_or_extension, 'url_maps'):
-            url_maps = app_or_extension.url_maps()
-        elif hasattr(app_or_extension, 'controllers'):
-            url_maps = app_or_extension.controllers()
-        else:
-            url_maps = None
+    if hasattr(app_or_extension, 'url_maps'):
+        url_maps = app_or_extension.url_maps()
+    elif hasattr(app_or_extension, 'controllers'):
+        url_maps = app_or_extension.controllers()
+    else:
+        url_maps = None
 
-        if url_maps:
-            for url_map in url_maps:
-                root_url = app_or_extension.root_url
-                namespace = root_url.replace('-', '_')
+    if url_maps:
+        for url_map in url_maps:
+            root_url = app_or_extension.root_url
+            namespace = root_url.replace('-', '_')
 
-                if namespace not in url_patterns:
-                    url_patterns[namespace] = []
+            if namespace not in url_patterns:
+                url_patterns[namespace] = []
 
-                # Create django url object
-                if isinstance(url_map.controller, basestring):
-                    controller_parts = url_map.controller.split('.')
-                    module_name = '.'.join(controller_parts[:-1])
-                    function_name = controller_parts[-1]
-                    try:
-                        module = __import__(module_name, fromlist=[function_name])
-                    except ImportError:
-                        error_msg = 'The following error occurred while trying to import the controller function ' \
-                                    '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
-                        log.error(error_msg)
-                        sys.exit(1)
-                    try:
-                        controller_function = getattr(module, function_name)
-                    except AttributeError as e:
-                        error_msg = 'The following error occurred while tyring to access the controller function ' \
-                                    '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
-                        log.error(error_msg)
-                        sys.exit(1)
-                else:
-                    controller_function = url_map.controller
-                django_url = url(url_map.url, controller_function, name=url_map.name)
+            # Create django url object
+            if isinstance(url_map.controller, basestring):
+                root_controller_path = 'tethysext' if is_extension else 'tethys_apps.tethysapp'
+                full_controller_path = '.'.join([root_controller_path, url_map.controller])
+                controller_parts = full_controller_path.split('.')
+                module_name = '.'.join(controller_parts[:-1])
+                function_name = controller_parts[-1]
+                try:
+                    module = __import__(module_name, fromlist=[function_name])
+                except ImportError:
+                    error_msg = 'The following error occurred while trying to import the controller function ' \
+                                '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
+                    log.error(error_msg)
+                    sys.exit(1)
+                try:
+                    controller_function = getattr(module, function_name)
+                except AttributeError as e:
+                    error_msg = 'The following error occurred while trying to access the controller function ' \
+                                '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
+                    log.error(error_msg)
+                    sys.exit(1)
+            else:
+                controller_function = url_map.controller
+            django_url = url(url_map.url, controller_function, name=url_map.name)
 
-                # Append to namespace list
-                url_patterns[namespace].append(django_url)
+            # Append to namespace list
+            url_patterns[namespace].append(django_url)
 
     return url_patterns
 
