@@ -72,9 +72,6 @@ RUN mkdir ${TETHYS_HOME}/workspaces ${TETHYS_HOME}/apps ${TETHYS_HOME}/static
 
 # Add static files
 ADD static ${TETHYS_HOME}/src/static/
-ADD aquaveo_static/images/aquaveo_favicon.ico ${TETHYS_HOME}/src/static/tethys_portal/images/default_favicon.png
-ADD aquaveo_static/images/aquaveo_logo.png ${TETHYS_HOME}/src/static/tethys_portal/images/tethys-logo-75.png
-ADD aquaveo_static/tethys_main.css ${TETHYS_HOME}/src/static/tethys_portal/css/tethys_main.css
 
 # Generate Inital Settings Files
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
