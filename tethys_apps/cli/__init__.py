@@ -185,7 +185,6 @@ def test_command(args):
 
     # print(primary_process)
     run_process(primary_process)
-    print(primary_process)
     if args.coverage:
         if args.file and (app_package_tag in args.file or extension_package_tag in args.file):
             run_process(['coverage', 'report'])
