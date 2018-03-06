@@ -113,6 +113,8 @@ def manage_command(args):
 
 def run_process(process):
     # Call the process with a little trick to ignore the keyboard interrupt error when it happens
+    import os
+    print(os.getcwd())
     try:
         if 'test' in process:
             set_testing_environment(True)
