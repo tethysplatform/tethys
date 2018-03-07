@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 import os
+from tethys_apps.harvester import SingletonHarvester
 
 
 def get_tethysapp_dir():
@@ -33,3 +34,21 @@ def get_installed_tethys_apps():
             tethys_apps[item] = item_path
 
     return tethys_apps
+
+
+def get_installed_tethys_extensions():
+    """
+    Get a list of installed extensions
+    """
+    harvester = SingletonHarvester()
+    install_extensions = harvester.extension_modules
+    extension_paths = {}
+
+    for extension_name, extension_module in install_extensions.items():
+        try:
+            extension = __import__(extension_module, fromlist=[''])
+            extension_paths[extension_name] = extension.__path__[0]
+        except (IndexError, ImportError):
+            '''DO NOTHING'''
+
+    return extension_paths
