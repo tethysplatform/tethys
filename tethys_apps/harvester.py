@@ -11,21 +11,15 @@ from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 from builtins import *
 
-import traceback
-import sys
 import os
 import inspect
 import logging
 import pkgutil
 
-from django.conf.urls import url
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ObjectDoesNotExist
-
 from tethys_apps.base import TethysAppBase, TethysExtensionBase
-from tethys_apps.models import TethysApp, TethysExtension
-
-from .terminal_colors import TerminalColors
+from tethys_apps.terminal_colors import TerminalColors
 
 tethys_log = logging.getLogger('tethys.' + __name__)
 
@@ -76,6 +70,21 @@ class SingletonHarvester(object):
 
         # Harvest App Instances
         self._harvest_app_instances(app_packages_list)
+
+    def get_url_patterns(self):
+        """
+        Generate the url pattern lists for each app and namespace them accordingly.
+        """
+        app_url_patterns = dict()
+        extension_url_patterns = dict()
+
+        for app in self.apps:
+            app_url_patterns.update(app.url_patterns)
+
+        for extension in self.extensions:
+            extension_url_patterns.update(extension.url_patterns)
+
+        return app_url_patterns, extension_url_patterns
         
     def __new__(cls):
         """
@@ -216,7 +225,13 @@ class SingletonHarvester(object):
                             app_instance.sync_with_tethys_db()
 
                             # load/validate app url patterns
-                            app_instance.url_patterns
+                            try:
+                                app_instance.url_patterns
+                            except:
+                                tethys_log.exception(
+                                    'App {0} not loaded because of an issue with loading urls:'.format(app_package))
+                                app_instance.remove_from_db()
+                                continue
 
                             # register app permissions
                             try:
@@ -247,18 +262,3 @@ class SingletonHarvester(object):
         # Update user
         print(TerminalColors.BLUE + 'Tethys Apps Loaded: '
               + TerminalColors.ENDC + '{0}'.format(', '.join(loaded_apps)) + '\n')
-
-    def get_url_patterns(self):
-        """
-        Generate the url pattern lists for each app and namespace them accordingly.
-        """
-        app_url_patterns = dict()
-        extension_url_patterns = dict()
-
-        for app in self.apps:
-            app_url_patterns.update(app.url_patterns)
-
-        for extension in self.extensions:
-            extension_url_patterns.update(extension.url_patterns)
-
-        return app_url_patterns, extension_url_patterns

@@ -130,6 +130,12 @@ class TethysBase(object):
         """
         raise NotImplementedError
 
+    def remove_from_db(self):
+        """
+        Remove the instance from the db.
+        """
+        raise NotImplementedError
+
 class TethysExtensionBase(TethysBase):
     """
     Base class used to define the extension class for Tethys extensions.
@@ -1326,6 +1332,18 @@ class TethysAppBase(TethysBase):
             # More than one instance of the app in db... (what to do here?)
             elif len(db_apps) >= 2:
                 pass
+        except Exception as e:
+            tethys_log.error(e)
+
+    def remove_from_db(self):
+        """
+        Remove the instance from the db.
+        """
+        from tethys_apps.models import TethysApp
+
+        try:
+            # Attempt to delete the object
+            TethysApp.objects.filter(package__exact=self.package).delete()
         except Exception as e:
             tethys_log.error(e)
 
