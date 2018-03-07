@@ -11,15 +11,20 @@ from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 from builtins import *
 
+import traceback
+import sys
 import os
 import inspect
 import logging
 import pkgutil
 
+from django.conf.urls import url
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ObjectDoesNotExist
 
 from tethys_apps.base import TethysAppBase, TethysExtensionBase
+from tethys_apps.models import TethysApp, TethysExtension
+
 from .terminal_colors import TerminalColors
 
 tethys_log = logging.getLogger('tethys.' + __name__)
@@ -33,6 +38,13 @@ class SingletonHarvester(object):
     extension_modules = {}
     apps = []
     _instance = None
+
+    def harvest(self):
+        """
+        Harvest apps and extensions.
+        """
+        self.harvest_extensions()
+        self.harvest_apps()
 
 
     def harvest_extensions(self):
@@ -119,34 +131,43 @@ class SingletonHarvester(object):
 
         for extension_name, extension_package in extension_packages.items():
 
-            # Import the "ext" module from the extension package
-            ext_module = __import__(extension_package + ".ext", fromlist=[''])
+            try:
+                # Import the "ext" module from the extension package
+                ext_module = __import__(extension_package + ".ext", fromlist=[''])
 
-            # Retrieve the members of the ext_module and iterate through
-            # them to find the the class that inherits from TethysExtensionBase.
-            for name, obj in inspect.getmembers(ext_module):
-                try:
-                    # issubclass() will fail if obj is not a class
-                    if (issubclass(obj, TethysExtensionBase)) and (obj is not TethysExtensionBase):
-                        # Assign a handle to the class
-                        ExtensionClass = getattr(ext_module, name)
+                # Retrieve the members of the ext_module and iterate through
+                # them to find the the class that inherits from TethysExtensionBase.
+                for name, obj in inspect.getmembers(ext_module):
+                    try:
+                        # issubclass() will fail if obj is not a class
+                        if (issubclass(obj, TethysExtensionBase)) and (obj is not TethysExtensionBase):
+                            # Assign a handle to the class
+                            ExtensionClass = getattr(ext_module, name)
 
-                        # Instantiate app and validate
-                        ext_instance = ExtensionClass()
-                        validated_ext_instance = self._validate_extension(ext_instance)
+                            # Instantiate app and validate
+                            ext_instance = ExtensionClass()
+                            validated_ext_instance = self._validate_extension(ext_instance)
 
-                        # compile valid apps
-                        if validated_ext_instance:
-                            valid_ext_instances.append(validated_ext_instance)
-                            valid_extension_modules[extension_name] = extension_package
+                            # sync app with Tethys db
+                            ext_instance.sync_with_tethys_db()
 
-                            # Notify user that the app has been loaded
-                            loaded_extensions.append(extension_name)
+                            # compile valid apps
+                            if validated_ext_instance:
+                                valid_ext_instances.append(validated_ext_instance)
+                                valid_extension_modules[extension_name] = extension_package
 
-                except TypeError:
-                    '''DO NOTHING'''
-                except:
-                    raise
+                                # Notify user that the app has been loaded
+                                loaded_extensions.append(extension_name)
+
+                            # We found the extension class so we're done
+                            break
+
+                    except TypeError:
+                        continue
+            except:
+                tethys_log.exception(
+                    'Extension {0} not loaded because of the following error:'.format(extension_package))
+                continue
 
         # Save valid apps
         self.extensions = valid_ext_instances
@@ -165,79 +186,79 @@ class SingletonHarvester(object):
         loaded_apps = []
         
         for app_package in app_packages_list:
-            # Collect data from each app package in the apps directory
-            if app_package not in ['__init__.py', '__init__.pyc', '.gitignore', '.DS_Store']:
-                # Create the path to the app module in the custom app package
-                app_module_name = '.'.join(['tethys_apps.tethysapp', app_package, 'app'])
+            # Skip these things
+            if app_package in ['__init__.py', '__init__.pyc', '.gitignore', '.DS_Store']:
+                continue
 
-                try:
-                    # Import the app.py module from the custom app package programmatically
-                    # (e.g.: apps.apps.<custom_package>.app)
-                    app_module = __import__(app_module_name, fromlist=[''])
+            # Create the path to the app module in the custom app package
+            app_module_name = '.'.join(['tethys_apps.tethysapp', app_package, 'app'])
+
+            try:
+                # Import the app.py module from the custom app package programmatically
+                # (e.g.: apps.apps.<custom_package>.app)
+                app_module = __import__(app_module_name, fromlist=[''])
 
 
-                    for name, obj in inspect.getmembers(app_module):
-                        # Retrieve the members of the app_module and iterate through
-                        # them to find the the class that inherits from AppBase.
-                        try:
-                            # issubclass() will fail if obj is not a class
-                            if (issubclass(obj, TethysAppBase)) and (obj is not TethysAppBase):
-                                # Assign a handle to the class
-                                _appClass = getattr(app_module, name)
+                for name, obj in inspect.getmembers(app_module):
+                    # Retrieve the members of the app_module and iterate through
+                    # them to find the the class that inherits from AppBase.
+                    try:
+                        # issubclass() will fail if obj is not a class
+                        if (issubclass(obj, TethysAppBase)) and (obj is not TethysAppBase):
+                            # Assign a handle to the class
+                            AppClass = getattr(app_module, name)
 
-                                # Instantiate app and validate
-                                app_instance = _appClass()
-                                validated_app_instance = self._validate_app(app_instance)
+                            # Instantiate app and validate
+                            app_instance = AppClass()
+                            validated_app_instance = self._validate_app(app_instance)
 
-                                # sync app with Tethys db
-                                app_instance.sync_with_tethys_db()
+                            # sync app with Tethys db
+                            app_instance.sync_with_tethys_db()
 
-                                # validate app url patterns
-                                app_instance.url_patterns
+                            # load/validate app url patterns
+                            app_instance.url_patterns
 
-                                # register app permissions
-                                try:
-                                    app_instance.register_app_permissions()
-                                except (ProgrammingError, ObjectDoesNotExist) as e:
-                                    tethys_log.error(e)
+                            # register app permissions
+                            try:
+                                app_instance.register_app_permissions()
+                            except (ProgrammingError, ObjectDoesNotExist) as e:
+                                tethys_log.error(e)
 
-                                # compile valid apps
-                                if validated_app_instance:
-                                    valid_app_instance_list.append(validated_app_instance)
+                            # compile valid apps
+                            if validated_app_instance:
+                                valid_app_instance_list.append(validated_app_instance)
 
-                                    # Notify user that the app has been loaded
-                                    loaded_apps.append(app_package)
+                                # Notify user that the app has been loaded
+                                loaded_apps.append(app_package)
 
-                        except TypeError:
-                            '''DO NOTHING'''
-                except:
-                    tethys_log.exception(
-                        'App {0} not loaded because of the following error:'.format(app_package))
-                    continue
+                            # We found the app class so we're done
+                            break
+
+                    except TypeError:
+                        continue
+            except:
+                tethys_log.exception(
+                    'App {0} not loaded because of the following error:'.format(app_package))
+                continue
 
         # Save valid apps
         self.apps = valid_app_instance_list
-
-        self.sync_tethys_app_db()
 
         # Update user
         print(TerminalColors.BLUE + 'Tethys Apps Loaded: '
               + TerminalColors.ENDC + '{0}'.format(', '.join(loaded_apps)) + '\n')
 
-    def sync_tethys_app_db(self):
+    def get_url_patterns(self):
         """
-        Sync installed apps with database.
+        Generate the url pattern lists for each app and namespace them accordingly.
         """
-        from tethys_apps.models import TethysApp
+        app_url_patterns = dict()
+        extension_url_patterns = dict()
 
-        try:
-            # Make pass to remove apps that were uninstalled
-            db_apps = TethysApp.objects.all()
-            installed_app_packages = [app.package for app in self.apps]
+        for app in self.apps:
+            app_url_patterns.update(app.url_patterns)
 
-            for db_apps in db_apps:
-                if db_apps.package not in installed_app_packages:
-                    db_apps.delete()
+        for extension in self.extensions:
+            extension_url_patterns.update(extension.url_patterns)
 
-        except Exception as e:
-            tethys_log.error(e)
+        return app_url_patterns, extension_url_patterns
