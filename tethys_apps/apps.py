@@ -9,7 +9,7 @@
 """
 from django.apps import AppConfig
 
-from tethys_apps.app_harvester import SingletonAppHarvester
+from tethys_apps.harvester import SingletonHarvester
 
 
 class TethysAppsConfig(AppConfig):
@@ -21,6 +21,8 @@ class TethysAppsConfig(AppConfig):
         Startup method for Tethys Apps django app.
         """
         # Perform App Harvesting
-        harvester = SingletonAppHarvester()
+        harvester = SingletonHarvester()
+        harvester.harvest_extensions()
         harvester.harvest_apps()
+
 

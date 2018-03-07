@@ -9,16 +9,16 @@
 """
 import logging
 import os
+import sys
+import traceback
 from collections import OrderedDict as SortedDict
 
-from django.contrib.staticfiles import utils
-from django.contrib.staticfiles.finders import BaseFinder
+from django.conf.urls import url
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.core.files.storage import FileSystemStorage
 from django.utils._os import safe_join
-from tethys_apps.app_harvester import SingletonAppHarvester
-from tethys_apps.base import permissions
-from tethys_apps.models import TethysApp
+from tethys_apps.harvester import SingletonHarvester
+from tethys_apps.base import permissions, TethysExtensionBase
+from tethys_apps.models import TethysApp, TethysExtension
 
 tethys_log = logging.getLogger('tethys.' + __name__)
 
@@ -32,7 +32,7 @@ def register_app_permissions():
     from django.contrib.auth.models import Permission, Group
 
     # Get the apps
-    harvester = SingletonAppHarvester()
+    harvester = SingletonHarvester()
     apps = harvester.apps
     all_app_permissions = {}
     all_groups = {}
@@ -151,103 +151,273 @@ def register_app_permissions():
                 assign_perm(p, g, db_app)
 
 
-def get_app_url_patterns():
+def generate_url_patterns():
     """
     Generate the url pattern lists for each app and namespace them accordingly.
     """
 
     # Get controllers list from app harvester
-    harvester = SingletonAppHarvester()
+    harvester = SingletonHarvester()
     apps = harvester.apps
+    extensions = harvester.extensions
     app_url_patterns = dict()
+    extension_url_patterns = dict()
 
     for app in apps:
-        app_url_patterns.update(app.url_patterns)
+        app_url_patterns.update(get_django_urls_for(app))
 
-    return app_url_patterns
+    for extension in extensions:
+        extension_url_patterns.update(get_django_urls_for(extension))
+
+    return app_url_patterns, extension_url_patterns
 
 
-def get_directories_in_tethys_apps(directory_names, with_app_name=False):
-    # Determine the tethysapp directory
+def get_django_urls_for(app_or_extension):
+    """
+    Get all UrlMaps from the app or extension given and convert to django urls.
+
+    Args:
+        app_or_extension(TethysApp or TethysExtension): TethysApp or TethysExtension instance.
+
+    Returns:
+        dictionary<namespace, django url object>: django urls grouped by namespace.
+    """
+    is_extension = isinstance(app_or_extension, TethysExtensionBase)
+    url_patterns = dict()
+
+    if hasattr(app_or_extension, 'url_maps'):
+        url_maps = app_or_extension.url_maps()
+    elif hasattr(app_or_extension, 'controllers'):
+        url_maps = app_or_extension.controllers()
+    else:
+        url_maps = None
+
+    if url_maps:
+        for url_map in url_maps:
+            root_url = app_or_extension.root_url
+            namespace = root_url.replace('-', '_')
+
+            if namespace not in url_patterns:
+                url_patterns[namespace] = []
+
+            # Create django url object
+            if isinstance(url_map.controller, basestring):
+                root_controller_path = 'tethysext' if is_extension else 'tethys_apps.tethysapp'
+                full_controller_path = '.'.join([root_controller_path, url_map.controller])
+                controller_parts = full_controller_path.split('.')
+                module_name = '.'.join(controller_parts[:-1])
+                function_name = controller_parts[-1]
+                try:
+                    module = __import__(module_name, fromlist=[function_name])
+                except ImportError:
+                    error_msg = 'The following error occurred while trying to import the controller function ' \
+                                '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
+                    tethys_log.error(error_msg)
+                    sys.exit(1)
+                try:
+                    controller_function = getattr(module, function_name)
+                except AttributeError as e:
+                    error_msg = 'The following error occurred while trying to access the controller function ' \
+                                '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
+                    tethys_log.error(error_msg)
+                    sys.exit(1)
+            else:
+                controller_function = url_map.controller
+            django_url = url(url_map.url, controller_function, name=url_map.name)
+
+            # Append to namespace list
+            url_patterns[namespace].append(django_url)
+
+    return url_patterns
+
+
+def get_directories_in_tethys(directory_names, with_app_name=False):
+    """
+    # Locate given directories in tethys apps and extensions.
+    Args:
+        directory_names: directory to get path to.
+        with_app_name: inlcud the app name if True.
+
+    Returns:
+        list: list of paths to directories in apps and extensions.
+    """
+    # Determine the directories of tethys apps directory
     tethysapp_dir = safe_join(os.path.abspath(os.path.dirname(__file__)), 'tethysapp')
+    tethysapp_contents = os.walk(tethysapp_dir).next()[1]
+    potential_dirs = [safe_join(tethysapp_dir, item) for item in tethysapp_contents]
 
-    # Assemble a list of tethysapp directories
-    tethysapp_contents = os.listdir(tethysapp_dir)
-    tethysapp_match_dirs = []
 
-    for item in tethysapp_contents:
-        item_path = safe_join(tethysapp_dir, item)
+    # Determine the directories of tethys extensions
+    harvester = SingletonHarvester()
 
-        # Check each directory combination
+    for _, extension_module in harvester.extension_modules.items():
+        try:
+            extension_module = __import__(extension_module, fromlist=[''])
+            potential_dirs.append(extension_module.__path__[0])
+        except (ImportError, AttributeError, IndexError):
+            pass
+
+    # Check each directory combination
+    match_dirs = []
+    for potential_dir in potential_dirs:
         for directory_name in directory_names:
             # Only check directories
-            if os.path.isdir(item_path):
-                match_dir = safe_join(item_path, directory_name)
+            if os.path.isdir(potential_dir):
+                match_dir = safe_join(potential_dir, directory_name)
 
-                if match_dir not in tethysapp_match_dirs and os.path.isdir(match_dir):
+                if match_dir not in match_dirs and os.path.isdir(match_dir):
                     if not with_app_name:
-                        tethysapp_match_dirs.append(match_dir)
+                        match_dirs.append(match_dir)
                     else:
-                        tethysapp_match_dirs.append((item, match_dir))
+                        match_dirs.append((os.path.basename(potential_dir), match_dir))
 
-    return tethysapp_match_dirs
+    return match_dirs
 
 
-class TethysAppsStaticFinder(BaseFinder):
+def sync_tethys_db():
     """
-    A static files finder that looks in each app in the tethysapp directory for static files.
-    This finder search for static files in a directory called 'public' or 'static'.
+    Sync installed apps and extensions with database.
     """
+    # Get the harvester
+    harvester = SingletonHarvester()
 
-    def __init__(self, apps=None, *args, **kwargs):
-        # List of locations with static files
-        self.locations = get_directories_in_tethys_apps(('static', 'public'), with_app_name=True)
+    try:
+        # Make pass to remove apps that were uninstalled
+        db_apps = TethysApp.objects.all()
+        installed_app_packages = [app.package for app in harvester.apps]
 
-        # Maps dir paths to an appropriate storage instance
-        self.storages = SortedDict()
+        for db_apps in db_apps:
+            if db_apps.package not in installed_app_packages:
+                db_apps.delete()
 
-        for prefix, root in self.locations:
-            filesystem_storage = FileSystemStorage(location=root)
-            filesystem_storage.prefix = prefix
-            self.storages[root] = filesystem_storage
+        # Make pass to remove extensions that were uninstalled
+        db_extensions = TethysExtension.objects.all()
+        installed_extension_packages = [extension.package for extension in harvester.extensions]
 
-        super(TethysAppsStaticFinder, self).__init__(*args, **kwargs)
+        for db_extensions in db_extensions:
+            if db_extensions.package not in installed_extension_packages:
+                db_extensions.delete()
 
-    def find(self, path, all=False):
-        """
-        Looks for files in the Tethys apps static or public directories
-        """
-        matches = []
-        for prefix, root in self.locations:
-            matched_path = self.find_location(root, path, prefix)
-            if matched_path:
-                if not all:
-                    return matched_path
-                matches.append(matched_path)
-        return matches
+        # Make pass to add apps to db that are newly installed
+        installed_extensions = harvester.extensions
+        installed_apps = harvester.apps
 
-    def find_location(self, root, path, prefix=None):
-        """
-        Finds a requested static file in a location, returning the found
-        absolute path (or ``None`` if no match).
-        """
-        if prefix:
-            prefix = '%s%s' % (prefix, os.sep)
-            if not path.startswith(prefix):
-                return None
-            path = path[len(prefix):]
-        path = safe_join(root, path)
-        if os.path.exists(path):
-            return path
 
-    def list(self, ignore_patterns):
-        """
-        List all files in all locations.
-        """
-        for prefix, root in self.locations:
-            storage = self.storages[root]
-            for path in utils.get_files(storage, ignore_patterns):
-                yield path, storage
+        for installed_app in installed_apps:
+            # map extension to db
+            map_app_to_db(installed_app)
+
+        for installed_extension in installed_extensions:
+            # map extension to db
+            map_extension_to_db(installed_extension)
+    except Exception as e:
+        tethys_log.error(e)
+
+
+def map_app_to_db(installed_app):
+    """
+    Sync installed apps with database.
+    """
+    from django.conf import settings
+
+    # Query to see if installed app is in the database
+    db_apps = TethysApp.objects. \
+        filter(package__exact=installed_app.package). \
+        all()
+
+    # If the app is not in the database, then add it
+    if len(db_apps) == 0:
+        app = TethysApp(
+            name=installed_app.name,
+            package=installed_app.package,
+            description=installed_app.description,
+            enable_feedback=installed_app.enable_feedback,
+            feedback_emails=installed_app.feedback_emails,
+            index=installed_app.index,
+            icon=installed_app.icon,
+            root_url=installed_app.root_url,
+            color=installed_app.color,
+            tags=installed_app.tags
+        )
+        app.save()
+
+        # custom settings
+        app.add_settings(installed_app.custom_settings())
+        # dataset services settings
+        app.add_settings(installed_app.dataset_service_settings())
+        # spatial dataset services settings
+        app.add_settings(installed_app.spatial_dataset_service_settings())
+        # wps settings
+        app.add_settings(installed_app.web_processing_service_settings())
+        # persistent store settings
+        app.add_settings(installed_app.persistent_store_settings())
+
+        app.save()
+
+    # If the app is in the database, update developer-first attributes
+    elif len(db_apps) == 1:
+        db_app = db_apps[0]
+        db_app.index = installed_app.index
+        db_app.icon = installed_app.icon
+        db_app.root_url = installed_app.root_url
+        db_app.color = installed_app.color
+        db_app.save()
+
+        if hasattr(settings, 'DEBUG') and settings.DEBUG:
+            db_app.name = installed_app.name
+            db_app.description = installed_app.description
+            db_app.tags = installed_app.tags
+            db_app.enable_feedback = installed_app.enable_feedback
+            db_app.feedback_emails = installed_app.feedback_emails
+            db_app.save()
+
+            # custom settings
+            db_app.add_settings(installed_app.custom_settings())
+            # dataset services settings
+            db_app.add_settings(installed_app.dataset_service_settings())
+            # spatial dataset services settings
+            db_app.add_settings(installed_app.spatial_dataset_service_settings())
+            # wps settings
+            db_app.add_settings(installed_app.web_processing_service_settings())
+            # persistent store settings
+            db_app.add_settings(installed_app.persistent_store_settings())
+            db_app.save()
+
+
+def map_extension_to_db(installed_extension):
+    """
+    A function to map extension to the db
+
+    Args:
+        installed_extension(TethysExtension): extension to be mapped to db
+    """
+    from django.conf import settings
+
+    # Query to see if installed extension is in the database
+    db_extensions = TethysExtension.objects. \
+        filter(package__exact=installed_extension.package). \
+        all()
+
+    # If the extension is not in the database, then add it
+    if len(db_extensions) == 0:
+        extension = TethysExtension(
+            name=installed_extension.name,
+            package=installed_extension.package,
+            description=installed_extension.description,
+            root_url=installed_extension.root_url,
+        )
+        extension.save()
+
+    # If the extension is in the database, update developer-first attributes
+    elif len(db_extensions) == 1:
+        db_extension = db_extensions[0]
+        db_extension.root_url = installed_extension.root_url
+        db_extension.save()
+
+        if hasattr(settings, 'DEBUG') and settings.DEBUG:
+            db_extension.name = installed_extension.name
+            db_extension.description = installed_extension.description
+            db_extension.save()
 
 
 def get_active_app(request=None, url=None):
@@ -281,3 +451,173 @@ def get_active_app(request=None, url=None):
             except MultipleObjectsReturned:
                 tethys_log.warning('Multiple apps found with root url "{0}".'.format(app_root_url))
     return app
+
+
+def create_ps_database_setting(app_package, name, description='', required=False, initializer='', initialized=False,
+                               spatial=False, dynamic=False):
+    from cli.cli_colors import pretty_output, FG_RED, FG_GREEN
+    from tethys_apps.models import PersistentStoreDatabaseSetting
+
+    try:
+        app = TethysApp.objects.get(package=app_package)
+    except ObjectDoesNotExist:
+        with pretty_output(FG_RED) as p:
+            p.write('A Tethys App with the name "{}" does not exist. Aborted.'.format(app_package))
+        return False
+
+    try:
+        setting = PersistentStoreDatabaseSetting.objects.get(name=name)
+        if setting:
+            with pretty_output(FG_RED) as p:
+                p.write('A PersistentStoreDatabaseSetting with name "{}" already exists. Aborted.'.format(name))
+            return False
+    except ObjectDoesNotExist:
+        pass
+
+    try:
+        ps_database_setting = PersistentStoreDatabaseSetting(
+            tethys_app=app,
+            name=name,
+            description=description,
+            required=required,
+            initializer=initializer,
+            initialized=initialized,
+            spatial=spatial,
+            dynamic=dynamic
+        )
+        ps_database_setting.save()
+        with pretty_output(FG_GREEN) as p:
+            p.write('PersistentStoreDatabaseSetting named "{}" for app "{}" created successfully!'.format(name,
+                                                                                                          app_package))
+        return True
+    except Exception as e:
+        print e
+        with pretty_output(FG_RED) as p:
+            p.write('The above error was encountered. Aborted.'.format(app_package))
+        return False
+
+
+def remove_ps_database_setting(app_package, name, force=False):
+    from cli.cli_colors import pretty_output, FG_RED, FG_GREEN
+    from tethys_apps.models import PersistentStoreDatabaseSetting
+
+    try:
+        app = TethysApp.objects.get(package=app_package)
+    except ObjectDoesNotExist:
+        with pretty_output(FG_RED) as p:
+            p.write('A Tethys App with the name "{}" does not exist. Aborted.'.format(app_package))
+        return False
+
+    try:
+        setting = PersistentStoreDatabaseSetting.objects.get(tethys_app=app, name=name)
+    except ObjectDoesNotExist:
+        with pretty_output(FG_RED) as p:
+            p.write('An PersistentStoreDatabaseSetting with the name "{}" for app "{}" does not exist. Aborted.'
+                    .format(name, app_package))
+        return False
+
+    if not force:
+        proceed = raw_input('Are you sure you want to delete the PersistentStoreDatabaseSetting named "{}"? [y/n]: '
+                            .format(name))
+        while proceed not in ['y', 'n', 'Y', 'N']:
+            proceed = raw_input('Please enter either "y" or "n": ')
+
+        if proceed in ['y', 'Y']:
+            setting.delete()
+            with pretty_output(FG_GREEN) as p:
+                p.write('Successfully removed PersistentStoreDatabaseSetting with name "{0}"!'.format(name))
+            return True
+        else:
+            with pretty_output(FG_RED) as p:
+                p.write('Aborted. PersistentStoreDatabaseSetting not removed.')
+    else:
+        setting.delete()
+        with pretty_output(FG_GREEN) as p:
+            p.write('Successfully removed PersistentStoreDatabaseSetting with name "{0}"!'.format(name))
+        return True
+
+
+def link_service_to_app_setting(service_type, service_uid, app_package, setting_type, setting_uid):
+    """
+    Links a Tethys Service to a TethysAppSetting.
+    :param service_type: The type of service being linked to an app. Must be either 'spatial' or 'persistent'.
+    :param service_uid: The name or id of the service being linked to an app.
+    :param app_package: The package name of the app whose setting is being linked to a service.
+    :param setting_type: The type of setting being linked to a service. Must be one of the following: 'ps_database',
+    'ps_connection', or 'ds_spatial'.
+    :param setting_uid: The name or id of the setting being linked to a service.
+    :return: True if successful, False otherwise.
+    """
+    from cli.cli_colors import pretty_output, FG_GREEN, FG_RED
+    from tethys_sdk.app_settings import (SpatialDatasetServiceSetting, PersistentStoreConnectionSetting,
+                                         PersistentStoreDatabaseSetting)
+    from tethys_services.models import (SpatialDatasetService, PersistentStoreService)
+
+    service_type_to_model_dict = {
+        'spatial': SpatialDatasetService,
+        'persistent': PersistentStoreService
+    }
+
+    setting_type_to_link_model_dict = {
+        'ps_database': {
+            'setting_model': PersistentStoreDatabaseSetting,
+            'service_field': 'persistent_store_service'
+        },
+        'ps_connection': {
+            'setting_model': PersistentStoreConnectionSetting,
+            'service_field': 'persistent_store_service'
+        },
+        'ds_spatial': {
+            'setting_model': SpatialDatasetServiceSetting,
+            'service_field': 'spatial_dataset_service'
+        }
+    }
+
+    service_model = service_type_to_model_dict[service_type]
+
+    try:
+        try:
+            service_uid = int(service_uid)
+            service = service_model.objects.get(pk=service_uid)
+        except ValueError:
+            service = service_model.objects.get(name=service_uid)
+    except ObjectDoesNotExist:
+        with pretty_output(FG_RED) as p:
+            p.write('A {0} with ID/Name "{1}" does not exist.'.format(str(service_model), service_uid))
+        return False
+
+    try:
+        app = TethysApp.objects.get(package=app_package)
+    except ObjectDoesNotExist:
+        with pretty_output(FG_RED) as p:
+            p.write('A Tethys App with the name "{}" does not exist. Aborted.'.format(app_package))
+        return False
+
+    try:
+        linked_setting_model_dict = setting_type_to_link_model_dict[setting_type]
+    except KeyError:
+        with pretty_output(FG_RED) as p:
+            p.write('The setting_type you specified ("{0}") does not exist.'
+                    '\nChoose from: "ps_database|ps_connection|ds_spatial"'.format(setting_type))
+        return False
+
+    linked_setting_model = linked_setting_model_dict['setting_model']
+    linked_service_field = linked_setting_model_dict['service_field']
+
+    try:
+        try:
+            setting_uid = int(setting_uid)
+            setting = linked_setting_model.objects.get(tethys_app=app, pk=setting_uid)
+        except ValueError:
+            setting = linked_setting_model.objects.get(tethys_app=app, name=setting_uid)
+
+        setattr(setting, linked_service_field, service)
+        setting.save()
+        with pretty_output(FG_GREEN) as p:
+            p.write('{} with name "{}" was successfully linked to "{}" with name "{}" of the "{}" Tethys App'
+                    .format(str(service_model), service_uid, linked_setting_model, setting_uid, app_package))
+        return True
+    except ObjectDoesNotExist:
+        with pretty_output(FG_RED) as p:
+            p.write('A {0} with ID/Name "{1}" does not exist.'.format(str(linked_setting_model), setting_uid))
+        return False

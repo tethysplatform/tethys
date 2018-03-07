@@ -10,6 +10,7 @@
 from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
 from tethys_apps.models import (TethysApp,
+                                TethysExtension,
                                 CustomSetting,
                                 DatasetServiceSetting,
                                 SpatialDatasetServiceSetting,
@@ -86,4 +87,17 @@ class TethysAppAdmin(GuardedModelAdmin):
     def has_add_permission(self, request):
         return False
 
+
+
+class TethysExtensionAdmin(GuardedModelAdmin):
+    readonly_fields = ('package', 'name', 'description')
+    fields = ('package', 'name', 'description', 'enabled')
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False
+
 admin.site.register(TethysApp, TethysAppAdmin)
+admin.site.register(TethysExtension, TethysExtensionAdmin)

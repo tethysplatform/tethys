@@ -7,12 +7,17 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+# from django.db.utils import ProgrammingError
+# from django.core.exceptions import ObjectDoesNotExist
 from django.conf.urls import url, include
-from tethys_apps.utilities import get_app_url_patterns
+from tethys_apps.utilities import generate_url_patterns, sync_tethys_db, register_app_permissions
 from tethys_apps.views import library, send_beta_feedback_email
 import logging
 
 tethys_log = logging.getLogger('tethys.' + __name__)
+
+# Sync the tethys apps database
+sync_tethys_db()
 
 urlpatterns = [
     url(r'^$', library, name='app_library'),
@@ -20,11 +25,17 @@ urlpatterns = [
 ]
 
 # Append the app urls urlpatterns
-app_url_patterns = get_app_url_patterns()
+app_url_patterns, extension_url_patterns = generate_url_patterns()
 
 for namespace, urls in app_url_patterns.items():
     root_pattern = r'^{0}/'.format(namespace.replace('_', '-'))
     urlpatterns.append(url(root_pattern, include(urls, namespace=namespace)))
+
+extension_urls = []
+
+for namespace, urls in extension_url_patterns.items():
+    root_pattern = r'^{0}/'.format(namespace.replace('_', '-'))
+    extension_urls.append(url(root_pattern, include(urls, namespace=namespace)))
 
 # # Register permissions here?
 # try:
