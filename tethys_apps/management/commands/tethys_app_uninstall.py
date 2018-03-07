@@ -86,9 +86,6 @@ class Command(BaseCommand):
         # Remove the namespace package file if applicable.
         for site_package in site.getsitepackages():
             try:
-                print("******")
-                print(site_package)
-                print(os.path.join(site_package, "{}-{}-nspkg.pth".format(PREFIX, item_name.replace('_','-'))))
                 os.remove(os.path.join(site_package, "{}-{}-nspkg.pth".format(PREFIX, item_name.replace('_','-'))))
             except:
                 continue
