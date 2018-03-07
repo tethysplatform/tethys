@@ -13,7 +13,7 @@ except ImportError:
     from urllib.parse import urlparse
 
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import redirect
 from django.utils.functional import wraps
 from past.builtins import basestring
@@ -123,7 +123,7 @@ def permission_required(*args, **kwargs):
             if not pass_permission_test:
                 if not raise_exception:
                     # If user is authenticated...
-                    if request.user.is_authenticated():
+                    if request.user.is_authenticated:
                         # User feedback
                         messages.add_message(request, messages.WARNING, message)
 
