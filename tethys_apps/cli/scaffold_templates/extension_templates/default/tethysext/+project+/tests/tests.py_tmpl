@@ -28,7 +28,7 @@ To run any tests:
        The general form is: "tethys test -f tethysext.<extension_name>.<folder_name>.<file_name>.<class_name>.<function_name>"
        See below for specific examples
 
-        To run all tests across this app:
+        To run all tests across this extension:
             Test command: "tethys test -f tethysext.{{project}}"
 
         To run all tests in this file:
@@ -48,7 +48,7 @@ To learn more about writing tests, see:
 
 class {{class_name}}TestCase(TethysTestCase):
     """
-    In this class you may define as many functions as you'd like to test different aspects of your app.
+    In this class you may define as many functions as you'd like to test different aspects of your extension.
     Each function must start with the word "test" for it to be recognized and executed during testing.
     You could also create multiple TethysTestCase classes within this or other python files to organize your tests.
     """
@@ -62,7 +62,7 @@ class {{class_name}}TestCase(TethysTestCase):
         If you are testing against a controller that check for certain user info, you can create a fake test user and
         get a test client, like so:
 
-            #The test client simulates a browser that can navigate your app's url endpoints
+            #The test client simulates a browser that can navigate your extension's url endpoints
             self.c = self.get_test_client()
             self.user = self.create_test_user(username="joe", password="secret", email="joe@some_site.com")
             # To create a super_user, use "self.create_test_superuser(*params)" with the same params
@@ -99,7 +99,7 @@ class {{class_name}}TestCase(TethysTestCase):
 
     def test_if_tethys_platform_is_great(self):
         """
-        This is an example test function that can be modified to test a specific aspect of your app.
+        This is an example test function that can be modified to test a specific aspect of your extension.
         It is required that the function name begins with the word "test" or it will not be executed.
         Generally, the code written here will consist of many assert methods.
         A list of assert methods is included here for reference or to get you started:
