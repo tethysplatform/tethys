@@ -3,10 +3,10 @@ from tethys_sdk.base import TethysExtensionBase
 
 class {{class_name}}(TethysExtensionBase):
     """
-    Tethys app class for {{proper_name}}.
+    Tethys extension class for {{proper_name}}.
     """
 
     name = '{{proper_name}}'
     package = '{{project}}'
     root_url = '{{project_url}}'
-    description = '{{description|default:"Place a brief description of your app here."}}'
+    description = '{{description|default:"Place a brief description of your extension here."}}'
