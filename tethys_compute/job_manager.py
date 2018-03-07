@@ -12,7 +12,7 @@ from abc import abstractmethod
 import logging
 import warnings
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from tethys_compute.models import (TethysJob,
                                    BasicJob,

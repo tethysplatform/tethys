@@ -15,3 +15,5 @@ docs/_build
 tethys_gizmos/static/tethys_gizmos/less/bower_components/*
 .coverage
 tests/coverage_html_report
+.*.swp
+.DS_Store
