@@ -32,15 +32,14 @@ class Command(BaseCommand):
         app_or_extension = "App" if not options['is_extension'] else 'Extension'
         PREFIX = 'tethysapp' if not options['is_extension'] else 'tethysext'
         item_name = options['app_or_extension'][0]
-        installed_items = get_installed_tethys_apps()
-        installed_items.update(get_installed_tethys_extensions())
+        installed_items = get_installed_tethys_extensions() if options['is_extension'] else get_installed_tethys_apps()
 
         if PREFIX in item_name:
             prefix_length = len(PREFIX) + 1
             item_name = item_name[prefix_length:]
 
         if item_name not in installed_items:
-            warnings.warn('WARNING: {} with name "{}" cannot be uninstalled, because it is not installed.'.format(app_or_extension, item_name))
+            warnings.warn('WARNING: {0} with name "{1}" cannot be uninstalled, because it is not installed or not an {0}.'.format(app_or_extension, item_name))
             exit(0)
 
         item_with_prefix = '{0}-{1}'.format(PREFIX, item_name)
@@ -84,9 +83,13 @@ class Command(BaseCommand):
         except KeyboardInterrupt:
             pass
 
+        # Remove the namespace package file if applicable.
         for site_package in site.getsitepackages():
             try:
-                os.remove(os.path.join(site_package, "{}-{}-nspkg.pth".format(PREFIX, item_name)))
+                print("******")
+                print(site_package)
+                print(os.path.join(site_package, "{}-{}-nspkg.pth".format(PREFIX, item_name.replace('_','-'))))
+                os.remove(os.path.join(site_package, "{}-{}-nspkg.pth".format(PREFIX, item_name.replace('_','-'))))
             except:
                 continue
 
