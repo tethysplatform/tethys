@@ -68,7 +68,7 @@ class TethysBase(object):
 
                     return url_maps
         """
-        raise NotImplementedError()
+        return []
 
     @property
     def url_patterns(self):
@@ -77,8 +77,9 @@ class TethysBase(object):
         """
 
         if self._url_patterns is None:
+            is_extension = isinstance(self, TethysExtensionBase)
 
-            app_url_patterns = dict()
+            url_patterns = dict()
 
             if hasattr(self, 'url_maps'):
                 url_maps = self.url_maps()
@@ -86,20 +87,22 @@ class TethysBase(object):
                 url_maps = []
 
             for url_map in url_maps:
-                app_root = self.root_url
-                app_namespace = app_root.replace('-', '_')
+                root_url = self.root_url
+                namespace = root_url.replace('-', '_')
 
-                if app_namespace not in app_url_patterns:
-                    app_url_patterns[app_namespace] = []
+                if namespace not in url_patterns:
+                    url_patterns[namespace] = []
 
                 # Create django url object
                 if isinstance(url_map.controller, basestring):
-                    controller_parts = url_map.controller.split('.')
+                    root_controller_path = 'tethysext' if is_extension else 'tethys_apps.tethysapp'
+                    full_controller_path = '.'.join([root_controller_path, url_map.controller])
+                    controller_parts = full_controller_path.split('.')
                     module_name = '.'.join(controller_parts[:-1])
                     function_name = controller_parts[-1]
                     try:
                         module = __import__(module_name, fromlist=[function_name])
-                    except:
+                    except ImportError:
                         error_msg = 'The following error occurred while trying to import the controller function ' \
                                     '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
                         tethys_log.error(error_msg)
@@ -107,7 +110,7 @@ class TethysBase(object):
                     try:
                         controller_function = getattr(module, function_name)
                     except AttributeError as e:
-                        error_msg = 'The following error occurred while tyring to access the controller function ' \
+                        error_msg = 'The following error occurred while trying to access the controller function ' \
                                     '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
                         tethys_log.error(error_msg)
                         raise
@@ -116,10 +119,16 @@ class TethysBase(object):
                 django_url = url(url_map.url, controller_function, name=url_map.name)
 
                 # Append to namespace list
-                app_url_patterns[app_namespace].append(django_url)
-            self._url_patterns = app_url_patterns
+                url_patterns[namespace].append(django_url)
+            self._url_patterns = url_patterns
 
         return self._url_patterns
+
+    def sync_with_tethys_db(self):
+        """
+        Sync installed apps with database.
+        """
+        raise NotImplementedError
 
 class TethysExtensionBase(TethysBase):
     """
@@ -168,7 +177,43 @@ class TethysExtensionBase(TethysBase):
 
                     return url_maps
         """
+        return []
 
+    def sync_with_tethys_db(self):
+        """
+        Sync installed apps with database.
+        """
+        from django.conf import settings
+        from tethys_apps.models import TethysExtension
+
+        try:
+            # Query to see if installed extension is in the database
+            db_extensions = TethysExtension.objects. \
+                filter(package__exact=self.package). \
+                all()
+
+            # If the extension is not in the database, then add it
+            if len(db_extensions) == 0:
+                extension = TethysExtension(
+                    name=self.name,
+                    package=self.package,
+                    description=self.description,
+                    root_url=self.root_url,
+                )
+                extension.save()
+
+            # If the extension is in the database, update developer-first attributes
+            elif len(db_extensions) == 1:
+                db_extension = db_extensions[0]
+                db_extension.root_url = self.root_url
+                db_extension.save()
+
+                if hasattr(settings, 'DEBUG') and settings.DEBUG:
+                    db_extension.name = self.name
+                    db_extension.description = self.description
+                    db_extension.save()
+        except Exception as e:
+            tethys_log.error(e)
 
 
 class TethysAppBase(TethysBase):
