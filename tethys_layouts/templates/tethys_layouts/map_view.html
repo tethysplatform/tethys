@@ -3,6 +3,10 @@
 
 {% block app_navigation %}
   {{ block.super }}
+  <b>Table of Contents</b>
+  <div id="toc-layers">
+    <ul id="toc-layers-list" class="ui-sortable"></ul>
+  </div>
   {% block override_controls %}
   <a id="save-btn" class="btn btn-default">Save</a>
   {% endblock %}
@@ -21,10 +25,16 @@
 
 {% block styles %}
   {{ block.super }}
+  <!-- <link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" /> -->
   <link href="{% static 'tethys_layouts/css/map_view.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_gizmos/vendor/jqueryui/css/smoothness/jqueryui_min.css' %}" rel="stylesheet"/>
+  <link href="{% static 'tethys_layouts/vendor/contextMenu/contextMenu.css' %}" rel="stylesheet"/>
 {% endblock %}
 
 {% block scripts %}
   {{ block.super }}
   <script src="{% static 'tethys_layouts/js/map_view.js' %}" type="text/javascript"></script>
+  <!-- <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
+  <script src="{% static 'tethys_gizmos/vendor/jqueryui/js/jqueryui_min.js' %}"></script>
+  <script src="{% static 'tethys_layouts/vendor/contextMenu/contextMenu.min.js' %}"></script>
 {% endblock %}

@@ -32,6 +32,7 @@ var TETHYS_MAP_VIEW = (function() {
       DRAW_ATTRIBUTE = 'data-draw',                         // HTML attribute containing the drawing options
       LAYERS_ATTRIBUTE = 'data-layers',                     // HTML attribute containing the layers options
       LEGEND_ATTRIBUTE = 'data-legend',                     // HTML attribute containing the legend options
+      TOC_LEGEND_ATTRIBUTE = 'data-toc_legend',             // HTML attribute containing the boolean for TOC
       VIEW_ATTRIBUTE = 'data-view',                         // HTML attribute containing the view options
       FEAT_SELECTION_ATTRIBUTE = 'data-feature-selection',  // HTML attribute containing the feature selection options
       DISABLE_BASE_MAP_ATTRIBUTE = 'data-disable-base-map'; // HTML attribute containing the disable base map option
@@ -70,6 +71,7 @@ var TETHYS_MAP_VIEW = (function() {
       m_draw_options,                                       // Draw options json
       m_layers_options,                                     // Layers options json
       m_legend_options,                                     // Legend options json
+      m_toc_boolean,                                        // Boolean for TOC Legend
       m_view_options,                                       // View options json
       m_feature_selection_options,                          // Feature selection options json
       m_disable_base_map;                                   // Disable base map option json
@@ -747,6 +749,7 @@ var TETHYS_MAP_VIEW = (function() {
     m_draw_options = $map_element.attr(DRAW_ATTRIBUTE);
     m_layers_options = $map_element.attr(LAYERS_ATTRIBUTE);
     m_legend_options = $map_element.attr(LEGEND_ATTRIBUTE);
+    m_toc_boolean = $map_element.attr(TOC_LEGEND_ATTRIBUTE);
     m_view_options = $map_element.attr(VIEW_ATTRIBUTE);
     m_disable_base_map = $map_element.attr(DISABLE_BASE_MAP_ATTRIBUTE);
     m_feature_selection_options = $map_element.attr(FEAT_SELECTION_ATTRIBUTE);
@@ -786,6 +789,9 @@ var TETHYS_MAP_VIEW = (function() {
 
     if (is_defined(m_feature_selection_options)) {
       m_feature_selection_options = JSON.parse(m_feature_selection_options);
+    }
+    if (is_defined(m_toc_boolean)) {
+      m_toc_boolean = JSON.parse(m_toc_boolean);
     }
   };
 

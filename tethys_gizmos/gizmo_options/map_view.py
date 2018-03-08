@@ -197,7 +197,7 @@ class MapView(TethysGizmoOptions):
     gizmo_name = "map_view"
     
     def __init__(self, height='100%', width='100%', basemap='OpenStreetMap', view={'center': [-100, 40], 'zoom': 2},
-                 controls=[], layers=[], draw=None, legend=False, attributes={}, classes='', disable_basemap=False,
+                 controls=[], layers=[], draw=None, toc_legend=False, attributes={}, classes='', disable_basemap=False,
                  feature_selection=None):
         """
         Constructor
@@ -212,7 +212,7 @@ class MapView(TethysGizmoOptions):
         self.controls = controls
         self.layers = layers
         self.draw = draw
-        self.legend = legend
+        self.toc_legend = toc_legend
         self.disable_basemap = disable_basemap
         self.feature_selection = feature_selection
 

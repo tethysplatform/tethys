@@ -38,6 +38,7 @@
          {% if view %}data-view="{{ view|jsonify }}"{% endif %}
          {% if basemap %}data-base-map="{{ basemap|jsonify }}"{% endif %}
          {% if legend %}data-legend="{{ legend|jsonify }}"{% endif %}
+         {% if toc_legend%}data-toc_legend="{{ toc_legend|jsonify }}"{% endif %}
          {% if disable_basemap %}data-disable-base-map="{{ disable_basemap|jsonify }}"{% endif %}
          {% if feature_selection %}data-feature-selection="{{ feature_selection|jsonify }}"{% endif %}></div>
     <textarea id="map_view_geometry" name="geometry" rows="4" cols="180" hidden></textarea>
