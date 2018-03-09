@@ -1,7 +1,7 @@
 from tethys_sdk.base import TethysAppBase, url_map_maker
 
 
-class {{app_class_name}}(TethysAppBase):
+class {{class_name}}(TethysAppBase):
     """
     Tethys app class for {{proper_name}}.
     """
