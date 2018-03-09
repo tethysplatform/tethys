@@ -9,3 +9,4 @@
 """
 # DO NOT ERASE
 from tethys_gizmos.gizmo_options import *
+from tethys_gizmos.gizmo_options.base import TethysGizmoOptions, SecondaryGizmoOptions
