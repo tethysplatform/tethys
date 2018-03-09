@@ -9,7 +9,7 @@
 """
 # from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 # from django.http import HttpResponse, HttpResponseServerError
-# from django.core.urlresolvers import reverse
+# from django.urls import reverse
 # from django.core.exceptions import PermissionDenied
 #
 # from tethyscluster.cli_api import TethysCluster
