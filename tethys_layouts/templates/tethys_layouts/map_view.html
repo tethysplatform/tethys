@@ -17,6 +17,26 @@
     {% gizmo map_view map_view_gizmo %}
     {% csrf_token %}
   </div>
+  <div class="modal fade" id="GenericModal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+            <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="close">&times;</button>
+              <h4 class="modal-title" id="ModalTitle">TITLE</h4>
+            </div>
+            <div class="modal-body">
+                <div id="ModalBody">
+                  <span>BODY</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <div id="ModalFooter">
+              </div>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+      </div>
+  </div>
 {% endblock %}
 
 {# Hide the app actions bar #}
@@ -25,7 +45,6 @@
 
 {% block styles %}
   {{ block.super }}
-  <!-- <link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" /> -->
   <link href="{% static 'tethys_layouts/css/map_view.css' %}" rel="stylesheet"/>
   <link href="{% static 'tethys_gizmos/vendor/jqueryui/css/smoothness/jqueryui_min.css' %}" rel="stylesheet"/>
   <link href="{% static 'tethys_layouts/vendor/contextMenu/contextMenu.css' %}" rel="stylesheet"/>
@@ -34,7 +53,6 @@
 {% block scripts %}
   {{ block.super }}
   <script src="{% static 'tethys_layouts/js/map_view.js' %}" type="text/javascript"></script>
-  <!-- <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
   <script src="{% static 'tethys_gizmos/vendor/jqueryui/js/jqueryui_min.js' %}"></script>
   <script src="{% static 'tethys_layouts/vendor/contextMenu/contextMenu.min.js' %}"></script>
 {% endblock %}

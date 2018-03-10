@@ -187,6 +187,9 @@ var TETHYS_MAP_VIEW = (function() {
 
     // Add legend attributes
     base_map_layer.tethys_legend_title = 'Basemap';
+    if (is_defined(m_toc_boolean)) {
+      base_map_layer.tethys_data = {'tethys_toc':m_toc_boolean}
+    }
 
     // Add the base map to layers
     m_map.addLayer(base_map_layer);

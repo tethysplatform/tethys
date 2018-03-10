@@ -52,11 +52,12 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
     var onClickEditLayer;
     var onClickSaveEdits;
     var onClickCancelEdits;
-    var onClickShowAttrTable;
+    // var onClickShowAttrTable;
     var onClickisolateLayer;
 
     var enter_edit_mode;
     var exit_edit_mode;
+    var error_message;
 
 
     /*****************************************************************************
@@ -877,7 +878,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         $('#editSave').addClass("hidden");
         $('#editCancel').addClass("hidden");
 
-        onClickShowAttrTable();
+        // onClickShowAttrTable();
         //  Re-enable the layer select functionality in addition to the display of an attribute table
         initialize_listeners();
     };
@@ -990,84 +991,84 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
 
         //  Make sure to designate that the attributes table should not be read in for saving
         $('#attr-table').removeClass('edit');
-        onClickShowAttrTable();
+        // onClickShowAttrTable();
         //  Re-enable the layer select functionality
         initialize_listeners();
     };
 
-    onClickShowAttrTable = function(e){
-        //  Initialize the layer item variables, use a try/catch to make a button available as an option for layer editing.
-        try{
-            if (e){
-                var clickedElement = e.trigger.context;
-                var $lyrListItem = $(clickedElement).parent().parent();
-            }
-            else{
-                var $lyrListItem = $('.ui-selected');
-            }
-        }
-        catch(err){console.log(err);};
-        if ($lyrListItem[0] === undefined){
-            error_message("No layer selected");
-            return;
-        }
-        var layerName = $lyrListItem.find('.layer-name').text().trim();
-        var numLayers;
-        var map;
-        var mapIndex;
-        var layer;
-        var features;
-        var copyFeatures=[];
-        var featureProps=[];
+    // onClickShowAttrTable = function(e){
+    //     //  Initialize the layer item variables, use a try/catch to make a button available as an option for layer editing.
+    //     try{
+    //         if (e){
+    //             var clickedElement = e.trigger.context;
+    //             var $lyrListItem = $(clickedElement).parent().parent();
+    //         }
+    //         else{
+    //             var $lyrListItem = $('.ui-selected');
+    //         }
+    //     }
+    //     catch(err){console.log(err);};
+    //     if ($lyrListItem[0] === undefined){
+    //         error_message("No layer selected");
+    //         return;
+    //     }
+    //     var layerName = $lyrListItem.find('.layer-name').text().trim();
+    //     var numLayers;
+    //     var map;
+    //     var mapIndex;
+    //     var layer;
+    //     var features;
+    //     var copyFeatures=[];
+    //     var featureProps=[];
 
-        //  Use the projectInfo for finding the mapIndex and initialize map
-        mapIndex = projectInfo.map.layers[layerName].TethysMapIndex;
-        map = TETHYS_MAP_VIEW.getMap();
-        layer = map.getLayers().item(mapIndex);
+    //     //  Use the projectInfo for finding the mapIndex and initialize map
+    //     mapIndex = projectInfo.map.layers[layerName].TethysMapIndex;
+    //     map = TETHYS_MAP_VIEW.getMap();
+    //     layer = map.getLayers().item(mapIndex);
 
-        try{
-            features = layer.getSource().getFeatures();
-            features.sort(function(a,b){
-                return a.getProperties()['ID']-b.getProperties()['ID'];
-            });
-            for (feature in features){
-                copyFeatures.push({
-                    'type': 'Feature',
-                    'geometry':{
-                        'type': features[feature].getGeometry().getType(),
-                        'coordinates': features[feature].getGeometry().getCoordinates(),
-                    }
-                });
-                //  Gather the properties for each element
-                featureProps[feature] = [];
-                for (property in features[feature].getProperties()){
-                    if (String(property) === 'geometry'){}
-                    else{
-                        featureProps[feature].push([String(property),features[feature].getProperties()[property]])
-    //                    console.log(property);
-                    }
-                };
-            };
-            //  Add Properties to feature list
-            for (feature in copyFeatures){
-                copyFeatures[feature]['properties']={};
-                for (prop in featureProps[feature]){
-                    copyFeatures[feature]['properties'][featureProps[feature][prop][0]] = featureProps[feature][prop][1];
-                };
-            };
-        }
-        catch(err){
-    //        console.log(err);
-        }
-        if (copyFeatures.length === 0){
-            $('#attr-table tbody').empty()
-            $('#attr-table tbody').append("<tr><td align='center'>No Features on Selected Layer</td></tr>")
-            $($lyrListItem).find('.feature-count').html('(0)')
-            return
-        }
+    //     try{
+    //         features = layer.getSource().getFeatures();
+    //         features.sort(function(a,b){
+    //             return a.getProperties()['ID']-b.getProperties()['ID'];
+    //         });
+    //         for (feature in features){
+    //             copyFeatures.push({
+    //                 'type': 'Feature',
+    //                 'geometry':{
+    //                     'type': features[feature].getGeometry().getType(),
+    //                     'coordinates': features[feature].getGeometry().getCoordinates(),
+    //                 }
+    //             });
+    //             //  Gather the properties for each element
+    //             featureProps[feature] = [];
+    //             for (property in features[feature].getProperties()){
+    //                 if (String(property) === 'geometry'){}
+    //                 else{
+    //                     featureProps[feature].push([String(property),features[feature].getProperties()[property]])
+    // //                    console.log(property);
+    //                 }
+    //             };
+    //         };
+    //         //  Add Properties to feature list
+    //         for (feature in copyFeatures){
+    //             copyFeatures[feature]['properties']={};
+    //             for (prop in featureProps[feature]){
+    //                 copyFeatures[feature]['properties'][featureProps[feature][prop][0]] = featureProps[feature][prop][1];
+    //             };
+    //         };
+    //     }
+    //     catch(err){
+    // //        console.log(err);
+    //     }
+    //     if (copyFeatures.length === 0){
+    //         $('#attr-table tbody').empty()
+    //         $('#attr-table tbody').append("<tr><td align='center'>No Features on Selected Layer</td></tr>")
+    //         $($lyrListItem).find('.feature-count').html('(0)')
+    //         return
+    //     }
 
-        build_table(layerName,copyFeatures);
-    };
+    //     build_table(layerName,copyFeatures);
+    // };
 
     /*****************************************************************************
      *                           Utility Functions
@@ -1183,9 +1184,19 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         $('.layer-name').parent().on('click',function(){
             $('.layer-name').parent().removeClass('ui-selected');
             $(this).addClass('ui-selected').trigger('select_change');
-            onClickShowAttrTable();
+            // onClickShowAttrTable();
         });
     };
+
+    // Error message function using bootstrap
+    function error_message(errMessageText) {
+        $('#GenericModal').on('show.bs.modal', function (event) {
+            $('#ModalTitle').text('Error Message');
+            $('#ModalBody').text(errMessageText);
+            $('#ModalFooter').hide();
+        })
+        $('#GenericModal').modal('show')
+    }
 
     /*****************************************************************************
      *                           To be executed on load
@@ -1217,7 +1228,7 @@ TETHYS_TOC =    {   projectInfo: projectInfo,
                     exit_edit_mode: exit_edit_mode,
                     onClickEditLayer: onClickEditLayer,
                     onClickSaveEdits: onClickSaveEdits,
-                    onClickShowAttrTable: onClickShowAttrTable,
+                    // onClickShowAttrTable: onClickShowAttrTable,
                     add_layer:add_layer,
                     delete_layer:delete_layer,
                 }
@@ -1239,7 +1250,7 @@ TETHYS_TOC =    {   projectInfo: projectInfo,
                     exit_edit_mode: exit_edit_mode,
                     onClickEditLayer: onClickEditLayer,
                     onClickSaveEdits: onClickSaveEdits,
-                    onClickShowAttrTable: onClickShowAttrTable,
+                    // onClickShowAttrTable: onClickShowAttrTable,
                     add_layer:add_layer,
                     delete_layer:delete_layer,
                 };
