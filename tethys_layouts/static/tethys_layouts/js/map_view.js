@@ -518,28 +518,41 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
     onClickisolateLayer = function(e) {
         var clickedElement = e.trigger.context;
         var $lyrListItem = $(clickedElement).parent().parent();
-        var layerName = $lyrListItem.find('.layer-name').text().trim();
+        var layerName = $lyrListItem.find('.layer-name').text();
         var i;
         var numLayers;
         var map;
         var mapIndex;
 
-        //  Use the projectInfo for finding the mapIndex and initialize map
-        mapIndex = projectInfo.map.layers[layerName].TethysMapIndex;
-        map = TETHYS_MAP_VIEW.getMap();
+        // //  Use the projectInfo for finding the mapIndex and initialize map
+        // mapIndex = projectInfo.map.layers[layerName].TethysMapIndex;
+        // map = TETHYS_MAP_VIEW.getMap();
 
-        //  Find the number of layers in the map object
-        numLayers = map.getLayers().getArray().length;
+        // //  Find the number of layers in the map object
+        // numLayers = map.getLayers().getArray().length;
+
+        // Get list of layers by their names using Jquery
+        $lyrList = $('.layer-name')
+        $trnOffLyrs = $.grep($lyrList, function(e) {return e.innerText !== layerName})
+        $isolate = $.grep($lyrList, function(e) {return e.innerText === layerName})
 
         //  Set layer visibility state, leaving only the 'clicked' layer as visible
-        for (i=0; i < numLayers; i++){
-            if (i != mapIndex){
-                map.getLayers().item(i).setVisible(false);
-            }
-            else{
-                map.getLayers().item(i).setVisible(true);
+        for (var i = 0; i < $trnOffLyrs.length; i++){
+            if ($($trnOffLyrs[i]).prev()[0].checked === true){
+                $($trnOffLyrs[i]).prev().click();
             }
         }
+        if ($($isolate[0]).prev()[0].checked === false) {
+            $($isolate[0].prev().click())
+        }
+        // for (i=0; i < numLayers; i++){
+        //     if (i != mapIndex){
+        //         map.getLayers().item(i).setVisible(false);
+        //     }
+        //     else{
+        //         map.getLayers().item(i).setVisible(true);
+        //     }
+        // }
     };
     //*TODO*Need to select drawing layer regardless of index, right now it's hard coded to be layer 1 = Drawing Layer
     onClickEditLayer = function(e){
