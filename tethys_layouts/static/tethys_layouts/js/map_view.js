@@ -519,6 +519,9 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         var clickedElement = e.trigger.context;
         var $lyrListItem = $(clickedElement).parent().parent();
         var layerName = $lyrListItem.find('.layer-name').text();
+        var $lyrList;
+        var $trnOffLyrs;
+        var $isolate;
         var i;
         var numLayers;
         var map;
@@ -543,7 +546,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             }
         }
         if ($($isolate[0]).prev()[0].checked === false) {
-            $($isolate[0].prev().click())
+            $($isolate[0]).prev().click()
         }
         // for (i=0; i < numLayers; i++){
         //     if (i != mapIndex){
