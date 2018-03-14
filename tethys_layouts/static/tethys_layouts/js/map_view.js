@@ -54,6 +54,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
     var onClickCancelEdits;
     // var onClickShowAttrTable;
     var onClickisolateLayer;
+    var onClickZoomToLayer;
 
     var enter_edit_mode;
     var exit_edit_mode;
@@ -373,8 +374,8 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             name: 'Zoom to',
             title: 'Zoom to',
             fun: function (e) {
-    //            onClickZoomToLayer(e);
-                console.log("Zoomin' to the layer captain...I'm giving it all she's got captain!")
+               onClickZoomToLayer(e);
+                // console.log("Zoomin' to the layer captain...I'm giving it all she's got captain!")
             }
         });
 
@@ -515,6 +516,35 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         $(document).off('click.edtLyrNm');
     };
 
+    onClickZoomToLayer = function(e){
+        var clickedElement = e.trigger.context
+        var $lyrListItem = $(clickedElement).parent().parent();
+        var layerName = $lyrListItem.find('.layer-name').text();
+        var extent;
+        var numLayers;
+        var map;
+        var mapIndex;
+
+        //  Use the projectInfo for finding the mapIndex and initialize map
+        mapIndex = projectInfo.map.layers[layerName].TethysMapIndex;
+        map = TETHYS_MAP_VIEW.getMap();
+
+        //  Find the number of layers in the map object
+        numLayers = map.getLayers().getArray().length;
+
+        // for (i=0; i < numLayers; i++){
+        //     if (i != mapIndex){
+        //         map.getLayers().item(i).setVisible(false);
+        //     }
+        //     else{
+        //         map.getLayers().item(i).setVisible(true);
+        //     }
+        // }
+
+        extent =  map.getLayers().item(mapIndex).getSource().getExtent()
+        map.getView().fit(extent, map.getSize())
+    }
+
     onClickisolateLayer = function(e) {
         var clickedElement = e.trigger.context;
         var $lyrListItem = $(clickedElement).parent().parent();
@@ -522,17 +552,6 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         var $lyrList;
         var $trnOffLyrs;
         var $isolate;
-        var i;
-        var numLayers;
-        var map;
-        var mapIndex;
-
-        // //  Use the projectInfo for finding the mapIndex and initialize map
-        // mapIndex = projectInfo.map.layers[layerName].TethysMapIndex;
-        // map = TETHYS_MAP_VIEW.getMap();
-
-        // //  Find the number of layers in the map object
-        // numLayers = map.getLayers().getArray().length;
 
         // Get list of layers by their names using Jquery
         $lyrList = $('.layer-name')
@@ -548,14 +567,6 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         if ($($isolate[0]).prev()[0].checked === false) {
             $($isolate[0]).prev().click()
         }
-        // for (i=0; i < numLayers; i++){
-        //     if (i != mapIndex){
-        //         map.getLayers().item(i).setVisible(false);
-        //     }
-        //     else{
-        //         map.getLayers().item(i).setVisible(true);
-        //     }
-        // }
     };
     //*TODO*Need to select drawing layer regardless of index, right now it's hard coded to be layer 1 = Drawing Layer
     onClickEditLayer = function(e){
