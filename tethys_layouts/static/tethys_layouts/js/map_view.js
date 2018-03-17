@@ -520,7 +520,9 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         var clickedElement = e.trigger.context
         var $lyrListItem = $(clickedElement).parent().parent();
         var layerName = $lyrListItem.find('.layer-name').text();
+        var projCode;
         var extent;
+        var extent_prj;
         var numLayers;
         var map;
         var mapIndex;
@@ -532,17 +534,30 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         //  Find the number of layers in the map object
         numLayers = map.getLayers().getArray().length;
 
-        // for (i=0; i < numLayers; i++){
-        //     if (i != mapIndex){
-        //         map.getLayers().item(i).setVisible(false);
-        //     }
-        //     else{
-        //         map.getLayers().item(i).setVisible(true);
-        //     }
-        // }
+        // Nest try/catch statements to first try to use the tethys_legend_extent first,
+        // if it is not supplied, then try to calculate the extent from the vector source.
+        try{
+            if ((map.getLayers().item(mapIndex).tethys_legend_extent) !== undefined && 
+                    (map.getLayers().item(mapIndex).tethys_legend_extent_projection) !== undefined)
+                {
+                extent = map.getLayers().item(mapIndex).tethys_legend_extent;
+                extent_prj = map.getLayers().item(mapIndex).tethys_legend_extent_projection;
+                extent = ol.extent.applyTransform(extent, ol.proj.getTransform(extent_prj, "EPSG:3857"));
+                map.getView().fit(extent, map.getSize());
+            }
+        }
+        catch(err){
+            if (map.getLayers().item(mapIndex).getSource() instanceof ol.layer.Vector){
+                extent =  map.getLayers().item(mapIndex).getSource().getExtent();
+                map.getView().fit(extent, map.getSize());
+            }
+            else{
+                throw("Layer is not a vector layer, no extent can be calculated. Please provide an extent and projection code to the layer in the controller");
+            }
+        }
 
-        extent =  map.getLayers().item(mapIndex).getSource().getExtent()
-        map.getView().fit(extent, map.getSize())
+        // extent =  map.getLayers().item(mapIndex).getSource().getExtent()
+        // map.getView().fit(extent, map.getSize())
     }
 
     onClickisolateLayer = function(e) {
