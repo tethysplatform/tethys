@@ -12,6 +12,7 @@ try:
 except ImportError:
     from urllib.parse import urlparse
 
+from django.core.handlers.wsgi import WSGIRequest
 from django.contrib import messages
 from django.urls import reverse
 from django.shortcuts import redirect
@@ -86,16 +87,40 @@ def permission_required(*args, **kwargs):
     use_or = kwargs.pop('use_or', False)
     message = kwargs.pop('message', "We're sorry, but you are not allowed to perform this operation.")
     raise_exception = kwargs.pop('raise_exception', False)
-
-    for arg in args:
-        if not isinstance(arg, basestring):
-            raise ValueError("Arguments must be a string and the name of a permission for the app.")
-
-    perms = args
+    perms = [arg for arg in args if isinstance(arg, basestring)]
 
     def decorator(controller_func):
-        def _wrapped_controller(request, *args, **kwargs):
+        def _wrapped_controller(*args, **kwargs):
             # With OR check, we assume the permission test passes upfront
+            # Find request (varies position if class method is wrapped)
+            # e.g.: func(request, *args, **kwargs) vs. method(self, request, *args, **kwargs)
+            request_args_index = None
+            the_self = None
+
+            for index, arg in enumerate(args):
+                print(arg)
+                if isinstance(arg, WSGIRequest):
+                    request_args_index = index
+
+            print('*** ARGS AND REQUEST')
+            print(args)
+            print(kwargs)
+            print(request_args_index)
+
+            # Args are everything after the request object
+            if request_args_index is not None:
+                request = args[request_args_index]
+            else:
+                raise ValueError("No WSGIRequest object provided.")
+
+            if request_args_index > 0:
+                the_self = args[0]
+
+            args = args[request_args_index+1:]
+
+            print(request)
+            print(the_self)
+            print(request_args_index)
 
             # Check permission
             pass_permission_test = True
@@ -159,6 +184,12 @@ def permission_required(*args, **kwargs):
                 else:
                     return tethys_portal_error.handler_403(request)
 
-            return controller_func(request, *args, **kwargs)
+            # Call the controller
+            if the_self is not None:
+                response = controller_func(the_self, request, *args, **kwargs)
+            else:
+                response = controller_func(request, *args, **kwargs)
+
+            return response
         return wraps(controller_func)(_wrapped_controller)
     return decorator
