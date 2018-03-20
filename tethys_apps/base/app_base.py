@@ -982,12 +982,14 @@ class TethysAppBase(TethysBase):
         ps_connection_settings = db_app.persistent_store_connection_settings
 
         try:
+            # Return as_engine if the other two are False
+            as_engine = not as_sessionmaker and not as_url
             ps_connection_setting = ps_connection_settings.get(name=name)
             return ps_connection_setting.get_value(as_url=as_url, as_sessionmaker=as_sessionmaker, as_engine=as_engine)
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting', name, cls.name)
         except TethysAppSettingNotAssigned:
-            cls._log_tethys_app_setting_not_assigned_errror('PersistentStoreConnectionSetting', name)
+            cls._log_tethys_app_setting_not_assigned_error('PersistentStoreConnectionSetting', name)
 
     @classmethod
     def get_persistent_store_database(cls, name, as_url=False, as_sessionmaker=False):
@@ -1021,13 +1023,15 @@ class TethysAppBase(TethysBase):
         verified_name = name if not is_testing_environment() else get_test_db_name(name)
 
         try:
+            # Return as_engine if the other two are False
+            as_engine = not as_sessionmaker and not as_url
             ps_database_setting = ps_database_settings.get(name=verified_name)
             return ps_database_setting.get_value(with_db=True, as_url=as_url, as_sessionmaker=as_sessionmaker,
-                                                 as_engine=True)
+                                                 as_engine=as_engine)
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting', verified_name, cls.name)
         except TethysAppSettingNotAssigned:
-            cls._log_tethys_app_setting_not_assigned_errror('PersistentStoreConnectionSetting', verified_name)
+            cls._log_tethys_app_setting_not_assigned_error('PersistentStoreConnectionSetting', verified_name)
 
     @classmethod
     def create_persistent_store(cls, db_name, connection_name, spatial=False, initializer='', refresh=False,
@@ -1362,5 +1366,5 @@ class TethysAppBase(TethysBase):
         tethys_log.warn('Tethys app setting is not assigned.\nTraceback (most recent call last):\n{0} '
                         'TethysAppSettingNotAssigned: {1} named "{2}" has not been assigned. '
                         'Please visit the setting page for the app {3} and assign all required settings.'
-                        .format(traceback.format_stack(limit=3)[0], setting_type, setting_name, cls.name)
+                        .format(traceback.format_stack(limit=3)[0], setting_type, setting_name, cls.name.encode('utf-8'))
                         )
