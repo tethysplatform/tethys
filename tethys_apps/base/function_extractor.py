@@ -48,7 +48,7 @@ class TethysFunctionExtractor(object):
                 full_module_path = '.'.join((self.prefix, module_path)) if self.prefix else module_path
 
                 # Import module
-                module = __import__(full_module_path, fromlist=[function_name])
+                module = __import__(full_module_path, fromlist=[str(function_name)])
 
             except (ValueError, ImportError) as e:
                 self._valid = False
