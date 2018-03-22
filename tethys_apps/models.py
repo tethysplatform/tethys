@@ -22,8 +22,9 @@ from tethys_sdk.testing import is_testing_environment, get_test_db_name
 try:
     from tethys_services.models import (DatasetService, SpatialDatasetService,
                                         WebProcessingService, PersistentStoreService)
-except RuntimeError as e:
-    print(e)
+except RuntimeError:
+    log = logging.getLogger('tethys')
+    log.exception('An error occurred while trying to import tethys service models.')
 
 
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
@@ -783,7 +784,6 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                 else:
                     self.initializer_function(self.get_value(with_db=True, as_engine=True), not self.initialized)
             except Exception as e:
-                print(type(e))
                 raise PersistentStoreInitializerError(e)
 
         # Update initialization
