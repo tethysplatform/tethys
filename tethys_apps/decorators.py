@@ -98,14 +98,8 @@ def permission_required(*args, **kwargs):
             the_self = None
 
             for index, arg in enumerate(args):
-                print(arg)
                 if isinstance(arg, WSGIRequest):
                     request_args_index = index
-
-            print('*** ARGS AND REQUEST')
-            print(args)
-            print(kwargs)
-            print(request_args_index)
 
             # Args are everything after the request object
             if request_args_index is not None:
@@ -117,13 +111,6 @@ def permission_required(*args, **kwargs):
                 the_self = args[0]
 
             args = args[request_args_index+1:]
-
-            print(request)
-            print(the_self)
-            print(request_args_index)
-
-            # Check permission
-            pass_permission_test = True
 
             # OR Loop
             if use_or:
