@@ -37,6 +37,7 @@ class TethysBase(object):
 
     def __init__(self):
         self._url_patterns = None
+        self._namespace = None
 
     def url_maps(self):
         """
@@ -71,6 +72,15 @@ class TethysBase(object):
         return []
 
     @property
+    def namespace(self):
+        """
+        Get the namespace for the app.
+        """
+        if self._namespace is None:
+            self._namespace = self.root_url.replace('-', '_')
+        return self._namespace
+
+    @property
     def url_patterns(self):
         """
         Generate the url pattern lists for  app and namespace them accordingly.
@@ -87,8 +97,7 @@ class TethysBase(object):
                 url_maps = []
 
             for url_map in url_maps:
-                root_url = self.root_url
-                namespace = root_url.replace('-', '_')
+                namespace = self.namespace
 
                 if namespace not in url_patterns:
                     url_patterns[namespace] = []
