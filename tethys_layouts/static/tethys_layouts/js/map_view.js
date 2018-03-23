@@ -251,7 +251,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             editable: layer.tethys_editable,
             geomType: layer.getProperties().geometry_attribute,
             color: layer.color,
-            resType: layer.resType
+            resType: layer.tethys_data.resType
         };
     };
 
@@ -615,6 +615,10 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         var jsonFeatures;
         var jsonStyle;
         var color;
+        var i;
+        var feature;
+        var property;
+        var drawingLayer;
 
         //  Make sure that the user cannot change the selected layer or pull up another attribute table while in
         //  edit mode.
@@ -646,6 +650,12 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
                 map.getLayers().item(i).setVisible(true);
             }
         }
+        for (i=0; i < numLayers; i++){
+            if(map.getLayers().item(i).tethys_legend_title === "Drawing Layer"){
+                drawingLayer = map.getLayers().item(i)
+                break
+            }
+        }
 
         try{
             features = layer.getSource().getFeatures();
@@ -669,7 +679,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
                     }
                 };
                 //  This copies the features to the drawinglayer
-                map.getLayers().item(1).getSource().addFeature(features[feature].clone())
+                drawingLayer.getSource().addFeature(features[feature].clone())
             };
 
             //  Add Properties to feature list
@@ -1187,7 +1197,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
                 $('#draw_LineString').removeClass('hidden')}
             catch(err){}
         }
-        $(attrTableId).prop("disabled",false)
+        // $(attrTableId).prop("disabled",false)
     };
 
     exit_edit_mode = function(attrTableId){

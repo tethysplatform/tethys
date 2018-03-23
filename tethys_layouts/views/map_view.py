@@ -50,7 +50,7 @@ class MapViewLayoutController(TethysLayoutController):
         Build and return MVDraw for the underlying MapView Gizmo.
         """
         mvdraw = MVDraw(
-            controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
+            controls=['Delete', 'Move', 'Point', 'Box','Polygon','LineString', 'Modify'],
             initial='Point',
             output_format=self.input_data_format
         )
