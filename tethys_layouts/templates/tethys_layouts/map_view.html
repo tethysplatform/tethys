@@ -3,12 +3,18 @@
 
 {% block app_navigation %}
   {{ block.super }}
-  <b>Table of Contents</b>
-  <div id="toc-layers">
-    <ul id="toc-layers-list" class="ui-sortable"></ul>
+  <a id="save-btn" class="btn btn-default">Save</a>
+  <a id="open-btn" class="btn btn-default">Open</a>
+
+  <div id="table-of-contents">
+    <b>Table of Contents</b>
+    <div id="toc-layers">
+      <ul id="toc-layers-list" class="ui-sortable"></ul>
+    </div>
   </div>
   {% block override_controls %}
-  <a id="save-btn" class="btn btn-default">Save</a>
+  <a id="editCancel" class="btn btn-default hidden">Cancel Edits</a>
+  <a id="editSave" class="btn btn-default hidden">Save Edits</a>
   {% endblock %}
 {% endblock %}
 

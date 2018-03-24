@@ -27,6 +27,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
 
  	// Event handler methods
  	var handle_save;
+    var handle_open;
 
  	// UI methods
  	var resize_map;
@@ -771,7 +772,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         var numLayers;
         var map;
         var mapIndex;
-        var layer;
+        var drawingLayer;
         var features;
         var newFeatures;
         var clone;
@@ -779,7 +780,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         var featureProps=[];
         var copied;
         var format;
-        var color;
+        var color = '#ffcc33';
         var newStyle;
         var newSource;
         var jsonFeatures;
@@ -792,7 +793,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         map = TETHYS_MAP_VIEW.getMap();
         for (i=0;i < map.getLayers().getArray().length;i++){
             if (map.getLayers().item(i).tethys_legend_title === "Drawing Layer"){
-                layer = map.getLayers().item(i);
+                drawingLayer = map.getLayers().item(i);
             }
         };
 
@@ -802,14 +803,14 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             return;
         }
 
-        layerName = map.getLayers().item(1).tag;
+        layerName = drawingLayer.tag;
 
         //  Use the projectInfo for finding the mapIndex
         mapIndex = projectInfo.map.layers[layerName].TethysMapIndex;
 
 
         //  Return all layers to their original editable state based on ProjectInfo
-        for (mapObj in projectInfo.map.layers){
+        for (var mapObj in projectInfo.map.layers){
             if (projectInfo.map.layers[mapObj].editable === true){
                 map.getLayers().item(projectInfo.map.layers[mapObj].TethysMapIndex).tethys_editable = true;
             }
@@ -844,9 +845,9 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             };
             };
             //  Add Properties to feature list
-            for (feature in copyFeatures){
+            for (var feature in copyFeatures){
                 copyFeatures[feature]['properties']={};
-                for (prop in featureProps[feature]){
+                for (var prop in featureProps[feature]){
                     copyFeatures[feature]['properties'][featureProps[feature][prop][0]] = featureProps[feature][prop][1];
                 };
             };
@@ -879,7 +880,9 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
     //        };
 
             //  Find the layer color
-            color = map.getLayers().item(mapIndex).getStyle().fill_.color_;
+            if (map.getLayers().item(mapIndex).getStyle().fill_.color_ !== undefined){
+                color = map.getLayers().item(mapIndex).getStyle().fill_.color_;
+            }
 
             //  Read features and color to string for sessionStorage and then store features and style
             jsonFeatures = JSON.stringify(copyFeatures);
@@ -906,7 +909,9 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         }
         catch(err){
             console.log(err);
-            color = map.getLayers().item(mapIndex).getStyle().fill_.color_;
+            if (map.getLayers().item(mapIndex).getStyle().fill_.color_ !== undefined){
+                color = map.getLayers().item(mapIndex).getStyle().fill_.color_;
+            }
 
             //  Read style to string for sessionStorage and store style
             jsonStyle = JSON.stringify(color);
@@ -926,12 +931,13 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             map.getLayers().item(mapIndex).setStyle(newStyle);
         }
 
-        layer.getSource().clear();
-        delete map.getLayers().item(1).tag;
-        layer.tethys_editable = false;
-        layer.setVisible(false);
+        drawingLayer.getSource().clear();
+        delete drawingLayer.tag;
+        drawingLayer.tethys_editable = false;
+        drawingLayer.setVisible(false);
 
-        exit_edit_mode('#attr-table input');
+        // exit_edit_mode('#attr-table input');
+        exit_edit_mode();
         $('#editSave').addClass("hidden");
         $('#editCancel').addClass("hidden");
 
@@ -944,23 +950,25 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         var layerName;
         var map;
         var mapIndex;
-        var layer;
+        var drawingLayer;
         var format;
+        var color = '#ffcc33';
         var jsonStyle;
         var jsonFeatures;
         var savedStyle;
         var oldFeatures;
         var oldStyle;
         var oldSource;
+        var newStyle;
 
         //  Initialize map object
         map = TETHYS_MAP_VIEW.getMap();
 
         //  Set the layer to the edit layer
         map = TETHYS_MAP_VIEW.getMap();
-        for (i=0;i < map.getLayers().getArray().length;i++){
+        for (var i=0;i < map.getLayers().getArray().length;i++){
             if (map.getLayers().item(i).tethys_legend_title === "Drawing Layer"){
-                layer = map.getLayers().item(i);
+                drawingLayer = map.getLayers().item(i);
             }
         };
 
@@ -970,14 +978,14 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             return;
         }
 
-        layerName = map.getLayers().item(1).tag;
+        layerName = drawingLayer.tag;
 
         //  Use the projectInfo for finding the mapIndex
         mapIndex = projectInfo.map.layers[layerName].TethysMapIndex;
 
 
         //  Return all layers to their original editable state based on ProjectInfo
-        for (mapObj in projectInfo.map.layers){
+        for (var mapObj in projectInfo.map.layers){
             if (projectInfo.map.layers[mapObj].editable === true){
                 map.getLayers().item(projectInfo.map.layers[mapObj].TethysMapIndex).tethys_editable = true;
             }
@@ -1037,17 +1045,18 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             console.log(err);
         }
 
-        layer.getSource().clear();
-        delete layer.tag;
-        layer.tethys_editable = false;
-        layer.setVisible(false);
+        drawingLayer.getSource().clear();
+        delete drawingLayer.tag;
+        drawingLayer.tethys_editable = false;
+        drawingLayer.setVisible(false);
 
-        exit_edit_mode('#attr-table input');
+        // exit_edit_mode('#attr-table input');
+        exit_edit_mode();
         $('#editSave').addClass("hidden");
         $('#editCancel').addClass("hidden");
 
         //  Make sure to designate that the attributes table should not be read in for saving
-        $('#attr-table').removeClass('edit');
+        // $('#attr-table').removeClass('edit');
         // onClickShowAttrTable();
         //  Re-enable the layer select functionality
         initialize_listeners();
@@ -1205,7 +1214,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         // $(attrTableId).prop("disabled",false)
     };
 
-    exit_edit_mode = function(attrTableId){
+    exit_edit_mode = function(attrTableId=null){
         //  Change projectInfo to reflect that the edit mode is inactive
         projectInfo['editMode'] = false;
         //  Hide all of the Draw/Edit tools in the Map View Gizmo
@@ -1233,7 +1242,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         try{
             $('#tethys_pan').find('div:first-child').click()}
         catch(err){}
-        $(attrTableId).prop("disabled",true)
+        // $(attrTableId).prop("disabled",true)
     };
 
     initialize_listeners = function(){
@@ -1266,7 +1275,8 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             readInitialLayers();
             addInitialEventListeners();
             initialize_listeners();
-            exit_edit_mode('#attr-table input');
+            // exit_edit_mode('#attr-table input');
+            exit_edit_mode();
 
             $tocLayersList.sortable({
             placeholder: "ui-state-highlight",
@@ -1307,6 +1317,7 @@ TETHYS_TOC =    {   projectInfo: projectInfo,
                     exit_edit_mode: exit_edit_mode,
                     onClickEditLayer: onClickEditLayer,
                     onClickSaveEdits: onClickSaveEdits,
+                    onClickCancelEdits: onClickCancelEdits,
                     // onClickShowAttrTable: onClickShowAttrTable,
                     add_layer:add_layer,
                     delete_layer:delete_layer,
@@ -1324,6 +1335,13 @@ TETHYS_TOC =    {   projectInfo: projectInfo,
 
         // Save event
         $('#save-btn').click(handle_save);
+        $('#editSave').click(onClickSaveEdits);
+
+        // Open event
+        // $('#open-btn').click(handle_open);
+
+        // Cancel event
+        $('#editCancel').click(onClickCancelEdits);
 
         // Initialize map
         resize_map();
