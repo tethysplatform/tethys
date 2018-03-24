@@ -614,7 +614,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         var newStyle;
         var jsonFeatures;
         var jsonStyle;
-        var color;
+        var color = '#ffcc33';
         var i;
         var feature;
         var property;
@@ -701,7 +701,9 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             };
     //        newStyle = layer.getStyle();
             //  Read in the layer color to be stored and to apply new color to edit layer
-            color = projectInfo.map.layers[layerName].color;
+            if (projectInfo.map.layers[layerName].color !== undefined){
+                color = projectInfo.map.layers[layerName].color;
+            }
 
             //  Read features and style to string for sessionStorage and then store features and style
             jsonFeatures = JSON.stringify(copyFeatures);
@@ -711,7 +713,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             sessionStorage.setItem(String(layerName + "_Style"),jsonStyle);
 
             //  Set drawing layer style to match the layer to be edited
-            newStyle = map.getLayers().item(1).getStyle();
+            newStyle = drawingLayer.getStyle();
             newStyle.fill_.color_ = color;
             newStyle.image_=new ol.style.Circle({
                 radius: 4,
@@ -721,12 +723,14 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             });
             newStyle.stroke_.color_ = color;
 
-            map.getLayers().item(1).setStyle(newStyle);
+            drawingLayer.setStyle(newStyle);
 
         }
         catch(err){
             console.log(err);
-            color = map.getLayers().item(mapIndex).getStyle().fill_.color_;
+            if (map.getLayers().item(mapIndex).getStyle().fill_.color_ !== undefined){
+                color = map.getLayers().item(mapIndex).getStyle().fill_.color_;
+            }
 
             //  Read style to string for sessionStorage and store style
             jsonStyle = JSON.stringify(color);
@@ -743,22 +747,23 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             });
             newStyle.stroke_.color_ = color;
 
-            map.getLayers().item(1).setStyle(newStyle);
+            drawingLayer.setStyle(newStyle);
         }
 
         layer.getSource().clear();
-        map.getLayers().item(1).tag = layerName;
-        enter_edit_mode(projectInfo.map.layers[layerName].geomType,'#attr-table input');
+        drawingLayer.tag = layerName;
+        // enter_edit_mode(projectInfo.map.layers[layerName].geomType,'#attr-table input');
+        enter_edit_mode(projectInfo.map.layers[layerName].geomType);
         $('#editSave').removeClass("hidden");
         $('#editCancel').removeClass("hidden");
 
-        //  Verify that the layer actually has features before trying to build the table
-        if (copyFeatures.length === 0){
-            $('#attr-table tbody').empty()
-            $('#attr-table tbody').append("<tr><td align='center'>No Features on Selected Layer</td></tr>")
-            return;
-        }
-        else{build_table(layerName,copyFeatures,true);}
+        // //  Verify that the layer actually has features before trying to build the table
+        // if (copyFeatures.length === 0){
+        //     $('#attr-table tbody').empty()
+        //     $('#attr-table tbody').append("<tr><td align='center'>No Features on Selected Layer</td></tr>")
+        //     return;
+        // }
+        // else{build_table(layerName,copyFeatures,true);}
     };
 
     onClickSaveEdits = function(){
@@ -1126,7 +1131,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
      *                           Utility Functions
      *****************************************************************************/
 
-    enter_edit_mode = function(layerType,attrTableId){
+    enter_edit_mode = function(layerType,attrTableId=null){
         //  Change projectInfo to reflect that the edit mode is active
         projectInfo['editMode'] = true;
         //  Show the Draw/Edit tools in the Map View Gizmo
