@@ -624,6 +624,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         //  Make sure that the user cannot change the selected layer or pull up another attribute table while in
         //  edit mode.
         $('.layer-name').parent().off('click');
+        $('#save-btn').addClass('disabled');
 
         //  Use the projectInfo for finding the mapIndex and initialize map
         mapIndex = projectInfo.map.layers[layerName].TethysMapIndex;
@@ -791,7 +792,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
 
         //  Set the layer to the edit layer
         map = TETHYS_MAP_VIEW.getMap();
-        for (i=0;i < map.getLayers().getArray().length;i++){
+        for (var i=0;i < map.getLayers().getArray().length;i++){
             if (map.getLayers().item(i).tethys_legend_title === "Drawing Layer"){
                 drawingLayer = map.getLayers().item(i);
             }
@@ -820,7 +821,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         };
 
         try{
-            features = layer.getSource().getFeatures();
+            features = drawingLayer.getSource().getFeatures();
             features.sort(function(a,b){
                 return a.getProperties()['ID']-b.getProperties()['ID'];
             });
@@ -835,7 +836,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
                 });
             //  Gather the properties for each element
             featureProps[feature] = [];
-            for (property in features[feature].getProperties()){
+            for (var property in features[feature].getProperties()){
                 if (String(property) === 'geometry'){}
                 else{
                     featureProps[feature].push([String(property),features[feature].getProperties()[property]])
@@ -880,8 +881,10 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
     //        };
 
             //  Find the layer color
-            if (map.getLayers().item(mapIndex).getStyle().fill_.color_ !== undefined){
-                color = map.getLayers().item(mapIndex).getStyle().fill_.color_;
+            if (map.getLayers().item(mapIndex).getStyle().fill_ !== undefined){
+                if (map.getLayers().item(mapIndex).getStyle().fill_.color !== undefined){
+                    color = map.getLayers().item(mapIndex).getStyle().fill_.color_;
+                }
             }
 
             //  Read features and color to string for sessionStorage and then store features and style
@@ -893,14 +896,39 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
 
             //  Set layer style to match
             newStyle = map.getLayers().item(mapIndex).getStyle();
-            newStyle.fill_.color_ = color;
-            newStyle.image_=new ol.style.Circle({
+            if (newStyle.fill_ == undefined){
+                newStyle.fill_ = new ol.style.Fill({
+                    color: color,
+                })
+            }
+            else{
+                newStyle.fill_.color_ = color;
+            }
+
+            if (newStyle.image_ == undefined){
+                newStyle.image_=new ol.style.Circle({
+                    radius: 4,
+                    fill: new ol.style.Fill({
+                        color:color,
+                    })
+                })
+            }
+            else{
+                newStyle.image_=new ol.style.Circle({
                 radius: 4,
                 fill: new ol.style.Fill({
-                  color: color
+                    color: color
+                    })
+                });
+            }
+            if (newStyle.stroke_ == undefined){
+                newStyle.stroke_ = new ol.style.Stroke({
+                    color: color,
                 })
-            });
-            newStyle.stroke_.color_ = color;
+            }
+            else{
+                newStyle.stroke_.color_ = color;    
+            }
 
             map.getLayers().item(mapIndex).setStyle(newStyle);
             //  Set the save layer to the new source
@@ -940,6 +968,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         exit_edit_mode();
         $('#editSave').addClass("hidden");
         $('#editCancel').addClass("hidden");
+        $('#save-btn').removeClass('disabled');
 
         // onClickShowAttrTable();
         //  Re-enable the layer select functionality in addition to the display of an attribute table
@@ -960,6 +989,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         var oldStyle;
         var oldSource;
         var newStyle;
+        var oldCollection;
 
         //  Initialize map object
         map = TETHYS_MAP_VIEW.getMap();
@@ -999,15 +1029,40 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             color = JSON.parse(sessionStorage[String(layerName + "_Style")]);
             //  Set drawing layer style to match the layer to be edited
             newStyle = map.getLayers().item(mapIndex).getStyle();
-            newStyle.fill_.color_ = color;
-            newStyle.image_=new ol.style.Circle({
+            if (newStyle.fill_ == undefined){
+                newStyle.fill_ = new ol.style.Fill({
+                    color: color,
+                })
+            }
+            else{
+                newStyle.fill_.color_ = color;
+            }
+
+            if (newStyle.image_ == undefined){
+                newStyle.image_=new ol.style.Circle({
+                    radius: 4,
+                    fill: new ol.style.Fill({
+                        color:color,
+                    })
+                })
+            }
+            else{
+                newStyle.image_=new ol.style.Circle({
                 radius: 4,
                 fill: new ol.style.Fill({
-                  color: color
+                    color: color
+                    })
+                });
+            }
+            if (newStyle.stroke_ == undefined){
+                newStyle.stroke_ = new ol.style.Stroke({
+                    color: color,
                 })
-            });
-            newStyle.stroke_.color_ = color;
-
+            }
+            else{
+                newStyle.stroke_.color_ = color;    
+            }
+            
             map.getLayers().item(mapIndex).setStyle(newStyle);
 
             //  Because we can't store the source directly, the features need to be read back into a new source.
@@ -1054,6 +1109,7 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
         exit_edit_mode();
         $('#editSave').addClass("hidden");
         $('#editCancel').addClass("hidden");
+        $('#save-btn').removeClass('disabled');
 
         //  Make sure to designate that the attributes table should not be read in for saving
         // $('#attr-table').removeClass('edit');
