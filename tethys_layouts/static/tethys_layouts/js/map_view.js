@@ -96,10 +96,78 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
 
     // Event handler methods
     handle_save = function() {
-        var geometry, csrf_token;
+        var map;
+        var layers, style, map_info;
+        var csrf_token;
 
+        // Get the map variable
+        try{
+            map = TETHYS_MAP_VIEW.getMap();    
+        }
+        catch(err){
+            console.log(err);
+            consoler.log("In absence of the Tethys map data, save method cannot operate.")
+            return
+        }
+        
         // Get the JSON from the hidden field
-        geometry = $('#map_view_geometry').val();
+        // geometry = $('#map_view_geometry').val();
+        // Create a dictionary by layer, preserving geometry and properties
+        layers = {};
+        try{
+            for (var lyr in map.getLayers().getArray()){
+                if (map.getLayers().item(lyr).getSource() instanceof ol.source.Vector){
+                    var features = map.getLayers().item(lyr).getSource().getFeatures();
+                    features.sort(function(a,b){
+                        return a.getProperties()['ID']-b.getProperties()['ID'];
+                    });
+                    var copyFeatures = [];
+                    var featureProps = [];
+                    for (var feature in features){
+                        copyFeatures.push({
+                            'type': 'Feature',
+                            'geometry':{
+                                'type': features[feature].getGeometry().getType(),
+                                'coordinates': features[feature].getGeometry().getCoordinates(),
+                            }
+                        });
+                        //  Gather the properties for each element
+                        featureProps[feature] = [];
+                        for (var property in features[feature].getProperties()){
+                            if (String(property) === 'geometry'){}
+                            else{
+                                featureProps[feature].push([String(property),features[feature].getProperties()[property]])
+                            }
+                        };
+                    };
+
+                    //  Add Properties to feature list
+                    for (var feature in copyFeatures){
+                        copyFeatures[feature]['properties']={};
+                        for (var prop in featureProps[feature]){
+                            copyFeatures[feature]['properties'][featureProps[feature][prop][0]] = featureProps[feature][prop][1];
+                        }
+                    };
+
+                    //  Read features and style to string for sessionStorage and then store features and style
+                    var jsonFeatures = JSON.stringify(copyFeatures);
+                    layers[map.getLayers().item(lyr).tethys_legend_title] = jsonFeatures;
+                }
+            }
+        }
+        catch(err){
+            console.log(err);
+        }
+
+        // Attempt to retrieve the projectInfo object for saving
+        try{
+            map_info = TETHYS_MAP_VIEW_LAYOUT.projectInfo    
+        }
+        catch(err){
+            console.log(err)
+            console.log("TETHYS_MAP_VIEW_LAYOUT is not available")
+        }
+
 
         // Handle CSRF protection
         csrf_token = get_cookie('csrftoken');
@@ -117,7 +185,8 @@ var TETHYS_MAP_VIEW_LAYOUT = (function() {
             'method': 'post',
             'data': {
                 'event': 'on-save',
-                'geometry': geometry
+                'projectInfo': map_info,
+                'layers': layers
             },
         }).done(function(data) {
             if (!'success' in data || data.success === false) {
