@@ -89,13 +89,14 @@ class MapViewLayoutController(TethysLayoutController):
         """
         Handle a save event from the map.
         """
-        post_data = request.POST
-        for key in post_data.keys():
-            print(post_data[key])
-        if len(post_data.keys()) >= 1:
-            return True
-        else:
-            return False
+        # post_data = request.POST
+        # for key in post_data.keys():
+        #     print(post_data[key])
+        # if len(post_data.keys()) >= 1:
+        #     return True
+        # else:
+        print("Save method not implemented.")
+        return False
 
     def get(self, request, *args, **kwargs):
         """
