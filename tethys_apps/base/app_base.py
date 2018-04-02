@@ -21,12 +21,13 @@ from tethys_apps.base.testing.environment import is_testing_environment, get_tes
 from tethys_apps.base import permissions
 from .handoff import HandoffManager
 from .workspace import TethysWorkspace
+from .mixins import TethysBaseMixin
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
 tethys_log = logging.getLogger('tethys.app_base')
 
 
-class TethysBase(object):
+class TethysBase(TethysBaseMixin):
     """
     Abstract base class of app and extension classes.
     """
@@ -70,15 +71,6 @@ class TethysBase(object):
                     return url_maps
         """
         return []
-
-    @property
-    def namespace(self):
-        """
-        Get the namespace for the app.
-        """
-        if self._namespace is None:
-            self._namespace = self.root_url.replace('-', '_')
-        return self._namespace
 
     @property
     def url_patterns(self):
