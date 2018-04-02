@@ -17,6 +17,7 @@ from tethys_apps.exceptions import TethysAppSettingNotAssigned, PersistentStoreP
     PersistentStoreInitializerError
 from tethys_compute.utilities import ListField
 from sqlalchemy.orm import sessionmaker
+from tethys_apps.base.mixins import TethysBaseMixin
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
 
 try:
@@ -30,7 +31,7 @@ except RuntimeError:
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 
-class TethysApp(models.Model):
+class TethysApp(models.Model, TethysBaseMixin):
     """
     DB Model for Tethys Apps
     """
@@ -124,7 +125,7 @@ class TethysApp(models.Model):
         return True
 
 
-class TethysExtension(models.Model):
+class TethysExtension(models.Model, TethysBaseMixin):
     """
     DB Model for Tethys Extension
     """
