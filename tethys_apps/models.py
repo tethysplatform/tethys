@@ -17,19 +17,21 @@ from tethys_apps.exceptions import TethysAppSettingNotAssigned, PersistentStoreP
     PersistentStoreInitializerError
 from tethys_compute.utilities import ListField
 from sqlalchemy.orm import sessionmaker
+from tethys_apps.base.mixins import TethysBaseMixin
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
 
 try:
     from tethys_services.models import (DatasetService, SpatialDatasetService,
                                         WebProcessingService, PersistentStoreService)
-except RuntimeError as e:
-    print(e)
+except RuntimeError:
+    log = logging.getLogger('tethys')
+    log.exception('An error occurred while trying to import tethys service models.')
 
 
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 
-class TethysApp(models.Model):
+class TethysApp(models.Model, TethysBaseMixin):
     """
     DB Model for Tethys Apps
     """
@@ -123,7 +125,7 @@ class TethysApp(models.Model):
         return True
 
 
-class TethysExtension(models.Model):
+class TethysExtension(models.Model, TethysBaseMixin):
     """
     DB Model for Tethys Extension
     """
@@ -507,8 +509,8 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
         if ps_service is None:
             raise TethysAppSettingNotAssigned('Cannot create engine or url for PersistentStoreConnection "{0}" for app '
                                               '"{1}": no PersistentStoreService found.'.format(self.name,
-                                                                                               self.tethys_app.package))
-        # TODO order here manters. Is this the order we want?
+                                                                                            self.tethys_app.package))
+        # Order matters here. Think carefully before changing...
         if as_engine:
             return ps_service.get_engine()
 
@@ -585,7 +587,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
         return '_'.join((self.tethys_app.package, safe_name))
 
-    def get_value(self, with_db=False, as_url=False, as_sessionmaker=False, as_engine=True):
+    def get_value(self, with_db=False, as_url=False, as_sessionmaker=False, as_engine=False):
         """
         Get the SQLAlchemy engine from the connected persistent store service
         """
@@ -596,18 +598,18 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
             raise TethysAppSettingNotAssigned('Cannot create engine or url for PersistentStoreDatabase "{0}" for app '
                                               '"{1}": no PersistentStoreService found.'.format(self.name,
                                                                                                self.tethys_app.package))
-        # TODO order here manters. Is this the order we want?
         if with_db:
             ps_service.database = self.get_namespaced_persistent_store_name()
+
+        # Order matters here. Think carefully before changing...
+        if as_engine:
+            return ps_service.get_engine()
 
         if as_sessionmaker:
             return sessionmaker(bind=ps_service.get_engine())
 
         if as_url:
             return ps_service.get_url()
-
-        if as_engine:
-            return ps_service.get_engine()
 
         return ps_service
 
@@ -783,7 +785,6 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                 else:
                     self.initializer_function(self.get_value(with_db=True, as_engine=True), not self.initialized)
             except Exception as e:
-                print(type(e))
                 raise PersistentStoreInitializerError(e)
 
         # Update initialization
