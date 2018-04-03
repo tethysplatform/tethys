@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import password_reset, password_reset_confirm
@@ -21,7 +21,7 @@ def login_view(request):
     Handle login
     """
     # Only allow users to access login page if they are not logged in
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         return redirect('user:profile', username=request.user.username)
 
     # Handle form
@@ -79,7 +79,7 @@ def register(request):
     Handle new user registration
     """
     # Only allow users to access register page if they are not logged in
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         return redirect('user:profile', username=request.user.username)
 
     # Disallow access to this page if open signup is disabled
@@ -141,7 +141,7 @@ def logout_view(request):
     Handle logout
     """
     # Present goodbye message and logout if not anonymous
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         name = request.user.first_name or request.user.username
         messages.success(request, 'Goodbye, {0}. Come back soon!'.format(name))
         logout(request)
