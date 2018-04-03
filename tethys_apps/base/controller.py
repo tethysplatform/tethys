@@ -7,7 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-
+from django.views.generic import View
 from .url_map import UrlMapBase
 
 
@@ -19,3 +19,11 @@ def app_controller_maker(root_url):
     return type('UrlMap', (UrlMapBase,), properties)
 
 
+class TethysController(View):
+
+    @classmethod
+    def as_controller(cls, *args, **kwargs):
+        """
+        Thin veneer around the as_view method to make interface more consistent with Tethys terminology.
+        """
+        return cls.as_view(*args, **kwargs)

@@ -15,7 +15,7 @@ from functools import wraps
 
 from owslib.wps import WebProcessingService
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import redirect
 from social_core.exceptions import AuthAlreadyAssociated, AuthException
 

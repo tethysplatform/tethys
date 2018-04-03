@@ -21,10 +21,18 @@ from .docker_commands import *
 from .gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
 from .manage_commands import (manage_command, get_manage_path, run_process,
                               MANAGE_START, MANAGE_SYNCDB,
-                              MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
+                              MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_SYNC,
                               MANAGE_COLLECT, MANAGE_CREATESUPERUSER, TETHYS_SRC_DIRECTORY)
+from .services_commands import (SERVICES_CREATE, SERVICES_CREATE_PERSISTENT, SERVICES_CREATE_SPATIAL, SERVICES_LINK,
+                                services_create_persistent_command, services_create_spatial_command,
+                                services_list_command, services_remove_persistent_command,
+                                services_remove_spatial_command)
+from .link_commands import link_command
+from .app_settings_commands import (app_settings_list_command, app_settings_create_ps_database_command,
+                                    app_settings_remove_command)
+from .scheduler_commands import scheduler_create_command, schedulers_list_command, schedulers_remove_command
 from .gen_commands import VALID_GEN_OBJECTS, generate_command
-from tethys_apps.helpers import get_installed_tethys_apps
+from tethys_apps.helpers import get_installed_tethys_apps, get_installed_tethys_extensions
 
 # Module level variables
 PREFIX = 'tethysapp'
@@ -36,22 +44,32 @@ def uninstall_command(args):
     """
     # Get the path to manage.py
     manage_path = get_manage_path(args)
-    app_name = args.app
-    process = ['python', manage_path, 'tethys_app_uninstall', app_name]
+    item_name = args.app_or_extension
+    process = ['python', manage_path, 'tethys_app_uninstall', item_name]
+    if args.is_extension:
+        process.append('-e')
     try:
         subprocess.call(process)
     except KeyboardInterrupt:
         pass
 
 
-def list_apps_command(args):
+def list_command(args):
     """
     List installed apps.
     """
     installed_apps = get_installed_tethys_apps()
+    installed_extensions = get_installed_tethys_extensions()
 
-    for app in installed_apps:
-        print(app)
+    if installed_apps:
+        print('Apps:')
+        for item in installed_apps:
+            print('  {}'.format(item))
+
+    if installed_extensions:
+        print('Extensions:')
+        for item in installed_extensions:
+            print('  {}'.format(item))
 
 
 def docker_command(args):
@@ -136,15 +154,24 @@ def test_command(args):
     # Define the process to be run
     primary_process = ['python', manage_path, 'test']
 
-    # Tag to later check if tests are being run on a specific app
+    # Tag to later check if tests are being run on a specific app or extension
     app_package_tag = 'tethys_apps.tethysapp.'
+    extension_package_tag = 'tethysext.'
 
     if args.coverage or args.coverage_html:
         os.environ['TETHYS_TEST_DIR'] = tests_path
         if args.file and app_package_tag in args.file:
             app_package_parts = args.file.split(app_package_tag)
-            app_package = app_package_tag + app_package_parts[1].split('.')[0]
-            config_opt = '--source={0}'.format(app_package)
+            app_name = app_package_parts[1].split('.')[0]
+            core_app_package = '{}{}'.format(app_package_tag, app_name)
+            app_package = 'tethysapp.{}'.format(app_name)
+            config_opt = '--source={},{}'.format(core_app_package, app_package)
+        elif args.file and extension_package_tag in args.file:
+            extension_package_parts = args.file.split(extension_package_tag)
+            extension_name = extension_package_parts[1].split('.')[0]
+            core_extension_package = '{}{}'.format(extension_package_tag, extension_name)
+            extension_package = 'tethysext.{}'.format(extension_name)
+            config_opt = '--source={},{}'.format(core_extension_package, extension_package)
         else:
             config_opt = '--rcfile={0}'.format(os.path.join(tests_path, 'coverage.cfg'))
         primary_process = ['coverage', 'run', config_opt, manage_path, 'test']
@@ -159,7 +186,7 @@ def test_command(args):
     # print(primary_process)
     run_process(primary_process)
     if args.coverage:
-        if args.file and app_package_tag in args.file:
+        if args.file and (app_package_tag in args.file or extension_package_tag in args.file):
             run_process(['coverage', 'report'])
         else:
             run_process(['coverage', 'report', config_opt])
@@ -167,7 +194,7 @@ def test_command(args):
         report_dirname = 'coverage_html_report'
         index_fname = 'index.html'
 
-        if args.file and app_package_tag in args.file:
+        if args.file and (app_package_tag in args.file or extension_package_tag in args.file):
             run_process(['coverage', 'html', '--directory={0}'.format(os.path.join(tests_path, report_dirname))])
         else:
             run_process(['coverage', 'html', config_opt])
@@ -192,13 +219,13 @@ def tethys_command():
     scaffold_parser = subparsers.add_parser('scaffold', help='Create a new Tethys app project from a scaffold.')
     scaffold_parser.add_argument('name', help='The name of the new Tethys app project to create. Only lowercase '
                                               'letters, numbers, and underscores allowed.')
-    scaffold_parser.add_argument('-t', '--template', dest='template', help="Name of app template to use.")
-    scaffold_parser.add_argument('-e', '--extension', dest='extension', help="Name of extension template to use.")
+    scaffold_parser.add_argument('-t', '--template', dest='template', help="Name of template to use.")
+    scaffold_parser.add_argument('-e', '--extension', dest='extension', action="store_true")
     scaffold_parser.add_argument('-d', '--defaults', dest='use_defaults', action='store_true',
                                  help="Run command, accepting default values automatically.")
     scaffold_parser.add_argument('-o', '--overwrite', dest='overwrite', action="store_true",
                                  help="Attempt to overwrite project automatically if it already exists.")
-    scaffold_parser.set_defaults(func=scaffold_command, template='default', extension=None)
+    scaffold_parser.set_defaults(func=scaffold_command, template='default', extension=False)
 
     # Setup generate command
     gen_parser = subparsers.add_parser('gen', help='Aids the installation of Tethys by automating the '
@@ -223,11 +250,159 @@ def tethys_command():
     # Setup start server command
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
     manage_parser.add_argument('command', help='Management command to run.',
-                               choices=[MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT, MANAGE_CREATESUPERUSER])
+                               choices=[MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
+                                        MANAGE_COLLECT, MANAGE_CREATESUPERUSER, MANAGE_SYNC])
     manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
     manage_parser.add_argument('-p', '--port', type=str, help='Host and/or port on which to bind the development server.')
     manage_parser.add_argument('--noinput', action='store_true', help='Pass the --noinput argument to the manage.py command.')
+    manage_parser.add_argument('-f', '--force', required=False, action='store_true',
+                               help='Used only with {} to force the overwrite the app directory into its collect-to '
+                                    'location.')
     manage_parser.set_defaults(func=manage_command)
+
+    # SCHEDULERS COMMANDS
+    scheduler_parser = subparsers.add_parser('schedulers', help='Scheduler commands for Tethys Platform.')
+    scheduler_subparsers = scheduler_parser.add_subparsers(title='Commands')
+
+    # tethys schedulers create
+    schedulers_create = scheduler_subparsers.add_parser('create', help='Create a Scheduler that can be '
+                                                                       'accessed by Tethys Apps.')
+    schedulers_create.add_argument('-n', '--name', required=True, help='A unique name for the Scheduler', type=str)
+    schedulers_create.add_argument('-e', '--endpoint', required=True, type=str,
+                                   help='The endpoint of the service in the form <protocol>//<host>"')
+    schedulers_create.add_argument('-u', '--username', required=True, help='The username to connect to the host with',
+                                   type=str)
+    group = schedulers_create.add_mutually_exclusive_group(required=True)
+    group.add_argument('-p', '--password', required=False, type=str,
+                       help='The password associated with the provided username')
+    group.add_argument('-f', '--private-key-path', required=False, help='The path to the private ssh key file',
+                       type=str)
+    schedulers_create.add_argument('-k', '--private-key-pass', required=False, type=str,
+                                   help='The password to the private ssh key file')
+    schedulers_create.set_defaults(func=scheduler_create_command)
+
+    # tethys schedulers list
+    schedulers_list = scheduler_subparsers.add_parser('list', help='List the existing Schedulers.')
+    schedulers_list.set_defaults(func=schedulers_list_command)
+
+    # tethys schedulers remove
+    schedulers_remove = scheduler_subparsers.add_parser('remove', help='Remove a Scheduler.')
+    schedulers_remove.add_argument('scheduler_name', help='The unique name of the Scheduler that you are removing.')
+    schedulers_remove.add_argument('-f', '--force', action='store_true', help='Force removal without confirming.')
+    schedulers_remove.set_defaults(func=schedulers_remove_command)
+
+    # SERVICES COMMANDS
+    services_parser = subparsers.add_parser('services', help='Services commands for Tethys Platform.')
+    services_subparsers = services_parser.add_subparsers(title='Commands')
+
+    # tethys services remove
+    services_remove_parser = services_subparsers.add_parser('remove', help='Remove a Tethys Service.')
+    services_remove_subparsers = services_remove_parser.add_subparsers(title='Service Type')
+
+    # tethys services remove persistent
+    services_remove_persistent = services_remove_subparsers.add_parser('persistent',
+                                                                       help='Remove a Persistent Store Service.')
+    services_remove_persistent.add_argument('service_uid', help='The ID or name of the Persistent Store Service '
+                                                                'that you are removing.')
+    services_remove_persistent.add_argument('-f', '--force', action='store_true',
+                                            help='Force removal without confirming.')
+    services_remove_persistent.set_defaults(func=services_remove_persistent_command)
+
+    # tethys services remove spatial
+    services_remove_spatial = services_remove_subparsers.add_parser('spatial',
+                                                                    help='Remove a Spatial Dataset Service.')
+    services_remove_spatial.add_argument('service_uid', help='The ID or name of the Spatial Dataset Service '
+                                                             'that you are removing.')
+    services_remove_spatial.add_argument('-f', '--force', action='store_true', help='Force removal without confirming.')
+    services_remove_spatial.set_defaults(func=services_remove_spatial_command)
+
+    # tethys services create
+    services_create_parser = services_subparsers.add_parser('create', help='Create a Tethys Service.')
+    services_create_subparsers = services_create_parser.add_subparsers(title='Service Type')
+
+    # tethys services create persistent
+    services_create_ps = services_create_subparsers.add_parser('persistent',
+                                                               help='Create a Persistent Store Service.')
+    services_create_ps.add_argument('-n', '--name', required=True, help='A unique name for the Service', type=str)
+    services_create_ps.add_argument('-c', '--connection', required=True, type=str,
+                                    help='The connection of the Service in the form '
+                                         '"<username>:<password>@<host>:<port>"')
+    services_create_ps.set_defaults(func=services_create_persistent_command)
+
+    # tethys services create spatial
+    services_create_sd = services_create_subparsers.add_parser('spatial',
+                                                               help='Create a Spatial Dataset Service.')
+    services_create_sd.add_argument('-n', '--name', required=True, help='A unique name for the Service', type=str)
+    services_create_sd.add_argument('-c', '--connection', required=True, type=str,
+                                    help='The connection of the Service in the form '
+                                         '"<username>:<password>@<protocol>//<host>:<port>"')
+    services_create_sd.add_argument('-p', '--public-endpoint', required=False, type=str,
+                                    help='The public-facing endpoint, if different than what was provided with the '
+                                         '--connection argument, of the form "<host>:<port>"')
+    services_create_sd.add_argument('-k', '--apikey', required=False, type=str,
+                                    help='The API key, if any, required to establish a connection.')
+    services_create_sd.set_defaults(func=services_create_spatial_command)
+
+    # tethys services list
+    services_list_parser = services_subparsers.add_parser('list', help='List all existing Tethys Services.')
+    group = services_list_parser.add_mutually_exclusive_group()
+    group.add_argument('-p', '--persistent', action='store_true', help='Only list Persistent Store Services.')
+    group.add_argument('-s', '--spatial', action='store_true', help='Only list Spatial Dataset Services.')
+    services_list_parser.set_defaults(func=services_list_command)
+
+    # APP_SETTINGS COMMANDS
+    app_settings_parser = subparsers.add_parser('app_settings', help='Interact with Tethys App Settings.')
+    app_settings_subparsers = app_settings_parser.add_subparsers(title='Options')
+
+    # tethys app_settings list
+    app_settings_list_parser = app_settings_subparsers.add_parser('list', help='List all settings for a specified app')
+    app_settings_list_parser.add_argument('app', help='The app ("<app_package>") to list the Settings for.')
+    app_settings_list_parser.set_defaults(func=app_settings_list_command)
+
+    # tethys app_settings create
+    app_settings_create_cmd = app_settings_subparsers.add_parser('create', help='Create a Setting for an app.')
+
+    asc_subparsers = app_settings_create_cmd.add_subparsers(title='Create Options')
+    app_settings_create_cmd.add_argument('-a', '--app', required=True,
+                                         help='The app ("<app_package>") to create the Setting for.')
+    app_settings_create_cmd.add_argument('-n', '--name', required=True, help='The name of the Setting to create.')
+    app_settings_create_cmd.add_argument('-d', '--description', required=False,
+                                         help='A description for the Setting to create.')
+    app_settings_create_cmd.add_argument('-r', '--required', required=False, action='store_true',
+                                         help='Include this flag if the Setting is required for the app.')
+    app_settings_create_cmd.add_argument('-i', '--initializer', required=False,
+                                         help='The function that initializes the PersistentStoreSetting database.')
+    app_settings_create_cmd.add_argument('-z', '--initialized', required=False, action='store_true',
+                                         help='Include this flag if the database is already initialized.')
+
+    # tethys app_settings create ps_database
+    app_settings_create_psdb_cmd = asc_subparsers.add_parser('ps_database',
+                                                             help='Create a PersistentStoreDatabaseSetting')
+    app_settings_create_psdb_cmd.add_argument('-s', '--spatial', required=False, action='store_true',
+                                              help='Include this flag if the database requires spatial capabilities.')
+    app_settings_create_psdb_cmd.add_argument('-y', '--dynamic', action='store_true', required=False,
+                                              help='Include this flag if the database should be considered to be '
+                                                   'dynamically created.')
+    app_settings_create_psdb_cmd.set_defaults(func=app_settings_create_ps_database_command)
+
+    # tethys app_settings remove
+    app_settings_remove_cmd = app_settings_subparsers.add_parser('remove', help='Remove a Setting for an app.')
+    app_settings_remove_cmd.add_argument('app', help='The app ("<app_package>") to remove the Setting from.')
+    app_settings_remove_cmd.add_argument('-n', '--name', help='The name of the Setting to remove.', required=True)
+    app_settings_remove_cmd.add_argument('-f', '--force', action='store_true', help='Force removal without confirming.')
+    app_settings_remove_cmd.set_defaults(func=app_settings_remove_command)
+
+    # LINK COMMANDS
+    link_parser = subparsers.add_parser('link', help='Link a Service to a Tethys app Setting.')
+
+    # tethys link
+    link_parser.add_argument('service', help='Service to link to a target app. Of the form '
+                                             '"<spatial|persistent>:<service_id|service_name>" '
+                                             '(i.e. "persistent_connection:super_conn")')
+    link_parser.add_argument('setting', help='Setting of an app with which to link the specified service.'
+                                             'Of the form "<app_package>:<setting_type (ps_database|ps_connection|ds_spatial)>:'
+                                             '<setting_id|setting_name>" (i.e. "epanet:database:epanet_2")')
+    link_parser.set_defaults(func=link_command)
 
     # Setup test command
     test_parser = subparsers.add_parser('test', help='Testing commands for Tethys Platform.')
@@ -244,12 +419,14 @@ def tethys_command():
 
     # Setup uninstall command
     uninstall_parser = subparsers.add_parser('uninstall', help='Uninstall an app.')
-    uninstall_parser.add_argument('app', help='Name of the app to uninstall.')
+    uninstall_parser.add_argument('app_or_extension', help='Name of the app or extension to uninstall.')
+    uninstall_parser.add_argument('-e', '--extension', dest='is_extension', default=False, action='store_true',
+                                  help='Flag to denote an extension is being uninstalled')
     uninstall_parser.set_defaults(func=uninstall_command)
 
     # Setup list command
-    list_parser = subparsers.add_parser('list', help='List installed apps.')
-    list_parser.set_defaults(func=list_apps_command)
+    list_parser = subparsers.add_parser('list', help='List installed apps and extensions.')
+    list_parser.set_defaults(func=list_command)
 
     # Sync stores command
     syncstores_parser = subparsers.add_parser('syncstores', help='Management command for App Persistent Stores.')

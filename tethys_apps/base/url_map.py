@@ -35,7 +35,7 @@ class UrlMapBase(object):
 
         self.name = name
         self.url = django_url_preprocessor(url, self.root_url, regex)
-        self.controller = '.'.join(['tethys_apps.tethysapp', controller])
+        self.controller = controller
         self.custom_match_regex = regex
 
     def __repr__(self):

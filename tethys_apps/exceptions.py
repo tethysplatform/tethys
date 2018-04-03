@@ -12,7 +12,7 @@
 class TethysAppSettingDoesNotExist(Exception):
     def __init__(self, setting_type, setting_name, app_name, *args, **kwargs):
         msg = 'A {0} named "{1}" does not exist in the {2} app.'\
-            .format(setting_type, setting_name, app_name)
+            .format(setting_type, setting_name, app_name.encode('utf-8'))
         super(TethysAppSettingDoesNotExist, self).__init__(msg, *args, **kwargs)
 
 

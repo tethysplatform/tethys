@@ -118,8 +118,8 @@ def scaffold_command(args):
 
     if args.extension:
         is_extension = True
-        template_name = args.extension
-        template_root = os.path.join(EXTENSION_PATH, args.extension)
+        template_name = args.template
+        template_root = os.path.join(EXTENSION_PATH, args.template)
     else:
         template_name = args.template
         template_root = os.path.join(APP_PATH, args.template)
@@ -170,64 +170,98 @@ def scaffold_command(args):
     split_project_name = project_name.split('_')
     title_case_project_name = [x.title() for x in split_project_name]
     default_proper_name = ' '.join(title_case_project_name)
-    app_class_name = ''.join(title_case_project_name)
+    class_name = ''.join(title_case_project_name)
     default_theme_color = get_random_color()
 
     print('Creating new Tethys project named "{0}".'.format(project_dir))
 
     # Get metadata from user
-    metadata_input = (
-        {
-            'name': 'proper_name',
-            'prompt': 'Proper name for the app (e.g.: "My First App")',
-            'default': default_proper_name,
-            'validator': proper_name_validator
-        },
-        {
-            'name': 'description',
-            'prompt': 'Brief description of the app',
-            'default': '',
-            'validator': None
-        },
-        {
-            'name': 'color',
-            'prompt': 'App theme color (e.g.: "#27AE60")',
-            'default': default_theme_color,
-            'validator': theme_color_validator
-        },
-        {
-            'name': 'tags',
-            'prompt': 'Tags: Use commas to delineate tags and '
-                      'quotes around each tag (e.g.: "Hydrology","Reference Timeseries")',
-            'default': '',
-            'validator': None
-        },
-        {
-            'name': 'author',
-            'prompt': 'Author name',
-            'default': '',
-            'validator': None
-        },
-        {
-            'name': 'author_email',
-            'prompt': 'Author email',
-            'default': '',
-            'validator': None
-        },
-        {
-            'name': 'license_name',
-            'prompt': 'License name',
-            'default': '',
-            'validator': None
-        },
-    )
+    if not is_extension:
+        metadata_input = (
+            {
+                'name': 'proper_name',
+                'prompt': 'Proper name for the app (e.g.: "My First App")',
+                'default': default_proper_name,
+                'validator': proper_name_validator
+            },
+            {
+                'name': 'description',
+                'prompt': 'Brief description of the app',
+                'default': '',
+                'validator': None
+            },
+            {
+                'name': 'color',
+                'prompt': 'App theme color (e.g.: "#27AE60")',
+                'default': default_theme_color,
+                'validator': theme_color_validator
+            },
+            {
+                'name': 'tags',
+                'prompt': 'Tags: Use commas to delineate tags and '
+                          'quotes around each tag (e.g.: "Hydrology","Reference Timeseries")',
+                'default': '',
+                'validator': None
+            },
+            {
+                'name': 'author',
+                'prompt': 'Author name',
+                'default': '',
+                'validator': None
+            },
+            {
+                'name': 'author_email',
+                'prompt': 'Author email',
+                'default': '',
+                'validator': None
+            },
+            {
+                'name': 'license_name',
+                'prompt': 'License name',
+                'default': '',
+                'validator': None
+            },
+        )
+    else:
+        metadata_input = (
+            {
+                'name': 'proper_name',
+                'prompt': 'Proper name for the extension (e.g.: "My First Extension")',
+                'default': default_proper_name,
+                'validator': proper_name_validator
+            },
+            {
+                'name': 'description',
+                'prompt': 'Brief description of the extension',
+                'default': '',
+                'validator': None
+            },
+            {
+                'name': 'author',
+                'prompt': 'Author name',
+                'default': '',
+                'validator': None
+            },
+            {
+                'name': 'author_email',
+                'prompt': 'Author email',
+                'default': '',
+                'validator': None
+            },
+            {
+                'name': 'license_name',
+                'prompt': 'License name',
+                'default': '',
+                'validator': None
+            },
+        )
 
     # Build up template context
     context = {
         'project': project_name,
         'project_dir': project_dir,
         'project_url': project_name.replace('_', '-'),
-        'app_class_name': app_class_name,
+        'class_name': class_name,
         'proper_name': default_proper_name,
         'description': '',
         'color': default_theme_color,

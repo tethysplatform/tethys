@@ -17,113 +17,28 @@ from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
 from django.conf.urls import url
 
-from tethys_apps.base.testing.environment import is_testing_environment
+from tethys_apps.base.testing.environment import is_testing_environment, get_test_db_name, TESTING_DB_FLAG
 from tethys_apps.base import permissions
 from .handoff import HandoffManager
 from .workspace import TethysWorkspace
+from .mixins import TethysBaseMixin
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
 tethys_log = logging.getLogger('tethys.app_base')
 
 
-class TethysAppBase(object):
+class TethysBase(TethysBaseMixin):
     """
-    Base class used to define the app class for Tethys apps.
-
-    Attributes:
-      name (string): Name of the app.
-      index (string): Lookup term for the index URL of the app.
-      icon (string): Location of the image to use for the app icon.
-      package (string): Name of the app package.
-      root_url (string): Root URL of the app.
-      color (string): App theme color as RGB hexadecimal.
-      description (string): Description of the app.
-      tag (string): A string for filtering apps.
-      enable_feedback (boolean): Shows feedback button on all app pages.
-      feedback_emails (list): A list of emails corresponding to where submitted feedback forms are sent.
-
+    Abstract base class of app and extension classes.
     """
     name = ''
-    index = ''
-    icon = ''
     package = ''
     root_url = ''
-    color = ''
     description = ''
-    tags = ''
-    enable_feedback = False
-    feedback_emails = []
 
     def __init__(self):
         self._url_patterns = None
-
-    def __unicode__(self):
-        """
-        String representation
-        """
-        return '<TethysApp: {0}>'.format(self.name)
-
-    def __repr__(self):
-        """
-        String representation
-        """
-        return '<TethysApp: {0}>'.format(self.name)
-
-    @property
-    def url_patterns(self):
-        """
-        Generate the url pattern lists for  app and namespace them accordingly.
-        """
-
-        if self._url_patterns is None:
-
-            app_url_patterns = dict()
-
-            if hasattr(self, 'url_maps'):
-                url_maps = self.url_maps()
-            else:
-                url_maps = []
-
-            for url_map in url_maps:
-                app_root = self.root_url
-                app_namespace = app_root.replace('-', '_')
-
-                if app_namespace not in app_url_patterns:
-                    app_url_patterns[app_namespace] = []
-
-                # Create django url object
-                if isinstance(url_map.controller, basestring):
-                    controller_parts = url_map.controller.split('.')
-                    module_name = '.'.join(controller_parts[:-1])
-                    function_name = controller_parts[-1]
-                    try:
-                        module = __import__(module_name, fromlist=[function_name])
-                    except:
-                        error_msg = 'The following error occurred while trying to import the controller function ' \
-                                    '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
-                        tethys_log.error(error_msg)
-                        raise
-                    try:
-                        controller_function = getattr(module, function_name)
-                    except AttributeError as e:
-                        error_msg = 'The following error occurred while tyring to access the controller function ' \
-                                    '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
-                        tethys_log.error(error_msg)
-                        raise
-                else:
-                    controller_function = url_map.controller
-                django_url = url(url_map.url, controller_function, name=url_map.name)
-
-                # Append to namespace list
-                app_url_patterns[app_namespace].append(django_url)
-            self._url_patterns = app_url_patterns
-
-        return self._url_patterns
-
-    @property
-    def db_app(self):
-        from tethys_apps.models import TethysApp
-        return TethysApp.objects.get(package=self.package)
+        self._namespace = None
 
     def url_maps(self):
         """
@@ -155,7 +70,194 @@ class TethysAppBase(object):
 
                     return url_maps
         """
-        raise NotImplementedError()
+        return []
+
+    @property
+    def url_patterns(self):
+        """
+        Generate the url pattern lists for  app and namespace them accordingly.
+        """
+
+        if self._url_patterns is None:
+            is_extension = isinstance(self, TethysExtensionBase)
+
+            url_patterns = dict()
+
+            if hasattr(self, 'url_maps'):
+                url_maps = self.url_maps()
+            else:
+                url_maps = []
+
+            for url_map in url_maps:
+                namespace = self.namespace
+
+                if namespace not in url_patterns:
+                    url_patterns[namespace] = []
+
+                # Create django url object
+                if isinstance(url_map.controller, basestring):
+                    root_controller_path = 'tethysext' if is_extension else 'tethys_apps.tethysapp'
+                    full_controller_path = '.'.join([root_controller_path, url_map.controller])
+                    controller_parts = full_controller_path.split('.')
+                    module_name = '.'.join(controller_parts[:-1])
+                    function_name = controller_parts[-1]
+                    try:
+                        module = __import__(module_name, fromlist=[function_name])
+                    except ImportError:
+                        error_msg = 'The following error occurred while trying to import the controller function ' \
+                                    '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
+                        tethys_log.error(error_msg)
+                        raise
+                    try:
+                        controller_function = getattr(module, function_name)
+                    except AttributeError as e:
+                        error_msg = 'The following error occurred while trying to access the controller function ' \
+                                    '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
+                        tethys_log.error(error_msg)
+                        raise
+                else:
+                    controller_function = url_map.controller
+                django_url = url(url_map.url, controller_function, name=url_map.name)
+
+                # Append to namespace list
+                url_patterns[namespace].append(django_url)
+            self._url_patterns = url_patterns
+
+        return self._url_patterns
+
+    def sync_with_tethys_db(self):
+        """
+        Sync installed apps with database.
+        """
+        raise NotImplementedError
+
+    def remove_from_db(self):
+        """
+        Remove the instance from the db.
+        """
+        raise NotImplementedError
+
+class TethysExtensionBase(TethysBase):
+    """
+    Base class used to define the extension class for Tethys extensions.
+    """
+
+    def __unicode__(self):
+        """
+        String representation
+        """
+        return '<TethysApp: {0}>'.format(self.name)
+
+    def __repr__(self):
+        """
+        String representation
+        """
+        return '<TethysApp: {0}>'.format(self.name)
+
+    def url_maps(self):
+        """
+        Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically.
+
+        Returns:
+          iterable: A list or tuple of ``UrlMap`` objects.
+
+        **Example:**
+
+        ::
+
+            from tethys_sdk.base import url_map_maker
+
+            class MyFirstApp(TethysAppBase):
+
+                def url_maps(self):
+                    \"""
+                    Example url_maps method.
+                    \"""
+                    # Create UrlMap class that is bound to the root url.
+                    UrlMap = url_map_maker(self.root_url)
+
+                    url_maps = (UrlMap(name='home',
+                                       url='my-first-app',
+                                       controller='my_first_app.controllers.home',
+                                       ),
+                    )
+
+                    return url_maps
+        """
+        return []
+
+    def sync_with_tethys_db(self):
+        """
+        Sync installed apps with database.
+        """
+        from django.conf import settings
+        from tethys_apps.models import TethysExtension
+
+        try:
+            # Query to see if installed extension is in the database
+            db_extensions = TethysExtension.objects. \
+                filter(package__exact=self.package). \
+                all()
+
+            # If the extension is not in the database, then add it
+            if len(db_extensions) == 0:
+                extension = TethysExtension(
+                    name=self.name,
+                    package=self.package,
+                    description=self.description,
+                    root_url=self.root_url,
+                )
+                extension.save()
+
+            # If the extension is in the database, update developer-first attributes
+            elif len(db_extensions) == 1:
+                db_extension = db_extensions[0]
+                db_extension.root_url = self.root_url
+                db_extension.save()
+
+                if hasattr(settings, 'DEBUG') and settings.DEBUG:
+                    db_extension.name = self.name
+                    db_extension.description = self.description
+                    db_extension.save()
+        except Exception as e:
+            tethys_log.error(e)
+
+
+class TethysAppBase(TethysBase):
+    """
+    Base class used to define the app class for Tethys apps.
+
+    Attributes:
+      name (string): Name of the app.
+      index (string): Lookup term for the index URL of the app.
+      icon (string): Location of the image to use for the app icon.
+      package (string): Name of the app package.
+      root_url (string): Root URL of the app.
+      color (string): App theme color as RGB hexadecimal.
+      description (string): Description of the app.
+      tag (string): A string for filtering apps.
+      enable_feedback (boolean): Shows feedback button on all app pages.
+      feedback_emails (list): A list of emails corresponding to where submitted feedback forms are sent.
+
+    """
+    index = ''
+    icon = ''
+    color = ''
+    tags = ''
+    enable_feedback = False
+    feedback_emails = []
+
+    def __unicode__(self):
+        """
+        String representation
+        """
+        return '<TethysApp: {0}>'.format(self.name)
+
+    def __repr__(self):
+        """
+        String representation
+        """
+        return '<TethysApp: {0}>'.format(self.name)
 
     def custom_settings(self):
         """
@@ -812,7 +914,7 @@ class TethysAppBase(object):
 
         try:
             spatial_dataset_service_setting = spatial_dataset_service_settings.get(name=name)
-            spatial_dataset_service_setting.get_value(as_public_endpoint=as_public_endpoint, as_endpoint=as_endpoint,
+            return spatial_dataset_service_setting.get_value(as_public_endpoint=as_public_endpoint, as_endpoint=as_endpoint,
                                                       as_wms=as_wms, as_wfs=as_wfs, as_engine=as_engine)
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('SpatialDatasetServiceSetting', name, cls.name)
@@ -851,7 +953,7 @@ class TethysAppBase(object):
             raise TethysAppSettingDoesNotExist('WebProcessingServiceSetting', name, cls.name)
 
     @classmethod
-    def get_persistent_store_connection(cls, name, as_url=False, as_sessionmaker=False, as_engine=True):
+    def get_persistent_store_connection(cls, name, as_url=False, as_sessionmaker=False):
         """
         Gets an SQLAlchemy Engine or URL object for the named persistent store connection.
 
@@ -880,18 +982,15 @@ class TethysAppBase(object):
         db_app = TethysApp.objects.get(package=cls.package)
         ps_connection_settings = db_app.persistent_store_connection_settings
 
-        if is_testing_environment():
-            if 'tethys-testing_' not in name:
-                test_store_name = 'tethys-testing_{0}'.format(name)
-                name = test_store_name
-
         try:
+            # Return as_engine if the other two are False
+            as_engine = not as_sessionmaker and not as_url
             ps_connection_setting = ps_connection_settings.get(name=name)
             return ps_connection_setting.get_value(as_url=as_url, as_sessionmaker=as_sessionmaker, as_engine=as_engine)
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting', name, cls.name)
         except TethysAppSettingNotAssigned:
-            cls._log_tethys_app_setting_not_assigned_errror('PersistentStoreConnectionSetting', name)
+            cls._log_tethys_app_setting_not_assigned_error('PersistentStoreConnectionSetting', name)
 
     @classmethod
     def get_persistent_store_database(cls, name, as_url=False, as_sessionmaker=False):
@@ -922,19 +1021,18 @@ class TethysAppBase(object):
         db_app = TethysApp.objects.get(package=cls.package)
         ps_database_settings = db_app.persistent_store_database_settings
 
-        if is_testing_environment():
-            if 'tethys-testing_' not in name:
-                test_store_name = 'tethys-testing_{0}'.format(name)
-                name = test_store_name
+        verified_name = name if not is_testing_environment() else get_test_db_name(name)
 
         try:
-            ps_database_setting = ps_database_settings.get(name=name)
+            # Return as_engine if the other two are False
+            as_engine = not as_sessionmaker and not as_url
+            ps_database_setting = ps_database_settings.get(name=verified_name)
             return ps_database_setting.get_value(with_db=True, as_url=as_url, as_sessionmaker=as_sessionmaker,
-                                                 as_engine=True)
+                                                 as_engine=as_engine)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting', name, cls.name)
+            raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting', verified_name, cls.name)
         except TethysAppSettingNotAssigned:
-            cls._log_tethys_app_setting_not_assigned_errror('PersistentStoreConnectionSetting', name)
+            cls._log_tethys_app_setting_not_assigned_error('PersistentStoreConnectionSetting', verified_name)
 
     @classmethod
     def create_persistent_store(cls, db_name, connection_name, spatial=False, initializer='', refresh=False,
@@ -944,7 +1042,7 @@ class TethysAppBase(object):
 
         Args:
           db_name(string): Name of the persistent store that will be created.
-          connection_name(string): Name of persistent store connection.
+          connection_name(string|None): Name of persistent store connection or None if creating a test copy of an existing persistent store (only while in the testing environment)
           spatial(bool): Enable spatial extension on the database being created when True. Connection must have superuser role. Defaults to False.
           initializer(string): Dot-notation path to initializer function (e.g.: 'my_first_app.models.init_db').
           refresh(bool): Drop database if it exists and create again when True. Defaults to False.
@@ -975,27 +1073,37 @@ class TethysAppBase(object):
         ps_connection_settings = db_app.persistent_store_connection_settings
 
         if is_testing_environment():
-            if 'tethys-testing_' not in connection_name:
-                test_store_name = 'test_{0}'.format(connection_name)
-                connection_name = test_store_name
+            verified_db_name = get_test_db_name(db_name)
+        else:
+            verified_db_name = db_name
+            if connection_name is None:
+                raise ValueError('The connection_name cannot be None unless running in the testing environment.')
 
         try:
-            ps_connection_setting = ps_connection_settings.get(name=connection_name)
+            if connection_name is None:
+                ps_database_settings = db_app.persistent_store_database_settings
+                ps_setting = ps_database_settings.get(name=db_name)
+            else:
+                ps_setting = ps_connection_settings.get(name=connection_name)
         except ObjectDoesNotExist:
-            raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting', connection_name, cls.name)
+            if connection_name is None:
+                raise TethysAppSettingDoesNotExist(
+                    'PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(db_name))
+            else:raise TethysAppSettingDoesNotExist(
+                'PersistentStoreConnectionSetting ',connection_name, cls.name)
 
-        ps_service = ps_connection_setting.persistent_store_service
+        ps_service = ps_setting.persistent_store_service
 
         # Check if persistent store database setting already exists before creating it
         try:
-            db_setting = db_app.persistent_store_database_settings.get(name=db_name)
+            db_setting = db_app.persistent_store_database_settings.get(name=verified_db_name)
             db_setting.persistent_store_service = ps_service
             db_setting.initializer = initializer
             db_setting.save()
         except ObjectDoesNotExist:
             # Create new PersistentStoreDatabaseSetting
             db_setting = PersistentStoreDatabaseSetting(
-                name=db_name,
+                name=verified_db_name,
                 description='',
                 required=False,
                 initializer=initializer,
@@ -1044,14 +1152,10 @@ class TethysAppBase(object):
         from tethys_apps.models import TethysApp
         db_app = TethysApp.objects.get(package=cls.package)
         ps_database_settings = db_app.persistent_store_database_settings
-
-        if is_testing_environment():
-            if 'tethys-testing_' not in name:
-                test_store_name = 'tethys-testing_{0}'.format(name)
-                name = test_store_name
+        verified_name = name if not is_testing_environment() else get_test_db_name(name)
 
         try:
-            ps_database_setting = ps_database_settings.get(name=name)
+            ps_database_setting = ps_database_settings.get(name=verified_name)
         except ObjectDoesNotExist:
             return True
 
@@ -1092,7 +1196,7 @@ class TethysAppBase(object):
         elif static_only:
             ps_database_settings = ps_database_settings.filter(persistentstoredatabasesetting__dynamic=False)
         return [ps_database_setting.name for ps_database_setting in ps_database_settings
-                if 'tethys-testing_' not in ps_database_setting.name]
+                if TESTING_DB_FLAG not in ps_database_setting.name]
 
     @classmethod
     def list_persistent_store_connections(cls):
@@ -1116,7 +1220,7 @@ class TethysAppBase(object):
         db_app = TethysApp.objects.get(package=cls.package)
         ps_connection_settings = db_app.persistent_store_connection_settings
         return [ps_connection_setting.name for ps_connection_setting in ps_connection_settings
-                if 'tethys-testing_' not in ps_connection_setting.name]
+                if TESTING_DB_FLAG not in ps_connection_setting.name]
 
     @classmethod
     def persistent_store_exists(cls, name):
@@ -1146,14 +1250,11 @@ class TethysAppBase(object):
         db_app = TethysApp.objects.get(package=cls.package)
         ps_database_settings = db_app.persistent_store_database_settings
 
-        if is_testing_environment():
-            if 'tethys-testing_' not in name:
-                test_store_name = 'tethys-testing_{0}'.format(name)
-                name = test_store_name
+        verified_name = name if not is_testing_environment() else get_test_db_name(name)
 
         try:
             # If it exists return True
-            ps_database_setting = ps_database_settings.get(name=name)
+            ps_database_setting = ps_database_settings.get(name=verified_name)
         except ObjectDoesNotExist:
             # Else return False
             return False
@@ -1239,6 +1340,18 @@ class TethysAppBase(object):
         except Exception as e:
             tethys_log.error(e)
 
+    def remove_from_db(self):
+        """
+        Remove the instance from the db.
+        """
+        from tethys_apps.models import TethysApp
+
+        try:
+            # Attempt to delete the object
+            TethysApp.objects.filter(package__exact=self.package).delete()
+        except Exception as e:
+            tethys_log.error(e)
+
     @classmethod
     def _log_tethys_app_setting_not_assigned_error(cls, setting_type, setting_name):
         """
@@ -1254,5 +1367,5 @@ class TethysAppBase(object):
         tethys_log.warn('Tethys app setting is not assigned.\nTraceback (most recent call last):\n{0} '
                         'TethysAppSettingNotAssigned: {1} named "{2}" has not been assigned. '
                         'Please visit the setting page for the app {3} and assign all required settings.'
-                        .format(traceback.format_stack(limit=3)[0], setting_type, setting_name, cls.name)
+                        .format(traceback.format_stack(limit=3)[0], setting_type, setting_name, cls.name.encode('utf-8'))
                         )

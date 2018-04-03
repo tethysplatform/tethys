@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 from django.conf.urls import url, include
-from tethys_apps.utilities import get_app_url_patterns
+from tethys_apps.harvester import SingletonHarvester
 from tethys_apps.views import library, send_beta_feedback_email
 import logging
 
@@ -20,15 +20,15 @@ urlpatterns = [
 ]
 
 # Append the app urls urlpatterns
-app_url_patterns = get_app_url_patterns()
+harvester = SingletonHarvester()
+app_url_patterns, extension_url_patterns = harvester.get_url_patterns()
 
 for namespace, urls in app_url_patterns.items():
     root_pattern = r'^{0}/'.format(namespace.replace('_', '-'))
     urlpatterns.append(url(root_pattern, include(urls, namespace=namespace)))
 
-# # Register permissions here?
-# try:
-#     register_app_permissions()
-# except (ProgrammingError, ObjectDoesNotExist) as e:
-#     tethys_log.error(e)
+extension_urls = []
 
+for namespace, urls in extension_url_patterns.items():
+    root_pattern = r'^{0}/'.format(namespace.replace('_', '-'))
+    extension_urls.append(url(root_pattern, include(urls, namespace=namespace)))

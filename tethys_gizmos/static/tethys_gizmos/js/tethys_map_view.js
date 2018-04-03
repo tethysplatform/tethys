@@ -1744,7 +1744,7 @@ var TETHYS_MAP_VIEW = (function() {
       bbox = bbox.replace('{{maxy}}', y + tolerance);
       cql_filter = '&CQL_FILTER=BBOX(' + geometry_attribute + '%2C' + bbox + '%2C%27EPSG%3A3857%27)';
       layer_params = source.getParams();
-      layer_name = layer_params.LAYERS;
+      layer_name = layer_params.LAYERS.replace('_group', '');
       layer_view_params = layer_params.VIEWPARAMS ? layer_params.VIEWPARAMS : '';
 
       if (source instanceof ol.source.ImageWMS) {
@@ -1833,7 +1833,7 @@ var TETHYS_MAP_VIEW = (function() {
               + '?SERVICE=wfs'
               + '&VERSION=2.0.0'
               + '&REQUEST=GetFeature'
-              + '&TYPENAMES=' + layer_name
+              + '&TYPENAMES=' + layer_name.replace('_group', '')
               + '&VIEWPARAMS=' + layer_view_params
               + '&OUTPUTFORMAT=text/javascript'
               + '&FORMAT_OPTIONS=callback:TETHYS_MAP_VIEW.jsonResponseHandler;'
