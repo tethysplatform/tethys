@@ -16,6 +16,14 @@ from sys import platform as _platform
 import ctypes
 
 
+def find_resource_files(directory):
+    paths = []
+    for (path, directories, filenames) in os.walk(directory):
+        for filename in filenames:
+            paths.append(os.path.join('..', path, filename))
+    return paths
+
+
 def get_tethysapp_directory():
     """
     Return the absolute path to the tethysapp directory.
