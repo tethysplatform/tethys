@@ -17,7 +17,7 @@ class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
     def process_exception(self, request, exception):
         if hasattr(social_exceptions, exception.__class__.__name__):
             if isinstance(exception, social_exceptions.AuthCanceled):
-                if request.user.is_anonymous():
+                if request.user.is_anonymous:
                     return redirect('accounts:login')
                 else:
                     return redirect('user:settings', username=request.user.username)
@@ -37,14 +37,14 @@ class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
 
                 messages.success(request, blurb)
 
-                if request.user.is_anonymous():
+                if request.user.is_anonymous:
                     return redirect('accounts:login')
                 else:
                     return redirect('user:settings', username=request.user.username)
             elif isinstance(exception, social_exceptions.NotAllowedToDisconnect):
                 blurb = 'Unable to disconnect from this social account.'
                 messages.success(request, blurb)
-                if request.user.is_anonymous():
+                if request.user.is_anonymous:
                     return redirect('accounts:login')
                 else:
                     return redirect('user:settings', username=request.user.username)
