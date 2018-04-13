@@ -9,31 +9,31 @@ import tethys_compute.utilities
 
 class Migration(migrations.Migration):
 
-    replaces = [(b'tethys_apps', '0001_initial'), (b'tethys_apps', '0002_tethysapp_tags'), (b'tethys_apps', '0003_auto_20170505_0350')]
+    # replaces = [('tethys_apps', '0001_initial'), ('tethys_apps', '0002_tethysapp_tags'), ('tethys_apps', '0003_auto_20170505_0350')]
 
     initial = True
 
-    # dependencies = [
-    #     ('tethys_services', '0009_persistentstoreservice'),
-    # ]
+    dependencies = [
+        ('tethys_services', '0001_initial_20'),
+    ]
 
     operations = [
         migrations.CreateModel(
             name='TethysApp',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('package', models.CharField(default=b'', max_length=200, unique=True)),
-                ('name', models.CharField(default=b'', max_length=200)),
-                ('description', models.TextField(blank=True, default=b'', max_length=1000)),
+                ('package', models.CharField(default='', max_length=200, unique=True)),
+                ('name', models.CharField(default='', max_length=200)),
+                ('description', models.TextField(blank=True, default='', max_length=1000)),
                 ('enable_feedback', models.BooleanField(default=False)),
-                ('feedback_emails', tethys_compute.utilities.ListField(blank=True, default=b'')),
-                ('index', models.CharField(default=b'', max_length=200)),
-                ('icon', models.CharField(default=b'', max_length=200)),
-                ('root_url', models.CharField(default=b'', max_length=200)),
-                ('color', models.CharField(default=b'', max_length=10)),
+                ('feedback_emails', tethys_compute.utilities.ListField(blank=True, default='')),
+                ('index', models.CharField(default='', max_length=200)),
+                ('icon', models.CharField(default='', max_length=200)),
+                ('root_url', models.CharField(default='', max_length=200)),
+                ('color', models.CharField(default='', max_length=10)),
                 ('enabled', models.BooleanField(default=True)),
                 ('show_in_apps_library', models.BooleanField(default=True)),
-                ('tags', models.CharField(blank=True, default=b'', max_length=200)),
+                ('tags', models.CharField(blank=True, default='', max_length=200)),
             ],
             options={
                 'verbose_name': 'Tethys App',
@@ -45,10 +45,10 @@ class Migration(migrations.Migration):
             name='TethysAppSetting',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default=b'', max_length=200)),
-                ('description', models.TextField(blank=True, default=b'', max_length=1000)),
+                ('name', models.CharField(default='', max_length=200)),
+                ('description', models.TextField(blank=True, default='', max_length=1000)),
                 ('required', models.BooleanField(default=True)),
-                ('initializer', models.CharField(default=b'', max_length=1000)),
+                ('initializer', models.CharField(default='', max_length=1000)),
                 ('initialized', models.BooleanField(default=False)),
             ],
         ),
@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('tethysappsetting_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_apps.TethysAppSetting')),
                 ('value', models.CharField(blank=True, max_length=1024)),
-                ('type', models.CharField(choices=[(b'STRING', b'String'), (b'INTEGER', b'Integer'), (b'FLOAT', b'Float'), (b'BOOLEAN', b'Boolean')], default=b'STRING', max_length=200)),
+                ('type', models.CharField(choices=[('STRING', 'String'), ('INTEGER', 'Integer'), ('FLOAT', 'Float'), ('BOOLEAN', 'Boolean')], default='STRING', max_length=200)),
             ],
             bases=('tethys_apps.tethysappsetting',),
         ),
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
             name='DatasetServiceSetting',
             fields=[
                 ('tethysappsetting_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_apps.TethysAppSetting')),
-                ('engine', models.CharField(choices=[(b'tethys_dataset_services.engines.CkanDatasetEngine', b'CKAN'), (b'tethys_dataset_services.engines.HydroShareDatasetEngine', b'HydroShare')], default=b'tethys_dataset_services.engines.CkanDatasetEngine', max_length=200)),
+                ('engine', models.CharField(choices=[('tethys_dataset_services.engines.CkanDatasetEngine', 'CKAN'), ('tethys_dataset_services.engines.HydroShareDatasetEngine', 'HydroShare')], default='tethys_dataset_services.engines.CkanDatasetEngine', max_length=200)),
                 ('dataset_service', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='tethys_services.DatasetService')),
             ],
             bases=('tethys_apps.tethysappsetting',),
@@ -92,7 +92,7 @@ class Migration(migrations.Migration):
             name='SpatialDatasetServiceSetting',
             fields=[
                 ('tethysappsetting_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_apps.TethysAppSetting')),
-                ('engine', models.CharField(choices=[(b'tethys_dataset_services.engines.GeoServerSpatialDatasetEngine', b'GeoServer')], default=b'tethys_dataset_services.engines.GeoServerSpatialDatasetEngine', max_length=200)),
+                ('engine', models.CharField(choices=[('tethys_dataset_services.engines.GeoServerSpatialDatasetEngine', 'GeoServer')], default='tethys_dataset_services.engines.GeoServerSpatialDatasetEngine', max_length=200)),
                 ('spatial_dataset_service', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='tethys_services.SpatialDatasetService')),
             ],
             bases=('tethys_apps.tethysappsetting',),
