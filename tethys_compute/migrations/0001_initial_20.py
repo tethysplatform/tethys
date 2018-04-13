@@ -12,14 +12,14 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    replaces = [(b'tethys_compute', '0001_initial'), (b'tethys_compute', '0002_initialize_settings'),
-                (b'tethys_compute', '0003_auto_20150529_1651'), (b'tethys_compute', '0004_auto_20150812_1915'),
-                (b'tethys_compute', '0005_auto_20150914_1712'), (b'tethys_compute', '0006_auto_20151221_2207'),
-                (b'tethys_compute', '0006_auto_20151026_2142'), (b'tethys_compute', '0007_merge'),
-                (b'tethys_compute', '0008_start_condorjob_refactor'),
-                (b'tethys_compute', '0009_condorjob_data_migration'),
-                (b'tethys_compute', '0010_finish_condorjob_refactor'), (b'tethys_compute', '0011_delete_cluster'),
-                (b'tethys_compute', '0012_delete_settings')]
+    # replaces = [('tethys_compute', '0001_initial'), ('tethys_compute', '0002_initialize_settings'),
+    #             ('tethys_compute', '0003_auto_20150529_1651'), ('tethys_compute', '0004_auto_20150812_1915'),
+    #             ('tethys_compute', '0005_auto_20150914_1712'), ('tethys_compute', '0006_auto_20151221_2207'),
+    #             ('tethys_compute', '0006_auto_20151026_2142'), ('tethys_compute', '0007_merge'),
+    #             ('tethys_compute', '0008_start_condorjob_refactor'),
+    #             ('tethys_compute', '0009_condorjob_data_migration'),
+    #             ('tethys_compute', '0010_finish_condorjob_refactor'), ('tethys_compute', '0011_delete_cluster'),
+    #             ('tethys_compute', '0012_delete_settings')]
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -30,16 +30,16 @@ class Migration(migrations.Migration):
             name='CondorPyJob',
             fields=[
                 ('condorpyjob_id', models.AutoField(primary_key=True, serialize=False)),
-                ('_attributes', tethys_compute.utilities.DictionaryField(default=b'')),
+                ('_attributes', tethys_compute.utilities.DictionaryField(default='')),
                 ('_num_jobs', models.IntegerField(default=1)),
-                ('_remote_input_files', tethys_compute.utilities.ListField(default=b'')),
+                ('_remote_input_files', tethys_compute.utilities.ListField(default='')),
             ],
         ),
         migrations.CreateModel(
             name='CondorPyWorkflow',
             fields=[
                 ('condorpyworkflow_id', models.AutoField(primary_key=True, serialize=False)),
-                ('_max_jobs', tethys_compute.utilities.DictionaryField(blank=True, default=b'')),
+                ('_max_jobs', tethys_compute.utilities.DictionaryField(blank=True, default='')),
                 ('_config', models.CharField(blank=True, max_length=1024, null=True)),
             ],
         ),
@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
                 ('pre_script_args', models.CharField(blank=True, max_length=1024, null=True)),
                 ('post_script', models.CharField(blank=True, max_length=1024, null=True)),
                 ('post_script_args', models.CharField(blank=True, max_length=1024, null=True)),
-                ('variables', tethys_compute.utilities.DictionaryField(blank=True, default=b'')),
+                ('variables', tethys_compute.utilities.DictionaryField(blank=True, default='')),
                 ('priority', models.IntegerField(blank=True, null=True)),
                 ('category', models.CharField(blank=True, max_length=128, null=True)),
                 ('retry', models.PositiveSmallIntegerField(blank=True, null=True)),
@@ -82,16 +82,16 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=1024)),
-                ('description', models.CharField(blank=True, default=b'', max_length=2048)),
+                ('description', models.CharField(blank=True, default='', max_length=2048)),
                 ('label', models.CharField(max_length=1024)),
                 ('creation_time', models.DateTimeField(auto_now_add=True)),
                 ('execute_time', models.DateTimeField(blank=True, null=True)),
                 ('start_time', models.DateTimeField(blank=True, null=True)),
                 ('completion_time', models.DateTimeField(blank=True, null=True)),
-                ('workspace', models.CharField(default=b'', max_length=1024)),
-                ('extended_properties', tethys_compute.utilities.DictionaryField(blank=True, default=b'')),
+                ('workspace', models.CharField(default='', max_length=1024)),
+                ('extended_properties', tethys_compute.utilities.DictionaryField(blank=True, default='')),
                 ('_process_results_function', models.CharField(blank=True, max_length=1024, null=True)),
-                ('_status', models.CharField(choices=[(b'PEN', b'Pending'), (b'SUB', b'Submitted'), (b'RUN', b'Running'), (b'COM', b'Complete'), (b'ERR', b'Error'), (b'ABT', b'Aborted'), (b'VAR', b'Various'), (b'VCP', b'Various-Complete')], default=b'PEN', max_length=3)),
+                ('_status', models.CharField(choices=[('PEN', 'Pending'), ('SUB', 'Submitted'), ('RUN', 'Running'), ('COM', 'Complete'), ('ERR', 'Error'), ('ABT', 'Aborted'), ('VAR', 'Various'), ('VCP', 'Various-Complete')], default='PEN', max_length=3)),
             ],
             options={
                 'verbose_name': 'Job',
