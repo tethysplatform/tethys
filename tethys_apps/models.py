@@ -40,7 +40,7 @@ class TethysApp(models.Model):
     description = models.TextField(max_length=1000, blank=True, default='')
     enable_feedback = models.BooleanField(default=False)
     feedback_emails = ListField(default='', blank=True)
-    tags = models.CharField(max_length=200, blank=True,  default='')
+    tags = models.CharField(max_length=200, blank=True, default='')
 
     # Developer first attributes
     index = models.CharField(max_length=200, default='')
@@ -61,6 +61,9 @@ class TethysApp(models.Model):
         verbose_name_plural = 'Installed Apps'
 
     def __unicode__(self):
+        return text(self.name)
+
+    def __str__(self):
         return text(self.name)
 
     def add_settings(self, setting_list):
@@ -84,22 +87,22 @@ class TethysApp(models.Model):
     @property
     def custom_settings(self):
         return self.settings_set.exclude(customsetting__isnull=True) \
-                .select_subclasses('customsetting')
+            .select_subclasses('customsetting')
 
     @property
     def dataset_service_settings(self):
         return self.settings_set.exclude(datasetservicesetting__isnull=True) \
-                .select_subclasses('datasetservicesetting')
+            .select_subclasses('datasetservicesetting')
 
     @property
     def spatial_dataset_service_settings(self):
         return self.settings_set.exclude(spatialdatasetservicesetting__isnull=True) \
-                .select_subclasses('spatialdatasetservicesetting')
+            .select_subclasses('spatialdatasetservicesetting')
 
     @property
     def wps_services_settings(self):
         return self.settings_set.exclude(webprocessingservicesetting__isnull=True) \
-                .select_subclasses('webprocessingservicesetting')
+            .select_subclasses('webprocessingservicesetting')
 
     @property
     def persistent_store_connection_settings(self):
@@ -137,6 +140,9 @@ class TethysAppSetting(models.Model):
     initialized = models.BooleanField(default=False)
 
     def __unicode__(self):
+        return self.name
+
+    def __str__(self):
         return self.name
 
     @property
@@ -232,13 +238,13 @@ class CustomSetting(TethysAppSetting):
         if self.value != '' and self.type == self.TYPE_FLOAT:
             try:
                 float(self.value)
-            except:
+            except Exception:
                 raise ValidationError('Value must be a float.')
 
         elif self.value != '' and self.type == self.TYPE_INTEGER:
             try:
                 int(self.value)
-            except:
+            except Exception:
                 raise ValidationError('Value must be an integer.')
 
         elif self.value != '' and self.type == self.TYPE_BOOLEAN:
@@ -328,6 +334,7 @@ class DatasetServiceSetting(TethysAppSetting):
 
         return self.dataset_service
 
+
 class SpatialDatasetServiceSetting(TethysAppSetting):
     """
     Used to define a Spatial Dataset Service Setting.
@@ -367,7 +374,7 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
             raise ValidationError('Required.')
 
     def get_value(self, as_public_endpoint=False, as_endpoint=False, as_wms=False,
-                                    as_wfs=False, as_engine=False):
+                  as_wfs=False, as_engine=False):
 
         if not self.spatial_dataset_service:
             return None  # TODO Why don't we raise a NotAssigned error here?
@@ -389,6 +396,7 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
             return self.spatial_dataset_service.public_endpoint
 
         return self.spatial_dataset_service
+
 
 class WebProcessingServiceSetting(TethysAppSetting):
     """
