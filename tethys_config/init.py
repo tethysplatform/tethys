@@ -36,7 +36,7 @@ def initial_settings(apps, schema_editor):
                                         date_modified=now)
 
     general_category.setting_set.create(name="Brand Image",
-                                        content="/static/tethys_portal/images/tethys-logo-75.png",
+                                        content="/tethys_portal/images/tethys-logo-75.png",
                                         date_modified=now)
 
     general_category.setting_set.create(name="Brand Image Height",
@@ -167,6 +167,3 @@ def reverse_init(apps, schema_editor):
 
     for category in categories:
         category.delete()
-
-
-
