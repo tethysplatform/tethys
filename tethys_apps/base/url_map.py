@@ -91,9 +91,6 @@ def django_url_preprocessor(url, root_url, custom_regex=None):
                 except IndexError:
                     expression = custom_regex[0]
 
-                except:
-                    raise
-
             else:
                 expression = DEFAULT_EXPRESSION
 

@@ -62,7 +62,7 @@ class TextInput(TethysGizmoOptions):
 
     """
     gizmo_name = "text_input"
-    
+
     def __init__(self, name, display_text='', initial='', placeholder='', prepend='', append='', icon_prepend='',
                  icon_append='', disabled=False, error='', attributes={}, classes=''):
         """

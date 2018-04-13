@@ -25,10 +25,3 @@ app_url_patterns = get_app_url_patterns()
 for namespace, urls in app_url_patterns.items():
     root_pattern = r'^{0}/'.format(namespace.replace('_', '-'))
     urlpatterns.append(url(root_pattern, include(urls, namespace=namespace)))
-
-# # Register permissions here?
-# try:
-#     register_app_permissions()
-# except (ProgrammingError, ObjectDoesNotExist) as e:
-#     tethys_log.error(e)
-

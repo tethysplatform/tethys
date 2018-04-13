@@ -7,5 +7,6 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+# flake8: noqa
 # DO NOT ERASE
 from tethys_gizmos.gizmo_options import *

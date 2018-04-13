@@ -12,7 +12,9 @@ from tethys_apps.terminal_colors import TerminalColors
 
 ALL_APPS = 'all'
 
-#TODO: remove syncstores interface and update documentation once able to initialize/create persistent stores from app admin interface
+# TODO: remove syncstores interface and update documentation once able to initialize/create persistent stores from app admin interface
+
+
 class Command(BaseCommand):
     """
     Command class that handles the syncstores command. Provides persistent store management functionality.

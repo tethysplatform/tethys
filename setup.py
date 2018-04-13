@@ -44,7 +44,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     entry_points={
-        'console_scripts': ['tethys=tethys_apps.cli:tethys_command',],
+        'console_scripts': ['tethys=tethys_apps.cli:tethys_command', ],
     },
     install_requires=requires,
     extras_require={

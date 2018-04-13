@@ -53,13 +53,11 @@ def login_view(request):
                     # The password is valid, but the user account has been disabled
                     # Return a disabled account 'error' message
                     messages.error(request, "Sorry, but your account has been disabled. Please contact the site "
-                                            "administrator for more details."
-                    )
+                                            "administrator for more details.")
             else:
                 # User was not authenticated, return errors
-                 messages.warning(request, "Whoops! We were not able to log you in. Please check your username and "
-                                           "password and try again."
-                 )
+                messages.warning(request, "Whoops! We were not able to log you in. Please check your username and "
+                                          "password and try again.")
 
     else:
         # Create new empty login form
@@ -95,7 +93,7 @@ def register(request):
         if form.is_valid():
             # Validate username and password using form methods
             username = form.clean_username()
-            email = form.clean_email()
+            email = form.clean_email()  # noqa: F841
             password = form.clean_password2()
 
             # If no exceptions raised to here, then the username is unique and the passwords match.
@@ -120,13 +118,11 @@ def register(request):
                     # The password is valid, but the user account has been disabled
                     # Return a disabled account 'error' message
                     messages.error(request, "Sorry, but your account has been disabled. Please contact the site "
-                                            "administrator for more details."
-                    )
+                                            "administrator for more details.")
             else:
                 # User was not authenticated, return errors
-                 messages.warning(request, "Whoops! We were not able to log you in. Please check your username and "
-                                           "password and try again."
-                 )
+                messages.warning(request, "Whoops! We were not able to log you in. Please check your username and "
+                                          "password and try again.")
 
     else:
         # Create new empty form
@@ -151,18 +147,20 @@ def logout_view(request):
 
 
 def reset_confirm(request, uidb64=None, token=None):
-    return password_reset_confirm(request,
-                                  template_name='tethys_portal/accounts/password_reset/reset_confirm.html',
-                                  uidb64=uidb64,
-                                  token=token,
-                                  post_reset_redirect=reverse('accounts:login')
+    return password_reset_confirm(
+        request,
+        template_name='tethys_portal/accounts/password_reset/reset_confirm.html',
+        uidb64=uidb64,
+        token=token,
+        post_reset_redirect=reverse('accounts:login')
     )
 
 
 def reset(request):
-    return password_reset(request,
-                          template_name='tethys_portal/accounts/password_reset/reset_request.html',
-                          email_template_name='tethys_portal/accounts/password_reset/reset_email.html',
-                          subject_template_name='tethys_portal/accounts/password_reset/reset_subject.txt',
-                          post_reset_redirect=reverse('accounts:login')
+    return password_reset(
+        request,
+        template_name='tethys_portal/accounts/password_reset/reset_request.html',
+        email_template_name='tethys_portal/accounts/password_reset/reset_email.html',
+        subject_template_name='tethys_portal/accounts/password_reset/reset_subject.txt',
+        post_reset_redirect=reverse('accounts:login')
     )

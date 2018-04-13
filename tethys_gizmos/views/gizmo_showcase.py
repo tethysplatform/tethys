@@ -156,7 +156,6 @@ def index(request):
                                         original=True,
                                         options=[('One', '1'), ('Two', '2'), ('Three', '3')])
 
-
     # Text Input
     text_input = TextInput(display_text='Text',
                            name='inputAmount',
@@ -327,17 +326,18 @@ def index(request):
     )
 
     # D3 Scatter Plot
-    d3_scatter_plot_view = ScatterPlot(width='100%',
-                                       height='500px',
-                                       engine='d3',
-                                       title='D3 Scatter Plot',
-                                       subtitle='D3 Scatter Plot',
-                                       x_axis_title='Height',
-                                       x_axis_units='cm',
-                                       y_axis_title='Weight',
-                                       y_axis_units='kg',
-                                       series=[male_dataset, female_dataset]
-                                       )
+    d3_scatter_plot_view = ScatterPlot(
+        width='100%',
+        height='500px',
+        engine='d3',
+        title='D3 Scatter Plot',
+        subtitle='D3 Scatter Plot',
+        x_axis_title='Height',
+        x_axis_units='cm',
+        y_axis_title='Weight',
+        y_axis_units='kg',
+        series=[male_dataset, female_dataset]
+    )
 
     # Web Plot
     web_plot = PolarPlot(
@@ -347,22 +347,22 @@ def index(request):
         title='Polar Chart',
         subtitle='Polar Chart',
         pane={
-          'size': '80%'
+            'size': '80%'
         },
         categories=['Infiltration', 'Soil Moisture', 'Precipitation',
                     'Evaporation', 'Roughness', 'Runoff', 'Permeability',
                     'Vegetation'],
         series=[
-          {
-              'name': 'Park City',
-              'data': [0.2, 0.5, 0.1, 0.8, 0.2, 0.6, 0.8, 0.3],
-              'pointPlacement': 'on'
-          },
-          {
-              'name': 'Little Dell',
-              'data': [0.8, 0.3, 0.2, 0.5, 0.1, 0.8, 0.2, 0.6],
-              'pointPlacement': 'on'
-          }
+            {
+                'name': 'Park City',
+                'data': [0.2, 0.5, 0.1, 0.8, 0.2, 0.6, 0.8, 0.3],
+                'pointPlacement': 'on'
+            },
+            {
+                'name': 'Little Dell',
+                'data': [0.8, 0.3, 0.2, 0.5, 0.1, 0.8, 0.2, 0.6],
+                'pointPlacement': 'on'
+            }
         ]
     )
 
@@ -640,14 +640,14 @@ def index(request):
     x = [datetime(year=2013, month=10, day=4),
          datetime(year=2013, month=11, day=5),
          datetime(year=2013, month=12, day=6)]
-    
+
     my_plotly_view = PlotlyView([go.Scatter(x=x, y=[1, 3, 6])])
-    
-    #TODO: Add pandas example when pandas is included with Tethys Platform
+
+    # TODO: Add pandas example when pandas is included with Tethys Platform
 
     # Bokeh View
     plot = bokeh_figure(plot_height=300)
-    plot.circle([1,2], [3,4])
+    plot.circle([1, 2], [3, 4])
     my_bokeh_view = BokehView(plot, height="300px")
 
     # Table View
@@ -678,7 +678,7 @@ def index(request):
                                             ('Bob', 26, 'boss')],
                                       searching=False,
                                       orderClasses=False,
-                                      lengthMenu=[ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+                                      lengthMenu=[[10, 25, 50, -1], [10, 25, 50, "All"]],
                                       )
 
     datatable_with_extension = DataTableView(column_names=('Name', 'Age', 'Job'),
@@ -847,13 +847,17 @@ def index(request):
         delete_btn=True,
     )
 
-    #ESRI Map Gizmo
+    # ESRI Map Gizmo
     esri_map_view = EMView(center=[-100, 40], zoom=4)
-    esri_layer = EMLayer(type='FeatureLayer',
-                         url='http://geoserver.byu.edu/arcgis/rest/services/gaugeviewer/AHPS_gauges/MapServer/0')
+    esri_layer = EMLayer(
+        type='FeatureLayer',
+        url='http://geoserver.byu.edu/arcgis/rest/services/gaugeviewer/AHPS_gauges/MapServer/0'
+    )
 
-    vector_tile = EMLayer(type='ImageryLayer',
-                          url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer')
+    vector_tile = EMLayer(
+        type='ImageryLayer',
+        url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer'
+    )
 
     esri_map = ESRIMap(height='400px', width='100%', basemap='topo', view=esri_map_view,
                        layers=[vector_tile, esri_layer])
@@ -891,7 +895,7 @@ def index(request):
                'flash_message': flash_message,
                'jobs_table_options': jobs_table_options,
                'map_view_options': map_view_options,
-               "esri_map":esri_map,
+               "esri_map": esri_map,
                'scatter_plot_view': scatter_plot_view,
                'pie_plot_view': pie_plot_view,
                'd3_pie_plot_view': d3_pie_plot_view,
@@ -935,31 +939,48 @@ def swap_overlays(request):
     This action is used to demonstrate how overlay layers can be swapped out dynamically using the javascript API.
     """
 
-    overlay_json = {"type": "GeometryCollection",
-                    "geometries": [{"type": "Polygon",
-                                    "coordinates": [[40.643135583312805, -111.48951530456543],
-                                                    [40.636622594719725, -111.49432182312012],
-                                                    [40.63310531666155, -111.4877986907959],
-                                                    [40.63805550673186, -111.48110389709473],
-                                                    [40.6413120105605, -111.48539543151855]],
-                                    "properties": {"id": 4, "value": 5}, "crs": {"type": "link", "properties": {
-                            "href": "http://spatialreference.org/ref/epsg/4326/proj4/", "type": "proj4"}}
-                                    },
-                                   {"type": "Point",
-                                    "coordinates": [40.629587853312174, -111.50959968566895],
-                                    "properties": {"id": 5, "value": 6}, "crs": {"type": "link", "properties": {
-                                       "href": "http://spatialreference.org/ref/epsg/4326/proj4/", "type": "proj4"}}
-                                    },
-                                   {"type": "LineString",
-                                    "coordinates": [[40.62737305910759, -111.50118827819824],
-                                                    [40.61564645424611, -111.5071964263916],
-                                                    [40.61277963772034, -111.48608207702637],
-                                                    [40.62802447679272, -111.49157524108887]],
-                                    "properties": {"id": 6, "value": 7}, "crs": {"type": "link", "properties": {
-                                       "href": "http://spatialreference.org/ref/epsg/4326/proj4/", "type": "proj4"}}
-                                    }
-                                   ]
-                    }
+    overlay_json = {
+        "type": "GeometryCollection",
+        "geometries": [
+            {"type": "Polygon",
+             "coordinates": [[40.643135583312805, -111.48951530456543],
+                             [40.636622594719725, -111.49432182312012],
+                             [40.63310531666155, -111.4877986907959],
+                             [40.63805550673186, -111.48110389709473],
+                             [40.6413120105605, -111.48539543151855]],
+             "properties": {"id": 4, "value": 5},
+             "crs": {"type": "link",
+                     "properties": {
+                         "href": "http://spatialreference.org/ref/epsg/4326/proj4/",
+                         "type": "proj4"
+                     }
+                     }
+             },
+            {"type": "Point",
+             "coordinates": [40.629587853312174, -111.50959968566895],
+             "properties": {"id": 5, "value": 6},
+             "crs": {"type": "link",
+                     "properties": {
+                         "href": "http://spatialreference.org/ref/epsg/4326/proj4/",
+                         "type": "proj4"
+                     }
+                     }
+             },
+            {"type": "LineString",
+             "coordinates": [[40.62737305910759, -111.50118827819824],
+                             [40.61564645424611, -111.5071964263916],
+                             [40.61277963772034, -111.48608207702637],
+                             [40.62802447679272, -111.49157524108887]],
+             "properties": {"id": 6, "value": 7},
+             "crs": {"type": "link",
+                     "properties": {
+                         "href": "http://spatialreference.org/ref/epsg/4326/proj4/",
+                         "type": "proj4"
+                     }
+                     }
+             }
+        ]
+    }
 
     return HttpResponse(json.dumps(overlay_json), content_type='application/json')
 
@@ -971,37 +992,42 @@ def google_map_view(request):
     """
 
     # Editable Google Map
-    google_map_view = GoogleMapView(height='600px',
-                                    width='100%',
-                                    reference_kml_action=reverse('gizmos:get_kml'),
-                                    drawing_types_enabled=['POLYGONS', 'POINTS', 'POLYLINES', 'BOXES'],
-                                    initial_drawing_mode='BOXES',
-                                    input_overlays={"type": "GeometryCollection",
-                                              "geometries": [
-                                                  {"type": "Point",
-                                                   "coordinates": [40.629197012613545, -111.5123462677002],
-                                                   "properties": {"id": 1, "value": 1}},
-                                                  {"type": "Polygon",
-                                                   "coordinates": [[40.63193284946615, -111.50153160095215],
-                                                                   [40.617210120505035, -111.50101661682129],
-                                                                   [40.623594711231775, -111.48625373840332],
-                                                                   [40.63193284946615, -111.49123191833496]],
-                                                   "properties": {"id": 2, "value": 2}},
-                                                  {"type": "LineString",
-                                                   "coordinates": [[40.65003865742191, -111.49123191833496],
-                                                                   [40.635319920747456, -111.49088859558105],
-                                                                   [40.64912697157757, -111.48127555847168],
-                                                                   [40.634668574229735, -111.48024559020996]],
-                                                   "properties": {"id": 3, "value": 3}},
-                                                  {"type": "BoundingBox",
-                                                   "bounds": [-111.54521942138672, 40.597792003905454, -111.46625518798828,
-                                                              40.66449372533465],
-                                                   "properties": {"id": 4, "value": 4}
-                                                   }
-                                                   ]
-                                               },
-                                    output_format='WKT',
-                                    )
+    google_map_view = GoogleMapView(
+        height='600px',
+        width='100%',
+        reference_kml_action=reverse('gizmos:get_kml'),
+        drawing_types_enabled=['POLYGONS', 'POINTS', 'POLYLINES', 'BOXES'],
+        initial_drawing_mode='BOXES',
+        input_overlays={
+            "type": "GeometryCollection",
+            "geometries": [
+                {"type": "Point",
+                 "coordinates": [40.629197012613545, -111.5123462677002],
+                 "properties": {"id": 1, "value": 1}
+                 },
+                {"type": "Polygon",
+                 "coordinates": [[40.63193284946615, -111.50153160095215],
+                                 [40.617210120505035, -111.50101661682129],
+                                 [40.623594711231775, -111.48625373840332],
+                                 [40.63193284946615, -111.49123191833496]],
+                 "properties": {"id": 2, "value": 2}
+                 },
+                {"type": "LineString",
+                 "coordinates": [[40.65003865742191, -111.49123191833496],
+                                 [40.635319920747456, -111.49088859558105],
+                                 [40.64912697157757, -111.48127555847168],
+                                 [40.634668574229735, -111.48024559020996]],
+                 "properties": {"id": 3, "value": 3}
+                 },
+                {"type": "BoundingBox",
+                 "bounds": [-111.54521942138672, 40.597792003905454,
+                            -111.46625518798828, 40.66449372533465],
+                 "properties": {"id": 4, "value": 4}
+                 }
+            ]
+        },
+        output_format='WKT',
+    )
 
     if ('editable_map_submit' in request.POST) and (request.POST['geometry']):
         # Some example code showing how you can decode the JSON into python
@@ -1149,22 +1175,28 @@ def map_view(request):
 
     return render(request, 'tethys_gizmos/gizmo_showcase/map_view.html', context)
 
+
 @login_required()
 def esri_map(request):
 
     esri_map_view = EMView(center=[-100, 40], zoom=4)
-    esri_layer = EMLayer(type='FeatureLayer',
-                         url='http://geoserver.byu.edu/arcgis/rest/services/gaugeviewer/AHPS_gauges/MapServer/0')
+    esri_layer = EMLayer(
+        type='FeatureLayer',
+        url='http://geoserver.byu.edu/arcgis/rest/services/gaugeviewer/AHPS_gauges/MapServer/0'
+    )
 
-    vector_tile = EMLayer(type='ImageryLayer',
-                          url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer')
+    vector_tile = EMLayer(
+        type='ImageryLayer',
+        url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer'
+    )
 
-    esri_map = ESRIMap(height='400px', width='100%', basemap='topo', view=esri_map_view,
-                              layers=[vector_tile, esri_layer])
+    esri_map = ESRIMap(height='400px', width='100%', basemap='topo',
+                       view=esri_map_view, layers=[vector_tile, esri_layer])
 
-    context = {"esri_map":esri_map}
+    context = {"esri_map": esri_map}
 
-    return render(request,'tethys_gizmos/gizmo_showcase/esri_map.html',context)
+    return render(request, 'tethys_gizmos/gizmo_showcase/esri_map.html', context)
+
 
 def jobs_table_results(request, job_id):
     return redirect(reverse('gizmos:showcase') + '#jobs_table_docs')

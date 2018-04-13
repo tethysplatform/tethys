@@ -66,4 +66,3 @@ class Command(BaseCommand):
             elif os.path.isdir(static_path):
                 os.symlink(static_path, static_root_path)
                 print('INFO: Successfully linked static directory to STATIC_ROOT for app "{0}".'.format(app))
-

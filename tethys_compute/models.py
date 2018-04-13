@@ -13,7 +13,6 @@ import datetime
 import inspect
 from abc import abstractmethod, abstractproperty
 import logging
-log = logging.getLogger('tethys.tethys_compute.models')
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -26,6 +25,8 @@ from tethys_compute.utilities import DictionaryField, ListField
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 from condorpy import Job, Workflow, Node, Templates
+
+log = logging.getLogger('tethys' + __name__)
 
 
 class Scheduler(models.Model):
@@ -117,7 +118,7 @@ class TethysJob(models.Model):
         old_status = self._status
         if self._status in ['PEN', 'SUB', 'RUN', 'VAR']:
             if not hasattr(self, '_last_status_update') \
-                    or datetime.datetime.now()-self.last_status_update > self.update_status_interval:
+                    or datetime.datetime.now() - self.last_status_update > self.update_status_interval:
                 self._update_status(*args, **kwargs)
                 self._last_status_update = datetime.datetime.now()
             if self._status == 'RUN' and (old_status == 'PEN' or old_status == 'SUB'):

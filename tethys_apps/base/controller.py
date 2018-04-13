@@ -17,5 +17,3 @@ def app_controller_maker(root_url):
     """
     properties = {'root_url': root_url}
     return type('UrlMap', (UrlMapBase,), properties)
-
-

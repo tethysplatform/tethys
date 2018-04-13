@@ -3,12 +3,15 @@ from tethys_apps.base import TethysAppBase
 from tethys_compute.job_manager import JobManager, TethysJob, CondorJob
 from django.contrib.auth.models import User
 
+
 def echo(arg):
     return arg
+
 
 class TestApp(TethysAppBase):
     def job_templates(self):
         return []
+
 
 class TethysJobTestCase(TestCase):
     def setUp(self):
@@ -24,7 +27,6 @@ class TethysJobTestCase(TestCase):
         self.assertIsInstance(job.extended_properties, dict)
 
         job.extended_properties['property'] = 'value'
-
 
         job.save()
 

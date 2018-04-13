@@ -42,12 +42,12 @@ class HydroShareBackendTest(TestCase):
 
         self.access_token = str(uuid.uuid4())
         self.refresh_token = str(uuid.uuid4())
-        self.expires_in = random.randint(1, 30*60*60)  # 1 sec to 30 days
+        self.expires_in = random.randint(1, 30 * 60 * 60)  # 1 sec to 30 days
         self.token_type = "bearer"
         self.scope = "read write"
 
-        self.social_username="drew"
-        self.social_email="drew@byu.edu"
+        self.social_username = "drew"
+        self.social_email = "drew@byu.edu"
 
     def tearDown(self):
         pass
@@ -58,7 +58,7 @@ class HydroShareBackendTest(TestCase):
         # expect for only 1 user: anonymous user
         self.assertEqual(User.objects.all().count(), 1)
 
-        username_new, social, backend=self.run_oauth(m)
+        username_new, social, backend = self.run_oauth(m)
 
         # expect for 2 users: anonymous and newly created social user
         self.assertEqual(User.objects.all().count(), 2)
@@ -113,9 +113,11 @@ class HydroShareBackendTest(TestCase):
         # expect for only 1 user: anonymous user
         self.assertEqual(User.objects.all().count(), 1)
         # manually create a new user named self.social_username
-        user_sherry = User.objects.create_user(username="sherry",
-                                             email="sherry@byu.edu",
-                                             password='top_secret')
+        user_sherry = User.objects.create_user(
+            username="sherry",
+            email="sherry@byu.edu",
+            password='top_secret'
+        )
         logger.debug(user_sherry.is_authenticated())
         logger.debug(user_sherry.is_active)
 

@@ -23,6 +23,8 @@ from .handoff import HandoffManager
 from .workspace import TethysWorkspace
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
+from past.builtins import basestring
+
 tethys_log = logging.getLogger('tethys.app_base')
 
 
@@ -98,18 +100,18 @@ class TethysAppBase(object):
                     function_name = controller_parts[-1]
                     try:
                         module = __import__(module_name, fromlist=[function_name])
-                    except:
+                    except Exception as e:
                         error_msg = 'The following error occurred while trying to import the controller function ' \
                                     '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
                         tethys_log.error(error_msg)
-                        raise
+                        raise e
                     try:
                         controller_function = getattr(module, function_name)
                     except AttributeError as e:
                         error_msg = 'The following error occurred while tyring to access the controller function ' \
                                     '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
                         tethys_log.error(error_msg)
-                        raise
+                        raise e
                 else:
                     controller_function = url_map.controller
                 django_url = url(url_map.url, controller_function, name=url_map.name)
@@ -705,8 +707,8 @@ class TethysAppBase(object):
 
         """
         # Find the path to the app project directory
-        ## Hint: cls is a child class of this class.
-        ## Credits: http://stackoverflow.com/questions/4006102/is-possible-to-know-the-_path-of-the-file-of-a-subclass-in-python
+        # Hint: cls is a child class of this class.
+        # Credits: http://stackoverflow.com/questions/4006102/is-possible-to-know-the-_path-of-the-file-of-a-subclass-in-python
         project_directory = os.path.dirname(sys.modules[cls.__module__].__file__)
         workspace_directory = os.path.join(project_directory, 'workspaces', 'app_workspace')
         return TethysWorkspace(workspace_directory)
@@ -739,8 +741,6 @@ class TethysAppBase(object):
             return custom_setting.get_value()
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('CustomTethysAppSetting', name, cls.name)
-
-
 
     @classmethod
     def get_dataset_service(cls, name, as_public_endpoint=False, as_endpoint=False,

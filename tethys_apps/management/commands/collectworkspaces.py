@@ -66,4 +66,3 @@ class Command(BaseCommand):
                 if os.path.isdir(workspaces_root_path):
                     os.symlink(workspaces_root_path, workspaces_path)
                     print('INFO: Successfully linked "workspaces" directory to TETHYS_WORKSPACES_ROOT for app "{0}".'.format(app))
-

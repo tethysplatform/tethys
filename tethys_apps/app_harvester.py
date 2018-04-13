@@ -43,14 +43,14 @@ class SingletonAppHarvester(object):
 
         # Harvest App Instances
         self._harvest_app_instances(app_packages_list)
-        
+
     def __new__(cls):
         """
         Make App Harvester a Singleton
         """
         if not cls._instance:
             cls._instance = super(SingletonAppHarvester, cls).__new__(cls)
-            
+
         return cls._instance
 
     @staticmethod
@@ -80,7 +80,7 @@ class SingletonAppHarvester(object):
         """
         valid_app_instance_list = []
         loaded_apps = []
-        
+
         for app_package in app_packages_list:
             # Collect data from each app package in the apps directory
             if app_package not in ['__init__.py', '__init__.pyc', '.gitignore', '.DS_Store']:
@@ -91,7 +91,6 @@ class SingletonAppHarvester(object):
                     # Import the app.py module from the custom app package programmatically
                     # (e.g.: apps.apps.<custom_package>.app)
                     app_module = __import__(app_module_name, fromlist=[''])
-
 
                     for name, obj in inspect.getmembers(app_module):
                         # Retrieve the members of the app_module and iterate through
@@ -127,7 +126,7 @@ class SingletonAppHarvester(object):
 
                         except TypeError:
                             '''DO NOTHING'''
-                except:
+                except Exception:
                     tethys_log.exception(
                         'App {0} not loaded because of the following error:'.format(app_package))
                     continue
@@ -138,8 +137,8 @@ class SingletonAppHarvester(object):
         self.sync_tethys_app_db()
 
         # Update user
-        print(TerminalColors.BLUE + 'Tethys Apps Loaded: '
-              + TerminalColors.ENDC + '{0}'.format(' '.join(loaded_apps)) + '\n')
+        print(TerminalColors.BLUE + 'Tethys Apps Loaded: ' +
+              TerminalColors.ENDC + '{0}'.format(' '.join(loaded_apps)) + '\n')
 
     def sync_tethys_app_db(self):
         """

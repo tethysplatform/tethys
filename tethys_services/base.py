@@ -119,5 +119,3 @@ class WpsService:
         String representation
         """
         return '<WpsService: name={0}, endpoint={1}>'.format(self.name, self.endpoint)
-
-

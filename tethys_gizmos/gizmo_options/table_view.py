@@ -64,7 +64,7 @@ class TableView(TethysGizmoOptions):
     ::
 
         {% load tethys_gizmos %}
-        
+
         {% gizmo table_view %}
         {% gizmo table_view_edit %}
 

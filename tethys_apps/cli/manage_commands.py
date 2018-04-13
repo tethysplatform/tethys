@@ -81,11 +81,11 @@ def manage_command(args):
 
     elif args.command == MANAGE_COLLECT:
         # Convenience command to run collectstatic and collectworkspaces
-        ## Run pre_collectstatic
+        # Run pre_collectstatic
         intermediate_process = ['python', manage_path, 'pre_collectstatic']
         run_process(intermediate_process)
 
-        ## Setup for main collectstatic
+        # Setup for main collectstatic
         intermediate_process = ['python', manage_path, 'collectstatic']
 
         if args.noinput:
@@ -93,12 +93,11 @@ def manage_command(args):
 
         run_process(intermediate_process)
 
-        ## Run collectworkspaces command
+        # Run collectworkspaces command
         primary_process = ['python', manage_path, 'collectworkspaces']
 
     elif args.command == MANAGE_CREATESUPERUSER:
         primary_process = ['python', manage_path, 'createsuperuser']
-
 
     if primary_process:
         run_process(primary_process)

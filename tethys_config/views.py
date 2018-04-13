@@ -7,6 +7,6 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from django.shortcuts import render
+# from django.shortcuts import render
 
 # Create your views here.

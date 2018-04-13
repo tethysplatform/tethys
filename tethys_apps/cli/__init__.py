@@ -18,12 +18,18 @@ from builtins import input
 from tethys_apps.cli.scaffold_commands import scaffold_command
 from tethys_apps.terminal_colors import TerminalColors
 from .docker_commands import *
-from .gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
-from .manage_commands import (manage_command, get_manage_path, run_process,
-                              MANAGE_START, MANAGE_SYNCDB,
-                              MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
-                              MANAGE_COLLECT, MANAGE_CREATESUPERUSER, TETHYS_SRC_DIRECTORY)
-from .gen_commands import VALID_GEN_OBJECTS, generate_command
+from .gen_commands import (
+    GEN_SETTINGS_OPTION,
+    GEN_APACHE_OPTION,
+    VALID_GEN_OBJECTS,
+    generate_command
+)
+from .manage_commands import (
+    manage_command, get_manage_path, run_process,
+    MANAGE_START, MANAGE_SYNCDB,
+    MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
+    MANAGE_COLLECT, MANAGE_CREATESUPERUSER, TETHYS_SRC_DIRECTORY
+)
 from tethys_apps.helpers import get_installed_tethys_apps
 
 # Module level variables
@@ -176,7 +182,7 @@ def test_command(args):
             status = run_process(['open', os.path.join(tests_path, report_dirname, index_fname)])
             if status != 0:
                 raise Exception
-        except:
+        except Exception:
             webbrowser.open_new_tab(os.path.join(tests_path, report_dirname, index_fname))
 
 

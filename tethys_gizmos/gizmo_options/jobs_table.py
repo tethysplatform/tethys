@@ -63,7 +63,7 @@ class JobsTable(TethysGizmoOptions):
 
     """
     gizmo_name = "jobs_table"
-    
+
     def __init__(self, jobs, column_fields, status_actions=True, run_btn=True, delete_btn=True, results_url='',
                  hover=False, striped=False, bordered=False, condensed=False, attributes={}, classes='',
                  refresh_interval=5000, delay_loading_status=True):
@@ -127,8 +127,7 @@ class JobsTable(TethysGizmoOptions):
     @staticmethod
     def get_gizmo_js():
         """
-        JavaScript specific to gizmo to be placed in the 
+        JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
         return ('tethys_gizmos/js/jobs_table.js',)
-

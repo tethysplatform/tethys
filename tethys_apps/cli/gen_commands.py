@@ -15,21 +15,22 @@ from .manage_commands import TETHYS_HOME
 from platform import linux_distribution
 
 from django.template import Template, Context
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
 from django.conf import settings
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
 
 
 # Initialize settings
 try:
     __import__(os.environ['DJANGO_SETTINGS_MODULE'])
-except:
+except Exception:
     # Initialize settings with templates variable to allow gen to work properly
     settings.configure(TEMPLATES=[
         {
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
         }
     ])
-import django
+import django  # noqa: E402
 django.setup()
 
 

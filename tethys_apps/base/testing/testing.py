@@ -147,5 +147,3 @@ class TethysTestCase(TestCase):
             Client object
         """
         return Client()
-
-
