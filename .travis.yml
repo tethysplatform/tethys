@@ -16,8 +16,9 @@ os:
   - osx
 
 install:
-  - mkdir src
-  - mv ./* src/
+  - cd ..
+  - mv tethys src
+  - bash ./src/scripts/install_tethys.sh -h
   - bash ./src/scripts/install_tethys.sh -b master -t $PWD --python-version $PYTHON_VERSION
 
 # command to run tests
