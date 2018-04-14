@@ -20,11 +20,10 @@ install:
   - mv tethys src
   - bash ./src/scripts/install_tethys.sh -h
   - bash ./src/scripts/install_tethys.sh --partial-tethys-install mesdat -t $PWD --python-version $PYTHON_VERSION
-  - . ./miniconda/bin/activate tethys
   - pwd
-  - bash ./src/scripts/install_tethys.sh --partial-tethys-install s -t $PWD --db-username tethys_super
   - ls ./miniconda/bin/
   - source ./miniconda/bin/activate tethys
+  - bash ./src/scripts/install_tethys.sh --partial-tethys-install s -t $PWD --db-username tethys_super
   - tstartdb
   - conda list
   - cat $CONDA_HOME/envs/tethys/etc/conda/activate.d/tethys-activate.sh
