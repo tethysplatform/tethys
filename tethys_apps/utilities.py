@@ -132,7 +132,7 @@ def create_ps_database_setting(app_package, name, description='', required=False
                                                                                                           app_package))
         return True
     except Exception as e:
-        print e
+        print(e)
         with pretty_output(FG_RED) as p:
             p.write('The above error was encountered. Aborted.'.format(app_package))
         return False
