@@ -9,17 +9,6 @@ import tethys_services.models
 
 class Migration(migrations.Migration):
 
-    # replaces = [('tethys_services', '0001_initial'),
-    #             ('tethys_services', '0002_auto_20150119_1756'),
-    #             ('tethys_services', '0003_spatialdatasetservice'),
-    #             ('tethys_services', '0004_webprocessingservice'),
-    #             ('tethys_services', '0005_auto_20150424_2126'),
-    #             ('tethys_services', '0006_auto_20150729_1551'),
-    #             ('tethys_services', '0007_spatialdatasetservice_public_endpoint'),
-    #             ('tethys_services', '0008_auto_20151023_1427'),
-    #             ('tethys_services', '0009_persistentstoreservice')
-    #             ]
-
     initial = True
 
     dependencies = [

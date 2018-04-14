@@ -12,15 +12,6 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    # replaces = [('tethys_compute', '0001_initial'), ('tethys_compute', '0002_initialize_settings'),
-    #             ('tethys_compute', '0003_auto_20150529_1651'), ('tethys_compute', '0004_auto_20150812_1915'),
-    #             ('tethys_compute', '0005_auto_20150914_1712'), ('tethys_compute', '0006_auto_20151221_2207'),
-    #             ('tethys_compute', '0006_auto_20151026_2142'), ('tethys_compute', '0007_merge'),
-    #             ('tethys_compute', '0008_start_condorjob_refactor'),
-    #             ('tethys_compute', '0009_condorjob_data_migration'),
-    #             ('tethys_compute', '0010_finish_condorjob_refactor'), ('tethys_compute', '0011_delete_cluster'),
-    #             ('tethys_compute', '0012_delete_settings')]
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
