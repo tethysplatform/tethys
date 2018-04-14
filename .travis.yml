@@ -3,8 +3,6 @@ language: c
 env:
   - PYTHON_VERSION="2"
   - PYTHON_VERSION="3"
-  - PYTHON_VERSION="2" PRODUCTION="--production --install-docker"
-  - PYTHON_VERSION="3" PRODUCTION="--production --install-docker"
 
 # Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
@@ -24,7 +22,9 @@ install:
   - bash ./src/scripts/install_tethys.sh --partial-tethys-install mesdat -t $PWD --python-version $PYTHON_VERSION $PRODUCTION
   - . ./miniconda/bin/activate tethys
   - conda list
-  - cat $CONDA_HOME/tethys/etc/conda/activate.d/tethys-activate.sh
+  - ls $CONDA_HOME/envs/tethys/
+  - ls $CONDA_HOME/envs/tethys/etc/conda/
+  - cat $CONDA_HOME/envs/tethys/etc/conda/activate.d/tethys-activate.sh
 
 # command to run tests
 script:
