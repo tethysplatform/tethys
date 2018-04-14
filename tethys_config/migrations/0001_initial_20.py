@@ -9,12 +9,6 @@ from ..init import initial_settings, reverse_init
 
 class Migration(migrations.Migration):
 
-    # replaces = [('tethys_config', '0001_initial'),
-    #             ('tethys_config', '0002_auto_20141029_1848'),
-    #             ('tethys_config', '0003_auto_20141223_2244'),
-    #             ('tethys_config', '0004_auto_20150424_2050'),
-    #             ('tethys_config', '0005_auto_20151023_1720')]
-
     initial = True
 
     dependencies = [
