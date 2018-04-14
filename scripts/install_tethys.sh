@@ -8,7 +8,7 @@ OPTIONS:\n
 \t    -p, --port <PORT>                   \t\t\t Port on which to serve tethys. Default is 8000.\n
 \t    -b, --branch <BRANCH_NAME>          \t\t Branch to checkout from version control. Default is 'release'.\n
 \t    -c, --conda-home <PATH>             \t\t Path where Miniconda will be installed, or to an existing installation of Miniconda. Default is \${TETHYS_HOME}/miniconda.\n
-\t    -n, --conda-env-name <NAME>         \t\t Name for tethys conda environment. Default is 'tethys'.
+\t    -n, --conda-env-name <NAME>         \t\t Name for tethys conda environment. Default is 'tethys'.\n
 \t    --python-version <PYTHON_VERSION>   \t\t Main python version to install tethys environment into (2 or 3). Default is 2.\n
 \t    --db-username <USERNAME>            \t\t Username that the tethys database server will use. Default is 'tethys_default'.\n
 \t    --db-password <PASSWORD>            \t\t Password that the tethys database server will use. Default is 'pass'.\n
