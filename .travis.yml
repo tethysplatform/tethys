@@ -25,8 +25,7 @@ install:
   - source activate tethys
   - conda list
   - echo $TETHYS_DB_DIR
-  - cat $CONDA_HOME/envs/tethys/etc/conda/activate.d/tethys-activate.sh
-  - tstartdb
+  - pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" -l "${TETHYS_DB_DIR}/logfile" start -o "-p ${TETHYS_DB_PORT}"
   - bash ./src/scripts/install_tethys.sh --partial-tethys-install s -t $PWD --db-username tethys_super
 
 
