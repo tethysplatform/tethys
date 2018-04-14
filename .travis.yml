@@ -22,14 +22,12 @@ install:
   - bash ./src/scripts/install_tethys.sh --partial-tethys-install mesdat -t $PWD --python-version $PYTHON_VERSION $PRODUCTION
   - . ./miniconda/bin/activate tethys
   - conda list
-  - ls $CONDA_HOME/envs/tethys/
-  - ls $CONDA_HOME/envs/tethys/etc/conda/
   - cat $CONDA_HOME/envs/tethys/etc/conda/activate.d/tethys-activate.sh
 
 # command to run tests
 script:
-  tethys test
-  tstart
+  - tethys test
+  - tstart
 
 
 # generate test coverage information
