@@ -3,26 +3,42 @@
 USAGE="USAGE: . install_tethys.sh [options]\n
 \n
 OPTIONS:\n
-    -t, --tethys-home <PATH>            Path for tethys home directory. Default is ~/tethys.\n
-    -a, --allowed-host <HOST>           Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
-    -p, --port <PORT>                   Port on which to serve tethys. Default is 8000.\n
-    -b, --branch <BRANCH_NAME>          Branch to checkout from version control. Default is 'release'.\n
-    -c, --conda-home <PATH>             Path where Miniconda will be installed, or to an existing installation of Miniconda. Default is \${TETHYS_HOME}/miniconda.\n
-    -n, --conda-env-name <NAME>         Name for tethys conda environment. Default is 'tethys'.
-    --python-version <PYTHON_VERSION>   Main python version to install tethys environment into (2 or 3). Default is 2.\n
-    --db-username <USERNAME>            Username that the tethys database server will use. Default is 'tethys_default'.\n
-    --db-password <PASSWORD>            Password that the tethys database server will use. Default is 'pass'.\n
-    --db-port <PORT>                    Port that the tethys database server will use. Default is 5436.\n
-    -S, --superuser <USERNAME>          Tethys super user name. Default is 'admin'.\n
-    -E, --superuser-email <EMAIL>       Tethys super user email. Default is ''.\n
-    -P, --superuser-pass <PASSWORD>     Tethys super user password. Default is 'pass'.\n
-    --skip-tethys-install               Flag to skip the Tethys installation so that the Docker installation or production installation can be added to an existing Tethys installation.\n
-    --install-docker                    Flag to include Docker installation as part of the install script (Linux only).\n
-    --docker-options <OPTIONS>          Command line options to pass to the 'tethys docker init' call if --install-docker is used. Default is \"'-d'\".\n
-    --production                        Flag to install Tethys in a production configuration.\n
-    --configure-selinux                 Flag to perform configuration of SELinux for production installation. (Linux only).\n
-    -x                                  Flag to turn on shell command echoing.\n
-    -h, --help                          Print this help information.\n
+\t    -t, --tethys-home <PATH>            \t\t Path for tethys home directory. Default is ~/tethys.\n
+\t   -a, --allowed-host <HOST>            \t\t Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
+\t    -p, --port <PORT>                   \t\t\t Port on which to serve tethys. Default is 8000.\n
+\t    -b, --branch <BRANCH_NAME>          \t\t Branch to checkout from version control. Default is 'release'.\n
+\t    -c, --conda-home <PATH>             \t\t Path where Miniconda will be installed, or to an existing installation of Miniconda. Default is \${TETHYS_HOME}/miniconda.\n
+\t    -n, --conda-env-name <NAME>         \t\t Name for tethys conda environment. Default is 'tethys'.\n
+\t    --python-version <PYTHON_VERSION>   \t\t Main python version to install tethys environment into (2 or 3). Default is 2.\n
+\t    --db-username <USERNAME>            \t\t Username that the tethys database server will use. Default is 'tethys_default'.\n
+\t    --db-password <PASSWORD>            \t\t Password that the tethys database server will use. Default is 'pass'.\n
+\t    --db-super-username <USERNAME>      \t Username for super user on the tethys database server. Default is 'tethys_super'.\n
+\t    --db-super-password <PASSWORD>      \t Password for super user on the tethys database server. Default is 'pass'.\n
+\t    --db-port <PORT>                    \t\t\t Port that the tethys database server will use. Default is 5436.\n
+\t    --db-dir <PATH>                     \t\t\t Path where the local PostgreSQL database will be created. Default is \${TETHYS_HOME}/psql.\n
+\t    -S, --superuser <USERNAME>          \t\t Tethys super user name. Default is 'admin'.\n
+\t    -E, --superuser-email <EMAIL>       \t\t Tethys super user email. Default is ''.\n
+\t    -P, --superuser-pass <PASSWORD>     \t Tethys super user password. Default is 'pass'.\n
+\t    --skip-tethys-install               \t\t\t Flag to skip the Tethys installation so that the Docker installation or production installation can be added to an existing Tethys installation.\n
+\t    --partial-tethys-install <FLAGS>    \t List of flags to indicate which steps of the installation to do (e.g. --partial-tethys-install mresdat).\n\n
+
+\t        \t FLAGS:\n
+\t        \t\t m - Install Miniconda\n
+\t        \t\t r - Clone Tethys repository\n
+\t        \t\t e - Create Conda environment\n
+\t        \t\t s - Create 'settings.py' file\n
+\t        \t\t d - Setup local database server\n
+\t        \t\t a - Create activation/deactivation scripts for the Tethys Conda environment\n
+\t        \t\t t - Create the 't' alias t\n\n
+
+\t        \t NOTE: if --skip-tethys-install is used then this option will be ignored.\n\n
+
+\t    --install-docker                    \t\t\t Flag to include Docker installation as part of the install script (Linux only).\n
+\t    --docker-options <OPTIONS>          \t\t Command line options to pass to the 'tethys docker init' call if --install-docker is used. Default is \"'-d'\".\n
+\t    --production                        \t\t\t\t Flag to install Tethys in a production configuration.\n
+\t    --configure-selinux                 \t\t\t Flag to perform configuration of SELinux for production installation. (Linux only).\n
+\t    -x                                  \t\t\t\t\t Flag to turn on shell command echoing.\n
+\t    -h, --help                          \t\t\t\t Print this help information.\n
 "
 
 print_usage ()
@@ -65,6 +81,8 @@ TETHYS_HOME=~/tethys
 TETHYS_PORT=8000
 TETHYS_DB_USERNAME='tethys_default'
 TETHYS_DB_PASSWORD='pass'
+TETHYS_DB_SUPER_USERNAME='tethys_super'
+TETHYS_DB_SUPER_PASSWORD='pass'
 TETHYS_DB_PORT=5436
 CONDA_ENV_NAME='tethys'
 PYTHON_VERSION='2'
@@ -75,6 +93,14 @@ TETHYS_SUPER_USER_EMAIL=''
 TETHYS_SUPER_USER_PASS='pass'
 
 DOCKER_OPTIONS='-d'
+
+INSTALL_MINICONDA="true"
+CLONE_REPO="true"
+CREATE_ENV="true"
+CREATE_SETTINGS="true"
+SETUP_DB="true"
+CREATE_ENV_SCRIPTS="true"
+CREATE_SHORTCUTS="true"
 
 # parse command line options
 set_option_value ()
@@ -125,11 +151,23 @@ case $key in
     shift # past argument
     ;;
     --db-password)
-    set_option_value TETHYS_DB_PASS "$2"
+    set_option_value TETHYS_DB_PASSWORD "$2"
+    shift # past argument
+    ;;
+    --db-super-username)
+    set_option_value TETHYS_DB_SUPER_USERNAME "$2"
+    shift # past argument
+    ;;
+    --db-super-password)
+    set_option_value TETHYS_DB_SUPER_PASSWORD "$2"
     shift # past argument
     ;;
     --db-port)
     set_option_value TETHYS_DB_PORT "$2"
+    shift # past argument
+    ;;
+    --db-dir)
+    set_option_value TETHYS_DB_DIR "$2"
     shift # past argument
     ;;
     -S|--superuser)
@@ -146,6 +184,39 @@ case $key in
     ;;
     --skip-tethys-install)
         SKIP_TETHYS_INSTALL="true"
+    ;;
+    --partial-tethys-install)
+        # Set all steps to false be default and then activate only those steps that have been specified.
+        INSTALL_MINICONDA=
+        CLONE_REPO=
+        CREATE_ENV=
+        CREATE_SETTINGS=
+        SETUP_DB=
+        CREATE_ENV_SCRIPTS=
+        CREATE_SHORTCUTS=
+
+        if [[ "$2" = *"m"* ]]; then
+            INSTALL_MINICONDA="true"
+        fi
+        if [[ "$2" = *"r"* ]]; then
+            CLONE_REPO="true"
+        fi
+        if [[ "$2" = *"e"* ]]; then
+            CREATE_ENV="true"
+        fi
+        if [[ "$2" = *"s"* ]]; then
+            CREATE_SETTINGS="true"
+        fi
+        if [[ "$2" = *"d"* ]]; then
+            SETUP_DB="true"
+        fi
+        if [[ "$2" = *"a"* ]]; then
+            CREATE_ENV_SCRIPTS="true"
+        fi
+        if [[ "$2" = *"t"* ]]; then
+            CREATE_SHORTCUTS="true"
+        fi
+        shift # past argument
     ;;
     --install-docker)
     if [ "$(uname)" = "Linux" ]
@@ -182,7 +253,8 @@ case $key in
     print_usage
     ;;
     *) # unknown option
-    echo Ignoring unrecognized option: $key
+    echo Unrecognized option: $key
+    print_usage
     ;;
 esac
 shift # past argument or value
@@ -199,7 +271,13 @@ else
     resolve_relative_path CONDA_HOME ${CONDA_HOME}
 fi
 
-
+# set TETHYS_DB_DIR relative to TETHYS_HOME if not already set
+if [ -z ${TETHYS_DB_DIR} ]
+then
+    TETHYS_DB_DIR="${TETHYS_HOME}/psql"
+else
+    resolve_relative_path TETHYS_DB_DIR ${TETHYS_DB_DIR}
+fi
 
 if [ -n "${ECHO_COMMANDS}" ]
 then
@@ -219,85 +297,113 @@ then
 
     mkdir -p "${TETHYS_HOME}"
 
-    # install miniconda
-    # first see if Miniconda is already installed
-    if [ -f "${CONDA_HOME}/bin/activate" ]
+    if [ -n "${INSTALL_MINICONDA}" ]
     then
-        echo "Using existing Miniconda installation..."
-    else
-        echo "Installing Miniconda..."
-        wget ${MINICONDA_URL} -O "${TETHYS_HOME}/miniconda.sh" || (echo -using curl instead; curl ${MINICONDA_URL} -o "${TETHYS_HOME}/miniconda.sh")
-        pushd ./
-        cd "${TETHYS_HOME}"
-        bash miniconda.sh -b -p "${CONDA_HOME}"
-        popd
+        echo "MINICONDA" ${INSTALL_MINICONDA}
+        # install miniconda
+        # first see if Miniconda is already installed
+        if [ -f "${CONDA_HOME}/bin/activate" ]
+        then
+            echo "Using existing Miniconda installation..."
+        else
+            echo "Installing Miniconda..."
+            wget ${MINICONDA_URL} -O "${TETHYS_HOME}/miniconda.sh" || (echo -using curl instead; curl ${MINICONDA_URL} -o "${TETHYS_HOME}/miniconda.sh")
+            pushd ./
+            cd "${TETHYS_HOME}"
+            bash miniconda.sh -b -p "${CONDA_HOME}"
+            popd
+        fi
     fi
     export PATH="${CONDA_HOME}/bin:$PATH"
 
-    # clone Tethys repo
-    echo "Cloning the Tethys Platform repo..."
-    conda install --yes git
-    git clone https://github.com/tethysplatform/tethys.git "${TETHYS_HOME}/src"
-    cd "${TETHYS_HOME}/src"
-    git checkout ${BRANCH}
-
-    # create conda env and install Tethys
-    echo "Setting up the ${CONDA_ENV_NAME} environment..."
-    conda env create -n ${CONDA_ENV_NAME} -f "environment_py${PYTHON_VERSION}.yml"
-    . activate ${CONDA_ENV_NAME}
-    python setup.py develop
-
-    # only pass --allowed-hosts option to gen settings command if it is not the default
-    if [ ${ALLOWED_HOST} != "127.0.0.1" ]
+    if [ -n "${CLONE_REPO}" ]
     then
-        ALLOWED_HOST_OPT="--allowed-host ${ALLOWED_HOST}"
+        # clone Tethys repo
+        echo "Cloning the Tethys Platform repo..."
+        conda install --yes git
+        git clone https://github.com/tethysplatform/tethys.git "${TETHYS_HOME}/src"
+        cd "${TETHYS_HOME}/src"
+        git checkout ${BRANCH}
     fi
-    tethys gen settings ${ALLOWED_HOST_OPT} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT}
 
-    # Setup local database
-    echo "Setting up the Tethys database..."
-    initdb  -U postgres -D "${TETHYS_HOME}/psql/data"
-    pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" -l "${TETHYS_HOME}/psql/logfile" start -o "-p ${TETHYS_DB_PORT}"
-    echo "Waiting for databases to startup..."; sleep 10
-    psql -U postgres -p ${TETHYS_DB_PORT} --command "CREATE USER ${TETHYS_DB_USERNAME} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '${TETHYS_DB_PASSWORD}';"
-    createdb -U postgres -p ${TETHYS_DB_PORT} -O ${TETHYS_DB_USERNAME} ${TETHYS_DB_USERNAME} -E utf-8 -T template0
+    if [ -n "${CREATE_ENV}" ]
+    then
+        # create conda env and install Tethys
+        echo "Setting up the ${CONDA_ENV_NAME} environment..."
+        conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_HOME}/src/environment_py${PYTHON_VERSION}.yml"
+        source activate ${CONDA_ENV_NAME}
+        python "${TETHYS_HOME}/src/setup.py" develop
+    else
+        source activate ${CONDA_ENV_NAME}
+    fi
 
-    # Initialze Tethys database
-    tethys manage syncdb
-    echo "from django.contrib.auth.models import User; User.objects.create_superuser('${TETHYS_SUPER_USER}', '${TETHYS_SUPER_USER_EMAIL}', '${TETHYS_SUPER_USER_PASS}')" | python manage.py shell
-    pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" stop
-    . deactivate
+    if [ -n "${CREATE_SETTINGS}" ]
+    then
+        # only pass --allowed-hosts option to gen settings command if it is not the default
+        if [ ${ALLOWED_HOST} != "127.0.0.1" ]
+        then
+            ALLOWED_HOST_OPT="--allowed-host ${ALLOWED_HOST}"
+        fi
+        tethys gen settings ${ALLOWED_HOST_OPT} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT}
+    fi
 
+    if [ -n "${SETUP_DB}" ]
+    then
+        # Setup local database
+        export TETHYS_DB_PORT="${TETHYS_DB_PORT}"
+        echo "Setting up the Tethys database..."
+        initdb  -U postgres -D "${TETHYS_DB_DIR}/data"
+        pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" -l "${TETHYS_DB_DIR}/logfile" start -o "-p ${TETHYS_DB_PORT}"
+        echo "Waiting for databases to startup..."; sleep 10
+        psql -U postgres -p ${TETHYS_DB_PORT} --command "CREATE USER ${TETHYS_DB_USERNAME} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '${TETHYS_DB_PASSWORD}';"
+        createdb -U postgres -p ${TETHYS_DB_PORT} -O ${TETHYS_DB_USERNAME} ${TETHYS_DB_USERNAME} -E utf-8 -T template0
+        psql -U postgres -p ${TETHYS_DB_PORT} --command "CREATE USER ${TETHYS_DB_SUPER_USERNAME} WITH CREATEDB NOCREATEROLE SUPERUSER PASSWORD '${TETHYS_DB_SUPER_PASSWORD}';"
+        createdb -U postgres -p ${TETHYS_DB_PORT} -O ${TETHYS_DB_SUPER_USERNAME} ${TETHYS_DB_SUPER_USERNAME} -E utf-8 -T template0
 
-    # Create environment activate/deactivate scripts
-    mkdir -p "${ACTIVATE_DIR}" "${DEACTIVATE_DIR}"
+        # Initialze Tethys database
+        tethys manage syncdb
+        echo "from django.contrib.auth.models import User; User.objects.create_superuser('${TETHYS_SUPER_USER}', '${TETHYS_SUPER_USER_EMAIL}', '${TETHYS_SUPER_USER_PASS}')" | python "${TETHYS_HOME}/src/manage.py" shell
+        pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" stop
+        . deactivate
+    fi
 
-    echo "export TETHYS_HOME='${TETHYS_HOME}'" >> "${ACTIVATE_SCRIPT}"
-    echo "export TETHYS_PORT='${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
-    echo "export TETHYS_DB_PORT='${TETHYS_DB_PORT}'" >> "${ACTIVATE_SCRIPT}"
-    echo "export CONDA_HOME='${CONDA_HOME}'" >> "${ACTIVATE_SCRIPT}"
-    echo "export CONDA_ENV_NAME='${CONDA_ENV_NAME}'" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tethys_start_db='pg_ctl -U postgres -D \"\${TETHYS_HOME}/psql/data\" -l \"\${TETHYS_HOME}/psql/logfile\" start -o \"-p \${TETHYS_DB_PORT}\"'" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tstartdb=tethys_start_db" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tethys_stop_db='pg_ctl -U postgres -D \"\${TETHYS_HOME}/psql/data\" stop'" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tstopdb=tethys_stop_db" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tms='tethys manage start -p ${ALLOWED_HOST}:\${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tstart='tstartdb; tms'" >> "${ACTIVATE_SCRIPT}"
+    if [ -n "${CREATE_ENV_SCRIPTS}" ]
+    then
+        # Create environment activate/deactivate scripts
+        mkdir -p "${ACTIVATE_DIR}" "${DEACTIVATE_DIR}"
 
-    echo "unset TETHYS_HOME" >> "${DEACTIVATE_SCRIPT}"
-    echo "unset TETHYS_PORT" >> "${DEACTIVATE_SCRIPT}"
-    echo "unset TETHYS_DB_PORT" >> "${DEACTIVATE_SCRIPT}"
-    echo "unset CONDA_HOME" >> "${DEACTIVATE_SCRIPT}"
-    echo "unset CONDA_ENV_NAME" >> "${DEACTIVATE_SCRIPT}"
-    echo "unalias tethys_start_db" >> "${DEACTIVATE_SCRIPT}"
-    echo "unalias tstartdb" >> "${DEACTIVATE_SCRIPT}"
-    echo "unalias tethys_stop_db" >> "${DEACTIVATE_SCRIPT}"
-    echo "unalias tstopdb" >> "${DEACTIVATE_SCRIPT}"
-    echo "unalias tms" >> "${DEACTIVATE_SCRIPT}"
-    echo "unalias tstart" >> "${DEACTIVATE_SCRIPT}"
+        echo "export TETHYS_HOME='${TETHYS_HOME}'" >> "${ACTIVATE_SCRIPT}"
+        echo "export TETHYS_PORT='${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
+        echo "export TETHYS_DB_PORT='${TETHYS_DB_PORT}'" >> "${ACTIVATE_SCRIPT}"
+        echo "export TETHYS_DB_DIR='${TETHYS_DB_DIR}'" >> "${ACTIVATE_SCRIPT}"
+        echo "export CONDA_HOME='${CONDA_HOME}'" >> "${ACTIVATE_SCRIPT}"
+        echo "export CONDA_ENV_NAME='${CONDA_ENV_NAME}'" >> "${ACTIVATE_SCRIPT}"
+        echo "alias tethys_start_db='pg_ctl -U postgres -D \"\${TETHYS_DB_DIR}/data\" -l \"\${TETHYS_DB_DIR}/logfile\" start -o \"-p \${TETHYS_DB_PORT}\"'" >> "${ACTIVATE_SCRIPT}"
+        echo "alias tstartdb=tethys_start_db" >> "${ACTIVATE_SCRIPT}"
+        echo "alias tethys_stop_db='pg_ctl -U postgres -D \"\${TETHYS_DB_DIR}/data\" stop'" >> "${ACTIVATE_SCRIPT}"
+        echo "alias tstopdb=tethys_stop_db" >> "${ACTIVATE_SCRIPT}"
+        echo "alias tms='tethys manage start -p ${ALLOWED_HOST}:\${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
+        echo "alias tstart='tstartdb; tms'" >> "${ACTIVATE_SCRIPT}"
 
-    echo "# Tethys Platform" >> ~/${BASH_PROFILE}
-    echo "alias t='. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}'" >> ~/${BASH_PROFILE}
+        echo "unset TETHYS_HOME" >> "${DEACTIVATE_SCRIPT}"
+        echo "unset TETHYS_PORT" >> "${DEACTIVATE_SCRIPT}"
+        echo "unset TETHYS_DB_PORT" >> "${DEACTIVATE_SCRIPT}"
+        echo "unset TETHYS_DB_DIR" >> "${DEACTIVATE_SCRIPT}"
+        echo "unset CONDA_HOME" >> "${DEACTIVATE_SCRIPT}"
+        echo "unset CONDA_ENV_NAME" >> "${DEACTIVATE_SCRIPT}"
+        echo "unalias tethys_start_db" >> "${DEACTIVATE_SCRIPT}"
+        echo "unalias tstartdb" >> "${DEACTIVATE_SCRIPT}"
+        echo "unalias tethys_stop_db" >> "${DEACTIVATE_SCRIPT}"
+        echo "unalias tstopdb" >> "${DEACTIVATE_SCRIPT}"
+        echo "unalias tms" >> "${DEACTIVATE_SCRIPT}"
+        echo "unalias tstart" >> "${DEACTIVATE_SCRIPT}"
+    fi
+
+    if [ -n "${CREATE_SHORTCUTS}" ]
+    then
+        echo "# Tethys Platform" >> ~/${BASH_PROFILE}
+        echo "alias t='. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}'" >> ~/${BASH_PROFILE}
+    fi
 fi
 
 # Install Docker (if flag is set)
@@ -385,7 +491,7 @@ then
 
 
     . ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}
-    pg_ctl -U postgres -D "${TETHYS_HOME}/psql/data" -l "${TETHYS_HOME}/psql/logfile" start -o "-p ${TETHYS_DB_PORT}"
+    pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" -l "${TETHYS_DB_DIR}/logfile" start -o "-p ${TETHYS_DB_PORT}"
     echo "Waiting for databases to startup..."; sleep 5
     conda install -c conda-forge uwsgi -y
     tethys gen settings --production --allowed-host=${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite
@@ -533,7 +639,10 @@ if [ -z "${SKIP_TETHYS_INSTALL}" ]
 then
     echo "Tethys installation complete!"
     echo
-    echo "NOTE: to enable the new alias 't' which activates the tethys environment you must run '. ~/${BASH_PROFILE}'"
+    if [ -n "${CREATE_SHORTCUTS}" ]
+    then
+        echo "NOTE: to enable the new alias 't' which activates the tethys environment you must run '. ~/${BASH_PROFILE}'"
+    fi
 fi
 
 on_exit(){
