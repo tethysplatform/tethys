@@ -18,6 +18,8 @@ from tethys_apps.helpers import get_installed_tethys_apps, get_installed_tethys_
 
 from builtins import input
 
+from builtins import input
+
 
 class Command(BaseCommand):
     """
