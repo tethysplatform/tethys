@@ -16,12 +16,13 @@ os:
   - osx
 
 install:
-  - pwd
-  - bash ./scripts/install_tethys.sh -b master --python-version $PYTHON_VERSION
+  - mkdir src
+  - mv ./* src/
+  - bash ./src/scripts/install_tethys.sh -b master -t $PWD --python-version $PYTHON_VERSION
 
 # command to run tests
 script:
-  tstart &
+  tstart
   # tethys test
 
 
