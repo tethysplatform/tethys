@@ -1,5 +1,9 @@
 language: python
 
+python:
+  # We don't actually use the Travis Python, but this keeps it organized.
+  - "3.5"
+
 env:
   - PYTHON_VERSION="2"
   - PYTHON_VERSION="3"
@@ -21,9 +25,10 @@ install:
 
 # command to run tests
 script:
+  tstart &
   # tethys test
 
 
 # generate test coverage information
-after_success:
+# after_success:
   # coveralls
