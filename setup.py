@@ -48,7 +48,10 @@ setup(
     },
     install_requires=requires,
     extras_require={
-        'tests': [],
+        'tests': [
+            'requests_mock',
+
+        ],
         'docs': [
             'sphinx',
             'sphinx_rtd_theme',
