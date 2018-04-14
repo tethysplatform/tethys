@@ -23,7 +23,8 @@ install:
   - . ./miniconda/bin/activate tethys
   - pwd
   - bash ./src/scripts/install_tethys.sh --partial-tethys-install s -t $PWD --db-username tethys_super
-  - . ./miniconda/bin/activate tethys
+  - ls ./miniconda/bin/
+  - source ./miniconda/bin/activate tethys
   - tstartdb
   - conda list
   - cat $CONDA_HOME/envs/tethys/etc/conda/activate.d/tethys-activate.sh
