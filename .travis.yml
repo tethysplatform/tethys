@@ -1,0 +1,29 @@
+language: python
+
+env:
+  - PYTHON_VERSION="2"
+  - PYTHON_VERSION="3"
+
+# Setting sudo to false opts in to Travis-CI container-based builds.
+sudo: false
+
+# Turn off email notifications
+notifications:
+  email: false
+
+os:
+  - linux
+  - osx
+
+install:
+  - pwd
+  - bash ./scripts/install_tethys.sh -b master --python-version $PYTHON_VERSION
+
+# command to run tests
+script:
+  # tethys test
+
+
+# generate test coverage information
+after_success:
+  # coveralls
