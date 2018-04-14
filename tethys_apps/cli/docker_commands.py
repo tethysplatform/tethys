@@ -151,7 +151,7 @@ def validate_directory_cli_input(value, default=None):
             try:
                 os.makedirs(value)
             except OSError as e:
-                print ('{0}: {1}'.format(repr(e), value))
+                print('{0}: {1}'.format(repr(e), value))
                 prompt = 'Please provide a valid directory'
                 prompt = add_default_to_prompt(prompt, default)
                 prompt = close_prompt(prompt)
