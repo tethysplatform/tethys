@@ -40,7 +40,7 @@ def link_command(args):
         exit(0)
 
     except Exception as e:
-        print e
+        print(e)
         with pretty_output(FG_RED) as p:
             p.write('An unexpected error occurred. Please try again.')
         exit(1)
