@@ -1,3 +1,4 @@
+#
 language: c
 
 env:
@@ -21,11 +22,24 @@ install:
   - bash ./src/scripts/install_tethys.sh -h
   - bash ./src/scripts/install_tethys.sh --partial-tethys-install mesdat -t $PWD --python-version $PYTHON_VERSION
 
+  # activate conda environment
+  - export PATH="$PWD/miniconda/bin:$PATH"
+  - source activate tethys
+
+  # start database server
+  - pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" -l "${TETHYS_DB_DIR}/logfile" start -o "-p ${TETHYS_DB_PORT}"
+
+  # generate new settings.py file with tethys_super user for tests
+  - rm ./src/tethys_portal/settings.py
+  - tethys gen settings --db-username tethys_super --db-password pass --db-port ${TETHYS_DB_PORT}
+
+  # install test dependencies
+  - pip install -e $TETHYS_HOME/src/[tests]
+
+
 # command to run tests
 script:
-  tstart
-  # tethys test
-
+  - tethys test
 
 # generate test coverage information
 # after_success:
