@@ -23,6 +23,7 @@ install:
   - pwd
   - ls ./miniconda/bin/
   - source ./miniconda/bin/activate tethys
+  - rm ./src/tethys_portal/settings.py
   - bash ./src/scripts/install_tethys.sh --partial-tethys-install s -t $PWD --db-username tethys_super
   - tstartdb
   - conda list

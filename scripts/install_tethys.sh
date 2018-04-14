@@ -26,10 +26,10 @@ OPTIONS:\n
 \t        \t\t m - Install Miniconda\n
 \t        \t\t r - Clone Tethys repository\n
 \t        \t\t e - Create Conda environment\n
-\t        \t\t s - Create `settings.py` file\n
+\t        \t\t s - Create 'settings.py' file\n
 \t        \t\t d - Setup local database server\n
 \t        \t\t a - Create activation/deactivation scripts for the Tethys Conda environment\n
-\t        \t\t t - Create the `t` alias t\n\n
+\t        \t\t t - Create the 't' alias t\n\n
 
 \t        \t NOTE: if --skip-tethys-install is used then this option will be ignored.\n\n
 
@@ -313,8 +313,8 @@ then
             bash miniconda.sh -b -p "${CONDA_HOME}"
             popd
         fi
-        export PATH="${CONDA_HOME}/bin:$PATH"
     fi
+    export PATH="${CONDA_HOME}/bin:$PATH"
 
     if [ -n "${CLONE_REPO}" ]
     then
@@ -331,10 +331,10 @@ then
         # create conda env and install Tethys
         echo "Setting up the ${CONDA_ENV_NAME} environment..."
         conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_HOME}/src/environment_py${PYTHON_VERSION}.yml"
-        . activate ${CONDA_ENV_NAME}
+        source activate ${CONDA_ENV_NAME}
         python "${TETHYS_HOME}/src/setup.py" develop
     else
-        . activate ${CONDA_ENV_NAME}
+        source activate ${CONDA_ENV_NAME}
     fi
 
     if [ -n "${CREATE_SETTINGS}" ]
