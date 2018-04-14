@@ -24,6 +24,8 @@ from .workspace import TethysWorkspace
 from .mixins import TethysBaseMixin
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
+from past.builtins import basestring
+
 tethys_log = logging.getLogger('tethys.app_base')
 
 

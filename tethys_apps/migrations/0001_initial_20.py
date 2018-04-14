@@ -9,8 +9,6 @@ import tethys_compute.utilities
 
 class Migration(migrations.Migration):
 
-    # replaces = [('tethys_apps', '0001_initial'), ('tethys_apps', '0002_tethysapp_tags'), ('tethys_apps', '0003_auto_20170505_0350')]
-
     initial = True
 
     dependencies = [

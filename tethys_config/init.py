@@ -28,7 +28,7 @@ def initial_settings(apps, schema_editor):
                                         date_modified=now)
 
     general_category.setting_set.create(name="Favicon",
-                                        content="/static/tethys_portal/images/default_favicon.png",
+                                        content="/tethys_portal/images/default_favicon.png",
                                         date_modified=now)
 
     general_category.setting_set.create(name="Brand Text",
@@ -113,7 +113,7 @@ def initial_settings(apps, schema_editor):
                                      date_modified=now)
 
     home_category.setting_set.create(name="Feature 1 Image",
-                                     content="/static/tethys_portal/images/placeholder.gif",
+                                     content="/tethys_portal/images/placeholder.gif",
                                      date_modified=now)
 
     home_category.setting_set.create(name="Feature 2 Heading",
@@ -126,7 +126,7 @@ def initial_settings(apps, schema_editor):
                                      date_modified=now)
 
     home_category.setting_set.create(name="Feature 2 Image",
-                                     content="/static/tethys_portal/images/placeholder.gif",
+                                     content="/tethys_portal/images/placeholder.gif",
                                      date_modified=now)
 
     home_category.setting_set.create(name="Feature 3 Heading",
@@ -140,7 +140,7 @@ def initial_settings(apps, schema_editor):
                                      date_modified=now)
 
     home_category.setting_set.create(name="Feature 3 Image",
-                                     content="/static/tethys_portal/images/placeholder.gif",
+                                     content="/tethys_portal/images/placeholder.gif",
                                      date_modified=now)
 
     home_category.setting_set.create(name="Call to Action",
