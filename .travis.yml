@@ -24,15 +24,16 @@ install:
   - export PATH="$PWD/miniconda/bin:$PATH"
   - source activate tethys
   - conda list
-  - echo $TETHYS_DB_DIR
+  - echo $TETHYS_DB_DIR $TETHYS_DB_PORT
   - pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" -l "${TETHYS_DB_DIR}/logfile" start -o "-p ${TETHYS_DB_PORT}"
-  - bash ./src/scripts/install_tethys.sh --partial-tethys-install s -t $PWD --db-username tethys_super
+  - tethys gen settings --db-username tethys_super --db-password pass --db-port ${TETHYS_DB_PORT}
+  - pip install -e $TETHYS_HOME/src/[tests]
 
 
 # command to run tests
 script:
   - tethys test
-  - tstart
+  - tethys manage start
 
 
 # generate test coverage information
