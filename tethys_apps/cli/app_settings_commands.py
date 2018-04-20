@@ -39,7 +39,7 @@ def app_settings_list_command(args):
             p.write("\nUnlinked Settings:")
 
         if len(unlinked_settings) == 0:
-            print 'None'
+            print('None')
         else:
             is_first_row = True
             for setting in unlinked_settings:
@@ -47,13 +47,13 @@ def app_settings_list_command(args):
                     with pretty_output(BOLD) as p:
                         p.write('{0: <10}{1: <40}{2: <15}'.format('ID', 'Name', 'Type'))
                     is_first_row = False
-                print '{0: <10}{1: <40}{2: <15}'.format(setting.pk, setting.name, setting_type_dict[type(setting)])
+                print('{0: <10}{1: <40}{2: <15}'.format(setting.pk, setting.name, setting_type_dict[type(setting)]))
 
         with pretty_output(BOLD) as p:
             p.write("\nLinked Settings:")
 
         if len(linked_settings) == 0:
-            print 'None'
+            print('None')
         else:
             is_first_row = True
             for setting in linked_settings:
@@ -63,13 +63,13 @@ def app_settings_list_command(args):
                     is_first_row = False
                 service_name = setting.spatial_dataset_service.name if hasattr(setting, 'spatial_dataset_service') \
                     else setting.persistent_store_service.name
-                print '{0: <10}{1: <40}{2: <15}{3: <20}'.format(setting.pk, setting.name,
-                                                                setting_type_dict[type(setting)], service_name)
+                print('{0: <10}{1: <40}{2: <15}{3: <20}'.format(setting.pk, setting.name,
+                                                                setting_type_dict[type(setting)], service_name))
     except ObjectDoesNotExist:
         with pretty_output(FG_RED) as p:
             p.write('The app you specified ("{0}") does not exist. Command aborted.'.format(app_package))
     except Exception as e:
-        print e
+        print(e)
         with pretty_output(FG_RED) as p:
             p.write('Something went wrong. Please try again.')
 

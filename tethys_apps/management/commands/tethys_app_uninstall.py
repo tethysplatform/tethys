@@ -16,6 +16,8 @@ import warnings
 from django.core.management.base import BaseCommand
 from tethys_apps.helpers import get_installed_tethys_apps, get_installed_tethys_extensions
 
+from builtins import input
+
 
 class Command(BaseCommand):
     """
@@ -48,11 +50,11 @@ class Command(BaseCommand):
         valid_inputs = ('y', 'n', 'yes', 'no')
         no_inputs = ('n', 'no')
 
-        overwrite_input = raw_input('Are you sure you want to uninstall "{0}"? (y/n): '.format(item_with_prefix)).lower()
+        overwrite_input = input('Are you sure you want to uninstall "{0}"? (y/n): '.format(item_with_prefix)).lower()
 
         while overwrite_input not in valid_inputs:
-            overwrite_input = raw_input('Invalid option. Are you sure you want to '
-                                        'uninstall "{0}"? (y/n): '.format(item_with_prefix)).lower()
+            overwrite_input = input('Invalid option. Are you sure you want to '
+                                    'uninstall "{0}"? (y/n): '.format(item_with_prefix)).lower()
 
         if overwrite_input in no_inputs:
             self.stdout.write('Uninstall cancelled by user.')
