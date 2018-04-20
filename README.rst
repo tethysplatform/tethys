@@ -1,6 +1,6 @@
 Tethys Platform
 ===============
-.. image:: https://travis-ci.org/tethysplatform/tethys.svg?branch=release
+.. image:: https://travis-ci.org/tethysplatform/tethys.svg?branch=master
     :target: https://travis-ci.org/tethysplatform/tethys
 
 Tethys Platform provides both a development environment and a hosting environment for water resources web apps.
