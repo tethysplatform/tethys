@@ -810,7 +810,7 @@ class TethysAppBase(object):
             result = app.create_persistent_store('example_db', 'primary')
 
             if result:
-                engine = app.get_persistent_store_engine('example_db')
+                engine = app.get_persistent_store_database('example_db')
 
         """
         # Get named persistent store service connection
@@ -987,7 +987,7 @@ class TethysAppBase(object):
             result = app.persistent_store_exists('example_db')
 
             if result:
-                engine = app.get_persistent_store_engine('example_db')
+                engine = app.get_persistent_store_database('example_db')
 
         """
         from tethys_apps.models import TethysApp
