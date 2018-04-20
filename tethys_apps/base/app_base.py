@@ -595,10 +595,13 @@ class TethysAppBase(TethysBase):
         )
 
         # Remove any permissions that no longer exist
-        db_app_permissions = Permission.objects.filter(content_type=tethys_content_type).all()
+        db_app_permissions = Permission.objects.\
+            filter(content_type=tethys_content_type).\
+            filter(codename__icontains=perm_codename_prefix).\
+            all()
 
         for db_app_permission in db_app_permissions:
-            # Delete the permission if the permission is no longer required by an app
+            # Delete the permission if the permission is no longer required by this app
             if db_app_permission.codename not in app_permissions:
                 db_app_permission.delete()
 
@@ -622,7 +625,7 @@ class TethysAppBase(TethysBase):
                 p.save()
 
         # Remove any groups that no longer exist
-        db_groups = Group.objects.all()
+        db_groups = Group.objects.filter(name__icontains=perm_codename_prefix).all()
         db_apps = TethysApp.objects.all()
         db_app_names = [db_app.package for db_app in db_apps]
 
@@ -632,7 +635,7 @@ class TethysAppBase(TethysBase):
             # Only perform maintenance on groups that belong to Tethys Apps
             if (len(db_group_name_parts) > 1) and (db_group_name_parts[0] in db_app_names):
 
-                # Delete groups that is no longer required by an app
+                # Delete groups that is no longer required by this app
                 if db_group.name not in app_groups:
                     db_group.delete()
 
