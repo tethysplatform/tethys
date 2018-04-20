@@ -30,7 +30,7 @@ def get_directories_in_tethys(directory_names, with_app_name=False):
     """
     # Determine the directories of tethys apps directory
     tethysapp_dir = safe_join(os.path.abspath(os.path.dirname(__file__)), 'tethysapp')
-    tethysapp_contents = os.walk(tethysapp_dir).next()[1]
+    tethysapp_contents = next(os.walk(tethysapp_dir))[1]
     potential_dirs = [safe_join(tethysapp_dir, item) for item in tethysapp_contents]
 
 
@@ -132,7 +132,7 @@ def create_ps_database_setting(app_package, name, description='', required=False
                                                                                                           app_package))
         return True
     except Exception as e:
-        print e
+        print(e)
         with pretty_output(FG_RED) as p:
             p.write('The above error was encountered. Aborted.'.format(app_package))
         return False
