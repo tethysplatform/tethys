@@ -202,8 +202,8 @@ def services_list_command(args):
                     with pretty_output(BOLD) as p:
                         p.write('{0: <3}{1: <50}{2: <25}{3: <6}'.format('ID', 'Name', 'Host', 'Port'))
                     is_first_entry = False
-                print '{0: <3}{1: <50}{2: <25}{3: <6}'.format(model_dict['id'], model_dict['name'],
-                                                              model_dict['host'], model_dict['port'])
+                print('{0: <3}{1: <50}{2: <25}{3: <6}'.format(model_dict['id'], model_dict['name'],
+                                                              model_dict['host'], model_dict['port']))
 
     if list_spatial:
         spatial_entries = SpatialDatasetService.objects.order_by('id').all()
@@ -218,8 +218,8 @@ def services_list_command(args):
                         p.write('{0: <3}{1: <50}{2: <50}{3: <50}{4: <30}'.format('ID', 'Name', 'Endpoint',
                                                                                  'Public Endpoint', 'API Key'))
                     is_first_entry = False
-                print '{0: <3}{1: <50}{2: <50}{3: <50}{4: <30}'.format(model_dict['id'], model_dict['name'],
+                print('{0: <3}{1: <50}{2: <50}{3: <50}{4: <30}'.format(model_dict['id'], model_dict['name'],
                                                                        model_dict['endpoint'],
                                                                        model_dict['public_endpoint'],
                                                                        model_dict['apikey'] if model_dict['apikey']
-                                                                       else "None")
+                                                                       else "None"))
