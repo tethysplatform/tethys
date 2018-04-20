@@ -55,7 +55,7 @@ class Command(BaseCommand):
 
             # Only perform if workspaces_path is a directory
             if not os.path.isdir(app_ws_path):
-                print 'WARNING: The workspace_path for app "{}" is not a directory. Skipping...'.format(app)
+                print('WARNING: The workspace_path for app "{}" is not a directory. Skipping...'.format(app))
                 continue
 
             if not os.path.islink(app_ws_path):
