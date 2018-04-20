@@ -425,8 +425,8 @@ def condor_job_pre_delete(sender, instance, using, **kwargs):
     try:
         instance.condor_object.close_remote()
         shutil.rmtree(instance.initial_dir, ignore_errors=True)
-    except Exception, e:
-        log.exception(e.message)
+    except Exception as e:
+        log.exception(str(e))
 
 
 class CondorPyWorkflow(models.Model):
@@ -543,8 +543,8 @@ def condor_workflow_pre_delete(sender, instance, using, **kwargs):
     try:
         instance.condor_object.close_remote()
         shutil.rmtree(instance.workspace, ignore_errors=True)
-    except Exception, e:
-        log.exception(e.message)
+    except Exception as e:
+        log.exception(str(e))
 
 
 class CondorWorkflowNode(models.Model):
