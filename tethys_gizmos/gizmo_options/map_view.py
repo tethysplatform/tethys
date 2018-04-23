@@ -246,7 +246,7 @@ class MapView(TethysGizmoOptions):
     """  # noqa: E501
     gizmo_name = "map_view"
 
-    def __init__(self, height='100%', width='100%', basemap='OpenStreetMap', view={'center': [-100, 40], 'zoom': 2},
+    def __init__(self, height='100%', width='100%', basemap=None, view={'center': [-100, 40], 'zoom': 2},
                  controls=[], layers=[], draw=None, legend=False, attributes={}, classes='', disable_basemap=False,
                  feature_selection=None):
         """
