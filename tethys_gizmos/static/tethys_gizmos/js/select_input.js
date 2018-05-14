@@ -46,7 +46,7 @@ var TETHYS_SELECT_INPUT = (function() {
 	// the DOM tree finishes loading
 	$(function() {
 		// Initialize any select2 elements
-		initSelectInput($('.select2'));
+		initSelectInput($('.tethys-select2'));
 	});
 
 	return public_interface;
