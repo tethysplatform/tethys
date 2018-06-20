@@ -14,9 +14,9 @@ class TethysTestCase(TestCase):
     def setUp(self):
         # Resets the apps database and app permissions (workaround since Django's testing framework refreshes the
         # core db after each individual test)
-        from tethys_apps.utilities import sync_tethys_db, register_app_permissions
-        sync_tethys_db()
-        register_app_permissions()
+        from tethys_apps.harvester import SingletonHarvester
+        harvester = SingletonHarvester()
+        harvester.harvest()
         self.set_up()
 
     def tearDown(self):
