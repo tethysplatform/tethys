@@ -6,7 +6,7 @@ This project houses the docker file and scripts needed to make usable docker ima
 
 | Argument              | Description                 |Phase| Default                 |
 |-----------------------|-----------------------------|-----|-------------------------|
-|ALLOWED_HOST           | Django Setting              |Run  |127.0.0.1                |
+|ALLOWED_HOSTS          | Django Setting              |Run  |['127.0.0.1', 'localhost']|
 |BASH_PROFILE           | Where to create aliases     |Run  |.bashrc                  |
 |CONDA_HOME             | Path to Conda Home Dir      |Build|${TETHYS_HOME}/miniconda”|
 |CONDA_ENV_NAME         | Name of Conda environ       |Build|tethys                   |
@@ -14,14 +14,16 @@ This project houses the docker file and scripts needed to make usable docker ima
 |PYTHON_VERSION         | Version of Python to use    |Build|2                        |
 |TETHYS_HOME            | Path to Tethys Home Dir     |Build|/usr/lib/tethys          |
 |TETHYS_PORT            | Port for external web access|Run  |80                       |
-|TETHYS_PUBLIC_HOST     |                             |?    |172.17.0.1               |
+|TETHYS_PUBLIC_HOST     | Public host and port        |Run  |127.0.0.1                |
 |TETHYS_DB_USERNAME     | Postgres connection username|Run  |tethys_default           |
 |TETHYS_DB_PASSWORD     | Postgres connection password|Run  |pass                     |
 |TETHYS_DB_HOST         | Postgres connection address |Run  |172.17.0.1               |
 |TETHYS_DB_PORT         | Postgres connection Port    |Run  |5432                     |
-|TETHYS_SUPER_USER      | Default superuser username  |Run  |admin                    |
+|TETHYS_SUPER_USER      | Default superuser username  |Run  |""                       |
 |TETHYS_SUPER_USER_EMAIL| Default superuser email     |Run  |“”                       |
-|TETHYS_SUPER_USER_PASS | Default superuser password  |Run  |pass                     |
+|TETHYS_SUPER_USER_PASS | Default superuser password  |Run  |""                       |
+|UWSGI_PROCESSES        | Number of uwsgi processes   |Run  |10                       |
+|CLIENT_MAX_BODY_SIZE   | Maximum size of file uploads|Run  |75M                      |
 
 ### Building the Docker
 To build the docker use the following commands in the terminal after

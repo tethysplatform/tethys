@@ -14,7 +14,7 @@ uwsgi:
     master: true
     pidfile2: /run/uwsgi/tethys.pid
     # maximum number of worker processes
-    processes:  10
+    processes:  {{ uwsgi_processes }}
     # the socket file with correct permissions
     socket: /run/uwsgi/tethys.sock
     chmod-socket: 600

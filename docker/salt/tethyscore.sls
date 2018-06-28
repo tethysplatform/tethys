@@ -1,7 +1,9 @@
-{% set ALLOWED_HOST = salt['environ.get']('ALLOWED_HOST') %}
+{% set ALLOWED_HOSTS = salt['environ.get']('ALLOWED_HOSTS') %}
 {% set CONDA_ENV_NAME = salt['environ.get']('CONDA_ENV_NAME') %}
 {% set CONDA_HOME = salt['environ.get']('CONDA_HOME') %}
 {% set NGINX_USER = salt['environ.get']('NGINX_USER') %}
+{% set CLIENT_MAX_BODY_SIZE = salt['environ.get']('CLIENT_MAX_BODY_SIZE') %}
+{% set UWSGI_PROCESSES = salt['environ.get']('UWSGI_PROCESSES') %}
 {% set TETHYS_BIN_DIR = [CONDA_HOME, "/envs/", CONDA_ENV_NAME, "/bin"]|join %}
 {% set TETHYS_DB_HOST = salt['environ.get']('TETHYS_DB_HOST') %}
 {% set TETHYS_DB_PASSWORD = salt['environ.get']('TETHYS_DB_PASSWORD') %}
@@ -19,7 +21,7 @@
 
 Generate_Tethys_Settings:
   cmd.run:
-    - name: {{ TETHYS_BIN_DIR }}/tethys gen settings --production --allowed-host={{ ALLOWED_HOST }} --db-username {{ TETHYS_DB_USERNAME }} --db-password {{ TETHYS_DB_PASSWORD }} --db-port {{ TETHYS_DB_PORT }} --overwrite
+    - name: {{ TETHYS_BIN_DIR }}/tethys gen settings --production --allowed-hosts={{ ALLOWED_HOSTS }} --db-username {{ TETHYS_DB_USERNAME }} --db-password {{ TETHYS_DB_PASSWORD }} --db-port {{ TETHYS_DB_PORT }} --overwrite
     - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Edit_Tethys_Settings_File_(HOST):
@@ -57,12 +59,12 @@ Edit_Tethys_Settings_File_(PUBLIC_HOST):
 
 Generate_NGINX_Settings:
   cmd.run:
-    - name: {{ TETHYS_BIN_DIR }}/tethys gen nginx --overwrite
+    - name: {{ TETHYS_BIN_DIR }}/tethys gen nginx --client-max-body-size="{{ CLIENT_MAX_BODY_SIZE }}" --overwrite
     - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Generate_uwsgi_Settings:
   cmd.run:
-    - name: {{ TETHYS_BIN_DIR }}/tethys gen uwsgi_settings --overwrite
+    - name: {{ TETHYS_BIN_DIR }}/tethys gen uwsgi_settings --uwsgi-processes={{ UWSGI_PROCESSES }} --overwrite
     - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Generate_uwsgi_service:

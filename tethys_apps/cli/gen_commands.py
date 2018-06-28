@@ -119,6 +119,7 @@ def generate_command(args):
         secret_key = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(50)])
         context.update({'secret_key': secret_key,
                         'allowed_host': args.allowed_host,
+                        'allowed_hosts': args.allowed_hosts,
                         'db_username': args.db_username,
                         'db_password': args.db_password,
                         'db_port': args.db_port,
@@ -127,13 +128,14 @@ def generate_command(args):
                         })
 
     if args.type == GEN_NGINX_OPTION:
-        hostname = ''. join(settings.ALLOWED_HOSTS)
+        hostname = str(settings.ALLOWED_HOSTS[0]) if len(settings.ALLOWED_HOSTS) > 0 else '127.0.0.1'
         workspaces_root = get_settings_value('TETHYS_WORKSPACES_ROOT')
         static_root = get_settings_value('STATIC_ROOT')
 
         context.update({'hostname': hostname,
                         'workspaces_root': workspaces_root,
                         'static_root': static_root,
+                        'client_max_body_size': args.client_max_body_size
                         })
 
     if args.type == GEN_UWSGI_SERVICE_OPTION:
@@ -158,7 +160,8 @@ def generate_command(args):
         conda_env_name = get_environment_value('CONDA_ENV_NAME')
 
         context.update({'conda_home': conda_home,
-                        'conda_env_name': conda_env_name})
+                        'conda_env_name': conda_env_name,
+                        'uwsgi_processes': args.uwsgi_processes})
 
     if args.directory:
         if os.path.isdir(args.directory):

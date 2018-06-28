@@ -13,7 +13,7 @@ server {
     charset     utf-8;
 
     # max upload size
-    client_max_body_size 75M;   # adjust to taste
+    client_max_body_size {{ client_max_body_size }};   # adjust to taste
 
     # Tethys Workspaces
     location /workspaces  {
