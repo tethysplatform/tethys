@@ -233,7 +233,15 @@ def tethys_command():
     gen_parser.add_argument('type', help='The type of object to generate.', choices=VALID_GEN_OBJECTS)
     gen_parser.add_argument('-d', '--directory', help='Destination directory for the generated object.')
     gen_parser.add_argument('--allowed-host', dest='allowed_host',
-                            help='Hostname or IP address to add to allowed hosts in the settings file.')
+                            help='Single hostname or IP address to add to allowed hosts in the settings file. '
+                                 'e.g.: 127.0.0.1')
+    gen_parser.add_argument('--allowed-hosts', dest='allowed_hosts',
+                            help='A list of hostnames or IP addresses to add to allowed hosts in the settings file. '
+                                 'e.g.: "[\'127.0.0.1\', \'localhost\']"')
+    gen_parser.add_argument('--client-max-body-size', dest='client_max_body_size',
+                            help='Populates the client_max_body_size parameter for nginx config. Defaults to "75M".')
+    gen_parser.add_argument('--uwsgi-processes', dest='uwsgi_processes',
+                            help='The maximum number of uwsgi worker processes. Defaults to 10.')
     gen_parser.add_argument('--db-username', dest='db_username',
                             help='Username for the Tethys Database server to be set in the settings file.')
     gen_parser.add_argument('--db-password', dest='db_password',
@@ -244,8 +252,9 @@ def tethys_command():
                             help='Generate a new settings file for a production server.')
     gen_parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                             help='Overwrite existing file without prompting.')
-    gen_parser.set_defaults(func=generate_command, allowed_host=None, db_username='tethys_default',
-                            db_password='pass', db_port=5436, production=False, overwrite=False)
+    gen_parser.set_defaults(func=generate_command, allowed_host=None, allowed_hosts=None, client_max_body_size='75M',
+                            uwsgi_processes=10, db_username='tethys_default', db_password='pass', db_port=5436,
+                            production=False, overwrite=False)
 
     # Setup start server command
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
