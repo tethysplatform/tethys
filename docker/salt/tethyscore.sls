@@ -104,7 +104,7 @@ Sync_Stores:
 
 Create_Super_User:
   cmd.run:
-    - name: "{{TETHYS_BIN_DIR }}/python {{ TETHYS_HOME }}/src/manage.py shell -c \"from django.contrib.auth.models import User;\nif (len(User.objects.filter(username='{{ TETHYS_SUPER_USER }}')) == 0):\n\tUser.objects.create_superuser('{{ TETHYS_SUPER_USER }}', '{{ TETHYS_SUPER_USER_EMAIL }}', '{{ TETHYS_SUPER_USER_PASS }}')\""
+    - name: "{{TETHYS_BIN_DIR }}/python {{ TETHYS_HOME }}/src/manage.py shell -c \"from django.contrib.auth.models import User;\nif '{{ TETHYS_SUPER_USER }}' and len(User.objects.filter(username='{{ TETHYS_SUPER_USER }}')) == 0:\n\tUser.objects.create_superuser('{{ TETHYS_SUPER_USER }}', '{{ TETHYS_SUPER_USER_EMAIL }}', '{{ TETHYS_SUPER_USER_PASS }}')\""
     - cwd: {{ TETHYS_HOME }}/src
     - shell: /bin/bash 
 
