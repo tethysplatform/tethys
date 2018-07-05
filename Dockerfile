@@ -16,7 +16,7 @@ ENV  TETHYS_HOME="/usr/lib/tethys" \
      TETHYS_SUPER_USER_PASS=""
 
 # Misc
-ENV  ALLOWED_HOSTS="'127.0.0.1', 'localhost'" \
+ENV  ALLOWED_HOSTS="['127.0.0.1', 'localhost']" \
      BASH_PROFILE=".bashrc" \
      CONDA_HOME="${TETHYS_HOME}/miniconda" \
      CONDA_ENV_NAME=tethys \
@@ -83,12 +83,12 @@ ADD static ${TETHYS_HOME}/src/static/
 
 # Generate Inital Settings Files
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
-  ; tethys gen settings --production --allowed-host ${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite \
+  ; tethys gen settings --production --allowed-host "${ALLOWED_HOST}" --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite \
   ; sed -i -e "s:#TETHYS_WORKSPACES_ROOT = .*$:TETHYS_WORKSPACES_ROOT = \"/usr/lib/tethys/workspaces\":" ${TETHYS_HOME}/src/tethys_portal/settings.py \
   ; tethys gen nginx --overwrite \
   ; tethys gen uwsgi_settings --overwrite \
   ; tethys gen uwsgi_service --overwrite \
-  ; python manage.py collectstatic'
+  ; tethys manage collectstatic'
 
 # Give NGINX Permission
 RUN export NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}') \
