@@ -105,6 +105,7 @@ def manage_command(args):
         primary_process = ['python', manage_path, 'createsuperuser']
     elif args.command == MANAGE_SYNC:
         from tethys_apps.harvester import SingletonHarvester
+        harvester = SingletonHarvester()
         harvester.harvest()
 
     if primary_process:
