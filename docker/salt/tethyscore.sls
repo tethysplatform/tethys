@@ -120,7 +120,3 @@ Flag_Complete_Tethys_Setup:
   cmd.run:
     - name: touch /usr/lib/tethys/setup_complete
     - shell: /bin/bash
-
-
-
-
