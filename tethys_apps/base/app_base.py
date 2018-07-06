@@ -1037,7 +1037,7 @@ class TethysAppBase(TethysBase):
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('PersistentStoreDatabaseSetting', verified_name, cls.name)
         except TethysAppSettingNotAssigned:
-            cls._log_tethys_app_setting_not_assigned_error('PersistentStoreConnectionSetting', verified_name)
+            cls._log_tethys_app_setting_not_assigned_error('PersistentStoreDatabaseSetting', verified_name)
 
     @classmethod
     def create_persistent_store(cls, db_name, connection_name, spatial=False, initializer='', refresh=False,
