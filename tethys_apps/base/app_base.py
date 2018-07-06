@@ -1317,6 +1317,17 @@ class TethysAppBase(TethysBase):
                 db_app.icon = self.icon
                 db_app.root_url = self.root_url
                 db_app.color = self.color
+
+                # custom settings
+                db_app.add_settings(self.custom_settings())
+                # dataset services settings
+                db_app.add_settings(self.dataset_service_settings())
+                # spatial dataset services settings
+                db_app.add_settings(self.spatial_dataset_service_settings())
+                # wps settings
+                db_app.add_settings(self.web_processing_service_settings())
+                # persistent store settings
+                db_app.add_settings(self.persistent_store_settings())
                 db_app.save()
 
                 if hasattr(settings, 'DEBUG') and settings.DEBUG:
@@ -1325,18 +1336,6 @@ class TethysAppBase(TethysBase):
                     db_app.tags = self.tags
                     db_app.enable_feedback = self.enable_feedback
                     db_app.feedback_emails = self.feedback_emails
-                    db_app.save()
-
-                    # custom settings
-                    db_app.add_settings(self.custom_settings())
-                    # dataset services settings
-                    db_app.add_settings(self.dataset_service_settings())
-                    # spatial dataset services settings
-                    db_app.add_settings(self.spatial_dataset_service_settings())
-                    # wps settings
-                    db_app.add_settings(self.web_processing_service_settings())
-                    # persistent store settings
-                    db_app.add_settings(self.persistent_store_settings())
                     db_app.save()
 
             # More than one instance of the app in db... (what to do here?)
