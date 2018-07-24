@@ -51,4 +51,4 @@ class TestJobsTable(unittest.TestCase):
                                     column_name.title(), column_name)
 
     def test_get_gizmo_js(self):
-        self.assertIn('js', gizmo_jobs_table.JobsTable.get_gizmo_js()[0])
+        self.assertIn('jobs_table.js', gizmo_jobs_table.JobsTable.get_gizmo_js()[0])
