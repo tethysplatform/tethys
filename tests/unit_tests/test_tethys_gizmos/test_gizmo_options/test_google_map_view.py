@@ -26,9 +26,7 @@ class TestGoogleMapView(unittest.TestCase):
         self.assertIn(width, result['width'])
         self.assertIn(maps_api_key, result['maps_api_key'])
         self.assertIn(reference_kml_action, result['reference_kml_action'])
-        self.assertIn(drawing_types_enabled[0], result['drawing_types_enabled'])
-        self.assertIn(drawing_types_enabled[1], result['drawing_types_enabled'])
-        self.assertIn(drawing_types_enabled[2], result['drawing_types_enabled'])
+        self.assertEqual(drawing_types_enabled, result['drawing_types_enabled'])
         self.assertIn(initial_drawing_mode, result['initial_drawing_mode'])
         self.assertIn(output_format, result['output_format'])
 

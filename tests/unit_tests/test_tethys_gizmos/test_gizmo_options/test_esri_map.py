@@ -15,8 +15,7 @@ class TestESRI(unittest.TestCase):
         result = gizmo_esri_map.ESRIMap(basemap=basemap, layers=layers)
 
         self.assertIn(basemap, result['basemap'])
-        self.assertIn(layers[0], result['layers'])
-        self.assertIn(layers[1], result['layers'])
+        self.assertEqual(layers, result['layers'])
 
         result = gizmo_esri_map.ESRIMap.get_vendor_js()
         self.assertIn('js', result[0])
@@ -34,8 +33,7 @@ class TestESRI(unittest.TestCase):
         result = gizmo_esri_map.EMView(center=center, zoom=zoom)
 
         self.assertEqual(zoom, result['zoom'])
-        self.assertIn(center[0], result['center'])
-        self.assertIn(center[1], result['center'])
+        self.assertEqual(center, result['center'])
 
     def test_EMLayer(self):
         type = 'ImageryLayer'
