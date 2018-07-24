@@ -2,7 +2,7 @@ import unittest
 import tethys_gizmos.gizmo_options.google_map_view as gizmo_google_map_view
 
 
-class TestESRI(unittest.TestCase):
+class TestGoogleMapView(unittest.TestCase):
     def setUp(self):
         pass
 
