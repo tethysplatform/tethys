@@ -15,6 +15,7 @@ class TestDatatableView(unittest.TestCase):
         rows = 2
         result = gizmo_datatable_view.DataTableView(rows=rows, column_names=column_names,
                                                     datatable_options= datatable_options)
+        # Check Result
         self.assertEqual(rows, result['rows'])
         self.assertEqual(column_names, result['column_names'])
         self.assertIn(datatable_options['rows'][0][0], result['datatable_options']['datatable_options'])
@@ -25,10 +26,16 @@ class TestDatatableView(unittest.TestCase):
         self.assertIn(datatable_options['rows'][1][2], result['datatable_options']['datatable_options'])
 
         result = gizmo_datatable_view.DataTableView.get_vendor_css()
-        self.assertIn('css', result[0])
+        # Check Result
+        self.assertIn('.css', result[0])
+        self.assertNotIn('.js', result[0])
 
         result = gizmo_datatable_view.DataTableView.get_vendor_js()
-        self.assertIn('js', result[0])
+        # Check Result
+        self.assertIn('.js', result[0])
+        self.assertNotIn('.css', result[0])
 
         result = gizmo_datatable_view.DataTableView.get_gizmo_js()
-        self.assertIn('js', result[0])
+        # Check Result
+        self.assertIn('.js', result[0])
+        self.assertNotIn('.css', result[0])

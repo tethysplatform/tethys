@@ -11,7 +11,7 @@ class TestButton(unittest.TestCase):
 
     def test_ButtonGroup(self):
         buttons = [{'display_text': 'Add', 'style': 'success'},
-                  {'display_text': 'Delete', 'style': 'danger'}]
+                   {'display_text': 'Delete', 'style': 'danger'}]
         result = gizmo_button.ButtonGroup(buttons)
 
         self.assertIn(buttons[0], result['buttons'])

@@ -22,9 +22,10 @@ class TestBokehView(unittest.TestCase):
     def test_get_vendor_css(self):
         result = bokeh_view.BokehView.get_vendor_css()
 
-        self.assertIn('css', result[0])
+        self.assertIn('.css', result[0])
+        self.assertNotIn('.js', result[0])
 
     def test_get_vendor_js(self):
         result = bokeh_view.BokehView.get_vendor_js()
-        print(result)
-        self.assertIn('js', result[0])
+        self.assertIn('.js', result[0])
+        self.assertNotIn('.css', result[0])

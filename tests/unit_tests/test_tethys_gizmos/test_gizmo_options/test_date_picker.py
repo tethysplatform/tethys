@@ -22,6 +22,7 @@ class TestButton(unittest.TestCase):
                                               calendar_weeks=calendar_weeks, clear_button=clear_button,
                                               days_of_week_disabled=days_of_week_disabled, min_view_mode=min_view_mode)
 
+        # Check Result
         self.assertIn(name, result['name'])
         self.assertIn(display_text, result['display_text'])
         self.assertTrue(result['autoclose'])
@@ -31,7 +32,11 @@ class TestButton(unittest.TestCase):
         self.assertIn(min_view_mode, result['min_view_mode'])
 
         result = gizmo_date_picker.DatePicker.get_vendor_css()
-        self.assertIn('css', result[0])
+
+        # Check Result
+        self.assertIn('.css', result[0])
+        self.assertNotIn('.js', result[0])
 
         result = gizmo_date_picker.DatePicker.get_vendor_js()
-        self.assertIn('js', result[0])
+        self.assertIn('.js', result[0])
+        self.assertNotIn('.css', result[0])

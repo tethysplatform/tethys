@@ -160,7 +160,6 @@ class TestMapView(unittest.TestCase):
         # Check Result
         self.assertEqual(type_value, result['type'])
         self.assertEqual(fill, result['fill'])
-        # TODO: should this be stroke = fill instead of line = fill
         self.assertEqual(fill, result['line'])
 
         # Polygon with no fill

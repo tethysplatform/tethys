@@ -52,3 +52,4 @@ class TestJobsTable(unittest.TestCase):
 
     def test_get_gizmo_js(self):
         self.assertIn('jobs_table.js', gizmo_jobs_table.JobsTable.get_gizmo_js()[0])
+        self.assertNotIn('.css', gizmo_jobs_table.JobsTable.get_gizmo_js()[0])

@@ -21,7 +21,7 @@ class TestGoogleMapView(unittest.TestCase):
                                                      reference_kml_action=reference_kml_action, output_format=output_format,
                                                      drawing_types_enabled=drawing_types_enabled,
                                                      initial_drawing_mode=initial_drawing_mode)
-
+        # Check Result
         self.assertIn(height, result['height'])
         self.assertIn(width, result['width'])
         self.assertIn(maps_api_key, result['maps_api_key'])
@@ -31,10 +31,16 @@ class TestGoogleMapView(unittest.TestCase):
         self.assertIn(output_format, result['output_format'])
 
         result = gizmo_google_map_view.GoogleMapView.get_vendor_js()
-        self.assertIn('js', result[0])
+        # Check Result
+        self.assertIn('.js', result[0])
+        self.assertNotIn('.css', result[0])
 
         result = gizmo_google_map_view.GoogleMapView.get_vendor_css()
-        self.assertIn('css', result[0])
+        # Check Result
+        self.assertIn('.css', result[0])
+        self.assertNotIn('.js', result[0])
 
         result = gizmo_google_map_view.GoogleMapView.get_gizmo_js()
-        self.assertIn('js', result[0])
+        # Check Result
+        self.assertIn('.js', result[0])
+        self.assertNotIn('.css', result[0])
