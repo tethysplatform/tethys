@@ -117,8 +117,10 @@ class JobsTable(TethysGizmoOptions):
                         value = str(value).split('.')[0]
                     row_values.append(value)
                 else:
-                    log.waring('Column %s was not added because %s Job %s has no attribute %s.',
-                               column_name, str(job), attribute)
+                    # log.warning('Column %s was not added because %s Job %s has no attribute %s.',
+                    #            column_name, str(job), attribute)
+                    log.warning('Column %s was not added because Job has no attribute %s.',
+                                column_name, attribute)
 
             rows.append(row_values)
             column_names.append(column_name)

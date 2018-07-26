@@ -9,6 +9,8 @@
 """
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 from django.conf import settings
+import logging
+log = logging.getLogger('tethys.tethys_gizmos.gizmo_options.map_view')
 
 __all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer', 'MVLegendClass', 'MVLegendImageClass', 'MVLegendGeoServerImageClass']
 
@@ -374,7 +376,6 @@ class MVDraw(SecondaryGizmoOptions):
         super(MVDraw, self).__init__()
 
         self.controls = controls
-
         # Validate initial
         if initial not in self.controls:
             raise ValueError('Value of "initial" must be contained in the "controls" list.')
@@ -542,9 +543,9 @@ class MVLayer(SecondaryGizmoOptions):
         self.geometry_attribute = geometry_attribute
         self.data = data
 
-        # TODO: this should be a log
         if feature_selection and not geometry_attribute:
-            print("WARNING: geometry_attribute not defined -using default value 'the_geom'")
+            log.warning("geometry_attribute not defined -using default value 'the_geom'")
+
 
 class MVLegendClass(SecondaryGizmoOptions):
     """
@@ -616,8 +617,6 @@ class MVLegendClass(SecondaryGizmoOptions):
                 self.ramp = ramp
             else:
                 raise ValueError('Argument "ramp" must be specified for MVLegendClass of type "raster".')
-        else:
-            raise ValueError('Invalid type specified: {0}.'.format(type))
 
 
 class MVLegendImageClass(SecondaryGizmoOptions):
