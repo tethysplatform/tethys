@@ -3,7 +3,6 @@ from centroids_process import Centroids
 from sayhello_process import say_hello
 from featurecount_process import FeatureCount
 from buffer_process import Buffer
-from watershed_process import WatershedProcess
 from streamhucquery_process import StreamHUCQuery
 from area_process import Area
 from sum_process import SumProcess
