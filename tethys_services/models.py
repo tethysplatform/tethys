@@ -157,9 +157,11 @@ class SpatialDatasetService(models.Model):
         """
         Retrives GeoServer engine
         """
-        return GeoServerSpatialDatasetEngine(endpoint=self.endpoint,
-                                             username=self.username,
-                                             password=self.password)
+        engine = GeoServerSpatialDatasetEngine(endpoint=self.endpoint,
+                                               username=self.username,
+                                               password=self.password)
+        engine.public_endpoint = self.public_endpoint
+        return engine
 
 
 class WebProcessingService(models.Model):
