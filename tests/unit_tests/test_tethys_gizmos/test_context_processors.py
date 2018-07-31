@@ -1,6 +1,7 @@
 import unittest
 import tethys_gizmos.context_processors as gizmos_context_processor
 
+
 class TestContextProcessor(unittest.TestCase):
     def setUp(self):
         pass

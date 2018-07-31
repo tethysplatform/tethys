@@ -17,7 +17,8 @@ class TestRangeSlider(unittest.TestCase):
         step = 1
 
         result = gizmo_range_slider.RangeSlider(name=name, min=min, max=max, initial=initial, step=step)
-        #Check Result
+
+        # Check Result
         self.assertEqual(name, result['name'])
         self.assertEqual(min, result['min'])
         self.assertEqual(max, result['max'])
