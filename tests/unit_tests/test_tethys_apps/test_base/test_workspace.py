@@ -8,6 +8,7 @@ class TestUrlMap(unittest.TestCase):
     def setUp(self):
         self.root = os.path.abspath(os.path.dirname(__file__))
         self.test_root = os.path.join(self.root, 'test_workspace')
+        self.test_root_a = os.path.join(self.test_root, 'test_workspace_a')
         self.test_root2 = os.path.join(self.root, 'test_workspace2')
 
     def tearDown(self):
@@ -20,6 +21,9 @@ class TestUrlMap(unittest.TestCase):
         # Test Create new workspace folder test_workspace
         result = base_workspace.TethysWorkspace(path=self.test_root)
         workspace = '<TethysWorkspace path="{0}">'.format(self.test_root)
+
+        # Create new folder inside test_workspace
+        base_workspace.TethysWorkspace(path=self.test_root_a)
 
         # Create new folder test_workspace2
         base_workspace.TethysWorkspace(path=self.test_root2)
@@ -55,8 +59,6 @@ class TestUrlMap(unittest.TestCase):
         self.assertNotIn(self.test_root, result)
         self.assertNotIn(self.test_root2, result)
 
-        import pdb
-        pdb.set_trace()
         # Test Remove file
         base_workspace.TethysWorkspace(path=self.test_root).remove('test2.txt')
 
@@ -73,6 +75,10 @@ class TestUrlMap(unittest.TestCase):
         base_workspace.TethysWorkspace(path=self.test_root).clear()
 
         # Verify that the Directory has been remove
-        self.assertFalse(os.path.isdir(self.test_root))
+        self.assertFalse(os.path.isdir(self.test_root_a))
 
+        # Verify that the File has been remove
+        self.assertFalse(os.path.isfile(os.path.join(self.test_root, 'test1.txt')))
+
+        # TODO: test don't allow overwriting the path property
 
