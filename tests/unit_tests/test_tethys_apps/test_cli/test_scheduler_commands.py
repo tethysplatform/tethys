@@ -55,11 +55,32 @@ class SchedulerCommandsTest(unittest.TestCase):
         self.assertIn('already exists', po_call_args[0][0][0])
         mock_exit.assert_called_with(0)
 
-    def test_schedulers_list_command(self):
-        pass
+    @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
+    @mock.patch('tethys_compute.models.Scheduler')
+    def test_schedulers_list_command(self, mock_scheduler, mock_pretty_output):
+        mock_scheduler.objects.all.return_value = [mock.MagicMock(), mock.MagicMock()]
+        mock_args = mock.MagicMock()
+        schedulers_list_command(mock_args)
 
-    def test_schedulers_list_command_no_schedulers(self):
-        pass
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(3, len(po_call_args))
+        self.assertIn('Name', po_call_args[0][0][0])
+        self.assertIn('Host', po_call_args[0][0][0])
+        self.assertIn('Username', po_call_args[0][0][0])
+        self.assertIn('Password', po_call_args[0][0][0])
+        self.assertIn('Private Key Path', po_call_args[0][0][0])
+        self.assertIn('Private Key Pass', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
+    @mock.patch('tethys_compute.models.Scheduler')
+    def test_schedulers_list_command_no_schedulers(self, mock_scheduler, mock_pretty_output):
+        mock_scheduler.objects.all.return_value = []
+        mock_args = mock.MagicMock()
+        schedulers_list_command(mock_args)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual('There are no Schedulers registered in Tethys.', po_call_args[0][0][0])
 
     def test_schedulers_remove_command_force(self):
         pass
