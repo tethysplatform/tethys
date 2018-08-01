@@ -5,6 +5,7 @@ from datetime import datetime, date
 from django.template import base
 from django.template import TemplateSyntaxError
 
+
 class TestTethysGizmos(unittest.TestCase):
     def setUp(self):
         self.gizmo_name = 'tethysext.test_extension'
@@ -13,7 +14,6 @@ class TestTethysGizmos(unittest.TestCase):
     def tearDown(self):
         pass
 
-    # @mock.patch('tethys_gizmos.templatetags.tethys_gizmos.SingletonHarvester')
     @mock.patch('tethys_apps.harvester.SingletonHarvester')
     def test_TestTethysGizmos(self, mock_harvest):
         mock_harvest().extension_modules = {'Test Extension': 'tethysext.test_extension'}
@@ -180,6 +180,7 @@ class TestTethysGizmos(unittest.TestCase):
         context = Context({'gizmo_name': 'date_picker2'})
         # context = {'gizmo_name': {'gizmo_name': 'date_picker2'}}
         # result.render(context=context)
+        # TODO: finish off render after solving resolved_options error.
 
     def test_gizmo_dependencies(self):
         token = base.Token(token_type='TOKEN_TEXT', contents='token "css"')

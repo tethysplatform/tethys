@@ -19,13 +19,13 @@ class TestTethysFunctionExtractor(unittest.TestCase):
         pass
 
     def test_init(self):
-        path = 'test_path'
+        path = 'tethysapp-test_app.tethysapp.test_app.controller.home'
         result = tethys_function_extractor.TethysFunctionExtractor(path=path)
-
         # Check Result
         self.assertEqual(path, result.path)
         self.assertEqual('tethys_apps.tethysapp', result.prefix)
 
     def test_init_not_str(self):
         path = PathObject(name='test')
+        # TODO: ask Nathan on why self.valid or self.function isn't valid.
         # result = tethys_function_extractor.TethysFunctionExtractor(path=path)

@@ -23,24 +23,24 @@ class TestUrlMap(unittest.TestCase):
         self.assertEqual(controller, result.controller)
 
         # TEST regex-case1
-        regex = '_var'
-        expected_url = '^example/resource/(?P<variable_name>_var)//$'
+        regex = '[0-9A-Z]+'
+        expected_url = '^example/resource/(?P<variable_name>[0-9A-Z]+)//$'
 
         result = base_url_map.UrlMapBase(name=name, url=url, controller=controller, regex=regex)
         self.assertEqual(expected_url, result.url)
 
         # TEST regex-case2
-        regex = ['_var1', '_var2']
+        regex = ['[0-9A-Z]+', '[0-8A-W]+']
         url = '/example/resource/{variable_name}/{variable_name2}/'
-        expected_url = '^example/resource/(?P<variable_name>_var1)/(?P<variable_name2>_var2)//$'
+        expected_url = '^example/resource/(?P<variable_name>[0-9A-Z]+)/(?P<variable_name2>[0-8A-W]+)//$'
 
         result = base_url_map.UrlMapBase(name=name, url=url, controller=controller, regex=regex)
         self.assertEqual(expected_url, result.url)
 
         # TEST regex-case3
-        regex = ['_var1']
+        regex = ['[0-9A-Z]+']
         url = '/example/resource/{variable_name}/{variable_name2}/'
-        expected_url = '^example/resource/(?P<variable_name>_var1)/(?P<variable_name2>_var1)//$'
+        expected_url = '^example/resource/(?P<variable_name>[0-9A-Z]+)/(?P<variable_name2>[0-9A-Z]+)//$'
 
         result = base_url_map.UrlMapBase(name=name, url=url, controller=controller, regex=regex)
         self.assertEqual(expected_url, result.url)

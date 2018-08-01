@@ -60,7 +60,7 @@ def django_url_preprocessor(url, root_url, custom_regex=None):
     e.g.:
 
         '/example/resource/{variable_name}/'
-        r'^/example/resource/?P<variable_name>[1-9A-Za-z\-]+/$'
+        r'^/example/resource/(?P<variable_name>[0-9A-Za-z\-]+)//$'
     """
 
     # Split the url into parts
@@ -87,12 +87,8 @@ def django_url_preprocessor(url, root_url, custom_regex=None):
             elif (isinstance(custom_regex, list) or isinstance(custom_regex, tuple)) and len(custom_regex) > 0:
                 try:
                     expression = custom_regex[url_variable_count]
-
                 except IndexError:
                     expression = custom_regex[0]
-
-                except:
-                    raise
 
             else:
                 expression = DEFAULT_EXPRESSION

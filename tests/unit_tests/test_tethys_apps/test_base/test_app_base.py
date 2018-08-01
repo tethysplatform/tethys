@@ -13,6 +13,7 @@ class TestTethysBase(unittest.TestCase):
     def test_url_maps(self):
         result = tethys_app_base.TethysBase().url_maps()
         self.assertFalse(result)
+        # TODO: Ask Nathan how to test abstract base class
 
     @mock.patch('tethys_apps.base.app_base.tethys_log.error')
     @mock.patch('tethys_apps.base.app_base.TethysBase.url_maps')

@@ -80,5 +80,8 @@ class TestUrlMap(unittest.TestCase):
         # Verify that the File has been remove
         self.assertFalse(os.path.isfile(os.path.join(self.test_root, 'test1.txt')))
 
-        # TODO: test don't allow overwriting the path property
+        # Test don't allow overwriting the path property
+        workspace = base_workspace.TethysWorkspace(path=self.test_root)
+        workspace.path = 'foo'
+        self.assertEqual(self.test_root, workspace.path)
 
