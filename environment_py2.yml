@@ -31,6 +31,8 @@ dependencies:
 - postgresql=9.5*
 - pycrypto=2.6*
 - pyopenssl=16.2*
+- mock
+- factory_boy
 - pip:
     - django-gravatar2>=1.4.0,<1.5.0
     - django-bootstrap3>=8.2.0,<8.3.0
@@ -42,3 +44,5 @@ dependencies:
     - tethys_dataset_services>=1.6.0,<1.7.0
     - condorpy>=0.3.0,<0.4.0
     - social-auth-app-django>=1.2.0,<1.3.0
+    - python_social_auth
+    - requests-mock
