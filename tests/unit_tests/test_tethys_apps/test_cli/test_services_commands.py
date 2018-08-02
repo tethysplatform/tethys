@@ -1,0 +1,343 @@
+import unittest
+import mock
+
+from tethys_apps.cli.services_commands import services_create_persistent_command, services_remove_persistent_command,\
+    services_create_spatial_command, services_remove_spatial_command, services_list_command
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.utils import IntegrityError
+
+
+class ServicesCommandsTest(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.PersistentStoreService')
+    def test_services_create_persistent_command(self, mock_service, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        services_create_persistent_command(mock_args)
+
+        mock_service.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual('Successfully created new Persistent Store Service!', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.PersistentStoreService')
+    def test_services_create_persistent_command_exception_indexerror(self, mock_service, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        mock_service.side_effect = IndexError
+        services_create_persistent_command(mock_args)
+
+        mock_service.assert_called()
+        mock_service.objects.get().save.assert_not_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('The connection argument (-c) must be of the form', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.PersistentStoreService')
+    def test_services_create_persistent_command_exception_integrityerror(self, mock_service, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        mock_service.side_effect = IntegrityError
+        services_create_persistent_command(mock_args)
+
+        mock_service.assert_called()
+        mock_service.objects.get().save.assert_not_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('Persistent Store Service with name', po_call_args[0][0][0])
+        self.assertIn('already exists. Command aborted.', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_apps.cli.services_commands.exit')
+    @mock.patch('tethys_services.models.PersistentStoreService')
+    def test_services_remove_persistent_command_Exceptions(self, mock_service, mock_exit, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        mock_args.force = True
+        mock_service.objects.get.side_effect = [ValueError, ObjectDoesNotExist]
+        # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
+        # to break the code execution, which we catch below.
+        mock_exit.side_effect = SystemExit
+
+        self.assertRaises(SystemExit, services_remove_persistent_command, mock_args)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('A Persistent Store Service with ID/Name', po_call_args[0][0][0])
+        self.assertIn('does not exist', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_apps.cli.services_commands.exit')
+    @mock.patch('tethys_services.models.PersistentStoreService')
+    def test_services_remove_persistent_command_force(self, mock_service, mock_exit, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        mock_args.force = True
+        # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
+        # to break the code execution, which we catch below.
+        mock_exit.side_effect = SystemExit
+
+        self.assertRaises(SystemExit, services_remove_persistent_command, mock_args)
+
+        mock_service.objects.get().delete.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('Successfully removed Persistent Store Service', po_call_args[0][0][0])
+
+    @mock.patch('__builtin__.raw_input')
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_apps.cli.services_commands.exit')
+    @mock.patch('tethys_services.models.PersistentStoreService')
+    def test_services_remove_persistent_command_no_proceed_invalid_char(self, mock_service, mock_exit,
+                                                                        mock_pretty_output, mock_input):
+        mock_args = mock.MagicMock()
+        mock_args.force = False
+        # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
+        # to break the code execution, which we catch below.
+        mock_exit.side_effect = SystemExit
+        mock_input.side_effect = ['foo', 'N']
+
+        self.assertRaises(SystemExit, services_remove_persistent_command, mock_args)
+
+        mock_service.objects.get().delete.assert_not_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual('Aborted. Persistent Store Service not removed.', po_call_args[0][0][0])
+
+        po_call_args = mock_input.call_args_list
+        self.assertEqual(2, len(po_call_args))
+        self.assertEqual('Are you sure you want to delete this Persistent Store Service? [y/n]: ',
+                         po_call_args[0][0][0])
+        self.assertEqual('Please enter either "y" or "n": ', po_call_args[1][0][0])
+
+    @mock.patch('__builtin__.raw_input')
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_apps.cli.services_commands.exit')
+    @mock.patch('tethys_services.models.PersistentStoreService')
+    def test_services_remove_persistent_command_proceed(self, mock_service, mock_exit, mock_pretty_output, mock_input):
+        mock_args = mock.MagicMock()
+        mock_args.force = False
+        # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
+        # to break the code execution, which we catch below.
+        mock_exit.side_effect = SystemExit
+        mock_input.side_effect = ['y']
+
+        self.assertRaises(SystemExit, services_remove_persistent_command, mock_args)
+
+        mock_service.objects.get().delete.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('Successfully removed Persistent Store Service', po_call_args[0][0][0])
+
+        po_call_args = mock_input.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual('Are you sure you want to delete this Persistent Store Service? [y/n]: ',
+                         po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.SpatialDatasetService')
+    def test_services_create_spatial_command_IndexError(self, mock_service, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        mock_args.connection = 'IndexError:9876@IndexError'  # No 'http' or '://'
+
+        services_create_spatial_command(mock_args)
+
+        mock_service.assert_not_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('The connection argument (-c) must be of the form', po_call_args[0][0][0])
+        self.assertIn('"<username>:<password>@<protocol>//<host>:<port>".', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.SpatialDatasetService')
+    def test_services_create_spatial_command_FormatError(self, mock_service, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        mock_args.connection = 'foo:pass@http:://foo:1234'
+        mock_args.public_endpoint = 'foo@foo:foo'  # No 'http' or '://'
+
+        services_create_spatial_command(mock_args)
+
+        mock_service.assert_not_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('The public_endpoint argument (-p) must be of the form ', po_call_args[0][0][0])
+        self.assertIn('"<protocol>//<host>:<port>".', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.SpatialDatasetService')
+    def test_services_create_spatial_command_IntegrityError(self, mock_service, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        mock_args.connection = 'foo:pass@http:://foo:1234'
+        mock_args.public_endpoint = 'http://foo:1234'
+        mock_service.side_effect = IntegrityError
+
+        services_create_spatial_command(mock_args)
+
+        mock_service.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('Spatial Dataset Service with name ', po_call_args[0][0][0])
+        self.assertIn('already exists. Command aborted.', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.SpatialDatasetService')
+    def test_services_create_spatial_command(self, mock_service, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        mock_args.connection = 'foo:pass@http:://foo:1234'
+        mock_args.public_endpoint = 'http://foo:1234'
+        mock_service.side_effect = IntegrityError
+
+        services_create_spatial_command(mock_args)
+
+        mock_service.assert_called()
+        # FIX:  IntegrityError on SpatialDatasetService constructor, line 118
+        # FIX:  Prevents lines 121-124 from being tested
+        # mock_service.objects.get().save.assert_called()
+        #
+        # po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        # self.assertEqual(1, len(po_call_args))
+        # self.assertEqual('Successfully created new Persistent Store Service!', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_apps.cli.services_commands.exit')
+    @mock.patch('tethys_services.models.SpatialDatasetService')
+    def test_services_remove_spatial_command_Exceptions(self, mock_service, mock_exit, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        mock_service.objects.get.side_effect = [ValueError, ObjectDoesNotExist]
+        # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
+        # to break the code execution, which we catch below.
+        mock_exit.side_effect = SystemExit
+
+        self.assertRaises(SystemExit, services_remove_spatial_command, mock_args)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('A Spatial Dataset Service with ID/Name', po_call_args[0][0][0])
+        self.assertIn('does not exist.', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_apps.cli.services_commands.exit')
+    @mock.patch('tethys_services.models.SpatialDatasetService')
+    def test_services_remove_spatial_command_force(self, mock_service, mock_exit, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        mock_args.force = True
+        # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
+        # to break the code execution, which we catch below.
+        mock_exit.side_effect = SystemExit
+
+        self.assertRaises(SystemExit, services_remove_spatial_command, mock_args)
+
+        mock_service.objects.get().delete.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('Successfully removed Spatial Dataset Service', po_call_args[0][0][0])
+
+    @mock.patch('__builtin__.raw_input')
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_apps.cli.services_commands.exit')
+    @mock.patch('tethys_services.models.SpatialDatasetService')
+    def test_services_remove_spatial_command_no_proceed_invalid_char(self, mock_service, mock_exit,
+                                                                     mock_pretty_output, mock_input):
+        mock_args = mock.MagicMock()
+        mock_args.force = False
+        # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
+        # to break the code execution, which we catch below.
+        mock_exit.side_effect = SystemExit
+        mock_input.side_effect = ['foo', 'N']
+
+        self.assertRaises(SystemExit, services_remove_spatial_command, mock_args)
+
+        mock_service.objects.get().delete.assert_not_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual('Aborted. Spatial Dataset Service not removed.', po_call_args[0][0][0])
+
+        po_call_args = mock_input.call_args_list
+        self.assertEqual(2, len(po_call_args))
+        self.assertEqual('Are you sure you want to delete this Persistent Store Service? [y/n]: ',
+                         po_call_args[0][0][0])
+        self.assertEqual('Please enter either "y" or "n": ', po_call_args[1][0][0])
+
+    @mock.patch('__builtin__.raw_input')
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_apps.cli.services_commands.exit')
+    @mock.patch('tethys_services.models.SpatialDatasetService')
+    def test_services_remove_spatial_command_proceed(self, mock_service, mock_exit, mock_pretty_output, mock_input):
+        mock_args = mock.MagicMock()
+        mock_args.force = False
+        # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
+        # to break the code execution, which we catch below.
+        mock_exit.side_effect = SystemExit
+        mock_input.side_effect = ['y']
+
+        self.assertRaises(SystemExit, services_remove_spatial_command, mock_args)
+
+        mock_service.objects.get().delete.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('Successfully removed Spatial Dataset Service', po_call_args[0][0][0])
+
+        po_call_args = mock_input.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual('Are you sure you want to delete this Persistent Store Service? [y/n]: ',
+                         po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.PersistentStoreService')
+    @mock.patch('tethys_services.models.SpatialDatasetService')
+    def test_services_list_command_not_spatial_not_persistent(self, mock_spatial, mock_persistent, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        mock_args.spatial = False
+        mock_args.persistent = False
+
+        services_list_command(mock_args)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(0, len(po_call_args))
+        # FIX:  Cannot test
+        # self.assertIn('Persistent Store Services:', po_call_args[0][0][0])
+        # self.assertIn('Spatial Dataset Services:', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.SpatialDatasetService')
+    def test_services_list_command_spatial(self, mock_spatial, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        mock_args.spatial = True
+        mock_args.persistent = False
+
+        services_list_command(mock_args)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(0, len(po_call_args))
+        # FIX:  Cannot test
+        # self.assertIn('Spatial Dataset Services:', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.PersistentStoreService')
+    def test_services_list_command_persistent(self, mock_persistent, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        mock_args.spatial = False
+        mock_args.persistent = True
+
+        services_list_command(mock_args)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(0, len(po_call_args))
+        # FIX:  Cannot test
+        # self.assertIn('Persistent Store Services:', po_call_args[0][0][0])
