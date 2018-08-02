@@ -18,6 +18,13 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.PersistentStoreService')
     def test_services_create_persistent_command(self, mock_service, mock_pretty_output):
+        """
+        Test for services_create_persistent_command.
+        For running the test without any errors or problems.
+        :param mock_service:  mock for PersistentStoreService
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         services_create_persistent_command(mock_args)
 
@@ -30,6 +37,13 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.PersistentStoreService')
     def test_services_create_persistent_command_exception_indexerror(self, mock_service, mock_pretty_output):
+        """
+        Test for services_create_persistent_command.
+        For running the test with an IndexError exception thrown.
+        :param mock_service:  mock for PersistentStoreService
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_service.side_effect = IndexError
         services_create_persistent_command(mock_args)
@@ -44,6 +58,13 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.PersistentStoreService')
     def test_services_create_persistent_command_exception_integrityerror(self, mock_service, mock_pretty_output):
+        """
+        Test for services_create_persistent_command.
+        For running the test with an IntegrityError exception thrown.
+        :param mock_service:  mock for PersistentStoreService
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_service.side_effect = IntegrityError
         services_create_persistent_command(mock_args)
@@ -60,6 +81,14 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.services_commands.exit')
     @mock.patch('tethys_services.models.PersistentStoreService')
     def test_services_remove_persistent_command_Exceptions(self, mock_service, mock_exit, mock_pretty_output):
+        """
+        Test for services_remove_persistent_command
+        Test for handling all exceptions thrown by the function.
+        :param mock_service:  mock for PersistentStoreService
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output: mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.force = True
         mock_service.objects.get.side_effect = [ValueError, ObjectDoesNotExist]
@@ -78,6 +107,14 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.services_commands.exit')
     @mock.patch('tethys_services.models.PersistentStoreService')
     def test_services_remove_persistent_command_force(self, mock_service, mock_exit, mock_pretty_output):
+        """
+        Test for services_remove_persistent_command
+        Test for forcing a delete of the service
+        :param mock_service:  mock for PersistentStoreService
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output: mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.force = True
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -98,6 +135,15 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_services.models.PersistentStoreService')
     def test_services_remove_persistent_command_no_proceed_invalid_char(self, mock_service, mock_exit,
                                                                         mock_pretty_output, mock_input):
+        """
+        Test for services_remove_persistent_command
+        Handles answering the prompt to delete with invalid characters, and answering no.
+        :param mock_service:  mock for PersistentStoreService
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :param mock_input:  mock for handling raw_input requests
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.force = False
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -124,6 +170,15 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.services_commands.exit')
     @mock.patch('tethys_services.models.PersistentStoreService')
     def test_services_remove_persistent_command_proceed(self, mock_service, mock_exit, mock_pretty_output, mock_input):
+        """
+        Test for services_remove_persistent_command
+        Handles answering the prompt to delete with invalid characters by answering yes
+        :param mock_service:  mock for PersistentStoreService
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :param mock_input:  mock for handling raw_input requests
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.force = False
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -147,6 +202,13 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     def test_services_create_spatial_command_IndexError(self, mock_service, mock_pretty_output):
+        """
+        Test for services_create_spatial_command
+        Handles an IndexError exception
+        :param mock_service:  mock for SpatialDatasetService
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.connection = 'IndexError:9876@IndexError'  # No 'http' or '://'
 
@@ -162,6 +224,13 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     def test_services_create_spatial_command_FormatError(self, mock_service, mock_pretty_output):
+        """
+        Test for services_create_spatial_command
+        Handles an FormatError exception
+        :param mock_service:  mock for SpatialDatasetService
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.connection = 'foo:pass@http:://foo:1234'
         mock_args.public_endpoint = 'foo@foo:foo'  # No 'http' or '://'
@@ -178,6 +247,13 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     def test_services_create_spatial_command_IntegrityError(self, mock_service, mock_pretty_output):
+        """
+        Test for services_create_spatial_command
+        Handles an IntegrityError exception
+        :param mock_service:  mock for SpatialDatasetService
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.connection = 'foo:pass@http:://foo:1234'
         mock_args.public_endpoint = 'http://foo:1234'
@@ -195,6 +271,13 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     def test_services_create_spatial_command(self, mock_service, mock_pretty_output):
+        """
+        Test for services_create_spatial_command
+        For going through the function and saving
+        :param mock_service:  mock for SpatialDatasetService
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.connection = 'foo:pass@http:://foo:1234'
         mock_args.public_endpoint = 'http://foo:1234'
@@ -215,6 +298,14 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.services_commands.exit')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     def test_services_remove_spatial_command_Exceptions(self, mock_service, mock_exit, mock_pretty_output):
+        """
+        Test for services_remove_spatial_command
+        Handles testing all of the exceptions thrown
+        :param mock_service:  mock for SpatialDatasetService
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_service.objects.get.side_effect = [ValueError, ObjectDoesNotExist]
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -232,6 +323,14 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.services_commands.exit')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     def test_services_remove_spatial_command_force(self, mock_service, mock_exit, mock_pretty_output):
+        """
+        Test for services_remove_spatial_command
+        For when a delete is forced
+        :param mock_service:  mock for SpatialDatasetService
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.force = True
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -252,6 +351,15 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_services.models.SpatialDatasetService')
     def test_services_remove_spatial_command_no_proceed_invalid_char(self, mock_service, mock_exit,
                                                                      mock_pretty_output, mock_input):
+        """
+        Test for services_remove_spatial_command
+        For when deleting is not forced, and when prompted, giving an invalid answer, then no delete
+        :param mock_service:  mock for SpatialDatasetService
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :param mock_input:  mock for handling raw_input requests
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.force = False
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -278,6 +386,15 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.services_commands.exit')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     def test_services_remove_spatial_command_proceed(self, mock_service, mock_exit, mock_pretty_output, mock_input):
+        """
+        Test for services_remove_spatial_command
+        For when deleting is not forced, and when prompted, giving a valid answer to delete
+        :param mock_service:  mock for SpatialDatasetService
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :param mock_input:  mock for handling raw_input requests
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.force = False
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -302,6 +419,14 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_services.models.PersistentStoreService')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     def test_services_list_command_not_spatial_not_persistent(self, mock_spatial, mock_persistent, mock_pretty_output):
+        """
+        Test for services_list_command
+        Both spatial and persistent are not set, so both are processed
+        :param mock_spatial:  mock for SpatialDatasetService
+        :param mock_persistent:  mock for PersistentStoreService
+        :param mock_pretty_output: mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.spatial = False
         mock_args.persistent = False
@@ -317,6 +442,13 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     def test_services_list_command_spatial(self, mock_spatial, mock_pretty_output):
+        """
+        Test for services_list_command
+        Only spatial is set
+        :param mock_spatial:  mock for SpatialDatasetService
+        :param mock_pretty_output: mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.spatial = True
         mock_args.persistent = False
@@ -331,6 +463,13 @@ class ServicesCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.PersistentStoreService')
     def test_services_list_command_persistent(self, mock_persistent, mock_pretty_output):
+        """
+        Test for services_list_command
+        Only persistent is set
+        :param mock_persistent:  mock for PersistentStoreService
+        :param mock_pretty_output: mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.spatial = False
         mock_args.persistent = True

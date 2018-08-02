@@ -18,6 +18,14 @@ class SchedulerCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.scheduler_commands.exit')
     @mock.patch('tethys_compute.models.Scheduler')
     def test_scheduler_create_command(self, mock_scheduler, mock_exit, mock_pretty_output):
+        """
+        Test for scheduler_create_command.
+        Runs through and saves.
+        :param mock_scheduler:  mock for Scheduler
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_scheduler.objects.filter().first.return_value = False
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -43,6 +51,14 @@ class SchedulerCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.scheduler_commands.exit')
     @mock.patch('tethys_compute.models.Scheduler')
     def test_scheduler_create_command_existing_scheduler(self, mock_scheduler, mock_exit, mock_pretty_output):
+        """
+        Test for scheduler_create_command.
+        For when a scheduler already exists.
+        :param mock_scheduler:  mock for Scheduler
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_scheduler.objects.filter().first.return_value = True
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -59,6 +75,13 @@ class SchedulerCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
     @mock.patch('tethys_compute.models.Scheduler')
     def test_schedulers_list_command(self, mock_scheduler, mock_pretty_output):
+        """
+        Test for schedulers_list_command.
+        For use with multiple schedulers.
+        :param mock_scheduler:  mock for Scheduler
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
         mock_scheduler.objects.all.return_value = [mock.MagicMock(), mock.MagicMock()]
         mock_args = mock.MagicMock()
         schedulers_list_command(mock_args)
@@ -75,6 +98,13 @@ class SchedulerCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
     @mock.patch('tethys_compute.models.Scheduler')
     def test_schedulers_list_command_no_schedulers(self, mock_scheduler, mock_pretty_output):
+        """
+        Test for schedulers_list_command.
+        For use with no schedulers.
+        :param mock_scheduler:  mock for Scheduler
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
         mock_scheduler.objects.all.return_value = []
         mock_args = mock.MagicMock()
         schedulers_list_command(mock_args)
@@ -89,6 +119,14 @@ class SchedulerCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.scheduler_commands.exit')
     @mock.patch('tethys_compute.models.Scheduler')
     def test_schedulers_remove_command_force(self, mock_scheduler, mock_exit, mock_pretty_output):
+        """
+        Test for schedulers_remove_command.
+        Runs through, forcing a delete
+        :param mock_scheduler:  mock for Scheduler
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.force = True
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -110,6 +148,15 @@ class SchedulerCommandsTest(unittest.TestCase):
     @mock.patch('tethys_compute.models.Scheduler')
     def test_schedulers_remove_command_force_invalid_proceed_char(self, mock_scheduler, mock_exit, mock_pretty_output,
                                                                   mock_input):
+        """
+        Test for schedulers_remove_command.
+        Runs through, not forcing a delete, and when prompted to delete, gives an invalid answer
+        :param mock_scheduler:  mock for Scheduler
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :param mock_input:  mock for handling raw_input requests
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.force = False
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -136,6 +183,15 @@ class SchedulerCommandsTest(unittest.TestCase):
     @mock.patch('tethys_compute.models.Scheduler')
     def test_schedulers_remove_command_no_force_proceed(self, mock_scheduler, mock_exit, mock_pretty_output,
                                                         mock_input):
+        """
+        Test for schedulers_remove_command.
+        Runs through, not forcing a delete, and when prompted to delete, gives a valid answer to delete
+        :param mock_scheduler:  mock for Scheduler
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :param mock_input:  mock for handling raw_input requests
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.force = False
         mock_input.side_effect = ['Y']
@@ -162,6 +218,15 @@ class SchedulerCommandsTest(unittest.TestCase):
     @mock.patch('tethys_compute.models.Scheduler')
     def test_schedulers_remove_command_no_force_no_proceed(self, mock_scheduler, mock_exit, mock_pretty_output,
                                                            mock_input):
+        """
+        Test for schedulers_remove_command.
+        Runs through, not forcing a delete, and when prompted to delete, gives a valid answer to not delete
+        :param mock_scheduler:  mock for Scheduler
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :param mock_input:  mock for handling raw_input requests
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_args.force = False
         mock_input.side_effect = ['N']
@@ -186,6 +251,14 @@ class SchedulerCommandsTest(unittest.TestCase):
     @mock.patch('tethys_apps.cli.scheduler_commands.exit')
     @mock.patch('tethys_compute.models.Scheduler')
     def test_schedulers_remove_command_does_not_exist(self, mock_scheduler, mock_exit, mock_pretty_output):
+        """
+        Test for schedulers_remove_command.
+        For handling the Scheduler throwing ObjectDoesNotExist
+        :param mock_scheduler:  mock for Scheduler
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
         mock_args = mock.MagicMock()
         mock_scheduler.objects.get.side_effect = ObjectDoesNotExist
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
