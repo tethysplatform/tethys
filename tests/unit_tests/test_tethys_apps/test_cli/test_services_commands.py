@@ -281,18 +281,15 @@ class ServicesCommandsTest(unittest.TestCase):
         mock_args = mock.MagicMock()
         mock_args.connection = 'foo:pass@http:://foo:1234'
         mock_args.public_endpoint = 'http://foo:1234'
-        mock_service.side_effect = IntegrityError
+        mock_service.return_value = mock.MagicMock()
 
         services_create_spatial_command(mock_args)
 
         mock_service.assert_called()
-        # FIX:  IntegrityError on SpatialDatasetService constructor, line 118
-        # FIX:  Prevents lines 121-124 from being tested
-        # mock_service.objects.get().save.assert_called()
-        #
-        # po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        # self.assertEqual(1, len(po_call_args))
-        # self.assertEqual('Successfully created new Persistent Store Service!', po_call_args[0][0][0])
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual('Successfully created new Persistent Store Service!', po_call_args[0][0][0])
 
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_apps.cli.services_commands.exit')
