@@ -5,7 +5,6 @@ import mock
 from django.test import RequestFactory
 from tests.factories.django_user import UserFactory
 
-
 class TestPermission(unittest.TestCase):
     def setUp(self):
         self.user = UserFactory()
@@ -44,12 +43,20 @@ class TestPermission(unittest.TestCase):
         output2 = u'%s' % result
         self.assertEqual(output, output2)
 
-    def test_has_permission(self):
+    @mock.patch('tethys_apps.utilities.get_active_app')
+    def test_has_permission(self, mock_app):
         request = self.request_factory
-        request.path = 'test_app'
+        self.user.has_perm = mock.MagicMock()
         request.user = self.user
+        mock_app.return_value = mock.MagicMock(package='test_package')
+        result = tethys_permission.has_permission(request=request, perm='test_perm')
+        self.assertTrue(result)
 
-        # TODO: How to load test_app
-        # result = tethys_permission.has_permission(request=request, perm='test_perm')
-        #
-        # self.assertTrue(result)
+    @mock.patch('tethys_apps.utilities.get_active_app')
+    def test_has_permission_no(self, mock_app):
+        request = self.request_factory
+        self.user.has_perm = mock.MagicMock(return_value=False)
+        request.user = self.user
+        mock_app.return_value = mock.MagicMock(package='test_package')
+        result = tethys_permission.has_permission(request=request, perm='test_perm')
+        self.assertFalse(result)
