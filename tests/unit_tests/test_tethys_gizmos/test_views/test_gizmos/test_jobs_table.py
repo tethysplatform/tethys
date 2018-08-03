@@ -3,6 +3,7 @@ import tethys_gizmos.views.gizmos.jobs_table as gizmo_jobs_table
 import mock
 from django.test import RequestFactory
 
+
 class TestJobsTable(unittest.TestCase):
     def setUp(self):
         pass
@@ -53,9 +54,7 @@ class TestJobsTable(unittest.TestCase):
     def test_update_row(self, mock_tj, mock_rts):
         mock_rts.return_value = '{"job_statuses":[]}'
         mock_tj.objects.get_subclass.return_value = mock.MagicMock(status='Various', label='gizmos_showcase')
-        rows = [('1', '30'),
-                ('2', '18'),
-                ('3', '26')]
+        rows = [('1', '30')]
         column_names = ['ID', 'Time(s)']
         request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
         result = gizmo_jobs_table.update_row(request, job_id='1')
@@ -67,12 +66,22 @@ class TestJobsTable(unittest.TestCase):
                          rts_call_args[0][0][1]['job_statuses'])
         self.assertEqual(200, result.status_code)
 
-
-        # Another Case
-        mock_tj.return_value = mock.MagicMock(status='Various', label='test_label')
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.render_to_string')
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
+    def test_update_row_not_gizmos(self, mock_tj, mock_rts):
+        # Another Case where job.label is not gizmos_showcase
+        mock_rts.return_value = '{"job_statuses":[]}'
+        mock_tj.objects.get_subclass.return_value = mock.MagicMock(status='Various', label='test_label',
+                                                                   statuses={'Completed': 1})
+        rows = [('1', '30')]
+        column_names = ['ID', 'Time(s)']
+        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
         result = gizmo_jobs_table.update_row(request, job_id='1')
 
         # Check Result
+        rts_call_args = mock_rts.call_args_list
+        self.assertIn('job_statuses', rts_call_args[0][0][1])
+        self.assertEqual({'Completed': 1}, rts_call_args[0][0][1]['job_statuses'])
         self.assertEqual(200, result.status_code)
 
     @mock.patch('tethys_gizmos.views.gizmos.jobs_table.log')

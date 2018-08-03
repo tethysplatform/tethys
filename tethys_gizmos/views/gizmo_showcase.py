@@ -36,7 +36,6 @@ def get_geoserver_wms():
         if spatial_dataset_engine.type == 'GEOSERVER':
             try:
                 spatial_dataset_engine.validate()
-                geoserver_engine = spatial_dataset_engine
                 geoserver_endpoint = spatial_dataset_engine.endpoint
                 geoserver_wms = geoserver_endpoint.replace('rest', 'wms')
                 break
