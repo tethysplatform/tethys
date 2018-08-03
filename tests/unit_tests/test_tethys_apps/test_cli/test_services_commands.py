@@ -1,3 +1,4 @@
+import cStringIO
 import unittest
 import mock
 
@@ -8,6 +9,13 @@ from django.db.utils import IntegrityError
 
 
 class ServicesCommandsTest(unittest.TestCase):
+    """
+    Tests for tethys_apps.cli.services_commands
+    """
+
+    # Dictionary used in some of the tests
+    my_dict = {'id': 'Id_foo', 'name': 'Name_foo', 'host': 'Host_foo', 'port': 'Port_foo', 'endpoint': 'EndPoint_foo',
+               'public_endpoint': 'PublicEndPoint_bar', 'apikey': 'APIKey_foo'}
 
     def setUp(self):
         pass
@@ -289,7 +297,7 @@ class ServicesCommandsTest(unittest.TestCase):
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
-        self.assertEqual('Successfully created new Persistent Store Service!', po_call_args[0][0][0])
+        self.assertEqual('Successfully created new Spatial Dataset Service!', po_call_args[0][0][0])
 
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_apps.cli.services_commands.exit')
@@ -412,68 +420,171 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertEqual('Are you sure you want to delete this Persistent Store Service? [y/n]: ',
                          po_call_args[0][0][0])
 
+    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.PersistentStoreService')
     @mock.patch('tethys_services.models.SpatialDatasetService')
-    def test_services_list_command_not_spatial_not_persistent(self, mock_spatial, mock_persistent, mock_pretty_output):
+    @mock.patch('tethys_apps.cli.services_commands.model_to_dict')
+    def test_services_list_command_not_spatial_not_persistent(self, mock_mtd, mock_spatial, mock_persistent,
+                                                              mock_pretty_output, mock_stdout):
         """
         Test for services_list_command
         Both spatial and persistent are not set, so both are processed
+        :param mock_mtd:  mock for model_to_dict to return a dictionary
         :param mock_spatial:  mock for SpatialDatasetService
         :param mock_persistent:  mock for PersistentStoreService
         :param mock_pretty_output: mock for pretty_output text
+        :param mock_stdout:  mock for text written with print statements
         :return:
         """
+        mock_mtd.return_value = self.my_dict
         mock_args = mock.MagicMock()
         mock_args.spatial = False
         mock_args.persistent = False
+        mock_spatial.objects.order_by('id').all.return_value = [mock.MagicMock(), mock.MagicMock(), mock.MagicMock()]
+        mock_persistent.objects.order_by('id').all.return_value = [mock.MagicMock(), mock.MagicMock()]
 
         services_list_command(mock_args)
 
+        # Check expected pretty_output
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual(0, len(po_call_args))
-        # FIX:  Cannot test
-        # self.assertIn('Persistent Store Services:', po_call_args[0][0][0])
-        # self.assertIn('Spatial Dataset Services:', po_call_args[0][0][0])
+        self.assertEqual(4, len(po_call_args))
+        self.assertIn('Persistent Store Services:', po_call_args[0][0][0])
+        self.assertIn('ID', po_call_args[1][0][0])
+        self.assertIn('Name', po_call_args[1][0][0])
+        self.assertIn('Host', po_call_args[1][0][0])
+        self.assertIn('Port', po_call_args[1][0][0])
+        self.assertNotIn('Endpoint', po_call_args[1][0][0])
+        self.assertNotIn('Public Endpoint', po_call_args[1][0][0])
+        self.assertNotIn('API Key', po_call_args[1][0][0])
+        self.assertIn('Spatial Dataset Services:', po_call_args[2][0][0])
+        self.assertIn('ID', po_call_args[3][0][0])
+        self.assertIn('Name', po_call_args[3][0][0])
+        self.assertNotIn('Host', po_call_args[3][0][0])
+        self.assertNotIn('Port', po_call_args[3][0][0])
+        self.assertIn('Endpoint', po_call_args[3][0][0])
+        self.assertIn('Public Endpoint', po_call_args[3][0][0])
+        self.assertIn('API Key', po_call_args[3][0][0])
 
+        # Check text written with Python's print
+        a = len(mock_persistent.objects.order_by('id').all.return_value)
+        b = len(mock_spatial.objects.order_by('id').all.return_value)
+        self.assertIn(self.my_dict['id'], mock_stdout.getvalue())
+        self.assertIn(self.my_dict['name'], mock_stdout.getvalue())
+        self.assertIn(self.my_dict['host'], mock_stdout.getvalue())
+        self.assertIn(self.my_dict['port'], mock_stdout.getvalue())
+        self.assertIn(self.my_dict['endpoint'], mock_stdout.getvalue())
+        self.assertIn(self.my_dict['public_endpoint'], mock_stdout.getvalue())
+        self.assertIn(self.my_dict['apikey'], mock_stdout.getvalue())
+        self.assertEqual(a+b, mock_stdout.getvalue().count(self.my_dict['id']))
+        self.assertEqual(a+b, mock_stdout.getvalue().count(self.my_dict['name']))
+        self.assertEqual(a, mock_stdout.getvalue().count(self.my_dict['host']))
+        self.assertEqual(a, mock_stdout.getvalue().count(self.my_dict['port']))
+        self.assertEqual(b, mock_stdout.getvalue().count(self.my_dict['endpoint']))
+        self.assertEqual(b, mock_stdout.getvalue().count(self.my_dict['public_endpoint']))
+        self.assertEqual(b, mock_stdout.getvalue().count(self.my_dict['apikey']))
+        self.assertEqual(0, mock_stdout.getvalue().count('None'))
+
+    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.SpatialDatasetService')
-    def test_services_list_command_spatial(self, mock_spatial, mock_pretty_output):
+    @mock.patch('tethys_apps.cli.services_commands.model_to_dict')
+    def test_services_list_command_spatial(self, mock_mtd, mock_spatial, mock_pretty_output, mock_stdout):
         """
         Test for services_list_command
         Only spatial is set
+        :param mock_mtd:  mock for model_to_dict to return a dictionary
         :param mock_spatial:  mock for SpatialDatasetService
-        :param mock_pretty_output: mock for pretty_output text
+        :param mock_pretty_output:  mock for pretty_output text
+        :param mock_stdout:  mock for text written with print statements
         :return:
         """
+        mock_mtd.return_value = self.my_dict
         mock_args = mock.MagicMock()
         mock_args.spatial = True
         mock_args.persistent = False
+        mock_spatial.objects.order_by('id').all.return_value = [mock.MagicMock(), mock.MagicMock(), mock.MagicMock()]
 
         services_list_command(mock_args)
 
+        # Check expected pretty_output
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual(0, len(po_call_args))
-        # FIX:  Cannot test
-        # self.assertIn('Spatial Dataset Services:', po_call_args[0][0][0])
+        self.assertEqual(2, len(po_call_args))
+        self.assertIn('Spatial Dataset Services:', po_call_args[0][0][0])
+        self.assertIn('ID', po_call_args[1][0][0])
+        self.assertIn('Name', po_call_args[1][0][0])
+        self.assertNotIn('Host', po_call_args[1][0][0])
+        self.assertNotIn('Port', po_call_args[1][0][0])
+        self.assertIn('Endpoint', po_call_args[1][0][0])
+        self.assertIn('Public Endpoint', po_call_args[1][0][0])
+        self.assertIn('API Key', po_call_args[1][0][0])
 
+        # Check text written with Python's print
+        c = len(mock_spatial.objects.order_by('id').all.return_value)
+        self.assertIn(self.my_dict['id'], mock_stdout.getvalue())
+        self.assertIn(self.my_dict['name'], mock_stdout.getvalue())
+        self.assertNotIn(self.my_dict['host'], mock_stdout.getvalue())
+        self.assertNotIn(self.my_dict['port'], mock_stdout.getvalue())
+        self.assertIn(self.my_dict['endpoint'], mock_stdout.getvalue())
+        self.assertIn(self.my_dict['public_endpoint'], mock_stdout.getvalue())
+        self.assertIn(self.my_dict['apikey'], mock_stdout.getvalue())
+        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['id']))
+        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['name']))
+        self.assertEqual(0, mock_stdout.getvalue().count(self.my_dict['host']))
+        self.assertEqual(0, mock_stdout.getvalue().count(self.my_dict['port']))
+        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['endpoint']))
+        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['public_endpoint']))
+        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['apikey']))
+        self.assertEqual(0, mock_stdout.getvalue().count('None'))
+
+    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.PersistentStoreService')
-    def test_services_list_command_persistent(self, mock_persistent, mock_pretty_output):
+    @mock.patch('tethys_apps.cli.services_commands.model_to_dict')
+    def test_services_list_command_persistent(self, mock_mtd, mock_persistent, mock_pretty_output, mock_stdout):
         """
         Test for services_list_command
         Only persistent is set
+        :param mock_mtd:  mock for model_to_dict to return a dictionary
         :param mock_persistent:  mock for PersistentStoreService
-        :param mock_pretty_output: mock for pretty_output text
+        :param mock_pretty_output:  mock for pretty_output text
+        :param mock_stdout:  mock for text written with print statements
         :return:
         """
+        mock_mtd.return_value = self.my_dict
         mock_args = mock.MagicMock()
         mock_args.spatial = False
         mock_args.persistent = True
+        mock_persistent.objects.order_by('id').all.return_value = [mock.MagicMock(), mock.MagicMock()]
 
         services_list_command(mock_args)
 
+        # Check expected pretty_output
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual(0, len(po_call_args))
-        # FIX:  Cannot test
-        # self.assertIn('Persistent Store Services:', po_call_args[0][0][0])
+        self.assertEqual(2, len(po_call_args))
+        self.assertIn('Persistent Store Services:', po_call_args[0][0][0])
+        self.assertIn('ID', po_call_args[1][0][0])
+        self.assertIn('Name', po_call_args[1][0][0])
+        self.assertIn('Host', po_call_args[1][0][0])
+        self.assertIn('Port', po_call_args[1][0][0])
+        self.assertNotIn('Endpoint', po_call_args[1][0][0])
+        self.assertNotIn('Public Endpoint', po_call_args[1][0][0])
+        self.assertNotIn('API Key', po_call_args[1][0][0])
+
+        # Check text written with Python's print
+        c = len(mock_persistent.objects.order_by('id').all.return_value)
+        self.assertIn(self.my_dict['id'], mock_stdout.getvalue())
+        self.assertIn(self.my_dict['name'], mock_stdout.getvalue())
+        self.assertIn(self.my_dict['host'], mock_stdout.getvalue())
+        self.assertIn(self.my_dict['port'], mock_stdout.getvalue())
+        self.assertNotIn(self.my_dict['endpoint'], mock_stdout.getvalue())
+        self.assertNotIn(self.my_dict['public_endpoint'], mock_stdout.getvalue())
+        self.assertNotIn(self.my_dict['apikey'], mock_stdout.getvalue())
+        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['id']))
+        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['name']))
+        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['host']))
+        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['port']))
+        self.assertEqual(0, mock_stdout.getvalue().count(self.my_dict['endpoint']))
+        self.assertEqual(0, mock_stdout.getvalue().count(self.my_dict['public_endpoint']))
+        self.assertEqual(0, mock_stdout.getvalue().count(self.my_dict['apikey']))
+        self.assertEqual(0, mock_stdout.getvalue().count('None'))
