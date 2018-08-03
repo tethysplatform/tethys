@@ -46,8 +46,8 @@ class HydroShareBackendTest(TestCase):
         self.token_type = "bearer"
         self.scope = "read write"
 
-        self.social_username="drew"
-        self.social_email="drew@byu.edu"
+        self.social_username = "drew"
+        self.social_email = "drew@byu.edu"
 
     def tearDown(self):
         pass
