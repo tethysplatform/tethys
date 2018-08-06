@@ -4,7 +4,6 @@ from requests.exceptions import ConnectionError
 import mock
 from django.test import RequestFactory
 from tests.factories.django_user import UserFactory
-from django.contrib.messages.storage.fallback import FallbackStorage
 
 
 class TestGizmoShowcase(unittest.TestCase):
@@ -48,53 +47,6 @@ class TestGizmoShowcase(unittest.TestCase):
 
         self.assertEqual(200, result.status_code)
 
-    def test_google_map_view(self):
-        request = self.request_factory.post('/jobs', {'editable_map_submit': '1', 'geometry': '[100, 40]'})
-        request.user = self.user
-        # Need this to fix the You cannot add messages without installing
-        #  django.contrib.messages.middleware.MessageMiddleware
-        setattr(request, 'session', 'session')
-        messages = FallbackStorage(request)
-        setattr(request, '_messages', messages)
-        result = gizmo_showcase.google_map_view(request)
-
-        self.assertEqual(200, result.status_code)
-
-    def test_map_view(self):
-        request = self.request_factory.post('/jobs', {'editable_map_submit': '1', 'geometry': '[100, 40]'})
-        request.user = self.user
-        # Need this to fix the You cannot add messages without installing
-        #  django.contrib.messages.middleware.MessageMiddleware
-        setattr(request, 'session', 'session')
-        messages = FallbackStorage(request)
-        setattr(request, '_messages', messages)
-        result = gizmo_showcase.map_view(request)
-
-        self.assertEqual(200, result.status_code)
-
-    def test_esri_map(self):
-        request = self.request_factory.post('/jobs', {'editable_map_submit': '1', 'geometry': '[100, 40]'})
-        request.user = self.user
-        result = gizmo_showcase.esri_map(request)
-
-        self.assertEqual(200, result.status_code)
-
-    def test_jobs_table_result(self):
-        request = self.request_factory.post('/jobs', {'editable_map_submit': '1', 'geometry': '[100, 40]'})
-        request.user = self.user
-        result = gizmo_showcase.jobs_table_results(request=request, job_id='1')
-
-        self.assertEqual(302, result.status_code)
-
-    def test_create_sample_jobs(self):
-        request = self.request_factory
-        request.user = self.user
-
-        # import pdb
-        # pdb.set_trace()
-        # result = gizmo_showcase.create_sample_jobs(request)
-        # TODO: Ask Nathan on save error message. Mock BasicJob and check Assert
-
     def test_get_kml(self):
         request = self.request_factory
         result = gizmo_showcase.get_kml(request)
@@ -115,3 +67,56 @@ class TestGizmoShowcase(unittest.TestCase):
 
         self.assertIn('"type": "GeometryCollection"', result._container[0])
         self.assertEqual(200, result.status_code)
+
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.messages')
+    def test_google_map_view(self, mock_messages):
+        mock_mi = mock_messages.info
+        request = self.request_factory.post('/jobs', {'editable_map_submit': '1', 'geometry': '[100, 40]'})
+        request.user = self.user
+        # Need this to fix the You cannot add messages without installing
+        #  django.contrib.messages.middleware.MessageMiddleware
+        result = gizmo_showcase.google_map_view(request)
+
+        # Check result
+        mock_mi.assert_called_with(request, '[100, 40]')
+        self.assertEqual(200, result.status_code)
+
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.messages')
+    def test_map_view(self, mock_messages):
+        mock_mi = mock_messages.info
+        request = self.request_factory.post('/jobs', {'editable_map_submit': '1', 'geometry': '[100, 40]'})
+        request.user = self.user
+        # Need this to fix the You cannot add messages without installing
+        #  django.contrib.messages.middleware.MessageMiddleware
+        result = gizmo_showcase.map_view(request)
+
+        # Check result
+        mock_mi.assert_called_with(request, '[100, 40]')
+        self.assertEqual(200, result.status_code)
+
+    def test_esri_map(self):
+        request = self.request_factory.post('/jobs', {'editable_map_submit': '1', 'geometry': '[100, 40]'})
+        request.user = self.user
+        result = gizmo_showcase.esri_map(request)
+
+        self.assertEqual(200, result.status_code)
+
+    def test_jobs_table_result(self):
+        request = self.request_factory.post('/jobs', {'editable_map_submit': '1', 'geometry': '[100, 40]'})
+        request.user = self.user
+        result = gizmo_showcase.jobs_table_results(request=request, job_id='1')
+
+        self.assertEqual(302, result.status_code)
+
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.BasicJob')
+    def test_create_sample_jobs(self, mock_bj):
+        mock_bj().return_value = mock.MagicMock()
+        request = self.request_factory
+        request.user = 'test_user'
+        gizmo_showcase.create_sample_jobs(request)
+
+        # Check BasicJob Call
+        mock_bj.assert_called_with(_status='VCP', description='Completed multi-process job with some errors',
+                                   label='gizmos_showcase', name='job_8', user='test_user')
+
+

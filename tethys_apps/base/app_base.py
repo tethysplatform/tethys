@@ -79,7 +79,6 @@ class TethysBase(TethysBaseMixin):
         """
         Generate the url pattern lists for  app and namespace them accordingly.
         """
-
         if self._url_patterns is None:
             is_extension = isinstance(self, TethysExtensionBase)
 
@@ -87,8 +86,6 @@ class TethysBase(TethysBaseMixin):
 
             if hasattr(self, 'url_maps'):
                 url_maps = self.url_maps()
-            else:
-                url_maps = []
 
             for url_map in url_maps:
                 namespace = self.namespace
@@ -138,6 +135,7 @@ class TethysBase(TethysBaseMixin):
         Remove the instance from the db.
         """
         raise NotImplementedError
+
 
 class TethysExtensionBase(TethysBase):
     """
@@ -194,7 +192,6 @@ class TethysExtensionBase(TethysBase):
         """
         from django.conf import settings
         from tethys_apps.models import TethysExtension
-
         try:
             # Query to see if installed extension is in the database
             db_extensions = TethysExtension.objects. \

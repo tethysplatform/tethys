@@ -48,6 +48,7 @@ for module_name, extension_module in extension_modules.items():
                 gizmo_module_path = gizmo_module.__path__[0]
                 EXTENSION_PATH_MAP[cls.gizmo_name] = os.path.abspath(os.path.dirname(gizmo_module_path))
     except ImportError:
+        # TODO: Add Log?
         continue
 
 register = template.Library()

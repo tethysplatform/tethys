@@ -1,10 +1,11 @@
+from tethys_apps.utilities import link_service_to_app_setting
+from tethys_apps.cli.cli_colors import pretty_output, FG_RED
+
+
 def link_command(args):
     """
     Interact with Tethys Services (Spatial/Persistent Stores) to create them and/or link them to existing apps
     """
-    from ..utilities import link_service_to_app_setting
-    from .cli_colors import pretty_output, FG_RED
-
     try:
         service = args.service
         setting = args.setting
@@ -40,7 +41,7 @@ def link_command(args):
         exit(0)
 
     except Exception as e:
-        print(e)
         with pretty_output(FG_RED) as p:
+            p.write(e)
             p.write('An unexpected error occurred. Please try again.')
         exit(1)
