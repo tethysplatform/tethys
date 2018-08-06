@@ -7,10 +7,10 @@
 * License: 
 ********************************************************************************
 """
-try:
-    from urlparse import urlparse
-except ImportError:
-    from urllib.parse import urlparse
+from future.standard_library import install_aliases
+install_aliases()
+
+from urllib.parse import urlparse
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.contrib import messages
@@ -88,6 +88,9 @@ def permission_required(*args, **kwargs):
     message = kwargs.pop('message', "We're sorry, but you are not allowed to perform this operation.")
     raise_exception = kwargs.pop('raise_exception', False)
     perms = [arg for arg in args if isinstance(arg, basestring)]
+
+    if not perms:
+        raise ValueError('Must supply at least one permission to test.')
 
     def decorator(controller_func):
         def _wrapped_controller(*args, **kwargs):

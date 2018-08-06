@@ -42,7 +42,7 @@ class HarvesterTest(unittest.TestCase):
         mock_pkgutil.side_effect = Exception
 
         shv = SingletonHarvester()
-        shv.harvest()
+        shv.harvest_extensions()
 
         self.assertIn('Loading Tethys Extensions...', mock_stdout.getvalue())
         self.assertNotIn('Tethys Extensions Loaded:', mock_stdout.getvalue())
@@ -190,30 +190,30 @@ class HarvesterTest(unittest.TestCase):
         mock_subclass.assert_called()
         self.assertIn('Tethys Apps Loaded:', mock_stdout.getvalue())
 
-    # @mock.patch('sys.stdout', new_callable=io.StringIO)
-    # @mock.patch('tethys_apps.harvester.tethys_log.exception')
-    # @mock.PropertyMock('tethys_apps.tethysapp.test_app.app.TestApp.url_patterns')
-    # def test_harvest_app_instances_Exceptions1(self, mock_url_patterns, mock_logexception, mock_stdout):
-    #     """
-    #     Test for SingletonHarvester._harvest_app_instances
-    #     For the exception on lines 230-234
-    #     With an exception mocked up for the url_patterns
-    #     :param mock_url_patterns:  mock for url_patterns to thrown an Exception
-    #     :param mock_logexception:  mock for the tethys_log exception
-    #     :param mock_stdout:  mock for the text output
-    #     :return:
-    #     """
-    #     mock_args = mock.MagicMock()
-    #     list_apps = [u'.gitignore', u'test_app', u'__init__.py', u'__init__.pyc']
-    #     mock_args = list_apps
-    #     mock_url_patterns.side_effect = ImportError
-    #
-    #     shv = SingletonHarvester()
-    #     shv._harvest_app_instances(mock_args)
-    #
-    #     mock_logexception.assert_called()
-    #     mock_url_patterns.assert_called()
-    #     self.assertIn('Tethys Apps Loaded:', mock_stdout.getvalue())
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    @mock.patch('tethys_apps.harvester.tethys_log.exception')
+    @mock.patch('tethys_apps.tethysapp.test_app.app.TestApp.url_maps')
+    def test_harvest_app_instances_Exceptions1(self, mock_url_maps, mock_logexception, mock_stdout):
+        """
+        Test for SingletonHarvester._harvest_app_instances
+        For the exception on lines 230-234
+        With an exception mocked up for the url_patterns
+        :param mock_url_maps:  mock for url_patterns to thrown an Exception
+        :param mock_logexception:  mock for the tethys_log exception
+        :param mock_stdout:  mock for the text output
+        :return:
+        """
+        mock_args = mock.MagicMock()
+        list_apps = [u'.gitignore', u'test_app', u'__init__.py', u'__init__.pyc']
+        mock_args = list_apps
+        mock_url_maps.side_effect = ImportError
+
+        shv = SingletonHarvester()
+        shv._harvest_app_instances(mock_args)
+
+        mock_logexception.assert_called()
+        mock_url_maps.assert_called()
+        self.assertIn('Tethys Apps Loaded:', mock_stdout.getvalue())
 
     @mock.patch('sys.stdout', new_callable=io.StringIO)
     @mock.patch('tethys_apps.harvester.tethys_log.error')
@@ -228,13 +228,11 @@ class HarvesterTest(unittest.TestCase):
         :param mock_stdout:  mock for the text output
         :return:
         """
-        mock_args = mock.MagicMock()
         list_apps = [u'.gitignore', u'test_app', u'__init__.py', u'__init__.pyc']
-        mock_args = list_apps
         mock_permissions.side_effect = ProgrammingError
 
         shv = SingletonHarvester()
-        shv._harvest_app_instances(mock_args)
+        shv._harvest_app_instances(list_apps)
 
         mock_logerror.assert_called()
         mock_permissions.assert_called()
