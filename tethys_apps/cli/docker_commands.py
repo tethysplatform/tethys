@@ -1160,3 +1160,32 @@ def docker_ip():
         print('\n52 North WPS: Not Installed.')
     except:
         raise
+
+
+def docker_command(args):
+    """
+    Docker management commands.
+    """
+    if args.command == 'init':
+        docker_init(containers=args.containers, defaults=args.defaults)
+
+    elif args.command == 'start':
+        docker_start(containers=args.containers)
+
+    elif args.command == 'stop':
+        docker_stop(containers=args.containers, boot2docker=args.boot2docker)
+
+    elif args.command == 'status':
+        docker_status()
+
+    elif args.command == 'update':
+        docker_update(containers=args.containers, defaults=args.defaults)
+
+    elif args.command == 'remove':
+        docker_remove(containers=args.containers)
+
+    elif args.command == 'ip':
+        docker_ip()
+
+    elif args.command == 'restart':
+        docker_restart(containers=args.containers)

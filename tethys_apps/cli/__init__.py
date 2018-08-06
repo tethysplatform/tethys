@@ -9,202 +9,31 @@
 """
 # Commandline interface for Tethys
 import argparse
-import os
-import subprocess
-import webbrowser
 
-from builtins import input
-
+from tethys_apps.cli.docker_commands import docker_command
+from tethys_apps.cli.list_command import list_command
 from tethys_apps.cli.scaffold_commands import scaffold_command
-from tethys_apps.terminal_colors import TerminalColors
-from .docker_commands import *
-from .gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
-from .manage_commands import (manage_command, get_manage_path, run_process,
+from tethys_apps.cli.syncstores_command import syncstores_command
+from tethys_apps.cli.test_command import test_command
+from tethys_apps.cli.uninstall_command import uninstall_command
+from tethys_apps.cli.docker_commands import *
+from tethys_apps.cli.gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
+from tethys_apps.cli.manage_commands import (manage_command, get_manage_path, run_process,
                               MANAGE_START, MANAGE_SYNCDB,
                               MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_SYNC,
                               MANAGE_COLLECT, MANAGE_CREATESUPERUSER, TETHYS_SRC_DIRECTORY)
-from .services_commands import (SERVICES_CREATE, SERVICES_CREATE_PERSISTENT, SERVICES_CREATE_SPATIAL, SERVICES_LINK,
+from tethys_apps.cli.services_commands import (SERVICES_CREATE, SERVICES_CREATE_PERSISTENT, SERVICES_CREATE_SPATIAL, SERVICES_LINK,
                                 services_create_persistent_command, services_create_spatial_command,
                                 services_list_command, services_remove_persistent_command,
                                 services_remove_spatial_command)
-from .link_commands import link_command
-from .app_settings_commands import (app_settings_list_command, app_settings_create_ps_database_command,
+from tethys_apps.cli.link_commands import link_command
+from tethys_apps.cli.app_settings_commands import (app_settings_list_command, app_settings_create_ps_database_command,
                                     app_settings_remove_command)
-from .scheduler_commands import scheduler_create_command, schedulers_list_command, schedulers_remove_command
-from .gen_commands import VALID_GEN_OBJECTS, generate_command
-from tethys_apps.helpers import get_installed_tethys_apps, get_installed_tethys_extensions
+from tethys_apps.cli.scheduler_commands import scheduler_create_command, schedulers_list_command, schedulers_remove_command
+from tethys_apps.cli.gen_commands import VALID_GEN_OBJECTS, generate_command
 
 # Module level variables
 PREFIX = 'tethysapp'
-
-
-def uninstall_command(args):
-    """
-    Uninstall an app command.
-    """
-    # Get the path to manage.py
-    manage_path = get_manage_path(args)
-    item_name = args.app_or_extension
-    process = ['python', manage_path, 'tethys_app_uninstall', item_name]
-    if args.is_extension:
-        process.append('-e')
-    try:
-        subprocess.call(process)
-    except KeyboardInterrupt:
-        pass
-
-
-def list_command(args):
-    """
-    List installed apps.
-    """
-    installed_apps = get_installed_tethys_apps()
-    installed_extensions = get_installed_tethys_extensions()
-
-    if installed_apps:
-        print('Apps:')
-        for item in installed_apps:
-            print('  {}'.format(item))
-
-    if installed_extensions:
-        print('Extensions:')
-        for item in installed_extensions:
-            print('  {}'.format(item))
-
-
-def docker_command(args):
-    """
-    Docker management commands.
-    """
-    if args.command == 'init':
-        docker_init(containers=args.containers, defaults=args.defaults)
-
-    elif args.command == 'start':
-        docker_start(containers=args.containers)
-
-    elif args.command == 'stop':
-        docker_stop(containers=args.containers, boot2docker=args.boot2docker)
-
-    elif args.command == 'status':
-        docker_status()
-
-    elif args.command == 'update':
-        docker_update(containers=args.containers, defaults=args.defaults)
-
-    elif args.command == 'remove':
-        docker_remove(containers=args.containers)
-
-    elif args.command == 'ip':
-        docker_ip()
-
-    elif args.command == 'restart':
-        docker_restart(containers=args.containers)
-
-
-def syncstores_command(args):
-    """
-    Sync persistent stores.
-    """
-    # Get the path to manage.py
-    manage_path = get_manage_path(args)
-
-    # This command is a wrapper for a custom Django manage.py method called syncstores.
-    # See tethys_apps.mangement.commands.syncstores
-    process = ['python', manage_path, 'syncstores']
-
-    if args.refresh:
-        valid_inputs = ('y', 'n', 'yes', 'no')
-        no_inputs = ('n', 'no')
-        proceed = input('{1}WARNING:{2} You have specified the database refresh option. This will drop all of the '
-                        'databases for the following apps: {0}. This could result in significant data loss and '
-                        'cannot be undone. Do you wish to continue? (y/n): '.format(', '.join(args.app),
-                                                                                    TerminalColors.WARNING,
-                                                                                    TerminalColors.ENDC)).lower()
-
-        while proceed not in valid_inputs:
-            proceed = input('Invalid option. Do you wish to continue? (y/n): ').lower()
-
-        if proceed not in no_inputs:
-            process.extend(['-r'])
-        else:
-            print('Operation cancelled by user.')
-            exit(0)
-
-    if args.firsttime:
-        process.extend(['-f'])
-
-    if args.database:
-        process.extend(['-d', args.database])
-
-    if args.app:
-        process.extend(args.app)
-
-    try:
-        subprocess.call(process)
-    except KeyboardInterrupt:
-        pass
-
-
-def test_command(args):
-    args.manage = False
-    # Get the path to manage.py
-    manage_path = get_manage_path(args)
-    tests_path = os.path.join(TETHYS_SRC_DIRECTORY, 'tests')
-
-    # Define the process to be run
-    primary_process = ['python', manage_path, 'test']
-
-    # Tag to later check if tests are being run on a specific app or extension
-    app_package_tag = 'tethys_apps.tethysapp.'
-    extension_package_tag = 'tethysext.'
-
-    if args.coverage or args.coverage_html:
-        os.environ['TETHYS_TEST_DIR'] = tests_path
-        if args.file and app_package_tag in args.file:
-            app_package_parts = args.file.split(app_package_tag)
-            app_name = app_package_parts[1].split('.')[0]
-            core_app_package = '{}{}'.format(app_package_tag, app_name)
-            app_package = 'tethysapp.{}'.format(app_name)
-            config_opt = '--source={},{}'.format(core_app_package, app_package)
-        elif args.file and extension_package_tag in args.file:
-            extension_package_parts = args.file.split(extension_package_tag)
-            extension_name = extension_package_parts[1].split('.')[0]
-            core_extension_package = '{}{}'.format(extension_package_tag, extension_name)
-            extension_package = 'tethysext.{}'.format(extension_name)
-            config_opt = '--source={},{}'.format(core_extension_package, extension_package)
-        else:
-            config_opt = '--rcfile={0}'.format(os.path.join(tests_path, 'coverage.cfg'))
-        primary_process = ['coverage', 'run', config_opt, manage_path, 'test']
-
-    if args.file:
-        primary_process.append(args.file)
-    elif args.unit:
-        primary_process.append(os.path.join(tests_path, 'unit_tests'))
-    elif args.gui:
-        primary_process.append(os.path.join(tests_path, 'gui_tests'))
-
-    # print(primary_process)
-    run_process(primary_process)
-    if args.coverage:
-        if args.file and (app_package_tag in args.file or extension_package_tag in args.file):
-            run_process(['coverage', 'report'])
-        else:
-            run_process(['coverage', 'report', config_opt])
-    if args.coverage_html:
-        report_dirname = 'coverage_html_report'
-        index_fname = 'index.html'
-
-        if args.file and (app_package_tag in args.file or extension_package_tag in args.file):
-            run_process(['coverage', 'html', '--directory={0}'.format(os.path.join(tests_path, report_dirname))])
-        else:
-            run_process(['coverage', 'html', config_opt])
-
-        try:
-            status = run_process(['open', os.path.join(tests_path, report_dirname, index_fname)])
-            if status != 0:
-                raise Exception
-        except:
-            webbrowser.open_new_tab(os.path.join(tests_path, report_dirname, index_fname))
 
 
 def tethys_command():
