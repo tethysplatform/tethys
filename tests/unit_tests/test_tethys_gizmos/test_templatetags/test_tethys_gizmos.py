@@ -1,9 +1,37 @@
 import unittest
 import tethys_gizmos.templatetags.tethys_gizmos as gizmos_templatetags
+from tethys_gizmos.gizmo_options import DatePicker, MapView, PlotlyView
+from tethys_gizmos.gizmo_options.base import TethysGizmoOptions
 import mock
 from datetime import datetime, date
 from django.template import base
 from django.template import TemplateSyntaxError
+from django.template import Context
+
+
+class TestGizmo(TethysGizmoOptions):
+
+    gizmo_name = 'test_gizmo'
+
+    def __init__(self, name, *args, **kwargs):
+        super(TestGizmo, self).__init__(*args, **kwargs)
+        self.name = name
+
+    @staticmethod
+    def get_vendor_js():
+        return ('tethys_gizmos/vendor/openlayers/ol.js',)
+
+    @staticmethod
+    def get_gizmo_js():
+        return ('tethys_gizmos/js/plotly-load_from_python.js',)
+
+    @staticmethod
+    def get_vendor_css():
+        return ('tethys_gizmos/vendor/openlayers/ol.css',)
+
+    @staticmethod
+    def get_gizmo_css():
+        return ('tethys_gizmos/css/tethys_map_view.min.css',)
 
 
 class TestTethysGizmos(unittest.TestCase):
@@ -92,49 +120,132 @@ class TestTethysGizmos(unittest.TestCase):
         # Check Result
         self.assertEqual(expected_result, result)
 
-    def test_TethysGizmoIncludeDependency(self):
+
+class TestTethysGizmoIncludeDependency(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_load_gizmo_name(self):
         gizmo_name = '"plotly_view"'
+        # _load_gizmo_name is loaded in init
+        result = gizmos_templatetags.TethysGizmoIncludeDependency(gizmo_name=gizmo_name)
+
+        # Check result
+        self.assertEqual('plotly_view', result.gizmo_name)
+
+    def test_load_gizmos_rendered(self):
+        gizmo_name = 'plotly_view'
         context = {}
-        gizmos_templatetags.TethysGizmoIncludeDependency(gizmo_name=gizmo_name)
+
+        # _load_gizmos_rendered is loaded in render
         gizmos_templatetags.TethysGizmoIncludeDependency(gizmo_name=gizmo_name).render(context=context)
 
         self.assertEqual(['plotly_view'], context['gizmos_rendered'])
 
     @mock.patch('tethys_gizmos.templatetags.tethys_gizmos.settings')
-    def test_TethysGizmoIncludeDependency_syntax_error(self, mock_settings):
+    def test_load_gizmos_rendered_syntax_error(self, mock_settings):
         mock_settings.return_value = mock.MagicMock(TEMPLATE_DEBUG=True)
         gizmo_name = 'plotly_view1'
         context = {}
-        tethysGizmos_dependency = gizmos_templatetags.TethysGizmoIncludeDependency(gizmo_name=gizmo_name)
 
-        self.assertRaises(TemplateSyntaxError, tethysGizmos_dependency.render, context=context)
+        t = gizmos_templatetags.TethysGizmoIncludeDependency(gizmo_name=gizmo_name)
 
-    def test_TethysGizmoIncludeNode(self):
-        gizmo_name = '"plotly_view"'
-        result = gizmos_templatetags.TethysGizmoIncludeNode(options='gizmo_name', gizmo_name='date_picker2')
+        self.assertRaises(TemplateSyntaxError, t.render, context=context)
+
+
+class TestTethysGizmoIncludeNode(unittest.TestCase):
+    def setUp(self):
+        self.gizmo_name = 'tethysext.test_extension'
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_render(self):
+        gizmos_templatetags.GIZMO_NAME_MAP[TestGizmo.gizmo_name] = TestGizmo
+        result = gizmos_templatetags.TethysGizmoIncludeNode(options='foo', gizmo_name=TestGizmo.gizmo_name)
+
+        context = {'foo': TestGizmo(name='test_render')}
+        result_render = result.render(context)
 
         # Check Result
-        self.assertIsInstance(result, gizmos_templatetags.TethysGizmoIncludeNode)
+        self.assertEqual('test_render', result_render)
 
-        context = {'gizmo_name': {'gizmo_name': 'date_picker'}}
-        # result.render(context)
+    def test_render_no_gizmo_name(self):
+        result = gizmos_templatetags.TethysGizmoIncludeNode(options='foo', gizmo_name=None)
 
-        # TODO: Ask Nathan how resolved_options has attribute
+        context = {'foo': TestGizmo(name='test_render_no_name')}
+        result_render = result.render(context)
 
-    def test_gizmo(self):
+        # Check Result
+        self.assertEqual('test_render_no_name', result_render)
+
+    @mock.patch('tethys_gizmos.templatetags.tethys_gizmos.get_template')
+    def test_render_in_extension_path(self, mock_gt):
+        # Reset EXTENSION_PATH_MAP
+        gizmos_templatetags.EXTENSION_PATH_MAP = {TestGizmo.gizmo_name: 'tethys_gizmos'}
+        mock_gt.return_value = mock.MagicMock()
+        result = gizmos_templatetags.TethysGizmoIncludeNode(options='foo', gizmo_name=TestGizmo.gizmo_name)
+        context = Context({'foo': TestGizmo(name='test_render')})
+        result.render(context)
+
+        # Check Result
+        mock_gt.assert_called_with('tethys_gizmos/templates/gizmos/test_gizmo.html')
+
+        # We need to delete this extension path map to avoid template not exist error on the
+        # previous test
+        del gizmos_templatetags.EXTENSION_PATH_MAP[TestGizmo.gizmo_name]
+
+    @mock.patch('tethys_gizmos.templatetags.tethys_gizmos.settings')
+    @mock.patch('tethys_gizmos.templatetags.tethys_gizmos.template')
+    def test_render_syntax_error_debug(self, mock_template, mock_setting):
+        mock_resolve = mock_template.Variable().resolve()
+        mock_resolve.return_value = mock.MagicMock()
+        del mock_resolve.gizmo_name
+        mock_setting.TEMPLATES = [{'OPTIONS': {'debug': True}}]
+
+        context = Context({'foo': TestGizmo(name='test_render')})
+        tgin = gizmos_templatetags.TethysGizmoIncludeNode(options='foo', gizmo_name='not_gizmo')
+
+        self.assertRaises(TemplateSyntaxError, tgin.render, context=context)
+
+    @mock.patch('tethys_gizmos.templatetags.tethys_gizmos.settings')
+    @mock.patch('tethys_gizmos.templatetags.tethys_gizmos.template')
+    def test_render_syntax_error_no_debug(self, mock_template, mock_setting):
+        mock_resolve = mock_template.Variable().resolve()
+        mock_resolve.return_value = mock.MagicMock()
+        del mock_resolve.gizmo_name
+        mock_setting.TEMPLATES = [{'OPTIONS': {'debug': False}}]
+
+        context = Context({'foo': TestGizmo(name='test_render')})
+
+        result = gizmos_templatetags.TethysGizmoIncludeNode(options='foo', gizmo_name=TestGizmo.gizmo_name)
+        self.assertEqual('', result.render(context=context))
+
+
+class TestTags(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    @mock.patch('tethys_gizmos.templatetags.tethys_gizmos.TethysGizmoIncludeNode')
+    def test_gizmo(self, mock_tgin):
         token1 = base.Token(token_type='TOKEN_TEXT', contents='token test_options')
-        result = gizmos_templatetags.gizmo(parser='', token=token1)
+        gizmos_templatetags.gizmo(parser='', token=token1)
+
         # Check Result
-        self.assertIsInstance(result, gizmos_templatetags.TethysGizmoIncludeNode)
-        self.assertEqual('test_options', result.options)
-        self.assertFalse(result.gizmo_name)
+        mock_tgin.assert_called_with('test_options', None)
 
         token2 = base.Token(token_type='TOKEN_TEXT', contents='token test_gizmo_name test_options')
-        result = gizmos_templatetags.gizmo(parser='', token=token2)
+        gizmos_templatetags.gizmo(parser='', token=token2)
+
         # Check Result
-        self.assertIsInstance(result, gizmos_templatetags.TethysGizmoIncludeNode)
-        self.assertEqual('test_options', result.options)
-        self.assertEqual('test_gizmo_name', result.gizmo_name)
+        mock_tgin.assert_called_with('test_options', 'test_gizmo_name')
 
     def test_gizmo_syntax_error(self):
         token = base.Token(token_type='TOKEN_TEXT', contents='token')
@@ -142,13 +253,13 @@ class TestTethysGizmos(unittest.TestCase):
         # Check Error
         self.assertRaises(TemplateSyntaxError, gizmos_templatetags.gizmo, parser='', token=token)
 
-    def test_import_gizmo_dependency(self):
+    @mock.patch('tethys_gizmos.templatetags.tethys_gizmos.TethysGizmoIncludeDependency')
+    def test_import_gizmo_dependency(self, mock_tgid):
         token = base.Token(token_type='TOKEN_TEXT', contents='test_tag_name test_gizmo_name')
 
-        result = gizmos_templatetags.import_gizmo_dependency(parser='', token=token)
+        gizmos_templatetags.import_gizmo_dependency(parser='', token=token)
         # Check Result
-        self.assertIsInstance(result, gizmos_templatetags.TethysGizmoIncludeDependency)
-        self.assertEqual('test_gizmo_name', result.gizmo_name)
+        mock_tgid.assert_called_with('test_gizmo_name')
 
     def test_import_gizmo_dependency_syntax_error(self):
         token = base.Token(token_type='TOKEN_TEXT', contents='token')
@@ -156,40 +267,13 @@ class TestTethysGizmos(unittest.TestCase):
         self.assertRaises(TemplateSyntaxError, gizmos_templatetags.import_gizmo_dependency,
                           parser='', token=token)
 
-    def test_TethysGizmoDependenciesNode(self):
-        output_type = 'html'
-        result = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_type)
-
-        # Check result
-        self.assertEqual(output_type, result.output_type)
-
-        dependency_list = ['http://depend1', 'depend2', 'depend3']
-        dependency = 'http://depend1'
-
-        # TEST _append_dependency
-        # Dependency in list
-        result = result._append_dependency(dependency=dependency, dependency_list=dependency_list)
-
-        # Dependency not in list
-        dependency = 'gizmo_name'
-        result = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_type)
-        result._append_dependency(dependency=dependency, dependency_list=dependency_list)
-
-        # TEST render
-        from django.template import Context
-        context = Context({'gizmo_name': 'date_picker2'})
-        # context = {'gizmo_name': {'gizmo_name': 'date_picker2'}}
-        # result.render(context=context)
-        # TODO: finish off render after solving resolved_options error.
-
-    def test_gizmo_dependencies(self):
+    @mock.patch('tethys_gizmos.templatetags.tethys_gizmos.TethysGizmoDependenciesNode')
+    def test_gizmo_dependencies(self, mock_tgdn):
         token = base.Token(token_type='TOKEN_TEXT', contents='token "css"')
-
-        result = gizmos_templatetags.gizmo_dependencies(parser='', token=token)
+        gizmos_templatetags.gizmo_dependencies(parser='', token=token)
 
         # Check Result
-        self.assertIsInstance(result, gizmos_templatetags.TethysGizmoDependenciesNode)
-        self.assertEqual('css', result.output_type)
+        mock_tgdn.assert_called_with('css')
 
     def test_gizmo_dependencies_syntax_error(self):
         token = base.Token(token_type='TOKEN_TEXT', contents='token css js')
@@ -201,3 +285,43 @@ class TestTethysGizmos(unittest.TestCase):
         self.assertRaises(TemplateSyntaxError, gizmos_templatetags.gizmo_dependencies,
                           parser='', token=token)
 
+
+class TestTethysGizmoDependenciesNode(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_render(self):
+        gizmos_templatetags.GIZMO_NAME_MAP[TestGizmo.gizmo_name] = TestGizmo
+        output_global_css = 'global_css'
+        output_css = 'css'
+        output_global_js = 'global_js'
+        output_js = 'js'
+        result = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_global_css)
+
+        # Check result
+        self.assertEqual(output_global_css, result.output_type)
+
+        # TEST render
+        context = Context({'foo': TestGizmo(name='test_render')})
+        context.update({'gizmos_rendered': []})
+
+        #  unless it has the same gizmo name as the predefined one
+        render_globalcss = gizmos_templatetags.TethysGizmoDependenciesNode\
+            (output_type=output_global_css).render(context=context)
+        render_css = gizmos_templatetags.TethysGizmoDependenciesNode\
+            (output_type=output_css).render(context=context)
+        render_globaljs = gizmos_templatetags.TethysGizmoDependenciesNode\
+            (output_type=output_global_js).render(context=context)
+        render_js = gizmos_templatetags.TethysGizmoDependenciesNode\
+            (output_type=output_js).render(context=context)
+
+        self.assertIn('openlayers/ol.css', render_globalcss)
+        self.assertNotIn('tethys_gizmos.css', render_globalcss)
+        self.assertIn('tethys_gizmos.css', render_css)
+        self.assertNotIn('openlayers/ol.css', render_css)
+        self.assertIn('openlayers/ol.js', render_globaljs)
+        self.assertIn('plotly-load_from_python.js', render_js)
+        self.assertNotIn('openlayers/ol.js', render_js)
