@@ -1,6 +1,6 @@
 import subprocess
 
-from tethys_apps.cli import get_manage_path
+from tethys_apps.cli.manage_commands import get_manage_path
 
 
 def uninstall_command(args):

@@ -2,7 +2,7 @@ import subprocess
 
 from builtins import input
 
-from tethys_apps.cli import get_manage_path
+from tethys_apps.cli.manage_commands import get_manage_path
 from tethys_apps.terminal_colors import TerminalColors
 
 
