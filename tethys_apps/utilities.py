@@ -13,7 +13,6 @@ import os
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils._os import safe_join
 from tethys_apps.harvester import SingletonHarvester
-from tethys_apps.models import TethysApp
 
 tethys_log = logging.getLogger('tethys.' + __name__)
 
@@ -65,6 +64,7 @@ def get_active_app(request=None, url=None):
     """
     Get the active TethysApp object based on the request or URL.
     """
+    from tethys_apps.models import TethysApp
     apps_root = 'apps'
 
     if request is not None:
@@ -98,6 +98,7 @@ def create_ps_database_setting(app_package, name, description='', required=False
                                spatial=False, dynamic=False):
     from cli.cli_colors import pretty_output, FG_RED, FG_GREEN
     from tethys_apps.models import PersistentStoreDatabaseSetting
+    from tethys_apps.models import TethysApp
 
     try:
         app = TethysApp.objects.get(package=app_package)
@@ -139,6 +140,7 @@ def create_ps_database_setting(app_package, name, description='', required=False
 
 
 def remove_ps_database_setting(app_package, name, force=False):
+    from tethys_apps.models import TethysApp
     from cli.cli_colors import pretty_output, FG_RED, FG_GREEN
     from tethys_apps.models import PersistentStoreDatabaseSetting
 
@@ -193,6 +195,7 @@ def link_service_to_app_setting(service_type, service_uid, app_package, setting_
     from tethys_sdk.app_settings import (SpatialDatasetServiceSetting, PersistentStoreConnectionSetting,
                                          PersistentStoreDatabaseSetting)
     from tethys_services.models import (SpatialDatasetService, PersistentStoreService)
+    from tethys_apps.models import TethysApp
 
     service_type_to_model_dict = {
         'spatial': SpatialDatasetService,

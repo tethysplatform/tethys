@@ -121,7 +121,7 @@ def services_create_spatial_command(args):
         new_persistent_service.save()
 
         with pretty_output(FG_GREEN) as p:
-            p.write('Successfully created new Persistent Store Service!')
+            p.write('Successfully created new Spatial Dataset Service!')
     except IndexError:
         with pretty_output(FG_RED) as p:
             p.write('The connection argument (-c) must be of the form '

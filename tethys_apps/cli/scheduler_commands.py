@@ -14,7 +14,7 @@ def scheduler_create_command(args):
 
     existing_scheduler = Scheduler.objects.filter(name=name).first()
     if existing_scheduler:
-        with pretty_output(FG_RED) as p:
+        with pretty_output(FG_YELLOW) as p:
             p.write('A Scheduler with name "{}" already exists. Command aborted.'.format(name))
         exit(0)
 
