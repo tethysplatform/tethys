@@ -17,19 +17,18 @@ from tethys_apps.cli.syncstores_command import syncstores_command
 from tethys_apps.cli.test_command import test_command
 from tethys_apps.cli.uninstall_command import uninstall_command
 from tethys_apps.cli.docker_commands import *
-from tethys_apps.cli.gen_commands import GEN_SETTINGS_OPTION, GEN_APACHE_OPTION, generate_command
-from tethys_apps.cli.manage_commands import (manage_command, get_manage_path, run_process,
-                              MANAGE_START, MANAGE_SYNCDB,
-                              MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_SYNC,
-                              MANAGE_COLLECT, MANAGE_CREATESUPERUSER, TETHYS_SRC_DIRECTORY)
-from tethys_apps.cli.services_commands import (SERVICES_CREATE, SERVICES_CREATE_PERSISTENT, SERVICES_CREATE_SPATIAL, SERVICES_LINK,
-                                services_create_persistent_command, services_create_spatial_command,
-                                services_list_command, services_remove_persistent_command,
-                                services_remove_spatial_command)
+from tethys_apps.cli.manage_commands import (manage_command, MANAGE_START, MANAGE_SYNCDB,
+                                             MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_SYNC,
+                                             MANAGE_COLLECT, MANAGE_CREATESUPERUSER, TETHYS_SRC_DIRECTORY)
+from tethys_apps.cli.services_commands import (SERVICES_CREATE, SERVICES_CREATE_PERSISTENT, SERVICES_CREATE_SPATIAL,
+                                               SERVICES_LINK, services_create_persistent_command,
+                                               services_create_spatial_command, services_list_command,
+                                               services_remove_persistent_command, services_remove_spatial_command)
 from tethys_apps.cli.link_commands import link_command
 from tethys_apps.cli.app_settings_commands import (app_settings_list_command, app_settings_create_ps_database_command,
-                                    app_settings_remove_command)
-from tethys_apps.cli.scheduler_commands import scheduler_create_command, schedulers_list_command, schedulers_remove_command
+                                                   app_settings_remove_command)
+from tethys_apps.cli.scheduler_commands import (scheduler_create_command, schedulers_list_command,
+                                                schedulers_remove_command)
 from tethys_apps.cli.gen_commands import VALID_GEN_OBJECTS, generate_command
 
 # Module level variables

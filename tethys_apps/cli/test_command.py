@@ -1,7 +1,7 @@
 import os
 import webbrowser
 
-from tethys_apps.cli import get_manage_path, TETHYS_SRC_DIRECTORY, run_process
+from tethys_apps.cli.manage_commands import get_manage_path, TETHYS_SRC_DIRECTORY, run_process
 
 
 def test_command(args):
