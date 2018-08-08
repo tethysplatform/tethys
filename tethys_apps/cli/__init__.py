@@ -15,7 +15,7 @@ from tethys_apps.cli.list_command import list_command as lc
 from tethys_apps.cli.scaffold_commands import scaffold_command
 from tethys_apps.cli.syncstores_command import syncstores_command
 from tethys_apps.cli.test_command import test_command
-from tethys_apps.cli.uninstall_command import uninstall_command
+from tethys_apps.cli.uninstall_command import uninstall_command as uc
 from tethys_apps.cli.docker_commands import *
 from tethys_apps.cli.manage_commands import (manage_command, MANAGE_START, MANAGE_SYNCDB,
                                              MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_SYNC,
@@ -259,7 +259,7 @@ def tethys_command():
     uninstall_parser.add_argument('app_or_extension', help='Name of the app or extension to uninstall.')
     uninstall_parser.add_argument('-e', '--extension', dest='is_extension', default=False, action='store_true',
                                   help='Flag to denote an extension is being uninstalled')
-    uninstall_parser.set_defaults(func=uninstall_command)
+    uninstall_parser.set_defaults(func=uc)
 
     # Setup list command
     list_parser = subparsers.add_parser('list', help='List installed apps and extensions.')
