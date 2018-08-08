@@ -1090,8 +1090,10 @@ class TethysAppBase(TethysBase):
         except ObjectDoesNotExist:
             if connection_name is None:
                 raise TethysAppSettingDoesNotExist(
-                    'PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(db_name))
-            else:raise TethysAppSettingDoesNotExist(
+                    'PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(db_name)
+                    , connection_name, cls.name)
+            else:
+                raise TethysAppSettingDoesNotExist(
                 'PersistentStoreConnectionSetting ',connection_name, cls.name)
 
         ps_service = ps_setting.persistent_store_service
