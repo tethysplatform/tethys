@@ -934,7 +934,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('--gui', mock_stdout.getvalue())
         self.assertIn('--file', mock_stdout.getvalue())
 
-    @mock.patch('tethys_apps.cli.uninstall_command')
+    @mock.patch('tethys_apps.cli.uc')
     def test_uninstall_command(self, mock_uninstall_command):
         testargs = ['tethys', 'uninstall', 'foo_app']
 
@@ -946,7 +946,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual('foo_app', call_args[0][0][0].app_or_extension)
         self.assertEqual(False, call_args[0][0][0].is_extension)
 
-    @mock.patch('tethys_apps.cli.uninstall_command')
+    @mock.patch('tethys_apps.cli.uc')
     def test_uninstall_command_options(self, mock_uninstall_command):
         testargs = ['tethys', 'uninstall', '-e', 'foo_ext']
 
@@ -958,7 +958,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual('foo_ext', call_args[0][0][0].app_or_extension)
         self.assertEqual(True, call_args[0][0][0].is_extension)
 
-    @mock.patch('tethys_apps.cli.uninstall_command')
+    @mock.patch('tethys_apps.cli.uc')
     def test_uninstall_command_verbose_options(self, mock_uninstall_command):
         testargs = ['tethys', 'uninstall', '--extension', 'foo_ext']
 
@@ -972,7 +972,7 @@ class TethysCommandTests(unittest.TestCase):
 
     @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
-    @mock.patch('tethys_apps.cli.uninstall_command')
+    @mock.patch('tethys_apps.cli.uc')
     def test_uninstall_command_help(self, mock_uninstall_command, mock_exit, mock_stdout):
         mock_exit.side_effect = SystemExit
         testargs = ['tethys', 'uninstall', '-h']
@@ -987,7 +987,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('--extension', mock_stdout.getvalue())
         self.assertIn('app_or_extension', mock_stdout.getvalue())
 
-    @mock.patch('tethys_apps.cli.list_command')
+    @mock.patch('tethys_apps.cli.lc')
     def test_list_command(self, mock_list_command):
         testargs = ['tethys', 'list']
 
@@ -999,7 +999,7 @@ class TethysCommandTests(unittest.TestCase):
 
     @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
-    @mock.patch('tethys_apps.cli.list_command')
+    @mock.patch('tethys_apps.cli.lc')
     def test_list_command_help(self, mock_list_command, mock_exit, mock_stdout):
         mock_exit.side_effect = SystemExit
         testargs = ['tethys', 'list', '-h']

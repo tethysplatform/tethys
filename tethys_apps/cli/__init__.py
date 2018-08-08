@@ -11,11 +11,11 @@
 import argparse
 
 from tethys_apps.cli.docker_commands import docker_command
-from tethys_apps.cli.list_command import list_command
+from tethys_apps.cli.list_command import list_command as lc
 from tethys_apps.cli.scaffold_commands import scaffold_command
-from tethys_apps.cli.syncstores_command import syncstores_command
+from tethys_apps.cli.syncstores_command import syncstores_command as syc
 from tethys_apps.cli.test_command import test_command
-from tethys_apps.cli.uninstall_command import uninstall_command
+from tethys_apps.cli.uninstall_command import uninstall_command as uc
 from tethys_apps.cli.docker_commands import *
 from tethys_apps.cli.manage_commands import (manage_command, MANAGE_START, MANAGE_SYNCDB,
                                              MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_SYNC,
@@ -259,11 +259,11 @@ def tethys_command():
     uninstall_parser.add_argument('app_or_extension', help='Name of the app or extension to uninstall.')
     uninstall_parser.add_argument('-e', '--extension', dest='is_extension', default=False, action='store_true',
                                   help='Flag to denote an extension is being uninstalled')
-    uninstall_parser.set_defaults(func=uninstall_command)
+    uninstall_parser.set_defaults(func=uc)
 
     # Setup list command
     list_parser = subparsers.add_parser('list', help='List installed apps and extensions.')
-    list_parser.set_defaults(func=list_command)
+    list_parser.set_defaults(func=lc)
 
     # Sync stores command
     syncstores_parser = subparsers.add_parser('syncstores', help='Management command for App Persistent Stores.')
@@ -282,7 +282,7 @@ def tethys_command():
                                    dest='firsttime')
     syncstores_parser.add_argument('-d', '--database', help='Name of database to sync.')
     syncstores_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
-    syncstores_parser.set_defaults(func=syncstores_command, refresh=False, firstime=False)
+    syncstores_parser.set_defaults(func=syc, refresh=False, firstime=False)
 
     # Setup the docker commands
     docker_parser = subparsers.add_parser('docker', help="Management commands for the Tethys Docker containers.")
