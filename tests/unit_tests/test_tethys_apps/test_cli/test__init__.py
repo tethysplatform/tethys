@@ -869,7 +869,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('service', mock_stdout.getvalue())
         self.assertIn('setting', mock_stdout.getvalue())
 
-    @mock.patch('tethys_apps.cli.test_command')
+    @mock.patch('tethys_apps.cli.tstc')
     def test_test_command(self, mock_test_command):
         testargs = ['tethys', 'test']
 
@@ -884,7 +884,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(False, call_args[0][0][0].gui)
         self.assertEqual(False, call_args[0][0][0].unit)
 
-    @mock.patch('tethys_apps.cli.test_command')
+    @mock.patch('tethys_apps.cli.tstc')
     def test_test_command_options(self, mock_test_command):
         testargs = ['tethys', 'test', '-c', '-C', '-u', '-g', '-f', 'foo.bar']
 
@@ -899,7 +899,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(True, call_args[0][0][0].gui)
         self.assertEqual(True, call_args[0][0][0].unit)
 
-    @mock.patch('tethys_apps.cli.test_command')
+    @mock.patch('tethys_apps.cli.tstc')
     def test_test_command_options_verbose(self, mock_test_command):
         testargs = ['tethys', 'test', '--coverage', '--coverage-html', '--unit', '--gui', '--file', 'foo.bar']
 
@@ -916,7 +916,7 @@ class TethysCommandTests(unittest.TestCase):
 
     @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
-    @mock.patch('tethys_apps.cli.test_command')
+    @mock.patch('tethys_apps.cli.tstc')
     def test_test_command_help(self, mock_test_command, mock_exit, mock_stdout):
         mock_exit.side_effect = SystemExit
         testargs = ['tethys', 'test', '-h']
@@ -1012,7 +1012,7 @@ class TethysCommandTests(unittest.TestCase):
 
         self.assertIn('--help', mock_stdout.getvalue())
 
-    @mock.patch('tethys_apps.cli.syncstores_command')
+    @mock.patch('tethys_apps.cli.syc')
     def test_syncstores_command_single(self, mock_syncstores_command):
         testargs = ['tethys', 'syncstores', 'foo_app1']
 
@@ -1028,7 +1028,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(None, call_args[0][0][0].manage)
         self.assertEqual(False, call_args[0][0][0].refresh)
 
-    @mock.patch('tethys_apps.cli.syncstores_command')
+    @mock.patch('tethys_apps.cli.syc')
     def test_syncstores_command_multiple(self, mock_syncstores_command):
         testargs = ['tethys', 'syncstores', 'foo_app1', 'foo_app2', 'foo_app3']
 
@@ -1044,7 +1044,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(None, call_args[0][0][0].manage)
         self.assertEqual(False, call_args[0][0][0].refresh)
 
-    @mock.patch('tethys_apps.cli.syncstores_command')
+    @mock.patch('tethys_apps.cli.syc')
     def test_syncstores_command_all(self, mock_syncstores_command):
         testargs = ['tethys', 'syncstores', 'all']
 
@@ -1060,7 +1060,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(None, call_args[0][0][0].manage)
         self.assertEqual(False, call_args[0][0][0].refresh)
 
-    @mock.patch('tethys_apps.cli.syncstores_command')
+    @mock.patch('tethys_apps.cli.syc')
     def test_syncstores_command_options(self, mock_syncstores_command):
         testargs = ['tethys', 'syncstores', '-r', '-f', '-d', 'foo_db', '-m', '/foo/bar/manage.py', 'foo_app1']
 
@@ -1076,7 +1076,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual('/foo/bar/manage.py', call_args[0][0][0].manage)
         self.assertEqual(True, call_args[0][0][0].refresh)
 
-    @mock.patch('tethys_apps.cli.syncstores_command')
+    @mock.patch('tethys_apps.cli.syc')
     def test_syncstores_command_verbose_options(self, mock_syncstores_command):
         testargs = ['tethys', 'syncstores', '--refresh', '--firsttime', '--database', 'foo_db',
                     '--manage', '/foo/bar/manage.py', 'foo_app1']
@@ -1095,7 +1095,7 @@ class TethysCommandTests(unittest.TestCase):
 
     @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
-    @mock.patch('tethys_apps.cli.syncstores_command')
+    @mock.patch('tethys_apps.cli.syc')
     def test_syncstores_command_help(self, mock_syncstores_command, mock_exit, mock_stdout):
         mock_exit.side_effect = SystemExit
         testargs = ['tethys', 'syncstores', '-h']

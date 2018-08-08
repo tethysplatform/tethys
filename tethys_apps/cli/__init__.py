@@ -14,7 +14,7 @@ from tethys_apps.cli.docker_commands import docker_command
 from tethys_apps.cli.list_command import list_command as lc
 from tethys_apps.cli.scaffold_commands import scaffold_command
 from tethys_apps.cli.syncstores_command import syncstores_command as syc
-from tethys_apps.cli.test_command import test_command
+from tethys_apps.cli.test_command import test_command as tstc
 from tethys_apps.cli.uninstall_command import uninstall_command as uc
 from tethys_apps.cli.docker_commands import *
 from tethys_apps.cli.manage_commands import (manage_command, MANAGE_START, MANAGE_SYNCDB,
@@ -252,7 +252,7 @@ def tethys_command():
                                                  'If both flags are set then -u takes precedence.',
                              action='store_true')
     test_parser.add_argument('-f', '--file', type=str, help='File to run tests in. Overrides -g and -u.')
-    test_parser.set_defaults(func=test_command)
+    test_parser.set_defaults(func=tstc)
 
     # Setup uninstall command
     uninstall_parser = subparsers.add_parser('uninstall', help='Uninstall an app.')
