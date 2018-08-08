@@ -6,18 +6,17 @@ from django.test import RequestFactory
 from django.http import HttpResponseRedirect
 
 from tethys_sdk.permissions import permission_required
+from tests.factories.django_user import UserFactory
 
 
 class DecoratorsTest(unittest.TestCase):
 
     def setUp(self):
         self.request_factory = RequestFactory()
-        self.user = User.objects.create_user(
-            username='foo', email='foo@bar.com', password='pass'
-        )
+        self.user = UserFactory()
 
     def tearDown(self):
-        self.user.delete()
+        pass
 
     @mock.patch('tethys_apps.decorators.messages')
     @mock.patch('tethys_apps.decorators.has_permission', return_value=False)

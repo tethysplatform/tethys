@@ -5,6 +5,7 @@ import mock
 from django.test import RequestFactory
 from tests.factories.django_user import UserFactory
 
+
 class TestPermission(unittest.TestCase):
     def setUp(self):
         self.user = UserFactory()
