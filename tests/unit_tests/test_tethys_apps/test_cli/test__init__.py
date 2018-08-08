@@ -987,7 +987,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('--extension', mock_stdout.getvalue())
         self.assertIn('app_or_extension', mock_stdout.getvalue())
 
-    @mock.patch('tethys_apps.cli.list_command')
+    @mock.patch('tethys_apps.cli.lc')
     def test_list_command(self, mock_list_command):
         testargs = ['tethys', 'list']
 
@@ -999,7 +999,7 @@ class TethysCommandTests(unittest.TestCase):
 
     @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
-    @mock.patch('tethys_apps.cli.list_command')
+    @mock.patch('tethys_apps.cli.lc')
     def test_list_command_help(self, mock_list_command, mock_exit, mock_stdout):
         mock_exit.side_effect = SystemExit
         testargs = ['tethys', 'list', '-h']

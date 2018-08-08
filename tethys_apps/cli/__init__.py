@@ -11,7 +11,7 @@
 import argparse
 
 from tethys_apps.cli.docker_commands import docker_command
-from tethys_apps.cli.list_command import list_command
+from tethys_apps.cli.list_command import list_command as lc
 from tethys_apps.cli.scaffold_commands import scaffold_command
 from tethys_apps.cli.syncstores_command import syncstores_command
 from tethys_apps.cli.test_command import test_command
@@ -263,7 +263,7 @@ def tethys_command():
 
     # Setup list command
     list_parser = subparsers.add_parser('list', help='List installed apps and extensions.')
-    list_parser.set_defaults(func=list_command)
+    list_parser.set_defaults(func=lc)
 
     # Sync stores command
     syncstores_parser = subparsers.add_parser('syncstores', help='Management command for App Persistent Stores.')
