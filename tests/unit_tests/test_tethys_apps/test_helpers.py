@@ -32,7 +32,6 @@ class TethysAppsHelpersTests(unittest.TestCase):
         mock_isdir.side_effect = [False, True, False, False]
         result = helpers.get_installed_tethys_apps()
         self.assertTrue('foo_app' in result)
-        pass
 
     def test_get_installed_tethys_extensions(self):
         # Get a list of installed extensions
