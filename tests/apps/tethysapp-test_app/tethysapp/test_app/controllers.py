@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from tethys_sdk.gizmos import Button
 
 @login_required()
-def home(request):
+def home(request, var1, var2):
     """
     Controller for the app home page.
     """
