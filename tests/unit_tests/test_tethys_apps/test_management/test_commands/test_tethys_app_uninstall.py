@@ -3,7 +3,6 @@ import unittest
 import mock
 
 from argparse import ArgumentParser
-from django.db import models
 from tethys_apps.management.commands import tethys_app_uninstall
 from tethys_apps.models import TethysApp, TethysExtension
 
@@ -24,7 +23,6 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
         self.assertIn('app_or_extension', parser.format_usage())
         self.assertIn('[-e]', parser.format_usage())
         self.assertIn('--extension', parser.format_help())
-        pass
 
     @mock.patch('warnings.warn')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.exit')
