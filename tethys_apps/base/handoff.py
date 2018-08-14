@@ -62,7 +62,7 @@ class HandoffManager(object):
                 handlers = [handler for handler in handlers if not handler.internal]
 
             if jsonify:
-                handlers = json.dumps([handler.__json__() for handler in handlers])
+                handlers = json.dumps([handler.__dict__ for handler in handlers])
 
             return handlers
 
@@ -129,12 +129,11 @@ class HandoffManager(object):
         Returns:
             A HandoffManager object for the app with the name app_name or None if no app with that name is found.
         """
-
         if not app_name:
             return self
 
         # Get the app
-        harvester = tethys_apps.app_harvester.SingletonAppHarvester()
+        harvester = tethys_apps.harvester.SingletonAppHarvester()
         apps = harvester.apps
 
         for app in apps:
@@ -209,7 +208,7 @@ class HandoffHandler(TethysFunctionExtractor):
         """
         return '<Handoff Handler: name={0}, handler={1}>'.format(self.name, self.handler)
 
-    def __json__(self):
+    def __dict__(self):
         """
         JSON representation
         """
