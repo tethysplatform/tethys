@@ -15,21 +15,39 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     def test_get_directories_in_tethys_templates(self):
         # Get the templates directories for the test_app and test_extension
         result = utilities.get_directories_in_tethys(('templates',))
-        self.assertEqual(2, len(result))
-        self.assertIn('/tethysapp/test_app/templates', result[0])
-        self.assertIn('/tethysext-test_extension/tethysext/test_extension/templates', result[1])
+        self.assertGreaterEqual(len(result), 2)
+
+        test_app = False
+        test_ext = False
+
+        for r in result:
+            if '/tethysapp/test_app/templates' in r:
+                test_app = True
+            if '/tethysext-test_extension/tethysext/test_extension/templates' in r:
+                test_ext = True
+
+        self.assertTrue(test_app)
+        self.assertTrue(test_ext)
 
     def test_get_directories_in_tethys_templates_with_app_name(self):
         # Get the templates directories for the test_app and test_extension
         # Use the with_app_name argument, so that the app and extension names appear in the result
         result = utilities.get_directories_in_tethys(('templates',), with_app_name=True)
-        self.assertEqual(2, len(result))
+        self.assertGreaterEqual(len(result), 2)
         self.assertEqual(2, len(result[0]))
         self.assertEqual(2, len(result[1]))
-        self.assertEqual('test_app', result[0][0])
-        self.assertIn('/tethysapp/test_app/templates', result[0][1])
-        self.assertEqual('test_extension', result[1][0])
-        self.assertIn('/tethysext-test_extension/tethysext/test_extension/templates', result[1][1])
+
+        test_app = False
+        test_ext = False
+
+        for r in result:
+            if 'test_app' in r and '/tethysapp/test_app/templates' in r[1]:
+                test_app = True
+            if 'test_extension' in r and '/tethysext-test_extension/tethysext/test_extension/templates' in r[1]:
+                test_ext = True
+
+        self.assertTrue(test_app)
+        self.assertTrue(test_ext)
 
     @mock.patch('tethys_apps.utilities.SingletonHarvester')
     def test_get_directories_in_tethys_templates_extension_import_error(self, mock_harvester):
@@ -37,8 +55,19 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         mock_harvester().extension_modules = {'foo_invalid_foo': 'tethysext.foo_invalid_foo'}
 
         result = utilities.get_directories_in_tethys(('templates',))
-        self.assertEqual(1, len(result))
-        self.assertIn('/tethysapp/test_app/templates', result[0])
+        self.assertGreaterEqual(len(result), 1)
+
+        test_app = False
+        test_ext = False
+
+        for r in result:
+            if '/tethysapp/test_app/templates' in r:
+                test_app = True
+            if '/tethysext-test_extension/tethysext/test_extension/templates' in r:
+                test_ext = True
+
+        self.assertTrue(test_app)
+        self.assertFalse(test_ext)
 
     def test_get_directories_in_tethys_foo(self):
         # Get the foo directories for the test_app and test_extension
@@ -50,9 +79,19 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         # Get the foo and public directories for the test_app and test_extension
         # foo doesn't exist, but public will
         result = utilities.get_directories_in_tethys(('foo', 'public'))
-        self.assertEqual(2, len(result))
-        self.assertIn('/tethysapp/test_app/public', result[0])
-        self.assertIn('/tethysext-test_extension/tethysext/test_extension/public', result[1])
+        self.assertGreaterEqual(len(result), 2)
+
+        test_app = False
+        test_ext = False
+
+        for r in result:
+            if '/tethysapp/test_app/public' in r:
+                test_app = True
+            if '/tethysext-test_extension/tethysext/test_extension/public' in r:
+                test_ext = True
+
+        self.assertTrue(test_app)
+        self.assertTrue(test_ext)
 
     def test_get_active_app_none_none(self):
         # Get the active TethysApp object, with a request of None and url of None
