@@ -11,6 +11,7 @@
 import os
 import subprocess
 
+from tethys_apps.cli.cli_colors import pretty_output, FG_RED
 from tethys_apps.base.testing.environment import set_testing_environment
 
 #/usr/lib/tethys/src/tethys_apps/cli
@@ -39,7 +40,8 @@ def get_manage_path(args):
 
     # Throw error if path is not valid
     if not os.path.isfile(manage_path):
-        print('ERROR: Can\'t open file "{0}", no such file.'.format(manage_path))
+        with pretty_output(FG_RED) as p:
+            p.write('ERROR: Can\'t open file "{0}", no such file.'.format(manage_path))
         exit(1)
 
     return manage_path
