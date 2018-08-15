@@ -119,7 +119,8 @@ class TethysApp(models.Model, TethysBaseMixin):
 
     @property
     def configured(self):
-        for setting in [s for s in self.settings if s.required]:
+        required_settings = [s for s in self.settings if s.required]
+        for setting in required_settings:
             try:
                 if setting.get_value() is None:
                     return False
@@ -253,7 +254,7 @@ class CustomSetting(TethysAppSetting):
         (TYPE_FLOAT, 'Float'),
         (TYPE_BOOLEAN, 'Boolean'),
     )
-    value = models.CharField(max_length=1024, blank=True)
+    value = models.CharField(max_length=1024, blank=True, default='')
     type = models.CharField(max_length=200, choices=TYPE_CHOICES, default=TYPE_STRING)
 
     def clean(self):
@@ -283,7 +284,7 @@ class CustomSetting(TethysAppSetting):
         """
         Get the value, automatically casting it to the correct type.
         """
-        if self.value == '':
+        if self.value == '' or self.value is None:
             return None  # TODO Why don't we raise a NotAssigned error here?
 
         if self.type == self.TYPE_STRING:
