@@ -19,7 +19,6 @@ import pkgutil
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ObjectDoesNotExist
 from tethys_apps.base import TethysAppBase, TethysExtensionBase
-from tethys_apps.terminal_colors import TerminalColors
 
 tethys_log = logging.getLogger('tethys.' + __name__)
 
@@ -32,6 +31,11 @@ class SingletonHarvester(object):
     extension_modules = {}
     apps = []
     _instance = None
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
 
     def harvest(self):
         """
@@ -47,7 +51,7 @@ class SingletonHarvester(object):
         """
         try:
             import tethysext
-            print(TerminalColors.BLUE + 'Loading Tethys Extensions...' + TerminalColors.ENDC)
+            print(self.BLUE + 'Loading Tethys Extensions...' + self.ENDC)
             tethys_extensions = dict()
             for _, modname, ispkg in pkgutil.iter_modules(tethysext.__path__):
                 if ispkg:
@@ -62,7 +66,7 @@ class SingletonHarvester(object):
         Searches the apps package for apps
         """
         # Notify user harvesting is taking place
-        print(TerminalColors.BLUE + 'Loading Tethys Apps...' + TerminalColors.ENDC)
+        print(self.BLUE + 'Loading Tethys Apps...' + self.ENDC)
 
         # List the apps packages in directory
         apps_dir = os.path.join(os.path.dirname(__file__), 'tethysapp')
@@ -183,8 +187,8 @@ class SingletonHarvester(object):
         self.extension_modules = valid_extension_modules
 
         # Update user
-        print(TerminalColors.BLUE + 'Tethys Extensions Loaded: '
-            + TerminalColors.ENDC + '{0}'.format(', '.join(loaded_extensions)) + '\n')
+        print(self.BLUE + 'Tethys Extensions Loaded: '
+            + self.ENDC + '{0}'.format(', '.join(loaded_extensions)) + '\n')
 
     def _harvest_app_instances(self, app_packages_list):
         """
@@ -260,5 +264,5 @@ class SingletonHarvester(object):
         self.apps = valid_app_instance_list
 
         # Update user
-        print(TerminalColors.BLUE + 'Tethys Apps Loaded: '
-              + TerminalColors.ENDC + '{0}'.format(', '.join(loaded_apps)) + '\n')
+        print(self.BLUE + 'Tethys Apps Loaded: '
+              + self.ENDC + '{0}'.format(', '.join(loaded_apps)) + '\n')

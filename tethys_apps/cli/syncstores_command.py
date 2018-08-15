@@ -3,7 +3,7 @@ import subprocess
 from builtins import input
 
 from tethys_apps.cli.manage_commands import get_manage_path
-from tethys_apps.terminal_colors import TerminalColors
+from tethys_apps.cli.cli_colors import TC_WARNING, TC_ENDC
 
 
 def syncstores_command(args):
@@ -23,8 +23,8 @@ def syncstores_command(args):
         proceed = input('{1}WARNING:{2} You have specified the database refresh option. This will drop all of the '
                         'databases for the following apps: {0}. This could result in significant data loss and '
                         'cannot be undone. Do you wish to continue? (y/n): '.format(', '.join(args.app),
-                                                                                    TerminalColors.WARNING,
-                                                                                    TerminalColors.ENDC)).lower()
+                                                                                    TC_WARNING,
+                                                                                    TC_ENDC)).lower()
 
         while proceed not in valid_inputs:
             proceed = input('Invalid option. Do you wish to continue? (y/n): ').lower()
