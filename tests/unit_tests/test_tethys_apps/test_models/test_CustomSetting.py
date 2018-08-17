@@ -1,5 +1,5 @@
 from tethys_sdk.testing import TethysTestCase
-from tethys_apps.models import TethysApp, TethysAppSetting, CustomSetting
+from tethys_apps.models import TethysApp, CustomSetting
 from django.core.exceptions import ValidationError
 
 
