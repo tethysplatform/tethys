@@ -46,36 +46,10 @@ class DatasetServiceSettingTests(TethysTestCase):
         self.assertEqual('http://localhost/api/3/action/', ret.endpoint)
         self.assertEqual('http://publichost/api/3/action/', ret.public_endpoint)
 
-    def test_get_value_engine(self):
-        ds = DatasetService(
-            name='test_ds',
-        )
-        ds.save()
-        ds_setting = self.test_app.settings_set.select_subclasses().get(name='primary_ckan')
-        ds_setting.dataset_service = ds
-        ds_setting.save()
-
-        ret = DatasetServiceSetting.objects.get(name='primary_ckan').get_value(as_engine=True)
-
-        self.assertEqual('CKAN', ret.type)
-
-    def test_get_value_endpoint(self):
+    def test_get_value_check_if(self):
         ds = DatasetService(
             name='test_ds',
             endpoint='http://localhost/api/3/action/',
-        )
-        ds.save()
-        ds_setting = self.test_app.settings_set.select_subclasses().get(name='primary_ckan')
-        ds_setting.dataset_service = ds
-        ds_setting.save()
-
-        ret = DatasetServiceSetting.objects.get(name='primary_ckan').get_value(as_endpoint=True)
-
-        self.assertEqual('http://localhost/api/3/action/', ret)
-
-    def test_get_value_public_endpoint(self):
-        ds = DatasetService(
-            name='test_ds',
             public_endpoint='http://publichost/api/3/action/',
         )
         ds.save()
@@ -83,6 +57,14 @@ class DatasetServiceSettingTests(TethysTestCase):
         ds_setting.dataset_service = ds
         ds_setting.save()
 
-        ret = DatasetServiceSetting.objects.get(name='primary_ckan').get_value(as_public_endpoint=True)
+        # Check as_engine
+        ret = DatasetServiceSetting.objects.get(name='primary_ckan').get_value(as_engine=True)
+        self.assertEqual('CKAN', ret.type)
 
+        # Check as_enpoint
+        ret = DatasetServiceSetting.objects.get(name='primary_ckan').get_value(as_endpoint=True)
+        self.assertEqual('http://localhost/api/3/action/', ret)
+
+        # Check as_public_endpoint
+        ret = DatasetServiceSetting.objects.get(name='primary_ckan').get_value(as_public_endpoint=True)
         self.assertEqual('http://publichost/api/3/action/', ret)
