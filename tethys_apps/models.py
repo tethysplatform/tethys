@@ -472,7 +472,7 @@ class WebProcessingServiceSetting(TethysAppSetting):
             return wps_service.endpoint
 
         if as_public_endpoint:
-            return wps_service.pubic_endpoint
+            return wps_service.public_endpoint
 
         return wps_service
 
