@@ -252,6 +252,7 @@ class PersistentStoreService(models.Model):
         Returns a Persistent Store engine
         """
         from sqlalchemy import create_engine
+        import pdb; pdb.set_trace()
         url = self.get_url()
         return create_engine(url)
 
