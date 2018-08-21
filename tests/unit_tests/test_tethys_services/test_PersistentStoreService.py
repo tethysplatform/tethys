@@ -49,5 +49,5 @@ class PersistentStoreServiceTests(TethysTestCase):
         # Check if called correctly
         mock_ce.assert_called_with('test_url')
 
-
+    # TODO: Ask Nathan how to test HTTPError on ImportError.
 
