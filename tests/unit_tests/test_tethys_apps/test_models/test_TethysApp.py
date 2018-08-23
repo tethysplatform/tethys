@@ -209,6 +209,10 @@ class TethysAppTests(TethysTestCase):
         ps_setting.persistent_store_service = self.ps
         ps_setting.save()
 
+        ps_db_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
+        ps_db_setting.persistent_store_service = self.ps
+        ps_db_setting.save()
+
         ret = self.test_app.configured
 
         self.assertTrue(ret)
@@ -260,6 +264,10 @@ class TethysAppTests(TethysTestCase):
         ps_setting = self.test_app.settings_set.select_subclasses().get(name='primary')
         ps_setting.persistent_store_service = None
         ps_setting.save()
+
+        psd_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
+        psd_setting.persistent_store_service = None
+        psd_setting.save()
 
         ret = self.test_app.configured
         self.assertFalse(ret)

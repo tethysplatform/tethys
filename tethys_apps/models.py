@@ -668,7 +668,8 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         engine = self.get_value(as_engine=True)
 
         # Connection
-        drop_connection = engine.connect()
+        # TODO: We don't need this line
+        # drop_connection = engine.connect()
 
         namespaced_ps_name = self.get_namespaced_persistent_store_name()
 
@@ -693,7 +694,8 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                 # Try again to drop the database
                 drop_connection.execute('commit')
                 drop_connection.execute(drop_db_statement)
-                drop_connection.close()
+                # TODO: We don't need this line
+                # drop_connection.close()
             else:
                 raise e
         finally:
@@ -746,6 +748,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
             create_connection.execute('commit')
             try:
                 create_connection.execute(create_db_statement)
+
             except sqlalchemy.exc.ProgrammingError:
                 raise PersistentStorePermissionError('Database user "{0}" has insufficient permissions to create '
                                                      'the persistent store database "{1}": must have CREATE DATABASES '

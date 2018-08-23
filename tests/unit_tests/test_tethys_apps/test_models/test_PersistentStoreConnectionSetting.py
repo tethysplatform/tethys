@@ -88,5 +88,5 @@ class PersistentStoreConnectionSettingTests(TethysTestCase):
         # Execute
         ret = PersistentStoreConnectionSetting.objects.get(name='primary').get_value(as_url=True)
 
-        # Check if ret is an instance of sqlalchemy sessionmaker
+        # Check Url
         self.assertEqual('postgresql://foo:password@localhost:5432', str(ret))
