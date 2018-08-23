@@ -57,7 +57,7 @@ class TethysServicesViewsTests(unittest.TestCase):
         mock_identifier = mock.MagicMock()
         mock_wps_process = mock.MagicMock()
         mock_render.return_value = 'wps_process'
-        mock_wps = mock.MagicMock();
+        mock_wps = mock.MagicMock()
         mock_wps.describeprocess.return_value = mock_wps_process
         mock_get_wps_service_engine.return_value = mock_wps
 
