@@ -243,10 +243,6 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_init_param = mock.MagicMock()
         mock_get.side_effect = [mock_url, mock_engine, mock_new_db_engine, mock_init_param]
 
-        ps_ds_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
-        ps_ds_setting.persistent_store_service = self.pss
-        ps_ds_setting.save()
-
         # Execute
         PersistentStoreDatabaseSetting.objects.get(name='spatial_db').create_persistent_store_database(refresh=True, force_first_time=True)
 
@@ -313,11 +309,6 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_new_db_engine.connect().execute.side_effect = Exception
         mock_get.side_effect = [mock_url, mock_engine, mock_new_db_engine]
 
-        # Mock error
-        ps_ds_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
-        ps_ds_setting.persistent_store_service = self.pss
-        ps_ds_setting.save()
-
         # Execute
         self.assertRaises(PersistentStorePermissionError, PersistentStoreDatabaseSetting
                           .objects.get(name='spatial_db').create_persistent_store_database)
@@ -328,7 +319,8 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting.get_value')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting.initializer_function')
     @mock.patch('tethys_apps.models.logging')
-    def test_create_persistent_store_database_exception(self, _, mock_init, mock_get, mock_ps_de, mock_gn, mock_drop):
+    def test_create_persistent_store_database_exception(self, _, mock_init, mock_get, mock_ps_de,
+                                                        mock_gn, mock_drop):
         # Mock initializer_function
         mock_init.side_effect = Exception('Initializer Error')
         # Mock Get Name
@@ -346,11 +338,6 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_new_db_engine = mock.MagicMock()
         mock_init_param = mock.MagicMock()
         mock_get.side_effect = [mock_url, mock_engine, mock_new_db_engine, mock_init_param]
-
-        # Mock error
-        ps_ds_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
-        ps_ds_setting.persistent_store_service = self.pss
-        ps_ds_setting.save()
 
         # Execute
         self.assertRaises(PersistentStoreInitializerError, PersistentStoreDatabaseSetting

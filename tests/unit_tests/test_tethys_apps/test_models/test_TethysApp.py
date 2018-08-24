@@ -240,6 +240,10 @@ class TethysAppTests(TethysTestCase):
         ps_setting.persistent_store_service = self.ps
         ps_setting.save()
 
+        psd_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
+        psd_setting.persistent_store_service = self.ps
+        psd_setting.save()
+
         ret = self.test_app.configured
         self.assertFalse(ret)
 
@@ -270,6 +274,7 @@ class TethysAppTests(TethysTestCase):
         psd_setting.save()
 
         ret = self.test_app.configured
+
         self.assertFalse(ret)
 
 
