@@ -89,7 +89,7 @@ class TestApp(TethysAppBase):
             PersistentStoreDatabaseSetting(
                 name='spatial_db',
                 description='for storing important spatial stuff',
-                required=False,
+                required=True,
                 initializer='appsettings.model.init_spatial_db',
                 spatial=True,
             ),

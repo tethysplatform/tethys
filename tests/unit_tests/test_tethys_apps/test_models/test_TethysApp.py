@@ -40,7 +40,7 @@ class TethysAppTests(TethysTestCase):
         self.ds.save()
 
         self.ps = PersistentStoreService(
-            name='test_sds',
+            name='test_ps',
             host='localhost',
             port='5432',
             username='foo',
@@ -99,22 +99,92 @@ class TethysAppTests(TethysTestCase):
             self.assertIsInstance(r, TethysAppSetting)
 
     def test_custom_settings_prop(self):
-        pass
+        custom_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')
+        custom_setting.value = 'foo'
+        custom_setting.save()
+
+        ret = self.test_app.custom_settings
+
+        for r in ret:
+            self.assertIsInstance(r, TethysAppSetting)
+            if r.name == 'default_name':
+                self.assertEqual('foo', r.value)
 
     def test_dataset_service_settings_prop(self):
-        pass
+        ds_setting = self.test_app.settings_set.select_subclasses().get(name='primary_ckan')
+        ds_setting.dataset_service = self.ds
+        ds_setting.save()
+
+        ret = self.test_app.dataset_service_settings
+
+        for r in ret:
+            self.assertIsInstance(r, TethysAppSetting)
+            if r.name == 'primary_ckan':
+                self.assertEqual('test_ds', r.dataset_service.name)
+                self.assertEqual('foo', r.dataset_service.apikey)
+                self.assertEqual('http://localhost/api/3/action/', r.dataset_service.endpoint)
 
     def test_spatial_dataset_service_settings_prop(self):
-        pass
+        sds_setting = self.test_app.settings_set.select_subclasses().get(name='primary_geoserver')
+        sds_setting.spatial_dataset_service = self.sds
+        sds_setting.save()
+
+        ret = self.test_app.spatial_dataset_service_settings
+
+        for r in ret:
+            self.assertIsInstance(r, TethysAppSetting)
+            if r.name == 'primary_geoserver':
+                self.assertEqual('test_sds', r.spatial_dataset_service.name)
+                self.assertEqual('http://localhost/geoserver/rest/', r.spatial_dataset_service.endpoint)
+                self.assertEqual('foo', r.spatial_dataset_service.username)
+                self.assertEqual('password', r.spatial_dataset_service.password)
 
     def test_wps_services_settings_prop(self):
-        pass
+        wps_setting = self.test_app.settings_set.select_subclasses().get(name='primary_52n')
+        wps_setting.web_processing_service = self.wps
+        wps_setting.save()
+
+        ret = self.test_app.wps_services_settings
+
+        for r in ret:
+            self.assertIsInstance(r, TethysAppSetting)
+            if r.name == 'primary_52n':
+                self.assertEqual('test_wps', r.web_processing_service.name)
+                self.assertEqual('http://localhost/wps/WebProcessingService', r.web_processing_service.endpoint)
+                self.assertEqual('foo', r.web_processing_service.username)
+                self.assertEqual('password', r.web_processing_service.password)
 
     def test_persistent_store_connection_settings_prop(self):
-        pass
+        ps_setting = self.test_app.settings_set.select_subclasses().get(name='primary')
+        ps_setting.persistent_store_service = self.ps
+        ps_setting.save()
+
+        ret = self.test_app.persistent_store_connection_settings
+
+        for r in ret:
+            self.assertIsInstance(r, TethysAppSetting)
+            if r.name == 'primary':
+                self.assertEqual('test_ps', r.persistent_store_service.name)
+                self.assertEqual('localhost', r.persistent_store_service.host)
+                self.assertEqual(5432, r.persistent_store_service.port)
+                self.assertEqual('foo', r.persistent_store_service.username)
+                self.assertEqual('password', r.persistent_store_service.password)
 
     def test_persistent_store_database_settings_prop(self):
-        pass
+        ps_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
+        ps_setting.persistent_store_service = self.ps
+        ps_setting.save()
+
+        ret = self.test_app.persistent_store_database_settings
+
+        for r in ret:
+            self.assertIsInstance(r, TethysAppSetting)
+            if r.name == 'spatial_db':
+                self.assertEqual('test_ps', r.persistent_store_service.name)
+                self.assertEqual('localhost', r.persistent_store_service.host)
+                self.assertEqual(5432, r.persistent_store_service.port)
+                self.assertEqual('foo', r.persistent_store_service.username)
+                self.assertEqual('password', r.persistent_store_service.password)
 
     def test_configured_prop_required_and_set(self):
         # See: test_app.app for expected settings configuration
@@ -138,6 +208,10 @@ class TethysAppTests(TethysTestCase):
         ps_setting = self.test_app.settings_set.select_subclasses().get(name='primary')
         ps_setting.persistent_store_service = self.ps
         ps_setting.save()
+
+        ps_db_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
+        ps_db_setting.persistent_store_service = self.ps
+        ps_db_setting.save()
 
         ret = self.test_app.configured
 
@@ -166,6 +240,10 @@ class TethysAppTests(TethysTestCase):
         ps_setting.persistent_store_service = self.ps
         ps_setting.save()
 
+        psd_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
+        psd_setting.persistent_store_service = self.ps
+        psd_setting.save()
+
         ret = self.test_app.configured
         self.assertFalse(ret)
 
@@ -191,7 +269,12 @@ class TethysAppTests(TethysTestCase):
         ps_setting.persistent_store_service = None
         ps_setting.save()
 
+        psd_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
+        psd_setting.persistent_store_service = None
+        psd_setting.save()
+
         ret = self.test_app.configured
+
         self.assertFalse(ret)
 
 
