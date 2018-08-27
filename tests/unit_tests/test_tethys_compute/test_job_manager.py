@@ -1,11 +1,14 @@
 import unittest
 import mock
 
-from tethys_compute.job_manager import JobManager, JobTemplate, BasicJobTemplate, CondorJobTemplate, CondorJobDescription
+from tethys_compute.job_manager import JobManager, JobTemplate, BasicJobTemplate, CondorJobTemplate,\
+    CondorJobDescription, CondorWorkflowTemplate, CondorWorkflowNodeBaseTemplate, CondorWorkflowJobTemplate
 from tethys_compute.job_manager import JOB_CAST
 from tethys_compute.models import (TethysJob,
                                    BasicJob,
-                                   CondorJob)
+                                   CondorJob,
+                                   CondorWorkflow,
+                                   CondorWorkflowJobNode)
 
 
 class TestJobManager(unittest.TestCase):
@@ -105,7 +108,6 @@ class TestJobManager(unittest.TestCase):
 
     def test_JobManager_create_job_assertion(self):
         mock_args = mock.MagicMock()
-        mock_job_type = mock.MagicMock()
 
         mock_name = 'foo'
         mock_user = 'foo_user'
@@ -171,12 +173,8 @@ class TestJobManager(unittest.TestCase):
         mock_request.build_absolute_uri.assert_called_once_with(u'/update-job-status/foo/')
 
     def test_JobManager_replace_workspaces(self):
-        mock_parameters = mock.MagicMock()
         mock_app_workspace = mock.MagicMock()
         mock_user_workspace = mock.MagicMock()
-
-        # mock_app_workspace.path = '/foo/app/$(APP_WORKSPACE)/foo'
-        # mock_user_workspace.path = '/foo/user/$(USER_WORKSPACE)/foo'
         mock_app_workspace.path = 'replace_app'
         mock_user_workspace.path = 'replace_user'
 
@@ -305,7 +303,6 @@ class TestJobManager(unittest.TestCase):
         mock_remote_input_files = mock.MagicMock()
         mock_template = {mock_template_name: mock_remote_input_files}
         mock_job.get_condorpy_template.return_value = mock_template
-
         ret = CondorJobDescription(condorpy_template_name=mock_template_name,
                                    remote_input_files=mock_remote_input_files)
         self.assertEquals(mock_remote_input_files, ret.remote_input_files)
@@ -328,35 +325,133 @@ class TestJobManager(unittest.TestCase):
         ret.process_attributes(app_workspace=mock_app_workspace, user_workspace=mock_user_workspace)
         self.assertEquals({'attributes': mock_template, 'remote_input_files': mock_remote_input_files}, ret.__dict__)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    # CondorWorkflowTemplate
 
     def test_CondorWorkflowTemplate_init(self):
-        pass
+        mock_name = mock.MagicMock()
+        mock_job_description = mock.MagicMock()
+        mock_scheduler = mock.MagicMock()
+        mock_parameters = {list: ['/foo/app/workspace', '/foo/user/workspace'],
+                           'scheduler': mock_scheduler,
+                           'remote_input_files': mock_job_description.remote_input_files,
+                           'attributes': mock_job_description.attributes}
+        mock_job1 = mock.MagicMock()
+        mock_job2 = mock.MagicMock()
+        mock_jobs = [mock_job1, mock_job2]
+        mock_config = mock.MagicMock()
 
-    def test_CondorWorkflowTemplate_create_job(self):
-        pass
+        ret = CondorWorkflowTemplate(name=mock_name, parameters=mock_parameters, jobs=mock_jobs, mock_max_jobs=None,
+                                     config=mock_config)
+        self.assertEquals(mock_name, ret.name)
+        self.assertEquals(CondorWorkflow, ret.type)
+        self.assertEquals(mock_parameters, ret.parameters)
+        self.assertEquals(set(mock_jobs), ret.node_templates)
+
+    @mock.patch('tethys_compute.job_manager.CondorWorkflow.save')
+    def test_CondorWorkflowTemplate_create_job(self, mock_condor_workflow):
+        from tethys_compute.models import Scheduler
+
+        mock_name = mock.MagicMock()
+        mock_scheduler = mock.MagicMock()
+        mock_scheduler.__class__ = Scheduler
+        mock_parameters = {}
+        mock_job1 = mock.MagicMock()
+        mock_job_parent = mock.MagicMock()
+        mock_job1.parameters = {'parents': [mock_job_parent]}
+        mock_jobs = [mock_job1]
+        mock_config = mock.MagicMock()
+        mock_app_workspace = '/foo/APP_WORKSPACE'
+        mock_user_workspace = '/foo/USER_WORKSPACE'
+        mock_condor_workflow.return_value = True
+
+        template = CondorWorkflowTemplate(name=mock_name, parameters=mock_parameters, jobs=mock_jobs,
+                                          config=mock_config)
+        ret = template.create_job(app_workspace=mock_app_workspace, user_workspace=mock_user_workspace)
+        self.assertTrue(isinstance(ret, CondorWorkflow))
+
+    # CondorWorkflowNodeBaseTemplate
 
     def test_CondorWorkflowNodeBaseTemplate_init(self):
-        pass
+        mock_name = mock.MagicMock()
+        mock_type = CondorWorkflowJobNode
+        mock_parameters = {}
 
-    def test_CondorWorkflowNodeBaseTemplate_add_dependency(self):
-        pass
+        ret = CondorWorkflowNodeBaseTemplate(name=mock_name, type=mock_type, parameters=mock_parameters)
+        self.assertEquals(mock_name, ret.name)
+        self.assertEquals(CondorWorkflowJobNode, ret.type)
+        self.assertEquals(mock_parameters, ret.parameters)
 
-    def test_CondorWorkflowNodeBaseTemplate_create_node(self):
-        pass
+    @mock.patch('tethys_compute.job_manager.issubclass')
+    def test_CondorWorkflowNodeBaseTemplate_add_dependency(self, mock_issubclass):
+        mock_name = mock.MagicMock()
+        mock_type = CondorWorkflowJobNode
+        mock_parameters = {}
+        mock_dependency = mock.MagicMock()
+        dep_set = set()
+        dep_set.add(mock_dependency)
+        mock_issubclass.return_value = True
 
+        ret = CondorWorkflowNodeBaseTemplate(name=mock_name, type=mock_type, parameters=mock_parameters)
+        ret.add_dependency(mock_dependency)
+        self.assertEquals(dep_set, ret.dependencies)
 
+    @mock.patch('tethys_compute.job_manager.CondorWorkflowNode.save')
+    @mock.patch('tethys_compute.job_manager.JobManager._replace_workspaces')
+    def test_CondorWorkflowNodeBaseTemplate_create_node(self, mock_replace, mock_node_save):
+        mock_name = mock.MagicMock()
+        mock_type = CondorWorkflowJobNode
+        mock_job1 = mock.MagicMock()
+        mock_job_parent = mock.MagicMock()
+        mock_job1.parameters = {'parents': [mock_job_parent]}
+        mock_parameters = {'parents': [mock_job_parent]}
+        mock_app_workspace = '/foo/APP_WORKSPACE'
+        mock_user_workspace = '/foo/USER_WORKSPACE'
+        mock_workflow = mock.MagicMock()
+        mock_workflow.__class__ = CondorWorkflow
+        mock_node_save.return_value = True
+        mock_replace.return_value = {'parents': [mock_job_parent],
+                                     'num_jobs': 1,
+                                     'remote_input_files': []}
 
+        ret = CondorWorkflowNodeBaseTemplate(name=mock_name, type=mock_type, parameters=mock_parameters)
+        node = ret.create_node(mock_workflow, mock_app_workspace, mock_user_workspace)
 
+        self.assertTrue(isinstance(node, CondorWorkflowJobNode))
+        self.assertEquals(mock_parameters, ret.parameters)
+        self.assertEquals('JOB', node.type)
+        self.assertEquals('', node.workspace)
+
+    # CondorWorkflowJobTemplate
+
+    def test_CondorWorkflowJobTemplate_init(self):
+        mock_name = mock.MagicMock()
+
+        mock_job_description = mock.MagicMock()
+        mock_job_description.remote_input_files = mock.MagicMock()
+        mock_job_description.attributes = mock.MagicMock()
+
+        mock_parameters = {list: ['/foo/app/workspace', '/foo/user/workspace'],
+                           'remote_input_files': mock_job_description.remote_input_files,
+                           '_attributes': mock_job_description.attributes}
+
+        ret = CondorWorkflowJobTemplate(name=mock_name, job_description=mock_job_description)
+
+        self.assertEquals(mock_parameters['remote_input_files'], ret.parameters['remote_input_files'])
+        self.assertEquals(mock_parameters['_attributes'], ret.parameters['_attributes'])
+
+    def test_CondorWorkflowJobTemplate_process_parameters(self):
+        mock_name = mock.MagicMock()
+
+        mock_job_description = mock.MagicMock()
+        mock_job_description.remote_input_files = mock.MagicMock()
+        mock_job_description.attributes = mock.MagicMock()
+
+        mock_parameters = {list: ['/foo/app/workspace', '/foo/user/workspace'],
+                           'remote_input_files': mock_job_description.remote_input_files,
+                           '_attributes': mock_job_description.attributes}
+
+        ret = CondorWorkflowJobTemplate(name=mock_name, job_description=mock_job_description)
+        ret.process_parameters()
+
+        self.assertEquals(mock_parameters['remote_input_files'], ret.parameters['remote_input_files'])
+        self.assertEquals(mock_parameters['_attributes'], ret.parameters['_attributes'])
