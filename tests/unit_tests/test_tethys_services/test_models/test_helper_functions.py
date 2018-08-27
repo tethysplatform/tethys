@@ -10,6 +10,15 @@ class HelperFunctionTests(TethysTestCase):
     def tear_down(self):
         pass
 
+    def test_validate_url_valid(self):
+        test_url = 'http://'
+        raised = False
+        try:
+            service_model.validate_url(test_url)
+        except ValidationError:
+            raised = True
+        self.assertFalse(raised)
+
     def test_validate_url(self):
         test_url = 'test_url'
         self.assertRaises(ValidationError, service_model.validate_url, test_url)

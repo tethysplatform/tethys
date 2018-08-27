@@ -4,9 +4,7 @@ from django.core.exceptions import ValidationError
 from tethys_apps.exceptions import TethysAppSettingNotAssigned, PersistentStorePermissionError,\
     PersistentStoreInitializerError
 from sqlalchemy.engine.base import Engine
-from sqlalchemy.orm.session import sessionmaker
 import mock
-import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 
 
@@ -95,7 +93,9 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         self.assertRaises(TethysAppSettingNotAssigned, PersistentStoreDatabaseSetting.objects
                           .get(name='spatial_db').get_value)
 
-    def test_get_value_with_db(self):
+    @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting.get_namespaced_persistent_store_name')
+    def test_get_value_with_db(self, mock_gn):
+        mock_gn.return_value = 'test_database'
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
         ps_ds_setting.persistent_store_service = self.pss
         ps_ds_setting.save()
@@ -104,7 +104,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ret = PersistentStoreDatabaseSetting.objects.get(name='spatial_db').get_value(with_db=True)
 
         self.assertIsInstance(ret, PersistentStoreService)
-        self.assertEqual('test_app_tethys-testing_spatial_db', ret.database)
+        self.assertEqual('test_database', ret.database)
 
     def test_get_value_as_engine(self):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
@@ -193,10 +193,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
     def test_drop_persistent_store_database_exception(self, mock_psd, mock_get, mock_log):
         mock_psd.return_value = True
         mock_get().connect().execute.side_effect = [Exception('Message: being accessed by other users'),
-                                                    mock.DEFAULT, mock.DEFAULT]
-        # Execute
-        self.assertRaises(Exception, PersistentStoreDatabaseSetting.objects.
-                          get(name='spatial_db').drop_persistent_store_database)
+                                                    mock.DEFAULT, mock.DEFAULT, mock.DEFAULT]
 
         # Check
         mock_log.getLogger().info.assert_called_with('Dropping database "spatial_db" for app "test_app"...')
@@ -205,6 +202,22 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         self.assertEqual('commit', rts_call_args[0][0][0])
         self.assertIn('SELECT pg_terminate_backend(pg_stat_activity.pid)', rts_call_args[1][0][0])
         mock_get().connect().close.assert_called()
+
+    @mock.patch('tethys_apps.models.logging')
+    @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting.get_value')
+    @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting.persistent_store_database_exists')
+    def test_drop_persistent_store_database_connection_exception(self, mock_psd, mock_get, mock_log):
+        mock_psd.return_value = True
+        mock_get().connect.side_effect = [Exception('Message: being accessed by other users'),
+                                          mock.MagicMock(), mock.MagicMock()]
+        # Execute
+        PersistentStoreDatabaseSetting.objects.get(name='spatial_db').drop_persistent_store_database()
+
+        # Check
+        mock_log.getLogger().info.assert_called_with('Dropping database "spatial_db" for app "test_app"...')
+        mock_get().connect.assert_called()
+        mock_get().connect().execute.assert_not_called()
+        mock_get().connect().close.assert_not_called()
 
     @mock.patch('tethys_apps.models.logging')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting.get_value')
@@ -244,7 +257,8 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_get.side_effect = [mock_url, mock_engine, mock_new_db_engine, mock_init_param]
 
         # Execute
-        PersistentStoreDatabaseSetting.objects.get(name='spatial_db').create_persistent_store_database(refresh=True, force_first_time=True)
+        PersistentStoreDatabaseSetting.objects.get(name='spatial_db')\
+            .create_persistent_store_database(refresh=True, force_first_time=True)
 
         # Check mock called
         rts_get_args = mock_log.getLogger().info.call_args_list

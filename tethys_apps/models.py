@@ -668,8 +668,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         engine = self.get_value(as_engine=True)
 
         # Connection
-        # TODO: We don't need this line
-        # drop_connection = engine.connect()
+        drop_connection = None
 
         namespaced_ps_name = self.get_namespaced_persistent_store_name()
 
@@ -689,17 +688,16 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                                                 WHERE pg_stat_activity.datname = '{0}'
                                                 AND pg_stat_activity.pid <> pg_backend_pid();
                                                 '''.format(namespaced_ps_name)
-                drop_connection.execute(disconnect_sessions_statement)
+                if drop_connection:
+                    drop_connection.execute(disconnect_sessions_statement)
 
-                # Try again to drop the database
-                drop_connection.execute('commit')
-                drop_connection.execute(drop_db_statement)
-                # TODO: We don't need this line
-                # drop_connection.close()
+                    # Try again to drop the database
+                    drop_connection.execute('commit')
+                    drop_connection.execute(drop_db_statement)
             else:
                 raise e
         finally:
-            drop_connection.close()
+            drop_connection and drop_connection.close()
 
     def create_persistent_store_database(self, refresh=False, force_first_time=False):
         """

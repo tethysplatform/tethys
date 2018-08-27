@@ -16,7 +16,7 @@ class DatasetServiceTests(TethysTestCase):
         ds = service_model.DatasetService(
             name='test_ds',
         )
-        self.assertEqual('test_ds', ds.__unicode__())
+        self.assertEqual('test_ds', unicode(ds))
 
     @mock.patch('tethys_services.models.HydroShareDatasetEngine')
     def test_get_engine_hydroshare(self, mock_hsde):
@@ -30,7 +30,7 @@ class DatasetServiceTests(TethysTestCase):
             password='password'
 
         )
-
+        ds.save()
         ds.get_engine(request=request)
         mock_hsde.assert_called_with(apikey='test_api', endpoint='http://localhost/api/3/action/',
                                      password='password', username='foo')
@@ -55,6 +55,7 @@ class DatasetServiceTests(TethysTestCase):
             username='foo',
             password='password'
         )
+        ds.save()
         ds.get_engine()
         mock_ckan.assert_called_with(apikey='test_api', endpoint='http://localhost/api/3/action/',
                                      password='password', username='foo')

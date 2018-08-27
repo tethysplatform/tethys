@@ -25,6 +25,7 @@ class SpatialDatasetServiceTests(TethysTestCase):
             username='foo',
             password='password'
         )
+        sds.save()
         ret = sds.get_engine()
 
         # Check result

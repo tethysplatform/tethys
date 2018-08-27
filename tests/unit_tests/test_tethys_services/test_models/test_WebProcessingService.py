@@ -16,7 +16,7 @@ class WebProcessingServiceTests(TethysTestCase):
         wps = service_model.WebProcessingService(
             name='test_sds',
         )
-        self.assertEqual('test_sds', wps.__unicode__())
+        self.assertEqual('test_sds', unicode(wps))
 
     def test_activate(self):
         wps = service_model.WebProcessingService(
@@ -26,13 +26,14 @@ class WebProcessingServiceTests(TethysTestCase):
             username='foo',
             password='password'
         )
-
+        wps.save()
         # Check result
         mock_wps = mock.MagicMock()
         mock_wps.getcapabilities.return_value = 'test'
 
         ret = wps.activate(mock_wps)
 
+        mock_wps.getcapabilities.assert_called()
         self.assertEqual(mock_wps, ret)
 
     def test_activate_http_error_404(self):
@@ -109,7 +110,7 @@ class WebProcessingServiceTests(TethysTestCase):
             username='foo',
             password='password'
         )
-
+        wps.save()
         # Execute
         wps.get_engine()
 

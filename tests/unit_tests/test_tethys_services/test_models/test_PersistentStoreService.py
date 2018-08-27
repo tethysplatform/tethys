@@ -16,7 +16,7 @@ class PersistentStoreServiceTests(TethysTestCase):
             username='foo',
             password='pass'
         )
-        self.assertEqual('test_pss', pss.__unicode__())
+        self.assertEqual('test_pss', unicode(pss))
 
     @mock.patch('sqlalchemy.engine.url.URL')
     def test_get_url(self, mock_url):
@@ -48,6 +48,3 @@ class PersistentStoreServiceTests(TethysTestCase):
 
         # Check if called correctly
         mock_ce.assert_called_with('test_url')
-
-    # TODO: Ask Nathan how to test HTTPError on ImportError.
-

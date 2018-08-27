@@ -86,11 +86,24 @@ class CustomSettingTests(TethysTestCase):
         ret = CustomSetting.objects.get(name='default_name').get_value()
         self.assertEqual(3, ret)
 
-    def test_get_value_boolean(self):
-        custom_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')
-        custom_setting.value = 'TRUE'
-        custom_setting.type = 'BOOLEAN'
-        custom_setting.save()
+    def test_get_value_boolean_true(self):
+        test_cases = ['true', 'yes', 't', 'y', '1']
+        for test in test_cases:
+            custom_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')
+            custom_setting.value = test
+            custom_setting.type = 'BOOLEAN'
+            custom_setting.save()
 
-        ret = CustomSetting.objects.get(name='default_name').get_value()
-        self.assertTrue(ret)
+            ret = CustomSetting.objects.get(name='default_name').get_value()
+            self.assertTrue(ret)
+
+    def test_get_value_boolean_false(self):
+        test_cases = ['false', 'no', 'f', 'n', '0']
+        for test in test_cases:
+            custom_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')
+            custom_setting.value = test
+            custom_setting.type = 'BOOLEAN'
+            custom_setting.save()
+
+            ret = CustomSetting.objects.get(name='default_name').get_value()
+            self.assertFalse(ret)

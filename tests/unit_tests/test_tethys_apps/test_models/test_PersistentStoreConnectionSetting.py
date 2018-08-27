@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from tethys_apps.exceptions import TethysAppSettingNotAssigned
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm.session import sessionmaker
-import mock
 
 
 class PersistentStoreConnectionSettingTests(TethysTestCase):
@@ -22,7 +21,7 @@ class PersistentStoreConnectionSettingTests(TethysTestCase):
         pass
 
     def tear_down(self):
-        pass
+        self.pss.delete()
 
     def test_clean_empty_validation_error(self):
         ps_cs_setting = self.test_app.settings_set.select_subclasses().get(name='primary')
