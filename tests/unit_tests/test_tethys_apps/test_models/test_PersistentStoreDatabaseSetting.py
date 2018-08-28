@@ -193,7 +193,10 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
     def test_drop_persistent_store_database_exception(self, mock_psd, mock_get, mock_log):
         mock_psd.return_value = True
         mock_get().connect().execute.side_effect = [Exception('Message: being accessed by other users'),
-                                                    mock.DEFAULT, mock.DEFAULT, mock.DEFAULT]
+                                                    mock.MagicMock(), mock.MagicMock(), mock.MagicMock()]
+
+        # Execute
+        PersistentStoreDatabaseSetting.objects.get(name='spatial_db').drop_persistent_store_database()
 
         # Check
         mock_log.getLogger().info.assert_called_with('Dropping database "spatial_db" for app "test_app"...')
