@@ -20,11 +20,12 @@ from sqlalchemy.orm import sessionmaker
 from tethys_apps.base.mixins import TethysBaseMixin
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
 
+log = logging.getLogger('tethys')
+
 try:
     from tethys_services.models import (DatasetService, SpatialDatasetService,
                                         WebProcessingService, PersistentStoreService)
 except RuntimeError:
-    log = logging.getLogger('tethys')
     log.exception('An error occurred while trying to import tethys service models.')
 
 
