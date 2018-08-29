@@ -4,7 +4,8 @@ import time
 from tethys_services.backends.hs_restclient_helper import HSClientInitException
 import tethys_services.backends.hs_restclient_helper as hs_client_init_exception
 
-class HsRestClientHelperFooTest(unittest.TestCase):
+
+class HsRestClientHelperTest(unittest.TestCase):
     def setUp(self):
         pass
 
@@ -14,7 +15,7 @@ class HsRestClientHelperFooTest(unittest.TestCase):
     def test_init(self):
         exc = HSClientInitException('foo')
         self.assertEquals('foo', exc.value)
-        self.assertEquals("'foo'", exc.__str__())
+        self.assertEquals("'foo'", str(exc))
 
     @mock.patch('tethys_services.backends.hs_restclient_helper.logger')
     def test_get_get_oauth_hs_main_exception(self, mock_logger):
@@ -160,6 +161,7 @@ class HsRestClientHelperFooTest(unittest.TestCase):
 
         # call the method to test
         hs_client_init_exception.refresh_user_token(mock_user_social)
+
         mock_user_social.extra_data.get.assert_called_once_with('expires_at')
         mock_refresh_request.assert_called_once_with(mock_user_social)
 
@@ -173,6 +175,7 @@ class HsRestClientHelperFooTest(unittest.TestCase):
 
         # call the method to test
         self.assertRaises(Exception, hs_client_init_exception.refresh_user_token, mock_user_social)
+
         mock_user_social.extra_data.get.assert_called_once_with('expires_at')
         mock_refresh_request.assert_not_called()
         mock_time.assert_called_once()
