@@ -24,5 +24,3 @@ class TethysPortalDeveloperTests(unittest.TestCase):
         mock_render.return_value = 'foo'
         self.assertEquals('foo', home(mock_request))
         mock_render.assert_called_once_with(mock_request, 'tethys_portal/developer/home.html', context)
-
-

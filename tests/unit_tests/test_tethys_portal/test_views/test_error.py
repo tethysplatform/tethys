@@ -54,7 +54,8 @@ class TethysPortalViewsErrorTests(unittest.TestCase):
         mock_render.return_value = '500'
         context = {'error_code': '500',
                    'error_title': 'Internal Server Error',
-                   'error_message': "We're sorry, but we seem to have a problem. Please, come back later and try again.",
+                   'error_message': "We're sorry, but we seem to have a problem. "
+                                    "Please, come back later and try again.",
                    'error_image': '/static/tethys_portal/images/error_500.png'}
 
         self.assertEquals('500', handler_500(mock_request))
