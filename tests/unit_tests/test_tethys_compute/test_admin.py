@@ -36,3 +36,13 @@ class TestTethysComputeAdmin(unittest.TestCase):
 
         ja = JobAdmin(mock_admin, mock_admin2)
         self.assertFalse(ja.has_add_permission(mock_request))
+
+    def test_admin_site_register(self):
+        from django.contrib import admin
+        from tethys_compute.models import Scheduler, TethysJob
+        registry = admin.site._registry
+        self.assertIn(Scheduler, registry)
+        self.assertIsInstance(registry[Scheduler], SchedulerAdmin)
+
+        self.assertIn(TethysJob, registry)
+        self.assertIsInstance(registry[TethysJob], JobAdmin)
