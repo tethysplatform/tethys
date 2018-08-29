@@ -128,7 +128,7 @@ def update_job_status(request, job_id):
         job = TethysJob.objects.filter(id=job_id)[0]
         job.status
         json = {'success': True}
-    except Exception as e:
+    except Exception:
         json = {'success': False}
 
     return JsonResponse(json)

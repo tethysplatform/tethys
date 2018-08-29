@@ -30,6 +30,24 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_render.assert_called_once_with(mock_request, 'tethys_apps/app_library.html',
                                             {'apps': {'configured': [mock_app1], 'unconfigured': [mock_app2]}})
 
+    @mock.patch('tethys_apps.views.render')
+    @mock.patch('tethys_apps.views.TethysApp')
+    def test_library_no_staff(self, mock_tethys_app, mock_render):
+        mock_request = mock.MagicMock()
+        mock_request.user.is_staff = False
+        mock_app1 = mock.MagicMock()
+        mock_app1.configured = True
+        mock_app2 = mock.MagicMock()
+        mock_app2.configured = False
+        mock_tethys_app.objects.all.return_value = [mock_app1, mock_app2]
+        mock_render.return_value = True
+
+        ret = library(mock_request)
+        self.assertEqual(ret, mock_render.return_value)
+        mock_tethys_app.objects.all.assert_called_once()
+        mock_render.assert_called_once_with(mock_request, 'tethys_apps/app_library.html',
+                                            {'apps': {'configured': [mock_app1], 'unconfigured': []}})
+
     @mock.patch('tethys_apps.views.HttpResponse')
     @mock.patch('tethys_apps.views.TethysAppBase')
     def test_handoff_capabilities(self, mock_app_base, mock_http_response):
