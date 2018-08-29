@@ -1,7 +1,7 @@
 import cStringIO
 import unittest
 import mock
-
+import tethys_apps.cli.gen_commands
 from tethys_apps.cli.gen_commands import get_environment_value, get_settings_value, generate_command
 from tethys_apps.cli.gen_commands import GEN_SETTINGS_OPTION, GEN_NGINX_OPTION, GEN_UWSGI_SERVICE_OPTION,\
                                          GEN_UWSGI_SETTINGS_OPTION
@@ -221,3 +221,13 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
+
+    @mock.patch('tethys_apps.cli.gen_commands.os.environ')
+    def test_django_settings_module_error(self, mock_environ):
+        mock_environ.side_effect = Exception
+        try:
+            reload(tethys_apps.cli.gen_commands)
+        except:
+            pass
+
+        self.assertTrue(tethys_apps.cli.gen_commands.settings.configured)

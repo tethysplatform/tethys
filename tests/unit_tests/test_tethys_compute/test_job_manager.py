@@ -147,21 +147,22 @@ class TestJobManager(unittest.TestCase):
         self.assertEquals(ret, mock_jobs)
         mock_tethys_job.objects.get_subclass.assert_called_once_with(id='fooid', label=mock_app_package, user='bar')
 
-    # @mock.patch('tethys_compute.job_manager.TethysJob')
-    # def test_JobManager_get_job_assert(self, mock_tethys_job):
-    #     mock_args = mock.MagicMock()
-    #     mock_app_package = mock.MagicMock()
-    #     mock_args.package = mock_app_package
-    #     mock_tethys_job.objects.get_subclass.side_effect = TethysJob.DoesNotExist
-    #
-    #     mock_job_id = 'fooid'
-    #     mock_user = 'bar'
-    #
-    #     mgr = JobManager(mock_args)
-    #     ret = mgr.get_job(job_id=mock_job_id, user=mock_user)
-    #
-    #     self.assertEquals(ret, None)
-    #     mock_tethys_job.objects.get_subclass.assert_called_once_with(id='fooid', label=mock_app_package, user='bar')
+    @mock.patch('tethys_compute.job_manager.TethysJob')
+    def test_JobManager_get_job_dne(self, mock_tethys_job):
+        mock_args = mock.MagicMock()
+        mock_app_package = mock.MagicMock()
+        mock_args.package = mock_app_package
+        mock_tethys_job.DoesNotExist = TethysJob.DoesNotExist  # Restore original exception
+        mock_tethys_job.objects.get_subclass.side_effect = TethysJob.DoesNotExist
+
+        mock_job_id = 'fooid'
+        mock_user = 'bar'
+
+        mgr = JobManager(mock_args)
+        ret = mgr.get_job(job_id=mock_job_id, user=mock_user)
+
+        self.assertEquals(ret, None)
+        mock_tethys_job.objects.get_subclass.assert_called_once_with(id='fooid', label=mock_app_package, user='bar')
 
     def test_JobManager_get_job_status_callback_url(self):
         mock_args = mock.MagicMock()

@@ -1166,195 +1166,88 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn('Template context', mock_log_call_args[4][0][0])
         self.assertIn('Project root path', mock_log_call_args[5][0][0])
 
-    # @mock.patch('tethys_apps.cli.scaffold_commands.logging.getLogger')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.get_random_color')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.pretty_output')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.os.path.isdir')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.shutil.rmtree')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.Context')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.render_path')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.os.walk')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.os.makedirs')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.open', new_callable=mock.mock_open)
-    # @mock.patch('tethys_apps.cli.scaffold_commands.Template')
-    # def test_scaffold_command_with_unicode_decode_error(self, mock_template, mock_file, mock_makedirs, mock_os_walk,
-    #                                                     mock_render_path,
-    #                                                     mock_context, mock_rmt,
-    #                                                     mock_os_path_isdir, mock_pretty_output,
-    #                                                     mock_random_color,
-    #                                                     mock_logger):
-    #     # mock the input args
-    #     mock_args = mock.MagicMock()
-    #
-    #     mock_args.extension = '.ext'
-    #     mock_args.template = 'template_name'
-    #     mock_args.name = 'project-name'
-    #     mock_args.use_defaults = True
-    #     mock_args.overwrite = True
-    #
-    #     # mock the log
-    #     mock_log = mock.MagicMock()
-    #
-    #     # mock the getlogger from logging
-    #     mock_logger.return_value = mock_log
-    #
-    #     # mocking the validate template call return value
-    #     mock_os_path_isdir.return_value = [True, True]
-    #
-    #     # handlers = (mock_file.return_value, mock_file.return_value,
-    #     #             mock_file.return_value, mock_file.return_value,
-    #     #             UnicodeDecodeError, mock_file.return_value, mock_file.return_value, mock_file.return_value,
-    #     #             mock_file.return_value, mock_file.return_value,
-    #     #             mock_file.return_value, mock_file.return_value,
-    #     #             mock_file.return_value, mock_file.return_value,
-    #     #             mock_file.return_value, mock_file.return_value,
-    #     #             mock_file.return_value, mock_file.return_value,
-    #     #             mock_file.return_value, mock_file.return_value
-    #     #             )
-    #     # mock_file.side_effect = handlers
-    #     mock_template.side_Effect = UnicodeDecodeError
-    #
-    #     mock_template_context = mock.MagicMock()
-    #
-    #     # testing: walk the template directory, creating the templates and directories in the new project as we go
-    #     mock_context.return_value = mock_template_context
-    #
-    #     mock_current_project_root = mock.MagicMock()
-    #     mock_render_path.return_value = mock_current_project_root
-    #
-    #     mock_os_walk.return_value = [
-    #         ('/foo', ('bar',), ('baz',)),
-    #         ('/foo/bar', (), ('spam', 'eggs')),
-    #     ]
-    #
-    #     mock_makedirs.return_value = True
-    #
-    #     scaffold_command(args=mock_args)
-    #
-    #    
-    #     mock_pretty_output.assert_called()
-    #
-    #     
-    #     mock_random_color.assert_called()
-    #
-    #     # check shutil.rmtree call
-    #     mock_rmt.assert_called_once()
-    #
-    #     
-    #     mock_render_path.assert_called()
-    #
-    #     # mock the create root directory
-    #     mock_makedirs.assert_called()
-    #
-    #     po_call_args = mock_pretty_output().__enter__().write.call_args_list
-    #
-    #     self.assertEquals('Warning: Dashes in project name "project-name" have been replaced with underscores '
-    #                       '"project_name"', po_call_args[0][0][0])
-    #     self.assertEquals('Creating new Tethys project named "tethysext-project_name".', po_call_args[1][0][0])
-    #     self.assertIn('Created', po_call_args[2][0][0])
-    #     self.assertIn('Created', po_call_args[3][0][0])
-    #     self.assertIn('Created', po_call_args[4][0][0])
-    #     self.assertIn('Created', po_call_args[5][0][0])
-    #     self.assertIn('Created', po_call_args[6][0][0])
-    #     self.assertIn('Successfully scaffolded new project "project_name"', po_call_args[7][0][0])
-    #
-    #     mock_log_call_args = mock_log.debug.call_args_list
-    #     self.assertIn('Command args', mock_log_call_args[0][0][0])
-    #     self.assertIn('APP_PATH', mock_log_call_args[1][0][0])
-    #     self.assertIn('EXTENSION_PATH', mock_log_call_args[2][0][0])
-    #     self.assertIn('Template root directory', mock_log_call_args[3][0][0])
-    #     self.assertIn('Template context', mock_log_call_args[4][0][0])
-    #     self.assertIn('Project root path', mock_log_call_args[5][0][0])
+    @mock.patch('tethys_apps.cli.scaffold_commands.logging.getLogger')
+    @mock.patch('tethys_apps.cli.scaffold_commands.get_random_color')
+    @mock.patch('tethys_apps.cli.scaffold_commands.pretty_output')
+    @mock.patch('tethys_apps.cli.scaffold_commands.os.path.isdir')
+    @mock.patch('tethys_apps.cli.scaffold_commands.shutil.rmtree')
+    @mock.patch('tethys_apps.cli.scaffold_commands.Context')
+    @mock.patch('tethys_apps.cli.scaffold_commands.render_path')
+    @mock.patch('tethys_apps.cli.scaffold_commands.os.walk')
+    @mock.patch('tethys_apps.cli.scaffold_commands.os.makedirs')
+    @mock.patch('tethys_apps.cli.scaffold_commands.open', new_callable=mock.mock_open)
+    @mock.patch('tethys_apps.cli.scaffold_commands.Template')
+    def test_scaffold_command_with_unicode_decode_error(self, mock_template, _, mock_makedirs, mock_os_walk,
+                                                        mock_render_path,
+                                                        mock_context, mock_rmt,
+                                                        mock_os_path_isdir, mock_pretty_output,
+                                                        mock_random_color,
+                                                        mock_logger):
+        # mock the input args
+        mock_args = mock.MagicMock()
 
-    # @mock.patch('tethys_apps.cli.scaffold_commands.logging.getLogger')
-    # @mock.patch('__builtin__.callable')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.get_random_color')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.pretty_output')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.os.path.isdir')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.shutil.rmtree')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.Context')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.render_path')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.os.walk')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.os.makedirs')
-    # @mock.patch('tethys_apps.cli.scaffold_commands.open', new_callable=mock.mock_open)
-    # @mock.patch('tethys_apps.cli.scaffold_commands.Template')
-    # def test_scaffold_command_unicode_error(self, mock_template, __, mock_makedirs, mock_os_walk, mock_render_path, mock_context, mock_rmt,
-    #                           mock_os_path_isdir, mock_pretty_output, mock_random_color, mock_callable, mock_logger):
-    #     # mock the input args
-    #     mock_args = mock.MagicMock()
-    #
-    #     mock_args.extension = '.ext'
-    #     mock_args.template = '@@ee'
-    #     mock_args.name = 'project_name'
-    #     mock_args.use_defaults = True
-    #     mock_args.overwrite = True
-    #
-    #     # mock the log
-    #     mock_log = mock.MagicMock()
-    #
-    #     # mock the getlogger from logging
-    #     mock_logger.return_value = mock_log
-    #
-    #     # mocking the validate template call return value
-    #     mock_os_path_isdir.return_value = [True, True]
-    #
-    #     mock_callable.return_value = True
-    #
-    #     mock_template_context = mock.MagicMock()
-    #
-    #     # testing: walk the template directory, creating the templates and directories in the new project as we go
-    #     mock_context.return_value = mock_template_context
-    #
-    #     mock_os_walk.return_value = [
-    #         ('/foo', ('bar',), ('baz',)),
-    #         ('/foo/bar', (), ('spam', 'eggs')),
-    #     ]
-    #
-    #     mock_cuurent_project_root = mock.MagicMock()
-    #     mock_render_path.return_value = mock_cuurent_project_root
-    #
-    #     mock_makedirs.return_value = True
-    #
-    #     import pdb
-    #     pdb.set_trace()
-    #
-    #     scaffold_command(args=mock_args)
-    #
-    #    
-    #     mock_pretty_output.assert_called()
-    #
-    #     
-    #     mock_random_color.assert_called()
-    #
-    #     # check shutil.rmtree call
-    #     mock_rmt.assert_called()
-    #
-    #     
-    #     mock_render_path.assert_called()
-    #
-    #     # mock the create root directory
-    #     mock_makedirs.assert_called_with(mock_cuurent_project_root)
-    #
-    #     po_call_args = mock_pretty_output().__enter__().write.call_args_list
-    #
-    #     self.assertEquals('Creating new Tethys project named "tethysext-project_name".', po_call_args[0][0][0])
-    #     self.assertIn('Created:', po_call_args[1][0][0])
-    #     self.assertIn('Created:', po_call_args[2][0][0])
-    #     self.assertIn('Created:', po_call_args[3][0][0])
-    #     self.assertIn('Created:', po_call_args[4][0][0])
-    #     self.assertIn('Created:', po_call_args[5][0][0])
-    #     self.assertEquals('Successfully scaffolded new project "project_name"', po_call_args[6][0][0])
-    #
-    #     mock_log_call_args = mock_log.debug.call_args_list
-    #     self.assertIn('Command args', mock_log_call_args[0][0][0])
-    #     self.assertIn('APP_PATH', mock_log_call_args[1][0][0])
-    #     self.assertIn('EXTENSION_PATH', mock_log_call_args[2][0][0])
-    #     self.assertIn('Template root directory', mock_log_call_args[3][0][0])
-    #     self.assertIn('Template context', mock_log_call_args[4][0][0])
-    #     self.assertIn('Project root path', mock_log_call_args[5][0][0])
-    #     self.assertEquals('Loading template: "/foo/baz"', mock_log_call_args[6][0][0])
-    #     self.assertEquals('Rendering template: "/foo/baz"', mock_log_call_args[7][0][0])
-    #     self.assertEquals('Loading template: "/foo/bar/spam"', mock_log_call_args[8][0][0])
-    #     self.assertEquals('Rendering template: "/foo/bar/spam"', mock_log_call_args[9][0][0])
-    #     self.assertEquals('Loading template: "/foo/bar/eggs"', mock_log_call_args[10][0][0])
-    #     self.assertEquals('Rendering template: "/foo/bar/eggs"', mock_log_call_args[11][0][0])
+        mock_args.extension = '.ext'
+        mock_args.template = 'template_name'
+        mock_args.name = 'project-name'
+        mock_args.use_defaults = True
+        mock_args.overwrite = True
+
+        # mock the log
+        mock_log = mock.MagicMock()
+
+        # mock the getlogger from logging
+        mock_logger.return_value = mock_log
+
+        # mocking the validate template call return value
+        mock_os_path_isdir.return_value = [True, True]
+
+        mock_template.side_effect = UnicodeDecodeError('foo', 'bar', 1, 2, 'baz')
+
+        mock_template_context = mock.MagicMock()
+
+        # testing: walk the template directory, creating the templates and directories in the new project as we go
+        mock_context.return_value = mock_template_context
+
+        mock_current_project_root = mock.MagicMock()
+        mock_render_path.return_value = mock_current_project_root
+
+        mock_os_walk.return_value = [
+            ('/foo', ('bar',), ('baz',)),
+            ('/foo/bar', (), ('spam', 'eggs')),
+        ]
+
+        mock_makedirs.return_value = True
+
+        scaffold_command(args=mock_args)
+
+
+        mock_pretty_output.assert_called()
+
+
+        mock_random_color.assert_called()
+
+        # check shutil.rmtree call
+        mock_rmt.assert_called_once()
+
+
+        mock_render_path.assert_called()
+
+        # mock the create root directory
+        mock_makedirs.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+
+        self.assertEquals('Warning: Dashes in project name "project-name" have been replaced with underscores '
+                          '"project_name"', po_call_args[0][0][0])
+        self.assertEquals('Creating new Tethys project named "tethysext-project_name".', po_call_args[1][0][0])
+        self.assertIn('Created', po_call_args[2][0][0])
+        self.assertIn('Created', po_call_args[3][0][0])
+        self.assertIn('Successfully scaffolded new project "project_name"', po_call_args[4][0][0])
+
+        mock_log_call_args = mock_log.debug.call_args_list
+        self.assertIn('Command args', mock_log_call_args[0][0][0])
+        self.assertIn('APP_PATH', mock_log_call_args[1][0][0])
+        self.assertIn('EXTENSION_PATH', mock_log_call_args[2][0][0])
+        self.assertIn('Template root directory', mock_log_call_args[3][0][0])
+        self.assertIn('Template context', mock_log_call_args[4][0][0])
+        self.assertIn('Project root path', mock_log_call_args[5][0][0])
