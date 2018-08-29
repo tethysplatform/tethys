@@ -639,6 +639,7 @@ class TethysAppBase(TethysBase):
                     db_group.delete()
 
         # Create groups that need to be created
+        # import pdb; pdb.set_trace()
         for group in app_groups:
             # Look up the app
             db_app = TethysApp.objects.get(package=app_groups[group]['app_package'])

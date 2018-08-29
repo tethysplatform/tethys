@@ -18,7 +18,7 @@ class SpatialDatasetServiceTests(TethysTestCase):
         sds_setting.spatial_dataset_service = None
         sds_setting.save()
         # Check ValidationError
-        self.assertRaises(ValidationError, SpatialDatasetServiceSetting.objects.get(name='primary_geoserver').clean)
+        self.assertRaises(ValidationError, self.test_app.settings_set.select_subclasses().get(name='primary_geoserver').clean)
 
     def test_get_value(self):
         sds = SpatialDatasetService(
@@ -34,7 +34,7 @@ class SpatialDatasetServiceTests(TethysTestCase):
         sds_setting.spatial_dataset_service = sds
         sds_setting.save()
 
-        ret = SpatialDatasetServiceSetting.objects.get(name='primary_geoserver').get_value()
+        ret = self.test_app.settings_set.select_subclasses().get(name='primary_geoserver').get_value()
 
         # Check result
         self.assertEqual('test_sds', ret.name)
@@ -49,7 +49,7 @@ class SpatialDatasetServiceTests(TethysTestCase):
         sds_setting.spatial_dataset_service = None
         sds_setting.save()
 
-        ret = SpatialDatasetServiceSetting.objects.get(name='primary_geoserver').get_value()
+        ret = self.test_app.settings_set.select_subclasses().get(name='primary_geoserver').get_value()
         self.assertIsNone(ret)
 
     def test_get_value_check_if(self):
@@ -67,27 +67,27 @@ class SpatialDatasetServiceTests(TethysTestCase):
         sds_setting.save()
 
         # Check as_engine
-        ret = SpatialDatasetServiceSetting.objects.get(name='primary_geoserver').get_value(as_engine=True)
+        ret = self.test_app.settings_set.select_subclasses().get(name='primary_geoserver').get_value(as_engine=True)
         # Check result
         self.assertEqual('GEOSERVER', ret.type)
         self.assertEqual('http://localhost/geoserver/rest/', ret.endpoint)
 
         # Check as wms
-        ret = SpatialDatasetServiceSetting.objects.get(name='primary_geoserver').get_value(as_wms=True)
+        ret = self.test_app.settings_set.select_subclasses().get(name='primary_geoserver').get_value(as_wms=True)
         # Check result
         self.assertEqual('http://localhost/geoserver/wms', ret)
 
         # Check as wfs
-        ret = SpatialDatasetServiceSetting.objects.get(name='primary_geoserver').get_value(as_wfs=True)
+        ret = self.test_app.settings_set.select_subclasses().get(name='primary_geoserver').get_value(as_wfs=True)
         # Check result
         self.assertEqual('http://localhost/geoserver/ows', ret)
 
         # Check as_endpoint
-        ret = SpatialDatasetServiceSetting.objects.get(name='primary_geoserver').get_value(as_endpoint=True)
+        ret = self.test_app.settings_set.select_subclasses().get(name='primary_geoserver').get_value(as_endpoint=True)
         # Check result
         self.assertEqual('http://localhost/geoserver/rest/', ret)
 
         # Check as_endpoint
-        ret = SpatialDatasetServiceSetting.objects.get(name='primary_geoserver').get_value(as_public_endpoint=True)
+        ret = self.test_app.settings_set.select_subclasses().get(name='primary_geoserver').get_value(as_public_endpoint=True)
         # Check result
         self.assertEqual('http://publichost/geoserver/rest/', ret)

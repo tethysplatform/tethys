@@ -19,6 +19,7 @@ import pkgutil
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ObjectDoesNotExist
 from tethys_apps.base import TethysAppBase, TethysExtensionBase
+from tethys_apps.base.testing.environment import is_testing_environment
 
 tethys_log = logging.getLogger('tethys.' + __name__)
 
@@ -50,8 +51,10 @@ class SingletonHarvester(object):
         Searches for and loads Tethys extensions.
         """
         try:
+            if not is_testing_environment():
+                print(self.BLUE + 'Loading Tethys Extensions...' + self.ENDC)
+
             import tethysext
-            print(self.BLUE + 'Loading Tethys Extensions...' + self.ENDC)
             tethys_extensions = dict()
             for _, modname, ispkg in pkgutil.iter_modules(tethysext.__path__):
                 if ispkg:
@@ -66,7 +69,8 @@ class SingletonHarvester(object):
         Searches the apps package for apps
         """
         # Notify user harvesting is taking place
-        print(self.BLUE + 'Loading Tethys Apps...' + self.ENDC)
+        if not is_testing_environment():
+            print(self.BLUE + 'Loading Tethys Apps...' + self.ENDC)
 
         # List the apps packages in directory
         apps_dir = os.path.join(os.path.dirname(__file__), 'tethysapp')
@@ -187,8 +191,9 @@ class SingletonHarvester(object):
         self.extension_modules = valid_extension_modules
 
         # Update user
-        print(self.BLUE + 'Tethys Extensions Loaded: '
-            + self.ENDC + '{0}'.format(', '.join(loaded_extensions)) + '\n')
+        if not is_testing_environment():
+            print(self.BLUE + 'Tethys Extensions Loaded: '
+                + self.ENDC + '{0}'.format(', '.join(loaded_extensions)) + '\n')
 
     def _harvest_app_instances(self, app_packages_list):
         """
@@ -241,7 +246,7 @@ class SingletonHarvester(object):
                             try:
                                 app_instance.register_app_permissions()
                             except (ProgrammingError, ObjectDoesNotExist) as e:
-                                tethys_log.error(e)
+                                tethys_log.warning(e)
 
                             # compile valid apps
                             if validated_app_instance:
@@ -264,5 +269,6 @@ class SingletonHarvester(object):
         self.apps = valid_app_instance_list
 
         # Update user
-        print(self.BLUE + 'Tethys Apps Loaded: '
-              + self.ENDC + '{0}'.format(', '.join(loaded_apps)) + '\n')
+        if not is_testing_environment():
+            print(self.BLUE + 'Tethys Apps Loaded: '
+                  + self.ENDC + '{0}'.format(', '.join(loaded_apps)) + '\n')

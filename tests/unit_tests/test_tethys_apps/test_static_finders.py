@@ -60,6 +60,7 @@ class TestTethysStaticFinder(unittest.TestCase):
         for path, storage in tethys_static_finder.list(expected_ignore_patterns):
             if 'test_app' in storage.location:
                 expected_app_paths.append(path)
-        self.assertEquals('js/main.js', expected_app_paths[0])
-        self.assertEquals('images/icon.gif', expected_app_paths[1])
-        self.assertEquals('css/main.css', expected_app_paths[2])
+
+        self.assertIn('js/main.js', expected_app_paths)
+        self.assertIn('images/icon.gif', expected_app_paths)
+        self.assertIn('css/main.css', expected_app_paths)

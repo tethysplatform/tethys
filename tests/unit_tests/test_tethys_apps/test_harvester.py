@@ -217,9 +217,9 @@ class HarvesterTest(unittest.TestCase):
         self.assertIn('Tethys Apps Loaded:', mock_stdout.getvalue())
 
     @mock.patch('sys.stdout', new_callable=io.StringIO)
-    @mock.patch('tethys_apps.harvester.tethys_log.error')
+    @mock.patch('tethys_apps.harvester.tethys_log.warning')
     @mock.patch('tethys_apps.tethysapp.test_app.app.TestApp.register_app_permissions')
-    def test_harvest_app_instances_Exceptions2(self, mock_permissions, mock_logerror, mock_stdout):
+    def test_harvest_app_instances_Exceptions2(self, mock_permissions, mock_logwarning, mock_stdout):
         """
         Test for SingletonHarvester._harvest_app_instances
         For the exception on lines 239-240
@@ -235,7 +235,7 @@ class HarvesterTest(unittest.TestCase):
         shv = SingletonHarvester()
         shv._harvest_app_instances(list_apps)
 
-        mock_logerror.assert_called()
+        mock_logwarning.assert_called()
         mock_permissions.assert_called()
         self.assertIn('Tethys Apps Loaded:', mock_stdout.getvalue())
         self.assertIn('test_app', mock_stdout.getvalue())

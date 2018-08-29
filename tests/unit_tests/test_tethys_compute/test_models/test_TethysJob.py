@@ -3,7 +3,7 @@ from tethys_compute.models import TethysJob
 from django.contrib.auth.models import User
 import datetime
 
-class SchedulerTest(TethysTestCase):
+class TethysJobTest(TethysTestCase):
     def set_up(self):
         self.user = User.objects.create_user('tethys_super', 'user@example.com', 'pass')
         self.tethysjob = TethysJob(
@@ -25,7 +25,8 @@ class SchedulerTest(TethysTestCase):
         self.assertEqual(datetime.timedelta(0, 10), ret)
 
     def test_last_status_update_prop(self):
-        ret = TethysJob.objects.get(name='test_tethysjob').last_status_update
+        pass
+        # ret = TethysJob.objects.get(name='test_tethysjob').last_status_update
 
         # # Check result
         # import pdb

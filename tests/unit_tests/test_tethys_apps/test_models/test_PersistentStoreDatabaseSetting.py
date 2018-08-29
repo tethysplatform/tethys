@@ -1,26 +1,42 @@
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import TethysApp, PersistentStoreDatabaseSetting, PersistentStoreService
 from django.core.exceptions import ValidationError
+from django.conf import settings
 from tethys_apps.exceptions import TethysAppSettingNotAssigned, PersistentStorePermissionError,\
     PersistentStoreInitializerError
 from sqlalchemy.engine.base import Engine
-import mock
 from sqlalchemy.orm import sessionmaker
+import mock
 
 
 class PersistentStoreDatabaseSettingTests(TethysTestCase):
     def set_up(self):
         self.test_app = TethysApp.objects.get(package='test_app')
 
+        # Get default database connection if there is one
+        if 'default' in settings.DATABASES:
+            self.conn = settings.DATABASES['default']
+        else:
+            self.conn = {
+                'USER': 'tethys_super',
+                'PASSWORD': 'pass',
+                'HOST': 'localhost',
+                'PORT': '5435'
+            }
+
+        self.expected_url = 'postgresql://{}:{}@{}:{}'.format(
+            self.conn['USER'], self.conn['PASSWORD'], self.conn['HOST'], self.conn['PORT']
+        )
+
         self.pss = PersistentStoreService(
             name='test_ps',
-            host='localhost',
-            port='5435',
-            username='tethys_super',
-            password='pass'
+            host=self.conn['HOST'],
+            port=self.conn['PORT'],
+            username=self.conn['USER'],
+            password=self.conn['PASSWORD']
         )
+
         self.pss.save()
-        pass
 
     def tear_down(self):
         pass
@@ -30,7 +46,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting.persistent_store_service = None
         ps_ds_setting.save()
         # Check ValidationError
-        self.assertRaises(ValidationError, PersistentStoreDatabaseSetting.objects.get(name='spatial_db').clean)
+        self.assertRaises(ValidationError, self.test_app.settings_set.select_subclasses().get(name='spatial_db').clean)
 
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting.create_persistent_store_database')
     def test_initialize(self, mock_create):
@@ -39,7 +55,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting.save()
 
         # Execute
-        PersistentStoreDatabaseSetting.objects.get(name='spatial_db').initialize()
+        self.test_app.settings_set.select_subclasses().get(name='spatial_db').initialize()
 
         mock_create.assert_called()
 
@@ -51,7 +67,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting.save()
 
         # Execute
-        ret = PersistentStoreDatabaseSetting.objects.get(name='spatial_db').get_namespaced_persistent_store_name()
+        ret = self.test_app.settings_set.select_subclasses().get(name='spatial_db').get_namespaced_persistent_store_name()
 
         # Check result
         self.assertEqual('test_app_spatial_db', ret)
@@ -64,7 +80,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting.save()
 
         # Execute
-        ret = PersistentStoreDatabaseSetting.objects.get(name='spatial_db').get_namespaced_persistent_store_name()
+        ret = self.test_app.settings_set.select_subclasses().get(name='spatial_db').get_namespaced_persistent_store_name()
 
         # Check result
         self.assertEqual('test_app_tethys-testing_spatial_db', ret)
@@ -75,15 +91,15 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting.save()
 
         # Execute
-        ret = PersistentStoreDatabaseSetting.objects.get(name='spatial_db').get_value(with_db=True)
+        ret = self.test_app.settings_set.select_subclasses().get(name='spatial_db').get_value(with_db=True)
 
         # Check results
         self.assertIsInstance(ret, PersistentStoreService)
         self.assertEqual('test_ps', ret.name)
-        self.assertEqual('localhost', ret.host)
-        self.assertEqual(5435, ret.port)
-        self.assertEqual('tethys_super', ret.username)
-        self.assertEqual('pass', ret.password)
+        self.assertEqual(self.conn['HOST'], ret.host)
+        self.assertEqual(int(self.conn['PORT']), ret.port)
+        self.assertEqual(self.conn['USER'], ret.username)
+        self.assertEqual(self.conn['PASSWORD'], ret.password)
 
     def test_get_value_none(self):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
@@ -101,7 +117,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting.save()
 
         # Execute
-        ret = PersistentStoreDatabaseSetting.objects.get(name='spatial_db').get_value(with_db=True)
+        ret = self.test_app.settings_set.select_subclasses().get(name='spatial_db').get_value(with_db=True)
 
         self.assertIsInstance(ret, PersistentStoreService)
         self.assertEqual('test_database', ret.database)
@@ -112,10 +128,10 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting.save()
 
         # Execute
-        ret = PersistentStoreDatabaseSetting.objects.get(name='spatial_db').get_value(as_engine=True)
+        ret = self.test_app.settings_set.select_subclasses().get(name='spatial_db').get_value(as_engine=True)
 
         self.assertIsInstance(ret, Engine)
-        self.assertEqual('postgresql://tethys_super:pass@localhost:5435', str(ret.url))
+        self.assertEqual(self.expected_url, str(ret.url))
 
     def test_get_value_as_sessionmaker(self):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
@@ -123,10 +139,10 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting.save()
 
         # Execute
-        ret = PersistentStoreDatabaseSetting.objects.get(name='spatial_db').get_value(as_sessionmaker=True)
+        ret = self.test_app.settings_set.select_subclasses().get(name='spatial_db').get_value(as_sessionmaker=True)
 
         self.assertIsInstance(ret, sessionmaker)
-        self.assertEqual('postgresql://tethys_super:pass@localhost:5435', str(ret.kw['bind'].url))
+        self.assertEqual(self.expected_url, str(ret.kw['bind'].url))
 
     def test_get_value_as_url(self):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
@@ -134,30 +150,40 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting.save()
 
         # Execute
-        ret = PersistentStoreDatabaseSetting.objects.get(name='spatial_db').get_value(as_url=True)
+        ret = self.test_app.settings_set.select_subclasses().get(name='spatial_db').get_value(as_url=True)
 
         # check URL
-        self.assertEqual('postgresql://tethys_super:pass@localhost:5435', str(ret))
+        self.assertEqual(self.expected_url, str(ret))
 
     def test_persistent_store_database_exists(self):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
         ps_ds_setting.persistent_store_service = self.pss
         ps_ds_setting.save()
 
+        ps_ds_setting.get_namespaced_persistent_store_name = mock.MagicMock(return_value='foo_bar')
+        ps_ds_setting.get_value = mock.MagicMock()
+        mock_engine = ps_ds_setting.get_value()
+        mock_db = mock.MagicMock()
+        mock_db.name = 'foo_bar'
+        mock_engine.connect().execute.return_value = [mock_db]
+
         # Execute
-        ret = PersistentStoreDatabaseSetting.objects.get(name='spatial_db').persistent_store_database_exists()
+        ret = ps_ds_setting.persistent_store_database_exists()
 
         self.assertTrue(ret)
 
-    @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting.get_namespaced_persistent_store_name')
-    def test_persistent_store_database_exists_false(self, mock_name):
-        mock_name.return_value = '_no_database_should_have_this_name_'
+    def test_persistent_store_database_exists_false(self):
         ps_ds_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
         ps_ds_setting.persistent_store_service = self.pss
         ps_ds_setting.save()
 
+        ps_ds_setting.get_namespaced_persistent_store_name = mock.MagicMock(return_value='foo_bar')
+        ps_ds_setting.get_value = mock.MagicMock()
+        mock_engine = ps_ds_setting.get_value()
+        mock_engine.connect().execute.return_value = []
+
         # Execute
-        ret = PersistentStoreDatabaseSetting.objects.get(name='spatial_db').persistent_store_database_exists()
+        ret = ps_ds_setting.persistent_store_database_exists()
 
         self.assertFalse(ret)
 
@@ -166,7 +192,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_psd.return_value = False
 
         # Execute
-        ret = PersistentStoreDatabaseSetting.objects.get(name='spatial_db').drop_persistent_store_database()
+        ret = self.test_app.settings_set.select_subclasses().get(name='spatial_db').drop_persistent_store_database()
 
         self.assertIsNone(ret)
 
@@ -177,7 +203,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_psd.return_value = True
 
         # Execute
-        PersistentStoreDatabaseSetting.objects.get(name='spatial_db').drop_persistent_store_database()
+        self.test_app.settings_set.select_subclasses().get(name='spatial_db').drop_persistent_store_database()
 
         # Check
         mock_log.getLogger().info.assert_called_with('Dropping database "spatial_db" for app "test_app"...')
@@ -196,7 +222,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
                                                     mock.MagicMock(), mock.MagicMock(), mock.MagicMock()]
 
         # Execute
-        PersistentStoreDatabaseSetting.objects.get(name='spatial_db').drop_persistent_store_database()
+        self.test_app.settings_set.select_subclasses().get(name='spatial_db').drop_persistent_store_database()
 
         # Check
         mock_log.getLogger().info.assert_called_with('Dropping database "spatial_db" for app "test_app"...')
@@ -214,7 +240,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_get().connect.side_effect = [Exception('Message: being accessed by other users'),
                                           mock.MagicMock(), mock.MagicMock()]
         # Execute
-        PersistentStoreDatabaseSetting.objects.get(name='spatial_db').drop_persistent_store_database()
+        self.test_app.settings_set.select_subclasses().get(name='spatial_db').drop_persistent_store_database()
 
         # Check
         mock_log.getLogger().info.assert_called_with('Dropping database "spatial_db" for app "test_app"...')
@@ -260,7 +286,7 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         mock_get.side_effect = [mock_url, mock_engine, mock_new_db_engine, mock_init_param]
 
         # Execute
-        PersistentStoreDatabaseSetting.objects.get(name='spatial_db')\
+        self.test_app.settings_set.select_subclasses().get(name='spatial_db')\
             .create_persistent_store_database(refresh=True, force_first_time=True)
 
         # Check mock called
