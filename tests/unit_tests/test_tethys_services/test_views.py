@@ -26,7 +26,7 @@ class TethysServicesViewsTests(unittest.TestCase):
     def test_wps_home(self, mock_render, mock_list_wps_service_engines):
         mock_request = mock.MagicMock()
         mock_render.return_value = 'wps_home'
-        mock_wps = mock.MagicMock();
+        mock_wps = mock.MagicMock()
         mock_list_wps_service_engines.return_value = mock_wps
         context = {'wps_services': mock_wps}
 
@@ -39,7 +39,7 @@ class TethysServicesViewsTests(unittest.TestCase):
         mock_request = mock.MagicMock()
         mock_service = mock.MagicMock()
         mock_render.return_value = 'wps_service'
-        mock_wps = mock.MagicMock();
+        mock_wps = mock.MagicMock()
         mock_get_wps_service_engine.return_value = mock_wps
         context = {'wps': mock_wps,
                    'service': mock_service}
