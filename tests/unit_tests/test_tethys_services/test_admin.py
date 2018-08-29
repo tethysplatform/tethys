@@ -88,3 +88,18 @@ class TestTethysServicesAdmin(unittest.TestCase):
         ret = PersistentStoreServiceAdmin(mock_args, mock_args)
         self.assertEquals(PersistentStoreServiceForm, ret.form)
         self.assertEquals(expected_fields, ret.fields)
+
+    def test_admin_site_register(self):
+        from django.contrib import admin
+        registry = admin.site._registry
+        self.assertIn(DatasetService, registry)
+        self.assertIsInstance(registry[DatasetService], DatasetServiceAdmin)
+
+        self.assertIn(SpatialDatasetService, registry)
+        self.assertIsInstance(registry[SpatialDatasetService], SpatialDatasetServiceAdmin)
+
+        self.assertIn(WebProcessingService, registry)
+        self.assertIsInstance(registry[WebProcessingService], WebProcessingServiceAdmin)
+
+        self.assertIn(PersistentStoreService, registry)
+        self.assertIsInstance(registry[PersistentStoreService], PersistentStoreServiceAdmin)
