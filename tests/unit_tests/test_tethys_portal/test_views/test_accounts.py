@@ -3,7 +3,7 @@ import mock
 from tethys_portal.views.accounts import login_view, register, logout_view, reset_confirm, reset
 
 
-class TethysPortalViewsErrorTests(unittest.TestCase):
+class TethysPortalViewsAccountsTest(unittest.TestCase):
 
     def setUp(self):
         pass
