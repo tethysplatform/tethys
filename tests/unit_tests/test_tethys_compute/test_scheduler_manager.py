@@ -1,10 +1,10 @@
-import cStringIO
 import unittest
 import mock
 
 from tethys_compute.scheduler_manager import list_schedulers, get_scheduler, create_scheduler
 
-class TethysAppsUtilitiesTests(unittest.TestCase):
+
+class SchedulerManagerTests(unittest.TestCase):
 
     def setUp(self):
         pass
