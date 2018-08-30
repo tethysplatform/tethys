@@ -209,9 +209,6 @@ class TethysGizmoIncludeNode(TethysGizmoIncludeDependency):
             return t.render(resolved_options)
 
         except Exception as e:
-            if settings.TEMPLATE_DEBUG:
-                raise e
-        except Exception as e:
             if hasattr(settings, 'TEMPLATES'):
                 for template_settings in settings.TEMPLATES:
                     if 'OPTIONS' in template_settings \
