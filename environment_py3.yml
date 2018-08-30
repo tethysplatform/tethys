@@ -16,6 +16,7 @@ dependencies:
 - djangorestframework
 - bokeh
 - future
+- hs_restclient
 - psycopg2
 - sqlalchemy
 - requests

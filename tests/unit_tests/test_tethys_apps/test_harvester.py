@@ -4,15 +4,16 @@ import mock
 
 from django.db.utils import ProgrammingError
 from tethys_apps.harvester import SingletonHarvester
+from tethys_apps.base.testing.environment import set_testing_environment
 
 
 class HarvesterTest(unittest.TestCase):
 
     def setUp(self):
-        pass
+        set_testing_environment(False)
 
     def tearDown(self):
-        pass
+        set_testing_environment(True)
 
     @mock.patch('tethys_apps.harvester.tethys_log')
     @mock.patch('sys.stdout', new_callable=io.StringIO)

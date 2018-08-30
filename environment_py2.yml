@@ -16,6 +16,7 @@ dependencies:
 - djangorestframework=3.6*
 - bokeh=0.12*
 - future=0.16*
+- hs_restclient
 - paste=2.0*
 - psycopg2=2.7*
 - sqlalchemy=1.1*

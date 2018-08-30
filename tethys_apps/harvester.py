@@ -45,7 +45,6 @@ class SingletonHarvester(object):
         self.harvest_extensions()
         self.harvest_apps()
 
-
     def harvest_extensions(self):
         """
         Searches for and loads Tethys extensions.
