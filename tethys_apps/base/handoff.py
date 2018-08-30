@@ -158,7 +158,7 @@ class HandoffManager(object):
                     print('DEPRECATION WARNING: The handler attribute of a HandoffHandler should now be in the form: "my_first_app.controllers.my_handler". The form "handoff:my_handler" is now deprecated.')
 
                     # Split into module name and function name
-                    module_path, function_name  = handler_str.split(':')
+                    module_path, function_name = handler_str.split(':')
 
                     # Pre-process handler path
                     full_module_path = '.'.join(('tethys_apps.tethysapp', self.app.package, module_path))

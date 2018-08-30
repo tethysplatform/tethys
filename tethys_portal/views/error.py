@@ -52,4 +52,3 @@ def handler_500(request):
                'error_message': "We're sorry, but we seem to have a problem. Please, come back later and try again.",
                'error_image': '/static/tethys_portal/images/error_500.png'}
     return render(request, 'tethys_portal/error.html', context, status=500)
-

@@ -106,19 +106,18 @@ class DatePicker(TethysGizmoOptions):
         self.disabled = disabled
         self.error = error
 
-            
     @staticmethod
     def get_vendor_css():
         """
-        JavaScript vendor libraries to be placed in the 
+        JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
         return ('tethys_gizmos/vendor/bootstrap_datepicker/css/datepicker3.css',)
-        
+
     @staticmethod
     def get_vendor_js():
         """
-        JavaScript vendor libraries to be placed in the 
+        JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
         return ('tethys_gizmos/vendor/bootstrap_datepicker/js/bootstrap_datepicker.js',)

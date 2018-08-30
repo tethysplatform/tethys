@@ -110,7 +110,7 @@ class DatasetService(models.Model):
             try:
                 # social = user.social_auth.get(provider='google-oauth2')
                 social = user.social_auth.get(provider=HYDROSHARE_OAUTH_PROVIDER_NAME)
-                apikey = social.extra_data['access_token']
+                apikey = social.extra_data['access_token']  # noqa: F841
             except ObjectDoesNotExist:
                 # User is not associated with that provider
                 # Need to prompt for association
@@ -204,8 +204,6 @@ class WebProcessingService(models.Model):
                 raise e
         except URLError as e:
             return None
-        except:
-            raise
 
         return wps
 

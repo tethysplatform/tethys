@@ -53,7 +53,7 @@ class WebProcessingServiceSettingInline(TethysAppSettingInline):
     model = WebProcessingServiceSetting
 
 
-#TODO: Figure out how to initialize persistent stores with button in admin
+# TODO: Figure out how to initialize persistent stores with button in admin
 # Consider: https://medium.com/@hakibenita/how-to-add-custom-action-buttons-to-django-admin-8d266f5b0d41
 class PersistentStoreConnectionSettingInline(TethysAppSettingInline):
     readonly_fields = ('name', 'description', 'required')
@@ -98,6 +98,7 @@ class TethysExtensionAdmin(GuardedModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
 
 admin.site.register(TethysApp, TethysAppAdmin)
 admin.site.register(TethysExtension, TethysExtensionAdmin)

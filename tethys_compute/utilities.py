@@ -94,7 +94,7 @@ class DictionaryField(with_metaclass(SubfieldBase, models.Field)):
         else:
             return {}
 
-    def from_db_value(self, value,  expression, connection, context):
+    def from_db_value(self, value, expression, connection, context):
         return self.to_python(value)
 
     def get_prep_value(self, value):

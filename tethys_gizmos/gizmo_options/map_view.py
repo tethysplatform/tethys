@@ -12,7 +12,8 @@ from django.conf import settings
 import logging
 log = logging.getLogger('tethys.tethys_gizmos.gizmo_options.map_view')
 
-__all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer', 'MVLegendClass', 'MVLegendImageClass', 'MVLegendGeoServerImageClass']
+__all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer',
+           'MVLegendClass', 'MVLegendImageClass', 'MVLegendGeoServerImageClass']
 
 
 class MapView(TethysGizmoOptions):
@@ -368,7 +369,9 @@ class MVDraw(SecondaryGizmoOptions):
 
     """
 
-    def __init__(self, controls, initial, output_format='GeoJSON',line_color="#ffcc33",fill_color='rgba(255, 255, 255, 0.2)',point_color="#ffcc33"):
+    def __init__(self, controls, initial, output_format='GeoJSON',
+                 line_color="#ffcc33", fill_color='rgba(255, 255, 255, 0.2)',
+                 point_color="#ffcc33"):
         """
         Constructor
         """
@@ -524,8 +527,10 @@ class MVLayer(SecondaryGizmoOptions):
                                 legend_extent=[-173, 17, -65, 72]),
     """
 
-    def __init__(self, source, options, legend_title, layer_options=None, editable=True, legend_classes=None, legend_extent=None,
-                 legend_extent_projection='EPSG:4326', feature_selection=False, geometry_attribute=None, data={}):
+    def __init__(self, source, options, legend_title, layer_options=None, editable=True,
+                 legend_classes=None, legend_extent=None,
+                 legend_extent_projection='EPSG:4326',
+                 feature_selection=False, geometry_attribute=None, data=None):
         """
         Constructor
         """
@@ -541,10 +546,11 @@ class MVLayer(SecondaryGizmoOptions):
         self.legend_extent_projection = legend_extent_projection
         self.feature_selection = feature_selection
         self.geometry_attribute = geometry_attribute
-        self.data = data
+        self.data = data or dict()
 
         if feature_selection and not geometry_attribute:
             log.warning("geometry_attribute not defined -using default value 'the_geom'")
+
 
 
 class MVLegendClass(SecondaryGizmoOptions):
@@ -646,6 +652,7 @@ class MVLegendImageClass(SecondaryGizmoOptions):
         self.LEGEND_TYPE = 'mvlegendimage'
         self.value = value
         self.image_url = image_url
+
 
 class MVLegendGeoServerImageClass(MVLegendImageClass):
     """

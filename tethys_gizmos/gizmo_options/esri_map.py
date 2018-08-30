@@ -34,7 +34,7 @@ class ESRIMap(TethysGizmoOptions):
     """
     gizmo_name = "esri_map"
 
-    def __init__(self, height='100%', width='100%', basemap='topo',view={'center':[-100,40],'zoom':2},layers=[]):
+    def __init__(self, height='100%', width='100%', basemap='topo', view={'center': [-100, 40], 'zoom': 2}, layers=[]):
         """
         Constructor
         """
@@ -123,11 +123,11 @@ class EMLayer(SecondaryGizmoOptions):
     esri_image_layer = EMLayer(type='ImageryLayer', url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer')
 
     """
-    def __init__(self,type,url):
+    def __init__(self, type, url):
         """
         Constructor
         """
-        #Initialize super class
-        super(EMLayer,self).__init__()
+        # Initialize super class
+        super(EMLayer, self).__init__()
         self.type = type
         self.url = url

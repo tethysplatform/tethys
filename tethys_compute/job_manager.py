@@ -191,11 +191,12 @@ class JobManager(object):
             new_tuple_value = tuple(replace_in_list(tuple_value))
             return new_tuple_value
 
-        TYPE_DICT = {str: replace_in_string,
-                     dict: replace_in_dict,
-                     list: replace_in_list,
-                     tuple: replace_in_tuple,
-                    }
+        TYPE_DICT = {
+            str: replace_in_string,
+            dict: replace_in_dict,
+            list: replace_in_list,
+            tuple: replace_in_tuple,
+        }
 
         new_parameters = dict()
         for parameter, value in parameters.iteritems():
@@ -354,8 +355,8 @@ class CondorWorkflowTemplate(JobTemplate):
         # add code to link nodes
         return job
 
-# TODO remove when JobTemplate is made completely abstract
-JOB_CAST = {CondorJob: CondorJobTemplate,
+
+JOB_CAST = {CondorJob: CondorJobTemplate,  # TODO remove when JobTemplate is made completely abstract
             BasicJob: BasicJobTemplate,
             }
 
@@ -433,4 +434,3 @@ class CondorWorkflowDataJobTemplate(CondorWorkflowNodeBaseTemplate):
 
 class CondorWorkflowFinalTemplate(CondorWorkflowNodeBaseTemplate):
     pass
-

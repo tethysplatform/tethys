@@ -84,6 +84,3 @@ class Command(BaseCommand):
                     os.symlink(tethys_ws_root_path, app_ws_path)
                     print('INFO: Successfully linked "workspaces" directory to TETHYS_WORKSPACES_ROOT for app '
                           '"{0}".'.format(app))
-            else:
-                print('WARNING: Workspace directory for app "{}" is already symbolically linked to another directory '
-                      'within the TETHYS_WORKSPACES_ROOT directory. Skipping... '.format(app))

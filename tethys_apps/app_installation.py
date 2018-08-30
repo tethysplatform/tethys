@@ -12,8 +12,9 @@ import shutil
 import subprocess
 from setuptools.command.develop import develop
 from setuptools.command.install import install
-from sys import platform as _platform
 import ctypes
+import logging
+tethys_log = logging.getLogger('tethys.' + __name__)
 
 
 def find_resource_files(directory):
@@ -40,16 +41,16 @@ def _run_install(self):
     destination_dir = os.path.join(tethysapp_dir, self.app_package)
 
     # Notify user
-    print('Copying App Package: {0} to {1}'.format(self.app_package_dir, destination_dir))
+    tethys_log.info('Copying App Package: {0} to {1}'.format(self.app_package_dir, destination_dir))
 
     # Copy files
     try:
         shutil.copytree(self.app_package_dir, destination_dir)
 
-    except:
+    except Exception:
         try:
             shutil.rmtree(destination_dir)
-        except:
+        except Exception:
             os.remove(destination_dir)
 
         shutil.copytree(self.app_package_dir, destination_dir)
@@ -71,7 +72,7 @@ def _run_develop(self):
     destination_dir = os.path.join(tethysapp_dir, self.app_package)
 
     # Notify user
-    print('Creating Symbolic Link to App Package: {0} to {1}'.format(self.app_package_dir, destination_dir))
+    tethys_log.info('Creating Symbolic Link to App Package: {0} to {1}'.format(self.app_package_dir, destination_dir))
 
     # Create symbolic link
     try:
@@ -88,10 +89,10 @@ def _run_develop(self):
                    raise ctypes.WinError()
                 os.symlink = symlink_ms(self.app_package_dir, destination_dir)
     except Exception as e:
-        print(e)
+        tethys_log.exception(e)
         try:
             shutil.rmtree(destination_dir)
-        except Exception as e:
+        except Exception:
             os.remove(destination_dir)
 
         os.symlink(self.app_package_dir, destination_dir)

@@ -9,7 +9,7 @@
 """
 try:
     import curses
-except:
+except Exception:
     pass  # curses not available on Windows
 from builtins import input
 import platform
@@ -249,9 +249,6 @@ def get_docker_client():
 
         return docker_client
 
-    except:
-        raise
-
 
 def stop_boot2docker():
     """
@@ -263,9 +260,6 @@ def stop_boot2docker():
         print('Boot2Docker VM Stopped')
     except OSError:
         pass
-
-    except:
-        raise
 
 
 def get_images_to_install(docker_client, containers=ALL_DOCKER_INPUTS):
@@ -341,8 +335,11 @@ def log_pull_stream(stream):
                 current_status = json_line['status'] if 'status' in json_line else ''
                 current_progress = json_line['progress'] if 'progress' in json_line else ''
 
-                print("{id}{status} {progress}".format(id=current_id, status=current_status,
-                                                   progress=current_progress))
+                print("{id}{status} {progress}".format(
+                    id=current_id,
+                    status=current_status,
+                    progress=current_progress
+                ))
     else:
 
         TERMINAL_STATUSES = ['Already exists', 'Download complete', 'Pull complete']
@@ -385,8 +382,11 @@ def log_pull_stream(stream):
                                                                  'progress': current_progress}
                         else:
                             # add all other messages to list to show above progress messages
-                            message_log.append("{id}: {status} {progress}".format(id=current_id, status=current_status,
-                                                                               progress=current_progress))
+                            message_log.append("{id}: {status} {progress}".format(
+                                id=current_id,
+                                status=current_status,
+                                progress=current_progress
+                            ))
 
                             # remove messages from progress that have completed
                             if current_id in progress_messages:
@@ -614,7 +614,7 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
 
                 else:
                     max_ows_global = input('Maximum number of simultaneous OGC web service requests '
-                                            '(e.g.: WMS, WCS, WFS) [100]: ')
+                                           '(e.g.: WMS, WCS, WFS) [100]: ')
                     environment['MAX_OWS_GLOBAL'] = validate_numeric_cli_input(max_ows_global, '100')
 
                     max_wms_getmap = input('Maximum number of simultaneous GetMap requests [8]: ')
@@ -676,10 +676,10 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                 }
 
                 host_config = create_host_config(
-                        binds=[
-                            '/usr/lib/tethys/geoserver/data:/var/geoserver/data'
-                        ]
-                    )
+                    binds=[
+                        '/usr/lib/tethys/geoserver/data:/var/geoserver/data'
+                    ]
+                )
 
                 docker_client.create_container(
                     name=GEOSERVER_CONTAINER,
@@ -819,8 +819,6 @@ def start_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
         except KeyError:
             if container == POSTGIS_INPUT:
                 print('PostGIS container not installed...')
-        except:
-            raise
 
         try:
             if not container_status[GEOSERVER_CONTAINER] and container == GEOSERVER_INPUT:
@@ -843,8 +841,6 @@ def start_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
         except KeyError:
             if container == GEOSERVER_INPUT:
                 print('GeoServer container not installed...')
-        except:
-            raise
 
         try:
             if not container_status[N52WPS_CONTAINER] and container == N52WPS_INPUT:
@@ -858,8 +854,6 @@ def start_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
         except KeyError:
             if not container or container == N52WPS_INPUT:
                 print('52 North WPS container not installed...')
-        except:
-            raise
 
 
 def stop_docker_containers(docker_client, silent=False, containers=ALL_DOCKER_INPUTS):
@@ -883,8 +877,6 @@ def stop_docker_containers(docker_client, silent=False, containers=ALL_DOCKER_IN
         except KeyError:
             if not container or container == POSTGIS_INPUT:
                 print('PostGIS container not installed...')
-        except:
-            raise
 
         # Stop GeoServer
         try:
@@ -899,8 +891,6 @@ def stop_docker_containers(docker_client, silent=False, containers=ALL_DOCKER_IN
         except KeyError:
             if not container or container == GEOSERVER_INPUT:
                 print('GeoServer container not installed...')
-        except:
-            raise
 
         # Stop 52 North WPS
         try:
@@ -915,8 +905,6 @@ def stop_docker_containers(docker_client, silent=False, containers=ALL_DOCKER_IN
         except KeyError:
             if not container or container == N52WPS_INPUT:
                 print('52 North WPS container not installed...')
-        except:
-            raise
 
 
 def remove_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
@@ -1122,8 +1110,6 @@ def docker_ip():
     except KeyError:
         # If key error is raised, it is likely not installed.
         print('\nPostGIS/Database: Not Installed.')
-    except:
-        raise
 
     # GeoServer
     try:
@@ -1140,8 +1126,6 @@ def docker_ip():
     except KeyError:
         # If key error is raised, it is likely not installed.
         print('\nGeoServer: Not Installed.')
-    except:
-        raise
 
     # 52 North WPS
     try:
@@ -1158,8 +1142,6 @@ def docker_ip():
     except KeyError:
         # If key error is raised, it is likely not installed.
         print('\n52 North WPS: Not Installed.')
-    except:
-        raise
 
 
 def docker_command(args):

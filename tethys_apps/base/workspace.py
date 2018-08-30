@@ -165,9 +165,8 @@ class TethysWorkspace(object):
 
         """
         # Sanitize to prevent backing into other directories or entering the home directory
-        full_path = item.replace('../', '').replace('./', '').\
-                         replace('..\\', '').replace('.\\', '').\
-                         replace('~/', '').replace('~\\', '')
+        full_path = item.replace('../', '').replace('./', '').replace('..\\', '').\
+            replace('.\\', '').replace('~/', '').replace('~\\', '')
 
         if self._path not in full_path:
             full_path = os.path.join(self._path, full_path)

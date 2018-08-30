@@ -7,9 +7,12 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from tethys_apps.models import (CustomSetting,
-                                DatasetServiceSetting,
-                                SpatialDatasetServiceSetting,
-                                WebProcessingServiceSetting,
-                                PersistentStoreConnectionSetting,
-                                PersistentStoreDatabaseSetting)
+# flake8: noqa
+from tethys_apps.models import (
+    CustomSetting,
+    DatasetServiceSetting,
+    SpatialDatasetServiceSetting,
+    WebProcessingServiceSetting,
+    PersistentStoreConnectionSetting,
+    PersistentStoreDatabaseSetting
+)

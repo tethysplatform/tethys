@@ -8,7 +8,7 @@ __all__ = ['PlotObject', 'LinePlot', 'PolarPlot', 'ScatterPlot',
 class PlotViewBase(TethysGizmoOptions):
     """
     Plot view classes inherit from this class.
-    """    
+    """
     gizmo_name = "plot_view"
 
     def __init__(self, width='500px', height='500px', engine='d3'):
@@ -30,7 +30,7 @@ class PlotViewBase(TethysGizmoOptions):
     @staticmethod
     def get_vendor_js():
         """
-        JavaScript vendor libraries to be placed in the 
+        JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
         return ('tethys_gizmos/vendor/highcharts/js/highcharts.js',
@@ -42,7 +42,7 @@ class PlotViewBase(TethysGizmoOptions):
     @staticmethod
     def get_gizmo_js():
         """
-        JavaScript specific to gizmo to be placed in the 
+        JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
         return ('tethys_gizmos/js/plot_view.js',)
@@ -50,8 +50,8 @@ class PlotViewBase(TethysGizmoOptions):
     @staticmethod
     def get_gizmo_css():
         """
-        CSS specific to gizmo to be placed in the 
-        {% block content_dependent_styles %} block      
+        CSS specific to gizmo to be placed in the
+        {% block content_dependent_styles %} block
         """
         return ('tethys_gizmos/css/plot_view.css',)
 
@@ -61,7 +61,7 @@ class PlotObject(TethysGizmoOptions):
     Base Plot Object that is constructed by plot views.
     """
 
-    def __init__(self,  chart={}, title='', subtitle='', legend=None, display_legend=True,
+    def __init__(self, chart={}, title='', subtitle='', legend=None, display_legend=True,
                  tooltip=True, x_axis={}, y_axis={}, tooltip_format={}, plotOptions={}, **kwargs):
         """
         Constructor
@@ -82,11 +82,11 @@ class PlotObject(TethysGizmoOptions):
 
         if display_legend:
             default_legend = {
-                    'layout': 'vertical',
-                    'align': 'right',
-                    'verticalAlign': 'middle',
-                    'borderWidth': 0
-                }
+                'layout': 'vertical',
+                'align': 'right',
+                'verticalAlign': 'middle',
+                'borderWidth': 0
+            }
             self.legend = legend or default_legend
 
         if tooltip:

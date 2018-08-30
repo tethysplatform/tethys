@@ -4,7 +4,7 @@
 * Author: nswain
 * Created On: May 09, 2016
 * Copyright: (c) Aquaveo 2016
-* License: 
+* License:
 ********************************************************************************
 """
 from future.standard_library import install_aliases
