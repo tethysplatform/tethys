@@ -80,8 +80,6 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         mock_os_path_islink.assert_called_once_with('/foo/testing/tests/foo_app/workspaces')
         self.assertIn('INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.',
                       mock_stdout.getvalue())
-        self.assertIn('WARNING: Workspace directory for app "foo_app" is already symbolically linked to another '
-                      'directory within the TETHYS_WORKSPACES_ROOT directory. Skipping... ', mock_stdout.getvalue())
 
     @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
