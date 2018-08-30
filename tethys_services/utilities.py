@@ -44,7 +44,6 @@ def ensure_oauth2(provider):
         @wraps(func)
         def wrapper(request, *args, **kwargs):
             user = request.user
-
             # Assemble redirect response
             redirect_url = reverse('social:begin', args=[provider]) + '?next={0}'.format(request.path)
             redirect_response = redirect(redirect_url)
