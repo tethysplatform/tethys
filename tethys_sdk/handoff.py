@@ -7,4 +7,6 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from tethys_apps.base.handoff import HandoffHandler  # noqa: F401
+# flake8: noqa
+# DO NOT ERASE
+from tethys_apps.base.handoff import HandoffHandler

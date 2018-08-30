@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 # flake8: noqa
+# DO NOT ERASE
 from tethys_apps.models import (
     CustomSetting,
     DatasetServiceSetting,

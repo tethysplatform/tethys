@@ -102,7 +102,6 @@ class TethysBase(TethysBaseMixin):
                     function_name = controller_parts[-1]
                     try:
                         module = __import__(module_name, fromlist=[function_name])
-                    except ImportError:
                     except Exception as e:
                         error_msg = 'The following error occurred while trying to import the controller function ' \
                                     '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
