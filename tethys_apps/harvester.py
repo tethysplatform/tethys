@@ -9,7 +9,7 @@
 """
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
-from builtins import *
+from builtins import *  # noqa: F401, F403
 
 import os
 import inspect
@@ -60,7 +60,7 @@ class SingletonHarvester(object):
                     tethys_extensions[modname] = 'tethysext.{}'.format(modname)
 
             self._harvest_extension_instances(tethys_extensions)
-        except:
+        except Exception:
             '''DO NOTHING'''
 
     def harvest_apps(self):
@@ -92,14 +92,14 @@ class SingletonHarvester(object):
             extension_url_patterns.update(extension.url_patterns)
 
         return app_url_patterns, extension_url_patterns
-        
+
     def __new__(cls):
         """
         Make App Harvester a Singleton
         """
         if not cls._instance:
             cls._instance = super(SingletonHarvester, cls).__new__(cls)
-            
+
         return cls._instance
 
     @staticmethod
@@ -140,7 +140,7 @@ class SingletonHarvester(object):
 
         Arg:
             extension_packages(dict<name, extension_package>): Dictionary where keys are the name of the extension and value is the extension package module object.
-        """
+        """  # noqa:E501
         valid_ext_instances = []
         valid_extension_modules = {}
         loaded_extensions = []
@@ -180,7 +180,7 @@ class SingletonHarvester(object):
 
                     except TypeError:
                         continue
-            except:
+            except Exception:
                 tethys_log.exception(
                     'Extension {0} not loaded because of the following error:'.format(extension_package))
                 continue
@@ -191,8 +191,8 @@ class SingletonHarvester(object):
 
         # Update user
         if not is_testing_environment():
-            print(self.BLUE + 'Tethys Extensions Loaded: '
-                + self.ENDC + '{0}'.format(', '.join(loaded_extensions)) + '\n')
+            print(self.BLUE + 'Tethys Extensions Loaded: ' +
+                  self.ENDC + '{0}'.format(', '.join(loaded_extensions)) + '\n')
 
     def _harvest_app_instances(self, app_packages_list):
         """
@@ -201,7 +201,7 @@ class SingletonHarvester(object):
         """
         valid_app_instance_list = []
         loaded_apps = []
-        
+
         for app_package in app_packages_list:
             # Skip these things
             if app_package in ['__init__.py', '__init__.pyc', '.gitignore', '.DS_Store']:
@@ -214,7 +214,6 @@ class SingletonHarvester(object):
                 # Import the app.py module from the custom app package programmatically
                 # (e.g.: apps.apps.<custom_package>.app)
                 app_module = __import__(app_module_name, fromlist=[''])
-
 
                 for name, obj in inspect.getmembers(app_module):
                     # Retrieve the members of the app_module and iterate through
@@ -235,7 +234,7 @@ class SingletonHarvester(object):
                             # load/validate app url patterns
                             try:
                                 app_instance.url_patterns
-                            except:
+                            except Exception:
                                 tethys_log.exception(
                                     'App {0} not loaded because of an issue with loading urls:'.format(app_package))
                                 app_instance.remove_from_db()
@@ -259,7 +258,7 @@ class SingletonHarvester(object):
 
                     except TypeError:
                         continue
-            except:
+            except Exception:
                 tethys_log.exception(
                     'App {0} not loaded because of the following error:'.format(app_package))
                 continue
