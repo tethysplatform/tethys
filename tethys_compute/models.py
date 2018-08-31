@@ -11,13 +11,13 @@ import os
 import shutil
 import datetime
 import inspect
-from abc import abstractmethod, abstractproperty
+from abc import abstractmethod
 import logging
 log = logging.getLogger('tethys.tethys_compute.models')
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import pre_save, pre_delete
+from django.db.models.signals import pre_save, pre_delete, post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from model_utils.managers import InheritanceManager
@@ -214,7 +214,6 @@ class BasicJob(TethysJob):
 
 # condorpy_logger.activate_console_logging()
 
-
 class CondorBase(TethysJob):
     """
     Base class for CondorJob and CondorWorkflow
@@ -254,7 +253,7 @@ class CondorBase(TethysJob):
             condor_object._remote_id = self.remote_id
         return condor_object
 
-    @abstractproperty
+    @abstractmethod
     def _condor_object(self):
         """
         Returns: an instance of a condorpy job or condorpy workflow
@@ -328,6 +327,19 @@ class CondorPyJob(models.Model):
     _num_jobs = models.IntegerField(default=1)
     _remote_input_files = ListField(default='')
 
+    def __init__(self, *args, **kwargs):
+        # if condorpy_template_name or attributes is passed in then get the template and add it to the _attributes
+        attributes = kwargs.pop('attributes', dict())
+        _attributes = kwargs.get('_attributes', dict())
+        attributes.update(_attributes)
+        condorpy_template_name = kwargs.pop('condorpy_template_name', None)
+        if condorpy_template_name is not None:
+            template = self.get_condorpy_template(condorpy_template_name)
+            template.update(attributes)
+            attributes = template
+        kwargs['_attributes'] = attributes
+        super(CondorPyJob, self).__init__(*args, **kwargs)
+
     @classmethod
     def get_condorpy_template(cls, template_name):
         template_name = template_name or 'base'
@@ -353,11 +365,11 @@ class CondorPyJob(models.Model):
     def attributes(self):
         return self._attributes
 
-    # @attributes.setter
-    # def attributes(self, attributes):
-    #     assert isinstance(attributes, dict)
-    #     self.condorpy_job._attributes = attributes
-    #     self._attributes = attributes
+    @attributes.setter
+    def attributes(self, attributes):
+        assert isinstance(attributes, dict)
+        self._attributes = attributes
+        self.condorpy_job._attributes = attributes
 
     @property
     def num_jobs(self):
@@ -581,11 +593,11 @@ class CondorWorkflowNode(models.Model):
     noop = models.BooleanField(default=False)
     done = models.BooleanField(default=False)
 
-    @abstractproperty
+    @abstractmethod
     def type(self):
         pass
 
-    @abstractproperty
+    @abstractmethod
     def job(self):
         pass
 
@@ -660,3 +672,12 @@ class CondorWorkflowJobNode(CondorWorkflowNode, CondorPyJob):
 @receiver(pre_save, sender=CondorWorkflowJobNode)
 def condor_workflow_job_node_pre_save(sender, instance, raw, using, update_fields, **kwargs):
     instance.update_database_fields()
+
+
+@receiver(post_save, sender=CondorJob)
+@receiver(post_save, sender=BasicJob)
+@receiver(post_save, sender=TethysJob)
+def tethys_job_post_save(sender, instance, raw, using, update_fields, **kwargs):
+    if instance.name.find('{id}') > 0:
+        instance.name = instance.name.format(id=instance.id)
+        instance.save()
