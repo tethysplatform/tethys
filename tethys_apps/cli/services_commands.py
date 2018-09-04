@@ -2,7 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from django.forms.models import model_to_dict
 
-from .cli_colors import *
+from .cli_colors import BOLD, pretty_output, FG_RED, FG_GREEN
 from .cli_helpers import add_geoserver_rest_to_endpoint
 
 SERVICES_CREATE = 'create'

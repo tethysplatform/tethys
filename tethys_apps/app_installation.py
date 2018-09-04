@@ -13,7 +13,7 @@ import subprocess
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 import ctypes
-from tethys_apps.cli.cli_colors import pretty_output, FG_BLACK, FG_RED
+from tethys_apps.cli.cli_colors import pretty_output, FG_BLACK
 
 
 def find_resource_files(directory):
@@ -77,18 +77,20 @@ def _run_develop(self):
 
     # Create symbolic link
     try:
-        os_symlink = getattr(os, "symlink",None)
+        os_symlink = getattr(os, "symlink", None)
         if callable(os_symlink):
             os.symlink(self.app_package_dir, destination_dir)
         else:
             def symlink_ms(source, dest):
                 csl = ctypes.windll.kernel32.CreateSymbolicLinkW
-                csl.argtypes = (ctypes.c_wchar_p,ctypes.c_wchar_p,ctypes.c_uint32)
+                csl.argtypes = (ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint32)
                 csl.restype = ctypes.c_ubyte
                 flags = 1 if os.path.isdir(source) else 0
-                if csl(dest,source.replace('/','\\'),flags) == 0:
+                if csl(dest, source.replace('/', '\\'), flags) == 0:
                    raise ctypes.WinError()
-                os.symlink = symlink_ms(self.app_package_dir, destination_dir)
+
+            os.symlink = symlink_ms
+            symlink_ms(self.app_package_dir, destination_dir)
     except Exception as e:
         print(e)
         try:

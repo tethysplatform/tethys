@@ -89,8 +89,8 @@ def app_settings_create_ps_database_command(args):
     spatial = args.spatial
     dynamic = args.dynamic
 
-    success = create_ps_database_setting(app_package, setting_name, setting_description or '', required, initializer or '',
-                                         initialized, spatial, dynamic)
+    success = create_ps_database_setting(app_package, setting_name, setting_description or '',
+                                         required, initializer or '', initialized, spatial, dynamic)
 
     if not success:
         exit(1)

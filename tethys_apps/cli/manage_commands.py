@@ -14,7 +14,6 @@ import subprocess
 from tethys_apps.cli.cli_colors import pretty_output, FG_RED
 from tethys_apps.base.testing.environment import set_testing_environment
 
-#/usr/lib/tethys/src/tethys_apps/cli
 CURRENT_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 TETHYS_HOME = os.sep.join(CURRENT_SCRIPT_DIR.split(os.sep)[:-3])
 TETHYS_SRC_DIRECTORY = os.sep.join(CURRENT_SCRIPT_DIR.split(os.sep)[:-2])

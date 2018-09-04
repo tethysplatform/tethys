@@ -340,7 +340,8 @@ def scaffold_command(args):
             shutil.rmtree(project_root)
         except OSError:
             with pretty_output(FG_YELLOW) as p:
-                p.write('Error: Unable to overwrite "{}". Please remove the directory and try again.'.format(project_root))
+                p.write('Error: Unable to overwrite "{}". '
+                        'Please remove the directory and try again.'.format(project_root))
             exit(1)
 
     # Walk the template directory, creating the templates and directories in the new project as we go
