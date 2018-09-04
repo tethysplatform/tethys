@@ -109,9 +109,6 @@ def change_password(request, username=None):
             # Return to the settings page
             return redirect('user:settings', username=username)
 
-        else:
-            pass
-
     else:
         # Create a form populated with data from the instance user
         form = UserPasswordChangeForm(user=request_user)
