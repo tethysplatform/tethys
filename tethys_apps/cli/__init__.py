@@ -16,14 +16,13 @@ from tethys_apps.cli.scaffold_commands import scaffold_command
 from tethys_apps.cli.syncstores_command import syncstores_command as syc
 from tethys_apps.cli.test_command import test_command as tstc
 from tethys_apps.cli.uninstall_command import uninstall_command as uc
-from tethys_apps.cli.docker_commands import *
+from tethys_apps.cli.docker_commands import N52WPS_INPUT, GEOSERVER_INPUT, POSTGIS_INPUT
 from tethys_apps.cli.manage_commands import (manage_command, MANAGE_START, MANAGE_SYNCDB,
                                              MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_SYNC,
-                                             MANAGE_COLLECT, MANAGE_CREATESUPERUSER, TETHYS_SRC_DIRECTORY)
-from tethys_apps.cli.services_commands import (SERVICES_CREATE, SERVICES_CREATE_PERSISTENT, SERVICES_CREATE_SPATIAL,
-                                               SERVICES_LINK, services_create_persistent_command,
-                                               services_create_spatial_command, services_list_command,
-                                               services_remove_persistent_command, services_remove_spatial_command)
+                                             MANAGE_COLLECT, MANAGE_CREATESUPERUSER)
+from tethys_apps.cli.services_commands import (services_create_persistent_command, services_create_spatial_command,
+                                               services_list_command, services_remove_persistent_command,
+                                               services_remove_spatial_command)
 from tethys_apps.cli.link_commands import link_command
 from tethys_apps.cli.app_settings_commands import (app_settings_list_command, app_settings_create_ps_database_command,
                                                    app_settings_remove_command)
@@ -90,8 +89,10 @@ def tethys_command():
                                choices=[MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
                                         MANAGE_COLLECT, MANAGE_CREATESUPERUSER, MANAGE_SYNC])
     manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
-    manage_parser.add_argument('-p', '--port', type=str, help='Host and/or port on which to bind the development server.')
-    manage_parser.add_argument('--noinput', action='store_true', help='Pass the --noinput argument to the manage.py command.')
+    manage_parser.add_argument('-p', '--port', type=str,
+                               help='Host and/or port on which to bind the development server.')
+    manage_parser.add_argument('--noinput', action='store_true',
+                               help='Pass the --noinput argument to the manage.py command.')
     manage_parser.add_argument('-f', '--force', required=False, action='store_true',
                                help='Used only with {} to force the overwrite the app directory into its collect-to '
                                     'location.')
@@ -237,7 +238,8 @@ def tethys_command():
                                              '"<spatial|persistent>:<service_id|service_name>" '
                                              '(i.e. "persistent_connection:super_conn")')
     link_parser.add_argument('setting', help='Setting of an app with which to link the specified service.'
-                                             'Of the form "<app_package>:<setting_type (ps_database|ps_connection|ds_spatial)>:'
+                                             'Of the form "<app_package>:'
+                                             '<setting_type (ps_database|ps_connection|ds_spatial)>:'
                                              '<setting_id|setting_name>" (i.e. "epanet:database:epanet_2")')
     link_parser.set_defaults(func=link_command)
 
@@ -281,7 +283,8 @@ def tethys_command():
                                    action='store_true',
                                    dest='firsttime')
     syncstores_parser.add_argument('-d', '--database', help='Name of database to sync.')
-    syncstores_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
+    syncstores_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for '
+                                                          'Tethys Platform installation.')
     syncstores_parser.set_defaults(func=syc, refresh=False, firstime=False)
 
     # Setup the docker commands

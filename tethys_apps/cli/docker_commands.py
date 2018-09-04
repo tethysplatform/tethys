@@ -199,7 +199,8 @@ def get_docker_client():
             process = ['boot2docker', 'start']
             subprocess.call(process)
 
-        if ('DOCKER_HOST' not in os.environ) or ('DOCKER_CERT_PATH' not in os.environ) or ('DOCKER_TLS_VERIFY' not in os.environ):
+        if ('DOCKER_HOST' not in os.environ) or ('DOCKER_CERT_PATH' not in os.environ) or \
+                ('DOCKER_TLS_VERIFY' not in os.environ):
             # Get environmental variable values
             process = ['boot2docker', 'shellinit']
             p = subprocess.Popen(process, stdout=PIPE)
@@ -229,7 +230,8 @@ def get_docker_client():
         # Then test to see if the Docker is running a later version than the minimum
         # See: https://github.com/docker/docker-py/issues/439
         version_client = DockerClient(**client_kwargs)
-        client_kwargs['version'] = get_api_version(MAX_CLIENT_DOCKER_API_VERSION, version_client.version()['ApiVersion'])
+        client_kwargs['version'] = get_api_version(MAX_CLIENT_DOCKER_API_VERSION,
+                                                   version_client.version()['ApiVersion'])
 
         # Create Real Docker client
         docker_client = DockerClient(**client_kwargs)
@@ -558,8 +560,10 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                 while tethys_db_manager_pass_1 != tethys_db_manager_pass_2:
                     with pretty_output(FG_WHITE) as p:
                         p.write('Passwords do not match, please try again: ')
-                    tethys_db_manager_pass_1 = getpass.getpass('Password for "tethys_db_manager" database user [pass]: ')
-                    tethys_db_manager_pass_2 = getpass.getpass('Confirm password for "tethys_db_manager" database user: ')
+                    tethys_db_manager_pass_1 = getpass.getpass('Password for "tethys_db_manager" database user '
+                                                               '[pass]: ')
+                    tethys_db_manager_pass_2 = getpass.getpass('Confirm password for "tethys_db_manager" database '
+                                                               'user: ')
 
                 tethys_db_manager_pass = tethys_db_manager_pass_1
             else:
@@ -614,7 +618,8 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
 
                 with pretty_output(FG_WHITE) as p:
                     p.write("\nGeoServer can be configured with limits to certain types of requests to prevent it from "
-                            "becoming overwhelmed. This can be done automatically based on a number of processors or each "
+                            "becoming overwhelmed. This can be done automatically based on a number of processors or "
+                            "each "
                             "limit can be set explicitly.\n")
 
                 flow_control_mode = input('Would you like to specify number of Processors (c) OR set '
