@@ -238,7 +238,8 @@ class CondorBase(TethysJob):
     @property
     def condor_object(self):
         """
-        Returns: an instance of a condorpy job or condorpy workflow with scheduler, cluster_id, and remote_id attributes set
+        Returns: an instance of a condorpy job or condorpy workflow with scheduler, cluster_id, and remote_id
+        attributes set
         """
         condor_object = self._condor_object
         condor_object._cluster_id = self.cluster_id
@@ -288,7 +289,7 @@ class CondorBase(TethysJob):
                 running_statuses = statuses['Unexpanded'] + statuses['Idle'] + statuses['Running']
                 if not running_statuses:
                     condor_status = 'Various-Complete'
-        except Exception as e:
+        except Exception:
             # raise e
             condor_status = 'Submission_err'
         self._status = self.STATUS_MAP[condor_status]
