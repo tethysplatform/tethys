@@ -18,7 +18,8 @@ class SchedulerAdmin(admin.ModelAdmin):
 
 @admin.register(TethysJob)
 class JobAdmin(admin.ModelAdmin):
-    list_display = ['name', 'description', 'label', 'user', 'creation_time', 'execute_time', 'completion_time', 'status']
+    list_display = ['name', 'description', 'label', 'user', 'creation_time', 'execute_time', 'completion_time',
+                    'status']
     list_display_links = ('name',)
 
     def has_add_permission(self, request):

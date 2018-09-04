@@ -96,7 +96,7 @@ class JobManager(object):
         """
         try:
             template = self.job_templates[template_name]
-        except KeyError as e:
+        except KeyError:
             raise KeyError('A job template with name %s was not defined' % (template_name,))
         user_workspace = self.app.get_user_workspace(user)
         kwrgs = dict(name=name, user=user, label=self.label, workspace=user_workspace.path)
@@ -135,7 +135,8 @@ class JobManager(object):
             user (User, optional): The user to filter the jobs by.
 
         Returns:
-            A instance of a subclass of TethysJob if a job with job_id exists (and was created by user if the user argument is passed in).
+            A instance of a subclass of TethysJob if a job with job_id exists (and was created by user if the user
+            argument is passed in).
         """
         filters = filters or dict()
         filters['label'] = self.label
@@ -318,7 +319,8 @@ class CondorWorkflowTemplate(JobTemplate):
         name (str): Name to refer to the template.
         parameters (dict, DEPRECATED): A dictionary of key-value pairs. Each Job type defines the possible parameters.
         jobs (list): A list of CondorWorkflowJobTemplates.
-        max_jobs (dict, optional): A dictionary of category-max_job pairs defining the maximum number of jobs that will run simultaneously from each category.
+        max_jobs (dict, optional): A dictionary of category-max_job pairs defining the maximum number of jobs that will
+        run simultaneously from each category.
         config (str, optional): A path to a configuration file for the condorpy DAG.
     """
     def __init__(self, name, parameters=None, jobs=None, max_jobs=None, config=None, **kwargs):
@@ -412,7 +414,8 @@ class CondorWorkflowJobTemplate(CondorWorkflowNodeBaseTemplate):
 
     Args:
         name (str): Name to refer to the template.
-        job_description (CondorJobDescription): An instance of `CondorJobDescription` containing of key-value pairs of job attributes.
+        job_description (CondorJobDescription): An instance of `CondorJobDescription` containing of key-value pairs of
+        job attributes.
     """
     def __init__(self, name, job_description, **kwargs):
         parameters = kwargs

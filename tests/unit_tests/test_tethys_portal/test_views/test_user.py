@@ -162,32 +162,6 @@ class TethysPortalUserTests(unittest.TestCase):
 
     @mock.patch('tethys_portal.views.user.UserPasswordChangeForm')
     @mock.patch('tethys_portal.views.user.render')
-    def test_change_password_post_invalid_form(self, mock_render, mock_upf):
-        username = 'foo'
-
-        mock_user = mock.MagicMock()
-        mock_user.username = 'foo'
-
-        mock_request = mock.MagicMock()
-        mock_request.user = mock_user
-
-        mock_request.method = 'POST'
-        mock_request.POST = 'change-password-submit'
-
-        mock_form = mock.MagicMock()
-        mock_form.is_valid.return_value = False
-        mock_upf.return_value = mock_form
-
-        expected_context = {'form': mock_form}
-
-        change_password(mock_request, username)
-
-        mock_upf.assert_called_once_with(user=mock_request.user, data=mock_request.POST)
-
-        mock_render.assert_called_once_with(mock_request, 'tethys_portal/user/change_password.html', expected_context)
-
-    @mock.patch('tethys_portal.views.user.UserPasswordChangeForm')
-    @mock.patch('tethys_portal.views.user.render')
     def test_change_password_get(self, mock_render, mock_upf):
         username = 'foo'
 
