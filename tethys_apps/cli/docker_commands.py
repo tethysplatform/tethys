@@ -194,7 +194,8 @@ def get_docker_client():
 
         # Start the boot2docker VM if it is not already running
         if boot2docker_info['State'] != "running":
-            print('Starting Boot2Docker VM:')
+            with pretty_output(FG_WHITE) as p:
+                p.write('Starting Boot2Docker VM:')
             # Start up the Docker VM
             process = ['boot2docker', 'start']
             subprocess.call(process)
@@ -899,43 +900,52 @@ def stop_docker_containers(docker_client, silent=False, containers=ALL_DOCKER_IN
         try:
             if container_status[POSTGIS_CONTAINER] and container == POSTGIS_INPUT:
                 if not silent:
-                    print('Stopping PostGIS container...')
+                    with pretty_output(FG_WHITE) as p:
+                        p.write('Stopping PostGIS container...')
 
                 docker_client.stop(container=POSTGIS_CONTAINER)
 
             elif not silent and container == POSTGIS_INPUT:
-                print('PostGIS container already stopped.')
+                with pretty_output(FG_WHITE) as p:
+                    p.write('PostGIS container already stopped.')
         except KeyError:
             if not container or container == POSTGIS_INPUT:
-                print('PostGIS container not installed...')
+                with pretty_output(FG_WHITE) as p:
+                    p.write('PostGIS container not installed...')
 
         # Stop GeoServer
         try:
             if container_status[GEOSERVER_CONTAINER] and container == GEOSERVER_INPUT:
                 if not silent:
-                    print('Stopping GeoServer container...')
+                    with pretty_output(FG_WHITE) as p:
+                        p.write('Stopping GeoServer container...')
 
                 docker_client.stop(container=GEOSERVER_CONTAINER)
 
             elif not silent and container == GEOSERVER_INPUT:
-                print('GeoServer container already stopped.')
+                with pretty_output(FG_WHITE) as p:
+                    p.write('GeoServer container already stopped.')
         except KeyError:
             if not container or container == GEOSERVER_INPUT:
-                print('GeoServer container not installed...')
+                with pretty_output(FG_WHITE) as p:
+                    p.write('GeoServer container not installed...')
 
         # Stop 52 North WPS
         try:
             if container_status[N52WPS_CONTAINER] and container == N52WPS_INPUT:
                 if not silent:
-                    print('Stopping 52 North WPS container...')
+                    with pretty_output(FG_WHITE) as p:
+                        p.write('Stopping 52 North WPS container...')
 
                 docker_client.stop(container=N52WPS_CONTAINER)
 
             elif not silent and container == N52WPS_INPUT:
-                print('52 North WPS container already stopped.')
+                with pretty_output(FG_WHITE) as p:
+                    p.write('52 North WPS container already stopped.')
         except KeyError:
             if not container or container == N52WPS_INPUT:
-                print('52 North WPS container not installed...')
+                with pretty_output(FG_WHITE) as p:
+                    p.write('52 North WPS container not installed...')
 
 
 def remove_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
