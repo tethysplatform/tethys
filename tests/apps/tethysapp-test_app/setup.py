@@ -1,5 +1,4 @@
 import os
-import sys
 from setuptools import setup, find_packages
 from tethys_apps.app_installation import custom_develop_command, custom_install_command
 
