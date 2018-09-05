@@ -75,7 +75,8 @@ class Command(BaseCommand):
                         shutil.move(app_ws_path, tethys_ws_root_path)
                     else:
                         print('WARNING: Workspace directory for app "{}" already exists in the TETHYS_WORKSPACES_ROOT '
-                              'directory. A symbolic link is being created to the existing directory. To force overwrite '
+                              'directory. A symbolic link is being created to the existing directory. '
+                              'To force overwrite '
                               'the existing directory, re-run the command with the "-f" argument.'.format(app))
                         shutil.rmtree(app_ws_path, ignore_errors=True)
 

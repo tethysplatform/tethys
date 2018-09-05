@@ -88,7 +88,6 @@ class TethysAppAdmin(GuardedModelAdmin):
         return False
 
 
-
 class TethysExtensionAdmin(GuardedModelAdmin):
     readonly_fields = ('package', 'name', 'description')
     fields = ('package', 'name', 'description', 'enabled')

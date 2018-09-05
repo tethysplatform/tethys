@@ -87,7 +87,7 @@ def _run_develop(self):
                 csl.restype = ctypes.c_ubyte
                 flags = 1 if os.path.isdir(source) else 0
                 if csl(dest, source.replace('/', '\\'), flags) == 0:
-                   raise ctypes.WinError()
+                    raise ctypes.WinError()
 
             os.symlink = symlink_ms
             symlink_ms(self.app_package_dir, destination_dir)

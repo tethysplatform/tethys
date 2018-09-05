@@ -23,7 +23,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """
-        Symbolically link the static directories of each app into the static/public directory specified by the STATIC_ROOT
+        Symbolically link the static directories of each app into the static/public directory specified by
+        the STATIC_ROOT
         parameter of the settings.py. Do this prior to running Django's collectstatic method.
         """
         if not settings.STATIC_ROOT:
@@ -37,7 +38,6 @@ class Command(BaseCommand):
         # Get a list of installed apps
         installed_apps_and_extensions = get_installed_tethys_apps()
         installed_apps_and_extensions.update(get_installed_tethys_extensions())
-
 
         # Provide feedback to user
         print('INFO: Linking static and public directories of apps and extensions to "{0}".'.format(static_root))
