@@ -24,7 +24,7 @@ class TestEnvironment(unittest.TestCase):
         self.assertIsNone(result)
 
     def test_get_test_db_name(self):
-        expected_result ='tethys-testing_test'
+        expected_result = 'tethys-testing_test'
         result = base_environment.get_test_db_name('test')
         self.assertEqual(expected_result, result)
 

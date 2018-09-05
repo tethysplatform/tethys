@@ -51,4 +51,3 @@ class TestTethysFunctionExtractor(unittest.TestCase):
             return app.function
 
         self.assertRaises(ImportError, test_function_import)
-

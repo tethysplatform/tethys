@@ -1,10 +1,8 @@
 import cStringIO
 import unittest
 import tethys_apps.base.handoff as tethys_handoff
-from tethys_apps.base.app_base import TethysAppBase
 from types import FunctionType
 import mock
-import json
 
 
 def test_function(*args):
@@ -226,7 +224,8 @@ class TestHandoffHandler(unittest.TestCase):
         self.assertIs(type(result.function), FunctionType)
 
     def test_repr(self):
-        result = tethys_handoff.HandoffHandler(name='test_name', handler='test_app.handoff.csv', internal=True).__repr__()
+        result = tethys_handoff.HandoffHandler(name='test_name', handler='test_app.handoff.csv',
+                                               internal=True).__repr__()
 
         # Check Result
         check_string = '<Handoff Handler: name=test_name, handler=test_app.handoff.csv>'
@@ -234,7 +233,8 @@ class TestHandoffHandler(unittest.TestCase):
 
     def test_dict_json_arguments(self):
         tethys_handoff.HandoffHandler.arguments = ['test_json', 'request']
-        result = tethys_handoff.HandoffHandler(name='test_name', handler='test_app.handoff.csv', internal=True).__dict__()
+        result = tethys_handoff.HandoffHandler(name='test_name', handler='test_app.handoff.csv',
+                                               internal=True).__dict__()
 
         # Check Result
         check_dict = {'name': 'test_name', 'arguments': ['test_json']}
@@ -270,6 +270,3 @@ class TestGetHandoffManagerFroApp(unittest.TestCase):
 
         # Check result
         self.assertEqual('test_manager', result)
-
-
-
