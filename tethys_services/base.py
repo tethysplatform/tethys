@@ -46,7 +46,8 @@ class DatasetService:
         self.password = password
 
         with pretty_output(FG_WHITE) as p:
-            p.write('DEPRECATION WARNING: Storing connection credentials for Dataset Services in the app.py is a security leak. App configuration for Dataset Services will be deprecated in version 1.2.')
+            p.write('DEPRECATION WARNING: Storing connection credentials for Dataset Services in the app.py is a '
+                    'security leak. App configuration for Dataset Services will be deprecated in version 1.2.')
 
     def __repr__(self):
         """
@@ -91,8 +92,8 @@ class SpatialDatasetService:
 
         with pretty_output(FG_WHITE) as p:
             p.write('DEPRECATION WARNING: Storing connection credentials for Spatial Dataset Services '
-              'in the app.py is a security leak. App configuration for Spatial Dataset Services '
-              'will be deprecated in version 1.2.')
+                    'in the app.py is a security leak. App configuration for Spatial Dataset Services '
+                    'will be deprecated in version 1.2.')
 
     def __repr__(self):
         """
@@ -116,7 +117,8 @@ class WpsService:
         self.password = password
 
         with pretty_output(FG_WHITE) as p:
-            p.write('DEPRECATION WARNING: Storing connection credentials for WPS Services in the app.py is a security leak. App configuration for WPS Services will be deprecated in version 1.2.')
+            p.write('DEPRECATION WARNING: Storing connection credentials for WPS Services in the app.py is a security '
+                    'leak. App configuration for WPS Services will be deprecated in version 1.2.')
 
     def __repr__(self):
         """
