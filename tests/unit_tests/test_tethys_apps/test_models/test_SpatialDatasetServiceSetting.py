@@ -1,5 +1,5 @@
 from tethys_sdk.testing import TethysTestCase
-from tethys_apps.models import TethysApp, SpatialDatasetServiceSetting
+from tethys_apps.models import TethysApp
 from django.core.exceptions import ValidationError
 from tethys_services.models import SpatialDatasetService
 
@@ -18,7 +18,8 @@ class SpatialDatasetServiceTests(TethysTestCase):
         sds_setting.spatial_dataset_service = None
         sds_setting.save()
         # Check ValidationError
-        self.assertRaises(ValidationError, self.test_app.settings_set.select_subclasses().get(name='primary_geoserver').clean)
+        self.assertRaises(ValidationError, self.test_app.settings_set.select_subclasses().
+                          get(name='primary_geoserver').clean)
 
     def test_get_value(self):
         sds = SpatialDatasetService(
@@ -88,6 +89,7 @@ class SpatialDatasetServiceTests(TethysTestCase):
         self.assertEqual('http://localhost/geoserver/rest/', ret)
 
         # Check as_endpoint
-        ret = self.test_app.settings_set.select_subclasses().get(name='primary_geoserver').get_value(as_public_endpoint=True)
+        ret = self.test_app.settings_set.select_subclasses().get(name='primary_geoserver').\
+            get_value(as_public_endpoint=True)
         # Check result
         self.assertEqual('http://publichost/geoserver/rest/', ret)

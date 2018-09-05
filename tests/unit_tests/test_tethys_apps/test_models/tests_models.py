@@ -36,4 +36,3 @@
 #             pass
 #
 #         # mock_log.exception.assert_called_with('An error occurred while trying to import tethys service models.')
-
