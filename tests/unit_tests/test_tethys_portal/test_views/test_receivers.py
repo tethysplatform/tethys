@@ -28,4 +28,3 @@ class TethysPortalReceiversTests(unittest.TestCase):
 
         create_auth_token(expected_sender, instance=mock_instance, created=expected_created)
         mock_token.objects.create.assert_not_called()
-
