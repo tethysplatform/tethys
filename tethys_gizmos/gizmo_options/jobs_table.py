@@ -17,20 +17,27 @@ __all__ = ['JobsTable']
 
 class JobsTable(TethysGizmoOptions):
     """
-    A jobs table can be used to display users' jobs. The JobsTable gizmo takes the same formatting options as the table view gizmo, but does not allow the columns to be edited. Additional attributes for the jobs table allows for a dynamically updating status field, and action buttons.
+    A jobs table can be used to display users' jobs. The JobsTable gizmo takes the same formatting options as the table
+    view gizmo, but does not allow the columns to be edited. Additional attributes for the jobs table allows for a
+    dynamically updating status field, and action buttons.
 
     Attributes:
         jobs(tuple or list, required): A list/tuple of TethysJob objects.
-        column_fields(tuple or list, required): A tuple or list of strings that represent TethysJob object attributes to show in the columns.
-        status_actions(bool): Add a column to the table to show dynamically updating status, and action buttons. If this is false then the values for run_btn, delete_btn, and results_url will be ignored. Default is True.
+        column_fields(tuple or list, required): A tuple or list of strings that represent TethysJob object attributes
+                                                to show in the columns.
+        status_actions(bool): Add a column to the table to show dynamically updating status, and action buttons. If
+                              this is false then the values for run_btn, delete_btn, and results_url will be ignored.
+                              Default is True.
         run_btn(bool): Add a button to run the job when job status is "Pending". Default is True.
         delete_btn(bool): Add a button to delete jobs. Default is True.
-        results_url(str): A string representing the namespaced path to a controller to that displays job results (e.g. app_name:results_controller)
+        results_url(str): A string representing the namespaced path to a controller to that displays job results
+                          (e.g. app_name:results_controller)
         hover(bool): Illuminate rows on hover (does not work on striped tables)
         striped(bool): Stripe rows
         bordered(bool): Add borders and rounded corners
         condensed(bool): A more tightly packed table
-        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element
+                          (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
         refresh_interval(int): The refresh interval for the runtime and status fields in milliseconds. Default is 5000.
 

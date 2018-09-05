@@ -18,36 +18,59 @@ __all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer',
 
 class MapView(TethysGizmoOptions):
     """
-    The Map View gizmo can be used to produce interactive maps of spatial data. It is powered by OpenLayers 4, a free and open source pure javascript mapping library. It supports layers in a variety of different formats including WMS, Tiled WMS, GeoJSON, KML, and ArcGIS REST. It includes drawing capabilities and the ability to create a legend for the layers included in the map.
+    The Map View gizmo can be used to produce interactive maps of spatial data. It is powered by OpenLayers 4, a free
+    and open source pure javascript mapping library. It supports layers in a variety of different formats including
+    WMS, Tiled WMS, GeoJSON, KML, and ArcGIS REST. It includes drawing capabilities and the ability to create a legend
+    for the layers included in the map.
 
-    Shapes that are drawn on the map by users can be retrieved from the map via a hidden text field named 'geometry' and it is updated every time the map is changed. The text in the text field is a string representation of JSON. The geometry definition contained in this JSON can be formatted as either GeoJSON or Well Known Text. This can be configured via the output_format option of the MVDraw object. If the Map View is embedded in a form, the geometry that is drawn on the map will automatically be submitted with the rest of the form via the hidden text field.
+    Shapes that are drawn on the map by users can be retrieved from the map via a hidden text field named 'geometry'
+    and it is updated every time the map is changed. The text in the text field is a string representation of JSON. The
+    geometry definition contained in this JSON can be formatted as either GeoJSON or Well Known Text. This can be
+    configured via the output_format option of the MVDraw object. If the Map View is embedded in a form, the geometry
+    that is drawn on the map will automatically be submitted with the rest of the form via the hidden text field.
 
     Attributes:
         height(str): Height of the map element. Any valid css unit of length (e.g.: '500px'). Defaults to '520px'.
         width(str): Width of the map element. Any valid css unit of length (e.g.: '100%'). Defaults to '100%'.
-        basemap(str, dict or a list of strings and/or dicts): The base maps to display: choose from OpenStreetMap, MapQuest, or a Bing map. Valid values for the string option are: 'OpenStreetMap' and 'MapQuest'. If you wish to configure the base map with options, you must use the dictionary form. The dictionary form is required to use a Bing map, because an API key must be passed as an option. See below for more detail. A basemap switcher will automatically be provided if a list of more than one basemap is included.
+        basemap(str, dict or a list of strings and/or dicts): The base maps to display: choose from OpenStreetMap,
+                                                              MapQuest, or a Bing map. Valid values for the string
+                                                              option are: 'OpenStreetMap' and 'MapQuest'. If you wish
+                                                              to configure the base map with options, you must use the
+                                                              dictionary form. The dictionary form is required to use a
+                                                              Bing map, because an API key must be passed as an option.
+                                                              See below for more detail. A basemap switcher will
+                                                              automatically be provided if a list of more than one
+                                                              basemap is included.
         view(MVView): An MVView object specifying the initial view or extent for the map.
-        controls(list): A list of controls to add to the map. The list can be a list of strings or a list of dictionaries. Valid controls are ZoomSlider, Rotate, FullScreen, ScaleLine, ZoomToExtent, and 'MousePosition'. See below for more detail.
+        controls(list): A list of controls to add to the map. The list can be a list of strings or a list of
+                        dictionaries. Valid controls are ZoomSlider, Rotate, FullScreen, ScaleLine, ZoomToExtent, and
+                        'MousePosition'. See below for more detail.
         layers(list): A list of MVLayer objects.
         draw(MVDraw): An MVDraw object specifying the drawing options.
         disable_basemap(bool): Render the map without a base map.
         feature_selection(bool): A dictionary of global feature selection options. See below.
-        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element
+                          (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     **Options Dictionaries**
 
-    Many of the options above will accept dictionaries with additional options. These dictionaries should be structured with a single key that is the name of the original option with a value of another dictionary containing the additional options. For example, to provide additional options for the 'ZoomToExtent' control, you would create a dictionary with key 'ZoomToExtent' and value of a dictionary with the additional options like this:
+    Many of the options above will accept dictionaries with additional options. These dictionaries should be structured
+    with a single key that is the name of the original option with a value of another dictionary containing the
+    additional options. For example, to provide additional options for the 'ZoomToExtent' control, you would create a
+    dictionary with key 'ZoomToExtent' and value of a dictionary with the additional options like this:
 
     ::
 
         {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-135, 22, -55, 54]}}
 
-    Most of the additional options correspond with the options objects in the OpenLayers API. The following sections provide links to the OpenLayers objects that you can refer to when selecting the options.
+    Most of the additional options correspond with the options objects in the OpenLayers API. The following sections
+    provide links to the OpenLayers objects that you can refer to when selecting the options.
 
     **Base Maps**
 
-    There are three base maps supported by the Map View gizmo: OpenStreetMap, Bing, and MapQuest. Use the following links to learn about the additional options you can configure the base maps with:
+    There are three base maps supported by the Map View gizmo: OpenStreetMap, Bing, and MapQuest. Use the following
+    links to learn about the additional options you can configure the base maps with:
 
     * Bing: `ol.source.BingMaps <http://openlayers.org/en/v4.0.1/apidoc/ol.source.BingMaps.html>`_
     * MapQuest: `ol.source.MapQuest <http://openlayers.org/en/v4.0.1/apidoc/ol.source.MapQuest.html>`_
@@ -70,9 +93,11 @@ class MapView(TethysGizmoOptions):
 
     **Feature Selection**
 
-    The feature_selection dictionary contains global settings that can be used to modify the behavior of the feature selection functionality. An explanation of valid options follows:
+    The feature_selection dictionary contains global settings that can be used to modify the behavior of the feature
+    selection functionality. An explanation of valid options follows:
 
-    * multiselect: Set to True to allow multiple features to be selected while holding the shift key on the keyboard. Defaults to False.
+    * multiselect: Set to True to allow multiple features to be selected while holding the shift key on the keyboard.
+                   Defaults to False.
     * sensitivity: Integer value that adjust the feature selection sensitivity. Defaults to 2.
 
 
@@ -214,7 +239,8 @@ class MapView(TethysGizmoOptions):
         # Tiled ArcGIS REST Layer
         arc_gis_layer = MVLayer(
             source='TileArcGISRest',
-            options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' + 'Specialty/ESRI_StateCityHighway_USA/MapServer'},
+            options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' +
+                     'Specialty/ESRI_StateCityHighway_USA/MapServer'},
             legend_title='ESRI USA Highway',
             legend_extent=[-173, 17, -65, 72]
         )
@@ -305,10 +331,12 @@ class MapView(TethysGizmoOptions):
 
 class MVView(SecondaryGizmoOptions):
     """
-    MVView objects are used to define the initial view of the Map View. The initial view is set by specifying a center and a zoom level.
+    MVView objects are used to define the initial view of the Map View. The initial view is set by specifying a center
+    and a zoom level.
 
     Attributes:
-        projection(str): Projection of the center coordinates given. This projection will be used to transform the coordinates into the default map projection (EPSG:3857).
+        projection(str): Projection of the center coordinates given. This projection will be used to transform the
+        coordinates into the default map projection (EPSG:3857).
         center(list): An array with the coordinates of the center point of the initial view.
         zoom(int or float): The zoom level for the initial view.
         maxZoom(int or float): The maximum zoom level allowed. Defaults to 28.
@@ -347,11 +375,14 @@ class MVDraw(SecondaryGizmoOptions):
     MVDraw objects are used to define the drawing options for Map View.
 
     Attributes:
-        controls(list, required): List of drawing controls to add to the map. Valid options are 'Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon' and 'Box'.
+        controls(list, required): List of drawing controls to add to the map. Valid options are 'Modify', 'Delete',
+                                  'Move', 'Point', 'LineString', 'Polygon' and 'Box'.
         initial(str, required): Drawing control to be enabled initially. Must be included in the controls list.
-        output_format(str): Format to output to the hidden text area. Either 'WKT' (for Well Known Text format) or 'GeoJSON'. Defaults to 'GeoJSON'
+        output_format(str): Format to output to the hidden text area. Either 'WKT' (for Well Known Text format) or
+                            'GeoJSON'. Defaults to 'GeoJSON'
         line_color(str): User control for customizing the stroke color of annotation objects
-        fill_color(str): User control for customizing the fill color of polygons (suggest rgba format for setting transparency)
+        fill_color(str): User control for customizing the fill color of polygons (suggest rgba format for setting
+                         transparency)
         point_color(str): User control for customizing the color of points
 
     Example
@@ -402,7 +433,8 @@ class MVLayer(SecondaryGizmoOptions):
         feature_selection (bool): Set to True to enable feature selection on this layer. Defaults to False.
         geometry_attribute (str): The name of the attribute in the shapefile that describes the geometry
         legend_classes (list): A list of MVLegendClass objects.
-        legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
+        legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer":
+                              [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
         tethys_data (dict): Dictionary representation of layer data
 
@@ -449,7 +481,8 @@ class MVLayer(SecondaryGizmoOptions):
                                 legend_title='Test GeoJSON',
                                 legend_extent=[-46.7, -48.5, 74, 59],
                                 legend_classes=[
-                                    MVLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
+                                    MVLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)',
+                                                  stroke='#3d9dcd'),
                                     MVLegendClass('line', 'Lines', stroke='#3d9dcd')
                                 ])
 
@@ -469,7 +502,8 @@ class MVLayer(SecondaryGizmoOptions):
         # Define GeoServer Tile Layer with Custom tile grid
         # The default EPSG:900913 gridset can be used with OpenLayers.
         # You must ensure that OpenLayers requests tiles with the same gridset and origin as the gridset GeoServer uses
-        # to use GeoWebCaching capabilities. This is done by setting the TILESORIGIN parameter and specifying a custom tileGrid.
+        # to use GeoWebCaching capabilities. This is done by setting the TILESORIGIN parameter and specifying a custom
+        # tileGrid.
         # Refer to OpenLayers API for ol.tilegrid.TileGrid for explanation and options.
         # See: http://docs.geoserver.org/2.7.0/user/webadmin/tilecache/index.html
         geoserver_layer = MVLayer(source='TileWMS',
@@ -522,7 +556,8 @@ class MVLayer(SecondaryGizmoOptions):
 
         # Tiled ArcGIS REST Layer
         arc_gis_layer = MVLayer(source='TileArcGISRest',
-                                options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' + 'Specialty/ESRI_StateCityHighway_USA/MapServer'},
+                                options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' +
+                                         'Specialty/ESRI_StateCityHighway_USA/MapServer'},
                                 legend_title='ESRI USA Highway',
                                 legend_extent=[-173, 17, -65, 72]),
     """
@@ -552,17 +587,20 @@ class MVLayer(SecondaryGizmoOptions):
             log.warning("geometry_attribute not defined -using default value 'the_geom'")
 
 
-
 class MVLegendClass(SecondaryGizmoOptions):
     """
     MVLegendClasses are used to define the classes listed in the legend.
 
     Attributes:
-        type (str, required): The type of feature to be represented by the legend class. Either 'point', 'line', 'polygon', or 'raster'.
+        type (str, required): The type of feature to be represented by the legend class. Either 'point', 'line', '
+                              polygon', or 'raster'.
         value (str, required): The value or name of the legend class.
-        fill (str): Valid RGB color for the fill (e.g.: '#00ff00', 'rgba(0, 255, 0, 0.5)'). Required for 'point' or 'polygon' types.
-        stoke (str): Valid RGB color for the stoke/line (e.g.: '#00ff00', 'rgba(0, 255, 0, 0.5)'). Required for 'line' types and optional for 'polygon' types.
-        ramp (list): A list of hexidecimal RGB colors that will be used to construct a color ramp. Required for 'raster' types.
+        fill (str): Valid RGB color for the fill (e.g.: '#00ff00', 'rgba(0, 255, 0, 0.5)'). Required for 'point' or
+                    'polygon' types.
+        stoke (str): Valid RGB color for the stoke/line (e.g.: '#00ff00', 'rgba(0, 255, 0, 0.5)'). Required for 'line'
+                     types and optional for 'polygon' types.
+        ramp (list): A list of hexidecimal RGB colors that will be used to construct a color ramp. Required for 'raster'
+                     types.
 
     Example
 
@@ -656,7 +694,8 @@ class MVLegendImageClass(SecondaryGizmoOptions):
 
 class MVLegendGeoServerImageClass(MVLegendImageClass):
     """
-    MVLegendGeoServerImageClasses are used to define the classes listed in the legend using the GeoServer generated legend.
+    MVLegendGeoServerImageClasses are used to define the classes listed in the legend using the GeoServer generated
+    legend.
 
     Attributes:
         value (str, required): The value or name of the legend class.
