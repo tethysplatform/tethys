@@ -143,7 +143,7 @@ class TethysAppsViewsTest(unittest.TestCase):
                    'foo_betaFormUserAgent',
                    'foo_betaFormVendor',
                    'foo_betaUserComments'
-        )
+                   )
         mock_send_mail.assert_called_once_with(expected_subject, expected_message, from_email=None,
                                                recipient_list=mock_app.feedback_emails)
         mock_json_response.assert_called_once_with({'success': True,

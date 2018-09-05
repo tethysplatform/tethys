@@ -41,6 +41,3 @@ class TestUrls(TethysTestCase):
         self.assertEqual('/extensions/test-extension/foo/bar/', url)
         self.assertEquals('home', resolver.func.__name__)
         self.assertEqual('tethysext.test_extension.controllers', resolver.func.__module__)
-
-
-

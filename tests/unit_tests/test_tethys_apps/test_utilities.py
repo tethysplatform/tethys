@@ -4,6 +4,7 @@ import mock
 
 from tethys_apps import utilities
 
+
 class TethysAppsUtilitiesTests(unittest.TestCase):
 
     def setUp(self):
@@ -457,7 +458,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     @mock.patch('tethys_services.models.SpatialDatasetService')
     @mock.patch('tethys_apps.models.TethysApp')
     def test_link_service_to_app_setting_spatial_link_does_not_exist(self, mock_app, mock_service, mock_setting,
-                                                                       mock_pretty_output):
+                                                                     mock_pretty_output):
         from django.core.exceptions import ObjectDoesNotExist
 
         # Mock up TethysApp to MagicMock
