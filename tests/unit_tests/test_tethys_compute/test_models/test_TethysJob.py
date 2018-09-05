@@ -3,6 +3,7 @@ from tethys_compute.models import TethysJob
 from django.contrib.auth.models import User
 import datetime
 
+
 class TethysJobTest(TethysTestCase):
     def set_up(self):
         self.user = User.objects.create_user('tethys_super', 'user@example.com', 'pass')
