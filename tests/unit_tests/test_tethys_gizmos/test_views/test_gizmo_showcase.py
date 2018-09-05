@@ -118,5 +118,3 @@ class TestGizmoShowcase(unittest.TestCase):
         # Check BasicJob Call
         mock_bj.assert_called_with(_status='VCP', description='Completed multi-process job with some errors',
                                    label='gizmos_showcase', name='job_8', user='test_user')
-
-

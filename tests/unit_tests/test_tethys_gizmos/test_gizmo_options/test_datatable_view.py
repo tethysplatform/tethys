@@ -14,7 +14,7 @@ class TestDatatableView(unittest.TestCase):
         datatable_options = {'rows': [['Bill', '30', 'contractor'], ['Fred', '18', 'programmer']]}
         rows = 2
         result = gizmo_datatable_view.DataTableView(rows=rows, column_names=column_names,
-                                                    datatable_options= datatable_options)
+                                                    datatable_options=datatable_options)
         # Check Result
         self.assertEqual(rows, result['rows'])
         self.assertEqual(column_names, result['column_names'])

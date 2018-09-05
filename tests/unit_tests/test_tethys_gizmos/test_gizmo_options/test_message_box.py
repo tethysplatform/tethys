@@ -18,4 +18,3 @@ class TestMessageBox(unittest.TestCase):
         # Check Result
         self.assertEqual(name, result['name'])
         self.assertEqual(title, result['title'])
-        
