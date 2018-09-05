@@ -49,4 +49,3 @@ class TethysConfigAdminTest(unittest.TestCase):
         registry = admin.site._registry
         self.assertIn(SettingsCategory, registry)
         self.assertIsInstance(registry[SettingsCategory], SettingCategoryAdmin)
-
