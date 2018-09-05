@@ -90,7 +90,6 @@ class TethysAppTests(TethysTestCase):
         settings = app.settings_set.filter(name='new_setting')
         self.assertEqual(1, len(settings))
 
-
     def test_settings_prop(self):
         ret = self.test_app.settings
         self.assertEqual(12, len(ret))

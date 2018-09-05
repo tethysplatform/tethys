@@ -92,8 +92,8 @@ class HsRestClientHelperTest(unittest.TestCase):
         mock_hs_r.HydroShare.assert_called_once_with(auth=mock_hs_r.HydroShareAuthOAuth2(),
                                                      hostname=mock_backend_instance.auth_server_hostname)
         mock_logger.debug.assert_any_call('hs object initialized: {0} @ {1}'.
-                                             format(mock_social_auth_obj.extra_data['id'],
-                                                    mock_backend_instance.auth_server_hostname))
+                                          format(mock_social_auth_obj.extra_data['id'],
+                                                 mock_backend_instance.auth_server_hostname))
         mock_logger.debug.assert_called_with('Found oauth backend: hydroshare')
         mock_logger.exception.assert_called_once_with('Failed to initialize hs object: Found another hydroshare oauth '
                                                       'instance: {0} @ {1}'.

@@ -47,7 +47,8 @@ def validate_spatial_dataset_service_endpoint(value):
     validate_url(value)
 
     if '/geoserver/rest' not in value:
-        raise ValidationError('Invalid Endpoint: GeoServer endpoints follow the pattern "http://example.com/geoserver/rest".')
+        raise ValidationError('Invalid Endpoint: GeoServer endpoints follow the pattern '
+                              '"http://example.com/geoserver/rest".')
 
 
 def validate_wps_service_endpoint(value):
@@ -57,7 +58,8 @@ def validate_wps_service_endpoint(value):
     validate_url(value)
 
     if '/wps/WebProcessingService' not in value:
-        raise ValidationError('Invalid Endpoint: 52 North WPS endpoints follow the pattern "http://example.com/wps/WebProcessingService".')
+        raise ValidationError('Invalid Endpoint: 52 North WPS endpoints follow the pattern '
+                              '"http://example.com/wps/WebProcessingService".')
 
 
 def validate_persistent_store_port(value):
@@ -114,8 +116,8 @@ class DatasetService(models.Model):
             except ObjectDoesNotExist:
                 # User is not associated with that provider
                 # Need to prompt for association
-                raise AuthException("HydroShare authentication required. To automate the authentication prompt decorate "
-                                    "your controller function with the @ensure_oauth('hydroshare') decorator.")
+                raise AuthException("HydroShare authentication required. To automate the authentication prompt "
+                                    "decorate your controller function with the @ensure_oauth('hydroshare') decorator.")
 
             return HydroShareDatasetEngine(endpoint=self.endpoint,
                                            username=self.username,
@@ -141,7 +143,8 @@ class SpatialDatasetService(models.Model):
     name = models.CharField(max_length=30, unique=True)
     engine = models.CharField(max_length=200, choices=ENGINE_CHOICES, default=GEOSERVER)
     endpoint = models.CharField(max_length=1024, validators=[validate_spatial_dataset_service_endpoint])
-    public_endpoint = models.CharField(max_length=1024, validators=[validate_spatial_dataset_service_endpoint], blank=True)
+    public_endpoint = models.CharField(max_length=1024, validators=[validate_spatial_dataset_service_endpoint],
+                                       blank=True)
     apikey = models.CharField(max_length=100, blank=True)
     username = models.CharField(max_length=100, blank=True)
     password = models.CharField(max_length=100, blank=True)

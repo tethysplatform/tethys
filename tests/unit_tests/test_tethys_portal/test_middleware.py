@@ -71,8 +71,8 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         self.assertEquals(mock_request, call_args[0][0][0])
 
-        self.assertEquals('The Google account you tried to connect to has already been associated with another account.'
-                          , call_args[0][0][1])
+        self.assertEquals('The Google account you tried to connect to has already been associated with another '
+                          'account.', call_args[0][0][1])
 
         mock_redirect.assert_called_once_with('accounts:login')
 
@@ -82,8 +82,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
     @mock.patch('tethys_portal.middleware.hasattr')
     @mock.patch('tethys_portal.middleware.redirect')
     def test_process_exception_isinstance_linkedin(self, mock_redirect, mock_hasattr, mock_isinstance,
-                                                   mock_success,
-                                                   mock_pretty_output):
+                                                   mock_success, mock_pretty_output):
         mock_request = mock.MagicMock()
         mock_request.user.is_anonymous = True
 
@@ -105,8 +104,8 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         self.assertEquals(mock_request, call_args[0][0][0])
 
-        self.assertEquals('The LinkedIn account you tried to connect to has already been associated with another account.'
-                          , call_args[0][0][1])
+        self.assertEquals('The LinkedIn account you tried to connect to has already been associated with another '
+                          'account.', call_args[0][0][1])
 
         mock_redirect.assert_called_once_with('accounts:login')
 
@@ -149,9 +148,8 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
     @mock.patch('tethys_portal.middleware.isinstance')
     @mock.patch('tethys_portal.middleware.hasattr')
     @mock.patch('tethys_portal.middleware.redirect')
-    def test_process_exception_isinstance_facebook(self, mock_redirect, mock_hasattr, mock_isinstance,
-                                                     mock_success,
-                                                     mock_pretty_output):
+    def test_process_exception_isinstance_facebook(self, mock_redirect, mock_hasattr, mock_isinstance, mock_success,
+                                                   mock_pretty_output):
         mock_request = mock.MagicMock()
         mock_request.user.is_anonymous = True
 
@@ -217,8 +215,8 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
     @mock.patch('tethys_portal.middleware.isinstance')
     @mock.patch('tethys_portal.middleware.hasattr')
     @mock.patch('tethys_portal.middleware.redirect')
-    def test_process_exception_isinstance_exception_with_anonymous_user(self, mock_redirect, mock_hasattr, mock_isinstance,
-                                                                        mock_success):
+    def test_process_exception_isinstance_exception_with_anonymous_user(self, mock_redirect, mock_hasattr,
+                                                                        mock_isinstance, mock_success):
         mock_request = mock.MagicMock()
         mock_request.user.is_anonymous = False
         mock_request.user.username = 'foo'
@@ -246,7 +244,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
     @mock.patch('tethys_portal.middleware.hasattr')
     @mock.patch('tethys_portal.middleware.redirect')
     def test_process_exception_isinstance_exception_user(self, mock_redirect, mock_hasattr, mock_isinstance,
-                                                                        mock_success):
+                                                         mock_success):
         mock_request = mock.MagicMock()
         mock_request.user.is_anonymous = True
 

@@ -28,5 +28,3 @@ class SchedulerTest(TethysTestCase):
         self.assertEqual('pass', ret.password)
         self.assertEqual('test_path', ret.private_key_path)
         self.assertEqual('test_pass', ret.private_key_pass)
-
-

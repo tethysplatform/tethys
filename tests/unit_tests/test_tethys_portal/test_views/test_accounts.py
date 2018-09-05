@@ -170,7 +170,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
     @mock.patch('tethys_portal.views.accounts.LoginForm')
     @mock.patch('tethys_portal.views.accounts.redirect')
     def test_login_view_get_method_user_none(self, mock_redirect, mock_login_form, mock_authenticate, mock_login,
-                                                   mock_messages, mock_render):
+                                             mock_messages, mock_render):
         mock_request = mock.MagicMock()
         mock_request.method = 'POST'
         mock_request.POST = 'login-submit'
@@ -211,7 +211,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         mock_redirect.assert_not_called()
 
         mock_messages.warning.assert_called_once_with(mock_request, "Whoops! We were not able to log you in. "
-                                                                    "Please check your username and " 
+                                                                    "Please check your username and "
                                                                     "password and try again.")
 
         context = {'form': mock_login_form(),
@@ -269,7 +269,8 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
     @mock.patch('tethys_portal.views.accounts.authenticate')
     @mock.patch('tethys_portal.views.accounts.RegisterForm')
     @mock.patch('tethys_portal.views.accounts.redirect')
-    def test_register_post_request(self, mock_redirect, mock_register_form, mock_authenticate, mock_login, mock_settings):
+    def test_register_post_request(self, mock_redirect, mock_register_form, mock_authenticate, mock_login,
+                                   mock_settings):
         mock_request = mock.MagicMock()
         mock_request.method = 'POST'
         mock_request.POST = 'register-submit'
@@ -321,7 +322,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
     @mock.patch('tethys_portal.views.accounts.RegisterForm')
     @mock.patch('tethys_portal.views.accounts.redirect')
     def test_register_post_request_next(self, mock_redirect, mock_register_form, mock_authenticate, mock_login,
-                                   mock_settings):
+                                        mock_settings):
         mock_request = mock.MagicMock()
         mock_request.method = 'POST'
         mock_request.POST = 'register-submit'
@@ -433,7 +434,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
     @mock.patch('tethys_portal.views.accounts.RegisterForm')
     @mock.patch('tethys_portal.views.accounts.render')
     def test_register_post_request_user_none(self, mock_render, mock_register_form, mock_authenticate,
-                                                   mock_login, mock_settings, mock_messages):
+                                             mock_login, mock_settings, mock_messages):
         mock_request = mock.MagicMock()
         mock_request.method = 'POST'
         mock_request.POST = 'register-submit'
@@ -562,19 +563,3 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
                                         email_template_name='tethys_portal/accounts/password_reset/reset_email.html',
                                         subject_template_name='tethys_portal/accounts/password_reset/reset_subject.txt',
                                         post_reset_redirect='accounts:login')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

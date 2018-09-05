@@ -272,8 +272,8 @@ def get_spatial_dataset_engine(name, app_class=None):
                 spatial_dataset_object.public_endpoint = site_spatial_dataset_service.public_endpoint
                 return spatial_dataset_object
 
-    raise NameError('Could not find spatial dataset service with name "{0}". Please check that dataset service with that name '
-                    'exists in either the Admin Settings or in your app.py.'.format(name))
+    raise NameError('Could not find spatial dataset service with name "{0}". Please check that dataset service with '
+                    'that name exists in either the Admin Settings or in your app.py.'.format(name))
 
 
 def abstract_is_link(process):

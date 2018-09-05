@@ -69,9 +69,6 @@ class TestLinkCommands(unittest.TestCase):
 
         self.assertRaises(SystemExit, link_commands.link_command, args)
 
-        mock_link_app_setting.assert_called_with('persistent_connection', 'super_conn', 'epanet', 'database', 'epanet_2')
+        mock_link_app_setting.assert_called_with('persistent_connection', 'super_conn', 'epanet', 'database',
+                                                 'epanet_2')
         mock_exit.assert_called_with(1)
-
-
-
-

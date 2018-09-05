@@ -96,7 +96,8 @@ class TestJobsTable(unittest.TestCase):
         gizmo_jobs_table.update_row(request, job_id='1')
 
         # Check Result
-        mock_log.error.assert_called_with('The following error occurred when updating row for job %s: %s', '1', str('error'))
+        mock_log.error.assert_called_with('The following error occurred when updating row for job %s: %s', '1',
+                                          str('error'))
 
     @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
     def test_update_status(self, mock_tj):
@@ -129,7 +130,8 @@ class TestJobsTable(unittest.TestCase):
         request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
         gizmo_jobs_table.update_status(request, job_id='1')
 
-        mock_log.error.assert_called_with('The following error occurred when updating status for job %s: %s', '1', str('error'))
+        mock_log.error.assert_called_with('The following error occurred when updating status for job %s: %s', '1',
+                                          str('error'))
 
     def test_parse_value(self):
         result = gizmo_jobs_table._parse_value('True')

@@ -67,7 +67,8 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting.save()
 
         # Execute
-        ret = self.test_app.settings_set.select_subclasses().get(name='spatial_db').get_namespaced_persistent_store_name()
+        ret = self.test_app.settings_set.select_subclasses().get(name='spatial_db').\
+            get_namespaced_persistent_store_name()
 
         # Check result
         self.assertEqual('test_app_spatial_db', ret)
@@ -80,7 +81,8 @@ class PersistentStoreDatabaseSettingTests(TethysTestCase):
         ps_ds_setting.save()
 
         # Execute
-        ret = self.test_app.settings_set.select_subclasses().get(name='spatial_db').get_namespaced_persistent_store_name()
+        ret = self.test_app.settings_set.select_subclasses().get(name='spatial_db').\
+            get_namespaced_persistent_store_name()
 
         # Check result
         self.assertEqual('test_app_tethys-testing_spatial_db', ret)

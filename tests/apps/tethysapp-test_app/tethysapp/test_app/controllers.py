@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from tethys_sdk.gizmos import Button
 
+
 @login_required()
 def home(request, var1, var2):
     """
@@ -13,9 +14,9 @@ def home(request, var1, var2):
         icon='glyphicon glyphicon-floppy-disk',
         style='success',
         attributes={
-            'data-toggle':'tooltip',
-            'data-placement':'top',
-            'title':'Save'
+            'data-toggle': 'tooltip',
+            'data-placement': 'top',
+            'title': 'Save'
         }
     )
 
@@ -25,9 +26,9 @@ def home(request, var1, var2):
         icon='glyphicon glyphicon-edit',
         style='warning',
         attributes={
-            'data-toggle':'tooltip',
-            'data-placement':'top',
-            'title':'Edit'
+            'data-toggle': 'tooltip',
+            'data-placement': 'top',
+            'title': 'Edit'
         }
     )
 
@@ -37,9 +38,9 @@ def home(request, var1, var2):
         icon='glyphicon glyphicon-remove',
         style='danger',
         attributes={
-            'data-toggle':'tooltip',
-            'data-placement':'top',
-            'title':'Remove'
+            'data-toggle': 'tooltip',
+            'data-placement': 'top',
+            'title': 'Remove'
         }
     )
 
@@ -47,9 +48,9 @@ def home(request, var1, var2):
         display_text='Previous',
         name='previous-button',
         attributes={
-            'data-toggle':'tooltip',
-            'data-placement':'top',
-            'title':'Previous'
+            'data-toggle': 'tooltip',
+            'data-placement': 'top',
+            'title': 'Previous'
         }
     )
 
@@ -57,9 +58,9 @@ def home(request, var1, var2):
         display_text='Next',
         name='next-button',
         attributes={
-            'data-toggle':'tooltip',
-            'data-placement':'top',
-            'title':'Next'
+            'data-toggle': 'tooltip',
+            'data-placement': 'top',
+            'title': 'Next'
         }
     )
 

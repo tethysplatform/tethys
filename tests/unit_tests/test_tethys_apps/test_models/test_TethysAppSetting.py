@@ -32,4 +32,3 @@ class TethysAppSettingTests(TethysTestCase):
 
     def test_get_value(self):
         self.assertRaises(NotImplementedError, self.test_app_setting.get_value, 'test')
-

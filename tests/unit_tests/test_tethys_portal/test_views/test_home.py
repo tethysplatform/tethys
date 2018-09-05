@@ -40,5 +40,3 @@ class TethysPortalHomeTests(unittest.TestCase):
         mock_redirect.assert_not_called()
         mock_render.assert_called_once_with(mock_request, 'tethys_portal/home.html',
                                             {"ENABLE_OPEN_SIGNUP": mock_settings.ENABLE_OPEN_SIGNUP, })
-
-

@@ -586,7 +586,6 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         """
         Return the namespaced persistent store database name (e.g. my_first_app_db).
         """
-        from django.conf import settings
         # Convert name given by user to database safe name
         safe_name = self.name.lower().replace(' ', '_')
 

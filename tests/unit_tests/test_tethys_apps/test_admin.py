@@ -108,12 +108,13 @@ class TestTethysAppAdmin(unittest.TestCase):
     # Need to check
     def test_PersistentStoreDatabaseSettingInline_get_queryset(self):
         obj = PersistentStoreDatabaseSettingInline(mock.MagicMock(), mock.MagicMock())
-        mock_request= mock.MagicMock()
-        ret = obj.get_queryset(mock_request)
+        mock_request = mock.MagicMock()
+        obj.get_queryset(mock_request)
 
     def test_TethysAppAdmin(self):
         expected_readonly_fields = ('package',)
-        expected_fields = ('package', 'name', 'description', 'tags', 'enabled', 'show_in_apps_library', 'enable_feedback')
+        expected_fields = ('package', 'name', 'description', 'tags', 'enabled', 'show_in_apps_library',
+                           'enable_feedback')
         expected_inlines = [CustomSettingInline,
                             PersistentStoreConnectionSettingInline,
                             PersistentStoreDatabaseSettingInline,
@@ -163,11 +164,3 @@ class TestTethysAppAdmin(unittest.TestCase):
         registry = admin.site._registry
         self.assertIn(TethysExtension, registry)
         self.assertIsInstance(registry[TethysExtension], TethysExtensionAdmin)
-
-
-
-
-
-
-
-
