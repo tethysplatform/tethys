@@ -498,9 +498,9 @@ class TestDockerCommands(unittest.TestCase):
     def test_docker_ip(self, mock_dc, mock_containers, mock_status, mock_pretty_output):
         mock_dc().host = 'host'
 
-        mock_containers.return_value = {'tethys_postgis': {'Ports':[{'PublicPort': 123}]},
-                                        'tethys_geoserver':  {'Ports':[{'PublicPort': 234}]},
-                                        'tethys_wps': {'Ports':[{'PublicPort': 456}]}}
+        mock_containers.return_value = {'tethys_postgis': {'Ports': [{'PublicPort': 123}]},
+                                        'tethys_geoserver':  {'Ports': [{'PublicPort': 234}]},
+                                        'tethys_wps': {'Ports': [{'PublicPort': 456}]}}
 
         mock_status.return_value = {'tethys_postgis': True, 'tethys_geoserver': True, 'tethys_wps': True}
 
@@ -940,7 +940,8 @@ class TestDockerCommands(unittest.TestCase):
     @mock.patch('tethys_apps.cli.docker_commands.get_containers_to_create')
     @mock.patch('tethys_apps.cli.docker_commands.DockerClient')
     def test_install_docker_containers_wps_no_empty_defaults_blank_password(self, mock_dc, mock_containers_to_create,
-                                                                            mock_input, mock_getpass, mock_pretty_output):
+                                                                            mock_input, mock_getpass,
+                                                                            mock_pretty_output):
         mock_containers_to_create.return_value = ['tethys_wps']
         mock_input.side_effect = ['Name',  # Name
                                   'Pos',  # Position
@@ -1048,17 +1049,18 @@ class TestDockerCommands(unittest.TestCase):
         mock_dc_status.assert_called_with(mock_dc)
         mock_dc.start.assert_any_call(container='tethys_postgis', port_bindings={5432: '5435'})
         mock_dc.start.assert_any_call(container='tethys_geoserver', port_bindings={8181: '8181',
-                                                                             8081: ('0.0.0.0', 8081),
-                                                                             8082: ('0.0.0.0', 8082),
-                                                                             8083: ('0.0.0.0', 8083),
-                                                                             8084: ('0.0.0.0', 8084)})
+                                                                                   8081: ('0.0.0.0', 8081),
+                                                                                   8082: ('0.0.0.0', 8082),
+                                                                                   8083: ('0.0.0.0', 8083),
+                                                                                   8084: ('0.0.0.0', 8084)})
         mock_dc.start.assert_any_call(container='tethys_wps', port_bindings={8080: '8282'})
 
     @mock.patch('tethys_apps.cli.docker_commands.pretty_output')
     @mock.patch('tethys_apps.cli.docker_commands.get_docker_container_status')
     @mock.patch('tethys_apps.cli.docker_commands.get_docker_container_image')
     @mock.patch('tethys_apps.cli.docker_commands.DockerClient')
-    def test_start_docker_containers_starting_no_cluster(self, mock_dc, mock_dc_image, mock_dc_status, mock_pretty_output):
+    def test_start_docker_containers_starting_no_cluster(self, mock_dc, mock_dc_image, mock_dc_status,
+                                                         mock_pretty_output):
         mock_dc_image.return_value = {'tethys_geoserver': 'foo'}
         mock_dc_status.return_value = {'tethys_postgis': False, 'tethys_geoserver': False, 'tethys_wps': False}
 
@@ -1120,7 +1122,7 @@ class TestDockerCommands(unittest.TestCase):
     @mock.patch('tethys_apps.cli.docker_commands.get_docker_container_image')
     @mock.patch('tethys_apps.cli.docker_commands.DockerClient')
     def test_start_docker_containers_geoserver_exception(self, mock_dc, mock_dc_image, mock_dc_status,
-                                                       mock_pretty_output):
+                                                         mock_pretty_output):
         mock_dc_image.return_value = {'tethys_geoserver': 'foo'}
         mock_dc_status.return_value = {'tethys_postgis': False, 'tethys_geoserver': False, 'tethys_wps': False}
         mock_dc.start.side_effect = Exception
@@ -1139,8 +1141,7 @@ class TestDockerCommands(unittest.TestCase):
     @mock.patch('tethys_apps.cli.docker_commands.get_docker_container_status')
     @mock.patch('tethys_apps.cli.docker_commands.get_docker_container_image')
     @mock.patch('tethys_apps.cli.docker_commands.DockerClient')
-    def test_start_docker_containers_wps_exception(self, mock_dc, mock_dc_image, mock_dc_status,
-                                                         mock_pretty_output):
+    def test_start_docker_containers_wps_exception(self, mock_dc, mock_dc_image, mock_dc_status, mock_pretty_output):
         mock_dc_image.return_value = {'tethys_geoserver': 'foo'}
         mock_dc_status.return_value = {'tethys_postgis': False, 'tethys_geoserver': False, 'tethys_wps': False}
         mock_dc.start.side_effect = Exception
@@ -1312,4 +1313,3 @@ class TestDockerCommands(unittest.TestCase):
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertEquals('358464:Downloading bar', po_call_args[0][0][0])
-
