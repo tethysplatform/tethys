@@ -5,9 +5,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from social_core.exceptions import AuthAlreadyAssociated, AuthException
 
 from tethys_dataset_services.engines import HydroShareDatasetEngine
-from tethys_services.utilities import ensure_oauth2, initialize_engine_object, list_dataset_engines, get_dataset_engine, \
-    list_spatial_dataset_engines, get_spatial_dataset_engine, abstract_is_link, activate_wps, list_wps_service_engines, \
-    get_wps_service_engine
+from tethys_services.utilities import ensure_oauth2, initialize_engine_object, list_dataset_engines, \
+    get_dataset_engine, list_spatial_dataset_engines, get_spatial_dataset_engine, abstract_is_link, activate_wps, \
+    list_wps_service_engines, get_wps_service_engine
 from urllib2 import HTTPError, URLError
 
 
@@ -195,8 +195,8 @@ class TestUtilites(unittest.TestCase):
 
         mock_user.social_auth.get.side_effect = [AuthAlreadyAssociated(mock.MagicMock(), mock.MagicMock()), mock_social]
 
-        self.assertRaises(AuthAlreadyAssociated, initialize_engine_object, engine=input_engine, endpoint=input_end_point,
-                          request=mock_request)
+        self.assertRaises(AuthAlreadyAssociated, initialize_engine_object, engine=input_engine,
+                          endpoint=input_end_point, request=mock_request)
 
         mock_user.social_auth.get.assert_called_once_with(provider='hydroshare')
 
