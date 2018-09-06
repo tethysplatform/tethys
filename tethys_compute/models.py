@@ -98,6 +98,7 @@ class TethysJob(models.Model):
             end_time = self.completion_time or datetime.datetime.now(start_time.tzinfo)
             run_time = end_time - start_time
         else:
+            # TODO: Is this code reachable?
             if self.completion_time and self.execute_time:
                 run_time = self.completion_time - self.execute_time
             else:
@@ -333,7 +334,7 @@ class CondorPyJob(models.Model):
     @classmethod
     def get_condorpy_template(cls, template_name):
         template_name = template_name or 'base'
-        template = getattr(Templates, template_name)
+        template = getattr(Templates, template_name, None)
         if not template:
             template = Templates.base
         return template
@@ -385,7 +386,7 @@ class CondorPyJob(models.Model):
         return os.path.join(self.workspace, self.condorpy_job.initial_dir)
 
     def get_attribute(self, attribute):
-        self.condorpy_job.get(attribute)
+        return self.condorpy_job.get(attribute)
 
     def set_attribute(self, attribute, value):
         setattr(self.condorpy_job, attribute, value)
