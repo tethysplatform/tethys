@@ -1,7 +1,7 @@
+import mock
 import unittest
 import tethys_gizmos.templatetags.tethys_gizmos as gizmos_templatetags
 from tethys_gizmos.gizmo_options.base import TethysGizmoOptions
-import mock
 from datetime import datetime, date
 from django.template import base
 from django.template import TemplateSyntaxError

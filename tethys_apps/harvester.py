@@ -59,7 +59,7 @@ class SingletonHarvester(object):
                     tethys_extensions[modname] = 'tethysext.{}'.format(modname)
 
             self._harvest_extension_instances(tethys_extensions)
-        except:
+        except Exception:
             '''DO NOTHING'''
 
     def harvest_apps(self):
@@ -178,7 +178,7 @@ class SingletonHarvester(object):
 
                     except TypeError:
                         continue
-            except:
+            except Exception:
                 tethys_log.exception(
                     'Extension {0} not loaded because of the following error:'.format(extension_package))
                 continue
@@ -231,7 +231,7 @@ class SingletonHarvester(object):
                             # load/validate app url patterns
                             try:
                                 app_instance.url_patterns
-                            except:
+                            except Exception:
                                 tethys_log.exception(
                                     'App {0} not loaded because of an issue with loading urls:'.format(app_package))
                                 app_instance.remove_from_db()
@@ -255,7 +255,7 @@ class SingletonHarvester(object):
 
                     except TypeError:
                         continue
-            except:
+            except Exception:
                 tethys_log.exception(
                     'App {0} not loaded because of the following error:'.format(app_package))
                 continue

@@ -90,7 +90,7 @@ class Command(BaseCommand):
         for site_package in site.getsitepackages():
             try:
                 os.remove(os.path.join(site_package, "{}-{}-nspkg.pth".format(PREFIX, item_name.replace('_', '-'))))
-            except:
+            except Exception:
                 continue
 
         self.stdout.write('{} "{}" successfully uninstalled.'.format(app_or_extension, item_with_prefix))

@@ -227,7 +227,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_environ.side_effect = Exception
         try:
             reload(tethys_apps.cli.gen_commands)
-        except:
+        except Exception:
             pass
 
         self.assertTrue(tethys_apps.cli.gen_commands.settings.configured)
