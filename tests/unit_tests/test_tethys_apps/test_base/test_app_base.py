@@ -1,5 +1,4 @@
 import unittest
-from tethys_sdk.testing import TethysTestCase
 import tethys_apps.base.app_base as tethys_app_base
 import mock
 
@@ -304,7 +303,7 @@ class TestTethysAppBase(unittest.TestCase):
         # Mock Permission.DoesNotExist
         mock_dp.DoesNotExist = Exception
         # Mock Permission.objects.get
-        mock_perm_get= mock_dp.objects.get
+        mock_perm_get = mock_dp.objects.get
         mock_perm_get.side_effect = Exception
 
         # Mock Group.objects.filter
@@ -569,7 +568,8 @@ class TestTethysAppBase(unittest.TestCase):
         mock_ta.objects.get().persistent_store_database_settings.get.side_effect = ObjectDoesNotExist
 
         # Check Raise
-        self.assertRaises(TethysAppSettingDoesNotExist, TethysAppChild.get_persistent_store_database, name=self.fake_name)
+        self.assertRaises(TethysAppSettingDoesNotExist, TethysAppChild.get_persistent_store_database,
+                          name=self.fake_name)
 
     @mock.patch('tethys_apps.base.app_base.tethys_log')
     @mock.patch('tethys_apps.base.app_base.is_testing_environment')
@@ -637,8 +637,8 @@ class TestTethysAppBase(unittest.TestCase):
     @mock.patch('tethys_apps.models.TethysApp')
     def test_create_persistent_store_no_connection_name(self, _, mock_ite):
         mock_ite.return_value = False
-        self.assertRaises(ValueError, TethysAppChild.create_persistent_store, db_name='example_db', connection_name=None)
-
+        self.assertRaises(ValueError, TethysAppChild.create_persistent_store, db_name='example_db',
+                          connection_name=None)
 
     @mock.patch('tethys_apps.base.app_base.is_testing_environment')
     @mock.patch('tethys_apps.models.TethysApp')
@@ -647,7 +647,8 @@ class TestTethysAppBase(unittest.TestCase):
         mock_ite.return_value = True
         mock_ta.objects.get().persistent_store_database_settings.get.side_effect = ObjectDoesNotExist
 
-        self.assertRaises(TethysAppSettingDoesNotExist, TethysAppChild.create_persistent_store, db_name='example_db', connection_name=None)
+        self.assertRaises(TethysAppSettingDoesNotExist, TethysAppChild.create_persistent_store, db_name='example_db',
+                          connection_name=None)
 
     @mock.patch('tethys_apps.base.app_base.is_testing_environment')
     @mock.patch('tethys_apps.models.TethysApp')
@@ -656,7 +657,8 @@ class TestTethysAppBase(unittest.TestCase):
         mock_ite.return_value = True
         mock_ta.objects.get().persistent_store_connection_settings.get.side_effect = ObjectDoesNotExist
 
-        self.assertRaises(TethysAppSettingDoesNotExist, TethysAppChild.create_persistent_store, db_name='example_db', connection_name='test_con')
+        self.assertRaises(TethysAppSettingDoesNotExist, TethysAppChild.create_persistent_store, db_name='example_db',
+                          connection_name='test_con')
 
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting')
     @mock.patch('tethys_apps.base.app_base.is_testing_environment')
@@ -810,14 +812,14 @@ class TestTethysAppBase(unittest.TestCase):
         self.app.name = 'n'
         self.app.package = 'p'
         self.app.description = 'd'
-        self.app.enable_feedback ='e'
+        self.app.enable_feedback = 'e'
         self.app.feedback_emails = 'f'
         self.app.index = 'in'
         self.app.icon = 'ic'
         self.app.root_url = 'r'
         self.app.color = 'c'
         self.app.tags = 't'
-        result = self.app.sync_with_tethys_db()
+        self.app.sync_with_tethys_db()
 
         # Check if TethysApp.objects.filter is called
         mock_ta.objects.filter().all.assert_called()
@@ -838,7 +840,7 @@ class TestTethysAppBase(unittest.TestCase):
         mock_ds.DEBUG = True
         mock_app = mock.MagicMock()
         mock_ta.objects.filter().all.return_value = [mock_app]
-        result = self.app.sync_with_tethys_db()
+        self.app.sync_with_tethys_db()
 
         # Check if TethysApp.objects.filter is called
         mock_ta.objects.filter().all.assert_called()
@@ -883,7 +885,7 @@ class TestTethysAppBase(unittest.TestCase):
 
     @mock.patch('tethys_apps.base.app_base.tethys_log')
     @mock.patch('tethys_apps.models.TethysApp')
-    def test_remove_from_db(self, mock_ta, mock_log):
+    def test_remove_from_db_2(self, mock_ta, mock_log):
         mock_ta.objects.filter().delete.side_effect = Exception
         self.app.remove_from_db()
 

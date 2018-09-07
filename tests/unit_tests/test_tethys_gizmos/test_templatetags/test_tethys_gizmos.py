@@ -1,8 +1,7 @@
+import mock
 import unittest
 import tethys_gizmos.templatetags.tethys_gizmos as gizmos_templatetags
-from tethys_gizmos.gizmo_options import DatePicker, MapView, PlotlyView
 from tethys_gizmos.gizmo_options.base import TethysGizmoOptions
-import mock
 from datetime import datetime, date
 from django.template import base
 from django.template import TemplateSyntaxError
@@ -309,14 +308,14 @@ class TestTethysGizmoDependenciesNode(unittest.TestCase):
         context.update({'gizmos_rendered': []})
 
         #  unless it has the same gizmo name as the predefined one
-        render_globalcss = gizmos_templatetags.TethysGizmoDependenciesNode\
-            (output_type=output_global_css).render(context=context)
-        render_css = gizmos_templatetags.TethysGizmoDependenciesNode\
-            (output_type=output_css).render(context=context)
-        render_globaljs = gizmos_templatetags.TethysGizmoDependenciesNode\
-            (output_type=output_global_js).render(context=context)
-        render_js = gizmos_templatetags.TethysGizmoDependenciesNode\
-            (output_type=output_js).render(context=context)
+        render_globalcss = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_global_css).\
+            render(context=context)
+        render_css = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_css).\
+            render(context=context)
+        render_globaljs = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_global_js).\
+            render(context=context)
+        render_js = gizmos_templatetags.TethysGizmoDependenciesNode(output_type=output_js).\
+            render(context=context)
 
         self.assertIn('openlayers/ol.css', render_globalcss)
         self.assertNotIn('tethys_gizmos.css', render_globalcss)

@@ -18,7 +18,8 @@ class TestGoogleMapView(unittest.TestCase):
         initial_drawing_mode = 'POINTS'
         output_format = 'WKT'
         result = gizmo_google_map_view.GoogleMapView(height=height, width=width, maps_api_key=maps_api_key,
-                                                     reference_kml_action=reference_kml_action, output_format=output_format,
+                                                     reference_kml_action=reference_kml_action,
+                                                     output_format=output_format,
                                                      drawing_types_enabled=drawing_types_enabled,
                                                      initial_drawing_mode=initial_drawing_mode)
         # Check Result

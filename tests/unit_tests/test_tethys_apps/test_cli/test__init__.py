@@ -442,7 +442,7 @@ class TethysCommandTests(unittest.TestCase):
     @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.schedulers_remove_command')
-    def test_scheduler_list_command_help(self, mock_scheduler_remove_command, mock_exit, mock_stdout):
+    def test_scheduler_list_command_help_2(self, mock_scheduler_remove_command, mock_exit, mock_stdout):
         mock_exit.side_effect = SystemExit
         testargs = ['tethys', 'schedulers', 'remove', '-h']
 
@@ -797,7 +797,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('{ps_database}', mock_stdout.getvalue())
 
     @mock.patch('tethys_apps.cli.app_settings_remove_command')
-    def test_app_settings_create_command_options(self, mock_app_settings_remove_command):
+    def test_app_settings_create_command_options_2(self, mock_app_settings_remove_command):
         testargs = ['tethys', 'app_settings', 'remove', '-n', 'foo', '-f', 'foo_app']
 
         with mock.patch.object(sys, 'argv', testargs):
@@ -810,7 +810,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual('foo', call_args[0][0][0].name)
 
     @mock.patch('tethys_apps.cli.app_settings_remove_command')
-    def test_app_settings_create_command_verbose_options(self, mock_app_settings_remove_command):
+    def test_app_settings_create_command_verbose_options_2(self, mock_app_settings_remove_command):
         testargs = ['tethys', 'app_settings', 'remove', '--name', 'foo', '--force', 'foo_app']
 
         with mock.patch.object(sys, 'argv', testargs):
@@ -825,7 +825,7 @@ class TethysCommandTests(unittest.TestCase):
     @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.app_settings_remove_command')
-    def test_app_settings_create_command_help(self, mock_app_settings_remove_command, mock_exit, mock_stdout):
+    def test_app_settings_create_command_help_2(self, mock_app_settings_remove_command, mock_exit, mock_stdout):
         mock_exit.side_effect = SystemExit
         testargs = ['tethys', 'app_settings', 'remove', '-h']
 
@@ -995,7 +995,6 @@ class TethysCommandTests(unittest.TestCase):
             tethys_command()
 
         mock_list_command.assert_called()
-        call_args = mock_list_command.call_args_list
 
     @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')

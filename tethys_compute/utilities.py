@@ -22,6 +22,7 @@ from past.builtins import basestring
 # deprecated code copied from: https://github.com/django/django/blob/stable/1.9.x/django/db/models/fields/subclassing.py
 
 
+# TODO: Talk to Scott about this
 class SubfieldBase(type):
     """
     A metaclass for custom Field subclasses. This ensures the model's attribute

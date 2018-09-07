@@ -173,17 +173,3 @@ class TethysServicesBaseTests(unittest.TestCase):
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEquals(1, len(po_call_args))
         self.assertIn('DEPRECATION WARNING', po_call_args[0][0][0])
-
-
-
-
-
-
-
-
-
-
-
-
-
-

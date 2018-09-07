@@ -32,7 +32,6 @@ def get_directories_in_tethys(directory_names, with_app_name=False):
     tethysapp_contents = next(os.walk(tethysapp_dir))[1]
     potential_dirs = [safe_join(tethysapp_dir, item) for item in tethysapp_contents]
 
-
     # Determine the directories of tethys extensions
     harvester = SingletonHarvester()
 

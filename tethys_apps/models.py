@@ -20,6 +20,7 @@ from sqlalchemy.orm import sessionmaker
 from tethys_apps.base.mixins import TethysBaseMixin
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
 
+from tethys_apps.base.function_extractor import TethysFunctionExtractor
 log = logging.getLogger('tethys')
 
 try:
@@ -27,9 +28,6 @@ try:
                                         WebProcessingService, PersistentStoreService)
 except RuntimeError:
     log.exception('An error occurred while trying to import tethys service models.')
-
-
-from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 
 class TethysApp(models.Model, TethysBaseMixin):
@@ -203,7 +201,8 @@ class CustomSetting(TethysAppSetting):
 
     Attributes:
         name(str): Unique name used to identify the setting.
-        type(enum): The type of the custom setting. Either CustomSetting.TYPE_STRING, CustomSetting.TYPE_INTEGER, CustomSetting.TYPE_FLOAT, CustomSetting.TYPE_BOOLEAN
+        type(enum): The type of the custom setting. Either CustomSetting.TYPE_STRING, CustomSetting.TYPE_INTEGER,
+        CustomSetting.TYPE_FLOAT, CustomSetting.TYPE_BOOLEAN
         description(str): Short description of the setting.
         required(bool): A value will be required if True.
 
@@ -519,7 +518,7 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
         if ps_service is None:
             raise TethysAppSettingNotAssigned('Cannot create engine or url for PersistentStoreConnection "{0}" for app '
                                               '"{1}": no PersistentStoreService found.'.format(self.name,
-                                                                                            self.tethys_app.package))
+                                                                                               self.tethys_app.package))
         # Order matters here. Think carefully before changing...
         if as_engine:
             return ps_service.get_engine()
@@ -587,7 +586,6 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         """
         Return the namespaced persistent store database name (e.g. my_first_app_db).
         """
-        from django.conf import settings
         # Convert name given by user to database safe name
         safe_name = self.name.lower().replace(' ', '_')
 

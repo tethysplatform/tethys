@@ -19,7 +19,10 @@ import plotly.graph_objs as go
 from bokeh.plotting import figure as bokeh_figure
 from requests.exceptions import ConnectionError
 
-from tethys_sdk.gizmos import *
+from tethys_sdk.gizmos import Button, ButtonGroup, DatePicker, RangeSlider, SelectInput, TextInput, ToggleSwitch, \
+    LinePlot, ScatterPlot, PolarPlot, PiePlot, BarPlot, TimeSeries, AreaRange, PlotlyView, BokehView, TableView, \
+    DataTableView, MessageBox, GoogleMapView, MVView, MVDraw, MVLayer, MVLegendClass, MapView, JobsTable, EMView, \
+    EMLayer, ESRIMap
 from tethys_sdk.services import list_spatial_dataset_engines
 from tethys_compute.models import BasicJob
 
@@ -915,7 +918,8 @@ def get_kml(request):
     This action is used to pass the kml data to the google map. It must return JSON with the key 'kml_link'.
     """
     kml_links = [
-        'http://ciwckan.chpc.utah.edu/dataset/00d54047-8581-4dc2-bdc2-b96f5a635455/resource/69f8e7df-da87-47cd-90a1-d15dc84e99ba/download/indexclusters.kml']
+        'http://ciwckan.chpc.utah.edu/dataset/00d54047-8581-4dc2-bdc2-b96f5a635455/resource'
+        '/69f8e7df-da87-47cd-90a1-d15dc84e99ba/download/indexclusters.kml']
 
     return JsonResponse({'kml_links': kml_links})
 
@@ -928,7 +932,8 @@ def swap_kml(request):
         pass
 
     kml_links = [
-        'http://ciwckan.chpc.utah.edu/dataset/00d54047-8581-4dc2-bdc2-b96f5a635455/resource/53c7a910-5e00-4af7-803a-e48e0f17a131/download/elevation.kml']
+        'http://ciwckan.chpc.utah.edu/dataset/00d54047-8581-4dc2-bdc2-b96f5a635455/resource'
+        '/53c7a910-5e00-4af7-803a-e48e0f17a131/download/elevation.kml']
 
     return HttpResponse(json.dumps(kml_links), content_type='application/json')
 

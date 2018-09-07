@@ -72,7 +72,8 @@ class TestTethysTestCase(unittest.TestCase):
     def test_create_test_persistent_stores_for_app_not_testing_env(self, mock_ite):
         mock_ite.return_value = False
         app_class = TethysAppBase
-        self.assertRaises(EnvironmentError, base_testing.TethysTestCase.create_test_persistent_stores_for_app, app_class)
+        self.assertRaises(EnvironmentError, base_testing.TethysTestCase.create_test_persistent_stores_for_app,
+                          app_class)
 
     @mock.patch('tethys_apps.base.testing.testing.is_testing_environment')
     def test_create_test_persistent_stores_for_app_not_subclass(self, mock_ite):
@@ -133,7 +134,8 @@ class TestTethysTestCase(unittest.TestCase):
     def test_create_test_user(self, mock_user):
         mock_user.objects.create_user = mock.MagicMock(return_value='test_create_user')
 
-        result = base_testing.TethysTestCase.create_test_user(username='test_user', password='test_pass', email='test_e')
+        result = base_testing.TethysTestCase.create_test_user(username='test_user', password='test_pass',
+                                                              email='test_e')
 
         # Check result
         self.assertEqual('test_create_user', result)
@@ -143,11 +145,13 @@ class TestTethysTestCase(unittest.TestCase):
     def test_create_test_super_user(self, mock_user):
         mock_user.objects.create_superuser = mock.MagicMock(return_value='test_create_super_user')
 
-        result = base_testing.TethysTestCase.create_test_superuser(username='test_user', password='test_pass', email='test_e')
+        result = base_testing.TethysTestCase.create_test_superuser(username='test_user', password='test_pass',
+                                                                   email='test_e')
 
         # Check result
         self.assertEqual('test_create_super_user', result)
-        mock_user.objects.create_superuser.assert_called_with(username='test_user', password='test_pass', email='test_e')
+        mock_user.objects.create_superuser.assert_called_with(username='test_user', password='test_pass',
+                                                              email='test_e')
 
     @mock.patch('tethys_apps.base.testing.testing.Client')
     def test_get_test_client(self, mock_client):

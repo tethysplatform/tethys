@@ -87,7 +87,7 @@ class TestAppInstallation(unittest.TestCase):
         self.assertEquals('install', process_call_args[0][0][0][1])
         self.assertEquals('f', process_call_args[0][0][0][2])
 
-        # check the install call
+        # check the develop call
         mock_develop.run.assert_called_with(mock_self)
 
     def test_custom_install_command(self):
@@ -226,3 +226,49 @@ class TestAppInstallation(unittest.TestCase):
 
         # check the user notification
         mock_pretty_output.assert_called()
+
+    @mock.patch('tethys_apps.app_installation.shutil.rmtree')
+    @mock.patch('tethys_apps.app_installation.getattr')
+    @mock.patch('tethys_apps.app_installation.develop')
+    @mock.patch('tethys_apps.app_installation.subprocess')
+    @mock.patch('tethys_apps.app_installation.os')
+    @mock.patch('tethys_apps.app_installation.pretty_output')
+    @mock.patch('tethys_apps.app_installation.get_tethysapp_directory')
+    def test__run_develop_exception(self, mock_getdir, mock_pretty_output, mock_os, mock_subprocess,
+                                    mock_develop, mock_getattr, mock_rm_tree):
+
+        mock_destination = mock.MagicMock()
+        mock_os.path.join.return_value = mock_destination
+
+        # mock the self input
+        mock_self = mock.MagicMock(app_package='tethys_apps', app_package_dir='/test_app/', dependencies='foo')
+
+        mock_getattr.side_effect = Exception
+
+        mock_rm_tree.side_effect = Exception
+
+        # call the method for testing
+        tethys_app_installation._run_develop(self=mock_self)
+
+        # check the method call
+        mock_getdir.assert_called()
+
+        # check the user notification
+        mock_pretty_output.assert_called()
+
+        mock_rm_tree.assert_called_with(mock_destination)
+
+        mock_os.remove.assert_called_with(mock_destination)
+
+        # check the input arguments for os.symlink method
+        symlink_call_args = mock_os.symlink.call_args_list
+        self.assertEquals('/test_app/', symlink_call_args[0][0][0])
+
+        # check the input arguments for subprocess.call method
+        process_call_args = mock_subprocess.call.call_args_list
+        self.assertEquals('pip', process_call_args[0][0][0][0])
+        self.assertEquals('install', process_call_args[0][0][0][1])
+        self.assertEquals('f', process_call_args[0][0][0][2])
+
+        # check the develop call
+        mock_develop.run.assert_called_with(mock_self)

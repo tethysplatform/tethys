@@ -62,5 +62,5 @@ def test_command(args):
             status = run_process(['open', os.path.join(tests_path, report_dirname, index_fname)])
             if status != 0:
                 raise Exception
-        except:
+        except Exception:
             webbrowser.open_new_tab(os.path.join(tests_path, report_dirname, index_fname))

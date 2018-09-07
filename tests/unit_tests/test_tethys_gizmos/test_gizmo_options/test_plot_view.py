@@ -2,6 +2,7 @@ import unittest
 import tethys_gizmos.gizmo_options.plot_view as gizmo_plot_view
 import datetime
 
+
 class TestPlotView(unittest.TestCase):
     def setUp(self):
         pass
@@ -17,7 +18,7 @@ class TestPlotView(unittest.TestCase):
         self.assertEqual(engine, result['engine'])
 
         # Engine is not d3 or hightcharts
-        self.assertRaises(ValueError, gizmo_plot_view.PlotViewBase,engine='d2')
+        self.assertRaises(ValueError, gizmo_plot_view.PlotViewBase, engine='d2')
 
         # Check Get Method
         self.assertIn('.js', gizmo_plot_view.PlotViewBase.get_vendor_js()[0])
@@ -214,7 +215,8 @@ class TestPlotView(unittest.TestCase):
             [datetime.date(2009, 7, 1), 21.5], [datetime.date(2009, 7, 2), 22.1], [datetime.date(2009, 7, 3), 23]
         ]
         ranges = [
-            [datetime.date(2009, 7, 1), 14.3, 27.7], [datetime.date(2009, 7, 2), 14.5, 27.8], [datetime.date(2009, 7, 3), 15.5, 29.6]
+            [datetime.date(2009, 7, 1), 14.3, 27.7], [datetime.date(2009, 7, 2), 14.5, 27.8],
+            [datetime.date(2009, 7, 3), 15.5, 29.6]
         ]
         series = [{
             'name': 'Temperature',

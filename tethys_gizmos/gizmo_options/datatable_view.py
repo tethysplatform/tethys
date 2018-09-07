@@ -15,7 +15,8 @@ __all__ = ['DataTableView']
 
 class DataTableView(TethysGizmoOptions):
     """
-    Table views can be used to display tabular data. The table view gizmo can be configured to have columns that are editable. When used in this capacity, embed the table view in a form with a submit button.
+    Table views can be used to display tabular data. The table view gizmo can be configured to have columns that are
+    editable. When used in this capacity, embed the table view in a form with a submit button.
 
     .. note:: The current version of DataTables in Tethys Platform is 1.10.12.
 
@@ -23,8 +24,10 @@ class DataTableView(TethysGizmoOptions):
         rows(tuple or list, required): A list/tuple of lists/tuples representing each row in the table.
         column_names(tuple or list): A tuple or list of strings that represent the table columns names.
         footer(Optional[bool]):If True, it will add the column names to the bottom of the table.
-        attributes(Optional[dict]): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
-        classes(Optional[str]): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
+        attributes(Optional[dict]): A dictionary representing additional HTML attributes to add to the primary element
+                                    (e.g. {"onclick": "run_me();"}).
+        classes(Optional[str]): Additional classes to add to the primary HTML element (e.g. "example-class
+                                another-class").
         **kwargs(DataTable Options): See https://datatables.net/reference/option.
 
     Regular Controller Example
@@ -79,12 +82,14 @@ class DataTableView(TethysGizmoOptions):
         #LOAD IN EXTENSION JAVASCRIPT/CSS
         {% block global_scripts %}
           {{ block.super }}
-           <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
+           <script type="text/javascript" language="javascript"
+            src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
         {% endblock %}
 
         {% block styles %}
           {{ block.super }}
-          <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.dataTables.min.css">
+          <link rel="stylesheet" type="text/css"
+           href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.dataTables.min.css">
         {% endblock %}
         #END LOAD IN EXTENSION JAVASCRIPT/CSS
 

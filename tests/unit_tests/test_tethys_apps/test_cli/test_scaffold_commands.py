@@ -150,16 +150,16 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_makedirs.return_value = True
 
         scaffold_command(args=mock_args)
-        
+
         mock_pretty_output.assert_called()
-       
+
         mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called()
-       
+
         mock_render_path.assert_called()
-        
+
         mock_makedirs.assert_called_with(mock_cuurent_project_root)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
@@ -206,13 +206,13 @@ class TestScaffoldCommands(unittest.TestCase):
 
         # mock the getlogger from logging
         mock_logger.return_value = mock_log
-        
+
         mock_os_path_isdir.return_value = False
 
         mock_exit.side_effect = SystemExit
 
         self.assertRaises(SystemExit, scaffold_command, args=mock_args)
-        
+
         mock_pretty_output.assert_called()
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
@@ -256,13 +256,13 @@ class TestScaffoldCommands(unittest.TestCase):
 
         # mock the getlogger from logging
         mock_logger.return_value = mock_log
-       
+
         mock_os_path_isdir.return_value = [True, True]
 
         mock_callable.return_value = True
 
         mock_template_context = mock.MagicMock()
-       
+
         mock_context.return_value = mock_template_context
 
         mock_cuurent_project_root = mock.MagicMock()
@@ -276,16 +276,16 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_makedirs.return_value = True
 
         scaffold_command(args=mock_args)
-       
+
         mock_pretty_output.assert_called()
-        
+
         mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called()
-        
+
         mock_render_path.assert_called()
-      
+
         mock_makedirs.assert_called_with(mock_cuurent_project_root)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
@@ -349,7 +349,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_callable.return_value = True
 
         mock_template_context = mock.MagicMock()
-       
+
         mock_context.return_value = mock_template_context
 
         mock_cuurent_project_root = mock.MagicMock()
@@ -363,16 +363,16 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_makedirs.return_value = True
 
         scaffold_command(args=mock_args)
-      
+
         mock_pretty_output.assert_called()
-      
+
         mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called()
 
         mock_render_path.assert_called()
-      
+
         mock_makedirs.assert_called_with(mock_cuurent_project_root)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
@@ -421,13 +421,13 @@ class TestScaffoldCommands(unittest.TestCase):
 
         # mock the getlogger from logging
         mock_logger.return_value = mock_log
-       
+
         mock_os_path_isdir.return_value = True
 
         mock_exit.side_effect = SystemExit
 
         self.assertRaises(SystemExit, scaffold_command, args=mock_args)
-       
+
         mock_pretty_output.assert_called()
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
@@ -470,13 +470,13 @@ class TestScaffoldCommands(unittest.TestCase):
 
         # mock the getlogger from logging
         mock_logger.return_value = mock_log
-       
+
         mock_os_path_isdir.return_value = [True, True]
 
         mock_callable.return_value = True
 
         mock_template_context = mock.MagicMock()
-       
+
         mock_context.return_value = mock_template_context
 
         mock_cuurent_project_root = mock.MagicMock()
@@ -490,16 +490,16 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_makedirs.return_value = True
 
         scaffold_command(args=mock_args)
-      
+
         mock_pretty_output.assert_called()
-       
+
         mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called()
-       
+
         mock_render_path.assert_called()
-       
+
         mock_makedirs.assert_called_with(mock_cuurent_project_root)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
@@ -560,7 +560,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         # mock the getlogger from logging
         mock_logger.return_value = mock_log
-       
+
         mock_os_path_isdir.return_value = [True, True]
 
         mock_callable.side_effect = [True, False, False, False, False]
@@ -583,14 +583,14 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_proper_name_validator.return_value = True, 'foo'
 
         scaffold_command(args=mock_args)
-       
+
         mock_pretty_output.assert_called()
-        
+
         mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called()
-        
+
         mock_render_path.assert_called()
 
         # mock the create root directory
@@ -689,12 +689,12 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_proper_name_validator.return_value = True, 'foo'
 
         self.assertRaises(SystemExit, scaffold_command, args=mock_args)
-        
+
         mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_not_called()
-        
+
         mock_render_path.assert_not_called()
 
         # mock the create root directory
@@ -773,14 +773,14 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_proper_name_validator.return_value = False, 'foo'
 
         scaffold_command(args=mock_args)
-       
+
         mock_pretty_output.assert_called()
-        
+
         mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called()
-        
+
         mock_render_path.assert_called()
 
         # mock the create root directory
@@ -870,14 +870,14 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_input.side_effect = ['y']
 
         scaffold_command(args=mock_args)
-       
+
         mock_pretty_output.assert_called()
-        
+
         mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called()
-        
+
         mock_render_path.assert_called()
 
         # mock the create root directory
@@ -966,14 +966,14 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_input.side_effect = KeyboardInterrupt
 
         self.assertRaises(SystemExit, scaffold_command, args=mock_args)
-       
+
         mock_pretty_output.assert_called()
-        
+
         mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_not_called()
-        
+
         mock_render_path.assert_not_called()
 
         # mock the create root directory
@@ -1051,14 +1051,14 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_input.side_effect = ['n']
 
         self.assertRaises(SystemExit, scaffold_command, args=mock_args)
-       
+
         mock_pretty_output.assert_called()
-        
+
         mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_not_called()
-        
+
         mock_render_path.assert_not_called()
 
         # mock the create root directory
@@ -1138,14 +1138,14 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_rmt.side_effect = OSError
 
         self.assertRaises(SystemExit, scaffold_command, args=mock_args)
-       
+
         mock_pretty_output.assert_called()
-        
+
         mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called_once()
-        
+
         mock_render_path.assert_not_called()
 
         # mock the create root directory
@@ -1220,15 +1220,12 @@ class TestScaffoldCommands(unittest.TestCase):
 
         scaffold_command(args=mock_args)
 
-
         mock_pretty_output.assert_called()
-
 
         mock_random_color.assert_called()
 
         # check shutil.rmtree call
         mock_rmt.assert_called_once()
-
 
         mock_render_path.assert_called()
 

@@ -46,12 +46,15 @@ class HandoffManager(object):
         Gets a list of the valid handoff handlers.
 
         Args:
-            app_name (str, optional): The name of another app whose capabilities should be listed. Defaults to None in which case the capabilities of the current app will be listed.
-            external_only (bool, optional): If True only return handlers where the internal attribute is False. Default is False.
+            app_name (str, optional): The name of another app whose capabilities should be listed.
+            Defaults to None in which case the capabilities of the current app will be listed.
+            external_only (bool, optional): If True only return handlers where the internal attribute is False.
+            Default is False.
             jsonify (bool, optional): If True return the JSON representation of the handlers is used. Default is False.
 
         Returns:
-            A list of valid HandoffHandler objects (or a JSON string if jsonify=True) representing the capabilities of app_name, or None if no app with app_name is found.
+            A list of valid HandoffHandler objects (or a JSON string if jsonify=True) representing the capabilities of
+            app_name, or None if no app with app_name is found.
         """
         manager = self._get_handoff_manager_for_app(app_name)
 
@@ -72,10 +75,12 @@ class HandoffManager(object):
 
         Args:
             handler_name (str): the name of a HandoffHandler object.
-            app_name (str, optional): the name of the app with handler_name. Defaults to None in which case the current app will be used.
+            app_name (str, optional): the name of the app with handler_name. Defaults to None in which case the
+            current app will be used.
 
         Returns:
-            A HandoffHandler object where the name attribute is equal to handler_name or None if no HandoffHandler with that name is found or no app with app_name is found.
+            A HandoffHandler object where the name attribute is equal to handler_name or None if no HandoffHandler
+            with that name is found or no app with app_name is found.
         """
         manager = self._get_handoff_manager_for_app(app_name)
 
@@ -91,7 +96,8 @@ class HandoffManager(object):
         Args:
             request (HttpRequest): The request object passed by the http call.
             handler_name (str): The name of the HandoffHandler object to handle the handoff. Must not be internal.
-            app_name (str, optional): The name of another app where the handler should exist. Defaults to None in which case the current app will attempt to handle the handoff.
+            app_name (str, optional): The name of another app where the handler should exist. Defaults to None in
+            which case the current app will attempt to handle the handoff.
             **kwargs: Key-value pairs to be passed on to the handler.
 
         Returns:
@@ -116,7 +122,8 @@ class HandoffManager(object):
                     error['message'] = "HTTP 400 Bad Request: {0}. ".format(e.message)
                     return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
 
-        error['message'] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".format(manager.app.name, handler_name)
+        error['message'] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".\
+            format(manager.app.name, handler_name)
         return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
 
     def _get_handoff_manager_for_app(self, app_name):
@@ -124,7 +131,8 @@ class HandoffManager(object):
         Returns the app manager for app with package == app_name if that app is installed.
 
         Args:
-            app_name (str): The name of another Tethys app whose HandoffManager should be returned. If None then self is returned.
+            app_name (str): The name of another Tethys app whose HandoffManager should be returned.
+            If None then self is returned.
 
         Returns:
             A HandoffManager object for the app with the name app_name or None if no app with that name is found.
@@ -155,7 +163,9 @@ class HandoffManager(object):
             else:
                 handler_str = handler.handler
                 if ':' in handler_str:
-                    print('DEPRECATION WARNING: The handler attribute of a HandoffHandler should now be in the form: "my_first_app.controllers.my_handler". The form "handoff:my_handler" is now deprecated.')
+                    print('DEPRECATION WARNING: The handler attribute of a HandoffHandler should now be in the '
+                          'form: "my_first_app.controllers.my_handler". The form "handoff:my_handler" '
+                          'is now deprecated.')
 
                     # Split into module name and function name
                     module_path, function_name = handler_str.split(':')
@@ -182,8 +192,10 @@ class HandoffHandler(TethysFunctionExtractor):
 
     Attributes:
       name(str): Name of the handoff handler.
-      handler(str): Path to the handler function for the handoff interaction. Use dot-notation (e.g.: "foo.bar.function").
-      internal(bool, optional): Specifies that the handler is only for internal (i.e. within the same Tethys server) purposes.
+      handler(str): Path to the handler function for the handoff interaction. Use dot-notation
+      (e.g.: "foo.bar.function").
+      internal(bool, optional): Specifies that the handler is only for internal (i.e. within the same Tethys server)
+      purposes.
     """
 
     def __init__(self, name, handler, internal=False):

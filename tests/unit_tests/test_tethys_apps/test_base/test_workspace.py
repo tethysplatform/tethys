@@ -84,4 +84,3 @@ class TestUrlMap(unittest.TestCase):
         workspace = base_workspace.TethysWorkspace(path=self.test_root)
         workspace.path = 'foo'
         self.assertEqual(self.test_root, workspace.path)
-

@@ -154,6 +154,3 @@ class TestApp(TethysAppBase):
         )
 
         return wps_services
-
-
-

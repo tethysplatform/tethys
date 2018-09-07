@@ -14,6 +14,7 @@ from django.contrib.auth.password_validation import validate_password
 
 
 class LoginForm(forms.Form):
+
     username = forms.RegexField(
         label='', max_length=30,
         regex=r'^[\w.@+-]+$',
