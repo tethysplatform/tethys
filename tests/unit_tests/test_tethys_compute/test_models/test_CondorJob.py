@@ -89,7 +89,8 @@ class CondorJobTest(TethysTestCase):
     def test_condor_job_pre_delete(self, mock_co):
         if not os.path.exists(self.workspace_dir):
             os.makedirs(self.workspace_dir)
-            open('test_file.txt', 'a').close()
+            file_path = os.path.join(self.workspace_dir, 'test_file.txt')
+            open(file_path, 'a').close()
 
         self.condorjob.delete()
 
@@ -97,7 +98,6 @@ class CondorJobTest(TethysTestCase):
         mock_co.close_remote.assert_called()
 
         # Check if file has been removed
-        file_path = os.path.join(self.workspace_dir, 'test_file.txt')
         self.assertFalse(os.path.isfile(file_path))
 
     @mock.patch('tethys_compute.models.log')

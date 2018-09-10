@@ -59,10 +59,12 @@ class CondorPyJobTest(TethysTestCase):
     def test_condorpy_job(self):
         ret = self.condorjob.condorpy_job
 
-        # Check result
+        # Check result for Django Job
         self.assertIsInstance(ret, Job)
         self.assertEqual('test_condorbase', ret.name)
         self.assertEqual('test_workspace', ret._cwd)
+        self.assertEqual('test_condorbase', ret.attributes['job_name'])
+        self.assertEqual(1, ret.num_jobs)
 
     def test_attributes(self):
         ret = CondorPyJob.objects.get(condorpyjob_id='99').attributes
@@ -109,13 +111,13 @@ class CondorPyJobTest(TethysTestCase):
     def test_update_database_fields(self):
         ret = self.condorjob
 
-        ret.set_attribute('test', 'value')
-        ret.num_jobs = 9
-        ret.remote_input_files = ['test_file3.txt']
+        # Before Update
+        self.assertFalse(ret.attributes)
 
+        # Execute
         ret.update_database_fields()
 
-        # Check result
-        self.assertEqual('value', ret.condorpy_job.attributes['test'])
-        self.assertEqual(9, ret.condorpy_job.num_jobs)
-        self.assertEqual(['test_file3.txt'], ret.condorpy_job.remote_input_files)
+        # Check after update
+        self.assertEqual('test_condorbase', ret.attributes['job_name'])
+
+
