@@ -1313,3 +1313,15 @@ class TestDockerCommands(unittest.TestCase):
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertEquals('358464:Downloading bar', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.docker_commands.input')
+    def test_validate_numeric_cli_input_second_empty_value(self, mock_input):
+        mock_input.side_effect = ['']
+        ret = cli_docker_commands.validate_numeric_cli_input(value='555', default=1, max=1)
+        self.assertEqual('1', ret)
+
+    @mock.patch('tethys_apps.cli.docker_commands.input')
+    def test_validate_choice_cli_input_second_empty_value(self, mock_input):
+        mock_input.side_effect = ['']
+        ret = cli_docker_commands.validate_choice_cli_input(value='555', choices=['foo', 'bar'], default='foo')
+        self.assertEqual('foo', ret)

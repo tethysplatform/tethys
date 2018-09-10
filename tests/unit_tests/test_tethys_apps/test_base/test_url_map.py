@@ -51,6 +51,14 @@ class TestUrlMap(unittest.TestCase):
         result = base_url_map.UrlMapBase(name=name, url=url, controller=controller).__repr__()
         self.assertEqual(expected_result, result)
 
+        # TEST empty url
+        regex = ['[0-9A-Z]+']
+        url = ''
+        expected_url = '^$'
+
+        result = base_url_map.UrlMapBase(name=name, url=url, controller=controller, regex=regex)
+        self.assertEqual(expected_url, result.url)
+
     def test_UrlMapBase_value_error(self):
         self.assertRaises(ValueError, base_url_map.UrlMapBase, name='1', url='2',
                           controller='3', regex={'1': '2'})
