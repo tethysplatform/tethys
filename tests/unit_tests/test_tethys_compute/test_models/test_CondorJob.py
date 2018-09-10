@@ -108,5 +108,3 @@ class CondorJobTest(TethysTestCase):
 
         # Check if close_remote is called
         mock_log.exception.assert_called_with('test error')
-
-

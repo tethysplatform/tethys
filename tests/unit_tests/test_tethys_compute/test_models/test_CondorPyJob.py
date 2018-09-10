@@ -119,4 +119,3 @@ class CondorPyJobTest(TethysTestCase):
         self.assertEqual('value', ret.condorpy_job.attributes['test'])
         self.assertEqual(9, ret.condorpy_job.num_jobs)
         self.assertEqual(['test_file3.txt'], ret.condorpy_job.remote_input_files)
-

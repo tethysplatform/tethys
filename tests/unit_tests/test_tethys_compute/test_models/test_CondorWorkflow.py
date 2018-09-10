@@ -1,11 +1,8 @@
 from tethys_sdk.testing import TethysTestCase
-from tethys_compute.models import TethysJob, CondorPyWorkflow, CondorWorkflow
+from tethys_compute.models import CondorWorkflow
 from django.contrib.auth.models import User
-from datetime import datetime, timedelta
-from django.utils import timezone
 import mock
 import os
-import shutil
 import os.path
 
 
@@ -41,4 +38,3 @@ class CondorWorkflowTest(TethysTestCase):
         mock_co.submit.return_value = 111
 
         self.condorworkflow._execute(options=['foo'])
-

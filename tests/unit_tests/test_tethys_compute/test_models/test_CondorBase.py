@@ -1,5 +1,5 @@
 from tethys_sdk.testing import TethysTestCase
-from tethys_compute.models import TethysJob, Scheduler, CondorBase
+from tethys_compute.models import Scheduler, CondorBase
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from django.utils import timezone
