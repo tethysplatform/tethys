@@ -97,7 +97,7 @@ class JobManager(object):
         """
         try:
             template = self.job_templates[template_name]
-        except KeyError as e:
+        except KeyError:
             raise KeyError('A job template with name %s was not defined' % (template_name,))
         user_workspace = self.app.get_user_workspace(user)
         kwrgs = dict(name=name, user=user, label=self.label, workspace=user_workspace.path)
@@ -137,7 +137,7 @@ class JobManager(object):
 
         Returns:
             A instance of a subclass of TethysJob if a job with job_id exists (and was created by user if the user argument is passed in).
-        """
+        """  # noqa: E501
         filters = filters or dict()
         filters['label'] = self.label
         filters['id'] = job_id
@@ -295,7 +295,7 @@ class CondorWorkflowTemplate(JobTemplate):
         jobs (list): A list of CondorWorkflowJobTemplates.
         max_jobs (dict, optional): A dictionary of category-max_job pairs defining the maximum number of jobs that will run simultaneously from each category.
         config (str, optional): A path to a configuration file for the condorpy DAG.
-    """
+    """  # noqa: E501
     def __init__(self, name, parameters=None, jobs=None, max_jobs=None, config=None, **kwargs):
         parameters = parameters or dict()
         self.node_templates = set(jobs)
@@ -384,7 +384,7 @@ class CondorWorkflowJobTemplate(CondorWorkflowNodeBaseTemplate):
     Args:
         name (str): Name to refer to the template.
         job_description (CondorJobDescription): An instance of `CondorJobDescription` containing of key-value pairs of job attributes.
-    """
+    """  # noqa: E501
     def __init__(self, name, job_description, **kwargs):
         parameters = kwargs
         parameters['remote_input_files'] = job_description.remote_input_files
