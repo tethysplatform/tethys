@@ -472,6 +472,12 @@ class CondorPyWorkflow(models.Model):
     def max_jobs(self):
         return self._max_jobs
 
+    @max_jobs.setter
+    def max_jobs(self, max_jobs):
+        # TODO: Add setter to max_jobs in condorpy? Don't set max_jobs?
+        self.condorpy_workflow._max_jobs = max_jobs
+        self._max_jobs = max_jobs
+
     @property
     def config(self):
         return self._config
@@ -595,6 +601,17 @@ class CondorWorkflowNode(models.Model):
     dir = models.CharField(max_length=1024, null=True, blank=True)
     noop = models.BooleanField(default=False)
     done = models.BooleanField(default=False)
+
+    def __init__(self, *args, **kwargs):
+        # TODO: Discuss this approach with Scott. Cannot have any kwargs that are not properties of the class.
+        # TODO: Was getting an error because the condor_template_name was coming through the kwargs from the template.
+        # TODO: We need a more robust way to handle this in each model class that uses the kwargs pattern...
+        properties = inspect.getmembers(CondorWorkflowNode)
+        keys = kwargs.keys()
+        for key in keys:
+            if key not in properties:
+                kwargs.pop(key)
+        super(CondorWorkflowNode, self).__init__(*args, **kwargs)
 
     @abstractmethod
     def type(self):

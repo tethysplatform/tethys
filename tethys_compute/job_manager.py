@@ -54,7 +54,7 @@ class JobManager(object):
         for template in templates:
             self.job_templates[template.name] = template
 
-    def create_job(self, name, user, job_template=None, job_type=None, **kwargs):
+    def create_job(self, name, user, template_name=None, job_type=None, **kwargs):
         """
         Creates a new job from a JobTemplate.
 
@@ -67,13 +67,13 @@ class JobManager(object):
         Returns:
             A new job object of the type specified by job_type.
         """
-        if job_template is not None:
+        if template_name is not None:
             msg = 'The job template "{0}" was used in the "{1}" app. Using job templates is now depreciated. ' \
                   'See docs: <<link>>.'\
-                .format(job_template, self.app.package)
+                .format(template_name, self.app.package)
             warnings.warn(msg, DeprecationWarning)
             print(msg)
-            return self.old_create_job(name, user, job_template, **kwargs)
+            return self.old_create_job(name, user, template_name, **kwargs)
 
         job_type = JOB_TYPES[job_type]
         user_workspace = self.app.get_user_workspace(user)
@@ -296,9 +296,10 @@ class CondorWorkflowTemplate(JobTemplate):
         max_jobs (dict, optional): A dictionary of category-max_job pairs defining the maximum number of jobs that will run simultaneously from each category.
         config (str, optional): A path to a configuration file for the condorpy DAG.
     """  # noqa: E501
-    def __init__(self, name, parameters=None, jobs=None, max_jobs=None, config=None, **kwargs):
+    def __init__(self, name, parameters=None, jobs=None, max_jobs=None, config='', **kwargs):
         parameters = parameters or dict()
         self.node_templates = set(jobs)
+        # TODO: For this to work, needed to add a setter to max_jobs property on CondorPyWorkflow
         parameters['max_jobs'] = max_jobs
         parameters['config'] = config
         parameters.update(kwargs)
@@ -370,9 +371,7 @@ class CondorWorkflowNodeBaseTemplate(object):
         kwargs = JobManager._replace_workspaces(self.parameters, app_workspace, user_workspace)
         if 'parents' in kwargs:
             kwargs.pop('parents')
-        node = self.type(name=self.name,
-                         workflow=workflow,
-                         **kwargs)
+        node = self.type(name=self.name, workflow=workflow, **kwargs)
         node.save()
         return node
 
