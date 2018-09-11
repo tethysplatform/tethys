@@ -1,5 +1,5 @@
 from tethys_sdk.testing import TethysTestCase
-from tethys_compute.models import TethysJob, CondorPyWorkflow, CondorWorkflow, Scheduler, CondorWorkflowNode, \
+from tethys_compute.models import CondorPyWorkflow, CondorWorkflow, Scheduler, CondorWorkflowNode, \
     CondorWorkflowJobNode
 from django.contrib.auth.models import User
 from condorpy import Job

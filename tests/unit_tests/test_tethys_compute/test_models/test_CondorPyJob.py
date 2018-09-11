@@ -119,5 +119,3 @@ class CondorPyJobTest(TethysTestCase):
 
         # Check after update
         self.assertEqual('test_condorbase', ret.attributes['job_name'])
-
-
