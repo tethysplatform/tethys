@@ -26,8 +26,8 @@ from tethys_apps.cli.services_commands import (services_create_persistent_comman
 from tethys_apps.cli.link_commands import link_command
 from tethys_apps.cli.app_settings_commands import (app_settings_list_command, app_settings_create_ps_database_command,
                                                    app_settings_remove_command)
-from tethys_apps.cli.scheduler_commands import (scheduler_create_command, schedulers_list_command,
-                                                schedulers_remove_command)
+from tethys_apps.cli.scheduler_commands import (schedulers_list_command, schedulers_remove_command,
+                                                condor_scheduler_create_command, dask_scheduler_create_command)
 from tethys_apps.cli.gen_commands import VALID_GEN_OBJECTS, generate_command
 
 # Module level variables
@@ -102,25 +102,45 @@ def tethys_command():
     scheduler_parser = subparsers.add_parser('schedulers', help='Scheduler commands for Tethys Platform.')
     scheduler_subparsers = scheduler_parser.add_subparsers(title='Commands')
 
-    # tethys schedulers create
-    schedulers_create = scheduler_subparsers.add_parser('create', help='Create a Scheduler that can be '
-                                                                       'accessed by Tethys Apps.')
-    schedulers_create.add_argument('-n', '--name', required=True, help='A unique name for the Scheduler', type=str)
-    schedulers_create.add_argument('-e', '--endpoint', required=True, type=str,
-                                   help='The endpoint of the service in the form <protocol>//<host>"')
-    schedulers_create.add_argument('-u', '--username', required=True, help='The username to connect to the host with',
-                                   type=str)
-    group = schedulers_create.add_mutually_exclusive_group(required=True)
+    # tethys condor schedulers create
+    condor_schedulers_create = scheduler_subparsers.add_parser('create-condor',
+                                                               help='Create a Condor Scheduler that can be '
+                                                               'accessed by Tethys Apps.')
+    condor_schedulers_create.add_argument('-n', '--name', required=True,
+                                          help='A unique name for the Condor Scheduler', type=str)
+    condor_schedulers_create.add_argument('-e', '--endpoint', required=True, type=str,
+                                          help='The endpoint of the service in the form <protocol>//<host>"')
+    condor_schedulers_create.add_argument('-u', '--username', required=True,
+                                          help='The username to connect to the host with', type=str)
+    group = condor_schedulers_create.add_mutually_exclusive_group(required=True)
     group.add_argument('-p', '--password', required=False, type=str,
                        help='The password associated with the provided username')
     group.add_argument('-f', '--private-key-path', required=False, help='The path to the private ssh key file',
                        type=str)
-    schedulers_create.add_argument('-k', '--private-key-pass', required=False, type=str,
-                                   help='The password to the private ssh key file')
-    schedulers_create.set_defaults(func=scheduler_create_command)
+    condor_schedulers_create.add_argument('-k', '--private-key-pass', required=False, type=str,
+                                          help='The password to the private ssh key file')
+    condor_schedulers_create.set_defaults(func=condor_scheduler_create_command)
 
-    # tethys schedulers list
+    # tethys dask schedulers create
+    dask_schedulers_create = scheduler_subparsers.add_parser('create-dask', help='Create a Dask Scheduler that can be '
+                                                             'accessed by Tethys Apps.')
+    dask_schedulers_create.add_argument('-n', '--name', required=True,
+                                        help='A unique name for the Condor Scheduler', type=str)
+    dask_schedulers_create.add_argument('-e', '--endpoint', required=True, type=str,
+                                        help='The endpoint of the service in the form <protocol>//<host>"')
+    dask_schedulers_create.add_argument('-t', '--timeout', required=False, type=int,
+                                        help='The timeout value of the Dask Job')
+    dask_schedulers_create.add_argument('-b', '--heartbeat-interval', required=False,
+                                        help='The heartbeat interval value of the Dask Job', type=int)
+    dask_schedulers_create.add_argument('-d', '--dashboard', required=False, type=str,
+                                        help='The dashboard type of a DaskJob')
+    dask_schedulers_create.set_defaults(func=dask_scheduler_create_command)
+
+    # tethys condor/dask schedulers list
+
     schedulers_list = scheduler_subparsers.add_parser('list', help='List the existing Schedulers.')
+    schedulers_list.add_argument('-t', '--type', required=True,
+                                 help='input: Condor or Dask (List Condor or Dask type)', type=str)
     schedulers_list.set_defaults(func=schedulers_list_command)
 
     # tethys schedulers remove
