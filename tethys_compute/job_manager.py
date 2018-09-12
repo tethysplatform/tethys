@@ -11,7 +11,6 @@ import re
 from abc import abstractmethod
 import logging
 import warnings
-from tethys_apps.cli.cli_colors import pretty_output, FG_YELLOW
 
 
 from django.urls import reverse
@@ -74,8 +73,7 @@ class JobManager(object):
                   'See docs: <<link>>.'\
                 .format(template_name, self.app.package)
             warnings.warn(msg, DeprecationWarning)
-            with pretty_output(FG_YELLOW) as po:
-                po.write(msg)
+            print(msg)
             return self.old_create_job(name, user, template_name, **kwargs)
 
         job_type = JOB_TYPES[job_type]
