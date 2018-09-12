@@ -11,6 +11,8 @@ import re
 from abc import abstractmethod
 import logging
 import warnings
+from tethys_apps.cli.cli_colors import pretty_output, FG_YELLOW
+
 
 from django.urls import reverse
 
@@ -72,7 +74,8 @@ class JobManager(object):
                   'See docs: <<link>>.'\
                 .format(template_name, self.app.package)
             warnings.warn(msg, DeprecationWarning)
-            print(msg)
+            with pretty_output(FG_YELLOW) as po:
+                po.write(msg)
             return self.old_create_job(name, user, template_name, **kwargs)
 
         job_type = JOB_TYPES[job_type]
@@ -315,7 +318,6 @@ class CondorWorkflowTemplate(JobTemplate):
         job.save()
 
         node_dict = dict()
-
         def add_to_node_dict(node):
             if node not in node_dict:
                 node_dict[node] = node.create_node(job, app_workspace, user_workspace)
