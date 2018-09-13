@@ -300,7 +300,6 @@ class CondorWorkflowTemplate(JobTemplate):
     def __init__(self, name, parameters=None, jobs=None, max_jobs=None, config='', **kwargs):
         parameters = parameters or dict()
         self.node_templates = set(jobs)
-        # TODO: For this to work, needed to add a setter to max_jobs property on CondorPyWorkflow
         parameters['max_jobs'] = max_jobs
         parameters['config'] = config
         parameters.update(kwargs)

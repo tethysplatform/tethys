@@ -602,17 +602,6 @@ class CondorWorkflowNode(models.Model):
     noop = models.BooleanField(default=False)
     done = models.BooleanField(default=False)
 
-    def __init__(self, *args, **kwargs):
-        # TODO: Discuss this approach with Scott. Cannot have any kwargs that are not properties of the class.
-        # TODO: Was getting an error because the condor_template_name was coming through the kwargs from the template.
-        # TODO: We need a more robust way to handle this in each model class that uses the kwargs pattern...
-        properties = inspect.getmembers(CondorWorkflowNode)
-        keys = kwargs.keys()
-        for key in keys:
-            if key not in properties:
-                kwargs.pop(key)
-        super(CondorWorkflowNode, self).__init__(*args, **kwargs)
-
     @abstractmethod
     def type(self):
         pass
@@ -669,8 +658,10 @@ class CondorWorkflowJobNode(CondorWorkflowNode, CondorPyJob):
             num_jobs:
             remote_input_files:
         """
-        CondorWorkflowNode.__init__(self, *args, **kwargs)
         CondorPyJob.__init__(self, *args, **kwargs)
+        # CondorWorkflowNode will choke if condorpy_template_name is in kwargs
+        kwargs.pop('condorpy_template_name', None)
+        CondorWorkflowNode.__init__(self, *args, **kwargs)
 
     @property
     def type(self):
