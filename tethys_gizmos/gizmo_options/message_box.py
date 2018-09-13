@@ -14,8 +14,7 @@ __all__ = ['MessageBox']
 
 class MessageBox(TethysGizmoOptions):
     """
-    Message box gizmos can be used to display messages to users. These are especially useful for alerts and warning
-    messages. The message box gizmo is implemented using Twitter Bootstrap's modal.
+    Message box gizmos can be used to display messages to users. These are especially useful for alerts and warning messages. The message box gizmo is implemented using Twitter Bootstrap's modal.
 
     Attributes:
         name(str, required): Unique name for the message box
@@ -23,11 +22,9 @@ class MessageBox(TethysGizmoOptions):
         message(str): Message that will appear in the main body of the message box
         dismiss_button(str): Title for the dismiss button (a.k.a.: the "Cancel" button)
         affirmative_button(str): Title for the affirmative action button (a.k.a.: the "OK" button)
-        affirmative_attributes(str): Use this to place any html attributes on the affirmative button.
-                                     (e.g.: 'href="/action" onclick="doSomething();"')
+        affirmative_attributes(str): Use this to place any html attributes on the affirmative button. (e.g.: 'href="/action" onclick="doSomething();"')
         width(int): The width of the message box in pixels
-        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element
-                          (e.g. {"onclick": "run_me();"}).
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Controller Example
@@ -59,7 +56,7 @@ class MessageBox(TethysGizmoOptions):
         {% block after_app_content %}
             {% gizmo message_box %}
         {% endblock %}
-    """
+    """  # noqa: E501
     gizmo_name = "message_box"
 
     def __init__(self, name, title, message='', dismiss_button='Cancel', affirmative_button='Ok',

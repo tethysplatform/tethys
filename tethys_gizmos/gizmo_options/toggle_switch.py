@@ -14,24 +14,20 @@ __all__ = ['ToggleSwitch']
 
 class ToggleSwitch(TethysGizmoOptions):
     """
-    Toggle switches can be used as an alternative to check boxes for boolean or binomial input. Toggle switches are
-    implemented using the excellent `Bootstrap Switch reference <http://www.bootstrap-switch.org/>`_ project.
+    Toggle switches can be used as an alternative to check boxes for boolean or binomial input. Toggle switches are implemented using the excellent `Bootstrap Switch reference <http://www.bootstrap-switch.org/>`_ project.
 
     Attributes:
         display_text(str): Display text for the label that accompanies switch
         name(str, required): Name of the input element that will be used for form submission
         on_label(str): Text that appears in the "on" position of the switch
         off_label(str): Text that appears in the "off" position of the switch
-        on_style(str): Color of the "on" position. Either: 'default', 'info', 'primary', 'success', 'warning', or
-                       'danger'
-        off_style(str): Color of the "off" position. Either: 'default', 'info', 'primary', 'success', 'warning', or
-                        'danger'
+        on_style(str): Color of the "on" position. Either: 'default', 'info', 'primary', 'success', 'warning', or 'danger'
+        off_style(str): Color of the "off" position. Either: 'default', 'info', 'primary', 'success', 'warning', or 'danger'
         size(str): Size of the switch. Either: 'large', 'small', or 'mini'.
         initial(bool): The initial position of the switch (True for "on" and False for "off")
         disabled(bool): Disabled state of the switch
         error(str): Error message for form validation
-        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element
-                         (e.g. {"onclick": "run_me();"}).
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Controller Example
@@ -77,7 +73,7 @@ class ToggleSwitch(TethysGizmoOptions):
         {% gizmo toggle_switch_styled %}
         {% gizmo toggle_switch_disabled %}
 
-    """
+    """  # noqa: E501
     gizmo_name = "toggle_switch"
 
     def __init__(self, name, display_text='', on_label='ON', off_label='OFF', on_style='primary', off_style='default',

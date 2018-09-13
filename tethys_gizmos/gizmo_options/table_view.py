@@ -14,8 +14,7 @@ __all__ = ['TableView']
 
 class TableView(TethysGizmoOptions):
     """
-    Table views can be used to display tabular data. The table view gizmo can be configured to have columns that are
-    editable. When used in this capacity, embed the table view in a form with a submit button.
+    Table views can be used to display tabular data. The table view gizmo can be configured to have columns that are editable. When used in this capacity, embed the table view in a form with a submit button.
 
     Attributes:
         rows(tuple or list, required): A list/tuple of lists/tuples representing each row in the table.
@@ -24,14 +23,9 @@ class TableView(TethysGizmoOptions):
         striped(bool): Stripe rows
         bordered(bool): Add borders and rounded corners
         condensed(bool): A more tightly packed table
-        editable_columns(list or tuple): A list or tuple with an entry for each column in the table. The entry is
-                                         either False for non-editable columns or a string that will be used to create
-                                         identifiers for the input column_fields in that column.
-        row_ids(list or tuple): A list or tuple of ids for each row in the table. These will be combined with the
-                                string in the editable_columns parameter to create unique identifiers for easy input
-                                field in the table. If not specified, each row will be assigned an integer value.
-        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element
-                          (e.g. {"onclick": "run_me();"}).
+        editable_columns(list or tuple): A list or tuple with an entry for each column in the table. The entry is either False for non-editable columns or a string that will be used to create identifiers for the input column_fields in that column.
+        row_ids(list or tuple): A list or tuple of ids for each row in the table. These will be combined with the string in the editable_columns parameter to create unique identifiers for easy input field in the table. If not specified, each row will be assigned an integer value.
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Controller Example
@@ -74,7 +68,7 @@ class TableView(TethysGizmoOptions):
         {% gizmo table_view %}
         {% gizmo table_view_edit %}
 
-    """
+    """  # noqa: E501
     gizmo_name = "table_view"
 
     def __init__(self, rows, column_names='', hover=False, striped=False, bordered=False, condensed=False,
