@@ -50,9 +50,12 @@ class Creator(object):
         return obj.__dict__[self.field.name]
 
     def __set__(self, obj, value):
+        # Google says this is bad
+        # TODO: this is NOT tested
         obj.__dict__[self.field.name] = self.field.to_python(value)
 
 
+# TODO: Talk to Scott about this - Not used, can we take this out?
 def make_contrib(superclass, func=None):
     """
     Returns a suitable contribute_to_class() method for the Field subclass.
@@ -87,8 +90,9 @@ class DictionaryField(with_metaclass(SubfieldBase, models.Field)):
         elif isinstance(value, basestring):
             try:
                 return dict(json.loads(value))
-            except (ValueError, TypeError):
-                raise exceptions.ValidationError(self.error_messages['invalid value for json: %s' % value])
+            except (ValueError, TypeError) as e:
+                raise e
+                # raise exceptions.ValidationError(self.error_messages['invalid value for json: %s' % value])
 
         if isinstance(value, dict):
             return value
