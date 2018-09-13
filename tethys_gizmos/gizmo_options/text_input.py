@@ -14,8 +14,7 @@ __all__ = ['TextInput']
 
 class TextInput(TethysGizmoOptions):
     """
-    The text input gizmo makes it easy to add text inputs to your app that are styled similarly to the other input
-    snippets.
+    The text input gizmo makes it easy to add text inputs to your app that are styled similarly to the other input snippets.
 
     Attributes:
         display_text(str): Display text for the label that accompanies select input
@@ -28,8 +27,7 @@ class TextInput(TethysGizmoOptions):
         icon_append(str): The name of a valid Bootstrap v2.3 icon. The icon will be appended to the input.
         disabled(bool): Disabled state of the select input
         error(str): Error message for form validation
-        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element
-                          (e.g. {"onclick": "run_me();"}).
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Controller Example
@@ -62,7 +60,7 @@ class TextInput(TethysGizmoOptions):
         {% gizmo text_input %}
         {% gizmo text_error_input %}
 
-    """
+    """  # noqa: E501
     gizmo_name = "text_input"
 
     def __init__(self, name, display_text='', initial='', placeholder='', prepend='', append='', icon_prepend='',

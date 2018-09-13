@@ -668,8 +668,8 @@ class BarPlot(PlotViewBase):
         if group_tools:
             tooltip_format = {
                 'headerFormat': '<span style="font-size:10px">{point.key}</span><table>',
-                'pointFormat': '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                               '<td style="padding:0"><b>{point.y:.1f} %s </b></td></tr>' % (axis_units),
+                'pointFormat': '<tr><td style="color:{series.color};padding:0">{series.name}: </td>'
+                               + '<td style="padding:0"><b>{point.y:.1f} %s </b></td></tr>' % (axis_units),
                 'footerFormat': '</table>',
                 'shared': True,
                 'useHTML': True
@@ -828,20 +828,13 @@ class AreaRange(PlotViewBase):
             [datetime(2009, 7, 1), 14.3, 27.7], [datetime(2009, 7, 2), 14.5, 27.8], [datetime(2009, 7, 3), 15.5, 29.6],
             [datetime(2009, 7, 4), 16.7, 30.7], [datetime(2009, 7, 5), 16.5, 25.0], [datetime(2009, 7, 6), 17.8, 25.7],
             [datetime(2009, 7, 7), 13.5, 24.8], [datetime(2009, 7, 8), 10.5, 21.4], [datetime(2009, 7, 9), 9.2, 23.8],
-            [datetime(2009, 7, 10), 11.6, 21.8], [datetime(2009, 7, 11), 10.7, 23.7],
-            [datetime(2009, 7, 12), 11.0, 23.3],
-            [datetime(2009, 7, 13), 11.6, 23.7], [datetime(2009, 7, 14), 11.8, 20.7],
-            [datetime(2009, 7, 15), 12.6, 22.4],
-            [datetime(2009, 7, 16), 13.6, 19.6], [datetime(2009, 7, 17), 11.4, 22.6],
-            [datetime(2009, 7, 18), 13.2, 25.0],
-            [datetime(2009, 7, 19), 14.2, 21.6], [datetime(2009, 7, 20), 13.1, 17.1],
-            [datetime(2009, 7, 21), 12.2, 15.5],
-            [datetime(2009, 7, 22), 12.0, 20.8], [datetime(2009, 7, 23), 12.0, 17.1],
-            [datetime(2009, 7, 24), 12.7, 18.3],
-            [datetime(2009, 7, 25), 12.4, 19.4], [datetime(2009, 7, 26), 12.6, 19.9],
-            [datetime(2009, 7, 27), 11.9, 20.2],
-            [datetime(2009, 7, 28), 11.0, 19.3], [datetime(2009, 7, 29), 10.8, 17.8],
-            [datetime(2009, 7, 30), 11.8, 18.5],
+            [datetime(2009, 7, 10), 11.6, 21.8], [datetime(2009, 7, 11), 10.7, 23.7], [datetime(2009, 7, 12), 11.0, 23.3],
+            [datetime(2009, 7, 13), 11.6, 23.7], [datetime(2009, 7, 14), 11.8, 20.7], [datetime(2009, 7, 15), 12.6, 22.4],
+            [datetime(2009, 7, 16), 13.6, 19.6], [datetime(2009, 7, 17), 11.4, 22.6], [datetime(2009, 7, 18), 13.2, 25.0],
+            [datetime(2009, 7, 19), 14.2, 21.6], [datetime(2009, 7, 20), 13.1, 17.1], [datetime(2009, 7, 21), 12.2, 15.5],
+            [datetime(2009, 7, 22), 12.0, 20.8], [datetime(2009, 7, 23), 12.0, 17.1], [datetime(2009, 7, 24), 12.7, 18.3],
+            [datetime(2009, 7, 25), 12.4, 19.4], [datetime(2009, 7, 26), 12.6, 19.9], [datetime(2009, 7, 27), 11.9, 20.2],
+            [datetime(2009, 7, 28), 11.0, 19.3], [datetime(2009, 7, 29), 10.8, 17.8], [datetime(2009, 7, 30), 11.8, 18.5],
             [datetime(2009, 7, 31), 10.8, 16.1]
         ]
 
@@ -882,7 +875,7 @@ class AreaRange(PlotViewBase):
 
         {% gizmo area_range_plot_object %}
 
-    """
+    """  # noqa: E501
 
     def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='',
                  y_axis_title='', y_axis_units='', **kwargs):
@@ -961,8 +954,7 @@ class HeatMap(PlotViewBase):
             width='500px',
             height='500px',
             title='Sales per employee per weekday',
-            x_categories=['Alexander', 'Marie', 'Maximilian', 'Sophia', 'Lukas', 'Maria', 'Leon', 'Anna', 'Tim',
-                          'Laura'],
+            x_categories=['Alexander', 'Marie', 'Maximilian', 'Sophia', 'Lukas', 'Maria', 'Leon', 'Anna', 'Tim', 'Laura'],
             y_categories=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
             tooltip_phrase_one='sold',
             tooltip_phrase_two='items on',
@@ -1003,7 +995,7 @@ class HeatMap(PlotViewBase):
 
         {% gizmo heat_map_plot %}
 
-    """
+    """  # noqa: E501
 
     def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='', x_categories=[],
                  y_categories=[], tooltip_phrase_one='', tooltip_phrase_two='', **kwargs):

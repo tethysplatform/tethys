@@ -15,23 +15,19 @@ __all__ = ['SelectInput']
 
 class SelectInput(TethysGizmoOptions):
     """
-    Select inputs are used to select values from an given set of values. Use this gizmo to create select inputs and
-    multi select inputs. This uses the Select2 functionality.
+    Select inputs are used to select values from an given set of values. Use this gizmo to create select inputs and multi select inputs. This uses the Select2 functionality.
 
     Attributes:
         display_text(str): Display text for the label that accompanies select input
         name(str, required): Name of the input element that will be used for form submission
         multiple(bool): If True, select input will be a multi-select
-        original(bool): If True, `Select2 reference <http://ivaynberg.github.io/select2/>`_ functionality will be
-                        turned off
+        original(bool): If True, `Select2 reference <http://ivaynberg.github.io/select2/>`_ functionality will be turned off
         select2_options (dict): Select2 options that will be passed when initializing the select2.
         options(list): List of tuples that represent the options and values of the select input
-        initial(list or str): List of keys or values that represent the initial selected values or a string
-                              representing a singular initial selected value.
+        initial(list or str): List of keys or values that represent the initial selected values or a string representing a singular initial selected value.
         disabled(bool): Disabled state of the select input
         error(str): Error message for form validation
-        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element
-                          (e.g. {"onclick": "run_me();"}).
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Controller Example
@@ -93,7 +89,7 @@ class SelectInput(TethysGizmoOptions):
         {% gizmo select_input %}
         {% gizmo select_input_multiple %}
 
-    """
+    """  # noqa: E501
     gizmo_name = "select_input"
 
     def __init__(self, name, display_text='', initial=[], multiple=False, original=False,
