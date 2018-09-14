@@ -19,7 +19,9 @@ class TethysComputeUtilitiesTests(TestCase):
         CaptchaStore.generate_key()
         self.hashkey = CaptchaStore.objects.all()[0].hashkey
         self.response = CaptchaStore.objects.all()[0].response
-        self.user = User.objects.create_user(username='user_exist', email='foo_exist@aquaveo.com', password='glass_onion')
+        self.user = User.objects.create_user(username='user_exist',
+                                             email='foo_exist@aquaveo.com',
+                                             password='glass_onion')
 
     def tearDown(self):
         pass

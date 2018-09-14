@@ -66,7 +66,7 @@ def validate_persistent_store_port(value):
     """
     Validator for persistent store service ports
     """
-    if value < 1024 or value > 65535:
+    if int(value) < 1024 or int(value) > 65535:
         raise ValidationError('Invalid Port: Persistent Store ports must be an integer between 1024 and 65535.')
 
 

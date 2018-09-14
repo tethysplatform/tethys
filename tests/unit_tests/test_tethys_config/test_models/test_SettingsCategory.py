@@ -11,8 +11,8 @@ class SettingsCategoryTest(TethysTestCase):
         pass
 
     def test_Settings_Category_unicode(self):
-        self.assertEqual('General Settings', unicode(self.sc_gen))
-        self.assertEqual('Home Page', unicode(self.sc_home))
+        self.assertEqual('General Settings', str(self.sc_gen))
+        self.assertEqual('Home Page', str(self.sc_home))
 
     def test_Settings_Category_str(self):
         self.assertEqual('General Settings', str(self.sc_gen))
