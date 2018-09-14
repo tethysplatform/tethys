@@ -62,7 +62,7 @@ class CondorBaseTest(TethysTestCase):
         mock_co.set_scheduler.assert_called_with('localhost', 'tethys_super', 'pass', 'test_path', 'test_pass')
 
     def test_condor_obj_abs(self):
-        ret = CondorBase.objects.get(name='test_condorbase')._condor_object
+        ret = CondorBase.objects.get(name='test_condorbase')._condor_object()
 
         # Check result.
         self.assertIsNone(ret)

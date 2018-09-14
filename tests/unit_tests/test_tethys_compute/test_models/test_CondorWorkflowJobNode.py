@@ -1,5 +1,5 @@
 from tethys_sdk.testing import TethysTestCase
-from tethys_compute.models import CondorPyWorkflow, CondorWorkflow, CondorWorkflowJobNode
+from tethys_compute.models import CondorPyWorkflow, CondorWorkflow, CondorWorkflowJobNode, TethysJob
 from django.contrib.auth.models import User
 import mock
 import os
@@ -16,14 +16,14 @@ class CondorPyWorkflowJobNodeTest(TethysTestCase):
         self.condorworkflow = CondorWorkflow(
             _max_jobs={'foo': 10},
             _config='test_config',
-            name='test name',
+            name='foo{id}',
             workspace=self.workspace_dir,
             user=self.user,
         )
         self.condorworkflow.save()
 
         # To have a flow Node, we need to have a Condor Job which requires a CondorBase which requires a TethysJob
-        self.id_value = CondorWorkflow.objects.get(name='test name').condorpyworkflow_ptr_id
+        self.id_value = CondorWorkflow.objects.get(name='foo{id}').condorpyworkflow_ptr_id
         self.condorpyworkflow = CondorPyWorkflow.objects.get(condorpyworkflow_id=self.id_value)
 
         self.condorworkflowjobnode = CondorWorkflowJobNode(
@@ -68,3 +68,21 @@ class CondorPyWorkflowJobNodeTest(TethysTestCase):
         # Check result
         mock_pj_update.assert_called_once()
         mock_wfn_update.assert_called_once()
+
+    def test_job_post_save(self):
+        # get the job
+        tethys_job = TethysJob.objects.get(name='foo{id}')
+        id_val = tethys_job.id
+
+        # Run save to activate post save
+        tethys_job.save()
+
+        # Set up new name
+        new_name = 'foo{id}'.format(id=id_val)
+
+        # Get same tethys job with new name
+        tethys_job = TethysJob.objects.get(name=new_name)
+
+        # Check results
+        self.assertIsInstance(tethys_job, TethysJob)
+        self.assertEqual(new_name, tethys_job.name)

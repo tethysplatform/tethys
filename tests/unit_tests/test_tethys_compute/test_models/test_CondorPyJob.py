@@ -38,6 +38,16 @@ class CondorPyJobTest(TethysTestCase):
     def tear_down(self):
         self.condor_py.delete()
 
+    def test_init(self):
+        ret = CondorPyJob(_attributes={'foo': 'bar'},
+                          condorpy_template_name='vanilla_base',
+                          )
+        # Check result
+        # Instance of CondorPyJob
+        self.assertIsInstance(ret, CondorPyJob)
+        # Check return vanilla Django base
+        self.assertEqual('vanilla', ret.attributes['universe'])
+
     def test_get_condorpy_template(self):
         ret = CondorPyJob.get_condorpy_template('vanilla_base')
 
@@ -70,6 +80,18 @@ class CondorPyJobTest(TethysTestCase):
         ret = CondorPyJob.objects.get(condorpyjob_id='99').attributes
 
         self.assertEqual({'foo': 'bar'}, ret)
+
+    @mock.patch('tethys_compute.models.CondorPyJob.condorpy_job')
+    def test_set_attributes(self, mock_ca):
+        set_attributes = {'baz': 'qux'}
+        ret = CondorPyJob.objects.get(condorpyjob_id='99')
+
+        ret.attributes = set_attributes
+
+        # Mock setter
+        mock_ca._attributes = set_attributes
+
+        self.assertEqual({'baz': 'qux'}, ret.attributes)
 
     @mock.patch('tethys_compute.models.CondorPyJob.condorpy_job')
     def test_numjobs(self, mock_cj):

@@ -206,7 +206,7 @@ class TethysJobTest(TethysTestCase):
 
         # Check result
         self.assertEqual(ret, 'test_function_return')
-        mock_tfe.assert_called_with(unicode(test_function), None)
+        mock_tfe.assert_called_with(str(test_function), None)
 
     def test_process_results(self):
         ret = TethysJob.objects.get(name='test_tethysjob')

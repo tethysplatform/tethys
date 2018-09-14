@@ -75,11 +75,19 @@ class CondorPyWorkflowTest(TethysTestCase):
         self.assertEqual(self.workspace_dir, ret._cwd)
         self.assertEqual('test_config', ret.config)
 
-    def test_max_jobs_prop(self):
+    @mock.patch('tethys_compute.models.Workflow')
+    def test_max_jobs(self, mock_wf):
+        max_jobs = {'foo': 5}
+        self.condorpyworkflow.name = 'test_name'
+        self.condorpyworkflow.workspace = 'test_dict'
+        self.condorpyworkflow.max_jobs = max_jobs
+
         ret = self.condorpyworkflow.max_jobs
 
         # Check result
-        self.assertEqual(10, ret['foo'])
+        self.assertEqual(5, ret['foo'])
+        mock_wf.assert_called_with(config='test_config', max_jobs={'foo': 10},
+                                   name='test_name', working_directory='test_dict')
 
     @mock.patch('tethys_compute.models.CondorPyWorkflow.condorpy_workflow')
     def test_config(self, mock_cw):

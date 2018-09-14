@@ -70,13 +70,13 @@ class CondorPyWorkflowNodeTest(TethysTestCase):
         self.condorworkflowjobnode_child2.delete()
 
     def test_type_abs_prop(self):
-        ret = self.condorworkflownode.type
+        ret = self.condorworkflownode.type()
 
         # Check result
         self.assertIsNone(ret)
 
     def test_job_abs_prop(self):
-        ret = self.condorworkflownode.job
+        ret = self.condorworkflownode.job()
 
         # Check result
         self.assertIsNone(ret)

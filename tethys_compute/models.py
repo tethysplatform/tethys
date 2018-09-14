@@ -688,6 +688,6 @@ def condor_workflow_job_node_pre_save(sender, instance, raw, using, update_field
 @receiver(post_save, sender=BasicJob)
 @receiver(post_save, sender=TethysJob)
 def tethys_job_post_save(sender, instance, raw, using, update_fields, **kwargs):
-    if instance.name.find('{id}') > 0:
+    if instance.name.find('{id}') >= 0:
         instance.name = instance.name.format(id=instance.id)
         instance.save()

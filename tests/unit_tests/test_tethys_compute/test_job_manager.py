@@ -88,7 +88,8 @@ class TestJobManager(unittest.TestCase):
             # Execute
             ret_jm = JobManager(mock_app)
             ret_jm.create_job(name='test_name', user='test_user', job_type='CONDOR')
-            mock_cj.assert_called_with(label='test_label', name='test_name', user='test_user', workspace='test_user_workspace')
+            mock_cj.assert_called_with(label='test_label', name='test_name', user='test_user',
+                                       workspace='test_user_workspace')
 
     def test_old_create_job(self):
         mock_app = mock.MagicMock()
@@ -123,7 +124,8 @@ class TestJobManager(unittest.TestCase):
         mock_app.package = 'test_app_name'
 
         mgr = JobManager(mock_app)
-        self.assertRaises(KeyError, mgr.old_create_job, name=mock_name, user=mock_user, template_name=mock_template_name)
+        self.assertRaises(KeyError, mgr.old_create_job, name=mock_name, user=mock_user,
+                          template_name=mock_template_name)
 
     @mock.patch('tethys_compute.job_manager.TethysJob')
     def test_JobManager_list_job(self, mock_tethys_job):
@@ -261,7 +263,8 @@ class TestJobManager(unittest.TestCase):
         mock_jd.attributes = 'test_attributes'
         mock_param = {'workspace': 'test_workspace'}
 
-        ret = CondorJobTemplate(name='test_name', other_params=mock_param, job_description=mock_jd, scheduler=mock_scheduler)
+        ret = CondorJobTemplate(name='test_name', other_params=mock_param, job_description=mock_jd,
+                                scheduler=mock_scheduler)
 
         # Check result
         self.assertEqual(ret.type, CondorJob)
@@ -292,7 +295,6 @@ class TestJobManager(unittest.TestCase):
         self.assertEqual('rm_files', ret.remote_input_files)
         self.assertEqual('temp1', ret.condorpy_template_name)
         self.assertEqual('foo', ret.attributes['name'])
-
 
     @mock.patch('tethys_compute.job_manager.JobManager._replace_workspaces')
     def test_CondorJobDescription_process_attributes(self, mock_jm):
@@ -329,7 +331,6 @@ class TestJobManager(unittest.TestCase):
         self.assertEquals(input_config, ret.parameters['config'])
         self.assertEquals('param1', ret.parameters['additional_param'])
 
-
     @mock.patch('tethys_compute.job_manager.JobTemplate.create_job')
     def test_CondorWorkflowTemplate_create_job(self, mock_save):
         input_name = 'foo'
@@ -337,7 +338,7 @@ class TestJobManager(unittest.TestCase):
         mock_job1 = mock.MagicMock()
         mock_node_parent = mock.MagicMock()
         mock_node_parent.create_node.return_value = 'add_parent_code_line'
-        mock_job1.parameters ={'parents': [mock_node_parent]}
+        mock_job1.parameters = {'parents': [mock_node_parent]}
         mock_node1 = mock.MagicMock()
         mock_job1.create_node.return_value = mock_node1
 
@@ -432,4 +433,3 @@ class TestJobManager(unittest.TestCase):
         ret = CondorWorkflowJobTemplate(name='test_name', job_description=mock_jd, other_params='test_kwargs')
 
         self.assertIsNone(ret.process_parameters())
-
