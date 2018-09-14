@@ -97,9 +97,7 @@ class PermissionGroup:
 
 def has_permission(request, perm, user=None):
     """
-    Returns True if the user of the given request has the given permission for the app. If a user object is provided,
-     it is tested instead of the request user. The Request object is still required to derive the app context of
-     the permission check.
+    Returns True if the user of the given request has the given permission for the app. If a user object is provided, it is tested instead of the request user. The Request object is still required to derive the app context of the permission check.
 
     Args:
         request (Request): The current request object.
@@ -122,7 +120,7 @@ def has_permission(request, perm, user=None):
             if can_create_projects:
                 ...
 
-    """
+    """  # noqa: E501
     from tethys_apps.utilities import get_active_app
 
     app = get_active_app(request)

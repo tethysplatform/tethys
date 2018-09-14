@@ -12,9 +12,7 @@ class ESRIMap(TethysGizmoOptions):
     Attributes
         height(string, required): Height of map container in normal css units
         width(string, required): Width of map container in normal css units
-        basemap(string, required): Basemap layer. Values=[streets,satellite,hybrid,topo,gray,dark-gray,oceans,
-                                   national-geographic,terrain,osm,dark-gray-vector,gray-vector,street-vector,
-                                   topo-vector,streets-night-vector,streets-relief-vector,streets-navigation-vector]
+        basemap(string, required): Basemap layer. Values=[streets,satellite,hybrid,topo,gray,dark-gray,oceans, national-geographic,terrain,osm,dark-gray-vector,gray-vector,street-vector, topo-vector,streets-night-vector,streets-relief-vector,streets-navigation-vector]
         zoom(string,required): Zoom Level of the Basemap.
         view(EMView): An EVView object specifying the initial view or extent for the map
 
@@ -33,7 +31,7 @@ class ESRIMap(TethysGizmoOptions):
 
         {% gizmo esri_map_view_options %}
 
-    """
+    """  # noqa: E501
     gizmo_name = "esri_map"
 
     def __init__(self, height='100%', width='100%', basemap='topo', view={'center': [-100, 40], 'zoom': 2}, layers=[]):
@@ -77,8 +75,7 @@ class ESRIMap(TethysGizmoOptions):
 
 class EMView(SecondaryGizmoOptions):
     """
-       EMView objects are used to define the initial view of the ESRI Map View. The initial view is set by specifying a
-       center and a zoom level.
+       EMView objects are used to define the initial view of the ESRI Map View. The initial view is set by specifying a center and a zoom level.
 
        Attributes:
            center(list): An array with the coordinates of the center point of the initial view.
@@ -93,7 +90,7 @@ class EMView(SecondaryGizmoOptions):
                zoom=3.5,
            )
 
-       """
+       """  # noqa: E501
     def __init__(self, center, zoom):
         """
         Constructor
@@ -119,15 +116,13 @@ class EMLayer(SecondaryGizmoOptions):
 
     #Define ArcGIS FeatureLayer
 
-    esri_feature_layer = EMLayer(type='FeatureLayer',
-                                 url='http://geoserver.byu.edu/arcgis/rest/services/Alabama_Flood/Flood_45/MapServer/0')
+    esri_feature_layer = EMLayer(type='FeatureLayer', url='http://geoserver.byu.edu/arcgis/rest/services/Alabama_Flood/Flood_45/MapServer/0')
 
     #Define ArcGIS ImageLayer
 
-    esri_image_layer = EMLayer(type='ImageryLayer',
-                        url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer')
+    esri_image_layer = EMLayer(type='ImageryLayer', url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer')
 
-    """
+    """  # noqa: E501
     def __init__(self, type, url):
         """
         Constructor

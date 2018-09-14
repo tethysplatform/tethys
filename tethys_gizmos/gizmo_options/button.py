@@ -14,15 +14,12 @@ __all__ = ['ButtonGroup', 'Button']
 
 class ButtonGroup(TethysGizmoOptions):
     """
-    The button group gizmo can be used to generate a single button or a group of buttons. Groups of buttons can be
-    stacked horizontally or vertically. For a single button, specify a button group with one button. This gizmo is a
-    wrapper for Twitter Bootstrap buttons.
+    The button group gizmo can be used to generate a single button or a group of buttons. Groups of buttons can be  stacked horizontally or vertically. For a single button, specify a button group with one button. This gizmo is a wrapper for Twitter Bootstrap buttons.
 
     Attributes:
         buttons(list, required): A list of dictionaries where each dictionary contains the options for a button.
         vertical(bool): Set to true to have button group stack vertically.
-        attributes(str): A string representing additional HTML attributes to add to the primary element
-                        (e.g. "onclick=run_me();").
+        attributes(str): A string representing additional HTML attributes to add to the primary element (e.g. "onclick=run_me();").
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Controller Example
@@ -71,7 +68,7 @@ class ButtonGroup(TethysGizmoOptions):
         {% gizmo horizontal_buttons %}
         {% gizmo vertical_buttons %}
 
-    """
+    """  # noqa: E501
     gizmo_name = "button_group"
 
     def __init__(self, buttons, vertical=False, attributes='', classes=''):
@@ -91,13 +88,11 @@ class Button(TethysGizmoOptions):
         display_text(str): Display text that appears on the button.
         name(str): Name of the input element that will be used for form submission.
         style(str): Name of the input element that will be used for form submission.
-        icon(str): Name of a valid Twitter Bootstrap icon class (see the Bootstrap `glyphicon reference
-                   <http://getbootstrap.com/components/#glyphicons-glyphs>`_).
+        icon(str): Name of a valid Twitter Bootstrap icon class (see the Bootstrap `glyphicon reference <http://getbootstrap.com/components/#glyphicons-glyphs>`_).
         href(str): Link for anchor type buttons.
         submit(bool): Set this to true to make the button a submit type button for forms.
         disabled(bool): Set the disabled state.
-        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element
-                          (e.g. {"onclick": "run_me();"}).
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element  (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Controller Example
@@ -196,7 +191,7 @@ class Button(TethysGizmoOptions):
         {% gizmo remove_button %}
         {% gizmo previous_button %}
         {% gizmo next_button %}
-    """
+    """  # noqa: E501
     gizmo_name = "button"
 
     def __init__(self, display_text='', name='', style='', icon='', href='',

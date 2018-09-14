@@ -123,13 +123,3 @@ class TestUrls(TethysTestCase):
         self.assertEqual('/update-job-status/JI001/', url)
         self.assertEqual('update_job_status', resolver.func.__name__)
         self.assertEqual('tethys_apps.views', resolver.func.__module__)
-
-    # def test_url_silk(self):
-    #     # not working
-    #     from django.conf.urls import include, url
-    #     url(r'^silk/', include('silk.urls', namespace='silk'))
-    #     url = reverse('silk')
-    #     resolver = resolve(url)
-    #     self.assertEqual('/update-job-status/JI001/', url)
-    #     self.assertEqual('update_job_status', resolver.func.__name__)
-    #     self.assertEqual('tethys_apps.views', resolver.func.__module__)

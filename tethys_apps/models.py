@@ -201,8 +201,7 @@ class CustomSetting(TethysAppSetting):
 
     Attributes:
         name(str): Unique name used to identify the setting.
-        type(enum): The type of the custom setting. Either CustomSetting.TYPE_STRING, CustomSetting.TYPE_INTEGER,
-        CustomSetting.TYPE_FLOAT, CustomSetting.TYPE_BOOLEAN
+        type(enum): The type of the custom setting. Either CustomSetting.TYPE_STRING, CustomSetting.TYPE_INTEGER, CustomSetting.TYPE_FLOAT, CustomSetting.TYPE_BOOLEAN
         description(str): Short description of the setting.
         required(bool): A value will be required if True.
 
@@ -240,7 +239,7 @@ class CustomSetting(TethysAppSetting):
             required=True
         )
 
-    """
+    """  # noqa: E501
     TYPE_STRING = 'STRING'
     TYPE_INTEGER = 'INTEGER'
     TYPE_FLOAT = 'FLOAT'

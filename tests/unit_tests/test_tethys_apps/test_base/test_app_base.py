@@ -335,8 +335,7 @@ class TestTethysAppBase(unittest.TestCase):
 
         # Check if Permission in Permission.DoesNotExist is called
         rts_call_args = mock_dp.call_args_list
-        # import pdb;
-        # pdb.set_trace()
+
         self.assertEqual(':delete_test', rts_call_args[0][1]['codename'])
         self.assertIn('test_delete', rts_call_args[0][1]['name'])
 

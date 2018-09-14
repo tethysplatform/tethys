@@ -27,9 +27,8 @@ class UrlMapBase(object):
           name (str): Name of the url map. Letters and underscores only (_).
           url (str): Url pattern to map to the controller.
           controller (str): Dot-notation path to the controller.
-          regex (str or iterable, optional): Custom regex pattern(s) for url variables. If a string is provided,
-          it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
-        """
+          regex (str or iterable, optional): Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
+        """  # noqa: E501
         # Validate
         if regex and (not isinstance(regex, basestring) and not isinstance(regex, tuple)
                       and not isinstance(regex, list)):

@@ -163,11 +163,9 @@ class TethysWorkspace(object):
             workspace.remove('/full/path/to/directory')
             workspace.remove('relative/path/to/directory')
 
-        **Note:** Though you can specify relative paths, the ``remove()`` method will not allow you to back into other
-        directories using "../" or similar notation. Futhermore, absolute paths given must contain the path of the
-        workspace to be valid.
+        **Note:** Though you can specify relative paths, the ``remove()`` method will not allow you to back into other directories using "../" or similar notation. Futhermore, absolute paths given must contain the path of the workspace to be valid.
 
-        """
+        """  # noqa: E501
         # Sanitize to prevent backing into other directories or entering the home directory
         full_path = item.replace('../', '').replace('./', '').replace('..\\', '').\
             replace('.\\', '').replace('~/', '').replace('~\\', '')

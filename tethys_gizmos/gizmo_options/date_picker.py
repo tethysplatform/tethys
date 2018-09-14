@@ -14,9 +14,7 @@ __all__ = ['DatePicker']
 
 class DatePicker(TethysGizmoOptions):
     """
-    Date pickers are used to make the input of dates streamlined and easy. Rather than typing the date, the user is
-    presented with a calendar to select the date. This date picker was implemented using `Bootstrap Datepicker
-    <http://bootstrap-datepicker.readthedocs.org/en/release/index.html>`_.
+    Date pickers are used to make the input of dates streamlined and easy. Rather than typing the date, the user is  presented with a calendar to select the date. This date picker was implemented using `Bootstrap Datepicker <http://bootstrap-datepicker.readthedocs.org/en/release/index.html>`_.
 
     Attributes:
         name (str, required): Name of the input element that will be used for form submission.
@@ -24,11 +22,9 @@ class DatePicker(TethysGizmoOptions):
         autoclose (bool): Set whether datepicker auto closes when a date is selected.
         calendar_weeks (bool): Set whether calendar week numbers are shown on the left of the datepicker.
         clear_button (bool): Set whether the clear button is displayed or not.
-        days_of_week_disabled (str): Days of the week that are disabled 0-6 with 0 being Sunday and 6 being Saturday.
-                                     Multiple days are comma separated (e.g.: '0,6').
+        days_of_week_disabled (str): Days of the week that are disabled 0-6 with 0 being Sunday and 6 being Saturday. Multiple days are comma separated (e.g.: '0,6').
         end_date (str): Last date that can be selected. All other dates after this date are shown as disabled.
-        format (str): String representing date format. For valid formats see Bootstrap Datepicker documentation `here
-                      <http://bootstrap-datepicker.readthedocs.org/en/release/options.html#format>`_.
+        format (str): String representing date format. For valid formats see Bootstrap Datepicker documentation `here <http://bootstrap-datepicker.readthedocs.org/en/release/options.html#format>`_.
         min_view_mode (str): Set the minimum view mode. Possible values are 'days', 'months', 'years'.
         multidate (int): Enables multi-selection of dates up to the number given.
         start_date (str): First date that can be selected. All other dates before this date are shown as disabled.
@@ -39,8 +35,7 @@ class DatePicker(TethysGizmoOptions):
         initial (str): Initial date to appear in date picker.
         disabled (bool): Disabled state of the date picker.
         error (str): Error message for form validation.
-        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element
-                          (e.g. {"onclick": "run_me();"}).
+        attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
 
     Controller Example
@@ -79,7 +74,7 @@ class DatePicker(TethysGizmoOptions):
         {% gizmo date_picker %}
         {% gizmo date_picker_error %}
 
-    """
+    """  # noqa: E501
     gizmo_name = "date_picker"
 
     def __init__(self, name, display_text='', autoclose=False, calendar_weeks=False, clear_button=False,

@@ -46,16 +46,13 @@ class HandoffManager(object):
         Gets a list of the valid handoff handlers.
 
         Args:
-            app_name (str, optional): The name of another app whose capabilities should be listed.
-            Defaults to None in which case the capabilities of the current app will be listed.
-            external_only (bool, optional): If True only return handlers where the internal attribute is False.
-            Default is False.
+            app_name (str, optional): The name of another app whose capabilities should be listed. Defaults to None in which case the capabilities of the current app will be listed.
+            external_only (bool, optional): If True only return handlers where the internal attribute is False. Default is False.
             jsonify (bool, optional): If True return the JSON representation of the handlers is used. Default is False.
 
         Returns:
-            A list of valid HandoffHandler objects (or a JSON string if jsonify=True) representing the capabilities of
-            app_name, or None if no app with app_name is found.
-        """
+            A list of valid HandoffHandler objects (or a JSON string if jsonify=True) representing the capabilities of app_name, or None if no app with app_name is found.
+        """  # noqa: E501
         manager = self._get_handoff_manager_for_app(app_name)
 
         if manager:
@@ -75,13 +72,11 @@ class HandoffManager(object):
 
         Args:
             handler_name (str): the name of a HandoffHandler object.
-            app_name (str, optional): the name of the app with handler_name. Defaults to None in which case the
-            current app will be used.
+            app_name (str, optional): the name of the app with handler_name. Defaults to None in which case the current app will be used.
 
         Returns:
-            A HandoffHandler object where the name attribute is equal to handler_name or None if no HandoffHandler
-            with that name is found or no app with app_name is found.
-        """
+            A HandoffHandler object where the name attribute is equal to handler_name or None if no HandoffHandler with that name is found or no app with app_name is found.
+        """  # noqa: E501
         manager = self._get_handoff_manager_for_app(app_name)
 
         if manager:
@@ -96,13 +91,12 @@ class HandoffManager(object):
         Args:
             request (HttpRequest): The request object passed by the http call.
             handler_name (str): The name of the HandoffHandler object to handle the handoff. Must not be internal.
-            app_name (str, optional): The name of another app where the handler should exist. Defaults to None in
-            which case the current app will attempt to handle the handoff.
+            app_name (str, optional): The name of another app where the handler should exist. Defaults to None in which case the current app will attempt to handle the handoff.
             **kwargs: Key-value pairs to be passed on to the handler.
 
         Returns:
             HttpResponse object.
-        """
+        """  # noqa: E501
 
         error = {"message": "",
                  "code": 400,
@@ -131,12 +125,11 @@ class HandoffManager(object):
         Returns the app manager for app with package == app_name if that app is installed.
 
         Args:
-            app_name (str): The name of another Tethys app whose HandoffManager should be returned.
-            If None then self is returned.
+            app_name (str): The name of another Tethys app whose HandoffManager should be returned. If None then self is returned.
 
         Returns:
             A HandoffManager object for the app with the name app_name or None if no app with that name is found.
-        """
+        """  # noqa: E501
         if not app_name:
             return self
 
@@ -192,11 +185,9 @@ class HandoffHandler(TethysFunctionExtractor):
 
     Attributes:
       name(str): Name of the handoff handler.
-      handler(str): Path to the handler function for the handoff interaction. Use dot-notation
-      (e.g.: "foo.bar.function").
-      internal(bool, optional): Specifies that the handler is only for internal (i.e. within the same Tethys server)
-      purposes.
-    """
+      handler(str): Path to the handler function for the handoff interaction. Use dot-notation (e.g.: "foo.bar.function").
+      internal(bool, optional): Specifies that the handler is only for internal (i.e. within the same Tethys server) purposes.
+    """  # noqa: E501
 
     def __init__(self, name, handler, internal=False):
         """

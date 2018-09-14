@@ -238,9 +238,8 @@ class CondorBase(TethysJob):
     @property
     def condor_object(self):
         """
-        Returns: an instance of a condorpy job or condorpy workflow with scheduler, cluster_id, and remote_id
-        attributes set
-        """
+        Returns: an instance of a condorpy job or condorpy workflow with scheduler, cluster_id, and remote_id attributes set
+        """  # noqa: E501
         condor_object = self._condor_object
         condor_object._cluster_id = self.cluster_id
         condor_object._cwd = self.workspace

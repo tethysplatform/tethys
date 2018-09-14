@@ -33,11 +33,9 @@ def permission_required(*args, **kwargs):
 
     **Valid Kwargs:**
 
-    * **message: (string):** Override default message that is displayed to user when permission is denied.
-    Default message is "We're sorry, but you are not allowed to perform this operation.".
+    * **message: (string):** Override default message that is displayed to user when permission is denied. Default message is "We're sorry, but you are not allowed to perform this operation.".
     * **raise_exception (bool):** Raise 403 error if True. Defaults to False.
-    * **use_or (bool):** When multiple permissions are provided and this is True, use OR comparison rather than AND
-    comparison, which is default.
+    * **use_or (bool):** When multiple permissions are provided and this is True, use OR comparison rather than AND comparison, which is default.
 
     **Example:**
 
@@ -85,7 +83,7 @@ def permission_required(*args, **kwargs):
             \"""
             ...
 
-    """
+    """  # noqa: E501
 
     use_or = kwargs.pop('use_or', False)
     message = kwargs.pop('message', "We're sorry, but you are not allowed to perform this operation.")

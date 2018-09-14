@@ -44,10 +44,7 @@ class TethysBase(TethysBaseMixin):
 
     def url_maps(self):
         """
-        Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from
-        a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function
-        to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will
-        be done automatically.
+        Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically.
 
         Returns:
           iterable: A list or tuple of ``UrlMap`` objects.
@@ -74,7 +71,7 @@ class TethysBase(TethysBaseMixin):
                     )
 
                     return url_maps
-        """
+        """  # noqa: E501
         return []
 
     @property
@@ -159,10 +156,7 @@ class TethysExtensionBase(TethysBase):
 
     def url_maps(self):
         """
-        Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from
-        a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to
-        create the bound ``UrlMap`` class. If you generate your app project from the scaffold,
-        this will be done automatically.
+        Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically.
 
         Returns:
           iterable: A list or tuple of ``UrlMap`` objects.
@@ -189,7 +183,7 @@ class TethysExtensionBase(TethysBase):
                     )
 
                     return url_maps
-        """
+        """  # noqa: E501
         return []
 
     def sync_with_tethys_db(self):
@@ -319,8 +313,7 @@ class TethysAppBase(TethysBase):
         Override this method to define a persistent store service connections and databases for your app.
 
         Returns:
-          iterable: A list or tuple of ``PersistentStoreDatabaseSetting`` or ``PersistentStoreConnectionSetting``
-          objects.
+          iterable: A list or tuple of ``PersistentStoreDatabaseSetting`` or ``PersistentStoreConnectionSetting`` objects.
 
         **Example:**
 
@@ -367,7 +360,7 @@ class TethysAppBase(TethysBase):
                     )
 
                     return ps_settings
-        """
+        """  # noqa: E501
         return None
 
     def dataset_service_settings(self):
@@ -699,23 +692,17 @@ class TethysAppBase(TethysBase):
                     job_templates = (CondorJobTemplate(name='example',
                                                        parameters={'executable': '$(APP_WORKSPACE)/example_exe.py',
                                                                    'condorpy_template_name': 'vanilla_transfer_files',
-                                                                   'attributes': {'transfer_input_files':
-                                                                   ('../input_1.in', '../input_2.in'),
-                                                                                  'transfer_output_files':
-                                                                                  ('example_output1.out',
-                                                                                  'example_output2.out'),
+                                                                   'attributes': {'transfer_input_files': ('../input_1.in', '../input_2.in'),
+                                                                                  'transfer_output_files': ('example_output1.out', 'example_output2.out'),
                                                                                  },
                                                                    'scheduler': my_scheduler,
-                                                                   'remote_input_files':
-                                                                   ('$(APP_WORKSPACE)/example_exe.py',
-                                                                   '$(APP_WORKSPACE)/input_1.in', '$(USER_WORKSPACE)
-                                                                   /input_2.in'),
+                                                                   'remote_input_files': ('$(APP_WORKSPACE)/example_exe.py', '$(APP_WORKSPACE)/input_1.in', '$(USER_WORKSPACE)/input_2.in'),
                                                                   }
                                                       ),
                                     )
 
                     return job_templates
-        """
+        """  # noqa: E501
         return None
 
     @classmethod
@@ -823,8 +810,7 @@ class TethysAppBase(TethysBase):
         """
         # Find the path to the app project directory
         # Hint: cls is a child class of this class.
-        # Credits: http://stackoverflow.com/questions/4006102/
-        # is-possible-to-know-the-_path-of-the-file-of-a-subclass-in-python
+        # Credits: http://stackoverflow.com/questions/4006102/ is-possible-to-know-the-_path-of-the-file-of-a-subclass-in-python  # noqa: E501
         project_directory = os.path.dirname(sys.modules[cls.__module__].__file__)
         workspace_directory = os.path.join(project_directory, 'workspaces', 'app_workspace')
         return TethysWorkspace(workspace_directory)
@@ -1060,14 +1046,11 @@ class TethysAppBase(TethysBase):
 
         Args:
           db_name(string): Name of the persistent store that will be created.
-          connection_name(string|None): Name of persistent store connection or None if creating a test copy of an
-          existing persistent store (only while in the testing environment)
-          spatial(bool): Enable spatial extension on the database being created when True. Connection must have
-          superuser role. Defaults to False.
+          connection_name(string|None): Name of persistent store connection or None if creating a test copy of an existing persistent store (only while in the testing environment)
+          spatial(bool): Enable spatial extension on the database being created when True. Connection must have superuser role. Defaults to False.
           initializer(string): Dot-notation path to initializer function (e.g.: 'my_first_app.models.init_db').
           refresh(bool): Drop database if it exists and create again when True. Defaults to False.
-          force_first_time(bool): Call initializer function with "first_time" parameter forced to True,
-          even if this is not the first time intializing the persistent store database. Defaults to False.
+          force_first_time(bool): Call initializer function with "first_time" parameter forced to True, even if this is not the first time intializing the persistent store database. Defaults to False.
 
         Returns:
           bool: True if successful.
@@ -1084,7 +1067,7 @@ class TethysAppBase(TethysBase):
             if result:
                 engine = app.get_persistent_store_engine('example_db')
 
-        """
+        """  # noqa: E501
         # Get named persistent store service connection
         from tethys_apps.models import TethysApp
         from tethys_apps.models import PersistentStoreDatabaseSetting

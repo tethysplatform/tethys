@@ -30,8 +30,7 @@ To run any tests:
             }
         }
     4. Enter tethys test command.
-       The general form is:
-       "tethys test -f tethys_apps.tethysapp.<app_name>.<folder_name>.<file_name>.<class_name>.<function_name>"
+       The general form is: "tethys test -f tethys_apps.tethysapp.<app_name>.<folder_name>.<file_name>.<class_name>.<function_name>"
        See below for specific examples
 
         To run all tests across this app:
@@ -44,13 +43,12 @@ To run any tests:
             Test command: "tethys test -f tethys_apps.tethysapp.test_app.tests.tests.TestAppTestCase"
 
         To run only the test_if_tethys_platform_is_great function in the TestAppTestCase class:
-            Test command:
-            "tethys test -f tethys_apps.tethysapp.test_app.tests.tests.TestAppTestCase.test_if_tethys_platform_is_great"
+            Test command: "tethys test -f tethys_apps.tethysapp.test_app.tests.tests.TestAppTestCase.test_if_tethys_platform_is_great"
 
 To learn more about writing tests, see:
     https://docs.djangoproject.com/en/1.9/topics/testing/overview/#writing-tests
     https://docs.python.org/2.7/library/unittest.html#module-unittest
-"""
+"""  # noqa:E501
 
 
 class TestAppTestCase(TethysTestCase):

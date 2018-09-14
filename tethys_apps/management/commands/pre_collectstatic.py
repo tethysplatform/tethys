@@ -23,10 +23,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """
-        Symbolically link the static directories of each app into the static/public directory specified by
-        the STATIC_ROOT
+        Symbolically link the static directories of each app into the static/public directory specified by the STATIC_ROOT
         parameter of the settings.py. Do this prior to running Django's collectstatic method.
-        """
+        """  # noqa: E501
         if not settings.STATIC_ROOT:
             print('WARNING: Cannot find the STATIC_ROOT setting in the settings.py file. '
                   'Please provide the path to the static directory using the STATIC_ROOT setting and try again.')

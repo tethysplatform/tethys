@@ -12,7 +12,9 @@ class TethysPortalFormsTests(TestCase):
         CaptchaStore.generate_key()
         self.hashkey = CaptchaStore.objects.all()[0].hashkey
         self.response = CaptchaStore.objects.all()[0].response
-        self.user = User.objects.create_user(username='user_exist', email='foo_exist@aquaveo.com', password='glass_onion')
+        self.user = User.objects.create_user(username='user_exist',
+                                             email='foo_exist@aquaveo.com',
+                                             password='glass_onion')
 
     def tearDown(self):
         pass
@@ -231,7 +233,7 @@ class TethysPortalFormsTests(TestCase):
         # run is_valid to get cleaned_data attributes.
         self.assertTrue(user_password_change_form.is_valid())
 
-        ret = user_password_change_form.save()
+        user_password_change_form.save()
 
         # Also try to get from database after it's saved
         ret_new = User.objects.get(username='user_exist')
