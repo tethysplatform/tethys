@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from future.utils import python_2_unicode_compatible
 from django.db import models
 from django.core.exceptions import (ObjectDoesNotExist, ValidationError)
 from owslib.wps import WebProcessingService as WPS
@@ -96,7 +97,7 @@ class DatasetService(models.Model):
         verbose_name = 'Dataset Service'
         verbose_name_plural = 'Dataset Services'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_engine(self, request=None):
@@ -181,7 +182,10 @@ class WebProcessingService(models.Model):
         verbose_name = 'Web Processing Service'
         verbose_name_plural = 'Web Processing Services'
 
-    def __unicode__(self):
+    # def __unicode__(self):
+    #     return self.name
+
+    def __str__(self):
         return self.name
 
     def activate(self, wps):
@@ -245,7 +249,10 @@ class PersistentStoreService(models.Model):
         verbose_name = 'Persistent Store Service'
         verbose_name_plural = 'Persistent Store Services'
 
-    def __unicode__(self):
+    # def __unicode__(self):
+    #     return self.name
+
+    def __str__(self):
         return self.name
 
     def get_engine(self):
