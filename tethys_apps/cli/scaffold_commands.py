@@ -5,7 +5,7 @@ import random
 import shutil
 
 from django.template import Template, Context
-from cli_colors import pretty_output, FG_RED, FG_YELLOW, FG_WHITE
+from tethys_apps.cli.cli_colors import pretty_output, FG_RED, FG_YELLOW, FG_WHITE
 
 # Constants
 APP_PREFIX = 'tethysapp'

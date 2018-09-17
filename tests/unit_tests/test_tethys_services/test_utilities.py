@@ -8,7 +8,10 @@ from tethys_dataset_services.engines import HydroShareDatasetEngine
 from tethys_services.utilities import ensure_oauth2, initialize_engine_object, list_dataset_engines, \
     get_dataset_engine, list_spatial_dataset_engines, get_spatial_dataset_engine, abstract_is_link, activate_wps, \
     list_wps_service_engines, get_wps_service_engine
-from urllib2 import HTTPError, URLError
+try:
+    from urllib2 import HTTPError, URLError
+except ImportError:
+    from urllib.request import HTTPError, URLError
 
 
 @ensure_oauth2('hydroshare')

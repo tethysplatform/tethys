@@ -24,7 +24,7 @@ class UserFactory(factory.Factory):
         abstract = False
 
     username = factory.LazyAttribute(
-        lambda x: md5(datetime.datetime.now().strftime('%Y%,%d%H%M%S')).hexdigest()[0:30]
+        lambda x: md5(datetime.datetime.now().strftime('%Y%,%d%H%M%S').encode('utf-8')).hexdigest()[0:30]
     )
     email = factory.Sequence(lambda n: 'user{0}@example.com'.format(n))
 

@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from __future__ import print_function
 import re
 from abc import abstractmethod
 import logging
@@ -315,6 +316,7 @@ class CondorWorkflowTemplate(JobTemplate):
         job.save()
 
         node_dict = dict()
+
         def add_to_node_dict(node):
             if node not in node_dict:
                 node_dict[node] = node.create_node(job, app_workspace, user_workspace)

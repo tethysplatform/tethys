@@ -40,9 +40,10 @@ class TestJobManager(unittest.TestCase):
         self.assertEqual(mock_template1, ret.job_templates['template_1'])
         self.assertEqual(mock_template2, ret.job_templates['template_2'])
 
+    @mock.patch('tethys_compute.job_manager.print')
     @mock.patch('tethys_compute.job_manager.warnings')
     @mock.patch('tethys_compute.job_manager.JobManager.old_create_job')
-    def test_JobManager_create_job_template(self, mock_ocj, mock_warn):
+    def test_JobManager_create_job_template(self, mock_ocj, mock_warn, mock_print):
         mock_app = mock.MagicMock()
         mock_app.package = 'test_label'
         mock_app.get_app_workspace.return_value = 'test_app_workspace'
@@ -73,6 +74,7 @@ class TestJobManager(unittest.TestCase):
                     'See docs: <<link>>.'.format('template_1', 'test_label')
         rts_call_args = mock_warn.warn.call_args_list
         self.assertEqual(check_msg, rts_call_args[0][0][0])
+        mock_print.assert_called_with(check_msg)
 
     @mock.patch('tethys_compute.job_manager.CondorJob')
     def test_JobManager_create_job_template_none(self, mock_cj):

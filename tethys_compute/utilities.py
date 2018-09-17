@@ -10,7 +10,6 @@
 
 import json
 from django import forms
-from django.core import exceptions
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from future.utils import with_metaclass

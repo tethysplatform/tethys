@@ -13,7 +13,7 @@ class SettingTest(TethysTestCase):
         set_title = Setting.objects.get(name='Site Title')
 
         # Check result
-        self.assertEqual('Site Title', unicode(set_title))
+        self.assertEqual('Site Title', str(set_title))
 
     def test_Setting_str(self):
         set_title = Setting.objects.get(name='Site Title')
