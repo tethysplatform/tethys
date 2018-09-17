@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from __future__ import print_function
 import inspect
 import json
 from django.shortcuts import redirect
@@ -113,7 +114,7 @@ class HandoffManager(object):
                     urlish = handler(request, **kwargs)
                     return redirect(urlish)
                 except TypeError as e:
-                    error['message'] = "HTTP 400 Bad Request: {0}. ".format(e.message)
+                    error['message'] = "HTTP 400 Bad Request: {0}. ".format(str(e))
                     return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
 
         error['message'] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".\
