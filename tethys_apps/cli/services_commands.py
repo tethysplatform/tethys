@@ -5,6 +5,8 @@ from django.forms.models import model_to_dict
 from .cli_colors import BOLD, pretty_output, FG_RED, FG_GREEN
 from .cli_helpers import add_geoserver_rest_to_endpoint
 
+from builtins import input
+
 SERVICES_CREATE = 'create'
 SERVICES_CREATE_PERSISTENT = 'persistent'
 SERVICES_CREATE_SPATIAL = 'spatial'
@@ -69,9 +71,9 @@ def services_remove_persistent_command(args):
                 p.write('Successfully removed Persistent Store Service {0}!'.format(persistent_service_id))
             exit(0)
         else:
-            proceed = raw_input('Are you sure you want to delete this Persistent Store Service? [y/n]: ')
+            proceed = input('Are you sure you want to delete this Persistent Store Service? [y/n]: ')
             while proceed not in ['y', 'n', 'Y', 'N']:
-                proceed = raw_input('Please enter either "y" or "n": ')
+                proceed = input('Please enter either "y" or "n": ')
 
             if proceed in ['y', 'Y']:
                 service.delete()
@@ -155,9 +157,9 @@ def services_remove_spatial_command(args):
                 p.write('Successfully removed Spatial Dataset Service {0}!'.format(spatial_service_id))
             exit(0)
         else:
-            proceed = raw_input('Are you sure you want to delete this Persistent Store Service? [y/n]: ')
+            proceed = input('Are you sure you want to delete this Persistent Store Service? [y/n]: ')
             while proceed not in ['y', 'n', 'Y', 'N']:
-                proceed = raw_input('Please enter either "y" or "n": ')
+                proceed = input('Please enter either "y" or "n": ')
 
             if proceed in ['y', 'Y']:
                 service.delete()

@@ -1,6 +1,6 @@
 from .cli_colors import FG_RED, FG_GREEN, FG_YELLOW, BOLD, pretty_output
 from django.core.exceptions import ObjectDoesNotExist
-
+from builtins import input
 
 def scheduler_create_command(args):
     from tethys_compute.models import Scheduler
@@ -74,9 +74,9 @@ def schedulers_remove_command(args):
             p.write('Successfully removed Scheduler "{0}"!'.format(name))
         exit(0)
     else:
-        proceed = raw_input('Are you sure you want to delete this Scheduler? [y/n]: ')
+        proceed = input('Are you sure you want to delete this Scheduler? [y/n]: ')
         while proceed not in ['y', 'n', 'Y', 'N']:
-            proceed = raw_input('Please enter either "y" or "n": ')
+            proceed = input('Please enter either "y" or "n": ')
 
         if proceed in ['y', 'Y']:
             scheduler.delete()
