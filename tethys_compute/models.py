@@ -473,7 +473,6 @@ class CondorPyWorkflow(models.Model):
 
     @max_jobs.setter
     def max_jobs(self, max_jobs):
-        # TODO: Add setter to max_jobs in condorpy? Don't set max_jobs?
         self.condorpy_workflow._max_jobs = max_jobs
         self._max_jobs = max_jobs
 
@@ -646,21 +645,6 @@ class CondorWorkflowJobNode(CondorWorkflowNode, CondorPyJob):
     """
     CondorWorkflow JOB type node
     """
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize both CondorWorkflowNode and CondorPyJob
-
-        Args:
-            name:
-            workflow:
-            attributes:
-            num_jobs:
-            remote_input_files:
-        """
-        CondorPyJob.__init__(self, *args, **kwargs)
-        # CondorWorkflowNode will choke if condorpy_template_name is in kwargs
-        kwargs.pop('condorpy_template_name', None)
-        CondorWorkflowNode.__init__(self, *args, **kwargs)
 
     @property
     def type(self):

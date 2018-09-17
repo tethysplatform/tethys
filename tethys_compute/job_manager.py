@@ -69,7 +69,7 @@ class JobManager(object):
             A new job object of the type specified by job_type.
         """
         if template_name is not None:
-            msg = 'The job template "{0}" was used in the "{1}" app. Using job templates is now depreciated. ' \
+            msg = 'The job template "{0}" was used in the "{1}" app. Using job templates is now deprecated. ' \
                   'See docs: <<link>>.'\
                 .format(template_name, self.app.package)
             warnings.warn(msg, DeprecationWarning)
