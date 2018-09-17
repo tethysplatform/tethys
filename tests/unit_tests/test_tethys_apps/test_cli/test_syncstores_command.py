@@ -1,7 +1,3 @@
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
 import unittest
 import mock
 
@@ -91,13 +87,13 @@ class SyncstoresCommandTests(unittest.TestCase):
         self.assertIn('WARNING', po_call_args[0][0][0])
         self.assertIn('Invalid option. Do you wish to continue?', po_call_args[1][0][0])
 
-    @mock.patch('sys.stdout', new_callable=StringIO)
+    @mock.patch('tethys_apps.cli.syncstores_command.print')
     @mock.patch('tethys_apps.cli.syncstores_command.exit')
     @mock.patch('tethys_apps.cli.syncstores_command.input')
     @mock.patch('tethys_apps.cli.syncstores_command.subprocess.call')
     @mock.patch('tethys_apps.cli.syncstores_command.get_manage_path')
     def test_syncstores_command_refresh_exit(self, mock_get_manage_path, mock_subprocess_call, mock_input, mock_exit,
-                                             mock_stdout):
+                                             mock_print):
         mock_args = mock.MagicMock()
         mock_args.refresh = True
         mock_args.firsttime = False
@@ -113,7 +109,11 @@ class SyncstoresCommandTests(unittest.TestCase):
 
         mock_get_manage_path.assert_called_once()
         mock_subprocess_call.assert_not_called()
+
         po_call_args = mock_input.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertIn('WARNING', po_call_args[0][0][0])
-        self.assertIn('Operation cancelled by user.', mock_stdout.getvalue())
+
+        # Check print statement
+        rts_call_args = mock_print.call_args_list
+        self.assertIn('Operation cancelled by user.', rts_call_args[0][0][0])
