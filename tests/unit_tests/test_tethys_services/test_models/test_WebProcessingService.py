@@ -16,7 +16,7 @@ class WebProcessingServiceTests(TethysTestCase):
         wps = service_model.WebProcessingService(
             name='test_sds',
         )
-        self.assertEqual('test_sds', unicode(wps))
+        self.assertEqual('test_sds', str(wps))
 
     def test_activate(self):
         wps = service_model.WebProcessingService(

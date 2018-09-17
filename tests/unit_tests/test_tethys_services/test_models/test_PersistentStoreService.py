@@ -16,7 +16,7 @@ class PersistentStoreServiceTests(TethysTestCase):
             username='foo',
             password='pass'
         )
-        self.assertEqual('test_pss', unicode(pss))
+        self.assertEqual('test_pss', str(pss))
 
     @mock.patch('sqlalchemy.engine.url.URL')
     def test_get_url(self, mock_url):

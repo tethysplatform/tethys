@@ -16,7 +16,8 @@ class DatasetServiceTests(TethysTestCase):
         ds = service_model.DatasetService(
             name='test_ds',
         )
-        self.assertEqual('test_ds', unicode(ds))
+
+        self.assertEqual('test_ds', str(ds))
 
     @mock.patch('tethys_services.models.HydroShareDatasetEngine')
     def test_get_engine_hydroshare(self, mock_hsde):
