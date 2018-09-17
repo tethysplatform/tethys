@@ -113,7 +113,7 @@ def validate_numeric_cli_input(value, default=None, max=None):
             continue
 
         if max is not None:
-            if float(value) > max:
+            if float(value) > float(max):
                 if default is not None:
                     value = input('Maximum allowed value is {0} [{1}]: '.format(max, default))
                 else:
