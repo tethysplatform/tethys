@@ -1,4 +1,7 @@
-import cStringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 import unittest
 import mock
 
@@ -88,7 +91,7 @@ class SyncstoresCommandTests(unittest.TestCase):
         self.assertIn('WARNING', po_call_args[0][0][0])
         self.assertIn('Invalid option. Do you wish to continue?', po_call_args[1][0][0])
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.syncstores_command.exit')
     @mock.patch('tethys_apps.cli.syncstores_command.input')
     @mock.patch('tethys_apps.cli.syncstores_command.subprocess.call')

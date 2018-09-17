@@ -1,7 +1,10 @@
-import cStringIO
 import sys
 import unittest
 import mock
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 from tethys_apps.cli import tethys_command
 
@@ -60,7 +63,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertTrue(call_args[0][0][0].extension)
         self.assertTrue(call_args[0][0][0].use_defaults)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.scaffold_command')
     def test_scaffold_subcommand_help(self, mock_scaffold_command, mock_exit, mock_stdout):
@@ -145,7 +148,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual('apache', call_args[0][0][0].type)
         self.assertEqual('9', call_args[0][0][0].uwsgi_processes)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.generate_command')
     def test_generate_subcommand_help(self, mock_gen_command, mock_exit, mock_stdout):
@@ -305,7 +308,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(False, call_args[0][0][0].noinput)
         self.assertEqual(None, call_args[0][0][0].port)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.manage_command')
     def test_manage_subcommand_help(self, mock_manage_command, mock_exit, mock_stdout):
@@ -358,7 +361,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual('private_foo_path', call_args[0][0][0].private_key_path)
         self.assertEqual('foo_user', call_args[0][0][0].username)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.scheduler_create_command')
     def test_scheduler_create_command_help(self, mock_scheduler_create_command, mock_exit, mock_stdout):
@@ -388,7 +391,7 @@ class TethysCommandTests(unittest.TestCase):
 
         mock_scheduler_list_command.assert_called()
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.schedulers_list_command')
     def test_scheduler_list_command_help(self, mock_scheduler_list_command, mock_exit, mock_stdout):
@@ -439,7 +442,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(True, call_args[0][0][0].force)
         self.assertEqual('foo_name', call_args[0][0][0].scheduler_name)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.schedulers_remove_command')
     def test_scheduler_list_command_help_2(self, mock_scheduler_remove_command, mock_exit, mock_stdout):
@@ -492,7 +495,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(True, call_args[0][0][0].force)
         self.assertEqual('foo_service_uid', call_args[0][0][0].service_uid)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.services_remove_persistent_command')
     def test_services_remove_persistent_command_help(self, mock_services_remove_persistent_command, mock_exit,
@@ -546,7 +549,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(True, call_args[0][0][0].force)
         self.assertEqual('foo_service_uid', call_args[0][0][0].service_uid)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.services_remove_spatial_command')
     def test_services_remove_spatial_command_help(self, mock_services_remove_spatial_command, mock_exit, mock_stdout):
@@ -588,7 +591,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual('foo:pass@foo.bar:5555', call_args[0][0][0].connection)
         self.assertEqual('foo_name', call_args[0][0][0].name)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.services_create_persistent_command')
     def test_services_create_persistent_command_help(self, mock_services_create_persistent_command, mock_exit,
@@ -636,7 +639,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual('foo_name', call_args[0][0][0].name)
         self.assertEqual('foo.bar:1234', call_args[0][0][0].public_endpoint)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.services_create_spatial_command')
     def test_services_create_spatial_command_help(self, mock_services_create_spatial_command, mock_exit,
@@ -692,7 +695,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(False, call_args[0][0][0].persistent)
         self.assertEqual(True, call_args[0][0][0].spatial)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.services_list_command')
     def test_services_list_command_help(self, mock_services_list_command, mock_exit, mock_stdout):
@@ -720,7 +723,7 @@ class TethysCommandTests(unittest.TestCase):
         call_args = mock_app_settings_list_command.call_args_list
         self.assertEqual('foo_app', call_args[0][0][0].app)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.app_settings_list_command')
     def test_app_settings_list_command_help(self, mock_app_settings_list_command, mock_exit, mock_stdout):
@@ -774,7 +777,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(False, call_args[0][0][0].required)
         self.assertEqual(True, call_args[0][0][0].spatial)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.app_settings_create_ps_database_command')
     def test_app_settings_create_command_help(self, mock_app_settings_create_command, mock_exit, mock_stdout):
@@ -822,7 +825,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(True, call_args[0][0][0].force)
         self.assertEqual('foo', call_args[0][0][0].name)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.app_settings_remove_command')
     def test_app_settings_create_command_help_2(self, mock_app_settings_remove_command, mock_exit, mock_stdout):
@@ -852,7 +855,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual('spatial:foo_service', call_args[0][0][0].service)
         self.assertEqual('foo_package:database:foo_2', call_args[0][0][0].setting)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.link_command')
     def test_link_command_help(self, mock_link_command, mock_exit, mock_stdout):
@@ -914,7 +917,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(True, call_args[0][0][0].gui)
         self.assertEqual(True, call_args[0][0][0].unit)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.tstc')
     def test_test_command_help(self, mock_test_command, mock_exit, mock_stdout):
@@ -970,7 +973,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual('foo_ext', call_args[0][0][0].app_or_extension)
         self.assertEqual(True, call_args[0][0][0].is_extension)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.uc')
     def test_uninstall_command_help(self, mock_uninstall_command, mock_exit, mock_stdout):
@@ -996,7 +999,7 @@ class TethysCommandTests(unittest.TestCase):
 
         mock_list_command.assert_called()
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.lc')
     def test_list_command_help(self, mock_list_command, mock_exit, mock_stdout):
@@ -1092,7 +1095,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual('/foo/bar/manage.py', call_args[0][0][0].manage)
         self.assertEqual(True, call_args[0][0][0].refresh)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.syc')
     def test_syncstores_command_help(self, mock_syncstores_command, mock_exit, mock_stdout):
@@ -1154,7 +1157,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(None, call_args[0][0][0].containers)
         self.assertEqual(True, call_args[0][0][0].defaults)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     @mock.patch('tethys_apps.cli.docker_command')
     def test_docker_command_help(self, mock_docker_command, mock_exit, mock_stdout):

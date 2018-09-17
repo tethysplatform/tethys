@@ -82,7 +82,19 @@ class SchedulerCommandsTest(unittest.TestCase):
         :param mock_pretty_output:  mock for pretty_output text
         :return:
         """
-        mock_scheduler.objects.all.return_value = [mock.MagicMock(), mock.MagicMock()]
+        mock_scheduler1 = mock.MagicMock(name='test1')
+        mock_scheduler1.name = 'test_name1'
+        mock_scheduler1.host = 'test_host1'
+        mock_scheduler1.username = 'test_user1'
+        mock_scheduler1.private_key_path = 'test_path1'
+        mock_scheduler1.private_key_pass = 'test_private_key_path1'
+        mock_scheduler2 = mock.MagicMock()
+        mock_scheduler2.name = 'test_name2'
+        mock_scheduler2.host = 'test_host2'
+        mock_scheduler2.username = 'test_user2'
+        mock_scheduler2.private_key_path = 'test_path2'
+        mock_scheduler2.private_key_pass = 'test_private_key_path2'
+        mock_scheduler.objects.all.return_value = [mock_scheduler1, mock_scheduler2]
         mock_args = mock.MagicMock()
         schedulers_list_command(mock_args)
 
@@ -142,7 +154,7 @@ class SchedulerCommandsTest(unittest.TestCase):
         self.assertEqual(1, len(po_call_args))
         self.assertIn('Successfully removed Scheduler', po_call_args[0][0][0])
 
-    @mock.patch('__builtin__.raw_input')
+    @mock.patch('tethys_apps.cli.scheduler_commands.input')
     @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
     @mock.patch('tethys_apps.cli.scheduler_commands.exit')
     @mock.patch('tethys_compute.models.Scheduler')
@@ -177,7 +189,7 @@ class SchedulerCommandsTest(unittest.TestCase):
         self.assertEqual('Are you sure you want to delete this Scheduler? [y/n]: ', po_call_args[0][0][0])
         self.assertEqual('Please enter either "y" or "n": ', po_call_args[1][0][0])
 
-    @mock.patch('__builtin__.raw_input')
+    @mock.patch('tethys_apps.cli.scheduler_commands.input')
     @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
     @mock.patch('tethys_apps.cli.scheduler_commands.exit')
     @mock.patch('tethys_compute.models.Scheduler')
@@ -212,7 +224,7 @@ class SchedulerCommandsTest(unittest.TestCase):
         self.assertEqual(1, len(po_call_args))
         self.assertEqual('Are you sure you want to delete this Scheduler? [y/n]: ', po_call_args[0][0][0])
 
-    @mock.patch('__builtin__.raw_input')
+    @mock.patch('tethys_apps.cli.scheduler_commands.input')
     @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
     @mock.patch('tethys_apps.cli.scheduler_commands.exit')
     @mock.patch('tethys_compute.models.Scheduler')

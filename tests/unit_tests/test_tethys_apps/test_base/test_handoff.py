@@ -1,4 +1,4 @@
-import cStringIO
+from __future__ import print_function
 import unittest
 import tethys_apps.base.handoff as tethys_handoff
 from types import FunctionType
@@ -153,9 +153,10 @@ class TestHandoffManager(unittest.TestCase):
         self.hm._get_handoff_manager_for_app = mock.MagicMock(return_value=manager)
 
         tethys_handoff.HandoffManager(app=app).handoff(request=request, handler_name='test_handler')
-        mock_hrbr.assert_called_with('{"status": "error", "message": "HTTP 400 Bad Request: test message. ",'
-                                     ' "code": 400, "handler_name": "test_handler", "app_name": "test_app_name"}',
-                                     content_type='application/javascript')
+        rts_call_args = mock_hrbr.call_args_list
+
+        # Check result
+        self.assertIn('HTTP 400 Bad Request: test message.', rts_call_args[0][0][0])
 
     @mock.patch('tethys_apps.base.handoff.HttpResponseBadRequest')
     def test_handoff_error(self, mock_hrbr):
@@ -178,13 +179,15 @@ class TestHandoffManager(unittest.TestCase):
         self.hm._get_handoff_manager_for_app = mock.MagicMock(return_value=manager)
 
         tethys_handoff.HandoffManager(app=app).handoff(request=request, handler_name='test_handler')
-        mock_hrbr.assert_called_with('{"status": "error", "message": "HTTP 400 Bad Request: No handoff handler'
-                                     ' \'test manager name\' for app \'test_handler\' found.", "code": 400,'
-                                     ' "handler_name": "test_handler", "app_name": "test_app_name"}',
-                                     content_type='application/javascript')
+        rts_call_args = mock_hrbr.call_args_list
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
-    def test_get_valid_handlers(self, mock_stdout):
+        # Check result
+        check_message = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found".\
+            format('test manager name', 'test_handler')
+        self.assertIn(check_message, rts_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.base.handoff.print')
+    def test_get_valid_handlers(self, mock_print):
         app = mock.MagicMock(package='test_app')
 
         # Mock handoff_handlers
@@ -204,8 +207,9 @@ class TestHandoffManager(unittest.TestCase):
         self.assertEqual('my_first_app.controllers.my_handler', result[0].handler)
         self.assertEqual('controllers:home', result[1].handler)
 
-        self.assertIn('"handoff:my_handler" is now deprecated.', mock_stdout.getvalue())
-
+        check_message ='DEPRECATION WARNING: The handler attribute of a HandoffHandler should now be in the form:' \
+                       ' "my_first_app.controllers.my_handler". The form "handoff:my_handler" is now deprecated.'
+        mock_print.assert_called_with(check_message)
 
 class TestHandoffHandler(unittest.TestCase):
     def setUp(self):

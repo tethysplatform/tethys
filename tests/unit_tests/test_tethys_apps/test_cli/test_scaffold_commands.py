@@ -1,9 +1,14 @@
 import unittest
 import mock
-import os
+import os, sys
 
 from tethys_apps.cli.scaffold_commands import proper_name_validator, get_random_color, theme_color_validator, \
     render_path, scaffold_command
+
+if sys.version_info[0] < 3:
+    callable_mock_path = '__builtin__.callable'
+else:
+    callable_mock_path = 'builtins.callable'
 
 
 class TestScaffoldCommands(unittest.TestCase):
@@ -101,7 +106,7 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertEquals('variable', ret)
 
     @mock.patch('tethys_apps.cli.scaffold_commands.logging.getLogger')
-    @mock.patch('__builtin__.callable')
+    @mock.patch(callable_mock_path)
     @mock.patch('tethys_apps.cli.scaffold_commands.get_random_color')
     @mock.patch('tethys_apps.cli.scaffold_commands.pretty_output')
     @mock.patch('tethys_apps.cli.scaffold_commands.os.path.isdir')
@@ -227,7 +232,7 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn('Template root directory', mock_log_call_args[3][0][0])
 
     @mock.patch('tethys_apps.cli.scaffold_commands.logging.getLogger')
-    @mock.patch('__builtin__.callable')
+    @mock.patch(callable_mock_path)
     @mock.patch('tethys_apps.cli.scaffold_commands.get_random_color')
     @mock.patch('tethys_apps.cli.scaffold_commands.pretty_output')
     @mock.patch('tethys_apps.cli.scaffold_commands.os.path.isdir')
@@ -313,7 +318,7 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertEquals('Rendering template: "/foo/bar/eggs"', mock_log_call_args[11][0][0])
 
     @mock.patch('tethys_apps.cli.scaffold_commands.logging.getLogger')
-    @mock.patch('__builtin__.callable')
+    @mock.patch(callable_mock_path)
     @mock.patch('tethys_apps.cli.scaffold_commands.get_random_color')
     @mock.patch('tethys_apps.cli.scaffold_commands.pretty_output')
     @mock.patch('tethys_apps.cli.scaffold_commands.os.path.isdir')
@@ -441,7 +446,7 @@ class TestScaffoldCommands(unittest.TestCase):
         self.assertIn('EXTENSION_PATH', mock_log_call_args[2][0][0])
 
     @mock.patch('tethys_apps.cli.scaffold_commands.logging.getLogger')
-    @mock.patch('__builtin__.callable')
+    @mock.patch(callable_mock_path)
     @mock.patch('tethys_apps.cli.scaffold_commands.get_random_color')
     @mock.patch('tethys_apps.cli.scaffold_commands.pretty_output')
     @mock.patch('tethys_apps.cli.scaffold_commands.os.path.isdir')
@@ -531,7 +536,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch('tethys_apps.cli.scaffold_commands.proper_name_validator')
     @mock.patch('tethys_apps.cli.scaffold_commands.input')
     @mock.patch('tethys_apps.cli.scaffold_commands.logging.getLogger')
-    @mock.patch('__builtin__.callable')
+    @mock.patch(callable_mock_path)
     @mock.patch('tethys_apps.cli.scaffold_commands.get_random_color')
     @mock.patch('tethys_apps.cli.scaffold_commands.pretty_output')
     @mock.patch('tethys_apps.cli.scaffold_commands.os.path.isdir')
@@ -630,7 +635,7 @@ class TestScaffoldCommands(unittest.TestCase):
     @mock.patch('tethys_apps.cli.scaffold_commands.proper_name_validator')
     @mock.patch('tethys_apps.cli.scaffold_commands.input')
     @mock.patch('tethys_apps.cli.scaffold_commands.logging.getLogger')
-    @mock.patch('__builtin__.callable')
+    @mock.patch(callable_mock_path)
     @mock.patch('tethys_apps.cli.scaffold_commands.get_random_color')
     @mock.patch('tethys_apps.cli.scaffold_commands.pretty_output')
     @mock.patch('tethys_apps.cli.scaffold_commands.os.path.isdir')
@@ -1200,8 +1205,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         # mocking the validate template call return value
         mock_os_path_isdir.return_value = [True, True]
-
-        mock_template.side_effect = UnicodeDecodeError('foo', 'bar', 1, 2, 'baz')
+        mock_template.side_effect = UnicodeDecodeError('foo', 'bar'.encode(), 1, 2, 'baz')
 
         mock_template_context = mock.MagicMock()
 

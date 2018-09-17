@@ -1,8 +1,11 @@
-import cStringIO
 import unittest
 import mock
 
 from tethys_apps.cli.list_command import list_command
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 
 class ListCommandTests(unittest.TestCase):
@@ -13,7 +16,7 @@ class ListCommandTests(unittest.TestCase):
     def tearDown(self):
         pass
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.list_command.get_installed_tethys_extensions')
     @mock.patch('tethys_apps.cli.list_command.get_installed_tethys_apps')
     def test_list_command_installed_apps(self, mock_installed_apps, mock_installed_extensions, mock_stdout):
@@ -30,7 +33,7 @@ class ListCommandTests(unittest.TestCase):
         self.assertNotIn('Extensions:', mock_stdout.getvalue())
         self.assertNotIn('baz', mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.list_command.get_installed_tethys_extensions')
     @mock.patch('tethys_apps.cli.list_command.get_installed_tethys_apps')
     def test_list_command_installed_extensions(self, mock_installed_apps, mock_installed_extensions, mock_stdout):
@@ -46,7 +49,7 @@ class ListCommandTests(unittest.TestCase):
         self.assertIn('Extensions:', mock_stdout.getvalue())
         self.assertIn('baz', mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.list_command.get_installed_tethys_extensions')
     @mock.patch('tethys_apps.cli.list_command.get_installed_tethys_apps')
     def test_list_command_installed_both(self, mock_installed_apps, mock_installed_extensions, mock_stdout):

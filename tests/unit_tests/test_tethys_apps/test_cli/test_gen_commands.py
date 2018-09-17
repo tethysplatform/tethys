@@ -1,10 +1,13 @@
-import cStringIO
 import unittest
 import mock
 import tethys_apps.cli.gen_commands
 from tethys_apps.cli.gen_commands import get_environment_value, get_settings_value, generate_command
 from tethys_apps.cli.gen_commands import GEN_SETTINGS_OPTION, GEN_NGINX_OPTION, GEN_UWSGI_SERVICE_OPTION,\
                                          GEN_UWSGI_SETTINGS_OPTION
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 
 class CLIGenCommandsTest(unittest.TestCase):
@@ -148,7 +151,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.gen_commands.exit')
     @mock.patch('tethys_apps.cli.gen_commands.os.path.isdir')
     @mock.patch('tethys_apps.cli.gen_commands.get_environment_value')
@@ -176,7 +179,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.gen_commands.exit')
     @mock.patch('tethys_apps.cli.gen_commands.input')
     @mock.patch('tethys_apps.cli.gen_commands.get_environment_value')

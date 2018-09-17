@@ -1,4 +1,7 @@
-import cStringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 import unittest
 import mock
 
@@ -137,7 +140,7 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertEqual(1, len(po_call_args))
         self.assertIn('Successfully removed Persistent Store Service', po_call_args[0][0][0])
 
-    @mock.patch('__builtin__.raw_input')
+    @mock.patch('tethys_apps.cli.services_commands.input')
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_apps.cli.services_commands.exit')
     @mock.patch('tethys_services.models.PersistentStoreService')
@@ -173,7 +176,7 @@ class ServicesCommandsTest(unittest.TestCase):
                          po_call_args[0][0][0])
         self.assertEqual('Please enter either "y" or "n": ', po_call_args[1][0][0])
 
-    @mock.patch('__builtin__.raw_input')
+    @mock.patch('tethys_apps.cli.services_commands.input')
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_apps.cli.services_commands.exit')
     @mock.patch('tethys_services.models.PersistentStoreService')
@@ -350,7 +353,7 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertEqual(1, len(po_call_args))
         self.assertIn('Successfully removed Spatial Dataset Service', po_call_args[0][0][0])
 
-    @mock.patch('__builtin__.raw_input')
+    @mock.patch('tethys_apps.cli.services_commands.input')
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_apps.cli.services_commands.exit')
     @mock.patch('tethys_services.models.SpatialDatasetService')
@@ -386,7 +389,7 @@ class ServicesCommandsTest(unittest.TestCase):
                          po_call_args[0][0][0])
         self.assertEqual('Please enter either "y" or "n": ', po_call_args[1][0][0])
 
-    @mock.patch('__builtin__.raw_input')
+    @mock.patch('tethys_apps.cli.services_commands.input')
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_apps.cli.services_commands.exit')
     @mock.patch('tethys_services.models.SpatialDatasetService')
@@ -420,7 +423,7 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertEqual('Are you sure you want to delete this Persistent Store Service? [y/n]: ',
                          po_call_args[0][0][0])
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.PersistentStoreService')
     @mock.patch('tethys_services.models.SpatialDatasetService')
@@ -485,7 +488,7 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertEqual(b, mock_stdout.getvalue().count(self.my_dict['apikey']))
         self.assertEqual(0, mock_stdout.getvalue().count('None'))
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     @mock.patch('tethys_apps.cli.services_commands.model_to_dict')
@@ -537,7 +540,7 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['apikey']))
         self.assertEqual(0, mock_stdout.getvalue().count('None'))
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.PersistentStoreService')
     @mock.patch('tethys_apps.cli.services_commands.model_to_dict')

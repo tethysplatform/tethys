@@ -180,7 +180,7 @@ class TestTethysExtensionBase(unittest.TestCase):
 
         # Check_result
         rts_call_args = mock_error.call_args_list
-        self.assertEqual('test_error', rts_call_args[0][0][0][0])
+        self.assertEqual('test_error', rts_call_args[0][0][0].args[0])
 
 
 class TestTethysAppBase(unittest.TestCase):
@@ -336,8 +336,14 @@ class TestTethysAppBase(unittest.TestCase):
         # Check if Permission in Permission.DoesNotExist is called
         rts_call_args = mock_dp.call_args_list
 
-        self.assertEqual(':delete_test', rts_call_args[0][1]['codename'])
-        self.assertIn('test_delete', rts_call_args[0][1]['name'])
+        codename_check = []
+        name_check = []
+        for i in [0, 1]:
+            codename_check.append(rts_call_args[i][1]['codename'])
+            name_check.append(rts_call_args[i][1]['name'])
+
+        self.assertIn(':create_test', codename_check)
+        self.assertIn(' | test_create', name_check)
 
         # Check if db_group.delete() is called
         db_group.delete.assert_called_with()
@@ -367,6 +373,7 @@ class TestTethysAppBase(unittest.TestCase):
 
         # Check if assign_perm(p, g, db_app) is called
         rts_call_args = mock_asg.call_args_list
+
         self.assertEqual(':create_test', rts_call_args[0][0][0])
         self.assertEqual('test_get', rts_call_args[0][0][2])
         self.assertEqual(':delete_test', rts_call_args[1][0][0])
