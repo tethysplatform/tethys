@@ -11,7 +11,7 @@ class TethysAppSettingTests(TethysTestCase):
         pass
 
     def test_unicode(self):
-        ret = unicode(self.test_app_setting)
+        ret = str(self.test_app_setting)
         self.assertEqual('primary_ckan', ret)
 
     def test_str(self):

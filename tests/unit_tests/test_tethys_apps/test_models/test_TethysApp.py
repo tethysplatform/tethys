@@ -55,7 +55,7 @@ class TethysAppTests(TethysTestCase):
         self.sds.delete()
 
     def test_unicode(self):
-        ret = unicode(self.test_app)
+        ret = str(self.test_app)
         self.assertEqual('Test App', ret)
 
     def test_str(self):
