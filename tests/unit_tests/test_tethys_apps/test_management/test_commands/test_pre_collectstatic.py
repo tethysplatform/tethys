@@ -1,4 +1,3 @@
-import cStringIO
 import unittest
 import mock
 
@@ -13,10 +12,10 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
     def tearDown(self):
         pass
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.exit')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.settings')
-    def test_handle_no_static_root(self, mock_settings, mock_exit, mock_stdout):
+    def test_handle_no_static_root(self, mock_settings, mock_exit, mock_print):
         mock_settings.STATIC_ROOT = None
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
         # to break the code execution, which we catch below.
@@ -25,10 +24,14 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         cmd = pre_collectstatic.Command()
         self.assertRaises(SystemExit, cmd.handle)
 
-        self.assertIn('WARNING: Cannot find the STATIC_ROOT setting', mock_stdout.getvalue())
-        self.assertIn('Please provide the path to the static directory', mock_stdout.getvalue())
+        print_args = mock_print.call_args_list
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+        msg_warning = 'WARNING: Cannot find the STATIC_ROOT setting in the settings.py file. Please provide the ' \
+                      'path to the static directory using the STATIC_ROOT setting and try again.'
+        self.assertEqual(msg_warning, print_args[0][0][0])
+
+
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.remove')
@@ -36,7 +39,7 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_apps')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.settings')
     def test_handle_public_not_static(self, mock_settings, mock_get_apps, mock_get_extensions, mock_os_remove,
-                                      mock_os_path_isdir, mock_os_symlink, mock_stdout):
+                                      mock_os_path_isdir, mock_os_symlink, mock_print):
         mock_settings.STATIC_ROOT = '/foo/testing/tests'
         mock_get_apps.return_value = {'foo_app': '/foo/testing/tests/foo_app'}
         mock_get_extensions.return_value = {'foo_extension': '/foo/testing/tests/foo_extension'}
@@ -56,20 +59,33 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_os_symlink.assert_any_call('/foo/testing/tests/foo_app/public', '/foo/testing/tests/foo_app')
         mock_os_symlink.assert_called_with('/foo/testing/tests/foo_extension/public',
                                            '/foo/testing/tests/foo_extension')
-        self.assertNotIn('WARNING: Cannot find the STATIC_ROOT setting', mock_stdout.getvalue())
-        self.assertNotIn('Please provide the path to the static directory', mock_stdout.getvalue())
-        self.assertIn('INFO: Linking static and public directories of apps and extensions to "{0}".'.
-                      format(mock_settings.STATIC_ROOT), mock_stdout.getvalue())
-        self.assertIn('INFO: Successfully linked public directory to STATIC_ROOT for app "foo_app".',
-                      mock_stdout.getvalue())
-        self.assertIn('INFO: Successfully linked public directory to STATIC_ROOT for app "foo_extension".',
-                      mock_stdout.getvalue())
-        self.assertNotIn('INFO: Successfully linked static directory to STATIC_ROOT for app "foo_app".',
-                         mock_stdout.getvalue())
-        self.assertNotIn('INFO: Successfully linked static directory to STATIC_ROOT for app "foo_extension".',
-                         mock_stdout.getvalue())
+        print_args = mock_print.call_args_list
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+        msg = 'INFO: Linking static and public directories of apps and extensions to "{0}".'\
+            . format(mock_settings.STATIC_ROOT)
+
+        msg_info_first = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_app".'
+
+        msg_info_second = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_extension".'
+
+        self.assertEqual(msg, print_args[0][0][0])
+
+        self.assertEqual(msg_info_first, print_args[1][0][0])
+
+        self.assertEqual(msg_info_second, print_args[2][0][0])
+
+        msg_warning_not_in = 'WARNING: Cannot find the STATIC_ROOT setting'
+        msg_not_in = 'Please provide the path to the static directory'
+        info_not_in_first = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_app".'
+        info_not_in_second = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_extension".'
+
+        for i in range(len(print_args)):
+            self.assertNotEquals(msg_warning_not_in, print_args[i][0][0])
+            self.assertNotEquals(msg_not_in, print_args[i][0][0])
+            self.assertNotEquals(info_not_in_first, print_args[i][0][0])
+            self.assertNotEquals(info_not_in_second, print_args[i][0][0])
+
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.shutil.rmtree')
@@ -79,7 +95,7 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.settings')
     def test_handle_public_not_static_Exceptions(self, mock_settings, mock_get_apps, mock_get_extensions,
                                                  mock_os_remove, mock_shutil_rmtree, mock_os_path_isdir,
-                                                 mock_os_symlink, mock_stdout):
+                                                 mock_os_symlink, mock_print):
         mock_settings.STATIC_ROOT = '/foo/testing/tests'
         mock_get_apps.return_value = {'foo_app': '/foo/testing/tests/foo_app'}
         mock_get_extensions.return_value = {'foo_extension': '/foo/testing/tests/foo_extension'}
@@ -102,20 +118,31 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_os_symlink.assert_any_call('/foo/testing/tests/foo_app/public', '/foo/testing/tests/foo_app')
         mock_os_symlink.assert_called_with('/foo/testing/tests/foo_extension/public',
                                            '/foo/testing/tests/foo_extension')
-        self.assertNotIn('WARNING: Cannot find the STATIC_ROOT setting', mock_stdout.getvalue())
-        self.assertNotIn('Please provide the path to the static directory', mock_stdout.getvalue())
-        self.assertIn('INFO: Linking static and public directories of apps and extensions to "{0}".'.
-                      format(mock_settings.STATIC_ROOT), mock_stdout.getvalue())
-        self.assertIn('INFO: Successfully linked public directory to STATIC_ROOT for app "foo_app".',
-                      mock_stdout.getvalue())
-        self.assertIn('INFO: Successfully linked public directory to STATIC_ROOT for app "foo_extension".',
-                      mock_stdout.getvalue())
-        self.assertNotIn('INFO: Successfully linked static directory to STATIC_ROOT for app "foo_app".',
-                         mock_stdout.getvalue())
-        self.assertNotIn('INFO: Successfully linked static directory to STATIC_ROOT for app "foo_extension".',
-                         mock_stdout.getvalue())
+        msg_infor_1 = 'INFO: Linking static and public directories of apps and extensions to "{0}".'\
+            .format(mock_settings.STATIC_ROOT)
+        msg_infor_2 = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_app".'
+        msg_infor_3 = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_extension".'
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+        warn_not_in = 'WARNING: Cannot find the STATIC_ROOT setting'
+        msg_not_in = 'Please provide the path to the static directory'
+        info_not_in_first = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_app".'
+        info_not_in_second = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_extension".'
+
+        print_args = mock_print.call_args_list
+
+        self.assertEqual(msg_infor_1, print_args[0][0][0])
+
+        self.assertEqual(msg_infor_2, print_args[1][0][0])
+
+        self.assertEqual(msg_infor_3, print_args[2][0][0])
+
+        for i in range(len(print_args)):
+            self.assertNotEquals(warn_not_in, print_args[i][0][0])
+            self.assertNotEquals(msg_not_in, print_args[i][0][0])
+            self.assertNotEquals(info_not_in_first, print_args[i][0][0])
+            self.assertNotEquals(info_not_in_second, print_args[i][0][0])
+
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.remove')
@@ -123,7 +150,7 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_apps')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.settings')
     def test_handle_not_public_static(self, mock_settings, mock_get_apps, mock_get_extensions, mock_os_remove,
-                                      mock_os_path_isdir, mock_os_symlink, mock_stdout):
+                                      mock_os_path_isdir, mock_os_symlink, mock_print):
         mock_settings.STATIC_ROOT = '/foo/testing/tests'
         mock_get_apps.return_value = {'foo_app': '/foo/testing/tests/foo_app'}
         mock_get_extensions.return_value = {'foo_extension': '/foo/testing/tests/foo_extension'}
@@ -143,20 +170,32 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_os_symlink.assert_any_call('/foo/testing/tests/foo_app/static', '/foo/testing/tests/foo_app')
         mock_os_symlink.assert_called_with('/foo/testing/tests/foo_extension/static',
                                            '/foo/testing/tests/foo_extension')
-        self.assertNotIn('WARNING: Cannot find the STATIC_ROOT setting', mock_stdout.getvalue())
-        self.assertNotIn('Please provide the path to the static directory', mock_stdout.getvalue())
-        self.assertIn('INFO: Linking static and public directories of apps and extensions to "{0}".'.
-                      format(mock_settings.STATIC_ROOT), mock_stdout.getvalue())
-        self.assertNotIn('INFO: Successfully linked public directory to STATIC_ROOT for app "foo_app".',
-                         mock_stdout.getvalue())
-        self.assertNotIn('INFO: Successfully linked public directory to STATIC_ROOT for app "foo_extension".',
-                         mock_stdout.getvalue())
-        self.assertIn('INFO: Successfully linked static directory to STATIC_ROOT for app "foo_app".',
-                      mock_stdout.getvalue())
-        self.assertIn('INFO: Successfully linked static directory to STATIC_ROOT for app "foo_extension".',
-                      mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+        msg_info_one = 'INFO: Linking static and public directories of apps and extensions to "{0}".'\
+            .format(mock_settings.STATIC_ROOT)
+        msg_info_two = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_app".'
+        msg_info_three = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_extension".'
+
+        warn_not_in = 'WARNING: Cannot find the STATIC_ROOT setting'
+        msg_not_in = 'Please provide the path to the static directory'
+        info_not_in_first = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_app".'
+        info_not_in_second = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_extension".'
+
+        print_args = mock_print.call_args_list
+
+        self.assertEqual(msg_info_one, print_args[0][0][0])
+
+        self.assertEqual(msg_info_two, print_args[1][0][0])
+
+        self.assertEqual(msg_info_three, print_args[2][0][0])
+
+        for i in range(len(print_args)):
+            self.assertNotEquals(warn_not_in, print_args[i][0][0])
+            self.assertNotEquals(msg_not_in, print_args[i][0][0])
+            self.assertNotEquals(info_not_in_first, print_args[i][0][0])
+            self.assertNotEquals(info_not_in_second, print_args[i][0][0])
+
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.remove')
@@ -164,7 +203,7 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_apps')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.settings')
     def test_handle_not_public_not_static(self, mock_settings, mock_get_apps, mock_get_extensions, mock_os_remove,
-                                          mock_os_path_isdir, mock_os_symlink, mock_stdout):
+                                          mock_os_path_isdir, mock_os_symlink, mock_print):
         mock_settings.STATIC_ROOT = '/foo/testing/tests'
         mock_get_apps.return_value = {'foo_app': '/foo/testing/tests/foo_app'}
         mock_get_extensions.return_value = {'foo_extension': '/foo/testing/tests/foo_extension'}
@@ -182,15 +221,24 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_app/static')
         mock_os_path_isdir.assert_called_with('/foo/testing/tests/foo_extension/static')
         mock_os_symlink.assert_not_called()
-        self.assertNotIn('WARNING: Cannot find the STATIC_ROOT setting', mock_stdout.getvalue())
-        self.assertNotIn('Please provide the path to the static directory', mock_stdout.getvalue())
-        self.assertIn('INFO: Linking static and public directories of apps and extensions to "{0}".'.
-                      format(mock_settings.STATIC_ROOT), mock_stdout.getvalue())
-        self.assertNotIn('INFO: Successfully linked public directory to STATIC_ROOT for app "foo_app".',
-                         mock_stdout.getvalue())
-        self.assertNotIn('INFO: Successfully linked public directory to STATIC_ROOT for app "foo_extension".',
-                         mock_stdout.getvalue())
-        self.assertNotIn('INFO: Successfully linked static directory to STATIC_ROOT for app "foo_app".',
-                         mock_stdout.getvalue())
-        self.assertNotIn('INFO: Successfully linked static directory to STATIC_ROOT for app "foo_extension".',
-                         mock_stdout.getvalue())
+        msg_info = 'INFO: Linking static and public directories of apps and extensions to "{0}".'\
+            .format(mock_settings.STATIC_ROOT)
+
+        warn_not_in = 'WARNING: Cannot find the STATIC_ROOT setting'
+        msg_not_in = 'Please provide the path to the static directory'
+        info_not_in_first = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_app".'
+        info_not_in_second = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_extension".'
+        info_not_in_third = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_app".'
+        info_not_in_fourth = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_extension".'
+
+        print_args = mock_print.call_args_list
+
+        self.assertEqual(msg_info, print_args[0][0][0])
+
+        for i in range(len(print_args)):
+            self.assertNotEquals(warn_not_in, print_args[i][0][0])
+            self.assertNotEquals(msg_not_in, print_args[i][0][0])
+            self.assertNotEquals(info_not_in_first, print_args[i][0][0])
+            self.assertNotEquals(info_not_in_second, print_args[i][0][0])
+            self.assertNotEquals(info_not_in_third, print_args[i][0][0])
+            self.assertNotEquals(info_not_in_fourth, print_args[i][0][0])

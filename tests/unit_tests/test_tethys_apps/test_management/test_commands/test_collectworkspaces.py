@@ -1,4 +1,3 @@
-import cStringIO
 import unittest
 import mock
 
@@ -23,10 +22,10 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         self.assertIn('--force', parser.format_help())
         self.assertIn('Force the overwrite the app directory', parser.format_help())
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('tethys_apps.management.commands.collectworkspaces.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.exit')
     @mock.patch('tethys_apps.management.commands.collectworkspaces.settings')
-    def test_collectworkspaces_handle_no_atts(self, mock_settings, mock_exit, mock_stdout):
+    def test_collectworkspaces_handle_no_atts(self, mock_settings, mock_exit, mock_print):
         mock_settings.TETHYS_WORKSPACES_ROOT = None
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
         # to break the code execution, which we catch below.
@@ -35,17 +34,18 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         cmd = collectworkspaces.Command()
         self.assertRaises(SystemExit, cmd.handle)
 
-        self.assertIn('WARNING: Cannot find the TETHYS_WORKSPACES_ROOT setting in the settings.py file.',
-                      mock_stdout.getvalue())
-        self.assertIn('Please provide the path to the static directory using the TETHYS_WORKSPACES_ROOT setting and '
-                      'try again.', mock_stdout.getvalue())
+        check_msg = 'WARNING: Cannot find the TETHYS_WORKSPACES_ROOT setting in the settings.py file. ' \
+                    'Please provide the path to the static directory using the TETHYS_WORKSPACES_ROOT ' \
+                    'setting and try again.'
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+        mock_print.assert_called_with(check_msg)
+
+    @mock.patch('tethys_apps.management.commands.collectworkspaces.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
     @mock.patch('tethys_apps.management.commands.collectworkspaces.get_installed_tethys_apps')
     @mock.patch('tethys_apps.management.commands.collectworkspaces.settings')
     def test_collectworkspaces_handle_no_force_not_dir(self, mock_settings, mock_get_apps, mock_os_path_isdir,
-                                                       mock_stdout):
+                                                       mock_print):
         mock_settings.TETHYS_WORKSPACES_ROOT = '/foo/workspace'
         mock_get_apps.return_value = {'foo_app': '/foo/testing/tests/foo_app'}
         mock_os_path_isdir.return_value = False
@@ -55,18 +55,24 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
 
         mock_get_apps.assert_called_once()
         mock_os_path_isdir.assert_called_once_with('/foo/testing/tests/foo_app/workspaces')
-        self.assertIn('INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.',
-                      mock_stdout.getvalue())
-        self.assertIn('WARNING: The workspace_path for app "foo_app" is not a directory. Skipping...',
-                      mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+        msg_info = 'INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.'
+
+        msg_warning = 'WARNING: The workspace_path for app "foo_app" is not a directory. Skipping...'
+
+        print_call_args = mock_print.call_args_list
+
+        self.assertEqual(msg_info, print_call_args[0][0][0])
+
+        self.assertEqual(msg_warning, print_call_args[1][0][0])
+
+    @mock.patch('tethys_apps.management.commands.collectworkspaces.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.islink')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
     @mock.patch('tethys_apps.management.commands.collectworkspaces.get_installed_tethys_apps')
     @mock.patch('tethys_apps.management.commands.collectworkspaces.settings')
     def test_collectworkspaces_handle_no_force_is_link(self, mock_settings, mock_get_apps, mock_os_path_isdir,
-                                                       mock_os_path_islink, mock_stdout):
+                                                       mock_os_path_islink, mock_print):
         mock_settings.TETHYS_WORKSPACES_ROOT = '/foo/workspace'
         mock_get_apps.return_value = {'foo_app': '/foo/testing/tests/foo_app'}
         mock_os_path_isdir.return_value = True
@@ -78,10 +84,10 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         mock_get_apps.assert_called_once()
         mock_os_path_isdir.assert_called_once_with('/foo/testing/tests/foo_app/workspaces')
         mock_os_path_islink.assert_called_once_with('/foo/testing/tests/foo_app/workspaces')
-        self.assertIn('INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.',
-                      mock_stdout.getvalue())
+        msg_in = 'INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.'
+        mock_print.assert_called_with(msg_in)
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('tethys_apps.management.commands.collectworkspaces.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.shutil.move')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.exists')
@@ -91,7 +97,7 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
     @mock.patch('tethys_apps.management.commands.collectworkspaces.settings')
     def test_collectworkspaces_handle_not_exists(self, mock_settings, mock_get_apps, mock_os_path_isdir,
                                                  mock_os_path_islink, mock_os_path_exists, mock_shutil_move,
-                                                 mock_os_symlink, mock_stdout):
+                                                 mock_os_symlink, mock_print):
         mock_settings.TETHYS_WORKSPACES_ROOT = '/foo/workspace'
         mock_get_apps.return_value = {'foo_app': '/foo/testing/tests/foo_app'}
         mock_os_path_isdir.side_effect = [True, True]
@@ -109,12 +115,17 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         mock_os_path_islink.assert_called_once_with('/foo/testing/tests/foo_app/workspaces')
         mock_os_path_exists.assert_called_once_with('/foo/workspace/foo_app')
         mock_shutil_move.assert_called_once_with('/foo/testing/tests/foo_app/workspaces', '/foo/workspace/foo_app')
-        self.assertIn('INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.',
-                      mock_stdout.getvalue())
-        self.assertIn('INFO: Successfully linked "workspaces" directory to TETHYS_WORKSPACES_ROOT for app "foo_app".',
-                      mock_stdout.getvalue())
+        msg_first_info = 'INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.'
+        msg_second_info = 'INFO: Successfully linked "workspaces" directory to ' \
+                          'TETHYS_WORKSPACES_ROOT for app "foo_app".'
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+        print_call_args = mock_print.call_args_list
+
+        self.assertEqual(msg_first_info, print_call_args[0][0][0])
+
+        self.assertEqual(msg_second_info, print_call_args[1][0][0])
+
+    @mock.patch('tethys_apps.management.commands.collectworkspaces.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.shutil.rmtree')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.shutil.move')
@@ -125,7 +136,7 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
     @mock.patch('tethys_apps.management.commands.collectworkspaces.settings')
     def test_collectworkspaces_handle_exists_no_force(self, mock_settings, mock_get_apps, mock_os_path_isdir,
                                                       mock_os_path_islink, mock_os_path_exists, mock_shutil_move,
-                                                      mock_os_symlink, mock_shutil_rmtree, mock_stdout):
+                                                      mock_os_symlink, mock_shutil_rmtree, mock_print):
         mock_settings.TETHYS_WORKSPACES_ROOT = '/foo/workspace'
         mock_get_apps.return_value = {'foo_app': '/foo/testing/tests/foo_app'}
         mock_os_path_isdir.side_effect = [True, True]
@@ -145,16 +156,24 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         mock_os_path_exists.assert_called_once_with('/foo/workspace/foo_app')
         mock_shutil_move.assert_not_called()
         mock_shutil_rmtree.called_once_with('/foo/workspace/foo_app', ignore_errors=True)
-        self.assertIn('INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.',
-                      mock_stdout.getvalue())
-        self.assertIn('WARNING: Workspace directory for app "foo_app" already exists in the TETHYS_WORKSPACES_ROOT '
-                      'directory. A symbolic link is being created to the existing directory. To force overwrite the '
-                      'existing directory, re-run the command with the "-f" argument.',
-                      mock_stdout.getvalue())
-        self.assertIn('INFO: Successfully linked "workspaces" directory to TETHYS_WORKSPACES_ROOT for app "foo_app".',
-                      mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+        msg_first_info = 'INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.'
+
+        msg_warning = 'WARNING: Workspace directory for app "foo_app" already exists in the ' \
+                      'TETHYS_WORKSPACES_ROOT directory. A symbolic link is being created to the existing directory. ' \
+                      'To force overwrite the existing directory, re-run the command with the "-f" argument.'
+        msg_second_info = 'INFO: Successfully linked "workspaces" directory to ' \
+                          'TETHYS_WORKSPACES_ROOT for app "foo_app".'
+
+        print_call_args = mock_print.call_args_list
+
+        self.assertEqual(msg_first_info, print_call_args[0][0][0])
+
+        self.assertEqual(msg_warning, print_call_args[1][0][0])
+
+        self.assertEqual(msg_second_info, print_call_args[2][0][0])
+
+    @mock.patch('tethys_apps.management.commands.collectworkspaces.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.remove')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.shutil.rmtree')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
@@ -167,7 +186,7 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
     def test_collectworkspaces_handle_exists_force_exception(self, mock_settings, mock_get_apps, mock_os_path_isdir,
                                                              mock_os_path_islink, mock_os_path_exists, mock_shutil_move,
                                                              mock_os_symlink, mock_shutil_rmtree, mock_os_remove,
-                                                             mock_stdout):
+                                                             mock_print):
         mock_settings.TETHYS_WORKSPACES_ROOT = '/foo/workspace'
         mock_get_apps.return_value = {'foo_app': '/foo/testing/tests/foo_app'}
         mock_os_path_isdir.side_effect = [True, True]
@@ -189,11 +208,21 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         mock_shutil_move.assert_called_once_with('/foo/testing/tests/foo_app/workspaces', '/foo/workspace/foo_app')
         mock_shutil_rmtree.called_once_with('/foo/testing/tests/foo_app/workspaces', ignore_errors=True)
         mock_os_remove.assert_called_once_with('/foo/workspace/foo_app')
-        self.assertIn('INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.',
-                      mock_stdout.getvalue())
-        self.assertNotIn('WARNING: Workspace directory for app "foo_app" already exists in the TETHYS_WORKSPACES_ROOT '
-                         'directory. A symbolic link is being created to the existing directory. To force overwrite '
-                         'the existing directory, re-run the command with the "-f" argument.',
-                         mock_stdout.getvalue())
-        self.assertIn('INFO: Successfully linked "workspaces" directory to TETHYS_WORKSPACES_ROOT for app "foo_app".',
-                      mock_stdout.getvalue())
+
+        msg_first_info = 'INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.'
+
+        msg_second_info = 'INFO: Successfully linked "workspaces" directory to ' \
+                          'TETHYS_WORKSPACES_ROOT for app "foo_app".'
+
+        msg_warning = 'WARNING: Workspace directory for app "foo_app" already exists in the TETHYS_WORKSPACES_ROOT ' \
+                      'directory. A symbolic link is being created to the existing directory. To force overwrite ' \
+                      'the existing directory, re-run the command with the "-f" argument.'
+
+        print_call_args = mock_print.call_args_list
+
+        self.assertEqual(msg_first_info, print_call_args[0][0][0])
+
+        self.assertEqual(msg_second_info, print_call_args[1][0][0])
+
+        for i in range(len(print_call_args)):
+            self.assertNotEquals(msg_warning, print_call_args[i][0][0])

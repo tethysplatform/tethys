@@ -18,10 +18,10 @@ class TestExceptions(unittest.TestCase):
         self.assertRaises(TethysAppSettingDoesNotExist, raise_exception, TethysAppSettingDoesNotExist, 'setting-type',
                           'setting-name', 'app-name')
         exc = TethysAppSettingDoesNotExist('setting-type', 'setting-name', 'app-name')
-        self.assertIn('setting-type', exc.message)
-        self.assertIn('setting-name', exc.message)
-        self.assertIn('app-name', exc.message)
-        self.assertIn('does not exist', exc.message)
+        self.assertIn('setting-type', str(exc))
+        self.assertIn('setting-name', str(exc))
+        self.assertIn('app-name', str(exc))
+        self.assertIn('does not exist', str(exc))
 
     def test_tethys_app_settign_not_assigned(self):
         self.assertRaises(TethysAppSettingNotAssigned, raise_exception, TethysAppSettingNotAssigned)
