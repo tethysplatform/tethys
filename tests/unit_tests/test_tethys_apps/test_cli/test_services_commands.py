@@ -423,13 +423,13 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertEqual('Are you sure you want to delete this Persistent Store Service? [y/n]: ',
                          po_call_args[0][0][0])
 
-    @mock.patch('sys.stdout', new_callable=StringIO)
+    @mock.patch('tethys_apps.cli.services_commands.print')
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.PersistentStoreService')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     @mock.patch('tethys_apps.cli.services_commands.model_to_dict')
     def test_services_list_command_not_spatial_not_persistent(self, mock_mtd, mock_spatial, mock_persistent,
-                                                              mock_pretty_output, mock_stdout):
+                                                              mock_pretty_output, mock_print):
         """
         Test for services_list_command
         Both spatial and persistent are not set, so both are processed
@@ -470,29 +470,24 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertIn('API Key', po_call_args[3][0][0])
 
         # Check text written with Python's print
-        a = len(mock_persistent.objects.order_by('id').all.return_value)
-        b = len(mock_spatial.objects.order_by('id').all.return_value)
-        self.assertIn(self.my_dict['id'], mock_stdout.getvalue())
-        self.assertIn(self.my_dict['name'], mock_stdout.getvalue())
-        self.assertIn(self.my_dict['host'], mock_stdout.getvalue())
-        self.assertIn(self.my_dict['port'], mock_stdout.getvalue())
-        self.assertIn(self.my_dict['endpoint'], mock_stdout.getvalue())
-        self.assertIn(self.my_dict['public_endpoint'], mock_stdout.getvalue())
-        self.assertIn(self.my_dict['apikey'], mock_stdout.getvalue())
-        self.assertEqual(a+b, mock_stdout.getvalue().count(self.my_dict['id']))
-        self.assertEqual(a+b, mock_stdout.getvalue().count(self.my_dict['name']))
-        self.assertEqual(a, mock_stdout.getvalue().count(self.my_dict['host']))
-        self.assertEqual(a, mock_stdout.getvalue().count(self.my_dict['port']))
-        self.assertEqual(b, mock_stdout.getvalue().count(self.my_dict['endpoint']))
-        self.assertEqual(b, mock_stdout.getvalue().count(self.my_dict['public_endpoint']))
-        self.assertEqual(b, mock_stdout.getvalue().count(self.my_dict['apikey']))
-        self.assertEqual(0, mock_stdout.getvalue().count('None'))
+        rts_call_args = mock_print.call_args_list
+        self.assertIn(self.my_dict['id'], rts_call_args[0][0][0])
+        self.assertIn(self.my_dict['name'], rts_call_args[0][0][0])
+        self.assertIn(self.my_dict['host'], rts_call_args[0][0][0])
+        self.assertIn(self.my_dict['port'], rts_call_args[0][0][0])
+        self.assertIn(self.my_dict['id'], rts_call_args[4][0][0])
+        self.assertIn(self.my_dict['name'], rts_call_args[4][0][0])
+        self.assertNotIn(self.my_dict['host'], rts_call_args[4][0][0])
+        self.assertNotIn(self.my_dict['port'], rts_call_args[4][0][0])
+        self.assertIn(self.my_dict['endpoint'], rts_call_args[4][0][0])
+        self.assertIn(self.my_dict['public_endpoint'], rts_call_args[4][0][0])
+        self.assertIn(self.my_dict['apikey'], rts_call_args[4][0][0])
 
-    @mock.patch('sys.stdout', new_callable=StringIO)
+    @mock.patch('tethys_apps.cli.services_commands.print')
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     @mock.patch('tethys_apps.cli.services_commands.model_to_dict')
-    def test_services_list_command_spatial(self, mock_mtd, mock_spatial, mock_pretty_output, mock_stdout):
+    def test_services_list_command_spatial(self, mock_mtd, mock_spatial, mock_pretty_output, mock_print):
         """
         Test for services_list_command
         Only spatial is set
@@ -523,28 +518,21 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertIn('API Key', po_call_args[1][0][0])
 
         # Check text written with Python's print
-        c = len(mock_spatial.objects.order_by('id').all.return_value)
-        self.assertIn(self.my_dict['id'], mock_stdout.getvalue())
-        self.assertIn(self.my_dict['name'], mock_stdout.getvalue())
-        self.assertNotIn(self.my_dict['host'], mock_stdout.getvalue())
-        self.assertNotIn(self.my_dict['port'], mock_stdout.getvalue())
-        self.assertIn(self.my_dict['endpoint'], mock_stdout.getvalue())
-        self.assertIn(self.my_dict['public_endpoint'], mock_stdout.getvalue())
-        self.assertIn(self.my_dict['apikey'], mock_stdout.getvalue())
-        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['id']))
-        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['name']))
-        self.assertEqual(0, mock_stdout.getvalue().count(self.my_dict['host']))
-        self.assertEqual(0, mock_stdout.getvalue().count(self.my_dict['port']))
-        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['endpoint']))
-        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['public_endpoint']))
-        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['apikey']))
-        self.assertEqual(0, mock_stdout.getvalue().count('None'))
+        rts_call_args = mock_print.call_args_list
 
-    @mock.patch('sys.stdout', new_callable=StringIO)
+        self.assertIn(self.my_dict['id'], rts_call_args[2][0][0])
+        self.assertIn(self.my_dict['name'], rts_call_args[2][0][0])
+        self.assertNotIn(self.my_dict['host'], rts_call_args[2][0][0])
+        self.assertNotIn(self.my_dict['port'], rts_call_args[2][0][0])
+        self.assertIn(self.my_dict['endpoint'], rts_call_args[2][0][0])
+        self.assertIn(self.my_dict['public_endpoint'], rts_call_args[2][0][0])
+        self.assertIn(self.my_dict['apikey'], rts_call_args[2][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.print')
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.PersistentStoreService')
     @mock.patch('tethys_apps.cli.services_commands.model_to_dict')
-    def test_services_list_command_persistent(self, mock_mtd, mock_persistent, mock_pretty_output, mock_stdout):
+    def test_services_list_command_persistent(self, mock_mtd, mock_persistent, mock_pretty_output, mock_print):
         """
         Test for services_list_command
         Only persistent is set
@@ -575,19 +563,12 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertNotIn('API Key', po_call_args[1][0][0])
 
         # Check text written with Python's print
-        c = len(mock_persistent.objects.order_by('id').all.return_value)
-        self.assertIn(self.my_dict['id'], mock_stdout.getvalue())
-        self.assertIn(self.my_dict['name'], mock_stdout.getvalue())
-        self.assertIn(self.my_dict['host'], mock_stdout.getvalue())
-        self.assertIn(self.my_dict['port'], mock_stdout.getvalue())
-        self.assertNotIn(self.my_dict['endpoint'], mock_stdout.getvalue())
-        self.assertNotIn(self.my_dict['public_endpoint'], mock_stdout.getvalue())
-        self.assertNotIn(self.my_dict['apikey'], mock_stdout.getvalue())
-        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['id']))
-        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['name']))
-        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['host']))
-        self.assertEqual(c, mock_stdout.getvalue().count(self.my_dict['port']))
-        self.assertEqual(0, mock_stdout.getvalue().count(self.my_dict['endpoint']))
-        self.assertEqual(0, mock_stdout.getvalue().count(self.my_dict['public_endpoint']))
-        self.assertEqual(0, mock_stdout.getvalue().count(self.my_dict['apikey']))
-        self.assertEqual(0, mock_stdout.getvalue().count('None'))
+        rts_call_args = mock_print.call_args_list
+
+        self.assertIn(self.my_dict['id'], rts_call_args[1][0][0])
+        self.assertIn(self.my_dict['name'], rts_call_args[1][0][0])
+        self.assertIn(self.my_dict['host'], rts_call_args[1][0][0])
+        self.assertIn(self.my_dict['port'], rts_call_args[1][0][0])
+        self.assertNotIn(self.my_dict['endpoint'], rts_call_args[1][0][0])
+        self.assertNotIn(self.my_dict['public_endpoint'], rts_call_args[1][0][0])
+        self.assertNotIn(self.my_dict['apikey'], rts_call_args[1][0][0])

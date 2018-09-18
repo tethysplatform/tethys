@@ -4,10 +4,6 @@ import tethys_apps.cli.gen_commands
 from tethys_apps.cli.gen_commands import get_environment_value, get_settings_value, generate_command
 from tethys_apps.cli.gen_commands import GEN_SETTINGS_OPTION, GEN_NGINX_OPTION, GEN_UWSGI_SERVICE_OPTION,\
                                          GEN_UWSGI_SETTINGS_OPTION
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
 
 
 class CLIGenCommandsTest(unittest.TestCase):
@@ -151,14 +147,14 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
 
-    @mock.patch('sys.stdout', new_callable=StringIO)
+    @mock.patch('tethys_apps.cli.gen_commands.print')
     @mock.patch('tethys_apps.cli.gen_commands.exit')
     @mock.patch('tethys_apps.cli.gen_commands.os.path.isdir')
     @mock.patch('tethys_apps.cli.gen_commands.get_environment_value')
     @mock.patch('tethys_apps.cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_apps.cli.gen_commands.os.path.isfile')
     def test_generate_command_uwsgi_settings_option_bad_directory(self, mock_os_path_isfile, mock_file, mock_env,
-                                                                  mock_os_path_isdir, mock_exit, mock_stdout):
+                                                                  mock_os_path_isdir, mock_exit, mock_print):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_UWSGI_SETTINGS_OPTION
         mock_args.directory = '/foo/temp'
@@ -174,19 +170,23 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_not_called()
         mock_file.assert_called_once()
         mock_os_path_isdir.assert_called_once_with(mock_args.directory)
-        self.assertIn('ERROR:', mock_stdout.getvalue())
-        self.assertIn('is not a valid directory', mock_stdout.getvalue())
+
+        # Check if print is called correctly
+        rts_call_args = mock_print.call_args_list
+        self.assertIn('ERROR: ', rts_call_args[0][0][0])
+        self.assertIn('is not a valid directory', rts_call_args[0][0][0])
+
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
 
-    @mock.patch('sys.stdout', new_callable=StringIO)
+    @mock.patch('tethys_apps.cli.gen_commands.print')
     @mock.patch('tethys_apps.cli.gen_commands.exit')
     @mock.patch('tethys_apps.cli.gen_commands.input')
     @mock.patch('tethys_apps.cli.gen_commands.get_environment_value')
     @mock.patch('tethys_apps.cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_apps.cli.gen_commands.os.path.isfile')
     def test_generate_command_uwsgi_settings_pre_existing_input_exit(self, mock_os_path_isfile, mock_file, mock_env,
-                                                                     mock_input, mock_exit, mock_stdout):
+                                                                     mock_input, mock_exit, mock_print):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_UWSGI_SETTINGS_OPTION
         mock_args.directory = None
@@ -202,8 +202,12 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
-        self.assertIn('Generation of', mock_stdout.getvalue())
-        self.assertIn('cancelled', mock_stdout.getvalue())
+
+        # Check if print is called correctly
+        rts_call_args = mock_print.call_args_list
+        self.assertIn('Generation of: ', rts_call_args[0][0][0])
+        self.assertIn('cancelled', rts_call_args[0][0][0])
+
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
 

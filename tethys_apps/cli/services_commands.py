@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from django.forms.models import model_to_dict
