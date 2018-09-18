@@ -1,4 +1,7 @@
-import cStringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 import unittest
 import mock
 
@@ -42,7 +45,7 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
         mock_warnings.assert_called_once()
 
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.exit')
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.input')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_extensions')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_apps')
@@ -65,7 +68,7 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.shutil.rmtree')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.subprocess.Popen')
     @mock.patch('warnings.warn')
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.input')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_extensions')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_apps')
@@ -111,7 +114,7 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.os.remove')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.subprocess.Popen')
     @mock.patch('warnings.warn')
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.input')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_extensions')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_apps')

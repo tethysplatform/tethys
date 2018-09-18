@@ -1,4 +1,7 @@
-import cStringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 import unittest
 import mock
 
@@ -34,7 +37,7 @@ class ManagementCommandsSyncstoresTests(unittest.TestCase):
         cmd = syncstores.Command()
         cmd.handle(app_name='foo')
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.models.TethysApp.persistent_store_database_settings')
     @mock.patch('tethys_apps.models.TethysApp.persistent_store_database_settings')
     @mock.patch('tethys_apps.models.TethysApp.persistent_store_database_settings')
@@ -69,7 +72,7 @@ class ManagementCommandsSyncstoresTests(unittest.TestCase):
         mock_setting3.create_persistent_store_database.assert_called_once_with(refresh=True, force_first_time=True)
         self.assertIn('Provisioning Persistent Stores...', mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.models.TethysApp.persistent_store_database_settings')
     @mock.patch('tethys_apps.models.TethysApp.persistent_store_database_settings')
     @mock.patch('tethys_apps.models.TethysApp.persistent_store_database_settings')
@@ -104,7 +107,7 @@ class ManagementCommandsSyncstoresTests(unittest.TestCase):
         mock_setting3.create_persistent_store_database.assert_not_called()
         self.assertIn('Provisioning Persistent Stores...', mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.models.TethysApp.persistent_store_database_settings')
     @mock.patch('tethys_apps.models.TethysApp.persistent_store_database_settings')
     @mock.patch('tethys_apps.models.TethysApp.persistent_store_database_settings')
@@ -139,7 +142,7 @@ class ManagementCommandsSyncstoresTests(unittest.TestCase):
         mock_setting3.create_persistent_store_database.assert_not_called()
         self.assertIn('Provisioning Persistent Stores...', mock_stdout.getvalue())
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.models.TethysApp')
     def test_provision_persistent_stores_given_apps_not_found(self, mock_app, mock_stdout):
         # Mock arguments
