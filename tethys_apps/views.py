@@ -112,7 +112,7 @@ def send_beta_feedback_email(request):
         send_mail(subject, message, from_email=None, recipient_list=app.feedback_emails)
     except Exception as e:
         json = {'success': False,
-                'error': 'Failed to send email: ' + e.message}
+                'error': 'Failed to send email: ' + str(e)}
         return JsonResponse(json)
 
     json = {'success': True,
