@@ -205,7 +205,7 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         # Check if print is called correctly
         rts_call_args = mock_print.call_args_list
-        self.assertIn('Generation of: ', rts_call_args[0][0][0])
+        self.assertIn('Generation of', rts_call_args[0][0][0])
         self.assertIn('cancelled', rts_call_args[0][0][0])
 
         mock_env.assert_any_call('CONDA_HOME')
