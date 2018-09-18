@@ -7,6 +7,8 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from __future__ import print_function
+from builtins import input
 import logging
 import os
 
@@ -95,7 +97,7 @@ def get_active_app(request=None, url=None):
 
 def create_ps_database_setting(app_package, name, description='', required=False, initializer='', initialized=False,
                                spatial=False, dynamic=False):
-    from cli.cli_colors import pretty_output, FG_RED, FG_GREEN
+    from tethys_apps.cli.cli_colors import pretty_output, FG_RED, FG_GREEN
     from tethys_apps.models import PersistentStoreDatabaseSetting
     from tethys_apps.models import TethysApp
 
@@ -140,7 +142,7 @@ def create_ps_database_setting(app_package, name, description='', required=False
 
 def remove_ps_database_setting(app_package, name, force=False):
     from tethys_apps.models import TethysApp
-    from cli.cli_colors import pretty_output, FG_RED, FG_GREEN
+    from tethys_apps.cli.cli_colors import pretty_output, FG_RED, FG_GREEN
     from tethys_apps.models import PersistentStoreDatabaseSetting
 
     try:
@@ -159,10 +161,10 @@ def remove_ps_database_setting(app_package, name, force=False):
         return False
 
     if not force:
-        proceed = raw_input('Are you sure you want to delete the PersistentStoreDatabaseSetting named "{}"? [y/n]: '
+        proceed = input('Are you sure you want to delete the PersistentStoreDatabaseSetting named "{}"? [y/n]: '
                             .format(name))
         while proceed not in ['y', 'n', 'Y', 'N']:
-            proceed = raw_input('Please enter either "y" or "n": ')
+            proceed = input('Please enter either "y" or "n": ')
 
         if proceed in ['y', 'Y']:
             setting.delete()
@@ -190,7 +192,7 @@ def link_service_to_app_setting(service_type, service_uid, app_package, setting_
     :param setting_uid: The name or id of the setting being linked to a service.
     :return: True if successful, False otherwise.
     """
-    from cli.cli_colors import pretty_output, FG_GREEN, FG_RED
+    from tethys_apps.cli.cli_colors import pretty_output, FG_GREEN, FG_RED
     from tethys_sdk.app_settings import (SpatialDatasetServiceSetting, PersistentStoreConnectionSetting,
                                          PersistentStoreDatabaseSetting)
     from tethys_services.models import (SpatialDatasetService, PersistentStoreService)
