@@ -161,8 +161,8 @@ def remove_ps_database_setting(app_package, name, force=False):
         return False
 
     if not force:
-        proceed = input('Are you sure you want to delete the PersistentStoreDatabaseSetting named "{}"? [y/n]: '
-                            .format(name))
+        proceed = input('Are you sure you want to delete the '
+                        'PersistentStoreDatabaseSetting named "{}"? [y/n]: '.format(name))
         while proceed not in ['y', 'n', 'Y', 'N']:
             proceed = input('Please enter either "y" or "n": ')
 

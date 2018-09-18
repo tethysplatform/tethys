@@ -40,7 +40,7 @@ class Permission:
     def _repr(self):
         return '<Permission name="{0}" description="{1}">'.format(self.name, self.description)
 
-    def __unicode__(self):
+    def __str__(self):
         return self._repr()
 
     def __repr__(self):
@@ -88,7 +88,7 @@ class PermissionGroup:
     def _repr(self):
         return '<Group name="{0}">'.format(self.name)
 
-    def __unicode__(self):
+    def __str__(self):
         return self._repr()
 
     def __repr__(self):

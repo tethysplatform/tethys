@@ -7,7 +7,6 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from future.utils import python_2_unicode_compatible
 from django.db import models
 from django.core.exceptions import (ObjectDoesNotExist, ValidationError)
 from owslib.wps import WebProcessingService as WPS

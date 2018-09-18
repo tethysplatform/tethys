@@ -7,7 +7,6 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from builtins import str as text
 import sqlalchemy
 import logging
 from django.db import models
@@ -62,11 +61,8 @@ class TethysApp(models.Model, TethysBaseMixin):
         verbose_name = 'Tethys App'
         verbose_name_plural = 'Installed Apps'
 
-    def __unicode__(self):
-        return text(self.name)
-
     def __str__(self):
-        return text(self.name)
+        return self.name
 
     def add_settings(self, setting_list):
         """
@@ -149,8 +145,8 @@ class TethysExtension(models.Model, TethysBaseMixin):
         verbose_name = 'Tethys Extension'
         verbose_name_plural = 'Installed Extensions'
 
-    def __unicode__(self):
-        return text(self.name)
+    def __str__(self):
+        return self.name
 
 
 class TethysAppSetting(models.Model):
@@ -166,9 +162,6 @@ class TethysAppSetting(models.Model):
     required = models.BooleanField(default=True)
     initializer = models.CharField(max_length=1000, default='')
     initialized = models.BooleanField(default=False)
-
-    def __unicode__(self):
-        return self.name
 
     def __str__(self):
         return self.name
