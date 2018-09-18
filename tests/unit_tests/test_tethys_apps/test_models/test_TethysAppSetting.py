@@ -10,10 +10,6 @@ class TethysAppSettingTests(TethysTestCase):
     def tear_down(self):
         pass
 
-    def test_unicode(self):
-        ret = str(self.test_app_setting)
-        self.assertEqual('primary_ckan', ret)
-
     def test_str(self):
         ret = str(self.test_app_setting)
         self.assertEqual('primary_ckan', ret)

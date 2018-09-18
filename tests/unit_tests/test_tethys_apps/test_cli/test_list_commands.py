@@ -5,7 +5,7 @@ from tethys_apps.cli.list_command import list_command
 try:
     from StringIO import StringIO
 except ImportError:
-    from io import StringIO
+    from io import StringIO  # noqa: F401
 
 
 class ListCommandTests(unittest.TestCase):
@@ -15,7 +15,6 @@ class ListCommandTests(unittest.TestCase):
 
     def tearDown(self):
         pass
-
 
     @mock.patch('tethys_apps.cli.list_command.print')
     @mock.patch('tethys_apps.cli.list_command.get_installed_tethys_extensions')
@@ -31,9 +30,14 @@ class ListCommandTests(unittest.TestCase):
 
         # Check if print is called correctly
         rts_call_args = mock_print.call_args_list
-        self.assertIn('Apps:', rts_call_args[0][0][0])
-        self.assertIn('foo', rts_call_args[1][0][0])
-        self.assertIn('bar', rts_call_args[2][0][0])
+
+        check_list = []
+        for i in range(len(rts_call_args)):
+            check_list.append(rts_call_args[i][0][0])
+
+        self.assertIn('Apps:', check_list)
+        self.assertIn('  foo', check_list)
+        self.assertIn('  bar', check_list)
 
     @mock.patch('tethys_apps.cli.list_command.print')
     @mock.patch('tethys_apps.cli.list_command.get_installed_tethys_extensions')
@@ -47,8 +51,12 @@ class ListCommandTests(unittest.TestCase):
 
         # Check if print is called correctly
         rts_call_args = mock_print.call_args_list
-        self.assertIn('Extensions:', rts_call_args[0][0][0])
-        self.assertIn('baz', rts_call_args[1][0][0])
+        check_list = []
+        for i in range(len(rts_call_args)):
+            check_list.append(rts_call_args[i][0][0])
+
+        self.assertIn('Extensions:', check_list)
+        self.assertIn('  baz', check_list)
 
     @mock.patch('tethys_apps.cli.list_command.print')
     @mock.patch('tethys_apps.cli.list_command.get_installed_tethys_extensions')
@@ -62,8 +70,13 @@ class ListCommandTests(unittest.TestCase):
 
         # Check if print is called correctly
         rts_call_args = mock_print.call_args_list
-        self.assertIn('Apps:', rts_call_args[0][0][0])
-        self.assertIn('foo', rts_call_args[1][0][0])
-        self.assertIn('bar', rts_call_args[2][0][0])
-        self.assertIn('Extensions:', rts_call_args[3][0][0])
-        self.assertIn('baz', rts_call_args[4][0][0])
+
+        check_list = []
+        for i in range(len(rts_call_args)):
+            check_list.append(rts_call_args[i][0][0])
+
+        self.assertIn('Apps:', check_list)
+        self.assertIn('  foo', check_list)
+        self.assertIn('  bar', check_list)
+        self.assertIn('Extensions:', check_list)
+        self.assertIn('  baz', check_list)

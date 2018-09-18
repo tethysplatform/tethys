@@ -338,7 +338,7 @@ class TestTethysAppBase(unittest.TestCase):
 
         codename_check = []
         name_check = []
-        for i in [0, 1]:
+        for i in range(len(rts_call_args)):
             codename_check.append(rts_call_args[i][1]['codename'])
             name_check.append(rts_call_args[i][1]['name'])
 
@@ -355,8 +355,8 @@ class TestTethysAppBase(unittest.TestCase):
             app_label='tethys_apps',
             model='tethysapp'
         )
-        mock_dp.assert_called_with(codename=':create_test', content_type=tethys_content_type,
-                                   name=' | test_create')
+        mock_dp.assert_any_call(codename=':create_test', content_type=tethys_content_type,
+                                name=' | test_create')
 
         # Check if p.save() is called inside DoesNotExist
         mock_dp().save.assert_called()
@@ -373,11 +373,15 @@ class TestTethysAppBase(unittest.TestCase):
 
         # Check if assign_perm(p, g, db_app) is called
         rts_call_args = mock_asg.call_args_list
+        check_list = []
+        for i in range(len(rts_call_args)):
+            for j in [0, 2]:  # only get first and last element to check
+                check_list.append(rts_call_args[i][0][j])
 
-        self.assertEqual(':create_test', rts_call_args[0][0][0])
-        self.assertEqual('test_get', rts_call_args[0][0][2])
-        self.assertEqual(':delete_test', rts_call_args[1][0][0])
-        self.assertEqual('test_get', rts_call_args[1][0][2])
+        self.assertIn(':create_test', check_list)
+        self.assertIn('test_get', check_list)
+        self.assertIn(':delete_test', check_list)
+        self.assertIn('test_get', check_list)
 
     def test_job_templates(self):
         self.assertIsNone(tethys_app_base.TethysAppBase().job_templates())

@@ -1,6 +1,7 @@
 import unittest
 import mock
-import os, sys
+import os
+import sys
 
 from tethys_apps.cli.scaffold_commands import proper_name_validator, get_random_color, theme_color_validator, \
     render_path, scaffold_command

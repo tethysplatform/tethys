@@ -1,7 +1,13 @@
 import unittest
 import mock
 import os
+import sys
 import tethys_apps.app_installation as tethys_app_installation
+
+if sys.version_info[0] < 3:
+    callable_mock_path = '__builtin__.callable'
+else:
+    callable_mock_path = 'builtins.callable'
 
 
 class TestAppInstallation(unittest.TestCase):
@@ -56,7 +62,7 @@ class TestAppInstallation(unittest.TestCase):
     @mock.patch('tethys_apps.app_installation.develop')
     @mock.patch('tethys_apps.app_installation.subprocess')
     @mock.patch('tethys_apps.app_installation.os')
-    @mock.patch('__builtin__.callable')
+    @mock.patch(callable_mock_path)
     @mock.patch('tethys_apps.app_installation.pretty_output')
     @mock.patch('tethys_apps.app_installation.get_tethysapp_directory')
     def test__run_develop(self, mock_getdir, mock_pretty_output, mock_callable, mock_os, mock_subprocess,
@@ -199,7 +205,7 @@ class TestAppInstallation(unittest.TestCase):
 
     @mock.patch('tethys_apps.app_installation.ctypes')
     @mock.patch('tethys_apps.app_installation.os.path.isdir')
-    @mock.patch('__builtin__.callable')
+    @mock.patch(callable_mock_path)
     @mock.patch('tethys_apps.app_installation.pretty_output')
     @mock.patch('tethys_apps.app_installation.get_tethysapp_directory')
     def test_run_develop_windows(self, mock_getdir, mock_pretty_output, mock_callable, mock_os_path_isdir, mock_ctypes):

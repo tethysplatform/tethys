@@ -30,7 +30,6 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
                       'path to the static directory using the STATIC_ROOT setting and try again.'
         self.assertEqual(msg_warning, print_args[0][0][0])
 
-
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
@@ -53,12 +52,12 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_get_apps.assert_called_once()
         mock_get_extensions.assert_called_once()
         mock_os_remove.assert_any_call('/foo/testing/tests/foo_app')
-        mock_os_remove.assert_called_with('/foo/testing/tests/foo_extension')
+        mock_os_remove.assert_any_call('/foo/testing/tests/foo_extension')
         mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_app/public')
-        mock_os_path_isdir.assert_called_with('/foo/testing/tests/foo_extension/public')
+        mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_extension/public')
         mock_os_symlink.assert_any_call('/foo/testing/tests/foo_app/public', '/foo/testing/tests/foo_app')
-        mock_os_symlink.assert_called_with('/foo/testing/tests/foo_extension/public',
-                                           '/foo/testing/tests/foo_extension')
+        mock_os_symlink.assert_any_call('/foo/testing/tests/foo_extension/public',
+                                        '/foo/testing/tests/foo_extension')
         print_args = mock_print.call_args_list
 
         msg = 'INFO: Linking static and public directories of apps and extensions to "{0}".'\
@@ -68,11 +67,13 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
 
         msg_info_second = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_extension".'
 
-        self.assertEqual(msg, print_args[0][0][0])
+        check_list = []
+        for i in range(len(print_args)):
+            check_list.append(print_args[i][0][0])
 
-        self.assertEqual(msg_info_first, print_args[1][0][0])
-
-        self.assertEqual(msg_info_second, print_args[2][0][0])
+        self.assertIn(msg, check_list)
+        self.assertIn(msg_info_first, check_list)
+        self.assertIn(msg_info_second, check_list)
 
         msg_warning_not_in = 'WARNING: Cannot find the STATIC_ROOT setting'
         msg_not_in = 'Please provide the path to the static directory'
@@ -110,14 +111,14 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_get_apps.assert_called_once()
         mock_get_extensions.assert_called_once()
         mock_os_remove.assert_any_call('/foo/testing/tests/foo_app')
-        mock_os_remove.assert_called_with('/foo/testing/tests/foo_extension')
+        mock_os_remove.assert_any_call('/foo/testing/tests/foo_extension')
         mock_shutil_rmtree.assert_any_call('/foo/testing/tests/foo_app')
-        mock_shutil_rmtree.assert_called_with('/foo/testing/tests/foo_extension')
+        mock_shutil_rmtree.assert_any_call('/foo/testing/tests/foo_extension')
         mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_app/public')
-        mock_os_path_isdir.assert_called_with('/foo/testing/tests/foo_extension/public')
+        mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_extension/public')
         mock_os_symlink.assert_any_call('/foo/testing/tests/foo_app/public', '/foo/testing/tests/foo_app')
-        mock_os_symlink.assert_called_with('/foo/testing/tests/foo_extension/public',
-                                           '/foo/testing/tests/foo_extension')
+        mock_os_symlink.assert_any_call('/foo/testing/tests/foo_extension/public',
+                                        '/foo/testing/tests/foo_extension')
         msg_infor_1 = 'INFO: Linking static and public directories of apps and extensions to "{0}".'\
             .format(mock_settings.STATIC_ROOT)
         msg_infor_2 = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_app".'
@@ -130,11 +131,13 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
 
         print_args = mock_print.call_args_list
 
-        self.assertEqual(msg_infor_1, print_args[0][0][0])
+        check_list = []
+        for i in range(len(print_args)):
+            check_list.append(print_args[i][0][0])
 
-        self.assertEqual(msg_infor_2, print_args[1][0][0])
-
-        self.assertEqual(msg_infor_3, print_args[2][0][0])
+        self.assertIn(msg_infor_1, check_list)
+        self.assertIn(msg_infor_2, check_list)
+        self.assertIn(msg_infor_3, check_list)
 
         for i in range(len(print_args)):
             self.assertNotEquals(warn_not_in, print_args[i][0][0])
@@ -164,12 +167,12 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_get_apps.assert_called_once()
         mock_get_extensions.assert_called_once()
         mock_os_remove.assert_any_call('/foo/testing/tests/foo_app')
-        mock_os_remove.assert_called_with('/foo/testing/tests/foo_extension')
+        mock_os_remove.assert_any_call('/foo/testing/tests/foo_extension')
         mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_app/static')
-        mock_os_path_isdir.assert_called_with('/foo/testing/tests/foo_extension/static')
+        mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_extension/static')
         mock_os_symlink.assert_any_call('/foo/testing/tests/foo_app/static', '/foo/testing/tests/foo_app')
-        mock_os_symlink.assert_called_with('/foo/testing/tests/foo_extension/static',
-                                           '/foo/testing/tests/foo_extension')
+        mock_os_symlink.assert_any_call('/foo/testing/tests/foo_extension/static',
+                                        '/foo/testing/tests/foo_extension')
 
         msg_info_one = 'INFO: Linking static and public directories of apps and extensions to "{0}".'\
             .format(mock_settings.STATIC_ROOT)
@@ -183,11 +186,13 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
 
         print_args = mock_print.call_args_list
 
-        self.assertEqual(msg_info_one, print_args[0][0][0])
+        check_list = []
+        for i in range(len(print_args)):
+            check_list.append(print_args[i][0][0])
 
-        self.assertEqual(msg_info_two, print_args[1][0][0])
-
-        self.assertEqual(msg_info_three, print_args[2][0][0])
+        self.assertIn(msg_info_one, check_list)
+        self.assertIn(msg_info_two, check_list)
+        self.assertIn(msg_info_three, check_list)
 
         for i in range(len(print_args)):
             self.assertNotEquals(warn_not_in, print_args[i][0][0])
@@ -217,9 +222,9 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         mock_get_apps.assert_called_once()
         mock_get_extensions.assert_called_once()
         mock_os_remove.assert_any_call('/foo/testing/tests/foo_app')
-        mock_os_remove.assert_called_with('/foo/testing/tests/foo_extension')
+        mock_os_remove.assert_any_call('/foo/testing/tests/foo_extension')
         mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_app/static')
-        mock_os_path_isdir.assert_called_with('/foo/testing/tests/foo_extension/static')
+        mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_extension/static')
         mock_os_symlink.assert_not_called()
         msg_info = 'INFO: Linking static and public directories of apps and extensions to "{0}".'\
             .format(mock_settings.STATIC_ROOT)
@@ -232,7 +237,6 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         info_not_in_fourth = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_extension".'
 
         print_args = mock_print.call_args_list
-
         self.assertEqual(msg_info, print_args[0][0][0])
 
         for i in range(len(print_args)):

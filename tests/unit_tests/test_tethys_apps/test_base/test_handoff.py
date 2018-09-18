@@ -207,9 +207,10 @@ class TestHandoffManager(unittest.TestCase):
         self.assertEqual('my_first_app.controllers.my_handler', result[0].handler)
         self.assertEqual('controllers:home', result[1].handler)
 
-        check_message ='DEPRECATION WARNING: The handler attribute of a HandoffHandler should now be in the form:' \
-                       ' "my_first_app.controllers.my_handler". The form "handoff:my_handler" is now deprecated.'
+        check_message = 'DEPRECATION WARNING: The handler attribute of a HandoffHandler should now be in the form:' \
+                        ' "my_first_app.controllers.my_handler". The form "handoff:my_handler" is now deprecated.'
         mock_print.assert_called_with(check_message)
+
 
 class TestHandoffHandler(unittest.TestCase):
     def setUp(self):

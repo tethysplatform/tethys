@@ -8,41 +8,72 @@ from tests.factories.django_user import UserFactory
 
 class TestPermission(unittest.TestCase):
     def setUp(self):
-        self.user = UserFactory()
-        self.request_factory = RequestFactory()
+        self.name = 'test_name'
+        self.description = 'test_description'
+        self.check_string = '<Permission name="{0}" description="{1}">'.\
+            format(self.name, self.description)
 
     def tearDown(self):
         pass
 
-    def test_Permission(self):
-        name = 'test_name'
-        description = 'test_description'
+    def test_init(self):
+        result = tethys_permission.Permission(name=self.name, description=self.description)
+        self.assertEqual(self.name, result.name)
+        self.assertEqual(self.description, result.description)
 
-        result = tethys_permission.Permission(name=name, description=description)
-
-        # Check Result
-        self.assertEqual(name, result.name)
-        self.assertEqual(description, result.description)
-
-        output = '<Permission name="{0}" description="{1}">'.format(name, description)
-        self.assertEqual(output, str(result))
-
-        output2 = u'%s' % result
-        self.assertEqual(output, output2)
-
-    def test_PermissionGroup(self):
-        name = 'test_group'
-
-        result = tethys_permission.PermissionGroup(name=name)
+    def test_repr(self):
+        result = tethys_permission.Permission(name=self.name, description=self.description)._repr()
 
         # Check Result
-        self.assertEqual(name, result.name)
+        self.assertEqual(self.check_string, result)
 
-        output = '<Group name="{0}">'.format(name)
-        self.assertEqual(output, str(result))
+    def test_str(self):
+        result = tethys_permission.Permission(name=self.name, description=self.description).__str__()
 
-        output2 = u'%s' % result
-        self.assertEqual(output, output2)
+        # Check Result
+        self.assertEqual(self.check_string, result)
+
+    def test_repr_(self):
+        result = tethys_permission.Permission(name=self.name, description=self.description).__repr__()
+
+        # Check Result
+        self.assertEqual(self.check_string, result)
+
+
+class TestPermissionGroup(unittest.TestCase):
+    def setUp(self):
+        self.user = UserFactory()
+        self.request_factory = RequestFactory()
+        self.name = 'test_name'
+        self.permissions = ['foo', 'bar']
+        self.check_string = '<Group name="{0}">'.format(self.name)
+
+    def tearDown(self):
+        pass
+
+    def test_init(self):
+        result = tethys_permission.PermissionGroup(name=self.name, permissions=['foo', 'bar'])
+
+        self.assertEqual(self.name, result.name)
+        self.assertEqual(self.permissions, result.permissions)
+
+    def test_repr(self):
+        result = tethys_permission.PermissionGroup(name=self.name)._repr()
+
+        # Check Result
+        self.assertEqual(self.check_string, result)
+
+    def test_str(self):
+        result = tethys_permission.PermissionGroup(name=self.name).__str__()
+
+        # Check Result
+        self.assertEqual(self.check_string, result)
+
+    def test_repr_(self):
+        result = tethys_permission.PermissionGroup(name=self.name).__repr__()
+
+        # Check Result
+        self.assertEqual(self.check_string, result)
 
     @mock.patch('tethys_apps.utilities.get_active_app')
     def test_has_permission(self, mock_app):

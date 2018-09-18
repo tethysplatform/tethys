@@ -1,6 +1,6 @@
 import unittest
 import mock
-from tethys_apps.cli.cli_colors import pretty_output, FG_RED, FG_BLUE, BOLD, FG_GREEN, BG_GREEN, END, ALL_OFF
+from tethys_apps.cli.cli_colors import pretty_output, FG_RED, FG_BLUE, BOLD, FG_GREEN, BG_GREEN, END
 
 
 class TestCliColors(unittest.TestCase):
