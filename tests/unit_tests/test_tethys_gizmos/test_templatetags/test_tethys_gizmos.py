@@ -6,6 +6,10 @@ from datetime import datetime, date
 from django.template import base
 from django.template import TemplateSyntaxError
 from django.template import Context
+try:
+    reload
+except NameError:   # Python 3
+    from imp import reload
 
 
 class TestGizmo(TethysGizmoOptions):
@@ -55,13 +59,13 @@ class TestTethysGizmos(unittest.TestCase):
         # self.assertRaises(ImportError, reload, gizmos_templatetags)
 
     def test_HighchartsDateEncoder(self):
-        result = gizmos_templatetags.HighchartsDateEncoder().default(datetime(2018, 01, 01))
+        result = gizmos_templatetags.HighchartsDateEncoder().default(datetime(2018, 1, 1))
 
         # Timestamp should be 1514764800
         self.assertEqual(1514764800000.0, result)
 
     def test_HighchartsDateEncoder_no_dt(self):
-        result = gizmos_templatetags.HighchartsDateEncoder().default(date(2018, 01, 01))
+        result = gizmos_templatetags.HighchartsDateEncoder().default(date(2018, 1, 1))
 
         # Check Result
         self.assertEqual('2018-01-01', result)
@@ -90,7 +94,7 @@ class TestTethysGizmos(unittest.TestCase):
         self.assertFalse(result)
 
     def test_json_date_handler(self):
-        result = gizmos_templatetags.json_date_handler(datetime(2018, 01, 01))
+        result = gizmos_templatetags.json_date_handler(datetime(2018, 1, 1))
 
         # Timestamp should be 1514764800
         self.assertEqual(1514764800000.0, result)

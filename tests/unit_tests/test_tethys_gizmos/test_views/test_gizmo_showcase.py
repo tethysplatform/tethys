@@ -51,21 +51,21 @@ class TestGizmoShowcase(unittest.TestCase):
         request = self.request_factory
         result = gizmo_showcase.get_kml(request)
 
-        self.assertIn('kml_link', result._container[0])
+        self.assertIn('kml_link', result._container[0].decode())
         self.assertEqual(200, result.status_code)
 
     def test_swap_kml(self):
         request = self.request_factory
         result = gizmo_showcase.swap_kml(request)
 
-        self.assertIn('.kml', result._container[0])
+        self.assertIn('.kml', result._container[0].decode())
         self.assertEqual(200, result.status_code)
 
     def test_swap_overlays(self):
         request = self.request_factory
         result = gizmo_showcase.swap_overlays(request)
 
-        self.assertIn('"type": "GeometryCollection"', result._container[0])
+        self.assertIn('"type": "GeometryCollection"', result._container[0].decode())
         self.assertEqual(200, result.status_code)
 
     @mock.patch('tethys_gizmos.views.gizmo_showcase.messages')
