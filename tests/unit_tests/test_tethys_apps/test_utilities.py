@@ -1,4 +1,3 @@
-import cStringIO
 import unittest
 import mock
 
@@ -204,12 +203,12 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertIn('A PersistentStoreDatabaseSetting with name', po_call_args[0][0][0])
         self.assertIn('already exists. Aborted.', po_call_args[0][0][0])
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('tethys_apps.utilities.print')
     @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting')
     @mock.patch('tethys_apps.models.TethysApp')
     def test_create_ps_database_setting_ps_database_setting_exceptions(self, mock_app, mock_ps_db_setting,
-                                                                       mock_pretty_output, mock_stdout):
+                                                                       mock_pretty_output, mock_print):
         from django.core.exceptions import ObjectDoesNotExist
 
         # Mock up for TethysApp to exist and PersistentStoreDatabaseSetting to throw exceptions
@@ -228,7 +227,8 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertIn('The above error was encountered. Aborted.', po_call_args[0][0][0])
-        self.assertIn('foo exception', mock_stdout.getvalue())
+        rts_call_args = mock_print.call_args_list
+        self.assertIn('foo exception', rts_call_args[0][0][0].args[0])
 
     @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting')
@@ -313,7 +313,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual(1, len(po_call_args))
         self.assertIn('Successfully removed PersistentStoreDatabaseSetting with name', po_call_args[0][0][0])
 
-    @mock.patch('__builtin__.raw_input')
+    @mock.patch('tethys_apps.utilities.input')
     @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting')
     @mock.patch('tethys_apps.models.TethysApp')
@@ -336,7 +336,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual(1, len(po_call_args))
         self.assertIn('Successfully removed PersistentStoreDatabaseSetting with name', po_call_args[0][0][0])
 
-    @mock.patch('__builtin__.raw_input')
+    @mock.patch('tethys_apps.utilities.input')
     @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting')
     @mock.patch('tethys_apps.models.TethysApp')
