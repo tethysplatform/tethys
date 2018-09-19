@@ -36,7 +36,7 @@ class TestAppInstallation(unittest.TestCase):
 
     def test_get_tethysapp_directory(self):
         ret = tethys_app_installation.get_tethysapp_directory()
-        self.assertIn('src/tethys_apps/tethysapp', ret)
+        self.assertIn('tethys_apps/tethysapp', ret)
 
     @mock.patch('tethys_apps.app_installation.install')
     @mock.patch('tethys_apps.app_installation.subprocess')
