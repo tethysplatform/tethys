@@ -66,22 +66,27 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_settings.assert_any_call('TETHYS_WORKSPACES_ROOT')
         mock_settings.assert_called_with('STATIC_ROOT')
 
+    @mock.patch('tethys_apps.cli.gen_commands.Context')
+    @mock.patch('tethys_apps.cli.gen_commands.linux_distribution')
     @mock.patch('tethys_apps.cli.gen_commands.os.path.exists')
     @mock.patch('tethys_apps.cli.gen_commands.get_environment_value')
     @mock.patch('tethys_apps.cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_apps.cli.gen_commands.os.path.isfile')
-    def test_generate_command_uwsgi_service_option_nginx_conf(self, mock_os_path_isfile, mock_file, mock_env,
-                                                              mock_os_path_exists):
+    def test_generate_command_uwsgi_service_option_nginx_conf_redhat(self, mock_os_path_isfile, mock_file, mock_env,
+                                                                     mock_os_path_exists, mock_linux_distribution,
+                                                                     mock_context):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_UWSGI_SERVICE_OPTION
         mock_args.directory = None
         mock_os_path_isfile.return_value = False
         mock_env.side_effect = ['/foo/conda', 'conda_env']
         mock_os_path_exists.return_value = True
+        mock_linux_distribution.return_value = ['redhat']
         # First open is for the Template, next two are for /etc/nginx/nginx.conf and /etc/passwd, and the final
         # open is to "write" out the resulting file.  The middle two opens return information about a user, while
         # the first and last use MagicMock.
-        handlers = (mock_file.return_value, mock.mock_open(read_data='user foo_user').return_value,
+        handlers = (mock_file.return_value,
+                    mock.mock_open(read_data='user foo_user').return_value,
                     mock.mock_open(read_data='foo_user:x:1000:1000:Foo User,,,:/foo/nginx:/bin/bash').return_value,
                     mock_file.return_value)
         mock_file.side_effect = handlers
@@ -93,6 +98,78 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
         mock_os_path_exists.assert_called_once_with('/etc/nginx/nginx.conf')
+        context = mock_context().update.call_args_list[0][0][0]
+        self.assertEqual('http-', context['user_option_prefix'])
+
+    @mock.patch('tethys_apps.cli.gen_commands.Context')
+    @mock.patch('tethys_apps.cli.gen_commands.linux_distribution')
+    @mock.patch('tethys_apps.cli.gen_commands.os.path.exists')
+    @mock.patch('tethys_apps.cli.gen_commands.get_environment_value')
+    @mock.patch('tethys_apps.cli.gen_commands.open', new_callable=mock.mock_open)
+    @mock.patch('tethys_apps.cli.gen_commands.os.path.isfile')
+    def test_generate_command_uwsgi_service_option_nginx_conf_ubuntu(self, mock_os_path_isfile, mock_file, mock_env,
+                                                                     mock_os_path_exists, mock_linux_distribution,
+                                                                     mock_context):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_UWSGI_SERVICE_OPTION
+        mock_args.directory = None
+        mock_os_path_isfile.return_value = False
+        mock_env.side_effect = ['/foo/conda', 'conda_env']
+        mock_os_path_exists.return_value = True
+        mock_linux_distribution.return_value = 'ubuntu'
+        # First open is for the Template, next two are for /etc/nginx/nginx.conf and /etc/passwd, and the final
+        # open is to "write" out the resulting file.  The middle two opens return information about a user, while
+        # the first and last use MagicMock.
+        handlers = (mock_file.return_value,
+                    mock.mock_open(read_data='user foo_user').return_value,
+                    mock.mock_open(read_data='foo_user:x:1000:1000:Foo User,,,:/foo/nginx:/bin/bash').return_value,
+                    mock_file.return_value)
+        mock_file.side_effect = handlers
+
+        generate_command(args=mock_args)
+
+        mock_os_path_isfile.assert_called_once()
+        mock_file.assert_called()
+        mock_env.assert_any_call('CONDA_HOME')
+        mock_env.assert_called_with('CONDA_ENV_NAME')
+        mock_os_path_exists.assert_called_once_with('/etc/nginx/nginx.conf')
+        context = mock_context().update.call_args_list[0][0][0]
+        self.assertEqual('', context['user_option_prefix'])
+
+    @mock.patch('tethys_apps.cli.gen_commands.Context')
+    @mock.patch('tethys_apps.cli.gen_commands.linux_distribution')
+    @mock.patch('tethys_apps.cli.gen_commands.os.path.exists')
+    @mock.patch('tethys_apps.cli.gen_commands.get_environment_value')
+    @mock.patch('tethys_apps.cli.gen_commands.open', new_callable=mock.mock_open)
+    @mock.patch('tethys_apps.cli.gen_commands.os.path.isfile')
+    def test_generate_command_uwsgi_service_option_nginx_conf_not_linux(self, mock_os_path_isfile, mock_file, mock_env,
+                                                                        mock_os_path_exists, mock_linux_distribution,
+                                                                        mock_context):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_UWSGI_SERVICE_OPTION
+        mock_args.directory = None
+        mock_os_path_isfile.return_value = False
+        mock_env.side_effect = ['/foo/conda', 'conda_env']
+        mock_os_path_exists.return_value = True
+        mock_linux_distribution.side_effect = Exception
+        # First open is for the Template, next two are for /etc/nginx/nginx.conf and /etc/passwd, and the final
+        # open is to "write" out the resulting file.  The middle two opens return information about a user, while
+        # the first and last use MagicMock.
+        handlers = (mock_file.return_value,
+                    mock.mock_open(read_data='user foo_user').return_value,
+                    mock.mock_open(read_data='foo_user:x:1000:1000:Foo User,,,:/foo/nginx:/bin/bash').return_value,
+                    mock_file.return_value)
+        mock_file.side_effect = handlers
+
+        generate_command(args=mock_args)
+
+        mock_os_path_isfile.assert_called_once()
+        mock_file.assert_called()
+        mock_env.assert_any_call('CONDA_HOME')
+        mock_env.assert_called_with('CONDA_ENV_NAME')
+        mock_os_path_exists.assert_called_once_with('/etc/nginx/nginx.conf')
+        context = mock_context().update.call_args_list[0][0][0]
+        self.assertEqual('', context['user_option_prefix'])
 
     @mock.patch('tethys_apps.cli.gen_commands.get_environment_value')
     @mock.patch('tethys_apps.cli.gen_commands.open', new_callable=mock.mock_open)

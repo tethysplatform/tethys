@@ -144,16 +144,19 @@ def generate_command(args):
         conda_home = get_environment_value('CONDA_HOME')
         conda_env_name = get_environment_value('CONDA_ENV_NAME')
 
-        linux_distro = linux_distribution(full_distribution_name=0)[0]
         user_option_prefix = ''
-        if linux_distro in ['redhat', 'centos']:
-            user_option_prefix = 'http-'
+
+        try:
+            linux_distro = linux_distribution(full_distribution_name=0)[0]
+            if linux_distro in ['redhat', 'centos']:
+                user_option_prefix = 'http-'
+        except Exception:
+            pass
 
         context.update({'nginx_user': nginx_user,
                         'conda_home': conda_home,
                         'conda_env_name': conda_env_name,
                         'tethys_home': TETHYS_HOME,
-                        'linux_distribution': linux_distro,
                         'user_option_prefix': user_option_prefix
                         })
 
