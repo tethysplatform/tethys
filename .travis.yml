@@ -36,11 +36,19 @@ install:
   # install test dependencies
   - pip install -e $TETHYS_HOME/src/[tests]
 
+  # install test apps and extensions
+  - pushd ./src/tests/extensions/tethysext-test_extension
+  - python setup.py develop
+  - popd
+
+  - pushd ./src/tests/apps/tethysapp-test_app
+  - python setup.py develop
+  - popd
 
 # command to run tests
 script:
-  - tethys test
+  - tethys test -c -u
 
 # generate test coverage information
-# after_success:
-  # coveralls
+after_success:
+  - coveralls
