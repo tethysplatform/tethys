@@ -119,7 +119,7 @@ def run_process(process):
     try:
         if 'test' in process:
             set_testing_environment(True)
-        subprocess.call(process)
+        return subprocess.call(process)
     except KeyboardInterrupt:
         pass
     finally:

@@ -42,13 +42,14 @@ def test_command(args):
     elif args.gui:
         primary_process.append(os.path.join(tests_path, 'gui_tests'))
 
-    # print(primary_process)
-    run_process(primary_process)
+    test_status = run_process(primary_process)
+
     if args.coverage:
         if args.file and (app_package_tag in args.file or extension_package_tag in args.file):
             run_process(['coverage', 'report'])
         else:
             run_process(['coverage', 'report', config_opt])
+
     if args.coverage_html:
         report_dirname = 'coverage_html_report'
         index_fname = 'index.html'
@@ -64,3 +65,5 @@ def test_command(args):
                 raise Exception
         except Exception:
             webbrowser.open_new_tab(os.path.join(tests_path, report_dirname, index_fname))
+
+    exit(test_status)
