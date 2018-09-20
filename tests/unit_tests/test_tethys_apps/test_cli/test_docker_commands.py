@@ -100,8 +100,6 @@ class TestDockerCommands(unittest.TestCase):
 
         # Validate result
         self.assertEqual(mock_DockerClient(), ret)
-        # TODO: REMOVE - TEST TO SEE IF TRAVIS FAILS WHEN TESTS FAIL
-        self.assertTrue(False)
 
     @mock.patch('tethys_apps.cli.docker_commands.pretty_output')
     @mock.patch('tethys_apps.cli.docker_commands.get_api_version')

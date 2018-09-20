@@ -26,7 +26,7 @@ class TestCommandTests(unittest.TestCase):
         mock_join.return_value = '/foo'
         mock_run_process.return_value = 0
 
-        test_command(mock_args)
+        self.assertRaises(SystemExit, test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_join.assert_called()
         mock_run_process.assert_called_once()
@@ -46,7 +46,7 @@ class TestCommandTests(unittest.TestCase):
         mock_join.return_value = '/foo'
         mock_run_process.return_value = 0
 
-        test_command(mock_args)
+        self.assertRaises(SystemExit, test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_join.assert_called()
         mock_run_process.assert_called()
@@ -67,7 +67,7 @@ class TestCommandTests(unittest.TestCase):
         mock_join.return_value = '/foo'
         mock_run_process.return_value = 0
 
-        test_command(mock_args)
+        self.assertRaises(SystemExit, test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_join.assert_called()
         mock_run_process.assert_called()
@@ -89,7 +89,7 @@ class TestCommandTests(unittest.TestCase):
         mock_join.return_value = '/foo'
         mock_run_process.return_value = 0
 
-        test_command(mock_args)
+        self.assertRaises(SystemExit, test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_join.assert_called()
         mock_run_process.assert_called()
@@ -112,7 +112,7 @@ class TestCommandTests(unittest.TestCase):
         mock_join.return_value = '/foo'
         mock_run_process.return_value = 0
 
-        test_command(mock_args)
+        self.assertRaises(SystemExit, test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_join.assert_called()
         mock_run_process.assert_called()
@@ -134,7 +134,7 @@ class TestCommandTests(unittest.TestCase):
         mock_join.return_value = '/foo/bar'
         mock_run_process.return_value = 0
 
-        test_command(mock_args)
+        self.assertRaises(SystemExit, test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_join.assert_called()
         mock_run_process.assert_called()
@@ -159,7 +159,7 @@ class TestCommandTests(unittest.TestCase):
         mock_run_process.side_effect = [0, 0, 1]
         mock_open_new_tab.return_value = 1
 
-        test_command(mock_args)
+        self.assertRaises(SystemExit, test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_join.assert_called()
         mock_run_process.assert_called()
@@ -184,7 +184,8 @@ class TestCommandTests(unittest.TestCase):
         mock_join.return_value = '/foo'
         mock_run_process.return_value = 0
 
-        test_command(mock_args)
+        self.assertRaises(SystemExit, test_command, mock_args)
+
         mock_get_manage_path.assert_called()
         mock_join.assert_called()
         mock_run_process.assert_called_once()
@@ -204,7 +205,7 @@ class TestCommandTests(unittest.TestCase):
         mock_join.return_value = '/foo'
         mock_run_process.return_value = 0
 
-        test_command(mock_args)
+        self.assertRaises(SystemExit, test_command, mock_args)
         mock_get_manage_path.assert_called()
         mock_join.assert_called()
         mock_run_process.assert_called_once()

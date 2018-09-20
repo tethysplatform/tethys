@@ -5,6 +5,11 @@ from tethys_apps.cli.gen_commands import get_environment_value, get_settings_val
 from tethys_apps.cli.gen_commands import GEN_SETTINGS_OPTION, GEN_NGINX_OPTION, GEN_UWSGI_SERVICE_OPTION,\
                                          GEN_UWSGI_SETTINGS_OPTION
 
+try:
+    reload
+except NameError:   # Python 3
+    from imp import reload
+
 
 class CLIGenCommandsTest(unittest.TestCase):
 
