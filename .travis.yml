@@ -34,6 +34,7 @@ install:
   - tethys gen settings --db-username tethys_super --db-password pass --db-port ${TETHYS_DB_PORT}
 
   # install test dependencies
+  - pip install python-coveralls
   - pip install -e $TETHYS_HOME/src/[tests]
 
   # install test apps and extensions
@@ -51,4 +52,5 @@ script:
 
 # generate test coverage information
 after_success:
+  - ls -al
   - coveralls

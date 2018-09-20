@@ -80,11 +80,26 @@ class TestDockerCommands(unittest.TestCase):
         versions = ('1.2', '1.3')
         self.assertEquals(versions, cli_docker_commands.get_api_version(versions))
 
-    def test_get_docker_client_linux(self):
+    @mock.patch('tethys_apps.cli.docker_commands.get_api_version')
+    @mock.patch('tethys_apps.cli.docker_commands.DockerClient')
+    def test_get_docker_client_linux(self, mock_DockerClient, mock_get_api_version):
         ret = cli_docker_commands.get_docker_client()
-        self.assertIn('http+docker://localunixsocket', ret.base_url)
-        self.assertEquals('1.22', ret.api_version)
-        self.assertEquals('127.0.0.1', ret.host)
+        mock_get_api_version.assert_called()
+        call_args = mock_DockerClient.call_args_list
+
+        self.assertEqual(2, len(call_args))
+        # Validate first call
+        first_call = call_args[0]
+        self.assertEqual('unix://var/run/docker.sock', first_call[1]['base_url'])
+        self.assertEqual('1.12', first_call[1]['version'])
+
+        # Validate second call
+        second_call = call_args[1]
+        self.assertEqual('unix://var/run/docker.sock', second_call[1]['base_url'])
+        self.assertEqual(mock_get_api_version(), second_call[1]['version'])
+
+        # Validate result
+        self.assertEqual(mock_DockerClient(), ret)
 
     @mock.patch('tethys_apps.cli.docker_commands.pretty_output')
     @mock.patch('tethys_apps.cli.docker_commands.get_api_version')
