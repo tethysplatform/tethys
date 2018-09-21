@@ -6,6 +6,7 @@
 name: tethys
 
 channels:
+- tethysplatform
 - conda-forge
 - defaults
 
@@ -33,6 +34,7 @@ dependencies:
 - pyopenssl
 - mock
 - factory_boy
+- tethys_dataset_services>=1.7.0
 - pip:
     - django-gravatar2
     - django-bootstrap3
