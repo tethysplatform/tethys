@@ -9,7 +9,7 @@
 """
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
-from builtins import *
+from builtins import *  # noqa: F401, F403
 
 import os
 import inspect
@@ -19,7 +19,7 @@ import pkgutil
 from django.db.utils import ProgrammingError
 from django.core.exceptions import ObjectDoesNotExist
 from tethys_apps.base import TethysAppBase, TethysExtensionBase
-from tethys_apps.terminal_colors import TerminalColors
+from tethys_apps.base.testing.environment import is_testing_environment
 
 tethys_log = logging.getLogger('tethys.' + __name__)
 
@@ -32,6 +32,11 @@ class SingletonHarvester(object):
     extension_modules = {}
     apps = []
     _instance = None
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
 
     def harvest(self):
         """
@@ -40,21 +45,22 @@ class SingletonHarvester(object):
         self.harvest_extensions()
         self.harvest_apps()
 
-
     def harvest_extensions(self):
         """
         Searches for and loads Tethys extensions.
         """
         try:
+            if not is_testing_environment():
+                print(self.BLUE + 'Loading Tethys Extensions...' + self.ENDC)
+
             import tethysext
-            print(TerminalColors.BLUE + 'Loading Tethys Extensions...' + TerminalColors.ENDC)
             tethys_extensions = dict()
             for _, modname, ispkg in pkgutil.iter_modules(tethysext.__path__):
                 if ispkg:
                     tethys_extensions[modname] = 'tethysext.{}'.format(modname)
 
             self._harvest_extension_instances(tethys_extensions)
-        except:
+        except Exception:
             '''DO NOTHING'''
 
     def harvest_apps(self):
@@ -62,7 +68,8 @@ class SingletonHarvester(object):
         Searches the apps package for apps
         """
         # Notify user harvesting is taking place
-        print(TerminalColors.BLUE + 'Loading Tethys Apps...' + TerminalColors.ENDC)
+        if not is_testing_environment():
+            print(self.BLUE + 'Loading Tethys Apps...' + self.ENDC)
 
         # List the apps packages in directory
         apps_dir = os.path.join(os.path.dirname(__file__), 'tethysapp')
@@ -85,14 +92,14 @@ class SingletonHarvester(object):
             extension_url_patterns.update(extension.url_patterns)
 
         return app_url_patterns, extension_url_patterns
-        
+
     def __new__(cls):
         """
         Make App Harvester a Singleton
         """
         if not cls._instance:
             cls._instance = super(SingletonHarvester, cls).__new__(cls)
-            
+
         return cls._instance
 
     @staticmethod
@@ -133,7 +140,7 @@ class SingletonHarvester(object):
 
         Arg:
             extension_packages(dict<name, extension_package>): Dictionary where keys are the name of the extension and value is the extension package module object.
-        """
+        """  # noqa:E501
         valid_ext_instances = []
         valid_extension_modules = {}
         loaded_extensions = []
@@ -173,7 +180,7 @@ class SingletonHarvester(object):
 
                     except TypeError:
                         continue
-            except:
+            except Exception:
                 tethys_log.exception(
                     'Extension {0} not loaded because of the following error:'.format(extension_package))
                 continue
@@ -183,8 +190,9 @@ class SingletonHarvester(object):
         self.extension_modules = valid_extension_modules
 
         # Update user
-        print(TerminalColors.BLUE + 'Tethys Extensions Loaded: '
-            + TerminalColors.ENDC + '{0}'.format(', '.join(loaded_extensions)) + '\n')
+        if not is_testing_environment():
+            print(self.BLUE + 'Tethys Extensions Loaded: ' +
+                  self.ENDC + '{0}'.format(', '.join(loaded_extensions)) + '\n')
 
     def _harvest_app_instances(self, app_packages_list):
         """
@@ -193,7 +201,7 @@ class SingletonHarvester(object):
         """
         valid_app_instance_list = []
         loaded_apps = []
-        
+
         for app_package in app_packages_list:
             # Skip these things
             if app_package in ['__init__.py', '__init__.pyc', '.gitignore', '.DS_Store']:
@@ -206,7 +214,6 @@ class SingletonHarvester(object):
                 # Import the app.py module from the custom app package programmatically
                 # (e.g.: apps.apps.<custom_package>.app)
                 app_module = __import__(app_module_name, fromlist=[''])
-
 
                 for name, obj in inspect.getmembers(app_module):
                     # Retrieve the members of the app_module and iterate through
@@ -227,7 +234,7 @@ class SingletonHarvester(object):
                             # load/validate app url patterns
                             try:
                                 app_instance.url_patterns
-                            except:
+                            except Exception:
                                 tethys_log.exception(
                                     'App {0} not loaded because of an issue with loading urls:'.format(app_package))
                                 app_instance.remove_from_db()
@@ -237,7 +244,7 @@ class SingletonHarvester(object):
                             try:
                                 app_instance.register_app_permissions()
                             except (ProgrammingError, ObjectDoesNotExist) as e:
-                                tethys_log.error(e)
+                                tethys_log.warning(e)
 
                             # compile valid apps
                             if validated_app_instance:
@@ -251,7 +258,7 @@ class SingletonHarvester(object):
 
                     except TypeError:
                         continue
-            except:
+            except Exception:
                 tethys_log.exception(
                     'App {0} not loaded because of the following error:'.format(app_package))
                 continue
@@ -260,5 +267,6 @@ class SingletonHarvester(object):
         self.apps = valid_app_instance_list
 
         # Update user
-        print(TerminalColors.BLUE + 'Tethys Apps Loaded: '
-              + TerminalColors.ENDC + '{0}'.format(', '.join(loaded_apps)) + '\n')
+        if not is_testing_environment():
+            print(self.BLUE + 'Tethys Apps Loaded: '
+                  + self.ENDC + '{0}'.format(', '.join(loaded_apps)) + '\n')

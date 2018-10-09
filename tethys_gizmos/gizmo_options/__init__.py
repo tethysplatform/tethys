@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+# flake8: noqa
 from .date_picker import *
 from .button import *
 from .range_slider import *
