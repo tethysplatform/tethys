@@ -1,6 +1,6 @@
 # add the following  to operations in migrations
 # from . import initialize_settings
-    # migrations.RunPython(initialize_settings),
+# migrations.RunPython(initialize_settings),
 
 
 def initialize_settings(apps, schema_editor):
@@ -24,6 +24,7 @@ def initialize_settings(apps, schema_editor):
     for setting in['Subscription ID', 'Certificate Path']:
         s = Setting(name=setting, category=category)
         s.save()
+
 
 def clear_settings(apps, schema_edititor):
     SettingsCategory = apps.get_model('tethys_compute', 'SettingsCategory')
