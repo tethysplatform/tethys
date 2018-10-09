@@ -4,7 +4,7 @@
 * Author: nswain
 * Created On: May 09, 2016
 * Copyright: (c) Aquaveo 2016
-* License: 
+* License:
 ********************************************************************************
 """
 
@@ -40,7 +40,7 @@ class Permission:
     def _repr(self):
         return '<Permission name="{0}" description="{1}">'.format(self.name, self.description)
 
-    def __unicode__(self):
+    def __str__(self):
         return self._repr()
 
     def __repr__(self):
@@ -88,7 +88,7 @@ class PermissionGroup:
     def _repr(self):
         return '<Group name="{0}">'.format(self.name)
 
-    def __unicode__(self):
+    def __str__(self):
         return self._repr()
 
     def __repr__(self):
@@ -120,7 +120,7 @@ def has_permission(request, perm, user=None):
             if can_create_projects:
                 ...
 
-    """
+    """  # noqa: E501
     from tethys_apps.utilities import get_active_app
 
     app = get_active_app(request)

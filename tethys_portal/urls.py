@@ -14,15 +14,17 @@ from django.contrib.auth.views import password_reset, password_reset_done, passw
 from django.conf import settings
 from tethys_apps.urls import extension_urls
 
-admin.autodiscover()
+from tethys_portal.views import accounts as tethys_portal_accounts, developer as tethys_portal_developer, \
+    error as tethys_portal_error, home as tethys_portal_home, user as tethys_portal_user
+from tethys_apps import views as tethys_apps_views
 
 # ensure at least staff users logged in before accessing admin login page
 from django.contrib.admin.views.decorators import staff_member_required
 admin.site.login = staff_member_required(admin.site.login, redirect_field_name="", login_url='/accounts/login/')
 
-from tethys_portal.views import accounts as tethys_portal_accounts, developer as tethys_portal_developer, \
-    error as tethys_portal_error, home as tethys_portal_home, user as tethys_portal_user
-from tethys_apps import views as tethys_apps_views
+admin.autodiscover()
+admin.site.login = staff_member_required(admin.site.login, redirect_field_name="", login_url='/accounts/login/')
+
 
 account_urls = [
     url(r'^login/$', tethys_portal_accounts.login_view, name='login'),
