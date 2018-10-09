@@ -64,11 +64,11 @@ class TableView(TethysGizmoOptions):
     ::
 
         {% load tethys_gizmos %}
-        
+
         {% gizmo table_view %}
         {% gizmo table_view_edit %}
 
-    """
+    """  # noqa: E501
     gizmo_name = "table_view"
 
     def __init__(self, rows, column_names='', hover=False, striped=False, bordered=False, condensed=False,

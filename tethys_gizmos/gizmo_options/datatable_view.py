@@ -12,10 +12,12 @@ from json import dumps
 
 __all__ = ['DataTableView']
 
+
 class DataTableView(TethysGizmoOptions):
     """
-    Table views can be used to display tabular data. The table view gizmo can be configured to have columns that are editable. When used in this capacity, embed the table view in a form with a submit button.
-    
+    Table views can be used to display tabular data. The table view gizmo can be configured to have columns that are
+    editable. When used in this capacity, embed the table view in a form with a submit button.
+
     .. note:: The current version of DataTables in Tethys Platform is 1.10.12.
 
     Attributes:
@@ -43,14 +45,14 @@ class DataTableView(TethysGizmoOptions):
 
         context = { 'datatable_view': datatable_default}
 
-    Regular Template Example 
+    Regular Template Example
 
     ::
-    
+
         {% load tethys_gizmos %}
-        
+
         {% gizmo datatable_view %}
-        
+
     .. note:: You can also add extensions to the data table view as shown in the next example.
               To learn more about DataTable extensions, go to https://datatables.net/extensions/index.
 
@@ -66,35 +68,35 @@ class DataTableView(TethysGizmoOptions):
                                                        ('Bob', 26, 'boss')],
                                                  colReorder=True,
                                                  )
-                                                 
+
         context = { 'datatable_with_extension': datatable_with_extension}
 
-    ColReorder Template Example 
+    ColReorder Template Example
 
     ::
 
         {% load tethys_gizmos %}
-        
+
         #LOAD IN EXTENSION JAVASCRIPT/CSS
         {% block global_scripts %}
           {{ block.super }}
            <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/colreorder/1.3.2/js/dataTables.colReorder.min.js"></script>
         {% endblock %}
-        
+
         {% block styles %}
           {{ block.super }}
           <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colreorder/1.3.2/css/colReorder.dataTables.min.css">
         {% endblock %}
         #END LOAD IN EXTENSION JAVASCRIPT/CSS
-    
+
         {% gizmo datatable_with_extension %}
 
-    """
-    ##UNSUPPORTED_EXTENSIONS = ('autoFill', 'select', 'keyTable', 'rowReorder')
-    ##SUPPORTED_EXTENSIONS = ('buttons', 'colReorder', 'fizedColumns', 
-    ##                        'fixedHeader', 'responsive',  'scroller')
+    """  # noqa: E501
+    # UNSUPPORTED_EXTENSIONS = ('autoFill', 'select', 'keyTable', 'rowReorder')
+    # SUPPORTED_EXTENSIONS = ('buttons', 'colReorder', 'fizedColumns',
+    #                         'fixedHeader', 'responsive',  'scroller')
     gizmo_name = "datatable_view"
-    
+
     def __init__(self, rows, column_names, footer=False, attributes={}, classes='', **kwargs):
         """
         Constructor
@@ -105,23 +107,23 @@ class DataTableView(TethysGizmoOptions):
         self.rows = rows
         self.column_names = column_names
         self.footer = footer
-        self.datatable_options = {}        
+        self.datatable_options = {}
         for key, value in kwargs.items():
-            data_name = re.sub("([a-z])([A-Z])","\g<1>-\g<2>",key).lower()
+            data_name = re.sub("([a-z])([A-Z])", "\g<1>-\g<2>", key).lower()
             self.datatable_options[data_name] = dumps(value)
-            
+
     @staticmethod
     def get_vendor_css():
         """
-        JavaScript vendor libraries to be placed in the 
+        JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
         return ('https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css',)
-        
+
     @staticmethod
     def get_vendor_js():
         """
-        JavaScript vendor libraries to be placed in the 
+        JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
         return ('https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js',)
@@ -129,7 +131,7 @@ class DataTableView(TethysGizmoOptions):
     @staticmethod
     def get_gizmo_js():
         """
-        JavaScript specific to gizmo to be placed in the 
+        JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
         return ('tethys_gizmos/js/datatable_view.js',)

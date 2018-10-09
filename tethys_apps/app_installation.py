@@ -12,8 +12,8 @@ import shutil
 import subprocess
 from setuptools.command.develop import develop
 from setuptools.command.install import install
-from sys import platform as _platform
 import ctypes
+from tethys_apps.cli.cli_colors import pretty_output, FG_BLACK
 
 
 def find_resource_files(directory):
@@ -40,16 +40,17 @@ def _run_install(self):
     destination_dir = os.path.join(tethysapp_dir, self.app_package)
 
     # Notify user
-    print('Copying App Package: {0} to {1}'.format(self.app_package_dir, destination_dir))
+    with pretty_output(FG_BLACK) as p:
+        p.write('Copying App Package: {0} to {1}'.format(self.app_package_dir, destination_dir))
 
     # Copy files
     try:
         shutil.copytree(self.app_package_dir, destination_dir)
 
-    except:
+    except Exception:
         try:
             shutil.rmtree(destination_dir)
-        except:
+        except Exception:
             os.remove(destination_dir)
 
         shutil.copytree(self.app_package_dir, destination_dir)
@@ -71,27 +72,31 @@ def _run_develop(self):
     destination_dir = os.path.join(tethysapp_dir, self.app_package)
 
     # Notify user
-    print('Creating Symbolic Link to App Package: {0} to {1}'.format(self.app_package_dir, destination_dir))
+    with pretty_output(FG_BLACK) as p:
+        p.write('Creating Symbolic Link to App Package: {0} to {1}'.format(self.app_package_dir, destination_dir))
 
     # Create symbolic link
     try:
-        os_symlink = getattr(os,"symlink",None)
+        os_symlink = getattr(os, "symlink", None)
         if callable(os_symlink):
             os.symlink(self.app_package_dir, destination_dir)
         else:
-            def symlink_ms(source,dest):
+            def symlink_ms(source, dest):
                 csl = ctypes.windll.kernel32.CreateSymbolicLinkW
-                csl.argtypes = (ctypes.c_wchar_p,ctypes.c_wchar_p,ctypes.c_uint32)
+                csl.argtypes = (ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint32)
                 csl.restype = ctypes.c_ubyte
                 flags = 1 if os.path.isdir(source) else 0
-                if csl(dest,source.replace('/','\\'),flags) == 0:
-                   raise ctypes.WinError()
-                os.symlink = symlink_ms(self.app_package_dir, destination_dir)
+                if csl(dest, source.replace('/', '\\'), flags) == 0:
+                    raise ctypes.WinError()
+
+            os.symlink = symlink_ms
+            symlink_ms(self.app_package_dir, destination_dir)
     except Exception as e:
-        print(e)
+        with pretty_output(FG_BLACK) as p:
+            p.write(e)
         try:
             shutil.rmtree(destination_dir)
-        except Exception as e:
+        except Exception:
             os.remove(destination_dir)
 
         os.symlink(self.app_package_dir, destination_dir)

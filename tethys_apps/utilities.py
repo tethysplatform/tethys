@@ -7,13 +7,14 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from __future__ import print_function
+from builtins import input
 import logging
 import os
 
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils._os import safe_join
 from tethys_apps.harvester import SingletonHarvester
-from tethys_apps.models import TethysApp
 
 tethys_log = logging.getLogger('tethys.' + __name__)
 
@@ -32,7 +33,6 @@ def get_directories_in_tethys(directory_names, with_app_name=False):
     tethysapp_dir = safe_join(os.path.abspath(os.path.dirname(__file__)), 'tethysapp')
     tethysapp_contents = next(os.walk(tethysapp_dir))[1]
     potential_dirs = [safe_join(tethysapp_dir, item) for item in tethysapp_contents]
-
 
     # Determine the directories of tethys extensions
     harvester = SingletonHarvester()
@@ -65,6 +65,7 @@ def get_active_app(request=None, url=None):
     """
     Get the active TethysApp object based on the request or URL.
     """
+    from tethys_apps.models import TethysApp
     apps_root = 'apps'
 
     if request is not None:
@@ -96,8 +97,9 @@ def get_active_app(request=None, url=None):
 
 def create_ps_database_setting(app_package, name, description='', required=False, initializer='', initialized=False,
                                spatial=False, dynamic=False):
-    from cli.cli_colors import pretty_output, FG_RED, FG_GREEN
+    from tethys_apps.cli.cli_colors import pretty_output, FG_RED, FG_GREEN
     from tethys_apps.models import PersistentStoreDatabaseSetting
+    from tethys_apps.models import TethysApp
 
     try:
         app = TethysApp.objects.get(package=app_package)
@@ -139,7 +141,8 @@ def create_ps_database_setting(app_package, name, description='', required=False
 
 
 def remove_ps_database_setting(app_package, name, force=False):
-    from cli.cli_colors import pretty_output, FG_RED, FG_GREEN
+    from tethys_apps.models import TethysApp
+    from tethys_apps.cli.cli_colors import pretty_output, FG_RED, FG_GREEN
     from tethys_apps.models import PersistentStoreDatabaseSetting
 
     try:
@@ -158,10 +161,10 @@ def remove_ps_database_setting(app_package, name, force=False):
         return False
 
     if not force:
-        proceed = raw_input('Are you sure you want to delete the PersistentStoreDatabaseSetting named "{}"? [y/n]: '
-                            .format(name))
+        proceed = input('Are you sure you want to delete the '
+                        'PersistentStoreDatabaseSetting named "{}"? [y/n]: '.format(name))
         while proceed not in ['y', 'n', 'Y', 'N']:
-            proceed = raw_input('Please enter either "y" or "n": ')
+            proceed = input('Please enter either "y" or "n": ')
 
         if proceed in ['y', 'Y']:
             setting.delete()
@@ -189,10 +192,11 @@ def link_service_to_app_setting(service_type, service_uid, app_package, setting_
     :param setting_uid: The name or id of the setting being linked to a service.
     :return: True if successful, False otherwise.
     """
-    from cli.cli_colors import pretty_output, FG_GREEN, FG_RED
+    from tethys_apps.cli.cli_colors import pretty_output, FG_GREEN, FG_RED
     from tethys_sdk.app_settings import (SpatialDatasetServiceSetting, PersistentStoreConnectionSetting,
                                          PersistentStoreDatabaseSetting)
     from tethys_services.models import (SpatialDatasetService, PersistentStoreService)
+    from tethys_apps.models import TethysApp
 
     service_type_to_model_dict = {
         'spatial': SpatialDatasetService,

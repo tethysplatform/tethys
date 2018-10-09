@@ -1,5 +1,6 @@
-from .cli_colors import *
+from .cli_colors import FG_RED, FG_GREEN, FG_YELLOW, BOLD, pretty_output
 from django.core.exceptions import ObjectDoesNotExist
+from builtins import input
 
 
 def scheduler_create_command(args):
@@ -14,7 +15,7 @@ def scheduler_create_command(args):
 
     existing_scheduler = Scheduler.objects.filter(name=name).first()
     if existing_scheduler:
-        with pretty_output(FG_RED) as p:
+        with pretty_output(FG_YELLOW) as p:
             p.write('A Scheduler with name "{}" already exists. Command aborted.'.format(name))
         exit(0)
 
@@ -74,9 +75,9 @@ def schedulers_remove_command(args):
             p.write('Successfully removed Scheduler "{0}"!'.format(name))
         exit(0)
     else:
-        proceed = raw_input('Are you sure you want to delete this Scheduler? [y/n]: ')
+        proceed = input('Are you sure you want to delete this Scheduler? [y/n]: ')
         while proceed not in ['y', 'n', 'Y', 'N']:
-            proceed = raw_input('Please enter either "y" or "n": ')
+            proceed = input('Please enter either "y" or "n": ')
 
         if proceed in ['y', 'Y']:
             scheduler.delete()

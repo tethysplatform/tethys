@@ -121,7 +121,7 @@ def initial_settings(apps, schema_editor):
                                      date_modified=now)
 
     home_category.setting_set.create(name="Feature 2 Body",
-                                     content="Describe the apps and tools that your Tethys Portal provides and add"
+                                     content="Describe the apps and tools that your Tethys Portal provides and add "
                                              "custom pictures to each feature as a finishing touch.",
                                      date_modified=now)
 

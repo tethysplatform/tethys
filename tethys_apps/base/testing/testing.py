@@ -1,3 +1,5 @@
+import logging
+
 from django.test import Client
 from django.test import TestCase
 
@@ -17,10 +19,12 @@ class TethysTestCase(TestCase):
         from tethys_apps.harvester import SingletonHarvester
         harvester = SingletonHarvester()
         harvester.harvest()
+        logging.disable(logging.CRITICAL)
         self.set_up()
 
     def tearDown(self):
         self.tear_down()
+        logging.disable(logging.NOTSET)
 
     def set_up(self):
         """

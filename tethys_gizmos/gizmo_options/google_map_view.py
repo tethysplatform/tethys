@@ -119,9 +119,9 @@ class GoogleMapView(TethysGizmoOptions):
 
         {% gizmo google_map_view_options %}
 
-    """
+    """  # noqa:E501
     gizmo_name = "google_map_view"
-    
+
     def __init__(self, height, width, maps_api_key="", reference_kml_action="", drawing_types_enabled=[],
                  initial_drawing_mode="", output_format='GEOJSON', input_overlays=[None], attributes={}, classes=''):
         """
@@ -138,19 +138,19 @@ class GoogleMapView(TethysGizmoOptions):
         self.initial_drawing_mode = initial_drawing_mode
         self.output_format = output_format
         self.input_overlays = input_overlays
-        
+
     @staticmethod
     def get_vendor_js():
         """
-        JavaScript vendor libraries to be placed in the 
+        JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
         return ('tethys_gizmos/vendor/farbtastic/farbtastic.js',)
 
-    @staticmethod    
+    @staticmethod
     def get_vendor_css():
         """
-        CSS vendor libraries to be placed in the 
+        CSS vendor libraries to be placed in the
         {% block styles %} block
         """
         return ('tethys_gizmos/vendor/farbtastic/farbtastic.css',)
@@ -158,7 +158,7 @@ class GoogleMapView(TethysGizmoOptions):
     @staticmethod
     def get_gizmo_js():
         """
-        JavaScript specific to gizmo to be placed in the 
+        JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
         return ('tethys_gizmos/js/tethys_google_map_view.js',)
