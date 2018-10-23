@@ -40,8 +40,9 @@ def tethys_command():
     """
     # Create parsers
     parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(title='Commands')
-
+    subparsers = parser.add_subparsers(title='Commands', dest='require at least one argument')
+    subparsers.required = True
+    
     # Setup scaffold command
     scaffold_parser = subparsers.add_parser('scaffold', help='Create a new Tethys app project from a scaffold.')
     scaffold_parser.add_argument('name', help='The name of the new Tethys app project to create. Only lowercase '
@@ -329,3 +330,12 @@ def tethys_command():
     # Parse the args and call the default function
     args = parser.parse_args()
     args.func(args)
+    # parser = argparse.ArgumentParser(description='Process some integers.')
+    # parser.add_argument('integers', metavar='N', type=int, nargs='+',
+    #                     help='an integer for the accumulator')
+    # parser.add_argument('--sum', dest='accumulate', action='store_const',
+    #                     const=sum, default=max,
+    #                     help='sum the integers (default: find the max)')
+    #
+    # args = parser.parse_args()
+    # print(args.accumulate(args.integers))
