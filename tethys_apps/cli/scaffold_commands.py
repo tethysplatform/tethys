@@ -3,6 +3,7 @@ import re
 import logging
 import random
 import shutil
+from builtins import input
 
 from django.template import Template, Context
 from tethys_apps.cli.cli_colors import pretty_output, FG_RED, FG_YELLOW, FG_WHITE
@@ -287,7 +288,7 @@ def scaffold_command(args):
 
             while not valid:
                 try:
-                    response = input('{0} ["{1}"]: '.format(item['prompt'], item['default'])) or item['default']
+                    response = input('{0} ["{1}"]: '.format(item['prompt'], item['default'])) or str(item['default'])
                 except (KeyboardInterrupt, SystemExit):
                     with pretty_output(FG_YELLOW) as p:
                         p.write('\nScaffolding cancelled.')
