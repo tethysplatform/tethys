@@ -288,7 +288,7 @@ def scaffold_command(args):
 
             while not valid:
                 try:
-                    response = input('{0} ["{1}"]: '.format(item['prompt'], item['default'])) or str(item['default'])
+                    response = input('{0} ["{1}"]: '.format(item['prompt'], item['default'])) or item['default']
                 except (KeyboardInterrupt, SystemExit):
                     with pretty_output(FG_YELLOW) as p:
                         p.write('\nScaffolding cancelled.')
