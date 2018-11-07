@@ -12,22 +12,31 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 
+
 class LoginForm(forms.Form):
-    username = forms.RegexField(label='', max_length=30,
-                                regex=r'^[\w.@+-]+$',
-                                error_messages={
-                                    'invalid': "This value may contain only letters, numbers and @/./+/-/_ characters."},
-                                widget=forms.TextInput(attrs={'placeholder': 'Username',
-                                                              'autofocus': 'autofocus'}
-                                )
+
+    username = forms.RegexField(
+        label='', max_length=30,
+        regex=r'^[\w.@+-]+$',
+        error_messages={
+            'invalid': "This value may contain only letters, numbers and @/./+/-/_ characters."
+        },
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Username',
+                'autofocus': 'autofocus'
+            }
+        )
     )
 
-    password = forms.CharField(label='',
-                               widget=forms.PasswordInput(
-                                   attrs={'placeholder': 'Password'}
-                               )
+    password = forms.CharField(
+        label='',
+        widget=forms.PasswordInput(
+            attrs={'placeholder': 'Password'}
+        )
     )
     captcha = CaptchaField(label='')
+
 
 class RegisterForm(forms.ModelForm):
     """
@@ -40,27 +49,39 @@ class RegisterForm(forms.ModelForm):
         'duplicate_email': "A user with this email already exists."
     }
 
-    username = forms.RegexField(label='', max_length=30,
-                                regex=r'^[\w.@+-]+$',
-                                error_messages={
-                                    'invalid': "This value may contain only letters, numbers and @/./+/-/_ characters."},
-                                widget=forms.TextInput(attrs={'placeholder': 'Username',
-                                                              'autofocus': 'autofocus'}
-                                )
+    username = forms.RegexField(
+        label='', max_length=30,
+        regex=r'^[\w.@+-]+$',
+        error_messages={
+            'invalid': "This value may contain only letters, numbers and @/./+/-/_ characters."},
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Username',
+                'autofocus': 'autofocus'
+            }
+        )
     )
 
-    email = forms.CharField(label='',
-                            max_length=30,
-                            widget=forms.EmailInput(attrs={'placeholder': 'Email'}
-                            )
+    email = forms.CharField(
+        label='',
+        max_length=30,
+        widget=forms.EmailInput(
+            attrs={'placeholder': 'Email'}
+        )
     )
 
-    password1 = forms.CharField(label='',
-                                widget=forms.PasswordInput(attrs={'placeholder': 'Password'}),
+    password1 = forms.CharField(
+        label='',
+        widget=forms.PasswordInput(
+            attrs={'placeholder': 'Password'}
+        )
     )
 
-    password2 = forms.CharField(label='',
-                                widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password'}),
+    password2 = forms.CharField(
+        label='',
+        widget=forms.PasswordInput(
+            attrs={'placeholder': 'Confirm Password'}
+        )
     )
 
     captcha = CaptchaField(label='')
@@ -118,31 +139,40 @@ class UserSettingsForm(forms.ModelForm):
     """
     A form for modifying user settings.
     """
-    first_name = forms.CharField(max_length=30,
-                                 label='',
-                                 required=False,
-                                 widget=forms.TextInput(
-                                     attrs={'placeholder': '',
-                                            'class': 'form-control',
-                                            'autofocus': 'autofocus'}
-                                 )
+    first_name = forms.CharField(
+        max_length=30,
+        label='',
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': '',
+                'class': 'form-control',
+                'autofocus': 'autofocus'
+            }
+        )
     )
 
-    last_name = forms.CharField(max_length=30,
-                                label='',
-                                required=False,
-                                widget=forms.TextInput(
-                                    attrs={'placeholder': '',
-                                           'class': 'form-control'}
-                                )
+    last_name = forms.CharField(
+        max_length=30,
+        label='',
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': '',
+                'class': 'form-control'
+            }
+        )
     )
 
-    email = forms.EmailField(max_length=30,
-                             label='Email:',
-                             widget=forms.EmailInput(
-                                 attrs={'placeholder': '',
-                                        'class': 'form-control'}
-                             )
+    email = forms.EmailField(
+        max_length=30,
+        label='Email:',
+        widget=forms.EmailInput(
+            attrs={
+                'placeholder': '',
+                'class': 'form-control'
+            }
+        )
     )
 
     class Meta:
@@ -159,24 +189,29 @@ class UserPasswordChangeForm(forms.Form):
         'password_incorrect': "Your old password was entered incorrectly. Please enter it again.",
     }
 
-    old_password = forms.CharField(label="",
-                                   widget=forms.PasswordInput(
-                                       attrs={'placeholder': 'Old Password',
-                                              'autofocus': 'autofocus'}
-                                   ),
-                                   )
+    old_password = forms.CharField(
+        label="",
+        widget=forms.PasswordInput(
+            attrs={
+                'placeholder': 'Old Password',
+                'autofocus': 'autofocus'
+            }
+        )
+    )
 
-    new_password1 = forms.CharField(label="",
-                                    widget=forms.PasswordInput(
-                                        attrs={'placeholder': 'New Password'}
-                                    ),
-                                    )
+    new_password1 = forms.CharField(
+        label="",
+        widget=forms.PasswordInput(
+            attrs={'placeholder': 'New Password'}
+        )
+    )
 
-    new_password2 = forms.CharField(label="",
-                                    widget=forms.PasswordInput(
-                                        attrs={'placeholder': 'Confirm New Password'}
-                                    ),
-                                    )
+    new_password2 = forms.CharField(
+        label="",
+        widget=forms.PasswordInput(
+            attrs={'placeholder': 'Confirm New Password'}
+        )
+    )
 
     def __init__(self, user, *args, **kwargs):
         self.user = user

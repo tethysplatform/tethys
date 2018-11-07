@@ -60,6 +60,13 @@ BG_MAGENTA = '\033[45m'
 BG_CYAN = '\033[46m'
 BG_WHITE = '\033[47m'
 
+# TerminalColors colors
+TC_BLUE = '\033[94m'
+TC_GREEN = '\033[92m'
+TC_WARNING = '\033[93m'
+TC_FAIL = '\033[91m'
+TC_ENDC = '\033[0m'
+
 
 class pretty_output:
     '''
@@ -78,24 +85,3 @@ class pretty_output:
     def write(self, msg):
         style = ''.join(self.attributes)
         print('{}{}{}'.format(style, msg.replace(END, ALL_OFF + style), ALL_OFF))
-
-
-if __name__ == '__main__':
-
-    with pretty_output(FG_RED) as out:
-        out.write('This is a test in RED')
-
-    with pretty_output(FG_BLUE) as out:
-        out.write('This is a test in BLUE')
-
-    with pretty_output(BOLD, FG_GREEN) as out:
-        out.write('This is a bold text in green')
-
-    with pretty_output(BOLD, BG_GREEN) as out:
-        out.write('This is a text with green background')
-
-    with pretty_output(FG_GREEN) as out:
-        out.write('This is a green text with ' + BOLD + 'bold' + END + ' text included')
-
-    with pretty_output() as out:
-        out.write(BOLD + 'Use this' + END + ' even with ' + BOLD + FG_RED + 'no parameters' + END + ' in the with statement')

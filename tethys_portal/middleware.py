@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from social_django.middleware import SocialAuthExceptionMiddleware
 from social_core import exceptions as social_exceptions
+from tethys_apps.cli.cli_colors import pretty_output, FG_WHITE
 
 
 class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
@@ -23,7 +24,8 @@ class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
                     return redirect('user:settings', username=request.user.username)
             elif isinstance(exception, social_exceptions.AuthAlreadyAssociated):
                 blurb = 'The {0} account you tried to connect to has already been associated with another account.'
-                print(exception.backend.name)
+                with pretty_output(FG_WHITE) as p:
+                    p.write(exception.backend.name)
                 if 'google' in exception.backend.name:
                     blurb = blurb.format('Google')
                 elif 'linkedin' in exception.backend.name:
