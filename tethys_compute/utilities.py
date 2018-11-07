@@ -10,7 +10,6 @@
 
 import json
 from django import forms
-from django.core import exceptions
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from future.utils import with_metaclass
@@ -22,6 +21,7 @@ from past.builtins import basestring
 # deprecated code copied from: https://github.com/django/django/blob/stable/1.9.x/django/db/models/fields/subclassing.py
 
 
+# TODO: Talk to Scott about this
 class SubfieldBase(type):
     """
     A metaclass for custom Field subclasses. This ensures the model's attribute
@@ -49,9 +49,12 @@ class Creator(object):
         return obj.__dict__[self.field.name]
 
     def __set__(self, obj, value):
+        # Google says this is bad
+        # TODO: this is NOT tested
         obj.__dict__[self.field.name] = self.field.to_python(value)
 
 
+# TODO: Talk to Scott about this - Not used, can we take this out?
 def make_contrib(superclass, func=None):
     """
     Returns a suitable contribute_to_class() method for the Field subclass.
@@ -86,15 +89,16 @@ class DictionaryField(with_metaclass(SubfieldBase, models.Field)):
         elif isinstance(value, basestring):
             try:
                 return dict(json.loads(value))
-            except (ValueError, TypeError):
-                raise exceptions.ValidationError(self.error_messages['invalid value for json: %s' % value])
+            except (ValueError, TypeError) as e:
+                raise e
+                # raise exceptions.ValidationError(self.error_messages['invalid value for json: %s' % value])
 
         if isinstance(value, dict):
             return value
         else:
             return {}
 
-    def from_db_value(self, value,  expression, connection, context):
+    def from_db_value(self, value, expression, connection, context):
         return self.to_python(value)
 
     def get_prep_value(self, value):

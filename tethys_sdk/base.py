@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+# flake8: noqa
 # DO NOT ERASE
 from tethys_apps.base import TethysAppBase, TethysExtensionBase
 from tethys_apps.base.url_map import url_map_maker

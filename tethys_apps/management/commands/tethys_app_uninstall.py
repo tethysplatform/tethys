@@ -41,7 +41,8 @@ class Command(BaseCommand):
             item_name = item_name[prefix_length:]
 
         if item_name not in installed_items:
-            warnings.warn('WARNING: {0} with name "{1}" cannot be uninstalled, because it is not installed or not an {0}.'.format(app_or_extension, item_name))
+            warnings.warn('WARNING: {0} with name "{1}" cannot be uninstalled, because it is not installed or'
+                          ' not an {0}.'.format(app_or_extension, item_name))
             exit(0)
 
         item_with_prefix = '{0}-{1}'.format(PREFIX, item_name)
@@ -88,8 +89,8 @@ class Command(BaseCommand):
         # Remove the namespace package file if applicable.
         for site_package in site.getsitepackages():
             try:
-                os.remove(os.path.join(site_package, "{}-{}-nspkg.pth".format(PREFIX, item_name.replace('_','-'))))
-            except:
+                os.remove(os.path.join(site_package, "{}-{}-nspkg.pth".format(PREFIX, item_name.replace('_', '-'))))
+            except Exception:
                 continue
 
         self.stdout.write('{} "{}" successfully uninstalled.'.format(app_or_extension, item_with_prefix))
