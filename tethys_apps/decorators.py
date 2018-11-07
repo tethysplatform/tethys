@@ -4,13 +4,12 @@
 * Author: nswain
 * Created On: May 09, 2016
 * Copyright: (c) Aquaveo 2016
-* License: 
+* License:
 ********************************************************************************
 """
-try:
-    from urlparse import urlparse
-except ImportError:
-    from urllib.parse import urlparse
+from future.standard_library import install_aliases
+
+from urllib.parse import urlparse
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.contrib import messages
@@ -20,6 +19,8 @@ from django.utils.functional import wraps
 from past.builtins import basestring
 from tethys_portal.views import error as tethys_portal_error
 from tethys_apps.base import has_permission
+
+install_aliases()
 
 
 def permission_required(*args, **kwargs):
@@ -82,12 +83,15 @@ def permission_required(*args, **kwargs):
             \"""
             ...
 
-    """
+    """  # noqa: E501
 
     use_or = kwargs.pop('use_or', False)
     message = kwargs.pop('message', "We're sorry, but you are not allowed to perform this operation.")
     raise_exception = kwargs.pop('raise_exception', False)
     perms = [arg for arg in args if isinstance(arg, basestring)]
+
+    if not perms:
+        raise ValueError('Must supply at least one permission to test.')
 
     def decorator(controller_func):
         def _wrapped_controller(*args, **kwargs):

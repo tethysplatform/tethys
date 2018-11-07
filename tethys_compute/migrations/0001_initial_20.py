@@ -82,7 +82,10 @@ class Migration(migrations.Migration):
                 ('workspace', models.CharField(default='', max_length=1024)),
                 ('extended_properties', tethys_compute.utilities.DictionaryField(blank=True, default='')),
                 ('_process_results_function', models.CharField(blank=True, max_length=1024, null=True)),
-                ('_status', models.CharField(choices=[('PEN', 'Pending'), ('SUB', 'Submitted'), ('RUN', 'Running'), ('COM', 'Complete'), ('ERR', 'Error'), ('ABT', 'Aborted'), ('VAR', 'Various'), ('VCP', 'Various-Complete')], default='PEN', max_length=3)),
+                ('_status', models.CharField(choices=[('PEN', 'Pending'), ('SUB', 'Submitted'), ('RUN', 'Running'),
+                                                      ('COM', 'Complete'), ('ERR', 'Error'), ('ABT', 'Aborted'),
+                                                      ('VAR', 'Various'), ('VCP', 'Various-Complete')], default='PEN',
+                                             max_length=3)),
             ],
             options={
                 'verbose_name': 'Job',
@@ -91,14 +94,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='BasicJob',
             fields=[
-                ('tethysjob_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_compute.TethysJob')),
+                ('tethysjob_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE,
+                                                       parent_link=True, primary_key=True, serialize=False,
+                                                       to='tethys_compute.TethysJob')),
             ],
             bases=('tethys_compute.tethysjob',),
         ),
         migrations.CreateModel(
             name='CondorBase',
             fields=[
-                ('tethysjob_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_compute.TethysJob')),
+                ('tethysjob_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE,
+                                                       parent_link=True, primary_key=True, serialize=False,
+                                                       to='tethys_compute.TethysJob')),
                 ('cluster_id', models.IntegerField(blank=True, default=0)),
                 ('remote_id', models.CharField(blank=True, max_length=32, null=True)),
             ],
@@ -107,8 +114,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CondorWorkflowJobNode',
             fields=[
-                ('condorpyjob_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, to='tethys_compute.CondorPyJob')),
-                ('condorworkflownode_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_compute.CondorWorkflowNode')),
+                ('condorpyjob_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE,
+                                                         parent_link=True, to='tethys_compute.CondorPyJob')),
+                ('condorworkflownode_ptr', models.OneToOneField(auto_created=True,
+                                                                on_delete=django.db.models.deletion.CASCADE,
+                                                                parent_link=True, primary_key=True, serialize=False,
+                                                                to='tethys_compute.CondorWorkflowNode')),
             ],
             bases=('tethys_compute.condorworkflownode', 'tethys_compute.condorpyjob'),
         ),
@@ -125,27 +136,36 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='condorworkflownode',
             name='workflow',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='node_set', to='tethys_compute.CondorPyWorkflow'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='node_set',
+                                    to='tethys_compute.CondorPyWorkflow'),
         ),
         migrations.CreateModel(
             name='CondorJob',
             fields=[
-                ('condorpyjob_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, to='tethys_compute.CondorPyJob')),
-                ('condorbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_compute.CondorBase')),
+                ('condorpyjob_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE,
+                                                         parent_link=True, to='tethys_compute.CondorPyJob')),
+                ('condorbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE,
+                                                        parent_link=True, primary_key=True, serialize=False,
+                                                        to='tethys_compute.CondorBase')),
             ],
             bases=('tethys_compute.condorbase', 'tethys_compute.condorpyjob'),
         ),
         migrations.CreateModel(
             name='CondorWorkflow',
             fields=[
-                ('condorpyworkflow_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, to='tethys_compute.CondorPyWorkflow')),
-                ('condorbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='tethys_compute.CondorBase')),
+                ('condorpyworkflow_ptr', models.OneToOneField(auto_created=True,
+                                                              on_delete=django.db.models.deletion.CASCADE,
+                                                              parent_link=True, to='tethys_compute.CondorPyWorkflow')),
+                ('condorbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE,
+                                                        parent_link=True, primary_key=True, serialize=False,
+                                                        to='tethys_compute.CondorBase')),
             ],
             bases=('tethys_compute.condorbase', 'tethys_compute.condorpyworkflow'),
         ),
         migrations.AddField(
             model_name='condorbase',
             name='scheduler',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='tethys_compute.Scheduler'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL,
+                                    to='tethys_compute.Scheduler'),
         ),
     ]

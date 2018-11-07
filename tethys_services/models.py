@@ -47,7 +47,8 @@ def validate_spatial_dataset_service_endpoint(value):
     validate_url(value)
 
     if '/geoserver/rest' not in value:
-        raise ValidationError('Invalid Endpoint: GeoServer endpoints follow the pattern "http://example.com/geoserver/rest".')
+        raise ValidationError('Invalid Endpoint: GeoServer endpoints follow the pattern '
+                              '"http://example.com/geoserver/rest".')
 
 
 def validate_wps_service_endpoint(value):
@@ -57,14 +58,15 @@ def validate_wps_service_endpoint(value):
     validate_url(value)
 
     if '/wps/WebProcessingService' not in value:
-        raise ValidationError('Invalid Endpoint: 52 North WPS endpoints follow the pattern "http://example.com/wps/WebProcessingService".')
+        raise ValidationError('Invalid Endpoint: 52 North WPS endpoints follow the pattern '
+                              '"http://example.com/wps/WebProcessingService".')
 
 
 def validate_persistent_store_port(value):
     """
     Validator for persistent store service ports
     """
-    if value < 1024 or value > 65535:
+    if int(value) < 1024 or int(value) > 65535:
         raise ValidationError('Invalid Port: Persistent Store ports must be an integer between 1024 and 65535.')
 
 
@@ -94,7 +96,7 @@ class DatasetService(models.Model):
         verbose_name = 'Dataset Service'
         verbose_name_plural = 'Dataset Services'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_engine(self, request=None):
@@ -110,12 +112,12 @@ class DatasetService(models.Model):
             try:
                 # social = user.social_auth.get(provider='google-oauth2')
                 social = user.social_auth.get(provider=HYDROSHARE_OAUTH_PROVIDER_NAME)
-                apikey = social.extra_data['access_token']
+                apikey = social.extra_data['access_token']  # noqa: F841
             except ObjectDoesNotExist:
                 # User is not associated with that provider
                 # Need to prompt for association
-                raise AuthException("HydroShare authentication required. To automate the authentication prompt decorate "
-                                    "your controller function with the @ensure_oauth('hydroshare') decorator.")
+                raise AuthException("HydroShare authentication required. To automate the authentication prompt "
+                                    "decorate your controller function with the @ensure_oauth('hydroshare') decorator.")
 
             return HydroShareDatasetEngine(endpoint=self.endpoint,
                                            username=self.username,
@@ -141,7 +143,8 @@ class SpatialDatasetService(models.Model):
     name = models.CharField(max_length=30, unique=True)
     engine = models.CharField(max_length=200, choices=ENGINE_CHOICES, default=GEOSERVER)
     endpoint = models.CharField(max_length=1024, validators=[validate_spatial_dataset_service_endpoint])
-    public_endpoint = models.CharField(max_length=1024, validators=[validate_spatial_dataset_service_endpoint], blank=True)
+    public_endpoint = models.CharField(max_length=1024, validators=[validate_spatial_dataset_service_endpoint],
+                                       blank=True)
     apikey = models.CharField(max_length=100, blank=True)
     username = models.CharField(max_length=100, blank=True)
     password = models.CharField(max_length=100, blank=True)
@@ -157,9 +160,11 @@ class SpatialDatasetService(models.Model):
         """
         Retrives GeoServer engine
         """
-        return GeoServerSpatialDatasetEngine(endpoint=self.endpoint,
-                                             username=self.username,
-                                             password=self.password)
+        engine = GeoServerSpatialDatasetEngine(endpoint=self.endpoint,
+                                               username=self.username,
+                                               password=self.password)
+        engine.public_endpoint = self.public_endpoint
+        return engine
 
 
 class WebProcessingService(models.Model):
@@ -176,7 +181,10 @@ class WebProcessingService(models.Model):
         verbose_name = 'Web Processing Service'
         verbose_name_plural = 'Web Processing Services'
 
-    def __unicode__(self):
+    # def __unicode__(self):
+    #     return self.name
+
+    def __str__(self):
         return self.name
 
     def activate(self, wps):
@@ -202,8 +210,6 @@ class WebProcessingService(models.Model):
                 raise e
         except URLError as e:
             return None
-        except:
-            raise
 
         return wps
 
@@ -242,7 +248,10 @@ class PersistentStoreService(models.Model):
         verbose_name = 'Persistent Store Service'
         verbose_name_plural = 'Persistent Store Services'
 
-    def __unicode__(self):
+    # def __unicode__(self):
+    #     return self.name
+
+    def __str__(self):
         return self.name
 
     def get_engine(self):

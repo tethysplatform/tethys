@@ -9,10 +9,8 @@
 """
 from datetime import datetime
 import time
-## tethys 1.4
-#from social.backends.oauth import BaseOAuth2
-# tethys 2.0
 from social_core.backends.oauth import BaseOAuth2
+
 
 class HydroShareOAuth2(BaseOAuth2):
     """
@@ -107,7 +105,6 @@ class HydroShareOAuth2(BaseOAuth2):
         Args:
             token (str): valid refresh token
         """
-
         response = super(HydroShareOAuth2, self).refresh_token(token, *args, **kwargs)
 
         # testing purpose

@@ -17,7 +17,7 @@ server {
 
     # Tethys Workspaces
     location /workspaces  {
-	internal;
+    internal;
         alias {{ workspaces_root }};  # your Tethys workspaces files - amend as required
     }
 

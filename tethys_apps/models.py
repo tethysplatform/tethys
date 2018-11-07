@@ -7,7 +7,6 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from builtins import str as text
 import sqlalchemy
 import logging
 from django.db import models
@@ -20,15 +19,14 @@ from sqlalchemy.orm import sessionmaker
 from tethys_apps.base.mixins import TethysBaseMixin
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
 
+from tethys_apps.base.function_extractor import TethysFunctionExtractor
+log = logging.getLogger('tethys')
+
 try:
     from tethys_services.models import (DatasetService, SpatialDatasetService,
                                         WebProcessingService, PersistentStoreService)
 except RuntimeError:
-    log = logging.getLogger('tethys')
     log.exception('An error occurred while trying to import tethys service models.')
-
-
-from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 
 class TethysApp(models.Model, TethysBaseMixin):
@@ -63,11 +61,8 @@ class TethysApp(models.Model, TethysBaseMixin):
         verbose_name = 'Tethys App'
         verbose_name_plural = 'Installed Apps'
 
-    def __unicode__(self):
-        return text(self.name)
-
     def __str__(self):
-        return text(self.name)
+        return self.name
 
     def add_settings(self, setting_list):
         """
@@ -119,7 +114,8 @@ class TethysApp(models.Model, TethysBaseMixin):
 
     @property
     def configured(self):
-        for setting in [s for s in self.settings if s.required]:
+        required_settings = [s for s in self.settings if s.required]
+        for setting in required_settings:
             try:
                 if setting.get_value() is None:
                     return False
@@ -149,8 +145,8 @@ class TethysExtension(models.Model, TethysBaseMixin):
         verbose_name = 'Tethys Extension'
         verbose_name_plural = 'Installed Extensions'
 
-    def __unicode__(self):
-        return text(self.name)
+    def __str__(self):
+        return self.name
 
 
 class TethysAppSetting(models.Model):
@@ -166,9 +162,6 @@ class TethysAppSetting(models.Model):
     required = models.BooleanField(default=True)
     initializer = models.CharField(max_length=1000, default='')
     initialized = models.BooleanField(default=False)
-
-    def __unicode__(self):
-        return self.name
 
     def __str__(self):
         return self.name
@@ -239,7 +232,7 @@ class CustomSetting(TethysAppSetting):
             required=True
         )
 
-    """
+    """  # noqa: E501
     TYPE_STRING = 'STRING'
     TYPE_INTEGER = 'INTEGER'
     TYPE_FLOAT = 'FLOAT'
@@ -253,7 +246,7 @@ class CustomSetting(TethysAppSetting):
         (TYPE_FLOAT, 'Float'),
         (TYPE_BOOLEAN, 'Boolean'),
     )
-    value = models.CharField(max_length=1024, blank=True)
+    value = models.CharField(max_length=1024, blank=True, default='')
     type = models.CharField(max_length=200, choices=TYPE_CHOICES, default=TYPE_STRING)
 
     def clean(self):
@@ -283,7 +276,7 @@ class CustomSetting(TethysAppSetting):
         """
         Get the value, automatically casting it to the correct type.
         """
-        if self.value == '':
+        if self.value == '' or self.value is None:
             return None  # TODO Why don't we raise a NotAssigned error here?
 
         if self.type == self.TYPE_STRING:
@@ -471,7 +464,7 @@ class WebProcessingServiceSetting(TethysAppSetting):
             return wps_service.endpoint
 
         if as_public_endpoint:
-            return wps_service.pubic_endpoint
+            return wps_service.public_endpoint
 
         return wps_service
 
@@ -517,7 +510,7 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
         if ps_service is None:
             raise TethysAppSettingNotAssigned('Cannot create engine or url for PersistentStoreConnection "{0}" for app '
                                               '"{1}": no PersistentStoreService found.'.format(self.name,
-                                                                                            self.tethys_app.package))
+                                                                                               self.tethys_app.package))
         # Order matters here. Think carefully before changing...
         if as_engine:
             return ps_service.get_engine()
@@ -585,7 +578,6 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         """
         Return the namespaced persistent store database name (e.g. my_first_app_db).
         """
-        from django.conf import settings
         # Convert name given by user to database safe name
         safe_name = self.name.lower().replace(' ', '_')
 
@@ -667,7 +659,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         engine = self.get_value(as_engine=True)
 
         # Connection
-        drop_connection = engine.connect()
+        drop_connection = None
 
         namespaced_ps_name = self.get_namespaced_persistent_store_name()
 
@@ -687,16 +679,16 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
                                                 WHERE pg_stat_activity.datname = '{0}'
                                                 AND pg_stat_activity.pid <> pg_backend_pid();
                                                 '''.format(namespaced_ps_name)
-                drop_connection.execute(disconnect_sessions_statement)
+                if drop_connection:
+                    drop_connection.execute(disconnect_sessions_statement)
 
-                # Try again to drop the database
-                drop_connection.execute('commit')
-                drop_connection.execute(drop_db_statement)
-                drop_connection.close()
+                    # Try again to drop the database
+                    drop_connection.execute('commit')
+                    drop_connection.execute(drop_db_statement)
             else:
                 raise e
         finally:
-            drop_connection.close()
+            drop_connection and drop_connection.close()
 
     def create_persistent_store_database(self, refresh=False, force_first_time=False):
         """
@@ -745,6 +737,7 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
             create_connection.execute('commit')
             try:
                 create_connection.execute(create_db_statement)
+
             except sqlalchemy.exc.ProgrammingError:
                 raise PersistentStorePermissionError('Database user "{0}" has insufficient permissions to create '
                                                      'the persistent store database "{1}": must have CREATE DATABASES '

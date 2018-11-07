@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 from tethys_dataset_services.valid_engines import VALID_ENGINES, VALID_SPATIAL_ENGINES
+from tethys_apps.cli.cli_colors import pretty_output, FG_WHITE
 
 
 class DatasetService:
@@ -44,7 +45,9 @@ class DatasetService:
         self.username = username
         self.password = password
 
-        print('DEPRECATION WARNING: Storing connection credentials for Dataset Services in the app.py is a security leak. App configuration for Dataset Services will be deprecated in version 1.2.')
+        with pretty_output(FG_WHITE) as p:
+            p.write('DEPRECATION WARNING: Storing connection credentials for Dataset Services in the app.py is a '
+                    'security leak. App configuration for Dataset Services will be deprecated in version 1.2.')
 
     def __repr__(self):
         """
@@ -87,9 +90,10 @@ class SpatialDatasetService:
         self.username = username
         self.password = password
 
-        print('DEPRECATION WARNING: Storing connection credentials for Spatial Dataset Services '
-              'in the app.py is a security leak. App configuration for Spatial Dataset Services '
-              'will be deprecated in version 1.2.')
+        with pretty_output(FG_WHITE) as p:
+            p.write('DEPRECATION WARNING: Storing connection credentials for Spatial Dataset Services '
+                    'in the app.py is a security leak. App configuration for Spatial Dataset Services '
+                    'will be deprecated in version 1.2.')
 
     def __repr__(self):
         """
@@ -112,12 +116,12 @@ class WpsService:
         self.username = username
         self.password = password
 
-        print('DEPRECATION WARNING: Storing connection credentials for WPS Services in the app.py is a security leak. App configuration for WPS Services will be deprecated in version 1.2.')
+        with pretty_output(FG_WHITE) as p:
+            p.write('DEPRECATION WARNING: Storing connection credentials for WPS Services in the app.py is a security '
+                    'leak. App configuration for WPS Services will be deprecated in version 1.2.')
 
     def __repr__(self):
         """
         String representation
         """
         return '<WpsService: name={0}, endpoint={1}>'.format(self.name, self.endpoint)
-
-
