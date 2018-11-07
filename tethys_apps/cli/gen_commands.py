@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from __future__ import print_function
 from builtins import input
 import os
 import string
@@ -15,21 +16,22 @@ from .manage_commands import TETHYS_HOME
 from platform import linux_distribution
 
 from django.template import Template, Context
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
 from django.conf import settings
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
 
 
 # Initialize settings
 try:
     __import__(os.environ['DJANGO_SETTINGS_MODULE'])
-except:
+except Exception:
     # Initialize settings with templates variable to allow gen to work properly
     settings.configure(TEMPLATES=[
         {
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
         }
     ])
-import django
+import django  # noqa: E402
 django.setup()
 
 
@@ -142,16 +144,19 @@ def generate_command(args):
         conda_home = get_environment_value('CONDA_HOME')
         conda_env_name = get_environment_value('CONDA_ENV_NAME')
 
-        linux_distro = linux_distribution(full_distribution_name=0)[0]
         user_option_prefix = ''
-        if linux_distro in ['redhat', 'centos']:
-            user_option_prefix = 'http-'
+
+        try:
+            linux_distro = linux_distribution(full_distribution_name=0)[0]
+            if linux_distro in ['redhat', 'centos']:
+                user_option_prefix = 'http-'
+        except Exception:
+            pass
 
         context.update({'nginx_user': nginx_user,
                         'conda_home': conda_home,
                         'conda_env_name': conda_env_name,
                         'tethys_home': TETHYS_HOME,
-                        'linux_distribution': linux_distro,
                         'user_option_prefix': user_option_prefix
                         })
 

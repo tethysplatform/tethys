@@ -114,17 +114,17 @@ class {{class_name}}TestCase(TethysTestCase):
         It is required that the function name begins with the word "test" or it will not be executed.
         Generally, the code written here will consist of many assert methods.
         A list of assert methods is included here for reference or to get you started:
-            assertEqual(a, b)	        a == b
-            assertNotEqual(a, b)	    a != b
-            assertTrue(x)	            bool(x) is True
-            assertFalse(x)	            bool(x) is False
-            assertIs(a, b)	            a is b
-            assertIsNot(a, b)	        a is not b
-            assertIsNone(x)	            x is None
-            assertIsNotNone(x)	        x is not None
-            assertIn(a, b)	            a in b
-            assertNotIn(a, b)	        a not in b
-            assertIsInstance(a, b)	    isinstance(a, b)
+            assertEqual(a, b)           a == b
+            assertNotEqual(a, b)        a != b
+            assertTrue(x)              bool(x) is True
+            assertFalse(x)              bool(x) is False
+            assertIs(a, b)              a is b
+            assertIsNot(a, b)           a is not b
+            assertIsNone(x)             x is None
+            assertIsNotNone(x)          x is not None
+            assertIn(a, b)              a in b
+            assertNotIn(a, b)           a not in b
+            assertIsInstance(a, b)      isinstance(a, b)
             assertNotIsInstance(a, b)   !isinstance(a, b)
         Learn more about assert methods here:
             https://docs.python.org/2.7/library/unittest.html#assert-methods

@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from __future__ import print_function
 import os
 import shutil
 
@@ -75,7 +76,8 @@ class Command(BaseCommand):
                         shutil.move(app_ws_path, tethys_ws_root_path)
                     else:
                         print('WARNING: Workspace directory for app "{}" already exists in the TETHYS_WORKSPACES_ROOT '
-                              'directory. A symbolic link is being created to the existing directory. To force overwrite '
+                              'directory. A symbolic link is being created to the existing directory. '
+                              'To force overwrite '
                               'the existing directory, re-run the command with the "-f" argument.'.format(app))
                         shutil.rmtree(app_ws_path, ignore_errors=True)
 
@@ -84,6 +86,3 @@ class Command(BaseCommand):
                     os.symlink(tethys_ws_root_path, app_ws_path)
                     print('INFO: Successfully linked "workspaces" directory to TETHYS_WORKSPACES_ROOT for app '
                           '"{0}".'.format(app))
-            else:
-                print('WARNING: Workspace directory for app "{}" is already symbolically linked to another directory '
-                      'within the TETHYS_WORKSPACES_ROOT directory. Skipping... '.format(app))
