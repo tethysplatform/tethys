@@ -1386,23 +1386,25 @@ var TETHYS_MAP_VIEW = (function() {
                     '</ul>' +
                     '</div>';
         } else if (legend_class.LEGEND_TYPE === "mvlegend") {
-            html += '<span class="legend-class-symbol"><svg>';
+            html += '<span class="legend-class-symbol">';
             if (legend_class.type === legend_class.POINT_TYPE) {
-              html += '<circle cx="10" cy="10" r="25%" fill="' + legend_class.fill + '"/>';
+              html += '<svg><circle cx="10" cy="10" r="25%" fill="' + legend_class.fill + '"/></svg>';
             }
 
             else if (legend_class.type === legend_class.LINE_TYPE) {
-              html += '<polyline points="19 1, 1 6, 19 14, 1 19" stroke="' + legend_class.stroke + '" fill="transparent" stroke-width="2"/>';
+              html += '<svg><polyline points="19 1, 1 6, 19 14, 1 19" stroke="' + legend_class.stroke + '" fill="transparent" stroke-width="2"/></svg>';
             }
 
             else if (legend_class.type === legend_class.POLYGON_TYPE) {
-              html += '<polygon points="1 10, 5 3, 13 1, 19 9, 14 19, 9 13" stroke="' + legend_class.stroke + '" fill="' + legend_class.fill + '" stroke-width="2"/>';
+              html += '<svg><polygon points="1 10, 5 3, 13 1, 19 9, 14 19, 9 13" stroke="' + legend_class.stroke + '" fill="' + legend_class.fill + '" stroke-width="2"/></svg>';
             }
             else if (legend_class.type === legend_class.RASTER_TYPE) {
-              //TODO: ADD IMPLEMENTATION FOR RASTER
+                for (var j = 0; j < legend_class.ramp.length; j++) {
+                    html += '<svg><rect width="20" height="20" fill=' + legend_class.ramp[j] + '/></svg>';
+                }
             }
 
-            html += '</svg></span><span class="legend-class-value">' + legend_class.value + '</span>';
+            html += '</span><span class="legend-class-value">' + legend_class.value + '</span>';
         }
       }
 
