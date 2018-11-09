@@ -70,7 +70,7 @@ class SingletonHarvester(object):
         """
         # Notify user harvesting is taking place
         if not is_testing_environment():
-            print(self.BLUE + 'Loading Tethys Apps...' + self.ENDC)
+            print(self.BLUE + 'Loading Tethys Apps...\n' + self.ENDC)
 
         # List the apps packages in directory
         apps_dir = os.path.join(os.path.dirname(__file__), 'tethysapp')
@@ -165,15 +165,12 @@ class SingletonHarvester(object):
                             ext_instance = ExtensionClass()
                             validated_ext_instance = self._validate_extension(ext_instance)
 
-                            # sync app with Tethys db
-                            ext_instance.sync_with_tethys_db()
-
                             # compile valid apps
                             if validated_ext_instance:
                                 valid_ext_instances.append(validated_ext_instance)
                                 valid_extension_modules[extension_name] = extension_package
 
-                                # Notify user that the app has been loaded
+                                # Notify user that the extension has been loaded
                                 loaded_extensions.append(extension_name)
 
                             # We found the extension class so we're done
@@ -189,11 +186,6 @@ class SingletonHarvester(object):
         # Save valid apps
         self.extensions = valid_ext_instances
         self.extension_modules = valid_extension_modules
-
-        # Update user
-        if not is_testing_environment():
-            print(self.BLUE + 'Tethys Extensions Loaded: ' +
-                  self.ENDC + '{0}'.format(', '.join(loaded_extensions)) + '\n')
 
     def _harvest_app_instances(self, app_packages_list):
         """
@@ -229,9 +221,6 @@ class SingletonHarvester(object):
                             app_instance = AppClass()
                             validated_app_instance = self._validate_app(app_instance)
 
-                            # sync app with Tethys db
-                            app_instance.sync_with_tethys_db()
-
                             # load/validate app url patterns
                             try:
                                 app_instance.url_patterns
@@ -240,12 +229,6 @@ class SingletonHarvester(object):
                                     'App {0} not loaded because of an issue with loading urls:'.format(app_package))
                                 app_instance.remove_from_db()
                                 continue
-
-                            # register app permissions
-                            try:
-                                app_instance.register_app_permissions()
-                            except (ProgrammingError, ObjectDoesNotExist) as e:
-                                tethys_log.warning(e)
 
                             # compile valid apps
                             if validated_app_instance:
@@ -267,7 +250,37 @@ class SingletonHarvester(object):
         # Save valid apps
         self.apps = valid_app_instance_list
 
+    def sync_with_db(self):
+        """
+        Sync apps and extensions with the Tethys Database.
+        """
+        # Sync extensions with database
+        if not is_testing_environment():
+            print(self.BLUE + 'Syncing Tethys Extensions...' + self.ENDC)
+
+        for ext in self.extensions:
+            ext.sync_with_tethys_db()
+
+
+
+        # Sync apps with database
+        if not is_testing_environment():
+            print(self.BLUE + 'Syncing Tethys Apps...\n' + self.ENDC)
+
+        for app in self.apps:
+            app.sync_with_tethys_db()
+
+            # Register app permissions
+            try:
+                app.register_app_permissions()
+            except (ProgrammingError, ObjectDoesNotExist) as e:
+                tethys_log.warning(e)
+
         # Update user
         if not is_testing_environment():
-            print(self.BLUE + 'Tethys Apps Loaded: '
-                  + self.ENDC + '{0}'.format(', '.join(loaded_apps)) + '\n')
+            print(self.BLUE + 'Tethys Extensions: ' +
+                  self.ENDC + '{0}'.format(', '.join([ext.package for ext in self.extensions])))
+
+        if not is_testing_environment():
+            print(self.BLUE + 'Tethys Apps: '
+                  + self.ENDC + '{0}'.format(', '.join([app.package for app in self.apps])) + '\n')
