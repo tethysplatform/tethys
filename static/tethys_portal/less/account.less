@@ -149,6 +149,43 @@
   }
 }
 
+.btn-custom-oauth {
+  color: @default-header-text-color;
+  background-color: #ffffff;
+  border-color: rgba(0,0,0,0.2);
+}
+
+.btn-custom-oauth:hover {
+  color: #ffffff;
+  background-color: @custom-oauth-color;
+  border-color: rgba(0,0,0,0.2);
+}
+
+.btn-custom-oauth {
+  background-color: #ffffff;
+  color: @default-header-text-color;
+}
+
+.fa-unlock-alt {
+  color: @custom-oauth-color;
+}
+
+.btn-custom-oauth:hover {
+  background-color: @custom-oauth-color;
+
+  .fa-unlock-alt {
+    color: #ffffff;
+  }
+}
+
+.btn-custom-oauth:focus {
+  background-color: @custom-oauth-color;
+
+  .fa-unlock-alt {
+    color: #ffffff;
+  }
+}
+
 .btn-social {
   font-size: 15px;
   font-weight: 500;
