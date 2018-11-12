@@ -683,7 +683,7 @@ a:hover {
   z-index: 1000;
   top: 0;
   width: 100%;
-  background: #0A62A9;
+  background: #0a62a9;
   box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.35);
   box-sizing: border-box;
 }
@@ -1165,12 +1165,12 @@ a:hover {
   position: relative;
   max-height: 200px;
   z-index: 100;
-  background-color: #0A62A9;
+  background-color: #0a62a9;
   box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.25);
 }
 .blurb h3 {
   display: block;
-  color: white;
+  color: #ffffff;
   padding: 50px 0;
   white-space: pre;
   text-align: center;
@@ -1408,7 +1408,7 @@ a:hover {
 .nav-list > .active > a,
 .nav-list > .active > a:hover,
 .nav-list > .active > a:focus {
-  background-color: #0A62A9;
+  background-color: #0a62a9;
 }
 @media (max-width: 1250px) {
   .container {
@@ -1700,7 +1700,7 @@ li.dataset-item .dataset-content p {
   height: 40px;
 }
 .module-content.page-header .nav.nav-tabs li a {
-  color: #0A62A9;
+  color: #0a62a9;
 }
 .module-content.page-header .nav.nav-tabs li.active a {
   color: #555;
@@ -1712,7 +1712,7 @@ li.dataset-item .dataset-content p {
   top: 10px;
 }
 .tags .tag-list li a.tag:hover {
-  background-color: #0A62A9;
+  background-color: #0a62a9;
 }
 .additional-info h3 {
   font-weight: normal;
@@ -1729,7 +1729,7 @@ li.dataset-item .dataset-content p {
   color: #505050;
 }
 .nav-simple .nav-item.active a {
-  background-color: #0A62A9;
+  background-color: #0a62a9;
 }
 .nav-simple .nav-item.active a:before {
   background-image: none;
@@ -1737,29 +1737,29 @@ li.dataset-item .dataset-content p {
   width: 0;
   border-top: 17px solid transparent;
   border-bottom: 17px solid transparent;
-  border-left: 6px solid #0A62A9;
+  border-left: 6px solid #0a62a9;
 }
 .nav-simple .nav-item a:hover {
   color: #333;
 }
 .banner {
-  background-color: #0A62A9;
+  background-color: #0a62a9;
 }
 .popover-followee .popover-content .nav li a {
-  color: #0A62A9;
+  color: #0a62a9;
 }
 .popover-followee .popover-content .nav li a i {
   color: white;
-  background-color: #0A62A9;
+  background-color: #0a62a9;
   -webkit-font-smooting: antialiased;
 }
 .popover-followee .popover-content .nav li.active a {
   color: white;
-  background-color: #0A62A9;
+  background-color: #0a62a9;
 }
 .popover-followee .popover-content .nav li.active a i {
   background-color: white;
-  color: #0A62A9;
+  color: #0a62a9;
   -webkit-font-smooting: antialiased;
 }
 /*****************************************************************************
@@ -1773,7 +1773,7 @@ li.dataset-item .dataset-content p {
    The footer at the bottom of the site
    ==================================== */
 footer.site-footer {
-  background-color: #0A62A9;
+  background-color: #0a62a9;
   position: relative;
   z-index: 100;
   box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.25);
@@ -2059,6 +2059,35 @@ footer.site-footer .tethys-attribution a:hover {
 .btn-facebook:focus .fa-facebook {
   color: #ffffff;
 }
+.btn-custom-oauth {
+  color: #555555;
+  background-color: #ffffff;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.btn-custom-oauth:hover {
+  color: #ffffff;
+  background-color: #666666;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.btn-custom-oauth {
+  background-color: #ffffff;
+  color: #555555;
+}
+.fa-unlock-alt {
+  color: #666666;
+}
+.btn-custom-oauth:hover {
+  background-color: #666666;
+}
+.btn-custom-oauth:hover .fa-unlock-alt {
+  color: #ffffff;
+}
+.btn-custom-oauth:focus {
+  background-color: #666666;
+}
+.btn-custom-oauth:focus .fa-unlock-alt {
+  color: #ffffff;
+}
 .btn-social {
   font-size: 15px;
   font-weight: 500;
@@ -2323,6 +2352,14 @@ footer.site-footer .tethys-attribution a:hover {
 .label-linkedin:hover {
   color: #ffffff;
   background-color: #007bb6;
+}
+.label-custom-oauth {
+  color: #666666;
+  border: #aaaaaa solid 1px;
+}
+.label-custom-oauth:hover {
+  color: #ffffff;
+  background-color: #666666;
 }
 /*****************************************************************************
  * FILE: secondary_header
