@@ -49,7 +49,7 @@ install:
 
 # command to run tests
 script:
-  - tethys test -c -u
+  - tethys test -c
 
 # generate test coverage information
 after_success:
