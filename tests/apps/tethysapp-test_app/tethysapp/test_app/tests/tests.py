@@ -1,5 +1,6 @@
 # Most of your test classes should inherit from TethysTestCase
 from tethys_sdk.testing import TethysTestCase
+import unittest
 
 # Use if your app has persistent stores that will be tested against.
 # Your app class from app.py must be passed as an argument to the TethysTestCase functions to both
@@ -137,6 +138,7 @@ class TestAppTestCase(TethysTestCase):
         self.assertIs(self.is_tethys_platform_great(), True)
         self.assertIsNot(self.is_tethys_platform_great(), False)
 
+    @unittest.skip("")
     def test_home_controller(self):
         """
         This is an example test function of how you might test a controller that returns an HTML template rendered
