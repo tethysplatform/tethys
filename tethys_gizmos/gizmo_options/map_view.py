@@ -9,8 +9,11 @@
 """
 from .base import TethysGizmoOptions, SecondaryGizmoOptions
 from django.conf import settings
+import logging
+log = logging.getLogger('tethys.tethys_gizmos.gizmo_options.map_view')
 
-__all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer', 'MVLegendClass', 'MVLegendImageClass', 'MVLegendGeoServerImageClass']
+__all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer',
+           'MVLegendClass', 'MVLegendImageClass', 'MVLegendGeoServerImageClass']
 
 
 class MapView(TethysGizmoOptions):
@@ -240,10 +243,10 @@ class MapView(TethysGizmoOptions):
 
         {% gizmo map_view_options %}
 
-    """
+    """  # noqa: E501
     gizmo_name = "map_view"
 
-    def __init__(self, height='100%', width='100%', basemap='OpenStreetMap', view={'center': [-100, 40], 'zoom': 2},
+    def __init__(self, height='100%', width='100%', basemap=None, view={'center': [-100, 40], 'zoom': 2},
                  controls=[], layers=[], draw=None, legend=False, attributes={}, classes='', disable_basemap=False,
                  feature_selection=None):
         """
@@ -323,7 +326,7 @@ class MVView(SecondaryGizmoOptions):
             minZoom=2
         )
 
-    """
+    """  # noqa: E501
 
     def __init__(self, projection, center, zoom, maxZoom=28, minZoom=0):
         """
@@ -364,9 +367,11 @@ class MVDraw(SecondaryGizmoOptions):
             point_color='#663399'
         )
 
-    """
+    """  # noqa: E501
 
-    def __init__(self, controls, initial, output_format='GeoJSON',line_color="#ffcc33",fill_color='rgba(255, 255, 255, 0.2)',point_color="#ffcc33"):
+    def __init__(self, controls, initial, output_format='GeoJSON',
+                 line_color="#ffcc33", fill_color='rgba(255, 255, 255, 0.2)',
+                 point_color="#ffcc33"):
         """
         Constructor
         """
@@ -374,7 +379,6 @@ class MVDraw(SecondaryGizmoOptions):
         super(MVDraw, self).__init__()
 
         self.controls = controls
-
         # Validate initial
         if initial not in self.controls:
             raise ValueError('Value of "initial" must be contained in the "controls" list.')
@@ -521,10 +525,12 @@ class MVLayer(SecondaryGizmoOptions):
                                 options={'url': 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/' + 'Specialty/ESRI_StateCityHighway_USA/MapServer'},
                                 legend_title='ESRI USA Highway',
                                 legend_extent=[-173, 17, -65, 72]),
-    """
+    """  # noqa: E501
 
-    def __init__(self, source, options, legend_title, layer_options=None, editable=True, legend_classes=None, legend_extent=None,
-                 legend_extent_projection='EPSG:4326', feature_selection=False, geometry_attribute=None, data={}):
+    def __init__(self, source, options, legend_title, layer_options=None, editable=True,
+                 legend_classes=None, legend_extent=None,
+                 legend_extent_projection='EPSG:4326',
+                 feature_selection=False, geometry_attribute=None, data=None):
         """
         Constructor
         """
@@ -540,11 +546,11 @@ class MVLayer(SecondaryGizmoOptions):
         self.legend_extent_projection = legend_extent_projection
         self.feature_selection = feature_selection
         self.geometry_attribute = geometry_attribute
-        self.data = data
+        self.data = data or dict()
 
-        # TODO: this should be a log
         if feature_selection and not geometry_attribute:
-            print("WARNING: geometry_attribute not defined -using default value 'the_geom'")
+            log.warning("geometry_attribute not defined -using default value 'the_geom'")
+
 
 class MVLegendClass(SecondaryGizmoOptions):
     """
@@ -565,7 +571,7 @@ class MVLegendClass(SecondaryGizmoOptions):
         line_class = MVLegendClass(type='line', value='Roads', stroke='rbga(0,0,0,0.7)')
         polygon_class = MVLegendClass(type='polygon', value='Lakes', stroke='#0000aa', fill='#0000ff')
 
-    """
+    """  # noqa: E501
 
     def __init__(self, type, value, fill='', stroke='', ramp=[]):
         """
@@ -616,8 +622,6 @@ class MVLegendClass(SecondaryGizmoOptions):
                 self.ramp = ramp
             else:
                 raise ValueError('Argument "ramp" must be specified for MVLegendClass of type "raster".')
-        else:
-            raise ValueError('Invalid type specified: {0}.'.format(type))
 
 
 class MVLegendImageClass(SecondaryGizmoOptions):
@@ -635,7 +639,7 @@ class MVLegendImageClass(SecondaryGizmoOptions):
         image_class = MVLegendImageClass(value='Cities',
                                          image_url='https://upload.wikimedia.org/wikipedia/commons/d/da/The_City_London.jpg'
                                          )
-    """
+    """  # noqa: E501
 
     def __init__(self, value, image_url):
         """
@@ -647,6 +651,7 @@ class MVLegendImageClass(SecondaryGizmoOptions):
         self.LEGEND_TYPE = 'mvlegendimage'
         self.value = value
         self.image_url = image_url
+
 
 class MVLegendGeoServerImageClass(MVLegendImageClass):
     """
@@ -670,7 +675,7 @@ class MVLegendGeoServerImageClass(MVLegendImageClass):
                                                   layer='rivers',
                                                   width=20,
                                                   height=10)
-    """
+    """  # noqa: E501
 
     def __init__(self, value, geoserver_url, style, layer, width=20, height=10):
         """

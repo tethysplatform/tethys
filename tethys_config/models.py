@@ -17,9 +17,6 @@ class SettingsCategory(models.Model):
         verbose_name = 'Settings Category'
         verbose_name_plural = 'Site Settings'
 
-    def __unicode__(self):
-        return self.name
-
     def __str__(self):
         return self.name
 
@@ -29,9 +26,6 @@ class Setting(models.Model):
     content = models.TextField(max_length=500, blank=True)
     date_modified = models.DateTimeField('date modified', auto_now=True)
     category = models.ForeignKey(SettingsCategory)
-
-    def __unicode__(self):
-        return self.name
 
     def __str__(self):
         return self.name

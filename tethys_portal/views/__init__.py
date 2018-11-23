@@ -7,4 +7,3 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from .receivers import create_auth_token

@@ -9,7 +9,7 @@
 """
 try:
     import curses
-except:
+except Exception:
     pass  # curses not available on Windows
 from builtins import input
 import platform
@@ -22,6 +22,7 @@ from functools import cmp_to_key
 from docker.utils import kwargs_from_env, compare_version, create_host_config
 from docker.client import Client as DockerClient
 from docker.constants import DEFAULT_DOCKER_API_VERSION as MAX_CLIENT_DOCKER_API_VERSION
+from tethys_apps.cli.cli_colors import pretty_output, FG_WHITE
 
 
 __all__ = ['docker_init', 'docker_start',
@@ -112,7 +113,7 @@ def validate_numeric_cli_input(value, default=None, max=None):
             continue
 
         if max is not None:
-            if float(value) > max:
+            if float(value) > float(max):
                 if default is not None:
                     value = input('Maximum allowed value is {0} [{1}]: '.format(max, default))
                 else:
@@ -151,7 +152,8 @@ def validate_directory_cli_input(value, default=None):
             try:
                 os.makedirs(value)
             except OSError as e:
-                print('{0}: {1}'.format(repr(e), value))
+                with pretty_output(FG_WHITE) as p:
+                    p.write('{0}: {1}'.format(repr(e), value))
                 prompt = 'Please provide a valid directory'
                 prompt = add_default_to_prompt(prompt, default)
                 prompt = close_prompt(prompt)
@@ -192,12 +194,14 @@ def get_docker_client():
 
         # Start the boot2docker VM if it is not already running
         if boot2docker_info['State'] != "running":
-            print('Starting Boot2Docker VM:')
+            with pretty_output(FG_WHITE) as p:
+                p.write('Starting Boot2Docker VM:')
             # Start up the Docker VM
             process = ['boot2docker', 'start']
             subprocess.call(process)
 
-        if ('DOCKER_HOST' not in os.environ) or ('DOCKER_CERT_PATH' not in os.environ) or ('DOCKER_TLS_VERIFY' not in os.environ):
+        if ('DOCKER_HOST' not in os.environ) or ('DOCKER_CERT_PATH' not in os.environ) or \
+                ('DOCKER_TLS_VERIFY' not in os.environ):
             # Get environmental variable values
             process = ['boot2docker', 'shellinit']
             p = subprocess.Popen(process, stdout=PIPE)
@@ -227,7 +231,8 @@ def get_docker_client():
         # Then test to see if the Docker is running a later version than the minimum
         # See: https://github.com/docker/docker-py/issues/439
         version_client = DockerClient(**client_kwargs)
-        client_kwargs['version'] = get_api_version(MAX_CLIENT_DOCKER_API_VERSION, version_client.version()['ApiVersion'])
+        client_kwargs['version'] = get_api_version(MAX_CLIENT_DOCKER_API_VERSION,
+                                                   version_client.version()['ApiVersion'])
 
         # Create Real Docker client
         docker_client = DockerClient(**client_kwargs)
@@ -249,9 +254,6 @@ def get_docker_client():
 
         return docker_client
 
-    except:
-        raise
-
 
 def stop_boot2docker():
     """
@@ -260,12 +262,10 @@ def stop_boot2docker():
     try:
         process = ['boot2docker', 'stop']
         subprocess.call(process)
-        print('Boot2Docker VM Stopped')
+        with pretty_output(FG_WHITE) as p:
+            p.write('Boot2Docker VM Stopped')
     except OSError:
         pass
-
-    except:
-        raise
 
 
 def get_images_to_install(docker_client, containers=ALL_DOCKER_INPUTS):
@@ -341,8 +341,12 @@ def log_pull_stream(stream):
                 current_status = json_line['status'] if 'status' in json_line else ''
                 current_progress = json_line['progress'] if 'progress' in json_line else ''
 
-                print("{id}{status} {progress}".format(id=current_id, status=current_status,
-                                                   progress=current_progress))
+                with pretty_output(FG_WHITE) as p:
+                    p.write("{id}{status} {progress}".format(
+                        id=current_id,
+                        status=current_status,
+                        progress=current_progress
+                    ))
     else:
 
         TERMINAL_STATUSES = ['Already exists', 'Download complete', 'Pull complete']
@@ -385,8 +389,11 @@ def log_pull_stream(stream):
                                                                  'progress': current_progress}
                         else:
                             # add all other messages to list to show above progress messages
-                            message_log.append("{id}: {status} {progress}".format(id=current_id, status=current_status,
-                                                                               progress=current_progress))
+                            message_log.append("{id}: {status} {progress}".format(
+                                id=current_id,
+                                status=current_status,
+                                progress=current_progress
+                            ))
 
                             # remove messages from progress that have completed
                             if current_id in progress_messages:
@@ -424,7 +431,8 @@ def log_pull_stream(stream):
             curses.nocbreak()
             curses.endwin()
 
-        print('\n'.join(messages_to_print))
+        with pretty_output(FG_WHITE) as p:
+            p.write('\n'.join(messages_to_print))
 
 
 def get_docker_container_dicts(docker_client):
@@ -514,7 +522,8 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
 
     # PostGIS
     if POSTGIS_CONTAINER in containers_to_create or force:
-        print("\nInstalling the PostGIS Docker container...")
+        with pretty_output(FG_WHITE) as p:
+            p.write("\nInstalling the PostGIS Docker container...")
 
         # Default environmental vars
         tethys_default_pass = 'pass'
@@ -523,8 +532,9 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
 
         # User environmental variables
         if not defaults:
-            print("Provide passwords for the three Tethys database users or press enter to accept the default "
-                  "passwords shown in square brackets:")
+            with pretty_output(FG_WHITE) as p:
+                p.write("Provide passwords for the three Tethys database users or press enter to accept the default "
+                        "passwords shown in square brackets:")
 
             # tethys_default
             tethys_default_pass_1 = getpass.getpass('Password for "tethys_default" database user [pass]: ')
@@ -533,7 +543,8 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                 tethys_default_pass_2 = getpass.getpass('Confirm password for "tethys_default" database user: ')
 
                 while tethys_default_pass_1 != tethys_default_pass_2:
-                    print('Passwords do not match, please try again: ')
+                    with pretty_output(FG_WHITE) as p:
+                        p.write('Passwords do not match, please try again: ')
                     tethys_default_pass_1 = getpass.getpass('Password for "tethys_default" database user [pass]: ')
                     tethys_default_pass_2 = getpass.getpass('Confirm password for "tethys_default" database user: ')
 
@@ -548,9 +559,12 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                 tethys_db_manager_pass_2 = getpass.getpass('Confirm password for "tethys_db_manager" database user: ')
 
                 while tethys_db_manager_pass_1 != tethys_db_manager_pass_2:
-                    print('Passwords do not match, please try again: ')
-                    tethys_db_manager_pass_1 = getpass.getpass('Password for "tethys_db_manager" database user [pass]: ')
-                    tethys_db_manager_pass_2 = getpass.getpass('Confirm password for "tethys_db_manager" database user: ')
+                    with pretty_output(FG_WHITE) as p:
+                        p.write('Passwords do not match, please try again: ')
+                    tethys_db_manager_pass_1 = getpass.getpass('Password for "tethys_db_manager" database user '
+                                                               '[pass]: ')
+                    tethys_db_manager_pass_2 = getpass.getpass('Confirm password for "tethys_db_manager" database '
+                                                               'user: ')
 
                 tethys_db_manager_pass = tethys_db_manager_pass_1
             else:
@@ -563,7 +577,8 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                 tethys_super_pass_2 = getpass.getpass('Confirm password for "tethys_super" database user: ')
 
                 while tethys_super_pass_1 != tethys_super_pass_2:
-                    print('Passwords do not match, please try again: ')
+                    with pretty_output(FG_WHITE) as p:
+                        p.write('Passwords do not match, please try again: ')
                     tethys_super_pass_1 = getpass.getpass('Password for "tethys_super" database user [pass]: ')
                     tethys_super_pass_2 = getpass.getpass('Confirm password for "tethys_super" database user: ')
 
@@ -581,7 +596,8 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
 
     # GeoServer
     if GEOSERVER_CONTAINER in containers_to_create or force:
-        print("\nInstalling the GeoServer Docker container...")
+        with pretty_output(FG_WHITE) as p:
+            p.write("\nInstalling the GeoServer Docker container...")
 
         if "cluster" in GEOSERVER_IMAGE:
 
@@ -589,8 +605,9 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                 # Environmental variables from user input
                 environment = dict()
 
-                print("The GeoServer docker can be configured to run in a clustered mode (multiple instances of "
-                      "GeoServer running in the docker container) for better performance.\n")
+                with pretty_output(FG_WHITE) as p:
+                    p.write("The GeoServer docker can be configured to run in a clustered mode (multiple instances of "
+                            "GeoServer running in the docker container) for better performance.\n")
 
                 enabled_nodes = input('Number of GeoServer Instances Enabled (max 4) [1]: ')
                 environment['ENABLED_NODES'] = validate_numeric_cli_input(enabled_nodes, 1, 4)
@@ -600,9 +617,11 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                     max_rest_nodes))
                 environment['REST_NODES'] = validate_numeric_cli_input(rest_nodes, 1, max_rest_nodes)
 
-                print("\nGeoServer can be configured with limits to certain types of requests to prevent it from "
-                      "becoming overwhelmed. This can be done automatically based on a number of processors or each "
-                      "limit can be set explicitly.\n")
+                with pretty_output(FG_WHITE) as p:
+                    p.write("\nGeoServer can be configured with limits to certain types of requests to prevent it from "
+                            "becoming overwhelmed. This can be done automatically based on a number of processors or "
+                            "each "
+                            "limit can be set explicitly.\n")
 
                 flow_control_mode = input('Would you like to specify number of Processors (c) OR set '
                                           'limits explicitly (e) [C/e]: ')
@@ -614,7 +633,7 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
 
                 else:
                     max_ows_global = input('Maximum number of simultaneous OGC web service requests '
-                                            '(e.g.: WMS, WCS, WFS) [100]: ')
+                                           '(e.g.: WMS, WCS, WFS) [100]: ')
                     environment['MAX_OWS_GLOBAL'] = validate_numeric_cli_input(max_ows_global, '100')
 
                     max_wms_getmap = input('Maximum number of simultaneous GetMap requests [8]: ')
@@ -676,10 +695,10 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                 }
 
                 host_config = create_host_config(
-                        binds=[
-                            '/usr/lib/tethys/geoserver/data:/var/geoserver/data'
-                        ]
-                    )
+                    binds=[
+                        '/usr/lib/tethys/geoserver/data:/var/geoserver/data'
+                    ]
+                )
 
                 docker_client.create_container(
                     name=GEOSERVER_CONTAINER,
@@ -697,7 +716,8 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
 
     # 52 North WPS
     if N52WPS_CONTAINER in containers_to_create or force:
-        print("\nInstalling the 52 North WPS Docker container...")
+        with pretty_output(FG_WHITE) as p:
+            p.write("\nInstalling the 52 North WPS Docker container...")
 
         # Default environmental vars
         name = 'NONE'
@@ -714,8 +734,9 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
         password = 'wps'
 
         if not defaults:
-            print("Provide contact information for the 52 North Web Processing Service or press enter to accept the "
-                  "defaults shown in square brackets: ")
+            with pretty_output(FG_WHITE) as p:
+                p.write("Provide contact information for the 52 North Web Processing Service or press enter to accept "
+                        "the defaults shown in square brackets: ")
 
             name = input('Name [NONE]: ')
             if name == '':
@@ -771,7 +792,8 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                 password_2 = getpass.getpass('Confirm Password: ')
 
                 while password_1 != password_2:
-                    print('Passwords do not match, please try again.')
+                    with pretty_output(FG_WHITE) as p:
+                        p.write('Passwords do not match, please try again.')
                     password_1 = getpass.getpass('Admin Password [wps]: ')
                     password_2 = getpass.getpass('Confirm Password: ')
 
@@ -794,7 +816,8 @@ def install_docker_containers(docker_client, force=False, containers=ALL_DOCKER_
                          'PASSWORD': password}
         )
 
-    print("Finished installing Docker containers.")
+    with pretty_output(FG_WHITE) as p:
+        p.write("Finished installing Docker containers.")
 
 
 def start_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
@@ -810,22 +833,24 @@ def start_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
         # Start PostGIS
         try:
             if not container_status[POSTGIS_CONTAINER] and container == POSTGIS_INPUT:
-                print('Starting PostGIS container...')
+                with pretty_output(FG_WHITE) as p:
+                    p.write('Starting PostGIS container...')
                 docker_client.start(container=POSTGIS_CONTAINER,
                                     # restart_policy='always',
                                     port_bindings={5432: DEFAULT_POSTGIS_PORT})
             elif container == POSTGIS_INPUT:
-                print('PostGIS container already running...')
+                with pretty_output(FG_WHITE) as p:
+                    p.write('PostGIS container already running...')
         except KeyError:
             if container == POSTGIS_INPUT:
-                print('PostGIS container not installed...')
-        except:
-            raise
+                with pretty_output(FG_WHITE) as p:
+                    p.write('PostGIS container not installed...')
 
         try:
             if not container_status[GEOSERVER_CONTAINER] and container == GEOSERVER_INPUT:
                 # Start GeoServer
-                print('Starting GeoServer container...')
+                with pretty_output(FG_WHITE) as p:
+                    p.write('Starting GeoServer container...')
                 if 'cluster' in container_images[GEOSERVER_CONTAINER]:
                     docker_client.start(container=GEOSERVER_CONTAINER,
                                         # restart_policy='always',
@@ -839,27 +864,28 @@ def start_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
                                         # restart_policy='always',
                                         port_bindings={8080: DEFAULT_GEOSERVER_PORT})
             elif not container or container == GEOSERVER_INPUT:
-                print('GeoServer container already running...')
+                with pretty_output(FG_WHITE) as p:
+                    p.write('GeoServer container already running...')
         except KeyError:
             if container == GEOSERVER_INPUT:
-                print('GeoServer container not installed...')
-        except:
-            raise
+                with pretty_output(FG_WHITE) as p:
+                    p.write('GeoServer container not installed...')
 
         try:
             if not container_status[N52WPS_CONTAINER] and container == N52WPS_INPUT:
                 # Start 52 North WPS
-                print('Starting 52 North WPS container...')
+                with pretty_output(FG_WHITE) as p:
+                    p.write('Starting 52 North WPS container...')
                 docker_client.start(container=N52WPS_CONTAINER,
                                     # restart_policy='always',
                                     port_bindings={8080: DEFAULT_N52WPS_PORT})
             elif container == N52WPS_INPUT:
-                print('52 North WPS container already running...')
+                with pretty_output(FG_WHITE) as p:
+                    p.write('52 North WPS container already running...')
         except KeyError:
             if not container or container == N52WPS_INPUT:
-                print('52 North WPS container not installed...')
-        except:
-            raise
+                with pretty_output(FG_WHITE) as p:
+                    p.write('52 North WPS container not installed...')
 
 
 def stop_docker_containers(docker_client, silent=False, containers=ALL_DOCKER_INPUTS):
@@ -874,49 +900,52 @@ def stop_docker_containers(docker_client, silent=False, containers=ALL_DOCKER_IN
         try:
             if container_status[POSTGIS_CONTAINER] and container == POSTGIS_INPUT:
                 if not silent:
-                    print('Stopping PostGIS container...')
+                    with pretty_output(FG_WHITE) as p:
+                        p.write('Stopping PostGIS container...')
 
                 docker_client.stop(container=POSTGIS_CONTAINER)
 
             elif not silent and container == POSTGIS_INPUT:
-                print('PostGIS container already stopped.')
+                with pretty_output(FG_WHITE) as p:
+                    p.write('PostGIS container already stopped.')
         except KeyError:
             if not container or container == POSTGIS_INPUT:
-                print('PostGIS container not installed...')
-        except:
-            raise
+                with pretty_output(FG_WHITE) as p:
+                    p.write('PostGIS container not installed...')
 
         # Stop GeoServer
         try:
             if container_status[GEOSERVER_CONTAINER] and container == GEOSERVER_INPUT:
                 if not silent:
-                    print('Stopping GeoServer container...')
+                    with pretty_output(FG_WHITE) as p:
+                        p.write('Stopping GeoServer container...')
 
                 docker_client.stop(container=GEOSERVER_CONTAINER)
 
             elif not silent and container == GEOSERVER_INPUT:
-                print('GeoServer container already stopped.')
+                with pretty_output(FG_WHITE) as p:
+                    p.write('GeoServer container already stopped.')
         except KeyError:
             if not container or container == GEOSERVER_INPUT:
-                print('GeoServer container not installed...')
-        except:
-            raise
+                with pretty_output(FG_WHITE) as p:
+                    p.write('GeoServer container not installed...')
 
         # Stop 52 North WPS
         try:
             if container_status[N52WPS_CONTAINER] and container == N52WPS_INPUT:
                 if not silent:
-                    print('Stopping 52 North WPS container...')
+                    with pretty_output(FG_WHITE) as p:
+                        p.write('Stopping 52 North WPS container...')
 
                 docker_client.stop(container=N52WPS_CONTAINER)
 
             elif not silent and container == N52WPS_INPUT:
-                print('52 North WPS container already stopped.')
+                with pretty_output(FG_WHITE) as p:
+                    p.write('52 North WPS container already stopped.')
         except KeyError:
             if not container or container == N52WPS_INPUT:
-                print('52 North WPS container not installed...')
-        except:
-            raise
+                with pretty_output(FG_WHITE) as p:
+                    p.write('52 North WPS container not installed...')
 
 
 def remove_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
@@ -929,17 +958,20 @@ def remove_docker_containers(docker_client, containers=ALL_DOCKER_INPUTS):
     for container in containers:
         # Remove PostGIS
         if container == POSTGIS_INPUT and POSTGIS_CONTAINER not in containers_not_installed:
-            print('Removing PostGIS...')
+            with pretty_output(FG_WHITE) as p:
+                p.write('Removing PostGIS...')
             docker_client.remove_container(container=POSTGIS_CONTAINER)
 
         # Remove GeoServer
         if container == GEOSERVER_INPUT and GEOSERVER_CONTAINER not in containers_not_installed:
-            print('Removing GeoServer...')
+            with pretty_output(FG_WHITE) as p:
+                p.write('Removing GeoServer...')
             docker_client.remove_container(container=GEOSERVER_CONTAINER, v=True)
 
         # Remove 52 North WPS
         if container == N52WPS_INPUT and N52WPS_CONTAINER not in containers_not_installed:
-            print('Removing 52 North WPS...')
+            with pretty_output(FG_WHITE) as p:
+                p.write('Removing 52 North WPS...')
             docker_client.remove_container(container=N52WPS_CONTAINER)
 
 
@@ -955,9 +987,11 @@ def docker_init(containers=None, defaults=False):
     images_to_install = get_images_to_install(docker_client, containers=containers)
 
     if len(images_to_install) < 1:
-        print("Docker images already pulled.")
+        with pretty_output(FG_WHITE) as p:
+            p.write("Docker images already pulled.")
     else:
-        print("Pulling Docker images...")
+        with pretty_output(FG_WHITE) as p:
+            p.write("Pulling Docker images...")
 
     # Pull the Docker images
     for image in images_to_install:
@@ -1038,27 +1072,36 @@ def docker_status():
 
     # PostGIS
     if POSTGIS_CONTAINER in container_status and container_status[POSTGIS_CONTAINER]:
-        print('PostGIS/Database: Running')
+        with pretty_output(FG_WHITE) as p:
+            p.write('PostGIS/Database: Running')
     elif POSTGIS_CONTAINER in container_status and not container_status[POSTGIS_CONTAINER]:
-        print('PostGIS/Database: Stopped')
+        with pretty_output(FG_WHITE) as p:
+            p.write('PostGIS/Database: Stopped')
     else:
-        print('PostGIS/Database: Not Installed')
+        with pretty_output(FG_WHITE) as p:
+            p.write('PostGIS/Database: Not Installed')
 
     # GeoServer
     if GEOSERVER_CONTAINER in container_status and container_status[GEOSERVER_CONTAINER]:
-        print('GeoServer: Running')
+        with pretty_output(FG_WHITE) as p:
+            p.write('GeoServer: Running')
     elif GEOSERVER_CONTAINER in container_status and not container_status[GEOSERVER_CONTAINER]:
-        print('GeoServer: Stopped')
+        with pretty_output(FG_WHITE) as p:
+            p.write('GeoServer: Stopped')
     else:
-        print('GeoServer: Not Installed')
+        with pretty_output(FG_WHITE) as p:
+            p.write('GeoServer: Not Installed')
 
     # 52 North WPS
     if N52WPS_CONTAINER in container_status and container_status[N52WPS_CONTAINER]:
-        print('52 North WPS: Running')
+        with pretty_output(FG_WHITE) as p:
+            p.write('52 North WPS: Running')
     elif N52WPS_CONTAINER in container_status and not container_status[N52WPS_CONTAINER]:
-        print('52 North WPS: Stopped')
+        with pretty_output(FG_WHITE) as p:
+            p.write('52 North WPS: Stopped')
     else:
-        print('52 North WPS: Not Installed')
+        with pretty_output(FG_WHITE) as p:
+            p.write('52 North WPS: Not Installed')
 
 
 def docker_update(containers=None, defaults=False):
@@ -1113,50 +1156,82 @@ def docker_ip():
         if container_status[POSTGIS_CONTAINER]:
             postgis_container = containers[POSTGIS_CONTAINER]
             postgis_port = postgis_container['Ports'][0]['PublicPort']
-            print('\nPostGIS/Database:')
-            print('  Host: {0}'.format(docker_host))
-            print('  Port: {0}'.format(postgis_port))
+            with pretty_output(FG_WHITE) as p:
+                p.write('\nPostGIS/Database:')
+                p.write('  Host: {0}'.format(docker_host))
+                p.write('  Port: {0}'.format(postgis_port))
 
         else:
-            print('\nPostGIS/Database: Not Running.')
+            with pretty_output(FG_WHITE) as p:
+                p.write('\nPostGIS/Database: Not Running.')
     except KeyError:
         # If key error is raised, it is likely not installed.
-        print('\nPostGIS/Database: Not Installed.')
-    except:
-        raise
+        with pretty_output(FG_WHITE) as p:
+            p.write('\nPostGIS/Database: Not Installed.')
 
     # GeoServer
     try:
         if container_status[GEOSERVER_CONTAINER]:
             geoserver_container = containers[GEOSERVER_CONTAINER]
             geoserver_port = geoserver_container['Ports'][0]['PublicPort']
-            print('\nGeoServer:')
-            print('  Host: {0}'.format(docker_host))
-            print('  Port: {0}'.format(geoserver_port))
-            print('  Endpoint: http://{0}:{1}/geoserver/rest'.format(docker_host, geoserver_port))
+            with pretty_output(FG_WHITE) as p:
+                p.write('\nGeoServer:')
+                p.write('  Host: {0}'.format(docker_host))
+                p.write('  Port: {0}'.format(geoserver_port))
+                p.write('  Endpoint: http://{0}:{1}/geoserver/rest'.format(docker_host, geoserver_port))
 
         else:
-            print('\nGeoServer: Not Running.')
+            with pretty_output(FG_WHITE) as p:
+                p.write('\nGeoServer: Not Running.')
     except KeyError:
         # If key error is raised, it is likely not installed.
-        print('\nGeoServer: Not Installed.')
-    except:
-        raise
+        with pretty_output(FG_WHITE) as p:
+            p.write('\nGeoServer: Not Installed.')
 
     # 52 North WPS
     try:
         if container_status[N52WPS_CONTAINER]:
             n52wps_container = containers[N52WPS_CONTAINER]
             n52wps_port = n52wps_container['Ports'][0]['PublicPort']
-            print('\n52 North WPS:')
-            print('  Host: {0}'.format(docker_host))
-            print('  Port: {0}'.format(n52wps_port))
-            print('  Endpoint: http://{0}:{1}/wps/WebProcessingService\n'.format(docker_host, n52wps_port))
+            with pretty_output(FG_WHITE) as p:
+                p.write('\n52 North WPS:')
+                p.write('  Host: {0}'.format(docker_host))
+                p.write('  Port: {0}'.format(n52wps_port))
+                p.write('  Endpoint: http://{0}:{1}/wps/WebProcessingService\n'.format(docker_host, n52wps_port))
 
         else:
-            print('\n52 North WPS: Not Running.')
+            with pretty_output(FG_WHITE) as p:
+                p.write('\n52 North WPS: Not Running.')
     except KeyError:
         # If key error is raised, it is likely not installed.
-        print('\n52 North WPS: Not Installed.')
-    except:
-        raise
+        with pretty_output(FG_WHITE) as p:
+            p.write('\n52 North WPS: Not Installed.')
+
+
+def docker_command(args):
+    """
+    Docker management commands.
+    """
+    if args.command == 'init':
+        docker_init(containers=args.containers, defaults=args.defaults)
+
+    elif args.command == 'start':
+        docker_start(containers=args.containers)
+
+    elif args.command == 'stop':
+        docker_stop(containers=args.containers, boot2docker=args.boot2docker)
+
+    elif args.command == 'status':
+        docker_status()
+
+    elif args.command == 'update':
+        docker_update(containers=args.containers, defaults=args.defaults)
+
+    elif args.command == 'remove':
+        docker_remove(containers=args.containers)
+
+    elif args.command == 'ip':
+        docker_ip()
+
+    elif args.command == 'restart':
+        docker_restart(containers=args.containers)

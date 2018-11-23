@@ -6,21 +6,24 @@ FROM python:2-slim-stretch
 ###############
 ENV  TETHYS_HOME="/usr/lib/tethys" \
      TETHYS_PORT=80 \
-     TETHYS_PUBLIC_HOST="172.17.0.1" \
+     TETHYS_PUBLIC_HOST="127.0.0.1" \
      TETHYS_DB_USERNAME="tethys_default" \
      TETHYS_DB_PASSWORD="pass" \
      TETHYS_DB_HOST="172.17.0.1" \
      TETHYS_DB_PORT=5432 \
-     TETHYS_SUPER_USER="admin" \
+     TETHYS_SUPER_USER="" \
      TETHYS_SUPER_USER_EMAIL="" \
-     TETHYS_SUPER_USER_PASS="pass" 
+     TETHYS_SUPER_USER_PASS=""
+
 # Misc
-ENV  ALLOWED_HOST=127.0.0.1 \
+ENV  ALLOWED_HOSTS="['127.0.0.1', 'localhost']" \
      BASH_PROFILE=".bashrc" \
      CONDA_HOME="${TETHYS_HOME}/miniconda" \
      CONDA_ENV_NAME=tethys \
      MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh" \
-     PYTHON_VERSION=2 
+     PYTHON_VERSION=2 \
+     UWSGI_PROCESSES=10 \
+     CLIENT_MAX_BODY_SIZE="75M"
 
 #########
 # SETUP #
@@ -64,6 +67,11 @@ ADD tethys_services ${TETHYS_HOME}/src/tethys_services/
 ADD README.rst ${TETHYS_HOME}/src/
 ADD *.py ${TETHYS_HOME}/src/
 
+# Remove any apps that may have been installed in tethysapp
+RUN rm -rf ${TETHYS_HOME}/src/tethys_apps/tethysapp \
+  ; mkdir -p ${TETHYS_HOME}/src/tethys_apps/tethysapp
+ADD tethys_apps/tethysapp/__init__.py ${TETHYS_HOME}/src/tethys_apps/tethysapp/
+
 # Run Installer
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; python setup.py develop \
@@ -75,13 +83,12 @@ ADD static ${TETHYS_HOME}/src/static/
 
 # Generate Inital Settings Files
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
-  ; tethys gen settings --production --allowed-host ${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite \
+  ; tethys gen settings --production --allowed-host "${ALLOWED_HOST}" --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite \
   ; sed -i -e "s:#TETHYS_WORKSPACES_ROOT = .*$:TETHYS_WORKSPACES_ROOT = \"/usr/lib/tethys/workspaces\":" ${TETHYS_HOME}/src/tethys_portal/settings.py \
   ; tethys gen nginx --overwrite \
   ; tethys gen uwsgi_settings --overwrite \
   ; tethys gen uwsgi_service --overwrite \
-  ; python manage.py collectstatic'
-
+  ; tethys manage collectstatic'
 
 # Give NGINX Permission
 RUN export NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}') \
@@ -100,7 +107,6 @@ RUN apt-get -y remove wget gcc gnupg2 \
 ENV PATH ${CONDA_HOME}/miniconda/envs/tethys/bin:$PATH 
 VOLUME ["${TETHYS_HOME}/workspaces", "${TETHYS_HOME}/keys"]
 EXPOSE 80
-
 
 ###############*
 # COPY IN SALT #

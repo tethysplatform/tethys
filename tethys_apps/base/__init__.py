@@ -8,8 +8,8 @@
 ********************************************************************************
 """
 # DO NOT ERASE
-from tethys_apps.base.app_base import TethysAppBase, TethysExtensionBase
-from tethys_apps.base.controller import app_controller_maker
-from tethys_apps.base.url_map import url_map_maker
-from tethys_apps.base.workspace import TethysWorkspace
-from tethys_apps.base.permissions import Permission, PermissionGroup, has_permission
+from tethys_apps.base.app_base import TethysAppBase, TethysExtensionBase  # noqa: F401
+from tethys_apps.base.controller import app_controller_maker  # noqa: F401
+from tethys_apps.base.url_map import url_map_maker  # noqa: F401
+from tethys_apps.base.workspace import TethysWorkspace  # noqa: F401
+from tethys_apps.base.permissions import Permission, PermissionGroup, has_permission  # noqa: F401

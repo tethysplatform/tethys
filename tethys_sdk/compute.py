@@ -7,5 +7,6 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+# flake8: noqa
+# DO NOT ERASE
 from tethys_compute.scheduler_manager import list_schedulers, get_scheduler, create_scheduler
-

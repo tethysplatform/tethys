@@ -75,7 +75,11 @@ LOGGING = {
     },
 }
 
+{% if allowed_hosts %}
+ALLOWED_HOSTS = {{ allowed_hosts|safe }}
+{% else %}
 ALLOWED_HOSTS = [{% if allowed_host %}'{{ allowed_host }}'{% endif %}]
+{% endif %}
 
 # Application definition
 

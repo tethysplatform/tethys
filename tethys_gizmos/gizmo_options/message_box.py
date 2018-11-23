@@ -56,7 +56,7 @@ class MessageBox(TethysGizmoOptions):
         {% block after_app_content %}
             {% gizmo message_box %}
         {% endblock %}
-    """
+    """  # noqa: E501
     gizmo_name = "message_box"
 
     def __init__(self, name, title, message='', dismiss_button='Cancel', affirmative_button='Ok',

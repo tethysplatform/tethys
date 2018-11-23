@@ -12,7 +12,7 @@ class ESRIMap(TethysGizmoOptions):
     Attributes
         height(string, required): Height of map container in normal css units
         width(string, required): Width of map container in normal css units
-        basemap(string, required): Basemap layer. Values=[streets,satellite,hybrid,topo,gray,dark-gray,oceans,national-geographic,terrain,osm,dark-gray-vector,gray-vector,street-vector,topo-vector,streets-night-vector,streets-relief-vector,streets-navigation-vector]
+        basemap(string, required): Basemap layer. Values=[streets,satellite,hybrid,topo,gray,dark-gray,oceans, national-geographic,terrain,osm,dark-gray-vector,gray-vector,street-vector, topo-vector,streets-night-vector,streets-relief-vector,streets-navigation-vector]
         zoom(string,required): Zoom Level of the Basemap.
         view(EMView): An EVView object specifying the initial view or extent for the map
 
@@ -31,10 +31,10 @@ class ESRIMap(TethysGizmoOptions):
 
         {% gizmo esri_map_view_options %}
 
-    """
+    """  # noqa: E501
     gizmo_name = "esri_map"
 
-    def __init__(self, height='100%', width='100%', basemap='topo',view={'center':[-100,40],'zoom':2},layers=[]):
+    def __init__(self, height='100%', width='100%', basemap='topo', view={'center': [-100, 40], 'zoom': 2}, layers=[]):
         """
         Constructor
         """
@@ -90,7 +90,7 @@ class EMView(SecondaryGizmoOptions):
                zoom=3.5,
            )
 
-       """
+       """  # noqa: E501
     def __init__(self, center, zoom):
         """
         Constructor
@@ -122,12 +122,12 @@ class EMLayer(SecondaryGizmoOptions):
 
     esri_image_layer = EMLayer(type='ImageryLayer', url='https://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer')
 
-    """
-    def __init__(self,type,url):
+    """  # noqa: E501
+    def __init__(self, type, url):
         """
         Constructor
         """
-        #Initialize super class
-        super(EMLayer,self).__init__()
+        # Initialize super class
+        super(EMLayer, self).__init__()
         self.type = type
         self.url = url

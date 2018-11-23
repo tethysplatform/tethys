@@ -8,7 +8,7 @@ __all__ = ['PlotObject', 'LinePlot', 'PolarPlot', 'ScatterPlot',
 class PlotViewBase(TethysGizmoOptions):
     """
     Plot view classes inherit from this class.
-    """    
+    """
     gizmo_name = "plot_view"
 
     def __init__(self, width='500px', height='500px', engine='d3'):
@@ -30,7 +30,7 @@ class PlotViewBase(TethysGizmoOptions):
     @staticmethod
     def get_vendor_js():
         """
-        JavaScript vendor libraries to be placed in the 
+        JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
         return ('tethys_gizmos/vendor/highcharts/js/highcharts.js',
@@ -42,7 +42,7 @@ class PlotViewBase(TethysGizmoOptions):
     @staticmethod
     def get_gizmo_js():
         """
-        JavaScript specific to gizmo to be placed in the 
+        JavaScript specific to gizmo to be placed in the
         {% block scripts %} block
         """
         return ('tethys_gizmos/js/plot_view.js',)
@@ -50,8 +50,8 @@ class PlotViewBase(TethysGizmoOptions):
     @staticmethod
     def get_gizmo_css():
         """
-        CSS specific to gizmo to be placed in the 
-        {% block content_dependent_styles %} block      
+        CSS specific to gizmo to be placed in the
+        {% block content_dependent_styles %} block
         """
         return ('tethys_gizmos/css/plot_view.css',)
 
@@ -61,7 +61,7 @@ class PlotObject(TethysGizmoOptions):
     Base Plot Object that is constructed by plot views.
     """
 
-    def __init__(self,  chart={}, title='', subtitle='', legend=None, display_legend=True,
+    def __init__(self, chart={}, title='', subtitle='', legend=None, display_legend=True,
                  tooltip=True, x_axis={}, y_axis={}, tooltip_format={}, plotOptions={}, **kwargs):
         """
         Constructor
@@ -82,11 +82,11 @@ class PlotObject(TethysGizmoOptions):
 
         if display_legend:
             default_legend = {
-                    'layout': 'vertical',
-                    'align': 'right',
-                    'verticalAlign': 'middle',
-                    'borderWidth': 0
-                }
+                'layout': 'vertical',
+                'align': 'right',
+                'verticalAlign': 'middle',
+                'borderWidth': 0
+            }
             self.legend = legend or default_legend
 
         if tooltip:
@@ -668,8 +668,8 @@ class BarPlot(PlotViewBase):
         if group_tools:
             tooltip_format = {
                 'headerFormat': '<span style="font-size:10px">{point.key}</span><table>',
-                'pointFormat': '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' + '<td style="padding:0"><b>{point.y:.1f} %s </b></td></tr>' % (
-                    axis_units),
+                'pointFormat': '<tr><td style="color:{series.color};padding:0">{series.name}: </td>'
+                               + '<td style="padding:0"><b>{point.y:.1f} %s </b></td></tr>' % (axis_units),
                 'footerFormat': '</table>',
                 'shared': True,
                 'useHTML': True
@@ -875,7 +875,7 @@ class AreaRange(PlotViewBase):
 
         {% gizmo area_range_plot_object %}
 
-    """
+    """  # noqa: E501
 
     def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='',
                  y_axis_title='', y_axis_units='', **kwargs):
@@ -995,7 +995,7 @@ class HeatMap(PlotViewBase):
 
         {% gizmo heat_map_plot %}
 
-    """
+    """  # noqa: E501
 
     def __init__(self, series=[], height='500px', width='500px', engine='d3', title='', subtitle='', x_categories=[],
                  y_categories=[], tooltip_phrase_one='', tooltip_phrase_two='', **kwargs):
@@ -1024,7 +1024,9 @@ class HeatMap(PlotViewBase):
         }
 
         tooltip_format = {
-            'formatter': 'function() {return "<b>" + this.series.xAxis.categories[this.point.x] + "</b> %s <br><b>" + this.point.value + "</b> %s <br><b>" + this.series.yAxis.categories[this.point.y] + "</b>";' % (tooltip_phrase_one, tooltip_phrase_two)
+            'formatter': 'function() {return "<b>" + this.series.xAxis.categories[this.point.x] + "</b> %s <br><b>" + '
+                         'this.point.value + "</b> %s <br><b>" + this.series.yAxis.categories[this.point.y] + "</b>";'
+                         % (tooltip_phrase_one, tooltip_phrase_two)
         }
 
         # Initialize super class

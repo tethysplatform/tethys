@@ -4,7 +4,7 @@ USAGE="USAGE: . install_tethys.sh [options]\n
 \n
 OPTIONS:\n
 \t    -t, --tethys-home <PATH>            \t\t Path for tethys home directory. Default is ~/tethys.\n
-\t   -a, --allowed-host <HOST>            \t\t Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
+\t    -a, --allowed-host <HOST>           \t\t Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
 \t    -p, --port <PORT>                   \t\t\t Port on which to serve tethys. Default is 8000.\n
 \t    -b, --branch <BRANCH_NAME>          \t\t Branch to checkout from version control. Default is 'release'.\n
 \t    -c, --conda-home <PATH>             \t\t Path where Miniconda will be installed, or to an existing installation of Miniconda. Default is \${TETHYS_HOME}/miniconda.\n

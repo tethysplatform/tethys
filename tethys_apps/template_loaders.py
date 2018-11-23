@@ -3,8 +3,8 @@
 * Name: template_loaders.py
 * Author: swainn
 * Created On: December 14, 2015
-* Copyright:
-* License: 
+* Copyright: (c) Aquaveo 2015
+* License:
 ********************************************************************************
 """
 import io

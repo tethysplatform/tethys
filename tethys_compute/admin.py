@@ -8,10 +8,7 @@
 ********************************************************************************
 """
 from django.contrib import admin
-from django.forms import Textarea
-from django.db import models
 from tethys_compute.models import Scheduler, TethysJob
-# Register your models here.
 
 
 @admin.register(Scheduler)
@@ -21,7 +18,8 @@ class SchedulerAdmin(admin.ModelAdmin):
 
 @admin.register(TethysJob)
 class JobAdmin(admin.ModelAdmin):
-    list_display = ['name', 'description', 'label', 'user', 'creation_time', 'execute_time', 'completion_time', 'status']
+    list_display = ['name', 'description', 'label', 'user', 'creation_time', 'execute_time', 'completion_time',
+                    'status']
     list_display_links = ('name',)
 
     def has_add_permission(self, request):
