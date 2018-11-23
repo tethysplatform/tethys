@@ -8,11 +8,14 @@
 ********************************************************************************
 """
 from django.core.management.base import BaseCommand
-from tethys_apps.terminal_colors import TerminalColors
+from tethys_apps.cli.cli_colors import TC_BLUE, TC_WARNING, TC_ENDC
 
 ALL_APPS = 'all'
 
-#TODO: remove syncstores interface and update documentation once able to initialize/create persistent stores from app admin interface
+# TODO: remove syncstores interface and update documentation once able to initialize/create persistent stores from app
+# admin interface
+
+
 class Command(BaseCommand):
     """
     Command class that handles the syncstores command. Provides persistent store management functionality.
@@ -58,11 +61,12 @@ class Command(BaseCommand):
             target_app_names = [a.package for a in target_apps]
             for app_name in app_names:
                 if app_name not in target_app_names:
-                    self.stdout.write('{0}WARNING:{1} The app named "{2}" cannot be found. Please make sure it is installed '
-                                      'and try again.'.format(TerminalColors.WARNING, TerminalColors.ENDC, app_name))
+                    self.stdout.write('{0}WARNING:{1} The app named "{2}" cannot be found. '
+                                      'Please make sure it is installed '
+                                      'and try again.'.format(TC_WARNING, TC_ENDC, app_name))
 
         # Notify user of database provisioning
-        self.stdout.write(TerminalColors.BLUE + '\nProvisioning Persistent Stores...' + TerminalColors.ENDC)
+        self.stdout.write(TC_BLUE + '\nProvisioning Persistent Stores...' + TC_ENDC)
 
         # Get apps and provision persistent stores if not already created
         for app in target_apps:
