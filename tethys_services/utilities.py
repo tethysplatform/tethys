@@ -40,11 +40,10 @@ def ensure_oauth2(provider):
     Note that calling get_dataset_engine for a hydroshare dataset engine will throw an error
     if it is not called in a function that is decorated with the ensure_oauth2 decorator.
     """
-    def decorator(function):
-        @wraps(function)
+    def decorator(func):
+        @wraps(func)
         def wrapper(request, *args, **kwargs):
             user = request.user
-
             # Assemble redirect response
             redirect_url = reverse('social:begin', args=[provider]) + '?next={0}'.format(request.path)
             redirect_response = redirect(redirect_url)
@@ -58,12 +57,10 @@ def ensure_oauth2(provider):
                 # Anonymous User needs to be logged in and associated with that provider
                 # return redirect('/login/{0}/?next={1}'.format(provider, request.path))
                 return redirect_response
-            except AuthAlreadyAssociated:
+            except AuthAlreadyAssociated as e:
                 # Another user has already used the account to associate...
-                raise
-            except:
-                raise
-            return function(request, *args, **kwargs)
+                raise e
+            return func(request, *args, **kwargs)
         return wrapper
     return decorator
 
@@ -81,8 +78,8 @@ def initialize_engine_object(engine, endpoint, apikey=None, username=None, passw
     engine_class_string = engine_split[-1]
 
     # Import
-    module = __import__(module_string, fromlist=[engine_class_string])
-    EngineClass = getattr(module, engine_class_string)
+    module_ = __import__(module_string, fromlist=[engine_class_string])
+    EngineClass = getattr(module_, engine_class_string)
 
     # Get Token for HydroShare interactions
     if EngineClass is HydroShareDatasetEngine:
@@ -102,14 +99,14 @@ def initialize_engine_object(engine, endpoint, apikey=None, username=None, passw
             raise
         except AuthAlreadyAssociated:
             raise
-        except:
-            raise
 
     # Create Engine Object
-    engine_instance = EngineClass(endpoint=endpoint,
-                                  apikey=apikey,
-                                  username=username,
-                                  password=password)
+    engine_instance = EngineClass(
+        endpoint=endpoint,
+        apikey=apikey,
+        username=username,
+        password=password
+    )
     return engine_instance
 
 
@@ -124,12 +121,14 @@ def list_dataset_engines(request=None):
     if site_dataset_services:
         # Search for match
         for site_dataset_service in site_dataset_services:
-            dataset_service_object = initialize_engine_object(engine=site_dataset_service.engine.encode('utf-8'),
-                                                              endpoint=site_dataset_service.endpoint,
-                                                              apikey=site_dataset_service.apikey,
-                                                              username=site_dataset_service.username,
-                                                              password=site_dataset_service.password,
-                                                              request=request)
+            dataset_service_object = initialize_engine_object(
+                engine=site_dataset_service.engine.encode('utf-8'),
+                endpoint=site_dataset_service.endpoint,
+                apikey=site_dataset_service.apikey,
+                username=site_dataset_service.username,
+                password=site_dataset_service.password,
+                request=request
+            )
             dataset_service_object.public_endpoint = site_dataset_service.public_endpoint
 
             dataset_service_engines.append(dataset_service_object)
@@ -162,12 +161,14 @@ def get_dataset_engine(name, app_class=None, request=None):
 
             # If match is found, initiate engine object
             if app_dataset_service.name == name:
-                return initialize_engine_object(engine=app_dataset_service.engine,
-                                                endpoint=app_dataset_service.endpoint,
-                                                apikey=app_dataset_service.apikey,
-                                                username=app_dataset_service.username,
-                                                password=app_dataset_service.password,
-                                                request=request)
+                return initialize_engine_object(
+                    engine=app_dataset_service.engine,
+                    endpoint=app_dataset_service.endpoint,
+                    apikey=app_dataset_service.apikey,
+                    username=app_dataset_service.username,
+                    password=app_dataset_service.password,
+                    request=request
+                )
 
     # If the dataset engine cannot be found in the app_class, check database for site-wide dataset engines
     site_dataset_services = DsModel.objects.all()
@@ -178,12 +179,14 @@ def get_dataset_engine(name, app_class=None, request=None):
 
             # If match is found initiate engine object
             if site_dataset_service.name == name:
-                dataset_service_object = initialize_engine_object(engine=site_dataset_service.engine.encode('utf-8'),
-                                                                  endpoint=site_dataset_service.endpoint,
-                                                                  apikey=site_dataset_service.apikey,
-                                                                  username=site_dataset_service.username,
-                                                                  password=site_dataset_service.password,
-                                                                  request=request)
+                dataset_service_object = initialize_engine_object(
+                    engine=site_dataset_service.engine.encode('utf-8'),
+                    endpoint=site_dataset_service.endpoint,
+                    apikey=site_dataset_service.apikey,
+                    username=site_dataset_service.username,
+                    password=site_dataset_service.password,
+                    request=request
+                )
 
                 dataset_service_object.public_endpoint = site_dataset_service.public_endpoint
                 return dataset_service_object
@@ -203,11 +206,13 @@ def list_spatial_dataset_engines():
     if site_spatial_dataset_services:
         # Search for match
         for site_spatial_dataset_service in site_spatial_dataset_services:
-            spatial_dataset_object =  initialize_engine_object(engine=site_spatial_dataset_service.engine.encode('utf-8'),
-                                                               endpoint=site_spatial_dataset_service.endpoint,
-                                                               apikey=site_spatial_dataset_service.apikey,
-                                                               username=site_spatial_dataset_service.username,
-                                                               password=site_spatial_dataset_service.password)
+            spatial_dataset_object = initialize_engine_object(
+                engine=site_spatial_dataset_service.engine.encode('utf-8'),
+                endpoint=site_spatial_dataset_service.endpoint,
+                apikey=site_spatial_dataset_service.apikey,
+                username=site_spatial_dataset_service.username,
+                password=site_spatial_dataset_service.password
+            )
             spatial_dataset_object.public_endpoint = site_spatial_dataset_service.public_endpoint
             spatial_dataset_service_engines.append(spatial_dataset_object)
 
@@ -239,11 +244,13 @@ def get_spatial_dataset_engine(name, app_class=None):
 
             # If match is found, initiate engine object
             if app_spatial_dataset_service.name == name:
-                return initialize_engine_object(engine=app_spatial_dataset_service.engine,
-                                                endpoint=app_spatial_dataset_service.endpoint,
-                                                apikey=app_spatial_dataset_service.apikey,
-                                                username=app_spatial_dataset_service.username,
-                                                password=app_spatial_dataset_service.password)
+                return initialize_engine_object(
+                    engine=app_spatial_dataset_service.engine,
+                    endpoint=app_spatial_dataset_service.endpoint,
+                    apikey=app_spatial_dataset_service.apikey,
+                    username=app_spatial_dataset_service.username,
+                    password=app_spatial_dataset_service.password
+                )
 
     # If the dataset engine cannot be found in the app_class, check database for site-wide dataset engines
     site_spatial_dataset_services = SdsModel.objects.all()
@@ -254,17 +261,19 @@ def get_spatial_dataset_engine(name, app_class=None):
 
             # If match is found initiate engine object
             if site_spatial_dataset_service.name == name:
-                 spatial_dataset_object = initialize_engine_object(engine=site_spatial_dataset_service.engine.encode('utf-8'),
-                                                                   endpoint=site_spatial_dataset_service.endpoint,
-                                                                   apikey=site_spatial_dataset_service.apikey,
-                                                                   username=site_spatial_dataset_service.username,
-                                                                   password=site_spatial_dataset_service.password)
+                spatial_dataset_object = initialize_engine_object(
+                    engine=site_spatial_dataset_service.engine.encode('utf-8'),
+                    endpoint=site_spatial_dataset_service.endpoint,
+                    apikey=site_spatial_dataset_service.apikey,
+                    username=site_spatial_dataset_service.username,
+                    password=site_spatial_dataset_service.password
+                )
 
-                 spatial_dataset_object.public_endpoint = site_spatial_dataset_service.public_endpoint
-                 return spatial_dataset_object
+                spatial_dataset_object.public_endpoint = site_spatial_dataset_service.public_endpoint
+                return spatial_dataset_object
 
-    raise NameError('Could not find spatial dataset service with name "{0}". Please check that dataset service with that name '
-                    'exists in either the Admin Settings or in your app.py.'.format(name))
+    raise NameError('Could not find spatial dataset service with name "{0}". Please check that dataset service with '
+                    'that name exists in either the Admin Settings or in your app.py.'.format(name))
 
 
 def abstract_is_link(process):
@@ -312,8 +321,6 @@ def activate_wps(wps, endpoint, name):
             raise e
     except URLError as e:
         return None
-    except:
-        raise
 
     return wps
 
@@ -399,11 +406,13 @@ def get_wps_service_engine(name, app_class=None):
 
             # If match is found, initiate engine object
             if app_wps_service.name == name:
-                wps = WebProcessingService(app_wps_service.endpoint,
-                                           username=app_wps_service.username,
-                                           password=app_wps_service.password,
-                                           verbose=False,
-                                           skip_caps=True)
+                wps = WebProcessingService(
+                    app_wps_service.endpoint,
+                    username=app_wps_service.username,
+                    password=app_wps_service.password,
+                    verbose=False,
+                    skip_caps=True
+                )
 
                 return activate_wps(wps=wps, endpoint=app_wps_service.endpoint, name=app_wps_service.name)
 
@@ -417,11 +426,13 @@ def get_wps_service_engine(name, app_class=None):
             # If match is found initiate engine object
             if site_wps_service.name == name:
                 # Create OWSLib WebProcessingService engine object
-                wps = WebProcessingService(site_wps_service.endpoint,
-                                           username=site_wps_service.username,
-                                           password=site_wps_service.password,
-                                           verbose=False,
-                                           skip_caps=True)
+                wps = WebProcessingService(
+                    site_wps_service.endpoint,
+                    username=site_wps_service.username,
+                    password=site_wps_service.password,
+                    verbose=False,
+                    skip_caps=True
+                )
 
                 # Initialize the object with get capabilities call
                 return activate_wps(wps=wps, endpoint=site_wps_service.endpoint, name=site_wps_service.name)

@@ -39,7 +39,7 @@ To create jobs in an app you first need to define job templates. A job template 
                                                 remote_input_files=('$(APP_WORKSPACE)/my_script.py', '$(APP_WORKSPACE)/input_1', '$(USER_WORKSPACE)/input_2'),
                                                 executable='my_script.py',
                                                 transfer_input_files=('../input_1', '../input_2'),
-                                                transfer_output_files=('example_output1', example_output2),
+                                                transfer_output_files=('example_output1', 'example_output2'),
                                                 )
 
       job_templates = (CondorJobTemplate(name='example',
