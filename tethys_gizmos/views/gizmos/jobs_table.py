@@ -36,7 +36,7 @@ def update_row(request, job_id):
     try:
         data = {key: _parse_value(val) for key, val in request.POST.items()}
         filter_string = data.pop('column_fields')
-        filters = [f.strip('\'\" ') for f in filter_string.strip('()').split(',')]
+        filters = [f.strip('\'\" ') for f in filter_string.strip('[]').split(',')]
         job = TethysJob.objects.get_subclass(id=job_id)
         status = job.status
         statuses = None
@@ -47,7 +47,7 @@ def update_row(request, job_id):
             else:
                 statuses = job.statuses
 
-        row = JobsTable.get_rows([job], filters)[0]
+        row = JobsTable.get_row(job, filters)
 
         data.update({'job': job, 'row': row, 'column_fields': filters, 'job_status': status,
                      'job_statuses': statuses, 'delay_loading_status': False})

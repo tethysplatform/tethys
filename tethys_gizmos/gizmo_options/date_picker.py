@@ -14,7 +14,7 @@ __all__ = ['DatePicker']
 
 class DatePicker(TethysGizmoOptions):
     """
-    Date pickers are used to make the input of dates streamlined and easy. Rather than typing the date, the user is presented with a calendar to select the date. This date picker was implemented using `Bootstrap Datepicker <http://bootstrap-datepicker.readthedocs.org/en/release/index.html>`_.
+    Date pickers are used to make the input of dates streamlined and easy. Rather than typing the date, the user is  presented with a calendar to select the date. This date picker was implemented using `Bootstrap Datepicker <http://bootstrap-datepicker.readthedocs.org/en/release/index.html>`_.
 
     Attributes:
         name (str, required): Name of the input element that will be used for form submission.
@@ -74,7 +74,7 @@ class DatePicker(TethysGizmoOptions):
         {% gizmo date_picker %}
         {% gizmo date_picker_error %}
 
-    """
+    """  # noqa: E501
     gizmo_name = "date_picker"
 
     def __init__(self, name, display_text='', autoclose=False, calendar_weeks=False, clear_button=False,
@@ -106,19 +106,18 @@ class DatePicker(TethysGizmoOptions):
         self.disabled = disabled
         self.error = error
 
-            
     @staticmethod
     def get_vendor_css():
         """
-        JavaScript vendor libraries to be placed in the 
+        JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
         return ('tethys_gizmos/vendor/bootstrap_datepicker/css/datepicker3.css',)
-        
+
     @staticmethod
     def get_vendor_js():
         """
-        JavaScript vendor libraries to be placed in the 
+        JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
         return ('tethys_gizmos/vendor/bootstrap_datepicker/js/bootstrap_datepicker.js',)

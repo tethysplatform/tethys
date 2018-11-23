@@ -22,8 +22,8 @@ def app_controller_maker(root_url):
 class TethysController(View):
 
     @classmethod
-    def as_controller(cls, *args, **kwargs):
+    def as_controller(cls, **kwargs):
         """
         Thin veneer around the as_view method to make interface more consistent with Tethys terminology.
         """
-        return cls.as_view(*args, **kwargs)
+        return cls.as_view(**kwargs)

@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from __future__ import print_function
 import inspect
 import json
 from django.shortcuts import redirect
@@ -52,7 +53,7 @@ class HandoffManager(object):
 
         Returns:
             A list of valid HandoffHandler objects (or a JSON string if jsonify=True) representing the capabilities of app_name, or None if no app with app_name is found.
-        """
+        """  # noqa: E501
         manager = self._get_handoff_manager_for_app(app_name)
 
         if manager:
@@ -62,7 +63,7 @@ class HandoffManager(object):
                 handlers = [handler for handler in handlers if not handler.internal]
 
             if jsonify:
-                handlers = json.dumps([handler.__json__() for handler in handlers])
+                handlers = json.dumps([handler.__dict__ for handler in handlers])
 
             return handlers
 
@@ -76,7 +77,7 @@ class HandoffManager(object):
 
         Returns:
             A HandoffHandler object where the name attribute is equal to handler_name or None if no HandoffHandler with that name is found or no app with app_name is found.
-        """
+        """  # noqa: E501
         manager = self._get_handoff_manager_for_app(app_name)
 
         if manager:
@@ -96,7 +97,7 @@ class HandoffManager(object):
 
         Returns:
             HttpResponse object.
-        """
+        """  # noqa: E501
 
         error = {"message": "",
                  "code": 400,
@@ -113,10 +114,11 @@ class HandoffManager(object):
                     urlish = handler(request, **kwargs)
                     return redirect(urlish)
                 except TypeError as e:
-                    error['message'] = "HTTP 400 Bad Request: {0}. ".format(e.message)
+                    error['message'] = "HTTP 400 Bad Request: {0}. ".format(str(e))
                     return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
 
-        error['message'] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".format(manager.app.name, handler_name)
+        error['message'] = "HTTP 400 Bad Request: No handoff handler '{0}' for app '{1}' found.".\
+            format(manager.app.name, handler_name)
         return HttpResponseBadRequest(json.dumps(error), content_type='application/javascript')
 
     def _get_handoff_manager_for_app(self, app_name):
@@ -128,13 +130,12 @@ class HandoffManager(object):
 
         Returns:
             A HandoffManager object for the app with the name app_name or None if no app with that name is found.
-        """
-
+        """  # noqa: E501
         if not app_name:
             return self
 
         # Get the app
-        harvester = tethys_apps.app_harvester.SingletonAppHarvester()
+        harvester = tethys_apps.harvester.SingletonAppHarvester()
         apps = harvester.apps
 
         for app in apps:
@@ -156,10 +157,12 @@ class HandoffManager(object):
             else:
                 handler_str = handler.handler
                 if ':' in handler_str:
-                    print('DEPRECATION WARNING: The handler attribute of a HandoffHandler should now be in the form: "my_first_app.controllers.my_handler". The form "handoff:my_handler" is now deprecated.')
+                    print('DEPRECATION WARNING: The handler attribute of a HandoffHandler should now be in the '
+                          'form: "my_first_app.controllers.my_handler". The form "handoff:my_handler" '
+                          'is now deprecated.')
 
                     # Split into module name and function name
-                    module_path, function_name  = handler_str.split(':')
+                    module_path, function_name = handler_str.split(':')
 
                     # Pre-process handler path
                     full_module_path = '.'.join(('tethys_apps.tethysapp', self.app.package, module_path))
@@ -185,7 +188,7 @@ class HandoffHandler(TethysFunctionExtractor):
       name(str): Name of the handoff handler.
       handler(str): Path to the handler function for the handoff interaction. Use dot-notation (e.g.: "foo.bar.function").
       internal(bool, optional): Specifies that the handler is only for internal (i.e. within the same Tethys server) purposes.
-    """
+    """  # noqa: E501
 
     def __init__(self, name, handler, internal=False):
         """
@@ -209,7 +212,7 @@ class HandoffHandler(TethysFunctionExtractor):
         """
         return '<Handoff Handler: name={0}, handler={1}>'.format(self.name, self.handler)
 
-    def __json__(self):
+    def __dict__(self):
         """
         JSON representation
         """
