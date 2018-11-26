@@ -47,11 +47,13 @@ class MapView(TethysGizmoOptions):
 
     **Base Maps**
 
-    There are three base maps supported by the Map View gizmo: OpenStreetMap, Bing, and MapQuest. Use the following links to learn about the additional options you can configure the base maps with:
+    There are several base maps supported by the Map View gizmo. Use the following links to learn about the additional options you can configure the base maps with:
 
-    * Bing: `ol.source.BingMaps <http://openlayers.org/en/v4.0.1/apidoc/ol.source.BingMaps.html>`_
-    * MapQuest: `ol.source.MapQuest <http://openlayers.org/en/v4.0.1/apidoc/ol.source.MapQuest.html>`_
-    * OpenStreetMap: `ol.source.OSM <http://openlayers.org/en/v4.0.1/apidoc/ol.source.OSM.html>`_
+    * OpenStreetMap: `ol/source/OSM <http://openlayers.org/en/latest/apidoc/module-ol_source_OSM-OSM.html>`_
+    * Stamen: `ol/source/Stamen <http://openlayers.org/en/latest/apidoc/module-ol_source_Stamen-Stamen.html>`_
+    * CartoDB `ol/source/CartoDB <http://openlayers.org/en/latest/apidoc/module-ol_source_CartoDB-CartoDB.html>`_
+    * XYZ `ol/source/XYZ <http://openlayers.org/en/latest/apidoc/module-ol_source_XYZ-XYZ.html>`_
+    * Bing: `ol/source/BingMaps <http://openlayers.org/en/latest/apidoc/module-ol_source_BingMaps-BingMaps.html>`_
 
     ::
 
@@ -245,10 +247,11 @@ class MapView(TethysGizmoOptions):
 
     """  # noqa: E501
     gizmo_name = "map_view"
+    ol_version = '5.3.0'
 
     def __init__(self, height='100%', width='100%', basemap=None, view={'center': [-100, 40], 'zoom': 2},
                  controls=[], layers=[], draw=None, legend=False, attributes={}, classes='', disable_basemap=False,
-                 feature_selection=None):
+                 feature_selection=None, ol_version='4.6.5'):
         """
         Constructor
         """
@@ -265,17 +268,20 @@ class MapView(TethysGizmoOptions):
         self.legend = legend
         self.disable_basemap = disable_basemap
         self.feature_selection = feature_selection
+        self.ol_version = ol_version
 
-    @staticmethod
-    def get_vendor_js():
+    @classmethod
+    def get_vendor_js(cls):
         """
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        openlayers_library = 'tethys_gizmos/vendor/openlayers/ol.js'
-        if settings.DEBUG:
-            openlayers_library = 'tethys_gizmos/vendor/openlayers/ol-debug.js'
-        return (openlayers_library,)
+        debug = '-debug' if settings.DEBUG else ''
+        openlayers_library = 'https://cdnjs.cloudflare.com/ajax/libs/openlayers/{}/ol{}.js'.format(cls.ol_version, debug)
+        # openlayers_library = 'https://cdn.jsdelivr.net/npm/openlayers@{}/dist/ol{}.js'.format(cls.ol_version, debug)
+        openlayers_library = 'tethys_gizmos/vendor/openlayers/{}/ol.js'.format(cls.ol_version)
+
+        return openlayers_library,
 
     @staticmethod
     def get_gizmo_js():
@@ -286,13 +292,18 @@ class MapView(TethysGizmoOptions):
         return ('tethys_gizmos/js/gizmo_utilities.js',
                 'tethys_gizmos/js/tethys_map_view.js')
 
-    @staticmethod
-    def get_vendor_css():
+    @classmethod
+    def get_vendor_css(cls):
         """
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        return ('tethys_gizmos/vendor/openlayers/ol.css',)
+        debug = '-debug' if settings.DEBUG else ''
+        openlayers_css = 'https://cdnjs.cloudflare.com/ajax/libs/openlayers/{}/ol{}.css'.format(cls.ol_version, debug)
+        openlayers_css = 'https://cdn.jsdelivr.net/npm/openlayers@{}/dist/ol{}.css'.format(cls.ol_version, debug)
+        openlayers_css = 'tethys_gizmos/vendor/openlayers/{}/ol.css'.format(cls.ol_version)
+
+        return openlayers_css,
 
     @staticmethod
     def get_gizmo_css():
@@ -300,7 +311,7 @@ class MapView(TethysGizmoOptions):
         CSS specific to gizmo to be placed in the
         {% block content_dependent_styles %} block
         """
-        return ('tethys_gizmos/css/tethys_map_view.min.css',)
+        return 'tethys_gizmos/css/tethys_map_view.min.css',
 
 
 class MVView(SecondaryGizmoOptions):
