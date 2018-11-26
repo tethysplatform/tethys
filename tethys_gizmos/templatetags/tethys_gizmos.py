@@ -214,7 +214,7 @@ class TethysGizmoIncludeNode(TethysGizmoIncludeDependency):
                     if 'OPTIONS' in template_settings \
                             and 'debug' in template_settings['OPTIONS'] \
                             and template_settings['OPTIONS']['debug']:
-                        raise e
+                        raise
             return ''
 
 
