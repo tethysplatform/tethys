@@ -97,7 +97,7 @@ class MapView(TethysGizmoOptions):
     * sensitivity: Integer value that adjust the feature selection sensitivity. Defaults to 2.
 
     .. tip::
-  
+
         **OpenLayers Version**
 
         Currently, OpenLayers version 5.3.0 is used by default with the Map View gizmo. If you need a specific version of OpenLayers you can specify the version number using the `ol_version` class attribute on the `MapView` class::
