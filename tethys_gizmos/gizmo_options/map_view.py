@@ -62,7 +62,7 @@ class MapView(TethysGizmoOptions):
 
         The CartoDB and ESRI services are just pre-defined instances of the XYZ service. In addition to the standard XYZ options they have the following additional options:
 
-    CartoDB: 
+    CartoDB:
         * `style`: The style of map. Possibilities are 'light' or 'dark'.
         * `labels`: Boolean specifying whether or not to include labels.
 
