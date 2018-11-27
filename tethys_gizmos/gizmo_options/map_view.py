@@ -47,25 +47,25 @@ class MapView(TethysGizmoOptions):
 
     **Base Maps**
 
-    There are several base maps supported by the Map View gizmo: `OpenStreetMap`, `Bing`, `Stamen`, `CartoDB`, and `ESRI`. All base maps can be specified as a string or as an options dictionary. When using an options dictionary all base maps map services accept the option `label`, which is used to specify the label to be used in the Base Map control. For example:: 
+    There are several base maps supported by the Map View gizmo: `OpenStreetMap`, `Bing`, `Stamen`, `CartoDB`, and `ESRI`. All base maps can be specified as a string or as an options dictionary. When using an options dictionary all base maps map services accept the option `label`, which is used to specify the label to be used in the Base Map control. For example::
 
         {'Bing': {'key': 'Ap|k3yheRE', 'imagerySet': 'Aerial', 'label': 'Bing Aerial'}}
-    
+
     For additional options that can be provided to each base map service see the following links:
 
     * OpenStreetMap: `ol/source/OSM <http://openlayers.org/en/latest/apidoc/module-ol_source_OSM-OSM.html>`_
     * Bing: `ol/source/BingMaps <http://openlayers.org/en/latest/apidoc/module-ol_source_BingMaps-BingMaps.html>`_
     * Stamen: `ol/source/Stamen <http://openlayers.org/en/latest/apidoc/module-ol_source_Stamen-Stamen.html>`_
     * XYZ `ol/source/XYZ <http://openlayers.org/en/latest/apidoc/module-ol_source_XYZ-XYZ.html>`_
-    
+
     .. note::
-     
+
         The CartoDB and ESRI services are just pre-defined instances of the XYZ service. In addition to the standard XYZ options they have the following additional options:
-        
+
     CartoDB: 
         * `style`: The style of map. Possibilities are 'light' or 'dark'.
         * `labels`: Boolean specifying whether or not to include labels.
-    
+
     ESRI:
         * `layer`: A string specifying which ESRI map to use. Possibilities are:
             * NatGeo_World_Map
@@ -97,15 +97,14 @@ class MapView(TethysGizmoOptions):
     * sensitivity: Integer value that adjust the feature selection sensitivity. Defaults to 2.
 
     .. tip::
-        
+  
         **OpenLayers Version**
-        
+
         Currently, OpenLayers version 5.3.0 is used by default with the Map View gizmo. If you need a specific version of OpenLayers you can specify the version number using the `ol_version` class attribute on the `MapView` class::
-        
+
             MapView.ol_version = '4.6.5'
-        
+
         Any versions that are provided by https://www.jsdelivr.com/package/npm/openlayers can be specified.
-    
 
     Controller Example
 
@@ -251,7 +250,6 @@ class MapView(TethysGizmoOptions):
         )
 
         # Define base map options
-        
         esri_layer_names = [
             'NatGeo_World_Map',
             'Ocean_Basemap',
@@ -276,10 +274,10 @@ class MapView(TethysGizmoOptions):
             'ESRI',
         ]
         basemaps.extend(esri_layers)
-        
+
         # Specify OpenLayers version
         MapView.ol_version = '5.3.0'
-        
+
         # Define map view options
         map_view_options = MapView(
                 height='600px',
