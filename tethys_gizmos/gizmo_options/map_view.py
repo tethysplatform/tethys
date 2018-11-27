@@ -18,7 +18,7 @@ __all__ = ['MapView', 'MVDraw', 'MVView', 'MVLayer',
 
 class MapView(TethysGizmoOptions):
     """
-    The Map View gizmo can be used to produce interactive maps of spatial data. It is powered by OpenLayers 4, a free and open source pure javascript mapping library. It supports layers in a variety of different formats including WMS, Tiled WMS, GeoJSON, KML, and ArcGIS REST. It includes drawing capabilities and the ability to create a legend for the layers included in the map.
+    The Map View gizmo can be used to produce interactive maps of spatial data. It is powered by OpenLayers, a free and open source pure javascript mapping library. It supports layers in a variety of different formats including WMS, Tiled WMS, GeoJSON, KML, and ArcGIS REST. It includes drawing capabilities and the ability to create a legend for the layers included in the map.
 
     Shapes that are drawn on the map by users can be retrieved from the map via a hidden text field named 'geometry' and it is updated every time the map is changed. The text in the text field is a string representation of JSON. The geometry definition contained in this JSON can be formatted as either GeoJSON or Well Known Text. This can be configured via the output_format option of the MVDraw object. If the Map View is embedded in a form, the geometry that is drawn on the map will automatically be submitted with the rest of the form via the hidden text field.
 
@@ -47,17 +47,36 @@ class MapView(TethysGizmoOptions):
 
     **Base Maps**
 
-    There are several base maps supported by the Map View gizmo. Use the following links to learn about the additional options you can configure the base maps with:
+    There are several base maps supported by the Map View gizmo: `OpenStreetMap`, `Bing`, `Stamen`, `CartoDB`, and `ESRI`. All base maps can be specified as a string or as an options dictionary. When using an options dictionary all base maps map services accept the option `label`, which is used to specify the label to be used in the Base Map control. For example:: 
+
+        {'Bing': {'key': 'Ap|k3yheRE', 'imagerySet': 'Aerial', 'label': 'Bing Aerial'}}
+    
+    For additional options that can be provided to each base map service see the following links:
 
     * OpenStreetMap: `ol/source/OSM <http://openlayers.org/en/latest/apidoc/module-ol_source_OSM-OSM.html>`_
-    * Stamen: `ol/source/Stamen <http://openlayers.org/en/latest/apidoc/module-ol_source_Stamen-Stamen.html>`_
-    * CartoDB `ol/source/CartoDB <http://openlayers.org/en/latest/apidoc/module-ol_source_CartoDB-CartoDB.html>`_
-    * XYZ `ol/source/XYZ <http://openlayers.org/en/latest/apidoc/module-ol_source_XYZ-XYZ.html>`_
     * Bing: `ol/source/BingMaps <http://openlayers.org/en/latest/apidoc/module-ol_source_BingMaps-BingMaps.html>`_
-
-    ::
-
-        {'Bing': {'key': 'Ap|k3yheRE', 'imagerySet': 'Aerial'}}
+    * Stamen: `ol/source/Stamen <http://openlayers.org/en/latest/apidoc/module-ol_source_Stamen-Stamen.html>`_
+    * XYZ `ol/source/XYZ <http://openlayers.org/en/latest/apidoc/module-ol_source_XYZ-XYZ.html>`_
+    
+    .. note::
+     
+        The CartoDB and ESRI services are just pre-defined instances of the XYZ service. In addition to the standard XYZ options they have the following additional options:
+        
+    CartoDB: 
+        * `style`: The style of map. Possibilities are 'light' or 'dark'.
+        * `labels`: Boolean specifying whether or not to include labels.
+    
+    ESRI:
+        * `layer`: A string specifying which ESRI map to use. Possibilities are:
+            * NatGeo_World_Map
+            * Ocean_Basemap
+            * USA_Topo_Maps
+            * World_Imagery
+            * World_Physical_Map
+            * World_Shaded_Relief
+            * World_Street_Map
+            * World_Terrain_Base
+            * World_Topo_Map
 
     **Controls**
 
@@ -77,6 +96,16 @@ class MapView(TethysGizmoOptions):
     * multiselect: Set to True to allow multiple features to be selected while holding the shift key on the keyboard. Defaults to False.
     * sensitivity: Integer value that adjust the feature selection sensitivity. Defaults to 2.
 
+    .. tip::
+        
+        **OpenLayers Version**
+        
+        Currently, OpenLayers version 5.3.0 is used by default with the Map View gizmo. If you need a specific version of OpenLayers you can specify the version number using the `ol_version` class attribute on the `MapView` class::
+        
+            MapView.ol_version = '4.6.5'
+        
+        Any versions that are provided by https://www.jsdelivr.com/package/npm/openlayers can be specified.
+    
 
     Controller Example
 
@@ -221,6 +250,36 @@ class MapView(TethysGizmoOptions):
             legend_extent=[-173, 17, -65, 72]
         )
 
+        # Define base map options
+        
+        esri_layer_names = [
+            'NatGeo_World_Map',
+            'Ocean_Basemap',
+            'USA_Topo_Maps',
+            'World_Imagery',
+            'World_Physical_Map',
+            'World_Shaded_Relief',
+            'World_Street_Map',
+            'World_Terrain_Base',
+            'World_Topo_Map',
+        ]
+        esri_layers = [{'ESRI': {'layer': l}} for l in esri_layer_names]
+        basemaps = [
+            'Stamen',
+            {'Stamen': {'layer': 'toner', 'label': 'Black and White'}},
+            {'Stamen': {'layer': 'watercolor'}},
+            'OpenStreetMap',
+            'CartoDB',
+            {'CartoDB': {'style': 'dark'}},
+            {'CartoDB': {'style': 'light', 'labels': False, 'label': 'CartoDB-light-no-labels'}},
+            {'XYZ': {'url': 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', 'label': 'Wikimedia'}}
+            'ESRI',
+        ]
+        basemaps.extend(esri_layers)
+        
+        # Specify OpenLayers version
+        MapView.ol_version = '5.3.0'
+        
         # Define map view options
         map_view_options = MapView(
                 height='600px',
@@ -230,7 +289,7 @@ class MapView(TethysGizmoOptions):
                           {'ZoomToExtent': {'projection': 'EPSG:4326', 'extent': [-130, 22, -65, 54]}}],
                 layers=[geojson_layer, geojson_point_layer, geoserver_layer, kml_layer, arc_gis_layer],
                 view=view_options,
-                basemap='OpenStreetMap',
+                basemap=basemaps,
                 draw=drawing_options,
                 legend=True
         )
@@ -248,10 +307,13 @@ class MapView(TethysGizmoOptions):
     """  # noqa: E501
     gizmo_name = "map_view"
     ol_version = '5.3.0'
+    cdn = 'https://cdn.jsdelivr.net/npm/openlayers@{version}/dist/ol{debug}.{ext}'
+    alternate_cdn = 'https://cdnjs.cloudflare.com/ajax/libs/openlayers/{version}/ol{debug}.{ext}'
+    local_url = 'tethys_gizmos/vendor/openlayers/{version}/ol.{ext}'
 
     def __init__(self, height='100%', width='100%', basemap=None, view={'center': [-100, 40], 'zoom': 2},
                  controls=[], layers=[], draw=None, legend=False, attributes={}, classes='', disable_basemap=False,
-                 feature_selection=None, ol_version='4.6.5'):
+                 feature_selection=None):
         """
         Constructor
         """
@@ -268,7 +330,14 @@ class MapView(TethysGizmoOptions):
         self.legend = legend
         self.disable_basemap = disable_basemap
         self.feature_selection = feature_selection
-        self.ol_version = ol_version
+
+    @classmethod
+    def static_url(cls):
+        return cls.cdn if cls.ol_version != '5.3.0' else cls.local_url
+
+    @classmethod
+    def debug(cls):
+        return '-debug' if settings.DEBUG else ''
 
     @classmethod
     def get_vendor_js(cls):
@@ -276,10 +345,11 @@ class MapView(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        debug = '-debug' if settings.DEBUG else ''
-        openlayers_library = 'https://cdnjs.cloudflare.com/ajax/libs/openlayers/{}/ol{}.js'.format(cls.ol_version, debug)
-        # openlayers_library = 'https://cdn.jsdelivr.net/npm/openlayers@{}/dist/ol{}.js'.format(cls.ol_version, debug)
-        openlayers_library = 'tethys_gizmos/vendor/openlayers/{}/ol.js'.format(cls.ol_version)
+        openlayers_library = cls.static_url().format(
+            version=cls.ol_version,
+            debug=cls.debug(),
+            ext='js'
+        )
 
         return openlayers_library,
 
@@ -298,10 +368,11 @@ class MapView(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        debug = '-debug' if settings.DEBUG else ''
-        openlayers_css = 'https://cdnjs.cloudflare.com/ajax/libs/openlayers/{}/ol{}.css'.format(cls.ol_version, debug)
-        openlayers_css = 'https://cdn.jsdelivr.net/npm/openlayers@{}/dist/ol{}.css'.format(cls.ol_version, debug)
-        openlayers_css = 'tethys_gizmos/vendor/openlayers/{}/ol.css'.format(cls.ol_version)
+        openlayers_css = cls.static_url().format(
+            version=cls.ol_version,
+            debug=cls.debug(),
+            ext='css'
+        )
 
         return openlayers_css,
 
