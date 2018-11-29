@@ -47,9 +47,9 @@ class MapView(TethysGizmoOptions):
 
     **Base Maps**
 
-    There are several base maps supported by the Map View gizmo: `OpenStreetMap`, `Bing`, `Stamen`, `CartoDB`, and `ESRI`. All base maps can be specified as a string or as an options dictionary. When using an options dictionary all base maps map services accept the option `label`, which is used to specify the label to be used in the Base Map control. For example::
+    There are several base maps supported by the Map View gizmo: `OpenStreetMap`, `Bing`, `Stamen`, `CartoDB`, and `ESRI`. All base maps can be specified as a string or as an options dictionary. When using an options dictionary all base maps map services accept the option `control_label`, which is used to specify the label to be used in the Base Map control. For example::
 
-        {'Bing': {'key': 'Ap|k3yheRE', 'imagerySet': 'Aerial', 'label': 'Bing Aerial'}}
+        {'Bing': {'key': 'Ap|k3yheRE', 'imagerySet': 'Aerial', 'control_label': 'Bing Aerial'}}
 
     For additional options that can be provided to each base map service see the following links:
 
@@ -264,13 +264,13 @@ class MapView(TethysGizmoOptions):
         esri_layers = [{'ESRI': {'layer': l}} for l in esri_layer_names]
         basemaps = [
             'Stamen',
-            {'Stamen': {'layer': 'toner', 'label': 'Black and White'}},
+            {'Stamen': {'layer': 'toner', 'control_label': 'Black and White'}},
             {'Stamen': {'layer': 'watercolor'}},
             'OpenStreetMap',
             'CartoDB',
             {'CartoDB': {'style': 'dark'}},
-            {'CartoDB': {'style': 'light', 'labels': False, 'label': 'CartoDB-light-no-labels'}},
-            {'XYZ': {'url': 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', 'label': 'Wikimedia'}}
+            {'CartoDB': {'style': 'light', 'labels': False, 'control_label': 'CartoDB-light-no-labels'}},
+            {'XYZ': {'url': 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', 'control_label': 'Wikimedia'}}
             'ESRI',
         ]
         basemaps.extend(esri_layers)
@@ -335,7 +335,8 @@ class MapView(TethysGizmoOptions):
 
     @classmethod
     def debug(cls):
-        return '-debug' if settings.DEBUG else ''
+        # Note: Since version 5 OpenLayers now uses source maps instead of a '-debug' version of the code
+        return '-debug' if settings.DEBUG and int(cls.ol_version[0]) < 5 else ''
 
     @classmethod
     def get_vendor_js(cls):
