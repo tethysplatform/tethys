@@ -236,8 +236,8 @@ var TETHYS_MAP_VIEW = (function() {
             }
 
             label = base_map_layer_name;
-            if (source_options && source_options.hasOwnProperty('label')) {
-              label = source_options.label;
+            if (source_options && source_options.hasOwnProperty('control_label')) {
+              label = source_options.control_label;
             }
             else if(base_map_metadata.label_property) {
               label += '-' + source_options[base_map_metadata.label_property];
