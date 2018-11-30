@@ -55,8 +55,12 @@ Install Script Options
 
         * `-n, --conda-env-name <NAME>`:
                 Name for tethys conda environment. Default is 'tethys'.
-        * `--python-version <PYTHON_VERSION>`:
-                Main python version to install tethys environment into (2 or 3). Default is 2.
+        * `--python-version <PYTHON_VERSION>` (deprecated):
+                Main python version to install tethys environment into (2-deprecated or 3). Default is 3.
+                .. note::
+
+                    Support for Python 2 is deprecated and will be dropped in Tethys version 3.0.
+
         * `--db-username <USERNAME>`:
                 Username that the tethys database server will use. Default is 'tethys_default'.
         * `--db-password <PASSWORD>`:
@@ -91,19 +95,21 @@ Install Script Options
                     * `e` - Create Conda environment
                     * `s` - Create `settings.py` file
                     * `d` - Setup local database server
+                    * `i` - Initialize database server with Tethys database and superuser
                     * `a` - Create activation/deactivation scripts for the Tethys Conda environment
                     * `t` - Create the `t` alias to activate the Tethys Conda environment
 
                 For example, if you already have Miniconda installed and you have the repository cloned and have generated a `settings.py` file, but you want to use the install script to:
 
-                     * create a conda environment,
-                     * setup the database,
-                     * create the conda activation/deactivation scripts, and
-                     * create the `t` shortcut,
+                    * create a conda environment,
+                    * setup a local database server,
+                    * initialize the database
+                    * create the conda activation/deactivation scripts, and
+                    * create the `t` shortcut,
 
                 then you can run the following command::
 
-                    bash install_tethys.sh --partial-tethys-install edat
+                    bash install_tethys.sh --partial-tethys-install ediat
 
                 .. warning::
 

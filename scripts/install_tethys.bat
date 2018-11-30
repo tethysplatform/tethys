@@ -13,7 +13,7 @@ SET TETHYS_DB_PORT=5436
 SET CONDA_HOME=
 SET CONDA_EXE=Miniconda3-latest-Windows-x86_64.exe
 SET CONDA_ENV_NAME=tethys
-SET PYTHON_VERSION=2
+SET PYTHON_VERSION=3
 SET BRANCH=release
 
 SET TETHYS_SUPER_USER=admin
@@ -350,7 +350,7 @@ ECHO     -b, --branch [BRANCH_NAME]          Branch to checkout from version con
 ECHO     -c, --conda-home [PATH]             Path to conda home directory where Miniconda will be installed. Default is %%TETHYS_HOME%%\miniconda.
 ECHO     -C, --conda-exe [PATH]              Path to Miniconda installer executable. Default is '.\Miniconda3-latest-Windows-x86_64.exe'.
 ECHO     -n, --conda-env-name [NAME]         Name for tethys conda environment. Default is 'tethys'.
-ECHO     --python-version [PYTHON_VERSION]   Main python version to install tethys environment into (2 or 3). Default is 2.
+ECHO     --python-version [PYTHON_VERSION]   Main python version to install tethys environment into (2-deprecated or 3). Default is 3.
 ECHO     --db-username [USERNAME]            Username that the tethys database server will use. Default is 'tethys_default'.
 ECHO     --db-password [PASSWORD]            Password that the tethys database server will use. Default is 'pass'.
 ECHO     --db-port [PORT]                    Port that the tethys database server will use. Default is 5436.

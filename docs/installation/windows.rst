@@ -52,8 +52,12 @@ As long as the :file:`install_tethys.bat` and the :file:`Miniconda3-latest-Windo
                 Path to Miniconda installer executable. Default is '.\Miniconda3-latest-Windows-x86_64.exe'.
         * `-n, --conda-env-name <NAME>`:
                 Name for tethys conda environment. Default is 'tethys'.
-        * `--python-version <PYTHON_VERSION>`:
-                Main python version to install tethys environment into (2 or 3). Default is 2.
+        * `--python-version <PYTHON_VERSION>` (deprecated):
+                Main python version to install tethys environment into (2-deprecated or 3). Default is 3.
+                .. note::
+
+                    Support for Python 2 is deprecated and will be dropped in Tethys version 3.0.
+
         * `--db-username <USERNAME>`:
                 Username that the tethys database server will use. Default is 'tethys_default'.
         * `--db-password <PASSWORD>`:

@@ -300,6 +300,7 @@ class CondorWorkflowTemplate(JobTemplate):
     """  # noqa: E501
     def __init__(self, name, parameters=None, jobs=None, max_jobs=None, config='', **kwargs):
         parameters = parameters or dict()
+        jobs = jobs or list()
         self.node_templates = set(jobs)
         parameters['max_jobs'] = max_jobs
         parameters['config'] = config
