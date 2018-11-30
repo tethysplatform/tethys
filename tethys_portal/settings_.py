@@ -1,0 +1,306 @@
+"""
+Settings for Tethys Platform
+
+This file contains default Django and other settings for the Tethys Platform.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/1.9/topics/settings/
+
+For the full list of settings and their values, see
+https://docs.djangoproject.com/en/1.9/ref/settings/
+"""
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import os
+
+from django.contrib.messages import constants as message_constants
+
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'mVh5qHkJQgNPSIbCmq40pUHyaUbamapzdi8YKZ7UoDqTtKG1Uv'
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+ALLOWED_HOSTS = []
+
+# List those who should be notified of an error when DEBUG = False as a tuple of (name, email address).
+# i.e.: ADMINS = (('John', 'john@example.com'), ('Mary', 'mary@example.com'))
+ADMINS = ()
+
+# Force user logout once the browser has been closed.
+# If changed, delete all django_session table entries from the tethys_default database to ensure updated behavior
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Warn user of forced logout after indicated number of seconds
+SESSION_SECURITY_WARN_AFTER = 840
+
+# Force user logout after a certain number of seconds
+SESSION_SECURITY_EXPIRE_AFTER = 100000
+
+# See https://docs.djangoproject.com/en/1.8/topics/logging/#configuring-logging for more logging configuration options.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s:%(name)s:%(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console_simple': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'console_verbose': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console_simple'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'WARNING'),
+        },
+        'tethys': {
+            'handlers': ['console_verbose'],
+            'level': 'INFO',
+        }
+    },
+}
+
+# Application definition
+
+INSTALLED_APPS = (
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django_gravatar',
+    'bootstrap3',
+    'termsandconditions',
+    'tethys_config',
+    'tethys_apps',
+    'tethys_gizmos',
+    'tethys_services',
+    'tethys_compute',
+    'social_django',
+    'guardian',
+    'session_security',
+    'captcha',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'datetimewidget',
+    'django_select2',
+)
+
+MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
+    'session_security.middleware.SessionSecurityMiddleware',
+)
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
+
+AUTHENTICATION_BACKENDS = (
+#    'tethys_services.backends.hydroshare.HydroShareOAuth2',
+#    'social_core.backends.linkedin.LinkedinOAuth2',
+#    'social_core.backends.google.GoogleOAuth2',
+#    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
+)
+
+# Password validation
+# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
+
+# AUTH_PASSWORD_VALIDATORS = [
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+#     },
+# ]
+
+# Terms and conditions settings
+ACCEPT_TERMS_PATH = '/terms/accept/'
+TERMS_EXCLUDE_URL_PREFIX_LIST = {'/admin/', '/oauth2/', '/handoff/', '/accounts/', '/terms/'}
+TERMS_EXCLUDE_URL_LIST = {'/'}
+TERMS_BASE_TEMPLATE = 'page.html'
+
+ROOT_URLCONF = 'tethys_portal.urls'
+
+WSGI_APPLICATION = 'tethys_portal.wsgi.application'
+
+# Database
+# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'tethys_default',
+        'USER': 'tethys_default',
+        'PASSWORD': 'pass',
+        'HOST': '127.0.0.1',
+        'PORT': '54323'
+    }
+}
+
+# Internationalization
+# https://docs.djangoproject.com/en/1.9/topics/i18n/
+
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'UTC'
+
+USE_I18N = True
+
+USE_L10N = True
+
+USE_TZ = True
+
+# Templates
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.template.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
+                'tethys_config.context_processors.tethys_global_settings_context',
+                'tethys_apps.context_processors.tethys_apps_context',
+                'tethys_gizmos.context_processors.tethys_gizmos_context'
+            ],
+            'loaders': [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+                'tethys_apps.template_loaders.TethysTemplateLoader'
+            ],
+            'debug': DEBUG
+        }
+    }
+]
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.9/howto/static-files/
+
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'tethys_apps.static_finders.TethysStaticFinder'
+)
+
+# Uncomment the next line for production installation
+#STATIC_ROOT = '/Volumes/SDC-DRIVE/Workspace/tethys/static'
+
+# Tethys Workspaces
+#TETHYS_WORKSPACES_ROOT = '/Volumes/SDC-DRIVE/Workspace/tethys/workspaces'
+
+# Messaging settings
+MESSAGE_TAGS = {message_constants.DEBUG: 'alert-danger',
+                message_constants.INFO: 'alert-info',
+                message_constants.SUCCESS: 'alert-success',
+                message_constants.WARNING: 'alert-warning',
+                message_constants.ERROR: 'alert-danger'}
+
+# Gravatar Settings
+GRAVATAR_URL = 'http://www.gravatar.com/'
+GRAVATAR_SECURE_URL = 'https://secure.gravatar.com/'
+GRAVATAR_DEFAULT_SIZE = '80'
+GRAVATAR_DEFAULT_IMAGE = 'retro'
+GRAVATAR_DEFAULT_RATING = 'g'
+GRAVATAR_DFFAULT_SECURE = True
+
+
+
+# Use this setting to bypass the home page
+BYPASS_TETHYS_HOME_PAGE = False
+
+# Use this setting to disable open account signup
+ENABLE_OPEN_SIGNUP = False
+
+# Uncomment the following lines and adjust to match your setup to enable emailing capabilities
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_HOST = 'localhost'
+#EMAIL_PORT = 25
+#EMAIL_HOST_USER = ''
+#EMAIL_HOST_PASSWORD = ''
+#EMAIL_USE_TLS = False
+#DEFAULT_FROM_EMAIL = 'Example <noreply@exmaple.com>'
+
+
+# OAuth Settings
+# http://psa.matiasaguirre.net/docs/configuration/index.html
+SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
+SOCIAL_AUTH_SLUGIFY_USERNAMES = True
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/apps/'
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/accounts/login/'
+
+# OAuth Providers
+## Google
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
+
+## Facebook
+SOCIAL_AUTH_FACEBOOK_KEY = ''
+SOCIAL_AUTH_FACEBOOK_SECRET = ''
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+
+## LinkedIn
+SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = ''
+SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = ''
+
+## HydroShare
+SOCIAL_AUTH_HYDROSHARE_KEY = ''
+SOCIAL_AUTH_HYDROSHARE_SECRET = ''
+
+# Django Guardian Settings
+ANONYMOUS_USER_ID = -1
+# GUARDIAN_RAISE_403 = False  # Mutually exclusive with GUARDIAN_RENDER_403
+# GUARDIAN_RENDER_403 = False  # Mutually exclusive with GUARDIAN_RAISE_403
+# GUARDIAN_TEMPLATE_403 = ''
+# ANONYMOUS_DEFAULT_USERNAME_VALUE = 'anonymous'

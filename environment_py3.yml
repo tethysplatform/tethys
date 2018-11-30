@@ -28,7 +28,7 @@ dependencies:
 - owslib
 - pip
 - pillow
-- plotly=1.12*
+- plotly
 - postgresql
 - pycrypto
 - pyopenssl
