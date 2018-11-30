@@ -119,25 +119,85 @@ var TETHYS_MAP_VIEW = (function() {
    * Initialization Methods
    ***********************************/
 
+  var base_map_labels = [];
   // Initialize the background map
   ol_base_map_init = function()
   {
     // Constants
-    var OPEN_STREET_MAP = 'OpenStreetMap',
-        BING = 'Bing',
-        MAP_QUEST = 'MapQuest';
+    var SUPPORTED_BASE_MAPS = {
+    'OpenStreetMap': {
+        source_class: ol.source.OSM,
+        default_source_options: {},
+        label_property: null,
+    },
+    'Bing': {
+        source_class: ol.source.BingMaps,
+        default_source_options: null,
+        label_property: 'imagerySet',
+    },
+    'Stamen': {
+        source_class: ol.source.Stamen,
+        default_source_options: {
+          layer: 'terrain',
+        },
+        label_property: 'layer',
+    },
+    'ESRI': {
+        source_class: function(options){
+            //ESRI_Imagery_World_2D (MapServer)
+            //ESRI_StreetMap_World_2D (MapServer)
+            //NatGeo_World_Map (MapServer)
+            //NGS_Topo_US_2D (MapServer)
+            //Ocean_Basemap (MapServer)
+            //USA_Topo_Maps (MapServer)
+            //World_Imagery (MapServer)
+            //World_Physical_Map (MapServer)
+            //World_Shaded_Relief (MapServer)
+            //World_Street_Map (MapServer)
+            //World_Terrain_Base (MapServer)
+            //World_Topo_Map (MapServer)
 
+            options.url = 'https://server.arcgisonline.com/ArcGIS/rest/services/' +
+                 options.layer + '/MapServer/tile/{z}/{y}/{x}';
+
+            return new ol.source.XYZ(options);
+        },
+        default_source_options: {
+            attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+                          'rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+            layer: 'World_Street_Map'
+        },
+        label_property: 'layer',
+    },
+    'CartoDB': {
+        source_class: function(options){
+            var style,  // 'light' or 'dark'. Default is 'light'
+                labels;  // true or false. Default is true.
+            style = is_defined(options.style) ? options.style : 'light';
+            labels = options.labels === false ? '_nolabels': '_all';
+
+            options.url = 'http://{1-4}.basemaps.cartocdn.com/' + style + labels + '/{z}/{x}/{y}.png'
+
+            return new ol.source.XYZ(options)
+        },
+        default_source_options: {
+            style: 'light',
+            labels: true,
+        },
+        label_property: 'style',
+    },
+    'XYZ': {
+        source_class: ol.source.XYZ,
+        default_source_options: {},
+        label_property: null,
+    },
+  }
     // Declarations
     var base_map_layer;
 
     if (is_defined(m_disable_base_map) && m_disable_base_map) {
       return;
     }
-
-    // Default base map
-    base_map_layer = new ol.layer.Tile({
-      source: new ol.source.OSM()
-    });
 
     if (is_defined(m_base_map_options)) {
       var base_map_options = Array.isArray(m_base_map_options) ? m_base_map_options : [m_base_map_options]
@@ -149,92 +209,64 @@ var TETHYS_MAP_VIEW = (function() {
           visible = true;
           first_flag = false;
         }
+
+        var base_map_layer_name,
+            base_map_layer_arguments;
+
         if (typeof base_map_option === 'string') {
-          if (base_map_option === OPEN_STREET_MAP) {
-            // Initialize default open street map layer
-            base_map_layer = new ol.layer.Tile({
-              source: new ol.source.OSM(),
-              visible: visible
-            });
-          } else if (base_map_option === BING) {
-            // Initialize default bing layer
+            base_map_layer_name = base_map_option;
+            base_map_layer_arguments = null;
+        }
+        else if (typeof base_map_option === 'object'){
+            base_map_layer_name = Object.getOwnPropertyNames(base_map_option)[0];
+            base_map_layer_arguments = base_map_option[base_map_layer_name];
+        }
 
-          } else if (base_map_option === MAP_QUEST) {
-            // Initialize default map quest layer
-            base_map_layer = new ol.layer.Tile({
-              source: new ol.source.MapQuest({layer: 'sat'}),
-              visible: visible
-            });
-          }
-          // Add legend attributes
-          base_map_layer.tethys_legend_title = 'Basemap: ' + base_map_option;
 
-        } else if (typeof base_map_option === 'object') {
+        if (Object.getOwnPropertyNames(SUPPORTED_BASE_MAPS).includes(base_map_layer_name)){
+            var base_map_metadata = SUPPORTED_BASE_MAPS[base_map_layer_name];
+            var LayerSource = base_map_metadata.source_class;
+            var source_options = base_map_layer_arguments ? base_map_layer_arguments : base_map_metadata.default_source_options;
 
-          if (OPEN_STREET_MAP in base_map_option) {
-            // Initialize custom open street map layer
-            base_map_layer = new ol.layer.Tile({
-              source: new ol.source.OSM(base_map_option[OPEN_STREET_MAP]),
-              visible: visible
-            });
-
-            if (base_map_option[OPEN_STREET_MAP].hasOwnProperty('label')) {
-              label = base_map_option[OPEN_STREET_MAP].label;
-            } else {
-              label = OPEN_STREET_MAP;
+            if(source_options){
+              base_map_layer = new ol.layer.Tile({
+                source: new LayerSource(source_options),
+                visible: visible
+              });
             }
+
+            label = base_map_layer_name;
+            if (source_options && source_options.hasOwnProperty('control_label')) {
+              label = source_options.control_label;
+            }
+            else if(base_map_metadata.label_property) {
+              label += '-' + source_options[base_map_metadata.label_property];
+            }
+
             // Add legend attributes
             base_map_layer.tethys_legend_title = 'Basemap: ' + label;
-
-          } else if (BING in base_map_option) {
-            // Initialize custom bing layer
-            base_map_layer = new ol.layer.Tile({
-              preload: Infinity,
-              source: new ol.source.BingMaps(base_map_option[BING]),
-              visible: visible
-            });
-
-            if (base_map_option[BING].hasOwnProperty('label')) {
-              label = base_map_option[BING].label;
-            } else {
-              label = BING + '-' + base_map_option[BING]['imagerySet'];
-            }
-            // Add legend attributes
-            base_map_layer.tethys_legend_title = 'Basemap: ' + label;
-
-          } else if (MAP_QUEST in base_map_option) {
-            // Initialize custom map quest layer
-            base_map_layer = new ol.layer.Tile({
-              source: new ol.source.MapQuest(base_map_option[MAP_QUEST]),
-              visible: visible
-            });
-
-            if (base_map_option[MAP_QUEST].hasOwnProperty('label')) {
-              label = base_map_option[MAP_QUEST].label;
-            } else {
-              label = MAP_QUEST;
-            }
-            // Add legend attributes
-            base_map_layer.tethys_legend_title = 'Basemap: ' + label;
-          }
+            base_map_labels.push(label);
         }
 
         // Add the base map to layers
         m_map.addLayer(base_map_layer);
       });
     }
+    else{
+        // Default base map
+        base_map_layer = new ol.layer.Tile({
+          source: new ol.source.OSM()
+        });
+        // Add the base map to layers
+        m_map.addLayer(base_map_layer);
+    }
   }
 
   // Initialize the base map switcher
   ol_base_map_switcher_init = function () {
-    // Constants
-    var OPEN_STREET_MAP = 'OpenStreetMap',
-        BING = 'Bing',
-        MAP_QUEST = 'MapQuest';
-
-    if (is_defined(m_base_map_options)) {
-      var base_map_options = Array.isArray(m_base_map_options) ? m_base_map_options : [m_base_map_options]
-      if (base_map_options.length >= 1) {
+    if (is_defined(base_map_labels)) {
+//      var base_map_options = Array.isArray(m_base_map_options) ? m_base_map_options : [m_base_map_options]
+      if (base_map_labels.length >= 1) {
         var $map_element = $('#' + m_map_target);
         var html = '<span class="dropdown" id="basemap_dropdown_container">' +
                    '<button class="btn btn-sm btn-default dropdown-toggle" type="button" id="basemap_dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
@@ -243,20 +275,7 @@ var TETHYS_MAP_VIEW = (function() {
                    '<ul class="dropdown-menu">' +
                    '<li class="basemap-option" value="None">None <span class="current-basemap-label"></span></li>';
         var first_flag = true;
-        base_map_options.forEach(function (base_map_option) {
-          var val;
-          if (typeof base_map_option === 'string') {
-            val = base_map_option;
-          } else {
-            if (OPEN_STREET_MAP in base_map_option) {
-              val = base_map_option[OPEN_STREET_MAP].hasOwnProperty('label') ? base_map_option[OPEN_STREET_MAP].label : OPEN_STREET_MAP;
-            } else if (BING in base_map_option) {
-              val = base_map_option[BING].hasOwnProperty('label') ? base_map_option[BING].label : BING + '-' + base_map_option[BING]['imagerySet'];
-            } else if (MAP_QUEST in base_map_option) {
-              val = base_map_option[MAP_QUEST].hasOwnProperty('label') ? base_map_option[MAP_QUEST].label : MAP_QUEST;
-            }
-          }
-
+        base_map_labels.forEach(function (val) {
           if (first_flag) {
             html += '<li class="basemap-option selected-basemap-option" value="' + val + '">' + val + ' <span class="current-basemap-label"> (Current)</span></li>';
             first_flag = false;
@@ -269,15 +288,6 @@ var TETHYS_MAP_VIEW = (function() {
 
         $(html).insertBefore($map_element);
 
-//        var offset = $map_element.position();
-//
-//        $('#basemap_dropdown_container').css({
-//          'position': 'relative',
-//          'top': offset.top + 40 + 'px',
-//          'left': offset.left + 52 + 'px',
-//          'z-index': 1000
-//        });
-
         // The function fired when a different basemap is selected from the drop-down
         var change_basemap = function () {
           var selected_base_map = $(this).attr('value');
@@ -289,8 +299,10 @@ var TETHYS_MAP_VIEW = (function() {
           $($(this).children()[0]).text(' (Current)');
 
           m_map.getLayers().forEach(function (layer) {
-            if (layer.tethys_legend_title.indexOf('Basemap') !== -1) {
+            if (layer.hasOwnProperty('tethys_legend_title')) {
+              if (layer.tethys_legend_title.indexOf('Basemap') !== -1) {
                 layer.setVisible(layer.tethys_legend_title === base_map_label);
+              }
             }
           });
         };
@@ -1374,23 +1386,25 @@ var TETHYS_MAP_VIEW = (function() {
                     '</ul>' +
                     '</div>';
         } else if (legend_class.LEGEND_TYPE === "mvlegend") {
-            html += '<span class="legend-class-symbol"><svg>';
+            html += '<span class="legend-class-symbol">';
             if (legend_class.type === legend_class.POINT_TYPE) {
-              html += '<circle cx="10" cy="10" r="25%" fill="' + legend_class.fill + '"/>';
+              html += '<svg><circle cx="10" cy="10" r="25%" fill="' + legend_class.fill + '"/></svg>';
             }
 
             else if (legend_class.type === legend_class.LINE_TYPE) {
-              html += '<polyline points="19 1, 1 6, 19 14, 1 19" stroke="' + legend_class.stroke + '" fill="transparent" stroke-width="2"/>';
+              html += '<svg><polyline points="19 1, 1 6, 19 14, 1 19" stroke="' + legend_class.stroke + '" fill="transparent" stroke-width="2"/></svg>';
             }
 
             else if (legend_class.type === legend_class.POLYGON_TYPE) {
-              html += '<polygon points="1 10, 5 3, 13 1, 19 9, 14 19, 9 13" stroke="' + legend_class.stroke + '" fill="' + legend_class.fill + '" stroke-width="2"/>';
+              html += '<svg><polygon points="1 10, 5 3, 13 1, 19 9, 14 19, 9 13" stroke="' + legend_class.stroke + '" fill="' + legend_class.fill + '" stroke-width="2"/></svg>';
             }
             else if (legend_class.type === legend_class.RASTER_TYPE) {
-              //TODO: ADD IMPLEMENTATION FOR RASTER
+                for (var j = 0; j < legend_class.ramp.length; j++) {
+                    html += '<svg><rect width="20" height="20" fill=' + legend_class.ramp[j] + '/></svg>';
+                }
             }
 
-            html += '</svg></span><span class="legend-class-value">' + legend_class.value + '</span>';
+            html += '</span><span class="legend-class-value">' + legend_class.value + '</span>';
         }
       }
 
