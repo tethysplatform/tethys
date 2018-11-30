@@ -38,7 +38,7 @@ class TestMapView(unittest.TestCase):
     def test_MapView_debug(self, mock_settings):
         ms = mock_settings()
         ms.return_value = MockObject()
-
+        gizmo_map_view.MapView.ol_version = '4.6.5'
         self.assertIn('-debug.js', gizmo_map_view.MapView.get_vendor_js()[0])
 
     def test_MVView(self):
