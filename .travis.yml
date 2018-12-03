@@ -20,7 +20,7 @@ install:
   - cd ..
   - mv tethys src
   - bash ./src/scripts/install_tethys.sh -h
-  - bash ./src/scripts/install_tethys.sh --partial-tethys-install mesdat -t $PWD --python-version $PYTHON_VERSION
+  - bash ./src/scripts/install_tethys.sh --partial-tethys-install mesdiat -t $PWD --python-version $PYTHON_VERSION
 
   # activate conda environment
   - export PATH="$PWD/miniconda/bin:$PATH"
