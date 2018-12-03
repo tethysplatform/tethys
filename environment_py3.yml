@@ -30,6 +30,7 @@ dependencies:
 - pillow
 - plotly
 - postgresql
+- postgis
 - pycrypto
 - pyopenssl
 - mock
