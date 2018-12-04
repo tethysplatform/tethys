@@ -28,9 +28,10 @@ dependencies:
 - geoalchemy2=0.4*
 - owslib=0.14*
 - pip=9.0*
-- pillow=4.1*
-- plotly=1.12*
-- postgresql=9.5*
+- pillow
+- plotly
+- postgresql
+- postgis
 - pycrypto=2.6*
 - pyopenssl=16.2*
 - mock

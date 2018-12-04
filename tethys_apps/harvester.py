@@ -12,6 +12,7 @@ from __future__ import (absolute_import, division,
 from builtins import *  # noqa: F401, F403
 
 import os
+import sys
 import inspect
 import logging
 import pkgutil
@@ -42,6 +43,10 @@ class SingletonHarvester(object):
         """
         Harvest apps and extensions.
         """
+        if sys.version_info.major == 2:
+            print(self.WARNING + 'WARNING: Support for Python 2 is deprecated '
+                                 'and will be dropped in Tethys version 3.0.' + self.ENDC)
+
         self.harvest_extensions()
         self.harvest_apps()
 
