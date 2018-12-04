@@ -22,12 +22,7 @@ class TethysAppsConfig(AppConfig):
         Import models
         """
         # Load models for the tethys_apps app
-        from pprint import pprint
-        print('#### BEFORE IMPORT ####')
-        pprint(self.models)
         super(TethysAppsConfig, self).import_models()
-        print('#### AFTER IMPORT ####')
-        pprint(self.models)
 
         # Perform App Harvesting
         self.harvester.harvest()
@@ -44,10 +39,6 @@ class TethysAppsConfig(AppConfig):
             # TODO: Import models from string...
             self.models[model.__name__.lower()] = model
 
-        print('#### AFTER CUSTOM MODEL LOAD ###')
-        pprint(custom_django_models)
-        pprint(self.models)
-
 
     def ready(self):
         """
@@ -55,6 +46,3 @@ class TethysAppsConfig(AppConfig):
         """
         # Synchronize with tethys db
         self.harvester.sync_with_db()
-
-
-
