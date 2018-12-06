@@ -17,6 +17,50 @@ class TethysCommandTests(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def assert_returns_help(self, stdout):
+        self.assertIn('usage: tethys', stdout)
+        self.assertIn('scaffold', stdout)
+        self.assertIn('gen', stdout)
+        self.assertIn('manage', stdout)
+        self.assertIn('schedulers', stdout)
+        self.assertIn('services', stdout)
+        self.assertIn('app_settings', stdout)
+        self.assertIn('link', stdout)
+        self.assertIn('test', stdout)
+        self.assertIn('uninstall', stdout)
+        self.assertIn('list', stdout)
+        self.assertIn('syncstores', stdout)
+        self.assertIn('docker', stdout)
+
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    @mock.patch('sys.stderr', new_callable=StringIO)
+    @mock.patch('tethys_apps.cli.argparse._sys.exit')
+    def test_tethys_with_no_subcommand(self, mock_exit, mock_stderr, mock_stdout):
+            mock_exit.side_effect = SystemExit
+            testargs = ['tethys']
+
+            with mock.patch.object(sys, 'argv', testargs):
+                self.assertRaises(SystemExit, tethys_command)
+
+            if mock_stdout.getvalue():
+                # Python 3
+                self.assert_returns_help(mock_stdout.getvalue())
+            else:
+                # Python 2
+                self.assert_returns_help(mock_stderr.getvalue())
+
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    @mock.patch('tethys_apps.cli.argparse._sys.exit')
+    def test_tethys_help(self, mock_exit, mock_stdout):
+        mock_exit.side_effect = SystemExit
+        testargs = ['tethys', '-h']
+
+        with mock.patch.object(sys, 'argv', testargs):
+            self.assertRaises(SystemExit, tethys_command)
+
+        mock_exit.assert_called_with(0)
+        self.assert_returns_help(mock_stdout.getvalue())
+
     @mock.patch('tethys_apps.cli.scaffold_command')
     def test_scaffold_subcommand(self, mock_scaffold_command):
         testargs = ['tethys', 'scaffold', 'foo']
