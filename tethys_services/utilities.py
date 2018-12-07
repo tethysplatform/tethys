@@ -319,7 +319,7 @@ def activate_wps(wps, endpoint, name):
             raise e
         else:
             raise e
-    except URLError as e:
+    except URLError:
         return None
 
     return wps

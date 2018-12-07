@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^$', gizmo_showcase_views.index, name='showcase'),
     url(r'^google-map-view/$', gizmo_showcase_views.google_map_view, name='google_map_view'),
     url(r'^map-view', gizmo_showcase_views.map_view, name='map_view'),
+    url(r'^(?P<type>[\w-]+)/cesium-map-view', gizmo_showcase_views.cesium_map_view, name='cesium_map_view'),
     url(r'^jobs-table', gizmo_showcase_views.jobs_table_demo, name='jobs_table'),
     url(r'^esri-map', gizmo_showcase_views.esri_map, name='esri_map'),
     url(r'^(?P<job_id>[\d.@+-]+)/results$', gizmo_showcase_views.jobs_table_results, name='results'),

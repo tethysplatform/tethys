@@ -124,6 +124,97 @@ class TestGizmoShowcase(unittest.TestCase):
                                    label='gizmos_showcase', _status='VAR')
 
     @mock.patch('tethys_gizmos.views.gizmo_showcase.render')
+    def test_cesium_map_view_home(self, mock_render):
+        request = self.request_factory.get('/jobs')
+        request.user = self.user
+
+        # Execute
+        gizmo_showcase.cesium_map_view(request, 'home')
+
+        # Check render
+        render_call_args = mock_render.call_args_list
+        self.assertIn('/developer/gizmos/map_layers/cesium-map-view', render_call_args[0][0][2]['map_layers_link'])
+        self.assertIn('home', render_call_args[0][0][2]['page_type'])
+        self.assertIn('/developer/gizmos/model/cesium-map-view', render_call_args[0][0][2]['model_link'])
+        self.assertIn('/developer/gizmos/home/cesium-map-view', render_call_args[0][0][2]['home_link'])
+        self.assertIn('homeButton', render_call_args[0][0][2]['cesium_map_view']['options'])
+
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.render')
+    def test_cesium_map_view_map_layers(self, mock_render):
+        request = self.request_factory.get('/jobs')
+        request.user = self.user
+
+        # Execute
+        gizmo_showcase.cesium_map_view(request, 'map_layers')
+
+        # Check render
+        render_call_args = mock_render.call_args_list
+        self.assertIn('map_layers', render_call_args[0][0][2]['page_type'])
+
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.render')
+    def test_cesium_map_view_terrain(self, mock_render):
+        request = self.request_factory.get('/jobs')
+        request.user = self.user
+
+        # Execute
+        gizmo_showcase.cesium_map_view(request, 'terrain')
+
+        # Check render
+        render_call_args = mock_render.call_args_list
+        self.assertIn('terrain', render_call_args[0][0][2]['page_type'])
+
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.render')
+    def test_cesium_map_view_czml(self, mock_render):
+        request = self.request_factory.get('/jobs')
+        request.user = self.user
+
+        # Execute
+        gizmo_showcase.cesium_map_view(request, 'czml')
+
+        # Check render
+        render_call_args = mock_render.call_args_list
+        self.assertIn('czml', render_call_args[0][0][2]['page_type'])
+
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.render')
+    def test_cesium_map_view_model(self, mock_render):
+        request = self.request_factory.get('/jobs')
+        request.user = self.user
+
+        # Execute
+        gizmo_showcase.cesium_map_view(request, 'model')
+
+        # Check render
+        render_call_args = mock_render.call_args_list
+        self.assertIn('model', render_call_args[0][0][2]['page_type'])
+
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.render')
+    def test_cesium_map_view_models(self, mock_render):
+        request = self.request_factory.get('/jobs')
+        request.user = self.user
+
+        # Execute
+        gizmo_showcase.cesium_map_view(request, 'model2')
+
+        # Check render
+        render_call_args = mock_render.call_args_list
+        self.assertIn('model2', render_call_args[0][0][2]['page_type'])
+
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.messages')
+    def test_cesium_map_view_geometry(self, mock_messages):
+        request = self.request_factory.get('/jobs')
+        request.user = self.user
+        mock_post = mock.MagicMock()
+        request.POST = mock_post
+        mock_post.get.return_value = 'test_submitted_geometry'
+
+        # Execute
+        gizmo_showcase.cesium_map_view(request, 'home')
+
+        # Check geometry submit
+        mock_post.get.assert_called_with('geometry', None)
+        mock_messages.info.assert_called_with(request, 'test_submitted_geometry')
+
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.render')
     @mock.patch('tethys_gizmos.views.gizmo_showcase.JobsTable')
     @mock.patch('tethys_gizmos.views.gizmo_showcase.TethysJob')
     def test_jobs_table_demo(self, mock_TethysJob, mock_JobsTable, mock_render):
