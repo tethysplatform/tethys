@@ -105,11 +105,6 @@ IF NOT "%1"=="" (
         SHIFT
         SET OPTION_RECOGNIZED=TRUE
     )
-    IF "%1"=="--python-version" (
-        SET PYTHON_VERSION=%2
-        SHIFT
-        SET OPTION_RECOGNIZED=TRUE
-    )
     IF "%1"=="--db-username" (
         SET TETHYS_DB_USERNAME=%2
         SHIFT
@@ -264,7 +259,7 @@ IF %ERRORLEVEL% NEQ 0 (
 
 :: create conda env and install Tethys
 ECHO Setting up the !CONDA_ENV_NAME! environment...
-conda env create -n !CONDA_ENV_NAME! -f environment_py!PYTHON_VERSION!.yml
+conda env create -n !CONDA_ENV_NAME! -f environment.yml
 CALL activate !CONDA_ENV_NAME!
 python setup.py develop
 

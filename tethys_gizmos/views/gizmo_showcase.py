@@ -24,7 +24,7 @@ from tethys_sdk.gizmos import Button, ButtonGroup, DatePicker, RangeSlider, Sele
     DataTableView, MessageBox, GoogleMapView, MVView, MVDraw, MVLayer, MVLegendClass, MapView, JobsTable, EMView, \
     EMLayer, ESRIMap
 from tethys_sdk.services import list_spatial_dataset_engines
-from tethys_compute.models import BasicJob
+from tethys_compute.models import TethysJob, BasicJob, CondorWorkflow
 
 
 def get_geoserver_wms():
@@ -834,21 +834,6 @@ def index(request):
                                draw=drawing_options,
                                legend=True)
 
-    jobs = BasicJob.objects.filter(label='gizmos_showcase').order_by('id')
-
-    # Table View
-    jobs_table_options = JobsTable(
-        jobs=jobs,
-        column_fields=('id', 'name', 'description', 'creation_time', 'execute_time'),
-        hover=True,
-        striped=False,
-        bordered=False,
-        condensed=False,
-        results_url='gizmos:results',
-        refresh_interval=10000,
-        delete_btn=True,
-    )
-
     # ESRI Map Gizmo
     esri_map_view = EMView(center=[-100, 40], zoom=4)
     esri_layer = EMLayer(
@@ -895,7 +880,6 @@ def index(request):
                'message_box': message_box,
                'google_map_view': google_map_view,
                'flash_message': flash_message,
-               'jobs_table_options': jobs_table_options,
                'map_view_options': map_view_options,
                "esri_map": esri_map,
                'scatter_plot_view': scatter_plot_view,
@@ -1202,20 +1186,49 @@ def esri_map(request):
     return render(request, 'tethys_gizmos/gizmo_showcase/esri_map.html', context)
 
 
+def jobs_table_demo(request):
+    jobs = TethysJob.objects.filter(label='gizmos_showcase').order_by('id').select_subclasses()
+
+    # Table View
+    jobs_table_options = JobsTable(
+        jobs=jobs,
+        column_fields=('id', 'name', 'description', 'creation_time'),
+        hover=True,
+        striped=False,
+        bordered=False,
+        condensed=False,
+        results_url='gizmos:results',
+        refresh_interval=10000,
+        delete_btn=True,
+        show_detailed_status=True
+    )
+
+    context = {'jobs_table': jobs_table_options}
+
+    return render(request, 'tethys_gizmos/gizmo_showcase/jobs_table.html', context)
+
+
 def jobs_table_results(request, job_id):
     return redirect(reverse('gizmos:showcase') + '#jobs_table_docs')
 
 
 def create_sample_jobs(request):
-    def create_job(id, description, status):
-        job = BasicJob(name='job_{0}'.format(id),
-                       user=request.user,
-                       description=description,
-                       label='gizmos_showcase',
-                       # execute_time=,
-                       # completion_time=,
-                       _status=status,
-                       )
+    def create_job(id, description, status, workflow=False):
+        if not workflow:
+            job = BasicJob(name='job_{0}'.format(id),
+                           user=request.user,
+                           description=description,
+                           label='gizmos_showcase',
+                           _status=status,
+                           )
+        else:
+            job = CondorWorkflow(
+                name='job_{0}'.format(id),
+                user=request.user,
+                description=description,
+                label='gizmos_showcase',
+                _status=status
+            )
         job.save()
 
     create_job('1', 'Pending job', 'PEN')
@@ -1226,5 +1239,6 @@ def create_sample_jobs(request):
     create_job('6', 'Aborted job', 'ABT')
     create_job('7', 'Completed job', 'COM')
     create_job('8', 'Completed multi-process job with some errors', 'VCP')
+    create_job('9', 'Workflow job with multiple nodes.', 'VAR', workflow=True)
 
-    return redirect(reverse('gizmos:showcase') + '#jobs_table_docs')
+    return redirect(reverse('gizmos:jobs_table') + '#jobs_table_docs')

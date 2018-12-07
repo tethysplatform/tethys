@@ -50,8 +50,11 @@ App-specific schedulers can be created with the ``create_scheduler`` function.
 ::
 
     from tethys_sdk.compute import create_scheduler
+    # For Condor Job
+    scheduler = create_scheduler(name='my_app_scheduler', host='example.com', type='condor', username='root', private_key_path='/path/to/private/key')
 
-    scheduler = create_scheduler(name='my_app_scheduler', host='example.com', username='root', private_key_path='/path/to/private/key')
+    # For Dask Job
+    scheduler = create_scheduler(name='my_app_scheduler', host='localhost:8786', type='dask', timeout=30, heartbeat_interval=2, dashboard='localhost:8787')
 
 API Documentation
 =================
@@ -61,4 +64,8 @@ API Documentation
 .. autofunction:: tethys_sdk.compute.get_scheduler
 
 .. autofunction:: tethys_sdk.compute.create_scheduler
+
+.. autofunction:: tethys_sdk.compute.create_condor_scheduler
+
+.. autofunction:: tethys_sdk.compute.create_dask_scheduler
 
