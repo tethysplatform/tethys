@@ -550,20 +550,11 @@ def my_view(request):
             <a id="jobs_table_docs" class="anchor"></a>
             <div class="docs-section">
                 <h2>Jobs Table</h2>
-                <p>Description of Jobs Table</p>
+                <p>The Jobs Table gizmo can be used to track the progress of jobs that are processing.</p>
                 <p>
                     For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/jobs_table.html">Jobs Table</a>.
                 </p>
-
-                <div class="example">
-                    <div class="demo">
-                        <h4>Jobs Table</h4>
-                        {% gizmo jobs_table jobs_table_options %}
-                        {% if not jobs_table_options.jobs %}
-                            <a class="btn btn-success" href="{% url 'gizmos:sample_jobs' %}">Create Sample Jobs</a>
-                        {% endif %}
-                    </div>
-                </div>
+                <p>Click <a href="{% url 'gizmos:jobs_table' %}">here</a> for demo.</p>
             </div>
 
         </div> {# end col #}

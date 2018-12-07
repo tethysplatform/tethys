@@ -1,0 +1,112 @@
+{
+  "_args": [
+    [
+      "dagre@^0.8.1",
+      "/home/nswain/tethys/src/tethys_gizmos/static/tethys_gizmos/node_modules/dagre-d3"
+    ]
+  ],
+  "_from": "dagre@>=0.8.1 <0.9.0",
+  "_id": "dagre@0.8.2",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/dagre",
+  "_nodeVersion": "9.5.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/dagre-0.8.2.tgz_1517934331321_0.5788071418646723"
+  },
+  "_npmUser": {
+    "email": "cpettitt@gmail.com",
+    "name": "cpettitt"
+  },
+  "_npmVersion": "5.6.0",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "dagre",
+    "raw": "dagre@^0.8.1",
+    "rawSpec": "^0.8.1",
+    "scope": null,
+    "spec": ">=0.8.1 <0.9.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "/dagre-d3"
+  ],
+  "_resolved": "https://registry.npmjs.org/dagre/-/dagre-0.8.2.tgz",
+  "_shasum": "755b79f4d5499d63cf74c3368fb08add93eceafe",
+  "_shrinkwrap": null,
+  "_spec": "dagre@^0.8.1",
+  "_where": "/home/nswain/tethys/src/tethys_gizmos/static/tethys_gizmos/node_modules/dagre-d3",
+  "author": {
+    "email": "cpettitt@gmail.com",
+    "name": "Chris Pettitt"
+  },
+  "bugs": {
+    "url": "https://github.com/dagrejs/dagre/issues"
+  },
+  "contributors": [
+    {
+      "name": "Matthew Dahl",
+      "url": "https://github.com/sandersky"
+    }
+  ],
+  "dependencies": {
+    "graphlib": "^2.1.5",
+    "lodash": "^4.17.4"
+  },
+  "description": "Graph layout for JavaScript",
+  "devDependencies": {
+    "benchmark": "^2.1.4",
+    "browserify": "^14.5.0",
+    "chai": "^4.1.2",
+    "istanbul": "^0.4.5",
+    "jscs": "^3.0.7",
+    "jshint": "^2.9.5",
+    "jshint-stylish": "^2.2.1",
+    "karma": "^2.0.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-mocha": "^1.3.0",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "karma-requirejs": "^1.1.0",
+    "karma-safari-launcher": "^1.0.0",
+    "mocha": "^4.1.0",
+    "phantomjs-prebuilt": "^2.1.16",
+    "requirejs": "^2.3.5",
+    "semver": "^5.4.1",
+    "sprintf": "^0.1.5",
+    "uglify-js": "^3.3.4"
+  },
+  "directories": {},
+  "dist": {
+    "integrity": "sha512-TEOOGZOkCOgCG7AoUIq64sJ3d21SMv8tyoqteLpX+UsUsS9Qw8iap4hhogXY4oB3r0bbZuAjO0atAilgCmsE0Q==",
+    "shasum": "755b79f4d5499d63cf74c3368fb08add93eceafe",
+    "tarball": "https://registry.npmjs.org/dagre/-/dagre-0.8.2.tgz"
+  },
+  "gitHead": "4c7dc4ce4c90043916ed4732c57829e52e21a326",
+  "homepage": "https://github.com/dagrejs/dagre#readme",
+  "keywords": [
+    "graph",
+    "layout"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "lutzroeder",
+      "email": "lutz.noreply@gmail.com"
+    },
+    {
+      "name": "cpettitt",
+      "email": "cpettitt@gmail.com"
+    }
+  ],
+  "name": "dagre",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dagrejs/dagre.git"
+  },
+  "version": "0.8.2"
+}
