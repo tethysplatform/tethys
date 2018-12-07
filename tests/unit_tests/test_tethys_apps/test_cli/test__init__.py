@@ -327,9 +327,9 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('--noinput', mock_stdout.getvalue())
         self.assertIn('--force', mock_stdout.getvalue())
 
-    @mock.patch('tethys_apps.cli.scheduler_create_command')
-    def test_scheduler_create_command_options(self, mock_scheduler_create_command):
-        testargs = ['tethys', 'schedulers', 'create', '-n', 'foo_name', '-e', 'http://foo.foo_endpoint',
+    @mock.patch('tethys_apps.cli.condor_scheduler_create_command')
+    def test_scheduler_create_condor_command_options(self, mock_scheduler_create_command):
+        testargs = ['tethys', 'schedulers', 'create-condor', '-n', 'foo_name', '-e', 'http://foo.foo_endpoint',
                     '-u', 'foo_user', '-p', 'foo_pass', '-k', 'private_foo_pass']
 
         with mock.patch.object(sys, 'argv', testargs):
@@ -344,10 +344,26 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(None, call_args[0][0][0].private_key_path)
         self.assertEqual('foo_user', call_args[0][0][0].username)
 
-    @mock.patch('tethys_apps.cli.scheduler_create_command')
-    def test_scheduler_create_command_verbose_options(self, mock_scheduler_create_command):
-        testargs = ['tethys', 'schedulers', 'create', '--name', 'foo_name', '--endpoint', 'http://foo.foo_endpoint',
-                    '--username', 'foo_user', '--private-key-path', 'private_foo_path']
+    @mock.patch('tethys_apps.cli.dask_scheduler_create_command')
+    def test_scheduler_create_dask_command_options(self, mock_scheduler_create_command):
+        testargs = ['tethys', 'schedulers', 'create-dask', '-n', 'foo_name', '-e', 'http://foo.foo_endpoint',
+                    '-t', '10', '-b', '12', '-d', 'bar']
+
+        with mock.patch.object(sys, 'argv', testargs):
+            tethys_command()
+
+        mock_scheduler_create_command.assert_called()
+        call_args = mock_scheduler_create_command.call_args_list
+        self.assertEqual('http://foo.foo_endpoint', call_args[0][0][0].endpoint)
+        self.assertEqual('foo_name', call_args[0][0][0].name)
+        self.assertEqual(10, call_args[0][0][0].timeout)
+        self.assertEqual(12, call_args[0][0][0].heartbeat_interval)
+        self.assertEqual('bar', call_args[0][0][0].dashboard)
+
+    @mock.patch('tethys_apps.cli.condor_scheduler_create_command')
+    def test_scheduler_create_condor_command_verbose_options(self, mock_scheduler_create_command):
+        testargs = ['tethys', 'schedulers', 'create-condor', '--name', 'foo_name', '--endpoint',
+                    'http://foo.foo_endpoint', '--username', 'foo_user', '--private-key-path', 'private_foo_path']
 
         with mock.patch.object(sys, 'argv', testargs):
             tethys_command()
@@ -361,12 +377,30 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual('private_foo_path', call_args[0][0][0].private_key_path)
         self.assertEqual('foo_user', call_args[0][0][0].username)
 
+    @mock.patch('tethys_apps.cli.dask_scheduler_create_command')
+    def test_scheduler_create_dask_command_verbose_options(self, mock_scheduler_create_command):
+        testargs = ['tethys', 'schedulers', 'create-dask', '--name', 'foo_name', '--endpoint',
+                    'http://foo.foo_endpoint', '--timeout', '12', '--heartbeat-interval', '15',
+                    '--dashboard', 'bar']
+
+        with mock.patch.object(sys, 'argv', testargs):
+            tethys_command()
+
+        mock_scheduler_create_command.assert_called()
+        call_args = mock_scheduler_create_command.call_args_list
+
+        self.assertEqual('http://foo.foo_endpoint', call_args[0][0][0].endpoint)
+        self.assertEqual('foo_name', call_args[0][0][0].name)
+        self.assertEqual(12, call_args[0][0][0].timeout)
+        self.assertEqual(15, call_args[0][0][0].heartbeat_interval)
+        self.assertEqual('bar', call_args[0][0][0].dashboard)
+
     @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
-    @mock.patch('tethys_apps.cli.scheduler_create_command')
-    def test_scheduler_create_command_help(self, mock_scheduler_create_command, mock_exit, mock_stdout):
+    @mock.patch('tethys_apps.cli.condor_scheduler_create_command')
+    def test_condor_scheduler_create_command_help(self, mock_scheduler_create_command, mock_exit, mock_stdout):
         mock_exit.side_effect = SystemExit
-        testargs = ['tethys', 'schedulers', 'create', '-h']
+        testargs = ['tethys', 'schedulers', 'create-condor', '-h']
 
         with mock.patch.object(sys, 'argv', testargs):
             self.assertRaises(SystemExit, tethys_command)
@@ -382,9 +416,37 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('--private-key-path', mock_stdout.getvalue())
         self.assertIn('--private-key-pass', mock_stdout.getvalue())
 
+    @mock.patch('sys.stdout', new_callable=StringIO)
+    @mock.patch('tethys_apps.cli.argparse._sys.exit')
+    @mock.patch('tethys_apps.cli.dask_scheduler_create_command')
+    def test_dask_scheduler_create_command_help(self, mock_scheduler_create_command, mock_exit, mock_stdout):
+        mock_exit.side_effect = SystemExit
+        testargs = ['tethys', 'schedulers', 'create-dask', '-h']
+
+        with mock.patch.object(sys, 'argv', testargs):
+            self.assertRaises(SystemExit, tethys_command)
+
+        mock_scheduler_create_command.assert_not_called()
+        mock_exit.assert_called_with(0)
+
+        self.assertIn('--help', mock_stdout.getvalue())
+        self.assertIn('--name', mock_stdout.getvalue())
+        self.assertIn('--endpoint', mock_stdout.getvalue())
+        self.assertIn('--heartbeat-interval', mock_stdout.getvalue())
+        self.assertIn('--dashboard', mock_stdout.getvalue())
+
     @mock.patch('tethys_apps.cli.schedulers_list_command')
-    def test_scheduler_list_command(self, mock_scheduler_list_command):
-        testargs = ['tethys', 'schedulers', 'list']
+    def test_scheduler_dask_list_command(self, mock_scheduler_list_command):
+        testargs = ['tethys', 'schedulers', 'list', '-t', 'Dask']
+
+        with mock.patch.object(sys, 'argv', testargs):
+            tethys_command()
+
+        mock_scheduler_list_command.assert_called()
+
+    @mock.patch('tethys_apps.cli.schedulers_list_command')
+    def test_scheduler_condor_list_command(self, mock_scheduler_list_command):
+        testargs = ['tethys', 'schedulers', 'list', '-t', 'Condor']
 
         with mock.patch.object(sys, 'argv', testargs):
             tethys_command()

@@ -3,11 +3,11 @@ import mock
 
 from tethys_compute.job_manager import JobManager, JobTemplate, BasicJobTemplate, CondorJobTemplate,\
     CondorJobDescription, CondorWorkflowTemplate, CondorWorkflowNodeBaseTemplate, CondorWorkflowJobTemplate
-from tethys_compute.models import (TethysJob,
-                                   BasicJob,
-                                   CondorJob,
-                                   CondorWorkflow,
-                                   CondorWorkflowJobNode)
+from tethys_compute.models.tethys_job import TethysJob
+from tethys_compute.models.basic_job import BasicJob
+from tethys_compute.models.condor.condor_job import CondorJob
+from tethys_compute.models.condor.condor_workflow_job_node import CondorWorkflowJobNode
+from tethys_compute.models.condor.condor_workflow import CondorWorkflow
 
 
 class TestJobManager(unittest.TestCase):
@@ -408,7 +408,7 @@ class TestJobManager(unittest.TestCase):
         self.assertTrue(isinstance(node, CondorWorkflowJobNode))
         self.assertEquals(mock_parameters, ret.parameters)
         self.assertEquals('JOB', node.type)
-        self.assertEquals('', node.workspace)
+        self.assertEquals('.', node.workspace)
 
     # CondorWorkflowJobTemplate
 

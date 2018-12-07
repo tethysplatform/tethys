@@ -1,9 +1,5 @@
-#
+# Build and Test Tethys Platform on Travis
 language: c
-
-env:
-  - PYTHON_VERSION="2"
-  - PYTHON_VERSION="3"
 
 # Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
@@ -20,7 +16,7 @@ install:
   - cd ..
   - mv tethys src
   - bash ./src/scripts/install_tethys.sh -h
-  - bash ./src/scripts/install_tethys.sh --partial-tethys-install mesdat -t $PWD --python-version $PYTHON_VERSION
+  - bash ./src/scripts/install_tethys.sh --partial-tethys-install mesdat -t $PWD
 
   # activate conda environment
   - export PATH="$PWD/miniconda/bin:$PATH"

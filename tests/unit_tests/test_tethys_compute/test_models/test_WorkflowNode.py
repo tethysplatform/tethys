@@ -1,6 +1,9 @@
 from tethys_sdk.testing import TethysTestCase
-from tethys_compute.models import CondorPyWorkflow, CondorWorkflow, Scheduler, CondorWorkflowNode, \
-    CondorWorkflowJobNode
+from tethys_compute.models.condor.condor_scheduler import CondorScheduler
+from tethys_compute.models.condor.condor_py_workflow import CondorPyWorkflow
+from tethys_compute.models.condor.condor_workflow_node import CondorWorkflowNode
+from tethys_compute.models.condor.condor_workflow_job_node import CondorWorkflowJobNode
+from tethys_compute.models.condor.condor_workflow import CondorWorkflow
 from django.contrib.auth.models import User
 from condorpy import Job
 import mock
@@ -8,14 +11,14 @@ import os
 import os.path
 
 
-class CondorPyWorkflowNodeTest(TethysTestCase):
+class CondorWorkflowNodeTest(TethysTestCase):
     def set_up(self):
         path = os.path.dirname(__file__)
         self.workspace_dir = os.path.join(path, 'workspace')
 
         self.user = User.objects.create_user('tethys_super', 'user@example.com', 'pass')
 
-        self.scheduler = Scheduler(
+        self.scheduler = CondorScheduler(
             name='test_scheduler',
             host='localhost',
             username='tethys_super',
@@ -81,7 +84,7 @@ class CondorPyWorkflowNodeTest(TethysTestCase):
         # Check result
         self.assertIsNone(ret)
 
-    @mock.patch('tethys_compute.models.CondorWorkflowNode.job')
+    @mock.patch('tethys_compute.models.condor.condor_workflow_node.CondorWorkflowNode.job')
     def test_condorpy_node(self, mock_job):
         mock_job_return = Job(name='test_job',
                               attributes={'foo': 'bar'},

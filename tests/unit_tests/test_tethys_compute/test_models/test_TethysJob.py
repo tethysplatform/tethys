@@ -1,5 +1,7 @@
 from tethys_sdk.testing import TethysTestCase
-from tethys_compute.models import TethysJob, CondorBase, Scheduler
+from tethys_compute.models.tethys_job import TethysJob
+from tethys_compute.models.condor.condor_base import CondorBase
+from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from pytz import timezone
@@ -17,13 +19,9 @@ class TethysJobTest(TethysTestCase):
 
         self.user = User.objects.create_user('tethys_super', 'user@example.com', 'pass')
 
-        self.scheduler = Scheduler(
+        self.scheduler = CondorScheduler(
             name='test_scheduler',
             host='localhost',
-            username='tethys_super',
-            password='pass',
-            private_key_path='test_path',
-            private_key_pass='test_pass'
         )
 
         self.scheduler.save()
@@ -54,6 +52,10 @@ class TethysJobTest(TethysTestCase):
         self.tethysjob_execute_time.delete()
         self.scheduler.delete()
 
+    def test_type(self):
+        ret = self.tethysjob.type
+        self.assertEqual('TethysJob', ret)
+
     def test_update_status_interval_prop(self):
         ret = TethysJob.objects.get(name='test_tethysjob').update_status_interval
 
@@ -75,6 +77,15 @@ class TethysJobTest(TethysTestCase):
         # Check result
         self.assertEqual('Pending', ret)
 
+    @mock.patch('tethys_compute.models.tethys_job.TethysJob.update_status')
+    def test_status_setter(self, mock_update):
+        tethys_job = TethysJob.objects.get(name='test_tethysjob')
+
+        tethys_job.status = 'test_status'
+
+        # Check result
+        mock_update.assert_called_with(status='test_status')
+
     def test_run_time_execute_time_prop(self):
         ret = TethysJob.objects.get(name='test_tethysjob_execute_time').run_time
 
@@ -83,6 +94,12 @@ class TethysJobTest(TethysTestCase):
         self.assertEqual(timedelta(0, 3600), ret)
 
         # TODO: How to get to inside the if self.completion_time and self.execute_time: statement
+
+    def test_run_time_execute_time_no_start_time_prop(self):
+        ret = TethysJob.objects.get(name='test_tethysjob').run_time
+
+        # Check result
+        self.assertEqual("", ret)
 
     def test_execute(self):
         ret_old = TethysJob.objects.get(name='test_tethysjob_execute_time')
@@ -93,8 +110,9 @@ class TethysJobTest(TethysTestCase):
         self.assertEqual('Various', ret_old.status)
         self.assertEqual('Pending', ret_new.status)
 
-    @mock.patch('tethys_compute.models.CondorBase.condor_object')
-    def test_update_status_run(self, mock_co):
+    @mock.patch('tethys_compute.models.tethys_job.TethysJob.is_time_to_update')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
+    def test_update_status_run(self, mock_co, mock_tup):
         tethysjob = CondorBase(
             name='test_tethysjob',
             description='test_description',
@@ -103,7 +121,7 @@ class TethysJobTest(TethysTestCase):
             scheduler=self.scheduler,
             execute_time=dt.now(),
         )
-
+        mock_tup.return_value = True
         mock_co.status = 'Running'
         tethysjob.update_status()
 
@@ -113,8 +131,22 @@ class TethysJobTest(TethysTestCase):
         self.assertIsNotNone(tethysjob.start_time)
         self.assertIsInstance(tethysjob.start_time, datetime)
 
-    @mock.patch('tethys_compute.models.CondorBase.condor_object')
-    def test_update_status_com(self, mock_co):
+    @mock.patch('tethys_compute.models.tethys_job.log')
+    def test_update_bad_status(self, mock_log):
+        tethys_job = TethysJob.objects.get(name='test_tethysjob')
+        tethys_job.update_status(status='test')
+
+        mock_log.error.assert_called_with('Invalid status given: test')
+
+    @mock.patch('django.db.models.base.Model.save')
+    def test_update_valid_status(self, mock_save):
+        tethys_job = TethysJob.objects.get(name='test_tethysjob')
+        tethys_job.update_status(status='PEN')
+        mock_save.assert_called()
+
+    @mock.patch('tethys_compute.models.tethys_job.TethysJob.is_time_to_update')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
+    def test_update_status_com(self, mock_co, mock_tup):
         tethysjob = CondorBase(
             name='test_tethysjob',
             description='test_description',
@@ -124,6 +156,7 @@ class TethysJobTest(TethysTestCase):
             execute_time=dt.now(),
         )
 
+        mock_tup.return_value = True
         mock_co.status = 'Completed'
         tethysjob.update_status()
 
@@ -133,8 +166,9 @@ class TethysJobTest(TethysTestCase):
         self.assertIsNotNone(tethysjob.completion_time)
         self.assertIsInstance(tethysjob.completion_time, datetime)
 
-    @mock.patch('tethys_compute.models.CondorBase.condor_object')
-    def test_update_status_vcp(self, mock_co):
+    @mock.patch('tethys_compute.models.tethys_job.TethysJob.is_time_to_update')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
+    def test_update_status_vcp(self, mock_co, mock_tup):
         tethysjob = CondorBase(
             name='test_tethysjob',
             description='test_description',
@@ -143,7 +177,7 @@ class TethysJobTest(TethysTestCase):
             scheduler=self.scheduler,
             execute_time=dt.now(),
         )
-
+        mock_tup.return_value = True
         mock_co.status = 'Various-Complete'
         tethysjob.update_status()
 
@@ -153,8 +187,9 @@ class TethysJobTest(TethysTestCase):
         self.assertIsNotNone(tethysjob.completion_time)
         self.assertIsInstance(tethysjob.completion_time, datetime)
 
-    @mock.patch('tethys_compute.models.CondorBase.condor_object')
-    def test_update_status_err(self, mock_co):
+    @mock.patch('tethys_compute.models.tethys_job.TethysJob.is_time_to_update')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
+    def test_update_status_err(self, mock_co, mock_tup):
         tethysjob = CondorBase(
             name='test_tethysjob',
             description='test_description',
@@ -165,6 +200,7 @@ class TethysJobTest(TethysTestCase):
         )
 
         mock_co.status = 'Held'
+        mock_tup.return_value = True
         tethysjob.update_status()
 
         # Check result
@@ -173,8 +209,9 @@ class TethysJobTest(TethysTestCase):
         self.assertIsNotNone(tethysjob.completion_time)
         self.assertIsInstance(tethysjob.completion_time, datetime)
 
-    @mock.patch('tethys_compute.models.CondorBase.condor_object')
-    def test_update_status_abt(self, mock_co):
+    @mock.patch('tethys_compute.models.tethys_job.TethysJob.is_time_to_update')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
+    def test_update_status_abt(self, mock_co, mock_tup):
         tethysjob = CondorBase(
             name='test_tethysjob',
             description='test_description',
@@ -183,6 +220,7 @@ class TethysJobTest(TethysTestCase):
             scheduler=self.scheduler,
             execute_time=dt.now(),
         )
+        mock_tup.return_value = True
 
         mock_co.status = 'Removed'
         tethysjob.update_status()
@@ -193,13 +231,32 @@ class TethysJobTest(TethysTestCase):
         self.assertIsNotNone(tethysjob.completion_time)
         self.assertIsInstance(tethysjob.completion_time, datetime)
 
-    @mock.patch('tethys_compute.models.TethysFunctionExtractor')
+    @mock.patch('tethys_compute.models.tethys_job.TethysFunctionExtractor')
     def test_process_results_function(self, mock_tfe):
         mock_tfe().valid = True
         mock_tfe().function = 'test_function_return'
 
         # Setter
         TethysJob.objects.get(name='test_tethysjob_execute_time').process_results_function = test_function
+
+        # Property
+        ret = TethysJob.objects.get(name='test_tethysjob_execute_time').process_results_function
+
+        # Check result
+        self.assertEqual(ret, 'test_function_return')
+        mock_tfe.assert_called_with(str(test_function), None)
+
+    @mock.patch('tethys_compute.models.tethys_job.TethysFunctionExtractor')
+    def test_process_results_function_string_input(self, mock_tfe):
+        mock_tfe().valid = True
+        mock_tfe().function = 'test_function_return'
+
+        # Setter
+        TethysJob.objects.get(name='test_tethysjob_execute_time').process_results_function = 'tests.unit_tests.' \
+                                                                                             'test_tethys_compute.' \
+                                                                                             'test_models.' \
+                                                                                             'test_TethysJob.' \
+                                                                                             'test_function'
 
         # Property
         ret = TethysJob.objects.get(name='test_tethysjob_execute_time').process_results_function
@@ -241,3 +298,25 @@ class TethysJobTest(TethysTestCase):
         self.assertRaises(NotImplementedError, TethysJob.objects.get(name='test_tethysjob').pause)
 
         self.assertRaises(NotImplementedError, TethysJob.objects.get(name='test_tethysjob').resume)
+
+    def test_is_time_to_update(self):
+        ret = TethysJob.objects.get(name='test_tethysjob')
+        ret._update_status_interval = timedelta(seconds=0)
+
+        fifteen_ago = datetime.now() - timedelta(minutes=15)
+        ret._last_status_update = fifteen_ago
+
+        time_to_update_status = ret.is_time_to_update()
+
+        self.assertTrue(time_to_update_status)
+
+    def test_is_time_to_update_false(self):
+        ret = TethysJob.objects.get(name='test_tethysjob')
+        ret._update_status_interval = timedelta(minutes=15)
+
+        fifteen_ago = datetime.now() - timedelta(minutes=5)
+        ret._last_status_update = fifteen_ago
+
+        time_to_update_status = ret.is_time_to_update()
+
+        self.assertFalse(time_to_update_status)

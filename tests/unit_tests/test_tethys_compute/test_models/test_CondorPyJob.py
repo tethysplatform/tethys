@@ -1,5 +1,7 @@
 from tethys_sdk.testing import TethysTestCase
-from tethys_compute.models import Scheduler, CondorPyJob, CondorJob
+from tethys_compute.models.condor.condor_scheduler import CondorScheduler
+from tethys_compute.models.condor.condor_py_job import CondorPyJob
+from tethys_compute.models.condor.condor_job import CondorJob
 from condorpy import Templates
 from django.contrib.auth.models import User
 from condorpy import Job
@@ -18,7 +20,7 @@ class CondorPyJobTest(TethysTestCase):
 
         user = User.objects.create_user('tethys_super', 'user@example.com', 'pass')
 
-        scheduler = Scheduler(
+        scheduler = CondorScheduler(
             name='test_scheduler',
             host='localhost',
             username='tethys_super',
@@ -81,7 +83,7 @@ class CondorPyJobTest(TethysTestCase):
 
         self.assertEqual({'foo': 'bar'}, ret)
 
-    @mock.patch('tethys_compute.models.CondorPyJob.condorpy_job')
+    @mock.patch('tethys_compute.models.condor.condor_py_job.CondorPyJob.condorpy_job')
     def test_set_attributes(self, mock_ca):
         set_attributes = {'baz': 'qux'}
         ret = CondorPyJob.objects.get(condorpyjob_id='99')
@@ -93,7 +95,7 @@ class CondorPyJobTest(TethysTestCase):
 
         self.assertEqual({'baz': 'qux'}, ret.attributes)
 
-    @mock.patch('tethys_compute.models.CondorPyJob.condorpy_job')
+    @mock.patch('tethys_compute.models.condor.condor_py_job.CondorPyJob.condorpy_job')
     def test_numjobs(self, mock_cj):
         num_job = 5
         ret = CondorPyJob.objects.get(condorpyjob_id='99')
@@ -105,7 +107,7 @@ class CondorPyJobTest(TethysTestCase):
         # self.assertEqual(5, ret)
         self.assertEqual(num_job, ret.num_jobs)
 
-    @mock.patch('tethys_compute.models.CondorPyJob.condorpy_job')
+    @mock.patch('tethys_compute.models.condor.condor_py_job.CondorPyJob.condorpy_job')
     def test_remote_input_files(self, mock_cj):
         ret = CondorPyJob.objects.get(condorpyjob_id='99')
         ret.remote_input_files = ['test_newfile1.txt']

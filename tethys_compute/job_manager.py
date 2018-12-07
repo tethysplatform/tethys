@@ -16,13 +16,13 @@ import warnings
 
 from django.urls import reverse
 
-from tethys_compute.models import (TethysJob,
-                                   BasicJob,
-                                   CondorJob,
-                                   CondorWorkflow,
-                                   CondorWorkflowNode,
-                                   CondorWorkflowJobNode,
-                                   )
+from tethys_compute.models.tethys_job import TethysJob
+from tethys_compute.models.basic_job import BasicJob
+from tethys_compute.models.dask.dask_job import DaskJob
+from tethys_compute.models.condor.condor_job import CondorJob
+from tethys_compute.models.condor.condor_workflow_node import CondorWorkflowNode
+from tethys_compute.models.condor.condor_workflow_job_node import CondorWorkflowJobNode
+from tethys_compute.models.condor.condor_workflow import CondorWorkflow
 
 log = logging.getLogger('tethys.tethys_compute.job_manager')
 
@@ -30,6 +30,7 @@ JOB_TYPES = {'CONDOR': CondorJob,
              'CONDORJOB': CondorJob,
              'CONDORWORKFLOW': CondorWorkflow,
              'BASIC': BasicJob,
+             'DASK': DaskJob,
              }
 
 

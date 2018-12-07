@@ -109,12 +109,42 @@ class TestGizmoShowcase(unittest.TestCase):
         self.assertEqual(302, result.status_code)
 
     @mock.patch('tethys_gizmos.views.gizmo_showcase.BasicJob')
-    def test_create_sample_jobs(self, mock_bj):
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.CondorWorkflow')
+    def test_create_sample_jobs(self, mock_cw, mock_bj):
         mock_bj().return_value = mock.MagicMock()
-        request = self.request_factory
-        request.user = 'test_user'
+        request = self.request_factory.get('/jobs')
+        request.user = self.user
         gizmo_showcase.create_sample_jobs(request)
 
         # Check BasicJob Call
         mock_bj.assert_called_with(_status='VCP', description='Completed multi-process job with some errors',
-                                   label='gizmos_showcase', name='job_8', user='test_user')
+                                   label='gizmos_showcase', name='job_8', user=request.user)
+        mock_cw.assert_called_once()
+        mock_cw.assert_called_with(name='job_9', user=request.user, description='Workflow job with multiple nodes.',
+                                   label='gizmos_showcase', _status='VAR')
+
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.render')
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.JobsTable')
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.TethysJob')
+    def test_jobs_table_demo(self, mock_TethysJob, mock_JobsTable, mock_render):
+        request = self.request_factory.get('/jobs')
+        request.user = self.user
+
+        result = gizmo_showcase.jobs_table_demo(request)
+
+        mock_JobsTable.assert_called_with(
+            jobs=mock_TethysJob.objects.filter().order_by().select_subclasses(),
+            column_fields=('id', 'name', 'description', 'creation_time'),
+            hover=True,
+            striped=False,
+            bordered=False,
+            condensed=False,
+            results_url='gizmos:results',
+            refresh_interval=10000,
+            delete_btn=True,
+            show_detailed_status=True
+        )
+
+        mock_render.assert_called_with(request, 'tethys_gizmos/gizmo_showcase/jobs_table.html',
+                                       {'jobs_table': mock_JobsTable()})
+        self.assertEqual(mock_render(), result)
