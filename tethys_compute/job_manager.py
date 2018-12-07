@@ -177,8 +177,8 @@ class JobManager(object):
             return value
 
         def replace_in_string(string_value):
-            new_string_value = re.sub('\$\(APP_WORKSPACE\)', app_workspace.path, string_value)
-            new_string_value = re.sub('\$\(USER_WORKSPACE\)', user_workspace.path, new_string_value)
+            new_string_value = re.sub(r'\$\(APP_WORKSPACE\)', app_workspace.path, string_value)
+            new_string_value = re.sub(r'\$\(USER_WORKSPACE\)', user_workspace.path, new_string_value)
             return new_string_value
 
         def replace_in_dict(dict_value):

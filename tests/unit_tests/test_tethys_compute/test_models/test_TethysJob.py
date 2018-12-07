@@ -77,6 +77,12 @@ class TethysJobTest(TethysTestCase):
         # Check result
         self.assertEqual('Pending', ret)
 
+    def test_status_setter_prop(self):
+        ret = TethysJob.objects.get(name='test_tethysjob_execute_time').status
+
+        # Check result
+        self.assertEqual('Various', ret)
+
     @mock.patch('tethys_compute.models.tethys_job.TethysJob.update_status')
     def test_status_setter(self, mock_update):
         tethys_job = TethysJob.objects.get(name='test_tethysjob')
@@ -93,7 +99,11 @@ class TethysJobTest(TethysTestCase):
         self.assertIsInstance(ret, timedelta)
         self.assertEqual(timedelta(0, 3600), ret)
 
-        # TODO: How to get to inside the if self.completion_time and self.execute_time: statement
+    def test_run_time_execute_time_prop_with_start_time(self):
+        ret = TethysJob.objects.get(name='test_tethysjob').run_time
+
+        # Check result
+        self.assertEqual('', ret)
 
     def test_run_time_execute_time_no_start_time_prop(self):
         ret = TethysJob.objects.get(name='test_tethysjob').run_time
@@ -109,6 +119,21 @@ class TethysJobTest(TethysTestCase):
         self.assertNotEqual(ret_old.execute_time, ret_new.execute_time)
         self.assertEqual('Various', ret_old.status)
         self.assertEqual('Pending', ret_new.status)
+
+    @mock.patch('tethys_compute.models.tethys_job.log')
+    def test_update_status_invalid(self, mock_log):
+        tethysjob = TethysJob(
+            name='test_tethysjob',
+            description='test_description',
+            user=self.user,
+            label='test_label',
+            execute_time=dt.now(),
+        )
+        tethysjob._status = ''
+
+        # Check result
+        self.assertIsNone(tethysjob.update_status('Test'))
+        mock_log.error.assert_called_with('Invalid status given: Test')
 
     @mock.patch('tethys_compute.models.tethys_job.TethysJob.is_time_to_update')
     @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
