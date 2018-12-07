@@ -606,10 +606,6 @@ g. Log in each user. If the permission has been applied correctly, "diviewer" sh
 
     For more details on Permissions, see: :doc:`../../tethys_sdk/permissions`.
 
-.. todo::
-
-    Split into another tutorial here?
-
 5. Persistent Store Related Tables
 ==================================
 

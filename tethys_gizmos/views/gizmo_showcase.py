@@ -22,7 +22,7 @@ from requests.exceptions import ConnectionError
 from tethys_sdk.gizmos import Button, ButtonGroup, DatePicker, RangeSlider, SelectInput, TextInput, ToggleSwitch, \
     LinePlot, ScatterPlot, PolarPlot, PiePlot, BarPlot, TimeSeries, AreaRange, PlotlyView, BokehView, TableView, \
     DataTableView, MessageBox, GoogleMapView, MVView, MVDraw, MVLayer, MVLegendClass, MapView, JobsTable, EMView, \
-    EMLayer, ESRIMap
+    EMLayer, ESRIMap, CesiumMapView
 from tethys_sdk.services import list_spatial_dataset_engines
 from tethys_compute.models import TethysJob, BasicJob, CondorWorkflow
 
@@ -1184,6 +1184,281 @@ def esri_map(request):
     context = {"esri_map": esri_map}
 
     return render(request, 'tethys_gizmos/gizmo_showcase/esri_map.html', context)
+
+
+@login_required()
+def cesium_map_view(request, type):
+    # Define nav link
+    home_link = reverse('gizmos:cesium_map_view', kwargs={'type': 'home'})
+    map_layers_link = reverse('gizmos:cesium_map_view', kwargs={'type': 'map_layers'})
+    terrain_link = reverse('gizmos:cesium_map_view', kwargs={'type': 'terrain'})
+    czml_link = reverse('gizmos:cesium_map_view', kwargs={'type': 'czml'})
+    model_link = reverse('gizmos:cesium_map_view', kwargs={'type': 'model'})
+    model2_link = reverse('gizmos:cesium_map_view', kwargs={'type': 'model2'})
+
+    header_link = {"home_link": home_link, "map_layers_link": map_layers_link, "terrain_link": terrain_link,
+                   "czml_link": czml_link, "model_link": model_link, "model2_link": model2_link,
+                   "page_type": type}
+
+    # 1. Basic Map
+    height = '600px'
+    if (type == 'home'):
+        cesium_map_view = CesiumMapView(
+            height=height,
+            options={'timeline': True, 'homeButton': True}
+        )
+
+    # 2. Map Layers
+    if (type == 'map_layers'):
+        cesium_map_view = CesiumMapView(
+            height=height,
+            draw=True,
+            options={'shouldAnimate': False, 'timeline': False, 'homeButton': False},
+            layers={'EsriArcGISMapServer': {
+                'imageryProvider': {
+                    'Cesium.ArcGisMapServerImageryProvider': [{
+                        'url': 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer'
+                    }]
+                }
+            }}
+        )
+
+    # 3. Terrain
+    if (type == 'terrain'):
+        cesium_map_view = CesiumMapView(
+            height=height,
+            draw=True,
+            options={'shouldAnimate': False, 'timeline': False, 'homeButton': False},
+            terrain={'terrainProvider': {'Cesium.createWorldTerrain': {'requestVertexNormals': True,
+                                                                       'requestWaterMask': True}}},
+            view={'flyTo': {
+                'destination': {'Cesium.Cartesian3.fromDegrees': [-122.19, 46.25, 5000.0]},
+                'orientation': {
+                    'direction': {
+                        'Cesium.Cartesian3': [-0.04231243104240401, -0.20123236049443421, -0.97862924300734]
+                    },
+                    'up': {
+                        'Cesium.Cartesian3': [-0.47934589305293746, -0.8553216253114552, 0.1966022179118339]
+                    }
+                }
+            }}
+        )
+
+    # 4. czml Object
+    if (type == 'czml'):
+        cesium_map_view = CesiumMapView(
+            height=height,
+            options={'shouldAnimate': True,
+                     'timeline': False,
+                     'homeButton': False,
+                     'shadows': True,
+                     },
+            view={'lookAt': {
+                'center': {'Cesium.Cartesian3.fromDegrees': [-58.0, 40.0]},
+                'offset': {'Cesium.Cartesian3': [0.0, -4790000.0, 3930000.0]},
+            }},
+            layers={'BingMap': {
+                'imageryProvider': {
+                    'Cesium.BingMapsImageryProvider': {
+                        'url': 'https://dev.virtualearth.net',
+                        'key': 'AnYTMwSuR3-CBMzhN0yAYrtl-28rEFe7Kxfg2IWC9csUBCn0nYDFXW1ioNakjX3W',
+                        'mapStyle': 'Aerial',
+                    },
+                }
+            }},
+            entities={'czml': [
+                {
+                    "id": "document",
+                    "name": "CZML Geometries: Polygon",
+                    "version": "1.0"
+                },
+                {
+                    "id": "redPolygon",
+                    "name": "Red polygon on surface",
+                    "polygon":
+                        {
+                            "positions":
+                                {
+                                    "cartographicDegrees": [
+                                        -115.0, 37.0, 0,
+                                        -115.0, 32.0, 0,
+                                        -107.0, 33.0, 0,
+                                        -102.0, 31.0, 0,
+                                        -102.0, 35.0, 0
+                                    ]
+                                },
+                            "material":
+                                {
+                                    "solidColor":
+                                        {
+                                            "color":
+                                                {
+                                                    "rgba": [255, 0, 0, 255]
+                                                }
+                                        }
+                                }
+                        }
+                },
+                {
+                    "id": "greenPolygon",
+                    "name": "Green extruded polygon",
+                    "polygon":
+                        {
+                            "positions": {
+                                "cartographicDegrees": [
+                                    -108.0, 42.0, 0,
+                                    -100.0, 42.0, 0,
+                                    -104.0, 40.0, 0
+                                ]
+                            },
+                            "material":
+                                {
+                                    "solidColor":
+                                        {
+                                            "color": {
+                                                "rgba": [0, 255, 0, 255]
+                                            }
+                                        }
+                                },
+                            "extrudedHeight": 500000.0,
+                            "closeTop": False,
+                            "closeBottom": False
+                        }
+                },
+                {
+                    "id": "orangePolygon",
+                    "name": "Orange polygon with per-position heights and outline",
+                    "polygon":
+                        {
+                            "positions": {
+                                "cartographicDegrees": [
+                                    -108.0, 25.0, 100000,
+                                    -100.0, 25.0, 100000,
+                                    -100.0, 30.0, 100000,
+                                    -108.0, 30.0, 300000
+                                ]
+                            },
+                            "material": {
+                                "solidColor": {
+                                    "color": {
+                                        "rgba": [255, 100, 0, 100]
+                                    }
+                                }
+                            },
+                            "extrudedHeight": 0,
+                            "perPositionHeight": True,
+                            "outline": True,
+                            "outlineColor": {
+                                "rgba": [0, 0, 0, 255]
+                            }
+                        }
+                }]
+            },
+        )
+
+    # 5. Model.
+    if (type == 'model'):
+        object1 = '/static/tethys_gizmos/cesium_models/CesiumAir/Cesium_Air.glb'
+        cesium_map_view = CesiumMapView(
+            height=height,
+            options={
+                'shouldAnimate': True,
+                'timeline': True,
+                'homeButton': True,
+                'shadows': True,
+            },
+            layers={'BingMap': {'imageryProvider': {
+                'Cesium.BingMapsImageryProvider': [{
+                    'url': 'https://dev.virtualearth.net',
+                    'key': 'AnYTMwSuR3-CBMzhN0yAYrtl-28rEFe7Kxfg2IWC9csUBCn0nYDFXW1ioNakjX3W',
+                    'mapStyle': 'Aerial',
+                }],
+            }}},
+            models={
+                'Cesium_Airplane': {
+                    'model': {
+                        'uri': object1,
+                        'show': True,
+                        'minimumPixelSize': 128,
+                        'maximumScale': 20000,
+                        'shadows': 'enabled',
+                    },
+                    'name': object1,
+                    'orientation': {
+                        'Cesium.Transforms.headingPitchRollQuaternion':
+                            [{'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
+                             {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}]},
+                    'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
+                },
+            },
+        )
+
+    if (type == 'model2'):
+        object1 = '/static/tethys_gizmos/cesium_models/CesiumAir/Cesium_Air.glb'
+        object2 = '/static/tethys_gizmos/cesium_models/CesiumBalloon/CesiumBalloon.glb'
+        cesium_map_view = CesiumMapView(
+            height='80%',
+            width='80%',
+            options={'shouldAnimate': True,
+                     'timeline': True,
+                     'homeButton': True,
+                     'shadows': True,
+                     },
+            layers={'BingMap': {
+                'imageryProvider': {'Cesium.BingMapsImageryProvider': [{
+                    'url': 'https://dev.virtualearth.net',
+                    'key': 'AnYTMwSuR3-CBMzhN0yAYrtl-28rEFe7Kxfg2IWC9csUBCn0nYDFXW1ioNakjX3W',
+                    'mapStyle': 'Aerial',
+                }]}
+            }},
+            models={
+                'Cesium_Airplane': {
+                    'model': {
+                        'uri': object1,
+                        'show': True,
+                        'minimumPixelSize': 128,
+                        'maximumScale': 20000,
+                        'shadows': 'enabled',
+                    },
+                    'name': object1,
+                    'orientation': {'Cesium.Transforms.headingPitchRollQuaternion': [
+                            {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
+                            {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}
+                        ]},
+                    'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
+                },
+                'Cesium_Ballon': {
+                    'model': {
+                        'uri': object2,
+                        'show': True,
+                        'minimumPixelSize': 128,
+                        'maximumScale': 20000,
+                        'shadows': 'enabled',
+                    },
+                    'name': object2,
+                    'orientation': {
+                        'Cesium.Transforms.headingPitchRollQuaternion': [
+                            {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
+                            {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians': 135}, 0, 0]}
+                        ]
+                    },
+                    'position': {
+                        'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]
+                    },
+
+                },
+            },
+        )
+
+    submitted_geometry = request.POST.get('geometry', None)
+
+    if submitted_geometry is not None:
+        messages.info(request, submitted_geometry)
+
+    context = {"cesium_map_view": cesium_map_view}
+    context.update(header_link)
+
+    return render(request, 'tethys_gizmos/gizmo_showcase/cesium_map_view.html', context)
 
 
 def jobs_table_demo(request):

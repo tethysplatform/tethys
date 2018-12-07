@@ -352,10 +352,6 @@ d. Navigate to ``workspaces/app_workspace/dams`` to see the JSON files that are 
 4. Develop Table View Page
 ==========================
 
-.. todo::
-
-    Implement with table view rather than raw HTML table
-
 Now that the data is being persisted in our make-shift inventory database, let's create useful views of the data in our inventory. First, we'll create a new page that lists all of the dams in our inventory database in a table, which will provide a good review of Model View Controller:
 
 a. Open ``models.py`` and add a model method for listing the dams called ``get_all_dams``:

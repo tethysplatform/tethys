@@ -80,6 +80,9 @@
                         <a href="#esri_map_view_docs">ESRI Map View</a>
                     </li>
                     <li>
+                        <a href="#cesium_map_view_docs">Cesium Map View</a>
+                    </li>
+                    <li>
                         <a href="#jobs_table_docs">Jobs Table</a>
                     </li>
                 </ul>
@@ -544,6 +547,17 @@ def my_view(request):
                         {% gizmo esri_map esri_map %}
                     </div>
                 </div>
+            </div>
+
+            {# Cesium Map View -----------------------------------------------------------------------------------------#}
+            <a id="cesium_map_view_docs" class="anchor"></a>
+            <div class="docs-section">
+                <h2>Cesium Map View</h2>
+                <p>The CesiumMapView gizmo can be used to harvest the power of CesiumJs. Cesium is powered by <a href="https://cesiumjs.org">Cesium API for Javascript</a>.</p>
+                <p>
+                    For example code and an explanation of options see Gizmo Options Object API for <a target="_blank" href="{{ docs_endpoint }}/tethys_sdk/gizmos/cesium_map_view.html">Cesium Map</a>.
+                </p>
+                <p>Click <a href="{% url 'gizmos:cesium_map_view' type='home' %}">here</a> for demo on a separate page.</p>
             </div>
 
             {# Jobs Table -----------------------------------------------------------------------------------------------#}

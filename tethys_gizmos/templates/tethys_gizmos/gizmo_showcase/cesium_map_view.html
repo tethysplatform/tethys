@@ -1,0 +1,110 @@
+{% extends "page.html" %}
+
+{% load staticfiles tethys_gizmos %}
+
+{% block title %}- Gizmos - Cesium Map View{% endblock %}
+
+
+{% block global_scripts %}
+    {{ block.super }}
+    {% gizmo_dependencies global_js %}
+{% endblock %}
+
+{% block styles %}
+	{{ block.super }}
+    {% gizmo_dependencies global_css %}
+    <link rel="stylesheet" href="{% static 'tethys_gizmos/css/gizmo_showcase.css' %}" type="text/css" />
+    <style>
+        #content {
+          padding-bottom: 50px;
+        }
+        #example_description {
+          padding-bottom: 10px;
+        }
+        .navbar {
+          position: fixed;
+          z-index: 99 !important;
+          width:100%;
+        }
+        .flash-messages {
+          float: left;
+          margin-top: 30px;
+          align: left;
+        }
+        #cesium-title {
+          position:relative;
+          margin-top: 60px;
+          align: left;
+        }
+    </style>
+{% endblock %}
+
+{% block flash %}
+
+{% endblock %}
+
+{% block content %}
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li><a href="{{ home_link }}"> Home </a></li>
+          <li><a href="{{ map_layers_link }}">Map Layers</a></li>
+          <li><a href="{{ terrain_link }}">Terrain</a></li>
+          <li><a href="{{ czml_link }}">CZML</a></li>
+          <li><a href="{{ model_link }}">Model</a></li>
+          <li><a href="{{ model2_link }}">Models</a></li>
+          <li><a href="{% url 'gizmos:showcase'%}">Back</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+<div class="gizmo-page-wrapper">
+    <form action="" method="post">
+        {% csrf_token %}
+        <div id="cesium-title"><h2>Cesium Map View</h2></div>
+        {%if page_type == 'home' %}
+            <div id="example_description">This example shows a basic 3D Map with CesiumJS</div>
+        {% endif %}
+        {%if page_type == 'map_layers' %}
+            <div id="example_description">This example display an ESRI World Street Map and a drawing toolbar with CesiumJS</div>
+        {% endif %}
+        {%if page_type == 'terrain' %}
+            <div id="example_description">This example integrates the terrain feature and a drawing toolbar to 3D Map with CesiumJS.</div>
+        {% endif %}
+        {%if page_type == 'czml' %}
+            <div id="example_description">This example displays multiple <a href="https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CZML-Guide">CZML data</a> on 3D Map with CesiumJS.</div>
+        {% endif %}
+        {%if page_type == 'model' %}
+            <div id="example_description">This example displays a GLB 3D model on 3D Map with CesiumJS. </div>
+        {% endif %}
+        {%if page_type == 'model2' %}
+            <div id="example_description">This example displays multiple GLB 3D models on 3D Map with CesiumJS</div>
+        {% endif %}
+
+        <div id="cesiumContainer">{% gizmo cesium_map_view %}</div>
+        {% if messages %}
+          <div class="flash-messages">
+            {% for message in messages %}
+              <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert">
+                  <span aria-hidden="true">&times;</span>
+                  <span class="sr-only">Close</span>
+                </button>
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <input type="submit" name="submit" style="margin-top: 20px;">
+    </form>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+  {% gizmo_dependencies css %}
+	{{ block.super }}
+  {% gizmo_dependencies js %}
+{% endblock %}
