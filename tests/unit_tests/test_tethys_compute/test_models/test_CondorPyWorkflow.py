@@ -1,5 +1,8 @@
 from tethys_sdk.testing import TethysTestCase
-from tethys_compute.models import CondorPyWorkflow, CondorWorkflow, Scheduler, CondorWorkflowJobNode
+from tethys_compute.models.condor.condor_scheduler import CondorScheduler
+from tethys_compute.models.condor.condor_py_workflow import CondorPyWorkflow
+from tethys_compute.models.condor.condor_workflow_job_node import CondorWorkflowJobNode
+from tethys_compute.models.condor.condor_workflow import CondorWorkflow
 from django.contrib.auth.models import User
 import mock
 import os
@@ -13,7 +16,7 @@ class CondorPyWorkflowTest(TethysTestCase):
 
         self.user = User.objects.create_user('tethys_super', 'user@example.com', 'pass')
 
-        self.scheduler = Scheduler(
+        self.scheduler = CondorScheduler(
             name='test_scheduler',
             host='localhost',
             username='tethys_super',
@@ -75,7 +78,7 @@ class CondorPyWorkflowTest(TethysTestCase):
         self.assertEqual(self.workspace_dir, ret._cwd)
         self.assertEqual('test_config', ret.config)
 
-    @mock.patch('tethys_compute.models.Workflow')
+    @mock.patch('tethys_compute.models.condor.condor_py_workflow.Workflow')
     def test_max_jobs(self, mock_wf):
         max_jobs = {'foo': 5}
         self.condorpyworkflow.name = 'test_name'
@@ -89,7 +92,7 @@ class CondorPyWorkflowTest(TethysTestCase):
         mock_wf.assert_called_with(config='test_config', max_jobs={'foo': 10},
                                    name='test_name', working_directory='test_dict')
 
-    @mock.patch('tethys_compute.models.CondorPyWorkflow.condorpy_workflow')
+    @mock.patch('tethys_compute.models.condor.condor_py_workflow.CondorPyWorkflow.condorpy_workflow')
     def test_config(self, mock_cw):
         test_config_value = 'test_config2'
 
@@ -156,10 +159,15 @@ class CondorPyWorkflowTest(TethysTestCase):
         # Check result
         self.assertEqual(20, ret.max_jobs['foo1'])
 
-    @mock.patch('tethys_compute.models.CondorWorkflowJobNode.update_database_fields')
+    @mock.patch('tethys_compute.models.condor.condor_workflow_job_node.CondorWorkflowJobNode.update_database_fields')
     def test_update_database_fields(self, mock_update):
         # Set attribute for node
         self.condorpyworkflow.update_database_fields()
 
         # Check if mock is called twice for node and child node
         self.assertTrue(mock_update.call_count == 2)
+
+    @mock.patch('tethys_compute.models.condor.condor_py_workflow.CondorPyWorkflow.condorpy_workflow')
+    def test_num_jobs(self, mock_condorpy_workflow_prop):
+        ret = self.condorpyworkflow.num_jobs
+        self.assertEqual(mock_condorpy_workflow_prop.num_jobs, ret)

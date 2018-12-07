@@ -7,10 +7,6 @@ class SchedulerTest(TethysTestCase):
         self.scheduler = Scheduler(
             name='test_scheduler',
             host='localhost',
-            username='tethys_super',
-            password='pass',
-            private_key_path='test_path',
-            private_key_pass='test_pass'
         )
         self.scheduler.save()
 
@@ -24,7 +20,3 @@ class SchedulerTest(TethysTestCase):
         self.assertIsInstance(ret, Scheduler)
         self.assertEqual('test_scheduler', ret.name)
         self.assertEqual('localhost', ret.host)
-        self.assertEqual('tethys_super', ret.username)
-        self.assertEqual('pass', ret.password)
-        self.assertEqual('test_path', ret.private_key_path)
-        self.assertEqual('test_pass', ret.private_key_pass)

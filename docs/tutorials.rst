@@ -11,3 +11,4 @@ Use the following tutorials to learn the basics about Tethys Platform.
 
    tutorials/getting_started
    tutorials/geoserver
+   tutorials/dask
