@@ -1,6 +1,5 @@
 import unittest
 import tethys_gizmos.gizmo_options.cesium_map_view as gizmo_map_view
-import mock
 
 
 class MockObject(object):
@@ -59,7 +58,7 @@ class TestCesiumMapView(unittest.TestCase):
 
         # Set cesium_version to blank to use the build version.
         gizmo_map_view.CesiumMapView.cesium_version = ''
-        result = gizmo_map_view.CesiumMapView(options=options, view=view,layers=layers, entities=entities,
+        result = gizmo_map_view.CesiumMapView(options=options, view=view, layers=layers, entities=entities,
                                               terrain=terrain, models=models, draw=True)
 
         # Check Result
@@ -74,7 +73,8 @@ class TestCesiumMapView(unittest.TestCase):
         self.assertTrue(result['draw'])
 
         # Check sources
-        self.assertIn('https://cesiumjs.org/Cesium/Build/Cesium/Cesium.js', gizmo_map_view.CesiumMapView.get_vendor_js()[0])
+        self.assertIn('https://cesiumjs.org/Cesium/Build/Cesium/Cesium.js',
+                      gizmo_map_view.CesiumMapView.get_vendor_js()[0])
         self.assertIn('https://cesiumjs.org/Cesium/Build/Cesium/Widgets/widgets.css',
                       gizmo_map_view.CesiumMapView.get_vendor_css()[0])
         self.assertIn('.js', gizmo_map_view.CesiumMapView.get_gizmo_js()[0])

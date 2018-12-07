@@ -42,7 +42,7 @@ def tethys_command():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(title='Commands', dest='require at least one argument')
     subparsers.required = True
-    
+
     # Setup scaffold command
     scaffold_parser = subparsers.add_parser('scaffold', help='Create a new Tethys app project from a scaffold.')
     scaffold_parser.add_argument('name', help='The name of the new Tethys app project to create. Only lowercase '

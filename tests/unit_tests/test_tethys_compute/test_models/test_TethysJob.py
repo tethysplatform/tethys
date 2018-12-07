@@ -76,7 +76,7 @@ class TethysJobTest(TethysTestCase):
 
         # Check result
         self.assertEqual('Pending', ret)
-    
+
     def test_status_setter_prop(self):
         ret = TethysJob.objects.get(name='test_tethysjob_execute_time').status
 
@@ -134,29 +134,6 @@ class TethysJobTest(TethysTestCase):
         # Check result
         self.assertIsNone(tethysjob.update_status('Test'))
         mock_log.error.assert_called_with('Invalid status given: Test')
-
-    # @mock.patch('tethys_compute.models.tethys_job.TethysJob.is_time_to_update')
-    # @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
-    # def test_update_status_with_empty_old_status(self, mock_co, mock_tup):
-    #     tethysjob = CondorBase(
-    #         name='test_tethysjob',
-    #         description='test_description',
-    #         user=self.user,
-    #         label='test_label',
-    #         scheduler=self.scheduler,
-    #         execute_time=dt.now(),
-    #     )
-    #     tethysjob._status = ''
-    #     mock_tup.return_value = True
-    #     mock_co.status = 'Running'
-    #     tethysjob.update_status()
-    # 
-    #     # Check result
-    #     self.assertIsNotNone(tethysjob.last_status_update)
-    #     self.assertIsInstance(tethysjob.last_status_update, datetime)
-    #     self.assertIsNotNone(tethysjob.start_time)
-    #     self.assertIsInstance(tethysjob.start_time, datetime)
-
 
     @mock.patch('tethys_compute.models.tethys_job.TethysJob.is_time_to_update')
     @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
