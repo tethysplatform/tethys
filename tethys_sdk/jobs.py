@@ -20,6 +20,9 @@ from tethys_compute.job_manager import (
     # CondorWorkflowDataJobTemplate,
     # CondorWorkflowFinalTemplate,
 )
+from tethys_compute.models import (
+    BasicJob, CondorJob, CondorWorkflow, CondorWorkflowJobNode, DaskJob
+)
 
-# Depricated imports
+# Deprecated imports
 from tethys_compute.job_manager import (JobTemplate, JOB_TYPES)

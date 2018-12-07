@@ -1,5 +1,6 @@
 from tethys_sdk.testing import TethysTestCase
-from tethys_compute.models import Scheduler, CondorBase
+from tethys_compute.models.condor.condor_scheduler import CondorScheduler
+from tethys_compute.models.condor.condor_base import CondorBase
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from django.utils import timezone
@@ -10,7 +11,7 @@ class CondorBaseTest(TethysTestCase):
     def set_up(self):
         self.user = User.objects.create_user('tethys_super', 'user@example.com', 'pass')
 
-        self.scheduler = Scheduler(
+        self.scheduler = CondorScheduler(
             name='test_scheduler',
             host='localhost',
             username='tethys_super',
@@ -48,7 +49,7 @@ class CondorBaseTest(TethysTestCase):
         self.condorbase.delete()
         self.condorbase_exe.delete()
 
-    @mock.patch('tethys_compute.models.CondorBase._condor_object')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._condor_object')
     def test_condor_object_pro(self, mock_co):
         ret = CondorBase.objects.get(name='test_condorbase')
         mock_co.return_value = ret
@@ -67,7 +68,7 @@ class CondorBaseTest(TethysTestCase):
         # Check result.
         self.assertIsNone(ret)
 
-    @mock.patch('tethys_compute.models.CondorBase.condor_object')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
     def test_statuses_prop(self, mock_co):
         mock_co.statuses = 'test_statuses'
 
@@ -93,7 +94,7 @@ class CondorBaseTest(TethysTestCase):
         # Check result, should not set statuses from condor_object again. Same ret as previous.
         self.assertEqual('test_statuses', ret)
 
-    @mock.patch('tethys_compute.models.CondorBase.condor_object')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
     def test_execute_abs(self, mock_co):
         mock_co.submit.return_value = 111
 
@@ -111,7 +112,7 @@ class CondorBaseTest(TethysTestCase):
         # Check result
         self.assertEqual('PEN', ret)
 
-    @mock.patch('tethys_compute.models.CondorBase.condor_object')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
     def test_update_status(self, mock_co):
         mock_co.status = 'Various'
         mock_co.statuses = {'Unexpanded': '', 'Idle': '', 'Running': ''}
@@ -122,7 +123,7 @@ class CondorBaseTest(TethysTestCase):
         # Check result
         self.assertEqual('VCP', ret)
 
-    @mock.patch('tethys_compute.models.CondorBase.condor_object')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
     def test_update_status_exception(self, mock_co):
         mock_co.status = 'Various'
         mock_co.statuses = {}
@@ -133,7 +134,7 @@ class CondorBaseTest(TethysTestCase):
         # Check result
         self.assertEqual('ERR', ret)
 
-    @mock.patch('tethys_compute.models.CondorBase.condor_object')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
     def test_process_results(self, mock_co):
         CondorBase.objects.get(name='test_condorbase_exe')._process_results()
 
@@ -141,7 +142,7 @@ class CondorBaseTest(TethysTestCase):
         mock_co.sync_remote_output.assert_called()
         mock_co.close_remote.assert_called()
 
-    @mock.patch('tethys_compute.models.CondorBase.condor_object')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
     def test_stop(self, mock_co):
         CondorBase.objects.get(name='test_condorbase_exe').stop()
 
@@ -160,7 +161,7 @@ class CondorBaseTest(TethysTestCase):
         # Check result
         self.assertIsNone(ret)
 
-    @mock.patch('tethys_compute.models.CondorBase._condor_object')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._condor_object')
     def test_update_database_fields(self, mock_co):
         mock_co._remote_id = 'test_update_remote_id'
         ret = CondorBase.objects.get(name='test_condorbase_exe')

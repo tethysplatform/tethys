@@ -4,7 +4,7 @@ from tethys_sdk.gizmos import Button
 
 
 @login_required()
-def home(request, var1, var2):
+def home(request):
     """
     Controller for the app home page.
     """

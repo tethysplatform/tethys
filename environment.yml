@@ -1,7 +1,7 @@
-# environment_py2.yml
+# environment.yml
 # Configuration file for creating a Conda Environment with dependencies needed for Tethys Platform.
 # Create the environment by running the following command (after installing Miniconda):
-#   $ conda env create -f environment_py3.yml
+#   $ conda env create -f environment.yml
 
 name: tethys
 
@@ -35,6 +35,8 @@ dependencies:
 - mock
 - factory_boy
 - tethys_dataset_services>=1.7.0
+- dask
+- tethys_dask_scheduler>=1.0.2
 - pip:
     - django-gravatar2
     - django-bootstrap3
