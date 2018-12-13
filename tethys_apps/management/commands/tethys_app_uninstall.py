@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-* Name: collectworkspaces.py
+* Name: tethys_app_uninstall.py
 * Author: Nathan Swain
 * Created On: August 6, 2015
 * Copyright: (c) Brigham Young University 2015
@@ -51,10 +51,16 @@ class Command(BaseCommand):
         TethysModel = TethysApp if not options['is_extension'] else TethysExtension
         db_app = None
         db_found = True
+
         try:
             db_app = TethysModel.objects.get(package=item_name)
         except TethysModel.DoesNotExist:
             db_found = False
+
+        if not module_found and not db_found:
+            warnings.warn('WARNING: {0} with name "{1}" cannot be uninstalled, because it is not installed or'
+                          ' not an {0}.'.format(app_or_extension, item_name))
+            exit(0)
 
         # Confirm
         item_with_prefix = '{0}-{1}'.format(PREFIX, item_name)
@@ -74,10 +80,7 @@ class Command(BaseCommand):
 
         # Remove app from database
         if db_found and db_app:
-            try:
-                db_app.delete()
-            except TethysModel.DoesNotExist:
-                warnings.warn('WARNING: The {} was not found in the database.'.format(app_or_extension.lower()))
+            db_app.delete()
 
         if module_found and not options['is_extension']:
             try:
