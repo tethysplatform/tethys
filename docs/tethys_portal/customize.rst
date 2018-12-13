@@ -57,11 +57,6 @@ Call to Action         Text that appears in the call to action banner at the bot
 Call to Action Button  Text that appears on the call to action button in the call to action banner (only visible when user is not logged in).
 ====================== =================================================================================
 
-.. figure:: ../images/tethys_portal/tethys_portal_home_page_settings.png
-    :width: 500px
-
-**Figure 3.** Home page settings for Tethys Portal.
-
 Bypass the Home Page
 ====================
 
