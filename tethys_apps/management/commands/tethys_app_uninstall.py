@@ -31,23 +31,34 @@ class Command(BaseCommand):
         """
         Remove the app from disk and in the database
         """
+        from tethys_apps.models import TethysApp, TethysExtension
         app_or_extension = "App" if not options['is_extension'] else 'Extension'
         PREFIX = 'tethysapp' if not options['is_extension'] else 'tethysext'
         item_name = options['app_or_extension'][0]
+
+        # Check for app files installed
         installed_items = get_installed_tethys_extensions() if options['is_extension'] else get_installed_tethys_apps()
 
         if PREFIX in item_name:
             prefix_length = len(PREFIX) + 1
             item_name = item_name[prefix_length:]
 
+        module_found = True
         if item_name not in installed_items:
-            warnings.warn('WARNING: {0} with name "{1}" cannot be uninstalled, because it is not installed or'
-                          ' not an {0}.'.format(app_or_extension, item_name))
-            exit(0)
+            module_found = False
 
-        item_with_prefix = '{0}-{1}'.format(PREFIX, item_name)
+        # Check for app/extension in database
+        TethysModel = TethysApp if not options['is_extension'] else TethysExtension
+        db_app = None
+        db_found = True
+        try:
+            db_app = TethysModel.objects.get(package=item_name)
+        except TethysModel.DoesNotExist:
+            db_found = False
 
         # Confirm
+        item_with_prefix = '{0}-{1}'.format(PREFIX, item_name)
+
         valid_inputs = ('y', 'n', 'yes', 'no')
         no_inputs = ('n', 'no')
 
@@ -62,15 +73,13 @@ class Command(BaseCommand):
             exit(0)
 
         # Remove app from database
-        from tethys_apps.models import TethysApp, TethysExtension
-        TethysModel = TethysApp if not options['is_extension'] else TethysExtension
-        try:
-            db_app = TethysModel.objects.get(package=item_name)
-            db_app.delete()
-        except TethysModel.DoesNotExist:
-            warnings.warn('WARNING: The {} was not found in the database.'.format(app_or_extension.lower()))
+        if db_found and db_app:
+            try:
+                db_app.delete()
+            except TethysModel.DoesNotExist:
+                warnings.warn('WARNING: The {} was not found in the database.'.format(app_or_extension.lower()))
 
-        if not options['is_extension']:
+        if module_found and not options['is_extension']:
             try:
                 # Remove directory
                 shutil.rmtree(installed_items[item_name])
