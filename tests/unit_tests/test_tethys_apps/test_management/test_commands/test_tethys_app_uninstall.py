@@ -27,23 +27,6 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
         self.assertIn('[-e]', parser.format_usage())
         self.assertIn('--extension', parser.format_help())
 
-    @mock.patch('warnings.warn')
-    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.exit')
-    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_extensions')
-    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_apps')
-    def test_tethys_app_uninstall_handle_apps_warning(self, mock_installed_apps, mock_installed_extensions, mock_exit,
-                                                      mock_warnings):
-        mock_installed_apps.return_value = ['']
-        mock_installed_extensions.return_value = ['']
-        mock_exit.side_effect = SystemExit
-
-        cmd = tethys_app_uninstall.Command()
-        self.assertRaises(SystemExit, cmd.handle, app_or_extension=['tethysapp.foo_app'], is_extension=False)
-
-        mock_installed_apps.assert_called_once()
-        mock_installed_extensions.assert_not_called()
-        mock_warnings.assert_called_once()
-
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.exit')
     @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.input')
@@ -110,42 +93,32 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
         mock_os_remove.assert_called_with('/foo/tethysapp-foo-app-nspkg.pth')
         mock_join.assert_called()
 
-    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.os.path.join')
-    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.os.remove')
-    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.subprocess.Popen')
     @mock.patch('warnings.warn')
+    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.exit')
     @mock.patch('sys.stdout', new_callable=StringIO)
-    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.input')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_extensions')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.get_installed_tethys_apps')
     @mock.patch('tethys_apps.models.TethysExtension')
     @mock.patch('tethys_apps.models.TethysApp')
-    def test_tethys_app_uninstall_handle_extension_DoesNotExist(self, mock_app, mock_extension, mock_installed_apps,
-                                                                mock_installed_extensions, mock_input, mock_stdout,
-                                                                mock_warnings, mock_popen, mock_os_remove, mock_join):
+    def test_tethys_app_uninstall_handle_module_and_db_not_found(self, mock_app, mock_extension, mock_installed_apps,
+                                                                 mock_installed_extensions, mock_stdout,
+                                                                 mock_exit, mock_warn):
+        # Raise DoesNotExist on db query
         mock_app.objects.get.return_value = mock.MagicMock()
         mock_app.DoesNotExist = TethysApp.DoesNotExist
         mock_extension.DoesNotExist = TethysExtension.DoesNotExist
         mock_app.objects.get.side_effect = TethysApp.DoesNotExist
         mock_extension.objects.get.return_value = mock.MagicMock()
         mock_extension.objects.get.side_effect = TethysExtension.DoesNotExist
+
+        # No installed apps or extensions returned
         mock_installed_apps.return_value = {}
-        mock_installed_extensions.return_value = {'foo_extension': '/foo/foo_extension'}
-        mock_input.side_effect = ['yes']
-        mock_popen.side_effect = KeyboardInterrupt
-        mock_os_remove.return_value = True
-        mock_join.return_value = '/foo/tethysext-foo-extension-nspkg.pth'
+        mock_installed_extensions.return_value = {}
+        mock_exit.side_effect = SystemExit
 
         cmd = tethys_app_uninstall.Command()
-        cmd.handle(app_or_extension=['tethysext.foo_extension'], is_extension=True)
+        self.assertRaises(SystemExit, cmd.handle, app_or_extension=['tethysext.foo_extension'], is_extension=True)
 
         mock_installed_apps.assert_not_called()
-        mock_installed_extensions.assert_called_once()
-        self.assertIn('successfully uninstalled', mock_stdout.getvalue())
-        mock_warnings.assert_called_once()
-        mock_app.objects.get.assert_not_called()
-        mock_extension.objects.get.assert_called()
-        mock_popen.assert_called_once_with(['pip', 'uninstall', '-y', 'tethysext-foo_extension'], stderr=-2, stdout=-1)
-        mock_os_remove.assert_any_call('/foo/tethysext-foo-extension-nspkg.pth')
-        mock_os_remove.assert_called_with('/foo/tethysext-foo-extension-nspkg.pth')
-        mock_join.assert_called()
+        mock_installed_extensions.assert_called()
+        mock_warn.assert_called_once()
