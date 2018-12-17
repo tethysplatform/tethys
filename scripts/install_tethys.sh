@@ -105,6 +105,7 @@ CLONE_REPO="true"
 CREATE_ENV="true"
 CREATE_SETTINGS="true"
 SETUP_DB="true"
+INITIALIZE_DB="true"
 CREATE_ENV_SCRIPTS="true"
 CREATE_SHORTCUTS="true"
 
@@ -331,6 +332,7 @@ then
     then
         # clone Tethys repo
         echo "Cloning the Tethys Platform repo..."
+        conda activate
         conda install --yes git
         git clone https://github.com/tethysplatform/tethys.git "${TETHYS_HOME}/src"
         cd "${TETHYS_HOME}/src"
@@ -424,7 +426,7 @@ then
     if [ -n "${CREATE_SHORTCUTS}" ]
     then
         echo "# Tethys Platform" >> ~/${BASH_PROFILE}
-        echo "alias t='. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME}'" >> ~/${BASH_PROFILE}
+        echo "alias t='source ${CONDA_HOME}/etc/profile.d/conda.sh; conda activate ${CONDA_ENV_NAME}'" >> ~/${BASH_PROFILE}
     fi
 fi
 
