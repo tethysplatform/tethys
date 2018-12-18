@@ -108,6 +108,7 @@ For more information about setting up email capabilities for Tethys Platform, re
 
 For an excellent guide on setting up Postfix on Ubuntu, refer to `How To Install and Setup Postfix on Ubuntu 14.04 <https://www.digitalocean.com/community/tutorials/how-to-install-and-setup-postfix-on-ubuntu-14-04>`_.
 
+.. _production_installation_ssl:
 
 4. Setup SSL (https) on the Tethys and Geoserver (Recommended)
 ==============================================================
