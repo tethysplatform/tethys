@@ -1,6 +1,6 @@
-*****************
-Tethys Extensions
-*****************
+*********************
+Tethys Extensions API
+*********************
 
 **Last Updated:** February 22, 2018
 
