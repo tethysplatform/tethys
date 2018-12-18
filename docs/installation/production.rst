@@ -13,6 +13,3 @@ The following instructions can be used to install Tethys Platform on a productio
     production/installation
     production/app_installation
     production/distributed
-    production/update
-
-
