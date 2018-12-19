@@ -340,7 +340,7 @@ For more detailed information about using HydroShare social authentication see t
 Social Auth Settings
 ====================
 
-Social authentication requires Tethys Platform 1.2.0 or later. If you are using an older version of Tethys Platform, you will need to upgrade by following either the :doc:`../installation/update` or the :doc:`../installation/production/update` instructions. The  ``settings.py`` script is unaffected by the upgrade. You will need to either generate a new  ``settings.py`` script using ``tethys gen settings`` or add the following settings to your existing ``settings.py`` script to support social login.
+Social authentication requires Tethys Platform 1.2.0 or later. If you are using an older version of Tethys Platform, you will need to upgrade by following either the :doc:`../installation/update` instructions. The  ``settings.py`` script is unaffected by the upgrade. You will need to either generate a new  ``settings.py`` script using ``tethys gen settings`` or add the following settings to your existing ``settings.py`` script to support social login.
 
 
 ::
