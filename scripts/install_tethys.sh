@@ -33,7 +33,7 @@ OPTIONS:\n
 \t        \t\t c - Checkout the branch specified by the option '--branch' (specifying the flag 'r' will also trigger this flag)\n
 \t        \t\t e - Create Conda environment\n
 \t        \t\t s - Create 'settings.py' file\n
-\t        \t\t d - Setup local database server\n
+\t        \t\t d - Create a local database server\n
 \t        \t\t i - Initialize database server with the Tethys database (specifying the flag 'd' will also trigger this flag)\n
 \t        \t\t u - Add a Tethys Portal Super User to the user database (specifying the flag 'd' will also trigger this flag)\n
 \t        \t\t a - Create activation/deactivation scripts for the Tethys Conda environment\n
