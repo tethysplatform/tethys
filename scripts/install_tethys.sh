@@ -30,10 +30,12 @@ OPTIONS:\n
 \t        \t FLAGS:\n
 \t        \t\t m - Install Miniconda\n
 \t        \t\t r - Clone Tethys repository\n
+\t        \t\t c - Checkout the branch specified by the option '--branch' (specifying the flag 'r' will also trigger this flag)\n
 \t        \t\t e - Create Conda environment\n
 \t        \t\t s - Create 'settings.py' file\n
 \t        \t\t d - Setup local database server\n
-\t        \t\t i - Initialize database server with Tethys database and superuser\n
+\t        \t\t i - Initialize database server with the Tethys database (specifying the flag 'd' will also trigger this flag)\n
+\t        \t\t u - Add a Tethys Portal Super User to the user database (specifying the flag 'd' will also trigger this flag)\n
 \t        \t\t a - Create activation/deactivation scripts for the Tethys Conda environment\n
 \t        \t\t t - Create the 't' alias t\n\n
 
@@ -102,10 +104,12 @@ DOCKER_OPTIONS='-d'
 
 INSTALL_MINICONDA="true"
 CLONE_REPO="true"
+CHECKOUT_BRANCH="true"
 CREATE_ENV="true"
 CREATE_SETTINGS="true"
 SETUP_DB="true"
 INITIALIZE_DB="true"
+CREATE_TETHYS_SUPER_USER="true"
 CREATE_ENV_SCRIPTS="true"
 CREATE_SHORTCUTS="true"
 
@@ -196,10 +200,12 @@ case $key in
         # Set all steps to false be default and then activate only those steps that have been specified.
         INSTALL_MINICONDA=
         CLONE_REPO=
+        CHECKOUT_BRANCH=
         CREATE_ENV=
         CREATE_SETTINGS=
         SETUP_DB=
         INITIALIZE_DB=
+        CREATE_TETHYS_SUPER_USER=
         CREATE_ENV_SCRIPTS=
         CREATE_SHORTCUTS=
 
@@ -208,6 +214,9 @@ case $key in
         fi
         if [[ "$2" = *"r"* ]]; then
             CLONE_REPO="true"
+        fi
+        if [[ "$2" = *"c"* ]]; then
+            CHECKOUT_BRANCH="true"
         fi
         if [[ "$2" = *"e"* ]]; then
             CREATE_ENV="true"
@@ -220,6 +229,9 @@ case $key in
         fi
         if [[ "$2" = *"i"* ]]; then
             INITIALIZE_DB="true"
+        fi
+        if [[ "$2" = *"u"* ]]; then
+            CREATE_TETHYS_SUPER_USER="true"
         fi
         if [[ "$2" = *"a"* ]]; then
             CREATE_ENV_SCRIPTS="true"
@@ -335,7 +347,12 @@ then
         conda activate
         conda install --yes git
         git clone https://github.com/tethysplatform/tethys.git "${TETHYS_HOME}/src"
+    fi
+
+    if [ -n "${CHECKOUT_BRANCH}" ] || [ -n "${CLONE_REPO}" ]
+    then
         cd "${TETHYS_HOME}/src"
+        conda activate
         git checkout ${BRANCH}
     fi
 
@@ -380,21 +397,27 @@ then
         createdb -U postgres -p ${TETHYS_DB_PORT} -O ${TETHYS_DB_SUPER_USERNAME} ${TETHYS_DB_SUPER_USERNAME} -E utf-8 -T template0
     fi
 
-    if [ -n "${INITIALIZE_DB}" ]
+    if [ -n "${INITIALIZE_DB}" ] || [ -n "${SETUP_DB}" ]
     then
         # Initialize Tethys database
         tethys manage syncdb
+    fi
+
+    if [ -n "${CREATE_TETHYS_SUPER_USER}" ] || [ -n "${SETUP_DB}" ]
+    then
         echo "from django.contrib.auth.models import User; User.objects.create_superuser('${TETHYS_SUPER_USER}', '${TETHYS_SUPER_USER_EMAIL}', '${TETHYS_SUPER_USER_PASS}')" | python "${TETHYS_HOME}/src/manage.py" shell
         pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" stop
     fi
 
-    echo "Deactivating the ${CONDA_ENV_NAME} environment..."
-    conda deactivate
+    if [ -n "${SETUP_DB}" ]
+    then
+        pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" stop
+    fi
 
     if [ -n "${CREATE_ENV_SCRIPTS}" ]
     then
-        # Create environment activate/deactivate scripts
-        mkdir -p "${ACTIVATE_DIR}" "${DEACTIVATE_DIR}"
+        # Create environment activatescripts
+        mkdir -p "${ACTIVATE_DIR}"
 
         echo "export TETHYS_HOME='${TETHYS_HOME}'" >> "${ACTIVATE_SCRIPT}"
         echo "export TETHYS_PORT='${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
@@ -408,6 +431,21 @@ then
         echo "alias tstopdb=tethys_stop_db" >> "${ACTIVATE_SCRIPT}"
         echo "alias tms='tethys manage start -p ${ALLOWED_HOST}:\${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
         echo "alias tstart='tstartdb; tms'" >> "${ACTIVATE_SCRIPT}"
+    fi
+
+    if [ -n "${CREATE_SHORTCUTS}" ]
+    then
+        echo "# Tethys Platform" >> ~/${BASH_PROFILE}
+        echo "alias t='source ${CONDA_HOME}/etc/profile.d/conda.sh; conda activate ${CONDA_ENV_NAME}'" >> ~/${BASH_PROFILE}
+    fi
+
+    echo "Deactivating the ${CONDA_ENV_NAME} environment..."
+    conda deactivate
+
+        if [ -n "${CREATE_ENV_SCRIPTS}" ]
+    then
+        # Create environment deactivate scripts
+        mkdir -p "${DEACTIVATE_DIR}"
 
         echo "unset TETHYS_HOME" >> "${DEACTIVATE_SCRIPT}"
         echo "unset TETHYS_PORT" >> "${DEACTIVATE_SCRIPT}"
@@ -422,20 +460,10 @@ then
         echo "unalias tms" >> "${DEACTIVATE_SCRIPT}"
         echo "unalias tstart" >> "${DEACTIVATE_SCRIPT}"
     fi
-
-    if [ -n "${CREATE_SHORTCUTS}" ]
-    then
-        echo "# Tethys Platform" >> ~/${BASH_PROFILE}
-        echo "alias t='source ${CONDA_HOME}/etc/profile.d/conda.sh; conda activate ${CONDA_ENV_NAME}'" >> ~/${BASH_PROFILE}
-    fi
 fi
 
 # Install Docker (if flag is set)
 set +e  # don't exit on error anymore
-
-# Rename some variables for reference after deactivating tethys environment.
-TETHYS_CONDA_HOME=${CONDA_HOME}
-TETHYS_CONDA_ENV_NAME=${CONDA_ENV_NAME}
 
 #  Install Production configuration if flag is set
 
