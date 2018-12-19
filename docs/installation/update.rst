@@ -54,7 +54,26 @@ This document provides a recommendation for how to upgrade Tethys Platform from 
     wget :install_tethys:`sh`
     bash install_tethys.sh -b |branch| --partial-tethys-install cieast -n tethys21
 
+5. (Optional) If you have a locally installed database server then you need to downgrade postgresql to the version that the database was created with. If it was created by the 2.0 Tethys install script then it was created with postgresql version 9.5. (Note: be sure to open a new terminal so that the newly created tethys environment is activated):
+
+::
+
+    t
+    conda install -c conda-forge postgresql=9.5
+
 
 .. tip::
 
     These instructions assume your previous installation was done using the install script with the default configuration. If you used any custom options when installing the environment initially, you will need to specify those same options. For an explanation of the installation script options, see: :ref:`install_script_options`.
+
+
+
+
+
+
+
+
+
+
+
+
