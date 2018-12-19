@@ -92,10 +92,12 @@ Install Script Options
                 Flags:
                     * `m` - Install Miniconda
                     * `r` - Clone Tethys repository
+                    * `c` - Checkout the branch specified by the option `--branch` (specifying the flag `r` will also trigger this flag)
                     * `e` - Create Conda environment
                     * `s` - Create `settings.py` file
-                    * `d` - Setup local database server
-                    * `i` - Initialize database server with Tethys database and superuser
+                    * `d` - Create a local database server
+                    * `i` - Initialize database server with the Tethys database (specifying the flag `d` will also trigger this flag)
+                    * `u` - Add a Tethys Portal Super User to the user database (specifying the flag `d` will also trigger this flag)
                     * `a` - Create activation/deactivation scripts for the Tethys Conda environment
                     * `t` - Create the `t` alias to activate the Tethys Conda environment
 
@@ -103,13 +105,12 @@ Install Script Options
 
                     * create a conda environment,
                     * setup a local database server,
-                    * initialize the database
                     * create the conda activation/deactivation scripts, and
                     * create the `t` shortcut,
 
                 then you can run the following command::
 
-                    bash install_tethys.sh --partial-tethys-install ediat
+                    bash install_tethys.sh --partial-tethys-install edat
 
                 .. warning::
 
