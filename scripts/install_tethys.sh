@@ -406,7 +406,6 @@ then
     if [ -n "${CREATE_TETHYS_SUPER_USER}" ] || [ -n "${SETUP_DB}" ]
     then
         echo "from django.contrib.auth.models import User; User.objects.create_superuser('${TETHYS_SUPER_USER}', '${TETHYS_SUPER_USER_EMAIL}', '${TETHYS_SUPER_USER_PASS}')" | python "${TETHYS_HOME}/src/manage.py" shell
-        pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" stop
     fi
 
     if [ -n "${SETUP_DB}" ]
