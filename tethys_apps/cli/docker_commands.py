@@ -1160,6 +1160,9 @@ def docker_ip():
                 p.write('\nPostGIS/Database:')
                 p.write('  Host: {0}'.format(docker_host))
                 p.write('  Port: {0}'.format(postgis_port))
+                p.write('  Endpoint: postgresql://<username>:<password>@{}:{}/<database>'.format(
+                    docker_host, postgis_port
+                ))
 
         else:
             with pretty_output(FG_WHITE) as p:
@@ -1173,12 +1176,18 @@ def docker_ip():
     try:
         if container_status[GEOSERVER_CONTAINER]:
             geoserver_container = containers[GEOSERVER_CONTAINER]
-            geoserver_port = geoserver_container['Ports'][0]['PublicPort']
+
+            node_ports = []
+            for port in geoserver_container['Ports']:
+                if port['PublicPort'] != 8181:
+                    node_ports.append(str(port['PublicPort']))
+
             with pretty_output(FG_WHITE) as p:
                 p.write('\nGeoServer:')
-                p.write('  Host: {0}'.format(docker_host))
-                p.write('  Port: {0}'.format(geoserver_port))
-                p.write('  Endpoint: http://{0}:{1}/geoserver/rest'.format(docker_host, geoserver_port))
+                p.write('  Host: {}'.format(docker_host))
+                p.write('  Primary Port: 8181')
+                p.write('  Node Ports: {}'.format(', '.join(node_ports)))
+                p.write('  Endpoint: http://{}:8181/geoserver/rest'.format(docker_host))
 
         else:
             with pretty_output(FG_WHITE) as p:
@@ -1195,9 +1204,9 @@ def docker_ip():
             n52wps_port = n52wps_container['Ports'][0]['PublicPort']
             with pretty_output(FG_WHITE) as p:
                 p.write('\n52 North WPS:')
-                p.write('  Host: {0}'.format(docker_host))
-                p.write('  Port: {0}'.format(n52wps_port))
-                p.write('  Endpoint: http://{0}:{1}/wps/WebProcessingService\n'.format(docker_host, n52wps_port))
+                p.write('  Host: {}'.format(docker_host))
+                p.write('  Port: {}'.format(n52wps_port))
+                p.write('  Endpoint: http://{}:{}/wps/WebProcessingService\n'.format(docker_host, n52wps_port))
 
         else:
             with pretty_output(FG_WHITE) as p:

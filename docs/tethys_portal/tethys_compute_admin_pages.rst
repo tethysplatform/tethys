@@ -12,6 +12,7 @@ The Tethys Compute settings in site admin allows an administrator to manage comp
 
 **Figure 1.** Dashboard for Tethys Compute admin pages.
 
+.. _jobs-label:
 
 Jobs
 ----
@@ -30,7 +31,7 @@ Schedulers are HTCondor nodes that have scheduling rights in the pool they belon
     :width: 700px
     :align: left
 
-**Figure 3.** Form for creating a new Scheduler.
+**Figure 2.** Form for creating a new Scheduler.
 
 .. _scheduler-name-label:
 
