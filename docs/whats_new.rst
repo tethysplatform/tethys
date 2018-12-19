@@ -70,9 +70,10 @@ Partial Install Options
 
 * The Tethys Platform installation scripts now allow for partial installation.
 * Install in existing Conda environment or against existing database.
+* Upgrade using the install script!
 * Linux and Mac only.
 
-See: :doc:`./installation/linux_and_mac`
+See: :doc:`./installation/linux_and_mac` and :doc:`./installation/update`
 
 Commandline Interface
 ---------------------
