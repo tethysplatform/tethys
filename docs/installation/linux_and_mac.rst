@@ -29,6 +29,9 @@ For Systems with `curl` (e.g. Mac OSX and CentOS):
       curl :install_tethys:`sh` -o ./install_tethys.sh
       bash install_tethys.sh -b |branch|
 
+
+.. _install_script_options:
+
 Install Script Options
 ......................
 
