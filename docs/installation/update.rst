@@ -2,42 +2,23 @@
 Upgrade to |version|
 ********************
 
-**Last Updated:** June 2017
+**Last Updated:** December 2018
 
-.. warning::
+This document provides a recommendation for how to upgrade Tethys Platform from the last release version. If you have not updated Tethys Platform to the last release version previously, please revisit the documentation for that version and follow those upgrade instructions first.
 
-    UNDER CONSTRUCTION: Pardon our dust, this documentation has not been updated yet. These instructions will NOT work. We apologize for the inconvenience.
 
-1. Get the Latest Version
-=========================
-
-When you installed Tethys Platform you did so using it's remote Git repository on GitHub. To get the latest version of Tethys Platform, you will need to pull the latest changes from this repository:
+1. Activate Tethys environment and start your Tethys Database:
 
 ::
 
-    $ cd /usr/lib/tethys/src
-    $ git pull origin master
+    . t
+    tstartdb
 
-2. Install Requirements and Run Setup Script
-============================================
-
-Install new dependencies and upgrade old ones:
+2. Backup your ``settings.py`` (Note: If you do not backup your ``settings.py`` you will be prompted to overwrite your settings file during upgrade):
 
 ::
 
-             $ . /usr/lib/tethys/bin/activate
-    (tethys) $ pip install --upgrade -r /usr/lib/tethys/src/requirements.txt
-    (tethys) $ python /usr/lib/tethys/src/setup.py develop
-
-3. Generate New Settings Script
-===============================
-
-Backup your old settings script (``settings.py``) and generate a new settings file to get the latest version of the settings. Then copy any settings (like database usernames and passwords) from the backed up settings script to the new settings script.
-
-::
-
-    (tethys) $ mv /usr/lib/tethys/src/tethys_apps/settings.py /usr/lib/tethys/src/tethys_apps/settings.py_bak
-    (tethys) $ tethys gen settings -d /usr/lib/tethys/src/tethys_apps
+    mv $TETHYS_HOME/src/tethys_portal/settings.py $TETHYS_HOME/src/tethys_portal/settings_20.py
 
 .. caution::
 
@@ -51,24 +32,48 @@ Backup your old settings script (``settings.py``) and generate a new settings fi
     * SOCIAL_OAUTH_XXXX_KEY, SOCIAL_OAUTH_XXXX_SECRET
     * BYPASS_TETHYS_HOME_PAGE
 
-    After you have copied these settings, you can delete or archive the backup settings script.
-
-4. Sync the Database
-====================
-
-Start the database docker if not already started and apply any changes to the database that may have been issued with the new release:
+3. (Optional) If you want the new environment to be called ``tethys`` remove the old environment:
 
 ::
 
-    (tethys) $ tethys docker start -c postgis
-    (tethys) $ tethys manage syncdb
+    conda activate base
+    conda env remove -n tethys
 
-.. note::
+.. tip::
 
-    For migration errors use:
+    If these commands don't work, you may need to update your conda installation:
 
     ::
 
-        $ cd ~/usr/lib/tethys/src
-        $ python manage.py makemigrations --merge
-        $ tethys manage syncdb
+        conda update conda -n root -c defaults
+
+4. Download and execute the new install tethys script with the following options (Note: if you removed your previous tethys environment, then you can omit the ``-n tethys21`` option to have the new environment called ``tethys``):
+
+.. parsed-literal::
+
+    wget :install_tethys:`sh`
+    bash install_tethys.sh -b |branch| --partial-tethys-install cieast -n tethys21
+
+5. (Optional) If you have a locally installed database server then you need to downgrade postgresql to the version that the database was created with. If it was created by the 2.0 Tethys install script then it was created with postgresql version 9.5. (Note: be sure to open a new terminal so that the newly created tethys environment is activated):
+
+::
+
+    t
+    conda install -c conda-forge postgresql=9.5
+
+
+.. tip::
+
+    These instructions assume your previous installation was done using the install script with the default configuration. If you used any custom options when installing the environment initially, you will need to specify those same options. For an explanation of the installation script options, see: :ref:`install_script_options`.
+
+
+
+
+
+
+
+
+
+
+
+
