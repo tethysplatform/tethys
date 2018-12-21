@@ -29,7 +29,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # parse the installed apps list from the settings template
 with open('../tethys_apps/cli/gen_templates/settings', 'r') as settings_file:
     settings_str = settings_file.read()
-    match = re.search('INSTALLED_APPS = \(\n(.*?)\)', settings_str, re.DOTALL)
+    match = re.search(r'INSTALLED_APPS = \(\n(.*?)\)', settings_str, re.DOTALL)
     installed_apps = [app.strip('\'|,') for app in match.group(1).split()]
 
 settings.configure(INSTALLED_APPS=installed_apps)
