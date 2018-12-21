@@ -43,6 +43,8 @@ Install Script Options
 
         * `-t, --tethys-home <PATH>`:
                 Path for tethys home directory. Default is ~/tethys.
+        * `-s, --tethys-src <PATH>`:
+                Path to the tethys source directory. Default is ${TETHYS_HOME}/src.
         * `-a, --allowed-host <HOST>`:
                 Hostname or IP address on which to serve Tethys. Default is 127.0.0.1.
         * `-p, --port <PORT>`:
@@ -94,7 +96,7 @@ Install Script Options
 
                 Flags:
                     * `m` - Install Miniconda
-                    * `r` - Clone Tethys repository
+                    * `r` - Clone Tethys repository (the `--tethys-src` option is required if you omit this flag).
                     * `c` - Checkout the branch specified by the option `--branch` (specifying the flag `r` will also trigger this flag)
                     * `e` - Create Conda environment
                     * `s` - Create `settings.py` file
