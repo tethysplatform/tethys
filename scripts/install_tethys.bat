@@ -6,6 +6,7 @@ IF %ERRORLEVEL% NEQ 0 (SET ERRORLEVEL=0)
 :: Set defaults
 SET ALLOWED_HOST=127.0.0.1
 SET TETHYS_HOME=C:%HOMEPATH%\tethys
+SET TETHYS_SRC=%TETHYS_HOME%\src
 SET TETHYS_PORT=8000
 SET TETHYS_DB_USERNAME=tethys_default
 SET TETHYS_DB_PASSWORD=pass
@@ -31,6 +32,16 @@ IF NOT "%1"=="" (
     )
     IF "%1"=="--tethys-home" (
         SET TETHYS_HOME=%2
+        SHIFT
+        SET OPTION_RECOGNIZED=TRUE
+    )
+    IF "%1"=="-s" (
+        SET TETHYS_SRC=%2
+        SHIFT
+        SET OPTION_RECOGNIZED=TRUE
+    )
+    IF "%1"=="--tethys-src" (
+        SET TETHYS_SRC=%2
         SHIFT
         SET OPTION_RECOGNIZED=TRUE
     )
@@ -242,8 +253,8 @@ IF %ERRORLEVEL% NEQ 0 (
 :: clone Tethys repo
 ECHO Cloning the Tethys Platform repo...
 conda install --yes git
-git clone https://github.com/tethysplatform/tethys "!TETHYS_HOME!\src"
-CD "!TETHYS_HOME!\src"
+git clone https://github.com/tethysplatform/tethys "!TETHYS_SRC!"
+CD "!TETHYS_SRC!"
 git checkout !BRANCH!
 
 IF %ERRORLEVEL% NEQ 0 (
@@ -343,7 +354,8 @@ EXIT /B %ERRORLEVEL%
 ECHO USAGE: install_tethys.bat [options]
 ECHO.
 ECHO OPTIONS:
-ECHO     -t, --tethys-home [PATH]            Path for tethys home directory. Default is 'C:\%HOMEPATH%\tehtys'.
+ECHO     -t, --tethys-home [PATH]            Path for tethys home directory. Default is 'C:\%HOMEPATH%\tethys'.
+ECHO     -s, --tethys-src [PATH]             Path for tethys source directory. Default is %%TETHYS_HOME%%\src.
 ECHO     -a, --allowed-host [HOST]           Hostname or IP address on which to serve tethys. Default is 127.0.0.1.
 ECHO     -p, --port [PORT]                   Port on which to serve tethys. Default is 8000.
 ECHO     -b, --branch [BRANCH_NAME]          Branch to checkout from version control. Default is 'release'.
