@@ -13,10 +13,9 @@ import subprocess
 
 from tethys_apps.cli.cli_colors import pretty_output, FG_RED
 from tethys_apps.base.testing.environment import set_testing_environment
+from tethys_apps.utilities import get_tethys_src_dir
 
-CURRENT_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-TETHYS_HOME = os.sep.join(CURRENT_SCRIPT_DIR.split(os.sep)[:-3])
-TETHYS_SRC_DIRECTORY = os.sep.join(CURRENT_SCRIPT_DIR.split(os.sep)[:-2])
+
 MANAGE_START = 'start'
 MANAGE_SYNCDB = 'syncdb'
 MANAGE_COLLECTSTATIC = 'collectstatic'
@@ -31,7 +30,7 @@ def get_manage_path(args):
     Validate user defined manage path, use default, or throw error
     """
     # Determine path to manage.py file
-    manage_path = os.path.join(TETHYS_SRC_DIRECTORY, 'manage.py')
+    manage_path = os.path.join(get_tethys_src_dir(), 'manage.py')
 
     # Check for path option
     if hasattr(args, 'manage'):

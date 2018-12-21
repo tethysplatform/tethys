@@ -35,6 +35,8 @@ As long as the :file:`install_tethys.bat` and the :file:`Miniconda3-latest-Windo
 
         * `-t, --tethys-home <PATH>`:
                 Path for tethys home directory. Default is C:\%HOMEPATH%\tethys.
+        * `-s, --tethys-src <PATH>`:
+                Path for tethys source directory. Default is %TETHYS_HOME%\src.
         * `-a, --allowed-host <HOST>`:
                 Hostname or IP address on which to serve Tethys. Default is 127.0.0.1.
         * `-p, --port <PORT>`:
