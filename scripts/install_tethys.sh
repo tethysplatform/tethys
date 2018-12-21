@@ -9,6 +9,7 @@ USAGE="USAGE: . install_tethys.sh [options]\n
 \n
 OPTIONS:\n
 \t    -t, --tethys-home <PATH>            \t\t Path for tethys home directory. Default is ~/tethys.\n
+\t    -s, --tethys-src <PATH>             \t\t Path for tethys source directory. Default is ~/tethys/src.\n
 \t    -a, --allowed-host <HOST>           \t\t Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
 \t    -p, --port <PORT>                   \t\t\t Port on which to serve tethys. Default is 8000.\n
 \t    -b, --branch <BRANCH_NAME>          \t\t Branch to checkout from version control. Default is 'release'.\n
@@ -131,6 +132,10 @@ key="$1"
 case $key in
     -t|--tethys-home)
     set_option_value TETHYS_HOME "$2"
+    shift # past argument
+    ;;
+    -s|--tethys-src)
+    set_option_value TETHYS_SRC "$2"
     shift # past argument
     ;;
     -a|--allowed-host)
@@ -294,6 +299,14 @@ else
     resolve_relative_path CONDA_HOME ${CONDA_HOME}
 fi
 
+# set TETHYS_SRC relative to TETHYS_HOME if not already set
+if [ -z "${TETHYS_SRC}" ]
+then
+    TETHYS_SRC="${TETHYS_HOME}/src"
+else
+    resolve_relative_path TETHYS_SRC ${TETHYS_SRC}
+fi
+
 # set TETHYS_DB_DIR relative to TETHYS_HOME if not already set
 if [ -z "${TETHYS_DB_DIR}" ]
 then
@@ -346,12 +359,12 @@ then
         echo "Cloning the Tethys Platform repo..."
         conda activate
         conda install --yes git
-        git clone https://github.com/tethysplatform/tethys.git "${TETHYS_HOME}/src"
+        git clone https://github.com/tethysplatform/tethys.git "${TETHYS_SRC}"
     fi
 
     if [ -n "${CHECKOUT_BRANCH}" ] || [ -n "${CLONE_REPO}" ]
     then
-        cd "${TETHYS_HOME}/src"
+        cd "${TETHYS_SRC}"
         conda activate
         git checkout ${BRANCH}
     fi
@@ -364,9 +377,9 @@ then
         then
             echo "${YELLOW}WARNING: Support for Python 2 is deprecated and will be removed in Tethys version 3.${RESET_COLOR}"
         fi
-        conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_HOME}/src/environment_py${PYTHON_VERSION}.yml"
+        conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/environment_py${PYTHON_VERSION}.yml"
         conda activate ${CONDA_ENV_NAME}
-        python "${TETHYS_HOME}/src/setup.py" develop
+        python "${TETHYS_SRC}/setup.py" develop
     else
         echo "Activating the ${CONDA_ENV_NAME} environment..."
         conda activate ${CONDA_ENV_NAME}
@@ -405,7 +418,7 @@ then
 
     if [ -n "${CREATE_TETHYS_SUPER_USER}" ] || [ -n "${SETUP_DB}" ]
     then
-        echo "from django.contrib.auth.models import User; User.objects.create_superuser('${TETHYS_SUPER_USER}', '${TETHYS_SUPER_USER_EMAIL}', '${TETHYS_SUPER_USER_PASS}')" | python "${TETHYS_HOME}/src/manage.py" shell
+        echo "from django.contrib.auth.models import User; User.objects.create_superuser('${TETHYS_SUPER_USER}', '${TETHYS_SUPER_USER_EMAIL}', '${TETHYS_SUPER_USER_PASS}')" | python "${TETHYS_SRC}/manage.py" shell
     fi
 
     if [ -n "${SETUP_DB}" ]
@@ -500,17 +513,17 @@ centos_production_install() {
 
 configure_selinux() {
     sudo yum install setroubleshoot -y
-    sudo semanage fcontext -a -t httpd_config_t ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf
-    sudo restorecon -v ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf
+    sudo semanage fcontext -a -t httpd_config_t ${TETHYS_SRC}/tethys_portal/tethys_nginx.conf
+    sudo restorecon -v ${TETHYS_SRC}/tethys_portal/tethys_nginx.conf
     sudo semanage fcontext -a -t httpd_sys_content_t "${TETHYS_HOME}(/.*)?"
     sudo semanage fcontext -a -t httpd_sys_content_t "${TETHYS_HOME}/static(/.*)?"
     sudo semanage fcontext -a -t httpd_sys_rw_content_t "${TETHYS_HOME}/workspaces(/.*)?"
     sudo restorecon -R -v ${TETHYS_HOME} > /dev/null
-    echo $'module tethys-selinux-policy 1.0;\nrequire {type httpd_t; type init_t; class unix_stream_socket connectto; }\n#============= httpd_t ==============\nallow httpd_t init_t:unix_stream_socket connectto;' > ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.te
+    echo $'module tethys-selinux-policy 1.0;\nrequire {type httpd_t; type init_t; class unix_stream_socket connectto; }\n#============= httpd_t ==============\nallow httpd_t init_t:unix_stream_socket connectto;' > ${TETHYS_SRC}/tethys_portal/tethys-selinux-policy.te
 
-    checkmodule -M -m -o ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.mod ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.te
-    semodule_package -o ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.pp -m ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.mod
-    sudo semodule -i ${TETHYS_HOME}/src/tethys_portal/tethys-selinux-policy.pp
+    checkmodule -M -m -o ${TETHYS_SRC}/tethys_portal/tethys-selinux-policy.mod ${TETHYS_SRC}/tethys_portal/tethys-selinux-policy.te
+    semodule_package -o ${TETHYS_SRC}/tethys_portal/tethys-selinux-policy.pp -m ${TETHYS_SRC}/tethys_portal/tethys-selinux-policy.mod
+    sudo semodule -i ${TETHYS_SRC}/tethys_portal/tethys-selinux-policy.pp
 }
 
 if [ -n "${LINUX_DISTRIBUTION}" -a "${PRODUCTION}" = "true" ]
@@ -558,15 +571,15 @@ then
     sudo chmod 705 ~
     sudo mkdir /var/log/uwsgi
     sudo touch /var/log/uwsgi/tethys.log
-    sudo ln -s ${TETHYS_HOME}/src/tethys_portal/tethys_nginx.conf /etc/nginx/${NGINX_SITES_DIR}/
+    sudo ln -s ${TETHYS_SRC}/tethys_portal/tethys_nginx.conf /etc/nginx/${NGINX_SITES_DIR}/
 
     if [ -n "${SELINUX}" ]
     then
         configure_selinux
     fi
 
-    sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_HOME}/src /var/log/uwsgi/tethys.log
-    sudo systemctl enable ${TETHYS_HOME}/src/tethys_portal/tethys.uwsgi.service
+    sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_SRC} /var/log/uwsgi/tethys.log
+    sudo systemctl enable ${TETHYS_SRC}/tethys_portal/tethys.uwsgi.service
     sudo systemctl start tethys.uwsgi.service
     sudo systemctl restart nginx
     set +x
@@ -574,9 +587,9 @@ then
 
     echo "export NGINX_USER='${NGINX_USER}'" >> "${ACTIVATE_SCRIPT}"
     echo "export NGINX_HOME='${NGINX_HOME}'" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tethys_user_own='sudo chown -R \${USER} \"\${TETHYS_HOME}/src\" \"\${TETHYS_HOME}/static\" \"\${TETHYS_HOME}/workspaces\" \"\${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_user_own='sudo chown -R \${USER} \"\${TETHYS_SRC}\" \"\${TETHYS_HOME}/static\" \"\${TETHYS_HOME}/workspaces\" \"\${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
     echo "alias tuo=tethys_user_own" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tethys_server_own='sudo chown -R \${NGINX_USER}:\${NGINX_USER} \"\${TETHYS_HOME}/src\" \"\${TETHYS_HOME}/static\" \"\${TETHYS_HOME}/workspaces\" \"\${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_server_own='sudo chown -R \${NGINX_USER}:\${NGINX_USER} \"\${TETHYS_SRC}\" \"\${TETHYS_HOME}/static\" \"\${TETHYS_HOME}/workspaces\" \"\${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
     echo "alias tso=tethys_server_own" >> "${ACTIVATE_SCRIPT}"
     echo "alias tethys_server_restart='tso; sudo systemctl restart tethys.uwsgi.service; sudo systemctl restart nginx'" >> "${ACTIVATE_SCRIPT}"
     echo "alias tsr=tethys_server_restart" >> "${ACTIVATE_SCRIPT}"

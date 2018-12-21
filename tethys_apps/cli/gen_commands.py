@@ -12,7 +12,7 @@ from builtins import input
 import os
 import string
 import random
-from .manage_commands import TETHYS_HOME
+from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir
 from platform import linux_distribution
 
 from django.template import Template, Context
@@ -79,6 +79,10 @@ def generate_command(args):
     """
     Generate a settings file for a new installation.
     """
+    # Consts
+    TETHYS_HOME = get_tethys_home_dir()
+    TETHYS_SRC = get_tethys_src_dir()
+
     # Setup variables
     context = Context()
 
@@ -156,7 +160,7 @@ def generate_command(args):
         context.update({'nginx_user': nginx_user,
                         'conda_home': conda_home,
                         'conda_env_name': conda_env_name,
-                        'tethys_home': TETHYS_HOME,
+                        'tethys_src': TETHYS_SRC,
                         'user_option_prefix': user_option_prefix
                         })
 
