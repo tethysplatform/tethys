@@ -38,7 +38,7 @@ class JobManager(object):
     A manager for interacting with the Jobs database providing a simple interface creating and retrieving jobs.
 
     Note:
-        Each app creates its own instance of the JobManager. the ``get_job_manager`` method returns the app.
+        Each app creates its own instance of the JobManager. The ``get_job_manager`` method returns the app.
 
         ::
 
@@ -70,9 +70,9 @@ class JobManager(object):
             A new job object of the type specified by job_type.
         """
         if template_name is not None:
-            msg = 'The job template "{0}" was used in the "{1}" app. Using job templates is now deprecated. ' \
-                  'See docs: <<link>>.'\
-                .format(template_name, self.app.package)
+            msg = 'The job template "{0}" was used in the "{1}" app. Using job templates is now deprecated.'.format(
+                template_name, self.app.package
+            )
             warnings.warn(msg, DeprecationWarning)
             print(msg)
             return self.old_create_job(name, user, template_name, **kwargs)
@@ -210,6 +210,7 @@ class JobManager(object):
 
 class JobTemplate(object):
     """
+    **DEPRECATED**
     A template from which to create a job.
 
     Args:
@@ -239,6 +240,7 @@ class JobTemplate(object):
 
 class BasicJobTemplate(JobTemplate):
     """
+    **DEPRECATED**
     A subclass of JobTemplate with the ``type`` argument set to BasicJob.
 
     Args:
@@ -254,6 +256,7 @@ class BasicJobTemplate(JobTemplate):
 
 class CondorJobDescription(object):
     """
+    **DEPRECATED**
     Helper class for CondorJobTemplate and CondorWorkflowJobTemplates. Stores job attributes.
     """
     def __init__(self, condorpy_template_name=None, remote_input_files=None, **kwargs):
@@ -267,6 +270,7 @@ class CondorJobDescription(object):
 
 class CondorJobTemplate(JobTemplate):
     """
+    **DEPRECATED**
     A subclass of the JobTemplate with the ``type`` argument set to CondorJob.
 
     Args:
@@ -289,6 +293,7 @@ class CondorJobTemplate(JobTemplate):
 
 class CondorWorkflowTemplate(JobTemplate):
     """
+    **DEPRECATED**
     A subclass of the JobTemplate with the ``type`` argument set to CondorWorkflow.
 
     Args:
@@ -343,6 +348,7 @@ NODE_TYPES = {'JOB': CondorWorkflowJobNode,
 
 class CondorWorkflowNodeBaseTemplate(object):
     """
+    **DEPRECATED**
     A template from which to create a job.
 
     Args:
@@ -380,6 +386,7 @@ class CondorWorkflowNodeBaseTemplate(object):
 
 class CondorWorkflowJobTemplate(CondorWorkflowNodeBaseTemplate):
     """
+    **DEPRECATED**
     A subclass of the CondorWorkflowNodeBaseTemplate with the ``type`` argument set to CondorWorkflowJobNode.
 
     Args:
@@ -395,15 +402,3 @@ class CondorWorkflowJobTemplate(CondorWorkflowNodeBaseTemplate):
 
     def process_parameters(self):
         pass
-
-
-class CondorWorkflowSubworkflowTemplate(CondorWorkflowNodeBaseTemplate):
-    pass
-
-
-class CondorWorkflowDataJobTemplate(CondorWorkflowNodeBaseTemplate):
-    pass
-
-
-class CondorWorkflowFinalTemplate(CondorWorkflowNodeBaseTemplate):
-    pass
