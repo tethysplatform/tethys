@@ -70,8 +70,9 @@ class TestJobManager(unittest.TestCase):
         mock_ocj.assert_called_with('test_name', 'test_user', 'template_1')
 
         # Check if warning message is called
-        check_msg = 'The job template "{0}" was used in the "{1}" app. Using job templates is now deprecated. ' \
-                    'See docs: <<link>>.'.format('template_1', 'test_label')
+        check_msg = 'The job template "{0}" was used in the "{1}" app. Using job templates is now deprecated.'.format(
+            'template_1', 'test_label'
+        )
         rts_call_args = mock_warn.warn.call_args_list
         self.assertEqual(check_msg, rts_call_args[0][0][0])
         mock_print.assert_called_with(check_msg)
