@@ -2,75 +2,102 @@
 Jobs API
 ********
 
-**Last Updated:** September 12, 2016
+**Last Updated:** December 27, 2018
 
 The Jobs API provides a way for your app to run asynchronous tasks (meaning that after starting a task you don't have to wait for it to finish before moving on). As an example, you may need to run a model that takes a long time (potentially hours or days) to complete. Using the Jobs API you can create a job that will run the model, and then leave it to run while your app moves on and does other stuff. You can check the job's status at any time, and when the job is done the Jobs API will help retrieve the results.
 
 
 Key Concepts
 ============
-To facilitate interacting with jobs asynchronously, they are stored in a database. The Jobs API provides a job manager to handle the details of working with the database, and provides a simple interface for creating and retrieving jobs. The first step to creating a job is to define a job template. A job template is like a blue print that describes certain key characteristics about the job, such as the job type and where the job will be run. The job manager uses a job template to create a new job that has all of the attributes that were defined in the template. Once a job has been created from a template it can then be customized with any additional attributes that are needed for that specific job.
+To facilitate interacting with jobs asynchronously, the details of the jobs are stored in a database. The Jobs API provides a job manager to handle the details of working with the database, and provides a simple interface for creating and retrieving jobs. The Jobs API supports various types of jobs (see `Job Types`_).
 
+.. deprecated::2.1
+    Creating jobs used to be done via job templates. This method is now deprecated.
 
-The Jobs API supports various types of jobs (see `Job Types`_).
+.. _job-manager-label:
 
-.. note::
-    The real power of the jobs API comes when it is combined with the :doc:`compute`. This make it possible for jobs to be offloaded from the main web server to a scalable computing cluster, which in turn enables very large scale jobs to be processed. This is done through the :doc:`jobs/condor_job_type` or the :doc:`jobs/condor_workflow_type`.
+Job Manager
+===========
+The Job Manager is used in your app to interact with the jobs database. It facilitates creating and querying jobs.
 
-.. seealso::
-    The Condor Job and the Condor Workflow job types use the CondorPy library to submit jobs to HTCondor compute pools. For more information on CondorPy and HTCondor see the `CondorPy documentation <http://condorpy.readthedocs.org/en/latest/>`_ and specifically the `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_.
-
-Defining Job Templates
-======================
-To create jobs in an app you first need to define job templates. A job template specifies the type of job, and also defines all of the static attributes of the job that will be the same for all instances of that template. These attributes often include the names of the executable, input files, and output files. Job templates are defined in a method on the ``TethysAppBase`` subclass in ``app.py`` module. The following code sample shows how this is done:
+Using the Job Manager in your App
+---------------------------------
+To use the Job Manager in your app you first need to import the TethysAppBase subclass from the app.py module:
 
 ::
 
-  from tethys_sdk.jobs import CondorJobTemplate, CondorJobDescription
-  from tethys_sdk.compute import list_schedulers
+    from app import MyFirstApp as app
 
-  def job_templates(cls):
-      """
-      Example job_templates method.
-      """
-      my_scheduler = list_schedulers()[0]
+You can then get the job manager by calling the method ``get_job_manager`` on the app.
 
-      my_job_description = CondorJobDescription(condorpy_template_name='vanilla_transfer_files',
-                                                remote_input_files=('$(APP_WORKSPACE)/my_script.py', '$(APP_WORKSPACE)/input_1', '$(USER_WORKSPACE)/input_2'),
-                                                executable='my_script.py',
-                                                transfer_input_files=('../input_1', '../input_2'),
-                                                transfer_output_files=('example_output1', 'example_output2'),
-                                                )
+::
 
-      job_templates = (CondorJobTemplate(name='example',
-                                         job_description=my_job_description,
-                                         scheduler=my_scheduler,
-                                        ),
-                      )
+    job_manager = app.get_job_manager()
 
-      return job_templates
+You can now use the job manager to create a new job, or retrieve an existing job or jobs.
 
-.. note::
-    To define job templates the appropriate template class and any supporting classes must be imported from ``tethys_sdk.jobs``. In this case the template class `CondorJobTemplate` is imported along with the supporting class `CondorJobDescription`.
+Creating and Executing a Job
+----------------------------
+To create a new job call the ``create_job`` method on the job manager. The required arguments are:
 
-There is a corresponding job template class for every job type. In this example the `CondorJobTemplate` class is used, which corresponds to the :doc:`jobs/condor_job_type`. For a list of all possible job types see `Job Types`_.
+    * ``name``: A unique string identifying the job
+    * ``user``: A user object, usually from the request argument: `request.user`
+    * ``job_type``: A string specifying on of the supported job types (see `Job Types`_)
 
-When instantiating any job template class there is a required ``name`` parameter, which is used used to identify the template to the job manager (see `Using the Job Manager in your App`_). The template class for each job type may have additional required and/or optional parameters. In the above example the `job_description` and the `scheduler` parameters are required because the the `CondorJobTemplate` class is being instantiated. Job template classes may also support setting job attributes as parameters in the template. See the `Job Types`_ documentation for a list of acceptable parameters for the template class of each job type.
+Any other job attributes can also be passed in as `kwargs`.
 
-.. warning::
-    The generic template class ``JobTemplate`` allong with the dictionary ``JOB_TYPES`` have been used to define job templates in the past but are being deprecated in favor of job-type specific templates classes (e.g. `CondorJobTemplate` or `CondorWorkflowTemplate`).
+::
+
+    # get the path to the app workspace to reference job files
+    app_workspace = app.get_app_workspace().path
+
+    # create a new job from the job manager
+    job = job_manager.create_job(
+        name='myjob_{id}',  # required
+        user=request.user,  # required
+        job_type='CONDOR',  # required
+
+        # any other properties can be passed in as kwargs
+        attributes=dict(attribute1='attr1'),
+        condorpy_template_name='vanilla_transfer_files',
+        remote_input_files=(
+            os.path.join(app_workspace, 'my_script.py'),
+            os.path.join(app_workspace, 'input_1'),
+            os.path.join(app_workspace, 'input_2')
+        )
+    )
+
+    # properties can also be added after the job is created
+    job.extended_properties = {'one': 1, 'two': 2}
+
+    # each job type may provided methods to further specify the job
+    job.set_attribute('executable', 'my_script.py')
+
+    # save or execute the job
+    job.save()
+    # or
+    job.execute()
+
+Before a controller returns a response the job must be saved or else all of the changes made to the job will be lost (executing the job automatically saves it). If submitting the job takes a long time (e.g. if a large amount of data has to be uploaded to a remote scheduler) then it may be best to use AJAX to execute the job.
+
+.. tip::
+   The `Jobs Table Gizmo`_ has a built-in mechanism for submitting jobs with AJAX. If the `Jobs Table Gizmo`_ is used to submit the jobs then be sure to save the job after it is created.
 
 Job Types
 ---------
-The Jobs API is designed to support multiple job types. Each job type provides a different framework and environment for executing jobs. To create a job of a particular job type, you must first create a job template from the template class corresponding to that job type (see `Defining Job Templates`_). After the job template for the job type you want has been instantiated you can create a new job instance using the job manager (see `Using the Job Manager in your App`_).
+The Jobs API is designed to support multiple job types. Each job type provides a different framework and environment for executing jobs. When creating a new job you must specify its type by passing in the `job_type` argument. Currently the supported job types are:
 
-Once you have a newly created job from the job manager you can then customize the job by setting job attributes. All jobs have a common set of attributes, and then each job type may add additional attributes.
+    * 'BASIC'
+    * 'CONDOR' or 'CONDORJOB'
+    * 'CONDORWORKFLOW'
+
+Additional job attributes can be passed into the `create_job` method of the job manager or they can be specified after the job is instantiated. All jobs have a common set of attributes, and then each job type may add additional attributes.
 
 The following attributes can be defined for all job types:
 
     * ``name`` (string, required): a unique identifier for the job. This should not be confused with the job template name. The template name identifies a template from which jobs can be created and is set when the template is created. The job ``name`` attribute is defined when the job is created (see `Creating and Executing a Job`_).
     * ``description`` (string): a short description of the job.
-    * ``workspace`` (string): a path to a directory that will act as the workspace for the job. Each job type may interact with the workspace differently. By default the workspace is set to the user's workspace in the app that is creating the job (see `Workspaces`_).
+    * ``workspace`` (string): a path to a directory that will act as the workspace for the job. Each job type may interact with the workspace differently. By default the workspace is set to the user's workspace in the app that is creating the job.
     * ``extended_properties`` (dict): a dictionary of additional properties that can be used to create custom job attributes.
 
 
@@ -95,9 +122,6 @@ All job types also have the following read-only attributes:
 
         \*used for job types with multiple sub-jobs (e.g. CondorWorkflow).
 
-.. note::
-    Job template classes may support passing in job attributes as additional arguments. See the documentation for each job type for a list of acceptable parameters for each template class add if additional arguments are supported.
-
 Specific job types may define additional attributes. The following job types are available.
 
 .. toctree::
@@ -107,55 +131,6 @@ Specific job types may define additional attributes. The following job types are
    jobs/condor_job_type
    jobs/condor_workflow_type
 
-
-
-Workspaces
-----------
-Each job has it's own workspace, which by default is set to the user's workspace in the app where the job is created. However, the job may need to reference files that are in other workspaces. To make it easier to interact with workspaces in job templates, two special variables are defined: ``$(APP_WORKSPACE)`` and ``$(USER_WORKSPACE)``. These two variables are resolved to absolute paths when the job is created. These variables can only be used in job templates. To access the app's workspace and the user's workspace when working with a job in other places in your app use the :doc:`workspaces`.
-
-.. _job-manager-label:
-
-Job Manager
-===========
-The Job Manager is used in your app to interact with the jobs database. It facilitates creating and querying jobs.
-
-Using the Job Manager in your App
-=================================
-To use the Job Manager in your app you first need to import the TethysAppBase subclass from the app.py module:
-
-::
-
-    from app import MyFirstApp as app
-
-You can then get the job manager by calling the method ``get_job_manager`` on the app.
-
-::
-
-    job_manager = app.get_job_manager()
-
-You can now use the job manager to create a new job, or retrieve an existing job or jobs.
-
-Creating and Executing a Job
-----------------------------
-To create a job call the ``create_job`` method on the job manager. The required parameters are ``name``, ``user`` and ``template_name``. Any other job attributes can also be passed in as `kwargs`.
-
-::
-
-    # create a new job
-    job = job_manager.create_job(name='job_name', user=request.user, template_name='example', description='my first job')
-
-    # customize the job using methods provided by the job type
-    job.set_attribute('arguments', 'input_2')
-
-    # save or execute the job
-    job.save()
-    # or
-    job.execute()
-
-Before a controller returns a response the job must be saved or else all of the changes made to the job will be lost (executing the job automatically saves it). If submitting the job takes a long time (e.g. if a large amount of data has to be uploaded to a remote scheduler) then it may be best to use AJAX to execute the job.
-
-.. tip::
-   The `Jobs Table Gizmo`_ has a built-in mechanism for submitting jobs with AJAX. If the `Jobs Table Gizmo`_ is used to submit the jobs then be sure to save the job after it is created.
 
 Retrieving Jobs
 ---------------
@@ -232,7 +207,7 @@ API Documentation
 .. autoclass:: tethys_compute.job_manager.JobManager
     :members: create_job, list_jobs, get_job, get_job_status_callback_url
 
-.. autoclass:: tethys_sdk.jobs.JobTemplate
+.. autoclass:: tethys_compute.models.TethysJob
 
 References
 ==========

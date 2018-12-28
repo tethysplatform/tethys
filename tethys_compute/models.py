@@ -569,6 +569,27 @@ def condor_workflow_pre_delete(sender, instance, using, **kwargs):
 class CondorWorkflowNode(models.Model):
     """
     Base class for CondorWorkflow Nodes
+
+    Args:
+        name (str):
+        workflow (`CondorWorkflow`): instance of a `CondorWorkflow` that node belongs to
+        parent_nodes (list): list of `CondorWorkflowNode` objects that are prerequisites to this node
+        pre_script (str):
+        pre_script_args (str):
+        post_script (str):
+        post_script_args (str):
+        variables (dict):
+        priority (int):
+        category (str):
+        retry (int):
+        retry_unless_exit_value (int):
+        pre_skip (int):
+        abort_dag_on (int):
+        dir (str):
+        noop (bool):
+        done (bool):
+
+    For a description of the arguments see http://research.cs.wisc.edu/htcondor/manual/v8.6/2_10DAGMan_Applications.html
     """
     TYPES = (('JOB', 'JOB'),
              ('DAT', 'DATA'),
