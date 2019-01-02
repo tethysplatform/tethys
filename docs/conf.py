@@ -14,7 +14,6 @@
 
 import sys
 import os
-import re
 import mock
 
 import pbr.version
@@ -41,6 +40,7 @@ MOCK_MODULES = [
     'tethys_apps.harvester',  # Mocked to prevent issues with loading apps during docs build.
     'tethys_compute.utilities'  # Mocked to prevent issues with DictionaryField and List Field during docs build.
 ]
+
 
 # Mock dependency modules so we don't have to install them
 # See: https://docs.readthedocs.io/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
@@ -356,4 +356,3 @@ todo_include_todos = True
 
 # If this is True, todo emits a warning for each TODO entries. The default is False.
 todo_emit_warnings = True
-
