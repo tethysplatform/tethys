@@ -49,6 +49,7 @@ class MockModule(mock.MagicMock):
     def __getattr__(cls, name):
         return mock.MagicMock()
 
+
 print('NOTE: The following modules are mocked to prevent timeouts during the docs build process on RTD:')
 print('{}'.format(', '.join(MOCK_MODULES)))
 sys.modules.update((mod_name, MockModule()) for mod_name in MOCK_MODULES)
