@@ -50,13 +50,6 @@ setup(
     extras_require={
         'tests': [
             'requests_mock',
-
         ],
-        'docs': [
-            'sphinx',
-            'sphinx_rtd_theme',
-            'sphinxcontrib-napoleon',
-            'pbr',
-        ]
     },
 )
