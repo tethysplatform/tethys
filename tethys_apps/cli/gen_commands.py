@@ -7,29 +7,31 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from __future__ import print_function
 from builtins import input
 import os
 import string
 import random
-from .manage_commands import TETHYS_HOME
+from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir
 from platform import linux_distribution
 
 from django.template import Template, Context
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
 from django.conf import settings
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
 
 
 # Initialize settings
 try:
     __import__(os.environ['DJANGO_SETTINGS_MODULE'])
-except:
+except Exception:
     # Initialize settings with templates variable to allow gen to work properly
     settings.configure(TEMPLATES=[
         {
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
         }
     ])
-import django
+import django  # noqa: E402
 django.setup()
 
 
@@ -77,6 +79,10 @@ def generate_command(args):
     """
     Generate a settings file for a new installation.
     """
+    # Consts
+    TETHYS_HOME = get_tethys_home_dir()
+    TETHYS_SRC = get_tethys_src_dir()
+
     # Setup variables
     context = Context()
 
@@ -119,6 +125,7 @@ def generate_command(args):
         secret_key = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(50)])
         context.update({'secret_key': secret_key,
                         'allowed_host': args.allowed_host,
+                        'allowed_hosts': args.allowed_hosts,
                         'db_username': args.db_username,
                         'db_password': args.db_password,
                         'db_port': args.db_port,
@@ -127,29 +134,33 @@ def generate_command(args):
                         })
 
     if args.type == GEN_NGINX_OPTION:
-        hostname = ''. join(settings.ALLOWED_HOSTS)
+        hostname = str(settings.ALLOWED_HOSTS[0]) if len(settings.ALLOWED_HOSTS) > 0 else '127.0.0.1'
         workspaces_root = get_settings_value('TETHYS_WORKSPACES_ROOT')
         static_root = get_settings_value('STATIC_ROOT')
 
         context.update({'hostname': hostname,
                         'workspaces_root': workspaces_root,
                         'static_root': static_root,
+                        'client_max_body_size': args.client_max_body_size
                         })
 
     if args.type == GEN_UWSGI_SERVICE_OPTION:
         conda_home = get_environment_value('CONDA_HOME')
         conda_env_name = get_environment_value('CONDA_ENV_NAME')
 
-        linux_distro = linux_distribution(full_distribution_name=0)[0]
         user_option_prefix = ''
-        if linux_distro in ['redhat', 'centos']:
-            user_option_prefix = 'http-'
+
+        try:
+            linux_distro = linux_distribution(full_distribution_name=0)[0]
+            if linux_distro in ['redhat', 'centos']:
+                user_option_prefix = 'http-'
+        except Exception:
+            pass
 
         context.update({'nginx_user': nginx_user,
                         'conda_home': conda_home,
                         'conda_env_name': conda_env_name,
-                        'tethys_home': TETHYS_HOME,
-                        'linux_distribution': linux_distro,
+                        'tethys_src': TETHYS_SRC,
                         'user_option_prefix': user_option_prefix
                         })
 
@@ -158,7 +169,8 @@ def generate_command(args):
         conda_env_name = get_environment_value('CONDA_ENV_NAME')
 
         context.update({'conda_home': conda_home,
-                        'conda_env_name': conda_env_name})
+                        'conda_env_name': conda_env_name,
+                        'uwsgi_processes': args.uwsgi_processes})
 
     if args.directory:
         if os.path.isdir(args.directory):

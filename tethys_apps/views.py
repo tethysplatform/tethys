@@ -27,8 +27,18 @@ def library(request):
     # Retrieve the app harvester
     apps = TethysApp.objects.all()
 
+    configured_apps = list()
+    unconfigured_apps = list()
+
+    for app in apps:
+        if app.configured:
+            configured_apps.append(app)
+        else:
+            if request.user.is_staff:
+                unconfigured_apps.append(app)
+
     # Define the context object
-    context = {'apps': apps}
+    context = {'apps': {'configured': configured_apps, 'unconfigured': unconfigured_apps}}
 
     return render(request, 'tethys_apps/app_library.html', context)
 
@@ -102,7 +112,7 @@ def send_beta_feedback_email(request):
         send_mail(subject, message, from_email=None, recipient_list=app.feedback_emails)
     except Exception as e:
         json = {'success': False,
-                'error': 'Failed to send email: ' + e.message}
+                'error': 'Failed to send email: ' + str(e)}
         return JsonResponse(json)
 
     json = {'success': True,
@@ -118,7 +128,7 @@ def update_job_status(request, job_id):
         job = TethysJob.objects.filter(id=job_id)[0]
         job.status
         json = {'success': True}
-    except Exception as e:
+    except Exception:
         json = {'success': False}
 
     return JsonResponse(json)

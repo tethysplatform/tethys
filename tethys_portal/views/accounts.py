@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import password_reset, password_reset_confirm
@@ -21,7 +21,7 @@ def login_view(request):
     Handle login
     """
     # Only allow users to access login page if they are not logged in
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         return redirect('user:profile', username=request.user.username)
 
     # Handle form
@@ -53,13 +53,11 @@ def login_view(request):
                     # The password is valid, but the user account has been disabled
                     # Return a disabled account 'error' message
                     messages.error(request, "Sorry, but your account has been disabled. Please contact the site "
-                                            "administrator for more details."
-                    )
+                                            "administrator for more details.")
             else:
                 # User was not authenticated, return errors
-                 messages.warning(request, "Whoops! We were not able to log you in. Please check your username and "
-                                           "password and try again."
-                 )
+                messages.warning(request, "Whoops! We were not able to log you in. Please check your username and "
+                                          "password and try again.")
 
     else:
         # Create new empty login form
@@ -79,7 +77,7 @@ def register(request):
     Handle new user registration
     """
     # Only allow users to access register page if they are not logged in
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         return redirect('user:profile', username=request.user.username)
 
     # Disallow access to this page if open signup is disabled
@@ -95,7 +93,7 @@ def register(request):
         if form.is_valid():
             # Validate username and password using form methods
             username = form.clean_username()
-            email = form.clean_email()
+            email = form.clean_email()  # noqa: F841
             password = form.clean_password2()
 
             # If no exceptions raised to here, then the username is unique and the passwords match.
@@ -120,13 +118,11 @@ def register(request):
                     # The password is valid, but the user account has been disabled
                     # Return a disabled account 'error' message
                     messages.error(request, "Sorry, but your account has been disabled. Please contact the site "
-                                            "administrator for more details."
-                    )
+                                            "administrator for more details.")
             else:
                 # User was not authenticated, return errors
-                 messages.warning(request, "Whoops! We were not able to log you in. Please check your username and "
-                                           "password and try again."
-                 )
+                messages.warning(request, "Whoops! We were not able to log you in. Please check your username and "
+                                          "password and try again.")
 
     else:
         # Create new empty form
@@ -141,7 +137,7 @@ def logout_view(request):
     Handle logout
     """
     # Present goodbye message and logout if not anonymous
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         name = request.user.first_name or request.user.username
         messages.success(request, 'Goodbye, {0}. Come back soon!'.format(name))
         logout(request)
@@ -151,18 +147,20 @@ def logout_view(request):
 
 
 def reset_confirm(request, uidb64=None, token=None):
-    return password_reset_confirm(request,
-                                  template_name='tethys_portal/accounts/password_reset/reset_confirm.html',
-                                  uidb64=uidb64,
-                                  token=token,
-                                  post_reset_redirect=reverse('accounts:login')
+    return password_reset_confirm(
+        request,
+        template_name='tethys_portal/accounts/password_reset/reset_confirm.html',
+        uidb64=uidb64,
+        token=token,
+        post_reset_redirect=reverse('accounts:login')
     )
 
 
 def reset(request):
-    return password_reset(request,
-                          template_name='tethys_portal/accounts/password_reset/reset_request.html',
-                          email_template_name='tethys_portal/accounts/password_reset/reset_email.html',
-                          subject_template_name='tethys_portal/accounts/password_reset/reset_subject.txt',
-                          post_reset_redirect=reverse('accounts:login')
+    return password_reset(
+        request,
+        template_name='tethys_portal/accounts/password_reset/reset_request.html',
+        email_template_name='tethys_portal/accounts/password_reset/reset_email.html',
+        subject_template_name='tethys_portal/accounts/password_reset/reset_subject.txt',
+        post_reset_redirect=reverse('accounts:login')
     )

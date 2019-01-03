@@ -1,11 +1,12 @@
-from builtins import *
 import os
 import re
 import logging
 import random
 import shutil
+from builtins import input
 
 from django.template import Template, Context
+from tethys_apps.cli.cli_colors import pretty_output, FG_RED, FG_YELLOW, FG_WHITE
 
 # Constants
 APP_PREFIX = 'tethysapp'
@@ -38,11 +39,13 @@ def proper_name_validator(value, default):
             value = value.replace('-', ' ')
             value = value.replace('"', '')
             value = value.replace("'", "")
-            print('Warning: Illegal characters were detected in proper name "{0}". They have been replaced or '
-                  'removed with valid characters: "{1}"'.format(before, value))
+            with pretty_output(FG_YELLOW) as p:
+                p.write('Warning: Illegal characters were detected in proper name "{0}". They have been replaced or '
+                        'removed with valid characters: "{1}"'.format(before, value))
         # Otherwise, throw error
         else:
-            print('Error: Proper name can only contain letters and numbers and spaces.')
+            with pretty_output(FG_RED) as p:
+                p.write('Error: Proper name can only contain letters and numbers and spaces.')
             return False, value
     return True, value
 
@@ -83,7 +86,8 @@ def theme_color_validator(value, default):
         value = '#' + value
         return True, value
     except ValueError:
-        print("Error: Value given is not a valid hexadecimal color.")
+        with pretty_output(FG_RED) as p:
+            p.write("Error: Value given is not a valid hexadecimal color.")
         return False, value
 
 
@@ -118,8 +122,8 @@ def scaffold_command(args):
 
     if args.extension:
         is_extension = True
-        template_name = args.extension
-        template_root = os.path.join(EXTENSION_PATH, args.extension)
+        template_name = args.template
+        template_root = os.path.join(EXTENSION_PATH, args.template)
     else:
         template_name = args.template
         template_root = os.path.join(APP_PATH, args.template)
@@ -128,7 +132,8 @@ def scaffold_command(args):
 
     # Validate template
     if not os.path.isdir(template_root):
-        print('Error: "{}" is not a valid template.'.format(template_name))
+        with pretty_output(FG_WHITE) as p:
+            p.write('Error: "{}" is not a valid template.'.format(template_name))
         exit(1)
 
     # Validate project name
@@ -144,8 +149,9 @@ def scaffold_command(args):
     if contains_uppers:
         before = project_name
         project_name = project_name.lower()
-        print('Warning: Uppercase characters in project name "{0}" '
-              'changed to lowercase: "{1}".'.format(before, project_name))
+        with pretty_output(FG_YELLOW) as p:
+            p.write('Warning: Uppercase characters in project name "{0}" '
+                    'changed to lowercase: "{1}".'.format(before, project_name))
 
     # Check for valid characters name
     project_error_regex = re.compile(r'^[a-zA-Z0-9_]+$')
@@ -157,12 +163,14 @@ def scaffold_command(args):
         if project_warning_regex.match(project_name):
             before = project_name
             project_name = project_name.replace('-', '_')
-            print('Warning: Dashes in project name "{0}" have been replaced '
-                  'with underscores "{1}"'.format(before, project_name))
+            with pretty_output(FG_YELLOW) as p:
+                p.write('Warning: Dashes in project name "{0}" have been replaced '
+                        'with underscores "{1}"'.format(before, project_name))
         # Otherwise, throw error
         else:
-            print('Error: Invalid characters in project name "{0}". '
-                  'Only letters, numbers, and underscores.'.format(project_name))
+            with pretty_output(FG_YELLOW) as p:
+                p.write('Error: Invalid characters in project name "{0}". '
+                        'Only letters, numbers, and underscores.'.format(project_name))
             exit(1)
 
     # Project name derivatives
@@ -170,64 +178,99 @@ def scaffold_command(args):
     split_project_name = project_name.split('_')
     title_case_project_name = [x.title() for x in split_project_name]
     default_proper_name = ' '.join(title_case_project_name)
-    app_class_name = ''.join(title_case_project_name)
+    class_name = ''.join(title_case_project_name)
     default_theme_color = get_random_color()
 
-    print('Creating new Tethys project named "{0}".'.format(project_dir))
+    with pretty_output(FG_WHITE) as p:
+        p.write('Creating new Tethys project named "{0}".'.format(project_dir))
 
     # Get metadata from user
-    metadata_input = (
-        {
-            'name': 'proper_name',
-            'prompt': 'Proper name for the app (e.g.: "My First App")',
-            'default': default_proper_name,
-            'validator': proper_name_validator
-        },
-        {
-            'name': 'description',
-            'prompt': 'Brief description of the app',
-            'default': '',
-            'validator': None
-        },
-        {
-            'name': 'color',
-            'prompt': 'App theme color (e.g.: "#27AE60")',
-            'default': default_theme_color,
-            'validator': theme_color_validator
-        },
-        {
-            'name': 'tags',
-            'prompt': 'Tags: Use commas to delineate tags and '
-                      'quotes around each tag (e.g.: "Hydrology","Reference Timeseries")',
-            'default': '',
-            'validator': None
-        },
-        {
-            'name': 'author',
-            'prompt': 'Author name',
-            'default': '',
-            'validator': None
-        },
-        {
-            'name': 'author_email',
-            'prompt': 'Author email',
-            'default': '',
-            'validator': None
-        },
-        {
-            'name': 'license_name',
-            'prompt': 'License name',
-            'default': '',
-            'validator': None
-        },
-    )
+    if not is_extension:
+        metadata_input = (
+            {
+                'name': 'proper_name',
+                'prompt': 'Proper name for the app (e.g.: "My First App")',
+                'default': default_proper_name,
+                'validator': proper_name_validator
+            },
+            {
+                'name': 'description',
+                'prompt': 'Brief description of the app',
+                'default': '',
+                'validator': None
+            },
+            {
+                'name': 'color',
+                'prompt': 'App theme color (e.g.: "#27AE60")',
+                'default': default_theme_color,
+                'validator': theme_color_validator
+            },
+            {
+                'name': 'tags',
+                'prompt': 'Tags: Use commas to delineate tags and '
+                          'quotes around each tag (e.g.: "Hydrology","Reference Timeseries")',
+                'default': '',
+                'validator': None
+            },
+            {
+                'name': 'author',
+                'prompt': 'Author name',
+                'default': '',
+                'validator': None
+            },
+            {
+                'name': 'author_email',
+                'prompt': 'Author email',
+                'default': '',
+                'validator': None
+            },
+            {
+                'name': 'license_name',
+                'prompt': 'License name',
+                'default': '',
+                'validator': None
+            },
+        )
+    else:
+        metadata_input = (
+            {
+                'name': 'proper_name',
+                'prompt': 'Proper name for the extension (e.g.: "My First Extension")',
+                'default': default_proper_name,
+                'validator': proper_name_validator
+            },
+            {
+                'name': 'description',
+                'prompt': 'Brief description of the extension',
+                'default': '',
+                'validator': None
+            },
+            {
+                'name': 'author',
+                'prompt': 'Author name',
+                'default': '',
+                'validator': None
+            },
+            {
+                'name': 'author_email',
+                'prompt': 'Author email',
+                'default': '',
+                'validator': None
+            },
+            {
+                'name': 'license_name',
+                'prompt': 'License name',
+                'default': '',
+                'validator': None
+            },
+        )
 
     # Build up template context
     context = {
         'project': project_name,
         'project_dir': project_dir,
         'project_url': project_name.replace('_', '-'),
-        'app_class_name': app_class_name,
+        'class_name': class_name,
         'proper_name': default_proper_name,
         'description': '',
         'color': default_theme_color,
@@ -247,7 +290,8 @@ def scaffold_command(args):
                 try:
                     response = input('{0} ["{1}"]: '.format(item['prompt'], item['default'])) or item['default']
                 except (KeyboardInterrupt, SystemExit):
-                    print('\nScaffolding cancelled.')
+                    with pretty_output(FG_YELLOW) as p:
+                        p.write('\nScaffolding cancelled.')
                     exit(1)
 
                 if callable(item['validator']):
@@ -256,7 +300,8 @@ def scaffold_command(args):
                     valid = True
 
                 if not valid:
-                    print('Invalid response: {}'.format(response))
+                    with pretty_output(FG_RED) as p:
+                        p.write('Invalid response: {}'.format(response))
 
             context[item['name']] = response
 
@@ -279,20 +324,24 @@ def scaffold_command(args):
                     response = input('Directory "{}" already exists. '
                                      'Would you like to overwrite it? [Y/n]: '.format(project_root)) or default
                 except (KeyboardInterrupt, SystemExit):
-                    print('\nScaffolding cancelled.')
+                    with pretty_output(FG_YELLOW) as p:
+                        p.write('\nScaffolding cancelled.')
                     exit(1)
 
                 if response.lower() in valid_choices:
                     valid = True
 
             if response.lower() in negative_choices:
-                print('Scaffolding cancelled.')
+                with pretty_output(FG_YELLOW) as p:
+                    p.write('Scaffolding cancelled.')
                 exit(0)
 
         try:
             shutil.rmtree(project_root)
         except OSError:
-            print('Error: Unable to overwrite "{}". Please remove the directory and try again.'.format(project_root))
+            with pretty_output(FG_YELLOW) as p:
+                p.write('Error: Unable to overwrite "{}". '
+                        'Please remove the directory and try again.'.format(project_root))
             exit(1)
 
     # Walk the template directory, creating the templates and directories in the new project as we go
@@ -305,7 +354,8 @@ def scaffold_command(args):
 
         # Create Root Directory
         os.makedirs(curr_project_root)
-        print('Created: "{}"'.format(curr_project_root))
+        with pretty_output(FG_WHITE) as p:
+            p.write('Created: "{}"'.format(curr_project_root))
 
         # Create Files
         for template_file in template_files:
@@ -331,6 +381,8 @@ def scaffold_command(args):
             if template:
                 with open(project_file_path, 'w') as pfp:
                     pfp.write(template.render(template_context))
-                print('Created: "{}"'.format(project_file_path))
+                with pretty_output(FG_WHITE) as p:
+                    p.write('Created: "{}"'.format(project_file_path))
 
-    print('Successfully scaffolded new project "{}"'.format(project_name))
+    with pretty_output(FG_WHITE) as p:
+        p.write('Successfully scaffolded new project "{}"'.format(project_name))

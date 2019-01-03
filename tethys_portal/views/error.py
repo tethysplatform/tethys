@@ -38,7 +38,8 @@ def handler_404(request):
     """
     context = {'error_code': '404',
                'error_title': 'Page Not Found',
-               'error_message': "We are unable to find the page you requested. Please, check the address and try again.",
+               'error_message': "We are unable to find the page you requested. Please, check the address and try "
+                                "again.",
                'error_image': '/static/tethys_portal/images/error_404.png'}
     return render(request, 'tethys_portal/error.html', context, status=404)
 
@@ -52,4 +53,3 @@ def handler_500(request):
                'error_message': "We're sorry, but we seem to have a problem. Please, come back later and try again.",
                'error_image': '/static/tethys_portal/images/error_500.png'}
     return render(request, 'tethys_portal/error.html', context, status=500)
-

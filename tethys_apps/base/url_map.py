@@ -28,14 +28,15 @@ class UrlMapBase(object):
           url (str): Url pattern to map to the controller.
           controller (str): Dot-notation path to the controller.
           regex (str or iterable, optional): Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
-        """
+        """  # noqa: E501
         # Validate
-        if regex and (not isinstance(regex, basestring) and not isinstance(regex, tuple) and not isinstance(regex, list)):
+        if regex and (not isinstance(regex, basestring) and not isinstance(regex, tuple)
+                      and not isinstance(regex, list)):
             raise ValueError('Value for "regex" must be either a string, list, or tuple.')
 
         self.name = name
         self.url = django_url_preprocessor(url, self.root_url, regex)
-        self.controller = '.'.join(['tethys_apps.tethysapp', controller])
+        self.controller = controller
         self.custom_match_regex = regex
 
     def __repr__(self):
@@ -60,7 +61,7 @@ def django_url_preprocessor(url, root_url, custom_regex=None):
     e.g.:
 
         '/example/resource/{variable_name}/'
-        r'^/example/resource/?P<variable_name>[1-9A-Za-z\-]+/$'
+        r'^/example/resource/(?P<variable_name>[0-9A-Za-z\-]+)//$'
     """
 
     # Split the url into parts
@@ -87,12 +88,8 @@ def django_url_preprocessor(url, root_url, custom_regex=None):
             elif (isinstance(custom_regex, list) or isinstance(custom_regex, tuple)) and len(custom_regex) > 0:
                 try:
                     expression = custom_regex[url_variable_count]
-
                 except IndexError:
                     expression = custom_regex[0]
-
-                except:
-                    raise
 
             else:
                 expression = DEFAULT_EXPRESSION

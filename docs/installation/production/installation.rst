@@ -108,8 +108,171 @@ For more information about setting up email capabilities for Tethys Platform, re
 
 For an excellent guide on setting up Postfix on Ubuntu, refer to `How To Install and Setup Postfix on Ubuntu 14.04 <https://www.digitalocean.com/community/tutorials/how-to-install-and-setup-postfix-on-ubuntu-14-04>`_.
 
+.. _production_installation_ssl:
 
-4. Install Apps
+4. Setup SSL (https) on the Tethys and Geoserver (Recommended)
+==============================================================
+
+SSL is the standard  technology for establishing a secured connection between a web server and a browser. In order to create a secured connection, an SSL certificate and key are needed. An SSL certificate is simply a paragraph with letters and numbers that acts similar to a password. When users visit your website via https this certificate is verified and if it matches, then a connecton is established. An SSL certificate can be self-signed, or purchased from a Certificate Authority. Some of the top certificate authorities include: Digicert, VertiSign, GeoTrust, Comodo, Thawte, GoDaddy, and Nework Solutions. If your instance of Tethys is part of a larger organization, contact your IT to determine if an agreement with one of these authorities already exists.
+
+Once a certificate is obtained, it needs to be referenced in the Nginx configuration, which is the web server that Tethys uses in production. The configuration file can be found at:
+
+::
+
+    /home/<username>/tethys/src/tethys_portal/tethys_nginx.conf
+
+The file should look something like this:
+::
+
+    # tethys_nginx.conf
+
+    # the upstream component nginx needs to connect to
+    upstream django {
+        server unix://run/uwsgi/tethys.sock; # for a file socket
+    }
+    # configuration of the server
+    server {
+        # the port your site will be served on
+        listen      80;
+        # the domain name it will serve for
+        server_name <domain-name>; # substitute your machine's IP address or FQDN
+        charset     utf-8;
+
+        # max upload size
+        client_max_body_size 75M;   # adjust to taste
+
+        # Tethys Workspaces
+        location /workspaces  {
+            internal;
+            alias /home/<username>/tethys/workspaces;  # your Tethys workspaces files - amend as required
+        }
+
+        location /static {
+            alias /home/<username>/tethys/static; # your Tethys static files - amend as required
+        }
+
+        # Finally, send all non-media requests to the Django server.
+        location / {
+            uwsgi_pass  django;
+            include /etc/nginx/uwsgi_params;
+        }
+    }
+
+If you need your site to be accessible through both secured (https) and non-secured (http) connections, you will need a server block for each type of connection. Otherwise just edit the existing block.
+
+Make a copy of the existing non-secured server block and paste it below the original. Then modify it as shown below:
+
+::
+
+    server {
+
+    listen   443;
+
+    ssl    on;
+    ssl_certificate    /home/<username>/tethys/ssl/your_domain_name.pem; (or bundle.crt)
+    ssl_certificate_key    /home/<username>/tethys/ssl/your_domain_name.key;
+
+
+    # the domain name it will serve for
+    server_name <domain-name>; # substitute your machine's IP address or FQDN
+    charset     utf-8;
+
+    # max upload size
+    client_max_body_size 75M;   # adjust to taste
+
+    # Tethys Workspaces
+    location /workspaces  {
+        internal;
+        alias /home/<username>/tethys/workspaces;  # your Tethys workspaces files - amend as required
+    }
+
+    location /static {
+        alias /home/<username>/tethys/static; # your Tethys static files - amend as required
+    }
+
+    # Finally, send all non-media requests to the Django server.
+    location / {
+        uwsgi_pass  django;
+        include /etc/nginx/uwsgi_params;
+    }
+
+
+.. Note::
+
+    SSL works on port 443, hence the server block above listens on 443 instead of 80
+
+Geoserver SSL
+-------------
+
+A secured server can only communicate with other secured servers. Therefore to allow the secured Tethys Portal to communicate with Geoserver, the latter needs to be secured as well. To do this, add the following location at the end of your server block.
+::
+
+    server {
+
+    listen   443;
+
+    ssl    on;
+    ssl_certificate    /home/<username>/tethys/ssl/your_domain_name.pem; (or bundle.crt)
+    ssl_certificate_key    /home/<username>/tethys/ssl/your_domain_name.key;
+
+
+    # the domain name it will serve for
+    server_name <domain-name>; # substitute your machine's IP address or FQDN
+    charset     utf-8;
+
+    # max upload size
+    client_max_body_size 75M;   # adjust to taste
+
+    # Tethys Workspaces
+    location /workspaces  {
+        internal;
+        alias /home/<username>/tethys/workspaces;  # your Tethys workspaces files - amend as required
+    }
+
+    location /static {
+        alias /home/<username>/tethys/static; # your Tethys static files - amend as required
+    }
+
+    # Finally, send all non-media requests to the Django server.
+    location / {
+        uwsgi_pass  django;
+        include /etc/nginx/uwsgi_params;
+    }
+
+    #Geoserver
+    location /geoserver {
+          proxy_pass http://127.0.0.1:8181/geoserver;
+    }
+
+Next, go to your Geoserver web interface (http://domain-name:8181/geoserver/web), sign in, and set the **Proxy Base URL** in Global settings to:
+::
+
+    https://<domain-name>/geoserver
+
+.. image:: images/geoserver_ssl.png
+    :width: 600px
+    :align: center
+
+Finally, restart uWSGI and Nginx services to effect the changes::
+
+    $ sudo systemctl restart tethys.uwsgi.service
+    $ sudo systemctl restart nginx
+
+.. tip::
+
+    Use the alias `trestart` as a shortcut to doing the final step.
+
+
+The portal should now be accessible from: https://domain-name
+
+Geoserver should now be accessible from: https://domain-name/geoserver
+
+.. Note::
+
+    Notice that the Geoserver port (8181) is not necessary once the proxy is configured
+
+
+5. Install Apps
 ===============
 
 Download and install any apps that you want to host using this installation of Tethys Platform. For more information see: :doc:`./app_installation`.
@@ -118,3 +281,5 @@ Download and install any apps that you want to host using this installation of T
 .. todo::
 
     **Troubleshooting**: Here we try to provide some guidance on some of the most commonly encountered issues. If you are experiencing problems and can't find a solution here then please post a question on the `Tethys Platform Forum <https://groups.google.com/forum/#!forum/tethysplatform>`_.
+
+

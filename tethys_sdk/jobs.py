@@ -7,17 +7,18 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+# flake8: noqa
 # DO NOT ERASE
-from tethys_compute.job_manager import (JobManager,
-                                        BasicJobTemplate,
-                                        CondorJobTemplate,
-                                        CondorJobDescription,
-                                        CondorWorkflowTemplate,
-                                        CondorWorkflowJobTemplate,
-                                        # CondorWorkflowSubworkflowTemplate,
-                                        # CondorWorkflowDataJobTemplate,
-                                        # CondorWorkflowFinalTemplate,
-                                        )
+from tethys_compute.job_manager import JobManager
+from tethys_compute.models import CondorWorkflowJobNode
 
 # Depricated imports
-from tethys_compute.job_manager import (JobTemplate, JOB_TYPES)
+from tethys_compute.job_manager import (
+    JobTemplate,
+    JOB_TYPES,
+    BasicJobTemplate,
+    CondorJobTemplate,
+    CondorJobDescription,
+    CondorWorkflowTemplate,
+    CondorWorkflowJobTemplate,
+)

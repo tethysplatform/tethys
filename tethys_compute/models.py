@@ -11,13 +11,12 @@ import os
 import shutil
 import datetime
 import inspect
-from abc import abstractmethod, abstractproperty
+from abc import abstractmethod
 import logging
-log = logging.getLogger('tethys.tethys_compute.models')
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import pre_save, pre_delete
+from django.db.models.signals import pre_save, pre_delete, post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from model_utils.managers import InheritanceManager
@@ -26,6 +25,8 @@ from tethys_compute.utilities import DictionaryField, ListField
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 from condorpy import Job, Workflow, Node, Templates
+
+log = logging.getLogger('tethys' + __name__)
 
 
 class Scheduler(models.Model):
@@ -97,6 +98,7 @@ class TethysJob(models.Model):
             end_time = self.completion_time or datetime.datetime.now(start_time.tzinfo)
             run_time = end_time - start_time
         else:
+            # TODO: Is this code reachable?
             if self.completion_time and self.execute_time:
                 run_time = self.completion_time - self.execute_time
             else:
@@ -117,7 +119,7 @@ class TethysJob(models.Model):
         old_status = self._status
         if self._status in ['PEN', 'SUB', 'RUN', 'VAR']:
             if not hasattr(self, '_last_status_update') \
-                    or datetime.datetime.now()-self.last_status_update > self.update_status_interval:
+                    or datetime.datetime.now() - self.last_status_update > self.update_status_interval:
                 self._update_status(*args, **kwargs)
                 self._last_status_update = datetime.datetime.now()
             if self._status == 'RUN' and (old_status == 'PEN' or old_status == 'SUB'):
@@ -214,7 +216,6 @@ class BasicJob(TethysJob):
 
 # condorpy_logger.activate_console_logging()
 
-
 class CondorBase(TethysJob):
     """
     Base class for CondorJob and CondorWorkflow
@@ -238,7 +239,7 @@ class CondorBase(TethysJob):
     def condor_object(self):
         """
         Returns: an instance of a condorpy job or condorpy workflow with scheduler, cluster_id, and remote_id attributes set
-        """
+        """  # noqa: E501
         condor_object = self._condor_object
         condor_object._cluster_id = self.cluster_id
         condor_object._cwd = self.workspace
@@ -254,7 +255,7 @@ class CondorBase(TethysJob):
             condor_object._remote_id = self.remote_id
         return condor_object
 
-    @abstractproperty
+    @abstractmethod
     def _condor_object(self):
         """
         Returns: an instance of a condorpy job or condorpy workflow
@@ -287,7 +288,7 @@ class CondorBase(TethysJob):
                 running_statuses = statuses['Unexpanded'] + statuses['Idle'] + statuses['Running']
                 if not running_statuses:
                     condor_status = 'Various-Complete'
-        except Exception as e:
+        except Exception:
             # raise e
             condor_status = 'Submission_err'
         self._status = self.STATUS_MAP[condor_status]
@@ -328,10 +329,23 @@ class CondorPyJob(models.Model):
     _num_jobs = models.IntegerField(default=1)
     _remote_input_files = ListField(default='')
 
+    def __init__(self, *args, **kwargs):
+        # if condorpy_template_name or attributes is passed in then get the template and add it to the _attributes
+        attributes = kwargs.pop('attributes', dict())
+        _attributes = kwargs.get('_attributes', dict())
+        attributes.update(_attributes)
+        condorpy_template_name = kwargs.pop('condorpy_template_name', None)
+        if condorpy_template_name is not None:
+            template = self.get_condorpy_template(condorpy_template_name)
+            template.update(attributes)
+            attributes = template
+        kwargs['_attributes'] = attributes
+        super(CondorPyJob, self).__init__(*args, **kwargs)
+
     @classmethod
     def get_condorpy_template(cls, template_name):
         template_name = template_name or 'base'
-        template = getattr(Templates, template_name)
+        template = getattr(Templates, template_name, None)
         if not template:
             template = Templates.base
         return template
@@ -353,11 +367,11 @@ class CondorPyJob(models.Model):
     def attributes(self):
         return self._attributes
 
-    # @attributes.setter
-    # def attributes(self, attributes):
-    #     assert isinstance(attributes, dict)
-    #     self.condorpy_job._attributes = attributes
-    #     self._attributes = attributes
+    @attributes.setter
+    def attributes(self, attributes):
+        assert isinstance(attributes, dict)
+        self._attributes = attributes
+        self.condorpy_job._attributes = attributes
 
     @property
     def num_jobs(self):
@@ -383,7 +397,7 @@ class CondorPyJob(models.Model):
         return os.path.join(self.workspace, self.condorpy_job.initial_dir)
 
     def get_attribute(self, attribute):
-        self.condorpy_job.get(attribute)
+        return self.condorpy_job.get(attribute)
 
     def set_attribute(self, attribute, value):
         setattr(self.condorpy_job, attribute, value)
@@ -424,7 +438,7 @@ def condor_job_pre_save(sender, instance, raw, using, update_fields, **kwargs):
 def condor_job_pre_delete(sender, instance, using, **kwargs):
     try:
         instance.condor_object.close_remote()
-        shutil.rmtree(instance.initial_dir)
+        shutil.rmtree(instance.initial_dir, ignore_errors=True)
     except Exception as e:
         log.exception(str(e))
 
@@ -456,6 +470,11 @@ class CondorPyWorkflow(models.Model):
     @property
     def max_jobs(self):
         return self._max_jobs
+
+    @max_jobs.setter
+    def max_jobs(self, max_jobs):
+        self.condorpy_workflow._max_jobs = max_jobs
+        self._max_jobs = max_jobs
 
     @property
     def config(self):
@@ -542,7 +561,7 @@ def condor_workflow_pre_save(sender, instance, raw, using, update_fields, **kwar
 def condor_workflow_pre_delete(sender, instance, using, **kwargs):
     try:
         instance.condor_object.close_remote()
-        shutil.rmtree(instance.workspace)
+        shutil.rmtree(instance.workspace, ignore_errors=True)
     except Exception as e:
         log.exception(str(e))
 
@@ -550,6 +569,27 @@ def condor_workflow_pre_delete(sender, instance, using, **kwargs):
 class CondorWorkflowNode(models.Model):
     """
     Base class for CondorWorkflow Nodes
+
+    Args:
+        name (str):
+        workflow (`CondorWorkflow`): instance of a `CondorWorkflow` that node belongs to
+        parent_nodes (list): list of `CondorWorkflowNode` objects that are prerequisites to this node
+        pre_script (str):
+        pre_script_args (str):
+        post_script (str):
+        post_script_args (str):
+        variables (dict):
+        priority (int):
+        category (str):
+        retry (int):
+        retry_unless_exit_value (int):
+        pre_skip (int):
+        abort_dag_on (int):
+        dir (str):
+        noop (bool):
+        done (bool):
+
+    For a description of the arguments see http://research.cs.wisc.edu/htcondor/manual/v8.6/2_10DAGMan_Applications.html
     """
     TYPES = (('JOB', 'JOB'),
              ('DAT', 'DATA'),
@@ -581,11 +621,11 @@ class CondorWorkflowNode(models.Model):
     noop = models.BooleanField(default=False)
     done = models.BooleanField(default=False)
 
-    @abstractproperty
+    @abstractmethod
     def type(self):
         pass
 
-    @abstractproperty
+    @abstractmethod
     def job(self):
         pass
 
@@ -626,19 +666,6 @@ class CondorWorkflowJobNode(CondorWorkflowNode, CondorPyJob):
     """
     CondorWorkflow JOB type node
     """
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize both CondorWorkflowNode and CondorPyJob
-
-        Args:
-            name:
-            workflow:
-            attributes:
-            num_jobs:
-            remote_input_files:
-        """
-        CondorWorkflowNode.__init__(self, *args, **kwargs)
-        CondorPyJob.__init__(self, *args, **kwargs)
 
     @property
     def type(self):
@@ -660,3 +687,12 @@ class CondorWorkflowJobNode(CondorWorkflowNode, CondorPyJob):
 @receiver(pre_save, sender=CondorWorkflowJobNode)
 def condor_workflow_job_node_pre_save(sender, instance, raw, using, update_fields, **kwargs):
     instance.update_database_fields()
+
+
+@receiver(post_save, sender=CondorJob)
+@receiver(post_save, sender=BasicJob)
+@receiver(post_save, sender=TethysJob)
+def tethys_job_post_save(sender, instance, raw, using, update_fields, **kwargs):
+    if instance.name.find('{id}') >= 0:
+        instance.name = instance.name.format(id=instance.id)
+        instance.save()

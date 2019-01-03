@@ -4,6 +4,8 @@ Condor Job Description
 
 **Last Updated:** March 29, 2016
 
+**DEPRECATED**
+
 Both the :doc:`./condor_job_type` or the :doc:`./condor_workflow_type` facilitate running jobs with HTCondor using the CondorPy library, and both use ``CondorJobDescription`` objects which stores attributes used to initialize the CondorPy job. The ``CondorJobDescription`` accepts as parameters any HTCondor job attributes.
 
 .. note::

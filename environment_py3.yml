@@ -6,6 +6,7 @@
 name: tethys
 
 channels:
+- tethysplatform
 - conda-forge
 - defaults
 
@@ -16,6 +17,7 @@ dependencies:
 - djangorestframework
 - bokeh
 - future
+- hs_restclient
 - psycopg2
 - sqlalchemy
 - requests
@@ -26,10 +28,14 @@ dependencies:
 - owslib
 - pip
 - pillow
-- plotly=1.12*
+- plotly
 - postgresql
+- postgis
 - pycrypto
 - pyopenssl
+- mock
+- factory_boy
+- tethys_dataset_services>=1.7.0
 - pip:
     - django-gravatar2
     - django-bootstrap3
@@ -42,3 +48,5 @@ dependencies:
     - condorpy
     - PasteScript
     - social-auth-app-django
+    - python_social_auth
+    - requests-mock
