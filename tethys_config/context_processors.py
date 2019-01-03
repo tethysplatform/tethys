@@ -20,7 +20,15 @@ def tethys_global_settings_context(request):
     site_globals = Setting.as_dict()
 
     # Get terms and conditions
-    site_globals.update({'documents': TermsAndConditions.get_active_list(as_dict=False)})
+
+    # Grrr!!! TermsAndConditions has a different interface for Python 2 and 3
+    try:
+        # for Python 3
+        site_globals.update({'documents': TermsAndConditions.get_active_terms_list()})
+    except AttributeError:
+        # for Python 3
+        site_globals.update({'documents': TermsAndConditions.get_active_list(as_dict=False)})
+
     context = {'site_globals': site_globals}
 
     return context

@@ -7,13 +7,14 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from __future__ import print_function
 import os
 import shutil
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
-from tethys_apps.helpers import get_installed_tethys_apps
+from tethys_apps.helpers import get_installed_tethys_apps, get_installed_tethys_extensions
 
 
 class Command(BaseCommand):
@@ -25,7 +26,7 @@ class Command(BaseCommand):
         """
         Symbolically link the static directories of each app into the static/public directory specified by the STATIC_ROOT
         parameter of the settings.py. Do this prior to running Django's collectstatic method.
-        """
+        """  # noqa: E501
         if not settings.STATIC_ROOT:
             print('WARNING: Cannot find the STATIC_ROOT setting in the settings.py file. '
                   'Please provide the path to the static directory using the STATIC_ROOT setting and try again.')
@@ -35,16 +36,17 @@ class Command(BaseCommand):
         static_root = settings.STATIC_ROOT
 
         # Get a list of installed apps
-        installed_apps = get_installed_tethys_apps()
+        installed_apps_and_extensions = get_installed_tethys_apps()
+        installed_apps_and_extensions.update(get_installed_tethys_extensions())
 
         # Provide feedback to user
-        print('INFO: Linking static and public directories of apps to "{0}".'.format(static_root))
+        print('INFO: Linking static and public directories of apps and extensions to "{0}".'.format(static_root))
 
-        for app, path in installed_apps.items():
+        for item, path in installed_apps_and_extensions.items():
             # Check for both variants of the static directory (public and static)
             public_path = os.path.join(path, 'public')
             static_path = os.path.join(path, 'static')
-            static_root_path = os.path.join(static_root, app)
+            static_root_path = os.path.join(static_root, item)
 
             # Clear out old symbolic links/directories if necessary
             try:
@@ -61,9 +63,8 @@ class Command(BaseCommand):
             # Create appropriate symbolic link
             if os.path.isdir(public_path):
                 os.symlink(public_path, static_root_path)
-                print('INFO: Successfully linked public directory to STATIC_ROOT for app "{0}".'.format(app))
+                print('INFO: Successfully linked public directory to STATIC_ROOT for app "{0}".'.format(item))
 
             elif os.path.isdir(static_path):
                 os.symlink(static_path, static_root_path)
-                print('INFO: Successfully linked static directory to STATIC_ROOT for app "{0}".'.format(app))
-
+                print('INFO: Successfully linked static directory to STATIC_ROOT for app "{0}".'.format(item))

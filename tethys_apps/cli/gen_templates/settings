@@ -45,24 +45,41 @@ SESSION_SECURITY_EXPIRE_AFTER = 900
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s:%(name)s:%(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
     'handlers': {
-        'console': {
+        'console_simple': {
             'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'console_verbose': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console_simple'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'WARNING'),
         },
         'tethys': {
-            'handlers': ['console'],
+            'handlers': ['console_verbose'],
             'level': 'INFO',
         }
     },
 }
 
+{% if allowed_hosts %}
+ALLOWED_HOSTS = {{ allowed_hosts|safe }}
+{% else %}
 ALLOWED_HOSTS = [{% if allowed_host %}'{{ allowed_host }}'{% endif %}]
+{% endif %}
 
 # Application definition
 
@@ -199,7 +216,7 @@ TEMPLATES = [
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader',
-                'tethys_apps.template_loaders.TethysAppsTemplateLoader'
+                'tethys_apps.template_loaders.TethysTemplateLoader'
             ],
             'debug': DEBUG
         }
@@ -216,7 +233,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'tethys_apps.utilities.TethysAppsStaticFinder'
+    'tethys_apps.static_finders.TethysStaticFinder'
 )
 
 # Uncomment the next line for production installation

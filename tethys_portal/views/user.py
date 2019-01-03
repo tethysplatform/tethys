@@ -16,6 +16,7 @@ from rest_framework.authtoken.models import Token
 
 from tethys_portal.forms import UserSettingsForm, UserPasswordChangeForm
 
+
 @login_required()
 def profile(request, username=None):
     """
@@ -27,10 +28,11 @@ def profile(request, username=None):
     context_user = User.objects.get(username=username)
     user_token, token_created = Token.objects.get_or_create(user=context_user)
     context = {
-                'context_user': context_user,
-                'user_token': user_token.key
-               }
+        'context_user': context_user,
+        'user_token': user_token.key
+    }
     return render(request, 'tethys_portal/user/profile.html', context)
+
 
 @login_required()
 def settings(request, username=None):
@@ -69,10 +71,13 @@ def settings(request, username=None):
         form = UserSettingsForm(instance=request_user)
 
     # Create template context object
+    user_token, token_created = Token.objects.get_or_create(user=request_user)
     context = {'form': form,
-               'context_user': request.user}
+               'context_user': request.user,
+               'user_token': user_token.key}
 
     return render(request, 'tethys_portal/user/settings.html', context)
+
 
 @login_required()
 def change_password(request, username=None):
@@ -104,9 +109,6 @@ def change_password(request, username=None):
             # Return to the settings page
             return redirect('user:settings', username=username)
 
-        else:
-            pass
-
     else:
         # Create a form populated with data from the instance user
         form = UserPasswordChangeForm(user=request_user)
@@ -115,6 +117,7 @@ def change_password(request, username=None):
     context = {'form': form}
 
     return render(request, 'tethys_portal/user/change_password.html', context)
+
 
 @login_required()
 def social_disconnect(request, username, provider, association_id):

@@ -1,0 +1,57 @@
+#
+language: c
+
+env:
+  - PYTHON_VERSION="2"
+  - PYTHON_VERSION="3"
+
+# Setting sudo to false opts in to Travis-CI container-based builds.
+sudo: false
+
+# Turn off email notifications
+notifications:
+  email: false
+
+os:
+  - linux
+  - osx
+
+install:
+  - cd ..
+  - mv tethys src
+  - bash ./src/scripts/install_tethys.sh -h
+  - bash ./src/scripts/install_tethys.sh --partial-tethys-install mesdiat -t $PWD --python-version $PYTHON_VERSION
+
+  # activate conda environment
+  - export PATH="$PWD/miniconda/bin:$PATH"
+  - source activate tethys
+  - conda list
+
+  # start database server
+  - pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" -l "${TETHYS_DB_DIR}/logfile" start -o "-p ${TETHYS_DB_PORT}"
+
+  # generate new settings.py file with tethys_super user for tests
+  - rm ./src/tethys_portal/settings.py
+  - tethys gen settings --db-username tethys_super --db-password pass --db-port ${TETHYS_DB_PORT}
+
+  # install test dependencies
+  - pip install python-coveralls
+  - pip install -e $TETHYS_HOME/src/[tests]
+
+  # install test apps and extensions
+  - pushd ./src/tests/extensions/tethysext-test_extension
+  - python setup.py develop
+  - popd
+
+  - pushd ./src/tests/apps/tethysapp-test_app
+  - python setup.py develop
+  - popd
+
+# command to run tests
+script:
+  - tethys test -c -u
+
+# generate test coverage information
+after_success:
+  - ls -al
+  - coveralls

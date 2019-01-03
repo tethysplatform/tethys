@@ -29,7 +29,11 @@ For Systems with `curl` (e.g. Mac OSX and CentOS):
       curl :install_tethys:`sh` -o ./install_tethys.sh
       bash install_tethys.sh -b |branch|
 
-.. note::
+
+.. _install_script_options:
+
+Install Script Options
+......................
 
     You can customize your tethys installation by passing command line options to the installation script. The available options can be listed by running::
 
@@ -39,6 +43,8 @@ For Systems with `curl` (e.g. Mac OSX and CentOS):
 
         * `-t, --tethys-home <PATH>`:
                 Path for tethys home directory. Default is ~/tethys.
+        * `-s, --tethys-src <PATH>`:
+                Path to the tethys source directory. Default is ${TETHYS_HOME}/src.
         * `-a, --allowed-host <HOST>`:
                 Hostname or IP address on which to serve Tethys. Default is 127.0.0.1.
         * `-p, --port <PORT>`:
@@ -54,14 +60,24 @@ For Systems with `curl` (e.g. Mac OSX and CentOS):
 
         * `-n, --conda-env-name <NAME>`:
                 Name for tethys conda environment. Default is 'tethys'.
-        * `--python-version <PYTHON_VERSION>`:
-                Main python version to install tethys environment into (2 or 3). Default is 2.
+        * `--python-version <PYTHON_VERSION>` (deprecated):
+                Main python version to install tethys environment into (2-deprecated or 3). Default is 3.
+                .. note::
+
+                    Support for Python 2 is deprecated and will be dropped in Tethys version 3.0.
+
         * `--db-username <USERNAME>`:
                 Username that the tethys database server will use. Default is 'tethys_default'.
         * `--db-password <PASSWORD>`:
                 Password that the tethys database server will use. Default is 'pass'.
+        * `--db-super-username <USERNAME>`:
+                Username for super user on the tethys database server. Default is 'tethys_super'.
+        * `--db-super-password <PASSWORD>`:
+                Password for super user on the tethys database server. Default is 'pass'.
         * `--db-port <PORT>`:
                 Port that the tethys database server will use. Default is 5436.
+        * `--db-dir <PATH>`:
+                Path where the local PostgreSQL database will be created. Default is ${TETHYS_HOME}/psql.
         * `-S, --superuser <USERNAME>`:
                 Tethys super user name. Default is 'admin'.
         * `-E, --superuser-email <EMAIL>`:
@@ -74,6 +90,36 @@ For Systems with `curl` (e.g. Mac OSX and CentOS):
                 .. tip::
 
                     If conda home is not in the default location then the `--conda-home` options must also be specified with this option.
+
+        * `--partial-tethys-install <FLAGS>`:
+                List of flags to indicate which steps of the installation to do.
+
+                Flags:
+                    * `m` - Install Miniconda
+                    * `r` - Clone Tethys repository (the `--tethys-src` option is required if you omit this flag).
+                    * `c` - Checkout the branch specified by the option `--branch` (specifying the flag `r` will also trigger this flag)
+                    * `e` - Create Conda environment
+                    * `s` - Create `settings.py` file
+                    * `d` - Create a local database server
+                    * `i` - Initialize database server with the Tethys database (specifying the flag `d` will also trigger this flag)
+                    * `u` - Add a Tethys Portal Super User to the user database (specifying the flag `d` will also trigger this flag)
+                    * `a` - Create activation/deactivation scripts for the Tethys Conda environment
+                    * `t` - Create the `t` alias to activate the Tethys Conda environment
+
+                For example, if you already have Miniconda installed and you have the repository cloned and have generated a `settings.py` file, but you want to use the install script to:
+
+                    * create a conda environment,
+                    * setup a local database server,
+                    * create the conda activation/deactivation scripts, and
+                    * create the `t` shortcut,
+
+                then you can run the following command::
+
+                    bash install_tethys.sh --partial-tethys-install edat
+
+                .. warning::
+
+                    If `--skip-tethys-install` is used then this option will be ignored.
 
         * `--install-docker`:
                 Flag to include Docker installation as part of the install script (Linux only). See `2. Install Docker (OPTIONAL)`_ for more details.

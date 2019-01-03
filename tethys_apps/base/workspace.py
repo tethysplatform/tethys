@@ -70,7 +70,8 @@ class TethysWorkspace(object):
 
         """
         if full_path:
-            files = [os.path.join(self._path, f) for f in os.listdir(self._path) if os.path.isfile(os.path.join(self._path, f))]
+            files = [os.path.join(self._path, f) for f in os.listdir(self._path) if
+                     os.path.isfile(os.path.join(self._path, f))]
         else:
             files = [f for f in os.listdir(self._path) if os.path.isfile(os.path.join(self._path, f))]
         return files
@@ -97,7 +98,8 @@ class TethysWorkspace(object):
 
         """
         if full_path:
-            directories = [os.path.join(self._path, d) for d in os.listdir(self._path) if os.path.isdir(os.path.join(self._path, d))]
+            directories = [os.path.join(self._path, d) for d in os.listdir(self._path) if
+                           os.path.isdir(os.path.join(self._path, d))]
         else:
             directories = [d for d in os.listdir(self._path) if os.path.isdir(os.path.join(self._path, d))]
         return directories
@@ -163,11 +165,10 @@ class TethysWorkspace(object):
 
         **Note:** Though you can specify relative paths, the ``remove()`` method will not allow you to back into other directories using "../" or similar notation. Futhermore, absolute paths given must contain the path of the workspace to be valid.
 
-        """
+        """  # noqa: E501
         # Sanitize to prevent backing into other directories or entering the home directory
-        full_path = item.replace('../', '').replace('./', '').\
-                         replace('..\\', '').replace('.\\', '').\
-                         replace('~/', '').replace('~\\', '')
+        full_path = item.replace('../', '').replace('./', '').replace('..\\', '').\
+            replace('.\\', '').replace('~/', '').replace('~\\', '')
 
         if self._path not in full_path:
             full_path = os.path.join(self._path, full_path)

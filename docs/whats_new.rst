@@ -2,153 +2,122 @@
 What's New
 **********
 
-**Last Updated:** May 2017
+**Last Updated:** December 2018
 
 Refer to this article for information about each new release of Tethys Platform.
 
 Release |version|
 =================
 
-Powered by Miniconda Environment
---------------------------------
+Python 3 Support
+----------------
 
-* Tethys Platform is now installed in a Miniconda environment.
-* Using the Miniconda includes Conda, an open source Python package management system
-* Conda can be used to install Python dependencies as well as system dependencies
-* Installing packages like GDAL or NetCDF4 are as easy as ``conda install gdal``
-* Conda is cross platform: it works on Windows, Linux, and MacOS
+* Python 3 officially supported in Tethys Platform.
+* Python 2 support officially deprecated and will be dropped when Tethys Platform 3.0 is released.
+* Tethys needs to migrate to Python 3 only so we can upgrade to Django 2.0, which only supports Python 3.
 
-See: `Miniconda <https://conda.io/miniconda.html>`_ and `Conda <https://conda.io/docs/>`_
+.. important::
 
-Cross Platform Support
-----------------------
+    Migrate your apps to Python 3. After Tethys Platform 3.0 is released, Python 2 will no longer be supported by Tethys Platform.
 
-* Develop natively on Windows, Mac, or Linux!
-* No more virtual machines.
-* Be careful with your paths.
 
-See: :doc:`installation`
+100% Unit Test Coverage
+-----------------------
 
-Installation Scripts
---------------------
+* Tests pass in Python 2 and Python 3.
+* Unit tests cover 100% of testable code.
+* Code base linted using flake8 to enforce PEP-8 and other Python coding best practices.
+* Automated test execution on Travis-CI and Stickler-CI whenever a Pull Request is submitted.
+* Added badges to the README to display build/testing, coverage, and docs status on github repository.
+* All of this will lead to increased stability in this and future releases.
 
-* Completely automated installation of Tethys
-* Scripts provided for Mac, Linux, and Windows.
+See: `Tethys Platform Repo <https://github.com/tethysplatform/tethys>`_ for build and coverage information.
 
-See: :doc:`installation`
+Tethys Extensions
+-----------------
 
-Python 3
---------
+* Customize Tethys Platform functionality.
+* Create your own gizmos.
+* Centralize app logic that is common to multiple apps in an extension.
 
-* Experimental Python 3 Support in 2.0.0
-* Tethys Dataset Services is not completely Python 3 compatible
-* Use ``--python-version 3`` option on the installation script
-* Python 2 support will be dropped in version 2.1
+See: :doc:`./tethys_sdk/extensions`
 
-See: :doc:`installation`
-
-Templating API
+Map View Gizmo
 --------------
 
-* Leaner, updated theme for app base template.
-* New ``header_buttons`` block for adding custom buttons to app header.
+* Added support for many more basemaps.
+* Added Esri, Stamen, CartoDB.
+* Support for custom XYZ services as basemaps.
+* User can set OpenLayers version.
+* Uses jsdelivr to load custom versions (see: `<https://cdn.jsdelivr.net/npm/openlayers>`_)
+* Default OpenLayers version updated to 5.3.0.
 
-See: :doc:`tethys_sdk/templating`
+See: :doc:`tethys_sdk/gizmos/map_view`
 
-App Settings
-------------
+Class-based Controllers
+-----------------------
 
-* Developers can create App Settings, which are configured in the admin interface of the Tethys Portal.
-* Types of settings that can be created include Custom Settings, Persistent Store Settings, Dataset Service Settings, Spatial Dataset Service Settings, and Web Processing Service Settings.
-* The way Tethys Services are allocated to apps is now done through App Settings.
-* All apps using the Persistent Stores APIs, Dataset Services APIs, or Web Processing Services APIs prior to version 2.0.0 will need to be refactored to use the new App settings approach.
+* Added ``TethysController`` to SDK to support class-based views in Tethys apps.
+* Inherits from django ``View`` class.
+* Includes ``as_controller`` method, which is a thin wrapper around ``as_view`` method to better match Tethys terminology.
+* UrlMaps can take class-based Views as the controller argument: ``MyClassBasedController.as_controller(...)``
+* More to come in the future.
 
-See: :doc:`./tethys_sdk/app_settings`
+See: `Django Class-based views <https://docs.djangoproject.com/en/2.1/topics/class-based-views/>`_ to get started.
+
+Partial Install Options
+-----------------------
+
+* The Tethys Platform installation scripts now allow for partial installation.
+* Install in existing Conda environment or against existing database.
+* Upgrade using the install script!
+* Linux and Mac only.
+
+See: :doc:`./installation/linux_and_mac` and :doc:`./installation/update`
 
 Commandline Interface
 ---------------------
 
-* Added ``tethys list`` command that lists installed apps.
-* Completely overhauled scaffold command that works cross-platform.
-* New options for scaffold command that allow automatically accepting the defaults and overwriting project if it already exists.
+* New commands to manage app settings and services.
+* ``tethys app_settings`` - List settings for an app.
+* ``tethys services`` - List, create, and remove Tethys services (only supports persistent store services and spatial dataset services for now).
+* ``tethys link`` - Link/Assign a Tethys service to a corresponding app setting.
+* ``tethys schedulers`` - List, create, and remove job Schedulers.
+* ``tethys manage sync`` - Sync app and extensions with Tethys database without a full Tethys start.
 
-See: :ref:`tethys_list_cmd` and :ref:`tethys_scaffold_cmd`
+See: :ref:`tethys_cli_app_settings`, :ref:`tethys_cli_services`, :ref:`tethys_cli_link`, :ref:`tethys_cli_schedulers`, and :ref:`tethys_manage_cmd`
 
-Tutorials
----------
+Dockerfile
+----------
 
-* Brand new Getting Started Tutorial
-* Demonstration of most Tethys SDK APIs
+* New Dockerfile for Tethys Platform.
+* Use it to build Docker images.
+* Use it as a base for your own Docker images that have your apps installed.
+* Includes supporting salt files.
+* Dockerfile has been optimized to minimize the size of the produced image.
+* Threading is enabled in the Docker container.
 
-See: :doc:`./tutorials/getting_started`
+See: `Docker Documentation <https://docs.docker.com/get-started/>`_ to learn how to use Docker in your workflows.
 
-Gizmos
-------
+API Tokens for Users
+--------------------
+* API tokens are automatically generated for users when they are created.
+* Use User API tokens to access protected REST API views.
 
-* New way to call them
-* New load dependencies Method
-* Updated select_gizmo to allow Select2 options to be passed in.
-
-See: :doc:`tethys_sdk/gizmos`
-
-Map View
---------
-
-* Updated OpenLayers libraries to version 4.0
-* Fixes to make MapView compatible with Internet Explorer
-* Can configure styling of MVDraw overlay layer
-* New editable attribute for MVLayers to lock layers from being edited
-* Added data attribute to MVLayer to allow passing custom attributes with layers for use in custom JavaScript
-* A basemap switcher tool is now enabled on the map with the capability to configure multiple basemaps, including turning the basemap off.
-* Added the ability to customize some styles of vector MVLayers.
-
-See: :doc:`tethys_sdk/gizmos/map_view`
-
-Esri Map View
+Documentation
 -------------
-
-* New map Gizmo that uses ArcGIS for JavaScript API.
-
-See: :doc:`tethys_sdk/gizmos/esri_map`
-
-Plotly View and Bokeh View Gizmos
----------------------------------
-
-* True open source options for plotting in Tethys
-
-See: :doc:`tethys_sdk/gizmos/bokeh_view` and :doc:`tethys_sdk/gizmos/plotly_view`
-
-DataTable View Gizmos
----------------------
-
-* Interactive table gizmo based on Data Tables.
-
-See: :doc:`tethys_sdk/gizmos/datatable_view`
-
-Security
---------
-
-* Sessions will now timeout and log user out after period of inactivity.
-* When user closes browser, they are automatically logged out now.
-* Expiration times can be configured in settings.
-
-See: :doc:`installation/platform_settings`
-
-HydroShare OAuth Backend and Helper Function
---------------------------------------------
-
-* Refactor default HydroShare OAuth backend; Token refresh is available; Add backends for HydroShare-beta and HydroShare-playground.
-* Include hs_restclient library in requirements.txt; Provide a helper function to help initialize the ``hs`` object based on HydroShare social account.
-* Update python-social-auth to 0.2.21.
-
-See: :doc:`tethys_portal/social_auth`
-
-
+* Added SSL setup instruction to Production Installation (see: :ref:`production_installation_ssl`)
 
 Bugs
 ----
 
-* Fixed issue where ``tethys uninstall <app>`` command was not uninstalling fully.
+* Fixed grammar in forget password link.
+* Refactored various methods and decorators to use new way of using Django methods ``is_authenticated`` and ``is_anonymous``.
+* Fixed bug with Gizmos that was preventing errors from being displayed when in debug mode.
+* Fixed various bugs with uninstalling apps and extensions.
+* Fixed bugs with get_persistent_store_setting methods.
+* Fixed a naming conflict in the SelectInput gizmo.
+* Fixed numerous bugs identified by new tests.
 
 Prior Release Notes
 ===================
