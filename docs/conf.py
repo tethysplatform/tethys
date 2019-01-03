@@ -54,9 +54,6 @@ print('NOTE: The following modules are mocked to prevent timeouts during the doc
 print('{}'.format(', '.join(MOCK_MODULES)))
 sys.modules.update((mod_name, MockModule()) for mod_name in MOCK_MODULES)
 
-# Patch mock the harvester harvest method
-mock.patch('tethys_apps.harvester.SingletonHarvester.harvest')
-
 # Fixes django settings module problem
 sys.path.insert(0, os.path.abspath('..'))
 
