@@ -23,7 +23,8 @@ var TETHYS_MAP_VIEW = (function() {
       DEFAULT_SENSITIVITY = 2,                              // Used in selectable features
       DEFAULT_OUTPUT_FORMAT = 'GeoJSON',                    // The default output format
       GEOJSON_FORMAT = 'GeoJSON',                           // GeoJSON format type
-      WKT_FORMAT = 'WKT';                                   // Well know text format type
+      WKT_FORMAT = 'WKT',                                   // Well know text format type
+      DEFAULT_FORMAT = GEOJSON_FORMAT;                      // Default format type
 
   // Options Attributes
   var ATTRIBUTE_TABLE_ATTRIBUTE = 'data-attribute-table',   // HTML attribute containing the attribute table options
@@ -37,10 +38,11 @@ var TETHYS_MAP_VIEW = (function() {
       DISABLE_BASE_MAP_ATTRIBUTE = 'data-disable-base-map'; // HTML attribute containing the disable base map option
 
   // Objects
-  var public_interface,                                      // Object returned by the module
+  var public_interface,                                     // Object returned by the module
       m_drawing_interaction,                                // Drawing interaction used for drawing
       m_drawing_source,                                     // Drawing sources for drawing feature
       m_drawing_layer,                                      // Drawing layer for drawing feature
+      m_serialization_format,                               // Serialization format for serializing layer data
       m_drag_box_interaction,                               // Drag box interaction used for drawing rectangles
       m_drag_feature_interaction,                           // Drag feature interaction
       m_delete_feature_interaction,                         // Delete feature interaction
@@ -57,7 +59,7 @@ var TETHYS_MAP_VIEW = (function() {
       m_lines_selected_layer,                               // The layer that contains the currently selected lines
       m_wms_feature_selection_changed_callbacks,            // An array of callback functions to execute whenever features change
       m_polygons_selected_layer,                            // The layer that contains the currently selected polygons
-      m_map;					                           // The map
+      m_map;					                            // The map
 
   // Selectors
   var m_map_target,                                         // Selector for the map container
@@ -88,7 +90,8 @@ var TETHYS_MAP_VIEW = (function() {
   // Drawing Methods
   var add_drawing_interaction, add_drag_box_interaction, add_drag_feature_interaction,
       add_delete_feature_interaction, add_modify_interaction, add_feature_callback,
-      draw_end_callback, draw_change_callback, delete_feature_callback, switch_interaction;
+      draw_end_callback, draw_change_callback, delete_feature_callback, change_feature_callback,
+      switch_interaction;
 
   // Feature Parser Methods
   var geojsonify, wellknowtextify;
@@ -398,6 +401,7 @@ var TETHYS_MAP_VIEW = (function() {
     // Constants
 ////////////////////////////////////////// Color of annotation tools and Button Spacing ////////////////////////////////
     var VALID_GEOMETRY_TYPES = ['Polygon', 'Point', 'LineString', 'Box'];
+    var VALID_CONTROL_TYPES = VALID_GEOMETRY_TYPES.concat(['Pan', 'Move', 'Delete', 'Modify']);
     var INITIAL_FILL_COLOR = 'rgba(255, 255, 255, 0.2)',
         INITIAL_STROKE_COLOR = '#ffcc33',
         INITIAL_POINT_FILL_COLOR = '#ffcc33',
@@ -408,15 +412,66 @@ var TETHYS_MAP_VIEW = (function() {
         button_left_offset = 136,
         initial_drawing_mode = 'Point';
 
-    if (is_defined(m_draw_options)) {
+    var initial_features_obj, projection, format, proj_format, features = [];
 
+    if (is_defined(m_draw_options)) {
       // Customize styles
       INITIAL_FILL_COLOR = m_draw_options.fill_color,
       INITIAL_STROKE_COLOR = m_draw_options.line_color,
       INITIAL_POINT_FILL_COLOR = m_draw_options.point_color,
 
+      initial_features_obj = m_draw_options.initial_features;
+
       // Initialize the drawing layer
       m_drawing_source = new ol.source.Vector({wrapX: false});
+
+      // Determine serialization format
+      m_serialization_format = DEFAULT_FORMAT;
+
+      if (is_defined(m_draw_options.output_format)) {
+        m_serialization_format = m_draw_options.output_format;
+      }
+
+      // Determine projection
+      proj_format = new ol.format.GeoJSON();
+      projection = proj_format.readProjection(initial_features_obj);
+
+      if (is_defined(initial_features_obj)) {
+
+        if (m_serialization_format === GEOJSON_FORMAT) {
+          // Read the features
+          if (is_defined(projection)) {
+            features = format.readFeatures(
+              initial_features_obj,
+              {'dataProjection': projection, 'featureProjection': DEFAULT_PROJECTION}
+            );
+          } else {
+            features = format.readFeatures(initial_features_obj);
+          }
+        } else {
+          format = new ol.format.WKT();
+
+          $.each(initial_features_obj.features, function(index, feature) {
+            var current_feature;
+            if (is_defined(projection)) {
+              current_feature = format.readFeatures(
+                feature.wkt,
+                {'dataProjection': projection, 'featureProjection': DEFAULT_PROJECTION}
+              );
+            } else {
+              current_feature = format.readFeatures(feature.wkt);
+            }
+
+            features = features.concat(current_feature);
+          });
+        }
+
+        // Add features to drawing layer source
+        m_drawing_source.addFeatures(features);
+
+        // Sync text field with initial features
+        update_field();
+      }
 
       m_drawing_layer = new ol.layer.Vector({
         source: m_drawing_source,
@@ -446,11 +501,12 @@ var TETHYS_MAP_VIEW = (function() {
 
       // Bind event
       m_drawing_source.on('addfeature', add_feature_callback);
-	  m_drawing_source.on('removefeature', delete_feature_callback);
+	    m_drawing_source.on('removefeature', delete_feature_callback);
+	    m_drawing_source.on('change', change_feature_callback);
 
       // Set initial drawing interaction
       if (is_defined(m_draw_options.initial) &&
-          in_array(m_draw_options.initial, VALID_GEOMETRY_TYPES) &&
+          in_array(m_draw_options.initial, VALID_CONTROL_TYPES) &&
           is_defined(m_draw_options.controls) &&
           in_array(m_draw_options.initial, m_draw_options.controls)
       ) {
@@ -468,7 +524,7 @@ var TETHYS_MAP_VIEW = (function() {
         pan_control = new DrawingControl({
           control_type: 'Pan',
           left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-          active: false,
+          active: initial_drawing_mode === 'Pan',
           control_id: "tethys_pan"
         });
 
@@ -482,7 +538,7 @@ var TETHYS_MAP_VIEW = (function() {
           modify_control = new DrawingControl({
             control_type: 'Modify',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-            active: false,
+            active: initial_drawing_mode === 'Modify',
             control_id: "tethys_modify"
           });
 
@@ -498,7 +554,7 @@ var TETHYS_MAP_VIEW = (function() {
           modify_control = new DrawingControl({
             control_type: 'Delete',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-            active: false,
+            active: initial_drawing_mode === 'Delete',
             control_id: "tethys_delete"
           });
 
@@ -515,7 +571,7 @@ var TETHYS_MAP_VIEW = (function() {
           drag_feature_control = new DrawingControl({
             control_type: 'Drag',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
-            active: false,
+            active: initial_drawing_mode === 'Move',
             control_id: "tethys_move"
           });
 
@@ -523,6 +579,7 @@ var TETHYS_MAP_VIEW = (function() {
           m_map.addControl(drag_feature_control);
         }
 
+        // Add geometry controls
         for (var i = 0; i < draw_controls.length; i++) {
 
           var current_control_type = draw_controls[i];
@@ -1098,6 +1155,11 @@ var TETHYS_MAP_VIEW = (function() {
   	update_field();
   };
 
+  change_feature_callback = function(feature){
+  	// Update the hidden text field
+  	update_field();
+  };
+
   draw_end_callback = function(feature) {
     // Initialize the feature properties
     initialize_feature_properties(feature);
@@ -1121,7 +1183,7 @@ var TETHYS_MAP_VIEW = (function() {
     m_map.removeInteraction(m_modify_select_interaction);
     m_map.removeInteraction(m_modify_interaction);
     m_map.removeInteraction(m_drag_feature_interaction);
-	m_map.removeInteraction(m_delete_feature_interaction);
+	  m_map.removeInteraction(m_delete_feature_interaction);
     m_map.removeInteraction(m_drag_box_interaction);
 
     // Set appropriate drawing interaction
@@ -1129,7 +1191,7 @@ var TETHYS_MAP_VIEW = (function() {
       // Do nothing
     } else if (interaction_type === 'Modify') {
       add_modify_interaction();
-    } else if (interaction_type === 'Drag') {
+    } else if (interaction_type === 'Move') {
       add_drag_feature_interaction();
   	} else if (interaction_type === 'Delete') {
       add_delete_feature_interaction();
@@ -1149,6 +1211,11 @@ var TETHYS_MAP_VIEW = (function() {
 
     // Get the features
     features = m_drawing_source.getFeatures();
+
+    if (features.length == 0)
+    {
+        return "";
+    }
 
     // Setup geometry collection
     geometry_collection = {'type': 'GeometryCollection',
@@ -1201,6 +1268,11 @@ var TETHYS_MAP_VIEW = (function() {
 
     // Get the features
     features = m_drawing_source.getFeatures();
+
+    if (features.length == 0)
+    {
+        return "";
+    }
 
     // Setup geometry collection
     geometry_collection = {'type': 'GeometryCollection',
@@ -1873,15 +1945,14 @@ var TETHYS_MAP_VIEW = (function() {
     $textarea = $('#' + m_textarea_target);
     textarea_string = '';
 
-    // Default output format to GeoJSON
-    if (is_defined(m_draw_options.output_format)) {
-      if (m_draw_options.output_format === WKT_FORMAT) {
-        textarea_string = JSON.stringify(wellknowtextify());
-      } else {
-        textarea_string = JSON.stringify(geojsonify());
-      }
+    if (m_serialization_format === GEOJSON_FORMAT) {
+        textarea_string = geojsonify();
     } else {
-      textarea_string = JSON.stringify(geojsonify());
+        textarea_string = wellknowtextify();
+    }
+
+    if (textarea_string !== '') {
+        textarea_string = JSON.stringify(textarea_string);
     }
 
     // Set value of textarea
@@ -1898,7 +1969,7 @@ var TETHYS_MAP_VIEW = (function() {
 
   is_defined = function(variable)
   {
-    return !!(typeof variable !== typeof undefined && variable !== false);
+    return !!(typeof variable !== typeof undefined && variable !== false && variable !== null);
   };
 
   // Instantiate a function from a string
