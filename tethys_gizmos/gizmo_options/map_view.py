@@ -430,6 +430,7 @@ class MVDraw(SecondaryGizmoOptions):
     Attributes:
         controls(list, required): List of drawing controls to add to the map. Valid options are 'Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon' and 'Box'.
         initial(str, required): Drawing control to be enabled initially. Must be included in the controls list.
+        initial_features(str): GeoJSON string containing features to add to the drawing layer. 
         output_format(str): Format to output to the hidden text area. Either 'WKT' (for Well Known Text format) or 'GeoJSON'. Defaults to 'GeoJSON'
         line_color(str): User control for customizing the stroke color of annotation objects
         fill_color(str): User control for customizing the fill color of polygons (suggest rgba format for setting transparency)
@@ -452,7 +453,7 @@ class MVDraw(SecondaryGizmoOptions):
 
     def __init__(self, controls, initial, output_format='GeoJSON',
                  line_color="#ffcc33", fill_color='rgba(255, 255, 255, 0.2)',
-                 point_color="#ffcc33"):
+                 point_color="#ffcc33", initial_features=None):
         """
         Constructor
         """
@@ -464,6 +465,7 @@ class MVDraw(SecondaryGizmoOptions):
         if initial not in self.controls:
             raise ValueError('Value of "initial" must be contained in the "controls" list.')
         self.initial = initial
+        self.initial_features = initial_features
         self.output_format = output_format
         self.fill_color = fill_color
         self.line_color = line_color
