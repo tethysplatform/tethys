@@ -75,6 +75,8 @@ class TethysJob(models.Model):
 
     @property
     def last_status_update(self):
+        if not getattr(self, '_last_status_update', None):
+            self._last_status_update = datetime.datetime(1, 1, 1)
         return self._last_status_update
 
     @property
@@ -112,6 +114,7 @@ class TethysJob(models.Model):
         """
         Update status of job.
         """
+
         old_status = self._status
 
         # Set status from status given
@@ -146,8 +149,6 @@ class TethysJob(models.Model):
         Returns:
             bool: True if update_status_interval or longer has elapsed since our last update, else False.
         """
-        if not getattr(self, '_last_status_update', None):
-            return False
 
         time_since_last_update = datetime.datetime.now() - self.last_status_update
         is_time_to_update = time_since_last_update > self.update_status_interval
