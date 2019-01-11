@@ -432,13 +432,15 @@ var TETHYS_MAP_VIEW = (function() {
         m_serialization_format = m_draw_options.output_format;
       }
 
-      // Determine projection
-      proj_format = new ol.format.GeoJSON();
-      projection = proj_format.readProjection(initial_features_obj);
-
+      // Load init features
       if (is_defined(initial_features_obj)) {
+        // Determine projection
+        proj_format = new ol.format.GeoJSON();
+        projection = proj_format.readProjection(initial_features_obj);
 
         if (m_serialization_format === GEOJSON_FORMAT) {
+          format = new ol.format.GeoJSON();
+
           // Read the features
           if (is_defined(projection)) {
             features = format.readFeatures(
@@ -569,7 +571,7 @@ var TETHYS_MAP_VIEW = (function() {
 
           // Add drag feature control next
           drag_feature_control = new DrawingControl({
-            control_type: 'Drag',
+            control_type: 'Move',
             left_offset: button_left_offset.toString() + BUTTON_OFFSET_UNITS,
             active: initial_drawing_mode === 'Move',
             control_id: "tethys_move"
