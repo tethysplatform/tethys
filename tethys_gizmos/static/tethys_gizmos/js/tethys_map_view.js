@@ -6,10 +6,26 @@
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
 
+// Extend Object prototype
+Object.byString = function(o, s) {
+    s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+    s = s.replace(/^\./, '');           // strip a leading dot
+    var a = s.split('.');
+
+    for (var i = 0, n = a.length; i < n; ++i) {
+        var k = a[i];
+        if (k in o) {
+            o = o[k];
+        } else {
+            return;
+        }
+    }
+    return o;
+}
+
 /*****************************************************************************
  *                      LIBRARY WRAPPER
  *****************************************************************************/
-
 var TETHYS_MAP_VIEW = (function() {
   // Wrap the library in a package function
   "use strict"; // And enable strict mode for this library
@@ -41,6 +57,7 @@ var TETHYS_MAP_VIEW = (function() {
   var public_interface,                                     // Object returned by the module
       m_drawing_interaction,                                // Drawing interaction used for drawing
       m_drawing_source,                                     // Drawing sources for drawing feature
+      m_snapping_source,                                    // Snapping source for drawing feature
       m_drawing_layer,                                      // Drawing layer for drawing feature
       m_serialization_format,                               // Serialization format for serializing layer data
       m_drag_box_interaction,                               // Drag box interaction used for drawing rectangles
@@ -48,6 +65,7 @@ var TETHYS_MAP_VIEW = (function() {
       m_delete_feature_interaction,                         // Delete feature interaction
       m_modify_interaction,                                 // Modify interaction used for modifying features
       m_modify_select_interaction,                          // Select interaction for modify action
+      m_snap_interaction,                                   // Snap interaction for drawing layers
       m_select_interaction,                                 // Select interaction for main layers
       m_zoom_on_selection,                                  // Indicates whether to zoom on selection event
       m_legend_element,                                     // Stores the document element for the legend
@@ -89,7 +107,7 @@ var TETHYS_MAP_VIEW = (function() {
 
   // Drawing Methods
   var add_drawing_interaction, add_drag_box_interaction, add_drag_feature_interaction,
-      add_delete_feature_interaction, add_modify_interaction, add_feature_callback,
+      add_delete_feature_interaction, add_modify_interaction, add_snap_interaction, add_feature_callback,
       draw_end_callback, draw_change_callback, delete_feature_callback, change_feature_callback,
       switch_interaction;
 
@@ -501,17 +519,81 @@ var TETHYS_MAP_VIEW = (function() {
       // Add drawing layer to the map
       m_map.addLayer(m_drawing_layer);
 
+      // Define snapping target source
+      m_snapping_source = m_drawing_source;
+      var snapping_layer = m_draw_options.snapping_layer;
+      var properties = Object.keys(snapping_layer);
+
+      if (properties.length > 0) {
+        var match_property = properties[0];
+        var match_value = snapping_layer[match_property];
+
+        m_map.getLayers().forEach(function(layer, index, layers) {
+          var val = Object.byString(layer, match_property);
+
+          if (val == match_value) {
+            var source, params, layer, wms_url, wfs_url, wfs_url_func;
+            source = layer.getSource();
+
+            // Only do the voodoo if the source is a WMS type
+            if (!source instanceof ol.source.ImageWMS && !source instanceof ol.source.TileWMS) {
+                return false;
+            }
+
+            // Get data from WMS source needed to make a WFS source
+            params = source.getParams();
+            layer = params.LAYERS;
+            wms_url = source.getUrls()[0];
+
+            // Convert the wfs url to a wms url
+            wfs_url = wms_url.replace('wms', 'wfs');
+
+            // Define the function used to load the WFS feature data
+            wfs_url_func = function(extent) {
+                return wfs_url + '?service=WFS&' +
+                    'version=1.1.0&' +
+                    'request=GetFeature&' +
+                    'typename=' + layer + '&' +
+                    'outputFormat=application/json&' +
+                    'srsname=EPSG:3857&' +
+                    'bbox=' + extent.join(',') + ',EPSG:3857';
+            }
+
+            // Create a new vector source for the WFS version of the WMS layer
+            m_snapping_source = new ol.source.Vector({
+                format: new ol.format.GeoJSON(),
+                url: wfs_url_func,
+                strategy: ol.loadingstrategy.bbox
+            });
+
+            // Add a new layer to contain the snapping vector layer, but style it to be transparent
+            var snapping_layer = new ol.layer.Vector({
+                source: m_snapping_source,
+                style: new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(0,0,0,0)',
+                        width: 2
+                    })
+                })
+            });
+            m_map.addLayer(snapping_layer);
+
+            return false;
+          }
+        });
+      }
+
       // Bind event
       m_drawing_source.on('addfeature', add_feature_callback);
-	    m_drawing_source.on('removefeature', delete_feature_callback);
-	    m_drawing_source.on('change', change_feature_callback);
+	  m_drawing_source.on('removefeature', delete_feature_callback);
+	  m_drawing_source.on('change', change_feature_callback);
 
       // Set initial drawing interaction
       if (is_defined(m_draw_options.initial) &&
           in_array(m_draw_options.initial, VALID_CONTROL_TYPES) &&
           is_defined(m_draw_options.controls) &&
-          in_array(m_draw_options.initial, m_draw_options.controls)
-      ) {
+          in_array(m_draw_options.initial, m_draw_options.controls))
+      {
         initial_drawing_mode = m_draw_options.initial;
       }
 
@@ -1049,7 +1131,7 @@ var TETHYS_MAP_VIEW = (function() {
     ol_legend_init();
 
     // Initialize tooltips
-    $('[data-toggle="tooltip"]').tooltip()
+    $('[data-toggle="tooltip"]').tooltip();
   };
 
   /***********************************
@@ -1116,6 +1198,14 @@ var TETHYS_MAP_VIEW = (function() {
     // Add delete feature interaction
     m_delete_feature_interaction = new DeleteFeatureInteraction();
     m_map.addInteraction(m_delete_feature_interaction);
+  };
+
+  add_snap_interaction = function() {
+    // Add snap interaction
+    var snap_options = {source: m_snapping_source};
+    snap_options = Object.assign(snap_options, m_draw_options.snapping_options);
+    m_snap_interaction = new ol.interaction.Snap(snap_options);
+    m_map.addInteraction(m_snap_interaction);
   };
 
   add_modify_interaction = function() {
@@ -1185,8 +1275,9 @@ var TETHYS_MAP_VIEW = (function() {
     m_map.removeInteraction(m_modify_select_interaction);
     m_map.removeInteraction(m_modify_interaction);
     m_map.removeInteraction(m_drag_feature_interaction);
-	  m_map.removeInteraction(m_delete_feature_interaction);
+	m_map.removeInteraction(m_delete_feature_interaction);
     m_map.removeInteraction(m_drag_box_interaction);
+    m_map.removeInteraction(m_snap_interaction);
 
     // Set appropriate drawing interaction
     if (interaction_type === 'Pan') {
@@ -1201,6 +1292,10 @@ var TETHYS_MAP_VIEW = (function() {
       add_drag_box_interaction();
     } else {
       add_drawing_interaction(interaction_type);
+    }
+
+    if (m_draw_options.snapping_enabled) {
+        add_snap_interaction();
     }
   };
 

@@ -435,7 +435,10 @@ class MVDraw(SecondaryGizmoOptions):
         line_color(str): User control for customizing the stroke color of annotation objects
         fill_color(str): User control for customizing the fill color of polygons (suggest rgba format for setting transparency)
         point_color(str): User control for customizing the color of points
-
+        snapping_enabled(bool): When enabled, features will be able to snap to other features on the drawing layer or in given snapping layers. Defaults to True.
+        snapping_options(dict): Supported options include edge, vertex, pixelTolerance. See: https://openlayers.org/en/latest/apidoc/module-ol_interaction_Snap.html
+        snapping_layer(dict): Dictionary with one key representing the attribute to use for identifying the layer and the value being the value to match (e.g.: {'legend_title': 'My Layer'}, {'data.my_attribute': 'value'}).
+    
     Example
 
     ::
@@ -451,9 +454,9 @@ class MVDraw(SecondaryGizmoOptions):
 
     """  # noqa: E501
 
-    def __init__(self, controls, initial, output_format='GeoJSON',
-                 line_color="#ffcc33", fill_color='rgba(255, 255, 255, 0.2)',
-                 point_color="#ffcc33", initial_features=None):
+    def __init__(self, controls, initial, output_format='GeoJSON', line_color="#ffcc33",
+                 fill_color='rgba(255, 255, 255, 0.2)', point_color="#ffcc33", initial_features=None,
+                 snapping_enabled=True, snapping_options={}, snapping_layer={}):
         """
         Constructor
         """
@@ -461,15 +464,34 @@ class MVDraw(SecondaryGizmoOptions):
         super().__init__()
 
         self.controls = controls
+
         # Validate initial
         if initial not in self.controls:
             raise ValueError('Value of "initial" must be contained in the "controls" list.')
+
+        if len(snapping_layer) > 1:
+            raise ValueError('The snapping_layer parameter of MVDraw object is not valid: {}. '
+                             'Only one key allowed.'.format(snapping_layer))
+
         self.initial = initial
         self.initial_features = initial_features
         self.output_format = output_format
         self.fill_color = fill_color
         self.line_color = line_color
         self.point_color = point_color
+        self.snapping_enabled = snapping_enabled
+        self.snapping_options = snapping_options
+
+        for key, value in snapping_layer.items():
+            root = key.split('.')[0]
+
+            if root in ['data', 'legend_title', 'legend_extent', 'legend_extent_projection', 'legend_classes',
+                        'editable']:
+                new_root = 'tethys_' + root
+                new_key = key.replace(root, new_root, 1)
+                snapping_layer = {new_key: value}
+
+        self.snapping_layer = snapping_layer
 
 
 class MVLayer(SecondaryGizmoOptions):
@@ -487,7 +509,7 @@ class MVLayer(SecondaryGizmoOptions):
         legend_classes (list): A list of MVLegendClass objects.
         legend_extent (list): A list of four ordinates representing the extent that will be used on "zoom to layer": [minx, miny, maxx, maxy].
         legend_extent_projection (str): The EPSG projection of the extent coordinates. Defaults to "EPSG:4326".
-        tethys_data (dict): Dictionary representation of layer data
+        data (dict): Dictionary representation of layer data
 
     Example
 
