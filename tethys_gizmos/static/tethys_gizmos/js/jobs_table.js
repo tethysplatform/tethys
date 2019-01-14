@@ -4,6 +4,7 @@
  *   copied from (https://docs.djangoproject.com/en/1.7/ref/contrib/csrf/)
  *
  *****************************************************************************/
+
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie != '') {
