@@ -70,16 +70,17 @@ def update_row(request, job_id):
 
         row = JobsTable.get_row(job, filters)
 
-        data.update({'job': job, 'row': row, 'column_fields': filters, 'job_status': status,
+        data.update({'job': job, 'job_id': job.id, 'row': row, 'column_fields': filters, 'job_status': status,
                      'job_statuses': statuses, 'delay_loading_status': False})
 
         success = True
         html = render_to_string('tethys_gizmos/gizmos/job_row.html', data)
     except Exception as e:
-        log.error('The following error occurred when updating row for job %s: %s', job_id, str(e))
+        error_msg = 'Updating row for job {} failed: {}'.format(job_id, str(e))
+        log.error(error_msg)
         success = False
         status = None
-        html = None
+        html = render_to_string('tethys_gizmos/gizmos/job_row_error.html', {'job_id': job_id, 'error_msg': error_msg})
 
     return JsonResponse({'success': success, 'status': status, 'html': html})
 
