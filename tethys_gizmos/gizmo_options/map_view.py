@@ -428,9 +428,9 @@ class MVDraw(SecondaryGizmoOptions):
     MVDraw objects are used to define the drawing options for Map View.
 
     Attributes:
-        controls(list, required): List of drawing controls to add to the map. Valid options are 'Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon' and 'Box'.
-        initial(str, required): Drawing control to be enabled initially. Must be included in the controls list.
-        initial_features(str): GeoJSON string containing features to add to the drawing layer. 
+        controls(list): List of drawing controls to add to the map. Valid options are 'Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon' and 'Box', 'Pan'.
+        initial(str): Drawing control to be enabled initially. Must be included in the controls list, defaults to 'Pan'.
+        initial_features(str): GeoJSON string containing features to add to the drawing layer.
         output_format(str): Format to output to the hidden text area. Either 'WKT' (for Well Known Text format) or 'GeoJSON'. Defaults to 'GeoJSON'
         line_color(str): User control for customizing the stroke color of annotation objects
         fill_color(str): User control for customizing the fill color of polygons (suggest rgba format for setting transparency)
@@ -438,13 +438,13 @@ class MVDraw(SecondaryGizmoOptions):
         snapping_enabled(bool): When enabled, features will be able to snap to other features on the drawing layer or in given snapping layers. Defaults to True.
         snapping_options(dict): Supported options include edge, vertex, pixelTolerance. See: https://openlayers.org/en/latest/apidoc/module-ol_interaction_Snap.html
         snapping_layer(dict): Dictionary with one key representing the attribute to use for identifying the layer and the value being the value to match (e.g.: {'legend_title': 'My Layer'}, {'data.my_attribute': 'value'}).
-    
+
     Example
 
     ::
 
         drawing_options = MVDraw(
-            controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
+            controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box', 'Pan'],
             initial='Point',
             output_format='GeoJSON',
             line_color='#663399',
@@ -454,9 +454,10 @@ class MVDraw(SecondaryGizmoOptions):
 
     """  # noqa: E501
 
-    def __init__(self, controls, initial, output_format='GeoJSON', line_color="#ffcc33",
-                 fill_color='rgba(255, 255, 255, 0.2)', point_color="#ffcc33", initial_features=None,
-                 snapping_enabled=True, snapping_options={}, snapping_layer={}):
+    def __init__(self, controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box', 'Pan'],
+                 initial='Pan', output_format='GeoJSON', line_color="#ffcc33", fill_color='rgba(255, 255, 255, 0.2)',
+                 point_color="#ffcc33", initial_features=None, snapping_enabled=True, snapping_options={},
+                 snapping_layer={}):
         """
         Constructor
         """
@@ -466,7 +467,7 @@ class MVDraw(SecondaryGizmoOptions):
         self.controls = controls
 
         # Validate initial
-        if initial not in self.controls:
+        if initial not in self.controls and initial != 'Pan':
             raise ValueError('Value of "initial" must be contained in the "controls" list.')
 
         if len(snapping_layer) > 1:

@@ -536,48 +536,53 @@ var TETHYS_MAP_VIEW = (function() {
             source = layer.getSource();
 
             // Only do the voodoo if the source is a WMS type
-            if (!source instanceof ol.source.ImageWMS && !source instanceof ol.source.TileWMS) {
-                return false;
-            }
+            // With the goal to set the m_snapping_source
+            if (source instanceof ol.source.ImageWMS || source instanceof ol.source.TileWMS) {
+                // Get data from WMS source needed to make a WFS source
+                params = source.getParams();
+                layer = params.LAYERS;
+                wms_url = source.getUrls()[0];
 
-            // Get data from WMS source needed to make a WFS source
-            params = source.getParams();
-            layer = params.LAYERS;
-            wms_url = source.getUrls()[0];
+                // Convert the wfs url to a wms url
+                wfs_url = wms_url.replace('wms', 'wfs');
 
-            // Convert the wfs url to a wms url
-            wfs_url = wms_url.replace('wms', 'wfs');
+                // Define the function used to load the WFS feature data
+                wfs_url_func = function(extent) {
+                    return wfs_url + '?service=WFS&' +
+                        'version=1.1.0&' +
+                        'request=GetFeature&' +
+                        'typename=' + layer + '&' +
+                        'outputFormat=application/json&' +
+                        'srsname=EPSG:3857&' +
+                        'bbox=' + extent.join(',') + ',EPSG:3857';
+                }
 
-            // Define the function used to load the WFS feature data
-            wfs_url_func = function(extent) {
-                return wfs_url + '?service=WFS&' +
-                    'version=1.1.0&' +
-                    'request=GetFeature&' +
-                    'typename=' + layer + '&' +
-                    'outputFormat=application/json&' +
-                    'srsname=EPSG:3857&' +
-                    'bbox=' + extent.join(',') + ',EPSG:3857';
-            }
+                // Create a new vector source for the WFS version of the WMS layer
+                m_snapping_source = new ol.source.Vector({
+                    format: new ol.format.GeoJSON(),
+                    url: wfs_url_func,
+                    strategy: ol.loadingstrategy.bbox
+                });
 
-            // Create a new vector source for the WFS version of the WMS layer
-            m_snapping_source = new ol.source.Vector({
-                format: new ol.format.GeoJSON(),
-                url: wfs_url_func,
-                strategy: ol.loadingstrategy.bbox
-            });
-
-            // Add a new layer to contain the snapping vector layer, but style it to be transparent
-            var snapping_layer = new ol.layer.Vector({
-                source: m_snapping_source,
-                style: new ol.style.Style({
-                    stroke: new ol.style.Stroke({
-                        color: 'rgba(0,0,0,0)',
-                        width: 2
+                // Add a new layer to contain the snapping vector layer, but style it to be transparent
+                var snapping_layer = new ol.layer.Vector({
+                    source: m_snapping_source,
+                    style: new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: 'rgba(0,0,0,0)',
+                            width: 2
+                        })
                     })
-                })
-            });
-            m_map.addLayer(snapping_layer);
-
+                });
+                m_map.addLayer(snapping_layer);
+            }
+            else if (source instanceof ol.source.Vector) {
+                m_snapping_source = source;
+            }
+            else {
+                console.log("Invalid source type. Supported source types for a given layer are Vector or ImageWMS or TileWMS.");
+            }
+            //Don't continue searching for the snapping layer. Break out of the loop
             return false;
           }
         });

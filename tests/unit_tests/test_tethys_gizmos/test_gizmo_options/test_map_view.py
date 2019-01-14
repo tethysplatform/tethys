@@ -77,11 +77,33 @@ class TestMapView(unittest.TestCase):
         self.assertEqual(line_color, result['line_color'])
         self.assertEqual(point_color, result['point_color'])
 
-    def test_MVDraw_no_ini(self):
-        controls = ['Modify']
+    def test_MVDraw_add_snapping_layer_special_cases(self):
+        special_options = ['data', 'legend_title', 'legend_extent', 'legend_extent_projection',
+                           'legend_classes', 'editable']
+
+        for option in special_options:
+            snapping_layer = {'{}.foo'.format(option): 'bar'}
+            result = gizmo_map_view.MVDraw(snapping_layer=snapping_layer)
+
+            # Check result
+            self.assertDictEqual({'tethys_{}.foo'.format(option): 'bar'}, result.snapping_layer)
+
+    def test_MVDraw_add_snapping_layer(self):
+        snapping_layer = {'not_data.foo': 'bar'}
+        result = gizmo_map_view.MVDraw(snapping_layer=snapping_layer)
+
+        # Check result
+        self.assertDictEqual({'not_data.foo': 'bar'}, result.snapping_layer)
+
+    def test_MVDraw_invalid_initial_control(self):
 
         # Raise Error if Initial is not in Controls list
-        self.assertRaises(ValueError, gizmo_map_view.MVDraw, controls=controls, initial='Point')
+        self.assertRaises(ValueError, gizmo_map_view.MVDraw, initial='foo')
+
+    def test_MVDraw_invalid_snapping_layer(self):
+        test_snapping_layer = {'foo': 1, 'bar': 1}
+        # Raise Error if Initial is not in Controls list
+        self.assertRaises(ValueError, gizmo_map_view.MVDraw, snapping_layer=test_snapping_layer)
 
     def test_MVLayer(self):
         source = 'KML'
