@@ -727,11 +727,7 @@ def index(request):
     )
 
     # Define drawing options
-    drawing_options = MVDraw(
-        controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
-        initial='Point',
-        output_format='WKT'
-    )
+    drawing_options = MVDraw(output_format='WKT')
 
     # Define the layers
     map_layers = []
@@ -1048,11 +1044,7 @@ def map_view(request):
     )
 
     # Define drawing options
-    drawing_options = MVDraw(
-        controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box'],
-        initial='Point',
-        output_format='GeoJSON'
-    )
+    drawing_options = MVDraw()
 
     # Define GeoJSON layer
     geojson_object = {
