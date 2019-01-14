@@ -60,6 +60,26 @@ function bind_run_button(btn){
     });
 }
 
+function bind_refresh_button(btn){
+    btn = $(btn);
+    var job_id = $(btn).data('job-id');
+    $(btn).on('click', function () {
+        var execute_url = '/developer/gizmos/ajax/' + job_id + '/update-row';
+        $.ajax({
+            url: execute_url
+        }).done(function (json) {
+            status_html =
+            '<div class="progress" style="margin-bottom: 0;">' +
+                '<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
+                    '<span class="sr-only">100% Complete</span>' +
+                '</div>' +
+            '</div>'
+            $(btn).parent().html(status_html);
+            update_row($('#jobs-table-row-' + job_id));
+        });
+    });
+}
+
 function bind_delete_button(btn){
     btn = $(btn);
     var job_id = $(btn).data('job-id');
@@ -201,6 +221,9 @@ function update_row(table_elem){
             $(table_elem).find('.btn-job-delete').each(function(){
                 bind_delete_button(this);
             });
+            $(table_elem).find('.btn-refresh-status').each(function(){
+                bind_refresh_button(this);
+            });
             status = json.status;
             if(status == 'Running' || status == 'Submitted' || status == 'Various'){
                 active_counter++;
@@ -209,6 +232,19 @@ function update_row(table_elem){
                     update_row(table_elem);
                 }, refresh_interval);
             }
+            else {
+                $('#bokeh-nodes-row-' + job_id).html('');
+            }
+        } else {
+            $(table_elem).html(json.html);
+            $(table_elem).find('.btn-refresh-status').each(function(){
+                bind_refresh_button(this);
+            });
+            $(table_elem).find('.btn-job-delete').each(function(){
+                bind_delete_button(this);
+            });
+
+
         }
     });
 }
@@ -305,10 +341,13 @@ function bokeh_nodes_row(table_elem){
                     }
                 })
             }
-
     });
 }
 
+
+$('.btn-refresh-status').each(function(){
+    bind_refresh_button(this);
+});
 
 $('.btn-job-run').each(function(){
     bind_run_button(this);
