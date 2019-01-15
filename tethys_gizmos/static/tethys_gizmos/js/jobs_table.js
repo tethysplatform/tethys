@@ -215,17 +215,20 @@ function update_row(table_elem){
         data: {column_fields: column_fields, status_actions: status_actions, run: run, delete: delete_btn, results_url: results_url}
     }).done(function(json){
         if(json.success){
-            $(table_elem).html(json.html);
-            $(table_elem).find('.btn-job-run').each(function(){
-                bind_run_button(this);
-            });
-            $(table_elem).find('.btn-job-delete').each(function(){
-                bind_delete_button(this);
-            });
-            $(table_elem).find('.btn-refresh-status').each(function(){
-                bind_refresh_button(this);
-            });
-            status = json.status;
+            var current_status = $('#jobs-table-status-'+job_id).children('div').attr('title') || 'None'
+            if(current_status != json.status) {
+                $(table_elem).html(json.html);
+                $(table_elem).find('.btn-job-run').each(function(){
+                    bind_run_button(this);
+                });
+                $(table_elem).find('.btn-job-delete').each(function(){
+                    bind_delete_button(this);
+                });
+                $(table_elem).find('.btn-refresh-status').each(function(){
+                    bind_refresh_button(this);
+                });
+                status = json.status;
+            }
             if(status == 'Running' || status == 'Submitted' || status == 'Various'){
                 var run_time_field = $('#run_time-' + job_id)
                 setTimeout(function(){
