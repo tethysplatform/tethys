@@ -140,6 +140,13 @@
               <div id="header-buttons-wrapper">
                   {% block header_buttons %}
                   {% endblock %}
+                  {% block login_button_override %}
+                    {% if not request.user.is_authenticated %}
+                    <div class="header-button login-button">
+                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'accounts:login' %}?next={{request.path}}');"data-toggle="tooltip" data-placement="bottom" title="Log In">Log In</a>
+                    </div>
+                    {%  endif %}
+                  {% endblock %}
                   {% block settings_button_override %}
                       {% if request.user.is_staff %}
                       <div class="header-button settings-button">
@@ -149,7 +156,7 @@
                   {% endblock %}
                   {% block exit_button_override %}
                     <div class="header-button exit-button">
-                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');"data-toggle="tooltip" data-placement="bottom" title="Exit">&times;</a>
+                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');"data-toggle="tooltip" data-placement="bottom" title="Exit">x</a>
                     </div>
                   {% endblock %}
               </div>
