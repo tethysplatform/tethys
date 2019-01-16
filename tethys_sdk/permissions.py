@@ -11,3 +11,4 @@
 # DO NOT ERASE
 from tethys_apps.base import Permission, PermissionGroup, has_permission
 from tethys_apps.decorators import permission_required
+from tethys_apps.decorators import login_required
