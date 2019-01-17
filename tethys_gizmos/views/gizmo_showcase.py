@@ -1200,8 +1200,11 @@ def cesium_map_view(request, type):
                    "czml_link": czml_link, "model_link": model_link, "model2_link": model2_link,
                    "page_type": type}
 
+    # Set Cesium_version to blank to use the build version
+    CesiumMapView.cesium_version = ''
+
     # Use release Cesium version 1.51
-    CesiumMapView.cesium_version = '1.51'
+    # CesiumMapView.cesium_version = '1.51'
 
     # 1. Basic Map
     height = '600px'
