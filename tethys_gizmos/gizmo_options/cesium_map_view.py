@@ -249,7 +249,7 @@ class CesiumMapView(TethysGizmoOptions):
     gizmo_name = "cesium_map_view"
 
     # Set Cesium Default Release Version.
-    cesium_version = "1.51"
+    cesium_version = ""
 
     def __init__(self, options={}, view={}, layers=[], entities=[], terrain={}, models=[],
                  height='100%', width='100%', draw=False, attributes={}, classes=''):
