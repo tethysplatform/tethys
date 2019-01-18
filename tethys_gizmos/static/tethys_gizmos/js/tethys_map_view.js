@@ -323,7 +323,8 @@ var TETHYS_MAP_VIEW = (function() {
         ZOOM_EXTENT = 'ZoomToExtent',
         FULL_SCREEN = 'FullScreen',
         MOUSE_POSITION = 'MousePosition',
-        SCALE_LINE = 'ScaleLine';
+        SCALE_LINE = 'ScaleLine',
+        OVERVIEW_MAP = 'OverviewMap';
 
     var controls;
 
@@ -356,6 +357,9 @@ var TETHYS_MAP_VIEW = (function() {
           else if (current_control === SCALE_LINE) {
             m_map.addControl(new ol.control.ScaleLine());
           }
+          else if (current_control === OVERVIEW_MAP) {
+            m_map.addControl(new ol.control.OverviewMap());
+          }
 
         // Handle object case
         } else if (typeof current_control === 'object') {
@@ -373,6 +377,9 @@ var TETHYS_MAP_VIEW = (function() {
           }
           else if (SCALE_LINE in current_control){
             m_map.addControl(new ol.control.ScaleLine(current_control[SCALE_LINE]));
+          }
+          else if (OVERVIEW_MAP in current_control){
+            m_map.addControl(new ol.control.OverviewMap(current_control[OVERVIEW_MAP]));
           }
           else if (ZOOM_EXTENT in current_control){
             var control_obj = current_control[ZOOM_EXTENT];
