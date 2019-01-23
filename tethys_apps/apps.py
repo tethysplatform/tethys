@@ -15,46 +15,11 @@ from tethys_apps.harvester import SingletonHarvester
 class TethysAppsConfig(AppConfig):
     name = 'tethys_apps'
     verbose_name = 'Tethys Apps'
-    harvester = SingletonHarvester()
-
-    def import_models(self):
-        """
-        Import models
-        """
-        # Load models for the tethys_apps app
-        from pprint import pprint
-        print('#### BEFORE IMPORT ####')
-        pprint(self.models)
-        super(TethysAppsConfig, self).import_models()
-        print('#### AFTER IMPORT ####')
-        pprint(self.models)
-
-        # Perform App Harvesting
-        self.harvester.harvest()
-
-        # Load models for tethys apps and extensions
-        custom_django_models = []
-        for app in self.harvester.apps:
-            custom_django_models.extend(app.django_models())
-
-        for ext in self.harvester.extensions:
-            custom_django_models.extend(ext.django_models())
-
-        for model in custom_django_models:
-            # TODO: Import models from string...
-            self.models[model.__name__.lower()] = model
-
-        print('#### AFTER CUSTOM MODEL LOAD ###')
-        pprint(custom_django_models)
-        pprint(self.models)
-
 
     def ready(self):
         """
         Startup method for Tethys Apps django app.
         """
-        # Synchronize with tethys db
-        self.harvester.sync_with_db()
-
-
-
+        # Perform App Harvesting
+        harvester = SingletonHarvester()
+        harvester.harvest()
