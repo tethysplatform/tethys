@@ -124,29 +124,6 @@ class TethysBase(TethysBaseMixin):
 
         return self._url_patterns
 
-    def django_models(self):
-        """
-        Override this method to define custom Django Models for your app or extension.
-        
-        Returns:
-          iterable: A list or tuple of ``django.model.Models`` classes.
-
-        **Example:**
-
-        ::
-
-            class MyFirstExt(TethysExtensionBase):
-
-                def django_models(self):
-                    \"""
-                    Example django_models method.
-                    \"""
-                    from tethysext.my_first_ext.models import MyModel
-
-                    return (MyModel,)
-        """  # noqa: E501
-        return []
-
     def sync_with_tethys_db(self):
         """
         Sync installed apps with database.
