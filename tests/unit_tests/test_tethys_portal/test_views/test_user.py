@@ -1,6 +1,9 @@
 import unittest
 from unittest import mock
-from tethys_portal.views.user import profile, settings, change_password, social_disconnect, delete_account
+from django.contrib.auth.models import User
+from tethys_portal.views.user \
+    import profile, settings, change_password, social_disconnect, delete_account, manage_storage, clear_workspace
+from tethys_apps.models import TethysApp
 
 
 class TethysPortalUserTests(unittest.TestCase):
@@ -11,10 +14,11 @@ class TethysPortalUserTests(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @mock.patch('tethys_quotas.helpers.log')
     @mock.patch('tethys_portal.views.user.render')
     @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
     @mock.patch('tethys_portal.views.user.User.objects.get')
-    def test_profile(self, mock_get_user, mock_token_get_create, mock_render):
+    def test_profile(self, mock_get_user, mock_token_get_create, mock_render, _):
         mock_request = mock.MagicMock()
         username = 'foo'
 
@@ -26,8 +30,11 @@ class TethysPortalUserTests(unittest.TestCase):
         mock_token_get_create.return_value = mock_user_token, mock_token_created
 
         expected_context = {
-                'context_user': mock_context_user,
-                'user_token': mock_user_token.key
+            'context_user': mock_context_user,
+            'user_token': mock_user_token.key,
+            'total_storage': 0,
+            'quota_size': None,
+            'units': 'GB',
         }
 
         profile(mock_request, username)
@@ -84,10 +91,11 @@ class TethysPortalUserTests(unittest.TestCase):
 
         mock_redirect.assert_called_once_with('user:profile', username='foo')
 
+    @mock.patch('tethys_quotas.helpers.log')
     @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
     @mock.patch('tethys_portal.views.user.UserSettingsForm')
     @mock.patch('tethys_portal.views.user.render')
-    def test_settings_request_get(self, mock_render, mock_usf, mock_token_get_create):
+    def test_settings_request_get(self, mock_render, mock_usf, mock_token_get_create, _):
         username = 'foo'
 
         mock_request_user = mock.MagicMock()
@@ -106,7 +114,11 @@ class TethysPortalUserTests(unittest.TestCase):
 
         expected_context = {'form': mock_form,
                             'context_user': mock_request.user,
-                            'user_token': mock_user_token.key}
+                            'user_token': mock_user_token.key,
+                            'total_storage': 0,
+                            'quota_size': None,
+                            'units': 'GB',
+                            }
 
         settings(mock_request, username)
 
@@ -284,3 +296,81 @@ class TethysPortalUserTests(unittest.TestCase):
         expected_context = {}
 
         mock_render.assert_called_once_with(mock_request, 'tethys_portal/user/delete.html', expected_context)
+
+    @mock.patch('tethys_portal.views.user.redirect')
+    @mock.patch('tethys_portal.views.user.messages.warning')
+    def test_manage_storage_different_user(self, mock_messages, mock_redirect):
+        mock_request = mock.MagicMock()
+        mock_request.user.username = 'ThisIsNotMe'
+
+        manage_storage(mock_request, 'ThisIsMe')
+
+        mock_messages.assert_called_once_with(mock_request, "You are not allowed to change other users' settings.")
+        mock_redirect.assert_called_once_with('user:profile', username=mock_request.user.username)
+
+    @mock.patch('tethys_quotas.helpers.log')
+    @mock.patch('tethys_portal.views.user.User')
+    @mock.patch('tethys_portal.views.user.SingletonHarvester', apps=[])
+    @mock.patch('tethys_portal.views.user.render')
+    def test_manage_storage_successful(self, mock_render, mock_harvester, mock_user, _):
+        mock_request = mock.MagicMock()
+        mock_request.user.username = 'ThisIsMe'
+
+        mock_user.objects.get.return_value = mock.MagicMock()
+
+        expected_context = {'apps': mock_harvester().apps,
+                            'context_user': mock_request.user,
+                            'total_storage': 0,
+                            'quota_size': None,
+                            'units': 'GB',
+                            }
+
+        manage_storage(mock_request, 'ThisIsMe')
+
+        mock_render.assert_called_once_with(mock_request, 'tethys_portal/user/manage_storage.html', expected_context)
+
+    @mock.patch('tethys_portal.views.user.redirect')
+    @mock.patch('tethys_portal.views.user.messages.warning')
+    def test_clear_workspace_different_user(self, mock_messages, mock_redirect):
+        mock_request = mock.MagicMock()
+        mock_request.user.username = 'ThisIsNotMe'
+
+        clear_workspace(mock_request, 'ThisIsMe', 'url')
+
+        mock_messages.assert_called_once_with(mock_request, "You are not allowed to change other users' settings.")
+        mock_redirect.assert_called_once_with('user:profile', username=mock_request.user.username)
+
+    @mock.patch('tethys_quotas.helpers.log')
+    @mock.patch('tethys_portal.views.user.TethysApp')
+    @mock.patch('tethys_portal.views.user.render')
+    def test_clear_workspace_display(self, mock_render, mock_TethysApp, _):
+        mock_request = mock.MagicMock()
+        mock_request.user.username = 'ThisIsMe'
+
+        expected_context = {'app_name': mock_TethysApp.objects.get().name}
+
+        clear_workspace(mock_request, 'ThisIsMe', 'root_url')
+
+        mock_render.assert_called_once_with(mock_request, 'tethys_portal/user/clear_workspace.html', expected_context)
+
+    @mock.patch('tethys_portal.views.user.SingletonHarvester', apps=[TethysApp(name='app_name')])
+    @mock.patch('tethys_portal.views.user._get_user_workspace')
+    @mock.patch('tethys_portal.views.user.User')
+    @mock.patch('tethys_portal.views.user.TethysApp')
+    @mock.patch('tethys_portal.views.user.messages.success')
+    @mock.patch('tethys_portal.views.user.redirect')
+    def test_clear_workspace_successful(self, mock_redirect, mock_message, mock_app, mock_user, mock_guw, _):
+        mock_request = mock.MagicMock(method='POST', POST='clear-workspace-submit')
+        mock_request.user.username = 'ThisIsMe'
+
+        mock_user.objects.get.return_value = mock.MagicMock(User(username='ThisIsMe'))
+        app = mock.MagicMock(TethysApp(name='app_name'))
+        mock_app.objects.get.return_value = app
+        app.pre_delete_user_workspace = mock.MagicMock()
+        app.post_delete_user_workspace = mock.MagicMock()
+        mock_guw.return_value = mock.MagicMock()
+
+        clear_workspace(mock_request, 'ThisIsMe', 'root_url')
+
+        mock_message.assert_called_once_with(mock_request, 'Your workspace has been successfully cleared.')
+        mock_redirect.assert_called_once_with('user:manage_storage', username=mock_request.user.username)

@@ -9,7 +9,16 @@
 """
 
 import os
+import sys
 import shutil
+import logging
+from django.utils.functional import wraps
+from django.http import HttpRequest
+from django.core.handlers.wsgi import WSGIRequest
+from django.utils.functional import SimpleLazyObject
+from tethys_quotas.helpers import passes_quota
+
+log = logging.getLogger('tethys.' + __name__)
 
 
 class TethysWorkspace:
@@ -177,3 +186,188 @@ class TethysWorkspace:
             shutil.rmtree(full_path)
         elif os.path.isfile(full_path):
             os.remove(full_path)
+
+    def get_size(self, units='b'):
+        units = units.lower()
+
+        total_size = 0
+        for file in self.files(True):
+            total_size += os.path.getsize(file)
+
+        if units == 'b':
+            return total_size
+        elif units == 'kb':
+            return total_size / (10**3)
+        elif units == 'mb':
+            return total_size / (10**6)
+        elif units == 'gb':
+            return total_size / (10**9)
+        elif units == 'tb':
+            return total_size / (10**12)
+
+
+def _get_user_workspace(app_class, user_or_request):
+    """
+    Get the file workspace (directory) for the given User.
+
+    Args:
+      app_class(TethysApp): tethys app
+      user_or_request(User or HttpRequest): User or request object.
+
+    Returns:
+      tethys_apps.base.TethysWorkspace: An object representing the workspace.
+
+    **Example:**
+
+    ::
+
+        import os
+        from my_first_app.app import MyFirstApp as app
+
+        def a_controller(request):
+            \"""
+            Example controller that uses get_user_workspace() method.
+            \"""
+            # Retrieve the workspace
+            user_workspace = app.get_user_workspace(request.user)
+            new_file_path = os.path.join(user_workspace.path, 'new_file.txt')
+
+            with open(new_file_path, 'w') as a_file:
+                a_file.write('...')
+
+            context = {}
+
+            return render(request, 'my_first_app/template.html', context)
+
+    """
+    username = ''
+
+    from django.contrib.auth.models import User
+    if isinstance(user_or_request, User) or isinstance(user_or_request, SimpleLazyObject):
+        username = user_or_request.username
+    elif isinstance(user_or_request, HttpRequest):
+        username = user_or_request.user.username
+    elif user_or_request is None:
+        pass
+    else:
+        raise ValueError("Invalid type for argument 'user': must be either an User or HttpRequest object.")
+
+    if not username:
+        username = 'anonymous_user'
+
+    project_directory = os.path.dirname(sys.modules[app_class.__module__].__file__)
+    workspace_directory = os.path.join(project_directory, 'workspaces', 'user_workspaces', username)
+    return TethysWorkspace(workspace_directory)
+
+
+def user_workspace():
+    def decorator(controller):
+        def wrapper(*args, **kwargs):
+            from tethys_quotas.models import ResourceQuota
+            from tethys_apps.utilities import get_active_app
+
+            request = None
+            for index, arg in enumerate(args):
+                if isinstance(arg, WSGIRequest):
+                    request = arg
+                    break
+
+            if request is None:
+                raise ValueError('No request given. The user_workspace decorator only works on controllers.')
+
+            # Get user
+            user = request.user
+
+            try:
+                codename = 'user_workspace_quota'
+                rq = ResourceQuota.objects.get(codename=codename)
+
+                if not passes_quota(user, codename):
+                    raise PermissionError(rq.help)
+
+            except ResourceQuota.DoesNotExist:
+                log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
+
+            # Get the active app
+            app = get_active_app(request)
+
+            the_workspace = _get_user_workspace(app, user)
+
+            return controller(*args, the_workspace, **kwargs)
+        return wraps(controller)(wrapper)
+    return decorator
+
+
+def _get_app_workspace(app_class):
+    """
+    Get the file workspace (directory) for the app.
+
+    Args:
+      app_class(TethysApp): tethys app
+
+    Returns:
+      tethys_apps.base.TethysWorkspace: An object representing the workspace.
+
+    **Example:**
+
+    ::
+
+        import os
+        from my_first_app.app import MyFirstApp as app
+
+        def a_controller(request):
+            \"""
+            Example controller that uses get_app_workspace() method.
+            \"""
+            # Retrieve the workspace
+            app_workspace = app.get_app_workspace()
+            new_file_path = os.path.join(app_workspace.path, 'new_file.txt')
+
+            with open(new_file_path, 'w') as a_file:
+                a_file.write('...')
+
+            context = {}
+
+            return render(request, 'my_first_app/template.html', context)
+
+    """
+    # Find the path to the app project directory
+    # Hint: cls is a child class of this class.
+    # Credits: http://stackoverflow.com/questions/4006102/ is-possible-to-know-the-_path-of-the-file-of-a-subclass-in-python  # noqa: E501
+    project_directory = os.path.dirname(sys.modules[app_class.__module__].__file__)
+    workspace_directory = os.path.join(project_directory, 'workspaces', 'app_workspace')
+    return TethysWorkspace(workspace_directory)
+
+
+def app_workspace():
+    def decorator(controller):
+        def wrapper(*args, **kwargs):
+            from tethys_quotas.models import ResourceQuota
+            from tethys_apps.utilities import get_active_app
+
+            request = None
+            for index, arg in enumerate(args):
+                if isinstance(arg, WSGIRequest):
+                    request = arg
+                    break
+
+            if request is None:
+                raise ValueError('No request given. The app_workspace decorator only works on controllers.')
+
+            try:
+                codename = 'app_workspace_quota'
+                rq = ResourceQuota.objects.get(codename=codename)
+
+            except ResourceQuota.DoesNotExist:
+                log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
+
+            app = get_active_app(request)
+
+            if not passes_quota(app, codename):
+                raise PermissionError(rq.help)
+
+            the_workspace = _get_app_workspace(app)
+
+            return controller(*args, the_workspace, **kwargs)
+        return wraps(controller)(wrapper)
+    return decorator

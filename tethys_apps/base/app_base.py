@@ -11,6 +11,7 @@ import logging
 import os
 import sys
 import traceback
+import warnings
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
@@ -726,6 +727,7 @@ class TethysAppBase(TethysBase):
     @classmethod
     def get_user_workspace(cls, user):
         """
+        **DEPRECATED**
         Get the file workspace (directory) for the given User.
 
         Args:
@@ -757,6 +759,8 @@ class TethysAppBase(TethysBase):
                 return render(request, 'my_first_app/template.html', context)
 
         """
+        warnings.warn('user_workspace decorator is now the preferred method for getting user workspace',
+                      DeprecationWarning)
         username = ''
 
         from django.contrib.auth.models import User
@@ -779,6 +783,7 @@ class TethysAppBase(TethysBase):
     @classmethod
     def get_app_workspace(cls):
         """
+        **DEPRECATED**
         Get the file workspace (directory) for the app.
 
         Returns:
@@ -807,6 +812,8 @@ class TethysAppBase(TethysBase):
                 return render(request, 'my_first_app/template.html', context)
 
         """
+        warnings.warn('app_workspace decorator is now the preferred method for getting app workspace',
+                      DeprecationWarning)
         # Find the path to the app project directory
         # Hint: cls is a child class of this class.
         # Credits: http://stackoverflow.com/questions/4006102/ is-possible-to-know-the-_path-of-the-file-of-a-subclass-in-python  # noqa: E501
@@ -1374,3 +1381,35 @@ class TethysAppBase(TethysBase):
                         .format(traceback.format_stack(limit=3)[0], setting_type, setting_name,
                                 cls.name.encode('utf-8'))
                         )
+
+    @classmethod
+    def pre_delete_user_workspace(cls, user):
+        """
+        Override this method to pre-process a user's workspace before it is emptied
+
+        Args:
+            user (User, required):
+                User that requested to clear their workspace
+        """
+
+    @classmethod
+    def post_delete_user_workspace(cls, user):
+        """
+        Override this method to post-process a user's workspace after it is emptied
+
+        Args:
+            user (User, required):
+                User that requested to clear their workspace
+        """
+
+    @classmethod
+    def pre_delete_app_workspace(cls):
+        """
+        Override this method to pre-process the app workspace before it is emptied
+        """
+
+    @classmethod
+    def post_delete_app_workspace(cls):
+        """
+        Override this method to post-process the app workspace after it is emptied
+        """

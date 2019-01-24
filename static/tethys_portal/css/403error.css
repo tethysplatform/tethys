@@ -1,0 +1,91 @@
+/*****************************************************************************
+ * FILE: error
+ * DATE: 2014
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
+/*****************************************************************************
+ * FILE: variables
+ * DATE: 2014
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
+/* =========
+   Variables
+   ========= */
+/*****************************************************************************
+ * FILE: mixins
+ * DATE: 2014
+ * AUTHOR: Nathan Swain
+ * COPYRIGHT: (c) Brigham Young University 2014
+ * LICENSE: BSD 2-Clause
+ *****************************************************************************/
+.error-container {
+  margin: 10%;
+}
+.error-image-container {
+  position: relative;
+  height: auto;
+}
+.error-image-container img {
+  width: 200px;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  background-clip: padding-box;
+}
+.error-message-container {
+  position: relative;
+}
+.error-message-container h2 {
+  font-size: 40px;
+  line-height: 1.1;
+  font-weight: 400;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.error-message-container p {
+  font-size: 30px;
+  line-height: 1.5;
+  font-weight: 300;
+  text-align: center;
+}
+/* This parent can be any width and height */
+.center-parent {
+  text-align: center;
+  /* The ghost, nudged to maintain perfect centering */
+
+}
+.center-parent:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -0.25em;
+  /* Adjusts for spacing */
+
+}
+/* The element to be centered, can also be of any width and height */
+.centered {
+  display: inline-block;
+  vertical-align: middle;
+}
+@media (max-width: 750px) {
+  .error-container {
+    margin: 50px;
+  }
+  .error-image-container img {
+    width: 150px;
+  }
+  .error-message-container {
+    position: relative;
+  }
+  .error-message-container h2 {
+    font-size: 30px;
+    margin-bottom: 10px;
+  }
+  .error-message-container p {
+    font-size: 20px;
+  }
+}
