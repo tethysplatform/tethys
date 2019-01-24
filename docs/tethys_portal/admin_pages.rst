@@ -160,13 +160,76 @@ The links under the ``TETHYS PORTAL`` heading can be used to customize the look 
 
     For more information on customizing the Tethys Portal see the :doc:`./customize` documentation.
 
+Tethys Quotas
+=============
+
+The link under the ``TETHYS QUOTAS`` heading can be used to manage resource quotas that exist for the Tethys Portal. Custom quotas can be created, but by default Tethys includes :ref:`tethys_quotas_user_admin` and :ref:`tethys_quotas_app_admin`.
+
+Resource Quotas
+---------------
+
+``Resource Quotas`` describe all individual quotas of a particular type. They also establish defaults and declare the overall state of the quota (i.e. active/inactive). There are some editable options that can be managed within the settings page for each ``Resource Quota`` (see Figure 10).
+
+Editable fields explained:
+
+* ``Default`` - default quota value
+* ``Help`` - help text to be displayed when quota is exceeded
+* ``Active`` - if enabled all quotas of this type will be enforced
+* ``Impose default`` - if enabled and the value for a specific entity's quota is empty the default value will apply
+
+.. figure:: ../images/tethys_portal/tethys_portal_rq_settings.png
+    :width: 675px
+
+**Figure 10.** Resource Quota settings page.
+
+.. _tethys_quotas_user_admin:
+
+User Workspace Quotas
+---------------------
+
+To manage quotas specific to individual users, navigate to the specified user's settings page and edit the value of their ``User Quota``. A link to the ``Resource Quota`` which describes this ``User Quota`` is also provided in the table (see Figure 11).
+
+.. tip::
+
+    See :ref:`tethys_quotas_user_manage` for details on how to manage user workspace storage.
+
+.. figure:: ../images/tethys_portal/tethys_portal_uq_settings.png
+    :width: 675px
+
+**Figure 11.** User settings page showing User Quotas.
+
+.. _tethys_quotas_app_admin:
+
+App Workspace Quotas
+--------------------
+
+To manage quotas specific to individual apps, navigate to the specified app's settings page and edit the value of their ``Tethys App Quota``. A link to the ``Resource Quota`` which describes this ``Tethys App Quota`` is also provided in the table (see Figure 12).
+
+.. figure:: ../images/tethys_portal/tethys_portal_aq_settings.png
+    :width: 675px
+
+**Figure 12.** App settings page showing Tethys App Quotas.
+
+.. _tethys_quotas_app_manage_storage:
+
+Manage App Storage
+------------------
+
+Within the app settings page there is a ``Manage app storage`` section that provides a summary of the app workspace storage and the current quota being enforced on it (see Figure 6). To clear the workspace click the ``Clear Workspace`` button.
+
+.. warning::
+    ``Clear Workspace`` will completely empty the app workspace.
+
+.. tip::
+
+    See :ref:`tethys_quotas_workspace_manage` for information on how to pre/post process the app workspace when it is cleared.
+
 .. _tethys_portal_tethys_services:
 
 Tethys Services
 ===============
 
 The links under the ``TETHYS SERVICES`` heading can be used to register external services with Tethys Platform for use by apps and extensions. Use the ``Spatial Dataset Services`` link to register your Tethys Portal to GeoServer, the ``Dataset Services`` link to register to CKAN or HydroShare instances, the ``Web Processing Services`` link to register to WPS instances, or the ``Persistent Store Services`` link to register a database.
-
 
 .. tip::
 
@@ -178,3 +241,36 @@ The links under the ``TETHYS SERVICES`` heading can be used to register external
         * :doc:`../tethys_sdk/tethys_services/persistent_store`
         * :doc:`../tethys_sdk/tethys_services/spatial_persistent_store`
         * :ref:`tethys_portal_service_settings`
+
+Tethys Users
+============
+
+User Settings
+-------------
+
+The user settings page can be accessed through the drop-down menu located at the top right of the tethys portal window. Through the settings page a use can change the information stored in their user profile.
+
+.. tip::
+
+    A non-editable view of the user's information can be accessed by clicking the user avatar icon to the left of the drop-down menu (see Figure 13).
+
+.. figure:: ../images/tethys_portal/tethys_portal_user_profile.png
+    :width: 675px
+
+**Figure 13.** User profile page.
+
+.. _tethys_quotas_user_manage:
+
+Manage User Storage
+-------------------
+
+Within a user's settings page there is a ``Workspace`` section that provides a summary of the user's workspace storage across all apps and the current quota being enforced on it (see Figure 14). To manage the workspaces click the ``Manage Storage`` button (this will bring you to a table displaying workspace information for each app). From there you a user can clear their workspaces per app by clicking ``Clear Workspace``, similar to :ref:`tethys_quotas_app_manage_storage`.
+
+.. figure:: ../images/tethys_portal/tethys_portal_user_workspace.png
+    :width: 675px
+
+**Figure 14.** User settings page showing Workspace section.
+
+.. tip::
+
+    See :ref:`tethys_quotas_workspace_manage` for information on how to pre/post process the user workspace when it is cleared.

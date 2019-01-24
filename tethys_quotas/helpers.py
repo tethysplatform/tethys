@@ -1,0 +1,172 @@
+"""
+********************************************************************************
+* Name: helpers.py
+* Author: tbayer, mlebarron
+* Created On: February 22, 2019
+* Copyright: (c) Aquaveo 2018
+********************************************************************************
+"""
+import logging
+from django.conf import settings
+
+log = logging.getLogger('tethys.' + __name__)
+
+
+def sync_resource_quota_handlers():
+    from tethys_quotas.models import ResourceQuota
+    from tethys_quotas.handlers.base import ResourceQuotaHandler
+    from tethys_sdk.quotas import codenames
+
+    if hasattr(settings, 'RESOURCE_QUOTA_HANDLERS'):
+        quota_entities = []
+        for quota_class_str in settings.RESOURCE_QUOTA_HANDLERS:
+            try:
+                components = quota_class_str.split('.')
+                mod = __import__('.'.join(components[:-1]), fromlist=[components[-1]])
+                class_obj = getattr(mod, components[-1])
+            except:  # noqa: E722
+                log.warning("Unable to load ResourceQuotaHandler: {} is not correctly formatted class or does not exist"
+                            .format(quota_class_str))
+                continue
+
+            if not issubclass(class_obj, ResourceQuotaHandler):
+                log.warning("Unable to load ResourceQuotaHandler: {} is not a subclass of ResourceQuotaHandler"
+                            .format(quota_class_str))
+                continue
+            else:
+                for entity in class_obj.applies_to:
+                    quota_entities.append(entity)
+                    entity_type = entity.split('.')[-1]
+                    if not ResourceQuota.objects.filter(applies_to=entity).exists():
+                        resource_quota = ResourceQuota(
+                            codename="{}_{}".format(entity_type.lower(), class_obj.codename),
+                            name="{} {}".format(entity_type, class_obj.name),
+                            description=class_obj.description,
+                            default=class_obj.default,
+                            units=class_obj.units,
+                            applies_to=entity,
+                            impose_default=True,
+                            help=class_obj.help,
+                            _handler=quota_class_str
+                        )
+                        resource_quota.save()
+
+        for rq in ResourceQuota.objects.all():
+            if rq.applies_to not in quota_entities:
+                rq.delete()
+            else:
+                setattr(codenames, rq.codename.upper(), rq.codename)
+
+
+def passes_quota(entity, codename):
+    """
+    Checks to see if the quota has been exceeded or not
+
+    Args:
+        entity(User or TethysApp): the entity on which to perform quota check.
+        codename(str): codename of the Quota to enforce
+
+    Returns:
+        Bool: ResourceQuota.check()
+    """
+    from tethys_quotas.models import ResourceQuota
+
+    try:
+        rq = ResourceQuota.objects.get(codename=codename)
+        return rq.check_quota(entity)
+
+    except ResourceQuota.DoesNotExist:
+        log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
+        return True
+
+
+def get_resource_available(entity, codename):
+    """
+    Checks the quantity of resources available before the quota is met (calls the get_quota function)
+
+    Args:
+        entity (User or TethysApp): the entity on which to perform quota check.
+        codename (str): codename of the Quota to enforce
+
+    Returns:
+        dict (resource_available, units): Dictionary with two keys: resource_available(int) - remaining space, units(str) - units of storage
+    """
+    from tethys_quotas.models import ResourceQuota
+
+    try:
+        rq = ResourceQuota.objects.get(codename=codename)
+        rqh = rq.handler(entity)
+        current_use = rqh.get_current_use()
+
+    except ResourceQuota.DoesNotExist:
+        log.warning('Invalid Codename: ResourceQuota with codename {} does not exist.'.format(codename))
+        return None
+
+    total_available = get_quota(entity, codename)
+    if total_available:
+        total_available = total_available['quota']
+        remaining_space = total_available - current_use
+    else:
+        return None
+
+    if remaining_space < 0:
+        remaining_space = 0
+
+    return {'resource_available': remaining_space,
+            'units': rq.units}
+
+
+def get_quota(entity, codename):
+    """
+    Gets the quota size
+
+    Args:
+        entity (User or TethysApp): the entity on which to perform quota check.
+        codename (str): codename of the Quota to enforce
+
+    Returns:
+        dict (quota, units): Dictionary with two keys: quota(int) - remaining space, units(str) - units of storage
+    """
+    from django.contrib.auth.models import User
+    from tethys_apps.models import TethysApp
+    from tethys_quotas.models import ResourceQuota, UserQuota, TethysAppQuota
+
+    result = {
+        'quota': None,
+        'units': None,
+    }
+    try:
+        rq = ResourceQuota.objects.get(codename=codename)
+        result['units'] = rq.units
+
+    except ResourceQuota.DoesNotExist:
+        log.warning('Invalid Codename: ResourceQuota with codename {} does not exist.'.format(codename))
+        return result
+
+    if not rq.active:
+        return result
+
+    try:
+        if isinstance(entity, User):
+            if entity.is_staff:
+                return result
+            eq = UserQuota.objects.get(entity=entity)
+
+        elif isinstance(entity, TethysApp):
+            eq = TethysAppQuota.objects.get(entity=entity)
+
+        else:
+            raise ValueError("Entity needs to be User or TethysApp")
+
+        quota = eq.value
+        if quota:
+            result['quota'] = quota
+            return result
+
+    except (UserQuota.DoesNotExist, TethysAppQuota.DoesNotExist):
+        pass
+
+    if rq.impose_default:
+        result['quota'] = rq.default
+
+    return result

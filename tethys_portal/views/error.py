@@ -21,15 +21,19 @@ def handler_400(request):
     return render(request, 'tethys_portal/error.html', context, status=400)
 
 
-def handler_403(request):
+def handler_403(request, *args, **argv):
     """
     Handle 403 errors
     """
+    error_message = "Permission Denied"
+    if 'exception' in argv and str(argv['exception']):
+        error_message = argv['exception']
+
     context = {'error_code': '403',
-               'error_title': 'Forbidden',
-               'error_message': "We apologize, but this operation is not permitted.",
-               'error_image': '/static/tethys_portal/images/error_403.png'}
-    return render(request, 'tethys_portal/error.html', context, status=403)
+               'error_title': 'Sorry, you are unable to access this page right now.',
+               'error_message': error_message,
+               'error_image': '/static/tethys_portal/images/data.png'}
+    return render(request, 'tethys_portal/403error.html', context, status=403)
 
 
 def handler_404(request):

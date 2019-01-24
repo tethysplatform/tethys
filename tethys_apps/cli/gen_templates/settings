@@ -98,6 +98,7 @@ INSTALLED_APPS = (
     'tethys_gizmos',
     'tethys_services',
     'tethys_compute',
+    'tethys_quotas',
     'social_django',
     'guardian',
     'session_security',
@@ -310,6 +311,11 @@ ANONYMOUS_USER_ID = -1
 # GUARDIAN_RENDER_403 = False  # Mutually exclusive with GUARDIAN_RAISE_403
 # GUARDIAN_TEMPLATE_403 = ''
 # ANONYMOUS_DEFAULT_USERNAME_VALUE = 'anonymous'
+
+# RESOURCE QUOTAS TO INSTALL
+RESOURCE_QUOTA_HANDLERS = [
+	"tethys_quotas.handlers.workspace.WorkspaceQuotaHandler",
+]
 
 # Placeholders for the ID's required by various web-analytics services supported by Django-Analytical.
 # Replace False with the tracking ID as a string e.g. SERVICE_ID = 'abcd1234'

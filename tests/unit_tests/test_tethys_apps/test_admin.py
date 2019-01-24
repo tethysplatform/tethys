@@ -4,6 +4,9 @@ from unittest import mock
 from tethys_apps.admin import TethysAppSettingInline, CustomSettingInline, DatasetServiceSettingInline, \
     SpatialDatasetServiceSettingInline, WebProcessingServiceSettingInline, PersistentStoreConnectionSettingInline, \
     PersistentStoreDatabaseSettingInline, TethysAppAdmin, TethysExtensionAdmin
+from tethys_quotas.admin import TethysAppQuotasSettingInline
+
+from tethys_quotas.models import TethysAppQuota
 
 from tethys_apps.models import (TethysApp,
                                 TethysExtension,
@@ -111,16 +114,34 @@ class TestTethysAppAdmin(unittest.TestCase):
         mock_request = mock.MagicMock()
         obj.get_queryset(mock_request)
 
+    def test_TethysAppQuotasSettingInline(self):
+        expected_readonly_fields = ('name', 'description', 'units')
+        expected_fields = ('name', 'description', 'value', 'units')
+        expected_model = TethysAppQuota
+
+        ret = TethysAppQuotasSettingInline(mock.MagicMock(), mock.MagicMock())
+
+        self.assertEquals(expected_readonly_fields, ret.readonly_fields)
+        self.assertEquals(expected_fields, ret.fields)
+        self.assertEquals(expected_model, ret.model)
+
+    # Need to check
+    # def test_TethysAppQuotasSettingInline_get_queryset(self):
+    #     obj = TethysAppQuotasSettingInline(mock.MagicMock(), mock.MagicMock())
+    #     mock_request = mock.MagicMock()
+    #     obj.get_queryset(mock_request)
+
     def test_TethysAppAdmin(self):
-        expected_readonly_fields = ('package',)
+        expected_readonly_fields = ('package', 'manage_app_storage',)
         expected_fields = ('package', 'name', 'description', 'tags', 'enabled', 'show_in_apps_library',
-                           'enable_feedback')
+                           'enable_feedback', 'manage_app_storage',)
         expected_inlines = [CustomSettingInline,
                             PersistentStoreConnectionSettingInline,
                             PersistentStoreDatabaseSettingInline,
                             DatasetServiceSettingInline,
                             SpatialDatasetServiceSettingInline,
-                            WebProcessingServiceSettingInline]
+                            WebProcessingServiceSettingInline,
+                            TethysAppQuotasSettingInline]
 
         ret = TethysAppAdmin(mock.MagicMock(), mock.MagicMock())
 

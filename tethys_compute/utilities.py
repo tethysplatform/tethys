@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-* Name: utilities.py
+* Name: helpers.py
 * Author: Scott Christensen
 * Created On: 2015
 * Copyright: (c) Brigham Young University 2015

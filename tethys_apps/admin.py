@@ -8,7 +8,13 @@
 ********************************************************************************
 """
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
+from django.utils.safestring import mark_safe
+from django.shortcuts import reverse
+from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
 from guardian.admin import GuardedModelAdmin
+from tethys_quotas.helpers import get_quota, get_resource_available
 from tethys_apps.models import (TethysApp,
                                 TethysExtension,
                                 CustomSetting,
@@ -72,20 +78,39 @@ class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
 
 
 class TethysAppAdmin(GuardedModelAdmin):
-    readonly_fields = ('package',)
-    fields = ('package', 'name', 'description', 'tags', 'enabled', 'show_in_apps_library', 'enable_feedback')
+    readonly_fields = ('package', 'manage_app_storage',)
+    fields = ('package', 'name', 'description', 'tags', 'enabled', 'show_in_apps_library', 'enable_feedback',
+              'manage_app_storage',)
     inlines = [CustomSettingInline,
                PersistentStoreConnectionSettingInline,
                PersistentStoreDatabaseSettingInline,
                DatasetServiceSettingInline,
                SpatialDatasetServiceSettingInline,
-               WebProcessingServiceSettingInline]
+               WebProcessingServiceSettingInline,
+               TethysAppQuotasSettingInline]
 
     def has_delete_permission(self, request, obj=None):
         return False
 
     def has_add_permission(self, request):
         return False
+
+    def manage_app_storage(self, app):
+        codename = 'tethysapp_workspace_quota'
+        quota_size = get_quota(app, codename)
+        total_storage = None
+        if quota_size:
+            quota_size = quota_size['quota']
+            total_storage = quota_size - get_resource_available(app, codename)['resource_available']
+
+        url = reverse('admin:clear_workspace', kwargs={'app_id': app.id})
+
+        return mark_safe("""
+        <span>{} of {} (GB)</span>
+        <a id="clear-workspace" class="btn btn-danger btn-sm"
+        href="{url}">
+        Clear Workspace</a>
+        """.format(total_storage, quota_size, url=url))
 
 
 class TethysExtensionAdmin(GuardedModelAdmin):
@@ -99,5 +124,11 @@ class TethysExtensionAdmin(GuardedModelAdmin):
         return False
 
 
+class UserAdmin(BaseUserAdmin):
+    inlines = (UserQuotasSettingInline,)
+
+
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 admin.site.register(TethysApp, TethysAppAdmin)
 admin.site.register(TethysExtension, TethysExtensionAdmin)

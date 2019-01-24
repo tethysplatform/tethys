@@ -14,7 +14,12 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from rest_framework.authtoken.models import Token
 
+from tethys_apps.harvester import SingletonHarvester
 from tethys_portal.forms import UserSettingsForm, UserPasswordChangeForm
+from tethys_apps.models import TethysApp
+from tethys_apps.base.workspace import _get_user_workspace
+from tethys_quotas.handlers.workspace import WorkspaceQuotaHandler
+from tethys_quotas.helpers import get_quota
 
 
 @login_required()
@@ -27,9 +32,16 @@ def profile(request, username=None):
     # as the username of the user that is accessing the page.
     context_user = User.objects.get(username=username)
     user_token, token_created = Token.objects.get_or_create(user=context_user)
+    total_storage = WorkspaceQuotaHandler(context_user).get_current_use()
+    quota_size = get_quota(context_user, 'user_workspace_quota')
+    if quota_size:
+        quota_size = quota_size['quota']
     context = {
         'context_user': context_user,
-        'user_token': user_token.key
+        'user_token': user_token.key,
+        'total_storage': total_storage,
+        'quota_size': quota_size,
+        'units': 'GB',
     }
     return render(request, 'tethys_portal/user/profile.html', context)
 
@@ -72,9 +84,17 @@ def settings(request, username=None):
 
     # Create template context object
     user_token, token_created = Token.objects.get_or_create(user=request_user)
+    total_storage = WorkspaceQuotaHandler(request_user).get_current_use()
+    quota_size = get_quota(request_user, 'user_workspace_quota')
+    if quota_size:
+        quota_size = quota_size['quota']
     context = {'form': form,
                'context_user': request.user,
-               'user_token': user_token.key}
+               'user_token': user_token.key,
+               'total_storage': total_storage,
+               'quota_size': quota_size,
+               'units': 'GB',
+               }
 
     return render(request, 'tethys_portal/user/settings.html', context)
 
@@ -161,3 +181,73 @@ def delete_account(request, username):
     context = {}
 
     return render(request, 'tethys_portal/user/delete.html', context)
+
+
+@login_required()
+def clear_workspace(request, username, root_url):
+    """
+    Handle clear workspace requests.
+    """
+    # Users are not allowed to make changes to other users settings
+    if request.user.username != username:
+        messages.warning(request, "You are not allowed to change other users' settings.")
+        return redirect('user:profile', username=request.user.username)
+
+    app = TethysApp.objects.get(root_url=root_url)
+
+    # Handle form submission
+    if request.method == 'POST' and 'clear-workspace-submit' in request.POST:
+        apps_s = SingletonHarvester().apps
+        for app_s in apps_s:
+            if app_s.name == app.name:
+                app = app_s
+                break
+
+        user = request.user
+        workspace = _get_user_workspace(app, user)
+
+        app.pre_delete_user_workspace(user)
+        workspace.clear()
+        app.post_delete_user_workspace(user)
+
+        # Give feedback
+        messages.success(request, 'Your workspace has been successfully cleared.')
+
+        # Redirect to home
+        return redirect('user:manage_storage', username=username)
+
+    context = {'app_name': app.name}
+
+    return render(request, 'tethys_portal/user/clear_workspace.html', context)
+
+
+@login_required()
+def manage_storage(request, username):
+    """
+    Handle clear workspace requests.
+    """
+    # Users are not allowed to make changes to other users settings
+    if request.user.username != username:
+        messages.warning(request, "You are not allowed to change other users' settings.")
+        return redirect('user:profile', username=request.user.username)
+
+    apps = SingletonHarvester().apps
+    user = request.user
+
+    for app in apps:
+        workspace = _get_user_workspace(app, user)
+        app.current_use = workspace.get_size('gb')
+
+    total_storage = WorkspaceQuotaHandler(user).get_current_use()
+    quota_size = get_quota(user, 'user_workspace_quota')
+    if quota_size:
+        quota_size = quota_size['quota']
+
+    context = {'apps': apps,
+               'context_user': request.user,
+               'total_storage': total_storage,
+               'quota_size': quota_size,
+               'units': 'GB',
+               }
+
+    return render(request, 'tethys_portal/user/manage_storage.html', context)
