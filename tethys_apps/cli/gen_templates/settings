@@ -98,6 +98,7 @@ INSTALLED_APPS = (
     'tethys_gizmos',
     'tethys_services',
     'tethys_compute',
+    'tethys_quotas',
     'social_django',
     'guardian',
     'session_security',
