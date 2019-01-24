@@ -1,0 +1,37 @@
+{% extends "page.html" %}
+
+{% load staticfiles tethys_gizmos %}
+
+{% block title %}- Gizmos - Map View{% endblock %}
+
+{% block global_scripts %}
+    {{ block.super }}
+    {% gizmo_dependencies global_js %}
+{% endblock %}
+
+{% block styles %}
+	{{ block.super }}
+    {% gizmo_dependencies global_css %}
+  <link rel="stylesheet" href="{% static 'tethys_gizmos/css/gizmo_showcase.css' %}" type="text/css" />
+  <style>
+    #content {
+      padding-bottom: 50px;
+    }
+  </style>
+{% endblock %}
+
+{% block primary_content %}
+  <div class="gizmo-page-wrapper">
+    <h2>Jobs Table</h2>
+    {% gizmo jobs_table %}
+    {% if not jobs_table.jobs %}
+        <a class="btn btn-success" href="{% url 'gizmos:sample_jobs' %}">Create Sample Jobs</a>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {% gizmo_dependencies css %}
+	{{ block.super }}
+  {% gizmo_dependencies js %}
+{% endblock %}

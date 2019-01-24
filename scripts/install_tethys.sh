@@ -15,7 +15,6 @@ OPTIONS:\n
 \t    -b, --branch <BRANCH_NAME>          \t\t Branch to checkout from version control. Default is 'release'.\n
 \t    -c, --conda-home <PATH>             \t\t Path where Miniconda will be installed, or to an existing installation of Miniconda. Default is \${TETHYS_HOME}/miniconda.\n
 \t    -n, --conda-env-name <NAME>         \t\t Name for tethys conda environment. Default is 'tethys'.\n
-\t    --python-version <PYTHON_VERSION>   \t Main python version to install tethys environment into (2-deprecated or 3). Default is 3.\n
 \t    --db-username <USERNAME>            \t\t Username that the tethys database server will use. Default is 'tethys_default'.\n
 \t    --db-password <PASSWORD>            \t\t Password that the tethys database server will use. Default is 'pass'.\n
 \t    --db-super-username <USERNAME>      \t Username for super user on the tethys database server. Default is 'tethys_super'.\n
@@ -94,7 +93,6 @@ TETHYS_DB_SUPER_USERNAME='tethys_super'
 TETHYS_DB_SUPER_PASSWORD='pass'
 TETHYS_DB_PORT=5436
 CONDA_ENV_NAME='tethys'
-PYTHON_VERSION='3'
 BRANCH='release'
 
 TETHYS_SUPER_USER='admin'
@@ -156,10 +154,6 @@ case $key in
     ;;
     -n|--conda-env-name)
     set_option_value CONDA_ENV_NAME "$2"
-    shift # past argument
-    ;;
-    --python-version)
-    set_option_value PYTHON_VERSION "$2"
     shift # past argument
     ;;
     --db-username)
@@ -373,12 +367,8 @@ then
     then
         # create conda env and install Tethys
         echo "Setting up the ${CONDA_ENV_NAME} environment..."
-        if [ "${PYTHON_VERSION}" == "2" ]
-        then
-            echo "${YELLOW}WARNING: Support for Python 2 is deprecated and will be removed in Tethys version 3.${RESET_COLOR}"
-        fi
-        conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/environment_py${PYTHON_VERSION}.yml"
-        conda activate ${CONDA_ENV_NAME}
+        conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/environment.yml"
+        source activate ${CONDA_ENV_NAME}
         python "${TETHYS_SRC}/setup.py" develop
     else
         echo "Activating the ${CONDA_ENV_NAME} environment..."

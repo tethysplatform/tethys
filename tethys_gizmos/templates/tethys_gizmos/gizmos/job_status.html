@@ -7,18 +7,26 @@
     <a data-job-id="{{ job.id }}" class='btn btn-success btn-xs btn-job-run' href="javascript:void(0)">Run</a>
   {% elif job_status == 'Various' %}
     <div class="progress" style="margin-bottom: 0;">
+      {% if job_statuses.Aborted > 0 %}
       <div class="progress-bar progress-bar progress-bar" role="progressbar" title="Aborted" aria-valuenow="{{ job_statuses.Aborted }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Aborted }}%; background-color: #555555;">
         <span class="sr-only">{{ job_statuses.Aborted }}% Aborted</span>
       </div>
+      {% endif %}
+      {% if job_statuses.Error > 0 %}
       <div class="progress-bar progress-bar-danger progress-bar" role="progressbar" title="Error" aria-valuenow="{{ job_statuses.Error }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Error }}%">
         <span class="sr-only">{{ job_statuses.Error }}% Error</span>
       </div>
+      {% endif %}
+      {% if job_statuses.Completed > 0 %}
       <div class="progress-bar progress-bar-success progress-bar" role="progressbar" title="Complete" aria-valuenow="{{ job_statuses.Completed }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Completed }}%">
         <span class="sr-only">{{ job_statuses.Completed }}% Complete</span>
       </div>
+      {% endif %}
+      {% if job_statuses.Running > 0 %}
       <div class="progress-bar progress-bar-info progress-bar-striped active" title="Running" role="progressbar" aria-valuenow="{{ job_statuses.Running }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Running }}%">
         <span class="sr-only">{{ job_statuses.Running }}% Running</span>
       </div>
+      {% endif %}
     </div>
   {% elif job_status == 'Running' %}
     <div class="progress" style="margin-bottom: 0;">
