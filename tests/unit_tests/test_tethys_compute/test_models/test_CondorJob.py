@@ -1,5 +1,9 @@
 from tethys_sdk.testing import TethysTestCase
-from tethys_compute.models import TethysJob, CondorJob, Scheduler, CondorBase, CondorPyJob
+from tethys_compute.models.tethys_job import TethysJob
+from tethys_compute.models.condor.condor_job import CondorJob
+from tethys_compute.models.condor.condor_scheduler import CondorScheduler
+from tethys_compute.models.condor.condor_base import CondorBase
+from tethys_compute.models.condor.condor_py_job import CondorPyJob
 from django.contrib.auth.models import User
 import mock
 import os
@@ -11,7 +15,7 @@ class CondorJobTest(TethysTestCase):
     def set_up(self):
         self.user = User.objects.create_user('tethys_super', 'user@example.com', 'pass')
 
-        self.scheduler = Scheduler(
+        self.scheduler = CondorScheduler(
             name='test_scheduler',
             host='localhost',
             username='tethys_super',
@@ -47,6 +51,10 @@ class CondorJobTest(TethysTestCase):
         if os.path.exists(self.workspace_dir):
             shutil.rmtree(self.workspace_dir)
 
+    def test_type(self):
+        ret = self.condorjob.type
+        self.assertEqual('CondorJob', ret)
+
     def test_condor_object_prop(self):
         condorpy_job = self.condorjob._condor_object
 
@@ -57,7 +65,7 @@ class CondorJobTest(TethysTestCase):
         self.assertIn('test_file1.txt', condorpy_job.remote_input_files)
         self.assertIn('test_file2.txt', condorpy_job.remote_input_files)
 
-    @mock.patch('tethys_compute.models.CondorBase.condor_object')
+    @mock.patch('tethys_compute.models.condor.condor_job.CondorBase.condor_object')
     def test_execute(self, mock_cos):
         # TODO: Check if we can mock this or we can provide an executable.
         # Mock condor_object.submit()
@@ -68,8 +76,8 @@ class CondorJobTest(TethysTestCase):
         self.assertEqual(111, self.condorjob.cluster_id)
         self.assertEqual(2, self.condorjob.num_jobs)
 
-    @mock.patch('tethys_compute.models.CondorPyJob.update_database_fields')
-    @mock.patch('tethys_compute.models.CondorBase.update_database_fields')
+    @mock.patch('tethys_compute.models.condor.condor_job.CondorPyJob.update_database_fields')
+    @mock.patch('tethys_compute.models.condor.condor_job.CondorBase.update_database_fields')
     def test_update_database_fields(self, mock_cb_update, mock_cj_update):
         # Mock condor_object.submit()
         self.condorjob.update_database_fields()
@@ -85,7 +93,7 @@ class CondorJobTest(TethysTestCase):
         # Check if CondorPyJob is updated
         self.assertIsInstance(CondorPyJob.objects.get(condorpyjob_id=99), CondorPyJob)
 
-    @mock.patch('tethys_compute.models.CondorBase.condor_object')
+    @mock.patch('tethys_compute.models.condor.condor_job.CondorBase.condor_object')
     def test_condor_job_pre_delete(self, mock_co):
         if not os.path.exists(self.workspace_dir):
             os.makedirs(self.workspace_dir)
@@ -100,8 +108,8 @@ class CondorJobTest(TethysTestCase):
         # Check if file has been removed
         self.assertFalse(os.path.isfile(file_path))
 
-    @mock.patch('tethys_compute.models.log')
-    @mock.patch('tethys_compute.models.CondorBase.condor_object')
+    @mock.patch('tethys_compute.models.condor.condor_job.log')
+    @mock.patch('tethys_compute.models.condor.condor_job.CondorBase.condor_object')
     def test_condor_job_pre_delete_exception(self, mock_co, mock_log):
         mock_co.close_remote.side_effect = Exception('test error')
         self.condorjob.delete()

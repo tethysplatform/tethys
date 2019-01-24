@@ -203,6 +203,7 @@ This section provides explanations of each of the Gizmo Options Objects availabl
    gizmos/plotly_view
    gizmos/bokeh_view
    gizmos/map_view
+   gizmos/cesium_map_view
    gizmos/esri_map
    gizmos/google_map
    gizmos/jobs_table

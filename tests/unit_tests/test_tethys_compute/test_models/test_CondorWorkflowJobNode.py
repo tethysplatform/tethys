@@ -1,5 +1,8 @@
 from tethys_sdk.testing import TethysTestCase
-from tethys_compute.models import CondorPyWorkflow, CondorWorkflow, CondorWorkflowJobNode, TethysJob
+from tethys_compute.models.tethys_job import TethysJob
+from tethys_compute.models.condor.condor_py_workflow import CondorPyWorkflow
+from tethys_compute.models.condor.condor_workflow_job_node import CondorWorkflowJobNode
+from tethys_compute.models.condor.condor_workflow import CondorWorkflow
 from django.contrib.auth.models import User
 import mock
 import os
@@ -43,15 +46,15 @@ class CondorPyWorkflowJobNodeTest(TethysTestCase):
         self.assertEqual('JOB', self.condorworkflowjobnode.type)
 
     def test_workspace_prop(self):
-        self.assertEqual('', self.condorworkflowjobnode.workspace)
+        self.assertEqual('.', self.condorworkflowjobnode.workspace)
 
-    @mock.patch('tethys_compute.models.CondorPyJob.condorpy_job')
+    @mock.patch('tethys_compute.models.condor.condor_workflow_job_node.CondorPyJob.condorpy_job')
     def test_job_prop(self, mock_cpj):
         # Condorpy_job Prop is already tested in CondorPyJob Test case
         self.assertEqual(mock_cpj, self.condorworkflowjobnode.job)
 
-    @mock.patch('tethys_compute.models.CondorWorkflowNode.update_database_fields')
-    @mock.patch('tethys_compute.models.CondorPyJob.update_database_fields')
+    @mock.patch('tethys_compute.models.condor.condor_workflow_job_node.CondorWorkflowNode.update_database_fields')
+    @mock.patch('tethys_compute.models.condor.condor_workflow_job_node.CondorPyJob.update_database_fields')
     def test_update_database_fields(self, mock_pj_update, mock_wfn_update):
         # Execute
         self.condorworkflowjobnode.update_database_fields()
@@ -60,8 +63,8 @@ class CondorPyWorkflowJobNodeTest(TethysTestCase):
         mock_pj_update.assert_called_once()
         mock_wfn_update.assert_called_once()
 
-    @mock.patch('tethys_compute.models.CondorWorkflowNode.update_database_fields')
-    @mock.patch('tethys_compute.models.CondorPyJob.update_database_fields')
+    @mock.patch('tethys_compute.models.condor.condor_workflow_job_node.CondorWorkflowNode.update_database_fields')
+    @mock.patch('tethys_compute.models.condor.condor_workflow_job_node.CondorPyJob.update_database_fields')
     def test_receiver_pre_save(self, mock_pj_update, mock_wfn_update):
         self.condorworkflowjobnode.save()
 

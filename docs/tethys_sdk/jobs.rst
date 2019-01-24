@@ -14,6 +14,12 @@ To facilitate interacting with jobs asynchronously, the details of the jobs are 
 .. deprecated::2.1
     Creating jobs used to be done via job templates. This method is now deprecated.
 
+.. seealso::
+    The Condor Job and the Condor Workflow job types use the CondorPy library to submit jobs to HTCondor compute pools. For more information on CondorPy and HTCondor see the `CondorPy documentation <http://condorpy.readthedocs.org/en/latest/>`_ and specifically the `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_.
+
+    The Dask Job uses the Dask Distributed python library to automatically parallelize your Python code and run them on a distributed cluster of workers. For more information on Dask, see: `Dask <https://docs.dask.org/en/latest/>`_ and `Dask Distributed <https://distributed.dask.org/en/latest/>`_ documentation.
+
+
 .. _job-manager-label:
 
 Job Manager
@@ -114,6 +120,7 @@ All job types also have the following read-only attributes:
         - 'Pending'
         - 'Submitted'
         - 'Running'
+        - 'Results-Ready'
         - 'Complete'
         - 'Error'
         - 'Aborted'
@@ -130,6 +137,7 @@ Specific job types may define additional attributes. The following job types are
    jobs/basic_job_type
    jobs/condor_job_type
    jobs/condor_workflow_type
+   jobs/dask_job_type
 
 
 Retrieving Jobs

@@ -1,8 +1,9 @@
 import unittest
 import mock
 
-from tethys_apps.cli.scheduler_commands import scheduler_create_command, schedulers_list_command, \
-    schedulers_remove_command
+from tethys_apps.cli.scheduler_commands import dask_scheduler_create_command, schedulers_list_command, \
+    schedulers_remove_command, condor_scheduler_create_command
+
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -16,10 +17,10 @@ class SchedulerCommandsTest(unittest.TestCase):
 
     @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
     @mock.patch('tethys_apps.cli.scheduler_commands.exit')
-    @mock.patch('tethys_compute.models.Scheduler')
-    def test_scheduler_create_command(self, mock_scheduler, mock_exit, mock_pretty_output):
+    @mock.patch('tethys_compute.models.condor.condor_scheduler.CondorScheduler')
+    def test_condor_scheduler_create_command(self, mock_scheduler, mock_exit, mock_pretty_output):
         """
-        Test for scheduler_create_command.
+        Test for condor_scheduler_create_command.
         Runs through and saves.
         :param mock_scheduler:  mock for Scheduler
         :param mock_exit:  mock for handling exit() code in function
@@ -32,7 +33,7 @@ class SchedulerCommandsTest(unittest.TestCase):
         # to break the code execution, which we catch below.
         mock_exit.side_effect = SystemExit
 
-        self.assertRaises(SystemExit, scheduler_create_command, mock_args)
+        self.assertRaises(SystemExit, condor_scheduler_create_command, mock_args)
 
         mock_scheduler.assert_called_with(
             name=mock_args.name,
@@ -44,15 +45,15 @@ class SchedulerCommandsTest(unittest.TestCase):
         )
         mock_scheduler().save.assert_called()
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual('Scheduler created successfully!', po_call_args[0][0][0])
+        self.assertEqual('Condor Scheduler created successfully!', po_call_args[0][0][0])
         mock_exit.assert_called_with(0)
 
     @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
     @mock.patch('tethys_apps.cli.scheduler_commands.exit')
-    @mock.patch('tethys_compute.models.Scheduler')
-    def test_scheduler_create_command_existing_scheduler(self, mock_scheduler, mock_exit, mock_pretty_output):
+    @mock.patch('tethys_compute.models.condor.condor_scheduler.CondorScheduler')
+    def test_condor_scheduler_create_command_existing_scheduler(self, mock_scheduler, mock_exit, mock_pretty_output):
         """
-        Test for scheduler_create_command.
+        Test for condor_scheduler_create_command.
         For when a scheduler already exists.
         :param mock_scheduler:  mock for Scheduler
         :param mock_exit:  mock for handling exit() code in function
@@ -65,7 +66,7 @@ class SchedulerCommandsTest(unittest.TestCase):
         # to break the code execution, which we catch below.
         mock_exit.side_effect = SystemExit
 
-        self.assertRaises(SystemExit, scheduler_create_command, mock_args)
+        self.assertRaises(SystemExit, condor_scheduler_create_command, mock_args)
 
         mock_scheduler.objects.filter.assert_called()
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
@@ -73,10 +74,10 @@ class SchedulerCommandsTest(unittest.TestCase):
         mock_exit.assert_called_with(0)
 
     @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
-    @mock.patch('tethys_compute.models.Scheduler')
-    def test_schedulers_list_command(self, mock_scheduler, mock_pretty_output):
+    @mock.patch('tethys_compute.models.condor.condor_scheduler.CondorScheduler')
+    def test_condor_schedulers_list_command(self, mock_scheduler, mock_pretty_output):
         """
-        Test for schedulers_list_command.
+        Test for condor_schedulers_list_command.
         For use with multiple schedulers.
         :param mock_scheduler:  mock for Scheduler
         :param mock_pretty_output:  mock for pretty_output text
@@ -95,10 +96,14 @@ class SchedulerCommandsTest(unittest.TestCase):
         mock_scheduler2.private_key_path = 'test_path2'
         mock_scheduler2.private_key_pass = 'test_private_key_path2'
         mock_scheduler.objects.all.return_value = [mock_scheduler1, mock_scheduler2]
-        mock_args = mock.MagicMock()
+
+        mock_args = mock.MagicMock(type='condor')
+
+        # Call the function
         schedulers_list_command(mock_args)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
+
         self.assertEqual(3, len(po_call_args))
         self.assertIn('Name', po_call_args[0][0][0])
         self.assertIn('Host', po_call_args[0][0][0])
@@ -108,31 +113,32 @@ class SchedulerCommandsTest(unittest.TestCase):
         self.assertIn('Private Key Pass', po_call_args[0][0][0])
 
     @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
-    @mock.patch('tethys_compute.models.Scheduler')
-    def test_schedulers_list_command_no_schedulers(self, mock_scheduler, mock_pretty_output):
+    @mock.patch('tethys_compute.models.condor.condor_scheduler.CondorScheduler')
+    def test_condor_schedulers_list_command_no_schedulers(self, mock_scheduler, mock_pretty_output):
         """
-        Test for schedulers_list_command.
+        Test for condor_schedulers_list_command.
         For use with no schedulers.
         :param mock_scheduler:  mock for Scheduler
         :param mock_pretty_output:  mock for pretty_output text
         :return:
         """
         mock_scheduler.objects.all.return_value = []
-        mock_args = mock.MagicMock()
+        mock_args = mock.MagicMock(type='condor')
+
         schedulers_list_command(mock_args)
 
         mock_scheduler.objects.all.assert_called()
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
-        self.assertEqual('There are no Schedulers registered in Tethys.', po_call_args[0][0][0])
+        self.assertEqual('There are no Condor Schedulers registered in Tethys.', po_call_args[0][0][0])
 
     @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
     @mock.patch('tethys_apps.cli.scheduler_commands.exit')
     @mock.patch('tethys_compute.models.Scheduler')
     def test_schedulers_remove_command_force(self, mock_scheduler, mock_exit, mock_pretty_output):
         """
-        Test for schedulers_remove_command.
+        Test for condor_schedulers_remove_command.
         Runs through, forcing a delete
         :param mock_scheduler:  mock for Scheduler
         :param mock_exit:  mock for handling exit() code in function
@@ -284,3 +290,120 @@ class SchedulerCommandsTest(unittest.TestCase):
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertIn('Command aborted.', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
+    @mock.patch('tethys_apps.cli.scheduler_commands.exit')
+    @mock.patch('tethys_compute.models.dask.dask_scheduler.DaskScheduler')
+    def test_dask_scheduler_create_command(self, mock_scheduler, mock_exit, mock_pretty_output):
+        """
+        Test for condor_scheduler_create_command.
+        Runs through and saves.
+        :param mock_scheduler:  mock for Scheduler
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
+        mock_args = mock.MagicMock()
+        mock_scheduler.objects.filter().first.return_value = False
+        # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
+        # to break the code execution, which we catch below.
+        mock_exit.side_effect = SystemExit
+
+        self.assertRaises(SystemExit, dask_scheduler_create_command, mock_args)
+
+        mock_scheduler.assert_called_with(
+            name=mock_args.name,
+            host=mock_args.endpoint,
+            timeout=mock_args.timeout,
+            heartbeat_interval=mock_args.heartbeat_interval,
+            dashboard=mock_args.dashboard,
+        )
+
+        mock_scheduler().save.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual('Dask Scheduler created successfully!', po_call_args[0][0][0])
+        mock_exit.assert_called_with(0)
+
+    @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
+    @mock.patch('tethys_apps.cli.scheduler_commands.exit')
+    @mock.patch('tethys_compute.models.dask.dask_scheduler.DaskScheduler')
+    def test_dask_scheduler_create_command_existing_scheduler(self, mock_scheduler, mock_exit, mock_pretty_output):
+        """
+        Test for dask_scheduler_create_command.
+        For when a scheduler already exists.
+        :param mock_scheduler:  mock for Scheduler
+        :param mock_exit:  mock for handling exit() code in function
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
+        mock_args = mock.MagicMock()
+        mock_scheduler.objects.filter().first.return_value = True
+        # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
+        # to break the code execution, which we catch below.
+        mock_exit.side_effect = SystemExit
+
+        self.assertRaises(SystemExit, dask_scheduler_create_command, mock_args)
+
+        mock_scheduler.objects.filter.assert_called()
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn('already exists', po_call_args[0][0][0])
+        mock_exit.assert_called_with(0)
+
+    @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
+    @mock.patch('tethys_compute.models.dask.dask_scheduler.DaskScheduler')
+    def test_dask_schedulers_list_command(self, mock_scheduler, mock_pretty_output):
+        """
+        Test for dask_schedulers_list_command.
+        For use with multiple schedulers.
+        :param mock_scheduler:  mock for Scheduler
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
+        mock_scheduler1 = mock.MagicMock(name='test1')
+        mock_scheduler1.name = 'test_name1'
+        mock_scheduler1.host = 'test_host1'
+        mock_scheduler1.timeout = 10
+        mock_scheduler1.heartbeat_interval = 5
+        mock_scheduler1.dashboard = 'test_dashboard1'
+        mock_scheduler.objects.all.return_value = [mock_scheduler1]
+
+        mock_args = mock.MagicMock(type='dask')
+
+        schedulers_list_command(mock_args)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+
+        self.assertEqual(2, len(po_call_args))
+        self.assertIn('Name', po_call_args[0][0][0])
+        self.assertIn('Host', po_call_args[0][0][0])
+        self.assertIn('Timeout', po_call_args[0][0][0])
+        self.assertIn('Heartbeat Interval', po_call_args[0][0][0])
+        self.assertIn('Dashboard', po_call_args[0][0][0])
+        self.assertIn('test_name1', po_call_args[1][0][0])
+        self.assertIn('test_host1', po_call_args[1][0][0])
+        self.assertIn('10', po_call_args[1][0][0])
+        self.assertIn('5', po_call_args[1][0][0])
+        self.assertIn('test_dashboard1', po_call_args[1][0][0])
+
+    @mock.patch('tethys_apps.cli.scheduler_commands.pretty_output')
+    @mock.patch('tethys_compute.models.dask.dask_scheduler.DaskScheduler')
+    def test_dask_schedulers_list_command_no_schedulers(self, mock_scheduler, mock_pretty_output):
+        """
+        Test for dask_schedulers_list_command.
+        For use with no schedulers.
+        :param mock_scheduler:  mock for Scheduler
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
+        mock_scheduler.objects.all.return_value = []
+
+        mock_args = mock.MagicMock(type='dask')
+
+        schedulers_list_command(mock_args)
+
+        mock_scheduler.objects.all.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual('There are no Dask Schedulers registered in Tethys.', po_call_args[0][0][0])

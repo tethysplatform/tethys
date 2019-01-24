@@ -1,0 +1,97 @@
+"""
+********************************************************************************
+* Name: condor_py_workflow
+* Author: nswain
+* Created On: September 12, 2018
+* Copyright: (c) Aquaveo 2018
+********************************************************************************
+"""
+from condorpy import Workflow
+from django.db import models
+
+from tethys_compute.utilities import DictionaryField
+
+
+class CondorPyWorkflow(models.Model):
+    """
+    Database model for condorpy workflows
+    """
+    condorpyworkflow_id = models.AutoField(primary_key=True)
+    _max_jobs = DictionaryField(default='', blank=True)
+    _config = models.CharField(max_length=1024, null=True, blank=True)
+
+    @property
+    def condorpy_workflow(self):
+        """
+        Returns: an instance of a condorpy Workflow
+        """
+        if not hasattr(self, '_condorpy_workflow'):
+            workflow = Workflow(name=self.name.replace(' ', '_'),
+                                max_jobs=self.max_jobs,
+                                config=self.config,
+                                working_directory=self.workspace
+                                )
+
+            self._condorpy_workflow = workflow
+            self.load_nodes()
+        return self._condorpy_workflow
+
+    @property
+    def max_jobs(self):
+        return self._max_jobs
+
+    @max_jobs.setter
+    def max_jobs(self, max_jobs):
+        self.condorpy_workflow._max_jobs = max_jobs
+        self._max_jobs = max_jobs
+
+    @property
+    def config(self):
+        return self._config
+
+    @config.setter
+    def config(self, config):
+        self.condorpy_workflow.config = config
+        self._config = config
+
+    @property
+    def nodes(self):
+        return self.node_set.select_subclasses()
+
+    @property
+    def num_jobs(self):
+        return self.condorpy_workflow.num_jobs
+
+    def load_nodes(self):
+        workflow = self.condorpy_workflow
+        node_dict = dict()
+
+        def add_node_to_dict(node):
+            if node not in node_dict:
+                node_dict[node] = node.condorpy_node
+
+        for node in self.nodes:
+            add_node_to_dict(node)
+            condorpy_node = node_dict[node]
+            parents = node.parents
+            for parent in parents:
+                add_node_to_dict(parent)
+                condorpy_node.add_parent(node_dict[parent])
+            workflow.add_node(condorpy_node)
+
+    def add_max_jobs_throttle(self, category, max_jobs):
+        """
+        Adds a max_jobs attribute to the workflow to throttle the number of jobs in a category
+
+        Args:
+            category (str): The category to throttle.
+            max_jobs (int): The maximum number of jobs that submit at one time
+        """
+        self.max_jobs[category] = max_jobs
+        self.condorpy_workflow.add_max_jobs_throttle(category, max_jobs)
+
+    def update_database_fields(self):
+        # self.max_jobs = self.condorpy_workflow.max_jobs
+        # self.config = self.condorpy_workflow.config
+        for node in self.nodes:
+            node.update_database_fields()

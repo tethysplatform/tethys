@@ -251,7 +251,7 @@ class TestUtilites(unittest.TestCase):
 
         mock_initialize_engine_object.assert_called_with(apikey=mock_api_key,
                                                          endpoint=mock_endpoint.endpoint,
-                                                         engine=mock_engine.encode('utf-8'),
+                                                         engine=mock_engine,
                                                          password=mock_password,
                                                          request=None,
                                                          username=mock_user_name,
@@ -312,7 +312,7 @@ class TestUtilites(unittest.TestCase):
 
         ret = get_dataset_engine(mock_name,  app_class=None)
 
-        mock_initialize_engine_object.assert_called_with(engine=mock_site_dataset_services.engine.encode('utf-8'),
+        mock_initialize_engine_object.assert_called_with(engine=mock_site_dataset_services.engine,
                                                          endpoint=mock_site_dataset_services.endpoint,
                                                          apikey=mock_site_dataset_services.apikey,
                                                          username=mock_site_dataset_services.username,
@@ -349,7 +349,7 @@ class TestUtilites(unittest.TestCase):
 
         self.assertEquals(mock_ret, ret[0])
         mock_sds_model.objects.all.assert_called_once()
-        mock_initialize.assert_called_once_with(engine=mock_service1.engine.encode('utf-8'),
+        mock_initialize.assert_called_once_with(engine=mock_service1.engine,
                                                 endpoint=mock_service1.endpoint,
                                                 apikey=mock_service1.apikey,
                                                 username=mock_service1.username,
@@ -392,7 +392,7 @@ class TestUtilites(unittest.TestCase):
         ret = get_spatial_dataset_engine(name=name, app_class=None)
 
         self.assertEquals(mock_sdo, ret)
-        mock_initialize_engine_object.assert_called_once_with(engine=mock_site_sds.engine.encode('utf-8'),
+        mock_initialize_engine_object.assert_called_once_with(engine=mock_site_sds.engine,
                                                               endpoint=mock_site_sds.endpoint,
                                                               apikey=mock_site_sds.apikey,
                                                               username=mock_site_sds.username,

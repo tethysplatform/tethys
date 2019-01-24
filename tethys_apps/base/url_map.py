@@ -9,7 +9,7 @@
 """
 from past.builtins import basestring
 
-DEFAULT_EXPRESSION = '[0-9A-Za-z-_.]+'
+DEFAULT_EXPRESSION = r'[0-9A-Za-z-_.]+'
 
 
 class UrlMapBase(object):
@@ -61,9 +61,8 @@ def django_url_preprocessor(url, root_url, custom_regex=None):
     e.g.:
 
         '/example/resource/{variable_name}/'
-        r'^/example/resource/(?P<variable_name>[0-9A-Za-z\-]+)//$'
+        r'^/example/resource/(?P<variable_name>[0-9A-Za-z-]+)//$'
     """
-
     # Split the url into parts
     url_parts = url.split('/')
     django_url_parts = []
