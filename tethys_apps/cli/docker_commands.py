@@ -14,8 +14,7 @@ except Exception:
 import platform
 import os
 import json
-from abc import ABCMeta, abstractmethod
-from future.utils import with_metaclass
+from abc import ABC, abstractmethod
 
 import getpass
 import docker
@@ -35,7 +34,7 @@ WINDOWS = 2
 LINUX = 3
 
 
-class ContainerMetadata(with_metaclass(ABCMeta)):
+class ContainerMetadata(ABC):
     input = None
     name = None
     display_name = None
@@ -190,7 +189,7 @@ class PostGisContainerMetadata(ContainerMetadata):
         )
 
     def default_container_options(self):
-        options = super(PostGisContainerMetadata, self).default_container_options()
+        options = super().default_container_options()
         options.update(
             environment=dict(
                 TETHYS_DEFAULT_PASS='pass',
@@ -259,7 +258,7 @@ class GeoServerContainerMetadata(ContainerMetadata):
             port_bindings.update({p: p for p in self.node_ports})
             return port_bindings
         else:
-            return super(GeoServerContainerMetadata, self).port_bindings
+            return super().port_bindings
 
     @property
     def ip(self):
@@ -278,7 +277,7 @@ class GeoServerContainerMetadata(ContainerMetadata):
                 endpoint=self.endpoint
             )
         else:
-            return super(GeoServerContainerMetadata, self).ip
+            return super().ip
 
     @property
     def installed_image(self):
@@ -289,7 +288,7 @@ class GeoServerContainerMetadata(ContainerMetadata):
         return 'cluster' in self.installed_image
 
     def default_container_options(self):
-        options = super(GeoServerContainerMetadata, self).default_container_options()
+        options = super().default_container_options()
         options.update(
             environment=dict(
                 ENABLED_NODES='1',
@@ -425,7 +424,7 @@ class N52WpsContainerMetadata(ContainerMetadata):
         )
 
     def default_container_options(self):
-        options = super(N52WpsContainerMetadata, self).default_container_options()
+        options = super().default_container_options()
         options.update(
             environment=dict(
                 NAME='NONE',
@@ -683,7 +682,7 @@ def docker_command(args):
         docker_restart(containers=args.containers)
 
 
-class UserInputHelper(object):
+class UserInputHelper:
 
     @staticmethod
     def get_input_with_default(prompt, default):

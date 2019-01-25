@@ -39,7 +39,7 @@ class ESRIMap(TethysGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(ESRIMap, self).__init__()
+        super().__init__()
 
         self.height = height
         self.width = width
@@ -96,7 +96,7 @@ class EMView(SecondaryGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(EMView, self).__init__()
+        super().__init__()
 
         self.center = center
         self.zoom = zoom
@@ -128,6 +128,6 @@ class EMLayer(SecondaryGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(EMLayer, self).__init__()
+        super().__init__()
         self.type = type
         self.url = url

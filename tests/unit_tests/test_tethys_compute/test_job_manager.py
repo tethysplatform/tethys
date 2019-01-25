@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 
 from tethys_compute.job_manager import JobManager, JobTemplate, BasicJobTemplate, CondorJobTemplate,\
     CondorJobDescription, CondorWorkflowTemplate, CondorWorkflowNodeBaseTemplate, CondorWorkflowJobTemplate

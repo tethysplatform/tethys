@@ -1,6 +1,6 @@
 from tethys_sdk.testing import TethysTestCase
 import tethys_services.models as service_model
-import mock
+from unittest import mock
 
 from tethys_services.models import HTTPError, URLError
 

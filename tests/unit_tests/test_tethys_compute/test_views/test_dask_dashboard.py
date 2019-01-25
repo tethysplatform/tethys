@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 
 from tethys_compute.views.dask_dashboard import dask_dashboard
 

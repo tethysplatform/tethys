@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 from django.core.exceptions import ObjectDoesNotExist
 import tethys_apps.cli.app_settings_commands as cli_app_settings_command
 

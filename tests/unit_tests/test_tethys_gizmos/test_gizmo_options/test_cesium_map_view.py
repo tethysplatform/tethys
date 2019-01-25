@@ -2,7 +2,7 @@ import unittest
 import tethys_gizmos.gizmo_options.cesium_map_view as gizmo_map_view
 
 
-class MockObject(object):
+class MockObject:
     def __init__(self, debug=True):
         self.DEBUG = debug
 

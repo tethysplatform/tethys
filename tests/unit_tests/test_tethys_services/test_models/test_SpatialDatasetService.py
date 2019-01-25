@@ -1,6 +1,6 @@
 from tethys_sdk.testing import TethysTestCase
 import tethys_services.models as service_model
-import mock
+from unittest import mock
 
 
 class SpatialDatasetServiceTests(TethysTestCase):
@@ -10,11 +10,11 @@ class SpatialDatasetServiceTests(TethysTestCase):
     def tear_down(self):
         pass
 
-    def test_unicode(self):
+    def test__str__(self):
         sds = service_model.SpatialDatasetService(
             name='test_sds',
         )
-        self.assertEqual('test_sds', sds.__unicode__())
+        self.assertEqual('test_sds', sds.__str__())
 
     @mock.patch('tethys_services.models.GeoServerSpatialDatasetEngine')
     def test_get_engine_geo_server(self, mock_sds):

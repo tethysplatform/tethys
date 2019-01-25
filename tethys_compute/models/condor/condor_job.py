@@ -33,7 +33,7 @@ class CondorJob(CondorBase, CondorPyJob):
 
     def _execute(self, queue=None, options=[]):
         self.num_jobs = queue or self.num_jobs
-        super(self.__class__, self)._execute(queue=self.num_jobs, options=options)
+        super()._execute(queue=self.num_jobs, options=options)
 
     def update_database_fields(self):
         CondorBase.update_database_fields(self)

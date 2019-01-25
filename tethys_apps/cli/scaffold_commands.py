@@ -3,7 +3,6 @@ import re
 import logging
 import random
 import shutil
-from builtins import input
 
 from django.template import Template, Context
 from tethys_apps.cli.cli_colors import pretty_output, FG_RED, FG_YELLOW, FG_WHITE

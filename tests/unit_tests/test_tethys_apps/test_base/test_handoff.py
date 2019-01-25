@@ -1,8 +1,7 @@
-from __future__ import print_function
 import unittest
 import tethys_apps.base.handoff as tethys_handoff
 from types import FunctionType
-import mock
+from unittest import mock
 
 
 def test_function(*args):

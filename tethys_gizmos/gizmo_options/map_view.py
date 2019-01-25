@@ -316,7 +316,7 @@ class MapView(TethysGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(MapView, self).__init__(attributes=attributes, classes=classes)
+        super().__init__(attributes=attributes, classes=classes)
 
         self.height = height
         self.width = width
@@ -414,7 +414,7 @@ class MVView(SecondaryGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(MVView, self).__init__()
+        super().__init__()
 
         self.projection = projection
         self.center = center
@@ -457,7 +457,7 @@ class MVDraw(SecondaryGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(MVDraw, self).__init__()
+        super().__init__()
 
         self.controls = controls
         # Validate initial
@@ -615,7 +615,7 @@ class MVLayer(SecondaryGizmoOptions):
         """
         Constructor
         """
-        super(MVLayer, self).__init__()
+        super().__init__()
 
         self.source = source
         self.legend_title = legend_title
@@ -660,7 +660,7 @@ class MVLegendClass(SecondaryGizmoOptions):
         """
 
         # Initialize super class
-        super(MVLegendClass, self).__init__()
+        super().__init__()
 
         self.LEGEND_TYPE = 'mvlegend'
         self.POINT_TYPE = 'point'
@@ -727,7 +727,7 @@ class MVLegendImageClass(SecondaryGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(MVLegendImageClass, self).__init__()
+        super().__init__()
 
         self.LEGEND_TYPE = 'mvlegendimage'
         self.value = value
@@ -768,4 +768,4 @@ class MVLegendGeoServerImageClass(MVLegendImageClass):
                     "LAYER={4}".format(geoserver_url, style, width, height, layer)
 
         # Initialize super class
-        super(MVLegendGeoServerImageClass, self).__init__(value, image_url)
+        super().__init__(value, image_url)

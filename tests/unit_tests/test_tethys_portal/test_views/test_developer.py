@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 
 from tethys_portal.views.developer import is_staff, home
 

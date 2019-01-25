@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 import unittest
 import tethys_gizmos.templatetags.tethys_gizmos as gizmos_templatetags
 from tethys_gizmos.gizmo_options.base import TethysGizmoOptions
@@ -17,7 +17,7 @@ class TestGizmo(TethysGizmoOptions):
     gizmo_name = 'test_gizmo'
 
     def __init__(self, name, *args, **kwargs):
-        super(TestGizmo, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.name = name
 
     @staticmethod

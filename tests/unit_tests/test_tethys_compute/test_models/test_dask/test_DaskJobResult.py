@@ -10,7 +10,7 @@ from tethys_sdk.testing import TethysTestCase
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 from tethys_compute.models.dask.dask_job import DaskJob
 from django.contrib.auth.models import User
-import mock
+from unittest import mock
 
 
 class DaskJobMockedResultsPropertyTests(TethysTestCase):

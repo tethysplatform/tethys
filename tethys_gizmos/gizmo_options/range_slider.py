@@ -71,7 +71,7 @@ class RangeSlider(TethysGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(RangeSlider, self).__init__(attributes=attributes, classes=classes)
+        super().__init__(attributes=attributes, classes=classes)
 
         self.name = name
         self.min = min

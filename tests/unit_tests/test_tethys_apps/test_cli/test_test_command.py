@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 
 from tethys_apps.cli.test_command import test_command
 

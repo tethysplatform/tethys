@@ -1,6 +1,6 @@
 import unittest
 import tethys_apps.base.testing.testing as base_testing
-import mock
+from unittest import mock
 from tethys_apps.base.app_base import TethysAppBase
 
 

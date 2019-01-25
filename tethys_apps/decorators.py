@@ -7,8 +7,6 @@
 * License:
 ********************************************************************************
 """
-from future.standard_library import install_aliases
-
 from urllib.parse import urlparse
 
 from django.core.handlers.wsgi import WSGIRequest
@@ -16,11 +14,8 @@ from django.contrib import messages
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.utils.functional import wraps
-from past.builtins import basestring
 from tethys_portal.views import error as tethys_portal_error
 from tethys_apps.base import has_permission
-
-install_aliases()
 
 
 def permission_required(*args, **kwargs):
@@ -88,7 +83,7 @@ def permission_required(*args, **kwargs):
     use_or = kwargs.pop('use_or', False)
     message = kwargs.pop('message', "We're sorry, but you are not allowed to perform this operation.")
     raise_exception = kwargs.pop('raise_exception', False)
-    perms = [arg for arg in args if isinstance(arg, basestring)]
+    perms = [arg for arg in args if isinstance(arg, str)]
 
     if not perms:
         raise ValueError('Must supply at least one permission to test.')

@@ -26,8 +26,6 @@
 # authors and should not be interpreted as representing official policies, either expressed
 # or implied, of Diego Navarro Mellén.
 
-from __future__ import print_function
-
 
 # Special END separator
 END = '0e8ed89a-47ba-4cdb-938e-b8af8e084d5c'

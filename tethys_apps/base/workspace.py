@@ -12,7 +12,7 @@ import os
 import shutil
 
 
-class TethysWorkspace(object):
+class TethysWorkspace:
     """
     Defines objects that represent file workspaces (directories) for apps and users.
 

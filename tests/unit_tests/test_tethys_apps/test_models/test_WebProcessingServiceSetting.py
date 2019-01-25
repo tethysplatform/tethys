@@ -1,7 +1,7 @@
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import TethysApp, WebProcessingServiceSetting
 from django.core.exceptions import ValidationError
-import mock
+from unittest import mock
 
 
 class WebProcessingServiceSettingTests(TethysTestCase):

@@ -5,7 +5,7 @@ from tethys_compute.models.condor.condor_job import CondorJob
 from condorpy import Templates
 from django.contrib.auth.models import User
 from condorpy import Job
-import mock
+from unittest import mock
 
 
 class CondorPyJobTest(TethysTestCase):

@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 import tethys_apps.cli.gen_commands
 from tethys_apps.cli.gen_commands import get_environment_value, get_settings_value, generate_command
 from tethys_apps.cli.gen_commands import GEN_SETTINGS_OPTION, GEN_NGINX_OPTION, GEN_UWSGI_SERVICE_OPTION,\
