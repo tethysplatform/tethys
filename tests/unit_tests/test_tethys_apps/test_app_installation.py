@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 import os
 import sys
 import tethys_apps.app_installation as tethys_app_installation

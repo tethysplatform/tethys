@@ -4,7 +4,7 @@ from tethys_compute.models.condor.condor_base import CondorBase
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from django.utils import timezone
-import mock
+from unittest import mock
 
 
 class CondorBaseTest(TethysTestCase):

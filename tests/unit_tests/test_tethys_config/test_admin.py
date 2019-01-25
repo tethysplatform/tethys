@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 
 from tethys_config.models import SettingsCategory, Setting
 from tethys_config.admin import SettingInline, SettingCategoryAdmin

@@ -12,8 +12,6 @@ import json
 from django import forms
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from future.utils import with_metaclass
-from past.builtins import basestring
 
 # TODO this should be refactored so it doesn't rely on the depricated code which I've copied here from the Django source
 # see https://code.djangoproject.com/ticket/26807
@@ -29,14 +27,14 @@ class SubfieldBase(type):
     """
     def __new__(cls, name, bases, attrs):
 
-        new_class = super(SubfieldBase, cls).__new__(cls, name, bases, attrs)
+        new_class = super().__new__(cls, name, bases, attrs)
         new_class.contribute_to_class = make_contrib(
             new_class, attrs.get('contribute_to_class')
         )
         return new_class
 
 
-class Creator(object):
+class Creator:
     """
     A placeholder class that provides a way to set the attribute on the model.
     """
@@ -75,7 +73,7 @@ def make_contrib(superclass, func=None):
 
 # code for DictionaryField was taken from https://djangosnippets.org/snippets/1979/
 
-class DictionaryField(with_metaclass(SubfieldBase, models.Field)):
+class DictionaryField(models.Field, metaclass=SubfieldBase):
     description = _("Dictionary object")
 
     def get_internal_type(self):
@@ -86,7 +84,7 @@ class DictionaryField(with_metaclass(SubfieldBase, models.Field)):
             return None
         elif value == "":
             return {}
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             try:
                 return dict(json.loads(value))
             except (ValueError, TypeError) as e:
@@ -104,7 +102,7 @@ class DictionaryField(with_metaclass(SubfieldBase, models.Field)):
     def get_prep_value(self, value):
         if not value:
             return ""
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             return value
         else:
             return json.dumps(value)
@@ -114,16 +112,16 @@ class DictionaryField(with_metaclass(SubfieldBase, models.Field)):
         return self.get_prep_value(value)
 
     def clean(self, value, model_instance):
-        value = super(DictionaryField, self).clean(value, model_instance)
+        value = super().clean(value, model_instance)
         return self.get_prep_value(value)
 
     def formfield(self, **kwargs):
         defaults = {'widget': forms.Textarea}
         defaults.update(kwargs)
-        return super(DictionaryField, self).formfield(**defaults)
+        return super().formfield(**defaults)
 
 
-class ListField(with_metaclass(SubfieldBase, models.Field)):
+class ListField(models.Field, metaclass=SubfieldBase):
     description = _("List object")
 
     def get_internal_type(self):
@@ -134,7 +132,7 @@ class ListField(with_metaclass(SubfieldBase, models.Field)):
             return None
         elif value == "":
             return []
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             try:
                 return json.loads(value)
             except (ValueError, TypeError) as e:
@@ -152,7 +150,7 @@ class ListField(with_metaclass(SubfieldBase, models.Field)):
     def get_prep_value(self, value):
         if not value:
             return ""
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             return value
         else:
             return json.dumps(value)
@@ -162,10 +160,10 @@ class ListField(with_metaclass(SubfieldBase, models.Field)):
         return self.get_prep_value(value)
 
     def clean(self, value, model_instance):
-        value = super(ListField, self).clean(value, model_instance)
+        value = super().clean(value, model_instance)
         return self.get_prep_value(value)
 
     def formfield(self, **kwargs):
         defaults = {'widget': forms.Textarea}
         defaults.update(kwargs)
-        return super(ListField, self).formfield(**defaults)
+        return super().formfield(**defaults)

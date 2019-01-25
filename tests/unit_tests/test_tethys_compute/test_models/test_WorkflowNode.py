@@ -6,7 +6,7 @@ from tethys_compute.models.condor.condor_workflow_job_node import CondorWorkflow
 from tethys_compute.models.condor.condor_workflow import CondorWorkflow
 from django.contrib.auth.models import User
 from condorpy import Job
-import mock
+from unittest import mock
 import os
 import os.path
 

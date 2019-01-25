@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 
 from django.core.exceptions import ObjectDoesNotExist
 from social_core.exceptions import AuthAlreadyAssociated, AuthException

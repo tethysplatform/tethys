@@ -128,7 +128,7 @@ class RegisterForm(forms.ModelForm):
         return password2
 
     def save(self, commit=True):
-        user = super(RegisterForm, self).save(commit=False)
+        user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
@@ -215,7 +215,7 @@ class UserPasswordChangeForm(forms.Form):
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
-        super(UserPasswordChangeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean_old_password(self):
         """

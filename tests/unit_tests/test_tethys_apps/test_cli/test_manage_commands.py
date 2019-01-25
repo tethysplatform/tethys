@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 import tethys_apps.cli.manage_commands as manage_commands
 from tethys_apps.cli.manage_commands import MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC, \
     MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT, MANAGE_CREATESUPERUSER, MANAGE_SYNC
