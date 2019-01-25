@@ -1,9 +1,9 @@
 import unittest
 import tethys_gizmos.gizmo_options.jobs_table as gizmo_jobs_table
-import mock
+from unittest import mock
 
 
-class JobObject(object):
+class JobObject:
     def __init__(self, id, name, description, creation_time, run_time):
         self.id = id
         self.name = name

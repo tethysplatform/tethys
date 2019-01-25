@@ -9,8 +9,6 @@
 """
 import re
 
-from past.builtins import basestring
-
 
 class TethysGizmoOptions(dict):
     """
@@ -24,12 +22,12 @@ class TethysGizmoOptions(dict):
         Constructor for Tethys Gizmo Options base.
         """
         # Initialize super class
-        super(TethysGizmoOptions, self).__init__()
+        super().__init__()
 
         # Dictionary magic
         self.__dict__ = self
 
-        if isinstance(attributes, basestring):
+        if isinstance(attributes, str):
             # 'key="value" key2="value with spaces"'
             pattern = r'(\w+)='
             pairs = re.split(pattern, attributes)
@@ -99,7 +97,7 @@ class SecondaryGizmoOptions(dict):
         Constructor for Tethys Gizmo Options base.
         """
         # Initialize super class
-        super(SecondaryGizmoOptions, self).__init__()
+        super().__init__()
 
         # Dictionary magic
         self.__dict__ = self

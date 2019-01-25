@@ -1,7 +1,4 @@
-from __future__ import print_function
 import subprocess
-
-from builtins import input
 
 from tethys_apps.cli.manage_commands import get_manage_path
 from tethys_apps.cli.cli_colors import TC_WARNING, TC_ENDC

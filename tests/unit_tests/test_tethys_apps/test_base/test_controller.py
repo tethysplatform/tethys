@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 import tethys_apps.base.controller as tethys_controller
 
 

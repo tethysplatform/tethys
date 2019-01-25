@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory
@@ -139,7 +139,7 @@ class DecoratorsTest(unittest.TestCase):
         request = self.request_factory.get('/apps/test-app')
         request.user = self.user
 
-        class Foo(object):
+        class Foo:
             @permission_required('create_projects')
             def method(self, request, *args, **kwargs):
                 return "expected_result"

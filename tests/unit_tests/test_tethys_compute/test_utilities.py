@@ -1,7 +1,7 @@
 from django.test import TestCase
 from captcha.models import CaptchaStore
 from django.contrib.auth.models import User
-import mock
+from unittest import mock
 from tethys_compute.utilities import ListField, DictionaryField, Creator
 
 
@@ -9,7 +9,7 @@ def test_fun():
     return 'test'
 
 
-class TestObject(object):
+class TestObject:
     test_name = 'test'
 
 
