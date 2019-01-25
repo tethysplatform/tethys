@@ -74,7 +74,7 @@ class HighchartsDateEncoder(DjangoJSONEncoder):
         # Highcharts date serializer
         if isinstance(obj, datetime):
             return time.mktime(obj.timetuple()) * 1000
-        return super(HighchartsDateEncoder, self).default(obj)
+        return super().default(obj)
 
 
 @register.filter(is_safe=True)
@@ -127,7 +127,7 @@ class TethysGizmoIncludeDependency(template.Node):
     Custom template include node that returns Tethys gizmos
     """
     def __init__(self, gizmo_name, *args, **kwargs):
-        super(TethysGizmoIncludeDependency, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._load_gizmo_name(gizmo_name)
 
     def _load_gizmo_name(self, gizmo_name):
@@ -176,7 +176,7 @@ class TethysGizmoIncludeNode(TethysGizmoIncludeDependency):
     """
     def __init__(self, options, gizmo_name, *args, **kwargs):
         self.options = options
-        super(TethysGizmoIncludeNode, self).__init__(gizmo_name, *args, **kwargs)
+        super().__init__(gizmo_name, *args, **kwargs)
 
     def render(self, context):
         resolved_options = template.Variable(self.options).resolve(context)
@@ -293,7 +293,7 @@ class TethysGizmoDependenciesNode(template.Node):
     """
 
     def __init__(self, output_type, *args, **kwargs):
-        super(TethysGizmoDependenciesNode, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.output_type = output_type
 
     def _append_dependency(self, dependency, dependency_list):

@@ -34,7 +34,7 @@ class CondorPyJob(models.Model):
             template.update(attributes)
             attributes = template
         kwargs['_attributes'] = attributes
-        super(CondorPyJob, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @classmethod
     def get_condorpy_template(cls, template_name):

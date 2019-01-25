@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 from distributed.protocol.serialize import serialize
 from django.core.exceptions import ValidationError
 from tethys_sdk.testing import TethysTestCase

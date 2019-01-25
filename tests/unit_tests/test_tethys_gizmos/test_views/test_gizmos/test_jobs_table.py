@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 import unittest
 import json
 from django.test import RequestFactory

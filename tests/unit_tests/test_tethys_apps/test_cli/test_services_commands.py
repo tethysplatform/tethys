@@ -3,7 +3,7 @@ try:
 except ImportError:
     from io import StringIO  # noqa: F401
 import unittest
-import mock
+from unittest import mock
 
 from tethys_apps.cli.services_commands import services_create_persistent_command, services_remove_persistent_command,\
     services_create_spatial_command, services_remove_spatial_command, services_list_command

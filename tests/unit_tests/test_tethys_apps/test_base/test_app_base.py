@@ -1,6 +1,6 @@
 import unittest
 import tethys_apps.base.app_base as tethys_app_base
-import mock
+from unittest import mock
 
 from django.test import RequestFactory
 from tests.factories.django_user import UserFactory
@@ -57,7 +57,7 @@ class TestTethysBase(unittest.TestCase):
 
     @mock.patch('tethys_apps.base.app_base.url')
     @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
-    def test_url_patterns_no_basestring(self, mock_tbm, mock_url):
+    def test_url_patterns_no_str(self, mock_tbm, mock_url):
         app = tethys_app_base.TethysBase()
         # controller_mock = mock.MagicMock()
 
@@ -135,8 +135,8 @@ class TestTethysExtensionBase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test__unicode__(self):
-        result = tethys_app_base.TethysExtensionBase().__unicode__()
+    def test__str__(self):
+        result = tethys_app_base.TethysExtensionBase().__str__()
         self.assertEqual('<TethysApp: >', result)
 
     def test__repr__(self):
@@ -193,8 +193,8 @@ class TestTethysAppBase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test__unicode__(self):
-        result = tethys_app_base.TethysAppBase().__unicode__()
+    def test__str__(self):
+        result = tethys_app_base.TethysAppBase().__str__()
         self.assertEqual('<TethysApp: >', result)
 
     def test__repr__(self):
