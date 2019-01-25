@@ -368,7 +368,7 @@ then
         # create conda env and install Tethys
         echo "Setting up the ${CONDA_ENV_NAME} environment..."
         conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/environment.yml"
-        source activate ${CONDA_ENV_NAME}
+        conda activate ${CONDA_ENV_NAME}
         python "${TETHYS_SRC}/setup.py" develop
     else
         echo "Activating the ${CONDA_ENV_NAME} environment..."
