@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 import tethys_apps.cli.link_commands as link_commands
 
 

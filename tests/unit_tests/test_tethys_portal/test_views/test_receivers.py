@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 from tethys_portal.views.receivers import create_auth_token
 
 

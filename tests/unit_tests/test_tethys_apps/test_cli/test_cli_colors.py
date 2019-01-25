@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 from tethys_apps.cli.cli_colors import (
     pretty_output,
     write_pretty_output,

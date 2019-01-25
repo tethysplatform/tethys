@@ -1,6 +1,6 @@
 import io
 import unittest
-import mock
+from unittest import mock
 
 from django.db.utils import ProgrammingError
 from tethys_apps.harvester import SingletonHarvester

@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 
 from tethys_apps.views import library, handoff_capabilities, handoff, send_beta_feedback_email, update_job_status, \
     update_dask_job_status

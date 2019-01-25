@@ -3,7 +3,7 @@ from captcha.models import CaptchaStore
 from tethys_portal.forms import LoginForm, RegisterForm, UserSettingsForm, UserPasswordChangeForm
 from django.contrib.auth.models import User
 from django import forms
-import mock
+from unittest import mock
 
 
 class TethysPortalFormsTests(TestCase):

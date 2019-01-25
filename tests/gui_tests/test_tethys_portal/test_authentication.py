@@ -7,7 +7,7 @@ class AuthenticationTests(StaticLiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(AuthenticationTests, cls).setUpClass()
+        super().setUpClass()
         cls.selenium = WebDriver()
 
         cls.user_pass = 'userpass'
@@ -18,7 +18,7 @@ class AuthenticationTests(StaticLiveServerTestCase):
     @classmethod
     def tearDownClass(cls):
         cls.selenium.quit()
-        super(AuthenticationTests, cls).tearDownClass()
+        super().tearDownClass()
 
     def test_login(self):
         self.selenium.get('%s%s' % (self.live_server_url, '/accounts/login/'))

@@ -8,7 +8,7 @@
 """
 from tethys_apps.base.testing.testing import TethysTestCase
 from tethys_compute.models import Scheduler, DaskScheduler
-import mock
+from unittest import mock
 
 
 class DaskSchedulerTest(TethysTestCase):
