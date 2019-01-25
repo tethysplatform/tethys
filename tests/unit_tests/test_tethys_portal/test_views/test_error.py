@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 from tethys_portal.views.error import handler_400, handler_403, handler_404, handler_500
 
 
