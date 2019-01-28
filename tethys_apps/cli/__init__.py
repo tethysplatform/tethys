@@ -329,8 +329,4 @@ def tethys_command():
 
     # Parse the args and call the default function
     args = parser.parse_args()
-    try:
-        args.func(args)
-    except AttributeError:
-        parser.print_help()
-        exit(2)
+    args.func(args)
