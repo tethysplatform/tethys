@@ -278,8 +278,8 @@ Geoserver should now be accessible from: https://domain-name/geoserver
 Download and install any apps that you want to host using this installation of Tethys Platform. For more information see: :doc:`./app_installation`.
 
 
-.. todo::
+.. tip::
 
-    **Troubleshooting**: Here we try to provide some guidance on some of the most commonly encountered issues. If you are experiencing problems and can't find a solution here then please post a question on the `Tethys Platform Forum <https://groups.google.com/forum/#!forum/tethysplatform>`_.
+    **Troubleshooting**: If you are experiencing problems please search for a solution or post a question on the `Tethys Platform Forum <https://groups.google.com/forum/#!forum/tethysplatform>`_.
 
 

@@ -1,6 +1,10 @@
 from tethys_sdk.testing import TethysTestCase
-from tethys_compute.models import CondorPyWorkflow, CondorWorkflow, Scheduler, CondorWorkflowJobNode
+from tethys_compute.models.condor.condor_scheduler import CondorScheduler
+from tethys_compute.models.condor.condor_py_workflow import CondorPyWorkflow
+from tethys_compute.models.condor.condor_workflow_job_node import CondorWorkflowJobNode
+from tethys_compute.models.condor.condor_workflow import CondorWorkflow
 from django.contrib.auth.models import User
+from django.utils import timezone as tz
 import mock
 import os
 import shutil
@@ -13,7 +17,7 @@ class CondorWorkflowTest(TethysTestCase):
         self.workspace_dir = os.path.join(path, 'workspace')
         self.user = User.objects.create_user('tethys_super', 'user@example.com', 'pass')
 
-        self.scheduler = Scheduler(
+        self.scheduler = CondorScheduler(
             name='test_scheduler',
             host='localhost',
             username='tethys_super',
@@ -45,8 +49,6 @@ class CondorWorkflowTest(TethysTestCase):
         )
         self.condorworkflowjobnode_child.save()
 
-        # self.child_id = CondorWorkflowJobNode.objects.get(name='Node_child').id
-
         self.condorworkflowjobnode = CondorWorkflowJobNode(
             name='Node_1',
             workflow=self.condorpyworkflow,
@@ -71,6 +73,10 @@ class CondorWorkflowTest(TethysTestCase):
         if os.path.exists(self.workspace_dir):
             shutil.rmtree(self.workspace_dir)
 
+    def test_type(self):
+        ret = self.condorworkflow.type
+        self.assertEqual('CondorWorkflow', ret)
+
     def test_condor_object_prop(self):
         ret = self.condorworkflow._condor_object
 
@@ -79,8 +85,8 @@ class CondorWorkflowTest(TethysTestCase):
         self.assertEqual('test_config', ret.config)
         self.assertEqual('<DAG: test_name>', repr(ret))
 
-    @mock.patch('tethys_compute.models.CondorPyWorkflow.load_nodes')
-    @mock.patch('tethys_compute.models.CondorBase.condor_object')
+    @mock.patch('tethys_compute.models.condor.condor_workflow.CondorPyWorkflow.load_nodes')
+    @mock.patch('tethys_compute.models.condor.condor_workflow.CondorBase.condor_object')
     def test_execute(self, mock_co, mock_ln):
         # Mock submit to return a 111 cluster id
         mock_co.submit.return_value = 111
@@ -107,8 +113,8 @@ class CondorWorkflowTest(TethysTestCase):
         # Check result
         self.assertIsNone(ret)
 
-    @mock.patch('tethys_compute.models.CondorBase.update_database_fields')
-    @mock.patch('tethys_compute.models.CondorPyWorkflow.update_database_fields')
+    @mock.patch('tethys_compute.models.condor.condor_workflow.CondorBase.update_database_fields')
+    @mock.patch('tethys_compute.models.condor.condor_workflow.CondorPyWorkflow.update_database_fields')
     def test_update_database_fieds(self, mock_pw_update, mock_ba_update):
         # Execute
         self.condorworkflow.update_database_fields()
@@ -117,7 +123,7 @@ class CondorWorkflowTest(TethysTestCase):
         mock_pw_update.assert_called()
         mock_ba_update.assert_called()
 
-    @mock.patch('tethys_compute.models.CondorWorkflow.update_database_fields')
+    @mock.patch('tethys_compute.models.condor.condor_workflow.CondorWorkflow.update_database_fields')
     def test_condor_workflow_presave(self, mock_update):
         # Excute
         self.condorworkflow.save()
@@ -125,7 +131,7 @@ class CondorWorkflowTest(TethysTestCase):
         # Check if update_database_fields is called
         mock_update.assert_called()
 
-    @mock.patch('tethys_compute.models.CondorWorkflow.condor_object')
+    @mock.patch('tethys_compute.models.condor.condor_workflow.CondorWorkflow.condor_object')
     def test_condor_job_pre_delete(self, mock_co):
         if not os.path.exists(self.workspace_dir):
             os.makedirs(self.workspace_dir)
@@ -140,11 +146,54 @@ class CondorWorkflowTest(TethysTestCase):
         # Check if file has been removed
         self.assertFalse(os.path.isfile(file_path))
 
-    @mock.patch('tethys_compute.models.log')
-    @mock.patch('tethys_compute.models.CondorWorkflow.condor_object')
+    @mock.patch('tethys_compute.models.condor.condor_workflow.log')
+    @mock.patch('tethys_compute.models.condor.condor_workflow.CondorWorkflow.condor_object')
     def test_condor_job_pre_delete_exception(self, mock_co, mock_log):
         mock_co.close_remote.side_effect = Exception('test error')
         self.condorworkflow.delete()
 
         # Check if close_remote is called
         mock_log.exception.assert_called_with('test error')
+
+    def test__update_status_no_execute_time(self):
+        self.condorworkflow.execute_time = None
+        ret = self.condorworkflow._update_status()
+        self.assertEqual('PEN', ret)
+
+    @mock.patch('tethys_compute.models.condor.condor_workflow.CondorBase.condor_object')
+    def test__update_status_not_Running(self, mock_co):
+        self.condorworkflow.execute_time = tz.now()
+        mock_co.status = 'Completed'
+
+        self.condorworkflow._update_status()
+
+        self.assertEqual('COM', self.condorworkflow._status)
+
+    @mock.patch('tethys_compute.models.condor.condor_workflow.CondorBase.condor_object')
+    def test__update_status_Running_not_running_statuses(self, mock_co):
+        self.condorworkflow.execute_time = tz.now()
+        mock_co.status = 'Running'
+        mock_co.statuses = {'Unexpanded': 0, 'Idle': 0, 'Running': 0, 'Completed': 1}
+
+        self.condorworkflow._update_status()
+
+        self.assertEqual('VCP', self.condorworkflow._status)
+
+    @mock.patch('tethys_compute.models.condor.condor_workflow.CondorBase.condor_object')
+    def test__update_status_Running_no_statuses(self, mock_co):
+        self.condorworkflow.execute_time = tz.now()
+        mock_co.status = 'Running'
+        mock_co.statuses = {'Unexpanded': 0, 'Idle': 0, 'Running': 0, 'Completed': 0}
+
+        self.condorworkflow._update_status()
+
+        self.assertEqual('SUB', self.condorworkflow._status)
+
+    @mock.patch('tethys_compute.models.condor.condor_workflow.CondorBase.condor_object')
+    def test__update_status_exception(self, mock_co):
+        self.condorworkflow.execute_time = tz.now()
+        type(mock_co).status = mock.PropertyMock(side_effect=Exception)
+
+        self.condorworkflow._update_status()
+
+        self.assertEqual('ERR', self.condorworkflow._status)
