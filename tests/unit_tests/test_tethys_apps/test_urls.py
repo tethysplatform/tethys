@@ -24,17 +24,17 @@ class TestUrls(TethysTestCase):
         self.assertEquals('send_beta_feedback_email', resolver.func.__name__)
         self.assertEqual('tethys_apps.views', resolver.func.__module__)
 
-        url = reverse('test_app:home', args=['foo', 'bar'])
+        url = reverse('test_app:home')
         resolver = resolve(url)
-        self.assertEqual('/apps/test-app/foo/bar/', url)
+        self.assertEqual('/apps/test-app/', url)
         self.assertEquals('home', resolver.func.__name__)
         self.assertEqual('tethys_apps.tethysapp.test_app.controllers', resolver.func.__module__)
 
-        url = reverse('test_app:home', kwargs={'var1': 'foo', 'var2': 'bar'})
+        url = reverse('test_extension:home', kwargs={'var1': 'foo', 'var2': 'bar'})
         resolver = resolve(url)
-        self.assertEqual('/apps/test-app/foo/bar/', url)
+        self.assertEqual('/extensions/test-extension/foo/bar/', url)
         self.assertEquals('home', resolver.func.__name__)
-        self.assertEqual('tethys_apps.tethysapp.test_app.controllers', resolver.func.__module__)
+        self.assertEqual('tethysext.test_extension.controllers', resolver.func.__module__)
 
         url = reverse('test_extension:home', args=['foo', 'bar'])
         resolver = resolve(url)
