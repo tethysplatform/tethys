@@ -20,7 +20,7 @@ def tethys_global_settings_context(request):
     site_globals = Setting.as_dict()
 
     # Get terms and conditions
-    site_globals.update({'documents': TermsAndConditions.get_active_terms_list(as_dict=False)})
+    site_globals.update({'documents': TermsAndConditions.get_active_terms_list()})
 
     context = {'site_globals': site_globals}
 
