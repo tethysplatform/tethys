@@ -28,7 +28,7 @@ class TestApp(TethysAppBase):
         url_maps = (
             UrlMap(
                 name='home',
-                url='test-app/{var1}/{var2}',
+                url='test-app/',
                 controller='test_app.controllers.home'
             ),
         )

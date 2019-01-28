@@ -1,0 +1,28 @@
+{
+  "name": "dagre-d3",
+  "version": "0.6.1",
+  "main": [
+    "dist/dagre-d3.core.js"
+  ],
+  "ignore": [
+    ".*",
+    "README.md",
+    "CHANGELOG.md",
+    "Makefile",
+    "browser.js",
+    "dist/dagre-d3.js",
+    "dist/dagre-d3.min.js",
+    "index.js",
+    "karma*",
+    "lib/**",
+    "package.json",
+    "src/**",
+    "test/**"
+  ],
+  "dependencies": {
+    "d3": "^4.12.2",
+    "dagre": "^0.8.1",
+    "graphlib": "^2.1.5",
+    "lodash": "^4.17.4"
+  }
+}

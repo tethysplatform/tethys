@@ -1,0 +1,54 @@
+# environment.yml
+# Configuration file for creating a Conda Environment with dependencies needed for Tethys Platform.
+# Create the environment by running the following command (after installing Miniconda):
+#   $ conda env create -f environment.yml
+
+name: tethys
+
+channels:
+- tethysplatform
+- conda-forge
+- defaults
+
+dependencies:
+- python=3.*
+- django=1.11.*
+- django-filter
+- djangorestframework
+- bokeh
+- future
+- hs_restclient
+- psycopg2
+- sqlalchemy
+- requests
+- selenium
+- coverage
+- docker-py<1.10
+- geoalchemy2
+- owslib
+- pip
+- pillow
+- plotly
+- postgresql
+- postgis
+- pycrypto
+- pyopenssl
+- mock
+- factory_boy
+- tethys_dataset_services>=1.7.0
+- dask
+- tethys_dask_scheduler>=1.0.2
+- pip:
+    - django-gravatar2
+    - django-bootstrap3
+    - django-model-utils
+    - django-guardian
+    - django-simple-captcha
+    - django-termsandconditions
+    - django-session-security
+    - tethys_dataset_services
+    - condorpy
+    - PasteScript
+    - social-auth-app-django
+    - python_social_auth
+    - requests-mock
