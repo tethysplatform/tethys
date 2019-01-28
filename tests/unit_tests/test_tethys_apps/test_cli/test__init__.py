@@ -33,9 +33,8 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('docker', stdout)
 
     @mock.patch('sys.stdout', new_callable=StringIO)
-    @mock.patch('sys.stderr', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
-    def test_tethys_with_no_subcommand(self, mock_exit, mock_stderr, mock_stdout):
+    def test_tethys_with_no_subcommand(self, mock_exit, mock_stdout):
             mock_exit.side_effect = SystemExit
             testargs = ['tethys']
 
@@ -43,11 +42,8 @@ class TethysCommandTests(unittest.TestCase):
                 self.assertRaises(SystemExit, tethys_command)
 
             if mock_stdout.getvalue():
-                # Python 3
                 self.assert_returns_help(mock_stdout.getvalue())
-            else:
-                # Python 2
-                self.assert_returns_help(mock_stderr.getvalue())
+
 
     @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
