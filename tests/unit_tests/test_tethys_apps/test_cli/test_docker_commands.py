@@ -528,20 +528,22 @@ class TestDockerCommands(unittest.TestCase):
         mock_status.assert_called_once_with(mock_dc())
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual(11, len(po_call_args))
+        self.assertEqual(13, len(po_call_args))
         self.assertIn('PostGIS/Database:', po_call_args[0][0][0])
         self.assertEquals('  Host: host', po_call_args[1][0][0])
         self.assertEquals('  Port: 123', po_call_args[2][0][0])
+        self.assertEquals('  Endpoint: postgresql://<username>:<password>@host:123/<database>', po_call_args[3][0][0])
 
-        self.assertIn('GeoServer:', po_call_args[3][0][0])
-        self.assertEquals('  Host: host', po_call_args[4][0][0])
-        self.assertEquals('  Port: 234', po_call_args[5][0][0])
-        self.assertEquals('  Endpoint: http://host:234/geoserver/rest', po_call_args[6][0][0])
+        self.assertIn('GeoServer:', po_call_args[4][0][0])
+        self.assertEquals('  Host: host', po_call_args[5][0][0])
+        self.assertEquals('  Primary Port: 8181', po_call_args[6][0][0])
+        self.assertEquals('  Node Ports: 234', po_call_args[7][0][0])
+        self.assertEquals('  Endpoint: http://host:8181/geoserver/rest', po_call_args[8][0][0])
 
-        self.assertIn('52 North WPS:', po_call_args[7][0][0])
-        self.assertEquals('  Host: host', po_call_args[8][0][0])
-        self.assertEquals('  Port: 456', po_call_args[9][0][0])
-        self.assertEquals('  Endpoint: http://host:456/wps/WebProcessingService\n', po_call_args[10][0][0])
+        self.assertIn('52 North WPS:', po_call_args[9][0][0])
+        self.assertEquals('  Host: host', po_call_args[10][0][0])
+        self.assertEquals('  Port: 456', po_call_args[11][0][0])
+        self.assertEquals('  Endpoint: http://host:456/wps/WebProcessingService\n', po_call_args[12][0][0])
 
     @mock.patch('tethys_apps.cli.docker_commands.pretty_output')
     @mock.patch('tethys_apps.cli.docker_commands.get_docker_container_status')

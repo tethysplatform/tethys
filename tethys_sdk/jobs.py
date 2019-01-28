@@ -9,6 +9,7 @@
 """
 # flake8: noqa
 # DO NOT ERASE
+# Depricated imports
 from tethys_compute.job_manager import (
     JobManager,
     BasicJobTemplate,
@@ -16,10 +17,11 @@ from tethys_compute.job_manager import (
     CondorJobDescription,
     CondorWorkflowTemplate,
     CondorWorkflowJobTemplate,
-    # CondorWorkflowSubworkflowTemplate,
-    # CondorWorkflowDataJobTemplate,
-    # CondorWorkflowFinalTemplate,
 )
-
-# Depricated imports
-from tethys_compute.job_manager import (JobTemplate, JOB_TYPES)
+from tethys_compute.models import (
+    BasicJob,
+    CondorJob,
+    CondorWorkflow,
+    CondorWorkflowJobNode,
+    DaskJob
+)

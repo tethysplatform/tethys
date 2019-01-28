@@ -16,13 +16,13 @@ import warnings
 
 from django.urls import reverse
 
-from tethys_compute.models import (TethysJob,
-                                   BasicJob,
-                                   CondorJob,
-                                   CondorWorkflow,
-                                   CondorWorkflowNode,
-                                   CondorWorkflowJobNode,
-                                   )
+from tethys_compute.models.tethys_job import TethysJob
+from tethys_compute.models.basic_job import BasicJob
+from tethys_compute.models.dask.dask_job import DaskJob
+from tethys_compute.models.condor.condor_job import CondorJob
+from tethys_compute.models.condor.condor_workflow_node import CondorWorkflowNode
+from tethys_compute.models.condor.condor_workflow_job_node import CondorWorkflowJobNode
+from tethys_compute.models.condor.condor_workflow import CondorWorkflow
 
 log = logging.getLogger('tethys.tethys_compute.job_manager')
 
@@ -30,6 +30,7 @@ JOB_TYPES = {'CONDOR': CondorJob,
              'CONDORJOB': CondorJob,
              'CONDORWORKFLOW': CondorWorkflow,
              'BASIC': BasicJob,
+             'DASK': DaskJob,
              }
 
 
@@ -38,7 +39,7 @@ class JobManager(object):
     A manager for interacting with the Jobs database providing a simple interface creating and retrieving jobs.
 
     Note:
-        Each app creates its own instance of the JobManager. the ``get_job_manager`` method returns the app.
+        Each app creates its own instance of the JobManager. The ``get_job_manager`` method returns the app.
 
         ::
 
@@ -70,9 +71,9 @@ class JobManager(object):
             A new job object of the type specified by job_type.
         """
         if template_name is not None:
-            msg = 'The job template "{0}" was used in the "{1}" app. Using job templates is now deprecated. ' \
-                  'See docs: <<link>>.'\
-                .format(template_name, self.app.package)
+            msg = 'The job template "{0}" was used in the "{1}" app. Using job templates is now deprecated.'.format(
+                template_name, self.app.package
+            )
             warnings.warn(msg, DeprecationWarning)
             print(msg)
             return self.old_create_job(name, user, template_name, **kwargs)
@@ -176,8 +177,8 @@ class JobManager(object):
             return value
 
         def replace_in_string(string_value):
-            new_string_value = re.sub('\$\(APP_WORKSPACE\)', app_workspace.path, string_value)
-            new_string_value = re.sub('\$\(USER_WORKSPACE\)', user_workspace.path, new_string_value)
+            new_string_value = re.sub(r'\$\(APP_WORKSPACE\)', app_workspace.path, string_value)
+            new_string_value = re.sub(r'\$\(USER_WORKSPACE\)', user_workspace.path, new_string_value)
             return new_string_value
 
         def replace_in_dict(dict_value):
@@ -210,6 +211,7 @@ class JobManager(object):
 
 class JobTemplate(object):
     """
+    **DEPRECATED**
     A template from which to create a job.
 
     Args:
@@ -239,6 +241,7 @@ class JobTemplate(object):
 
 class BasicJobTemplate(JobTemplate):
     """
+    **DEPRECATED**
     A subclass of JobTemplate with the ``type`` argument set to BasicJob.
 
     Args:
@@ -254,6 +257,7 @@ class BasicJobTemplate(JobTemplate):
 
 class CondorJobDescription(object):
     """
+    **DEPRECATED**
     Helper class for CondorJobTemplate and CondorWorkflowJobTemplates. Stores job attributes.
     """
     def __init__(self, condorpy_template_name=None, remote_input_files=None, **kwargs):
@@ -267,6 +271,7 @@ class CondorJobDescription(object):
 
 class CondorJobTemplate(JobTemplate):
     """
+    **DEPRECATED**
     A subclass of the JobTemplate with the ``type`` argument set to CondorJob.
 
     Args:
@@ -289,6 +294,7 @@ class CondorJobTemplate(JobTemplate):
 
 class CondorWorkflowTemplate(JobTemplate):
     """
+    **DEPRECATED**
     A subclass of the JobTemplate with the ``type`` argument set to CondorWorkflow.
 
     Args:
@@ -300,6 +306,7 @@ class CondorWorkflowTemplate(JobTemplate):
     """  # noqa: E501
     def __init__(self, name, parameters=None, jobs=None, max_jobs=None, config='', **kwargs):
         parameters = parameters or dict()
+        jobs = jobs or list()
         self.node_templates = set(jobs)
         parameters['max_jobs'] = max_jobs
         parameters['config'] = config
@@ -342,6 +349,7 @@ NODE_TYPES = {'JOB': CondorWorkflowJobNode,
 
 class CondorWorkflowNodeBaseTemplate(object):
     """
+    **DEPRECATED**
     A template from which to create a job.
 
     Args:
@@ -379,6 +387,7 @@ class CondorWorkflowNodeBaseTemplate(object):
 
 class CondorWorkflowJobTemplate(CondorWorkflowNodeBaseTemplate):
     """
+    **DEPRECATED**
     A subclass of the CondorWorkflowNodeBaseTemplate with the ``type`` argument set to CondorWorkflowJobNode.
 
     Args:
@@ -394,15 +403,3 @@ class CondorWorkflowJobTemplate(CondorWorkflowNodeBaseTemplate):
 
     def process_parameters(self):
         pass
-
-
-class CondorWorkflowSubworkflowTemplate(CondorWorkflowNodeBaseTemplate):
-    pass
-
-
-class CondorWorkflowDataJobTemplate(CondorWorkflowNodeBaseTemplate):
-    pass
-
-
-class CondorWorkflowFinalTemplate(CondorWorkflowNodeBaseTemplate):
-    pass

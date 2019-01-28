@@ -19,6 +19,28 @@ from tethys_apps.harvester import SingletonHarvester
 tethys_log = logging.getLogger('tethys.' + __name__)
 
 
+def get_tethys_src_dir():
+    """
+    Get/derive the TETHYS_SRC variable.
+
+    Returns:
+        str: path to TETHYS_SRC.
+    """
+    default = os.path.dirname(os.path.dirname(__file__))
+    return os.environ.get('TETHYS_SRC', default)
+
+
+def get_tethys_home_dir():
+    """
+    Get/derive the TETHYS_HOME variable.
+
+    Returns:
+        str: path to TETHYS_HOME.
+    """
+    default = os.path.dirname(get_tethys_src_dir())
+    return os.environ.get('TETHYS_HOME', default)
+
+
 def get_directories_in_tethys(directory_names, with_app_name=False):
     """
     # Locate given directories in tethys apps and extensions.

@@ -14,7 +14,7 @@
 
 import sys
 import os
-import re
+import mock
 
 import pbr.version
 import pbr.git
@@ -22,15 +22,54 @@ import pbr.git
 from django.conf import settings
 import django
 
+# Mock Dependencies
+# NOTE: No obvious way to automatically anticipate all the sub modules without
+# installing the package, which is what we are trying to avoid.
+MOCK_MODULES = [
+    'bokeh', 'bokeh.embed', 'bokeh.resources',
+    'condorpy',
+    'django_gravatar',
+    'future', 'future.standard_library', 'future.utils',
+    'guardian', 'guardian.admin',
+    'model_utils', 'model_utils.managers',
+    'past', 'past.builtins', 'past.types', 'past.utils',
+    'plotly', 'plotly.offline',
+    'social_core', 'social_core.exceptions',
+    'social_django',
+    'sqlalchemy', 'sqlalchemy.orm',
+    'tethys_apps.harvester',  # Mocked to prevent issues with loading apps during docs build.
+    'tethys_compute.utilities'  # Mocked to prevent issues with DictionaryField and List Field during docs build.
+]
+
+
+# Mock dependency modules so we don't have to install them
+# See: https://docs.readthedocs.io/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
+class MockModule(mock.MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+        return mock.MagicMock()
+
+
+print('NOTE: The following modules are mocked to prevent timeouts during the docs build process on RTD:')
+print('{}'.format(', '.join(MOCK_MODULES)))
+sys.modules.update((mod_name, MockModule()) for mod_name in MOCK_MODULES)
 
 # Fixes django settings module problem
 sys.path.insert(0, os.path.abspath('..'))
 
-# parse the installed apps list from the settings template
-with open('../tethys_apps/cli/gen_templates/settings', 'r') as settings_file:
-    settings_str = settings_file.read()
-    match = re.search('INSTALLED_APPS = \(\n(.*?)\)', settings_str, re.DOTALL)
-    installed_apps = [app.strip('\'|,') for app in match.group(1).split()]
+installed_apps = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'tethys_config',
+    'tethys_apps',
+    'tethys_gizmos',
+    'tethys_services',
+    'tethys_compute',
+]
 
 settings.configure(INSTALLED_APPS=installed_apps)
 django.setup()

@@ -4,7 +4,7 @@ After=syslog.target
 
 [Service]
 ExecStartPre=/bin/bash -c 'mkdir -p /run/uwsgi; chown {{ nginx_user }}:{{ nginx_user }} /run/uwsgi'
-ExecStart={{ conda_home }}/envs/{{ conda_env_name }}/bin/uwsgi --yaml {{ tethys_home }}/src/tethys_portal/tethys_uwsgi.yml --{{ user_option_prefix }}uid {{ nginx_user }} --{{ user_option_prefix }}gid {{ nginx_user }}
+ExecStart={{ conda_home }}/envs/{{ conda_env_name }}/bin/uwsgi --yaml {{ tethys_src }}/tethys_portal/tethys_uwsgi.yml --{{ user_option_prefix }}uid {{ nginx_user }} --{{ user_option_prefix }}gid {{ nginx_user }}
 ExecStartPost=/bin/bash -c 'chown -R {{ nginx_user }}:{{ nginx_user }} /run/uwsgi'
 Restart=always
 KillSignal=SIGQUIT

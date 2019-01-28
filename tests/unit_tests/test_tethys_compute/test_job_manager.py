@@ -3,11 +3,11 @@ import mock
 
 from tethys_compute.job_manager import JobManager, JobTemplate, BasicJobTemplate, CondorJobTemplate,\
     CondorJobDescription, CondorWorkflowTemplate, CondorWorkflowNodeBaseTemplate, CondorWorkflowJobTemplate
-from tethys_compute.models import (TethysJob,
-                                   BasicJob,
-                                   CondorJob,
-                                   CondorWorkflow,
-                                   CondorWorkflowJobNode)
+from tethys_compute.models.tethys_job import TethysJob
+from tethys_compute.models.basic_job import BasicJob
+from tethys_compute.models.condor.condor_job import CondorJob
+from tethys_compute.models.condor.condor_workflow_job_node import CondorWorkflowJobNode
+from tethys_compute.models.condor.condor_workflow import CondorWorkflow
 
 
 class TestJobManager(unittest.TestCase):
@@ -70,8 +70,9 @@ class TestJobManager(unittest.TestCase):
         mock_ocj.assert_called_with('test_name', 'test_user', 'template_1')
 
         # Check if warning message is called
-        check_msg = 'The job template "{0}" was used in the "{1}" app. Using job templates is now deprecated. ' \
-                    'See docs: <<link>>.'.format('template_1', 'test_label')
+        check_msg = 'The job template "{0}" was used in the "{1}" app. Using job templates is now deprecated.'.format(
+            'template_1', 'test_label'
+        )
         rts_call_args = mock_warn.warn.call_args_list
         self.assertEqual(check_msg, rts_call_args[0][0][0])
         mock_print.assert_called_with(check_msg)
@@ -408,7 +409,7 @@ class TestJobManager(unittest.TestCase):
         self.assertTrue(isinstance(node, CondorWorkflowJobNode))
         self.assertEquals(mock_parameters, ret.parameters)
         self.assertEquals('JOB', node.type)
-        self.assertEquals('', node.workspace)
+        self.assertEquals('.', node.workspace)
 
     # CondorWorkflowJobTemplate
 
