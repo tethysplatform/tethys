@@ -1,0 +1,106 @@
+/* Workflow Nodes Row Styles */
+.workflow-nodes-graph {
+    overflow: hidden;
+    background-color: #efefef;
+}
+
+.workflow-nodes-graph .progress {
+    margin-top: 50px;
+    margin-bottom: 10px;
+}
+
+.workflow-nodes-graph .loading-message {
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.workflow-nodes-graph .loading-message p {
+    font-size: 15px;
+    letter-spacing: 1px;
+}
+
+p.loading-error {
+    color: red;
+    text-align: center;
+    padding: 20px;
+    margin: 0;
+    letter-spacing: 1px;
+    font-size: 15px;
+}
+
+/* Styles for D3 Plot */
+.workflow-nodes-graph svg {
+    width: 100%;
+}
+
+/* Pending */
+.workflow-nodes-graph svg g.status-pen > rect {
+  fill: #cccccc;
+}
+
+.workflow-nodes-graph svg g.status-pen:hover > rect {
+  fill: #adadad;
+}
+
+/* Submitted */
+.workflow-nodes-graph svg g.status-sub > rect {
+  fill: #f0ad4e;
+}
+
+.workflow-nodes-graph svg g.status-sub:hover > rect {
+  fill: #ec971f;
+}
+
+/* Running */
+.workflow-nodes-graph svg g.status-run > rect {
+  fill: #5bc0de;
+}
+
+.workflow-nodes-graph svg g.status-run:hover > rect {
+  fill: #31b0d5;
+}
+
+/* Complete, Various-Complete */
+.workflow-nodes-graph svg g.status-com > rect,
+.workflow-nodes-graph svg g.status-vcp > rect {
+  fill: #5cb85c;
+}
+
+.workflow-nodes-graph svg g.status-com:hover > rect,
+.workflow-nodes-graph svg g.status-vcp:hover > rect {
+  fill: #449d44;
+}
+
+/* Error */
+.workflow-nodes-graph svg g.status-err > rect {
+  fill: #d9534f;
+}
+
+.workflow-nodes-graph svg g.status-err:hover > rect {
+  fill: #c9302c;
+}
+
+/* Aborted */
+.workflow-nodes-graph svg g.status-abt > rect {
+  fill: #000000;
+}
+
+.workflow-nodes-graph svg g.status-abt text {
+  fill: #ffffff;
+}
+
+.workflow-nodes-graph svg text {
+  font-weight: 300;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serf;
+  font-size: 14px;
+}
+
+.workflow-nodes-graph svg .node rect {
+  fill: #dddddd;
+  stroke-width: 0;
+}
+
+.workflow-nodes-graph svg .edgePath path {
+  stroke: #333;
+  stroke-width: 1px;
+}

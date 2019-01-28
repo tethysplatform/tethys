@@ -23,6 +23,14 @@
         <tr class="job-row" id="jobs-table-row-{{ job.id }}" data-job-id="{{ job.id }}">
           {% include "tethys_gizmos/gizmos/job_row.html" %}
         </tr>
+        {% if job.type == 'CondorWorkflow' and show_detailed_status %}
+        <tr class="workflow-nodes-row" id="workflow-nodes-row-{{ job.id }}" data-job-id="{{ job.id }}">
+          {% include "tethys_gizmos/gizmos/workflow_nodes_row.html" %}
+        </tr>
+        {% endif %}
+        {% if job.type == 'DaskJob' and show_detailed_status %}
+          <tr class="bokeh-nodes-row" id="bokeh-nodes-row-{{ job.id }}" data-job-id="{{ job.id }}"></tr>
+        {% endif %}
       {% endwith %}
     {% endwith %}
   {% empty %}

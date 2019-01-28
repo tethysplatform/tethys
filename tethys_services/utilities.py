@@ -78,7 +78,7 @@ def initialize_engine_object(engine, endpoint, apikey=None, username=None, passw
     engine_class_string = engine_split[-1]
 
     # Import
-    module_ = __import__(module_string, fromlist=[engine_class_string])
+    module_ = __import__(module_string, fromlist=[str(engine_class_string)])
     EngineClass = getattr(module_, engine_class_string)
 
     # Get Token for HydroShare interactions
@@ -122,7 +122,7 @@ def list_dataset_engines(request=None):
         # Search for match
         for site_dataset_service in site_dataset_services:
             dataset_service_object = initialize_engine_object(
-                engine=site_dataset_service.engine.encode('utf-8'),
+                engine=site_dataset_service.engine,
                 endpoint=site_dataset_service.endpoint,
                 apikey=site_dataset_service.apikey,
                 username=site_dataset_service.username,
@@ -180,7 +180,7 @@ def get_dataset_engine(name, app_class=None, request=None):
             # If match is found initiate engine object
             if site_dataset_service.name == name:
                 dataset_service_object = initialize_engine_object(
-                    engine=site_dataset_service.engine.encode('utf-8'),
+                    engine=site_dataset_service.engine,
                     endpoint=site_dataset_service.endpoint,
                     apikey=site_dataset_service.apikey,
                     username=site_dataset_service.username,
@@ -207,7 +207,7 @@ def list_spatial_dataset_engines():
         # Search for match
         for site_spatial_dataset_service in site_spatial_dataset_services:
             spatial_dataset_object = initialize_engine_object(
-                engine=site_spatial_dataset_service.engine.encode('utf-8'),
+                engine=site_spatial_dataset_service.engine,
                 endpoint=site_spatial_dataset_service.endpoint,
                 apikey=site_spatial_dataset_service.apikey,
                 username=site_spatial_dataset_service.username,
@@ -262,7 +262,7 @@ def get_spatial_dataset_engine(name, app_class=None):
             # If match is found initiate engine object
             if site_spatial_dataset_service.name == name:
                 spatial_dataset_object = initialize_engine_object(
-                    engine=site_spatial_dataset_service.engine.encode('utf-8'),
+                    engine=site_spatial_dataset_service.engine,
                     endpoint=site_spatial_dataset_service.endpoint,
                     apikey=site_spatial_dataset_service.apikey,
                     username=site_spatial_dataset_service.username,
@@ -319,7 +319,7 @@ def activate_wps(wps, endpoint, name):
             raise e
         else:
             raise e
-    except URLError as e:
+    except URLError:
         return None
 
     return wps

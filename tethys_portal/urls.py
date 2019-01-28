@@ -17,6 +17,7 @@ from tethys_apps.urls import extension_urls
 from tethys_portal.views import accounts as tethys_portal_accounts, developer as tethys_portal_developer, \
     error as tethys_portal_error, home as tethys_portal_home, user as tethys_portal_user
 from tethys_apps import views as tethys_apps_views
+from tethys_compute.views import dask_dashboard as tethys_dask_views
 
 # ensure at least staff users logged in before accessing admin login page
 from django.contrib.admin.views.decorators import staff_member_required
@@ -25,6 +26,10 @@ admin.site.login = staff_member_required(admin.site.login, redirect_field_name="
 admin.autodiscover()
 admin.site.login = staff_member_required(admin.site.login, redirect_field_name="", login_url='/accounts/login/')
 
+# Add Dask Dashboard Url
+admin_urls = admin.site.urls
+admin_urls[0].append(url(r'^dask-dashboard/(?P<page>[\w-]+)/(?P<dask_scheduler_id>[\w-]+)/$',
+                         tethys_dask_views.dask_dashboard, name='dask_dashboard'))
 
 account_urls = [
     url(r'^login/$', tethys_portal_accounts.login_view, name='login'),
@@ -62,7 +67,7 @@ developer_urls = [
 
 urlpatterns = [
     url(r'^$', tethys_portal_home.home, name='home'),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', include(admin_urls)),
     url(r'^accounts/', include(account_urls, namespace='accounts')),
     url(r'^captcha/', include('captcha.urls')),
     url(r'^oauth2/', include('social_django.urls', namespace='social')),
@@ -73,6 +78,8 @@ urlpatterns = [
     url(r'^handoff/(?P<app_name>[\w-]+)/$', tethys_apps_views.handoff_capabilities, name='handoff_capabilities'),
     url(r'^handoff/(?P<app_name>[\w-]+)/(?P<handler_name>[\w-]+)/$', tethys_apps_views.handoff, name='handoff'),
     url(r'^update-job-status/(?P<job_id>[\w-]+)/$', tethys_apps_views.update_job_status, name='update_job_status'),
+    url(r'^update-dask-job-status/(?P<key>[\w-]+)/$', tethys_apps_views.update_dask_job_status,
+        name='update_dask_job_status'),
     url(r'^terms/', include('termsandconditions.urls')),
     url(r'session_security/', include('session_security.urls')),
     # url(r'^error/', include(development_error_urls)),

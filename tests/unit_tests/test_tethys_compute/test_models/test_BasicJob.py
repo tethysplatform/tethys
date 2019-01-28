@@ -17,6 +17,10 @@ class CondorBaseTest(TethysTestCase):
     def tear_down(self):
         self.basic_job.delete()
 
+    def test_type(self):
+        ret = self.basic_job.type
+        self.assertEqual('BasicJob', ret)
+
     def test_execute(self):
         ret = BasicJob.objects.get(name='test_basicjob')._execute()
         self.assertIsNone(ret)

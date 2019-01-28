@@ -31,7 +31,7 @@ class TethysGizmoOptions(dict):
 
         if isinstance(attributes, basestring):
             # 'key="value" key2="value with spaces"'
-            pattern = '(\w+)='
+            pattern = r'(\w+)='
             pairs = re.split(pattern, attributes)
             if pairs:
                 pairs = [x.strip().strip('\'').strip('\"') for x in pairs]

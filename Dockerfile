@@ -47,9 +47,9 @@ RUN wget ${MINICONDA_URL} -O "${TETHYS_HOME}/miniconda.sh" \
  && bash ${TETHYS_HOME}/miniconda.sh -b -p "${CONDA_HOME}" 
 
 # Setup Conda Environment
-ADD environment_py2.yml ${TETHYS_HOME}/src/
+ADD environment.yml ${TETHYS_HOME}/src/
 WORKDIR ${TETHYS_HOME}/src
-RUN ${CONDA_HOME}/bin/conda env create -n "${CONDA_ENV_NAME}" -f "environment_py${PYTHON_VERSION}.yml"
+RUN ${CONDA_HOME}/bin/conda env create -n "${CONDA_ENV_NAME}" -f "environment.yml"
 
 ###########
 # INSTALL #

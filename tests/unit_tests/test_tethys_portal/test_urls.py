@@ -123,3 +123,10 @@ class TestUrls(TethysTestCase):
         self.assertEqual('/update-job-status/JI001/', url)
         self.assertEqual('update_job_status', resolver.func.__name__)
         self.assertEqual('tethys_apps.views', resolver.func.__module__)
+
+    def test_urlpatterns_update_dask_job_status(self):
+        url = reverse('update_dask_job_status', kwargs={'key': '123456789'})
+        resolver = resolve(url)
+        self.assertEqual('/update-dask-job-status/123456789/', url)
+        self.assertEqual('update_dask_job_status', resolver.func.__name__)
+        self.assertEqual('tethys_apps.views', resolver.func.__module__)

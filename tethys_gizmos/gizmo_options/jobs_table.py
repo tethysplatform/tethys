@@ -33,6 +33,7 @@ class JobsTable(TethysGizmoOptions):
         attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
         refresh_interval(int): The refresh interval for the runtime and status fields in milliseconds. Default is 5000.
+        show_detailed_status(bool): Show status of each node in CondorWorkflow jobs when True. Defaults to False.
 
     Controller Example
 
@@ -66,7 +67,7 @@ class JobsTable(TethysGizmoOptions):
 
     def __init__(self, jobs, column_fields, status_actions=True, run_btn=True, delete_btn=True, results_url='',
                  hover=False, striped=False, bordered=False, condensed=False, attributes={}, classes='',
-                 refresh_interval=5000, delay_loading_status=True):
+                 refresh_interval=5000, delay_loading_status=True, show_detailed_status=False):
         """
         Constructor
         """
@@ -91,6 +92,16 @@ class JobsTable(TethysGizmoOptions):
         self.classes = classes
         self.refresh_interval = refresh_interval
         self.delay_loading_status = delay_loading_status
+        self.show_detailed_status = show_detailed_status
+
+        # Compute column count
+        self.num_cols = len(column_fields)
+
+        if status_actions:
+            self.num_cols += 1
+
+            if self.delete:
+                self.num_cols += 1
 
     def set_rows_and_columns(self, jobs, column_fields):
         self.rows = list()
@@ -148,6 +159,22 @@ class JobsTable(TethysGizmoOptions):
             row_values.append(value)
 
         return row_values
+
+    @staticmethod
+    def get_gizmo_css():
+        return (
+            'tethys_gizmos/css/jobs_table.css',
+        )
+
+    @staticmethod
+    def get_vendor_js():
+        return (
+            'https://cdnjs.cloudflare.com/ajax/libs/d3/4.12.2/d3.min.js',
+            'tethys_gizmos/vendor/lodash/lodash.min.js',
+            'tethys_gizmos/vendor/graphlib/dist/graphlib.core.min.js',
+            'tethys_gizmos/vendor/dagre/dist/dagre.core.min.js',
+            'tethys_gizmos/vendor/dagre-d3/dist/dagre-d3.core.min.js'
+        )
 
     @staticmethod
     def get_gizmo_js():
