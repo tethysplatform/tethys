@@ -42,5 +42,4 @@ class ResourceQuotaTest(TethysTestCase):
     def test_handler(self):
         with self.assertRaises(NotImplemented) as context:
             self.resourcequota_user.handler
-
         self.resourcequota_user.assertTrue('Handler property net yet implemented' in context.exception)

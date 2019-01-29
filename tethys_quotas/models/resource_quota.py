@@ -54,7 +54,7 @@ class ResourceQuota(models.Model):
         """
         raise NotImplemented('Handler property net yet implemented')
 
-    def check(self, entity):
+    def check_quota(self, entity):
         """
         uses associated ResourceQuotaHandler to perform the quota check on the given entity
 
@@ -64,7 +64,6 @@ class ResourceQuota(models.Model):
         Returns:
             Boolean: check passes or fails**
         """
-        print("hello")
-        raise NotImplemented('Handler property net yet implemented')
+        raise NotImplemented('check_quota function net yet implemented')
 
 
