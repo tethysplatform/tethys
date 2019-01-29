@@ -9,10 +9,10 @@
 import logging
 
 from django.db import models
-from model_utils.managers import InheritanceManager
 
 
 log = logging.getLogger('tethys.' + __name__)
+
 
 class ResourceQuota(models.Model):
     """
@@ -32,9 +32,7 @@ class ResourceQuota(models.Model):
     class Meta:
         verbose_name = 'Quota'
 
-    objects = InheritanceManager()
-
-    codename = models.CharField(max_length=255)
+    codename = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=2048, blank=True, default='')
     default = models.FloatField()
