@@ -1,6 +1,15 @@
 import unittest
 import mock
-from tethys_apps.cli.cli_colors import pretty_output, FG_RED, FG_BLUE, BOLD, FG_GREEN, BG_GREEN, END
+from tethys_apps.cli.cli_colors import (
+    pretty_output,
+    write_pretty_output,
+    FG_RED,
+    FG_BLUE,
+    BOLD,
+    FG_GREEN,
+    BG_GREEN,
+    END,
+)
 
 
 class TestCliColors(unittest.TestCase):
@@ -63,5 +72,13 @@ class TestCliColors(unittest.TestCase):
                           '[0m in the with statement\x1b[0m'
         with pretty_output() as p:
             p.write(in_msg)
+
+        mock_print.assert_called_with(expected_string)
+
+    @mock.patch('tethys_apps.cli.cli_colors.print')
+    def test_write_pretty_output(self, mock_print):
+        act_msg = 'This is a test in RED'
+        expected_string = '\x1b[31mThis is a test in RED\x1b[0m'
+        write_pretty_output(act_msg, FG_RED)
 
         mock_print.assert_called_with(expected_string)
