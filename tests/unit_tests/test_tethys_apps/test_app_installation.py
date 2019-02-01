@@ -43,9 +43,11 @@ class TestAppInstallation(unittest.TestCase):
     @mock.patch('tethys_apps.app_installation.get_tethysapp_directory')
     @mock.patch('tethys_apps.app_installation.shutil')
     @mock.patch('tethys_apps.app_installation.pretty_output')
-    def test__run_install(self, mock_pretty_output, mock_shutil, mock_getdir, mock_subprocess, mock_install):
+    @mock.patch('tethys_apps.app_installation.os.path.join')
+    def test__run_install(self, mock_os_path_join, mock_pretty_output, mock_shutil, mock_getdir,
+                          mock_subprocess, mock_install):
         # mock the self input
-        mock_self = mock.MagicMock(app_package='tethys_apps', app_package_dir='/test_app/', dependencies='foo')
+        mock_self = mock.MagicMock(app_package='tethys_apps', app_package_dir='/test_app/', dependencies=['foo'])
 
         # call the method for testing
         tethys_app_installation._run_install(self=mock_self)
@@ -64,10 +66,11 @@ class TestAppInstallation(unittest.TestCase):
         process_call_args = mock_subprocess.call.call_args_list
         self.assertEquals('pip', process_call_args[0][0][0][0])
         self.assertEquals('install', process_call_args[0][0][0][1])
-        self.assertEquals('f', process_call_args[0][0][0][2])
+        self.assertEquals('foo', process_call_args[0][0][0][2])
 
         # check the install call
         mock_install.run.assert_called_with(mock_self)
+        mock_os_path_join.assert_called()
 
     @mock.patch('tethys_apps.app_installation.develop')
     @mock.patch('tethys_apps.app_installation.subprocess')
@@ -79,7 +82,7 @@ class TestAppInstallation(unittest.TestCase):
                           mock_develop):
 
         # mock the self input
-        mock_self = mock.MagicMock(app_package='tethys_apps', app_package_dir='/test_app/', dependencies='foo')
+        mock_self = mock.MagicMock(app_package='tethys_apps', app_package_dir='/test_app/', dependencies=['foo'])
 
         # call the method for testing
         tethys_app_installation._run_develop(self=mock_self)
@@ -101,7 +104,7 @@ class TestAppInstallation(unittest.TestCase):
         process_call_args = mock_subprocess.call.call_args_list
         self.assertEquals('pip', process_call_args[0][0][0][0])
         self.assertEquals('install', process_call_args[0][0][0][1])
-        self.assertEquals('f', process_call_args[0][0][0][2])
+        self.assertEquals('foo', process_call_args[0][0][0][2])
 
         # check the develop call
         mock_develop.run.assert_called_with(mock_self)
@@ -133,13 +136,13 @@ class TestAppInstallation(unittest.TestCase):
     @mock.patch('tethys_apps.app_installation.shutil.copytree')
     @mock.patch('tethys_apps.app_installation.install')
     @mock.patch('tethys_apps.app_installation.subprocess')
-    @mock.patch('tethys_apps.app_installation.get_tethysapp_directory')
+    @mock.patch('tethys_apps.app_installation.get_tethysapp_directory', return_value='')
     @mock.patch('tethys_apps.app_installation.shutil')
     @mock.patch('tethys_apps.app_installation.pretty_output')
     def test__run_install_exception(self, mock_pretty_output, mock_shutil, mock_getdir, mock_subprocess, mock_install,
                                     mock_copy_tree):
         # mock the self input
-        mock_self = mock.MagicMock(app_package='tethys_apps', app_package_dir='/test_app/', dependencies='foo')
+        mock_self = mock.MagicMock(app_package='tethys_apps', app_package_dir='/test_app/', dependencies=['foo'])
 
         mock_copy_tree.side_effect = Exception, True
 
@@ -164,7 +167,7 @@ class TestAppInstallation(unittest.TestCase):
         process_call_args = mock_subprocess.call.call_args_list
         self.assertEquals('pip', process_call_args[0][0][0][0])
         self.assertEquals('install', process_call_args[0][0][0][1])
-        self.assertEquals('f', process_call_args[0][0][0][2])
+        self.assertEquals('foo', process_call_args[0][0][0][2])
 
         # check the install call
         mock_install.run.assert_called_with(mock_self)
@@ -174,14 +177,14 @@ class TestAppInstallation(unittest.TestCase):
     @mock.patch('tethys_apps.app_installation.shutil.copytree')
     @mock.patch('tethys_apps.app_installation.install')
     @mock.patch('tethys_apps.app_installation.subprocess')
-    @mock.patch('tethys_apps.app_installation.get_tethysapp_directory')
+    @mock.patch('tethys_apps.app_installation.get_tethysapp_directory', return_value='')
     @mock.patch('tethys_apps.app_installation.shutil')
     @mock.patch('tethys_apps.app_installation.pretty_output')
     def test__run_install_exception_rm_tree_exception(self, mock_pretty_output, mock_shutil, mock_getdir,
                                                       mock_subprocess, mock_install, mock_copy_tree, mock_remove_tree,
                                                       mock_os_remove_tree):
         # mock the self input
-        mock_self = mock.MagicMock(app_package='tethys_apps', app_package_dir='/test_app/', dependencies='foo')
+        mock_self = mock.MagicMock(app_package='tethys_apps', app_package_dir='/test_app/', dependencies=['foo'])
 
         mock_copy_tree.side_effect = Exception, True
 
@@ -208,7 +211,7 @@ class TestAppInstallation(unittest.TestCase):
         process_call_args = mock_subprocess.call.call_args_list
         self.assertEquals('pip', process_call_args[0][0][0][0])
         self.assertEquals('install', process_call_args[0][0][0][1])
-        self.assertEquals('f', process_call_args[0][0][0][2])
+        self.assertEquals('foo', process_call_args[0][0][0][2])
 
         # check the install call
         mock_install.run.assert_called_with(mock_self)
@@ -218,9 +221,11 @@ class TestAppInstallation(unittest.TestCase):
     @mock.patch(callable_mock_path)
     @mock.patch('tethys_apps.app_installation.pretty_output')
     @mock.patch('tethys_apps.app_installation.get_tethysapp_directory')
-    def test_run_develop_windows(self, mock_getdir, mock_pretty_output, mock_callable, mock_os_path_isdir, mock_ctypes):
+    @mock.patch('tethys_apps.app_installation.os.path.join')
+    def test_run_develop_windows(self, mock_os_path_join, mock_getdir, mock_pretty_output, mock_callable,
+                                 mock_os_path_isdir, mock_ctypes):
         # mock the self input
-        mock_self = mock.MagicMock(app_package='tethys_apps', app_package_dir='/test_app/', dependencies='foo')
+        mock_self = mock.MagicMock(app_package='tethys_apps', app_package_dir='/test_app/', dependencies=['foo'])
 
         # mock callable method
         mock_callable.return_value = False
@@ -239,6 +244,7 @@ class TestAppInstallation(unittest.TestCase):
 
         # check the method call
         mock_getdir.assert_called()
+        mock_os_path_join.assert_called()
 
         # check the user notification
         mock_pretty_output.assert_called()
@@ -257,7 +263,7 @@ class TestAppInstallation(unittest.TestCase):
         mock_os.path.join.return_value = mock_destination
 
         # mock the self input
-        mock_self = mock.MagicMock(app_package='tethys_apps', app_package_dir='/test_app/', dependencies='foo')
+        mock_self = mock.MagicMock(app_package='tethys_apps', app_package_dir='/test_app/', dependencies=['foo'])
 
         mock_getattr.side_effect = Exception
 
@@ -284,7 +290,7 @@ class TestAppInstallation(unittest.TestCase):
         process_call_args = mock_subprocess.call.call_args_list
         self.assertEquals('pip', process_call_args[0][0][0][0])
         self.assertEquals('install', process_call_args[0][0][0][1])
-        self.assertEquals('f', process_call_args[0][0][0][2])
+        self.assertEquals('foo', process_call_args[0][0][0][2])
 
         # check the develop call
         mock_develop.run.assert_called_with(mock_self)
