@@ -38,6 +38,7 @@ dependencies:
 - tethys_dataset_services>=1.7.0
 - dask
 - tethys_dask_scheduler>=1.0.2
+- django-analytical
 - pip:
     - django-gravatar2
     - django-bootstrap3
