@@ -1,4 +1,6 @@
 from tethys_sdk.base import TethysAppBase, url_map_maker
+from django.core.management import settings
+import os
 
 
 class {{class_name}}(TethysAppBase):
@@ -16,6 +18,11 @@ class {{class_name}}(TethysAppBase):
     tags = '{{tags}}'
     enable_feedback = False
     feedback_emails = []
+    analytics = bool('analytical' in settings.INSTALLED_APPS and settings.GOOGLE_ANALYTICS_JS_PROPERTY_ID != '')
+
+    with open(os.path.join(os.path.dirname(__file__), 'templates/{{project}}/analytics.html'), 'w') as file:
+        if analytics:
+            file.write("{% load google_analytics_js %}{% google_analytics_js %}")
 
     def url_maps(self):
         """

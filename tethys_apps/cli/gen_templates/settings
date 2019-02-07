@@ -83,6 +83,8 @@ ALLOWED_HOSTS = [{% if allowed_host %}'{{ allowed_host }}'{% endif %}]
 
 # Application definition
 
+GOOGLE_ANALYTICS_JS_PROPERTY_ID = ''
+
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -104,6 +106,7 @@ INSTALLED_APPS = (
     'captcha',
     'rest_framework',
     'rest_framework.authtoken',
+    'analytical',
 )
 
 MIDDLEWARE_CLASSES = (
