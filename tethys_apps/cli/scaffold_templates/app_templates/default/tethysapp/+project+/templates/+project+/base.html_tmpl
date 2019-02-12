@@ -38,6 +38,6 @@
 
 {% templatetag openblock %} block scripts {% templatetag closeblock %}
   {% templatetag openvariable %} block.super }{{ "}" }}
-  {% include ”{{project}}/analytics.html" %}
+  {% include "{{project}}/analytics.html" %}
   <script src="{% templatetag openblock %} static '{{project}}/js/main.js' {% templatetag closeblock %}" type="text/javascript"></script>
 {% templatetag openblock %} endblock {% templatetag closeblock %}
