@@ -24,7 +24,7 @@ dependencies:
 - requests=2.18*
 - selenium=3.4*
 - coverage=4*
-- docker-py<1.10
+- docker-py
 - geoalchemy2=0.4*
 - owslib=0.14*
 - pip=9.0*

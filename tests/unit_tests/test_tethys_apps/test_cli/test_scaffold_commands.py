@@ -145,8 +145,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_context.return_value = mock_template_context
 
-        mock_cuurent_project_root = mock.MagicMock()
-        mock_render_path.return_value = mock_cuurent_project_root
+        mock_render_path.return_value = ''
 
         mock_os_walk.return_value = [
             ('/foo', ('bar',), ('baz',)),
@@ -166,7 +165,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.assert_called()
 
-        mock_makedirs.assert_called_with(mock_cuurent_project_root)
+        mock_makedirs.assert_called_with(mock_render_path.return_value)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
 
@@ -271,8 +270,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_context.return_value = mock_template_context
 
-        mock_cuurent_project_root = mock.MagicMock()
-        mock_render_path.return_value = mock_cuurent_project_root
+        mock_render_path.return_value = ''
 
         mock_os_walk.return_value = [
             ('/foo', ('bar',), ('baz',)),
@@ -292,7 +290,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.assert_called()
 
-        mock_makedirs.assert_called_with(mock_cuurent_project_root)
+        mock_makedirs.assert_called_with(mock_render_path.return_value)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
 
@@ -358,8 +356,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_context.return_value = mock_template_context
 
-        mock_cuurent_project_root = mock.MagicMock()
-        mock_render_path.return_value = mock_cuurent_project_root
+        mock_render_path.return_value = ''
 
         mock_os_walk.return_value = [
             ('/foo', ('bar',), ('baz',)),
@@ -379,7 +376,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.assert_called()
 
-        mock_makedirs.assert_called_with(mock_cuurent_project_root)
+        mock_makedirs.assert_called_with(mock_render_path.return_value)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
 
@@ -485,8 +482,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_context.return_value = mock_template_context
 
-        mock_cuurent_project_root = mock.MagicMock()
-        mock_render_path.return_value = mock_cuurent_project_root
+        mock_render_path.return_value = ''
 
         mock_os_walk.return_value = [
             ('/foo', ('bar',), ('baz',)),
@@ -506,7 +502,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_render_path.assert_called()
 
-        mock_makedirs.assert_called_with(mock_cuurent_project_root)
+        mock_makedirs.assert_called_with(mock_render_path.return_value)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
 
@@ -575,8 +571,7 @@ class TestScaffoldCommands(unittest.TestCase):
 
         mock_context.return_value = mock_template_context
 
-        mock_cuurent_project_root = mock.MagicMock()
-        mock_render_path.return_value = mock_cuurent_project_root
+        mock_render_path.return_value = ''
 
         mock_os_walk.return_value = [
             ('/foo', ('bar',), ('baz',)),
@@ -600,7 +595,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.assert_called()
 
         # mock the create root directory
-        mock_makedirs.assert_called_with(mock_cuurent_project_root)
+        mock_makedirs.assert_called_with(mock_render_path.return_value)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
 
@@ -678,8 +673,7 @@ class TestScaffoldCommands(unittest.TestCase):
         # testing: walk the template directory, creating the templates and directories in the new project as we go
         mock_context.return_value = mock_template_context
 
-        mock_cuurent_project_root = mock.MagicMock()
-        mock_render_path.return_value = mock_cuurent_project_root
+        mock_render_path.return_value = ''
 
         mock_os_walk.return_value = [
             ('/foo', ('bar',), ('baz',)),
@@ -765,8 +759,7 @@ class TestScaffoldCommands(unittest.TestCase):
         # testing: walk the template directory, creating the templates and directories in the new project as we go
         mock_context.return_value = mock_template_context
 
-        mock_cuurent_project_root = mock.MagicMock()
-        mock_render_path.return_value = mock_cuurent_project_root
+        mock_render_path.return_value = ''
 
         mock_os_walk.return_value = [
             ('/foo', ('bar',), ('baz',)),
@@ -790,7 +783,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.assert_called()
 
         # mock the create root directory
-        mock_makedirs.assert_called_with(mock_cuurent_project_root)
+        mock_makedirs.assert_called_with(mock_render_path.return_value)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
 
@@ -863,8 +856,7 @@ class TestScaffoldCommands(unittest.TestCase):
         # testing: walk the template directory, creating the templates and directories in the new project as we go
         mock_context.return_value = mock_template_context
 
-        mock_cuurent_project_root = mock.MagicMock()
-        mock_render_path.return_value = mock_cuurent_project_root
+        mock_render_path.return_value = ''
 
         mock_os_walk.return_value = [
             ('/foo', ('bar',), ('baz',)),
@@ -887,7 +879,7 @@ class TestScaffoldCommands(unittest.TestCase):
         mock_render_path.assert_called()
 
         # mock the create root directory
-        mock_makedirs.assert_called_with(mock_cuurent_project_root)
+        mock_makedirs.assert_called_with(mock_render_path.return_value)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
 
@@ -957,8 +949,7 @@ class TestScaffoldCommands(unittest.TestCase):
         # testing: walk the template directory, creating the templates and directories in the new project as we go
         mock_context.return_value = mock_template_context
 
-        mock_cuurent_project_root = mock.MagicMock()
-        mock_render_path.return_value = mock_cuurent_project_root
+        mock_render_path.return_value = ''
 
         mock_os_walk.return_value = [
             ('/foo', ('bar',), ('baz',)),
@@ -1042,8 +1033,7 @@ class TestScaffoldCommands(unittest.TestCase):
         # testing: walk the template directory, creating the templates and directories in the new project as we go
         mock_context.return_value = mock_template_context
 
-        mock_cuurent_project_root = mock.MagicMock()
-        mock_render_path.return_value = mock_cuurent_project_root
+        mock_render_path.return_value = ''
 
         mock_os_walk.return_value = [
             ('/foo', ('bar',), ('baz',)),
@@ -1127,8 +1117,7 @@ class TestScaffoldCommands(unittest.TestCase):
         # testing: walk the template directory, creating the templates and directories in the new project as we go
         mock_context.return_value = mock_template_context
 
-        mock_cuurent_project_root = mock.MagicMock()
-        mock_render_path.return_value = mock_cuurent_project_root
+        mock_render_path.return_value = ''
 
         mock_os_walk.return_value = [
             ('/foo', ('bar',), ('baz',)),
@@ -1213,8 +1202,7 @@ class TestScaffoldCommands(unittest.TestCase):
         # testing: walk the template directory, creating the templates and directories in the new project as we go
         mock_context.return_value = mock_template_context
 
-        mock_current_project_root = mock.MagicMock()
-        mock_render_path.return_value = mock_current_project_root
+        mock_render_path.return_value = ''
 
         mock_os_walk.return_value = [
             ('/foo', ('bar',), ('baz',)),
