@@ -98,10 +98,9 @@ def generate_command(args):
     destination_file = FILE_NAMES[args.type]
 
     # Default destination path is the current working directory
-    destination_dir = os.path.join(TETHYS_HOME, 'src', 'tethys_portal')
+    destination_dir = os.path.join(TETHYS_SRC, 'tethys_portal')
 
     nginx_user = ''
-    nginx_home = ''
     nginx_conf_path = '/etc/nginx/nginx.conf'
     if os.path.exists(nginx_conf_path):
         with open(nginx_conf_path, 'r') as nginx_conf:
@@ -111,18 +110,10 @@ def generate_command(args):
                     nginx_user = tokens[1].strip(';')
                     break
 
-        with open('/etc/passwd', 'r') as passwd:
-            for line in passwd.readlines():
-                tokens = line.split(':')
-                if tokens[0] == nginx_user:
-                    nginx_home = tokens[5]
-                    nginx_home = os.path.join(nginx_home, 'tethys')
-                    break
-
     # Settings file setup
     if args.type == GEN_SETTINGS_OPTION:
         # Generate context variables
-        secret_key = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(50)])
+        secret_key = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(50)])
         context.update({'secret_key': secret_key,
                         'allowed_host': args.allowed_host,
                         'allowed_hosts': args.allowed_hosts,

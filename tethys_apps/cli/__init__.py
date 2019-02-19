@@ -10,13 +10,12 @@
 # Commandline interface for Tethys
 import argparse
 
-from tethys_apps.cli.docker_commands import docker_command
+from tethys_apps.cli.docker_commands import docker_command, docker_container_inputs
 from tethys_apps.cli.list_command import list_command as lc
 from tethys_apps.cli.scaffold_commands import scaffold_command
 from tethys_apps.cli.syncstores_command import syncstores_command as syc
 from tethys_apps.cli.test_command import test_command as tstc
 from tethys_apps.cli.uninstall_command import uninstall_command as uc
-from tethys_apps.cli.docker_commands import N52WPS_INPUT, GEOSERVER_INPUT, POSTGIS_INPUT
 from tethys_apps.cli.manage_commands import (manage_command, MANAGE_START, MANAGE_SYNCDB,
                                              MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES, MANAGE_SYNC,
                                              MANAGE_COLLECT, MANAGE_CREATESUPERUSER)
@@ -320,7 +319,7 @@ def tethys_command():
     docker_parser.add_argument('-c', '--containers',
                                nargs='+',
                                help="Execute the command only on the given container(s).",
-                               choices=[POSTGIS_INPUT, GEOSERVER_INPUT, N52WPS_INPUT])
+                               choices=docker_container_inputs)
     docker_parser.add_argument('-b', '--boot2docker',
                                action='store_true',
                                dest='boot2docker',
