@@ -76,7 +76,7 @@ class ButtonGroup(TethysGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(ButtonGroup, self).__init__(attributes=attributes, classes=classes)
+        super().__init__(attributes=attributes, classes=classes)
 
         self.buttons = buttons
         self.vertical = vertical
@@ -200,7 +200,7 @@ class Button(TethysGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(Button, self).__init__(attributes=attributes, classes=classes)
+        super().__init__(attributes=attributes, classes=classes)
 
         self.display_text = display_text
         self.name = name

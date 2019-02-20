@@ -46,7 +46,7 @@ class BokehView(TethysGizmoOptions):
         Constructor
         """
         # Initialize the super class
-        super(BokehView, self).__init__(attributes, classes)
+        super().__init__(attributes, classes)
         self.script, self.div = components(plot_input)
         self.height = height
         self.width = width

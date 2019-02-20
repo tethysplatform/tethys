@@ -3,7 +3,7 @@ try:
 except ImportError:
     from io import StringIO
 import unittest
-import mock
+from unittest import mock
 
 from argparse import ArgumentParser
 from tethys_apps.management.commands import tethys_app_uninstall

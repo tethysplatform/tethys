@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 from tethys_portal.views.user import profile, settings, change_password, social_disconnect, delete_account
 
 

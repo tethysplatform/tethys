@@ -72,7 +72,7 @@ class JobsTable(TethysGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(JobsTable, self).__init__(attributes=attributes, classes=classes)
+        super().__init__(attributes=attributes, classes=classes)
 
         self.jobs = jobs
         self.rows = None
