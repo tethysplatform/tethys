@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 from tethys_services.backends.hydroshare_playground import HydroSharePlaygroundOAuth2
 
 

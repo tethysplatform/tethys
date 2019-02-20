@@ -1,6 +1,5 @@
 from .cli_colors import FG_RED, FG_GREEN, FG_YELLOW, BOLD, pretty_output
 from django.core.exceptions import ObjectDoesNotExist
-from builtins import input
 
 
 def schedulers_remove_command(args):

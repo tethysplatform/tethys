@@ -1,4 +1,3 @@
-from __future__ import print_function
 from tethys_apps.helpers import get_installed_tethys_apps, get_installed_tethys_extensions
 
 
