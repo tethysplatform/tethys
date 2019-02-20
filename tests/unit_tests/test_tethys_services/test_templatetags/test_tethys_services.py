@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 
 from owslib.wps import ComplexData
 from tethys_services.templatetags.tethys_services import is_complex_data

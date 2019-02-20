@@ -128,7 +128,7 @@ class GoogleMapView(TethysGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(GoogleMapView, self).__init__(attributes=attributes, classes=classes)
+        super().__init__(attributes=attributes, classes=classes)
 
         self.height = height
         self.width = width

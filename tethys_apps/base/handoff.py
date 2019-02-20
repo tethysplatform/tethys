@@ -7,7 +7,6 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from __future__ import print_function
 import inspect
 import json
 from django.shortcuts import redirect
@@ -17,7 +16,7 @@ import tethys_apps
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
 
 
-class HandoffManager(object):
+class HandoffManager:
     """
     An object that is used to interact with HandoffHandlers.
 
@@ -197,7 +196,7 @@ class HandoffHandler(TethysFunctionExtractor):
         self.name = name
         self.handler = handler
         self.internal = internal
-        super(HandoffHandler, self).__init__(self.handler)
+        super().__init__(self.handler)
 
         # ensure that the function and valid attributes are initialized
         self.function

@@ -6,7 +6,7 @@ from tethys_apps.exceptions import TethysAppSettingNotAssigned, PersistentStoreP
     PersistentStoreInitializerError
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.orm import sessionmaker
-import mock
+from unittest import mock
 
 
 class PersistentStoreDatabaseSettingTests(TethysTestCase):

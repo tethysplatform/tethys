@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from pytz import timezone
 from django.utils import timezone as dt
-import mock
+from unittest import mock
 
 
 def test_function():

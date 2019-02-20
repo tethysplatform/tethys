@@ -3,7 +3,7 @@ from tethys_compute.models.dask.dask_scheduler import Scheduler, DaskScheduler
 from tethys_compute.models.dask.dask_job import DaskJob
 from django.contrib.auth.models import User
 import dask
-import mock
+from unittest import mock
 import time
 
 

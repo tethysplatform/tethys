@@ -5,7 +5,7 @@ from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_compute.models.condor.condor_base import CondorBase
 from tethys_compute.models.condor.condor_py_job import CondorPyJob
 from django.contrib.auth.models import User
-import mock
+from unittest import mock
 import os
 import shutil
 import os.path

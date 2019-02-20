@@ -1,6 +1,6 @@
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import TethysAppSetting
-import mock
+from unittest import mock
 
 
 class TethysAppSettingTests(TethysTestCase):

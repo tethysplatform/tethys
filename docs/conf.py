@@ -14,7 +14,7 @@
 
 import sys
 import os
-import mock
+from unittest import mock
 
 import pbr.version
 import pbr.git
@@ -29,10 +29,8 @@ MOCK_MODULES = [
     'bokeh', 'bokeh.embed', 'bokeh.resources',
     'condorpy',
     'django_gravatar',
-    'future', 'future.standard_library', 'future.utils',
     'guardian', 'guardian.admin',
     'model_utils', 'model_utils.managers',
-    'past', 'past.builtins', 'past.types', 'past.utils',
     'plotly', 'plotly.offline',
     'social_core', 'social_core.exceptions',
     'social_django',

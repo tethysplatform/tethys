@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 
 from django.utils.translation import ugettext_lazy as _
 from tethys_services.models import DatasetService, SpatialDatasetService, WebProcessingService, PersistentStoreService

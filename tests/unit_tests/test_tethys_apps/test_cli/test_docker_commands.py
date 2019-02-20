@@ -1,6 +1,6 @@
-import imp
+import importlib
 import unittest
-import mock
+from unittest import mock
 import tethys_apps.cli.docker_commands as cli_docker_commands
 
 
@@ -19,7 +19,7 @@ class TestDockerCommands(unittest.TestCase):
 
     def test_curses_import_error(self):
         with mock.patch.dict('sys.modules', {'curses': None}):
-            imp.reload(cli_docker_commands)
+            importlib.reload(cli_docker_commands)
 
     def test_get_docker_client(self):
         dc = cli_docker_commands.ContainerMetadata.get_docker_client()

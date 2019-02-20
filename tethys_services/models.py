@@ -15,10 +15,7 @@ from tethys_dataset_services.valid_engines import VALID_ENGINES, VALID_SPATIAL_E
 from tethys_dataset_services.engines import (CkanDatasetEngine,
                                              GeoServerSpatialDatasetEngine,
                                              HydroShareDatasetEngine)
-try:
-    from urllib2 import HTTPError, URLError
-except ImportError:
-    from urllib.error import HTTPError, URLError
+from urllib.error import HTTPError, URLError
 
 
 def validate_url(value):
@@ -153,7 +150,7 @@ class SpatialDatasetService(models.Model):
         verbose_name = 'Spatial Dataset Service'
         verbose_name_plural = 'Spatial Dataset Services'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_engine(self):
@@ -180,9 +177,6 @@ class WebProcessingService(models.Model):
     class Meta:
         verbose_name = 'Web Processing Service'
         verbose_name_plural = 'Web Processing Services'
-
-    # def __unicode__(self):
-    #     return self.name
 
     def __str__(self):
         return self.name
@@ -247,9 +241,6 @@ class PersistentStoreService(models.Model):
     class Meta:
         verbose_name = 'Persistent Store Service'
         verbose_name_plural = 'Persistent Store Services'
-
-    # def __unicode__(self):
-    #     return self.name
 
     def __str__(self):
         return self.name

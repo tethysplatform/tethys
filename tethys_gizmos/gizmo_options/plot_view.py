@@ -16,7 +16,7 @@ class PlotViewBase(TethysGizmoOptions):
         Constructor
         """
         # Initialize the super class
-        super(PlotViewBase, self).__init__()
+        super().__init__()
 
         self.width = width
         self.height = height
@@ -67,7 +67,7 @@ class PlotObject(TethysGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(PlotObject, self).__init__()
+        super().__init__()
 
         self.chart = chart
         self.xAxis = x_axis
@@ -178,7 +178,7 @@ class LinePlot(PlotViewBase):
         Constructor
         """
         # Initialize super class
-        super(LinePlot, self).__init__(height=height, width=width, engine=engine)
+        super().__init__(height=height, width=width, engine=engine)
 
         chart = kwargs.pop('chart', None)
 
@@ -288,7 +288,7 @@ class PolarPlot(PlotViewBase):
         Constructor
         """
         # Initialize super class
-        super(PolarPlot, self).__init__(height=height, width=width, engine=engine)
+        super().__init__(height=height, width=width, engine=engine)
 
         chart = kwargs.pop('chart', None)
         x_axis = kwargs.pop('x_axis', None)
@@ -423,7 +423,7 @@ class ScatterPlot(PlotViewBase):
         Constructor
         """
         # Initialize super class
-        super(ScatterPlot, self).__init__(height=height, width=width, engine=engine)
+        super().__init__(height=height, width=width, engine=engine)
 
         chart = kwargs.pop('chart', None)
 
@@ -514,7 +514,7 @@ class PiePlot(PlotViewBase):
         Args:
         """
         # Initialize super class
-        super(PiePlot, self).__init__(height=height, width=width, engine=engine)
+        super().__init__(height=height, width=width, engine=engine)
 
         chart = kwargs.pop('chart', None)
 
@@ -615,7 +615,7 @@ class BarPlot(PlotViewBase):
         Constructor
         """
         # Initialize super class
-        super(BarPlot, self).__init__(height=height, width=width, engine=engine)
+        super().__init__(height=height, width=width, engine=engine)
 
         chart = kwargs.pop('chart', None)
         y_axis = kwargs.pop('y_axis', None)
@@ -756,7 +756,7 @@ class TimeSeries(PlotViewBase):
         Constructor
         """
         # Initialize super class
-        super(TimeSeries, self).__init__(height=height, width=width, engine=engine)
+        super().__init__(height=height, width=width, engine=engine)
 
         chart = kwargs.pop('chart', None)
         x_axis = kwargs.pop('x_axis', None)
@@ -883,7 +883,7 @@ class AreaRange(PlotViewBase):
         Constructor
         """
         # Initialize super class
-        super(AreaRange, self).__init__(height=height, width=width, engine=engine)
+        super().__init__(height=height, width=width, engine=engine)
 
         chart = kwargs.pop('chart', None)
         x_axis = kwargs.pop('x_axis', None)
@@ -1003,7 +1003,7 @@ class HeatMap(PlotViewBase):
         Constructor
         """
         # Initialize super class
-        super(HeatMap, self).__init__(height=height, width=width, engine=engine)
+        super().__init__(height=height, width=width, engine=engine)
 
         chart = kwargs.pop('chart', None)
 

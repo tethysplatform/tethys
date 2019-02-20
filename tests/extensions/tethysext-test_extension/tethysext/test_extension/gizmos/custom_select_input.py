@@ -13,7 +13,7 @@ class CustomSelectInput(TethysGizmoOptions):
         constructor
         """
         # Initialize parent
-        super(CustomSelectInput, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         # Initialize Attributes
         self.name = name

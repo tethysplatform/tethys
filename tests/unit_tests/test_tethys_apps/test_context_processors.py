@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 
 from django.db import models
 from tethys_apps.context_processors import tethys_apps_context

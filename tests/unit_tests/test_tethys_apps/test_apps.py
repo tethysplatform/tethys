@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 import tethys_apps
 from tethys_apps.apps import TethysAppsConfig
 

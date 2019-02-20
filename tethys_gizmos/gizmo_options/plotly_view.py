@@ -62,7 +62,7 @@ class PlotlyView(TethysGizmoOptions):
         Constructor
         """
         # Initialize the super class
-        super(PlotlyView, self).__init__()
+        super().__init__()
 
         self.plotly_div = opy.plot(plot_input,
                                    auto_open=False,

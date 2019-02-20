@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 import time
 from tethys_services.backends.hs_restclient_helper import HSClientInitException
 import tethys_services.backends.hs_restclient_helper as hs_client_init_exception

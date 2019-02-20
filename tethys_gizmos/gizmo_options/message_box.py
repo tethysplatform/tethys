@@ -65,7 +65,7 @@ class MessageBox(TethysGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(MessageBox, self).__init__(attributes=attributes, classes=classes)
+        super().__init__(attributes=attributes, classes=classes)
 
         self.name = name
         self.title = title

@@ -7,10 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-try:
-    from urllib2 import HTTPError, URLError
-except ImportError:
-    from urllib.error import HTTPError, URLError
+from urllib.error import HTTPError, URLError
 from functools import wraps
 
 from owslib.wps import WebProcessingService

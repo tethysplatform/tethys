@@ -7,7 +7,7 @@
 ********************************************************************************
 """
 # import unittest
-# import mock
+# from unittest import mock
 # import tethys_apps.models
 # from __builtin__ import __import__ as real_import
 #

@@ -7,7 +7,6 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from __future__ import print_function
 import re
 from abc import abstractmethod
 import logging
@@ -34,7 +33,7 @@ JOB_TYPES = {'CONDOR': CondorJob,
              }
 
 
-class JobManager(object):
+class JobManager:
     """
     A manager for interacting with the Jobs database providing a simple interface creating and retrieving jobs.
 
@@ -209,7 +208,7 @@ class JobManager(object):
         return new_parameters
 
 
-class JobTemplate(object):
+class JobTemplate:
     """
     **DEPRECATED**
     A template from which to create a job.
@@ -249,13 +248,13 @@ class BasicJobTemplate(JobTemplate):
         parameters (dict): A dictionary of parameters to pass to the BasicJob constructor.
     """
     def __init__(self, name, parameters=None):
-        super(BasicJobTemplate, self).__init__(name, JOB_TYPES['BASIC'], parameters)
+        super().__init__(name, JOB_TYPES['BASIC'], parameters)
 
     def process_parameters(self):
         pass
 
 
-class CondorJobDescription(object):
+class CondorJobDescription:
     """
     **DEPRECATED**
     Helper class for CondorJobTemplate and CondorWorkflowJobTemplates. Stores job attributes.
@@ -286,7 +285,7 @@ class CondorJobTemplate(JobTemplate):
         parameters['condorpy_template_name'] = job_description.condorpy_template_name
         parameters['attributes'] = job_description.attributes
         parameters.update(kwargs)
-        super(CondorJobTemplate, self).__init__(name, JOB_TYPES['CONDORJOB'], parameters)
+        super().__init__(name, JOB_TYPES['CONDORJOB'], parameters)
 
     def process_parameters(self):
         pass
@@ -311,7 +310,7 @@ class CondorWorkflowTemplate(JobTemplate):
         parameters['max_jobs'] = max_jobs
         parameters['config'] = config
         parameters.update(kwargs)
-        super(CondorWorkflowTemplate, self).__init__(name, JOB_TYPES['CONDORWORKFLOW'], parameters)
+        super().__init__(name, JOB_TYPES['CONDORWORKFLOW'], parameters)
 
     def process_parameters(self):
         pass
@@ -319,7 +318,7 @@ class CondorWorkflowTemplate(JobTemplate):
         # add methods to workflow to get nodes by name.
 
     def create_job(self, app_workspace, user_workspace, **kwargs):
-        job = super(CondorWorkflowTemplate, self).create_job(app_workspace, user_workspace, **kwargs)
+        job = super().create_job(app_workspace, user_workspace, **kwargs)
         job.save()
 
         node_dict = dict()
@@ -347,7 +346,7 @@ NODE_TYPES = {'JOB': CondorWorkflowJobNode,
               }
 
 
-class CondorWorkflowNodeBaseTemplate(object):
+class CondorWorkflowNodeBaseTemplate:
     """
     **DEPRECATED**
     A template from which to create a job.
@@ -399,7 +398,7 @@ class CondorWorkflowJobTemplate(CondorWorkflowNodeBaseTemplate):
         parameters['remote_input_files'] = job_description.remote_input_files
         parameters['condorpy_template_name'] = job_description.condorpy_template_name
         parameters['attributes'] = job_description.attributes
-        super(CondorWorkflowJobTemplate, self).__init__(name, NODE_TYPES['JOB'], parameters)
+        super().__init__(name, NODE_TYPES['JOB'], parameters)
 
     def process_parameters(self):
         pass

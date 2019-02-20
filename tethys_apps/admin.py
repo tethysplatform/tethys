@@ -67,7 +67,7 @@ class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
     model = PersistentStoreDatabaseSetting
 
     def get_queryset(self, request):
-        qs = super(PersistentStoreDatabaseSettingInline, self).get_queryset(request)
+        qs = super().get_queryset(request)
         return qs.filter(dynamic=False)
 
 
