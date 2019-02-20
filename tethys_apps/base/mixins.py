@@ -1,4 +1,4 @@
-class TethysBaseMixin(object):
+class TethysBaseMixin:
     """
     Provides methods and properties common to the TethysBase and model classes.
     """

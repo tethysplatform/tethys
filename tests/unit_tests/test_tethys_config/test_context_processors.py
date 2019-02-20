@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 
 from tethys_config.context_processors import tethys_global_settings_context
 

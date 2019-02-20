@@ -1,10 +1,7 @@
 import sys
 import unittest
-import mock
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from unittest import mock
+from io import StringIO
 
 from tethys_apps.cli import tethys_command
 
@@ -32,18 +29,16 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('syncstores', stdout)
         self.assertIn('docker', stdout)
 
-    @mock.patch('sys.stdout', new_callable=StringIO)
+    @mock.patch('sys.stderr', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
-    def test_tethys_with_no_subcommand(self, mock_exit, mock_stdout):
+    def test_tethys_with_no_subcommand(self, mock_exit, mock_stderr):
             mock_exit.side_effect = SystemExit
             testargs = ['tethys']
 
             with mock.patch.object(sys, 'argv', testargs):
                 self.assertRaises(SystemExit, tethys_command)
 
-            if mock_stdout.getvalue():
-                self.assert_returns_help(mock_stdout.getvalue())
-
+            self.assert_returns_help(mock_stderr.getvalue())
 
     @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
