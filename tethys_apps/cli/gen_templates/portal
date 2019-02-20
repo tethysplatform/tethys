@@ -1,0 +1,6 @@
+# Portal Level Config File
+
+# see tethys documentation for how to setup this file
+version: 1.0
+name:
+apps:

@@ -32,13 +32,13 @@ class TethysCommandTests(unittest.TestCase):
     @mock.patch('sys.stderr', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
     def test_tethys_with_no_subcommand(self, mock_exit, mock_stderr):
-            mock_exit.side_effect = SystemExit
-            testargs = ['tethys']
+        mock_exit.side_effect = SystemExit
+        testargs = ['tethys']
 
-            with mock.patch.object(sys, 'argv', testargs):
-                self.assertRaises(SystemExit, tethys_command)
+        with mock.patch.object(sys, 'argv', testargs):
+            self.assertRaises(SystemExit, tethys_command)
 
-            self.assert_returns_help(mock_stderr.getvalue())
+        self.assert_returns_help(mock_stderr.getvalue())
 
     @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')

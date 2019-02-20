@@ -53,6 +53,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     def test_get_directories_in_tethys_templates_extension_import_error(self, mock_harvester):
         # Mock the extension_modules variable with bad data, to throw an ImportError
         mock_harvester().extension_modules = {'foo_invalid_foo': 'tethysext.foo_invalid_foo'}
+        mock_harvester().app_modules = {'test_app': 'tethysapp.test_app'}
 
         result = utilities.get_directories_in_tethys(('templates',))
         self.assertGreaterEqual(len(result), 1)
@@ -68,6 +69,22 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
         self.assertTrue(test_app)
         self.assertFalse(test_ext)
+
+    @mock.patch('tethys_apps.utilities.SingletonHarvester')
+    def test_get_directories_in_tethys_templates_apps_import_error(self, mock_harvester):
+        # Mock the extension_modules variable with bad data, to throw an ImportError
+        mock_harvester().app_modules = {'foo_invalid_foo': 'tethys_app.foo_invalid_foo'}
+
+        result = utilities.get_directories_in_tethys(('templates',))
+        self.assertGreaterEqual(len(result), 0)
+
+        test_app = False
+
+        for r in result:
+            if '/tethysapp/foo_invalid_foo/templates' in r:
+                test_app = True
+
+        self.assertFalse(test_app)
 
     def test_get_directories_in_tethys_foo(self):
         # Get the foo directories for the test_app and test_extension

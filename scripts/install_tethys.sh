@@ -369,7 +369,7 @@ then
         echo "Setting up the ${CONDA_ENV_NAME} environment..."
         conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/environment.yml"
         conda activate ${CONDA_ENV_NAME}
-        python "${TETHYS_SRC}/setup.py" develop
+        python "${TETHYS_SRC}/setup.py" develop       
     else
         echo "Activating the ${CONDA_ENV_NAME} environment..."
         conda activate ${CONDA_ENV_NAME}

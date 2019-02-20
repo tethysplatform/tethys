@@ -3,7 +3,7 @@ from unittest import mock
 import tethys_apps.cli.gen_commands
 from tethys_apps.cli.gen_commands import get_environment_value, get_settings_value, generate_command
 from tethys_apps.cli.gen_commands import GEN_SETTINGS_OPTION, GEN_NGINX_OPTION, GEN_UWSGI_SERVICE_OPTION,\
-                                         GEN_UWSGI_SETTINGS_OPTION
+                                         GEN_UWSGI_SETTINGS_OPTION, GEN_SERVICES_OPTION
 
 try:
     reload
@@ -250,7 +250,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         self.assertRaises(SystemExit, generate_command, args=mock_args)
 
         mock_os_path_isfile.assert_not_called()
-        mock_file.assert_called_once()
+        mock_file.assert_called()
         mock_os_path_isdir.assert_called_once_with(mock_args.directory)
 
         # Check if print is called correctly
@@ -320,3 +320,16 @@ class CLIGenCommandsTest(unittest.TestCase):
             pass
 
         self.assertTrue(tethys_apps.cli.gen_commands.settings.configured)
+
+    @mock.patch('tethys_apps.cli.gen_commands.open', new_callable=mock.mock_open)
+    @mock.patch('tethys_apps.cli.gen_commands.os.path.isfile')
+    def test_generate_command_services_option(self, mock_os_path_isfile, mock_file):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_SERVICES_OPTION
+        mock_args.directory = None
+        mock_os_path_isfile.return_value = False
+
+        generate_command(args=mock_args)
+
+        mock_os_path_isfile.assert_called_once()
+        mock_file.assert_called()

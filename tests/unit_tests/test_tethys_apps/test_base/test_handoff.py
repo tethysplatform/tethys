@@ -4,6 +4,7 @@ from types import FunctionType
 from unittest import mock
 from tethys_sdk.testing import TethysTestCase
 
+
 def test_function(*args):
 
     if args is not None:
@@ -136,7 +137,8 @@ class TestHandoffManager(unittest.TestCase):
         rts_call_args = mock_hrbr.call_args_list
 
         # Check result
-        self.assertIn('HTTP 400 Bad Request: test message.', rts_call_args[0][0][0])
+        self.assertIn('HTTP 400 Bad Request: test message.',
+                      rts_call_args[0][0][0])
 
     @mock.patch('tethys_apps.base.handoff.HttpResponseBadRequest')
     def test_handoff_error(self, mock_hrbr):
@@ -171,20 +173,18 @@ class TestHandoffManager(unittest.TestCase):
         app = mock.MagicMock(package='test_app')
 
         # Mock handoff_handlers
-        # Mock handoff_handlers
-        handler1 = mock.MagicMock(handler='my_first_app.controllers.my_handler', valid=True)
-        handler2 = mock.MagicMock(handler='controllers:home', valid=False)
-
+        handler1 = mock.MagicMock(handler='controllers.home', valid=True)
         # Cover Import Error Case
-        handler3 = mock.MagicMock(handler='controllers1:home1', valid=False)
+        handler2 = mock.MagicMock(handler='controllers1:home1', valid=False)
+        # Cover Deprecated format
+        handler3 = mock.MagicMock(handler='controllers:home', valid=False)
 
         app.handoff_handlers.return_value = [handler1, handler2, handler3]
+
         # mock _get_valid_handlers
-
         result = tethys_handoff.HandoffManager(app=app)._get_valid_handlers()
-
         # Check result
-        self.assertEqual('my_first_app.controllers.my_handler', result[0].handler)
+        self.assertEqual('controllers.home', result[0].handler)
         self.assertEqual('controllers:home', result[1].handler)
 
         check_message = 'DEPRECATION WARNING: The handler attribute of a HandoffHandler should now be in the form:' \

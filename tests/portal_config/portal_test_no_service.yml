@@ -1,0 +1,7 @@
+version: 1.0
+name: Tethys Main Portal
+apps:
+ test_app:
+  services:
+   persistent:
+    primary:

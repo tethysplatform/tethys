@@ -22,16 +22,18 @@ def get_installed_tethys_apps():
     """
     Returns a list apps installed in the tethysapp directory.
     """
-    tethysapp_dir = get_tethysapp_dir()
 
-    tethysapp_contents = os.listdir(tethysapp_dir)
+    harvester = SingletonHarvester()
+    installed_apps = harvester.app_modules
 
     tethys_apps = {}
 
-    for item in tethysapp_contents:
-        item_path = os.path.join(tethysapp_dir, item)
-        if os.path.isdir(item_path):
-            tethys_apps[item] = item_path
+    for app_name, app_module in installed_apps.items():
+        try:
+            app = __import__(app_module, fromlist=[''])
+            tethys_apps[app_name] = app.__path__[0]
+        except (IndexError, ImportError):
+            '''DO NOTHING'''
 
     return tethys_apps
 

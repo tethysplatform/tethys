@@ -13,6 +13,8 @@ def uninstall_command(args):
     process = ['python', manage_path, 'tethys_app_uninstall', item_name]
     if args.is_extension:
         process.append('-e')
+    if args.is_forced:
+        process.append('-f')
     try:
         subprocess.call(process)
     except KeyboardInterrupt:
