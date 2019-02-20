@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 from tethys_sdk.testing import TethysTestCase
 from tethys_compute.models import Scheduler
 from tethys_compute.scheduler_manager import list_schedulers, get_scheduler, \

@@ -34,7 +34,7 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
 
     def _execute(self, options=[]):
         self.load_nodes()
-        super(self.__class__, self)._execute(options=options)
+        super()._execute(options=options)
 
     def _update_status(self, *args, **kwargs):
         if not self.execute_time:
