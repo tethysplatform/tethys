@@ -21,3 +21,4 @@ tests/coverage_html_report
 .*.swp
 .DS_Store
 dask-worker-space
+portal.yml

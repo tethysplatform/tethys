@@ -783,9 +783,9 @@ def log_pull_stream(stream):
                 current_progress = json_line['progress'] if 'progress' in json_line else ''
 
                 write_pretty_output("{id}{status} {progress}".format(
-                        id=current_id,
-                        status=current_status,
-                        progress=current_progress
+                    id=current_id,
+                    status=current_status,
+                    progress=current_progress
                 ))
     else:
 

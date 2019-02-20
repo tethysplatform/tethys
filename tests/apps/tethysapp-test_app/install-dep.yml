@@ -1,0 +1,12 @@
+version: 1.0
+name: test_app
+
+conda:
+  skip: false
+  channels:
+    - tacaswell
+  dependencies:
+    - geojson
+
+pip:
+  - see

@@ -1,0 +1,6 @@
+version: 1.0
+skip: false
+interactive: false
+
+persistent:
+   temp_db: test_persistent_install
