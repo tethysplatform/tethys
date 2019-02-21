@@ -83,7 +83,34 @@ ALLOWED_HOSTS = [{% if allowed_host %}'{{ allowed_host }}'{% endif %}]
 
 # Application definition
 
-GOOGLE_ANALYTICS_JS_PROPERTY_ID = ''
+# Placeholders for the ID's required by various web-analytics services supported by Django-Analytical
+
+# CHARTBEAT_USER_ID = ''
+# CLICKMAP_TRACKER_ID = ''
+# CLICKY_SITE_ID = ''
+# CRAZY_EGG_ACCOUNT_NUMBER = ''
+# FACEBOOK_PIXEL_ID = ''
+# GAUGES_SITE_ID = ''
+# GOOGLE_ANALYTICS_JS_PROPERTY_ID = ''
+# GOSQUARED_SITE_TOKEN = ''
+# HOTJAR_SITE_ID = ''
+# HUBSPOT_PORTAL_ID = ''
+# INTERCOM_APP_ID = ''
+# KISSINSIGHTS_ACCOUNT_NUMBER = ''
+# KISSINSIGHTS_SITE_CODE = ''
+# KISS_METRICS_API_KEY = ''
+# MIXPANEL_API_TOKEN = ''
+# OLARK_SITE_ID = ''
+# OPTIMIZELY_ACCOUNT_NUMBER = ''
+# PERFORMABLE_API_KEY = ''
+# PIWIK_DOMAIN_PATH = ''
+# PIWIK_SITE_ID = ''
+# RATING_MAILRU_COUNTER_ID = ''
+# SNAPENGAGE_WIDGET_ID = ''
+# SPRING_METRICS_TRACKING_ID = ''
+# USERVOICE_WIDGET_KEY = ''
+# WOOPRA_DOMAIN = ''
+# YANDEX_METRICA_COUNTER_ID = ''
 
 INSTALLED_APPS = (
     'django.contrib.admin',
