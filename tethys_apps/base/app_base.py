@@ -1375,3 +1375,97 @@ class TethysAppBase(TethysBase):
                         .format(traceback.format_stack(limit=3)[0], setting_type, setting_name,
                                 cls.name.encode('utf-8'))
                         )
+
+    @classmethod
+    def get_templates_path(cls):
+        project_directory = os.path.dirname(sys.modules[cls.__module__].__file__)
+        return os.path.join(project_directory, 'templates', cls.package)
+
+    def check_analytics_config(self):
+        """
+        Checks how analytics are configured for the portal the app is installed on then adds the correct django tags to
+        analytics.html. Used in conjunction with Django-Analytical.
+        """
+        from django.core.management import settings
+
+        trackingtags = {
+            'clickmap': '{% load clickmap %}{% clickmap %}',
+            'clicky': '{% load clicky %}{% clicky %}',
+            'crazyegg': '{% load crazy_egg %}{% crazy_egg %}',
+            'facebookpixel': '{% load facebook_pixel %}{% facebook_pixel_body %}',
+            'gauges': '{% load gauges %}{% gauges %}',
+            'googleanalytics': '{% load google_analytics_js %}{% google_analytics_js %}',
+            'gosquared': '{% load gosquared %}{% gosquared %}',
+            'hotjar': '{% load hotjar %}{% hotjar %}',
+            'hubspot': '{% load hubspot %}{% hubspot %}',
+            'intercomio': '{% load intercom %}{% intercom %}',
+            'kissinsights': '{% load kiss_insights %}{% kiss_insights %}',
+            'kissmetrics': '{% load kiss_metrics %}{% kiss_metrics %}',
+            'mixpanel': '{% load mixpanel %}{% mixpanel %}',
+            'olark': '{% load olark %}{% olark %}',
+            'optimizely': '{% load optimizely %}{% optimizely %}',
+            'performable': '{% load performable %}{% performable %}',
+            'piwik': '{% load piwik %}{% piwik %}',
+            'mailru': '{% load rating_mailru %}{% rating_mailru %}',
+            'snapengage': '{% load snapengage %}{% snapengage %}',
+            'springmetrics': '{% load spring_metrics %}{% spring_metrics %}',
+            'uservote': '{% load uservoice %}{% uservoice %}',
+            'woopra': '{% load uservoice %}{% uservoice %}',
+            'yandex': '{% load yandex_metrica %}{% yandex_metrica %}',
+        }
+
+        tags = ''
+        with open(os.path.join(self.get_templates_path(), 'analytics.html'), 'w') as file:
+            if 'analytical' in settings.INSTALLED_APPS:
+                tags = '{% load analytical %}'
+                if settings.CHARTBEAT_USER_ID:
+                    tags += trackingtags['chartbeat']
+                if settings.CLICKMAP_TRACKER_ID:
+                    tags += trackingtags['clickmap']
+                if settings.CLICKY_SITE_ID:
+                    tags += trackingtags['clicky']
+                if settings.CRAZY_EGG_ACCOUNT_NUMBER:
+                    tags += trackingtags['crazyegg']
+                if settings.FACEBOOK_PIXEL_ID:
+                    tags += trackingtags['facebookpixel']
+                if settings.GAUGES_SITE_ID:
+                    tags += trackingtags['gauges']
+                if settings.GOOGLE_ANALYTICS_JS_PROPERTY_ID:
+                    tags += trackingtags['googleanalytics']
+                if settings.GOSQUARED_SITE_TOKEN:
+                    tags += trackingtags['gosquared']
+                if settings.HOTJAR_SITE_ID:
+                    tags += trackingtags['hotjar']
+                if settings.HUBSPOT_PORTAL_ID:
+                    tags += trackingtags['hubspot']
+                if settings.INTERCOM_APP_ID:
+                    tags += trackingtags['intercomio']
+                if settings.KISSINSIGHTS_ACCOUNT_NUMBER and settings.KISSINSIGHTS_SITE_CODE:
+                    tags += trackingtags['kissinsights']
+                if settings.KISS_METRICS_API_KEY:
+                    tags += trackingtags['kissmetrics']
+                if settings.MIXPANEL_API_TOKEN:
+                    tags += trackingtags['mixpanel']
+                if settings.OLARK_SITE_ID:
+                    tags += trackingtags['olark']
+                if settings.OPTIMIZELY_ACCOUNT_NUMBER:
+                    tags += trackingtags['optimizely']
+                if settings.PERFORMABLE_API_KEY:
+                    tags += trackingtags['performable']
+                if settings.PIWIK_DOMAIN_PATH and settings.PIWIK_SITE_ID:
+                    tags += trackingtags['piwik']
+                if settings.RATING_MAILRU_COUNTER_ID:
+                    tags += trackingtags['mailru']
+                if settings.SNAPENGAGE_WIDGET_ID:
+                    tags += trackingtags['snapengage']
+                if settings.SPRING_METRICS_TRACKING_ID:
+                    tags += trackingtags['springmetrics']
+                if settings.USERVOICE_WIDGET_KEY:
+                    tags += trackingtags['uservote']
+                if settings.WOOPRA_DOMAIN:
+                    tags += trackingtags['woopra']
+                if settings.YANDEX_METRICA_COUNTER_ID:
+                    tags += trackingtags['yandex']
+            file.write(tags)
+
+        return

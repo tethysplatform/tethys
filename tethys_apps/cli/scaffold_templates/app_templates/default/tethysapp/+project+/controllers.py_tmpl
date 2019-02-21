@@ -2,6 +2,10 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from tethys_sdk.gizmos import Button
 
+from .app import {{class_name}} as app
+app.check_analytics_config(app)
+
+
 @login_required()
 def home(request):
     """
