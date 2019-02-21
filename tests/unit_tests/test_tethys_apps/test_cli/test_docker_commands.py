@@ -798,16 +798,17 @@ class TestDockerCommands(unittest.TestCase):
         self.mock_input.assert_called_with('prompt (max 10) [1]: ')
 
     def test_uih_get_valid_numeric_input_invalid(self):
-        self.mock_input.side_effect = ['five', '11', '10']
+        self.mock_input.side_effect = ['five', '11', '10.0', '10']
 
         num = cli_docker_commands.UserInputHelper.get_valid_numeric_input(prompt='prompt', min_val=1, max_val=10)
         self.assertEqual(num, 10)
 
         input_call_args = self.mock_input.call_args_list
-        self.assertEqual(3, len(input_call_args))
+        self.assertEqual(4, len(input_call_args))
         self.assertEqual('prompt (max 10) [1]: ', input_call_args[0][0][0])
-        self.assertEqual('Please enter a number\nprompt (max 10) [1]: ', input_call_args[1][0][0])
+        self.assertEqual('Please enter an integer number\nprompt (max 10) [1]: ', input_call_args[1][0][0])
         self.assertEqual('Number must be between 1 and 10\nprompt (max 10) [1]: ', input_call_args[2][0][0])
+        self.assertEqual('Please enter an integer number\nprompt (max 10) [1]: ', input_call_args[1][0][0])
 
     def test_uih_get_valid_choice_input_default(self):
         self.mock_input.side_effect = ['']
