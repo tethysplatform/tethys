@@ -6,10 +6,10 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
-import datetime
 from abc import abstractmethod
 
 from django.db import models
+from django.utils import timezone
 
 from tethys_compute.models.tethys_job import TethysJob
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
@@ -63,9 +63,7 @@ class CondorBase(TethysJob):
 
     @property
     def statuses(self):
-        updated = True
-        if hasattr(self, '_last_status_update'):
-            updated = datetime.datetime.now() - self.last_status_update < self.update_status_interval
+        updated = (timezone.now() - self.last_status_update) < self.update_status_interval
         if not (hasattr(self, '_statuses') and updated):
             self._statuses = self.condor_object.statuses
 
