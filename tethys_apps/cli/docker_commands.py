@@ -379,7 +379,7 @@ class GeoServerContainerMetadata(ContainerMetadata):
 
             max_memory = int(environment['MAX_MEMORY'])
             environment['MIN_MEMORY'] = UserInputHelper.get_valid_numeric_input(
-                prompt='Maximum memory to allocate to each GeoServer instance in MB',
+                prompt='Minimum memory to allocate to each GeoServer instance in MB',
                 max_val=max_memory,
                 default=max_memory
             )
@@ -715,9 +715,9 @@ class UserInputHelper:
         while True:
             value = input('{}{}'.format(pre_prompt, prompt)) or str(default)
             try:
-                value = float(value)
+                value = int(value)
             except ValueError:
-                pre_prompt = 'Please enter a number\n'
+                pre_prompt = 'Please enter an integer number\n'
                 continue
 
             temp_max = max_val or value
