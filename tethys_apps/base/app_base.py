@@ -902,7 +902,7 @@ class TethysAppBase(TethysBase):
 
             from my_first_app.app import MyFirstApp as app
 
-            geoserver_engine = app.get_spatial_dataset_engine('primary_geoserver', as_engine=True)
+            geoserver_engine = app.get_spatial_dataset_service('primary_geoserver', as_engine=True)
 
 
         """
