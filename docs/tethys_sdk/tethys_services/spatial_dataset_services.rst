@@ -144,7 +144,7 @@ Call the ``get_spatial_dataset_service()`` method of the app class to get a ``Sp
 
     from my_first_app.app import MyFirstApp as app
 
-    geoserver_engine = app.get_spatial_dataset_engine('primary_geoserver', as_engine=True)
+    geoserver_engine = app.get_spatial_dataset_service('primary_geoserver', as_engine=True)
 
 You can also create a ``SpatialDatasetEngine`` object directly. This can be useful if you want to vary the credentials for dataset access frequently (e.g.: using user specific credentials)::
 
@@ -168,7 +168,7 @@ Consider the following example for uploading a shapefile to spatial dataset serv
     from my_first_app.app import MyFirstApp as app
 
     # First get an engine
-    engine = app.get_spatial_dataset_engine('primary_geoserver', as_engine=True)
+    engine = app.get_spatial_dataset_service('primary_geoserver', as_engine=True)
 
     # Create a workspace named after our app
     engine.create_workspace(workspace_id='my_app', uri='http://www.example.com/apps/my-app')
