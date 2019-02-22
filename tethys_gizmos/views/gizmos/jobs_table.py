@@ -189,7 +189,7 @@ def update_workflow_nodes_row(request, job_id):
 
         success = True
     except Exception as e:
-        log.error('The following error occurred when updating row for job %s: %s', job_id, str(e))
+        log.error('The following error occurred when updating details row for job %s: %s', job_id, str(e))
         success = False
         status = None
 
