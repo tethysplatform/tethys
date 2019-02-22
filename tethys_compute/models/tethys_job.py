@@ -75,6 +75,8 @@ class TethysJob(models.Model):
 
     @property
     def last_status_update(self):
+        if not getattr(self, '_last_status_update', None):
+            self._last_status_update = self.execute_time or timezone.now() - self.update_status_interval
         return self._last_status_update
 
     @property
@@ -103,10 +105,10 @@ class TethysJob(models.Model):
         """
         executes the job
         """
-        self.execute_time = timezone.now()
-        self._status = 'PEN'
-        self.save()
         self._execute(*args, **kwargs)
+        self.execute_time = timezone.now()
+        self._status = 'SUB'
+        self.save()
 
     def update_status(self, status=None, *args, **kwargs):
         """
@@ -126,7 +128,7 @@ class TethysJob(models.Model):
         # Update status if status not given and still pending/running
         elif old_status in ['PEN', 'SUB', 'RUN', 'VAR'] and self.is_time_to_update():
             self._update_status(*args, **kwargs)
-            self._last_status_update = datetime.datetime.now()
+            self._last_status_update = timezone.now()
 
         # Post-process status after update if old status was pending/running
         if old_status in ['PEN', 'SUB', 'RUN', 'VAR']:
@@ -146,12 +148,8 @@ class TethysJob(models.Model):
         Returns:
             bool: True if update_status_interval or longer has elapsed since our last update, else False.
         """
-        if not getattr(self, '_last_status_update', None):
-            return False
-
-        time_since_last_update = datetime.datetime.now() - self.last_status_update
+        time_since_last_update = timezone.now() - self.last_status_update
         is_time_to_update = time_since_last_update > self.update_status_interval
-
         return is_time_to_update
 
     @property
