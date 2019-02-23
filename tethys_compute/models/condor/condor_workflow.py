@@ -61,7 +61,8 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
                     condor_status = 'Idle'
 
         except Exception as e:
-            log.error('Unexpected exception encountered while attempting to update CondorWorkflow status: {}'.format(str(e)))
+            log.error('Unexpected exception encountered while attempting to update '
+                      'CondorWorkflow status: {}'.format(str(e)))
             condor_status = 'Submission_err'
 
         self._status = self.STATUS_MAP[condor_status]
