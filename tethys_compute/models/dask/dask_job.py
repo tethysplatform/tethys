@@ -30,10 +30,10 @@ class DaskJob(TethysJob):
 
     DASK_TO_STATUS_TYPES = {
         # States returned from Scheduler transition event.
-        'new-released': 'PEN',
-        'released-waiting': 'PEN',
-        'waiting-no-worker': 'PEN',
-        'no-worker-waiting': 'PEN',
+        'new-released': 'SUB',
+        'released-waiting': 'SUB',
+        'waiting-no-worker': 'SUB',
+        'no-worker-waiting': 'SUB',
         'no-worker-processing': 'RUN',
         'waiting-processing': 'RES',  # Should technically be RUN, but needs to be RES to get results
         'processing-memory': 'RES',
@@ -43,7 +43,7 @@ class DaskJob(TethysJob):
         'processing-erred': 'ERR',
         'erred-forgotten': 'ERR',
         # States returned by Future objects
-        'pending': 'PEN',
+        'pending': 'SUB',
         'processing': 'RUN',
         'finished': 'COM'
     }
