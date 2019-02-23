@@ -2,7 +2,7 @@ from tethys_sdk.testing import TethysTestCase
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_compute.models.condor.condor_base import CondorBase
 from django.contrib.auth.models import User
-from datetime import datetime, timedelta
+from datetime import timedelta
 from django.utils import timezone
 from unittest import mock
 
@@ -75,7 +75,7 @@ class CondorBaseTest(TethysTestCase):
         condor_obj = CondorBase.objects.get(name='test_condorbase')
 
         # to set updated inside if statement = False
-        d = datetime.now() - timedelta(days=1)
+        d = timezone.now() - timedelta(days=1)
         condor_obj._last_status_update = d
 
         # Execute
@@ -85,7 +85,7 @@ class CondorBaseTest(TethysTestCase):
         self.assertEqual('test_statuses', ret)
 
         # to set updated inside if statement = True
-        d = datetime.now()
+        d = timezone.now()
         condor_obj._last_status_update = d
 
         mock_co.statuses = 'test_statuses2'
