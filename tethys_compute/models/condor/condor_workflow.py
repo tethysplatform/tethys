@@ -38,7 +38,7 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
 
     def _update_status(self, *args, **kwargs):
         if not self.execute_time:
-            return 'PEN'
+            return 'SUB'
         try:
             # get the status of the condorpy job/workflow
             condor_status = self.condor_object.status

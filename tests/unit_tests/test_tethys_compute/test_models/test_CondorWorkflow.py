@@ -158,7 +158,7 @@ class CondorWorkflowTest(TethysTestCase):
     def test__update_status_no_execute_time(self):
         self.condorworkflow.execute_time = None
         ret = self.condorworkflow._update_status()
-        self.assertEqual('PEN', ret)
+        self.assertEqual('SUB', ret)
 
     @mock.patch('tethys_compute.models.condor.condor_workflow.CondorBase.condor_object')
     def test__update_status_not_Running(self, mock_co):
