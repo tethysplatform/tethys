@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 
 from tethys_services.views import datasets_home, wps_home, wps_service, wps_process
 

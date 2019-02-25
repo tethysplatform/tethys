@@ -99,7 +99,7 @@ class SelectInput(TethysGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(SelectInput, self).__init__(attributes=attributes, classes=classes)
+        super().__init__(attributes=attributes, classes=classes)
 
         self.display_text = display_text
         self.name = name

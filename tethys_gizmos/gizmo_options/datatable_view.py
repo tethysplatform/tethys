@@ -102,7 +102,7 @@ class DataTableView(TethysGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(DataTableView, self).__init__(attributes=attributes, classes=classes)
+        super().__init__(attributes=attributes, classes=classes)
 
         self.rows = rows
         self.column_names = column_names

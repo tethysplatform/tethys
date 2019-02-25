@@ -24,7 +24,6 @@ from .workspace import TethysWorkspace
 from .mixins import TethysBaseMixin
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
-from past.builtins import basestring
 
 tethys_log = logging.getLogger('tethys.app_base')
 
@@ -94,7 +93,7 @@ class TethysBase(TethysBaseMixin):
                     url_patterns[namespace] = []
 
                 # Create django url object
-                if isinstance(url_map.controller, basestring):
+                if isinstance(url_map.controller, str):
                     root_controller_path = 'tethysext' if is_extension else 'tethys_apps.tethysapp'
                     full_controller_path = '.'.join([root_controller_path, url_map.controller])
                     controller_parts = full_controller_path.split('.')
@@ -142,7 +141,7 @@ class TethysExtensionBase(TethysBase):
     Base class used to define the extension class for Tethys extensions.
     """
 
-    def __unicode__(self):
+    def __str__(self):
         """
         String representation
         """
@@ -246,7 +245,7 @@ class TethysAppBase(TethysBase):
     enable_feedback = False
     feedback_emails = []
 
-    def __unicode__(self):
+    def __str__(self):
         """
         String representation
         """

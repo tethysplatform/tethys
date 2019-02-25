@@ -26,8 +26,6 @@
 # authors and should not be interpreted as representing official policies, either expressed
 # or implied, of Diego Navarro Mellén.
 
-from __future__ import print_function
-
 
 # Special END separator
 END = '0e8ed89a-47ba-4cdb-938e-b8af8e084d5c'
@@ -69,9 +67,9 @@ TC_ENDC = '\033[0m'
 
 
 class pretty_output:
-    '''
+    """
     Context manager for pretty terminal prints
-    '''
+    """
 
     def __init__(self, *attr):
         self.attributes = attr
@@ -85,3 +83,23 @@ class pretty_output:
     def write(self, msg):
         style = ''.join(self.attributes)
         print('{}{}{}'.format(style, msg.replace(END, ALL_OFF + style), ALL_OFF))
+
+
+def write_pretty_output(msg, color=FG_WHITE, attributes=None):
+    """Utility function to write output with the `pretty_output` context manager
+
+    Args:
+        msg(str, required):
+            output to write
+        color(constant, optional, default=FG_WHITE):
+            constant representing color of the text
+        attributes(list, optional, default=None):
+            list of constants applying style attributes to `msg`
+
+    Note:
+        If a foreground color is specified in attributes it will override the `color` argument.
+    """
+    attributes = attributes or list()
+    attributes.insert(0, color)
+    with pretty_output(*attributes) as p:
+        p.write(msg)
