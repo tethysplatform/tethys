@@ -16,8 +16,6 @@ import warnings
 from django.core.management.base import BaseCommand
 from tethys_apps.helpers import get_installed_tethys_apps, get_installed_tethys_extensions
 
-from builtins import input
-
 
 class Command(BaseCommand):
     """
