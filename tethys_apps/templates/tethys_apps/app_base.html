@@ -103,6 +103,79 @@
       {% gizmo_dependencies global_js %}
     {% endblock %}
 
+    {% block analyticsscripts %}
+      {% if analytics.analytical is True %}
+        {% load analytical %}
+      {% endif %}
+      {% if analytics.clickmap is True %}
+        {% load clickmap %}{% clickmap %}
+      {% endif %}
+      {% if analytics.clicky is True %}
+        {% load clicky %}{% clicky %}
+      {% endif %}
+      {% if analytics.crazyegg is True %}
+        {% load crazy_egg %}{% crazy_egg %}
+      {% endif %}
+      {% if analytics.gauges is True %}
+        {% load gauges %}{% gauges %}
+      {% endif %}
+      {% if analytics.googleanalytics is True %}
+        {% load google_analytics_js %}{% google_analytics_js %}
+      {% endif %}
+      {% if analytics.gosquared is True %}
+        {% load gosquared %}{% gosquared %}
+      {% endif %}
+      {% if analytics.hotjar is True %}
+        {% load hotjar %}{% hotjar %}
+      {% endif %}
+      {% if analytics.hubspot is True %}
+        {% load hubspot %}{% hubspot %}
+      {% endif %}
+      {% if analytics.intercomio is True %}
+        {% load intercom %}{% intercom %}
+      {% endif %}
+      {% if analytics.kissinsights is True %}
+        {% load kiss_insights %}{% kiss_insights %}
+      {% endif %}
+      {% if analytics.kissmetrics is True %}
+        {% load kiss_metrics %}{% kiss_metrics %}
+      {% endif %}
+      {% if analytics.mixpanel is True %}
+        {% load mixpanel %}{% mixpanel %}
+      {% endif %}
+      {% if analytics.olark is True %}
+        {% load olark %}{% olark %}
+      {% endif %}
+      {% if analytics.optimizely is True %}
+        {% load optimizely %}{% optimizely %}
+      {% endif %}
+      {% if analytics.performable is True %}
+        {% load performable %}{% performable %}
+      {% endif %}
+      {% if analytics.piwik is True %}
+        {% load piwik %}{% piwik %}
+      {% endif %}
+      {% if analytics.mailru is True %}
+        {% load rating_mailru %}{% rating_mailru %}
+      {% endif %}
+      {% if analytics.snapengage is True %}
+        {% load snapengage %}{% snapengage %}
+      {% endif %}
+      {% if analytics.springmetrics is True %}
+        {% load spring_metrics %}{% spring_metrics %}
+      {% endif %}
+      {% if analytics.uservote is True %}
+        {% load uservoice %}{% uservoice %}
+      {% endif %}
+      {% if analytics.woopra is True %}
+        {% load uservoice %}{% uservoice %}
+      {% endif %}
+      {% if analytics.yandex is True %}
+        {% load yandex_metrica %}{% yandex_metrica %}
+      {% endif %}
+    {% endblock %}
+
+
     {% block session_timeout_modal %}
       {% include 'session_security/all.html' %}
       <link href="{% static 'tethys_portal/css/session_security_override.css' %}"  rel="stylesheet" />
