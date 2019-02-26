@@ -7,12 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from __future__ import (absolute_import, division,
-                        print_function, unicode_literals)
-from builtins import *  # noqa: F401, F403
-
 import os
-import sys
 import inspect
 import logging
 import pkgutil
@@ -25,7 +20,7 @@ from tethys_apps.base.testing.environment import is_testing_environment
 tethys_log = logging.getLogger('tethys.' + __name__)
 
 
-class SingletonHarvester(object):
+class SingletonHarvester:
     """
     Collects information for initiating apps
     """
@@ -99,7 +94,7 @@ class SingletonHarvester(object):
         Make App Harvester a Singleton
         """
         if not cls._instance:
-            cls._instance = super(SingletonHarvester, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
 
         return cls._instance
 

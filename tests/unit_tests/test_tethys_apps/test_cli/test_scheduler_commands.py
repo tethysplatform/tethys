@@ -1,5 +1,5 @@
 import unittest
-import mock
+from unittest import mock
 
 from tethys_apps.cli.scheduler_commands import dask_scheduler_create_command, schedulers_list_command, \
     schedulers_remove_command, condor_scheduler_create_command

@@ -85,7 +85,7 @@ class DatePicker(TethysGizmoOptions):
         Constructor
         """
         # Initialize super class
-        super(DatePicker, self).__init__(attributes=attributes, classes=classes)
+        super().__init__(attributes=attributes, classes=classes)
 
         self.name = name
         self.display_text = display_text

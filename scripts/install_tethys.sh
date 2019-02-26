@@ -422,6 +422,7 @@ then
         mkdir -p "${ACTIVATE_DIR}"
 
         echo "export TETHYS_HOME='${TETHYS_HOME}'" >> "${ACTIVATE_SCRIPT}"
+        echo "export TETHYS_SRC='${TETHYS_SRC}'" >> "${ACTIVATE_SCRIPT}"
         echo "export TETHYS_PORT='${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
         echo "export TETHYS_DB_PORT='${TETHYS_DB_PORT}'" >> "${ACTIVATE_SCRIPT}"
         echo "export TETHYS_DB_DIR='${TETHYS_DB_DIR}'" >> "${ACTIVATE_SCRIPT}"
@@ -450,6 +451,7 @@ then
         mkdir -p "${DEACTIVATE_DIR}"
 
         echo "unset TETHYS_HOME" >> "${DEACTIVATE_SCRIPT}"
+        echo "unset TETHYS_SRC" >> "${DEACTIVATE_SCRIPT}"
         echo "unset TETHYS_PORT" >> "${DEACTIVATE_SCRIPT}"
         echo "unset TETHYS_DB_PORT" >> "${DEACTIVATE_SCRIPT}"
         echo "unset TETHYS_DB_DIR" >> "${DEACTIVATE_SCRIPT}"

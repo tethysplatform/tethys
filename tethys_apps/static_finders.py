@@ -34,7 +34,7 @@ class TethysStaticFinder(BaseFinder):
             filesystem_storage.prefix = prefix
             self.storages[root] = filesystem_storage
 
-        super(TethysStaticFinder, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def find(self, path, all=False):
         """
