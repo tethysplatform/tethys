@@ -17,6 +17,7 @@ from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 from tethys_compute.models.dask.dask_field import DaskSerializedField
 
 log = logging.getLogger('tethys.' + __name__)
+client_fire_forget = None
 
 
 class DaskJob(TethysJob):
@@ -122,6 +123,10 @@ class DaskJob(TethysJob):
         # Must use fire and forget to ensure job runs after the future goes out of scope.
         fire_and_forget(future)
 
+        # Save this client to close it after obtaining the result.
+        global client_fire_forget
+        client_fire_forget = self.client
+
     def _update_status(self, *args, **kwargs):
         """
         Check status using a Future, translate to Tethys Jobs status and save.
@@ -140,6 +145,9 @@ class DaskJob(TethysJob):
             # Translate to TethysJob status
             self._status = self.DASK_TO_STATUS_TYPES[dask_status]
             self.save()
+            # Clean up client
+            self.client.close()
+
         except KeyError:
             log.error('Unknown Dask Status: "{}"'.format(dask_status))
 
@@ -160,14 +168,23 @@ class DaskJob(TethysJob):
 
         # Skip processing results if forget
         if self.forget:
+            # Clean up client
+            self.client.close()
             return
 
         try:
             # Get results using the client
             result = self.client.gather(future)
         except Exception as e:
+            # Tell scheduler to stop sending updates about this key
+            self.client.set_metadata(self.key, False)
+            # Clean up client
+            self.client.close()
             result = e
             log.warning('Exception encountered when retrieving results: "{}"'.format(str(e)))
+
+        # Tell scheduler to stop sending updates about this key
+        self.client.set_metadata(self.key, False)
 
         # Handle custom process results function
         if self.process_results_function:
@@ -188,14 +205,17 @@ class DaskJob(TethysJob):
         else:
             self._status = 'COM' if self._status != 'ERR' else 'ERR'
 
-        # Tell scheduler to stop sending updates about this key
-        self.client.set_metadata(self.key, False)
-
         # Erase the key to avoid problem with dask recycle key
         self.key = ''
 
         # save the results or status in the database
         self.save()
+
+        # Clean up client
+        self.client.close()
+
+        if client_fire_forget:
+            client_fire_forget.close()
 
         self._release_pr_lock()
 
