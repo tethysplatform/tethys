@@ -231,9 +231,10 @@ class DaskJobTest(TethysTestCase):
         # _Execute
         self.assertRaises(ValueError, djob._execute, 1)
 
+    @mock.patch('tethys_compute.models.dask.dask_job.DaskJob.client')
     @mock.patch('django.db.models.base.Model.save')
     @mock.patch('tethys_compute.models.dask.dask_job.DaskJob.future')
-    def test_update_status(self, mock_future, mock_save):
+    def test_update_status(self, mock_future, mock_save, mock_client):
         mock_future.status = 'finished'
         # Create DaskJob
         djob = DaskJob(
@@ -247,6 +248,7 @@ class DaskJobTest(TethysTestCase):
         djob._update_status()
 
         # check the results
+        mock_client.close.assert_called()
         mock_save.assert_called()
 
     def test_update_status_with_no_future(self):
@@ -305,9 +307,10 @@ class DaskJobTest(TethysTestCase):
         # call the function
         self.assertIsNone(djob._process_results())
 
+    @mock.patch('tethys_compute.models.dask.dask_job.DaskJob.client')
     @mock.patch('tethys_compute.models.dask.dask_job.DaskJob.future',
                 new_callable=mock.PropertyMock())
-    def test_process_result_forget(self, _):
+    def test_process_result_forget(self, _, mock_client):
         # Create DaskJob
         djob = DaskJob(name='test_dj', user=self.user, label='label', scheduler=self.scheduler, forget=True)
 
@@ -315,6 +318,7 @@ class DaskJobTest(TethysTestCase):
         ret = djob._process_results()
 
         # check the result
+        mock_client.close.assert_called()
         self.assertIsNone(ret)
 
     @mock.patch('tethys_compute.models.tethys_job.TethysFunctionExtractor')
@@ -345,6 +349,7 @@ class DaskJobTest(TethysTestCase):
         djob._process_results()
 
         # check the result
+        mock_client.close.assert_called()
         mock_client.gather.assert_called_with(mock_future)
         mock_function.assert_called_with(mock_client.gather())
         mock_client.set_metadata.assert_called_with(fake_key, False)
