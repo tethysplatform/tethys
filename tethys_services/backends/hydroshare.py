@@ -49,9 +49,7 @@ class HydroShareOAuth2(BaseOAuth2):
     set_expires_in_to = None
 
     def extra_data(self, user, uid, response, details=None, *args, **kwargs):
-        data = super().extra_data(user, uid, response,
-                                                        details,
-                                                        *args, **kwargs)
+        data = super().extra_data(user, uid, response, details, *args, **kwargs)
 
         # testing purpose
         if self.set_expires_in_to is not None:
