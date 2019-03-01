@@ -4,8 +4,8 @@ from tethys_compute.models.condor.condor_base import CondorBase
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
-from pytz import timezone
-from django.utils import timezone as dt
+from pytz import timezone as pytz_timezone
+from django.utils import timezone as django_timezone
 from unittest import mock
 
 
@@ -15,7 +15,7 @@ def test_function():
 
 class TethysJobTest(TethysTestCase):
     def set_up(self):
-        self.tz = timezone('America/Denver')
+        self.tz = pytz_timezone('America/Denver')
 
         self.user = User.objects.create_user('tethys_super', 'user@example.com', 'pass')
 
@@ -118,7 +118,7 @@ class TethysJobTest(TethysTestCase):
 
         self.assertNotEqual(ret_old.execute_time, ret_new.execute_time)
         self.assertEqual('Various', ret_old.status)
-        self.assertEqual('Pending', ret_new.status)
+        self.assertEqual('Submitted', ret_new.status)
 
     @mock.patch('tethys_compute.models.tethys_job.log')
     def test_update_status_invalid(self, mock_log):
@@ -127,7 +127,7 @@ class TethysJobTest(TethysTestCase):
             description='test_description',
             user=self.user,
             label='test_label',
-            execute_time=dt.now(),
+            execute_time=django_timezone.now(),
         )
         tethysjob._status = ''
 
@@ -144,7 +144,7 @@ class TethysJobTest(TethysTestCase):
             user=self.user,
             label='test_label',
             scheduler=self.scheduler,
-            execute_time=dt.now(),
+            execute_time=django_timezone.now(),
         )
         mock_tup.return_value = True
         mock_co.status = 'Running'
@@ -178,7 +178,7 @@ class TethysJobTest(TethysTestCase):
             user=self.user,
             label='test_label',
             scheduler=self.scheduler,
-            execute_time=dt.now(),
+            execute_time=django_timezone.now(),
         )
 
         mock_tup.return_value = True
@@ -200,7 +200,7 @@ class TethysJobTest(TethysTestCase):
             user=self.user,
             label='test_label',
             scheduler=self.scheduler,
-            execute_time=dt.now(),
+            execute_time=django_timezone.now(),
         )
         mock_tup.return_value = True
         mock_co.status = 'Various-Complete'
@@ -221,7 +221,7 @@ class TethysJobTest(TethysTestCase):
             user=self.user,
             label='test_label',
             scheduler=self.scheduler,
-            execute_time=dt.now(),
+            execute_time=django_timezone.now(),
         )
 
         mock_co.status = 'Held'
@@ -243,7 +243,7 @@ class TethysJobTest(TethysTestCase):
             user=self.user,
             label='test_label',
             scheduler=self.scheduler,
-            execute_time=dt.now(),
+            execute_time=django_timezone.now(),
         )
         mock_tup.return_value = True
 
@@ -328,7 +328,7 @@ class TethysJobTest(TethysTestCase):
         ret = TethysJob.objects.get(name='test_tethysjob')
         ret._update_status_interval = timedelta(seconds=0)
 
-        fifteen_ago = datetime.now() - timedelta(minutes=15)
+        fifteen_ago = django_timezone.now() - timedelta(minutes=15)
         ret._last_status_update = fifteen_ago
 
         time_to_update_status = ret.is_time_to_update()
@@ -339,7 +339,7 @@ class TethysJobTest(TethysTestCase):
         ret = TethysJob.objects.get(name='test_tethysjob')
         ret._update_status_interval = timedelta(minutes=15)
 
-        fifteen_ago = datetime.now() - timedelta(minutes=5)
+        fifteen_ago = django_timezone.now() - timedelta(minutes=5)
         ret._last_status_update = fifteen_ago
 
         time_to_update_status = ret.is_time_to_update()

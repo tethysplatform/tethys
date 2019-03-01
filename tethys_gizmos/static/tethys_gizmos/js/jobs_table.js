@@ -4,7 +4,6 @@
  *   copied from (https://docs.djangoproject.com/en/1.7/ref/contrib/csrf/)
  *
  *****************************************************************************/
-
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie != '') {
@@ -204,13 +203,11 @@ function update_row(table_elem){
             });
             status = json.status;
             if(status == 'Running' || status == 'Submitted' || status == 'Various'){
-                var run_time_field = $('#run_time-' + job_id)
+                active_counter++;
+                var run_time_field = $('#run_time-' + job_id);
                 setTimeout(function(){
                     update_row(table_elem);
                 }, refresh_interval);
-            }
-            else {
-                $('#bokeh-nodes-row-' + job_id).html('');
             }
         }
     });
@@ -285,14 +282,12 @@ function bokeh_nodes_row(table_elem){
         url: update_url,
         data: {}
     }).done(function(json){
-            if ($('#jobs-table-status-' + job_id).text().includes('View Results')) {
-                $('#bokeh-nodes-row-' + job_id).html('');
-            }
-            else if ($('#jobs-table-status-' + job_id).text().includes('Complete')) {
+            // Only show bokeh if we can find any jobs still running.
+            if (active_counter > 0) {
                 $('#bokeh-nodes-row-' + job_id).html(
                     '<td id="job_id_' + job_id + '" colspan="100%">' +
-                      '<div id="icon_job_id_' + job_id + '"><strong>Show Details</strong></div>' +
-                      '<div style="display: none" id="content_job_id_' + job_id + '">' + json.html + '</div>' +
+                      '<div id="icon_job_id_' + job_id + '"><strong>Hide Details</strong></div>' +
+                      '<div id="content_job_id_' + job_id + '">' + json.html + '</div>' +
                     '</td>');
 
                 // two click event has been binded to the element. use off() to unbind click event and then on() to bind it again.
@@ -310,6 +305,7 @@ function bokeh_nodes_row(table_elem){
                     }
                 })
             }
+
     });
 }
 
@@ -321,7 +317,8 @@ $('.btn-job-run').each(function(){
 $('.btn-job-delete').each(function(){
     bind_delete_button(this);
 });
-
+// Keep track of how many job are active. If none of the jobs are active, we won't show bokeh graph.
+var active_counter = 0
 $('.job-row').each(function(){
     update_row(this);
 });
@@ -330,6 +327,10 @@ $('.workflow-nodes-row').each(function(){
     update_workflow_nodes_row(this);
 });
 
+// Only show bokeh for the top row.
+var counter = 0;
 $('.bokeh-nodes-row').each(function(){
-    bokeh_nodes_row(this);
+    counter++;
+    if (counter == 1) { bokeh_nodes_row(this);}
+    else { return false;}
 });

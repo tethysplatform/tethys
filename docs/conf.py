@@ -29,6 +29,8 @@ MOCK_MODULES = [
     'bokeh', 'bokeh.embed', 'bokeh.resources',
     'condorpy',
     'django_gravatar',
+    'dask', 'dask.delayed', 'dask.distributed',
+    'distributed', 'distributed.protocol', 'distributed.protocol.serialize',
     'guardian', 'guardian.admin',
     'model_utils', 'model_utils.managers',
     'plotly', 'plotly.offline',
