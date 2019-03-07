@@ -25,6 +25,9 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
     CondorPy Workflow job type
     """
 
+    class Meta:
+        manager_inheritance_from_future = True
+
     @property
     def _condor_object(self):
         """
