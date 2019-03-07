@@ -54,8 +54,8 @@ user_urls = [
 
 developer_urls = [
     url(r'^$', tethys_portal_developer.home, name='developer_home'),
-    url(r'^gizmos/', include('tethys_gizmos.urls', namespace='gizmos')),
-    url(r'^services/', include('tethys_services.urls', namespace='services')),
+    url(r'^gizmos/', include(('tethys_gizmos.urls', 'gizmos'), namespace='gizmos')),
+    url(r'^services/', include(('tethys_services.urls', 'services'), namespace='services')),
 ]
 
 # development_error_urls = [
@@ -67,11 +67,11 @@ developer_urls = [
 
 urlpatterns = [
     url(r'^$', tethys_portal_home.home, name='home'),
-    url(r'^admin/', include(admin_urls)),
-    url(r'^accounts/', include(account_urls, namespace='accounts')),
+    url(r'^admin/', admin_urls),
+    url(r'^accounts/', include((account_urls, 'accounts'), namespace='accounts')),
     url(r'^captcha/', include('captcha.urls')),
     url(r'^oauth2/', include('social_django.urls', namespace='social')),
-    url(r'^user/(?P<username>[\w.@+-]+)/', include(user_urls, namespace='user')),
+    url(r'^user/(?P<username>[\w.@+-]+)/', include((user_urls, 'user'), namespace='user')),
     url(r'^apps/', include('tethys_apps.urls')),
     url(r'^extensions/', include(extension_urls)),
     url(r'^developer/', include(developer_urls)),

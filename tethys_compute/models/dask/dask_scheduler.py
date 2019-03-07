@@ -23,6 +23,11 @@ class DaskScheduler(Scheduler):
     heartbeat_interval = models.IntegerField(blank=True, default=0)
     dashboard = models.CharField(max_length=255, blank=True, null=True)
 
+    # objects = models.Manager()
+
+    class Meta:
+        manager_inheritance_from_future = True
+
     @property
     def client(self):
         """
