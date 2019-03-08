@@ -24,9 +24,6 @@ class CondorJob(CondorBase, CondorPyJob):
     CondorPy Job job type
     """
 
-    class Meta:
-        manager_inheritance_from_future = True
-
     @property
     def _condor_object(self):
         """

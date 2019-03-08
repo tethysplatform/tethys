@@ -25,9 +25,6 @@ class DaskScheduler(Scheduler):
 
     # objects = models.Manager()
 
-    class Meta:
-        manager_inheritance_from_future = True
-
     @property
     def client(self):
         """

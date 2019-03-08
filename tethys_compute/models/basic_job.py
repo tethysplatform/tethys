@@ -13,10 +13,6 @@ class BasicJob(TethysJob):
     """
     Basic job type. Use this class as a model for subclassing TethysJob
     """
-
-    class Meta:
-        manager_inheritance_from_future = True
-
     def _execute(self, *args, **kwargs):
         pass
 

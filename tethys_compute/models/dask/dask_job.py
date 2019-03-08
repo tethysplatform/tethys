@@ -29,11 +29,6 @@ class DaskJob(TethysJob):
     forget = models.BooleanField(default=False)
     result = DaskSerializedField(blank=True, null=True)
 
-    # objects = models.Manager()
-
-    class Meta:
-        manager_inheritance_from_future = True
-
     DASK_TO_STATUS_TYPES = {
         # States returned from Scheduler transition event.
         'new-released': 'SUB',

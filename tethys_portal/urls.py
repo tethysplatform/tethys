@@ -9,8 +9,8 @@
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.contrib.auth.views import password_reset, password_reset_done, password_reset_confirm, \
-    password_reset_complete
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, \
+    PasswordResetCompleteView
 from django.conf import settings
 from tethys_apps.urls import extension_urls
 
@@ -35,12 +35,12 @@ account_urls = [
     url(r'^login/$', tethys_portal_accounts.login_view, name='login'),
     url(r'^logout/$', tethys_portal_accounts.logout_view, name='logout'),
     url(r'^register/$', tethys_portal_accounts.register, name='register'),
-    url(r'^password/reset/$', password_reset, {'post_reset_redirect': '/accounts/password/reset/done/'},
+    url(r'^password/reset/$', PasswordResetView.as_view(), {'post_reset_redirect': '/accounts/password/reset/done/'},
         name='password_reset'),
-    url(r'^password/reset/done/$', password_reset_done),
-    url(r'^password/reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', password_reset_confirm,
+    url(r'^password/reset/done/$', PasswordResetDoneView.as_view()),
+    url(r'^password/reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', PasswordResetConfirmView.as_view(),
         {'post_reset_redirect': '/accounts/password/done/'}, name='password_confirm'),
-    url(r'^password/done/$', password_reset_complete),
+    url(r'^password/done/$', PasswordResetCompleteView.as_view()),
 ]
 
 user_urls = [
