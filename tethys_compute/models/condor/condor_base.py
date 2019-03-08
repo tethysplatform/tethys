@@ -34,9 +34,6 @@ class CondorBase(TethysJob):
                   'Various-Complete': 'VCP',
                   }
 
-    class Meta:
-        manager_inheritance_from_future = True
-
     @property
     def condor_object(self):
         """
