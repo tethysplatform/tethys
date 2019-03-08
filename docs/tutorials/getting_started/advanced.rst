@@ -264,9 +264,14 @@ g. Add **Persistent Store Service** to Tethys Portal:
     d. Click on the **Add Persistent Store Service** button.
     e. Give the **Persistent Store Service** a name and fill out the connection information.
 
+.. figure:: images/tutorial/advanced/Persistent_Store_Service.png
+    :width: 600px
+    :align: center
+
 .. important::
 
     The username and password for the persistent store service must be a superuser to use spatial persistent stores.
+    Note that this is set by default in the installation to: username: "tethys_super", password: "pass".
 
 h. Assign **Persistent Store Service** to Dam Inventory App:
 
@@ -276,6 +281,10 @@ h. Assign **Persistent Store Service** to Dam Inventory App:
     d. Select the **Dam Inventory** link.
     e. Scroll down to the **Persistent Store Database Settings** section.
     f. Assign the **Persistent Store Service** that you created in Step 4 to the **primary_db**.
+
+.. figure:: images/tutorial/advanced/Assign_Persistent_Store_Service.png
+    :width: 600px
+    :align: center
 
 i. Execute **syncstores** command to initialize Persistent Store database:
 
