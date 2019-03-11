@@ -137,7 +137,6 @@ class TestGizmoShowcase(unittest.TestCase):
         self.assertIn('home', render_call_args[0][0][2]['page_type'])
         self.assertIn('/developer/gizmos/model/cesium-map-view', render_call_args[0][0][2]['model_link'])
         self.assertIn('/developer/gizmos/home/cesium-map-view', render_call_args[0][0][2]['home_link'])
-        self.assertIn('homeButton', render_call_args[0][0][2]['cesium_map_view']['options'])
 
     @mock.patch('tethys_gizmos.views.gizmo_showcase.render')
     def test_cesium_map_view_map_layers(self, mock_render):
