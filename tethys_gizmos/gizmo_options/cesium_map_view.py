@@ -49,21 +49,14 @@ class CesiumMapView(TethysGizmoOptions):
             ::
 
                 options={'shouldAnimate': False, 'timeline': False, 'homeButton': False}
-                
         **Globe**
-        
         You can specify options that are often set on the Globe object associated with the Cesium viewer. For example, to achieve the equivalent of these calls in the Cesiumm JavaScript API:
-        
         ::
-            
             // Cesium JS Example
             viewer.scene.globe.enableLighting = true;
             viewer.scene.globe.depthTestAgainstTerrain = true;
-            
         Pass the following Globe options to CesiumMapView:
-        
         ::
-        
             # Tethys CesiumMapView example
             cesium_map_view = CesiumMapView(
                 globe={
@@ -237,13 +230,9 @@ class CesiumMapView(TethysGizmoOptions):
                 },
                 'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
             }}
-            
         **Clock**
-        
         You can customize the clock on the viewer such as specifying the starting date and time and specifying the time step interval. For example, to achieve the equivalent of these calls in the Cesiumm JavaScript API:
-        
         ::
-            
             // Cesium JS Example
             var clock = new Cesium.Clock({
                 startTime : Cesium.JulianDate.fromIso8601('2017-07-11T00:00:00Z'),
@@ -254,17 +243,12 @@ class CesiumMapView(TethysGizmoOptions):
                 multiplier : 1000,
                 shouldAnimate : true
             });
-            
             var viewer = new Cesium.Viewer('cesiumContainer', {
                 clockViewModel : new Cesium.ClockViewModel(clock),
             });
-            
         Pass the following Clock options to CesiumMapView:
-        
         ::
-        
             # Tethys CesiumMapView example
-            
             cesium_map_view = CesiumMapView(
                 clock = {'clock': {'Cesium.Clock': {
                     'startTime': {'Cesium.JulianDate.fromIso8601': ['2017-07-11T00:00:00Z']},
