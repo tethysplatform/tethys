@@ -185,6 +185,8 @@ class TestGizmoShowcase(unittest.TestCase):
         # Check render
         render_call_args = mock_render.call_args_list
         self.assertIn('model', render_call_args[0][0][2]['page_type'])
+        self.assertIn('clock', render_call_args[0][0][2]['cesium_map_view'])
+        self.assertIn('globe', render_call_args[0][0][2]['cesium_map_view'])
 
     @mock.patch('tethys_gizmos.views.gizmo_showcase.render')
     def test_cesium_map_view_models(self, mock_render):
