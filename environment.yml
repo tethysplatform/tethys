@@ -39,7 +39,7 @@ dependencies:
 - tethys_dask_scheduler>=1.0.2
 
 # django/plugin dependencies
-- django=1.11.*
+- django=2.1.*
 - django-filter
 - djangorestframework
 - django-bootstrap3

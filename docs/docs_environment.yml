@@ -13,7 +13,7 @@ channels:
 dependencies:
 - python=3.5
 - tethys_dataset_services>=1.7.0
-- django=1.11.*
+- django=2.1.*
 - pip:
     - sphinx
     - mock
