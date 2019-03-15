@@ -229,15 +229,12 @@ function update_row(table_elem){
                 });
                 status = json.status;
             }
-            if(status == 'Running' || status == 'Submitted' || status == 'Various'){
+            if(status == 'Running' || status == 'Submitted' || status == 'Various') {
                 active_counter++;
                 var run_time_field = $('#run_time-' + job_id);
                 setTimeout(function(){
                     update_row(table_elem);
                 }, refresh_interval);
-            }
-            else {
-                $('#bokeh-nodes-row-' + job_id).html('');
             }
         } else {
             $(table_elem).html(json.html);
@@ -322,29 +319,29 @@ function bokeh_nodes_row(table_elem){
         url: update_url,
         data: {}
     }).done(function(json){
-            // Only show bokeh if we can find any jobs still running.
-            if (active_counter > 0) {
-                $('#bokeh-nodes-row-' + job_id).html(
-                    '<td id="job_id_' + job_id + '" colspan="100%">' +
-                      '<div id="icon_job_id_' + job_id + '"><strong>Hide Details</strong></div>' +
-                      '<div id="content_job_id_' + job_id + '">' + json.html + '</div>' +
-                    '</td>');
+        // Only show bokeh if we can find any jobs still running.
+        if (active_counter > 0) {
+            $('#bokeh-nodes-row-' + job_id).html(
+                '<td id="job_id_' + job_id + '" colspan="100%">' +
+                  '<div id="icon_job_id_' + job_id + '"><strong>Hide Details</strong></div>' +
+                  '<div id="content_job_id_' + job_id + '">' + json.html + '</div>' +
+                '</td>');
 
-                // two click event has been binded to the element. use off() to unbind click event and then on() to bind it again.
-                $('#bokeh-nodes-row-' + job_id).off('click').on('click', function() {
-                    var content_id = 'content_job_id_' + job_id;
-                    var icon_id = 'icon_job_id_' + job_id;
-                    var element = document.getElementById(content_id);
-                    var element_icon = document.getElementById(icon_id);
-                    if (element.style.display == "none") {
-                        element.style.display = "block";
-                        element_icon.innerHTML = '<strong>Hide Details</strong>';
-                    } else {
-                        element.style.display = "none";
-                        element_icon.innerHTML = '<strong>Show Details</strong>';
-                    }
-                })
-            }
+            // two click event has been binded to the element. use off() to unbind click event and then on() to bind it again.
+            $('#bokeh-nodes-row-' + job_id).off('click').on('click', function() {
+                var content_id = 'content_job_id_' + job_id;
+                var icon_id = 'icon_job_id_' + job_id;
+                var element = document.getElementById(content_id);
+                var element_icon = document.getElementById(icon_id);
+                if (element.style.display == "none") {
+                    element.style.display = "block";
+                    element_icon.innerHTML = '<strong>Hide Details</strong>';
+                } else {
+                    element.style.display = "none";
+                    element_icon.innerHTML = '<strong>Show Details</strong>';
+                }
+            })
+        }
     });
 }
 
@@ -361,7 +358,8 @@ $('.btn-job-delete').each(function(){
     bind_delete_button(this);
 });
 // Keep track of how many job are active. If none of the jobs are active, we won't show bokeh graph.
-var active_counter = 0
+var active_counter = 0;
+
 $('.job-row').each(function(){
     update_row(this);
 });
