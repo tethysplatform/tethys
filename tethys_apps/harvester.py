@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 import os
+import glob
 import inspect
 import logging
 import pkgutil
@@ -16,6 +17,12 @@ from django.db.utils import ProgrammingError
 from django.core.exceptions import ObjectDoesNotExist
 from tethys_apps.base import TethysAppBase, TethysExtensionBase
 from tethys_apps.base.testing.environment import is_testing_environment
+
+from bokeh.command.util import build_single_handler_application
+from bokeh.server.contexts import ApplicationContext
+from bokeh.application.application import Application
+from bokeh.application.handlers.function import FunctionHandler
+from bokeh.application.handlers.document_lifecycle import DocumentLifecycleHandler
 
 tethys_log = logging.getLogger('tethys.' + __name__)
 
@@ -40,6 +47,7 @@ class SingletonHarvester:
         """
         self.harvest_extensions()
         self.harvest_apps()
+        self.harvest_jupyter_apps()
 
     def harvest_extensions(self):
         """
@@ -74,6 +82,52 @@ class SingletonHarvester:
         # Harvest App Instances
         self._harvest_app_instances(app_packages_list)
 
+    def harvest_jupyter_apps(self):
+        """
+        Searches the apps package for apps
+        """
+        # Notify user harvesting is taking place
+        if not is_testing_environment():
+            print(self.BLUE + 'Loading Jupyter Apps...' + self.ENDC)
+
+        # List the apps packages in directory
+        apps_dir = os.path.join(os.path.dirname(__file__), 'jupyterapp', 'scripts')
+        path_list = glob.glob(os.path.join(apps_dir, "*.py"))
+
+        applications = {}
+        for path in path_list:
+            application = build_single_handler_application(path)
+
+            route = application.handlers[0].url_path()
+
+            if not route:
+                if '/' in applications:
+                    raise RuntimeError("Don't know the URL path to use for %s" % (path))
+                route = '/'
+            applications[route] = application
+
+        if callable(applications):
+            applications = Application(FunctionHandler(applications))
+
+        if isinstance(applications, Application):
+            applications = {'/': applications}
+
+        for k, v in list(applications.items()):
+            if callable(v):
+                applications[k] = Application(FunctionHandler(v))
+            if all(not isinstance(handler, DocumentLifecycleHandler) for handler in applications[k]._handlers):
+                applications[k].add(DocumentLifecycleHandler())
+
+        self._jupyter_applications = dict()
+
+        loaded_jupyter_apps = []
+        for k, v in applications.items():
+            loaded_jupyter_apps.append(k.replace('/', ''))
+            self._jupyter_applications[k] = ApplicationContext(v, url=k)
+
+        print(self.BLUE + 'Jupyter Apps Loaded: '
+              + self.ENDC + '{0}'.format(', '.join(loaded_jupyter_apps)) + '\n')
+
     def get_url_patterns(self):
         """
         Generate the url pattern lists for each app and namespace them accordingly.
@@ -88,6 +142,9 @@ class SingletonHarvester:
             extension_url_patterns.update(extension.url_patterns)
 
         return app_url_patterns, extension_url_patterns
+
+    def get_jupyter_applications(self):
+        return self._jupyter_applications
 
     def __new__(cls):
         """

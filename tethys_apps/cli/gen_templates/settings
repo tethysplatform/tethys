@@ -106,6 +106,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'analytical',
+    'channels',
 )
 
 MIDDLEWARE = (
@@ -343,3 +344,5 @@ SPRING_METRICS_TRACKING_ID = False
 USERVOICE_WIDGET_KEY = False
 WOOPRA_DOMAIN = False
 YANDEX_METRICA_COUNTER_ID = False
+
+ASGI_APPLICATION = "tethys_apps.routing.application"

@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var categorical_scale_1 = require("./categorical_scale");
+exports.CategoricalScale = categorical_scale_1.CategoricalScale;
+var linear_scale_1 = require("./linear_scale");
+exports.LinearScale = linear_scale_1.LinearScale;
+var log_scale_1 = require("./log_scale");
+exports.LogScale = log_scale_1.LogScale;
+var scale_1 = require("./scale");
+exports.Scale = scale_1.Scale;

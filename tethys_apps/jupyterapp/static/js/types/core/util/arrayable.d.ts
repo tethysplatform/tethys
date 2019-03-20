@@ -1,0 +1,12 @@
+import { Arrayable } from "../types";
+export declare function splice<T>(array: Arrayable<T>, start: number, k?: number, ...items: T[]): Arrayable<T>;
+export declare function insert<T>(array: Arrayable<T>, item: T, i: number): Arrayable<T>;
+export declare function append<T>(array: Arrayable<T>, item: T): Arrayable<T>;
+export declare function prepend<T>(array: Arrayable<T>, item: T): Arrayable<T>;
+export declare function indexOf<T>(array: Arrayable<T>, item: T): number;
+export declare function map<T, U>(array: Arrayable<T>, fn: (item: T, i: number, array: Arrayable<T>) => U): Arrayable<U>;
+export declare function min(array: Arrayable<number>): number;
+export declare function minBy<T>(array: Arrayable<T>, key: (item: T) => number): T;
+export declare function max(array: Arrayable<number>): number;
+export declare function maxBy<T>(array: Arrayable<T>, key: (item: T) => number): T;
+export declare function sum(array: Arrayable<number>): number;
