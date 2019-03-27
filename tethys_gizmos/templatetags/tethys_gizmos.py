@@ -164,12 +164,8 @@ class TethysGizmoIncludeDependency(template.Node):
         try:
             self._load_gizmos_rendered(context)
         except Exception as e:
-            if hasattr(settings, 'TEMPLATES'):
-                for template_settings in settings.TEMPLATES:
-                    if 'OPTIONS' in template_settings \
-                            and 'debug' in template_settings['OPTIONS'] \
-                            and template_settings['OPTIONS']['debug']:
-                        raise e
+            if settings.TEMPLATE_DEBUG:
+                raise e
 
         return ''
 

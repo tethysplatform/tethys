@@ -34,9 +34,11 @@ class TethysPortalHomeTests(unittest.TestCase):
         mock_request = mock.MagicMock()
         mock_hasattr.return_value = False
         mock_settings.ENABLE_OPEN_SIGNUP = True
+        mock_settings.ENABLE_OPEN_PORTAL = True
         mock_redirect.return_value = 'foo'
         mock_render.return_value = 'bar'
         self.assertEquals('bar', home(mock_request))
         mock_redirect.assert_not_called()
         mock_render.assert_called_once_with(mock_request, 'tethys_portal/home.html',
-                                            {"ENABLE_OPEN_SIGNUP": mock_settings.ENABLE_OPEN_SIGNUP, })
+                                            {"ENABLE_OPEN_SIGNUP": mock_settings.ENABLE_OPEN_SIGNUP,
+                                             "ENABLE_OPEN_PORTAL": mock_settings.ENABLE_OPEN_PORTAL})
