@@ -8,7 +8,6 @@
 ********************************************************************************
 """
 import os
-import glob
 import inspect
 import logging
 import pkgutil
@@ -17,12 +16,6 @@ from django.db.utils import ProgrammingError
 from django.core.exceptions import ObjectDoesNotExist
 from tethys_apps.base import TethysAppBase, TethysExtensionBase
 from tethys_apps.base.testing.environment import is_testing_environment
-
-from bokeh.command.util import build_single_handler_application
-from bokeh.server.contexts import ApplicationContext
-from bokeh.application.application import Application
-from bokeh.application.handlers.function import FunctionHandler
-from bokeh.application.handlers.document_lifecycle import DocumentLifecycleHandler
 
 tethys_log = logging.getLogger('tethys.' + __name__)
 
