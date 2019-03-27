@@ -82,7 +82,7 @@ class TethysBase(TethysBaseMixin):
         if self._url_patterns is None:
             is_extension = isinstance(self, TethysExtensionBase)
 
-            url_patterns = dict()
+            url_patterns = {'http': dict(), 'websocket': dict()}
 
             if hasattr(self, 'url_maps'):
                 url_maps = self.url_maps()
@@ -90,8 +90,8 @@ class TethysBase(TethysBaseMixin):
             for url_map in url_maps:
                 namespace = self.namespace
 
-                if namespace not in url_patterns:
-                    url_patterns[namespace] = []
+                if namespace not in url_patterns[url_map.protocol]:
+                    url_patterns[url_map.protocol][namespace] = []
 
                 # Create django url object
                 if isinstance(url_map.controller, str):
@@ -119,7 +119,7 @@ class TethysBase(TethysBaseMixin):
                 django_url = url(url_map.url, controller_function, name=url_map.name)
 
                 # Append to namespace list
-                url_patterns[namespace].append(django_url)
+                url_patterns[url_map.protocol][namespace].append(django_url)
             self._url_patterns = url_patterns
 
         return self._url_patterns

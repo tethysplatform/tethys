@@ -47,7 +47,6 @@ class SingletonHarvester:
         """
         self.harvest_extensions()
         self.harvest_apps()
-        self.harvest_jupyter_apps()
 
     def harvest_extensions(self):
         """
@@ -82,69 +81,30 @@ class SingletonHarvester:
         # Harvest App Instances
         self._harvest_app_instances(app_packages_list)
 
-    def harvest_jupyter_apps(self):
-        """
-        Searches the apps package for apps
-        """
-        # Notify user harvesting is taking place
-        if not is_testing_environment():
-            print(self.BLUE + 'Loading Jupyter Apps...' + self.ENDC)
-
-        # List the apps packages in directory
-        apps_dir = os.path.join(os.path.dirname(__file__), 'jupyterapp', 'scripts')
-        path_list = glob.glob(os.path.join(apps_dir, "*.py"))
-
-        applications = {}
-        for path in path_list:
-            application = build_single_handler_application(path)
-
-            route = application.handlers[0].url_path()
-
-            if not route:
-                if '/' in applications:
-                    raise RuntimeError("Don't know the URL path to use for %s" % (path))
-                route = '/'
-            applications[route] = application
-
-        if callable(applications):
-            applications = Application(FunctionHandler(applications))
-
-        if isinstance(applications, Application):
-            applications = {'/': applications}
-
-        for k, v in list(applications.items()):
-            if callable(v):
-                applications[k] = Application(FunctionHandler(v))
-            if all(not isinstance(handler, DocumentLifecycleHandler) for handler in applications[k]._handlers):
-                applications[k].add(DocumentLifecycleHandler())
-
-        self._jupyter_applications = dict()
-
-        loaded_jupyter_apps = []
-        for k, v in applications.items():
-            loaded_jupyter_apps.append(k.replace('/', ''))
-            self._jupyter_applications[k] = ApplicationContext(v, url=k)
-
-        print(self.BLUE + 'Jupyter Apps Loaded: '
-              + self.ENDC + '{0}'.format(', '.join(loaded_jupyter_apps)) + '\n')
-
     def get_url_patterns(self):
         """
         Generate the url pattern lists for each app and namespace them accordingly.
         """
         app_url_patterns = dict()
         extension_url_patterns = dict()
+        routing_url_patterns = dict()
 
         for app in self.apps:
-            app_url_patterns.update(app.url_patterns)
+            app_url_patterns.update(app.url_patterns['http'])
+
+        for app in self.apps:
+            routing_url_patterns.update(app.url_patterns['websocket'])
 
         for extension in self.extensions:
-            extension_url_patterns.update(extension.url_patterns)
+            extension_url_patterns.update(extension.url_patterns['http'])
 
-        return app_url_patterns, extension_url_patterns
+        url_patterns = {
+            'url_pattern': app_url_patterns,
+            'url_pattern_ext': extension_url_patterns,
+            'ws_pattern': routing_url_patterns
+        }
 
-    def get_jupyter_applications(self):
-        return self._jupyter_applications
+        return url_patterns
 
     def __new__(cls):
         """
