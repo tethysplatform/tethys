@@ -273,7 +273,7 @@ class TestJobsTable(unittest.TestCase):
         request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
         result = gizmo_jobs_table.update_status(request, job_id='1')
 
-        mock_log.error.assert_called_with('The following error occurred when updating status for job %s: %s', '1',
+        mock_log.exception.assert_called_with('The following error occurred when updating status for job %s: %s', '1',
                                           str('error'))
         self.assertEqual(200, result.status_code)
         data = json.loads(result.content.decode())
