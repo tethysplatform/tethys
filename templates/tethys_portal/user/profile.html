@@ -135,6 +135,8 @@
                         <span class="label label-hydroshare">HydroShare-beta</span>
                       {% elif 'hydroshare_playground' == backend.provider %}
                         <span class="label label-hydroshare">HydroShare-playground</span>
+                      {% else %}
+                        <span class="label label-custom-oauth">{{ backend.provider }}</span>
                       {% endif %}
                     {% endfor %}
                   </div>
@@ -162,6 +164,8 @@
                         <span class="label label-hydroshare">HydroShare-beta</span>
                       {% elif 'hydroshare_playground' == backend %}
                         <span class="label label-hydroshare">HydroShare-playground</span>
+                      {% else %}
+                        <span class="label label-custom-oauth">{{ backend }}</span>
                       {% endif %}
                     {% endfor %}
                   </div>
