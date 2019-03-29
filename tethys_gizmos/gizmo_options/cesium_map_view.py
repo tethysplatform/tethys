@@ -13,12 +13,17 @@ class CesiumMapView(TethysGizmoOptions):
             height(str): Height of the map element. Any valid css unit of length (e.g.: '500px'). Defaults to '100%'.
             width(str): Width of the map element. Any valid css unit of length (e.g.: '100%'). Defaults to '100%'.
             options(dict): Viewer basic options. One item in dictionary per option.
+            globe(dict): Options to set on the Globe of the view.
             view(dict): Set the initial view of the map using various methods(e.g.: flyTo, setView)
             layers(dict): Add imagery layer to map. One item in dictionary per imagery layer.
             entities(dict):: Add entities to map. One item in dictionary per entity
             terrain(dict): Add terrain provider to the map.
             models(dict): Add 3D model to map. One item in dictionary per model.
+            clock(dict): Define custom clock options for viewer.
             draw(boolean): Turn drawing tools on/off.
+            attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
+            classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
+
 
 
         **Cesium Version**
@@ -44,6 +49,21 @@ class CesiumMapView(TethysGizmoOptions):
             ::
 
                 options={'shouldAnimate': False, 'timeline': False, 'homeButton': False}
+        **Globe**
+        You can specify options that are often set on the Globe object associated with the Cesium viewer. For example, to achieve the equivalent of these calls in the Cesiumm JavaScript API:
+        ::
+            // Cesium JS Example
+            viewer.scene.globe.enableLighting = true;
+            viewer.scene.globe.depthTestAgainstTerrain = true;
+        Pass the following Globe options to CesiumMapView:
+        ::
+            # Tethys CesiumMapView example
+            cesium_map_view = CesiumMapView(
+                globe={
+                    'enableLighting': True,
+                    'depthTestAgainstTerrain': True
+                }
+            )
 
         **View**
 
@@ -60,7 +80,7 @@ class CesiumMapView(TethysGizmoOptions):
                     }
                 });
 
-        In CesiumMapView, you can define this setting using python as follows
+        In Tethys CesiumMapView, you can define this setting using python as follows
 
             ::
 
@@ -210,6 +230,36 @@ class CesiumMapView(TethysGizmoOptions):
                 },
                 'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
             }}
+        **Clock**
+        You can customize the clock on the viewer such as specifying the starting date and time and specifying the time step interval. For example, to achieve the equivalent of these calls in the Cesiumm JavaScript API:
+        ::
+            // Cesium JS Example
+            var clock = new Cesium.Clock({
+                startTime : Cesium.JulianDate.fromIso8601('2017-07-11T00:00:00Z'),
+                stopTime : Cesium.JulianDate.fromIso8601('2017-07-11T24:00:00Z'),
+                currentTime : Cesium.JulianDate.fromIso8601('2017-07-11T10:00:00Z'),
+                clockRange : Cesium.ClockRange.LOOP_STOP,
+                clockStep : Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER,
+                multiplier : 1000,
+                shouldAnimate : true
+            });
+            var viewer = new Cesium.Viewer('cesiumContainer', {
+                clockViewModel : new Cesium.ClockViewModel(clock),
+            });
+        Pass the following Clock options to CesiumMapView:
+        ::
+            # Tethys CesiumMapView example
+            cesium_map_view = CesiumMapView(
+                clock = {'clock': {'Cesium.Clock': {
+                    'startTime': {'Cesium.JulianDate.fromIso8601': ['2017-07-11T00:00:00Z']},
+                    'stopTime': {'Cesium.JulianDate.fromIso8601': ['2017-07-11T24:00:00Z']},
+                    'currentTime': {'Cesium.JulianDate.fromIso8601': ['2017-07-11T10:00:00Z']},
+                    'clockRange': 'Cesium.ClockRange.LOOP_STOP',
+                    'clockStep': 'Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER',
+                    'multiplier': 1000,
+                    'shouldAnimate': True
+                }}}
+            )
 
         **Drawing**
 
@@ -251,16 +301,18 @@ class CesiumMapView(TethysGizmoOptions):
     # Set Cesium Default Release Version.
     cesium_version = ""
 
-    def __init__(self, options={}, view={}, layers=[], entities=[], terrain={}, models=[],
+    def __init__(self, options={}, globe={}, view={}, layers={}, entities={}, terrain={}, models={}, clock={},
                  height='100%', width='100%', draw=False, attributes={}, classes=''):
         """
         Constructor
         """
         # Initialize super class
-        super().__init__(attributes=attributes, classes=classes)
+        super(CesiumMapView, self).__init__(attributes=attributes, classes=classes)
         self.height = height
         self.width = width
         self.options = options
+        self.globe = globe
+        self.clock = clock
         self.view = view
         self.layers = layers
         self.entities = entities

@@ -1202,14 +1202,11 @@ def cesium_map_view(request, type):
 
     # 1. Basic Map
     height = '600px'
-    if (type == 'home'):
-        cesium_map_view = CesiumMapView(
-            height=height,
-            options={'timeline': True, 'homeButton': True}
-        )
+    if type == 'home':
+        cesium_map_view = CesiumMapView(height=height)
 
     # 2. Map Layers
-    if (type == 'map_layers'):
+    if type == 'map_layers':
         cesium_map_view = CesiumMapView(
             height=height,
             draw=True,
@@ -1224,7 +1221,7 @@ def cesium_map_view(request, type):
         )
 
     # 3. Terrain
-    if (type == 'terrain'):
+    if type == 'terrain':
         cesium_map_view = CesiumMapView(
             height=height,
             draw=True,
@@ -1245,7 +1242,7 @@ def cesium_map_view(request, type):
         )
 
     # 4. czml Object
-    if (type == 'czml'):
+    if type == 'czml':
         cesium_map_view = CesiumMapView(
             height=height,
             options={'shouldAnimate': True,
@@ -1262,7 +1259,7 @@ def cesium_map_view(request, type):
                     'Cesium.BingMapsImageryProvider': {
                         'url': 'https://dev.virtualearth.net',
                         'key': 'AnYTMwSuR3-CBMzhN0yAYrtl-28rEFe7Kxfg2IWC9csUBCn0nYDFXW1ioNakjX3W',
-                        'mapStyle': 'Aerial',
+                        'mapStyle': 'Cesium.BingMapsStyle.AERIAL',
                     },
                 }
             }},
@@ -1357,7 +1354,7 @@ def cesium_map_view(request, type):
         )
 
     # 5. Model.
-    if (type == 'model'):
+    if type == 'model':
         object1 = '/static/tethys_gizmos/cesium_models/CesiumAir/Cesium_Air.glb'
         cesium_map_view = CesiumMapView(
             height=height,
@@ -1391,9 +1388,18 @@ def cesium_map_view(request, type):
                     'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
                 },
             },
+            clock={'clock': {'Cesium.Clock': {
+                'startTime': {'Cesium.JulianDate.fromIso8601': ['2017-07-11T00:00:00Z']},
+                'stopTime': {'Cesium.JulianDate.fromIso8601': ['2017-07-11T24:00:00Z']},
+                'currentTime': {'Cesium.JulianDate.fromIso8601': ['2017-07-11T10:00:00Z']},
+                'clockRange': 'Cesium.ClockRange.LOOP_STOP',
+                'clockStep': 'Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER',
+                'multiplier': 1000,
+                'shouldAnimate': True
+            }}}
         )
 
-    if (type == 'model2'):
+    if type == 'model2':
         object1 = '/static/tethys_gizmos/cesium_models/CesiumAir/Cesium_Air.glb'
         object2 = '/static/tethys_gizmos/cesium_models/CesiumBalloon/CesiumBalloon.glb'
         cesium_map_view = CesiumMapView(

@@ -264,7 +264,7 @@ g. Add **Persistent Store Service** to Tethys Portal:
     d. Click on the **Add Persistent Store Service** button.
     e. Give the **Persistent Store Service** a name and fill out the connection information.
 
-.. figure:: images/tutorial/advanced/Persistent_Store_Service.png
+.. figure:: ../../images/tutorial/advanced/Persistent_Store_Service.png
     :width: 600px
     :align: center
 
@@ -282,7 +282,7 @@ h. Assign **Persistent Store Service** to Dam Inventory App:
     e. Scroll down to the **Persistent Store Database Settings** section.
     f. Assign the **Persistent Store Service** that you created in Step 4 to the **primary_db**.
 
-.. figure:: images/tutorial/advanced/Assign_Persistent_Store_Service.png
+.. figure:: ../../images/tutorial/advanced/Assign_Persistent_Store_Service.png
     :width: 600px
     :align: center
 

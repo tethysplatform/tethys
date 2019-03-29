@@ -1,20 +1,26 @@
 {% load staticfiles tethys_gizmos %}
 
 
-<div id="cesium_map_view_outer_container">
+<div id="cesium_map_view_outer_container" style="height: 100%;">
     <div id="cesium_map_wrapper" style="height: {{ height|default:'100%' }}; width:{{ width|default:'100%'}};">
         <div id="cesium_map_view" style="width: 100%; height:100%; position: relative;"
-            {% if options %}data-options="{{ options|jsonify }}"{% endif %}
-            {% if view %}data-view="{{ view|jsonify }}"{% endif %}
-            {% if layers %}data-layer="{{ layers|jsonify }}"{% endif %}
-            {% if models %}data-models="{{ models|jsonify }}"{% endif %}
-            {% if entities %}data-entities="{{ entities|jsonify }}"{% endif %}
-            {% if terrain %}data-terrain="{{ terrain|jsonify }}"{% endif %}
-            {% if toolbar %}data-toolbar="{{ toolbar|jsonify }}"{% endif %}
-            {% if draw %}data-draw="{{ draw|jsonify }}"{% endif %}>
+            {% if classes %}class="{{ classes }}"{% endif %}
+            {% if attributes %}
+                {% for key, value in attributes.items %}
+                    {{ key }}="{{ value }}"
+                {% endfor %}
+            {% endif %}
+            data-options="{{ options|jsonify }}"
+            data-globe="{{ globe|jsonify }}"
+            data-view="{{ view|jsonify }}"
+            data-layer="{{ layers|jsonify }}"
+            data-models="{{ models|jsonify }}"
+            data-entities="{{ entities|jsonify }}"
+            data-terrain="{{ terrain|jsonify }}"
+            data-clock="{{ clock|jsonify }}"
+            data-draw="{{ draw|jsonify }}">
             <div id="cesium_map_view_toolbar"></div>
             <div id="cesium_map_view_logging" style="display:none"></div>
-            <!--<div id="cesium_drawing_status" value="{{ draw|jsonify }}"></div>-->
         </div>
         <textarea id="cesium_map_view_geometry" name="geometry" rows="4" cols="180" hidden></textarea>
     </div>
