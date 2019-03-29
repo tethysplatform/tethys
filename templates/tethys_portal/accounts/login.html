@@ -22,37 +22,8 @@
         </div>
         <div class="account-form-body">
           <form role="form" method="post">
-            {% if 'hydroshare' in backends.not_associated %}
-              <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-                 <i class="fa fa-hydroshare"></i> Sign in with HydroShare
-              </a>
-            {% endif %}
-            {% if 'hydroshare_beta' in backends.not_associated %}
-              <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare_beta' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-                <i class="fa fa-hydroshare"></i> Sign in with HydroShare-beta
-              </a>
-            {% endif %}
-            {% if 'hydroshare_playground' in backends.not_associated %}
-              <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare_playground' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-                <i class="fa fa-hydroshare"></i> Sign in with HydroShare-playground
-              </a>
-            {% endif %}
-            {% if 'google-oauth2' in backends.not_associated %}
-              <a class="btn btn-block btn-social btn-google" href="{% url 'social:begin' 'google-oauth2' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-                <i class="fa fa-google"></i> Sign in with Google
-              </a>
-            {% endif %}
-            {% if 'linkedin-oauth2' in backends.not_associated %}
-              <a class="btn btn-block btn-social btn-linkedin" href="{% url 'social:begin' 'linkedin-oauth2' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-                <i class="fa fa-linkedin"></i> Sign in with LinkedIn
-              </a>
-            {% endif %}
-            {% if 'facebook' in backends.not_associated %}
-              <a class="btn btn-block btn-social btn-facebook" href="{% url 'social:begin' 'facebook' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
-                <i class="fa fa-facebook"></i> Sign in with Facebook
-              </a>
-            {% endif %}
             {% if backends.not_associated %}
+              {% include 'tethys_portal/accounts/social_buttons.html' with action='Log in' backends=backends.not_associated %}
               <div class="social-divide-or">
                 <div class="line"></div>
                 <span class="or">or</span>
