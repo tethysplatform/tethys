@@ -37,7 +37,7 @@ Replace the contents of :file:`controllers.py` module with the following:
     import string
 
     from django.shortcuts import render
-    from django.contrib.auth.decorators import login_required
+    from tethys_sdk.permissions import login_required
 
     from tethys_sdk.gizmos import *
     from .app import GeoserverApp as app
