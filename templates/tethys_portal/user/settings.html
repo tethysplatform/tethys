@@ -85,6 +85,8 @@
                   <a href="{% url 'user:disconnect' user.username 'hydroshare_beta' association.id %}"><span class="label label-hydroshare">Disconnect HydroShare-beta</span></a>
                 {% elif 'hydroshare_playground' == association.provider %}
                   <a href="{% url 'user:disconnect' user.username 'hydroshare_playground' association.id %}"><span class="label label-hydroshare">Disconnect HydroShare-playground</span></a>
+                {% else %}
+                  <a href="{% url 'user:disconnect' user.username association.provider association.id %}"><span class="label label-custom-oauth">Disconnect {{ association.provider }}</span></a>
                 {% endif %}
               {% endfor %}
             {% else %}
@@ -101,6 +103,8 @@
                   <span class="label label-hydroshare">HydroShare-beta</span>
                 {% elif 'hydroshare_playground' == backend.provider %}
                   <span class="label label-hydroshare">HydroShare-playground</span>
+                {% else %}
+                  <span class="label label-custom-oauth">{{ backend.provider }}</span>
                 {% endif %}
               {% endfor %}
             {% endif %}
@@ -129,6 +133,8 @@
                 <a href="{% url 'social:begin' 'hydroshare_beta' %}?next={{ request.path }}"><span class="label label-hydroshare">Connect HydroShare-beta</span></a>
               {% elif 'hydroshare_playground' == backend %}
                 <a href="{% url 'social:begin' 'hydroshare_playground' %}?next={{ request.path }}"><span class="label label-hydroshare">Connect HydroShare-playground</span></a>
+              {% else %}
+                <a href="{% url 'social:begin' backend %}?next={{ request.path }}"><span class="label label-custom-oauth">Connect {{ backend }}</span></a>
               {% endif %}
             {% endfor %}
           </div>

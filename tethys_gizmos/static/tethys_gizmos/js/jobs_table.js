@@ -4,6 +4,7 @@
  *   copied from (https://docs.djangoproject.com/en/1.7/ref/contrib/csrf/)
  *
  *****************************************************************************/
+
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie != '') {
@@ -45,6 +46,26 @@ function bind_run_button(btn){
     var job_id = $(btn).data('job-id');
     $(btn).on('click', function () {
         var execute_url = '/developer/gizmos/ajax/' + job_id + '/execute';
+        $.ajax({
+            url: execute_url
+        }).done(function (json) {
+            status_html =
+            '<div class="progress" style="margin-bottom: 0;">' +
+                '<div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" title="Submitted" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
+                    '<span class="sr-only">100% Complete</span>' +
+                '</div>' +
+            '</div>'
+            $(btn).parent().html(status_html);
+            update_row($('#jobs-table-row-' + job_id));
+        });
+    });
+}
+
+function bind_refresh_button(btn){
+    btn = $(btn);
+    var job_id = $(btn).data('job-id');
+    $(btn).on('click', function () {
+        var execute_url = '/developer/gizmos/ajax/' + job_id + '/update-row';
         $.ajax({
             url: execute_url
         }).done(function (json) {
@@ -194,21 +215,37 @@ function update_row(table_elem){
         data: {column_fields: column_fields, status_actions: status_actions, run: run, delete: delete_btn, results_url: results_url}
     }).done(function(json){
         if(json.success){
-            $(table_elem).html(json.html);
-            $(table_elem).find('.btn-job-run').each(function(){
-                bind_run_button(this);
-            });
-            $(table_elem).find('.btn-job-delete').each(function(){
-                bind_delete_button(this);
-            });
-            status = json.status;
-            if(status == 'Running' || status == 'Submitted' || status == 'Various'){
+            var current_status = $('#jobs-table-status-'+job_id).children('div').attr('title') || 'None'
+            if(current_status != json.status) {
+                $(table_elem).html(json.html);
+                $(table_elem).find('.btn-job-run').each(function(){
+                    bind_run_button(this);
+                });
+                $(table_elem).find('.btn-job-delete').each(function(){
+                    bind_delete_button(this);
+                });
+                $(table_elem).find('.btn-refresh-status').each(function(){
+                    bind_refresh_button(this);
+                });
+                status = json.status;
+            }
+            if(status == 'Running' || status == 'Submitted' || status == 'Various') {
                 active_counter++;
                 var run_time_field = $('#run_time-' + job_id);
                 setTimeout(function(){
                     update_row(table_elem);
                 }, refresh_interval);
             }
+        } else {
+            $(table_elem).html(json.html);
+            $(table_elem).find('.btn-refresh-status').each(function(){
+                bind_refresh_button(this);
+            });
+            $(table_elem).find('.btn-job-delete').each(function(){
+                bind_delete_button(this);
+            });
+
+
         }
     });
 }
@@ -282,33 +319,36 @@ function bokeh_nodes_row(table_elem){
         url: update_url,
         data: {}
     }).done(function(json){
-            // Only show bokeh if we can find any jobs still running.
-            if (active_counter > 0) {
-                $('#bokeh-nodes-row-' + job_id).html(
-                    '<td id="job_id_' + job_id + '" colspan="100%">' +
-                      '<div id="icon_job_id_' + job_id + '"><strong>Hide Details</strong></div>' +
-                      '<div id="content_job_id_' + job_id + '">' + json.html + '</div>' +
-                    '</td>');
+        // Only show bokeh if we can find any jobs still running.
+        if (active_counter > 0) {
+            $('#bokeh-nodes-row-' + job_id).html(
+                '<td id="job_id_' + job_id + '" colspan="100%">' +
+                  '<div id="icon_job_id_' + job_id + '"><strong>Hide Details</strong></div>' +
+                  '<div id="content_job_id_' + job_id + '">' + json.html + '</div>' +
+                '</td>');
 
-                // two click event has been binded to the element. use off() to unbind click event and then on() to bind it again.
-                $('#bokeh-nodes-row-' + job_id).off('click').on('click', function() {
-                    var content_id = 'content_job_id_' + job_id;
-                    var icon_id = 'icon_job_id_' + job_id;
-                    var element = document.getElementById(content_id);
-                    var element_icon = document.getElementById(icon_id);
-                    if (element.style.display == "none") {
-                        element.style.display = "block";
-                        element_icon.innerHTML = '<strong>Hide Details</strong>';
-                    } else {
-                        element.style.display = "none";
-                        element_icon.innerHTML = '<strong>Show Details</strong>';
-                    }
-                })
-            }
-
+            // two click event has been binded to the element. use off() to unbind click event and then on() to bind it again.
+            $('#bokeh-nodes-row-' + job_id).off('click').on('click', function() {
+                var content_id = 'content_job_id_' + job_id;
+                var icon_id = 'icon_job_id_' + job_id;
+                var element = document.getElementById(content_id);
+                var element_icon = document.getElementById(icon_id);
+                if (element.style.display == "none") {
+                    element.style.display = "block";
+                    element_icon.innerHTML = '<strong>Hide Details</strong>';
+                } else {
+                    element.style.display = "none";
+                    element_icon.innerHTML = '<strong>Show Details</strong>';
+                }
+            })
+        }
     });
 }
 
+
+$('.btn-refresh-status').each(function(){
+    bind_refresh_button(this);
+});
 
 $('.btn-job-run').each(function(){
     bind_run_button(this);
@@ -318,7 +358,8 @@ $('.btn-job-delete').each(function(){
     bind_delete_button(this);
 });
 // Keep track of how many job are active. If none of the jobs are active, we won't show bokeh graph.
-var active_counter = 0
+var active_counter = 0;
+
 $('.job-row').each(function(){
     update_row(this);
 });
