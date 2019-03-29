@@ -16,6 +16,27 @@ from django.shortcuts import redirect
 from django.utils.functional import wraps
 from tethys_portal.views import error as tethys_portal_error
 from tethys_apps.base import has_permission
+from django.conf import settings
+from django.contrib.auth import REDIRECT_FIELD_NAME
+
+
+def login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
+    """
+    Decorator for Tethys App controllers that checks whether a user has a permission.
+    """
+    def decorator(controller_func):
+        def wrapper(request, *args, **kwargs):
+
+            if not getattr(settings, 'ENABLE_OPEN_PORTAL', False):
+                from django.contrib.auth.decorators import login_required as lr
+                dec = lr(function=function, redirect_field_name=redirect_field_name, login_url=login_url)
+                controller = dec(controller_func)
+                return controller(request, *args, **kwargs)
+            else:
+                return controller_func(request, *args, **kwargs)
+
+        return wraps(controller_func)(wrapper)
+    return decorator
 
 
 def permission_required(*args, **kwargs):

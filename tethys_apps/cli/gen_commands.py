@@ -120,6 +120,7 @@ def generate_command(args):
                         'db_port': args.db_port,
                         'tethys_home': TETHYS_HOME,
                         'production': args.production,
+                        'open_portal': args.open_portal
                         })
 
     if args.type == GEN_NGINX_OPTION:

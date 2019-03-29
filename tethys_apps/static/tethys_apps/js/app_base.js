@@ -56,6 +56,7 @@ var TETHYS_APP_BASE = (function() {
 
             // Toggle cookie
             docCookies.setItem(tethys_nav_cookie_key, nav_out_value, null, apps_library_url);
+            $(toggle_nav_selector).trigger('tethys:hide-nav');
 
         } else {
             // Do thing on Nav Open
@@ -63,8 +64,11 @@ var TETHYS_APP_BASE = (function() {
 
             // Toggle cookie
             docCookies.setItem(tethys_nav_cookie_key, nav_in_value, null, apps_library_url);
+            $(toggle_nav_selector).trigger('tethys:show-nav');
 
         }
+
+        $(toggle_nav_selector).trigger('tethys:toggle-nav');
    };
 
    // Handle the entry entry transitions in the app

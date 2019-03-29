@@ -140,7 +140,7 @@ a. Open ``controllers.py`` and define the ``dam_inventory_map`` and ``add_dam_bu
 ::
 
     from django.shortcuts import render
-    from django.contrib.auth.decorators import login_required
+    from tethys_sdk.permissions import login_required
     from tethys_sdk.gizmos import MapView, Button
 
 

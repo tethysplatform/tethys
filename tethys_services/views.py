@@ -7,7 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from django.contrib.auth.decorators import login_required
+from tethys_sdk.permissions import login_required
 from django.shortcuts import render
 
 from .utilities import get_wps_service_engine, list_wps_service_engines, abstract_is_link

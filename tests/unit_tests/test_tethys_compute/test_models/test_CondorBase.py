@@ -165,6 +165,7 @@ class CondorBaseTest(TethysTestCase):
     def test_update_database_fields(self, mock_co):
         mock_co._remote_id = 'test_update_remote_id'
         ret = CondorBase.objects.get(name='test_condorbase_exe')
+        ret.remote_id = None
 
         # _condor_object is an abstract method returning a condorpyjob or condorpyworkflow.
         #  We'll test condor_object.remote_id in condorpyjob test

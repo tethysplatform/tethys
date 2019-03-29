@@ -115,7 +115,7 @@ def update_status(request, job_id):
         success = True
         html = render_to_string('tethys_gizmos/gizmos/job_status.html', data)
     except Exception as e:
-        log.error('The following error occurred when updating status for job %s: %s', job_id, str(e))
+        log.exception('The following error occurred when updating status for job %s: %s', job_id, str(e))
         success = False
         status = None
         html = None

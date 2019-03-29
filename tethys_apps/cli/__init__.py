@@ -77,11 +77,13 @@ def tethys_command():
                             help='Port for the Tethys Database server to be set in the settings file.')
     gen_parser.add_argument('--production', dest='production', action='store_true',
                             help='Generate a new settings file for a production server.')
+    gen_parser.add_argument('--open-portal', dest='open_portal',
+                            help='Allow Open Portal Mode.')
     gen_parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                             help='Overwrite existing file without prompting.')
     gen_parser.set_defaults(func=generate_command, allowed_host=None, allowed_hosts=None, client_max_body_size='75M',
                             uwsgi_processes=10, db_username='tethys_default', db_password='pass', db_port=5436,
-                            production=False, overwrite=False)
+                            production=False, open_portal=False, overwrite=False)
 
     # Setup start server command
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')

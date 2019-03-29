@@ -3,9 +3,11 @@ from unittest import mock
 
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory
+from django.test.utils import override_settings
 from django.http import HttpResponseRedirect
 
 from tethys_sdk.permissions import permission_required
+from tethys_sdk.permissions import login_required
 from tests.factories.django_user import UserFactory
 
 
@@ -17,6 +19,46 @@ class DecoratorsTest(unittest.TestCase):
 
     def tearDown(self):
         pass
+
+    @override_settings(ENABLE_OPEN_PORTAL=True)
+    def test_login_required_open_portal_True(self):
+        request = self.request_factory.get('/apps/test-app')
+        request.user = AnonymousUser()
+
+        @login_required()
+        def create_projects(request, *args, **kwargs):
+            return "expected_result"
+
+        ret = create_projects(request)
+
+        self.assertEqual('expected_result', ret)
+
+    @override_settings(ENABLE_OPEN_PORTAL=False)
+    def test_login_required_open_portal_False_Fail(self):
+        request = self.request_factory.get('/apps/test-app')
+        request.user = AnonymousUser()
+
+        @login_required()
+        def create_projects(request, *args, **kwargs):
+            return "expected_result"
+
+        ret = create_projects(request)
+
+        self.assertIsInstance(ret, HttpResponseRedirect)
+        self.assertIn('/accounts/login/', ret.url)
+
+    @override_settings(ENABLE_OPEN_PORTAL=False)
+    def test_login_required_open_portal_False_Pass(self):
+        request = self.request_factory.get('/apps/test-app')
+        request.user = self.user
+
+        @login_required()
+        def create_projects(request, *args, **kwargs):
+            return "expected_result"
+
+        ret = create_projects(request)
+
+        self.assertEqual('expected_result', ret)
 
     @mock.patch('tethys_apps.decorators.messages')
     @mock.patch('tethys_apps.decorators.has_permission', return_value=False)

@@ -114,7 +114,7 @@ Add the jobs button to the ``home`` controller in :file:`controller.py` module s
 
     import random
     from django.shortcuts import render, reverse, redirect
-    from django.contrib.auth.decorators import login_required
+    from tethys_sdk.permissions import login_required
     from django.http.response import HttpResponseRedirect
     from django.contrib import messages
     from tethys_sdk.gizmos import Button
