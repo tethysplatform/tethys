@@ -168,8 +168,7 @@ class TestJobsTable(unittest.TestCase):
         gizmo_jobs_table.update_row(request, job_id='1')
 
         # Check Result
-        mock_log.error.assert_called_with('The following error occurred when updating row for job %s: %s', '1',
-                                          str('error'))
+        mock_log.error.assert_called_with('Updating row for job 1 failed: error')
 
     @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
     def test_update_status_showcase(self, mock_tj):

@@ -77,11 +77,14 @@ class JobManager:
             print(msg)
             return self.old_create_job(name, user, template_name, **kwargs)
 
-        job_type = JOB_TYPES[job_type]
+        # Allow the job class to be passed in as job_type.
+        if isinstance(job_type, str):
+            job_type = JOB_TYPES[job_type]
         user_workspace = self.app.get_user_workspace(user)
         kwrgs = dict(name=name, user=user, label=self.label, workspace=user_workspace.path)
         kwrgs.update(kwargs)
         job = job_type(**kwrgs)
+
         return job
 
     def old_create_job(self, name, user, template_name, **kwargs):

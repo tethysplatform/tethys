@@ -94,6 +94,22 @@ class TestJobManager(unittest.TestCase):
             mock_cj.assert_called_with(label='test_label', name='test_name', user='test_user',
                                        workspace='test_user_workspace')
 
+    @mock.patch('tethys_compute.job_manager.CondorJob')
+    def test_JobManager_create_job_custom_class(self, mock_cj):
+        mock_app = mock.MagicMock()
+        mock_app.package = 'test_label'
+        mock_app.get_app_workspace.return_value = 'test_app_workspace'
+        mock_user_workspace = mock.MagicMock()
+
+        mock_app.get_user_workspace.return_value = mock_user_workspace
+        mock_app.get_user_workspace().path = 'test_user_workspace'
+
+        # Execute
+        ret_jm = JobManager(mock_app)
+        ret_jm.create_job(name='test_name', user='test_user', job_type=mock_cj)
+        mock_cj.assert_called_with(label='test_label', name='test_name', user='test_user',
+                                   workspace='test_user_workspace')
+
     def test_old_create_job(self):
         mock_app = mock.MagicMock()
         mock_app.package = 'test_label'

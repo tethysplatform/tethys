@@ -1,0 +1,31 @@
+{% for backend in backends %}
+  {% if backend == 'hydroshare' %}
+    <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
+       <i class="fa fa-hydroshare"></i> {{ action }} with HydroShare
+    </a>
+  {% elif backend == 'hydroshare_beta' %}
+    <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare_beta' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
+      <i class="fa fa-hydroshare"></i> {{ action }} with HydroShare-beta
+    </a>
+  {% elif backend == 'hydroshare_playground' %}
+    <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare_playground' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
+      <i class="fa fa-hydroshare"></i> {{ action }} with HydroShare-playground
+    </a>
+  {% elif backend == 'google-oauth2' %}
+    <a class="btn btn-block btn-social btn-google" href="{% url 'social:begin' 'google-oauth2' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
+      <i class="fa fa-google"></i> {{ action }} with Google
+    </a>
+  {% elif backend == 'linkedin-oauth2' %}
+    <a class="btn btn-block btn-social btn-linkedin" href="{% url 'social:begin' 'linkedin-oauth2' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
+      <i class="fa fa-linkedin"></i> {{ action }} with LinkedIn
+    </a>
+  {% elif backend == 'facebook' %}
+    <a class="btn btn-block btn-social btn-facebook" href="{% url 'social:begin' 'facebook' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
+      <i class="fa fa-facebook"></i> {{ action }} with Facebook
+    </a>
+  {% else %}
+    <a class="btn btn-block btn-social btn-custom-oauth" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
+      <i class="fa fa-unlock-alt"></i> {{ action }} with {{ backend }}
+    </a>
+  {% endif %}
+{% endfor %}

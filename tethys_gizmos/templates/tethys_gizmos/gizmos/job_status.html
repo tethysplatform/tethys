@@ -1,10 +1,10 @@
 <div data-toggle="tooltip" title="{{ job_status }}" align="left">
   {% if job_status == 'Complete' and results_url %}
-    <a class='btn btn-primary btn-xs' href="{% url results_url job_id=job.id %}">View Results</a>
+    <a class='btn btn-primary btn-xs' href="{% url results_url job_id=job_id %}">View Results</a>
   {% elif job_status == 'Various-Complete' and results_url %}
-    <a class='btn btn-danger btn-xs' title='Complete with Errors' href="{% url results_url job_id=job.id %}">View Results</a>
+    <a class='btn btn-danger btn-xs' title='Complete with Errors' href="{% url results_url job_id=job_id %}">View Results</a>
   {% elif job_status == 'Pending' and run %}
-    <a data-job-id="{{ job.id }}" class='btn btn-success btn-xs btn-job-run' href="javascript:void(0)">Run</a>
+    <a data-job-id="{{ job_id }}" class='btn btn-success btn-xs btn-job-run' href="javascript:void(0)">Run</a>
   {% elif job_status == 'Various' %}
     <div class="progress" style="margin-bottom: 0;">
       {% if job_statuses.Aborted > 0 %}
