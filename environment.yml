@@ -20,7 +20,7 @@ dependencies:
 
 # database dependencies
 - postgresql
-#- postgis
+- postgis
 - psycopg2
 - sqlalchemy
 - geoalchemy2
