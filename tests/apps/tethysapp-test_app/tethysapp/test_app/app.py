@@ -2,6 +2,7 @@ from tethys_sdk.base import TethysAppBase, url_map_maker
 from tethys_sdk.app_settings import CustomSetting, PersistentStoreDatabaseSetting, PersistentStoreConnectionSetting, \
     DatasetServiceSetting, SpatialDatasetServiceSetting, WebProcessingServiceSetting
 
+from tethys_sdk.handoff import HandoffHandler
 
 class TestApp(TethysAppBase):
     """
@@ -154,3 +155,12 @@ class TestApp(TethysAppBase):
         )
 
         return wps_services
+
+    def handoff_handlers(self):
+        """
+        Register some handoff handlers
+        """
+        handoff_handlers = (HandoffHandler(name='test_name',
+                                           handler='test_app.handoff.csv'),
+                            )
+        return handoff_handlers
