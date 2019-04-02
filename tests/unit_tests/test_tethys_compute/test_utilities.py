@@ -116,7 +116,7 @@ class TethysComputeUtilitiesTests(TestCase):
         mock_jd.assert_called_with(input_value)
 
     @mock.patch('tethys_compute.utilities.ListField.get_prep_value')
-    @mock.patch('tethys_compute.utilities.ListField._get_val_from_obj')
+    @mock.patch('tethys_compute.utilities.ListField.value_from_object')
     def test_list_field_value_to_string(self, mock_gpvo, mock_gpv):
         ret = ListField()
 
@@ -215,7 +215,7 @@ class TethysComputeUtilitiesTests(TestCase):
         mock_jd.assert_called_with(input_value)
 
     @mock.patch('tethys_compute.utilities.DictionaryField.get_prep_value')
-    @mock.patch('tethys_compute.utilities.DictionaryField._get_val_from_obj')
+    @mock.patch('tethys_compute.utilities.DictionaryField.value_from_object')
     def test_dictionary_field_value_to_string(self, mock_gpvo, mock_gpv):
         ret = DictionaryField()
 

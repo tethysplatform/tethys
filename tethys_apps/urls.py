@@ -25,10 +25,10 @@ app_url_patterns, extension_url_patterns = harvester.get_url_patterns()
 
 for namespace, urls in app_url_patterns.items():
     root_pattern = r'^{0}/'.format(namespace.replace('_', '-'))
-    urlpatterns.append(url(root_pattern, include(urls, namespace=namespace)))
+    urlpatterns.append(url(root_pattern, include((urls, namespace), namespace=namespace)))
 
 extension_urls = []
 
 for namespace, urls in extension_url_patterns.items():
     root_pattern = r'^{0}/'.format(namespace.replace('_', '-'))
-    extension_urls.append(url(root_pattern, include(urls, namespace=namespace)))
+    extension_urls.append(url(root_pattern, include((urls, namespace), namespace=namespace)))
