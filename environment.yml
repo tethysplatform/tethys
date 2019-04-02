@@ -6,8 +6,8 @@
 name: tethys
 
 channels:
-- tethysplatform
 - conda-forge
+- tethysplatform
 - defaults
 
 dependencies:
@@ -20,7 +20,7 @@ dependencies:
 
 # database dependencies
 - postgresql
-- postgis
+#- postgis
 - psycopg2
 - sqlalchemy
 - geoalchemy2

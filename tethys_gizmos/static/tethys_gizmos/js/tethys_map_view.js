@@ -128,7 +128,7 @@ var TETHYS_MAP_VIEW = (function() {
   var update_field;
 
   // Utility Methods
-  var is_defined, in_array, string_to_function;
+  var is_defined, in_array, string_to_function, build_ol_objects;
 
   // Class Declarations
   var DrawingControl, DragFeatureInteraction, DeleteFeatureInteraction;
@@ -736,34 +736,42 @@ var TETHYS_MAP_VIEW = (function() {
             layer, Source, current_layer_layer_options;
 
         current_layer = m_layers_options[i];
+
         // Extract layer_options
         if ('layer_options' in current_layer && current_layer.layer_options) {
+          // Process style layer options
           if ('style' in current_layer.layer_options) {
-            var style_options = current_layer.layer_options.style;
-            if ('image' in style_options) {
-                var image_options = current_layer.layer_options.style.image;
-                for (var ikey in image_options) {
-                    if (image_options.hasOwnProperty(ikey)) {
-                        if (ikey in STYLE_IMAGE_MAP) {
-                            for (var ckey in image_options[ikey]) {
-                                if (image_options[ikey].hasOwnProperty(ckey)) {
-                                    if (ckey in STYLE_MAP)
-                                    {
-                                        current_layer.layer_options.style.image[ikey][ckey] = new STYLE_MAP[ckey](image_options[ikey][ckey]);
-                                    }
-                                }
-                            }
-                            current_layer.layer_options.style.image = new STYLE_IMAGE_MAP[ikey](image_options[ikey]);
-                        }
-                    }
-                }
-            }
-            current_layer.layer_options.style = new ol.style.Style(current_layer.layer_options.style);
+            var style = current_layer.layer_options.style;
+
+            // Build the openlayers objects
+            var built_style = build_ol_objects(style, {});
+
+            // Overwrite style layer option with built objects
+            current_layer.layer_options.style = built_style;
           }
+
+          // Process style_map layer option
+          if ('style_map' in current_layer.layer_options) {
+            var style_map = current_layer.layer_options.style_map;
+            delete current_layer.layer_options.style_map;
+
+            // Build the openlayers objects
+            var built_style_map = build_ol_objects(style_map, {});
+
+            // Create the style map function
+            var style_map_function = function(feature) {
+                return built_style_map[feature.getGeometry().getType()];
+            };
+
+            current_layer.layer_options['style'] = style_map_function;
+          }
+
+          // Get updated layer options
           current_layer_layer_options = current_layer.layer_options;
         } else {
           current_layer_layer_options = {};
         }
+
         // Tile layer case
         if (in_array(current_layer.source, TILE_SOURCES)) {
           var resolutions, source_options, tile_grid;
@@ -2089,6 +2097,42 @@ var TETHYS_MAP_VIEW = (function() {
     }
 
     return  fn;
+  };
+
+  build_ol_objects = function(obj, stack) {
+    for (var property in obj) {
+      if (!obj.hasOwnProperty(property)) {
+          continue;
+      }
+
+      if (property.includes('ol.')) {
+        var constructor_options = obj[property];
+        var ol_import = property.split('.');
+        var the_class = null;
+        try {
+          $.each(ol_import, function(index, module) {
+            if (module == 'ol') {
+              the_class = window[module];
+            }
+            else {
+              the_class = the_class[module];
+            }
+          });
+          return new the_class(build_ol_objects(constructor_options, {}));
+        } catch(err) {
+            console.error('Invalid OpenLayers class: ' + property);
+            return {};
+        }
+      } else {
+        if (obj[property] instanceof Object) {
+          stack[property] = build_ol_objects(obj[property], {});
+        }
+        else {
+          stack[property] = obj[property];
+        }
+      }
+    }
+    return stack;
   };
 
   /***********************************

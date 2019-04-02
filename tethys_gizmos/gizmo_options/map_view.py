@@ -182,14 +182,33 @@ class MapView(TethysGizmoOptions):
           ]
         }
 
+        style = {'ol.style.Style': {
+            'stroke': {'ol.style.Stroke': {
+                'color': 'blue',
+                'width': 2
+            }},
+            'fill': {'ol.style.Fill': {
+                'color': 'green'
+            }},
+            'image': {'ol.style.Circle': {
+                'radius': 10,
+                'fill': None,
+                'stroke': {'ol.style.Stroke': {
+                    'color': 'red',
+                    'width': 2
+                }}
+            }}
+        }}
+    
         geojson_layer = MVLayer(
             source='GeoJSON',
             options=geojson_object,
+            layer_options={'style': style},
             legend_title='Test GeoJSON',
             legend_extent=[-46.7, -48.5, 74, 59],
             legend_classes=[
-                MVLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
-                MVLegendClass('line', 'Lines', stroke='#3d9dcd')
+                MVLegendClass('polygon', 'Polygons', fill='green', stroke='blue'),
+                MVLegendClass('line', 'Lines', stroke='blue')
             ]
         )
 
@@ -201,17 +220,6 @@ class MapView(TethysGizmoOptions):
             legend_classes=[
                 MVLegendClass('line', 'Lines', stroke='#3d9dcd')
             ],
-            layer_options={
-                'style': {
-                    'image': {
-                        'circle': {
-                            'radius': 10,
-                            'fill': {'color':  '#d84e1f'},
-                            'stroke': {'color': '#ffffff', 'width': 1},
-                        }
-                    }
-                }
-            }
         )
 
         # Define GeoServer Layer
@@ -549,14 +557,46 @@ class MVLayer(SecondaryGizmoOptions):
             }
           ]
         }
-
+        
+        style_map = {
+            'Point': {'ol.style.Style': {
+                'image': {'ol.style.Circle': {
+                    'radius': 5,
+                    'fill': {'ol.style.Fill': {
+                        'color': 'red',
+                    }},
+                    'stroke': {'ol.style.Stroke': {
+                        'color': 'red',
+                        'width': 2
+                    }}
+                }}
+            }},
+            'LineString': {'ol.style.Style': {
+                'stroke': {'ol.style.Stroke': {
+                    'color': 'green',
+                    'width': 3
+                }}
+            }},
+            'Polygon': {'ol.style.Style': {
+                'stroke': {'ol.style.Stroke': {
+                    'color': 'blue',
+                    'width': 1
+                }},
+                'fill': {'ol.style.Fill': {
+                    'color': 'rgba(0, 0, 255, 0.1)'
+                }}
+            }},
+        }
+    
         geojson_layer = MVLayer(source='GeoJSON',
                                 options=geojson_object,
+                                layer_options={'style_map': style_map},
                                 legend_title='Test GeoJSON',
                                 legend_extent=[-46.7, -48.5, 74, 59],
                                 legend_classes=[
-                                    MVLegendClass('polygon', 'Polygons', fill='rgba(255,255,255,0.8)', stroke='#3d9dcd'),
-                                    MVLegendClass('line', 'Lines', stroke='#3d9dcd')
+                                    MVLegendClass('polygon', 'Polygons', fill='rgba(0, 0, 255, 0.1)', stroke='blue'),
+                                    MVLegendClass('line', 'Lines', stroke='green'),
+                                    MVLegendClass('point', 'Points', fill='red')
                                 ])
 
         # Define GeoServer Layer
