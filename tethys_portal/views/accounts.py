@@ -11,7 +11,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.views import password_reset, password_reset_confirm
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.contrib import messages
 from tethys_portal.forms import LoginForm, RegisterForm
 
@@ -147,20 +147,20 @@ def logout_view(request):
 
 
 def reset_confirm(request, uidb64=None, token=None):
-    return password_reset_confirm(
+    return PasswordResetConfirmView(
         request,
         template_name='tethys_portal/accounts/password_reset/reset_confirm.html',
         uidb64=uidb64,
         token=token,
-        post_reset_redirect=reverse('accounts:login')
+        success_url=reverse('accounts:login')
     )
 
 
 def reset(request):
-    return password_reset(
+    return PasswordResetView(
         request,
         template_name='tethys_portal/accounts/password_reset/reset_request.html',
         email_template_name='tethys_portal/accounts/password_reset/reset_email.html',
         subject_template_name='tethys_portal/accounts/password_reset/reset_subject.txt',
-        post_reset_redirect=reverse('accounts:login')
+        success_url=reverse('accounts:login')
     )

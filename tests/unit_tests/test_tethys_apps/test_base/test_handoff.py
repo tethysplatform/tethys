@@ -2,7 +2,7 @@ import unittest
 import tethys_apps.base.handoff as tethys_handoff
 from types import FunctionType
 from unittest import mock
-
+from tethys_sdk.testing import TethysTestCase
 
 def test_function(*args):
 
@@ -115,25 +115,6 @@ class TestHandoffManager(unittest.TestCase):
         result = tethys_handoff.HandoffManager(app=app).get_handler(handler_name='handler1')
 
         self.assertEqual('handler1', result.name)
-
-    def test_handoff(self):
-        from django.http import HttpRequest
-        request = HttpRequest()
-
-        # Mock app
-        app = mock.MagicMock()
-        app.name = 'test_app_name'
-
-        # Mock _get_handoff_manager_for_app
-        handler1 = mock.MagicMock()
-        handler1().internal = False
-        manager = mock.MagicMock(get_handler=handler1)
-        self.hm._get_handoff_manager_for_app = mock.MagicMock(return_value=manager)
-
-        result = tethys_handoff.HandoffManager(app=app).handoff(request=request, handler_name='test_handler')
-
-        # 302 code is for redirect
-        self.assertEqual(302, result.status_code)
 
     @mock.patch('tethys_apps.base.handoff.HttpResponseBadRequest')
     def test_handoff_type_error(self, mock_hrbr):
@@ -269,8 +250,23 @@ class TestGetHandoffManagerFroApp(unittest.TestCase):
     def test_with_app(self, mock_ta):
         app = mock.MagicMock(package='test_app')
         app.get_handoff_manager.return_value = 'test_manager'
-        mock_ta.harvester.SingletonAppHarvester().apps = [app]
+        mock_ta.harvester.SingletonHarvester().apps = [app]
         result = tethys_handoff.HandoffManager(app=app)._get_handoff_manager_for_app(app_name='test_app')
 
         # Check result
         self.assertEqual('test_manager', result)
+
+
+class TestTestAppHandoff(TethysTestCase):
+    def set_up(self):
+        self.c = self.get_test_client()
+        self.user = self.create_test_user(username="joe", password="secret", email="joe@some_site.com")
+        self.c.force_login(self.user)
+
+    def tear_down(self):
+        self.user.delete()
+
+    def test_test_app_handoff(self):
+        response = self.c.get('/handoff/test-app/test_name/?csv_url=""')
+
+        self.assertEqual(302, response.status_code)

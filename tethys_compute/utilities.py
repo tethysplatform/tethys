@@ -108,7 +108,7 @@ class DictionaryField(models.Field, metaclass=SubfieldBase):
             return json.dumps(value)
 
     def value_to_string(self, obj):
-        value = self._get_val_from_obj(obj)
+        value = self.value_from_object(obj)
         return self.get_prep_value(value)
 
     def clean(self, value, model_instance):
@@ -156,7 +156,7 @@ class ListField(models.Field, metaclass=SubfieldBase):
             return json.dumps(value)
 
     def value_to_string(self, obj):
-        value = self._get_val_from_obj(obj)
+        value = self.value_from_object(obj)
         return self.get_prep_value(value)
 
     def clean(self, value, model_instance):

@@ -134,7 +134,7 @@ class HandoffManager:
             return self
 
         # Get the app
-        harvester = tethys_apps.harvester.SingletonAppHarvester()
+        harvester = tethys_apps.harvester.SingletonHarvester()
         apps = harvester.apps
 
         for app in apps:

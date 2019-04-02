@@ -34,14 +34,14 @@ class TestUrls(TethysTestCase):
         url = reverse('accounts:password_reset')
         resolver = resolve(url)
         self.assertEqual('/accounts/password/reset/', url)
-        self.assertEqual('password_reset', resolver.func.__name__)
+        self.assertEqual('PasswordResetView', resolver.func.__name__)
         self.assertEqual('django.contrib.auth.views', resolver.func.__module__)
 
     def test_account_urls_accounts_password_confirm(self):
         url = reverse('accounts:password_confirm', kwargs={'uidb64': 'f00Bar', 'token': 'tok'})
         resolver = resolve(url)
         self.assertEqual('/accounts/password/reset/f00Bar-tok/', url)
-        self.assertEqual('password_reset_confirm', resolver.func.__name__)
+        self.assertEqual('PasswordResetConfirmView', resolver.func.__name__)
         self.assertEqual('django.contrib.auth.views', resolver.func.__module__)
 
     def test_user_urls_profile(self):

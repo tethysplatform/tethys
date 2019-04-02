@@ -9,6 +9,8 @@
 *.db
 tethys_apps/settings.py
 tethys_apps/settings.py_bak
+tethys_portal/settings.py
+tethys_portal/settings.py_bak
 settings.py
 docs/_build
 *~

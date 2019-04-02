@@ -9,8 +9,8 @@
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.contrib.auth.views import password_reset, password_reset_done, password_reset_confirm, \
-    password_reset_complete
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, \
+    PasswordResetCompleteView
 from django.conf import settings
 from tethys_apps.urls import extension_urls
 
@@ -35,12 +35,12 @@ account_urls = [
     url(r'^login/$', tethys_portal_accounts.login_view, name='login'),
     url(r'^logout/$', tethys_portal_accounts.logout_view, name='logout'),
     url(r'^register/$', tethys_portal_accounts.register, name='register'),
-    url(r'^password/reset/$', password_reset, {'post_reset_redirect': '/accounts/password/reset/done/'},
+    url(r'^password/reset/$', PasswordResetView.as_view(), {'post_reset_redirect': '/accounts/password/reset/done/'},
         name='password_reset'),
-    url(r'^password/reset/done/$', password_reset_done),
-    url(r'^password/reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', password_reset_confirm,
+    url(r'^password/reset/done/$', PasswordResetDoneView.as_view()),
+    url(r'^password/reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', PasswordResetConfirmView.as_view(),
         {'post_reset_redirect': '/accounts/password/done/'}, name='password_confirm'),
-    url(r'^password/done/$', password_reset_complete),
+    url(r'^password/done/$', PasswordResetCompleteView.as_view()),
 ]
 
 user_urls = [
@@ -54,8 +54,8 @@ user_urls = [
 
 developer_urls = [
     url(r'^$', tethys_portal_developer.home, name='developer_home'),
-    url(r'^gizmos/', include('tethys_gizmos.urls', namespace='gizmos')),
-    url(r'^services/', include('tethys_services.urls', namespace='services')),
+    url(r'^gizmos/', include(('tethys_gizmos.urls', 'gizmos'), namespace='gizmos')),
+    url(r'^services/', include(('tethys_services.urls', 'services'), namespace='services')),
 ]
 
 # development_error_urls = [
@@ -67,11 +67,11 @@ developer_urls = [
 
 urlpatterns = [
     url(r'^$', tethys_portal_home.home, name='home'),
-    url(r'^admin/', include(admin_urls)),
-    url(r'^accounts/', include(account_urls, namespace='accounts')),
+    url(r'^admin/', admin_urls),
+    url(r'^accounts/', include((account_urls, 'accounts'), namespace='accounts')),
     url(r'^captcha/', include('captcha.urls')),
     url(r'^oauth2/', include('social_django.urls', namespace='social')),
-    url(r'^user/(?P<username>[\w.@+-]+)/', include(user_urls, namespace='user')),
+    url(r'^user/(?P<username>[\w.@+-]+)/', include((user_urls, 'user'), namespace='user')),
     url(r'^apps/', include('tethys_apps.urls')),
     url(r'^extensions/', include(extension_urls)),
     url(r'^developer/', include(developer_urls)),

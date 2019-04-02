@@ -30,7 +30,7 @@ dependencies:
 - bokeh
 
 # external services dependencies
-- tethys_dataset_services>=1.7.0
+- tethys_dataset_services>=2.0.0
 - hs_restclient
 - owslib
 - requests
@@ -39,7 +39,7 @@ dependencies:
 - tethys_dask_scheduler>=1.0.2
 
 # django/plugin dependencies
-- django=1.11.*
+- django=2.1.*
 - django-filter
 - djangorestframework
 - django-bootstrap3
