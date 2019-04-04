@@ -2,6 +2,8 @@ from django.shortcuts import render
 from tethys_sdk.permissions import login_required
 from tethys_sdk.gizmos import Button
 
+from channels.consumer import SyncConsumer
+
 
 @login_required()
 def home(request):
@@ -73,3 +75,17 @@ def home(request):
     }
 
     return render(request, 'test_app/home.html', context)
+
+
+class ws(SyncConsumer):
+
+    def websocket_connect(self, event):
+        self.send({
+            "type": "websocket.accept",
+        })
+
+    def websocket_receive(self, event):
+        self.send({
+            "type": "websocket.send",
+            "text": event["text"],
+        })
