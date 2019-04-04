@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
 from django.shortcuts import reverse
 from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
+from tethys_quotas.helpers import _convert_storage_units
 from guardian.admin import GuardedModelAdmin
 from tethys_quotas.helpers import get_quota, get_resource_available
 from tethys_apps.models import (TethysApp,
@@ -97,20 +98,24 @@ class TethysAppAdmin(GuardedModelAdmin):
 
     def manage_app_storage(self, app):
         codename = 'tethysapp_workspace_quota'
-        quota_size = get_quota(app, codename)
+        quota = get_quota(app, codename)
+        resource_available = None
         total_storage = None
-        if quota_size:
-            quota_size = quota_size['quota']
-            total_storage = quota_size - get_resource_available(app, codename)['resource_available']
+        if quota:
+            resource_available = get_resource_available(app, codename)
+            total_storage = quota['quota'] - resource_available['resource_available']
 
         url = reverse('admin:clear_workspace', kwargs={'app_id': app.id})
 
+        quota = _convert_storage_units(quota['units'], quota['quota'])
+        total_storage = _convert_storage_units(resource_available['units'], total_storage)
+
         return mark_safe("""
-        <span>{} of {} (GB)</span>
+        <span>{} of {}</span>
         <a id="clear-workspace" class="btn btn-danger btn-sm"
         href="{url}">
         Clear Workspace</a>
-        """.format(total_storage, quota_size, url=url))
+        """.format(total_storage, quota, url=url))
 
 
 class TethysExtensionAdmin(GuardedModelAdmin):

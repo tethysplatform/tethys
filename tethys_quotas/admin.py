@@ -52,7 +52,7 @@ class UserQuotasSettingInline(TethysQuotasSettingInline):
             if not resource_quota.active:
                 return None
 
-            user_id = request.resolver_match.args[0]
+            user_id = request.resolver_match.kwargs['object_id']
             user = User.objects.get(id=user_id)
 
             qs = qs.filter(entity=user)
@@ -114,7 +114,7 @@ class TethysAppQuotasSettingInline(TethysQuotasSettingInline):
             if not resource_quota.active:
                 return None
 
-            tethys_app_id = request.resolver_match.args[0]
+            tethys_app_id = request.resolver_match.kwargs['object_id']
             tethys_app = TethysApp.objects.get(id=tethys_app_id)
 
             qs = qs.filter(entity=tethys_app)

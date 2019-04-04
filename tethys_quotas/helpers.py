@@ -170,3 +170,33 @@ def get_quota(entity, codename):
         result['quota'] = rq.default
 
     return result
+
+
+# Adapted from https://pypi.org/project/hurry.filesize/
+def _convert_storage_units(units, amount):
+    base_units = [
+        (1024 ** 5, ' PB'),
+        (1024 ** 4, ' TB'),
+        (1024 ** 3, ' GB'),
+        (1024 ** 2, ' MB'),
+        (1024 ** 1, ' KB'),
+        (1024 ** 0, (' byte', ' bytes')),
+    ]
+
+    base_conversion = [item[0] for item in base_units if units.upper() in item[1]]
+    if not base_conversion:
+        return None
+
+    amount = amount * base_conversion[0]
+
+    for factor, suffix in base_units:
+        if amount >= factor:
+            break
+    amount = int(amount / factor)
+    if isinstance(suffix, tuple):
+        singular, multiple = suffix
+        if amount == 1:
+            suffix = singular
+        else:
+            suffix = multiple
+    return str(amount) + suffix

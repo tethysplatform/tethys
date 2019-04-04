@@ -23,4 +23,4 @@ class TethysAppQuota(EntityQuota):
     class Meta:
         verbose_name = 'Tethys App Quota'
 
-    entity = models.ForeignKey(TethysApp)
+    entity = models.ForeignKey(TethysApp, on_delete=models.CASCADE)

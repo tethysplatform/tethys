@@ -31,5 +31,5 @@ class EntityQuota(models.Model):
 
     objects = InheritanceManager()
 
-    resource_quota = models.ForeignKey(ResourceQuota)
+    resource_quota = models.ForeignKey(ResourceQuota, on_delete=models.CASCADE)
     value = models.IntegerField(null=True, blank=True)
