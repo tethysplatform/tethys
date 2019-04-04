@@ -211,7 +211,7 @@
             </div>
             <div class="col-md-8 profile-parameters">
               <ul>
-                <li><span class="parameter">Storage Summary:</span><span class="value">{{ total_storage|floatformat:3 }} of {{ quota_size|floatformat:3|default:"&#8734;" }} ({{ units }})</span></li>
+                <li><span class="parameter">Storage Summary:</span><span class="value">{{ total_storage }} of {{ quota_size|default:"&#8734;" }}</span></li>
               </ul>
             </div>
           </div>

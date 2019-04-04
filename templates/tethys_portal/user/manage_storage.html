@@ -38,7 +38,7 @@
       <thead>
         <tr>
           <th>App Name</th>
-          <th>Current Usage ({{ units }})</th>
+          <th>Current Usage</th>
           <th>Manage Storage</th>
         </tr>
       </thead>
@@ -48,7 +48,7 @@
           <td>
             <a href="{% url app.index %}">{{ app.name }}</a>
           </td>
-          <td>{{ app.current_use|floatformat:3 }}</td>
+          <td>{{ app.current_use }}</td>
           <td>
             <a class="btn btn-danger btn-sm" href="{% url 'user:clear_workspace' user.username app.root_url %}">Clear Workspace</a>
           </td>
@@ -56,7 +56,7 @@
         {% endfor %}
       </tbody>
     </table>
-    <div id="storage_summary" style="text-align: center;"><span class="parameter">Storage Summary:</span><span class="value">{{ total_storage|floatformat:3 }} of {{ quota_size|floatformat:3|default:"&#8734;" }} ({{ units }})</span></div>
+    <div id="storage_summary" style="text-align: center;"><span class="parameter">Storage Summary:</span><span class="value">{{ total_storage }} of {{ quota_size|default:"&#8734;" }}</span></div>
   </div>
 </div>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>

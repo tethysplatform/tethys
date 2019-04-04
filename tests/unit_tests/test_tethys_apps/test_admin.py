@@ -115,8 +115,8 @@ class TestTethysAppAdmin(unittest.TestCase):
         obj.get_queryset(mock_request)
 
     def test_TethysAppQuotasSettingInline(self):
-        expected_readonly_fields = ('name', 'description', 'units')
-        expected_fields = ('name', 'description', 'value', 'units')
+        expected_readonly_fields = ('name', 'description', 'default', 'units')
+        expected_fields = ('name', 'description', 'value', 'default', 'units')
         expected_model = TethysAppQuota
 
         ret = TethysAppQuotasSettingInline(mock.MagicMock(), mock.MagicMock())

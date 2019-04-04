@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 from django.test import TestCase
 from tethys_quotas.admin import ResourceQuotaAdmin, UserQuotasSettingInline
 from tethys_quotas.models import UserQuota
@@ -33,7 +33,7 @@ class TethysQuotasAdminTest(TestCase):
 
     def test_UserQuotasSettingInline(self):
         expected_readonly_fields = ('name', 'description', 'default', 'units')
-        expected_fields = ('name', 'description', 'default', 'value', 'units')
+        expected_fields = ('name', 'description', 'value', 'default', 'units')
         expected_model = UserQuota
 
         ret = UserQuotasSettingInline(mock.MagicMock(), mock.MagicMock())

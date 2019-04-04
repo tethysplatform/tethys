@@ -23,4 +23,4 @@ class UserQuota(EntityQuota):
     class Meta:
         verbose_name = 'User Quota'
 
-    entity = models.ForeignKey(User)
+    entity = models.ForeignKey(User, on_delete=models.CASCADE)
