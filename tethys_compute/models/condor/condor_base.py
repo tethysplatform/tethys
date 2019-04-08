@@ -6,10 +6,10 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
-import datetime
 from abc import abstractmethod
 
 from django.db import models
+from django.utils import timezone
 
 from tethys_compute.models.tethys_job import TethysJob
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
@@ -23,7 +23,7 @@ class CondorBase(TethysJob):
     remote_id = models.CharField(max_length=32, blank=True, null=True)
     scheduler = models.ForeignKey(CondorScheduler, on_delete=models.SET_NULL, blank=True, null=True)
 
-    STATUS_MAP = {'Unexpanded': 'PEN',
+    STATUS_MAP = {'Unexpanded': 'SUB',
                   'Idle': 'SUB',
                   'Running': 'RUN',
                   'Removed': 'ABT',
@@ -49,7 +49,6 @@ class CondorBase(TethysJob):
                                         self.scheduler.private_key_path,
                                         self.scheduler.private_key_pass
                                         )
-            # save remote_id if it's not already saved, and then make sure the condor_object's remote_id is in sync
             self.remote_id = self.remote_id or condor_object._remote_id
             condor_object._remote_id = self.remote_id
         return condor_object
@@ -63,9 +62,7 @@ class CondorBase(TethysJob):
 
     @property
     def statuses(self):
-        updated = True
-        if hasattr(self, '_last_status_update'):
-            updated = datetime.datetime.now() - self.last_status_update < self.update_status_interval
+        updated = (timezone.now() - self.last_status_update) < self.update_status_interval
         if not (hasattr(self, '_statuses') and updated):
             self._statuses = self.condor_object.statuses
 
@@ -117,4 +114,4 @@ class CondorBase(TethysJob):
         # self.condor_object.release()
 
     def update_database_fields(self):
-        self.remote_id = self._condor_object._remote_id
+        self.remote_id = self.remote_id or self._condor_object._remote_id

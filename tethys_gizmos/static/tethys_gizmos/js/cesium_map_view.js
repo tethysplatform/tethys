@@ -15,11 +15,13 @@ var CESIUM_MAP_VIEW = (function() {
     var m_viewer;					    // The map object
 
     var m_options,                      // The map basic options
+        m_globe,                        // The map globe options
         m_view_options,                 // The map view options
         m_terrain_options,              // The map terrain options
         m_image_layer_options,          // The map image layer options
         m_models_options,               // The map 3D object options
         m_entities_options,             // The map entity options
+        m_clock,                        // The map clock options
         m_draw;                         // The map drawing option (boolean)
 
     // Others
@@ -28,14 +30,14 @@ var CESIUM_MAP_VIEW = (function() {
 	/************************************************************************
  	*                    PRIVATE FUNCTION DECLARATIONS
  	*************************************************************************/
- 	var cesium_base_map_init, cesium_map_view_init, cesium_initialize_all, cesium_widgets_init, cesium_view,
- 	    cesium_terrain, cesium_image_layers, cesium_load_model, cesium_load_entities, cesium_models,
- 	    update_field, option_checker;
+ 	var cesium_base_map_init, cesium_globe_init, cesium_map_view_init, cesium_initialize_all, cesium_widgets_init,
+ 	    clock_options_init, cesium_view, cesium_terrain, cesium_image_layers, cesium_load_model, cesium_load_entities,
+ 	    cesium_models, update_field, option_checker;
 
     var cesium_shadow_options, textarea_string_dict, cesium_logging;
 
     // Utility Methods
-    var is_defined, in_array, string_to_function, string_w_arg_to_function,
+    var is_defined, is_empty_or_undefined, in_array, string_to_object, string_to_function, string_w_arg_to_function,
         build_options, build_options_string, need_to_run, cesium_options, json_parser, clear_data;
 
 
@@ -52,12 +54,60 @@ var CESIUM_MAP_VIEW = (function() {
         var $map_element = $('#' + m_map_target);
         m_options = $map_element.data('options');
 
-        if (m_options)
+        // Initialize the clock options
+        clock_options_init();
+
+        if (!is_empty_or_undefined(m_options))
         {
             // Init Map
             m_viewer = new Cesium.Viewer(m_map_target, m_options);
+        }
+        else
+        {
+            m_viewer = new Cesium.Viewer(m_map_target);
+        }
+    };
 
-            // Get drawing status
+    clock_options_init = function() {
+        // Get view settings from data attribute
+        var $map_element = $('#' + m_map_target);
+        m_clock = $map_element.data('clock');
+
+        if (!is_empty_or_undefined(m_clock))
+        {
+            // Parse out the Cesium objects
+            m_clock = cesium_options(m_clock);
+
+            // Lazily initialize the m_options if it isn't initialized or is empty.
+            if (is_empty_or_undefined(m_options))
+            {
+                m_options = {};
+            }
+
+            // Add clockViewModel to m_options for the viewer
+            if (!is_empty_or_undefined(m_clock)) {
+                m_options['clockViewModel'] = new Cesium.ClockViewModel(m_clock['clock']);
+            }
+        }
+    };
+
+    // Set globe options, if any
+    cesium_globe_init = function()
+    {
+        // Get view settings from data attribute
+        var $map_element = $('#' + m_map_target);
+        m_globe = $map_element.data('globe');
+
+        if (!is_empty_or_undefined(m_globe))
+        {
+            for (var property in m_globe)
+            {
+                // Set the globe property if it is a valid property of the existing globe object
+                if (m_viewer.scene.globe.hasOwnProperty(property))
+                {
+                    m_viewer.scene.globe[property] = m_globe[property];
+                }
+            }
         }
     };
 
@@ -66,7 +116,7 @@ var CESIUM_MAP_VIEW = (function() {
         var $map_element = $('#' + m_map_target);
         m_view_options = $map_element.data('view');
 
-        if(m_view_options)
+        if(!is_empty_or_undefined(m_view_options))
         {
             let m_cesium_view_options = cesium_options(m_view_options);
             for (let view_option in m_cesium_view_options)
@@ -103,9 +153,9 @@ var CESIUM_MAP_VIEW = (function() {
 
         m_terrain_options = $map_element.data('terrain');
 
-        if(m_terrain_options)
+        if(!is_empty_or_undefined(m_terrain_options))
         {
-            m_terrain_options = cesium_options(m_terrain_options)
+            m_terrain_options = cesium_options(m_terrain_options);
             m_viewer.terrainProvider = m_terrain_options['terrainProvider'];
         }
         else
@@ -119,7 +169,7 @@ var CESIUM_MAP_VIEW = (function() {
         var $map_element = $('#' + m_map_target);
         m_image_layer_options = $map_element.data('layer');
 
-        if(!m_image_layer_options)
+        if(is_empty_or_undefined(m_image_layer_options))
         {
             return;
         }
@@ -141,7 +191,7 @@ var CESIUM_MAP_VIEW = (function() {
         var $map_element = $('#' + m_map_target);
         m_models_options = $map_element.data('models');
 
-        if(m_models_options)
+        if(!is_empty_or_undefined(m_models_options))
         {
              cesium_shadow_options = {'disabled': 0, 'enabled': 1, 'cast_only': 2, 'receive_only': 3, 'number_of_shadow_modes': 4}
         }
@@ -184,7 +234,7 @@ var CESIUM_MAP_VIEW = (function() {
         var $map_element = $('#' + m_map_target);
         m_entities_options = $map_element.data('entities');
 
-        if(!m_entities_options)
+        if(is_empty_or_undefined(m_entities_options))
         {
             return;
         }
@@ -338,9 +388,10 @@ var CESIUM_MAP_VIEW = (function() {
         // Initialize the map
         cesium_base_map_init();
 
-        // Set View using Cesium View Properties
-        cesium_view();
+        // Initialize the globe
+        cesium_globe_init();
 
+        // Set Cesium Terrain options
         cesium_terrain();
 
          // Set Image layers using Cesium View Properties
@@ -351,6 +402,9 @@ var CESIUM_MAP_VIEW = (function() {
 
         // Load Cesium entities
         cesium_load_entities();
+
+        // Load the view last
+        cesium_view();
 
         // Enable Drawing Option if specified
         let $map_element = $('#' + m_map_target);
@@ -443,13 +497,19 @@ var CESIUM_MAP_VIEW = (function() {
 
     // Instantiate a function from a string
     // credits: http://stackoverflow.com/questions/1366127/instantiate-a-javascript-object-using-a-string-to-define-the-class-name
-    string_to_function = function(str) {
+    string_to_object = function(str) {
         var arr = str.split(".");
         var fn = (window || this);
 
         for (var i = 0, len = arr.length; i < len; i++) {
           fn = fn[arr[i]];
         }
+
+        return  fn;
+    };
+
+    string_to_function = function(str) {
+        var fn = string_to_object(str);
 
         if (typeof fn !== "function") {
           throw new Error("function not found: " + str);
@@ -482,9 +542,17 @@ var CESIUM_MAP_VIEW = (function() {
             var method_call;
 
             // convert string to function. ex: Cesium.Cartesian3
-            var method = string_to_function(method_string);
+
+
+            // Check to see if is a constant (all uppercase)
+            if (method_last_string == method_last_string.toUpperCase())
+            {
+                console.log('here');
+                console.log(method_last_string);
+            }
             // Check the initial letter to see if it's a string or class
             if (initial_letter == initial_letter.toLowerCase()) {
+                var method = string_to_function(method_string);
                 // This is a method
                 if(Array.isArray(args)) {       // if args is an array object, we have to use ...args
                     method_call = method(...args);
@@ -492,6 +560,7 @@ var CESIUM_MAP_VIEW = (function() {
                     method_call = method(args);
                 }
             } else {
+                var method = string_to_function(method_string);
                 // This is a class
                 if(Array.isArray(args)) {       // if args is an array object, we have to use ...args
                     method_call = new method(...args);
@@ -508,6 +577,7 @@ var CESIUM_MAP_VIEW = (function() {
     build_options = function (obj, stack) {
         for (var property in obj) {
             if(obj.hasOwnProperty(property)) {
+                // Value of property is an object
                 if(typeof obj[property] == 'object') {
                     // Use string to function when detect Cesium. in the key
                     var obj_key = Object.keys(obj[property])[0];
@@ -518,19 +588,42 @@ var CESIUM_MAP_VIEW = (function() {
                             var obj_child_key_all = obj[property][obj_key]
                             if (typeof obj_child_key_all !== 'undefined') {
                                 var index;
-                                for (index = 0 ; index < obj_child_key_all.length -1; index++ ) {
-                                    if (typeof Object.keys(obj_child_key_all[index])[0] !== 'undefined') {
-                                        if ((Object.keys(obj_child_key_all[index])[0].indexOf('Cesium.')) > -1) {
-                                            build_options(obj[property], stack[property] = obj[property]);
+                                if (typeof obj_child_key_all === 'object')
+                                {
+                                    for (var key in obj_child_key_all) {
+                                        if (!Array.isArray(obj_child_key_all)) {
+                                            // Continue to build object since this is not the last element.
+                                            if (typeof obj_child_key_all[key] === 'object') {
+                                                build_options(obj[property], stack[property] = obj[property]);
+                                            }
+                                            // handle string or number. Use toString so we don't have to write another if statement
+                                            else if ((obj_child_key_all[key]).toString().indexOf('Cesium.') > -1) {
+                                                build_options(obj[property], stack[property] = obj[property]);
+                                            }
+                                        }
+                                        else if (typeof (Object.keys(obj_child_key_all[key])[0]) !== 'undefined') {
+                                            if ((Object.keys(obj_child_key_all[key])[0].indexOf('Cesium.')) > -1) {
+                                                build_options(obj[property], stack[property] = obj[property]);
+                                            }
                                         }
                                     }
                                 }
-                                // if we don't find any Cesium in Children, execute the method/class
-                                build_options(obj[property], stack[property] = string_w_arg_to_function(obj[property]));
+                            // if we don't find any Cesium in Children, execute the method/class
+                            build_options(obj[property], stack[property] = string_w_arg_to_function(obj[property]));
                             }
                         } else {  // Simply continue to build object when no Cesium. in the key
                             build_options(obj[property], stack[property] = obj[property]);
                         }
+                    }
+                }
+                // Value of property is a string
+                else if (typeof obj[property] == 'string')
+                {
+                    // Use string to function when detect Cesium. in the key
+                    var str_value = obj[property];
+                    if (str_value.indexOf('Cesium.') > -1) {
+                        var const_value = string_to_object(str_value);
+                        build_options(obj[property], stack[property] = const_value);
                     }
                 }
             }
@@ -591,6 +684,20 @@ var CESIUM_MAP_VIEW = (function() {
         }
 
         return new_obj;
+    }
+
+    // Check if object is empty or undefined
+    is_empty_or_undefined = function(obj)
+    {
+        if (!obj || typeof obj !== 'object') {
+            return true;
+        }
+
+        for(var key in obj) {
+            if(obj.hasOwnProperty(key))
+                return false;
+        }
+        return true;
     }
 
 	/************************************************************************

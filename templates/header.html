@@ -148,7 +148,9 @@
     {% block header_nav %}
     <ul class="header-nav">
       {% block header_nav_items %}
-        {% if user.is_authenticated and user.is_active %}
+        {% if ENABLE_OPEN_PORTAL %}
+          <li><a href="{% url 'app_library' %}" title="Apps">Apps</a></li>
+        {% elif user.is_authenticated and user.is_active %}
           <li><a href="{% url 'app_library' %}" title="Apps">Apps</a></li>
           {% if user.is_staff or user.is_superuser %}
           <li><a href="{% url 'developer_home' %}" title="Developer">Developer</a></li>
@@ -187,7 +189,6 @@
             </li>
           </ul> {# END user-dropdown-menu #}
         </li> {# END user-dropdown #}
-
       {% else %}
         <li class="action header-action"><a href="{% url 'accounts:login' %}" title="Log In">Log In</a></li>
       {% endif %}

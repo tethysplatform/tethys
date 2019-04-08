@@ -326,7 +326,7 @@ class DatasetServiceSetting(TethysAppSetting):
     CKAN = DatasetService.CKAN
     HYDROSHARE = DatasetService.HYDROSHARE
 
-    dataset_service = models.ForeignKey(DatasetService, blank=True, null=True)
+    dataset_service = models.ForeignKey(DatasetService, on_delete=models.CASCADE, blank=True, null=True)
     engine = models.CharField(max_length=200,
                               choices=DatasetService.ENGINE_CHOICES,
                               default=DatasetService.CKAN)
@@ -382,7 +382,7 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
     """
     GEOSERVER = SpatialDatasetService.GEOSERVER
 
-    spatial_dataset_service = models.ForeignKey(SpatialDatasetService, blank=True, null=True)
+    spatial_dataset_service = models.ForeignKey(SpatialDatasetService, on_delete=models.CASCADE, blank=True, null=True)
     engine = models.CharField(max_length=200,
                               choices=SpatialDatasetService.ENGINE_CHOICES,
                               default=SpatialDatasetService.GEOSERVER)
@@ -441,7 +441,7 @@ class WebProcessingServiceSetting(TethysAppSetting):
         )
 
     """
-    web_processing_service = models.ForeignKey(WebProcessingService, blank=True, null=True)
+    web_processing_service = models.ForeignKey(WebProcessingService, on_delete=models.CASCADE, blank=True, null=True)
 
     def clean(self):
         """
@@ -491,7 +491,8 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
         )
 
     """
-    persistent_store_service = models.ForeignKey(PersistentStoreService, blank=True, null=True)
+    persistent_store_service = models.ForeignKey(PersistentStoreService, on_delete=models.CASCADE, blank=True,
+                                                 null=True)
 
     def clean(self):
         """
@@ -559,7 +560,8 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
     """
     spatial = models.BooleanField(default=False)
     dynamic = models.BooleanField(default=False)
-    persistent_store_service = models.ForeignKey(PersistentStoreService, blank=True, null=True)
+    persistent_store_service = models.ForeignKey(PersistentStoreService, on_delete=models.CASCADE, blank=True,
+                                                 null=True)
 
     def clean(self):
         """
