@@ -56,7 +56,7 @@
         {% endfor %}
       </tbody>
     </table>
-    <div id="storage_summary" style="text-align: center;"><span class="parameter">Storage Summary:</span><span class="value">{{ total_storage }} of {{ quota_size|default:"&#8734;" }}</span></div>
+    <div id="storage_summary" style="text-align: center;"><span class="parameter">Storage Summary:</span><span class="value">{{ current_use }} of {{ quota|default:"&#8734;" }}</span></div>
   </div>
 </div>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>

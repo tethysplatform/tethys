@@ -103,7 +103,7 @@ def get_resource_available(entity, codename):
         return None
 
     total_available = get_quota(entity, codename)
-    if total_available:
+    if total_available['quota']:
         total_available = total_available['quota']
         remaining_space = total_available - current_use
     else:

@@ -8,7 +8,7 @@
 """
 from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from django.contrib import admin
 from django.contrib.auth.models import User
 from tethys_apps.models import TethysApp
@@ -75,7 +75,7 @@ class UserQuotasSettingInline(TethysQuotasSettingInline):
 
         content_type = ContentType.objects.get_for_model(rq.__class__)
         admin_url = reverse("admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(rq.id,))
-        return mark_safe("""<a href="{}">{}</a>""".format(admin_url, rq.name))
+        return format_html("""<a href="{}">{}</a>""".format(admin_url, rq.name))
 
     def description(*args):
         for arg in args:
@@ -137,7 +137,7 @@ class TethysAppQuotasSettingInline(TethysQuotasSettingInline):
 
         content_type = ContentType.objects.get_for_model(rq.__class__)
         admin_url = reverse("admin:{}_{}_change".format(content_type.app_label, content_type.model), args=(rq.id,))
-        return mark_safe("""<a href="{}">{}</a>""".format(admin_url, rq.name))
+        return format_html("""<a href="{}">{}</a>""".format(admin_url, rq.name))
 
     def description(*args):
         for arg in args:
@@ -157,7 +157,7 @@ class TethysAppQuotasSettingInline(TethysQuotasSettingInline):
 
         content_type = ContentType.objects.get_for_model(rq.__class__)
         admin_url = reverse("admin:{}_{}_change".format(content_type.app_label, content_type.model), args=(rq.id,))
-        return mark_safe("""<a href="{}">{}</a>""".format(admin_url, rq.name))
+        return format_html("""<a href="{}">{}</a>""".format(admin_url, rq.name))
 
     def units(*args):
         for arg in args:

@@ -19,7 +19,7 @@ from tethys_portal.forms import UserSettingsForm, UserPasswordChangeForm
 from tethys_apps.models import TethysApp
 from tethys_apps.base.workspace import _get_user_workspace
 from tethys_quotas.handlers.workspace import WorkspaceQuotaHandler
-from tethys_quotas.helpers import get_quota
+from tethys_quotas.helpers import get_quota, _convert_storage_units
 
 
 @login_required()
@@ -32,16 +32,20 @@ def profile(request, username=None):
     # as the username of the user that is accessing the page.
     context_user = User.objects.get(username=username)
     user_token, token_created = Token.objects.get_or_create(user=context_user)
-    total_storage = WorkspaceQuotaHandler(context_user).get_current_use()
-    quota_size = get_quota(context_user, 'user_workspace_quota')
-    if quota_size:
-        quota_size = quota_size['quota']
+    codename = 'tethysapp_workspace_quota'
+    rqh = WorkspaceQuotaHandler(context_user)
+    current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
+    quota = get_quota(context_user, codename)
+    if quota['quota']:
+        quota = _convert_storage_units(quota['units'], quota['quota'])
+    else:
+        quota = None
+
     context = {
         'context_user': context_user,
         'user_token': user_token.key,
-        'total_storage': total_storage,
-        'quota_size': quota_size,
-        'units': 'GB',
+        'current_use': current_use,
+        'quota': quota,
     }
     return render(request, 'tethys_portal/user/profile.html', context)
 
@@ -84,16 +88,20 @@ def settings(request, username=None):
 
     # Create template context object
     user_token, token_created = Token.objects.get_or_create(user=request_user)
-    total_storage = WorkspaceQuotaHandler(request_user).get_current_use()
-    quota_size = get_quota(request_user, 'user_workspace_quota')
-    if quota_size:
-        quota_size = quota_size['quota']
+    codename = 'tethysapp_workspace_quota'
+    rqh = WorkspaceQuotaHandler(request_user)
+    current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
+    quota = get_quota(request_user, codename)
+    if quota['quota']:
+        quota = _convert_storage_units(quota['units'], quota['quota'])
+    else:
+        quota = None
+
     context = {'form': form,
                'context_user': request.user,
                'user_token': user_token.key,
-               'total_storage': total_storage,
-               'quota_size': quota_size,
-               'units': 'GB',
+               'current_use': current_use,
+               'quota': quota,
                }
 
     return render(request, 'tethys_portal/user/settings.html', context)
@@ -236,18 +244,21 @@ def manage_storage(request, username):
 
     for app in apps:
         workspace = _get_user_workspace(app, user)
-        app.current_use = workspace.get_size('gb')
+        app.current_use = _convert_storage_units('gb', workspace.get_size('gb'))
 
-    total_storage = WorkspaceQuotaHandler(user).get_current_use()
-    quota_size = get_quota(user, 'user_workspace_quota')
-    if quota_size:
-        quota_size = quota_size['quota']
+    codename = 'tethysapp_workspace_quota'
+    rqh = WorkspaceQuotaHandler(user)
+    current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
+    quota = get_quota(user, codename)
+    if quota['quota']:
+        quota = _convert_storage_units(quota['units'], quota['quota'])
+    else:
+        quota = None
 
     context = {'apps': apps,
                'context_user': request.user,
-               'total_storage': total_storage,
-               'quota_size': quota_size,
-               'units': 'GB',
+               'current_use': current_use,
+               'quota': quota,
                }
 
     return render(request, 'tethys_portal/user/manage_storage.html', context)

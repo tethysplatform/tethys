@@ -261,6 +261,35 @@ def _get_user_workspace(app_class, user_or_request):
 
 
 def user_workspace():
+    """
+    **Decorator:** Get the file workspace (directory) for the given User.
+
+    Returns:
+      tethys_apps.base.TethysWorkspace: An object representing the workspace.
+
+    **Example:**
+
+    ::
+
+        import os
+        from my_first_app.app import MyFirstApp as app
+        from tethys_sdk.workspaces import user_workspace
+
+        @user_workspace()
+        def a_controller(request, user_workspace):
+            \"""
+            Example controller that uses @user_workspace() decorator.
+            \"""
+            new_file_path = os.path.join(user_workspace.path, 'new_file.txt')
+
+            with open(new_file_path, 'w') as a_file:
+                a_file.write('...')
+
+            context = {}
+
+            return render(request, 'my_first_app/template.html', context)
+
+    """
     def decorator(controller):
         def wrapper(*args, **kwargs):
             from tethys_quotas.models import ResourceQuota
@@ -340,6 +369,35 @@ def _get_app_workspace(app_class):
 
 
 def app_workspace():
+    """
+    **Decorator:** Get the file workspace (directory) for the app.
+
+    Returns:
+      tethys_apps.base.TethysWorkspace: An object representing the workspace.
+
+    **Example:**
+
+    ::
+
+        import os
+        from my_first_app.app import MyFirstApp as app
+        from tethys_sdk.workspaces import app_workspace
+
+        @app_workspace()
+        def a_controller(request, app_workspace):
+            \"""
+            Example controller that uses @app_workspace() decorator.
+            \"""
+            new_file_path = os.path.join(app_workspace.path, 'new_file.txt')
+
+            with open(new_file_path, 'w') as a_file:
+                a_file.write('...')
+
+            context = {}
+
+            return render(request, 'my_first_app/template.html', context)
+
+    """
     def decorator(controller):
         def wrapper(*args, **kwargs):
             from tethys_quotas.models import ResourceQuota

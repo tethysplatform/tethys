@@ -9,17 +9,17 @@ The Workspaces API makes it easy for you to create directories for storing files
 Get a Workspace
 ===============
 
-The Workspaces API adds two methods to your :term:`app class`, ``get_app_workspace()`` and ``get_user_workspace()``, that can be used to retrieve with the global app workspace and the user workspaces, respectively. To use the Workspace API methods, import your :term:`app class` from the :term:`app configuration file` (:file:`app.py`) and call the appropriate method on that class. Explanations of the methods and example usage follows.
+The Workspaces API adds two decorators, that can be used to retrieve with the global app workspace and the user workspaces, respectively. To use the Workspace API methods, import the appropriate method from `tethys_sdk.workspaces`. Explanations of the decorators and example usage follows.
 
-get_app_workspace
+@app_workspace
 -----------------
 
-.. automethod:: tethys_apps.base.TethysAppBase.get_app_workspace
+.. automethod:: tethys_apps.base.workspace.app_workspace
 
-get_user_workspace
+@user_workspace
 ------------------
 
-.. automethod:: tethys_apps.base.TethysAppBase.get_user_workspace
+.. automethod:: tethys_apps.base.workspace.user_workspace
 
 
 Working with Workspaces
