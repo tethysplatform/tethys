@@ -177,7 +177,7 @@
     </div>
     <div class="col-md-8 profile-parameters">
       <ul>
-        <li><span class="parameter">Storage Summary:</span><span class="value">{{ total_storage }} of {{ quota_size|default:"&#8734;" }}</span></li>
+        <li><span class="parameter">Storage Summary:</span><span class="value">{{ current_use }} of {{ quota|default:"&#8734;" }}</span></li>
         <li><span class="parameter">Manage Storage:</span><span class="value button"><a class="btn btn-default btn-sm" href="{% url 'user:manage_storage' user.username %}">Manage Storage</a></span></li>
       </ul>
     </div>
