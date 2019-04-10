@@ -1,4 +1,5 @@
 {% load staticfiles tethys_gizmos terms_tags %}
+{% load analytical %}
 <!DOCTYPE html>
 
 {# Allows custom attributes to be added to the html tag #}
@@ -11,6 +12,7 @@
 
   {# Allows custom attributes to be added to the head tag #}
   <head {% block headtag %}{% endblock %}>
+    {% analytical_body_top %}
 
     {% comment "meta explanation" %}
       Add custom meta tags to the page. Call block.super to get the default tags
@@ -39,10 +41,6 @@
 
         {% block title %}My Subtitle - {{ block.super }}{% endblock %}
     {% endcomment %}
-
-    {% block analytics %}
-      { anaytics_stuff }
-    {% endblock %}
 
     <title>
       {% if site_globals.site_title %}
@@ -111,10 +109,14 @@
       {% include 'session_security/all.html' %}
       <link href="{% static 'tethys_portal/css/session_security_override.css' %}"  rel="stylesheet" />
     {% endblock %}
+
+    {% analytical_head_bottom %}
   </head>
 
   {# Allows custom attributes to be added to the body tag #}
   <body {% block bodytag %}{% endblock %}>
+    {% analytical_body_top %}
+
     {% block app_content_wrapper_override %}
       <div id="app-content-wrapper" class="show-nav">
         {% block app_header_override %}
@@ -268,5 +270,7 @@
       {% endif %}
       {% gizmo_dependencies js %}
     {% endblock %}
+
+  {% analytical_body_bottom %}
   </body>
 </html>

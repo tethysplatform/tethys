@@ -1,7 +1,7 @@
 """
 ********************************************************************************
 * Name: context_processors.py
-* Author: Nathan Swain, Riley Hales
+* Author: Nathan Swain
 * Created On: 2014
 * Copyright: (c) Brigham Young University 2014
 * License: BSD 2-Clause
@@ -30,7 +30,6 @@ def tethys_apps_context(request):
     app = get_active_app(request=request)
 
     if app is not None:
-        # Tethys app metadata
         context['tethys_app'] = {
             'id': app.id,
             'name': app.name,
