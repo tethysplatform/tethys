@@ -12,7 +12,7 @@
 
   {# Allows custom attributes to be added to the head tag #}
   <head {% block headtag %}{% endblock %}>
-    {% analytical_body_top %}
+    {% analytical_head_top %}
 
     {% comment "meta explanation" %}
       Add custom meta tags to the page. Call block.super to get the default tags
