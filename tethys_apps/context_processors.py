@@ -14,15 +14,9 @@ def tethys_apps_context(request):
     """
     Add the current Tethys app metadata to the template context.
 
-    Enables web-analytics services by:
-        1. Checking which analytics services are configured for the portal
-        2. Creates a string with the necessary tags to load each of the web-analytics services
-        3. Puts them in a dictionary which can be read as a variable in the app_base.html template
-
     Args:
         request: Django request object.
     """
-
     # Setup variables
     context = {'tethys_app': None}
 
