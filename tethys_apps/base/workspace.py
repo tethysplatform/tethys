@@ -14,6 +14,7 @@ import shutil
 import logging
 from django.utils.functional import wraps
 from django.http import HttpRequest
+from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
 from django.utils.functional import SimpleLazyObject
 from tethys_quotas.helpers import passes_quota
@@ -312,13 +313,19 @@ def user_workspace():
                 rq = ResourceQuota.objects.get(codename=codename)
 
                 if not passes_quota(user, codename):
-                    raise PermissionError(rq.help)
+                    raise PermissionDenied(rq.help)
 
             except ResourceQuota.DoesNotExist:
                 log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
 
             # Get the active app
+            from tethys_apps.harvester import SingletonHarvester
             app = get_active_app(request)
+            apps_s = SingletonHarvester().apps
+            for app_s in apps_s:
+                if app_s.name == app.name:
+                    app = app_s
+                    break
 
             the_workspace = _get_user_workspace(app, user)
 
@@ -419,10 +426,17 @@ def app_workspace():
             except ResourceQuota.DoesNotExist:
                 log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
 
+            # Get the active app
+            from tethys_apps.harvester import SingletonHarvester
             app = get_active_app(request)
+            apps_s = SingletonHarvester().apps
+            for app_s in apps_s:
+                if app_s.name == app.name:
+                    app = app_s
+                    break
 
             if not passes_quota(app, codename):
-                raise PermissionError(rq.help)
+                raise PermissionDenied(rq.help)
 
             the_workspace = _get_app_workspace(app)
 

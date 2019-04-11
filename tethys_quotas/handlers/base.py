@@ -45,12 +45,14 @@ class ResourceQuotaHandler(object):
 
     def check(self):
         """
-        Checks if entity use is at/below/above quota. Uses get_current_use() to compute the current use of the resource.
+        Checks if entity use is at/below/above quota. Uses get_resource_available() to compute the current use of the resource.
 
         Returns:
             Boolean: True if entity use is at or below quota and False if entity use is above the quota.
         """
-        resource_available = get_resource_available(self.entity, self.codename)
+        # self.codename isn't complete because the actual ResourceQuota codename is 'applies_to' specific
+        codename = "{}_{}".format(self.entity.__class__.__name__.lower(), self.codename)
+        resource_available = get_resource_available(self.entity, codename)
         if resource_available and resource_available['resource_available'] == 0:
             return False
         else:
