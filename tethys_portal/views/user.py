@@ -32,7 +32,7 @@ def profile(request, username=None):
     # as the username of the user that is accessing the page.
     context_user = User.objects.get(username=username)
     user_token, token_created = Token.objects.get_or_create(user=context_user)
-    codename = 'tethysapp_workspace_quota'
+    codename = 'user_workspace_quota'
     rqh = WorkspaceQuotaHandler(context_user)
     current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
     quota = get_quota(context_user, codename)
@@ -88,7 +88,7 @@ def settings(request, username=None):
 
     # Create template context object
     user_token, token_created = Token.objects.get_or_create(user=request_user)
-    codename = 'tethysapp_workspace_quota'
+    codename = 'user_workspace_quota'
     rqh = WorkspaceQuotaHandler(request_user)
     current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
     quota = get_quota(request_user, codename)
@@ -246,7 +246,7 @@ def manage_storage(request, username):
         workspace = _get_user_workspace(app, user)
         app.current_use = _convert_storage_units('gb', workspace.get_size('gb'))
 
-    codename = 'tethysapp_workspace_quota'
+    codename = 'user_workspace_quota'
     rqh = WorkspaceQuotaHandler(user)
     current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
     quota = get_quota(user, codename)

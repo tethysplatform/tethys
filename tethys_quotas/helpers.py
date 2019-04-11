@@ -18,7 +18,7 @@ def sync_resource_quota_handlers():
     from tethys_sdk.quotas import codenames
 
     if hasattr(settings, 'RESOURCE_QUOTA_HANDLERS'):
-        quota_entities = []
+        quota_codenames = []
         for quota_class_str in settings.RESOURCE_QUOTA_HANDLERS:
             try:
                 components = quota_class_str.split('.')
@@ -35,9 +35,10 @@ def sync_resource_quota_handlers():
                 continue
             else:
                 for entity in class_obj.applies_to:
-                    quota_entities.append(entity)
                     entity_type = entity.split('.')[-1]
-                    if not ResourceQuota.objects.filter(applies_to=entity).exists():
+                    codename = '{}_{}'.format(entity_type.lower(), class_obj.codename)
+                    quota_codenames.append(codename)
+                    if not ResourceQuota.objects.filter(codename=codename).exists():
                         resource_quota = ResourceQuota(
                             codename="{}_{}".format(entity_type.lower(), class_obj.codename),
                             name="{} {}".format(entity_type, class_obj.name),
@@ -52,7 +53,7 @@ def sync_resource_quota_handlers():
                         resource_quota.save()
 
         for rq in ResourceQuota.objects.all():
-            if rq.applies_to not in quota_entities:
+            if rq.codename not in quota_codenames:
                 rq.delete()
             else:
                 setattr(codenames, rq.codename.upper(), rq.codename)
