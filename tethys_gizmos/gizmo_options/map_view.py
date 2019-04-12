@@ -199,7 +199,7 @@ class MapView(TethysGizmoOptions):
                 }}
             }}
         }}
-    
+
         geojson_layer = MVLayer(
             source='GeoJSON',
             options=geojson_object,
@@ -557,7 +557,7 @@ class MVLayer(SecondaryGizmoOptions):
             }
           ]
         }
-        
+
         style_map = {
             'Point': {'ol.style.Style': {
                 'image': {'ol.style.Circle': {
@@ -587,7 +587,7 @@ class MVLayer(SecondaryGizmoOptions):
                 }}
             }},
         }
-    
+
         geojson_layer = MVLayer(source='GeoJSON',
                                 options=geojson_object,
                                 layer_options={'style_map': style_map},
