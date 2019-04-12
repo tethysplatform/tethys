@@ -62,6 +62,10 @@ def django_url_preprocessor(url, root_url, protocol, custom_regex=None):
         '/example/resource/{variable_name}/'
         r'^/example/resource/(?P<variable_name>[0-9A-Za-z-]+)//$'
     """
+    # Remove last slash if present
+    if url.endswith('/'):
+        url = url[:-1]
+
     # Split the url into parts
     url_parts = url.split('/')
     django_url_parts = []
@@ -113,6 +117,6 @@ def django_url_preprocessor(url, root_url, protocol, custom_regex=None):
             django_url = r'^ws/{0}/{1}/$'.format(root_url, django_url_joined)
         else:
             # Handle empty string case
-            django_url = r'^$'
+            django_url = r'^ws/{0}/$'.format(root_url)
 
     return django_url
