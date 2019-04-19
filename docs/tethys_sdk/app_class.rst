@@ -62,9 +62,11 @@ Class Methods
 
 .. automethod:: tethys_apps.base.TethysAppBase.get_job_manager
 
+.. deprecated:: 2.1
 .. automethod:: tethys_apps.base.TethysAppBase.get_app_workspace
    :noindex:
 
+.. deprecated:: 2.1
 .. automethod:: tethys_apps.base.TethysAppBase.get_user_workspace
    :noindex:
 

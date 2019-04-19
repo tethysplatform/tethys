@@ -11,10 +11,14 @@ Get a Workspace
 
 The Workspaces API adds two decorators, that can be used to retrieve with the global app workspace and the user workspaces, respectively. To use the Workspace API methods, import the appropriate method from `tethys_sdk.workspaces`. Explanations of the decorators and example usage follows.
 
+.. _app_workspace:
+
 @app_workspace
 -----------------
 
 .. automethod:: tethys_apps.base.workspace.app_workspace
+
+.. _user_workspace:
 
 @user_workspace
 ------------------

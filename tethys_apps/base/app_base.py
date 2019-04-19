@@ -11,7 +11,6 @@ import logging
 import os
 import sys
 import traceback
-import warnings
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest

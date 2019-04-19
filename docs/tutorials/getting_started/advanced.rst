@@ -905,6 +905,8 @@ d. Update navigation
       <li class="{% if request.path == assign_hydrograph_url %}active{% endif %}"><a href="{{ assign_hydrograph_url }}">Assign Hydrograph</a></li>
     {% endblock %}
 
+.. _sample_hydrographs:
+
 f. Test upload with these files:
 
     :download:`Sample Hydrograph CSVs <./hydrographs.zip>`
@@ -1031,15 +1033,75 @@ d. Add UrlMap with URL Variable
 
             return url_maps
 
-e. Modify ``list_dams`` controller:
+e. Add ``get_hydrograph`` helper function to ``model.py``
 
 ::
 
-    .. todo::
+    def get_hydrograph(dam_id):
+    """
+    Get hydrograph id from dam id.
+    """
+        Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+        session = Session()
 
-        Find a way to get links into data tables view
+        # Query if hydrograph exists for dam
+        hydrograph = session.query(Hydrograph).filter_by(dam_id=dam_id).first()
+        session.close()
 
+        if hydrograph:
+            return hydrograph.id
+        else:
+            return None
 
+f. Modify ``list_dams`` controller:
+
+::
+
+    from django.utils.html import format_html
+
+    ...
+
+    @login_required()
+    def list_dams(request):
+        """
+        Show all dams in a table view.
+        """
+        dams = get_all_dams()
+        table_rows = []
+
+        for dam in dams:
+            hydrograph_id = get_hydrograph(dam.id)
+            if hydrograph_id:
+                url = reverse('dam_inventory:hydrograph', kwargs={'hydrograph_id': hydrograph_id})
+                dam_hydrograph = format_html('<a class="btn btn-primary" href="{}">Hydrograph Plot</a>'.format(url))
+            else:
+                dam_hydrograph = format_html('<a class="btn btn-primary disabled" title="No hydrograph assigned" '
+                                             'style="pointer-events: auto;">Hydrograph Plot</a>')
+
+            table_rows.append(
+                (
+                    dam.name, dam.owner,
+                    dam.river, dam.date_built,
+                    dam_hydrograph
+                )
+            )
+
+        dams_table = DataTableView(
+            column_names=('Name', 'Owner', 'River', 'Date Built', 'Hydrograph'),
+            rows=table_rows,
+            searching=False,
+            orderClasses=False,
+            lengthMenu=[[10, 25, 50, -1], [10, 25, 50, "All"]],
+        )
+
+        context = {
+            'dams_table': dams_table,
+            'can_add_dams': has_permission(request, 'add_dams')
+        }
+
+        return render(request, 'dam_inventory/list_dams.html', context)
+
+g. Test by going to the Dams page and clicking on the new ``Hydrograph Plot`` button in the table for a dam that has already been assigned a hydrograph.
 
 8. Dynamic Hydrograph Plot in Pop-Ups
 =====================================
