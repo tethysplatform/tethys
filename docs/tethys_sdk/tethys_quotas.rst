@@ -75,7 +75,7 @@ ResourceQuotaHandler
 
 .. _tethys_quotas_custom_quota:
 
-How to make custom Quotas
+How to make custom quotas
 =========================
 
 To create a custom quota you will have to create a new quota handler class. Your new handler class will have to inherit from the :ref:`tethys_quotas_rqh` class. Follow the pattern in the built-in handler class, ``WorkspaceQuotaHandler`` (located at ``src/tethys_quotas/handlers/workspace.py``).
@@ -98,3 +98,32 @@ Once the class has been created you will need to append the classpath to the ``R
 .. note::
 
     Delete or comment out classpath strings in the settings.py file to remove certain quota types from the portal.
+
+How to enforce quotas
+=====================
+
+Using the :ref:`app_workspace` or :ref:`user_workspace` decorators will automatically enforce the built in workspace quotas. To enforce a custom quota the ``@enforce_quota`` decorator must be used. Within the decorator initialization pass in the respective ``codename`` of the quota you wish to enforce.
+
+::
+
+    # Import the enforce_quota decorator
+    from tethys_sdk.quotas import enforce_quota
+    ...
+
+    # Enforce the desired quota (taken from the Dam Inventory Tutorial)
+    @enforce_quota('user_dam_quota')
+    @permission_required('add_dams')
+    def add_dam(request):
+        """
+        Controller for the Add Dam page.
+        """
+        ...
+
+**Figure 2.** Example usage of ``@enforce_quota``, taken from the Dam Inventory Tutorial.
+
+The ``@enforce_quota`` decorator will check to make sure the desired quota hasn't been met. If the quota has been met the user will be rerouted to an error page displaying the quota's help text.
+
+Additional Resources
+====================
+
+For more information and examples on how to use the Tethys Quotas API (including creating and enforcing custom quotas) see the :doc:`../tutorials/getting_started/quotas` tutorial.

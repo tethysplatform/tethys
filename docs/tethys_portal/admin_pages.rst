@@ -165,6 +165,8 @@ Tethys Quotas
 
 The link under the ``TETHYS QUOTAS`` heading can be used to manage resource quotas that exist for the Tethys Portal. Custom quotas can be created, but by default Tethys includes :ref:`tethys_quotas_user_admin` and :ref:`tethys_quotas_app_admin`.
 
+.. _tethys_quotas_resource_quota:
+
 Resource Quotas
 ---------------
 

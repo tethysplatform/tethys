@@ -24,7 +24,7 @@ class WorkspaceQuotaHandler(ResourceQuotaHandler):
     description = "Set quota on workspace storage for apps and users."
     default = 1
     units = "GB"
-    help = "You have exceeded your quota on storage. Please visit storage management pages and remove unneeded files."
+    help = "You have exceeded your quota on storage. Please visit the storage management pages and clean workspaces."
     applies_to = ["django.contrib.auth.models.User", "tethys_apps.models.TethysApp"]
 
     def get_current_use(self):
