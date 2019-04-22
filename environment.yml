@@ -6,8 +6,8 @@
 name: tethys
 
 channels:
-- conda-forge
 - tethysplatform
+- conda-forge
 - defaults
 
 dependencies:
