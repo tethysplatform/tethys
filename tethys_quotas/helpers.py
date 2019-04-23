@@ -64,11 +64,11 @@ def passes_quota(entity, codename):
     Checks to see if the quota has been exceeded or not
 
     Args:
-        entity(User or TethysApp): the entity on which to perform quota check.
-        codename(str): codename of the Quota to enforce
+        entity(User or TethysApp): the entity on which to check.
+        codename(str): codename of the Quota to check
 
     Returns:
-        Bool: ResourceQuota.check()
+        False if the entity has exceeded the quota, otherwise True.
     """
     from tethys_quotas.models import ResourceQuota
 
@@ -83,14 +83,14 @@ def passes_quota(entity, codename):
 
 def get_resource_available(entity, codename):
     """
-    Checks the quantity of resources available before the quota is met (calls the get_quota function)
+    Checks the quantity of resources remaining before the quota is met
 
     Args:
-        entity (User or TethysApp): the entity on which to perform quota check.
-        codename (str): codename of the Quota to enforce
+        entity (User or TethysApp): the entity on which to check.
+        codename (str): codename of the Quota to check
 
     Returns:
-        dict (resource_available, units): Dictionary with two keys: resource_available(int) - remaining space, units(str) - units of storage
+        dict (resource_available, units): Dictionary with two keys: resource_available(int) - amount of resource remaining, units(str) - units of amount, if applicable
     """
     from tethys_quotas.models import ResourceQuota
 
@@ -119,14 +119,14 @@ def get_resource_available(entity, codename):
 
 def get_quota(entity, codename):
     """
-    Gets the quota size
+    Gets the quota value
 
     Args:
         entity (User or TethysApp): the entity on which to perform quota check.
-        codename (str): codename of the Quota to enforce
+        codename (str): codename of the Quota to get
 
     Returns:
-        dict (quota, units): Dictionary with two keys: quota(int) - remaining space, units(str) - units of storage
+        dict (quota, units): Dictionary with two keys: quota(int) - value of quota, units(str) - units of value, if applicable
     """
     from django.contrib.auth.models import User
     from tethys_apps.models import TethysApp
