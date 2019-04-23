@@ -328,8 +328,8 @@ a. Modify the `add_dam` controller, such that it won't add a new dam if the `max
                 session = Session()
                 num_dams = session.query(Dam).count()
 
-                # Only add the dam if we have not exceed max_dams
-                if num_dams < max_dams:
+                # Only add the dam if custom setting doesn't exist or we have not exceed max_dams
+                if not max_dams or num_dams < max_dams:
                     add_new_dam(location=location, name=name, owner=owner, river=river, date_built=date_built)
                 else:
                     messages.warning(request, 'Unable to add dam "{0}", because the inventory is full.'.format(name))
@@ -694,8 +694,8 @@ a. New Model function
         hydro_points = []
 
         try:
-
             for line in hydrograph_file:
+                line = line.decode('utf-8')
                 sline = line.split(',')
 
                 try:
@@ -1053,12 +1053,12 @@ e. Add ``get_hydrograph`` helper function to ``model.py``
         else:
             return None
 
-f. Modify ``list_dams`` controller:
+f. Modify ``list_dams`` controller (and add needed imports):
 
 ::
 
     from django.utils.html import format_html
-
+    from .model import add_new_dam, get_all_dams, Dam, assign_hydrograph_to_dam, get_hydrograph  #  added get_hydrograph function created in previous step
     ...
 
     @login_required()

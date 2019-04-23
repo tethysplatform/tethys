@@ -20,7 +20,7 @@ log = logging.getLogger('tethys.' + __name__)
 
 class ResourceQuota(models.Model):
     """
-    Base class for all quota types. This is intended to be an abstract class that is not directly instantiated.
+    Model definition for all quota types. This is intended to be an internal class that is not directly instantiated by users.
     
     Attributes:
         codename (CharField): unique codename for quota, used to look up specific quotas easily (e.g. ‘workspace_storage’).

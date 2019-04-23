@@ -67,3 +67,22 @@ Run the ``collectworkspaces`` command to automatically move all of the workspace
     ::
 
         $ tethys manage collectall
+
+.. _tethys_quotas_workspace_manage:
+
+Handling Workspace Clearing
+===========================
+
+Users and portal administrators are able to clear their user and app workspaces through pages in the Tethys Portal. The app class provides methods to allow the app developer to customize how the app handles clearing user/app workspaces. Override these methods in your app class to handle workspaces clearing appropriately in your app. When a workspace is cleared through the portal admin pages or user profile pages, the appropriate 'pre-delete' method is called, the workspace is cleared, and then the appropriate 'post-delete' method is called.
+
+.. automethod:: tethys_apps.base.app_base.TethysAppBase.pre_delete_app_workspace
+    :noindex:
+
+.. automethod:: tethys_apps.base.app_base.TethysAppBase.post_delete_app_workspace
+    :noindex:
+
+.. automethod:: tethys_apps.base.app_base.TethysAppBase.pre_delete_user_workspace
+    :noindex:
+
+.. automethod:: tethys_apps.base.app_base.TethysAppBase.post_delete_user_workspace
+    :noindex:
