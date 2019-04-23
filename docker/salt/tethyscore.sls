@@ -21,7 +21,7 @@
 
 Generate_Tethys_Settings_TethysCore:
   cmd.run:
-    - name: {{ TETHYS_BIN_DIR }}/tethys gen settings --production --allowed-hosts={{ ALLOWED_HOSTS }} --db-username {{ TETHYS_DB_USERNAME }} --db-password {{ TETHYS_DB_PASSWORD }} --db-port {{ TETHYS_DB_PORT }} --overwrite
+    - name: {{ TETHYS_BIN_DIR }}/tethys gen settings --production --allowed-hosts {{ ALLOWED_HOSTS }} --db-username {{ TETHYS_DB_USERNAME }} --db-password {{ TETHYS_DB_PASSWORD }} --db-port {{ TETHYS_DB_PORT }} --overwrite
     - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Edit_Tethys_Settings_File_(HOST)_TethysCore:

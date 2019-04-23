@@ -1,53 +1,46 @@
-# Build and Test Tethys Platform on Travis
 language: c
-
-# Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
-
-# Turn off email notifications
 notifications:
   email: false
-
+services:
+- docker
 os:
-  - linux
-  - osx
-
+- linux
 install:
-  - cd ..
-  - mv tethys src
-  - bash ./src/scripts/install_tethys.sh -h
-  - bash ./src/scripts/install_tethys.sh --partial-tethys-install mesdat -t $PWD
+- cd ..
+- mv tethys src
+- cd ./docker
+- docker-compose build
 
-  # activate conda environment
-  - export PATH="$PWD/miniconda/bin:$PATH"
-  - source activate tethys
-  - conda list
-
-  # start database server
-  - pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" -l "${TETHYS_DB_DIR}/logfile" start -o "-p ${TETHYS_DB_PORT}"
-
-  # generate new settings.py file with tethys_super user for tests
-  - rm ./src/tethys_portal/settings.py
-  - tethys gen settings --db-username tethys_super --db-password pass --db-port ${TETHYS_DB_PORT}
-
-  # install test dependencies
-  - pip install python-coveralls
-  - pip install -e $TETHYS_HOME/src/[tests]
-
-  # install test apps and extensions
-  - pushd ./src/tests/extensions/tethysext-test_extension
-  - python setup.py develop
-  - popd
-
-  - pushd ./src/tests/apps/tethysapp-test_app
-  - python setup.py develop
-  - popd
-
-# command to run tests
 script:
-  - tethys test -c -u
-
-# generate test coverage information
+- docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+- docker image build --squash -t tethys-core:latest ./DockerFile --build-arg
+  TETHYSBUILD_DB_USERNAME=tethys_super --build-arg TETHYSBUILD_DB_PASSWORD=pass --build-arg
+  TETHYSBUILD_DB_HOST=localhost --build-arg TETHYSBUILD_DB_PORT=${TETHYS_DB_PORT}
 after_success:
-  - ls -al
-  - coveralls
+- ls -al
+- coveralls
+
+
+
+script:
+  - docker build --tag myorg/myimage .
+  - docker run myorg/myimage
+
+after_script:
+  - docker images
+
+before_deploy:
+  - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
+deploy:
+  provider: script
+  script: docker push myorg/myimage
+  on:
+    branch: master
+
+
+
+env:
+  matrix:
+  - secure: ebvTzQwJYhTYboNJ4WXqxecAD5zfdhV+5A9dSD4aC3+nztBD18/hC1gmmL2FpAkRX6gkQQNllpenSc9CaLNXyXJ2+0YU8+aQcCtCqFOLZ82AcL+fQyoE17R18x0lB78FLC0zGIBBONfBU70yb/yk2sikADOCV66+E58tU4XK+svaTGMxlBsd2d1bp4ediJKT8KHWCT/P/6VCmwpyTLFxMaCp9lfYMRvQWG7j55WTdX1YJpeQyZRJhk0lj+vJnfjdKwz6RRvh2IfzhIq6yRKAsHYTvEcnEVbBDwZt9x9iFi+L/mm/F2eXvJQvWHlwJJ/uQeX0hwhUCuKvS+IpDjAcYImkM+p/vWu4b+h9CgvL5YrKd0p0s0cJ4kjSAuPPualvqy2HG8056WEHR3HjPel0in+JTu3t6OPu2IxSfL/cFKHRqixLjrM3lRtS3kbtRUOJuRHiVr1pQHWjqkZcm2ZHYl4G+RcjDY2oSA4YvvO5Oa2oSgfOQi9UwVwcFiQRcCWQf1UoM95ERTu2Q4HMFV1ewMd3jMGpZA+PwauEcnlS9IVpyNZ48k7NqxYgljWOrcBw+pd7tR3P8ePZ2Z6mc38bKde78/acEIQXLsM3XtWFb4ZRiEl8E5Lu46KAEsZTd2xuN1RNGE6fcWPiE/NDqI0x+yKxSXrWz9z/boxeW99lYSs=
+  - secure: cwhHjLQ/l7umqIKtcxgOs2yjN22ME2TDxN/XDwQNpmi6sE8e9p9/fcNT4X3OcXupRLiK54heNWEWvPhplX3oIdwQ//NVNL+jRJfxVvIhVE5JdDWBC2nyoDWvkOtBDuh68UTXvDT2Ci29EL2k2p3OYfmiT7qIUJ/vzmR0pwBaWS9WZnqFb9pCYCVRlS5QMVdQiIf1p1xMxDKaL1LtE46kM6Mp6eeoObbYEFl9ZyhnnwaNYmhz7ySdl8i0FwEaRma9FTa+dmGtij8sAu1qdEdvCzofwb4bZLLBOJyssRrNh6CNo28j/XIoHOv+5rXepqmc+YH6zikh83lCi5uV1Wouv4jf9BCEAmvrShuQPNCan3QaxevAzoUrfFer4mwVCfYd5FvFlz6UBJSiiNaWAuAEyszpjogB12PAlLGMgreM9bWyPB+az2Tv8SD7tQspQKFDAROl/ivltink1qYBGQRecJ54gj6C4SROdRpEKdgsUtJmbIvz8r0wtrlsQtC9j52ioe1KiGLoefmFbE+V1dypluQsb82QAQpxqFj6/GCfOniUzfsndGG2dwG3l0tLQ5bTvgXhrCYz3WRo3v0mNDFMjtbl2EW3WBQOHHm73kV+jjfxIpUCY+v9ccMONXZWF3pc+e8+JiKYhKOVVrFnxT2BEDTV7kb+ruzZilED2xGsJ3I=
