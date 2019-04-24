@@ -87,17 +87,17 @@ A few helper functions have been added with Tethys Quotas to help developers int
 get_quota
 ---------
 
-.. automethod:: tethys_quotas.helpers.get_quota
+.. autofunction:: tethys_quotas.helpers.get_quota
 
 get_resource_available
 ----------------------
 
-.. automethod:: tethys_quotas.helpers.get_resource_available
+.. autofunction:: tethys_quotas.helpers.get_resource_available
 
 passes_quota
 ------------
 
-.. automethod:: tethys_quotas.helpers.passes_quota
+.. autofunction:: tethys_quotas.helpers.passes_quota
 
 Additional Resources
 ====================
