@@ -5,16 +5,15 @@ services:
 - docker
 os:
 - linux
-install:
-- cd ..
-- mv tethys src
-- cd ./src/docker
-script: 
-- docker-compose build
+before_script:
+  - docker pull tethysplatform/tethys-core || true
+script:
+  - docker build --pull --cache-from myorg/myimage --tag myorg/myimage .
+  - docker run myorg/myimage
 after_script:
-- docker images
+  - docker images
 before_deploy:
-- docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
+  - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
 deploy:
   provider: script
   script: docker push tethysplatform/tethys-core

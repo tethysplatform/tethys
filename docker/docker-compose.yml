@@ -4,6 +4,8 @@ services:
     container_name: tethyscore
     image: tethysplatform/tethys-core
     build:
+      cache_from:
+        - tethysplatform/tethys-core
       context: ../
       args:
         TETHYSBUILD_DB_USERNAME: tethys_admin
