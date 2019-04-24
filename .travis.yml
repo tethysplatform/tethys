@@ -8,6 +8,9 @@ os:
 before_script:
   - docker pull tethysplatform/tethys-core || true
 script:
+  - cd ..
+  - mv tethys src
+  - cd ./src/docker
   - docker-compose build
 after_script:
   - docker images
