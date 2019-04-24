@@ -1,4 +1,5 @@
 sudo: false
+language: minimal
 notifications:
   email: false
 services:
