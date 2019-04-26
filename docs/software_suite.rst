@@ -127,17 +127,6 @@ The installation procedure for each software has been encapsulated in a Docker i
 2. Download the Docker images
 3. Deploy the Docker images as containers
 
-Web-Analytics Integration
-=========================
-
-.. image:: images/software/webanalytics.png
-   :width: 300px
-   :align: right
-
-Tethys portals are configured to allow portal administrators to track how users interact with their portal and applications using web based analytical services. 24 services, including common services like Google Analytical and Optimizely, can be configured using the `Django-Analytical <https://github.com/jazzband/django-analytical>`_ package.
-
-To use a web-analytics service in your Tethys Portal, use the :doc:`./tethys_sdk/webanalytics`.
-
 SDK Relationships
 =================
 

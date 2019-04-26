@@ -2,9 +2,13 @@
 Web-Analytics Documentation
 ***************************
 
-**Last Updated:** April 22, 2019
+**Last Updated:** April 26, 2019
 
-Web-based analytical services are integrated into a Tethys portal using the `Django-Analytical <https://github.com/jazzband/django-analytical>`_ package
+.. image:: ../images/software/webanalytics.png
+   :width: 300px
+   :align: right
+
+Tethys portals are configured to allow portal administrators to track how users interact with their portal and applications using web based analytical services. 24 services, including common services like Google Analytical and Optimizely, can be configured using the `Django-Analytical <https://github.com/jazzband/django-analytical>`_ package.
 
 Key Concepts
 ============
