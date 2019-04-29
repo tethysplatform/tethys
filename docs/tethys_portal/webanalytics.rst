@@ -1,8 +1,8 @@
-***************************
-Web-Analytics Documentation
-***************************
+*************
+Web-Analytics
+*************
 
-**Last Updated:** April 26, 2019
+**Last Updated:** April 29, 2019
 
 .. image:: ../images/software/webanalytics.png
    :width: 300px
