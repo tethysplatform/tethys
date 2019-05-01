@@ -27,9 +27,9 @@ If you wish to use the advanced solution as a starting point:
 1. Workspace Quotas
 ===================
 
-In the :doc:`./advanced` tutorial we refactored the Model to use an SQL database, rather than files. However, we might want to store some data as files for backups in case the database gets corrupted. This will also allow us to take advantage of the built-in workspace qutoas that come with the :doc:`../../tethys_sdk/tethys_quotas`.
+In the :doc:`./advanced` tutorial we refactored the Model to use an SQL database, rather than files. However, we might want to store some data as files in case we want to export them later. This will also allow us to demonstrate the use of the built-in workspace qutoas that come with the :doc:`../../tethys_sdk/tethys_quotas`.
 
-a. Modify the ``assign_hydrograph`` controller to use the :ref:`user_workspace` decorator and write the hydrograph CSV to the user's workspace.
+a.Add the :ref:`user_workspace` decorator and a `user_workspace` argument to the ``assign_hydrograph`` controller. Write the hydrograph CSV with the dam id prepended to the filename to the user's workspace. The prepended id will be used later when handling a user deleting a dam they have created.
 
 ::
 
@@ -51,8 +51,14 @@ a. Modify the ``assign_hydrograph`` controller to use the :ref:`user_workspace` 
                 hydrograph_file = hydrograph_file[0]
                 success = assign_hydrograph_to_dam(selected_dam, hydrograph_file)
 
+                # Remove csv related to dam if exists
+                for file in os.listdir(user_workspace.path):
+                    if file.startswith("{}_".format(selected_dam)):
+                        os.remove(os.path.join(user_workspace.path, file))
+
                 # Write csv to user_workspace to test workspace quota functionality
-                with open(os.path.join(user_workspace.path, hydrograph_file.name), 'wb+') as destination:
+                full_filename = "{}_{}".format(selected_dam, hydrograph_file.name)
+                with open(os.path.join(user_workspace.path, full_filename), 'wb+') as destination:
                     for chunk in hydrograph_file.chunks():
                         destination.write(chunk)
                     destination.close()
@@ -71,9 +77,53 @@ c. To test, assign ``hydrograph2.csv`` and ``hydrograph4.csv`` (from :ref:`Sampl
 
 .. note::
 
-    Quotas are not be enforced on administrators. To manage quotas, login as administrator, but to test them, login as a normal user.
+    Quotas are not enforced on administrator users (i.e. staff/superusers). To manage quotas, login as administrator, but to test them, login as a normal user.
 
-d. Now that hydrograph backup files are stored to the user's workspace and the user can clear said workspace through their settings page, we will want to do some extra processing when they actually do clear their workspace. If the user deletes their backup hydrograph files we also want to remove the related hydrographs from the database. First add ``user_id = Column(Integer)`` as a column in the Dam model class. Also add ``cascade="all,delete"`` as an argument to the `hydrograph` relationship in the ``Dam`` model class and the `points` relationship in the ``Hydrograph`` model class. Then modify the ``add_new_dam`` function like so:
+d. Now that hydrograph files are stored to the user's workspace and the user can clear said workspace through their settings page, we will want to do some extra processing when they actually do clear their workspace. If the user deletes their hydrograph files we also want to remove the related hydrographs from the database.
+
+First add ``user_id = Column(Integer)`` as a column in the Dam model class. Also add ``cascade="all,delete"`` as an argument to the `hydrograph` relationship in the ``Dam`` model class and the `points` relationship in the ``Hydrograph`` model class.
+
+::
+
+    class Dam(Base):
+        """
+        SQLAlchemy Dam DB Model
+        """
+        __tablename__ = 'dams'
+
+        # Columns
+        id = Column(Integer, primary_key=True)
+        latitude = Column(Float)
+        longitude = Column(Float)
+        name = Column(String)
+        owner = Column(String)
+        river = Column(String)
+        date_built = Column(String)
+        user_id = Column(Integer)
+
+        # Relationships
+        hydrograph = relationship('Hydrograph', cascade="all,delete", back_populates='dam', uselist=False)
+
+
+        class Hydrograph(Base):
+        """
+        SQLAlchemy Hydrograph DB Model
+        """
+        __tablename__ = 'hydrographs'
+
+        # Columns
+        id = Column(Integer, primary_key=True)
+        dam_id = Column(ForeignKey('dams.id'))
+
+        # Relationships
+        dam = relationship('Dam', back_populates='hydrograph')
+        points = relationship('HydrographPoint', cascade="all,delete", back_populates='hydrograph')
+
+.. note::
+
+    Adding ``cascade="all,delete"`` as an argument in an sqlalchemey model relationship causes the deletion of related records to be handled automatically. In this case, if hydrograph is removed from the database the hydrograph's points will also be deleted and if a dam is removed the connected hydrograph and its points will be removed.
+
+Then modify the ``add_new_dam`` function like so:
 
 ::
 
@@ -99,11 +149,38 @@ d. Now that hydrograph backup files are stored to the user's workspace and the u
 
         ...
 
-.. note::
+e. Add ``user_id=-1`` when initializing ``dam1`` and ``dam2`` in the ``init_primary_db`` function.
 
-    Adding ``cascade="all,delete"`` as an argument in an sqlalchemey model relationship causes the deletion of related records to be handled automatically. In this case, if hydrograph is removed from the database the hydrograph's points will also be deleted and if a dam is removed the connected hydrograph and its points will be removed.
+::
 
-e. Add ``user_id=-1`` when initializing ``dam1`` and ``dam2`` in the ``init_primary_db`` function. Then make the following changes to the ``add_dam`` controller:
+    def init_primary_db(engine, first_time):
+
+        ...
+
+            # Initialize database with two dams
+            dam1 = Dam(
+                latitude=40.406624,
+                longitude=-111.529133,
+                name="Deer Creek",
+                owner="Reclamation",
+                river="Provo River",
+                date_built="April 12, 1993",
+                user_id=-1,
+            )
+
+            dam2 = Dam(
+                latitude=40.598168,
+                longitude=-111.424055,
+                name="Jordanelle",
+                owner="Reclamation",
+                river="Provo River",
+                date_built="1941",
+                user_id=-1,
+            )
+
+            ...
+
+Then make the following changes to the ``add_dam`` controller:
 
 ::
 
@@ -125,9 +202,11 @@ e. Add ``user_id=-1`` when initializing ``dam1`` and ``dam2`` in the ``init_prim
 
     ...
 
+Now that we have changed the model in the persistent store we will need to re-run ``$ tethys syncstores dam_inventory`` through the command line.
+
 .. important::
 
-    Now that we have changed the model in the persistent store we will need to re-run ``$ tethys syncstores dam_inventory`` through the command line.
+    Don't forget to run ``$ tethys syncstores dam_inventory``!
 
 f. Modify the ``assign_hydrograph`` controller again, this time to only allow users to assign hydrographs to dams that they have created.
 
@@ -178,7 +257,7 @@ g. Finally, override the ``pre_delete_user_workspace`` method that was added wit
 2. Custom Dam Quota
 ===================
 
-Now that we have made dam's user specific within the database we can track how many dams each user has created. In this part of the tutorial we will create a custom quota to restrict the number of dams a user can create. This will effectively replace the work we did in previous tutorials with the custom setting, `max_dams`. Instead of limiting the number of dams for the whole app through a custom setting we will restrict it per user with a custom quota.
+With the changes we made to the Dam model, we can now associate each dam with the user that created it and track how many dams each user created. In this part of the tutorial we will create a custom quota to restrict the number of dams a user can create. This will effectively replace the work we did in previous tutorials with the custom setting, `max_dams`. Instead of limiting the number of dams for the whole app through a custom setting we will restrict it per user with a custom quota.
 
 .. note::
 
@@ -219,7 +298,13 @@ a. Creating a custom quota is pretty simple. Create a new file called ``dam_quot
             session = Session()
             current_use = session.query(Dam).filter(Dam.user_id == self.entity.id).count()
 
+            session.close()
+
             return current_use
+
+.. note::
+
+    See :ref:`tethys_quotas_rqh` for an explanation of the different parameters.
 
 b. Now go into the portal's ``settings.py`` file and add the dot-path of the handler class you just created in the ``RESOURCE_QUOTA_HANDLERS`` array.
 
@@ -261,7 +346,13 @@ e. To enforce the new dam quota import the ``@enforce_quota`` decorator and add 
 
     ...
 
-f. You can now test this by logging into a non-administrator account and trying to create more than 3 dams. You should be taken to another error page telling you that you have reached your dam limit.
+.. note::
+
+    We used the codename ``user_dam_quota`` instead of just ``dam_quota`` because Tethys Quotas appends what the quota ``applies_to`` (from the :ref:`tethys_quotas_rqh` class parameters) to the codename to differentiate between quotas on users or on apps.
+
+    If we wanted to enforce our custom dam quota on an app as a whole we would need to add ``"tethys_apps.models.TethysApp"`` to the ``applies_to`` parameter in our ``DamQuotaHandler`` and then change the codename to ``tethysapp_dam_quota``.
+
+f. You can now test this by logging into a non-administrator account and trying to create more than 3 dams. You should be taken to another error page telling you that you have reached the limit on dams you can create.
 
 3. Dam Quota Management
 =======================
@@ -282,13 +373,19 @@ b. Create the ``delete_dam`` function in ``controllers.py``:
 
 ::
 
+    @user_workspace()
     @login_required()
-    def delete_dam(request, dam_id):
+    def delete_dam(request, user_workspace, dam_id):
         """
         Controller for the deleting a dam.
         """
         Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
         session = Session()
+
+        # Delete hydrograph file related to dam if exists
+        for file in os.listdir(user_workspace.path):
+            if file.startswith("{}_".format(int(dam_id))):
+                os.remove(os.path.join(user_workspace.path, file))
 
         # Delete dam object
         dam = session.query(Dam).get(int(dam_id))
@@ -320,7 +417,7 @@ c. Refactor the ``list_dams`` controller to add a `Delete` button for each dam. 
                 url = reverse('dam_inventory:delete_dam', kwargs={'dam_id': dam.id})
                 dam_delete = format_html('<a class="btn btn-danger" href="{}">Delete Dam</a>'.format(url))
             else:
-                dam_delete = format_html('<a class="btn btn-danger disabled" title="You are not the dam creator" '
+                dam_delete = format_html('<a class="btn btn-danger disabled" title="You are not the creator of the dam" '
                                          'style="pointer-events: auto;">Delete Dam</a>')
 
             table_rows.append(
