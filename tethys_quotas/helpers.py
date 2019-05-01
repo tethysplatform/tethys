@@ -38,19 +38,22 @@ def sync_resource_quota_handlers():
                     entity_type = entity.split('.')[-1]
                     codename = '{}_{}'.format(entity_type.lower(), class_obj.codename)
                     quota_codenames.append(codename)
-                    if not ResourceQuota.objects.filter(codename=codename).exists():
-                        resource_quota = ResourceQuota(
-                            codename="{}_{}".format(entity_type.lower(), class_obj.codename),
-                            name="{} {}".format(entity_type, class_obj.name),
-                            description=class_obj.description,
-                            default=class_obj.default,
-                            units=class_obj.units,
-                            applies_to=entity,
-                            impose_default=True,
-                            help=class_obj.help,
-                            _handler=quota_class_str
-                        )
-                        resource_quota.save()
+                    try:
+                        if not ResourceQuota.objects.filter(codename=codename).exists():
+                            resource_quota = ResourceQuota(
+                                codename="{}_{}".format(entity_type.lower(), class_obj.codename),
+                                name="{} {}".format(entity_type, class_obj.name),
+                                description=class_obj.description,
+                                default=class_obj.default,
+                                units=class_obj.units,
+                                applies_to=entity,
+                                impose_default=True,
+                                help=class_obj.help,
+                                _handler=quota_class_str
+                            )
+                            resource_quota.save()
+                    except:  # noqa: E722
+                        log.warning("ResourceQuota table not created yet")
 
         for rq in ResourceQuota.objects.all():
             if rq.codename not in quota_codenames:
