@@ -45,7 +45,7 @@ class ResourceQuotaHandler(object):
 
     def check(self):
         """
-        Checks if entity use is at/below/above quota. Uses get_resource_available() to compute the current use of the resource.
+        Checks if entity use is at/below/above quota. Uses get_resource_available() to compute the current use of the resource.  # noqa: E501
 
         Returns:
             Boolean: True if entity use is at or below quota and False if entity use is above the quota.

@@ -90,7 +90,7 @@ def get_resource_available(entity, codename):
         codename (str): codename of the Quota to check
 
     Returns:
-        dict (resource_available, units): Dictionary with two keys: resource_available(int) - amount of resource remaining, units(str) - units of amount, if applicable
+        dict (resource_available, units): Dictionary with two keys: resource_available(int) - amount of resource remaining, units(str) - units of amount, if applicable  # noqa: E501
     """
     from tethys_quotas.models import ResourceQuota
 
@@ -126,7 +126,7 @@ def get_quota(entity, codename):
         codename (str): codename of the Quota to get
 
     Returns:
-        dict (quota, units): Dictionary with two keys: quota(int) - value of quota, units(str) - units of value, if applicable
+        dict (quota, units): Dictionary with two keys: quota(int) - value of quota, units(str) - units of value, if applicable  # noqa: E501
     """
     from django.contrib.auth.models import User
     from tethys_apps.models import TethysApp
