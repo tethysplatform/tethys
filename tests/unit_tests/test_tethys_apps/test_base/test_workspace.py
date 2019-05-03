@@ -5,6 +5,7 @@ import shutil
 from unittest import mock
 from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from tethys_apps.base.workspace import user_workspace, app_workspace
 from tethys_quotas.models import ResourceQuota
 
@@ -164,7 +165,7 @@ class TestUrlMap(unittest.TestCase):
         mock_pq.return_value = False
 
         ret = None
-        with self.assertRaises(PermissionError) as context:
+        with self.assertRaises(PermissionDenied) as context:
             ret = user_dec_controller(mock_request)
         self.assertTrue("helpful message" in str(context.exception))
         self.assertEqual(None, ret)
@@ -217,7 +218,7 @@ class TestUrlMap(unittest.TestCase):
         mock_pq.return_value = False
 
         ret = None
-        with self.assertRaises(PermissionError) as context:
+        with self.assertRaises(PermissionDenied) as context:
             ret = app_dec_controller(mock_request)
         self.assertTrue("helpful message" in str(context.exception))
         self.assertEqual(None, ret)
