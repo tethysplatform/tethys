@@ -1,4 +1,4 @@
-{% load staticfiles terms_tags %}
+{% load staticfiles terms_tags analytical %}
 <!DOCTYPE html>
 
 {# Allows custom attributes to be added to the html tag #}
@@ -11,6 +11,7 @@
 
   {# Allows custom attributes to be added to the head tag #}
   <head {% block headtag %}{% endblock %}>
+    {% analytical_head_top %}
 
     {% comment "meta explanation" %}
       Add custom meta tags to the page. Call block.super to get the default tags
@@ -107,10 +108,13 @@
 
     {% block extrahead %}{% endblock %}
     {% block blockbots %}{% endblock %}
+
+    {% analytical_head_bottom %}
   </head>
 
   {# Allows custom attributes to be added to the body tag #}
   <body {% block bodytag %}{% endblock %}>
+    {% analytical_body_top %}
 
     {% comment "page explanation" %}
       The page block allows you to add content to the page. Most of the time it is
@@ -145,5 +149,7 @@
     {% block scripts %}
       <script src="{% static 'tethys_portal/js/tethys_main.js' %}" type="text/javascript"></script>
     {% endblock %}
+
+    {% analytical_body_bottom %}
   </body>
 </html>
