@@ -104,6 +104,7 @@ INSTALLED_APPS = (
     'captcha',
     'rest_framework',
     'rest_framework.authtoken',
+    'analytical',
 )
 
 MIDDLEWARE = (
@@ -309,3 +310,30 @@ ANONYMOUS_USER_ID = -1
 # GUARDIAN_RENDER_403 = False  # Mutually exclusive with GUARDIAN_RAISE_403
 # GUARDIAN_TEMPLATE_403 = ''
 # ANONYMOUS_DEFAULT_USERNAME_VALUE = 'anonymous'
+
+# Placeholders for the ID's required by various web-analytics services supported by Django-Analytical.
+# Replace False with the tracking ID as a string e.g. SERVICE_ID = 'abcd1234'
+CLICKMAP_TRACKER_ID = False
+CLICKY_SITE_ID = False
+CRAZY_EGG_ACCOUNT_NUMBER = False
+GAUGES_SITE_ID = False
+GOOGLE_ANALYTICS_JS_PROPERTY_ID = False
+GOSQUARED_SITE_TOKEN = False
+HOTJAR_SITE_ID = False
+HUBSPOT_PORTAL_ID = False
+INTERCOM_APP_ID = False
+KISSINSIGHTS_ACCOUNT_NUMBER = False
+KISSINSIGHTS_SITE_CODE = False
+KISS_METRICS_API_KEY = False
+MIXPANEL_API_TOKEN = False
+OLARK_SITE_ID = False
+OPTIMIZELY_ACCOUNT_NUMBER = False
+PERFORMABLE_API_KEY = False
+PIWIK_DOMAIN_PATH = False
+PIWIK_SITE_ID = False
+RATING_MAILRU_COUNTER_ID = False
+SNAPENGAGE_WIDGET_ID = False
+SPRING_METRICS_TRACKING_ID = False
+USERVOICE_WIDGET_KEY = False
+WOOPRA_DOMAIN = False
+YANDEX_METRICA_COUNTER_ID = False

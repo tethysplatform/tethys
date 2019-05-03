@@ -64,3 +64,4 @@ dependencies:
     - django-session-security
     - condorpy
     - python_social_auth
+    - django-analytical
