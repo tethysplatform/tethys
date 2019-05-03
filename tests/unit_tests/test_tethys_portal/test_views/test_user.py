@@ -32,9 +32,8 @@ class TethysPortalUserTests(unittest.TestCase):
         expected_context = {
             'context_user': mock_context_user,
             'user_token': mock_user_token.key,
-            'total_storage': 0,
-            'quota_size': None,
-            'units': 'GB',
+            'current_use': '0 bytes',
+            'quota': None,
         }
 
         profile(mock_request, username)
@@ -115,9 +114,8 @@ class TethysPortalUserTests(unittest.TestCase):
         expected_context = {'form': mock_form,
                             'context_user': mock_request.user,
                             'user_token': mock_user_token.key,
-                            'total_storage': 0,
-                            'quota_size': None,
-                            'units': 'GB',
+                            'current_use': '0 bytes',
+                            'quota': None,
                             }
 
         settings(mock_request, username)
@@ -320,9 +318,8 @@ class TethysPortalUserTests(unittest.TestCase):
 
         expected_context = {'apps': mock_harvester().apps,
                             'context_user': mock_request.user,
-                            'total_storage': 0,
-                            'quota_size': None,
-                            'units': 'GB',
+                            'current_use': '0 bytes',
+                            'quota': None,
                             }
 
         manage_storage(mock_request, 'ThisIsMe')
