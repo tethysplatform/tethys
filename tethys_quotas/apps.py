@@ -6,8 +6,11 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+import logging
 from django.apps import AppConfig
 from tethys_quotas.helpers import sync_resource_quota_handlers
+
+log = logging.getLogger('tethys.' + __name__)
 
 
 class TethysQuotasConfig(AppConfig):
@@ -15,4 +18,7 @@ class TethysQuotasConfig(AppConfig):
     verbose_name = 'Tethys Quotas'
 
     def ready(self):
-        sync_resource_quota_handlers()
+        try:
+            sync_resource_quota_handlers()
+        except:  # noqa
+            log.warning("RQ table not created yet")

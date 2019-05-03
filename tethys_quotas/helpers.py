@@ -17,50 +17,47 @@ def sync_resource_quota_handlers():
     from tethys_quotas.handlers.base import ResourceQuotaHandler
     from tethys_sdk.quotas import codenames
 
-    try:
-        if hasattr(settings, 'RESOURCE_QUOTA_HANDLERS'):
-            quota_codenames = []
-            for quota_class_str in settings.RESOURCE_QUOTA_HANDLERS:
-                try:
-                    components = quota_class_str.split('.')
-                    mod = __import__('.'.join(components[:-1]), fromlist=[components[-1]])
-                    class_obj = getattr(mod, components[-1])
-                except:  # noqa: E722
-                    log.warning("Unable to load ResourceQuotaHandler: {} is not correctly formatted class or does not exist"
-                                .format(quota_class_str))
-                    continue
+    if hasattr(settings, 'RESOURCE_QUOTA_HANDLERS'):
+        quota_codenames = []
+        for quota_class_str in settings.RESOURCE_QUOTA_HANDLERS:
+            try:
+                components = quota_class_str.split('.')
+                mod = __import__('.'.join(components[:-1]), fromlist=[components[-1]])
+                class_obj = getattr(mod, components[-1])
+            except:  # noqa: E722
+                log.warning("Unable to load ResourceQuotaHandler: {} is not correctly formatted class or does not exist"
+                            .format(quota_class_str))
+                continue
 
-                if not issubclass(class_obj, ResourceQuotaHandler):
-                    log.warning("Unable to load ResourceQuotaHandler: {} is not a subclass of ResourceQuotaHandler"
-                                .format(quota_class_str))
-                    continue
-                else:
-                    for entity in class_obj.applies_to:
-                        entity_type = entity.split('.')[-1]
-                        codename = '{}_{}'.format(entity_type.lower(), class_obj.codename)
-                        quota_codenames.append(codename)
+            if not issubclass(class_obj, ResourceQuotaHandler):
+                log.warning("Unable to load ResourceQuotaHandler: {} is not a subclass of ResourceQuotaHandler"
+                            .format(quota_class_str))
+                continue
+            else:
+                for entity in class_obj.applies_to:
+                    entity_type = entity.split('.')[-1]
+                    codename = '{}_{}'.format(entity_type.lower(), class_obj.codename)
+                    quota_codenames.append(codename)
 
-                        if not ResourceQuota.objects.filter(codename=codename).exists():
-                            resource_quota = ResourceQuota(
-                                codename="{}_{}".format(entity_type.lower(), class_obj.codename),
-                                name="{} {}".format(entity_type, class_obj.name),
-                                description=class_obj.description,
-                                default=class_obj.default,
-                                units=class_obj.units,
-                                applies_to=entity,
-                                impose_default=True,
-                                help=class_obj.help,
-                                _handler=quota_class_str
-                            )
-                            resource_quota.save()
+                    if not ResourceQuota.objects.filter(codename=codename).exists():
+                        resource_quota = ResourceQuota(
+                            codename="{}_{}".format(entity_type.lower(), class_obj.codename),
+                            name="{} {}".format(entity_type, class_obj.name),
+                            description=class_obj.description,
+                            default=class_obj.default,
+                            units=class_obj.units,
+                            applies_to=entity,
+                            impose_default=True,
+                            help=class_obj.help,
+                            _handler=quota_class_str
+                        )
+                        resource_quota.save()
 
-            for rq in ResourceQuota.objects.all():
-                if rq.codename not in quota_codenames:
-                    rq.delete()
-                else:
-                    setattr(codenames, rq.codename.upper(), rq.codename)
-    except:
-        log.warning("RQ table not created yet")
+        for rq in ResourceQuota.objects.all():
+            if rq.codename not in quota_codenames:
+                rq.delete()
+            else:
+                setattr(codenames, rq.codename.upper(), rq.codename)
 
 
 def passes_quota(entity, codename):
