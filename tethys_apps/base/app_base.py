@@ -44,7 +44,7 @@ class TethysBase(TethysBaseMixin):
 
     def url_maps(self):
         """
-        Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically.
+        Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically. Starting in Tethys 3.0, the ``Websocket`` protocol is supported along with the ``HTTP`` protocol. To create a ``Websocket UrlMap``, follow the same pattern used for the ``HTTP`` protocol. In addition, provide a ``Consumer`` path in the controllers parameter as well as a ``Websocket`` string value for the new protocol parameter for the ``Weboscket UrlMap``.
 
         Returns:
           iterable: A list or tuple of ``UrlMap`` objects.
@@ -67,6 +67,12 @@ class TethysBase(TethysBaseMixin):
                     url_maps = (UrlMap(name='home',
                                        url='my-first-app',
                                        controller='my_first_app.controllers.home',
+                                       ),
+                    ),
+                    url_maps = (UrlMap(name='home_ws',
+                                       url='my-first-ws',
+                                       controller='my_first_app.controllers.homeConsumer',
+                                       protocol='websocket'
                                        ),
                     )
 

@@ -22,12 +22,12 @@ class TestConsumer(TethysTestCase):
             connected, subprotocol = await communicator.connect()
 
             # Test connection
-            assert connected
+            self.assertTrue(connected)
 
             # Test sending and receiving messages
             await communicator.send_to(text_data=json.dumps({'client_message': "This is a consumer test"}))
             response = await communicator.receive_from()
-            assert json.loads(response)["server_message"] == "This is a consumer test"
+            self.assertEqual(json.loads(response)["server_message"], "This is a consumer test")
 
             # Close
             await communicator.disconnect()
