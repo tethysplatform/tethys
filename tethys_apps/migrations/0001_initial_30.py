@@ -8,8 +8,6 @@ import tethys_apps.base.mixins
 
 class Migration(migrations.Migration):
 
-    replaces = [('tethys_apps', '0001_initial_20'), ('tethys_apps', '0002_tethysextension'), ('tethys_apps', '0003_python3_compatibility'), ('tethys_apps', '0004_auto_20190506_1714')]
-
     initial = True
 
     dependencies = [

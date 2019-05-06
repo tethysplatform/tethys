@@ -10,8 +10,6 @@ import tethys_compute.models.dask.dask_field
 
 class Migration(migrations.Migration):
 
-    replaces = [('tethys_compute', '0001_initial_20'), ('tethys_compute', '0002_daskjob'), ('tethys_compute', '0003_auto_20190506_1714')]
-
     initial = True
 
     dependencies = [
