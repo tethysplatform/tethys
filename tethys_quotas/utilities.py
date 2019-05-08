@@ -107,14 +107,14 @@ def get_resource_available(entity, codename):
     total_available = get_quota(entity, codename)
     if total_available['quota']:
         total_available = total_available['quota']
-        remaining_space = total_available - current_use
+        resource_available = total_available - current_use
     else:
         return None
 
-    if remaining_space < 0:
-        remaining_space = 0
+    if resource_available < 0:
+        resource_available = 0
 
-    return {'resource_available': remaining_space,
+    return {'resource_available': resource_available,
             'units': rq.units}
 
 
@@ -176,14 +176,7 @@ def get_quota(entity, codename):
 
 # Adapted from https://pypi.org/project/hurry.filesize/
 def _convert_storage_units(units, amount):
-    base_units = [
-        (1024 ** 5, ' PB'),
-        (1024 ** 4, ' TB'),
-        (1024 ** 3, ' GB'),
-        (1024 ** 2, ' MB'),
-        (1024 ** 1, ' KB'),
-        (1024 ** 0, (' byte', ' bytes')),
-    ]
+    base_units = _get_storage_units()
 
     base_conversion = [item[0] for item in base_units if units.upper() in item[1]]
     if not base_conversion:
@@ -202,3 +195,14 @@ def _convert_storage_units(units, amount):
         else:
             suffix = multiple
     return str(amount) + suffix
+
+
+def _get_storage_units():
+    return [
+        (1024 ** 5, ' PB'),
+        (1024 ** 4, ' TB'),
+        (1024 ** 3, ' GB'),
+        (1024 ** 2, ' MB'),
+        (1024 ** 1, ' KB'),
+        (1024 ** 0, (' byte', ' bytes')),
+    ]

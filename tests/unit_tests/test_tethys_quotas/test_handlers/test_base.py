@@ -66,12 +66,12 @@ class ResourceQuotaHandlerTest(TestCase):
         self.entity_quota_app.delete()
         self.app_model.delete()
 
-    @mock.patch('tethys_quotas.helpers.log')
+    @mock.patch('tethys_quotas.utilities.log')
     def test_rqh_check_rq_dne(self, _):
         bad_rqh = WorkspaceQuotaHandler("not.a.user")
         self.assertTrue(bad_rqh.check())
 
-    @mock.patch('tethys_quotas.helpers.log')
+    @mock.patch('tethys_quotas.utilities.log')
     def test_rqh_check_eq_dne(self, _):
         with transaction.atomic():
             user = User.objects.create_user(username="mike",
@@ -81,11 +81,11 @@ class ResourceQuotaHandlerTest(TestCase):
             self.assertEquals("workspace_quota", resource_quota_handler.codename)
             self.assertTrue(resource_quota_handler.check())
 
-    @mock.patch('tethys_quotas.helpers.log')
+    @mock.patch('tethys_quotas.utilities.log')
     def test_rqh_check_eq_passes(self, _):
         self.assertTrue(self.resource_quota_handler.check())
 
-    @mock.patch('tethys_quotas.helpers.log')
+    @mock.patch('tethys_quotas.utilities.log')
     def test_rqh_check_eq_app_passes(self, _):
         resource_quota_handler = WorkspaceQuotaHandler(self.app_model)
 

@@ -14,7 +14,7 @@ from django.utils.html import format_html
 from django.shortcuts import reverse
 from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
 from guardian.admin import GuardedModelAdmin
-from tethys_quotas.helpers import get_quota, _convert_storage_units
+from tethys_quotas.utilities import get_quota, _convert_storage_units
 from tethys_quotas.handlers.workspace import WorkspaceQuotaHandler
 from tethys_apps.models import (TethysApp,
                                 TethysExtension,

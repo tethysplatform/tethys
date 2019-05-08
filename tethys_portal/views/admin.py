@@ -1,8 +1,8 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
-from django.shortcuts import render, redirect
-from tethys_apps.harvester import SingletonHarvester
+from django.shortcuts import render, redirect, reverse
 from tethys_apps.models import TethysApp
+from tethys_apps.utilities import get_app_class
 from tethys_apps.base.workspace import _get_app_workspace
 
 
@@ -11,14 +11,8 @@ def clear_workspace(request, app_id):
     """
     Handle clear workspace requests.
     """
-    url = '/admin/tethys_apps/tethysapp/{}/change/'.format(app_id)
-    app = TethysApp.objects.get(id=app_id)
-
-    apps_s = SingletonHarvester().apps
-    for app_s in apps_s:
-        if app_s.name == app.name:
-            app = app_s
-            break
+    url = reverse('admin:tethys_apps_tethysapp_change', args=(app_id,))
+    app = get_app_class(TethysApp.objects.get(id=app_id))
 
     # Handle form submission
     if request.method == 'POST' and 'clear-workspace-submit' in request.POST:

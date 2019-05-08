@@ -11,6 +11,7 @@ import logging
 import os
 import sys
 import traceback
+import warnings
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
@@ -757,7 +758,7 @@ class TethysAppBase(TethysBase):
                 return render(request, 'my_first_app/template.html', context)
 
         """
-        print('DEPRECATED: @user_workspace decorator is now the preferred method for getting user workspace')
+        warnings.warn('@user_workspace decorator is now the preferred method for getting user workspace', DeprecationWarning)  # noqa: E501
         username = ''
 
         from django.contrib.auth.models import User
@@ -808,7 +809,7 @@ class TethysAppBase(TethysBase):
                 return render(request, 'my_first_app/template.html', context)
 
         """
-        print('DEPRECATION WARNING: @app_workspace decorator is now the preferred method for getting app workspace')  # noqa: E501
+        warnings.warn('@app_workspace decorator is now the preferred method for getting app workspace', DeprecationWarning)  # noqa: E501
         # Find the path to the app project directory
         # Hint: cls is a child class of this class.
         # Credits: http://stackoverflow.com/questions/4006102/ is-possible-to-know-the-_path-of-the-file-of-a-subclass-in-python  # noqa: E501
