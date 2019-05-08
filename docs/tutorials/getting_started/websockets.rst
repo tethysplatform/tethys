@@ -22,10 +22,14 @@ If you wish to use the advanced solution as a starting point:
     $ cd tethysapp-dam_inventory
     $ git checkout advanced-solution
 
-1. Django Channels Consummers
-=============================
+.. note::
 
-Cosumer classes are the equivalent of controller functions when working with websockets on Tethys.
+    This tutorial can also be built on any other advanced solution, such as the Tethys Quotas tutorial solution.
+
+1. Django Channels Consumers
+============================
+
+Consumer classes are the equivalent of controller functions when working with websockets on Tethys.
 
 a. Add the following code to the controller.
 
@@ -99,7 +103,6 @@ Create a websocket connection by adding the following code to the home.html temp
     {% endblock %}
 
     {% block after_app_content %}
-    {% gizmo message_box %}
       <script>
         var notificationWS = new WebSocket('ws://' + window.location.host + '/ws/dam-inventory/dams/notifications/');
       </script>
@@ -259,9 +262,9 @@ b. Let's create a message box to display our notification when a new app is adde
     ...
 
 
-This gismo creates an empty message box with a current page refresh. It will be populated in the next step based on our websocket connection.
+This gizmo creates an empty message box with a current page refresh. It will be populated in the next step based on our websocket connection.
 
-h. Now that the logic has been added, lets modify the websocket connection from step (2) to listen for any ``New Dam`` messages and populate our message box accordingly. Update the code in home.html as follows.
+c. Now that the logic has been added, lets add the tethys message box gizmo and modify the websocket connection from step (2) to listen for any ``New Dam`` messages and populate our message box accordingly. Update the code in home.html as follows.
 
 .. code-block:: html+jinja
 
@@ -293,7 +296,7 @@ h. Now that the logic has been added, lets modify the websocket connection from 
 
 Besides the message_box gizmo, a simple ``JavaScript`` conditional has been added to display and populate the message box if the message our websocket connection listened for is equal to ``New Dam``.
 
-Test the websocket communication by opening two instances of the dam inventory app at the same time. Add an dam in one instance, a message box will display on the home of the other instance suggesting a refresh to display the newly added dam.
+Test the websocket communication by opening two instances of the dam inventory app at the same time. Add a dam in one instance, a message box will display on the home of the other instance suggesting a refresh to display the newly added dam.
 
 .. note::
 
