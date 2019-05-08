@@ -167,7 +167,6 @@ class TestUrlMap(unittest.TestCase):
     def test_get_app_workspace(self, mock_tws):
         _get_app_workspace(self.app)
 
-
         # Check result
         rts_call_args = mock_tws.call_args_list
         self.assertIn('workspaces', rts_call_args[0][0][0])

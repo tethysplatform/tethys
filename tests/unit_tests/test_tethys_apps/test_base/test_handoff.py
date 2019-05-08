@@ -4,6 +4,7 @@ from types import FunctionType
 from unittest import mock
 from tethys_sdk.testing import TethysTestCase
 
+
 def test_function(*args):
 
     if args is not None:

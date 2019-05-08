@@ -193,7 +193,6 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         self.assertEquals(expected_html.replace(" ", ""), actual_html.replace(" ", ""))
 
-
     def test_TethysExtensionAdmin(self):
         expected_readonly_fields = ('package', 'name', 'description')
         expected_fields = ('package', 'name', 'description', 'enabled')
