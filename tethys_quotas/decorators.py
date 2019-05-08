@@ -12,12 +12,18 @@ from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
 from tethys_apps.utilities import get_active_app
 from tethys_quotas.models.resource_quota import ResourceQuota
-from tethys_quotas.helpers import passes_quota
+from tethys_quotas.utilities import passes_quota
 
 log = logging.getLogger('tethys.' + __name__)
 
 
 def enforce_quota(codename):
+    """
+        Decorator to enforce custom quotas
+
+        Args:
+            codename (string): codename of quota to enforce
+    """  # noqa: E501
     def decorator(controller):
         def wrapper(*args, **kwargs):
             try:

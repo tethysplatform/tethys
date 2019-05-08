@@ -9,6 +9,7 @@
 """
 import inspect
 import json
+import warnings
 from django.shortcuts import redirect
 from django.http import HttpResponseBadRequest
 
@@ -156,9 +157,9 @@ class HandoffManager:
             else:
                 handler_str = handler.handler
                 if ':' in handler_str:
-                    print('DEPRECATION WARNING: The handler attribute of a HandoffHandler should now be in the '
-                          'form: "my_first_app.controllers.my_handler". The form "handoff:my_handler" '
-                          'is now deprecated.')
+                    warnings.warn('The handler attribute of a HandoffHandler should now be in the '
+                                  'form: "my_first_app.controllers.my_handler". The form "handoff:my_handler" '
+                                  'is now deprecated.', DeprecationWarning)
 
                     # Split into module name and function name
                     module_path, function_name = handler_str.split(':')

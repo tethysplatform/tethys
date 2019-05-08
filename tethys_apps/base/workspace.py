@@ -17,7 +17,7 @@ from django.http import HttpRequest
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
 from django.utils.functional import SimpleLazyObject
-from tethys_quotas.helpers import passes_quota
+from tethys_quotas.utilities import passes_quota, _get_storage_units
 
 log = logging.getLogger('tethys.' + __name__)
 
@@ -189,22 +189,17 @@ class TethysWorkspace:
             os.remove(full_path)
 
     def get_size(self, units='b'):
-        units = units.lower()
-
         total_size = 0
         for file in self.files(True):
             total_size += os.path.getsize(file)
 
-        if units == 'b':
-            return total_size
-        elif units == 'kb':
-            return total_size / (10**3)
-        elif units == 'mb':
-            return total_size / (10**6)
-        elif units == 'gb':
-            return total_size / (10**9)
-        elif units == 'tb':
-            return total_size / (10**12)
+        if units.lower() == 'b':
+            conversion_factor = 1
+        else:
+            storage_units = _get_storage_units()
+            conversion_factor = [item[0] for item in storage_units if units.upper() in item[1]][0]
+
+        return total_size / conversion_factor
 
 
 def _get_user_workspace(app_class, user_or_request):
@@ -319,13 +314,7 @@ def user_workspace():
                 log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
 
             # Get the active app
-            from tethys_apps.harvester import SingletonHarvester
-            app = get_active_app(request)
-            apps_s = SingletonHarvester().apps
-            for app_s in apps_s:
-                if app_s.name == app.name:
-                    app = app_s
-                    break
+            app = get_active_app(request, get_class=True)
 
             the_workspace = _get_user_workspace(app, user)
 
@@ -427,13 +416,7 @@ def app_workspace():
                 log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
 
             # Get the active app
-            from tethys_apps.harvester import SingletonHarvester
-            app = get_active_app(request)
-            apps_s = SingletonHarvester().apps
-            for app_s in apps_s:
-                if app_s.name == app.name:
-                    app = app_s
-                    break
+            app = get_active_app(request, get_class=True)
 
             if not passes_quota(app, codename):
                 raise PermissionDenied(rq.help)

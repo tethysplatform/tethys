@@ -18,8 +18,9 @@ from tethys_apps.harvester import SingletonHarvester
 from tethys_portal.forms import UserSettingsForm, UserPasswordChangeForm
 from tethys_apps.models import TethysApp
 from tethys_apps.base.workspace import _get_user_workspace
+from tethys_apps.utilities import get_app_class
 from tethys_quotas.handlers.workspace import WorkspaceQuotaHandler
-from tethys_quotas.helpers import get_quota, _convert_storage_units
+from tethys_quotas.utilities import get_quota, _convert_storage_units
 
 
 @login_required()
@@ -36,10 +37,7 @@ def profile(request, username=None):
     rqh = WorkspaceQuotaHandler(context_user)
     current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
     quota = get_quota(context_user, codename)
-    if quota['quota']:
-        quota = _convert_storage_units(quota['units'], quota['quota'])
-    else:
-        quota = None
+    quota = _check_quota_helper(quota)
 
     context = {
         'context_user': context_user,
@@ -92,10 +90,7 @@ def settings(request, username=None):
     rqh = WorkspaceQuotaHandler(request_user)
     current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
     quota = get_quota(request_user, codename)
-    if quota['quota']:
-        quota = _convert_storage_units(quota['units'], quota['quota'])
-    else:
-        quota = None
+    quota = _check_quota_helper(quota)
 
     context = {'form': form,
                'context_user': request.user,
@@ -205,11 +200,7 @@ def clear_workspace(request, username, root_url):
 
     # Handle form submission
     if request.method == 'POST' and 'clear-workspace-submit' in request.POST:
-        apps_s = SingletonHarvester().apps
-        for app_s in apps_s:
-            if app_s.name == app.name:
-                app = app_s
-                break
+        app = get_app_class(app)
 
         user = request.user
         workspace = _get_user_workspace(app, user)
@@ -250,10 +241,7 @@ def manage_storage(request, username):
     rqh = WorkspaceQuotaHandler(user)
     current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
     quota = get_quota(user, codename)
-    if quota['quota']:
-        quota = _convert_storage_units(quota['units'], quota['quota'])
-    else:
-        quota = None
+    quota = _check_quota_helper(quota)
 
     context = {'apps': apps,
                'context_user': request.user,
@@ -262,3 +250,10 @@ def manage_storage(request, username):
                }
 
     return render(request, 'tethys_portal/user/manage_storage.html', context)
+
+
+def _check_quota_helper(quota):
+    if quota['quota']:
+        return _convert_storage_units(quota['units'], quota['quota'])
+    else:
+        return None

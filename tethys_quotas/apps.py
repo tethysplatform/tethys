@@ -8,7 +8,8 @@
 """
 import logging
 from django.apps import AppConfig
-from tethys_quotas.helpers import sync_resource_quota_handlers
+from django.db.utils import ProgrammingError
+from tethys_quotas.utilities import sync_resource_quota_handlers
 
 log = logging.getLogger('tethys.' + __name__)
 
@@ -20,5 +21,5 @@ class TethysQuotasConfig(AppConfig):
     def ready(self):
         try:
             sync_resource_quota_handlers()
-        except:  # noqa
-            log.warning("RQ table not created yet")
+        except ProgrammingError:
+            log.warning("Unable to sync resource quota handlers: Resource Quota table does not exist")

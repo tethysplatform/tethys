@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-* Name: helpers.py
+* Name: utilities.py
 * Author: Nathan Swain
 * Created On: 2014
 * Copyright: (c) Brigham Young University 2014
