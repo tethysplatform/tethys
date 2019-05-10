@@ -9,7 +9,7 @@
 """
 try:
     import curses
-except Exception:
+except Exception:  # pragma: no cover
     pass  # curses not available on Windows
 import platform
 import os

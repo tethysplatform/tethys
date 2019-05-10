@@ -15,3 +15,4 @@ You will need to use the command line/terminal to manage your app and run the de
    getting_started/beginner
    getting_started/intermediate
    getting_started/advanced
+   getting_started/quotas

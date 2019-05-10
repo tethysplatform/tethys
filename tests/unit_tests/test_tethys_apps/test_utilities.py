@@ -122,6 +122,19 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         result = utilities.get_active_app(url='/apps/foo/bar')
         self.assertEqual(mock_app.objects.get(), result)
 
+    @mock.patch('tethys_apps.utilities.SingletonHarvester')
+    @mock.patch('tethys_apps.models.TethysApp')
+    def test_get_active_app_class(self, mock_app, mock_harvester):
+        # Mock up for TethysApp
+        app = mock.MagicMock()
+        mock_app.objects.get.return_value = app
+
+        mock_harvester().apps = [app]
+
+        # Result should be mock for mock_app.objects.get.return_value
+        result = utilities.get_active_app(url='/apps/foo/bar', get_class=True)
+        self.assertEqual(mock_app.objects.get(), result)
+
     @mock.patch('tethys_apps.models.TethysApp')
     def test_get_active_app_request_bad_path(self, mock_app):
         # Mock up for TethysApp

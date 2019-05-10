@@ -12,11 +12,9 @@ from tethys_sdk.permissions import login_required
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.core.mail import send_mail
-
 from tethys_apps.base.app_base import TethysAppBase
 from tethys_apps.models import TethysApp
 from tethys_apps.utilities import get_active_app
-
 from tethys_compute.models import TethysJob, DaskJob
 
 log = logging.getLogger('tethys.' + __name__)
