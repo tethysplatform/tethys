@@ -4,6 +4,7 @@ from types import FunctionType
 from unittest import mock
 from tethys_sdk.testing import TethysTestCase
 
+
 def test_function(*args):
 
     if args is not None:
@@ -166,8 +167,8 @@ class TestHandoffManager(unittest.TestCase):
             format('test manager name', 'test_handler')
         self.assertIn(check_message, rts_call_args[0][0][0])
 
-    @mock.patch('tethys_apps.base.handoff.print')
-    def test_get_valid_handlers(self, mock_print):
+    @mock.patch('warnings.warn')
+    def test_get_valid_handlers(self, mock_warn):
         app = mock.MagicMock(package='test_app')
 
         # Mock handoff_handlers
@@ -187,9 +188,9 @@ class TestHandoffManager(unittest.TestCase):
         self.assertEqual('my_first_app.controllers.my_handler', result[0].handler)
         self.assertEqual('controllers:home', result[1].handler)
 
-        check_message = 'DEPRECATION WARNING: The handler attribute of a HandoffHandler should now be in the form:' \
+        check_message = 'The handler attribute of a HandoffHandler should now be in the form:' \
                         ' "my_first_app.controllers.my_handler". The form "handoff:my_handler" is now deprecated.'
-        mock_print.assert_called_with(check_message)
+        mock_warn.assert_called_with(check_message, DeprecationWarning)
 
 
 class TestHandoffHandler(unittest.TestCase):

@@ -25,7 +25,7 @@ log = logging.getLogger('tethys')
 try:
     from tethys_services.models import (DatasetService, SpatialDatasetService,
                                         WebProcessingService, PersistentStoreService)
-except RuntimeError:
+except RuntimeError:  # pragma: no cover
     log.exception('An error occurred while trying to import tethys service models.')
 
 

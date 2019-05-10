@@ -65,6 +65,7 @@ installed_apps = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'tethys_config',
+    'tethys_quotas',
     'tethys_apps',
     'tethys_gizmos',
     'tethys_services',
