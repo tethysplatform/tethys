@@ -346,3 +346,9 @@ WOOPRA_DOMAIN = False
 YANDEX_METRICA_COUNTER_ID = False
 
 ASGI_APPLICATION = "tethys_apps.routing.application"
+
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels.layers.InMemoryChannelLayer'
+#     },
+# }
