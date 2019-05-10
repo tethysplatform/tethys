@@ -184,7 +184,11 @@
     {% endif %}
 
     {% block account_parameters %}
-    <div class="profile-section last">
+      {% if user.username == context_user.username %}
+        <div class="profile-section">
+      {% else %}
+        <div class="profile-section last">
+      {% endif %}
       <div class="row">
         <div class="col-md-2 col-md-offset-2 profile-section-header">
           <h3>Account</h3>
@@ -197,6 +201,22 @@
         </div>
       </div>
     </div>
+    {% endblock %}
+    {% block workspace_management %}
+      {% if user.username == context_user.username %}
+        <div class="profile-section last">
+          <div class="row">
+            <div class="col-md-2 col-md-offset-2 profile-section-header">
+              <h3>Workspace</h3>
+            </div>
+            <div class="col-md-8 profile-parameters">
+              <ul>
+                <li><span class="parameter">Storage Summary:</span><span class="value">{{ current_use }} of {{ quota|default:"&#8734;" }}</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endif%}
     {% endblock %}
   {% endblock %}
 

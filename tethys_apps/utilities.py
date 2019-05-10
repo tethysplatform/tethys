@@ -81,7 +81,7 @@ def get_directories_in_tethys(directory_names, with_app_name=False):
     return match_dirs
 
 
-def get_active_app(request=None, url=None):
+def get_active_app(request=None, url=None, get_class=None):
     """
     Get the active TethysApp object based on the request or URL.
     """
@@ -112,7 +112,18 @@ def get_active_app(request=None, url=None):
                 tethys_log.warning('Could not locate app with root url "{0}".'.format(app_root_url))
             except MultipleObjectsReturned:
                 tethys_log.warning('Multiple apps found with root url "{0}".'.format(app_root_url))
+
+    if get_class:
+        app = get_app_class(app)
+
     return app
+
+
+def get_app_class(app):
+    apps_s = SingletonHarvester().apps
+    for app_s in apps_s:
+        if app_s.name == app.name:
+            return app_s
 
 
 def create_ps_database_setting(app_package, name, description='', required=False, initializer='', initialized=False,

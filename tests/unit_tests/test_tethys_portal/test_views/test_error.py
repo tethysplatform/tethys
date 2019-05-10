@@ -28,12 +28,12 @@ class TethysPortalViewsErrorTests(unittest.TestCase):
         mock_request = mock.MagicMock()
         mock_render.return_value = '403'
         context = {'error_code': '403',
-                   'error_title': 'Forbidden',
-                   'error_message': "We apologize, but this operation is not permitted.",
-                   'error_image': '/static/tethys_portal/images/error_403.png'}
+                   'error_title': 'Sorry, you are unable to access this page right now.',
+                   'error_message': 'error message',
+                   'error_image': '/static/tethys_portal/images/data.png'}
 
-        self.assertEquals('403', handler_403(mock_request))
-        mock_render.assert_called_once_with(mock_request, 'tethys_portal/error.html', context, status=403)
+        self.assertEquals('403', handler_403(mock_request, exception="error message"))
+        mock_render.assert_called_once_with(mock_request, 'tethys_portal/403error.html', context, status=403)
 
     @mock.patch('tethys_portal.views.error.render')
     def test_handler_404(self, mock_render):
