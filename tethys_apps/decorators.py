@@ -126,7 +126,7 @@ def permission_required(*args, **kwargs):
             if request_args_index is not None:
                 request = args[request_args_index]
             else:
-                raise ValueError("No WSGIRequest object provided.")
+                raise ValueError("No WSGIRequest or ASGIRequest object provided.")
 
             if request_args_index > 0:
                 the_self = args[0]
