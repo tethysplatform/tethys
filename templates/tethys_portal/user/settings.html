@@ -13,6 +13,10 @@
     body {
       background: {{ site_globals.background_color|default:'#efefef' }};
     }
+
+    a:hover {
+      cursor:pointer;
+    }
   </style>
 {% endblock %}
 
@@ -149,7 +153,7 @@
 {% endblock %}
 
 {% block account_parameters %}
-  <div class="profile-section last">
+  <div class="profile-section">
     <div class="row">
       <div class="col-md-2 col-md-offset-2 profile-section-header">
         <h3>Account</h3>
@@ -165,6 +169,21 @@
   </div>
 {% endblock %}
 
+{% block workspace_management %}
+<div class="profile-section last">
+  <div class="row">
+    <div class="col-md-2 col-md-offset-2 profile-section-header">
+      <h3>Workspace</h3>
+    </div>
+    <div class="col-md-8 profile-parameters">
+      <ul>
+        <li><span class="parameter">Storage Summary:</span><span class="value">{{ current_use }} of {{ quota|default:"&#8734;" }}</span></li>
+        <li><span class="parameter">Manage Storage:</span><span class="value button"><a class="btn btn-default btn-sm" href="{% url 'user:manage_storage' user.username %}">Manage Storage</a></span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
 
 {% block profile_sections %}
   <form role="form" class="form-horizontal" method="post">
@@ -186,5 +205,3 @@
     </div>
   </form>
 {% endblock %}
-
-

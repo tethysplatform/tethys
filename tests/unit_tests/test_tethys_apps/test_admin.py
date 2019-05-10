@@ -1,9 +1,14 @@
 import unittest
 from unittest import mock
+from django.utils.html import format_html
+from django.shortcuts import reverse
 
 from tethys_apps.admin import TethysAppSettingInline, CustomSettingInline, DatasetServiceSettingInline, \
     SpatialDatasetServiceSettingInline, WebProcessingServiceSettingInline, PersistentStoreConnectionSettingInline, \
     PersistentStoreDatabaseSettingInline, TethysAppAdmin, TethysExtensionAdmin
+from tethys_quotas.admin import TethysAppQuotasSettingInline
+
+from tethys_quotas.models import TethysAppQuota
 
 from tethys_apps.models import (TethysApp,
                                 TethysExtension,
@@ -111,16 +116,34 @@ class TestTethysAppAdmin(unittest.TestCase):
         mock_request = mock.MagicMock()
         obj.get_queryset(mock_request)
 
+    def test_TethysAppQuotasSettingInline(self):
+        expected_readonly_fields = ('name', 'description', 'default', 'units')
+        expected_fields = ('name', 'description', 'value', 'default', 'units')
+        expected_model = TethysAppQuota
+
+        ret = TethysAppQuotasSettingInline(mock.MagicMock(), mock.MagicMock())
+
+        self.assertEquals(expected_readonly_fields, ret.readonly_fields)
+        self.assertEquals(expected_fields, ret.fields)
+        self.assertEquals(expected_model, ret.model)
+
+    # Need to check
+    # def test_TethysAppQuotasSettingInline_get_queryset(self):
+    #     obj = TethysAppQuotasSettingInline(mock.MagicMock(), mock.MagicMock())
+    #     mock_request = mock.MagicMock()
+    #     obj.get_queryset(mock_request)
+
     def test_TethysAppAdmin(self):
-        expected_readonly_fields = ('package',)
+        expected_readonly_fields = ('package', 'manage_app_storage',)
         expected_fields = ('package', 'name', 'description', 'tags', 'enabled', 'show_in_apps_library',
-                           'enable_feedback')
+                           'enable_feedback', 'manage_app_storage',)
         expected_inlines = [CustomSettingInline,
                             PersistentStoreConnectionSettingInline,
                             PersistentStoreDatabaseSettingInline,
                             DatasetServiceSettingInline,
                             SpatialDatasetServiceSettingInline,
-                            WebProcessingServiceSettingInline]
+                            WebProcessingServiceSettingInline,
+                            TethysAppQuotasSettingInline]
 
         ret = TethysAppAdmin(mock.MagicMock(), mock.MagicMock())
 
@@ -135,6 +158,40 @@ class TestTethysAppAdmin(unittest.TestCase):
     def test_TethysAppAdmin_has_add_permission(self):
         ret = TethysAppAdmin(mock.MagicMock(), mock.MagicMock())
         self.assertFalse(ret.has_add_permission(mock.MagicMock()))
+
+    @mock.patch('tethys_apps.admin.get_quota')
+    @mock.patch('tethys_apps.admin._convert_storage_units')
+    def test_TethysAppAdmin_manage_app_storage(self, mock_convert, mock_get_quota):
+        ret = TethysAppAdmin(mock.MagicMock(), mock.MagicMock())
+        app = mock.MagicMock()
+        app.id = 1
+        mock_convert.return_value = '0 bytes'
+        mock_get_quota.return_value = {'quota': None}
+        url = reverse('admin:clear_workspace', kwargs={'app_id': app.id})
+
+        expected_html = format_html("""
+                <span>{} of {}</span>
+                <a id="clear-workspace" class="btn btn-danger btn-sm"
+                href="{url}">
+                Clear Workspace</a>
+                """.format('0 bytes', "&#8734;", url=url))
+        actual_html = ret.manage_app_storage(app)
+
+        self.assertEquals(expected_html.replace(" ", ""), actual_html.replace(" ", ""))
+
+        mock_convert.return_value = '0 bytes'
+        mock_get_quota.return_value = {'quota': 5, 'units': 'gb'}
+        url = reverse('admin:clear_workspace', kwargs={'app_id': app.id})
+
+        expected_html = format_html("""
+                        <span>{} of {}</span>
+                        <a id="clear-workspace" class="btn btn-danger btn-sm"
+                        href="{url}">
+                        Clear Workspace</a>
+                        """.format('0 bytes', "0 bytes", url=url))
+        actual_html = ret.manage_app_storage(app)
+
+        self.assertEquals(expected_html.replace(" ", ""), actual_html.replace(" ", ""))
 
     def test_TethysExtensionAdmin(self):
         expected_readonly_fields = ('package', 'name', 'description')

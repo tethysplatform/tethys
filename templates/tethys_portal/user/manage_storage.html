@@ -1,0 +1,74 @@
+{% extends "tethys_portal/user/profile.html" %}
+
+{% load bootstrap3 %}
+
+{% block edit_button %}
+{% endblock %}
+
+{% block title %}- User Settings{% endblock %}
+
+{% block styles %}
+  {{ block.super }}
+  <style>
+    body {
+      background: {{ site_globals.background_color|default:'#efefef' }};
+    }
+
+    a:hover {
+      cursor:pointer;
+    }
+
+    .parameter {
+      padding-right: 10px;
+      font-size: 18px;
+    }
+
+    .value {
+      font-size: 17px;
+    }
+  </style>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+{% endblock %}
+
+{% block profile_sections %}
+<div class="profile-section first last">
+  <div class="results">
+    <table id="app_list" class="table table-striped table-bordered" style="width:100%">
+      <thead>
+        <tr>
+          <th>App Name</th>
+          <th>Current Usage</th>
+          <th>Manage Storage</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in apps %}
+        <tr>
+          <td>
+            <a href="{% url app.index %}">{{ app.name }}</a>
+          </td>
+          <td>{{ app.current_use }}</td>
+          <td>
+            <a class="btn btn-danger btn-sm" href="{% url 'user:clear_workspace' user.username app.root_url %}">Clear Workspace</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div id="storage_summary" style="text-align: center;"><span class="parameter">Storage Summary:</span><span class="value">{{ current_use }} of {{ quota|default:"&#8734;" }}</span></div>
+  </div>
+</div>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>
+<script>
+$(document).ready(function() {
+  $('#app_list').DataTable({
+    "columnDefs": [
+      { "orderable": false, "targets": 2 }
+    ]
+  });
+});
+</script>
+
+{% endblock %}

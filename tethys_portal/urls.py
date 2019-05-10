@@ -15,7 +15,7 @@ from django.conf import settings
 from tethys_apps.urls import extension_urls
 
 from tethys_portal.views import accounts as tethys_portal_accounts, developer as tethys_portal_developer, \
-    error as tethys_portal_error, home as tethys_portal_home, user as tethys_portal_user
+    error as tethys_portal_error, home as tethys_portal_home, user as tethys_portal_user, admin as tethys_portal_admin
 from tethys_apps import views as tethys_apps_views
 from tethys_compute.views import dask_dashboard as tethys_dask_views
 
@@ -30,6 +30,10 @@ admin.site.login = staff_member_required(admin.site.login, redirect_field_name="
 admin_urls = admin.site.urls
 admin_urls[0].append(url(r'^dask-dashboard/(?P<page>[\w-]+)/(?P<dask_scheduler_id>[\w-]+)/$',
                          tethys_dask_views.dask_dashboard, name='dask_dashboard'))
+
+# Add clear app workspace url
+admin_urls[0].insert(0, url(r'^tethys_apps/tethysapp/(?P<app_id>[0-9]+)/clear-workspace/$',
+                            tethys_portal_admin.clear_workspace, name='clear_workspace'))
 
 account_urls = [
     url(r'^login/$', tethys_portal_accounts.login_view, name='login'),
@@ -50,6 +54,8 @@ user_urls = [
     url(r'^disconnect/(?P<provider>[\w.@+-]+)/(?P<association_id>[0-9]+)/$', tethys_portal_user.social_disconnect,
         name='disconnect'),
     url(r'^delete-account/$', tethys_portal_user.delete_account, name='delete'),
+    url(r'^clear-workspace/(?P<root_url>[\w.@+-]+)/$', tethys_portal_user.clear_workspace, name='clear_workspace'),
+    url(r'^manage-storage/$', tethys_portal_user.manage_storage, name='manage_storage'),
 ]
 
 developer_urls = [
