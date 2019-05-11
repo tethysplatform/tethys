@@ -164,8 +164,6 @@ TERMS_BASE_TEMPLATE = 'page.html'
 
 ROOT_URLCONF = 'tethys_portal.urls'
 
-WSGI_APPLICATION = 'tethys_portal.wsgi.application'
-
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
@@ -345,7 +343,7 @@ USERVOICE_WIDGET_KEY = False
 WOOPRA_DOMAIN = False
 YANDEX_METRICA_COUNTER_ID = False
 
-ASGI_APPLICATION = "tethys_apps.routing.application"
+ASGI_APPLICATION = "tethys_portal.routing.application"
 
 # CHANNEL_LAYERS = {
 #     'default': {
