@@ -23,38 +23,38 @@ class TestTethysServicesAdmin(unittest.TestCase):
         expected_fields = ('name', 'engine', 'endpoint', 'public_endpoint', 'apikey', 'username', 'password')
 
         ret = DatasetServiceForm(mock_args)
-        self.assertEquals(DatasetService, ret.Meta.model)
-        self.assertEquals(expected_fields, ret.Meta.fields)
+        self.assertEqual(DatasetService, ret.Meta.model)
+        self.assertEqual(expected_fields, ret.Meta.fields)
         self.assertTrue('password' in ret.Meta.widgets)
-        self.assertEquals(self.expected_labels, ret.Meta.labels)
+        self.assertEqual(self.expected_labels, ret.Meta.labels)
 
     def test_SpatialDatasetServiceForm(self):
         mock_args = mock.MagicMock()
         expected_fields = ('name', 'engine', 'endpoint', 'public_endpoint', 'apikey', 'username', 'password')
 
         ret = SpatialDatasetServiceForm(mock_args)
-        self.assertEquals(SpatialDatasetService, ret.Meta.model)
-        self.assertEquals(expected_fields, ret.Meta.fields)
+        self.assertEqual(SpatialDatasetService, ret.Meta.model)
+        self.assertEqual(expected_fields, ret.Meta.fields)
         self.assertTrue('password' in ret.Meta.widgets)
-        self.assertEquals(self.expected_labels, ret.Meta.labels)
+        self.assertEqual(self.expected_labels, ret.Meta.labels)
 
     def test_WebProcessingServiceForm(self):
         mock_args = mock.MagicMock()
         expected_fields = ('name', 'endpoint', 'public_endpoint', 'username', 'password')
 
         ret = WebProcessingServiceForm(mock_args)
-        self.assertEquals(WebProcessingService, ret.Meta.model)
-        self.assertEquals(expected_fields, ret.Meta.fields)
+        self.assertEqual(WebProcessingService, ret.Meta.model)
+        self.assertEqual(expected_fields, ret.Meta.fields)
         self.assertTrue('password' in ret.Meta.widgets)
-        self.assertEquals(self.expected_labels, ret.Meta.labels)
+        self.assertEqual(self.expected_labels, ret.Meta.labels)
 
     def test_PersistentStoreServiceForm(self):
         mock_args = mock.MagicMock()
         expected_fields = ('name', 'engine', 'host', 'port', 'username', 'password')
 
         ret = PersistentStoreServiceForm(mock_args)
-        self.assertEquals(PersistentStoreService, ret.Meta.model)
-        self.assertEquals(expected_fields, ret.Meta.fields)
+        self.assertEqual(PersistentStoreService, ret.Meta.model)
+        self.assertEqual(expected_fields, ret.Meta.fields)
         self.assertTrue('password' in ret.Meta.widgets)
 
     def test_DatasetServiceAdmin(self):
@@ -62,32 +62,32 @@ class TestTethysServicesAdmin(unittest.TestCase):
         expected_fields = ('name', 'engine', 'endpoint', 'public_endpoint', 'apikey', 'username', 'password')
 
         ret = DatasetServiceAdmin(mock_args, mock_args)
-        self.assertEquals(DatasetServiceForm, ret.form)
-        self.assertEquals(expected_fields, ret.fields)
+        self.assertEqual(DatasetServiceForm, ret.form)
+        self.assertEqual(expected_fields, ret.fields)
 
     def test_SpatialDatasetServiceAdmin(self):
         mock_args = mock.MagicMock()
         expected_fields = ('name', 'engine', 'endpoint', 'public_endpoint', 'apikey', 'username', 'password')
 
         ret = SpatialDatasetServiceAdmin(mock_args, mock_args)
-        self.assertEquals(SpatialDatasetServiceForm, ret.form)
-        self.assertEquals(expected_fields, ret.fields)
+        self.assertEqual(SpatialDatasetServiceForm, ret.form)
+        self.assertEqual(expected_fields, ret.fields)
 
     def test_WebProcessingServiceAdmin(self):
         mock_args = mock.MagicMock()
         expected_fields = ('name', 'endpoint', 'public_endpoint', 'username', 'password')
 
         ret = WebProcessingServiceAdmin(mock_args, mock_args)
-        self.assertEquals(WebProcessingServiceForm, ret.form)
-        self.assertEquals(expected_fields, ret.fields)
+        self.assertEqual(WebProcessingServiceForm, ret.form)
+        self.assertEqual(expected_fields, ret.fields)
 
     def test_PersistentStoreServiceAdmin(self):
         mock_args = mock.MagicMock()
         expected_fields = ('name', 'engine', 'host', 'port', 'username', 'password')
 
         ret = PersistentStoreServiceAdmin(mock_args, mock_args)
-        self.assertEquals(PersistentStoreServiceForm, ret.form)
-        self.assertEquals(expected_fields, ret.fields)
+        self.assertEqual(PersistentStoreServiceForm, ret.form)
+        self.assertEqual(expected_fields, ret.fields)
 
     def test_admin_site_register(self):
         from django.contrib import admin

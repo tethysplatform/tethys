@@ -11,12 +11,13 @@ channels:
 - defaults
 
 dependencies:
-- python=3.6*
+- python
 
 # system dependencies
 - pycrypto
 - pyopenssl
 - docker-py
+- distro
 
 # database dependencies
 - postgresql

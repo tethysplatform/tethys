@@ -13,7 +13,7 @@ import subprocess
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 import ctypes
-from tethys_apps.cli.cli_colors import pretty_output, FG_BLACK
+from tethys_cli.cli_colors import pretty_output, FG_BLACK
 
 
 def find_resource_files(directory):

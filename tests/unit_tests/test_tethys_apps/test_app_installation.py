@@ -60,13 +60,13 @@ class TestAppInstallation(unittest.TestCase):
 
         # check the input arguments for shutil.copytree method
         shutil_call_args = mock_shutil.copytree.call_args_list
-        self.assertEquals('/test_app/', shutil_call_args[0][0][0])
+        self.assertEqual('/test_app/', shutil_call_args[0][0][0])
 
         # check the input arguments for subprocess.call method
         process_call_args = mock_subprocess.call.call_args_list
-        self.assertEquals('pip', process_call_args[0][0][0][0])
-        self.assertEquals('install', process_call_args[0][0][0][1])
-        self.assertEquals('foo', process_call_args[0][0][0][2])
+        self.assertEqual('pip', process_call_args[0][0][0][0])
+        self.assertEqual('install', process_call_args[0][0][0][1])
+        self.assertEqual('foo', process_call_args[0][0][0][2])
 
         # check the install call
         mock_install.run.assert_called_with(mock_self)
@@ -98,13 +98,13 @@ class TestAppInstallation(unittest.TestCase):
 
         # check the input arguments for os.symlink method
         symlink_call_args = mock_os.symlink.call_args_list
-        self.assertEquals('/test_app/', symlink_call_args[0][0][0])
+        self.assertEqual('/test_app/', symlink_call_args[0][0][0])
 
         # check the input arguments for subprocess.call method
         process_call_args = mock_subprocess.call.call_args_list
-        self.assertEquals('pip', process_call_args[0][0][0][0])
-        self.assertEquals('install', process_call_args[0][0][0][1])
-        self.assertEquals('foo', process_call_args[0][0][0][2])
+        self.assertEqual('pip', process_call_args[0][0][0][0])
+        self.assertEqual('install', process_call_args[0][0][0][1])
+        self.assertEqual('foo', process_call_args[0][0][0][2])
 
         # check the develop call
         mock_develop.run.assert_called_with(mock_self)
@@ -116,10 +116,10 @@ class TestAppInstallation(unittest.TestCase):
 
         ret = tethys_app_installation.custom_install_command(app_package, app_package_dir, dependencies)
 
-        self.assertEquals('tethys_apps', ret.app_package)
-        self.assertEquals('/test_app/', ret.app_package_dir)
-        self.assertEquals('foo', ret.dependencies)
-        self.assertEquals('tethys_apps.app_installation', ret.__module__)
+        self.assertEqual('tethys_apps', ret.app_package)
+        self.assertEqual('/test_app/', ret.app_package_dir)
+        self.assertEqual('foo', ret.dependencies)
+        self.assertEqual('tethys_apps.app_installation', ret.__module__)
 
     def test_custom_develop_command(self):
         app_package = 'tethys_apps1'
@@ -128,10 +128,10 @@ class TestAppInstallation(unittest.TestCase):
 
         ret = tethys_app_installation.custom_develop_command(app_package, app_package_dir, dependencies)
 
-        self.assertEquals('tethys_apps1', ret.app_package)
-        self.assertEquals('/test_app/', ret.app_package_dir)
-        self.assertEquals('foo', ret.dependencies)
-        self.assertEquals('tethys_apps.app_installation', ret.__module__)
+        self.assertEqual('tethys_apps1', ret.app_package)
+        self.assertEqual('/test_app/', ret.app_package_dir)
+        self.assertEqual('foo', ret.dependencies)
+        self.assertEqual('tethys_apps.app_installation', ret.__module__)
 
     @mock.patch('tethys_apps.app_installation.shutil.copytree')
     @mock.patch('tethys_apps.app_installation.install')
@@ -157,7 +157,7 @@ class TestAppInstallation(unittest.TestCase):
 
         # check the input arguments for shutil.copytree method
         shutil_call_args = mock_shutil.copytree.call_args_list
-        self.assertEquals('/test_app/', shutil_call_args[0][0][0])
+        self.assertEqual('/test_app/', shutil_call_args[0][0][0])
 
         mock_shutil.rmtree.assert_called()
 
@@ -165,9 +165,9 @@ class TestAppInstallation(unittest.TestCase):
 
         # check the input arguments for subprocess.call method
         process_call_args = mock_subprocess.call.call_args_list
-        self.assertEquals('pip', process_call_args[0][0][0][0])
-        self.assertEquals('install', process_call_args[0][0][0][1])
-        self.assertEquals('foo', process_call_args[0][0][0][2])
+        self.assertEqual('pip', process_call_args[0][0][0][0])
+        self.assertEqual('install', process_call_args[0][0][0][1])
+        self.assertEqual('foo', process_call_args[0][0][0][2])
 
         # check the install call
         mock_install.run.assert_called_with(mock_self)
@@ -201,7 +201,7 @@ class TestAppInstallation(unittest.TestCase):
 
         # check the input arguments for shutil.copytree method
         shutil_call_args = mock_shutil.copytree.call_args_list
-        self.assertEquals('/test_app/', shutil_call_args[0][0][0])
+        self.assertEqual('/test_app/', shutil_call_args[0][0][0])
 
         mock_os_remove_tree.assert_called()
 
@@ -209,9 +209,9 @@ class TestAppInstallation(unittest.TestCase):
 
         # check the input arguments for subprocess.call method
         process_call_args = mock_subprocess.call.call_args_list
-        self.assertEquals('pip', process_call_args[0][0][0][0])
-        self.assertEquals('install', process_call_args[0][0][0][1])
-        self.assertEquals('foo', process_call_args[0][0][0][2])
+        self.assertEqual('pip', process_call_args[0][0][0][0])
+        self.assertEqual('install', process_call_args[0][0][0][1])
+        self.assertEqual('foo', process_call_args[0][0][0][2])
 
         # check the install call
         mock_install.run.assert_called_with(mock_self)
@@ -284,13 +284,13 @@ class TestAppInstallation(unittest.TestCase):
 
         # check the input arguments for os.symlink method
         symlink_call_args = mock_os.symlink.call_args_list
-        self.assertEquals('/test_app/', symlink_call_args[0][0][0])
+        self.assertEqual('/test_app/', symlink_call_args[0][0][0])
 
         # check the input arguments for subprocess.call method
         process_call_args = mock_subprocess.call.call_args_list
-        self.assertEquals('pip', process_call_args[0][0][0][0])
-        self.assertEquals('install', process_call_args[0][0][0][1])
-        self.assertEquals('foo', process_call_args[0][0][0][2])
+        self.assertEqual('pip', process_call_args[0][0][0][0])
+        self.assertEqual('install', process_call_args[0][0][0][1])
+        self.assertEqual('foo', process_call_args[0][0][0][2])
 
         # check the develop call
         mock_develop.run.assert_called_with(mock_self)

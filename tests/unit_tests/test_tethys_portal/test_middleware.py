@@ -69,9 +69,9 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         call_args = mock_success.call_args_list
 
-        self.assertEquals(mock_request, call_args[0][0][0])
+        self.assertEqual(mock_request, call_args[0][0][0])
 
-        self.assertEquals('The Google account you tried to connect to has already been associated with another '
+        self.assertEqual('The Google account you tried to connect to has already been associated with another '
                           'account.', call_args[0][0][1])
 
         mock_redirect.assert_called_once_with('accounts:login')
@@ -102,9 +102,9 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         call_args = mock_success.call_args_list
 
-        self.assertEquals(mock_request, call_args[0][0][0])
+        self.assertEqual(mock_request, call_args[0][0][0])
 
-        self.assertEquals('The LinkedIn account you tried to connect to has already been associated with another '
+        self.assertEqual('The LinkedIn account you tried to connect to has already been associated with another '
                           'account.', call_args[0][0][1])
 
         mock_redirect.assert_called_once_with('accounts:login')
@@ -136,9 +136,9 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         call_args = mock_success.call_args_list
 
-        self.assertEquals(mock_request, call_args[0][0][0])
+        self.assertEqual(mock_request, call_args[0][0][0])
 
-        self.assertEquals('The HydroShare account you tried to connect to has already been associated with '
+        self.assertEqual('The HydroShare account you tried to connect to has already been associated with '
                           'another account.', call_args[0][0][1])
 
         mock_redirect.assert_called_once_with('accounts:login')
@@ -169,9 +169,9 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         call_args = mock_success.call_args_list
 
-        self.assertEquals(mock_request, call_args[0][0][0])
+        self.assertEqual(mock_request, call_args[0][0][0])
 
-        self.assertEquals('The Facebook account you tried to connect to has already been associated with '
+        self.assertEqual('The Facebook account you tried to connect to has already been associated with '
                           'another account.', call_args[0][0][1])
 
         mock_redirect.assert_called_once_with('accounts:login')
@@ -204,9 +204,9 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         call_args = mock_success.call_args_list
 
-        self.assertEquals(mock_request, call_args[0][0][0])
+        self.assertEqual(mock_request, call_args[0][0][0])
 
-        self.assertEquals('The social account you tried to connect to has already been associated with '
+        self.assertEqual('The social account you tried to connect to has already been associated with '
                           'another account.', call_args[0][0][1])
 
         mock_redirect.assert_called_once_with('user:settings', username='foo')
@@ -233,9 +233,9 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         call_args = mock_success.call_args_list
 
-        self.assertEquals(mock_request, call_args[0][0][0])
+        self.assertEqual(mock_request, call_args[0][0][0])
 
-        self.assertEquals('Unable to disconnect from this social account.', call_args[0][0][1])
+        self.assertEqual('Unable to disconnect from this social account.', call_args[0][0][1])
 
         mock_redirect.assert_called_once_with('user:settings', username='foo')
 
@@ -260,8 +260,8 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         call_args = mock_success.call_args_list
 
-        self.assertEquals(mock_request, call_args[0][0][0])
+        self.assertEqual(mock_request, call_args[0][0][0])
 
-        self.assertEquals('Unable to disconnect from this social account.', call_args[0][0][1])
+        self.assertEqual('Unable to disconnect from this social account.', call_args[0][0][1])
 
         mock_redirect.assert_called_once_with('accounts:login')

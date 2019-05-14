@@ -177,7 +177,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual(None, result)
         mock_log_warning.assert_called_once_with('Multiple apps found with root url "foo".')
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_apps.models.TethysApp')
     def test_create_ps_database_setting_app_does_not_exist(self, mock_app, mock_pretty_output):
         from django.core.exceptions import ObjectDoesNotExist
@@ -196,7 +196,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertIn('A Tethys App with the name', po_call_args[0][0][0])
         self.assertIn('does not exist. Aborted.', po_call_args[0][0][0])
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting')
     @mock.patch('tethys_apps.models.TethysApp')
     def test_create_ps_database_setting_ps_database_setting_exists(self, mock_app, mock_ps_db_setting,
@@ -217,7 +217,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertIn('already exists. Aborted.', po_call_args[0][0][0])
 
     @mock.patch('tethys_apps.utilities.print')
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting')
     @mock.patch('tethys_apps.models.TethysApp')
     def test_create_ps_database_setting_ps_database_setting_exceptions(self, mock_app, mock_ps_db_setting,
@@ -243,7 +243,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         rts_call_args = mock_print.call_args_list
         self.assertIn('foo exception', rts_call_args[0][0][0].args[0])
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting')
     @mock.patch('tethys_apps.models.TethysApp')
     def test_create_ps_database_setting_ps_database_savess(self, mock_app, mock_ps_db_setting, mock_pretty_output):
@@ -265,7 +265,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertIn('PersistentStoreDatabaseSetting named', po_call_args[0][0][0])
         self.assertIn('created successfully!', po_call_args[0][0][0])
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_apps.models.TethysApp')
     def test_remove_ps_database_setting_app_not_exist(self, mock_app, mock_pretty_output):
         from django.core.exceptions import ObjectDoesNotExist
@@ -284,7 +284,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertIn('A Tethys App with the name', po_call_args[0][0][0])
         self.assertIn('does not exist. Aborted.', po_call_args[0][0][0])
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting')
     @mock.patch('tethys_apps.models.TethysApp')
     def test_remove_ps_database_setting_psdbs_not_exist(self, mock_app, mock_ps_db_setting, mock_pretty_output):
@@ -306,7 +306,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertIn(' for app ', po_call_args[0][0][0])
         self.assertIn('does not exist. Aborted.', po_call_args[0][0][0])
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting')
     @mock.patch('tethys_apps.models.TethysApp')
     def test_remove_ps_database_setting_force_delete(self, mock_app, mock_ps_db_setting, mock_pretty_output):
@@ -327,7 +327,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertIn('Successfully removed PersistentStoreDatabaseSetting with name', po_call_args[0][0][0])
 
     @mock.patch('tethys_apps.utilities.input')
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting')
     @mock.patch('tethys_apps.models.TethysApp')
     def test_remove_ps_database_setting_proceed_delete(self, mock_app, mock_ps_db_setting, mock_pretty_output,
@@ -350,7 +350,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertIn('Successfully removed PersistentStoreDatabaseSetting with name', po_call_args[0][0][0])
 
     @mock.patch('tethys_apps.utilities.input')
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting')
     @mock.patch('tethys_apps.models.TethysApp')
     def test_remove_ps_database_setting_do_not_proceed(self, mock_app, mock_ps_db_setting, mock_pretty_output,
@@ -372,7 +372,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual(1, len(po_call_args))
         self.assertEqual('Aborted. PersistentStoreDatabaseSetting not removed.', po_call_args[0][0][0])
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     def test_link_service_to_app_setting_spatial_dss_does_not_exist(self, mock_service, mock_pretty_output):
         from django.core.exceptions import ObjectDoesNotExist
@@ -392,7 +392,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertIn('with ID/Name', po_call_args[0][0][0])
         self.assertIn('does not exist.', po_call_args[0][0][0])
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     @mock.patch('tethys_apps.models.TethysApp')
     def test_link_service_to_app_setting_spatial_dss_value_error(self, mock_app, mock_service, mock_pretty_output):
@@ -416,7 +416,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertIn('A Tethys App with the name', po_call_args[0][0][0])
         self.assertIn('does not exist. Aborted.', po_call_args[0][0][0])
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     @mock.patch('tethys_apps.models.TethysApp')
     def test_link_service_to_app_setting_spatial_link_key_error(self, mock_app, mock_service, mock_pretty_output):
@@ -438,7 +438,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertIn('The setting_type you specified ("foo_invalid") does not exist.', po_call_args[0][0][0])
         self.assertIn('Choose from: "ps_database|ps_connection|ds_spatial"', po_call_args[0][0][0])
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_sdk.app_settings.SpatialDatasetServiceSetting')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     @mock.patch('tethys_apps.models.TethysApp')
@@ -466,7 +466,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual(1, len(po_call_args))
         self.assertIn('was successfully linked to', po_call_args[0][0][0])
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_sdk.app_settings.SpatialDatasetServiceSetting')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     @mock.patch('tethys_apps.models.TethysApp')
