@@ -83,14 +83,14 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
 
     @mock.patch('tethys_cli.gen_commands.render_template')
-    @mock.patch('tethys_apps.cli.gen_commands.linux_distribution')
-    @mock.patch('tethys_apps.cli.gen_commands.os.path.exists')
-    @mock.patch('tethys_apps.cli.gen_commands.get_environment_value')
-    @mock.patch('tethys_apps.cli.gen_commands.open', new_callable=mock.mock_open)
-    @mock.patch('tethys_apps.cli.gen_commands.os.path.isfile')
-    def test_generate_command_asgi_service_nginx_conf_redhat(self, mock_os_path_isfile, mock_file, mock_env,
-                                                             mock_os_path_exists, mock_linux_distribution,
-                                                             mock_render_template):
+    @mock.patch('tethys_cli.gen_commands.linux_distribution')
+    @mock.patch('tethys_cli.gen_commands.os.path.exists')
+    @mock.patch('tethys_cli.gen_commands.get_environment_value')
+    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
+    @mock.patch('tethys_cli.gen_commands.os.path.isfile')
+    def test_generate_command_asgi_service_option_nginx_conf_redhat(self, mock_os_path_isfile, mock_file, mock_env,
+                                                                     mock_os_path_exists, mock_linux_distribution,
+                                                                     mock_render_template):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
@@ -304,16 +304,6 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
-
-    @mock.patch('tethys_cli.gen_commands.os.environ')
-    def test_django_settings_module_error(self, mock_environ):
-        mock_environ.side_effect = Exception
-        try:
-            reload(tethys_apps.cli.gen_commands)
-        except Exception:
-            pass
-
-        self.assertTrue(tethys_apps.cli.gen_commands.settings.configured)
 
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
