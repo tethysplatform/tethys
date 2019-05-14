@@ -44,12 +44,16 @@ class SchedulerManagerTests(TethysTestCase):
 
         mock_cs.return_value = mock_sch
 
-        self.assertEquals(mock_sch, create_condor_scheduler(name, host, username=username,
-                                                            password=password,
-                                                            private_key_path=private_key_path,
-                                                            private_key_pass=private_key_pass))
+        self.assertEqual(mock_sch, create_condor_scheduler(
+            name, host,
+            username=username,
+            password=password,
+            private_key_path=private_key_path,
+            private_key_pass=private_key_pass,
+        ))
 
-        mock_cs.assert_called_once_with('foo', 'localhost', username=username,
+        mock_cs.assert_called_once_with('foo', 'localhost',
+                                        username=username,
                                         password=password,
                                         private_key_path=private_key_path,
                                         private_key_pass=private_key_pass)
@@ -66,9 +70,15 @@ class SchedulerManagerTests(TethysTestCase):
 
         mock_ds.return_value = mock_sch
 
-        self.assertEquals(mock_sch, create_dask_scheduler(name, host, timeout=timeout,
-                                                          heartbeat_interval=heartbeat_interval,
-                                                          dashboard=dashboard))
+        self.assertEqual(
+            mock_sch,
+            create_dask_scheduler(
+                name, host,
+                timeout=timeout,
+                heartbeat_interval=heartbeat_interval,
+                dashboard=dashboard
+            )
+        )
         mock_ds.assert_called_once_with('foo', 'localhost', timeout=timeout,
                                         heartbeat_interval=heartbeat_interval,
                                         dashboard=dashboard)

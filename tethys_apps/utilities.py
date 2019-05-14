@@ -188,7 +188,7 @@ def get_app_settings(app):
 
 def create_ps_database_setting(app_package, name, description='', required=False, initializer='', initialized=False,
                                spatial=False, dynamic=False):
-    from tethys_apps.cli.cli_colors import pretty_output, FG_RED, FG_GREEN
+    from tethys_cli.cli_colors import pretty_output, FG_RED, FG_GREEN
     from tethys_apps.models import PersistentStoreDatabaseSetting
     from tethys_apps.models import TethysApp
 
@@ -233,7 +233,7 @@ def create_ps_database_setting(app_package, name, description='', required=False
 
 def remove_ps_database_setting(app_package, name, force=False):
     from tethys_apps.models import TethysApp
-    from tethys_apps.cli.cli_colors import pretty_output, FG_RED, FG_GREEN
+    from tethys_cli.cli_colors import pretty_output, FG_RED, FG_GREEN
     from tethys_apps.models import PersistentStoreDatabaseSetting
 
     try:
@@ -284,7 +284,9 @@ def link_service_to_app_setting(service_type, service_uid, app_package, setting_
     :param setting_uid: The name or id of the setting being linked to a service.
     :return: True if successful, False otherwise.
     """
-    from tethys_apps.cli.cli_colors import pretty_output, FG_GREEN, FG_RED
+    import django
+    django.setup()
+    from tethys_cli.cli_colors import pretty_output, FG_GREEN, FG_RED
     from tethys_sdk.app_settings import (SpatialDatasetServiceSetting, PersistentStoreConnectionSetting,
                                          PersistentStoreDatabaseSetting,
                                          WebProcessingServiceSetting)
