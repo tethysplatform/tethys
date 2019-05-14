@@ -55,6 +55,7 @@ dependencies:
 - pillow
 - pip
 - future
+- flake8
 
 - pip:
     - django-gravatar2
