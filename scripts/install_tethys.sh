@@ -571,7 +571,7 @@ then
 
     sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_SRC} /var/log/asgi/tethys.log
     sudo mkdir -p /run/asgi; sudo chown ${NGINX_USER}:${NGINX_USER} /run/asgi
-    sudo ln -s ${TETHYS_SRC}/tethys_portal/asgi_supervisord.conf  /etc/supervisor/conf.d/asgi_supervisord.conf
+    sudo ln -s ${TETHYS_SRC}/tethys_portal/asgi_supervisord.conf /etc/supervisor/conf.d/asgi_supervisord.conf
     sudo supervisorctl reread
     sudo supervisorctl update
     sudo systemctl restart nginx

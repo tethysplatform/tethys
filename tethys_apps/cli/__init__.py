@@ -82,7 +82,7 @@ def tethys_command():
     gen_parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                             help='Overwrite existing file without prompting.')
     gen_parser.set_defaults(func=generate_command, allowed_host=None, allowed_hosts=None, client_max_body_size='75M',
-                            asgi_processes=10, db_username='tethys_default', db_password='pass', db_port=5436,
+                            asgi_processes=4, db_username='tethys_default', db_password='pass', db_port=5436,
                             production=False, open_portal=False, overwrite=False)
 
     # Setup start server command
