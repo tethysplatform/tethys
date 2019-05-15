@@ -551,17 +551,18 @@ then
     echo "Waiting for databases to startup..."; sleep 5
     tethys gen settings --production --allowed-host=${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite
     tethys gen nginx --overwrite
-    sed -i '$ s@$@ ${TETHYS_SRC}/tethys_portal/asgi_supervisord.conf@' "/etc/supervisor/supervisord.conf"
     tethys gen asgi_service --overwrite
     NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')
     NGINX_GROUP=${NGINX_USER}
     NGINX_HOME=$(grep ${NGINX_USER} /etc/passwd | awk -F':' '{print $6}')
+    mkdir -p /run/asgi; chown ${NGINX_USER}:${NGINX_USER} /run/asgi
     mkdir -p ${TETHYS_HOME}/static ${TETHYS_HOME}/workspaces ${TETHYS_HOME}/apps
     sudo chown -R ${USER} ${TETHYS_HOME}
     tethys manage collectall --noinput
     sudo chmod 705 ~
     sudo mkdir /var/log/asgi
     sudo touch /var/log/asgi/tethys.log
+    sudo touch /var/log/asgi/asgid.log
     sudo ln -s ${TETHYS_SRC}/tethys_portal/tethys_nginx.conf /etc/nginx/${NGINX_SITES_DIR}/
 
     if [ -n "${SELINUX}" ]
@@ -570,6 +571,7 @@ then
     fi
 
     sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_SRC} /var/log/asgi/tethys.log
+    sudo ln -s ${TETHYS_SRC}/tethys_portal/asgi_supervisord.conf  /etc/supervisor/supervisord.conf
     sudo supervisorctl reread
     sudo supervisorctl update
     sudo systemctl restart nginx
