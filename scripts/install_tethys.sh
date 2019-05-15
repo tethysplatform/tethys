@@ -555,7 +555,6 @@ then
     NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')
     NGINX_GROUP=${NGINX_USER}
     NGINX_HOME=$(grep ${NGINX_USER} /etc/passwd | awk -F':' '{print $6}')
-    mkdir -p /run/asgi; chown ${NGINX_USER}:${NGINX_USER} /run/asgi
     mkdir -p ${TETHYS_HOME}/static ${TETHYS_HOME}/workspaces ${TETHYS_HOME}/apps
     sudo chown -R ${USER} ${TETHYS_HOME}
     tethys manage collectall --noinput
@@ -571,7 +570,8 @@ then
     fi
 
     sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_SRC} /var/log/asgi/tethys.log
-    sudo ln -s ${TETHYS_SRC}/tethys_portal/asgi_supervisord.conf  /etc/supervisor/supervisord.conf
+    sudo mkdir -p /run/asgi; sudo chown ${NGINX_USER}:${NGINX_USER} /run/asgi
+    sed -i '$ s@$@ ${TETHYS_SRC}/tethys_portal/asgi_supervisord.conf@' "/etc/supervisor/supervisord.conf"
     sudo supervisorctl reread
     sudo supervisorctl update
     sudo systemctl restart nginx
