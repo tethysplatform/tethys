@@ -561,7 +561,6 @@ then
     sudo chmod 705 ~
     sudo mkdir /var/log/asgi
     sudo touch /var/log/asgi/tethys.log
-    sudo touch /var/log/asgi/asgid.log
     sudo ln -s ${TETHYS_SRC}/tethys_portal/tethys_nginx.conf /etc/nginx/${NGINX_SITES_DIR}/
 
     if [ -n "${SELINUX}" ]

@@ -260,7 +260,7 @@ Finally, restart uWSGI and Nginx services to effect the changes::
 
 .. tip::
 
-    Use the alias `trestart` as a shortcut to doing the final step.
+    Use the alias `tsr` as a shortcut to doing the final step.
 
 
 The portal should now be accessible from: https://domain-name
