@@ -229,7 +229,7 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
-        mock_os_path_isdir.assert_called_once_with(mock_args.directory)
+        mock_os_path_isdir.assert_called_with(mock_args.directory)
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
 
@@ -255,7 +255,7 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_not_called()
         mock_file.assert_called()
-        mock_os_path_isdir.assert_called_once_with(mock_args.directory)
+        mock_os_path_isdir.assert_called_with(mock_args.directory)
 
         # Check if print is called correctly
         rts_call_args = mock_print.call_args_list
