@@ -3,6 +3,7 @@ from channels.http import AsgiHandler
 
 import tethys_portal.routing as routing
 
+
 class TestRoutings(TethysTestCase):
 
     def set_up(self):
