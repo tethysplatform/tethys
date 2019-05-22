@@ -12,8 +12,6 @@ echo_status "Starting up..."
 
 # Set extra ENVs
 export NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')
-export NGINX_PIDFILE=$(grep 'pid .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')
-export ASGI_PIDFILE=$(grep 'pidfile=.*' /etc/supervisor/supervisord.conf | awk -F'=' '{print $2}' | awk '{print $1}')
 
 # Create Salt Config
 echo "file_client: local" > /etc/salt/minion 
