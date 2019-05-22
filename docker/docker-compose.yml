@@ -1,0 +1,29 @@
+version: "3.2"
+services:
+  tethys:
+    container_name: tethyscore
+    build:
+      context: ../
+      dockerfile: Dockerfile
+      args:
+        TETHYSBUILD_DB_USERNAME: tethys_admin
+        TETHYSBUILD_DB_PASSWORD: tethys123
+        TETHYSBUILD_DB_HOST: db
+        TETHYSBUILD_DB_PORT: 5432
+    ports:
+      - "8000:80"
+    environment:
+      CONDA_HOME: /opt/conda
+      ALLOWED_HOSTS: '"[''127.0.0.1'', ''localhost'']"'
+      TETHYS_SUPER_USER: "admin"
+      TETHYS_SUPER_USER_PASS: "pass"
+    links:
+      - db
+    depends_on:
+      - db
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: tethys123
+      POSTGRES_USER: tethys_admin
