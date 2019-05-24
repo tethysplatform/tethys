@@ -7,3 +7,4 @@
 *.db
 *.sqlite
 *.DS_Store
+.idea/
