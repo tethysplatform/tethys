@@ -388,8 +388,6 @@ then
     if [ -n "${SETUP_DB}" ]
     then
         # Setup local database
-        export TETHYS_DB_PORT="${TETHYS_DB_PORT}"
-        echo ${TETHYS_DB_PORT}
         echo "Setting up the Tethys database..."
         initdb  -U postgres -D "${TETHYS_DB_DIR}/data"
         pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" -l "${TETHYS_DB_DIR}/logfile" start -o "-p ${TETHYS_DB_PORT}"

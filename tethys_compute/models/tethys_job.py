@@ -12,12 +12,12 @@ import inspect
 from abc import abstractmethod
 
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils import timezone
 from model_utils.managers import InheritanceManager
 
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
-from tethys_compute.utilities import DictionaryField
 
 
 log = logging.getLogger('tethys.' + __name__)
@@ -56,7 +56,7 @@ class TethysJob(models.Model):
     start_time = models.DateTimeField(blank=True, null=True)
     completion_time = models.DateTimeField(blank=True, null=True)
     workspace = models.CharField(max_length=1024, default='')
-    extended_properties = DictionaryField(default='', blank=True)
+    extended_properties = JSONField(default=dict, null=True, blank=True)
     _process_results_function = models.CharField(max_length=1024, blank=True, null=True)
     _status = models.CharField(max_length=3, choices=STATUSES, default=STATUSES[0][0])
 

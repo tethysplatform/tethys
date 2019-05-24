@@ -14,7 +14,7 @@ from django.core.exceptions import ValidationError
 from model_utils.managers import InheritanceManager
 from tethys_apps.exceptions import TethysAppSettingNotAssigned, PersistentStorePermissionError, \
     PersistentStoreInitializerError
-from tethys_compute.utilities import ListField
+from django.contrib.postgres.fields import ArrayField
 from sqlalchemy.orm import sessionmaker
 from tethys_apps.base.mixins import TethysBaseMixin
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
@@ -40,7 +40,10 @@ class TethysApp(models.Model, TethysBaseMixin):
     name = models.CharField(max_length=200, default='')
     description = models.TextField(max_length=1000, blank=True, default='')
     enable_feedback = models.BooleanField(default=False)
-    feedback_emails = ListField(default='', blank=True)
+    feedback_emails = ArrayField(
+        models.CharField(max_length=200, null=True, blank=True),
+        default=list,
+    )
     tags = models.CharField(max_length=200, blank=True, default='')
 
     # Developer first attributes

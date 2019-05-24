@@ -11,7 +11,7 @@ import os
 from condorpy import Templates, Job
 from django.db import models
 
-from tethys_compute.utilities import DictionaryField, ListField
+from django.contrib.postgres.fields import ArrayField, JSONField
 
 
 class CondorPyJob(models.Model):
@@ -19,9 +19,12 @@ class CondorPyJob(models.Model):
     Database model for condorpy jobs
     """
     condorpyjob_id = models.AutoField(primary_key=True)
-    _attributes = DictionaryField(default='')
+    _attributes = JSONField(default=dict, null=True, blank=True)
     _num_jobs = models.IntegerField(default=1)
-    _remote_input_files = ListField(default='')
+    _remote_input_files = ArrayField(
+        models.CharField(max_length=1024, null=True, blank=True),
+        default=list,
+    )
 
     def __init__(self, *args, **kwargs):
         # if condorpy_template_name or attributes is passed in then get the template and add it to the _attributes

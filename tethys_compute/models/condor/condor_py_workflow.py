@@ -9,7 +9,7 @@
 from condorpy import Workflow
 from django.db import models
 
-from tethys_compute.utilities import DictionaryField
+from django.contrib.postgres.fields import JSONField
 
 
 class CondorPyWorkflow(models.Model):
@@ -17,7 +17,7 @@ class CondorPyWorkflow(models.Model):
     Database model for condorpy workflows
     """
     condorpyworkflow_id = models.AutoField(primary_key=True)
-    _max_jobs = DictionaryField(default='', blank=True)
+    _max_jobs = JSONField(default=dict, null=True, blank=True)
     _config = models.CharField(max_length=1024, null=True, blank=True)
 
     @property
