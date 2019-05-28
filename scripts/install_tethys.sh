@@ -571,12 +571,11 @@ then
     sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_SRC} /var/log/tethys/tethys.log
     sudo mkdir -p /run/asgi; sudo chown ${NGINX_USER}:${NGINX_USER} /run/asgi
     sudo ln -s ${TETHYS_SRC}/tethys_portal/asgi_supervisord.conf /etc/supervisor/conf.d/asgi_supervisord.conf
-    # Create NGINX Supervisor Config
-    echo "[program:nginx]" > /etc/supervisor/conf.d/nginx_supervisord.conf
-    echo "command=nginx -g 'daemon off;'" >> /etc/supervisor/conf.d/nginx_supervisord.conf
-    echo "stdout_logfile=/var/log/nginx/access.log" >> /etc/supervisor/conf.d/nginx_supervisord.conf
-    echo "stderr_logfile=/var/log/nginx/error.log" >> /etc/supervisor/conf.d/nginx_supervisord.conf
-    echo "redirect_stderr=true" >> /etc/supervisor/conf.d/nginx_supervisord.conf
+    sudo echo "[program:nginx]" > /etc/supervisor/conf.d/nginx_supervisord.conf
+    sudo echo "command=nginx -g 'daemon off;'" >> /etc/supervisor/conf.d/nginx_supervisord.conf
+    sudo echo "stdout_logfile=/var/log/nginx/access.log" >> /etc/supervisor/conf.d/nginx_supervisord.conf
+    sudo echo "stderr_logfile=/var/log/nginx/error.log" >> /etc/supervisor/conf.d/nginx_supervisord.conf
+    sudo echo "redirect_stderr=true" >> /etc/supervisor/conf.d/nginx_supervisord.conf
     sudo supervisorctl reread
     sudo supervisorctl update
     set +x
