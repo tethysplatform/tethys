@@ -13,7 +13,6 @@ import sys
 import shutil
 import logging
 from django.utils.functional import wraps
-from django.http import HttpRequest
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
