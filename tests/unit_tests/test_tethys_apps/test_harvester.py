@@ -57,13 +57,13 @@ class HarvesterTest(unittest.TestCase):
         """
         shv = SingletonHarvester()
         app_url_patterns = shv.get_url_patterns()['url_pattern']
-        extension_url_patterns = shv.get_url_patterns()['url_pattern_ext']
+        ext_url_patterns = shv.get_url_patterns()['url_pattern_ext']
         app_ws_patterns = shv.get_url_patterns()['ws_pattern']
 
         self.assertGreaterEqual(len(app_url_patterns), 1)
         self.assertIn('test_app', app_url_patterns)
-        self.assertGreaterEqual(len(extension_url_patterns), 1)
-        self.assertIn('test_extension', extension_url_patterns)
+        self.assertGreaterEqual(len(ext_url_patterns), 1)
+        self.assertIn('test_extension', ext_url_patterns)
         self.assertGreaterEqual(len(app_ws_patterns), 1)
         self.assertIn('test_app', app_ws_patterns)
 

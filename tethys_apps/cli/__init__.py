@@ -68,7 +68,7 @@ def tethys_command():
     gen_parser.add_argument('--client-max-body-size', dest='client_max_body_size',
                             help='Populates the client_max_body_size parameter for nginx config. Defaults to "75M".')
     gen_parser.add_argument('--asgi-processes', dest='asgi_processes',
-                            help='The maximum number of asgi worker processes. Defaults to 10.')
+                            help='The maximum number of asgi worker processes. Defaults to 4.')
     gen_parser.add_argument('--db-username', dest='db_username',
                             help='Username for the Tethys Database server to be set in the settings file.')
     gen_parser.add_argument('--db-password', dest='db_password',

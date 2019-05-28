@@ -36,7 +36,7 @@ class TestApp(TethysAppBase):
             UrlMap(
                 name='ws',
                 url='test-app-ws/',
-                controller='test_app.controllers.ws',
+                controller='test_app.controllers.TestWS',
                 protocol='websocket'
             ),
         )

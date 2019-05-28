@@ -59,7 +59,7 @@ class TestUrlMap(unittest.TestCase):
         result = base_url_map.UrlMapBase(name=name, url=url, controller=controller, regex=regex)
         self.assertEqual(expected_url, result.url)
 
-        # TEST websocket url
+        # TEST WebSocket url
         url = 'example/resource/{variable_name}/'
         expected_url = r'^ws/test-app/example/resource/(?P<variable_name>[0-9A-Za-z-_.]+)/$'
 
@@ -67,7 +67,7 @@ class TestUrlMap(unittest.TestCase):
         result = test_UrlMap(name=name, url=url, controller=controller, protocol='websocket')
         self.assertEqual(expected_url, result.url)
 
-        # TEST empty websocket url
+        # TEST empty WebSocket url
         url = ''
         expected_url = '^ws/test-app/$'
 

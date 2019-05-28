@@ -4,7 +4,7 @@ import asyncio
 
 from tethys_sdk.testing import TethysTestCase
 from channels.testing import WebsocketCommunicator
-from tethys_apps.tethysapp.test_app.controllers import ws
+from tethys_apps.tethysapp.test_app.controllers import TestWS
 
 from django.conf import settings
 
@@ -18,7 +18,7 @@ class TestConsumer(TethysTestCase):
             os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
             settings.CHANNEL_LAYERS = {}
 
-            communicator = WebsocketCommunicator(ws, "/ws/test-app/test-app-ws/")
+            communicator = WebsocketCommunicator(TestWS, "/ws/test-app/test-app-ws/")
             connected, subprotocol = await communicator.connect()
 
             # Test connection

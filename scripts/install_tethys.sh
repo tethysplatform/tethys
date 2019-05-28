@@ -559,8 +559,8 @@ then
     sudo chown -R ${USER} ${TETHYS_HOME}
     tethys manage collectall --noinput
     sudo chmod 705 ~
-    sudo mkdir /var/log/asgi
-    sudo touch /var/log/asgi/tethys.log
+    sudo mkdir /var/log/tethys
+    sudo touch /var/log/tethys/tethys.log
     sudo ln -s ${TETHYS_SRC}/tethys_portal/tethys_nginx.conf /etc/nginx/${NGINX_SITES_DIR}/
 
     if [ -n "${SELINUX}" ]
@@ -568,12 +568,17 @@ then
         configure_selinux
     fi
 
-    sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_SRC} /var/log/asgi/tethys.log
+    sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_SRC} /var/log/tethys/tethys.log
     sudo mkdir -p /run/asgi; sudo chown ${NGINX_USER}:${NGINX_USER} /run/asgi
     sudo ln -s ${TETHYS_SRC}/tethys_portal/asgi_supervisord.conf /etc/supervisor/conf.d/asgi_supervisord.conf
+    # Create NGINX Supervisor Config
+    echo "[program:nginx]" > /etc/supervisor/conf.d/nginx_supervisord.conf
+    echo "command=nginx -g 'daemon off;'" >> /etc/supervisor/conf.d/nginx_supervisord.conf
+    echo "stdout_logfile=/var/log/nginx/access.log" >> /etc/supervisor/conf.d/nginx_supervisord.conf
+    echo "stderr_logfile=/var/log/nginx/error.log" >> /etc/supervisor/conf.d/nginx_supervisord.conf
+    echo "redirect_stderr=true" >> /etc/supervisor/conf.d/nginx_supervisord.conf
     sudo supervisorctl reread
     sudo supervisorctl update
-    sudo systemctl restart nginx
     set +x
     conda deactivate
 
@@ -583,7 +588,7 @@ then
     echo "alias tuo=tethys_user_own" >> "${ACTIVATE_SCRIPT}"
     echo "alias tethys_server_own='sudo chown -R \${NGINX_USER}:\${NGINX_USER} \"\${TETHYS_SRC}\" \"\${TETHYS_HOME}/static\" \"\${TETHYS_HOME}/workspaces\" \"\${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
     echo "alias tso=tethys_server_own" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tethys_server_restart='tso; sudo supervisorctl restart all; sudo systemctl restart nginx'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_server_restart='tso; sudo supervisorctl restart all;'" >> "${ACTIVATE_SCRIPT}"
     echo "alias tsr=tethys_server_restart" >> "${ACTIVATE_SCRIPT}"
 
     echo "unset NGINX_USER" >> "${DEACTIVATE_SCRIPT}"

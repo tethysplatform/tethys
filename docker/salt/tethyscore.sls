@@ -74,7 +74,7 @@ Generate_ASGI_Service_TethysCore:
     - mode: 755
     - makedirs: True
 
-/var/log/asgi/tethys.log:
+/var/log/tethys/tethys.log:
   file.managed:
     - user: {{ NGINX_USER }}
     - replace: False

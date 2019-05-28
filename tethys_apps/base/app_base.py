@@ -71,7 +71,7 @@ class TethysBase(TethysBaseMixin):
                     ),
                     url_maps = (UrlMap(name='home_ws',
                                        url='my-first-ws',
-                                       controller='my_first_app.controllers.homeConsumer',
+                                       controller='my_first_app.controllers.HomeConsumer',
                                        protocol='websocket'
                                        ),
                     )

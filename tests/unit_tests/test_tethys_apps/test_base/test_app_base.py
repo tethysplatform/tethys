@@ -42,7 +42,7 @@ class TestTethysBase(unittest.TestCase):
         app._namespace = 'foo'
         url_map = mock.MagicMock(controller='test_app.controllers.home', url='test-url', protocol='http')
         url_map.name = 'home'
-        url_map_ws = mock.MagicMock(controller='test_app.controllers.ws', url='test-url-ws', protocol='websocket')
+        url_map_ws = mock.MagicMock(controller='test_app.controllers.TestWS', url='test-url-ws', protocol='websocket')
         url_map_ws.name = 'ws'
         app.url_maps = mock.MagicMock(return_value=[url_map, url_map_ws])
         mock_tbm.return_value = mock.MagicMock(url_maps='test-app')

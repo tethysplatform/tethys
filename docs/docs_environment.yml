@@ -15,6 +15,7 @@ dependencies:
 - tethys_dataset_services>=2.0.0
 - django=2.1.*
 - pip:
+    - channels
     - sphinx
     - mock
     - sphinx_rtd_theme

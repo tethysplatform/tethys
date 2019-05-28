@@ -19,5 +19,5 @@ autostart=true
 autorestart=true
 
 # Choose where you want your log to go
-stdout_logfile=/var/log/asgi/tethys.log
+stdout_logfile=/var/log/tethys/tethys.log
 redirect_stderr=true

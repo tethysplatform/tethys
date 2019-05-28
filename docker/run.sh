@@ -43,4 +43,4 @@ echo_status "Done!"
 
 # Watch Logs
 echo_status "Watching logs"
-tail -qF /var/log/supervisor/* /var/log/nginx/* /var/log/asgi/*
+tail -qF /var/log/supervisor/* /var/log/nginx/* /var/log/tethys/*

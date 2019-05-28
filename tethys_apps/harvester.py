@@ -79,22 +79,22 @@ class SingletonHarvester:
         Generate the url pattern lists for each app and namespace them accordingly.
         """
         app_url_patterns = dict()
-        extension_url_patterns = dict()
-        routing_url_patterns = dict()
+        ext_url_patterns = dict()
+        ws_url_patterns = dict()
 
         for app in self.apps:
             app_url_patterns.update(app.url_patterns['http'])
 
         for app in self.apps:
-            routing_url_patterns.update(app.url_patterns['websocket'])
+            ws_url_patterns.update(app.url_patterns['websocket'])
 
         for extension in self.extensions:
-            extension_url_patterns.update(extension.url_patterns['http'])
+            ext_url_patterns.update(extension.url_patterns['http'])
 
         url_patterns = {
             'url_pattern': app_url_patterns,
-            'url_pattern_ext': extension_url_patterns,
-            'ws_pattern': routing_url_patterns
+            'url_pattern_ext': ext_url_patterns,
+            'ws_pattern': ws_url_patterns
         }
 
         return url_patterns

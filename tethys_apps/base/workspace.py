@@ -15,7 +15,7 @@ import logging
 from django.utils.functional import wraps
 from django.http import HttpRequest
 from django.core.exceptions import PermissionDenied
-from channels.http import AsgiRequest
+from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
 from tethys_quotas.utilities import passes_quota, _get_storage_units
 
@@ -293,7 +293,7 @@ def user_workspace():
 
             request = None
             for index, arg in enumerate(args):
-                if isinstance(arg, AsgiRequest):
+                if isinstance(arg, HttpRequest):
                     request = arg
                     break
 
@@ -401,7 +401,7 @@ def app_workspace():
 
             request = None
             for index, arg in enumerate(args):
-                if isinstance(arg, AsgiRequest):
+                if isinstance(arg, HttpRequest):
                     request = arg
                     break
 

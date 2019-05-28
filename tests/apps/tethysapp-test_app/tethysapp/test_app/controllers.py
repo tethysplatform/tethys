@@ -77,7 +77,7 @@ def home(request):
     return render(request, 'test_app/home.html', context)
 
 
-class ws(WebsocketConsumer):
+class TestWS(WebsocketConsumer):
     def connect(self):
         self.accept()
 

@@ -9,8 +9,7 @@
 """
 from urllib.parse import urlparse
 
-from django.core.handlers.wsgi import WSGIRequest
-from channels.http import AsgiRequest
+from django.http import HttpRequest
 from django.contrib import messages
 from django.urls import reverse
 from django.shortcuts import redirect
@@ -119,14 +118,14 @@ def permission_required(*args, **kwargs):
             the_self = None
 
             for index, arg in enumerate(args):
-                if isinstance(arg, WSGIRequest) or isinstance(arg, AsgiRequest):
+                if isinstance(arg, HttpRequest):
                     request_args_index = index
 
             # Args are everything after the request object
             if request_args_index is not None:
                 request = args[request_args_index]
             else:
-                raise ValueError("No WSGIRequest or ASGIRequest object provided.")
+                raise ValueError("No HttpRequest object provided.")
 
             if request_args_index > 0:
                 the_self = args[0]
