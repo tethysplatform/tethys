@@ -56,9 +56,9 @@ class HarvesterTest(unittest.TestCase):
         :return:
         """
         shv = SingletonHarvester()
-        app_url_patterns = shv.get_url_patterns()['url_pattern']
-        ext_url_patterns = shv.get_url_patterns()['url_pattern_ext']
-        app_ws_patterns = shv.get_url_patterns()['ws_pattern']
+        app_url_patterns = shv.get_url_patterns()['app_url_patterns']
+        ext_url_patterns = shv.get_url_patterns()['ext_url_patterns']
+        app_ws_patterns = shv.get_url_patterns()['ws_url_patterns']
 
         self.assertGreaterEqual(len(app_url_patterns), 1)
         self.assertIn('test_app', app_url_patterns)

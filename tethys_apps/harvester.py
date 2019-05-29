@@ -92,9 +92,9 @@ class SingletonHarvester:
             ext_url_patterns.update(extension.url_patterns['http'])
 
         url_patterns = {
-            'url_pattern': app_url_patterns,
-            'url_pattern_ext': ext_url_patterns,
-            'ws_pattern': ws_url_patterns
+            'app_url_patterns': app_url_patterns,
+            'ext_url_patterns': ext_url_patterns,
+            'ws_url_patterns': ws_url_patterns
         }
 
         return url_patterns

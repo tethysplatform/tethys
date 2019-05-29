@@ -4,7 +4,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from tethys_apps.harvester import SingletonHarvester
 
 harvester = SingletonHarvester()
-app_ws_patterns = harvester.get_url_patterns()['ws_pattern']
+app_ws_patterns = harvester.get_url_patterns()['ws_url_patterns']
 
 ws_routing_patterns = []
 

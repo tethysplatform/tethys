@@ -4,7 +4,7 @@ WebSockets Concepts
 
 **Last Updated:** May 2019
 
-This tutorial introduces WebSocket communication concepts for Tethys developers. A consumer will be created to notify other users when a dam has been added to the app database by someone else, giving the user the option to reload the app to visualize the location of the new dam. The topics covered include:
+This tutorial introduces ``WebSocket`` communication concepts for Tethys developers. A consumer will be created to notify other users when a dam has been added to the app database by someone else, giving the user the option to reload the app to visualize the location of the new dam. The topics covered include:
 
 * Django Channels Consumers
 * WebSocket Connections
@@ -29,9 +29,9 @@ If you wish to use the advanced solution as a starting point:
 1. Django Channels Consumers
 ============================
 
-Consumer classes are the equivalent of controller functions when working with WebSockets on Tethys.
+``Consumer classes`` are the equivalent of ``controller functions`` when working with `WebSockets` on Tethys.
 
-a. Add the following code to the controller.
+a. Add the following code to the ``controller``.
 
 ::
 
@@ -47,7 +47,7 @@ a. Add the following code to the controller.
         async def disconnect(self, close_code):
             pass
 
-b. Create a UrlMap for the consumer in app.py by adding the following code.
+b. Create a ``UrlMap`` for the ``consumer`` in ``app.py`` by adding the following code.
 
 ::
 
@@ -84,14 +84,14 @@ b. Create a UrlMap for the consumer in app.py by adding the following code.
 
 .. note::
 
-    The controller parameter of the `UrlMap` is pointing to the consumer added in the previous step. A new `protocol` parameter with a string value equal to `websocket` has been added to the `UrlMap`.
+    The controller parameter of the ``UrlMap`` is pointing to the consumer added in the previous step. A new ``protocol parameter`` with a string value equal to `websocket` has been added to the ``UrlMap``.
 
 2. WebSocket Connections
 ========================
 
-A ``handshake`` needs to be established between the client and server when creating a WebSocket connection. We will use the standard ``JavaScript WebSocket API`` to do this.
+A ``handshake`` needs to be established between the client and server when creating a ``WebSocket connection``. We will use the standard ``JavaScript WebSocket API`` to do this.
 
-Create a WebSocket connection by adding the following code to the home.html template after the app_content block.
+Create a ``WebSocket connection`` by adding the following code to the ``home.html`` template after the ``app_content`` block.
 
 .. code-block:: html+django
 
@@ -110,9 +110,9 @@ Create a WebSocket connection by adding the following code to the home.html temp
 
     ...
 
-A ``WebSocket URL`` follows a pattern similar to tethys app ``HTTP URLs``. The differences being that the URL starts with ``ws://`` instead of ``http(s)://``, and the "apps" part of the URL in between the host and the app name is substituted with a "ws". For example: ws://tethys.host.com/ws/base-app-name/base-ws-url. If the base name of the app is included in the `WebSocket URL`, it will not be duplicated. This is the same behavior for `HTTP URLs`.
+A ``WebSocket URL`` follows a pattern similar to tethys app ``HTTP URLs``. The differences being that the URL starts with ``ws://`` instead of ``http(s)://``, and the "apps" part of the URL in between the host and the app name is substituted with a "ws". For example: ws://tethys.host.com/ws/base-app-name/base-ws-url. If the base name of the app is included in the ``WebSocket URL``, it will not be duplicated. This is the same behavior for ``HTTP URLs``.
 
-Upon loading the app home page, the "WebSocket Connected" message will be printed to the terminal. The WebSocket connection can also be accessed from the browser by right-clicking and selecting inspect, network and filtering by "WS" as displayed in the image below.
+Upon loading the app home page, the "WebSocket Connected" message will be printed to the terminal. The ``WebSocket connection`` can also be accessed from the browser by right-clicking and selecting inspect, network and filtering by "WS" as displayed in the image below.
 
 .. image:: ../../images/tutorial/advanced/ws-conn-browser.png
    :width: 600px
@@ -121,9 +121,9 @@ Upon loading the app home page, the "WebSocket Connected" message will be printe
 3. Channel Layers
 =================
 
-A channel layer is needed for two or more app instances to communicate between each other (e.g. two different users interacting with the same app at the same time). A channel layer provides a backend where WebSocket messages can be stored and then accessed by the different app instances. The updated consumer in this step opens a communication link (channel_name) in the "notification" channel group on connect, and closes it on disconnect. A new async function has also been added to handle messages.
+A ``channel layer`` is needed for two or more app instances to communicate between each other (e.g. two different users interacting with the same app at the same time). A ``channel layer`` provides a backend where ``WebSocket messages`` can be stored and then accessed by the different app instances. The updated ``consumer`` in this step opens a communication link (channel_name) in the "notification" channel group on connect, and closes it on disconnect. A new async function has also been added to handle messages.
 
-a. Update the consumer class from step (1.a) to look like this.
+a. Update the ``consumer class`` from step (1.a) to look like this.
 
 ::
 
@@ -150,7 +150,7 @@ a. Update the consumer class from step (1.a) to look like this.
 
 The respective print messages set on connect and disconnect will appear in the terminal when the app home is opened or closed.
 
-b. Channel layers require a backend to store the WebSocket messages coming from different app instances. These messages can be stored in memory. Add the following peace of code to tethys' settings.py.
+b. ``Channel layers`` require a backend to store the ``WebSocket messages`` coming from different app instances. These messages can be stored in memory. Add the following peace of code to tethys' ``settings.py``.
 
 ::
 
@@ -164,7 +164,7 @@ b. Channel layers require a backend to store the WebSocket messages coming from 
 
 .. note::
 
-    Django Channels recommends the use of an external backend store for production environments. The channel_redis python package plus redis server are the default recommendation. For more information see Django Channels `channel layers <https://channels.readthedocs.io/en/latest/topics/channel_layers.html>`_ and `deploying <https://channels.readthedocs.io/en/latest/deploying.html>`_ sections.
+    ``Django Channels`` recommends the use of an external backend store for production environments. The ``channels-redis`` python package plus ``Redis Server`` are the default recommendation. For more information see ``Django Channels`` `channel layers <https://channels.readthedocs.io/en/latest/topics/channel_layers.html>`_ and `deploying <https://channels.readthedocs.io/en/latest/deploying.html>`_ sections.
 
 Channel Layer Definitions
 -------------------------
@@ -187,9 +187,9 @@ Channel Layer Definitions
 4. New Dam Notification
 =======================
 
-Now that we have a working WebSocket connection and a communication backend is set, let's add the programming logic.
+Now that we have a working ``WebSocket connection`` and a communication backend is set, let's add the programming logic.
 
-a. Add the following code to the add_dam controller in controllers.py.
+a. Add the following code to the ``add_dam controller`` in ``controllers.py``.
 
 ::
 
@@ -223,13 +223,13 @@ This piece of code checks to see if a new dam has been added and if so it sends 
 
 .. note::
 
-    Channel layers can easily be accessed from within a consumer by calling ``self.channel_layer``. From outside the consumer they can be called with ``channels.layers.get_channel_layer``.
+    ``Channel layers`` can easily be accessed from within a consumer by calling ``self.channel_layer``. From outside the ``consumer`` they can be called with ``channels.layers.get_channel_layer``.
 
 .. note::
 
-    Channel layers are purely asynchronous so they need to be wrapped in a converter like ``async_to_sync`` to be used from synchronous code.
+    ``Channel layers`` are purely ``asynchronous`` so they need to be wrapped in a converter like ``async_to_sync`` to be used from synchronous code.
 
-b. Let's create a message box to display our notification when a new app is added. Add the following code to the home controller in controllers.py.
+b. Let's create a message box to display our notification when a new app is added. Add the following code to the ``home controller`` in ``controllers.py``.
 
 ::
 
@@ -262,9 +262,9 @@ b. Let's create a message box to display our notification when a new app is adde
     ...
 
 
-This gizmo creates an empty message box with a current page refresh. It will be populated in the next step based on our WebSocket connection.
+This ``gizmo`` creates an empty message box with a current page refresh. It will be populated in the next step based on our ``WebSocket connection``.
 
-c. Now that the logic has been added, lets add the tethys message box gizmo and modify the WebSocket connection from step (2) to listen for any ``New Dam`` messages and populate our message box accordingly. Update the code in home.html as follows.
+c. Now that the logic has been added, lets add the tethys ``message box gizmo`` and modify the ``WebSocket connection`` from step (2) to listen for any ``New Dam`` messages and populate our message box accordingly. Update the code in home.html as follows.
 
 .. code-block:: html+django
 
@@ -294,13 +294,13 @@ c. Now that the logic has been added, lets add the tethys message box gizmo and 
       </script>
     {% endblock %}
 
-Besides the message_box gizmo, a simple ``JavaScript`` conditional has been added to display and populate the message box if the message our WebSocket connection listened for is equal to ``New Dam``.
+Besides the ``message_box gizmo``, a simple ``JavaScript`` conditional has been added to display and populate the message box if the message our ``WebSocket connection`` listened for is equal to ``New Dam``.
 
-Test the WebSocket communication by opening two instances of the dam inventory app at the same time. Add a dam in one instance, a message box will display on the home of the other instance suggesting a refresh to display the newly added dam.
+Test the ``WebSocket communication`` by opening two instances of the dam inventory app at the same time. Add a dam in one instance, a message box will display on the home of the other instance suggesting a refresh to display the newly added dam.
 
 .. note::
 
-    Other WebSockets could be added to the app as a way of practice. For example: another message box when a hydrograph has been added to a dam.
+    Other ``WebSockets`` could be added to the app as a way of practice. For example: another message box when a hydrograph has been added to a dam.
 
 5. Solution
 ===========
