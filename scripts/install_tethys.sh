@@ -265,7 +265,7 @@ case $key in
     then
         SELINUX="true"
     else
-        echo SELinux confiuration is not supported on $(uname). Ignoring option $key.
+        echo SELinux configuration is not supported on $(uname). Ignoring option $key.
     fi
     ;;
     -x)
@@ -476,17 +476,20 @@ ubuntu_debian_production_install() {
     sudo apt install -y nginx supervisor
     sudo rm /etc/nginx/sites-enabled/default
     NGINX_SITES_DIR='sites-enabled'
+    SUPERVISOR_SITES_DIR='supervisor/conf.d'
 }
 
 enterprise_linux_production_install() {
     sudo yum install supervisor nginx -y
-    sudo systemctl enable nginx
-    sudo systemctl start nginx
+    sudo systemctl enable supervisord
+    sudo systemctl start supervisord
     sudo firewall-cmd --permanent --zone=public --add-service=http
 #    sudo firewall-cmd --permanent --zone=public --add-service=https
     sudo firewall-cmd --reload
 
     NGINX_SITES_DIR='conf.d'
+    sudo sed -i '$ s@$@ /etc/supervisord.d/*.conf@' "/etc/supervisord.conf"
+    SUPERVISOR_SITES_DIR='supervisord.d'
 }
 
 redhat_production_install() {
@@ -552,6 +555,11 @@ then
     tethys gen settings --production --allowed-host=${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite
     tethys gen nginx --overwrite
     tethys gen asgi_service --overwrite
+    sudo echo "[program:nginx]" > ${TETHYS_SRC}/tethys_portal/nginx_supervisord.conf
+    sudo echo "command=nginx -g 'daemon off;'" >> ${TETHYS_SRC}/tethys_portal/nginx_supervisord.conf
+    sudo echo "stdout_logfile=/var/log/nginx/access.log" >> ${TETHYS_SRC}/tethys_portal/nginx_supervisord.conf
+    sudo echo "stderr_logfile=/var/log/nginx/error.log" >> ${TETHYS_SRC}/tethys_portal/nginx_supervisord.conf
+    sudo echo "redirect_stderr=true" >> ${TETHYS_SRC}/tethys_portal/nginx_supervisord.conf
     NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')
     NGINX_GROUP=${NGINX_USER}
     NGINX_HOME=$(grep ${NGINX_USER} /etc/passwd | awk -F':' '{print $6}')
@@ -570,12 +578,8 @@ then
 
     sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_SRC} /var/log/tethys/tethys.log
     sudo mkdir -p /run/asgi; sudo chown ${NGINX_USER}:${NGINX_USER} /run/asgi
-    sudo ln -s ${TETHYS_SRC}/tethys_portal/asgi_supervisord.conf /etc/supervisor/conf.d/asgi_supervisord.conf
-    sudo echo "[program:nginx]" > /etc/supervisor/conf.d/nginx_supervisord.conf
-    sudo echo "command=nginx -g 'daemon off;'" >> /etc/supervisor/conf.d/nginx_supervisord.conf
-    sudo echo "stdout_logfile=/var/log/nginx/access.log" >> /etc/supervisor/conf.d/nginx_supervisord.conf
-    sudo echo "stderr_logfile=/var/log/nginx/error.log" >> /etc/supervisor/conf.d/nginx_supervisord.conf
-    sudo echo "redirect_stderr=true" >> /etc/supervisor/conf.d/nginx_supervisord.conf
+    sudo ln -s ${TETHYS_SRC}/tethys_portal/asgi_supervisord.conf /etc/${SUPERVISOR_SITES_DIR}/asgi_supervisord.conf
+    sudo ln -s ${TETHYS_SRC}/tethys_portal/nginx_supervisord.conf /etc/${SUPERVISOR_SITES_DIR}/nginx_supervisord.conf
     sudo supervisorctl reread
     sudo supervisorctl update
     set +x
