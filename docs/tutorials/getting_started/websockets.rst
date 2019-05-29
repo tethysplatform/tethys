@@ -1,5 +1,5 @@
 *******************
-Websockets Concepts
+WebSockets Concepts
 *******************
 
 **Last Updated:** May 2019
@@ -7,7 +7,7 @@ Websockets Concepts
 This tutorial introduces WebSocket communication concepts for Tethys developers. A consumer will be created to notify other users when a dam has been added to the app database by someone else, giving the user the option to reload the app to visualize the location of the new dam. The topics covered include:
 
 * Django Channels Consumers
-* Websocket Connections
+* WebSocket Connections
 * Channel Layers
 * New Dam Notification
 
@@ -42,7 +42,7 @@ a. Add the following code to the controller.
     class notificationsConsumer(AsyncWebsocketConsumer):
         async def connect(self):
             await self.accept()
-            print("-----------Websocket Connected-----------")
+            print("-----------WebSocket Connected-----------")
 
         async def disconnect(self, close_code):
             pass
@@ -86,7 +86,7 @@ b. Create a UrlMap for the consumer in app.py by adding the following code.
 
     The controller parameter of the `UrlMap` is pointing to the consumer added in the previous step. A new `protocol` parameter with a string value equal to `websocket` has been added to the `UrlMap`.
 
-2. Websocket Connections
+2. WebSocket Connections
 ========================
 
 A ``handshake`` needs to be established between the client and server when creating a WebSocket connection. We will use the standard ``JavaScript WebSocket API`` to do this.
@@ -112,7 +112,7 @@ Create a WebSocket connection by adding the following code to the home.html temp
 
 A ``WebSocket URL`` follows a pattern similar to tethys app ``HTTP URLs``. The differences being that the URL starts with ``ws://`` instead of ``http(s)://``, and the "apps" part of the URL in between the host and the app name is substituted with a "ws". For example: ws://tethys.host.com/ws/base-app-name/base-ws-url. If the base name of the app is included in the `WebSocket URL`, it will not be duplicated. This is the same behavior for `HTTP URLs`.
 
-Upon loading the app home page, the "Websocket Connected" message will be printed to the terminal. The WebSocket connection can also be accessed from the browser by right-clicking and selecting inspect, network and filtering by "WS" as displayed in the image below.
+Upon loading the app home page, the "WebSocket Connected" message will be printed to the terminal. The WebSocket connection can also be accessed from the browser by right-clicking and selecting inspect, network and filtering by "WS" as displayed in the image below.
 
 .. image:: ../../images/tutorial/advanced/ws-conn-browser.png
    :width: 600px

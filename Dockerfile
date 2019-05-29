@@ -15,7 +15,7 @@ ENV  TETHYS_HOME="/usr/lib/tethys" \
      TETHYS_SUPER_USER_PASS=""
 
 # Misc
-ENV  ALLOWED_HOSTS="['127.0.0.1', 'localhost']" \
+ENV  ALLOWED_HOSTS="\"['localhost', '127.0.0.1']\"" \
      BASH_PROFILE=".bashrc" \
      CONDA_HOME="/opt/conda" \
      CONDA_ENV_NAME=tethys \
