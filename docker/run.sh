@@ -29,13 +29,6 @@ find ${TETHYS_HOME} ! -user ${NGINX_USER} -print0 | xargs -0 -I{} chown ${NGINX_
 
 echo_status "Starting supervisor"
 
-# Create NGINX Supervisor Config
-echo "[program:nginx]" >> /etc/supervisor/conf.d/nginx_supervisord.conf
-echo "command=/usr/sbin/nginx -g 'daemon off;'" >> /etc/supervisor/conf.d/nginx_supervisord.conf
-echo "stdout_logfile=/var/log/nginx/access.log" >> /etc/supervisor/conf.d/nginx_supervisord.conf
-echo "stderr_logfile=/var/log/nginx/error.log" >> /etc/supervisor/conf.d/nginx_supervisord.conf
-echo "redirect_stderr=true" >> /etc/supervisor/conf.d/nginx_supervisord.conf
-
 # Start Supervisor
 /usr/bin/supervisord -n
 

@@ -106,6 +106,12 @@ Link_NGINX_Config_TethysCore:
     - target: {{ TETHYS_HOME }}/src/tethys_portal/tethys_nginx.conf
     - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
+Link_NGINX_Service_TethysCore:
+  file.symlink:
+    - name: /etc/supervisor/conf.d/nginx_supervisord.conf
+    - target: {{ TETHYS_HOME }}/src/tethys_portal/nginx_supervisord.conf
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+
 Link_ASGI_Config_TethysCore:
   file.symlink:
     - name: /etc/supervisor/conf.d/asgi_supervisord.conf

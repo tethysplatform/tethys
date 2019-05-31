@@ -81,6 +81,7 @@ RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; tethys gen settings --production --allowed-host "${ALLOWED_HOSTS}" --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite \
   ; sed -i -e "s:#TETHYS_WORKSPACES_ROOT = .*$:TETHYS_WORKSPACES_ROOT = \"/usr/lib/tethys/workspaces\":" ${TETHYS_HOME}/src/tethys_portal/settings.py \
   ; tethys gen nginx --overwrite \
+  ; tethys gen nginx_service --overwrite \
   ; tethys gen asgi_service --overwrite \
   ; tethys manage collectstatic'
 

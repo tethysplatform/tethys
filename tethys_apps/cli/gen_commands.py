@@ -40,17 +40,20 @@ GEN_SETTINGS_OPTION = 'settings'
 GEN_APACHE_OPTION = 'apache'
 GEN_ASGI_SERVICE_OPTION = 'asgi_service'
 GEN_NGINX_OPTION = 'nginx'
+GEN_NGINX_SERVICE_OPTION = 'nginx_service'
 
 FILE_NAMES = {GEN_SETTINGS_OPTION: 'settings.py',
               GEN_APACHE_OPTION: 'tethys-default.conf',
               GEN_ASGI_SERVICE_OPTION: 'asgi_supervisord.conf',
               GEN_NGINX_OPTION: 'tethys_nginx.conf',
+              GEN_NGINX_SERVICE_OPTION: 'nginx_supervisord.conf',
               }
 
 VALID_GEN_OBJECTS = (GEN_SETTINGS_OPTION,
                      GEN_APACHE_OPTION,
                      GEN_ASGI_SERVICE_OPTION,
                      GEN_NGINX_OPTION,
+                     GEN_NGINX_SERVICE_OPTION,
                      )
 
 

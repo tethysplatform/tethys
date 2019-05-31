@@ -552,12 +552,8 @@ then
     echo "Waiting for databases to startup..."; sleep 5
     tethys gen settings --production --allowed-host=${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite
     tethys gen nginx --overwrite
+    tethys gen nginx_service --overwrite
     tethys gen asgi_service --overwrite
-    sudo echo "[program:nginx]" > ${TETHYS_SRC}/tethys_portal/nginx_supervisord.conf
-    sudo echo "command=nginx -g 'daemon off;'" >> ${TETHYS_SRC}/tethys_portal/nginx_supervisord.conf
-    sudo echo "stdout_logfile=/var/log/nginx/access.log" >> ${TETHYS_SRC}/tethys_portal/nginx_supervisord.conf
-    sudo echo "stderr_logfile=/var/log/nginx/error.log" >> ${TETHYS_SRC}/tethys_portal/nginx_supervisord.conf
-    sudo echo "redirect_stderr=true" >> ${TETHYS_SRC}/tethys_portal/nginx_supervisord.conf
     NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')
     NGINX_GROUP=${NGINX_USER}
     NGINX_HOME=$(grep ${NGINX_USER} /etc/passwd | awk -F':' '{print $6}')

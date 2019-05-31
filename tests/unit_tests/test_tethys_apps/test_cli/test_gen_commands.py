@@ -2,7 +2,8 @@ import unittest
 from unittest import mock
 import tethys_apps.cli.gen_commands
 from tethys_apps.cli.gen_commands import get_environment_value, get_settings_value, generate_command
-from tethys_apps.cli.gen_commands import GEN_SETTINGS_OPTION, GEN_NGINX_OPTION, GEN_ASGI_SERVICE_OPTION
+from tethys_apps.cli.gen_commands import (GEN_SETTINGS_OPTION, GEN_NGINX_OPTION, GEN_NGINX_SERVICE_OPTION,
+                                          GEN_ASGI_SERVICE_OPTION)
 
 try:
     reload
@@ -64,6 +65,19 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
         mock_settings.assert_any_call('TETHYS_WORKSPACES_ROOT')
         mock_settings.assert_called_with('STATIC_ROOT')
+
+    @mock.patch('tethys_apps.cli.gen_commands.open', new_callable=mock.mock_open)
+    @mock.patch('tethys_apps.cli.gen_commands.os.path.isfile')
+    def test_generate_command_nginx_service(self, mock_os_path_isfile, mock_file):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_NGINX_SERVICE_OPTION
+        mock_args.directory = None
+        mock_os_path_isfile.return_value = False
+
+        generate_command(args=mock_args)
+
+        mock_os_path_isfile.assert_called_once()
+        mock_file.assert_called()
 
     @mock.patch('tethys_apps.cli.gen_commands.Context')
     @mock.patch('tethys_apps.cli.gen_commands.linux_distribution')
