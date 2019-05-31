@@ -5,6 +5,7 @@ from tethys_sdk.gizmos import Button
 from channels.generic.websocket import WebsocketConsumer
 import json
 
+
 @login_required()
 def home(request):
     """

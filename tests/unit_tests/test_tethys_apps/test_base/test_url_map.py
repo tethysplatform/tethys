@@ -74,7 +74,6 @@ class TestUrlMap(unittest.TestCase):
         result = test_UrlMap(name=name, url=url, controller=controller,  protocol='websocket')
         self.assertEqual(expected_url, result.url)
 
-
     def test_UrlMapBase_value_error(self):
         self.assertRaises(ValueError, base_url_map.UrlMapBase, name='1', url='2',
                           controller='3', regex={'1': '2'})
