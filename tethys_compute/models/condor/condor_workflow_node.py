@@ -13,7 +13,7 @@ from django.db import models
 from model_utils.managers import InheritanceManager
 
 from tethys_compute.models.condor.condor_py_workflow import CondorPyWorkflow
-from tethys_compute.utilities import DictionaryField
+from django.contrib.postgres.fields import JSONField
 
 
 class CondorWorkflowNode(models.Model):
@@ -38,7 +38,7 @@ class CondorWorkflowNode(models.Model):
     pre_script_args = models.CharField(max_length=1024, null=True, blank=True)
     post_script = models.CharField(max_length=1024, null=True, blank=True)
     post_script_args = models.CharField(max_length=1024, null=True, blank=True)
-    variables = DictionaryField(default='', blank=True)
+    variables = JSONField(default=dict, null=True, blank=True)
     priority = models.IntegerField(null=True, blank=True)
     category = models.CharField(max_length=128, null=True, blank=True)
     retry = models.PositiveSmallIntegerField(null=True, blank=True)
