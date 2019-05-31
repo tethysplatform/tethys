@@ -595,7 +595,7 @@ then
     echo "unalias tethys_server_own" >> "${DEACTIVATE_SCRIPT}"
     echo "unalias tso" >> "${DEACTIVATE_SCRIPT}"
     echo "unalias tethys_server_restart" >> "${DEACTIVATE_SCRIPT}"
-    echo "unalias trs" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tsr" >> "${DEACTIVATE_SCRIPT}"
 fi
 
 
