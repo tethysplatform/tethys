@@ -48,17 +48,17 @@ The Nginx user must own any files that Nginx is serving. This includes the sourc
 
     (tethys) $ tethys_server_own
 
-7. Restart uWSGI and Nginx
+7. Restart ASGI and Nginx
 ==========================
 
-Restart uWSGI and Nginx services to effect the changes::
+Restart ASGI and Nginx services to effect the changes::
 
-    $ sudo systemctl restart tethys.uwsgi.service
+    $ sudo supervisorctl restart all
     $ sudo systemctl restart nginx
 
 .. tip::
 
-    Use the alias `trestart` as a shortcut to doing both steps 6 and 7.
+    Use the alias `tsr` as a shortcut to doing both steps 6 and 7.
 
 8. Configure App Settings
 =========================
