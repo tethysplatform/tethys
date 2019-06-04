@@ -265,7 +265,7 @@ case $key in
     then
         SELINUX="true"
     else
-        echo SELinux confiuration is not supported on $(uname). Ignoring option $key.
+        echo SELinux configuration is not supported on $(uname). Ignoring option $key.
     fi
     ;;
     -x)
@@ -471,20 +471,23 @@ set +e  # don't exit on error anymore
 
 ubuntu_debian_production_install() {
     sudo apt update
-    sudo apt install -y nginx
+    sudo apt install -y nginx supervisor
     sudo rm /etc/nginx/sites-enabled/default
     NGINX_SITES_DIR='sites-enabled'
+    SUPERVISOR_SITES_DIR='supervisor/conf.d'
 }
 
 enterprise_linux_production_install() {
-    sudo yum install nginx -y
-    sudo systemctl enable nginx
-    sudo systemctl start nginx
+    sudo yum install supervisor nginx -y
+    sudo systemctl enable supervisord
+    sudo systemctl start supervisord
     sudo firewall-cmd --permanent --zone=public --add-service=http
 #    sudo firewall-cmd --permanent --zone=public --add-service=https
     sudo firewall-cmd --reload
 
     NGINX_SITES_DIR='conf.d'
+    sudo sed -i '$ s@$@ /etc/supervisord.d/*.conf@' "/etc/supervisord.conf"
+    SUPERVISOR_SITES_DIR='supervisord.d'
 }
 
 redhat_production_install() {
@@ -547,11 +550,10 @@ then
     conda activate ${CONDA_ENV_NAME}
     pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" -l "${TETHYS_DB_DIR}/logfile" start -o "-p ${TETHYS_DB_PORT}"
     echo "Waiting for databases to startup..."; sleep 5
-    conda install -c conda-forge uwsgi -y
     tethys gen settings --production --allowed-host=${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite
     tethys gen nginx --overwrite
-    tethys gen uwsgi_settings --overwrite
-    tethys gen uwsgi_service --overwrite
+    tethys gen nginx_service --overwrite
+    tethys gen asgi_service --overwrite
     NGINX_USER=$(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')
     NGINX_GROUP=${NGINX_USER}
     NGINX_HOME=$(grep ${NGINX_USER} /etc/passwd | awk -F':' '{print $6}')
@@ -559,8 +561,8 @@ then
     sudo chown -R ${USER} ${TETHYS_HOME}
     tethys manage collectall --noinput
     sudo chmod 705 ~
-    sudo mkdir /var/log/uwsgi
-    sudo touch /var/log/uwsgi/tethys.log
+    sudo mkdir /var/log/tethys
+    sudo touch /var/log/tethys/tethys.log
     sudo ln -s ${TETHYS_SRC}/tethys_portal/tethys_nginx.conf /etc/nginx/${NGINX_SITES_DIR}/
 
     if [ -n "${SELINUX}" ]
@@ -568,10 +570,12 @@ then
         configure_selinux
     fi
 
-    sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_SRC} /var/log/uwsgi/tethys.log
-    sudo systemctl enable ${TETHYS_SRC}/tethys_portal/tethys.uwsgi.service
-    sudo systemctl start tethys.uwsgi.service
-    sudo systemctl restart nginx
+    sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_SRC} /var/log/tethys/tethys.log
+    sudo mkdir -p /run/asgi; sudo chown ${NGINX_USER}:${NGINX_USER} /run/asgi
+    sudo ln -s ${TETHYS_SRC}/tethys_portal/asgi_supervisord.conf /etc/${SUPERVISOR_SITES_DIR}/asgi_supervisord.conf
+    sudo ln -s ${TETHYS_SRC}/tethys_portal/nginx_supervisord.conf /etc/${SUPERVISOR_SITES_DIR}/nginx_supervisord.conf
+    sudo supervisorctl reread
+    sudo supervisorctl update
     set +x
     conda deactivate
 
@@ -581,7 +585,7 @@ then
     echo "alias tuo=tethys_user_own" >> "${ACTIVATE_SCRIPT}"
     echo "alias tethys_server_own='sudo chown -R \${NGINX_USER}:\${NGINX_USER} \"\${TETHYS_SRC}\" \"\${TETHYS_HOME}/static\" \"\${TETHYS_HOME}/workspaces\" \"\${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
     echo "alias tso=tethys_server_own" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tethys_server_restart='tso; sudo systemctl restart tethys.uwsgi.service; sudo systemctl restart nginx'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_server_restart='tso; sudo supervisorctl restart all;'" >> "${ACTIVATE_SCRIPT}"
     echo "alias tsr=tethys_server_restart" >> "${ACTIVATE_SCRIPT}"
 
     echo "unset NGINX_USER" >> "${DEACTIVATE_SCRIPT}"
@@ -591,7 +595,7 @@ then
     echo "unalias tethys_server_own" >> "${DEACTIVATE_SCRIPT}"
     echo "unalias tso" >> "${DEACTIVATE_SCRIPT}"
     echo "unalias tethys_server_restart" >> "${DEACTIVATE_SCRIPT}"
-    echo "unalias trs" >> "${DEACTIVATE_SCRIPT}"
+    echo "unalias tsr" >> "${DEACTIVATE_SCRIPT}"
 fi
 
 

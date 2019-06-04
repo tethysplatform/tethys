@@ -136,7 +136,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertFalse(call_args[0][0][0].overwrite)
         self.assertFalse(call_args[0][0][0].production)
         self.assertEqual('settings', call_args[0][0][0].type)
-        self.assertEqual(10, call_args[0][0][0].uwsgi_processes)
+        self.assertEqual(4, call_args[0][0][0].asgi_processes)
 
     @mock.patch('tethys_apps.cli.generate_command')
     def test_generate_subcommand_settings_directory(self, mock_gen_command):
@@ -157,12 +157,12 @@ class TethysCommandTests(unittest.TestCase):
         self.assertFalse(call_args[0][0][0].overwrite)
         self.assertFalse(call_args[0][0][0].production)
         self.assertEqual('settings', call_args[0][0][0].type)
-        self.assertEqual(10, call_args[0][0][0].uwsgi_processes)
+        self.assertEqual(4, call_args[0][0][0].asgi_processes)
 
     @mock.patch('tethys_apps.cli.generate_command')
     def test_generate_subcommand_apache_settings_verbose_options(self, mock_gen_command):
         testargs = ['tethys', 'gen', 'apache', '-d', '/tmp/foo/bar', '--allowed-host', '127.0.0.1',
-                    '--allowed-hosts', 'localhost', '--client-max-body-size', '123M', '--uwsgi-processes', '9',
+                    '--allowed-hosts', 'localhost', '--client-max-body-size', '123M', '--asgi-processes', '9',
                     '--db-username', 'foo_user', '--db-password', 'foo_pass', '--db-port', '5555',
                     '--production', '--overwrite']
 
@@ -181,7 +181,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertTrue(call_args[0][0][0].overwrite)
         self.assertTrue(call_args[0][0][0].production)
         self.assertEqual('apache', call_args[0][0][0].type)
-        self.assertEqual('9', call_args[0][0][0].uwsgi_processes)
+        self.assertEqual('9', call_args[0][0][0].asgi_processes)
 
     @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_apps.cli.argparse._sys.exit')
@@ -200,7 +200,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('--directory', mock_stdout.getvalue())
         self.assertIn('--allowed-host', mock_stdout.getvalue())
         self.assertIn('--client-max-body-size', mock_stdout.getvalue())
-        self.assertIn('--uwsgi-processes', mock_stdout.getvalue())
+        self.assertIn('--asgi-processes', mock_stdout.getvalue())
         self.assertIn('--db-username', mock_stdout.getvalue())
         self.assertIn('--db-password', mock_stdout.getvalue())
         self.assertIn('--db-port', mock_stdout.getvalue())
