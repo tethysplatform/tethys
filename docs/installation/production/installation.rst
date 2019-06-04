@@ -18,7 +18,7 @@ Follow the default :doc:`../linux_and_mac` instructions to install Tethys Portal
 
 For a production installation the installation script should be run with all of the following settings::
 
-    $ bash install_tethys.sh -allowed-host <YOUR_SERVERS_HOSTNAME> --db-username <SECURE_DB_USERNAME> --db-password <SECURE_DB_PASSWORD> --db-port <PORT_FOR_YOUR_DB_SERVER> --superuser <PORTAL_ADMIN_USERNAME> --superuser-email <PORTAL_ADMIN_EMAIL> --superuser-pass <PORTAL_ADMIN_PASSWORD> --production
+    $ bash install_tethys.sh --allowed-host <YOUR_SERVERS_HOSTNAME> --db-username <SECURE_DB_USERNAME> --db-password <SECURE_DB_PASSWORD> --db-port <PORT_FOR_YOUR_DB_SERVER> --superuser <PORTAL_ADMIN_USERNAME> --superuser-email <PORTAL_ADMIN_EMAIL> --superuser-pass <PORTAL_ADMIN_PASSWORD> --production
 
 .. note::
 
@@ -33,7 +33,7 @@ Open the :file:`settings.py` module for editing using ``vim`` or another text ed
 
 ::
 
-    sudo vim $TETHYS_HOME/src/tethys_apps/settings.py
+    sudo vim $TETHYS_HOME/src/tethys_portal/settings.py
 
 Press :kbd:`i` to start editing and change settings as necessary for your production environment. Some settings you may want to customize include:
 
@@ -260,7 +260,7 @@ Finally, restart uWSGI and Nginx services to effect the changes::
 
 .. tip::
 
-    Use the alias `trestart` as a shortcut to doing the final step.
+    Use the alias `tsr` as a shortcut to doing the final step.
 
 
 The portal should now be accessible from: https://domain-name

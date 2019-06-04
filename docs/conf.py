@@ -27,6 +27,7 @@ import django
 # installing the package, which is what we are trying to avoid.
 MOCK_MODULES = [
     'bokeh', 'bokeh.embed', 'bokeh.resources',
+    'channels',
     'condorpy',
     'django_gravatar',
     'dask', 'dask.delayed', 'dask.distributed',

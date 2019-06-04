@@ -679,21 +679,25 @@ a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
             'features': features
         }
 
+        style = {'ol.style.Style': {
+            'image': {'ol.style.Circle': {
+                'radius': 10,
+                'fill': {'ol.style.Fill': {
+                    'color':  '#d84e1f'
+                }},
+                'stroke': {'ol.style.Stroke': {
+                    'color': '#ffffff',
+                    'width': 1
+                }}
+            }}
+        }}
+
         # Create a Map View Layer
         dams_layer = MVLayer(
             source='GeoJSON',
             options=dams_feature_collection,
             legend_title='Dams',
-            layer_options={
-                'style': {
-                    'image': {
-                        'circle': {
-                            'radius': 10,
-                            'fill': {'color':  '#d84e1f'},
-                            'stroke': {'color': '#ffffff', 'width': 1},
-                        }
-                    }
-                }
+            layer_options={'style': style}
             }
         )
 
