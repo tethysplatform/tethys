@@ -38,22 +38,22 @@ __all__ = ['VALID_GEN_OBJECTS', 'generate_command']
 
 GEN_SETTINGS_OPTION = 'settings'
 GEN_APACHE_OPTION = 'apache'
-GEN_UWSGI_SERVICE_OPTION = 'uwsgi_service'
-GEN_UWSGI_SETTINGS_OPTION = 'uwsgi_settings'
+GEN_ASGI_SERVICE_OPTION = 'asgi_service'
 GEN_NGINX_OPTION = 'nginx'
+GEN_NGINX_SERVICE_OPTION = 'nginx_service'
 
 FILE_NAMES = {GEN_SETTINGS_OPTION: 'settings.py',
               GEN_APACHE_OPTION: 'tethys-default.conf',
-              GEN_UWSGI_SERVICE_OPTION: 'tethys.uwsgi.service',
-              GEN_UWSGI_SETTINGS_OPTION: 'tethys_uwsgi.yml',
+              GEN_ASGI_SERVICE_OPTION: 'asgi_supervisord.conf',
               GEN_NGINX_OPTION: 'tethys_nginx.conf',
+              GEN_NGINX_SERVICE_OPTION: 'nginx_supervisord.conf',
               }
 
 VALID_GEN_OBJECTS = (GEN_SETTINGS_OPTION,
                      GEN_APACHE_OPTION,
-                     GEN_UWSGI_SERVICE_OPTION,
-                     GEN_UWSGI_SETTINGS_OPTION,
+                     GEN_ASGI_SERVICE_OPTION,
                      GEN_NGINX_OPTION,
+                     GEN_NGINX_SERVICE_OPTION,
                      )
 
 
@@ -125,16 +125,20 @@ def generate_command(args):
 
     if args.type == GEN_NGINX_OPTION:
         hostname = str(settings.ALLOWED_HOSTS[0]) if len(settings.ALLOWED_HOSTS) > 0 else '127.0.0.1'
+        port = get_environment_value('TETHYS_PORT')
         workspaces_root = get_settings_value('TETHYS_WORKSPACES_ROOT')
         static_root = get_settings_value('STATIC_ROOT')
 
         context.update({'hostname': hostname,
+                        'port': port,
                         'workspaces_root': workspaces_root,
                         'static_root': static_root,
                         'client_max_body_size': args.client_max_body_size
                         })
 
-    if args.type == GEN_UWSGI_SERVICE_OPTION:
+    if args.type == GEN_ASGI_SERVICE_OPTION:
+        hostname = str(settings.ALLOWED_HOSTS[0]) if len(settings.ALLOWED_HOSTS) > 0 else '127.0.0.1'
+        port = get_environment_value('TETHYS_PORT')
         conda_home = get_environment_value('CONDA_HOME')
         conda_env_name = get_environment_value('CONDA_ENV_NAME')
 
@@ -148,19 +152,14 @@ def generate_command(args):
             pass
 
         context.update({'nginx_user': nginx_user,
+                        'hostname': hostname,
+                        'port': port,
+                        'asgi_processes': args.asgi_processes,
                         'conda_home': conda_home,
                         'conda_env_name': conda_env_name,
                         'tethys_src': TETHYS_SRC,
                         'user_option_prefix': user_option_prefix
                         })
-
-    if args.type == GEN_UWSGI_SETTINGS_OPTION:
-        conda_home = get_environment_value('CONDA_HOME')
-        conda_env_name = get_environment_value('CONDA_ENV_NAME')
-
-        context.update({'conda_home': conda_home,
-                        'conda_env_name': conda_env_name,
-                        'uwsgi_processes': args.uwsgi_processes})
 
     if args.directory:
         if os.path.isdir(args.directory):

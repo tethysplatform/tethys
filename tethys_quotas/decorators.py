@@ -9,7 +9,7 @@
 import logging
 from django.utils.functional import wraps
 from django.core.exceptions import PermissionDenied
-from django.core.handlers.wsgi import WSGIRequest
+from django.http import HttpRequest
 from tethys_apps.utilities import get_active_app
 from tethys_quotas.models.resource_quota import ResourceQuota
 from tethys_quotas.utilities import passes_quota
@@ -29,7 +29,7 @@ def enforce_quota(codename):
             try:
                 request = None
                 for index, arg in enumerate(args):
-                    if isinstance(arg, WSGIRequest):
+                    if isinstance(arg, HttpRequest):
                         request = arg
                         break
 

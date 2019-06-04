@@ -3,7 +3,7 @@
 {% set CONDA_HOME = salt['environ.get']('CONDA_HOME') %}
 {% set NGINX_USER = salt['environ.get']('NGINX_USER') %}
 {% set CLIENT_MAX_BODY_SIZE = salt['environ.get']('CLIENT_MAX_BODY_SIZE') %}
-{% set UWSGI_PROCESSES = salt['environ.get']('UWSGI_PROCESSES') %}
+{% set ASGI_PROCESSES = salt['environ.get']('ASGI_PROCESSES') %}
 {% set TETHYS_BIN_DIR = [CONDA_HOME, "/envs/", CONDA_ENV_NAME, "/bin"]|join %}
 {% set TETHYS_DB_HOST = salt['environ.get']('TETHYS_DB_HOST') %}
 {% set TETHYS_DB_PASSWORD = salt['environ.get']('TETHYS_DB_PASSWORD') %}
@@ -21,7 +21,7 @@
 
 Generate_Tethys_Settings_TethysCore:
   cmd.run:
-    - name: {{ TETHYS_BIN_DIR }}/tethys gen settings --production --allowed-hosts={{ ALLOWED_HOSTS }} --db-username {{ TETHYS_DB_USERNAME }} --db-password {{ TETHYS_DB_PASSWORD }} --db-port {{ TETHYS_DB_PORT }} --overwrite
+    - name: {{ TETHYS_BIN_DIR }}/tethys gen settings --production --allowed-hosts {{ ALLOWED_HOSTS }} --db-username {{ TETHYS_DB_USERNAME }} --db-password {{ TETHYS_DB_PASSWORD }} --db-port {{ TETHYS_DB_PORT }} --overwrite
     - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Edit_Tethys_Settings_File_(HOST)_TethysCore:
@@ -62,23 +62,19 @@ Generate_NGINX_Settings_TethysCore:
     - name: {{ TETHYS_BIN_DIR }}/tethys gen nginx --client-max-body-size="{{ CLIENT_MAX_BODY_SIZE }}" --overwrite
     - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
-Generate_UWSGI_Settings_TethysCore:
+Generate_ASGI_Service_TethysCore:
   cmd.run:
-    - name: {{ TETHYS_BIN_DIR }}/tethys gen uwsgi_settings --uwsgi-processes={{ UWSGI_PROCESSES }} --overwrite
+    - name: {{ TETHYS_BIN_DIR }}/tethys gen asgi_service --asgi-processes={{ ASGI_PROCESSES }} --overwrite
     - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
-Generate_UWSGI_Service_TethysCore:
-  cmd.run:
-    - name: {{ TETHYS_BIN_DIR }}/tethys gen uwsgi_service --overwrite
-    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
-
-/run/uwsgi/tethys.pid:
-  file.managed:
+/run/asgi:
+  file.directory:
     - user: {{ NGINX_USER }}
-    - replace: False
+    - group: {{ NGINX_USER }}
+    - mode: 755
     - makedirs: True
 
-/var/log/uwsgi/tethys.log:
+/var/log/tethys/tethys.log:
   file.managed:
     - user: {{ NGINX_USER }}
     - replace: False
@@ -108,6 +104,18 @@ Link_NGINX_Config_TethysCore:
   file.symlink:
     - name: /etc/nginx/sites-enabled/tethys_nginx.conf
     - target: {{ TETHYS_HOME }}/src/tethys_portal/tethys_nginx.conf
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+
+Link_NGINX_Service_TethysCore:
+  file.symlink:
+    - name: /etc/supervisor/conf.d/nginx_supervisord.conf
+    - target: {{ TETHYS_HOME }}/src/tethys_portal/nginx_supervisord.conf
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+
+Link_ASGI_Config_TethysCore:
+  file.symlink:
+    - name: /etc/supervisor/conf.d/asgi_supervisord.conf
+    - target: {{ TETHYS_HOME }}/src/tethys_portal/asgi_supervisord.conf
     - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Flag_Complete_Setup_TethysCore:

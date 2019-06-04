@@ -62,6 +62,8 @@ dependencies:
     - django-simple-captcha
     - django-termsandconditions
     - django-session-security
+    - channels
+    - service_identity
     - condorpy
     - python_social_auth
     - django-analytical

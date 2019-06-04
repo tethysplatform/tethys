@@ -21,7 +21,8 @@ urlpatterns = [
 
 # Append the app urls urlpatterns
 harvester = SingletonHarvester()
-app_url_patterns, extension_url_patterns = harvester.get_url_patterns()
+app_url_patterns = harvester.get_url_patterns()['app_url_patterns']
+ext_url_patterns = harvester.get_url_patterns()['ext_url_patterns']
 
 for namespace, urls in app_url_patterns.items():
     root_pattern = r'^{0}/'.format(namespace.replace('_', '-'))
@@ -29,6 +30,6 @@ for namespace, urls in app_url_patterns.items():
 
 extension_urls = []
 
-for namespace, urls in extension_url_patterns.items():
+for namespace, urls in ext_url_patterns.items():
     root_pattern = r'^{0}/'.format(namespace.replace('_', '-'))
     extension_urls.append(url(root_pattern, include((urls, namespace), namespace=namespace)))

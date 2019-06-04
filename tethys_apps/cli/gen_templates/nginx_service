@@ -1,0 +1,5 @@
+[program:nginx]
+command=nginx -g 'daemon off;'
+stdout_logfile=/var/log/nginx/access.log
+stderr_logfile=/var/log/nginx/error.log
+redirect_stderr=true

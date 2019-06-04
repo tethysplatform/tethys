@@ -44,7 +44,7 @@ class TethysBase(TethysBaseMixin):
 
     def url_maps(self):
         """
-        Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically.
+        Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically. Starting in Tethys 3.0, the ``WebSocket`` protocol is supported along with the ``HTTP`` protocol. To create a ``WebSocket UrlMap``, follow the same pattern used for the ``HTTP`` protocol. In addition, provide a ``Consumer`` path in the controllers parameter as well as a ``WebSocket`` string value for the new protocol parameter for the ``WebSocket UrlMap``.
 
         Returns:
           iterable: A list or tuple of ``UrlMap`` objects.
@@ -68,6 +68,12 @@ class TethysBase(TethysBaseMixin):
                                        url='my-first-app',
                                        controller='my_first_app.controllers.home',
                                        ),
+                    ),
+                    url_maps = (UrlMap(name='home_ws',
+                                       url='my-first-ws',
+                                       controller='my_first_app.controllers.HomeConsumer',
+                                       protocol='websocket'
+                                       ),
                     )
 
                     return url_maps
@@ -82,7 +88,7 @@ class TethysBase(TethysBaseMixin):
         if self._url_patterns is None:
             is_extension = isinstance(self, TethysExtensionBase)
 
-            url_patterns = dict()
+            url_patterns = {'http': dict(), 'websocket': dict()}
 
             if hasattr(self, 'url_maps'):
                 url_maps = self.url_maps()
@@ -90,8 +96,8 @@ class TethysBase(TethysBaseMixin):
             for url_map in url_maps:
                 namespace = self.namespace
 
-                if namespace not in url_patterns:
-                    url_patterns[namespace] = []
+                if namespace not in url_patterns[url_map.protocol]:
+                    url_patterns[url_map.protocol][namespace] = []
 
                 # Create django url object
                 if isinstance(url_map.controller, str):
@@ -119,7 +125,7 @@ class TethysBase(TethysBaseMixin):
                 django_url = url(url_map.url, controller_function, name=url_map.name)
 
                 # Append to namespace list
-                url_patterns[namespace].append(django_url)
+                url_patterns[url_map.protocol][namespace].append(django_url)
             self._url_patterns = url_patterns
 
         return self._url_patterns

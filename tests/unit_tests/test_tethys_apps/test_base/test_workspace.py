@@ -4,7 +4,7 @@ import os
 import shutil
 from unittest import mock
 from tests.factories.django_user import UserFactory
-from django.core.handlers.wsgi import WSGIRequest
+from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 import tethys_apps.base.app_base as tethys_app_base
@@ -182,7 +182,7 @@ class TestUrlMap(unittest.TestCase):
         mock_guw.return_value = user_workspace
         mock_rq.objects.get.return_value = mock.MagicMock(codename='user_workspace_quota')
         mock_rq.DoesNotExist = ResourceQuota.DoesNotExist
-        mock_request = mock.MagicMock(spec=WSGIRequest, user=mock.MagicMock(spec=User))
+        mock_request = mock.MagicMock(spec=HttpRequest, user=mock.MagicMock(spec=User))
 
         ret = user_dec_controller(mock_request)
         self.assertEqual(user_workspace, ret)
@@ -195,12 +195,12 @@ class TestUrlMap(unittest.TestCase):
     def test_user_workspace_rq_does_not_exist(self, _, __, mock_rq, mock_log):
         mock_rq.objects.get.side_effect = ResourceQuota.DoesNotExist
         mock_rq.DoesNotExist = ResourceQuota.DoesNotExist
-        mock_request = mock.MagicMock(spec=WSGIRequest, user=mock.MagicMock(spec=User))
+        mock_request = mock.MagicMock(spec=HttpRequest, user=mock.MagicMock(spec=User))
 
         user_dec_controller(mock_request)
         mock_log.warning.assert_called_with('ResourceQuota with codename user_workspace_quota does not exist.')
 
-    def test_user_workspace_no_WSGIRequest(self):
+    def test_user_workspace_no_HttpRequest(self):
         mock_request = mock.MagicMock()
         ret = None
         with self.assertRaises(ValueError) as context:
@@ -216,7 +216,7 @@ class TestUrlMap(unittest.TestCase):
     def test_user_workspace_passes_quota_false(self, _, mock_app, mock_rq, mock_pq):
         mock_rq.DoesNotExist = ResourceQuota.DoesNotExist
         mock_rq.objects.get.return_value = mock.MagicMock(help='helpful message')
-        mock_request = mock.MagicMock(spec=WSGIRequest, user=mock.MagicMock(spec=User))
+        mock_request = mock.MagicMock(spec=HttpRequest, user=mock.MagicMock(spec=User))
         mock_pq.return_value = False
 
         ret = None
@@ -234,7 +234,7 @@ class TestUrlMap(unittest.TestCase):
         mock_gaw.return_value = app_workspace
         mock_rq.objects.get.return_value = mock.MagicMock(codename='app_workspace_quota')
         mock_rq.DoesNotExist = ResourceQuota.DoesNotExist
-        mock_request = mock.MagicMock(spec=WSGIRequest, user=mock.MagicMock(spec=User))
+        mock_request = mock.MagicMock(spec=HttpRequest, user=mock.MagicMock(spec=User))
 
         ret = app_dec_controller(mock_request)
         self.assertEqual(app_workspace, ret)
@@ -248,12 +248,12 @@ class TestUrlMap(unittest.TestCase):
     def test_app_workspace_rq_does_not_exist(self, _, __, mock_rq, mock_log, ___):
         mock_rq.objects.get.side_effect = ResourceQuota.DoesNotExist
         mock_rq.DoesNotExist = ResourceQuota.DoesNotExist
-        mock_request = mock.MagicMock(spec=WSGIRequest, user=mock.MagicMock(spec=User))
+        mock_request = mock.MagicMock(spec=HttpRequest, user=mock.MagicMock(spec=User))
 
         app_dec_controller(mock_request)
         mock_log.warning.assert_called_with('ResourceQuota with codename app_workspace_quota does not exist.')
 
-    def test_app_workspace_no_WSGIRequest(self):
+    def test_app_workspace_no_HttpRequest(self):
         mock_request = mock.MagicMock()
         ret = None
         with self.assertRaises(ValueError) as context:
@@ -269,7 +269,7 @@ class TestUrlMap(unittest.TestCase):
     def test_app_workspace_passes_quota_false(self, _, mock_app, mock_rq, mock_pq):
         mock_rq.DoesNotExist = ResourceQuota.DoesNotExist
         mock_rq.objects.get.return_value = mock.MagicMock(help='helpful message')
-        mock_request = mock.MagicMock(spec=WSGIRequest, user=mock.MagicMock(spec=User))
+        mock_request = mock.MagicMock(spec=HttpRequest, user=mock.MagicMock(spec=User))
         mock_pq.return_value = False
 
         ret = None

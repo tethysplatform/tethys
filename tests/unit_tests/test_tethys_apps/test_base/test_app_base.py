@@ -40,9 +40,11 @@ class TestTethysBase(unittest.TestCase):
     def test_url_patterns(self, mock_tbm, mock_url):
         app = tethys_app_base.TethysBase()
         app._namespace = 'foo'
-        url_map = mock.MagicMock(controller='test_app.controllers.home', url='test-url')
+        url_map = mock.MagicMock(controller='test_app.controllers.home', url='test-url', protocol='http')
         url_map.name = 'home'
-        app.url_maps = mock.MagicMock(return_value=[url_map])
+        url_map_ws = mock.MagicMock(controller='test_app.controllers.TestWS', url='test-url-ws', protocol='websocket')
+        url_map_ws.name = 'ws'
+        app.url_maps = mock.MagicMock(return_value=[url_map, url_map_ws])
         mock_tbm.return_value = mock.MagicMock(url_maps='test-app')
 
         # Execute
@@ -50,10 +52,15 @@ class TestTethysBase(unittest.TestCase):
         # Check url call at django_url = url...
         rts_call_args = mock_url.call_args_list
         self.assertEqual('test-url', rts_call_args[0][0][0])
+        self.assertEqual('test-url-ws', rts_call_args[1][0][0])
         self.assertIn('name', rts_call_args[0][1])
+        self.assertIn('name', rts_call_args[1][1])
         self.assertEqual('home', rts_call_args[0][1]['name'])
-        self.assertIn('foo', result)
+        self.assertEqual('ws', rts_call_args[1][1]['name'])
+        self.assertIn('foo', result['http'])
+        self.assertIn('foo', result['websocket'])
         self.assertIsInstance(rts_call_args[0][0][1], FunctionType)
+        self.assertIsInstance(rts_call_args[1][0][1], type)
 
     @mock.patch('tethys_apps.base.app_base.url')
     @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
@@ -64,7 +71,7 @@ class TestTethysBase(unittest.TestCase):
         def test_func():
             return ''
 
-        url_map = mock.MagicMock(controller=test_func, url='test-app')
+        url_map = mock.MagicMock(controller=test_func, url='test-app', protocol='http')
         url_map.name = 'home'
         app.url_maps = mock.MagicMock(return_value=[url_map])
         mock_tbm.return_value = mock.MagicMock(url_maps='test-app')
@@ -84,7 +91,7 @@ class TestTethysBase(unittest.TestCase):
     def test_url_patterns_import_error(self, mock_tbm, mock_log):
         mock_error = mock_log.error
         app = tethys_app_base.TethysBase()
-        url_map = mock.MagicMock(controller='1module.1function', url='test-app')
+        url_map = mock.MagicMock(controller='1module.1function', url='test-app', protocol='http')
         url_map.name = 'home'
         app.url_maps = mock.MagicMock(return_value=[url_map])
         mock_tbm.return_value = mock.MagicMock(url_maps='test-app')
@@ -105,7 +112,7 @@ class TestTethysBase(unittest.TestCase):
     def test_url_patterns_attribute_error(self, mock_tbm, mock_log):
         mock_error = mock_log.error
         app = tethys_app_base.TethysBase()
-        url_map = mock.MagicMock(controller='test_app.controllers.home1', url='test-app')
+        url_map = mock.MagicMock(controller='test_app.controllers.home1', url='test-app', protocol='http')
         url_map.name = 'home'
         app.url_maps = mock.MagicMock(return_value=[url_map])
         mock_tbm.return_value = mock.MagicMock(url_maps='test-app')

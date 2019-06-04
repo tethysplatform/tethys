@@ -86,7 +86,6 @@ To facilitate the large-scale computing that is often required by water resource
 
 To use the HTCondor and the computing capabilities in your app use the :doc:`./tethys_sdk/jobs` and the :doc:`./tethys_sdk/compute`.
 
-
 File Dataset Storage
 ====================
 
@@ -105,6 +104,23 @@ Tethys Software Suite does not include software for handling flat file storage. 
 `HydroShare <http://hydroshare.cuahsi.org/>`_ is an online hydrologic model and data sharing portal being developed by CUAHSI. It builds on the sharing capabilities of CUAHSI’s Hydrologic Information System by adding support for sharing models and using social media functionality.
 
 To use a CKAN instance for flat file storage in your app use the :doc:`./tethys_sdk/tethys_services/dataset_services`. HydroShare is not fully supported at this time, but when it is you will use the :doc:`./tethys_sdk/tethys_services/dataset_services` to access HydroShare resources.
+
+WebSocket Communication
+=======================
+
+.. image:: images/software/django-channels.png
+   :width: 200px
+   :align: right
+
+Tethys Platform supports WebSocket connections using `Django Channels <https://channels.readthedocs.io/en/latest/index.html/>`_. Django Channels is an official Django project that brings asynchronous and long-running connections to the synchronous Django.
+
+The WebSocket protocol provides as persistent connection between client and server. In contrast to the traditional HTTP protocol, the webscoket protocol allows for bidirectional communication between client and server (i.e. the server can trigger a response without the client sending a request). Django Channels uses Consumers to structure code and handle client/server communication in a similar way Controllers are used with the HTTP protocol. When creating a WebSocket connection, a "handshake" needs to be established between the client and server.
+
+For more information about Django Channels and Consumers visit `the Django Channels docummentation <https://channels.readthedocs.io/en/latest/>`_.
+
+For more information on establishing a WebSocket connection see `the JavaScript WebSocket API <https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/>`_. Alternatively, other existing JavaScript or Python WebSocket clients can we used.
+
+To create a URL mapping using the WebSocket protocol see the example provided in the `App Base Class API documentation <./tethys_sdk/app_class.html#override-methods>`_.
 
 Docker Installation
 ===================

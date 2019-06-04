@@ -80,14 +80,14 @@ This page is provides a list of all the external resources referred too during t
 
 **Production Installation**
 
-* `WSGI <http://www.wsgi.org/>`_
-* `modwsgi <https://code.google.com/p/modwsgi/>`_
-* `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_
-* `Deployment Checklist: STATIC_ROOT <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#static-root-and-static-url>`_
-* `Deployment Checklist: SECRET_KEY <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#secret-key>`_
-* `Deployment Checklist: ALLOWED_HOSTS <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#allowed-hosts>`_
-* `Deployment Checklist: STATIC_ROOT <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/#static-root-and-static-url>`_
-* `How to deploy with WSGI <https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/>`_
+* `ASGI <https://asgi.readthedocs.io/en/latest/>`_
+* `Django Channels <https://channels.readthedocs.io/en/latest/>`_
+* `Deployment Checklist <https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/>`_
+* `Deployment Checklist: STATIC_ROOT <https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/#static-root-and-static-url>`_
+* `Deployment Checklist: SECRET_KEY <https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/#secret-key>`_
+* `Deployment Checklist: ALLOWED_HOSTS <https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/#allowed-hosts>`_
+* `Deployment Checklist: STATIC_ROOT <https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/#static-root-and-static-url>`_
+* `How to deploy with ASGI <https://channels.readthedocs.io/en/latest/deploying.html>`_
 *
 
 **Miscellaneous**

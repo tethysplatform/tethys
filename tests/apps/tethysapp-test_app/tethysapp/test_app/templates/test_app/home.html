@@ -16,6 +16,29 @@
   <h4>Heading 4</h4>
   <h5>Heading 5</h5>
   <h6>Heading 6</h6>
+  <script>
+    var webSocket = new WebSocket(
+      'ws://' + window.location.host +
+      '/ws/test-app/test-app-ws/'
+    );
+
+    var message = "websocket message test"
+
+    webSocket.onopen = function() {
+      webSocket.send(JSON.stringify({
+        'client_message': message
+      }));
+    }
+
+    webSocket.onmessage = function(e) {
+      alert(e.data);
+    }
+
+    if (webSocket.readyState == WebSocket.OPEN) {
+      webSocket.onopen();
+    };
+
+   </script>
 {% endblock %}
 
 {# Use the after_app_content block for modals #}

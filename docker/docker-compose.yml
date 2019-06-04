@@ -1,0 +1,25 @@
+version: "3.2"
+services:
+  tethys:
+    container_name: tethyscore
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      ALLOWED_HOSTS: '"[''127.0.0.1'', ''localhost'']"'
+      TETHYS_SUPER_USER: "admin"
+      TETHYS_SUPER_USER_PASS: "pass"
+      ASGI_PROCESSES: 4
+      CLIENT_MAX_BODY_SIZE: "75M"
+    links:
+      - db
+    depends_on:
+      - db
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: tethys_default
