@@ -48,7 +48,7 @@ The Nginx user must own any files that Nginx is serving. This includes the sourc
 
     (tethys) $ tethys_server_own
 
-7. Restart ASGI and Nginx
+6. Restart ASGI and Nginx
 ==========================
 
 Restart ASGI and Nginx services to effect the changes::
