@@ -1,8 +1,7 @@
-import unittest
 import os
 import subprocess
 import io
-
+from django.test import TestCase
 from unittest import mock
 from conda.cli.python_api import Commands
 from tethys_apps.cli import install_commands
@@ -10,7 +9,7 @@ from tethys_apps.cli import install_commands
 FNULL = open(os.devnull, 'w')
 
 
-class TestServiceInstallHelpers(unittest.TestCase):
+class TestServiceInstallHelpers(TestCase):
 
     def test_get_service_from_id_fail(self):
         self.assertFalse(install_commands.get_service_from_id(9384))
@@ -74,7 +73,7 @@ class TestServiceInstallHelpers(unittest.TestCase):
         self.assertEqual(install_commands.parse_id_input("werwr"), (False, ['werwr']))
 
 
-class TestInstallServicesCommands(unittest.TestCase):
+class TestInstallServicesCommands(TestCase):
     def setUp(self):
         self.src_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
         self.root_app_path = os.path.join(self.src_dir, 'apps', 'tethysapp-test_app')
@@ -369,7 +368,7 @@ class TestInstallServicesCommands(unittest.TestCase):
         mock_exit.assert_called_with(0)
 
 
-class TestInstallCommands(unittest.TestCase):
+class TestInstallCommands(TestCase):
     def setUp(self):
         self.src_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
         self.root_app_path = os.path.join(self.src_dir, 'apps', 'tethysapp-test_app')
