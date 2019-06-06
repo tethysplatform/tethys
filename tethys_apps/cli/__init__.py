@@ -244,7 +244,7 @@ def tethys_command():
     services_create_dataset.set_defaults(func=services_create_dataset_command)
 
     # tethys services create WPS
-    services_create_wps = services_create_subparsers.add_parser('WPS',
+    services_create_wps = services_create_subparsers.add_parser('wps',
                                                                 help='Create a Web Processing Service.')
     services_create_wps.add_argument('-n', '--name', required=True, help='A unique name for the Service', type=str)
     services_create_wps.add_argument('-c', '--connection', required=True, type=str,
