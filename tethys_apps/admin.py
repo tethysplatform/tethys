@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.utils.html import format_html
 from django.shortcuts import reverse
@@ -127,11 +127,17 @@ class TethysExtensionAdmin(GuardedModelAdmin):
         return False
 
 
-class UserAdmin(BaseUserAdmin):
-    inlines = (UserQuotasSettingInline,)
+class CustomUser(UserAdmin):
+    def add_view(self, *args, **kwargs):
+        self.inlines = []
+        return super(UserAdmin, self).add_view(*args, **kwargs)
+
+    def change_view(self, *args, **kwargs):
+        self.inlines = [UserQuotasSettingInline]
+        return super(UserAdmin, self).change_view(*args, **kwargs)
 
 
 admin.site.unregister(User)
-admin.site.register(User, UserAdmin)
+admin.site.register(User, CustomUser)
 admin.site.register(TethysApp, TethysAppAdmin)
 admin.site.register(TethysExtension, TethysExtensionAdmin)

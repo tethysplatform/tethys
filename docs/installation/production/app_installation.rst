@@ -34,6 +34,10 @@ Execute the install command in the app directory to make Python aware of the app
     (tethys) $ cd $TETHYS_HOME/apps/tethysapp-my_first_app
     (tethys) $ tethys install
 
+.. note::
+
+    Check the apps documentation for any additional installation configurations.
+
 4. Collect and Static Files and Workspaces
 ==========================================
 
@@ -60,10 +64,10 @@ Restart ASGI and Nginx services to effect the changes::
 
     Use the alias `tsr` as a shortcut to doing both steps 6 and 7.
 
-7. Configure App Settings
-=========================
+7. Configure Additional App Settings
+====================================
 
-Set all required settings on the app settings page in the Tethys Portal admin pages (see :doc:`../../tethys_portal/admin_pages`).
+Set any additional required settings on the app settings page in the Tethys Portal admin pages (see :doc:`../../tethys_portal/admin_pages`).
 
 8. Initialize Persistent Stores
 ===============================
