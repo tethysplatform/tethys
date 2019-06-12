@@ -216,7 +216,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         ret = CustomUser(mock.MagicMock(), mock.MagicMock())
         try:
             ret.change_view(mock.MagicMock())
-        except:
+        except:  # noqa: E722
             pass
         registry = admin.site._registry
         self.assertIn(User, registry)
