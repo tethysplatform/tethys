@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from tethys_apps.admin import TethysAppSettingInline, CustomSettingInline, DatasetServiceSettingInline, \
     SpatialDatasetServiceSettingInline, WebProcessingServiceSettingInline, PersistentStoreConnectionSettingInline, \
     PersistentStoreDatabaseSettingInline, TethysAppAdmin, TethysExtensionAdmin, CustomUser
-from tethys_quotas.admin import TethysAppQuotasSettingInline
+from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
 
 from tethys_quotas.models import TethysAppQuota
 
@@ -211,13 +211,13 @@ class TestTethysAppAdmin(unittest.TestCase):
         ret = TethysExtensionAdmin(mock.MagicMock(), mock.MagicMock())
         self.assertFalse(ret.has_add_permission(mock.MagicMock()))
 
-    def test_admin_site_register_custom_user(self):
+    @mock.patch('django.contrib.auth.admin.UserAdmin.change_view')
+    def test_admin_site_register_custom_user(self, mock_user_admin):
         from django.contrib import admin
         ret = CustomUser(mock.MagicMock(), mock.MagicMock())
-        try:
-            ret.change_view(mock.MagicMock())
-        except:  # noqa: E722
-            pass
+        ret.change_view(mock.MagicMock())
+        mock_user_admin.assert_called()
+        self.assertEqual([UserQuotasSettingInline], ret.inlines)
         registry = admin.site._registry
         self.assertIn(User, registry)
         self.assertIsInstance(registry[User], CustomUser)

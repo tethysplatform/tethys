@@ -130,7 +130,7 @@ class TethysExtensionAdmin(GuardedModelAdmin):
 class CustomUser(UserAdmin):
     def change_view(self, *args, **kwargs):
         self.inlines = [UserQuotasSettingInline]
-        return super(UserAdmin, self).change_view(*args, **kwargs)
+        return super().change_view(*args, **kwargs)
 
 
 admin.site.unregister(User)
