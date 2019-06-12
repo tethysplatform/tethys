@@ -2,10 +2,11 @@ import unittest
 from unittest import mock
 from django.utils.html import format_html
 from django.shortcuts import reverse
+from django.contrib.auth.models import User
 
 from tethys_apps.admin import TethysAppSettingInline, CustomSettingInline, DatasetServiceSettingInline, \
     SpatialDatasetServiceSettingInline, WebProcessingServiceSettingInline, PersistentStoreConnectionSettingInline, \
-    PersistentStoreDatabaseSettingInline, TethysAppAdmin, TethysExtensionAdmin
+    PersistentStoreDatabaseSettingInline, TethysAppAdmin, TethysExtensionAdmin, CustomUser
 from tethys_quotas.admin import TethysAppQuotasSettingInline
 
 from tethys_quotas.models import TethysAppQuota
@@ -209,6 +210,17 @@ class TestTethysAppAdmin(unittest.TestCase):
     def test_TethysExtensionAdmin_has_add_permission(self):
         ret = TethysExtensionAdmin(mock.MagicMock(), mock.MagicMock())
         self.assertFalse(ret.has_add_permission(mock.MagicMock()))
+
+    def test_admin_site_register_custom_user(self):
+        from django.contrib import admin
+        ret = CustomUser(mock.MagicMock(), mock.MagicMock())
+        try:
+            ret.change_view(mock.MagicMock())
+        except:
+            pass
+        registry = admin.site._registry
+        self.assertIn(User, registry)
+        self.assertIsInstance(registry[User], CustomUser)
 
     def test_admin_site_register_tethys_app_admin(self):
         from django.contrib import admin
