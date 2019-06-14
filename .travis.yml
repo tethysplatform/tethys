@@ -1,27 +1,80 @@
+# Build and Test Tethys Platform on Travis
+language: c
+
+# Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
-language: minimal
+
+# Turn off email notifications
 notifications:
   email: false
-services:
-- docker
+
 os:
-- linux
-before_script:
-  - docker pull tethysplatform/tethys-core || true
-script:
-  - cd ..
-  - mv tethys src
-  - cd ./src/docker
-  - docker-compose build
-after_script:
-  - docker images
-before_deploy:
-  - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
-deploy:
-  provider: script
-  script: docker push tethysplatform/tethys-core
-  on:
-    branch: automated_deployment
-env:
-  global:
-    secure: BRmdxJszhsvtRdXH5rH5uM72mnhpms0Aqe99K3k8LOa4AyV5E72qOycUo/g5nqlatV+LXTwghnNjcEbRoNeBiRdhCwFG+uvk8FBCACmmprIPFjVWtW66F/fY1hhLDdg6+BlwTrUzJ1mY0+5G/CNoutsphLRS7mnR58LwEzhMCD1hPR8No1JSIQOzmydscZsuWDSrShtdOwheEMw9BVW2p+jnNNu9ahg6axmVGchO5hcHmQ3YU7dhU56CTt8LlXLWS+KtfUl3lKT8fJOwLsYdjP1MKqbQqiNb89Z2cgDuCoFFr3eqMBit4OvUNy7ujgSxuVbjtAG065dsiKcT45ewJV9NF2bc2yVZ+sZ5db8ywhrwnV0EIqHXxWKT9XYFmuAp+u5XrlGRv9d/R9l5wr6xmAoVet56N9JZMT/dS7sTFMrhMJJyB0+t9jkBfF5cyuEQiZMyMQFiEWttJ0JTDdb/8iZIWc0rk7sz61WiGW8tVprLdnPf7QKYLPtuAxxKyTzRdEBTvQGuGY1AYaUuznxhzthLs8GWEbNXUZ/A1mXICr1Rr+F8T2VrOKIOdpdd3J0k/5/x77GyeOVc5Xk3TTZzIahmeZqMHLzklE+a3ye+zVfAQIpcJu71oh+xYgimyJ2Fe11wozwBmh7gaH3GJxI8Xv5B6PnrxbbgiKyTSdKDDRU=
+  - linux
+  - osx
+services:
+  - docker
+jobs:
+  include:
+    - stage: test
+      # Run on every commit to master, pull requests to master, and tag
+      if: (branch = automated_deployment) OR ((type = pull_request) AND (branch = automated_deployment)) OR (tag IS present)
+      install:
+        - cd ..
+        - mv tethys src
+        - bash ./src/scripts/install_tethys.sh -h
+        - bash ./src/scripts/install_tethys.sh --partial-tethys-install mesdat -t $PWD
+
+        # activate conda environment
+        - export PATH="$PWD/miniconda/bin:$PATH"
+        - source activate tethys
+        - conda list
+
+        # start database server
+        - pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" -l "${TETHYS_DB_DIR}/logfile" start -o "-p ${TETHYS_DB_PORT}"
+
+        # generate new settings.py file with tethys_super user for tests
+        - rm ./src/tethys_portal/settings.py
+        - tethys gen settings --db-username tethys_super --db-password pass --db-port ${TETHYS_DB_PORT}
+
+        # install test dependencies
+        - pip install python-coveralls
+        - pip install -e $TETHYS_HOME/src/[tests]
+
+        # install test apps and extensions
+        - pushd ./src/tests/extensions/tethysext-test_extension
+        - python setup.py develop
+        - popd
+
+        - pushd ./src/tests/apps/tethysapp-test_app
+        - python setup.py develop
+        - popd
+
+      # command to run tests
+      script:
+        - tethys test -c -u
+
+      # generate test coverage information
+      after_success:
+        - ls -al
+        - coveralls
+    - stage: build
+      if: (branch = automated_deployment) OR (tag IS present)
+      before_script:
+        - docker pull tethysplatform/tethys-core || true
+      script:
+        - cd ..
+        - mv tethys src
+        - cd ./src/docker
+        - docker-compose build
+      after_script:
+        - docker images
+      before_deploy:
+        - docker login -u "$DOCKERHUB_USERNAME" - p "$DOCKERHUB_PASSWORD"
+      deploy:
+        provider: script
+        script: docker push tethysplatform/tethys-core
+        on:
+          branch: automated_deployment
+          tags: true
+
+
