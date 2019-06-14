@@ -10,9 +10,10 @@ notifications:
 
 os:
   - linux
-  - osx
+
 services:
   - docker
+
 jobs:
   include:
     - stage: test
