@@ -10,6 +10,7 @@ notifications:
 
 os:
   - linux
+  - osx
 
 services:
   - docker
