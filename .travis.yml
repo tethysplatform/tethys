@@ -66,11 +66,7 @@ jobs:
       script:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - if [ -n "$TRAVIS_TAG"]; then docker build -t tethysplatform/tethys-core:$TRAVIS_BRANCH; export LATEST_TAG="latest"; else export LATEST_TAG="dev"; fi
+        - echo "$LATEST_TAG"
         - docker build -t tethysplatform/tethys-core:$LATEST_TAG .
-      deploy:
-        provider: script
-        script:
-          - if [ -n "$TRAVIS_TAG"]; then docker push tethysplatform/tethys-core:$TRAVIS-BRANCH; fi
-          - docker push tethysplatform/tethys-core:$LATEST_TAG
-        on:
-          branch: automated_deployment
+        - if [ -n "$TRAVIS_TAG"]; then docker push tethysplatform/tethys-core:$TRAVIS-BRANCH; fi
+        - docker push tethysplatform/tethys-core:$LATEST_TAG
