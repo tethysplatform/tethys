@@ -19,7 +19,8 @@ jobs:
     - stage: test
       name: "Tethys Unit Tests"
       # Run on every commit to master, pull requests to master, and tag
-      if: (branch = automated_deployment) OR ((type = pull_request) AND (branch = master)) OR (tag IS present)
+      # TODO: Replace automated_deployment with master
+      if: (branch = automated_deployment) OR ((type = pull_request) AND (branch = automated_deployment)) OR (tag IS present)
       install:
         - cd ..
         - mv tethys src
@@ -63,15 +64,14 @@ jobs:
       name: "Build Tethys"
       if: (branch = automated_deployment) OR (tag IS present)
       script:
-        - if [ -z "$CI_COMMIT_TAG" ]; then export LATEST_TAG="dev"; else export LATEST_TAG="latest"; fi
-        - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-        - docker build --squash -t $CI_REGISTRY/tethys/aqua-tethys/tethyscore:$CI_COMMIT_REF_NAME -t $CI_REGISTRY/tethys/aqua-tethys/tethyscore:$LATEST_TAG .
+        - if [ -z "$TRAVIS_COMMIT" ]; then export LATEST_TAG="dev"; else export LATEST_TAG="latest"; fi
+        - docker build --squash -t tethysplatform/tethys-core:$TRAVIS-BRANCH -t tethysplatform/tethys-core:$LATEST_TAG .
       deploy:
         provider: script
         script:
-          - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-          - docker push $CI_REGISTRY/tethys/aqua-tethys/tethyscore:$CI_COMMIT_REF_NAME
-          - docker push $CI_REGISTRY/tethys/aqua-tethys/tethyscore:$LATEST_TAG
+          - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+          - docker push tethysplatform/tethys-core:$TRAVIS-BRANCH
+          - docker push tethysplatform/tethys-core:$LATEST_TAG
         on:
           branch: automated_deployment
           tags: true
