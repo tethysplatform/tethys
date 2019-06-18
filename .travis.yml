@@ -65,9 +65,9 @@ jobs:
       if: (branch = automated_deployment) OR (tag IS present)
       script:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - if [ -n "$TRAVIS_TAG"]; then docker build -t tethysplatform/tethys-core:$TRAVIS_TAG; export LATEST_TAG="latest"; else export LATEST_TAG="dev"; fi
+        - if [ -z "$TRAVIS_TAG"]; then export LATEST_TAG="dev"; else docker build -t tethysplatform/tethys-core:$TRAVIS_TAG; export LATEST_TAG="latest"; fi
         - echo "$LATEST_TAG"
         - docker build -t tethysplatform/tethys-core:$LATEST_TAG .
         - echo "$TRAVIS_TAG"
-        - if [ -n "$TRAVIS_TAG"]; then docker push tethysplatform/tethys-core:$TRAVIS_TAG; fi
+        - if [ -z "$TRAVIS_TAG"]; then echo "No Tag is Present"; else docker push tethysplatform/tethys-core:$TRAVIS_TAG; fi
         - docker push tethysplatform/tethys-core:$LATEST_TAG
