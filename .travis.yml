@@ -67,12 +67,12 @@ jobs:
         - if [ -z "$TRAVIS_COMMIT" ]; then export LATEST_TAG="dev"; else export LATEST_TAG="latest"; fi
         - echo "$TRAVIS-BRANCH"
         - echo "$TRAVIS_COMMIT"
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker build --squash -t tethysplatform/tethys-core:$TRAVIS-BRANCH -t tethysplatform/tethys-core:$LATEST_TAG .
       deploy:
         provider: script
         script:
-          - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-          - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+          - docker login -u $DOCKER_PASSWORD -p $DOCKER_USERNAME
           - docker push tethysplatform/tethys-core:$TRAVIS-BRANCH
           - docker push tethysplatform/tethys-core:$LATEST_TAG
         on:
