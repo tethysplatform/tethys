@@ -65,10 +65,11 @@ jobs:
       if: (branch = automated_deployment) OR (tag IS present)
       script:
         - if [ -z "$TRAVIS_COMMIT" ]; then export LATEST_TAG="dev"; else export LATEST_TAG="latest"; fi
-        - echo "$TRAVIS-BRANCH"
+        - echo "$TRAVIS_BRANCH"
         - echo "$TRAVIS_COMMIT"
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - docker build --squash -t tethysplatform/tethys-core:$TRAVIS-BRANCH -t tethysplatform/tethys-core:$LATEST_TAG .
+        - echo "$TRAVIS_TAG"
+        - docker build --squash -t tethysplatform/tethys-core:$TRAVIS_BRANCH -t tethysplatform/tethys-core:$LATEST_TAG .
       deploy:
         provider: script
         script:
