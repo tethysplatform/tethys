@@ -16,12 +16,12 @@ services:
 
 jobs:
   include:
-    - stage: test
-      name: "Tethys Unit Tests"
-      # Run on every commit to master, pull requests to master, and tag
-      # TODO: Replace automated_deployment with master
-      if: (branch = automated_deployment) OR ((type = pull_request) AND (branch = automated_deployment)) OR (tag IS present)
-      install:
+#    - stage: test
+#      name: "Tethys Unit Tests"
+#      # Run on every commit to master, pull requests to master, and tag
+#      # TODO: Replace automated_deployment with master
+#      if: (branch = automated_deployment) OR ((type = pull_request) AND (branch = automated_deployment)) OR (tag IS present)
+#      install:
 #        - cd ..
 #        - mv tethys src
 #        - bash ./src/scripts/install_tethys.sh -h
@@ -51,13 +51,13 @@ jobs:
 #        - pushd ./src/tests/apps/tethysapp-test_app
 #        - python setup.py develop
 #        - popd
-
-      # command to run tests
-      script:
+#
+#      # command to run tests
+#      script:
 #        - tethys test -c -u
-
-      # generate test coverage information
-      after_success:
+#
+#      # generate test coverage information
+#      after_success:
 #        - ls -al
 #        - coveralls
     - stage: build
