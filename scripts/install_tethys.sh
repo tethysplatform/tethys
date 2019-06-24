@@ -377,7 +377,14 @@ then
         then
             echo "${YELLOW}WARNING: Support for Python 2 is deprecated and will be removed in Tethys version 3.${RESET_COLOR}"
         fi
-        conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/environment_py${PYTHON_VERSION}.yml"
+        if [ "${BRANCH}" == "release" ]
+        then
+            echo "Using stable environment file: ${TETHYS_SRC}/stable_environment_py${PYTHON_VERSION}.yml"
+            conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/stable_environment_py${PYTHON_VERSION}.yml"
+        else
+            echo "${YELLOW}WARNING: Using unstable environment file: ${TETHYS_SRC}/environment_py${PYTHON_VERSION}.yml${RESET_COLOR}"
+            conda env create -n ${CONDA_ENV_NAME} -f "${TETHYS_SRC}/environment_py${PYTHON_VERSION}.yml"
+        fi
         conda activate ${CONDA_ENV_NAME}
         python "${TETHYS_SRC}/setup.py" develop
     else
