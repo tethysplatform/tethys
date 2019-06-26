@@ -450,7 +450,7 @@ var TETHYS_MAP_VIEW = (function() {
         m_serialization_format = m_draw_options.output_format;
       }
 
-      // Load init features
+      // Load initial features
       if (is_defined(initial_features_obj)) {
         // Determine projection
         proj_format = new ol.format.GeoJSON();
@@ -512,12 +512,18 @@ var TETHYS_MAP_VIEW = (function() {
         })
       });
 
-      // Add drawing layer legend properites
-      m_drawing_layer.tethys_legend_title = 'Drawing Layer';
+      // Add drawing layer legend properties
+      m_drawing_layer.tethys_legend_title = m_draw_options.legend_title;
       m_drawing_layer.tethys_editable = true;
+      m_drawing_layer.tethys_data = m_draw_options.data;
 
       // Add drawing layer to the map
       m_map.addLayer(m_drawing_layer);
+
+      // Initialize drawing layer selection
+      if (m_draw_options.feature_selection) {
+        m_selectable_layers.push(m_drawing_layer);
+      }
 
       // Define snapping target source
       m_snapping_source = m_drawing_source;
@@ -1131,11 +1137,11 @@ var TETHYS_MAP_VIEW = (function() {
     // Initialize WMS Selectable Features
     ol_wms_feature_selection_init();
 
-    // Initialize Selectable Features
-    ol_selection_interaction_init();
-
     // Initialize Drawing
     ol_drawing_init();
+
+    // Initialize Selectable Features
+    ol_selection_interaction_init();
 
     // Initialize View
     ol_view_init();
@@ -1486,7 +1492,8 @@ var TETHYS_MAP_VIEW = (function() {
 
   initialize_feature_properties = function(feature) {
     // Set the id
-    feature.setId(generate_feature_id());
+    let feature_id = 'drawing_layer.' + generate_feature_id();
+    feature.setId(feature_id);
 
     // Initialize with properties and defaults provided
     //feature.setProperties({
