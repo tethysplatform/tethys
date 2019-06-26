@@ -446,6 +446,9 @@ class MVDraw(SecondaryGizmoOptions):
         snapping_enabled(bool): When enabled, features will be able to snap to other features on the drawing layer or in given snapping layers. Defaults to True.
         snapping_options(dict): Supported options include edge, vertex, pixelTolerance. See: https://openlayers.org/en/latest/apidoc/module-ol_interaction_Snap.html
         snapping_layer(dict): Dictionary with one key representing the attribute to use for identifying the layer and the value being the value to match (e.g.: {'legend_title': 'My Layer'}, {'data.my_attribute': 'value'}).
+        feature_selection(bool): Set to True to enable feature selection on the drawing layer. Defaults to False.
+        legend_title(str): Title to display in the legend for the drawing layer. Defaults to 'Drawing Layer'.
+        data(dict): Dictionary representation of data to attach to the drawing layer.
 
     Example
 
@@ -465,7 +468,7 @@ class MVDraw(SecondaryGizmoOptions):
     def __init__(self, controls=['Modify', 'Delete', 'Move', 'Point', 'LineString', 'Polygon', 'Box', 'Pan'],
                  initial='Pan', output_format='GeoJSON', line_color="#ffcc33", fill_color='rgba(255, 255, 255, 0.2)',
                  point_color="#ffcc33", initial_features=None, snapping_enabled=True, snapping_options={},
-                 snapping_layer={}):
+                 snapping_layer={}, feature_selection=False, legend_title='Drawing Layer', data=None):
         """
         Constructor
         """
@@ -490,6 +493,9 @@ class MVDraw(SecondaryGizmoOptions):
         self.point_color = point_color
         self.snapping_enabled = snapping_enabled
         self.snapping_options = snapping_options
+        self.feature_selection = feature_selection
+        self.legend_title = legend_title
+        self.data = data or dict()
 
         for key, value in snapping_layer.items():
             root = key.split('.')[0]
