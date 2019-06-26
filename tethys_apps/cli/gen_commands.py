@@ -125,12 +125,11 @@ def generate_command(args):
 
     if args.type == GEN_NGINX_OPTION:
         hostname = str(settings.ALLOWED_HOSTS[0]) if len(settings.ALLOWED_HOSTS) > 0 else '127.0.0.1'
-        port = get_environment_value('TETHYS_PORT')
         workspaces_root = get_settings_value('TETHYS_WORKSPACES_ROOT')
         static_root = get_settings_value('STATIC_ROOT')
 
         context.update({'hostname': hostname,
-                        'port': port,
+                        'port': args.tethys_port,
                         'workspaces_root': workspaces_root,
                         'static_root': static_root,
                         'client_max_body_size': args.client_max_body_size
@@ -138,7 +137,6 @@ def generate_command(args):
 
     if args.type == GEN_ASGI_SERVICE_OPTION:
         hostname = str(settings.ALLOWED_HOSTS[0]) if len(settings.ALLOWED_HOSTS) > 0 else '127.0.0.1'
-        port = get_environment_value('TETHYS_PORT')
         conda_home = get_environment_value('CONDA_HOME')
         conda_env_name = get_environment_value('CONDA_ENV_NAME')
 
@@ -153,7 +151,7 @@ def generate_command(args):
 
         context.update({'nginx_user': nginx_user,
                         'hostname': hostname,
-                        'port': port,
+                        'port': args.tethys_port,
                         'asgi_processes': args.asgi_processes,
                         'conda_home': conda_home,
                         'conda_env_name': conda_env_name,
