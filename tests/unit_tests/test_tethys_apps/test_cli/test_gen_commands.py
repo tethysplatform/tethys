@@ -92,7 +92,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
         mock_os_path_isfile.return_value = False
-        mock_env.side_effect = [8000, '/foo/conda', 'conda_env']
+        mock_env.side_effect = ['/foo/conda', 'conda_env']
         mock_os_path_exists.return_value = True
         mock_linux_distribution.return_value = ['redhat']
         # First open is for the Template, next two are for /etc/nginx/nginx.conf and /etc/passwd, and the final
@@ -108,7 +108,6 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
-        mock_env.assert_any_call('TETHYS_PORT')
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
         mock_os_path_exists.assert_called_once_with('/etc/nginx/nginx.conf')
@@ -128,7 +127,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
         mock_os_path_isfile.return_value = False
-        mock_env.side_effect = [8000, '/foo/conda', 'conda_env']
+        mock_env.side_effect = ['/foo/conda', 'conda_env']
         mock_os_path_exists.return_value = True
         mock_linux_distribution.return_value = 'ubuntu'
         # First open is for the Template, next two are for /etc/nginx/nginx.conf and /etc/passwd, and the final
@@ -144,7 +143,6 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
-        mock_env.assert_any_call('TETHYS_PORT')
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
         mock_os_path_exists.assert_called_once_with('/etc/nginx/nginx.conf')
@@ -164,7 +162,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
         mock_os_path_isfile.return_value = False
-        mock_env.side_effect = [8000, '/foo/conda', 'conda_env']
+        mock_env.side_effect = ['/foo/conda', 'conda_env']
         mock_os_path_exists.return_value = True
         mock_linux_distribution.side_effect = Exception
         # First open is for the Template, next two are for /etc/nginx/nginx.conf and /etc/passwd, and the final
@@ -180,7 +178,6 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
-        mock_env.assert_any_call('TETHYS_PORT')
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
         mock_os_path_exists.assert_called_once_with('/etc/nginx/nginx.conf')
@@ -195,13 +192,12 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
         mock_os_path_isfile.return_value = False
-        mock_env.side_effect = [8000, '/foo/conda', 'conda_env']
+        mock_env.side_effect = ['/foo/conda', 'conda_env']
 
         generate_command(args=mock_args)
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
-        mock_env.assert_any_call('TETHYS_PORT')
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
 
@@ -215,14 +211,13 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
         mock_os_path_isfile.return_value = False
-        mock_env.side_effect = [8000, '/foo/conda', 'conda_env']
+        mock_env.side_effect = ['/foo/conda', 'conda_env']
         mock_distribution.return_value = ('redhat', 'linux', '')
 
         generate_command(args=mock_args)
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
-        mock_env.assert_any_call('TETHYS_PORT')
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
 
@@ -236,7 +231,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = '/foo/temp'
         mock_os_path_isfile.return_value = False
-        mock_env.side_effect = [8000, '/foo/conda', 'conda_env']
+        mock_env.side_effect = ['/foo/conda', 'conda_env']
         mock_os_path_isdir.return_value = True
 
         generate_command(args=mock_args)
@@ -259,7 +254,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = '/foo/temp'
         mock_os_path_isfile.return_value = False
-        mock_env.side_effect = [8000, '/foo/conda', 'conda_env']
+        mock_env.side_effect = ['/foo/conda', 'conda_env']
         mock_os_path_isdir.return_value = False
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
         # to break the code execution, which we catch below.
@@ -276,7 +271,6 @@ class CLIGenCommandsTest(unittest.TestCase):
         self.assertIn('ERROR: ', rts_call_args[0][0][0])
         self.assertIn('is not a valid directory', rts_call_args[0][0][0])
 
-        mock_env.assert_any_call('TETHYS_PORT')
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
 
@@ -293,7 +287,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.directory = None
         mock_args.overwrite = False
         mock_os_path_isfile.return_value = True
-        mock_env.side_effect = [8000, '/foo/conda', 'conda_env']
+        mock_env.side_effect = ['/foo/conda', 'conda_env']
         mock_input.side_effect = ['foo', 'no']
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
         # to break the code execution, which we catch below.
@@ -309,7 +303,6 @@ class CLIGenCommandsTest(unittest.TestCase):
         self.assertIn('Generation of', rts_call_args[0][0][0])
         self.assertIn('cancelled', rts_call_args[0][0][0])
 
-        mock_env.assert_any_call('TETHYS_PORT')
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
 
@@ -322,13 +315,12 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.directory = None
         mock_args.overwrite = True
         mock_os_path_isfile.return_value = True
-        mock_env.side_effect = [8000, '/foo/conda', 'conda_env']
+        mock_env.side_effect = ['/foo/conda', 'conda_env']
 
         generate_command(args=mock_args)
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
-        mock_env.assert_any_call('TETHYS_PORT')
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
 

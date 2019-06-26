@@ -79,11 +79,14 @@ def tethys_command():
                             help='Generate a new settings file for a production server.')
     gen_parser.add_argument('--open-portal', dest='open_portal',
                             help='Allow Open Portal Mode.')
+    gen_parser.add_argument('--tethys-port', dest='tethys_port',
+                            help='Port for the Tethys Server to run on in production. This is used when generating the '
+                                 'Daphne and nginx configuration files. Defaults to 8000.')
     gen_parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                             help='Overwrite existing file without prompting.')
     gen_parser.set_defaults(func=generate_command, allowed_host=None, allowed_hosts=None, client_max_body_size='75M',
                             asgi_processes=4, db_username='tethys_default', db_password='pass', db_port=5436,
-                            production=False, open_portal=False, overwrite=False)
+                            production=False, open_portal=False, tethys_port=8000, overwrite=False)
 
     # Setup start server command
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
