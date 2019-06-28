@@ -1,81 +1,70 @@
-from django.core.exceptions import ObjectDoesNotExist
-
-from tethys_apps.cli.cli_colors import pretty_output, BOLD, FG_RED
+from tethys_apps.utilities import get_app_settings
+from tethys_apps.cli.cli_colors import pretty_output, BOLD
 
 
 def app_settings_list_command(args):
-    from tethys_apps.models import (TethysApp, PersistentStoreConnectionSetting, PersistentStoreDatabaseSetting,
-                                    SpatialDatasetServiceSetting)
+    from tethys_apps.models import (PersistentStoreConnectionSetting, PersistentStoreDatabaseSetting,
+                                    SpatialDatasetServiceSetting, DatasetServiceSetting, WebProcessingServiceSetting,
+                                    CustomSetting)
 
     setting_type_dict = {
         PersistentStoreConnectionSetting: 'ps_connection',
         PersistentStoreDatabaseSetting: 'ps_database',
-        SpatialDatasetServiceSetting: 'ds_spatial'
+        SpatialDatasetServiceSetting: 'ds_spatial',
+        DatasetServiceSetting: 'ds_dataset',
+        WebProcessingServiceSetting: 'wps',
+        CustomSetting: 'custom_setting'
     }
 
-    app_package = args.app
-    try:
-        app = TethysApp.objects.get(package=app_package)
+    app_settings = get_app_settings(args.app)
+    unlinked_settings = app_settings['unlinked_settings']
+    linked_settings = app_settings['linked_settings']
 
-        app_settings = []
-        for setting in PersistentStoreConnectionSetting.objects.filter(tethys_app=app):
-            app_settings.append(setting)
-        for setting in PersistentStoreDatabaseSetting.objects.filter(tethys_app=app):
-            app_settings.append(setting)
-        for setting in SpatialDatasetServiceSetting.objects.filter(tethys_app=app):
-            app_settings.append(setting)
+    with pretty_output(BOLD) as p:
+        p.write("\nUnlinked Settings:")
 
-        unlinked_settings = []
-        linked_settings = []
+    if len(unlinked_settings) == 0:
+        with pretty_output() as p:
+            p.write('None')
+    else:
+        is_first_row = True
+        for setting in unlinked_settings:
+            if is_first_row:
+                with pretty_output(BOLD) as p:
+                    p.write('{0: <10}{1: <40}{2: <15}'.format('ID', 'Name', 'Type'))
+                is_first_row = False
+            with pretty_output() as p:
+                p.write('{0: <10}{1: <40}{2: <15}'.format(setting.pk, setting.name,
+                                                          setting_type_dict[type(setting)]))
 
-        for setting in app_settings:
-            if hasattr(setting, 'spatial_dataset_service') and setting.spatial_dataset_service \
-                    or hasattr(setting, 'persistent_store_service') and setting.persistent_store_service:
-                linked_settings.append(setting)
+    with pretty_output(BOLD) as p:
+        p.write("\nLinked Settings:")
+
+    if len(linked_settings) == 0:
+        with pretty_output() as p:
+            p.write('None')
+    else:
+        is_first_row = True
+        for setting in linked_settings:
+            if is_first_row:
+                with pretty_output(BOLD) as p:
+                    p.write('{0: <10}{1: <40}{2: <15}{3: <20}'.format('ID', 'Name', 'Type', 'Linked With'))
+                is_first_row = False
+
+            if isinstance(setting, PersistentStoreConnectionSetting) or \
+                    isinstance(setting, PersistentStoreDatabaseSetting):
+                service_name = setting.persistent_store_service.name
+            elif isinstance(setting, SpatialDatasetServiceSetting):
+                service_name = setting.spatial_dataset_service.name
+            elif isinstance(setting, DatasetServiceSetting):
+                service_name = setting.dataset_service.name
+            elif isinstance(setting, WebProcessingServiceSetting):
+                service_name = setting.web_processing_service.name
             else:
-                unlinked_settings.append(setting)
+                service_name = setting.value
 
-        with pretty_output(BOLD) as p:
-            p.write("\nUnlinked Settings:")
-
-        if len(unlinked_settings) == 0:
-            with pretty_output() as p:
-                p.write('None')
-        else:
-            is_first_row = True
-            for setting in unlinked_settings:
-                if is_first_row:
-                    with pretty_output(BOLD) as p:
-                        p.write('{0: <10}{1: <40}{2: <15}'.format('ID', 'Name', 'Type'))
-                    is_first_row = False
-                with pretty_output() as p:
-                    p.write('{0: <10}{1: <40}{2: <15}'.format(setting.pk, setting.name,
-                                                              setting_type_dict[type(setting)]))
-
-        with pretty_output(BOLD) as p:
-            p.write("\nLinked Settings:")
-
-        if len(linked_settings) == 0:
-            with pretty_output() as p:
-                p.write('None')
-        else:
-            is_first_row = True
-            for setting in linked_settings:
-                if is_first_row:
-                    with pretty_output(BOLD) as p:
-                        p.write('{0: <10}{1: <40}{2: <15}{3: <20}'.format('ID', 'Name', 'Type', 'Linked With'))
-                    is_first_row = False
-                service_name = setting.spatial_dataset_service.name if hasattr(setting, 'spatial_dataset_service') \
-                    else setting.persistent_store_service.name
-                print('{0: <10}{1: <40}{2: <15}{3: <20}'.format(setting.pk, setting.name,
-                                                                setting_type_dict[type(setting)], service_name))
-    except ObjectDoesNotExist:
-        with pretty_output(FG_RED) as p:
-            p.write('The app you specified ("{0}") does not exist. Command aborted.'.format(app_package))
-    except Exception as e:
-        with pretty_output(FG_RED) as p:
-            p.write(e)
-            p.write('Something went wrong. Please try again.')
+            print('{0: <10}{1: <40}{2: <15}{3: <20}'.format(setting.pk, setting.name,
+                                                            setting_type_dict[type(setting)], service_name))
 
 
 def app_settings_create_ps_database_command(args):

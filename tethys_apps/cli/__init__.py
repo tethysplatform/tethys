@@ -388,13 +388,23 @@ def tethys_command():
     application_install_parser.add_argument('-d', '--develop',
                                             help='Will run setup.py develop instead of setup.py install',
                                             action="store_true")
-    application_install_parser.add_argument('-f', '--file', type=str, help='The path to the Init Config file. ')
+    application_install_parser.add_argument('-f', '--file', type=str, help='The path to the Install file. ')
     application_install_parser.add_argument('-p', '--portal-file', type=str,
                                             help='The path to the Portal initialization config file')
     application_install_parser.add_argument('-s', '--services-file', type=str,
                                             help='The path to the Services.yml config file')
     application_install_parser.add_argument('--force-services',
                                             help='Force Services.yml file over portal.yml file', action="store_true")
+    application_install_parser.add_argument('-q', '--quiet',
+                                            help='Skips interactive mode.',
+                                            action="store_true")
+    application_install_parser.add_argument('-n', '--no-sync',
+                                            help='Skips syncstores when linked persistent stores are found.',
+                                            action="store_true")
+    application_install_parser.add_argument('-v', '--verbose',
+                                            help='Will show all pip install output when enabled',
+                                            action="store_true")
+    # clean
     application_install_parser.set_defaults(func=install_command)
 
     # Parse the args and call the default function

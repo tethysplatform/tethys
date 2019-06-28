@@ -8,15 +8,19 @@
 ********************************************************************************
 """
 import os
+import warnings
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 
 
-def find_resource_files(directory):
+def find_resource_files(directory, relative_to=None):
     paths = []
     for (path, directories, filenames) in os.walk(directory):
         for filename in filenames:
-            paths.append(os.path.join('..', path, filename))
+            if relative_to is not None:
+                paths.append(os.path.join(os.path.relpath(path, relative_to), filename))
+            else:
+                paths.append(os.path.join('..', path, filename))
     return paths
 
 
@@ -27,37 +31,19 @@ def get_tethysapp_directory():
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), 'tethysapp')
 
 
-def _run_install(self):
-    # Run the original install command
-    install.run(self)
-
-
-def _run_develop(self):
-    # Run the original develop command
-    develop.run(self)
-
-
 def custom_install_command(app_package, app_package_dir, dependencies):
     """
-    Returns a custom install command class that is tailored for the app calling it.
+    DEPRECATED: Returns a custom install command class that is tailored for the app calling it.
     """
-    # Define the properties (and methods) for the class that will be created.
-    properties = {'app_package': app_package,
-                  'app_package_dir': app_package_dir,
-                  'dependencies': dependencies,
-                  'run': _run_install}
+    warnings.warn("The setup script for {} is outdated. Please run 'tethys gen setup' to update it.".format(app_package), DeprecationWarning)  # noqa: E501
 
-    return type('CustomInstallCommand', (install, object), properties)
+    return install
 
 
 def custom_develop_command(app_package, app_package_dir, dependencies):
     """
-    Returns a custom develop command class that is tailored for the app calling it.
+    DEPRECATED: Returns a custom develop command class that is tailored for the app calling it.
     """
-    # Define the properties (and methods) for the class that will be created.
-    properties = {'app_package': app_package,
-                  'app_package_dir': app_package_dir,
-                  'dependencies': dependencies,
-                  'run': _run_develop}
+    warnings.warn("The setup script for {} is outdated. Please run 'tethys gen setup' to update it.".format(app_package), DeprecationWarning)  # noqa: E501
 
-    return type('CustomDevelopCommand', (develop, object), properties)
+    return develop

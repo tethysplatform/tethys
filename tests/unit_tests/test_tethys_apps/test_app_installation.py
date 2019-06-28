@@ -2,6 +2,8 @@ import unittest
 from unittest import mock
 import os
 import sys
+from setuptools.command.develop import develop
+from setuptools.command.install import install
 import tethys_apps.app_installation as tethys_app_installation
 
 if sys.version_info[0] < 3:
@@ -39,53 +41,28 @@ class TestAppInstallation(unittest.TestCase):
         ret = tethys_app_installation.get_tethysapp_directory()
         self.assertIn('tethys_apps/tethysapp', ret)
 
-    @mock.patch('tethys_apps.app_installation.install')
-    def test__run_install(self, mock_install):
-        # mock the self input
-        mock_self = mock.MagicMock(app_package='tethys_apps', app_package_dir='/test_app/', dependencies=['foo'])
-
-        # call the method for testing
-        tethys_app_installation._run_install(self=mock_self)
-
-        # check the install call
-        mock_install.run.assert_called_with(mock_self)
-
-    @mock.patch('tethys_apps.app_installation.develop')
-    @mock.patch(callable_mock_path)
-    def test__run_develop(self, mock_callable, mock_develop):
-
-        # mock the self input
-        mock_self = mock.MagicMock(app_package='tethys_apps', app_package_dir='/test_app/', dependencies=['foo'])
-
-        # call the method for testing
-        tethys_app_installation._run_develop(self=mock_self)
-
-        # mock callable method
-        mock_callable.return_value = True
-
-        # check the develop call
-        mock_develop.run.assert_called_with(mock_self)
-
-    def test_custom_install_command(self):
+    @mock.patch('warnings.warn')
+    def test_custom_install_command(self, mock_warn):
         app_package = 'tethys_apps'
         app_package_dir = '/test_app/'
         dependencies = 'foo'
 
         ret = tethys_app_installation.custom_install_command(app_package, app_package_dir, dependencies)
 
-        self.assertEquals('tethys_apps', ret.app_package)
-        self.assertEquals('/test_app/', ret.app_package_dir)
-        self.assertEquals('foo', ret.dependencies)
-        self.assertEquals('tethys_apps.app_installation', ret.__module__)
+        self.assertEqual(install, ret)
 
-    def test_custom_develop_command(self):
+        check_message = "The setup script for {} is outdated. Please run 'tethys gen setup' to update it.".format(app_package)  # noqa: E501
+        mock_warn.assert_called_with(check_message, DeprecationWarning)
+
+    @mock.patch('warnings.warn')
+    def test_custom_develop_command(self, mock_warn):
         app_package = 'tethys_apps1'
         app_package_dir = '/test_app/'
         dependencies = 'foo'
 
         ret = tethys_app_installation.custom_develop_command(app_package, app_package_dir, dependencies)
 
-        self.assertEquals('tethys_apps1', ret.app_package)
-        self.assertEquals('/test_app/', ret.app_package_dir)
-        self.assertEquals('foo', ret.dependencies)
-        self.assertEquals('tethys_apps.app_installation', ret.__module__)
+        self.assertEqual(develop, ret)
+
+        check_message = "The setup script for {} is outdated. Please run 'tethys gen setup' to update it.".format(app_package)  # noqa: E501
+        mock_warn.assert_called_with(check_message, DeprecationWarning)

@@ -48,18 +48,19 @@ This file is generated with your application scaffold. Please do NOT list any de
 	# This should match the app - package name in your setup.py
 	name: hydroexplorer
 
-	conda:
+	requirements:
 	  # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
 	  skip: false
-	  channels:
-	  	- conda-forge
-	  dependencies:
-	    - pyshp=2.0.0
-	    - geojson
-	    - shapely
+	  conda:
+        channels:
+          - conda-forge
+        packages:
+          - pyshp=2.0.0
+          - geojson
+          - shapely
 
-	pip:
-	  - see
+      pip:
+        - see
 
 	post:
   	  - test.sh
@@ -94,8 +95,6 @@ This file will be created by the portal administrator who has created/has access
 
 	# Do not commit this file. This file is portal specific.
 	version: 1.0
-	skip: false
-	interactive: false
 
 	# Set service params in the following format :
 	# app_service_setting_name(from your app.py): <service_name or id from list of installed services>
@@ -106,18 +105,18 @@ This file will be created by the portal administrator who has created/has access
   	 wps_main: testWPS
   	dataset:
   	spatial:
+  	custom_settings:
+  	 max_dams: 5
 
 **services.yml Options:**
 
 * **version**: Indicated the version of the :file:`services.yml` file. Current default : 1.0
-* **skip**: If enabled, it will skip the installation of services. This option is set to `False` by default. 
-* **interactive**: If enabled, it will start an interactive mode that will let you select from existing portal services. This option is set to `False` by default. 
-
 
 * **persistent** : List of persistent store settings in the app and the service to link to each.
 * **dataset** : List of dataset settings in the app and the service to link to each.
 * **spatial** : List of spatial persistent store settings in the app and the service to link to each.
-* **wps** : List of Web Processing service settings in the app and the service to link to each. 
+* **wps** : List of web processing service settings in the app and the service to link to each.
+* **custom_setting** : List of custom settings in the app and value of each.
 
 Settings in each of the service sections above will need to be listed in the following format::
 

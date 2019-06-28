@@ -273,8 +273,10 @@ def services_list_command(args):
     elif args.wps:
         list_wps = True
 
+    entries = []
     if list_persistent:
         persistent_entries = PersistentStoreService.objects.order_by('id').all()
+        entries.append(persistent_entries)
         if len(persistent_entries) > 0:
             with pretty_output(BOLD) as p:
                 p.write('\nPersistent Store Services:')
@@ -290,6 +292,7 @@ def services_list_command(args):
 
     if list_spatial:
         spatial_entries = SpatialDatasetService.objects.order_by('id').all()
+        entries.append(spatial_entries)
         if len(spatial_entries) > 0:
             with pretty_output(BOLD) as p:
                 p.write('\nSpatial Dataset Services:')
@@ -308,6 +311,7 @@ def services_list_command(args):
                                                                        else "None"))
     if list_dataset:
         dataset_entries = DatasetService.objects.order_by('id').all()
+        entries.append(dataset_entries)
         if len(dataset_entries) > 0:
             with pretty_output(BOLD) as p:
                 p.write('\nDataset Services:')
@@ -326,6 +330,7 @@ def services_list_command(args):
                                                                        else "None"))
     if list_wps:
         service_entries = WebProcessingService.objects.order_by('id').all()
+        entries.append(service_entries)
         if len(service_entries) > 0:
             with pretty_output(BOLD) as p:
                 p.write('\nWeb Processing Services:')
@@ -340,3 +345,5 @@ def services_list_command(args):
                 print('{0: <3}{1: <50}{2: <50}{3: <50}'.format(model_dict['id'], model_dict['name'],
                                                                model_dict['endpoint'],
                                                                model_dict['public_endpoint']))
+
+    return entries

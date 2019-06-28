@@ -4,11 +4,11 @@ import os
 from subprocess import (call, Popen, PIPE, STDOUT)
 from argparse import Namespace
 from conda.cli.python_api import run_command as conda_run, Commands
-from django.core.exceptions import ObjectDoesNotExist
-from tethys_apps.cli.cli_colors import pretty_output, FG_RED, FG_BLUE, FG_YELLOW
-from tethys_apps.cli.services_commands import services_list_command
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
-from tethys_apps.utilities import link_service_to_app_setting
+from tethys_apps.cli.cli_colors import write_msg, write_error, write_info, write_warning, write_success
+from tethys_apps.cli.services_commands import services_list_command
+from tethys_apps.utilities import link_service_to_app_setting, get_app_settings
 
 FNULL = open(os.devnull, 'w')
 
@@ -18,21 +18,6 @@ serviceLinkParam = {
     "persistent": 'ps_database',
     'wps': 'wps'
 }
-
-
-def write_msg(msg):
-    with pretty_output(FG_YELLOW) as p:
-        p.write(msg)
-
-
-def write_error(msg):
-    with pretty_output(FG_RED) as p:
-        p.write(msg)
-
-
-def write_comment(msg):
-    with pretty_output(FG_BLUE) as p:
-        p.write(msg)
 
 
 def open_file(file_path):
@@ -46,34 +31,34 @@ def open_file(file_path):
         exit(1)
 
 
-def get_service_from_id(id):
+def get_service_from_id(service_id):
 
     from tethys_services.models import (SpatialDatasetService, PersistentStoreService,
                                         DatasetService, WebProcessingService)
 
     try:
-        persistent_entries = PersistentStoreService.objects.get(id=id)  # noqa: F841
+        PersistentStoreService.objects.get(id=service_id)  # noqa: F841
         return {"service_type": "persistent",
                 "linkParam": serviceLinkParam['persistent']}
     except ObjectDoesNotExist:
         pass
 
     try:
-        entries = SpatialDatasetService.objects.get(id=id)  # noqa: F841
+        entries = SpatialDatasetService.objects.get(id=service_id)  # noqa: F841
         return {"service_type": "spatial",
                 "linkParam": serviceLinkParam['spatial']}
     except ObjectDoesNotExist:
         pass
 
     try:
-        entries = DatasetService.objects.get(id=id)  # noqa: F841
+        entries = DatasetService.objects.get(id=service_id)  # noqa: F841
         return {"service_type": "dataset",
                 "linkParam": serviceLinkParam['dataset']}
     except ObjectDoesNotExist:
         pass
 
     try:
-        entries = WebProcessingService.objects.get(id=id)  # noqa: F841
+        entries = WebProcessingService.objects.get(id=service_id)  # noqa: F841
         return {"service_type": "wps",
                 "linkParam": serviceLinkParam['persistent']}
     except ObjectDoesNotExist:
@@ -88,28 +73,28 @@ def get_service_from_name(name):
                                         DatasetService, WebProcessingService)
 
     try:
-        persistent_entries = PersistentStoreService.objects.get(name=name)  # noqa: F841
+        PersistentStoreService.objects.get(name=name)  # noqa: F841
         return {"service_type": "persistent",
                 "linkParam": serviceLinkParam['persistent']}
     except ObjectDoesNotExist:
         pass
 
     try:
-        entries = SpatialDatasetService.objects.get(name=name)  # noqa: F841
+        SpatialDatasetService.objects.get(name=name)  # noqa: F841
         return {"service_type": "spatial",
                 "linkParam": serviceLinkParam['spatial']}
     except ObjectDoesNotExist:
         pass
 
     try:
-        entries = DatasetService.objects.get(name=name)  # noqa: F841
+        DatasetService.objects.get(name=name)  # noqa: F841
         return {"service_type": "dataset",
                 "linkParam": serviceLinkParam['dataset']}
     except ObjectDoesNotExist:
         pass
 
     try:
-        entries = WebProcessingService.objects.get(name=name)  # noqa: F841
+        WebProcessingService.objects.get(name=name)  # noqa: F841
         return {"service_type": "wps",
                 "linkParam": serviceLinkParam['wps']}
     except ObjectDoesNotExist:
@@ -128,87 +113,168 @@ def get_service_name_input():
     return input("")
 
 
-def parse_id_input(inputResponse):
-    id_search = False
+def print_unconfigured_settings(app_name, unlinked_settings):
+    if len(unlinked_settings) > 0:
+        write_msg(f'\nThe following settings were not configured for app: {app_name}:\n')
+        write_msg('{0: <50}{1: <50}{2: <15}'.format('Name', 'Type', 'Required'))
 
-    try:
-        ids = inputResponse.split(',')
-        ids = list(map(lambda x: int(x), ids))
+        for unlinked_setting in unlinked_settings:
+            write_msg('{0: <50}{1: <50}{2: <15}'.format(unlinked_setting.name, unlinked_setting.__class__.__name__,
+                                                        str(unlinked_setting.required)))
 
-        id_search = True
-    except ValueError:
-        ids = [inputResponse]
-        pass
 
-    return id_search, ids
+def run_sync_stores(app_name, linked_settings):
+    from tethys_apps.models import PersistentStoreConnectionSetting, PersistentStoreDatabaseSetting
+
+    linked_persistent = False
+    for setting in linked_settings:
+        if isinstance(setting, PersistentStoreDatabaseSetting) or isinstance(setting, PersistentStoreConnectionSetting):
+            linked_persistent = True
+
+    if linked_persistent:
+        write_msg('Running syncstores for app {}'.format(app_name))
+        call(['tethys', 'syncstores', app_name])
 
 
 def run_interactive_services(app_name):
+    from tethys_apps.models import (PersistentStoreConnectionSetting, PersistentStoreDatabaseSetting,
+                                    SpatialDatasetServiceSetting, DatasetServiceSetting, WebProcessingServiceSetting,
+                                    CustomSetting)
+
+    setting_type_dict = {
+        PersistentStoreConnectionSetting: 'persistent',
+        PersistentStoreDatabaseSetting: 'persistent',
+        SpatialDatasetServiceSetting: 'spatial',
+        DatasetServiceSetting: 'dataset',
+        WebProcessingServiceSetting: 'wps',
+        CustomSetting: 'custom_setting'
+    }
+
     write_msg('Running Interactive Service Mode. '
               'Any configuration options in install.yml for services will be ignored...')
+    write_msg('Hit return at any time to skip a step.')
 
-    # List existing services
-    tempNS = Namespace()
+    app_settings = get_app_settings(app_name)
+    unlinked_settings = app_settings['unlinked_settings']
 
-    for conf in ['spatial', 'persistent', 'wps', 'dataset']:
-        setattr(tempNS, conf, False)
+    for setting in unlinked_settings:
+        valid = False
+        configure_text = "Configuring {}".format(setting.name)
+        star_out = '*' * len(configure_text)
+        write_msg(f"\n{star_out}\n{configure_text}\n{star_out}")
+        write_msg(f"Type: {setting.__class__.__name__}\n"
+                  f"Description: {setting.description}\n"
+                  f"Required: {setting.required}")
+        if isinstance(setting, CustomSetting):
+            while not valid:
+                write_msg('\nEnter the desired value for the current custom setting: {}'.format(setting.name))
+                try:
+                    value = get_interactive_input()
+                    if value != "":
+                        try:
+                            setting.value = value
+                            setting.clean()
+                            setting.save()
+                            valid = True
+                            write_success("{} successfully set with value: {}.".format(setting.name, value))
+                        except ValidationError:
+                            write_error("Incorrect value type given for custom setting '{}'. Please try again"
+                                        .format(setting.name))
 
-    services_list_command(tempNS)
-
-    write_msg('Please enter the service ID/Name to link one of the above listed service.')
-    write_msg('You may also enter a comma separated list of service ids : (1,2).')
-    write_msg('Just hit return if you wish to skip this step and move on to creating your own services.')
-
-    valid = False
-    while not valid:
-        try:
-            response = get_interactive_input()
-            if response != "":
-                # Parse Response
-                id_search, ids = parse_id_input(response)
-
-                for service_id in ids:
-                    if id_search:
-                        service = get_service_from_id(service_id)
                     else:
-                        service = get_service_from_name(service_id)
-                    if service:
-                        # Ask for app setting name:
-                        write_msg(
-                            'Please enter the name of the service from your app.py eg: "catalog_db")')
-                        setting_name = get_service_name_input()
-                        link_service_to_app_setting(service['service_type'],
-                                                    service_id,
-                                                    app_name,
-                                                    service['linkParam'],
-                                                    setting_name)
+                        write_msg("Skipping setup of {}".format(setting.name))
+                        valid = True
 
-                valid = True
+                except (KeyboardInterrupt, SystemExit):
+                    write_msg('\nInstall Command cancelled.')
+                    exit(0)
+        else:
+            # List existing services
+            args = Namespace()
 
-            else:
-                write_msg(
-                    "Please run 'tethys services create -h' to create services via the command line.")
-                valid = True
+            for conf in ['spatial', 'persistent', 'wps', 'dataset']:
+                setattr(args, conf, False)
 
-        except (KeyboardInterrupt, SystemExit):
-            write_msg('\nInstall Command cancelled.')
-            exit(0)
+            setattr(args, setting_type_dict[type(setting)], True)
+            services = services_list_command(args)[0]
+
+            if len(services) <= 0:
+                write_warning('No compatible services found. See:\n\n  tethys services create {} -h\n'
+                              .format(setting_type_dict[type(setting)]))
+                continue
+
+            while not valid:
+                write_msg('\nEnter the service ID/Name to link to the current service setting: {}.'
+                          .format(setting.name))
+                try:
+                    service_id = get_interactive_input()
+                    if service_id != "":
+                        try:
+                            int(service_id)
+                            service = get_service_from_id(service_id)
+                        except ValueError:
+                            service = get_service_from_name(service_id)
+
+                        if service:
+                            link_service_to_app_setting(service['service_type'],
+                                                        service_id,
+                                                        app_name,
+                                                        service['linkParam'],
+                                                        setting.name)
+
+                            valid = True
+                        else:
+                            write_error('Incorrect service ID/Name. Please try again.')
+
+                    else:
+                        write_msg("Skipping setup of {}".format(setting.name))
+                        valid = True
+
+                except (KeyboardInterrupt, SystemExit):
+                    write_msg('\nInstall Command cancelled.')
+                    exit(0)
 
 
-def find_and_link(service_type, setting_name, service_id, app_name):
+def find_and_link(service_type, setting_name, service_name, app_name):
 
-    service = get_service_from_name(service_id)
+    service = get_service_from_name(service_name)
     if service:
         link_service_to_app_setting(service['service_type'],
-                                    service_id,
+                                    service_name,
                                     app_name,
                                     service['linkParam'],
                                     setting_name)
     else:
-        write_error('Warning: Could not find service of type: {} with the name/id: {}'.format(service_type, service_id))
+        write_error('Warning: Could not find service of type: {} with the name/id: {}'.format(service_type,
+                                                                                              service_name))
 
 
-def run_portal_install(service_models, file_path, app_name):
+def configure_services(services, app_name):
+    from tethys_apps.models import CustomSetting
+
+    if services['version']:
+        del services['version']
+    for service_type in services:
+        if services[service_type] is not None:
+            current_services = services[service_type]
+            for service_setting_name in current_services:
+                if service_type == 'custom_setting':
+                    custom_setting = CustomSetting.objects.get(name=service_setting_name)
+
+                    try:
+                        custom_setting.value = current_services[service_setting_name]
+                        custom_setting.clean()
+                        custom_setting.save()
+                    except ValidationError:
+                        write_error("Incorrect value type given for custom setting '{}'. Please adjust "
+                                    "services.yml or set the value in the app's settings page."
+                                    .format(service_setting_name))
+                else:
+                    find_and_link(service_type, service_setting_name,
+                                  current_services[service_setting_name], app_name)
+
+
+def run_portal_install(file_path, app_name):
 
     if file_path is None:
         file_path = './portal.yml'
@@ -223,172 +289,172 @@ def run_portal_install(service_models, file_path, app_name):
     if app_check and app_name in portal_options['apps'] and 'services' in portal_options['apps'][app_name]:
         services = portal_options['apps'][app_name]['services']
         if services and len(services) > 0:
-            for service_type in services:
-                if services[service_type] is not None:
-                    current_services = services[service_type]
-                    for service_setting_name in current_services:
-                        find_and_link(service_type, service_setting_name,
-                                      current_services[service_setting_name], app_name)
+            configure_services(services, app_name)
         else:
-            write_msg("No app configuration found for app: {} in portal config file. ".format(app_name))
+            write_msg("No app configuration found for app: {} in portal config file. "
+                      "Moving to look for local app level services.yml... ".format(app_name))
+            return False
 
     else:
-        write_msg("No apps configuration found in portal config file. ".format(app_name))
+        write_msg("No apps configuration found in portal config file. "
+                  "Moving to look for local app level services.yml... ".format(app_name))
+        return False
 
     return True
 
 
-def install_dependencies(conda_config):
-    # Compile channels arguments
-    install_args = []
-    if "channels" in conda_config and conda_config['channels'] and len(conda_config['channels']) > 0:
-        channels = conda_config['channels']
-        for channel in channels:
-            install_args.extend(['-c', channel])
+def run_services(app_name, args):
+    # import pdb; pdb.set_trace()
+    services_file = args.services_file
 
-    # Install all Dependencies
-    if "dependencies" in conda_config and conda_config['dependencies'] and len(conda_config['dependencies']) > 0:
-        install_args.extend(conda_config['dependencies'])
-        write_comment('Installing Dependencies.....')
-        [resp, err, code] = conda_run(
-            Commands.INSTALL, *install_args, use_exception_handler=False, stdout=None, stderr=None)
-        if code != 0:
-            write_error('Warning: Dependencies installation ran into an error. Please try again or a manual install')
-
-
-def run_services(services_config, file_path, app_name, serviceFileInput):
-
-    if serviceFileInput is None:
+    if services_file is None:
         file_path = './services.yml'
     else:
-        file_path = serviceFileInput
+        file_path = services_file
 
     if not os.path.exists(file_path):
-        write_msg("No Services install file found. Skipping app service installation")
+        write_msg("No Services file found.")
         return
 
     install_options = open_file(file_path)
 
     # Setup any services that need to be setup
     services = install_options
-    interactive_mode = False
-    skip = False
 
-    if "skip" in services:
-        skip = services['skip']
-        del services['skip']
-    if "interactive" in services:
-        interactive_mode = services['interactive']
-        del services['interactive']
-
-    if not skip:
-        if interactive_mode:
-            run_interactive_services(app_name)
-        else:
-            if services and len(services) > 0:
-                if services['version']:
-                    del services['version']
-                for service_type in services:
-                    if services[service_type] is not None:
-                        current_services = services[service_type]
-                        for service_setting_name in current_services:
-                            find_and_link(service_type, service_setting_name,
-                                          current_services[service_setting_name], app_name)
-        write_msg("Services Configuration Completed.")
+    if services and len(services) > 0:
+        configure_services(services, app_name)
     else:
-        write_msg(
-            "Skipping services configuration, Skip option found.")
+        write_msg("No Services listed in Services file.")
+
+
+def install_packages(conda_config):
+    # Compile channels arguments
+    install_args = []
+    if validate_schema('channels', conda_config):
+        channels = conda_config['channels']
+        for channel in channels:
+            install_args.extend(['-c', channel])
+
+    # Install all Packages
+    if validate_schema('packages', conda_config):
+        install_args.extend(conda_config['packages'])
+        write_info('Installing Packages.....')
+        [resp, err, code] = conda_run(
+            Commands.INSTALL, *install_args, use_exception_handler=False, stdout=None, stderr=None)
+        if code != 0:
+            write_error('Warning: Packages installation ran into an error. Please try again or a manual install')
 
 
 def install_command(args):
     """
     install Command
     """
-
-    # Have to import within function or else install partial on a system fails
-    from tethys_services.models import (
-        SpatialDatasetService, DatasetService, PersistentStoreService, WebProcessingService)
-
-    service_models = {
-        'spatial': SpatialDatasetService,
-        "dataset": DatasetService,
-        "persistent": PersistentStoreService,
-        'wps': WebProcessingService
-    }
-
     app_name = None
-    # Check if input config file exists. We Can't do anything without it
+    skip_config = False
     file_path = args.file
 
     if file_path is None:
         file_path = './install.yml'
 
     if not os.path.exists(file_path):
-        valid_inputs = ('y', 'n', 'yes', 'no')
-        no_inputs = ('n', 'no')
+        write_warning('WARNING: No install file found.')
+        if not args.quiet:
+            valid_inputs = ('y', 'n', 'yes', 'no')
+            no_inputs = ('n', 'no')
 
-        generate_input = input('WARNING: No Install File found. '
-                               'Would you like to generate a template install.yml file in your current directory '
-                               'now? (y/n): ')
+            generate_input = input('Would you like to generate a template install.yml file in your current directory '
+                                   'now? (y/n): ')
 
-        while generate_input not in valid_inputs:
-            generate_input = input('Invalid option. Overwrite? (y/n): ').lower()
+            while generate_input not in valid_inputs:
+                generate_input = input('Invalid option. Try again. (y/n): ').lower()
 
-        if generate_input in no_inputs:
-            write_msg('Generation of Install File cancelled. Please create an install.yml file and re-install.')
-            exit(0)
-        else:
-            call(['tethys', 'gen', 'install'])
+            if generate_input in no_inputs:
+                skip_config = True
+                write_msg('Generation of Install File cancelled.')
+            else:
+                call(['tethys', 'gen', 'install'])
+                write_msg('Install file generated. Fill out necessary information and re-install.')
+                exit(0)
 
-    install_options = open_file(file_path)
+        write_warning('Continuing install without configuration.')
 
-    if "name" in install_options:
-        app_name = install_options['name']
+    if not skip_config:
+        install_options = open_file(file_path)
 
-    if "conda" not in install_options:
-        write_comment('No Conda options found. Does your app not have any dependencies?')
-        exit(0)
+        if "name" in install_options:
+            app_name = install_options['name']
 
-    conda_config = install_options['conda']
-    skip = False
-    if "skip" in conda_config:
-        skip = conda_config['skip']
-        del conda_config['skip']
+        if validate_schema('requirements', install_options):
+            requirements_config = install_options['requirements']
+            skip = False
+            if "skip" in requirements_config:
+                skip = requirements_config['skip']
 
-    if skip:
-        write_msg("Skipping dependency installation, Skip option found.")
-    else:
-        install_dependencies(conda_config)
-
-        if "pip" in install_options and install_options["pip"] and len(install_options["pip"]) > 0:
-            write_msg("Running pip installation tasks...")
-            call(['pip', 'install', *install_options["pip"]])
+            if skip:
+                write_msg("Skipping package installation, Skip option found.")
+            else:
+                if validate_schema('conda', requirements_config):  # noqa: E501
+                    conda_config = requirements_config['conda']
+                    install_packages(conda_config)
+                if validate_schema('pip', requirements_config):
+                    write_msg("Running pip installation tasks...")
+                    call(['pip', 'install', *requirements_config["pip"]])
 
     # Run Setup.py
     write_msg("Running application install....")
-
-    if args.develop:
-        call(['python', 'setup.py', 'develop'], stdout=FNULL, stderr=STDOUT)
+    # import pdb; pdb.set_trace()
+    if args.verbose:
+        call(['python', 'setup.py', 'clean', '--all'], stderr=STDOUT)
+        if args.develop:
+            call(['python', 'setup.py', 'develop'], stderr=STDOUT)
+        else:
+            call(['python', 'setup.py', 'install'], stderr=STDOUT)
     else:
-        call(['python', 'setup.py', 'install'], stdout=FNULL, stderr=STDOUT)
+        call(['python', 'setup.py', 'clean', '--all'], stdout=FNULL, stderr=STDOUT)
+        if args.develop:
+            call(['python', 'setup.py', 'develop'], stdout=FNULL, stderr=STDOUT)
+        else:
+            call(['python', 'setup.py', 'install'], stdout=FNULL, stderr=STDOUT)
 
     call(['tethys', 'manage', 'sync'])
 
     # Run Portal Level Config if present
-    if args.force_services:
-        run_services(service_models, file_path, app_name, args.services_file)
-    else:
-        portal_result = run_portal_install(service_models, args.portal_file, app_name)
-        if not portal_result:
-            run_services(service_models, file_path, app_name, args.services_file)
+    if not skip_config:
+        if args.force_services:
+            run_services(app_name, args)
+        else:
+            portal_result = run_portal_install(args.portal_file, app_name)
+            if not portal_result:
+                run_services(app_name, args)
 
-    # Check to see if any extra scripts need to be run
-    if "post" in install_options and install_options["post"] and len(install_options["post"]) > 0:
-        write_msg("Running post installation tasks...")
-        for post in install_options["post"]:
-            path_to_post = os.path.join(os.path.dirname(os.path.realpath(file_path)), post)
-            # Attempting to run processes.
-            process = Popen(path_to_post, shell=True, stdout=PIPE)
-            stdout = process.communicate()[0]
-            write_msg("Post Script Result: {}".format(stdout))
+        if args.quiet:
+            write_msg("Quiet mode: No additional service setting validation will be performed.")
+        else:
+            run_interactive_services(app_name)
+
+        write_success("Services Configuration Completed.")
+
+        app_settings = get_app_settings(app_name)
+        linked_settings = app_settings['linked_settings']
+        unlinked_settings = app_settings['unlinked_settings']
+        if args.no_sync:
+            write_msg('Skipping syncstores.')
+        else:
+            run_sync_stores(app_name, linked_settings)
+
+        print_unconfigured_settings(app_name, unlinked_settings)
+
+        # Check to see if any extra scripts need to be run
+        if validate_schema('post', install_options):
+            write_msg("Running post installation tasks...")
+            for post in install_options["post"]:
+                path_to_post = os.path.join(os.path.dirname(os.path.realpath(file_path)), post)
+                # Attempting to run processes.
+                process = Popen(path_to_post, shell=True, stdout=PIPE)
+                stdout = process.communicate()[0]
+                write_msg("Post Script Result: {}".format(stdout))
     exit(0)
+
+
+def validate_schema(check_str, check_list):
+    return check_str in check_list and check_list[check_str] and len(check_list[check_str]) > 0

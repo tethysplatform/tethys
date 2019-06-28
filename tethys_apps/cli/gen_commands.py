@@ -173,6 +173,10 @@ def generate_command(args):
     if args.type in [GEN_SERVICES_OPTION, GEN_INSTALL_OPTION]:
         destination_dir = os.getcwd()
 
+    if args.type == GEN_INSTALL_OPTION:
+        print('Please review the generated install.yml file and fill in the appropriate information '
+              '(app name is requited).')
+
     if args.directory:
         if os.path.isdir(args.directory):
             destination_dir = args.directory
