@@ -490,6 +490,61 @@ class N52WpsContainerMetadata(ContainerMetadata):
         return options
 
 
+class ThreddsContainerMetadata(ContainerMetadata):
+    input = 'thredds'
+    name = 'tethys_thredds'
+    display_name = 'THREDDS'
+    image = 'unidata/thredds-docker:4.6.13'
+    host_port = 9000
+    container_port = 8080
+
+    @property
+    def endpoint(self):
+        return 'http://{host}:{port}/thredds/catalog'.format(
+            host=self.default_host,
+            port=self.host_port
+        )
+
+    def default_container_options(self):
+        options = super().default_container_options()
+        options.update(
+            environment=dict(
+
+            ),
+            volumes=[
+
+            ],
+        )
+        return options
+
+    def get_container_options(self, defaults):
+        # Default environmental vars
+        options = self.default_container_options()
+
+        if not defaults:
+            write_pretty_output("Provide configuration options for the THREDDS container or or press enter to "
+                                "accept the defaults shown in square brackets: ")
+
+            mount_data_dir = UserInputHelper.get_valid_choice_input(
+                prompt='Bind the THREDDS data directory to the host?',
+                choices=['y', 'n'],
+                default='y',
+            )
+
+            if mount_data_dir.lower() == 'y':
+                tethys_home = os.environ.get('TETHYS_HOME', os.path.expanduser('~/tethys/'))
+                default_mount_location = os.path.join(tethys_home, 'thredds')
+                gs_data_volume = '/usr/local/tomcat/content/thredds'
+                mount_location = UserInputHelper.get_valid_directory_input(
+                    prompt='Specify location to bind data directory',
+                    default=default_mount_location
+                )
+                mounts = [Mount(gs_data_volume, mount_location, type='bind')]
+                options['host_config'].update(mounts=mounts)
+
+        return options
+
+
 docker_container_inputs = [c.input for c in ContainerMetadata.get_containers()]
 
 
