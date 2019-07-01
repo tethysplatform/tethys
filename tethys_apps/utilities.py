@@ -139,7 +139,7 @@ def get_app_settings(app):
     Returns:
         dict (linked_settings, unlinked_settings): Dictionary with two keys: linked_settings(list) - list of linked settings, unlinked_settings(list) - list of unlinked settings  # noqa: E501
     """
-    from tethys_apps.cli.cli_colors import pretty_output, FG_RED
+    from tethys_apps.cli.cli_colors import write_error
     from tethys_apps.models import (TethysApp, PersistentStoreConnectionSetting, PersistentStoreDatabaseSetting,
                                     SpatialDatasetServiceSetting, DatasetServiceSetting, WebProcessingServiceSetting,
                                     CustomSetting)
@@ -169,7 +169,7 @@ def get_app_settings(app):
                     or (hasattr(setting, 'persistent_store_service') and setting.persistent_store_service) \
                     or (hasattr(setting, 'dataset_service') and setting.dataset_service) \
                     or (hasattr(setting, 'web_processing_service') and setting.web_processing_service) \
-                    or (isinstance(setting, CustomSetting) and setting.value != ''):
+                    or (hasattr(setting, 'value') and setting.value != ''):
                 linked_settings.append(setting)
             else:
                 unlinked_settings.append(setting)
@@ -180,12 +180,10 @@ def get_app_settings(app):
         }
 
     except ObjectDoesNotExist:
-        with pretty_output(FG_RED) as p:
-            p.write('The app you specified ("{0}") does not exist. Command aborted.'.format(app))
+        write_error('The app you specified ("{0}") does not exist. Command aborted.'.format(app))
     except Exception as e:
-        with pretty_output(FG_RED) as p:
-            p.write(e)
-            p.write('Something went wrong. Please try again.')
+        write_error(str(e))
+        write_error('Something went wrong. Please try again.')
 
 
 def create_ps_database_setting(app_package, name, description='', required=False, initializer='', initialized=False,
@@ -369,7 +367,7 @@ def link_service_to_app_setting(service_type, service_uid, app_package, setting_
         setting.save()
         with pretty_output(FG_GREEN) as p:
             p.write('{}:"{}" was successfully linked to {}:"{}" of the "{}" Tethys App'
-                    .format(service_model.__name__, service.name, linked_setting_model.__name__, setting.name,
+                    .format(service.__class__.__name__, service.name, setting.__class__.__name__, setting.name,
                             app_package))
         return True
     except ObjectDoesNotExist:

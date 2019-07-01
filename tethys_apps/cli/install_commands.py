@@ -165,7 +165,7 @@ def run_interactive_services(app_name):
         write_msg(f"Type: {setting.__class__.__name__}\n"
                   f"Description: {setting.description}\n"
                   f"Required: {setting.required}")
-        if isinstance(setting, CustomSetting):
+        if hasattr(setting, 'value'):
             while not valid:
                 write_msg('\nEnter the desired value for the current custom setting: {}'.format(setting.name))
                 try:
@@ -304,7 +304,6 @@ def run_portal_install(file_path, app_name):
 
 
 def run_services(app_name, args):
-    # import pdb; pdb.set_trace()
     services_file = args.services_file
 
     if services_file is None:
@@ -338,7 +337,7 @@ def install_packages(conda_config):
     # Install all Packages
     if validate_schema('packages', conda_config):
         install_args.extend(conda_config['packages'])
-        write_info('Installing Packages.....')
+        write_msg("Running conda installation tasks...")
         [resp, err, code] = conda_run(
             Commands.INSTALL, *install_args, use_exception_handler=False, stdout=None, stderr=None)
         if code != 0:
@@ -402,7 +401,6 @@ def install_command(args):
 
     # Run Setup.py
     write_msg("Running application install....")
-    # import pdb; pdb.set_trace()
     if args.verbose:
         call(['python', 'setup.py', 'clean', '--all'], stderr=STDOUT)
         if args.develop:
@@ -435,14 +433,15 @@ def install_command(args):
         write_success("Services Configuration Completed.")
 
         app_settings = get_app_settings(app_name)
-        linked_settings = app_settings['linked_settings']
-        unlinked_settings = app_settings['unlinked_settings']
-        if args.no_sync:
-            write_msg('Skipping syncstores.')
-        else:
-            run_sync_stores(app_name, linked_settings)
+        if app_settings is not None:
+            linked_settings = app_settings['linked_settings']
+            unlinked_settings = app_settings['unlinked_settings']
+            if args.no_sync:
+                write_msg('Skipping syncstores.')
+            else:
+                run_sync_stores(app_name, linked_settings)
 
-        print_unconfigured_settings(app_name, unlinked_settings)
+            print_unconfigured_settings(app_name, unlinked_settings)
 
         # Check to see if any extra scripts need to be run
         if validate_schema('post', install_options):

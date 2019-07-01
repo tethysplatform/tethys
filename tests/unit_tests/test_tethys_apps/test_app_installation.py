@@ -37,6 +37,22 @@ class TestAppInstallation(unittest.TestCase):
         self.assertTrue(icon_gif)
         self.assertTrue(main_css)
 
+    def test_find_resource_files_rel_to(self):
+        ret = tethys_app_installation.find_resource_files(self.root, '')
+        main_js = False
+        icon_gif = False
+        main_css = False
+        if any('/js/main.js' in s for s in ret):
+            main_js = True
+        if any('/images/icon.gif' in s for s in ret):
+            icon_gif = True
+        if any('/css/main.css' in s for s in ret):
+            main_css = True
+
+        self.assertTrue(main_js)
+        self.assertTrue(icon_gif)
+        self.assertTrue(main_css)
+
     def test_get_tethysapp_directory(self):
         ret = tethys_app_installation.get_tethysapp_directory()
         self.assertIn('tethys_apps/tethysapp', ret)

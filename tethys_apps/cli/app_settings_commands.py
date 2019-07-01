@@ -3,20 +3,9 @@ from tethys_apps.cli.cli_colors import pretty_output, BOLD
 
 
 def app_settings_list_command(args):
-    from tethys_apps.models import (PersistentStoreConnectionSetting, PersistentStoreDatabaseSetting,
-                                    SpatialDatasetServiceSetting, DatasetServiceSetting, WebProcessingServiceSetting,
-                                    CustomSetting)
-
-    setting_type_dict = {
-        PersistentStoreConnectionSetting: 'ps_connection',
-        PersistentStoreDatabaseSetting: 'ps_database',
-        SpatialDatasetServiceSetting: 'ds_spatial',
-        DatasetServiceSetting: 'ds_dataset',
-        WebProcessingServiceSetting: 'wps',
-        CustomSetting: 'custom_setting'
-    }
-
     app_settings = get_app_settings(args.app)
+    if app_settings is None:
+        return
     unlinked_settings = app_settings['unlinked_settings']
     linked_settings = app_settings['linked_settings']
 
@@ -35,7 +24,7 @@ def app_settings_list_command(args):
                 is_first_row = False
             with pretty_output() as p:
                 p.write('{0: <10}{1: <40}{2: <15}'.format(setting.pk, setting.name,
-                                                          setting_type_dict[type(setting)]))
+                                                          get_setting_type(setting)))
 
     with pretty_output(BOLD) as p:
         p.write("\nLinked Settings:")
@@ -51,20 +40,36 @@ def app_settings_list_command(args):
                     p.write('{0: <10}{1: <40}{2: <15}{3: <20}'.format('ID', 'Name', 'Type', 'Linked With'))
                 is_first_row = False
 
-            if isinstance(setting, PersistentStoreConnectionSetting) or \
-                    isinstance(setting, PersistentStoreDatabaseSetting):
+            if hasattr(setting, 'persistent_store_service'):
                 service_name = setting.persistent_store_service.name
-            elif isinstance(setting, SpatialDatasetServiceSetting):
+            elif hasattr(setting, 'spatial_dataset_service'):
                 service_name = setting.spatial_dataset_service.name
-            elif isinstance(setting, DatasetServiceSetting):
+            elif hasattr(setting, 'dataset_service'):
                 service_name = setting.dataset_service.name
-            elif isinstance(setting, WebProcessingServiceSetting):
+            elif hasattr(setting, 'web_processing_service'):
                 service_name = setting.web_processing_service.name
-            else:
+            elif hasattr(setting, 'value'):
                 service_name = setting.value
 
-            print('{0: <10}{1: <40}{2: <15}{3: <20}'.format(setting.pk, setting.name,
-                                                            setting_type_dict[type(setting)], service_name))
+            with pretty_output() as p:
+                p.write(f'{setting.pk: <10}{setting.name: <40}{get_setting_type(setting): <15}{service_name: <20}')
+
+
+def get_setting_type(setting):
+    from tethys_apps.models import (PersistentStoreConnectionSetting, PersistentStoreDatabaseSetting,
+                                    SpatialDatasetServiceSetting, DatasetServiceSetting, WebProcessingServiceSetting,
+                                    CustomSetting)
+
+    setting_type_dict = {
+        PersistentStoreConnectionSetting: 'ps_connection',
+        PersistentStoreDatabaseSetting: 'ps_database',
+        SpatialDatasetServiceSetting: 'ds_spatial',
+        DatasetServiceSetting: 'ds_dataset',
+        WebProcessingServiceSetting: 'wps',
+        CustomSetting: 'custom_setting'
+    }
+
+    return setting_type_dict[type(setting)]
 
 
 def app_settings_create_ps_database_command(args):
