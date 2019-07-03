@@ -5,7 +5,6 @@ from tethys_apps.cli.cli_colors import (
     write_pretty_output,
     write_info,
     FG_RED,
-    FG_BLUE,
     BOLD,
     FG_GREEN,
     BG_GREEN,

@@ -21,7 +21,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
     @mock.patch('tethys_apps.models.CustomSetting')
     @mock.patch('tethys_apps.cli.app_settings_commands.pretty_output')
     def test_app_settings_list_command_unlinked(self, mock_pretty_output, __, ___, ____, _____, ______,
-                                       MockPscs, MockTethysApp, _):
+                                                MockPscs, MockTethysApp, _):
         # mock the args
         mock_arg = mock.MagicMock(app='foo')
 
@@ -69,7 +69,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
     @mock.patch('tethys_apps.cli.app_settings_commands.pretty_output')
     @mock.patch('tethys_apps.cli.app_settings_commands.type')
     def test_app_settings_list_command_linked(self, mock_type, mock_pretty_output, MockCs, MockWpss, MockDss,
-                                                       MockSdss, MockPsds, MockPscs, MockTethysApp, _):
+                                              MockSdss, MockPsds, MockPscs, MockTethysApp, _):
         # mock the args
         mock_arg = mock.MagicMock(app='foo')
 

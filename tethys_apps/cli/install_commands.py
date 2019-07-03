@@ -6,7 +6,7 @@ from argparse import Namespace
 from conda.cli.python_api import run_command as conda_run, Commands
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
-from tethys_apps.cli.cli_colors import write_msg, write_error, write_info, write_warning, write_success
+from tethys_apps.cli.cli_colors import write_msg, write_error, write_warning, write_success
 from tethys_apps.cli.services_commands import services_list_command
 from tethys_apps.utilities import link_service_to_app_setting, get_app_settings
 
@@ -26,7 +26,7 @@ def open_file(file_path):
             return yaml.safe_load(f)
 
     except Exception as e:
-        write_error(e)
+        write_error(str(e))
         write_error('An unexpected error occurred reading the file. Please try again.')
         exit(1)
 
@@ -136,7 +136,7 @@ def run_sync_stores(app_name, linked_settings):
         call(['tethys', 'syncstores', app_name])
 
 
-def run_interactive_services(app_name):
+def get_setting_type(setting):
     from tethys_apps.models import (PersistentStoreConnectionSetting, PersistentStoreDatabaseSetting,
                                     SpatialDatasetServiceSetting, DatasetServiceSetting, WebProcessingServiceSetting,
                                     CustomSetting)
@@ -150,6 +150,10 @@ def run_interactive_services(app_name):
         CustomSetting: 'custom_setting'
     }
 
+    return setting_type_dict[type(setting)]
+
+
+def run_interactive_services(app_name):
     write_msg('Running Interactive Service Mode. '
               'Any configuration options in install.yml for services will be ignored...')
     write_msg('Hit return at any time to skip a step.')
@@ -195,12 +199,12 @@ def run_interactive_services(app_name):
             for conf in ['spatial', 'persistent', 'wps', 'dataset']:
                 setattr(args, conf, False)
 
-            setattr(args, setting_type_dict[type(setting)], True)
+            setattr(args, get_setting_type(setting), True)
             services = services_list_command(args)[0]
 
             if len(services) <= 0:
                 write_warning('No compatible services found. See:\n\n  tethys services create {} -h\n'
-                              .format(setting_type_dict[type(setting)]))
+                              .format(get_setting_type(setting)))
                 continue
 
             while not valid:
@@ -297,7 +301,7 @@ def run_portal_install(file_path, app_name):
 
     else:
         write_msg("No apps configuration found in portal config file. "
-                  "Moving to look for local app level services.yml... ".format(app_name))
+                  "Moving to look for local app level services.yml... ")
         return False
 
     return True
@@ -315,10 +319,7 @@ def run_services(app_name, args):
         write_msg("No Services file found.")
         return
 
-    install_options = open_file(file_path)
-
-    # Setup any services that need to be setup
-    services = install_options
+    services = open_file(file_path)
 
     if services and len(services) > 0:
         configure_services(services, app_name)

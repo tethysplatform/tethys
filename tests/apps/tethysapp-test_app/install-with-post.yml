@@ -2,7 +2,7 @@ version: 1.0
 name: test_app
 
 requirements:
-  skip: false
+  skip: True
   conda:
     channels:
       - tacaswell
