@@ -41,40 +41,19 @@ install.yml
 
 This file is generated with your application scaffold. Please do NOT list any dependencies in setup.py. Instead list them in the :file:`install.yml` file. This file should be committed with your application code in order to aid installation on a Tethys Portal
 
-.. code-block:: python
-
-	# This file may be committed to your app code.
-	version: 1.0
-	# This should match the app - package name in your setup.py
-	name: hydroexplorer
-
-	requirements:
-	  # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
-	  skip: false
-	  conda:
-        channels:
-          - conda-forge
-        packages:
-          - pyshp=2.0.0
-          - geojson
-          - shapely
-
-      pip:
-        - see
-
-	post:
-  	  - test.sh
+.. literalinclude:: resources/install.yml
+   :language: yaml
 
 **install.yml Options:**
 
 * **version**: Indicated the version of the :file:`install.yml` file. Current default : 1.0
 * **name**: This should match the app-package name in your setup.py
 
-* **conda/skip**: If enabled, it will skip the installation of dependencies and channels. This option is set to `False` by default. 
+* **skip**: If enabled, it will skip the installation of packages. This option is set to `False` by default.
 
 * **conda/channels**: List of conda channels that need to be searched for dependency installation. Only specify any conda channels that are apart from the default. 
 
-* **conda/dependencies**: List of python dependencies that need to be installed by conda. These may be entered in the format ``pyshp=2.0.0`` to download a specific version.
+* **conda/packages**: List of python dependencies that need to be installed by conda. These may be entered in the format ``pyshp=2.0.0`` to download a specific version.
 
 * **pip**: A list of python dependencies that need to be installed by pip.
 
@@ -91,22 +70,8 @@ services.yml
 
 This file will be created by the portal administrator who has created/has access to all the service in the portal. This file will only be run by default if there is no portal services config file present (see :ref:`tethys_portal_yml`). However you can force the use of this file over the portal config by specifying the `--force-services` tag on the install command.
 
-.. code-block:: python
-
-	# Do not commit this file. This file is portal specific.
-	version: 1.0
-
-	# Set service params in the following format :
-	# app_service_setting_name(from your app.py): <service_name or id from list of installed services>
-	persistent:
-  	 catalog_db: hydroexplorer-persistent
-  	 second_db: main-persistent
-	wps:
-  	 wps_main: testWPS
-  	dataset:
-  	spatial:
-  	custom_settings:
-  	 max_dams: 5
+.. literalinclude:: resources/services.yml
+   :language: yaml
 
 **services.yml Options:**
 
@@ -116,7 +81,7 @@ This file will be created by the portal administrator who has created/has access
 * **dataset** : List of dataset settings in the app and the service to link to each.
 * **spatial** : List of spatial persistent store settings in the app and the service to link to each.
 * **wps** : List of web processing service settings in the app and the service to link to each.
-* **custom_setting** : List of custom settings in the app and value of each.
+* **custom_settings** : List of custom settings in the app and value of each.
 
 Settings in each of the service sections above will need to be listed in the following format::
 
@@ -135,21 +100,8 @@ portal.yml
 
 The file is designed to be maintained by the server administrator who can provide incoming apps with default services. 
 
-.. code-block:: python
-
-	# Portal Level Config File
-
-	version: 1.0
-	name: Tethys Main Portal
-	apps:
-	 hydroexplorer:
-	  services:
-	   persistent:
-	    catalog_db: test
-	   spatial:
-	   dataset:
-	   wps:
-
+.. literalinclude:: resources/services.yml
+   :language: yaml
 
 **portal.yml Options:**
 
@@ -160,6 +112,7 @@ The file is designed to be maintained by the server administrator who can provid
 * **apps/<app-name>/services/dataset** : List of dataset settings in the app and the service to link to each.
 * **apps/<app-name>/services/spatial** : List of spatial persistent store settings in the app and the service to link to each.
 * **apps/<app-name>/services/wps** : List of Web Processing service settings in the app and the service to link to each. 
+* **apps/<app-name>/services/custom_settings** : List of custom settings in the app and the value of each.
 
 Settings in each of the service sections above will need to be listed in the following format::
 

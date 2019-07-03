@@ -3,7 +3,6 @@ name: test_app
 
 requirements:
   conda:
-    skip: false
     channels:
       - tacaswell
     packages:
