@@ -454,7 +454,7 @@ This command is used to interact with Schedulers from the command line, rather t
 install 
 -------
 
-This command is used to trigger an automatic install for an application on a portal. For this command to work, it needs an :ref:`install.yml file <tethys_install_yml>` in the app directory. If the install file doesnt exist the command will offer to create a blank template install.yml file for you. If you require services to be setup automatically as well, then place a :ref:`settings.yml file <tethys_services_yml>` in the root of your application.
+This command is used to trigger an automatic install for an application on a portal. We recommend using an :ref:`install.yml file <tethys_install_yml>` in the app directory to customize the installation process. If the install file doesnt exist the command will offer to create a blank template install.yml file for you. If you require services to be setup automatically as well, place a :ref:`settings.yml file <tethys_services_yml>` in the root of your application. If any services haven't been setup yet, you will be prompted to configure them interactively during the installation process. If there are any linked persistent stores upon completing the installation process, ``tethys syncstores {app_name}`` is run (add the '-n' arg to the install command to prevent this).
 This command needs to be run from the root of the application directory. 
 
 **Optional Arguments:**
@@ -468,6 +468,13 @@ This command needs to be run from the root of the application directory.
 * **-s --services-file**: Absolute path to :file:`services.yml` file for Tethys Application installation if different than default. By default it will look for services.yml in the root of your application directory. 
 
 * **--force-services**: Force the use of :file:`services.yml` over :file:`portal.yml` file
+
+* **-q --quiet**: Skips interactive mode.
+
+* **-n --no-sync**: Skips syncstores when linked persistent stores are found.
+
+* **-v --verbose**: Will show all pip install output when enabled.
+
 
 
 **Examples:**

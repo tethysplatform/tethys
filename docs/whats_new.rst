@@ -20,6 +20,15 @@ Automatic Application Installation
 See: :ref:`Install Command <tethys_cli_install>`
 
 
+Application Migration
+=====================
+
+.. toctree::
+   :maxdepth: 1
+
+   whats_new/app_migration
+
+
 Release |version|
 =================
 

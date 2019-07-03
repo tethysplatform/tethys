@@ -34,9 +34,9 @@ Execute the install command in the app directory to make Python aware of the app
     (tethys) $ cd $TETHYS_HOME/apps/tethysapp-my_first_app
     (tethys) $ tethys install
 
-.. note::
+.. seealso::
 
-    Check the apps documentation for any additional installation configurations.
+    :doc:`../application` for more information on the installation process.
 
 4. Collect and Static Files and Workspaces
 ==========================================

@@ -21,7 +21,7 @@ Within the command line interface, navigate to the directory of the app you wish
 Using Install (Recommended):
 ----------------------------
 
-Using the ``install`` cli command, you can install the application in one quick step. The ``install`` command will install all the dependencies, link any services that you might need for your application and can also rely on the portal configuration to link default services to your application (as configured by the portal administrator).
+Using the :ref:`install cli command <tethys_cli_install>`, you can install the application in one quick step. The ``install`` command will install all the dependencies, link any services that you might need for your application and can also rely on the portal configuration to link default services to your application (as configured by the portal administrator).
 
 ::
 
@@ -41,7 +41,7 @@ install.yml
 
 This file is generated with your application scaffold. Please do NOT list any dependencies in setup.py. Instead list them in the :file:`install.yml` file. This file should be committed with your application code in order to aid installation on a Tethys Portal
 
-.. literalinclude:: resources/install.yml
+.. literalinclude:: resources/example-install.yml
    :language: yaml
 
 **install.yml Options:**
@@ -70,7 +70,7 @@ services.yml
 
 This file will be created by the portal administrator who has created/has access to all the service in the portal. This file will only be run by default if there is no portal services config file present (see :ref:`tethys_portal_yml`). However you can force the use of this file over the portal config by specifying the `--force-services` tag on the install command.
 
-.. literalinclude:: resources/services.yml
+.. literalinclude:: resources/example-services.yml
    :language: yaml
 
 **services.yml Options:**
@@ -100,7 +100,7 @@ portal.yml
 
 The file is designed to be maintained by the server administrator who can provide incoming apps with default services. 
 
-.. literalinclude:: resources/services.yml
+.. literalinclude:: resources/example-portal.yml
    :language: yaml
 
 **portal.yml Options:**

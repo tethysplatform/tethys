@@ -402,7 +402,7 @@ def tethys_command():
                                             help='Skips syncstores when linked persistent stores are found.',
                                             action="store_true")
     application_install_parser.add_argument('-v', '--verbose',
-                                            help='Will show all pip install output when enabled',
+                                            help='Will show all pip install output when enabled.',
                                             action="store_true")
     # clean
     application_install_parser.set_defaults(func=install_command)
