@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 from django.db import models
+from tethys_services.models import validate_url
 
 
 class SettingsCategory(models.Model):
@@ -41,3 +42,21 @@ class Setting(models.Model):
             settings_dict[code_name] = setting.content
 
         return settings_dict
+
+
+class AppProxyInstance(models.Model):
+    """
+    ORM for App Proxy which allows you to redirect an app to another host
+    """
+
+    name = models.CharField(max_length=100, unique=True)
+    endpoint = models.CharField(max_length=1024, validators=[validate_url])
+    logo_url = models.CharField(max_length=100, validators=[validate_url], blank=True)
+    description = models.TextField(max_length=2048, blank=True)
+
+    class Meta:
+        verbose_name = 'App Proxy Instance'
+        verbose_name_plural = 'App Proxy Instances'
+
+    def __str__(self):
+        return self.name

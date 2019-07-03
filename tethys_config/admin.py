@@ -8,9 +8,9 @@
 ********************************************************************************
 """
 from django.contrib import admin
-from django.forms import Textarea
+from django.forms import ModelForm, Textarea
 from django.db import models
-from tethys_config.models import SettingsCategory, Setting
+from tethys_config.models import SettingsCategory, Setting, AppProxyInstance
 from tethys_apps.admin import TethysAppSettingInline
 
 
@@ -37,4 +37,5 @@ class SettingCategoryAdmin(admin.ModelAdmin):
         return False
 
 
+admin.site.register(AppProxyInstance)
 admin.site.register(SettingsCategory, SettingCategoryAdmin)
