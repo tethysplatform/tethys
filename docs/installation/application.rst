@@ -68,7 +68,7 @@ This file is generated with your application scaffold. Please do NOT list any de
 services.yml 
 ------------
 
-This file will be created by the portal administrator who has created/has access to all the service in the portal. This file will only be run by default if there is no portal services config file present (see :ref:`tethys_portal_yml`). However you can force the use of this file over the portal config by specifying the `--force-services` tag on the install command.
+This file will be created by the portal administrator who has created/has access to all the services in the portal. This file will only be run by default if there is no portal services config file present (see :ref:`tethys_portal_yml`). However you can force the use of this file over the portal config by specifying the `--force-services` tag on the install command.
 
 .. literalinclude:: resources/example-services.yml
    :language: yaml

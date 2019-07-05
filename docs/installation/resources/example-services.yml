@@ -1,4 +1,4 @@
-# Do not commit this file. This file is portal specific.
+# Do not commit this file with your app code. This file is portal specific.
 version: 1.0
 
 # Set service params in the following format :

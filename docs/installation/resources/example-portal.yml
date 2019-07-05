@@ -2,7 +2,7 @@
 version: 1.0
 name: Tethys Main Portal
 apps:
-  hydroexplorer:
+  my_first_app:
     services:
       persistent:
         catalog_db: test
