@@ -19,7 +19,29 @@ Init.py
 
 The file structure of old tethys apps needs to be slightly modified to work with the new ``install`` command.
 
-The ``__init__.py`` from the tethys app root directory needs to be removed.
+.. figure:: ../images/app_package_django.png
+	:alt: diagram of a Tethys app project for an app named my_first_app
+
+	**Figure 1. An example of a Tethys app project for an app named "my_first_app".**
+
+The ``__init__.py`` from the ``Project`` and the ``tethysapp`` directories need to be deleted.
+
+The ``__init__.py`` from the ``App Package`` directory needs to be empty.
+
+For example:
+
+Remove the following contents from ``tethysapp-my_first_app/tethysapp/my_first_app/__init__.py``:
+
+.. code-block:: python
+
+    # this is a namespace package
+    try:
+        import pkg_resources
+        pkg_resources.declare_namespace(__name__)
+    except ImportError:
+        import pkgutil
+        __path__ = pkgutil.extend_path(__path__, __name__)
+
 
 Setup.py
 ========
