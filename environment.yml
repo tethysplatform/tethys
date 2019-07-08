@@ -57,6 +57,9 @@ dependencies:
 - future
 - flake8
 
+# Conda to allow Python API access to Conda Install
+- conda
+
 - pip:
     - django-gravatar2
     - django-simple-captcha

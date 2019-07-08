@@ -3,8 +3,8 @@ from unittest import mock
 from tethys_apps.cli.cli_colors import (
     pretty_output,
     write_pretty_output,
+    write_info,
     FG_RED,
-    FG_BLUE,
     BOLD,
     FG_GREEN,
     BG_GREEN,
@@ -32,8 +32,7 @@ class TestCliColors(unittest.TestCase):
     def test_pretty_output_fg_blue(self, mock_print):
         act_msg = 'This is a test in BLUE'
         expected_string = '\x1b[34mThis is a test in BLUE\x1b[0m'
-        with pretty_output(FG_BLUE) as p:
-            p.write(act_msg)
+        write_info(act_msg)
 
         mock_print.assert_called_with(expected_string)
 
