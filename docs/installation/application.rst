@@ -39,7 +39,7 @@ The install command uses three configuration files:
 install.yml 
 -----------
 
-This file is generated with your application scaffold. Please do NOT list any dependencies in setup.py. Instead list them in the :file:`install.yml` file. This file should be committed with your application code in order to aid installation on a Tethys Portal
+This file is generated with your application scaffold. Dependencies that are listed in the ``install.yml`` will be installed with conda and will honor the specified channel priority. If there are any dependencies listed in the ``setup.py`` that are not specified in the ``install.yml`` then these packages will be installed with pip as part of the setup process. This file should be committed with your application code in order to aid installation on a Tethys Portal.
 
 .. literalinclude:: resources/example-install.yml
    :language: yaml
@@ -139,12 +139,12 @@ Restart tethys portal to effect the changes::
 4. Configure Additional App Settings
 ====================================
 
-Set any additional required settings on the application settings page in the Tethys Portal admin pages (see :doc:`../../tethys_portal/admin_pages`).
+If any required settings were not configured through the installation process go to the application settings page in the Tethys Portal admin pages and configure them there (see :doc:`../../tethys_portal/admin_pages`).
 
 5. Initialize Persistent Stores
 ===============================
 
-If your application requires a database via the persistent stores API, you will need to initialize it::
+If your application requires a database via the persistent stores API, and you did not initialize it through the installation process, you will need to by running::
 
     $ t
-    (tethys) $ tethys syncstores all
+    (tethys) $ tethys syncstores {app_name}
