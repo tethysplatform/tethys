@@ -1,0 +1,12 @@
+# Portal Level Config File
+version: 1.0
+name: Tethys Main Portal
+apps:
+  my_first_app:
+    services:
+      persistent:
+        catalog_db: test
+      spatial:
+      dataset:
+      wps:
+      custom_settings:
