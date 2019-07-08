@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tethys_apps', '0003_python3_compatibility'),
+        ('tethys_apps', '0004_auto_20190506_1714'),
     ]
 
     operations = [
