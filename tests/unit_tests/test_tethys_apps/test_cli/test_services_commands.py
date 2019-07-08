@@ -5,8 +5,11 @@ except ImportError:
 import unittest
 from unittest import mock
 
-from tethys_apps.cli.services_commands import services_create_persistent_command, services_remove_persistent_command,\
-    services_create_spatial_command, services_remove_spatial_command, services_list_command
+from tethys_apps.cli.services_commands import (services_create_persistent_command, services_remove_persistent_command,
+                                               services_create_spatial_command, services_remove_spatial_command,
+                                               services_list_command, services_create_dataset_command,
+                                               services_remove_dataset_command, services_create_wps_command,
+                                               services_remove_wps_command)
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 
@@ -38,12 +41,32 @@ class ServicesCommandsTest(unittest.TestCase):
         """
         mock_args = mock.MagicMock()
         services_create_persistent_command(mock_args)
-
         mock_service.assert_called()
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertEqual('Successfully created new Persistent Store Service!', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.PersistentStoreService')
+    def test_services_create_persistent_command_exception_attributeerror(self, mock_service, mock_pretty_output):
+        """
+        Test for services_create_persistent_command.
+        For running the test with an IndexError exception thrown.
+        :param mock_service:  mock for PersistentStoreService
+        :param mock_pretty_output:  mock for pretty_output text
+        :return:
+        """
+        mock_args = mock.MagicMock()
+        mock_args.connection = AttributeError
+        services_create_persistent_command(mock_args)
+
+        mock_service.assert_not_called()
+        mock_service.objects.get().save.assert_not_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('Missing Input Parameters. Please check your input.', po_call_args[0][0][0])
 
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.PersistentStoreService')
@@ -100,7 +123,9 @@ class ServicesCommandsTest(unittest.TestCase):
         :param mock_pretty_output: mock for pretty_output text
         :return:
         """
+
         mock_args = mock.MagicMock()
+        mock_service.__str__.return_value = 'Persistent Store'
         mock_args.force = True
         mock_service.objects.get.side_effect = [ValueError, ObjectDoesNotExist]
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
@@ -128,6 +153,8 @@ class ServicesCommandsTest(unittest.TestCase):
         """
         mock_args = mock.MagicMock()
         mock_args.force = True
+        mock_service.__str__.return_value = 'Persistent Store'
+
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
         # to break the code execution, which we catch below.
         mock_exit.side_effect = SystemExit
@@ -161,6 +188,7 @@ class ServicesCommandsTest(unittest.TestCase):
         # to break the code execution, which we catch below.
         mock_exit.side_effect = SystemExit
         mock_input.side_effect = ['foo', 'N']
+        mock_service.__str__.return_value = 'Persistent Store'
 
         self.assertRaises(SystemExit, services_remove_persistent_command, mock_args)
 
@@ -172,8 +200,8 @@ class ServicesCommandsTest(unittest.TestCase):
 
         po_call_args = mock_input.call_args_list
         self.assertEqual(2, len(po_call_args))
-        self.assertEqual('Are you sure you want to delete this Persistent Store Service? [y/n]: ',
-                         po_call_args[0][0][0])
+        self.assertEqual(
+            'Are you sure you want to delete this Persistent Store Service? [y/n]: ', po_call_args[0][0][0])
         self.assertEqual('Please enter either "y" or "n": ', po_call_args[1][0][0])
 
     @mock.patch('tethys_apps.cli.services_commands.input')
@@ -191,6 +219,7 @@ class ServicesCommandsTest(unittest.TestCase):
         :return:
         """
         mock_args = mock.MagicMock()
+        mock_service.__str__.return_value = 'Persistent Store'
         mock_args.force = False
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
         # to break the code execution, which we catch below.
@@ -207,8 +236,8 @@ class ServicesCommandsTest(unittest.TestCase):
 
         po_call_args = mock_input.call_args_list
         self.assertEqual(1, len(po_call_args))
-        self.assertEqual('Are you sure you want to delete this Persistent Store Service? [y/n]: ',
-                         po_call_args[0][0][0])
+        self.assertEqual(
+            'Are you sure you want to delete this Persistent Store Service? [y/n]: ', po_call_args[0][0][0])
 
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_services.models.SpatialDatasetService')
@@ -304,27 +333,29 @@ class ServicesCommandsTest(unittest.TestCase):
 
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
     @mock.patch('tethys_apps.cli.services_commands.exit')
-    @mock.patch('tethys_services.models.SpatialDatasetService')
-    def test_services_remove_spatial_command_Exceptions(self, mock_service, mock_exit, mock_pretty_output):
+    @mock.patch('tethys_services.models.WebProcessingService')
+    def test_services_remove_wps_command_Exceptions(self, mock_service, mock_exit, mock_pretty_output):
         """
-        Test for services_remove_spatial_command
+        Test for services_remove_wps_command
         Handles testing all of the exceptions thrown
-        :param mock_service:  mock for SpatialDatasetService
+        :param mock_service:  mock for Web Processing Service
         :param mock_exit:  mock for handling exit() code in function
         :param mock_pretty_output:  mock for pretty_output text
         :return:
         """
         mock_args = mock.MagicMock()
+        mock_service.__str__.return_value = 'Web Processing'
+
         mock_service.objects.get.side_effect = [ValueError, ObjectDoesNotExist]
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
         # to break the code execution, which we catch below.
         mock_exit.side_effect = SystemExit
 
-        self.assertRaises(SystemExit, services_remove_spatial_command, mock_args)
+        self.assertRaises(SystemExit, services_remove_wps_command, mock_args)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
-        self.assertIn('A Spatial Dataset Service with ID/Name', po_call_args[0][0][0])
+        self.assertIn('A Web Processing Service with ID/Name', po_call_args[0][0][0])
         self.assertIn('does not exist.', po_call_args[0][0][0])
 
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
@@ -340,6 +371,8 @@ class ServicesCommandsTest(unittest.TestCase):
         :return:
         """
         mock_args = mock.MagicMock()
+        mock_service.__str__.return_value = 'Spatial Dataset'
+
         mock_args.force = True
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
         # to break the code execution, which we catch below.
@@ -369,6 +402,8 @@ class ServicesCommandsTest(unittest.TestCase):
         :return:
         """
         mock_args = mock.MagicMock()
+        mock_service.__str__.return_value = 'Spatial Dataset'
+
         mock_args.force = False
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
         # to break the code execution, which we catch below.
@@ -385,8 +420,7 @@ class ServicesCommandsTest(unittest.TestCase):
 
         po_call_args = mock_input.call_args_list
         self.assertEqual(2, len(po_call_args))
-        self.assertEqual('Are you sure you want to delete this Persistent Store Service? [y/n]: ',
-                         po_call_args[0][0][0])
+        self.assertEqual('Are you sure you want to delete this Spatial Dataset Service? [y/n]: ', po_call_args[0][0][0])
         self.assertEqual('Please enter either "y" or "n": ', po_call_args[1][0][0])
 
     @mock.patch('tethys_apps.cli.services_commands.input')
@@ -404,6 +438,8 @@ class ServicesCommandsTest(unittest.TestCase):
         :return:
         """
         mock_args = mock.MagicMock()
+        mock_service.__str__.return_value = 'Spatial Dataset'
+
         mock_args.force = False
         # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
         # to break the code execution, which we catch below.
@@ -420,8 +456,7 @@ class ServicesCommandsTest(unittest.TestCase):
 
         po_call_args = mock_input.call_args_list
         self.assertEqual(1, len(po_call_args))
-        self.assertEqual('Are you sure you want to delete this Persistent Store Service? [y/n]: ',
-                         po_call_args[0][0][0])
+        self.assertEqual('Are you sure you want to delete this Spatial Dataset Service? [y/n]: ', po_call_args[0][0][0])
 
     @mock.patch('tethys_apps.cli.services_commands.print')
     @mock.patch('tethys_apps.cli.services_commands.pretty_output')
@@ -444,8 +479,12 @@ class ServicesCommandsTest(unittest.TestCase):
         mock_args = mock.MagicMock()
         mock_args.spatial = False
         mock_args.persistent = False
-        mock_spatial.objects.order_by('id').all.return_value = [mock.MagicMock(), mock.MagicMock(), mock.MagicMock()]
-        mock_persistent.objects.order_by('id').all.return_value = [mock.MagicMock(), mock.MagicMock()]
+        mock_args.dataset = False
+        mock_args.wps = False
+        mock_spatial.objects.order_by('id').all.return_value = [mock.MagicMock(), mock.MagicMock(), mock.MagicMock(),
+                                                                mock.MagicMock()]
+        mock_persistent.objects.order_by('id').all.return_value = [mock.MagicMock(), mock.MagicMock(), mock.MagicMock(),
+                                                                   mock.MagicMock()]
 
         services_list_command(mock_args)
 
@@ -501,6 +540,8 @@ class ServicesCommandsTest(unittest.TestCase):
         mock_args = mock.MagicMock()
         mock_args.spatial = True
         mock_args.persistent = False
+        mock_args.dataset = False
+        mock_args.wps = False
         mock_spatial.objects.order_by('id').all.return_value = [mock.MagicMock(), mock.MagicMock(), mock.MagicMock()]
 
         services_list_command(mock_args)
@@ -546,6 +587,8 @@ class ServicesCommandsTest(unittest.TestCase):
         mock_args = mock.MagicMock()
         mock_args.spatial = False
         mock_args.persistent = True
+        mock_args.dataset = False
+        mock_args.wps = False
         mock_persistent.objects.order_by('id').all.return_value = [mock.MagicMock(), mock.MagicMock()]
 
         services_list_command(mock_args)
@@ -572,3 +615,238 @@ class ServicesCommandsTest(unittest.TestCase):
         self.assertNotIn(self.my_dict['endpoint'], rts_call_args[1][0][0])
         self.assertNotIn(self.my_dict['public_endpoint'], rts_call_args[1][0][0])
         self.assertNotIn(self.my_dict['apikey'], rts_call_args[1][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.print')
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.DatasetService')
+    @mock.patch('tethys_apps.cli.services_commands.model_to_dict')
+    def test_services_list_command_dataset(self, mock_mtd, mock_dataset, mock_pretty_output, mock_print):
+        """
+        Test for services_list_command
+        Only dataset is set
+        :param mock_mtd:  mock for model_to_dict to return a dictionary
+        :param mock_dataset:  mock for DatasetService
+        :param mock_pretty_output:  mock for pretty_output text
+        :param mock_stdout:  mock for text written with print statements
+        :return:
+        """
+        mock_mtd.return_value = self.my_dict
+        mock_args = mock.MagicMock()
+        mock_args.spatial = False
+        mock_args.persistent = False
+        mock_args.dataset = True
+        mock_args.wps = False
+        mock_dataset.objects.order_by('id').all.return_value = [mock.MagicMock(), mock.MagicMock()]
+
+        services_list_command(mock_args)
+
+        # Check expected pretty_output
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(2, len(po_call_args))
+        self.assertIn('Dataset Services:', po_call_args[0][0][0])
+        self.assertIn('ID', po_call_args[1][0][0])
+        self.assertIn('Name', po_call_args[1][0][0])
+        self.assertIn('Endpoint', po_call_args[1][0][0])
+        self.assertIn('Public Endpoint', po_call_args[1][0][0])
+        self.assertIn('API Key', po_call_args[1][0][0])
+        self.assertNotIn('Host', po_call_args[1][0][0])
+        self.assertNotIn('Port', po_call_args[1][0][0])
+
+        # Check text written with Python's print
+        rts_call_args = mock_print.call_args_list
+
+        self.assertIn(self.my_dict['id'], rts_call_args[1][0][0])
+        self.assertIn(self.my_dict['name'], rts_call_args[1][0][0])
+        self.assertIn(self.my_dict['endpoint'], rts_call_args[1][0][0])
+        self.assertIn(self.my_dict['public_endpoint'], rts_call_args[1][0][0])
+        self.assertIn(self.my_dict['apikey'], rts_call_args[1][0][0])
+        self.assertNotIn(self.my_dict['host'], rts_call_args[1][0][0])
+        self.assertNotIn(self.my_dict['port'], rts_call_args[1][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.print')
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.WebProcessingService')
+    @mock.patch('tethys_apps.cli.services_commands.model_to_dict')
+    def test_services_list_command_wps(self, mock_mtd, mock_wps, mock_pretty_output, mock_print):
+        """
+        Test for services_list_command
+        Only dataset is set
+        :param mock_mtd:  mock for model_to_dict to return a dictionary
+        :param mock_wps:  mock for WebProcessingService
+        :param mock_pretty_output:  mock for pretty_output text
+        :param mock_stdout:  mock for text written with print statements
+        :return:
+        """
+        mock_mtd.return_value = self.my_dict
+        mock_args = mock.MagicMock()
+        mock_args.spatial = False
+        mock_args.persistent = False
+        mock_args.dataset = False
+        mock_args.wps = True
+        mock_wps.objects.order_by('id').all.return_value = [mock.MagicMock(), mock.MagicMock()]
+
+        services_list_command(mock_args)
+
+        # Check expected pretty_output
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(2, len(po_call_args))
+        self.assertIn('Web Processing Services:', po_call_args[0][0][0])
+        self.assertIn('ID', po_call_args[1][0][0])
+        self.assertIn('Name', po_call_args[1][0][0])
+        self.assertIn('Endpoint', po_call_args[1][0][0])
+        self.assertIn('Public Endpoint', po_call_args[1][0][0])
+        self.assertNotIn('Host', po_call_args[1][0][0])
+        self.assertNotIn('Port', po_call_args[1][0][0])
+        self.assertNotIn('API Key', po_call_args[1][0][0])
+
+        # Check text written with Python's print
+        rts_call_args = mock_print.call_args_list
+
+        self.assertIn(self.my_dict['id'], rts_call_args[1][0][0])
+        self.assertIn(self.my_dict['name'], rts_call_args[1][0][0])
+        self.assertIn(self.my_dict['endpoint'], rts_call_args[1][0][0])
+        self.assertIn(self.my_dict['public_endpoint'], rts_call_args[1][0][0])
+        self.assertNotIn(self.my_dict['host'], rts_call_args[1][0][0])
+        self.assertNotIn(self.my_dict['port'], rts_call_args[1][0][0])
+        self.assertNotIn(self.my_dict['apikey'], rts_call_args[1][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.DatasetService')
+    def test_services_create_dataset_command_IndexError(self, mock_service, mock_pretty_output):
+
+        mock_args = mock.MagicMock()
+        mock_args.connection = 'IndexError:9876@IndexError'  # No 'http' or '://'
+
+        services_create_dataset_command(mock_args)
+
+        mock_service.assert_not_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('The connection argument (-c) must be of the form', po_call_args[0][0][0])
+        self.assertIn('"<username>:<password>@<protocol>//<host>:<port>".', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.DatasetService')
+    def test_services_create_dataset_command_FormatError(self, mock_service, mock_pretty_output):
+
+        mock_args = mock.MagicMock()
+        mock_args.connection = 'foo:pass@http:://foo:1234'
+        mock_args.public_endpoint = 'foo@foo:foo'  # No 'http' or '://'
+
+        services_create_dataset_command(mock_args)
+
+        mock_service.assert_not_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('The public_endpoint argument (-p) must be of the form ', po_call_args[0][0][0])
+        self.assertIn('"<protocol>//<host>:<port>".', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.DatasetService')
+    def test_services_create_dataset_command_IntegrityError(self, mock_service, mock_pretty_output):
+
+        mock_args = mock.MagicMock()
+        mock_args.connection = 'foo:pass@http:://foo:1234'
+        mock_args.public_endpoint = 'http://foo:1234'
+        mock_service.side_effect = IntegrityError
+
+        services_create_dataset_command(mock_args)
+
+        mock_service.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('Dataset Service with name ', po_call_args[0][0][0])
+        self.assertIn('already exists. Command aborted.', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.DatasetService')
+    def test_services_create_dataset_command(self, mock_service, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        mock_args.connection = 'foo:pass@http:://foo:1234'
+        mock_args.public_endpoint = 'http://foo:1234'
+        mock_service.return_value = mock.MagicMock()
+
+        services_create_dataset_command(mock_args)
+
+        mock_service.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual('Successfully created new Dataset Service!', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.input')
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_apps.cli.services_commands.exit')
+    @mock.patch('tethys_services.models.DatasetService')
+    def test_services_remove_dataset_command_proceed(self, mock_service, mock_exit, mock_pretty_output, mock_input):
+
+        mock_args = mock.MagicMock()
+        mock_service.__str__.return_value = 'Dataset'
+
+        mock_args.force = False
+        mock_exit.side_effect = SystemExit
+        mock_input.side_effect = ['y']
+
+        self.assertRaises(SystemExit, services_remove_dataset_command, mock_args)
+
+        mock_service.objects.get().delete.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('Successfully removed Dataset Service', po_call_args[0][0][0])
+
+        po_call_args = mock_input.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual('Are you sure you want to delete this Dataset Service? [y/n]: ', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.WebProcessingService')
+    def test_services_create_wps_command_IndexError(self, mock_service, mock_pretty_output):
+
+        mock_args = mock.MagicMock()
+        mock_args.connection = 'IndexError:9876@IndexError'  # No 'http' or '://'
+
+        services_create_wps_command(mock_args)
+
+        mock_service.assert_not_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('The connection argument (-c) must be of the form', po_call_args[0][0][0])
+        self.assertIn('"<username>:<password>@<protocol>//<host>:<port>".', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.WebProcessingService')
+    def test_services_create_wps_command_IntegrityError(self, mock_service, mock_pretty_output):
+
+        mock_args = mock.MagicMock()
+        mock_args.connection = 'foo:pass@http:://foo:1234'
+        mock_args.public_endpoint = 'http://foo:1234'
+        mock_service.side_effect = IntegrityError
+
+        services_create_wps_command(mock_args)
+
+        mock_service.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertIn('Web Processing Service with name ', po_call_args[0][0][0])
+        self.assertIn('already exists. Command aborted.', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.cli.services_commands.pretty_output')
+    @mock.patch('tethys_services.models.WebProcessingService')
+    def test_services_create_wps_command(self, mock_service, mock_pretty_output):
+        mock_args = mock.MagicMock()
+        mock_args.connection = 'foo:pass@http:://foo:1234'
+        mock_service.return_value = mock.MagicMock()
+
+        services_create_wps_command(mock_args)
+
+        mock_service.assert_called()
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual('Successfully created new Web Processing Service!', po_call_args[0][0][0])

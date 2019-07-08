@@ -3,7 +3,7 @@ from unittest import mock
 import tethys_apps.cli.gen_commands
 from tethys_apps.cli.gen_commands import get_environment_value, get_settings_value, generate_command
 from tethys_apps.cli.gen_commands import (GEN_SETTINGS_OPTION, GEN_NGINX_OPTION, GEN_NGINX_SERVICE_OPTION,
-                                          GEN_ASGI_SERVICE_OPTION)
+                                          GEN_ASGI_SERVICE_OPTION, GEN_SERVICES_OPTION, GEN_INSTALL_OPTION)
 
 try:
     reload
@@ -333,3 +333,33 @@ class CLIGenCommandsTest(unittest.TestCase):
             pass
 
         self.assertTrue(tethys_apps.cli.gen_commands.settings.configured)
+
+    @mock.patch('tethys_apps.cli.gen_commands.open', new_callable=mock.mock_open)
+    @mock.patch('tethys_apps.cli.gen_commands.os.path.isfile')
+    def test_generate_command_services_option(self, mock_os_path_isfile, mock_file):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_SERVICES_OPTION
+        mock_args.directory = None
+        mock_os_path_isfile.return_value = False
+
+        generate_command(args=mock_args)
+
+        mock_os_path_isfile.assert_called_once()
+        mock_file.assert_called()
+
+    @mock.patch('tethys_apps.cli.gen_commands.open', new_callable=mock.mock_open)
+    @mock.patch('tethys_apps.cli.gen_commands.os.path.isfile')
+    @mock.patch('tethys_apps.cli.gen_commands.print')
+    def test_generate_command_install_option(self, mock_print, mock_os_path_isfile, mock_file):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_INSTALL_OPTION
+        mock_args.directory = None
+        mock_os_path_isfile.return_value = False
+
+        generate_command(args=mock_args)
+
+        rts_call_args = mock_print.call_args_list
+        self.assertIn('Please review the generated install.yml', rts_call_args[0][0][0])
+
+        mock_os_path_isfile.assert_called_once()
+        mock_file.assert_called()

@@ -4,7 +4,7 @@ import asyncio
 
 from tethys_sdk.testing import TethysTestCase
 from channels.testing import WebsocketCommunicator
-from tethys_apps.tethysapp.test_app.controllers import TestWS
+from tethysapp.test_app.controllers import TestWS
 
 from django.conf import settings
 

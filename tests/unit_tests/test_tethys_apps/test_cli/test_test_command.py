@@ -1,7 +1,13 @@
 import unittest
+import os
+
 from unittest import mock
 
-from tethys_apps.cli.test_command import test_command
+from tethys_apps.utilities import get_tethys_src_dir
+from tethys_apps.cli.test_command import (test_command, check_and_install_prereqs)
+
+FNULL = open(os.devnull, 'w')
+TETHYS_SRC_DIRECTORY = get_tethys_src_dir()
 
 
 class TestCommandTests(unittest.TestCase):
@@ -210,3 +216,18 @@ class TestCommandTests(unittest.TestCase):
         mock_join.assert_called()
         mock_run_process.assert_called_once()
         mock_run_process.assert_called_with(['python', '/foo/manage.py', 'test', '/foo'])
+
+    @mock.patch('tethys_apps.cli.test_command.subprocess.call')
+    @mock.patch('tethysapp.test_app', new=None)
+    @mock.patch('tethysext.test_extension', new=None)
+    def test_check_and_install_prereqs(self, mock_run_process):
+        tests_path = os.path.join(TETHYS_SRC_DIRECTORY, 'tests')
+        check_and_install_prereqs(tests_path)
+        setup_path = os.path.join(tests_path, 'apps', 'tethysapp-test_app')
+        extension_setup_path = os.path.join(tests_path, 'extensions', 'tethysext-test_extension')
+
+        mock_run_process.assert_any_call(['python', 'setup.py', 'develop'],
+                                         stdout=mock.ANY, stderr=mock.ANY, cwd=setup_path)
+
+        mock_run_process.assert_any_call(['python', 'setup.py', 'develop'], stdout=mock.ANY,
+                                         stderr=mock.ANY, cwd=extension_setup_path)

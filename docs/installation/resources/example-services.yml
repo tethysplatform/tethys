@@ -1,0 +1,14 @@
+# Do not commit this file with your app code. This file is portal specific.
+version: 1.0
+
+# Set service params in the following format :
+# app_service_setting_name(from your app.py): <service_name or id from list of installed services>
+persistent:
+  catalog_db: hydroexplorer-persistent
+  second_db: main-persistent
+wps:
+  wps_main: testWPS
+dataset:
+spatial:
+custom_settings:
+  max_dams: 5

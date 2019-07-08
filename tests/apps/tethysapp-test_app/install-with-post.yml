@@ -1,0 +1,14 @@
+version: 1.0
+name: test_app
+
+requirements:
+  skip: True
+  conda:
+    channels:
+      - tacaswell
+    packages:
+      - pyshp=2.0.0
+      - geojson
+      - shapely
+post:
+  - ./test.sh

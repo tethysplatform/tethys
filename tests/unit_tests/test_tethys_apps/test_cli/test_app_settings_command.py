@@ -11,21 +11,31 @@ class TestCliAppSettingsCommand(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @mock.patch('tethys_apps.cli.app_settings_commands.get_setting_type', return_value='setting_type')
     @mock.patch('tethys_apps.models.TethysApp')
     @mock.patch('tethys_apps.models.PersistentStoreConnectionSetting')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting')
     @mock.patch('tethys_apps.models.SpatialDatasetServiceSetting')
+    @mock.patch('tethys_apps.models.DatasetServiceSetting')
+    @mock.patch('tethys_apps.models.WebProcessingServiceSetting')
+    @mock.patch('tethys_apps.models.CustomSetting')
     @mock.patch('tethys_apps.cli.app_settings_commands.pretty_output')
-    def test_app_settings_list_command(self, mock_pretty_output, MockSdss, MockPsds, MockPscs, MockTethysApp):
+    def test_app_settings_list_command_unlinked(self, mock_pretty_output, __, ___, ____, _____, ______,
+                                                MockPscs, MockTethysApp, _):
         # mock the args
         mock_arg = mock.MagicMock(app='foo')
 
+        mock_setting = mock.MagicMock(pk='pk')
+        mock_setting.persistent_store_service.name = 'mock_ps'
+        mock_setting.name = 'name'
+        del mock_setting.persistent_store_service
+        del mock_setting.spatial_dataset_service
+        del mock_setting.dataset_service
+        del mock_setting.web_processing_service
+        del mock_setting.value
+
         # mock the PersistentStoreConnectionSetting filter return value
-        MockPscs.objects.filter.return_value = [mock.MagicMock()]
-        # mock the PersistentStoreDatabaseSetting filter return value
-        MockPsds.objects.filter.return_value = [mock.MagicMock()]
-        # mock the SpatialDatasetServiceSetting filter return value
-        MockSdss.objects.filter.return_value = [mock.MagicMock()]
+        MockPscs.objects.filter.return_value = [mock_setting]
 
         cli_app_settings_command.app_settings_list_command(mock_arg)
 
@@ -39,26 +49,27 @@ class TestCliAppSettingsCommand(unittest.TestCase):
 
         # check PersistentStoreConnectionSetting.objects.filter method is called with 'app'
         MockPscs.objects.filter.assert_called_with(tethys_app=app)
-        # check PersistentStoreDatabaseSetting.objects.filter method is called with 'app'
-        MockPsds.objects.filter.assert_called_with(tethys_app=app)
-        # check SpatialDatasetServiceSetting.objects.filter is called with 'app'
-        MockSdss.objects.filter.assert_called_with(tethys_app=app)
 
         # get the called arguments from the mock print
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertIn('Unlinked Settings:', po_call_args[0][0][0])
-        self.assertIn('None', po_call_args[1][0][0])
-        self.assertIn('Linked Settings:', po_call_args[2][0][0])
-        self.assertIn('Name', po_call_args[3][0][0])
+        self.assertIn('Name', po_call_args[1][0][0])
+        self.assertIn('pk', po_call_args[2][0][0])
+        self.assertIn('Linked Settings:', po_call_args[3][0][0])
+        self.assertIn('None', po_call_args[4][0][0])
 
+    @mock.patch('tethys_apps.cli.app_settings_commands.get_setting_type', return_value='setting_type')
     @mock.patch('tethys_apps.models.TethysApp')
     @mock.patch('tethys_apps.models.PersistentStoreConnectionSetting')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting')
     @mock.patch('tethys_apps.models.SpatialDatasetServiceSetting')
+    @mock.patch('tethys_apps.models.DatasetServiceSetting')
+    @mock.patch('tethys_apps.models.WebProcessingServiceSetting')
+    @mock.patch('tethys_apps.models.CustomSetting')
     @mock.patch('tethys_apps.cli.app_settings_commands.pretty_output')
     @mock.patch('tethys_apps.cli.app_settings_commands.type')
-    def test_app_settings_list_command_unlink_settings(self, mock_type, mock_pretty_output, MockSdss, MockPsds,
-                                                       MockPscs, MockTethysApp):
+    def test_app_settings_list_command_linked(self, mock_type, mock_pretty_output, MockCs, MockWpss, MockDss,
+                                              MockSdss, MockPsds, MockPscs, MockTethysApp, _):
         # mock the args
         mock_arg = mock.MagicMock(app='foo')
 
@@ -66,25 +77,54 @@ class TestCliAppSettingsCommand(unittest.TestCase):
         pscs = MockPscs()
         pscs.name = 'n001'
         pscs.pk = 'p001'
-        pscs.persistent_store_service = ''
-        del pscs.spatial_dataset_service
+        pscs.persistent_store_service.name = ''
         MockPscs.objects.filter.return_value = [pscs]
 
         # mock the PersistentStoreDatabaseSetting filter return value
         psds = MockPsds()
         psds.name = 'n002'
         psds.pk = 'p002'
-        psds.persistent_store_service = ''
-        del psds.spatial_dataset_service
+        psds.persistent_store_service.name = ''
+        # del psds.spatial_dataset_service
         MockPsds.objects.filter.return_value = [psds]
 
         # mock the Spatial Dataset ServiceSetting filter return value
         sdss = MockSdss()
         sdss.name = 'n003'
         sdss.pk = 'p003'
-        sdss.spatial_dataset_service = ''
+        sdss.spatial_dataset_service.name = ''
         del sdss.persistent_store_service
         MockSdss.objects.filter.return_value = [sdss]
+
+        # mock the Dataset ServiceSetting filter return value
+        dss = MockDss()
+        dss.name = 'n004'
+        dss.pk = 'p004'
+        dss.dataset_service.name = ''
+        del dss.persistent_store_service
+        del dss.spatial_dataset_service
+        MockDss.objects.filter.return_value = [dss]
+
+        # mock the Web Processing ServiceSetting filter return value
+        wpss = MockWpss()
+        wpss.name = 'n005'
+        wpss.pk = 'p005'
+        wpss.web_processing_service.name = ''
+        del wpss.persistent_store_service
+        del wpss.spatial_dataset_service
+        del wpss.dataset_service
+        MockWpss.objects.filter.return_value = [wpss]
+
+        # mock the Custom Setting filter return value
+        cs = MockCs()
+        cs.name = 'n006'
+        cs.pk = 'p006'
+        cs.value = '5'
+        del cs.persistent_store_service
+        del cs.spatial_dataset_service
+        del cs.dataset_service
+        del cs.web_processing_service
+        MockCs.objects.filter.return_value = [cs]
 
         MockTethysApp.objects.get(package='foo').return_value = mock_arg.app
 
@@ -112,20 +152,28 @@ class TestCliAppSettingsCommand(unittest.TestCase):
         MockPsds.objects.filter.assert_called_with(tethys_app=app)
         # check SpatialDatasetServiceSetting.objects.filter is called with 'app'
         MockSdss.objects.filter.assert_called_with(tethys_app=app)
+        # check DatasetServiceSetting.objects.filter is called with 'app'
+        MockDss.objects.filter.assert_called_with(tethys_app=app)
+        # check WepProcessingServiceSetting.objects.filter is called with 'app'
+        MockWpss.objects.filter.assert_called_with(tethys_app=app)
+        # check CustomSetting.objects.filter is called with 'app'
+        MockCs.objects.filter.assert_called_with(tethys_app=app)
 
         # get the called arguments from the mock print
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertIn('Unlinked Settings:', po_call_args[0][0][0])
-        self.assertIn('ID', po_call_args[1][0][0])
-        self.assertIn('n001', po_call_args[2][0][0])
-        self.assertIn('n002', po_call_args[3][0][0])
-        self.assertIn('n003', po_call_args[4][0][0])
-        self.assertIn('n003', po_call_args[4][0][0])
-        self.assertIn('Linked Settings:', po_call_args[5][0][0])
-        self.assertIn('None', po_call_args[6][0][0])
+        self.assertIn('None', po_call_args[1][0][0])
+        self.assertIn('Linked Settings:', po_call_args[2][0][0])
+        self.assertIn('Name', po_call_args[3][0][0])
+        self.assertIn('n001', po_call_args[4][0][0])
+        self.assertIn('n002', po_call_args[5][0][0])
+        self.assertIn('n003', po_call_args[6][0][0])
+        self.assertIn('n004', po_call_args[7][0][0])
+        self.assertIn('n005', po_call_args[8][0][0])
+        self.assertIn('n006', po_call_args[9][0][0])
 
     @mock.patch('tethys_apps.models.TethysApp')
-    @mock.patch('tethys_apps.cli.app_settings_commands.pretty_output')
+    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
     def test_app_settings_list_command_object_does_not_exist(self, mock_pretty_output, MockTethysApp):
         # mock the args
         mock_arg = mock.MagicMock(app='foo')
@@ -140,12 +188,12 @@ class TestCliAppSettingsCommand(unittest.TestCase):
         self.assertIn('The app you specified ("foo") does not exist. Command aborted.', po_call_args[0][0][0])
 
     @mock.patch('tethys_apps.models.TethysApp')
-    @mock.patch('tethys_apps.cli.app_settings_commands.pretty_output')
+    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
     def test_app_settings_list_command_object_exception(self, mock_pretty_output, MockTethysApp):
         # mock the args
         mock_arg = mock.MagicMock(app='foo')
 
-        MockTethysApp.objects.get.side_effect = Exception
+        MockTethysApp.objects.get.side_effect = Exception("error message")
 
         # raise ObjectDoesNotExist error
         cli_app_settings_command.app_settings_list_command(mock_arg)
@@ -244,3 +292,16 @@ class TestCliAppSettingsCommand(unittest.TestCase):
 
         # check the mock exit value
         mock_exit.assert_called_with(1)
+
+    def test_app_settings_get_setting_type(self):
+        from tethys_apps.models import (PersistentStoreConnectionSetting, PersistentStoreDatabaseSetting,
+                                        SpatialDatasetServiceSetting, DatasetServiceSetting,
+                                        WebProcessingServiceSetting,
+                                        CustomSetting)
+
+        self.assertEqual('ps_connection', cli_app_settings_command.get_setting_type(PersistentStoreConnectionSetting()))
+        self.assertEqual('ps_database', cli_app_settings_command.get_setting_type(PersistentStoreDatabaseSetting()))
+        self.assertEqual('ds_spatial', cli_app_settings_command.get_setting_type(SpatialDatasetServiceSetting()))
+        self.assertEqual('ds_dataset', cli_app_settings_command.get_setting_type(DatasetServiceSetting()))
+        self.assertEqual('wps', cli_app_settings_command.get_setting_type(WebProcessingServiceSetting()))
+        self.assertEqual('custom_setting', cli_app_settings_command.get_setting_type(CustomSetting()))

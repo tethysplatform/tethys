@@ -8,7 +8,6 @@
 ********************************************************************************
 """
 import os
-import shutil
 import site
 import subprocess
 import warnings
@@ -21,9 +20,12 @@ class Command(BaseCommand):
     """
     Command class that handles the uninstall command for uninstall Tethys apps.
     """
+
     def add_arguments(self, parser):
         parser.add_argument('app_or_extension', nargs='+', type=str)
         parser.add_argument('-e', '--extension', dest='is_extension', default=False, action='store_true')
+        parser.add_argument('-f', '--force', dest='is_forced',
+                            default=False, action='store_true')
 
     def handle(self, *args, **options):
         """
@@ -66,27 +68,21 @@ class Command(BaseCommand):
         valid_inputs = ('y', 'n', 'yes', 'no')
         no_inputs = ('n', 'no')
 
-        overwrite_input = input('Are you sure you want to uninstall "{0}"? (y/n): '.format(item_with_prefix)).lower()
+        if not options['is_forced']:
+            overwrite_input = input(
+                'Are you sure you want to uninstall "{0}"? (y/n): '.format(item_with_prefix)).lower()
 
-        while overwrite_input not in valid_inputs:
-            overwrite_input = input('Invalid option. Are you sure you want to '
-                                    'uninstall "{0}"? (y/n): '.format(item_with_prefix)).lower()
+            while overwrite_input not in valid_inputs:
+                overwrite_input = input('Invalid option. Are you sure you want to '
+                                        'uninstall "{0}"? (y/n): '.format(item_with_prefix)).lower()
 
-        if overwrite_input in no_inputs:
-            self.stdout.write('Uninstall cancelled by user.')
-            exit(0)
+            if overwrite_input in no_inputs:
+                self.stdout.write('Uninstall cancelled by user.')
+                exit(0)
 
         # Remove app from database
         if db_found and db_app:
             db_app.delete()
-
-        if module_found and not options['is_extension']:
-            try:
-                # Remove directory
-                shutil.rmtree(installed_items[item_name])
-            except OSError:
-                # Remove symbolic link
-                os.remove(installed_items[item_name])
 
         # Uninstall using pip
         process = ['pip', 'uninstall', '-y', '{0}-{1}'.format(PREFIX, item_name)]

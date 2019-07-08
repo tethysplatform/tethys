@@ -1,0 +1,11 @@
+version: 1.0
+name: test_app
+
+requirements:
+  conda:
+    channels:
+      - tacaswell
+    packages:
+      - geojson
+  pip:
+    - see

@@ -11,6 +11,17 @@ class CustomSettingTests(TethysTestCase):
     def tear_down(self):
         pass
 
+    def test_clean(self):
+        custom_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')
+        custom_setting.default = 1
+        custom_setting.save()
+
+        # Check ValidationError
+        ret = CustomSetting.objects.get(name='default_name')
+        ret.value = ''
+        ret.clean()
+        self.assertEquals('1', ret.value)
+
     def test_clean_empty_validation_error(self):
         custom_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')
         custom_setting.value = ''
@@ -50,6 +61,15 @@ class CustomSettingTests(TethysTestCase):
         # Check ValidationError
         ret = CustomSetting.objects.get(name='default_name')
         self.assertRaises(ValidationError, ret.clean)
+
+    def test_get(self):
+        custom_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')
+        custom_setting.default = 1
+        custom_setting.save()
+
+        ret = CustomSetting.objects.get(name='default_name')
+        ret.value = ''
+        self.assertEquals('1', ret.get_value())
 
     def test_get_value_empty(self):
         custom_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')

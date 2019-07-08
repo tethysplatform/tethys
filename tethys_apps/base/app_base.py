@@ -101,7 +101,7 @@ class TethysBase(TethysBaseMixin):
 
                 # Create django url object
                 if isinstance(url_map.controller, str):
-                    root_controller_path = 'tethysext' if is_extension else 'tethys_apps.tethysapp'
+                    root_controller_path = 'tethysext' if is_extension else 'tethysapp'
                     full_controller_path = '.'.join([root_controller_path, url_map.controller])
                     controller_parts = full_controller_path.split('.')
                     module_name = '.'.join(controller_parts[:-1])
@@ -647,7 +647,8 @@ class TethysAppBase(TethysBase):
         # Create groups that need to be created
         for group in app_groups:
             # Look up the app
-            db_app = TethysApp.objects.get(package=app_groups[group]['app_package'])
+            db_app = TethysApp.objects.get(
+                package=app_groups[group]['app_package'])
 
             # Create group if it doesn't exist
             try:
@@ -921,7 +922,8 @@ class TethysAppBase(TethysBase):
         spatial_dataset_service_settings = db_app.spatial_dataset_service_settings
 
         try:
-            spatial_dataset_service_setting = spatial_dataset_service_settings.get(name=name)
+            spatial_dataset_service_setting = spatial_dataset_service_settings.get(
+                name=name)
             return spatial_dataset_service_setting.get_value(
                 as_public_endpoint=as_public_endpoint,
                 as_endpoint=as_endpoint,
@@ -1103,8 +1105,7 @@ class TethysAppBase(TethysBase):
                     'PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(db_name),
                     connection_name, cls.name)
             else:
-                raise TethysAppSettingDoesNotExist(
-                                                   'PersistentStoreConnectionSetting ', connection_name, cls.name)
+                raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting ', connection_name, cls.name)
 
         ps_service = ps_setting.persistent_store_service
 

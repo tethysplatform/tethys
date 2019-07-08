@@ -20,7 +20,7 @@ class TestTethysFunctionExtractor(unittest.TestCase):
 
         # Check Result
         self.assertEqual(path, result.path)
-        self.assertEqual('tethys_apps.tethysapp', result.prefix)
+        self.assertEqual('tethysapp', result.prefix)
 
     def test_init_func(self):
         result = tethys_function_extractor.TethysFunctionExtractor(path=test_func)

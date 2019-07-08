@@ -2,7 +2,7 @@
 Installation
 ************
 
-**Last Updated:** July 1, 2016
+**Last Updated:** March 13, 2019
 
 This section describes how to install Tethys Platform. Installation instructions are provided for Ubuntu.
 
@@ -15,6 +15,7 @@ This section describes how to install Tethys Platform. Installation instructions
     installation/platform_settings
     installation/web_admin_setup
     installation/update
+    installation/application
     installation/production
 
 

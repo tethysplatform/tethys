@@ -9,6 +9,8 @@
 """
 import sqlalchemy
 import logging
+
+import django.dispatch
 from django.db import models
 from django.core.exceptions import ValidationError
 from model_utils.managers import InheritanceManager
@@ -200,6 +202,7 @@ class CustomSetting(TethysAppSetting):
         type(enum): The type of the custom setting. Either CustomSetting.TYPE_STRING, CustomSetting.TYPE_INTEGER, CustomSetting.TYPE_FLOAT, CustomSetting.TYPE_BOOLEAN
         description(str): Short description of the setting.
         required(bool): A value will be required if True.
+        default(str): Value as a string that may be provided as a default.
 
     **Example:**
 
@@ -211,7 +214,8 @@ class CustomSetting(TethysAppSetting):
             name='default_name',
             type=CustomSetting.TYPE_STRING
             description='Default model name.',
-            required=True
+            required=True,
+            default="Name_123"
         )
 
         max_count_setting = CustomSetting(
@@ -250,14 +254,20 @@ class CustomSetting(TethysAppSetting):
         (TYPE_BOOLEAN, 'Boolean'),
     )
     value = models.CharField(max_length=1024, blank=True, default='')
+    default = models.CharField(max_length=1024, blank=True, default='')
     type = models.CharField(max_length=200, choices=TYPE_CHOICES, default=TYPE_STRING)
 
     def clean(self):
         """
         Validate prior to saving changes.
         """
-        if self.value == '' and self.required:
-            raise ValidationError('Required.')
+
+        if self.default != '':
+            if self.value == '':
+                self.value = self.default
+        else:
+            if self.value == '' and self.required:
+                raise ValidationError('Required.')
 
         if self.value != '' and self.type == self.TYPE_FLOAT:
             try:
@@ -279,6 +289,10 @@ class CustomSetting(TethysAppSetting):
         """
         Get the value, automatically casting it to the correct type.
         """
+        if self.default != '':
+            if self.value == '':
+                self.value = self.default
+
         if self.value == '' or self.value is None:
             return None  # TODO Why don't we raise a NotAssigned error here?
 
@@ -293,6 +307,23 @@ class CustomSetting(TethysAppSetting):
 
         if self.type == self.TYPE_BOOLEAN:
             return self.value.lower() in self.TRUTHY_BOOL_STRINGS
+
+
+@django.dispatch.receiver(models.signals.post_init, sender=CustomSetting)
+def set_default_value(sender, instance, *args, **kwargs):
+    """
+    Set the default value for `value` on the `instance` of Setting.
+    This signal receiver will process it as soon as the object is created for use
+
+    Attributes:
+        sender(CustomSetting): The `CustomSetting` class that sent the signal.
+        instance(CustomSetting): The `CustomSetting` instance that is being initialised.
+
+    Returns:
+        None
+    """
+    if not instance.value or instance.value == '':
+        instance.value = instance.default
 
 
 class DatasetServiceSetting(TethysAppSetting):
@@ -386,6 +417,7 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
     GEOSERVER = SpatialDatasetService.GEOSERVER
 
     spatial_dataset_service = models.ForeignKey(SpatialDatasetService, on_delete=models.CASCADE, blank=True, null=True)
+
     engine = models.CharField(max_length=200,
                               choices=SpatialDatasetService.ENGINE_CHOICES,
                               default=SpatialDatasetService.GEOSERVER)
@@ -444,6 +476,7 @@ class WebProcessingServiceSetting(TethysAppSetting):
         )
 
     """
+
     web_processing_service = models.ForeignKey(WebProcessingService, on_delete=models.CASCADE, blank=True, null=True)
 
     def clean(self):
@@ -494,8 +527,8 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
         )
 
     """
-    persistent_store_service = models.ForeignKey(PersistentStoreService, on_delete=models.CASCADE, blank=True,
-                                                 null=True)
+    persistent_store_service = models.ForeignKey(
+        PersistentStoreService, on_delete=models.CASCADE, blank=True, null=True)
 
     def clean(self):
         """
@@ -563,8 +596,8 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
     """
     spatial = models.BooleanField(default=False)
     dynamic = models.BooleanField(default=False)
-    persistent_store_service = models.ForeignKey(PersistentStoreService, on_delete=models.CASCADE, blank=True,
-                                                 null=True)
+    persistent_store_service = models.ForeignKey(
+        PersistentStoreService, on_delete=models.CASCADE, blank=True, null=True)
 
     def clean(self):
         """
