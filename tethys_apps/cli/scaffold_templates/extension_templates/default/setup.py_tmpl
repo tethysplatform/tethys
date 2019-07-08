@@ -1,23 +1,20 @@
-import os
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 from tethys_apps.app_installation import find_resource_files
 
-# -- Extension Definition -- #
+# -- Apps Definition -- #
 ext_package = '{{project}}'
 release_package = 'tethysext-' + ext_package
-ext_class = '{{project}}.ext:{{class_name}}'
-ext_package_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tethysext', ext_package)
 
 # -- Python Dependencies -- #
 dependencies = []
 
 # -- Get Resource File -- #
-resource_files = find_resource_files('tethysext/' + ext_package + '/templates')
-resource_files += find_resource_files('tethysext/' + ext_package + '/public')
+resource_files = find_resource_files('tethysext/' + ext_package + '/templates', 'tethysext/' + ext_package)
+resource_files += find_resource_files('tethysext/' + ext_package + '/public', 'tethysext/' + ext_package)
 
 setup(
     name=release_package,
-    version='0.0.0',
+    version='0.0.1',
     description='{{description|default:''}}',
     long_description='',
     keywords='',
@@ -25,11 +22,8 @@ setup(
     author_email='{{author_email|default:''}}',
     url='',
     license='{{license_name|default:''}}',
-    packages=find_packages(
-        exclude=['ez_setup', 'examples', 'tethysext/' + ext_package + '/tests', 'tethysext/' + ext_package + '/tests.*']
-    ),
+    packages=find_namespace_packages(),
     package_data={'': resource_files},
-    namespace_packages=['tethysext', 'tethysext.' + ext_package],
     include_package_data=True,
     zip_safe=False,
     install_requires=dependencies,

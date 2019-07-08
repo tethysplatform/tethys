@@ -41,12 +41,18 @@ GEN_APACHE_OPTION = 'apache'
 GEN_ASGI_SERVICE_OPTION = 'asgi_service'
 GEN_NGINX_OPTION = 'nginx'
 GEN_NGINX_SERVICE_OPTION = 'nginx_service'
+GEN_PORTAL_OPTION = 'portal'
+GEN_SERVICES_OPTION = 'services'
+GEN_INSTALL_OPTION = 'install'
 
 FILE_NAMES = {GEN_SETTINGS_OPTION: 'settings.py',
               GEN_APACHE_OPTION: 'tethys-default.conf',
               GEN_ASGI_SERVICE_OPTION: 'asgi_supervisord.conf',
               GEN_NGINX_OPTION: 'tethys_nginx.conf',
               GEN_NGINX_SERVICE_OPTION: 'nginx_supervisord.conf',
+              GEN_PORTAL_OPTION: 'portal.yml',
+              GEN_SERVICES_OPTION: 'services.yml',
+              GEN_INSTALL_OPTION: 'install.yml',
               }
 
 VALID_GEN_OBJECTS = (GEN_SETTINGS_OPTION,
@@ -54,6 +60,9 @@ VALID_GEN_OBJECTS = (GEN_SETTINGS_OPTION,
                      GEN_ASGI_SERVICE_OPTION,
                      GEN_NGINX_OPTION,
                      GEN_NGINX_SERVICE_OPTION,
+                     GEN_PORTAL_OPTION,
+                     GEN_SERVICES_OPTION,
+                     GEN_INSTALL_OPTION,
                      )
 
 
@@ -158,6 +167,13 @@ def generate_command(args):
                         'tethys_src': TETHYS_SRC,
                         'user_option_prefix': user_option_prefix
                         })
+
+    if args.type in [GEN_SERVICES_OPTION, GEN_INSTALL_OPTION]:
+        destination_dir = os.getcwd()
+
+    if args.type == GEN_INSTALL_OPTION:
+        print('Please review the generated install.yml file and fill in the appropriate information '
+              '(app name is requited).')
 
     if args.directory:
         if os.path.isdir(args.directory):

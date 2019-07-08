@@ -1,0 +1,15 @@
+# Do not commit this file. This file is portal specific.
+version: 1.0
+
+# see tethys documentation for how to setup this file
+# Set service params in the following format :
+# app_service_setting_name(from your app.py): <service_name or id from list of installed services>
+persistent:
+
+wps:
+
+dataset:
+
+spatial:
+
+custom_setting:

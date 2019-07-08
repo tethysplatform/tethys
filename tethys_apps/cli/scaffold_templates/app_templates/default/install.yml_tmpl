@@ -1,0 +1,12 @@
+# This file may be committed to your app code.
+version: 1.0
+# This should match the app - package name in your setup.py
+name: {{project}}
+
+conda:
+  channels:
+  dependencies:
+
+pip:
+
+post:

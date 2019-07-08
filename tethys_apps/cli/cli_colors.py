@@ -26,7 +26,6 @@
 # authors and should not be interpreted as representing official policies, either expressed
 # or implied, of Diego Navarro Mellén.
 
-
 # Special END separator
 END = '0e8ed89a-47ba-4cdb-938e-b8af8e084d5c'
 
@@ -46,7 +45,7 @@ FG_YELLOW = '\033[33m'
 FG_BLUE = '\033[34m'
 FG_MAGENTA = '\033[35m'
 FG_CYAN = '\033[36m'
-FG_WHITE = '\033[37m'
+FG_WHITE = '\033[39m'
 
 # Background colors
 BG_BLACK = '\033[40m'
@@ -56,7 +55,7 @@ BG_YELLOW = '\033[43m'
 BG_BLUE = '\033[44m'
 BG_MAGENTA = '\033[45m'
 BG_CYAN = '\033[46m'
-BG_WHITE = '\033[47m'
+BG_WHITE = '\033[49m'
 
 # TerminalColors colors
 TC_BLUE = '\033[94m'
@@ -103,3 +102,23 @@ def write_pretty_output(msg, color=FG_WHITE, attributes=None):
     attributes.insert(0, color)
     with pretty_output(*attributes) as p:
         p.write(msg)
+
+
+def write_msg(msg):
+    write_pretty_output(msg)
+
+
+def write_error(msg):
+    write_pretty_output(msg, FG_RED)
+
+
+def write_warning(msg):
+    write_pretty_output(msg, FG_YELLOW)
+
+
+def write_success(msg):
+    write_pretty_output(msg, FG_GREEN)
+
+
+def write_info(msg):
+    write_pretty_output(msg, FG_BLUE)

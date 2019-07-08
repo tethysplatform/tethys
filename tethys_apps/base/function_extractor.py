@@ -5,7 +5,7 @@ class TethysFunctionExtractor:
     Attributes:
         path (str): The path to a function in the form "app_name.module_name.function_name" or the function object.
     """
-    PATH_PREFIX = 'tethys_apps.tethysapp'
+    PATH_PREFIX = 'tethysapp'
 
     def __init__(self, path, prefix=PATH_PREFIX, throw=False):
         self.path = path

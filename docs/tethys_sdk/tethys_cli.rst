@@ -2,7 +2,7 @@
 Command Line Interface
 **********************
 
-**Last Updated:** November 18, 2014
+**Last Updated:** March 13, 2019
 
 The Tethys Command Line Interface (CLI) provides several commands that are used for managing Tethys Platform and Tethys apps. The :term:`Python conda environment` must be activated to use the command line tools. This can be done using the following command:
 
@@ -447,3 +447,51 @@ This command is used to interact with Schedulers from the command line, rather t
 
     # Remove a scheduler
     $ tethys schedulers remove my_scheduler
+
+
+.. _tethys_cli_install:
+
+install 
+-------
+
+This command is used to trigger an automatic install for an application on a portal. We recommend using an
+:ref:`install.yml file <tethys_install_yml>` in the app directory to customize the installation process. If the install
+file doesn't exist the command will offer to create a blank template install.yml file for you. If you require services
+to be setup automatically, place a :ref:`services.yml file <tethys_services_yml>` in the root of your application. If
+there are any services that are needed by settings in your app that haven't been setup yet, you will be prompted to
+configure them interactively during the installation process. If there are any linked persistent stores upon completing
+the installation process, the install command will automatically run ``tethys syncstores {app_name}``. Finally, any
+scripts listed in the install.yml will be run to finish the installation.
+
+**Optional Arguments:**
+
+* **-d --develop**: Install will run ``python setup.py develop`` instead of ``python setup.py install``.
+
+* **-f --file**: Absolute path to :file:`install.yml` file for Tethys Application installation if different than default. By default it will look for install.yml in your current working directory (which is assumed to be the application's root directory).
+
+* **-p --portal-file**: Absolute path to :file:`portal.yml` file for Tethys Application installation. If provided this file will be used to gather portal configuration for services. The active directory will be searched for a :file:`portal.yml` file.
+
+* **-s --services-file**: Absolute path to :file:`services.yml` file for Tethys Application installation if different than default. By default it will look for services.yml in the root of your application directory.
+
+* **--force-services**: Force the use of :file:`services.yml` over :file:`portal.yml` file
+
+* **-q --quiet**: Skips interactive mode.
+
+* **-n --no-sync**: Skips syncstores when linked persistent stores are found.
+
+* **-v --verbose**: Will show all pip install output when enabled.
+
+
+
+**Examples:**
+
+::
+
+    # CD to your app directory
+    $ cd $TETHYS_HOME/apps/tethysapp-my_first_app
+
+    # Run Install
+    $ tethys install
+
+    # Tethys install with custom options
+    $ tethys install -f ../install.yml -p $TETHYS_HOME/src/configs/portal.yml
