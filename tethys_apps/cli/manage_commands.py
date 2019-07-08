@@ -61,9 +61,6 @@ def manage_command(args):
         else:
             primary_process = ['python', manage_path, 'runserver']
     elif args.command == MANAGE_SYNCDB:
-        intermediate_process = ['python', manage_path, 'makemigrations']
-        run_process(intermediate_process)
-
         primary_process = ['python', manage_path, 'migrate']
 
     elif args.command == MANAGE_COLLECTSTATIC:

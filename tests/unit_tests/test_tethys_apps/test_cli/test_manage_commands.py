@@ -82,15 +82,10 @@ class TestManageCommands(unittest.TestCase):
         # get the call arguments for the run process mock method
         process_call_args = mock_run_process.call_args_list
 
-        # intermediate process
+        # primary process
         self.assertEquals('python', process_call_args[0][0][0][0])
         self.assertIn('manage.py', process_call_args[0][0][0][1])
-        self.assertEquals('makemigrations', process_call_args[0][0][0][2])
-
-        # primary process
-        self.assertEquals('python', process_call_args[1][0][0][0])
-        self.assertIn('manage.py', process_call_args[1][0][0][1])
-        self.assertEquals('migrate', process_call_args[1][0][0][2])
+        self.assertEquals('migrate', process_call_args[0][0][0][2])
 
     @mock.patch('tethys_apps.cli.manage_commands.run_process')
     def test_manage_command_manage_manage_collectstatic(self, mock_run_process):

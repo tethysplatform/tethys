@@ -68,7 +68,7 @@ This file is generated with your application scaffold. Dependencies that are lis
 services.yml 
 ------------
 
-This file will be created by the portal administrator who has created/has access to all the services in the portal. This file will only be run by default if there is no portal services config file present (see :ref:`tethys_portal_yml`). However you can force the use of this file over the portal config by specifying the `--force-services` tag on the install command.
+The file is designed to be maintained by Tethys Portal administrators to automatically assign services defined in their Tethys Portal to apps they are installing. This file will only be run by default if there is no portal services config file present (see :ref:`tethys_portal_yml`). However you can force the use of this file over the portal config by specifying the `--force-services` tag on the install command.
 
 .. literalinclude:: resources/example-services.yml
    :language: yaml
@@ -85,9 +85,9 @@ This file will be created by the portal administrator who has created/has access
 
 Settings in each of the service sections above will need to be listed in the following format::
 
-	<app_service_setting_name> : <service_name or id>
+	<app_setting_name> : <service_name or id>
 
-In the above example, ``catalog_db`` is the name of the service in your :file:`app.py` and ``hydroexplorer-persistent`` is the name of the service on the portal. 
+In the above example, ``catalog_db`` is the name of the setting in your :file:`app.py` and ``hydroexplorer-persistent`` is the name of the service on the portal.
 
 .. tip::
 
@@ -98,7 +98,7 @@ In the above example, ``catalog_db`` is the name of the service in your :file:`a
 portal.yml 
 ------------
 
-The file is designed to be maintained by the server administrator who can provide incoming apps with default services. 
+The file is designed to be maintained by Tethys Portal administrators to automatically assign services defined in their Tethys Portal to apps they are installing.
 
 .. literalinclude:: resources/example-portal.yml
    :language: yaml
@@ -111,14 +111,14 @@ The file is designed to be maintained by the server administrator who can provid
 * **apps/<app-name>/services/persistent** : List of persistent store settings in the app and the service to link to each.
 * **apps/<app-name>/services/dataset** : List of dataset settings in the app and the service to link to each.
 * **apps/<app-name>/services/spatial** : List of spatial persistent store settings in the app and the service to link to each.
-* **apps/<app-name>/services/wps** : List of Web Processing service settings in the app and the service to link to each. 
+* **apps/<app-name>/services/wps** : List of web processing service settings in the app and the service to link to each.
 * **apps/<app-name>/services/custom_settings** : List of custom settings in the app and the value of each.
 
 Settings in each of the service sections above will need to be listed in the following format::
 
 	<app_service_setting_name> : <service_name or id>
 
-In the above example, ``catalog_db`` is the name of the service in your :file:`app.py` and ``test`` is the name of the service on the portal.
+In the above example, ``catalog_db`` is the name of the setting in your :file:`app.py` and ``test`` is the name of the service on the portal.
 
 .. tip::
 
@@ -141,10 +141,12 @@ Restart tethys portal to effect the changes::
 
 If any required settings were not configured through the installation process go to the application settings page in the Tethys Portal admin pages and configure them there (see :doc:`../../tethys_portal/admin_pages`).
 
-5. Initialize Persistent Stores
+5. (Optional) Initialize Persistent Stores
 ===============================
 
-If your application requires a database via the persistent stores API, and you did not initialize it through the installation process, you will need to by running::
+The install command will automatically run the syncstores command if it detects that the app has persistent stores. However, if you need to run syncstores manually, it can be done like so:
+
+::
 
     $ t
     (tethys) $ tethys syncstores {app_name}
