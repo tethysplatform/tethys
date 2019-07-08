@@ -13,7 +13,6 @@ class BasicJob(TethysJob):
     """
     Basic job type. Use this class as a model for subclassing TethysJob
     """
-
     def _execute(self, *args, **kwargs):
         pass
 

@@ -2,6 +2,7 @@ import unittest
 import tethys_apps.base.handoff as tethys_handoff
 from types import FunctionType
 from unittest import mock
+from tethys_sdk.testing import TethysTestCase
 
 
 def test_function(*args):
@@ -116,25 +117,6 @@ class TestHandoffManager(unittest.TestCase):
 
         self.assertEqual('handler1', result.name)
 
-    def test_handoff(self):
-        from django.http import HttpRequest
-        request = HttpRequest()
-
-        # Mock app
-        app = mock.MagicMock()
-        app.name = 'test_app_name'
-
-        # Mock _get_handoff_manager_for_app
-        handler1 = mock.MagicMock()
-        handler1().internal = False
-        manager = mock.MagicMock(get_handler=handler1)
-        self.hm._get_handoff_manager_for_app = mock.MagicMock(return_value=manager)
-
-        result = tethys_handoff.HandoffManager(app=app).handoff(request=request, handler_name='test_handler')
-
-        # 302 code is for redirect
-        self.assertEqual(302, result.status_code)
-
     @mock.patch('tethys_apps.base.handoff.HttpResponseBadRequest')
     def test_handoff_type_error(self, mock_hrbr):
         from django.http import HttpRequest
@@ -155,7 +137,8 @@ class TestHandoffManager(unittest.TestCase):
         rts_call_args = mock_hrbr.call_args_list
 
         # Check result
-        self.assertIn('HTTP 400 Bad Request: test message.', rts_call_args[0][0][0])
+        self.assertIn('HTTP 400 Bad Request: test message.',
+                      rts_call_args[0][0][0])
 
     @mock.patch('tethys_apps.base.handoff.HttpResponseBadRequest')
     def test_handoff_error(self, mock_hrbr):
@@ -185,30 +168,28 @@ class TestHandoffManager(unittest.TestCase):
             format('test manager name', 'test_handler')
         self.assertIn(check_message, rts_call_args[0][0][0])
 
-    @mock.patch('tethys_apps.base.handoff.print')
-    def test_get_valid_handlers(self, mock_print):
+    @mock.patch('warnings.warn')
+    def test_get_valid_handlers(self, mock_warn):
         app = mock.MagicMock(package='test_app')
 
         # Mock handoff_handlers
-        # Mock handoff_handlers
-        handler1 = mock.MagicMock(handler='my_first_app.controllers.my_handler', valid=True)
-        handler2 = mock.MagicMock(handler='controllers:home', valid=False)
-
+        handler1 = mock.MagicMock(handler='controllers.home', valid=True)
         # Cover Import Error Case
-        handler3 = mock.MagicMock(handler='controllers1:home1', valid=False)
+        handler2 = mock.MagicMock(handler='controllers1:home1', valid=False)
+        # Cover Deprecated format
+        handler3 = mock.MagicMock(handler='controllers:home', valid=False)
 
         app.handoff_handlers.return_value = [handler1, handler2, handler3]
+
         # mock _get_valid_handlers
-
         result = tethys_handoff.HandoffManager(app=app)._get_valid_handlers()
-
         # Check result
-        self.assertEqual('my_first_app.controllers.my_handler', result[0].handler)
+        self.assertEqual('controllers.home', result[0].handler)
         self.assertEqual('controllers:home', result[1].handler)
 
-        check_message = 'DEPRECATION WARNING: The handler attribute of a HandoffHandler should now be in the form:' \
+        check_message = 'The handler attribute of a HandoffHandler should now be in the form:' \
                         ' "my_first_app.controllers.my_handler". The form "handoff:my_handler" is now deprecated.'
-        mock_print.assert_called_with(check_message)
+        mock_warn.assert_called_with(check_message, DeprecationWarning)
 
 
 class TestHandoffHandler(unittest.TestCase):
@@ -269,8 +250,23 @@ class TestGetHandoffManagerFroApp(unittest.TestCase):
     def test_with_app(self, mock_ta):
         app = mock.MagicMock(package='test_app')
         app.get_handoff_manager.return_value = 'test_manager'
-        mock_ta.harvester.SingletonAppHarvester().apps = [app]
+        mock_ta.harvester.SingletonHarvester().apps = [app]
         result = tethys_handoff.HandoffManager(app=app)._get_handoff_manager_for_app(app_name='test_app')
 
         # Check result
         self.assertEqual('test_manager', result)
+
+
+class TestTestAppHandoff(TethysTestCase):
+    def set_up(self):
+        self.c = self.get_test_client()
+        self.user = self.create_test_user(username="joe", password="secret", email="joe@some_site.com")
+        self.c.force_login(self.user)
+
+    def tear_down(self):
+        self.user.delete()
+
+    def test_test_app_handoff(self):
+        response = self.c.get('/handoff/test-app/test_name/?csv_url=""')
+
+        self.assertEqual(302, response.status_code)

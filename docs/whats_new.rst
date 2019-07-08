@@ -6,6 +6,29 @@ What's New
 
 Refer to this article for information about each new release of Tethys Platform.
 
+UnReleased |version|
+====================
+
+
+Automatic Application Installation
+----------------------------------
+
+* Support for an install.yml app specific file that will setup dependencies
+* Support for a services.yml app-portal specific file that will link services
+* Support for tethys install command
+
+See: :ref:`Install Command <tethys_cli_install>`
+
+
+Application Migration
+=====================
+
+.. toctree::
+   :maxdepth: 1
+
+   whats_new/app_migration
+
+
 Release |version|
 =================
 
@@ -75,8 +98,8 @@ Partial Install Options
 
 See: :doc:`./installation/linux_and_mac` and :doc:`./installation/update`
 
-Commandline Interface
----------------------
+Command Line Interface
+----------------------
 
 * New commands to manage app settings and services.
 * ``tethys app_settings`` - List settings for an app.

@@ -537,7 +537,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         mock_redirect.assert_called_once_with('home')
 
     @mock.patch('tethys_portal.views.accounts.reverse')
-    @mock.patch('tethys_portal.views.accounts.password_reset_confirm')
+    @mock.patch('tethys_portal.views.accounts.PasswordResetConfirmView')
     def test_reset_confirm(self, mock_prc, mock_reverse):
         mock_request = mock.MagicMock()
         mock_reverse.return_value = 'accounts:login'
@@ -548,10 +548,10 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
                                          template_name='tethys_portal/accounts/password_reset/reset_confirm.html',
                                          uidb64=None,
                                          token=None,
-                                         post_reset_redirect='accounts:login')
+                                         success_url='accounts:login')
 
     @mock.patch('tethys_portal.views.accounts.reverse')
-    @mock.patch('tethys_portal.views.accounts.password_reset')
+    @mock.patch('tethys_portal.views.accounts.PasswordResetView')
     def test_reset(self, mock_pr, mock_reverse):
         mock_request = mock.MagicMock()
         mock_reverse.return_value = 'accounts:login'
@@ -562,4 +562,4 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
                                         template_name='tethys_portal/accounts/password_reset/reset_request.html',
                                         email_template_name='tethys_portal/accounts/password_reset/reset_email.html',
                                         subject_template_name='tethys_portal/accounts/password_reset/reset_subject.txt',
-                                        post_reset_redirect='accounts:login')
+                                        success_url='accounts:login')

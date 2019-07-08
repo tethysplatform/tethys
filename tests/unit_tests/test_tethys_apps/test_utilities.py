@@ -53,6 +53,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
     def test_get_directories_in_tethys_templates_extension_import_error(self, mock_harvester):
         # Mock the extension_modules variable with bad data, to throw an ImportError
         mock_harvester().extension_modules = {'foo_invalid_foo': 'tethysext.foo_invalid_foo'}
+        mock_harvester().app_modules = {'test_app': 'tethysapp.test_app'}
 
         result = utilities.get_directories_in_tethys(('templates',))
         self.assertGreaterEqual(len(result), 1)
@@ -68,6 +69,22 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
         self.assertTrue(test_app)
         self.assertFalse(test_ext)
+
+    @mock.patch('tethys_apps.utilities.SingletonHarvester')
+    def test_get_directories_in_tethys_templates_apps_import_error(self, mock_harvester):
+        # Mock the extension_modules variable with bad data, to throw an ImportError
+        mock_harvester().app_modules = {'foo_invalid_foo': 'tethys_app.foo_invalid_foo'}
+
+        result = utilities.get_directories_in_tethys(('templates',))
+        self.assertGreaterEqual(len(result), 0)
+
+        test_app = False
+
+        for r in result:
+            if '/tethysapp/foo_invalid_foo/templates' in r:
+                test_app = True
+
+        self.assertFalse(test_app)
 
     def test_get_directories_in_tethys_foo(self):
         # Get the foo directories for the test_app and test_extension
@@ -120,6 +137,19 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
         # Result should be mock for mock_app.objects.get.return_value
         result = utilities.get_active_app(url='/apps/foo/bar')
+        self.assertEqual(mock_app.objects.get(), result)
+
+    @mock.patch('tethys_apps.utilities.SingletonHarvester')
+    @mock.patch('tethys_apps.models.TethysApp')
+    def test_get_active_app_class(self, mock_app, mock_harvester):
+        # Mock up for TethysApp
+        app = mock.MagicMock()
+        mock_app.objects.get.return_value = app
+
+        mock_harvester().apps = [app]
+
+        # Result should be mock for mock_app.objects.get.return_value
+        result = utilities.get_active_app(url='/apps/foo/bar', get_class=True)
         self.assertEqual(mock_app.objects.get(), result)
 
     @mock.patch('tethys_apps.models.TethysApp')

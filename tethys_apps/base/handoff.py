@@ -9,6 +9,7 @@
 """
 import inspect
 import json
+import warnings
 from django.shortcuts import redirect
 from django.http import HttpResponseBadRequest
 
@@ -134,7 +135,7 @@ class HandoffManager:
             return self
 
         # Get the app
-        harvester = tethys_apps.harvester.SingletonAppHarvester()
+        harvester = tethys_apps.harvester.SingletonHarvester()
         apps = harvester.apps
 
         for app in apps:
@@ -156,16 +157,15 @@ class HandoffManager:
             else:
                 handler_str = handler.handler
                 if ':' in handler_str:
-                    print('DEPRECATION WARNING: The handler attribute of a HandoffHandler should now be in the '
-                          'form: "my_first_app.controllers.my_handler". The form "handoff:my_handler" '
-                          'is now deprecated.')
+                    warnings.warn('The handler attribute of a HandoffHandler should now be in the '
+                                  'form: "my_first_app.controllers.my_handler". The form "handoff:my_handler" '
+                                  'is now deprecated.', DeprecationWarning)
 
                     # Split into module name and function name
                     module_path, function_name = handler_str.split(':')
 
                     # Pre-process handler path
-                    full_module_path = '.'.join(('tethys_apps.tethysapp', self.app.package, module_path))
-
+                    full_module_path = '.'.join(('tethysapp', self.app.package, module_path))
                     try:
                         # Import module
                         module = __import__(full_module_path, fromlist=[function_name])

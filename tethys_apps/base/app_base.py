@@ -11,6 +11,7 @@ import logging
 import os
 import sys
 import traceback
+import warnings
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
@@ -43,7 +44,7 @@ class TethysBase(TethysBaseMixin):
 
     def url_maps(self):
         """
-        Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically.
+        Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically. Starting in Tethys 3.0, the ``WebSocket`` protocol is supported along with the ``HTTP`` protocol. To create a ``WebSocket UrlMap``, follow the same pattern used for the ``HTTP`` protocol. In addition, provide a ``Consumer`` path in the controllers parameter as well as a ``WebSocket`` string value for the new protocol parameter for the ``WebSocket UrlMap``.
 
         Returns:
           iterable: A list or tuple of ``UrlMap`` objects.
@@ -67,6 +68,12 @@ class TethysBase(TethysBaseMixin):
                                        url='my-first-app',
                                        controller='my_first_app.controllers.home',
                                        ),
+                    ),
+                    url_maps = (UrlMap(name='home_ws',
+                                       url='my-first-ws',
+                                       controller='my_first_app.controllers.HomeConsumer',
+                                       protocol='websocket'
+                                       ),
                     )
 
                     return url_maps
@@ -81,7 +88,7 @@ class TethysBase(TethysBaseMixin):
         if self._url_patterns is None:
             is_extension = isinstance(self, TethysExtensionBase)
 
-            url_patterns = dict()
+            url_patterns = {'http': dict(), 'websocket': dict()}
 
             if hasattr(self, 'url_maps'):
                 url_maps = self.url_maps()
@@ -89,12 +96,12 @@ class TethysBase(TethysBaseMixin):
             for url_map in url_maps:
                 namespace = self.namespace
 
-                if namespace not in url_patterns:
-                    url_patterns[namespace] = []
+                if namespace not in url_patterns[url_map.protocol]:
+                    url_patterns[url_map.protocol][namespace] = []
 
                 # Create django url object
                 if isinstance(url_map.controller, str):
-                    root_controller_path = 'tethysext' if is_extension else 'tethys_apps.tethysapp'
+                    root_controller_path = 'tethysext' if is_extension else 'tethysapp'
                     full_controller_path = '.'.join([root_controller_path, url_map.controller])
                     controller_parts = full_controller_path.split('.')
                     module_name = '.'.join(controller_parts[:-1])
@@ -118,7 +125,7 @@ class TethysBase(TethysBaseMixin):
                 django_url = url(url_map.url, controller_function, name=url_map.name)
 
                 # Append to namespace list
-                url_patterns[namespace].append(django_url)
+                url_patterns[url_map.protocol][namespace].append(django_url)
             self._url_patterns = url_patterns
 
         return self._url_patterns
@@ -640,7 +647,8 @@ class TethysAppBase(TethysBase):
         # Create groups that need to be created
         for group in app_groups:
             # Look up the app
-            db_app = TethysApp.objects.get(package=app_groups[group]['app_package'])
+            db_app = TethysApp.objects.get(
+                package=app_groups[group]['app_package'])
 
             # Create group if it doesn't exist
             try:
@@ -757,6 +765,7 @@ class TethysAppBase(TethysBase):
                 return render(request, 'my_first_app/template.html', context)
 
         """
+        warnings.warn('@user_workspace decorator is now the preferred method for getting user workspace', DeprecationWarning)  # noqa: E501
         username = ''
 
         from django.contrib.auth.models import User
@@ -807,6 +816,7 @@ class TethysAppBase(TethysBase):
                 return render(request, 'my_first_app/template.html', context)
 
         """
+        warnings.warn('@app_workspace decorator is now the preferred method for getting app workspace', DeprecationWarning)  # noqa: E501
         # Find the path to the app project directory
         # Hint: cls is a child class of this class.
         # Credits: http://stackoverflow.com/questions/4006102/ is-possible-to-know-the-_path-of-the-file-of-a-subclass-in-python  # noqa: E501
@@ -912,7 +922,8 @@ class TethysAppBase(TethysBase):
         spatial_dataset_service_settings = db_app.spatial_dataset_service_settings
 
         try:
-            spatial_dataset_service_setting = spatial_dataset_service_settings.get(name=name)
+            spatial_dataset_service_setting = spatial_dataset_service_settings.get(
+                name=name)
             return spatial_dataset_service_setting.get_value(
                 as_public_endpoint=as_public_endpoint,
                 as_endpoint=as_endpoint,
@@ -1094,8 +1105,7 @@ class TethysAppBase(TethysBase):
                     'PersistentStoreDatabaseSetting named "{0}" does not exist.'.format(db_name),
                     connection_name, cls.name)
             else:
-                raise TethysAppSettingDoesNotExist(
-                                                   'PersistentStoreConnectionSetting ', connection_name, cls.name)
+                raise TethysAppSettingDoesNotExist('PersistentStoreConnectionSetting ', connection_name, cls.name)
 
         ps_service = ps_setting.persistent_store_service
 
@@ -1374,3 +1384,35 @@ class TethysAppBase(TethysBase):
                         .format(traceback.format_stack(limit=3)[0], setting_type, setting_name,
                                 cls.name.encode('utf-8'))
                         )
+
+    @classmethod
+    def pre_delete_user_workspace(cls, user):
+        """
+        Override this method to pre-process a user's workspace before it is emptied
+
+        Args:
+            user (User, required):
+                User that requested to clear their workspace
+        """
+
+    @classmethod
+    def post_delete_user_workspace(cls, user):
+        """
+        Override this method to post-process a user's workspace after it is emptied
+
+        Args:
+            user (User, required):
+                User that requested to clear their workspace
+        """
+
+    @classmethod
+    def pre_delete_app_workspace(cls):
+        """
+        Override this method to pre-process the app workspace before it is emptied
+        """
+
+    @classmethod
+    def post_delete_app_workspace(cls):
+        """
+        Override this method to post-process the app workspace after it is emptied
+        """

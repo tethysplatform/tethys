@@ -30,12 +30,12 @@ def get_manage_path(args):
     Validate user defined manage path, use default, or throw error
     """
     # Determine path to manage.py file
+
     manage_path = os.path.join(get_tethys_src_dir(), 'manage.py')
 
     # Check for path option
     if hasattr(args, 'manage'):
         manage_path = args.manage or manage_path
-
     # Throw error if path is not valid
     if not os.path.isfile(manage_path):
         with pretty_output(FG_RED) as p:

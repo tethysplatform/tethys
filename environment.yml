@@ -20,7 +20,6 @@ dependencies:
 
 # database dependencies
 - postgresql
-- postgis
 - psycopg2
 - sqlalchemy
 - geoalchemy2
@@ -30,7 +29,7 @@ dependencies:
 - bokeh
 
 # external services dependencies
-- tethys_dataset_services>=1.7.0
+- tethys_dataset_services>=2.0.0
 - hs_restclient
 - owslib
 - requests
@@ -39,7 +38,7 @@ dependencies:
 - tethys_dask_scheduler>=1.0.2
 
 # django/plugin dependencies
-- django=1.11.*
+- django=2.1.*
 - django-filter
 - djangorestframework
 - django-bootstrap3
@@ -56,11 +55,18 @@ dependencies:
 - pillow
 - pip
 - future
+- flake8
+
+# Conda to allow Python API access to Conda Install
+- conda
 
 - pip:
     - django-gravatar2
     - django-simple-captcha
     - django-termsandconditions
     - django-session-security
+    - channels
+    - service_identity
     - condorpy
     - python_social_auth
+    - django-analytical

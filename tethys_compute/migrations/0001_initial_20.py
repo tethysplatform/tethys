@@ -3,7 +3,7 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import tethys_compute.utilities
+import tethys_compute.graveyard
 
 
 class Migration(migrations.Migration):
@@ -19,16 +19,16 @@ class Migration(migrations.Migration):
             name='CondorPyJob',
             fields=[
                 ('condorpyjob_id', models.AutoField(primary_key=True, serialize=False)),
-                ('_attributes', tethys_compute.utilities.DictionaryField(default='')),
+                ('_attributes', tethys_compute.graveyard.DictionaryField(default='')),
                 ('_num_jobs', models.IntegerField(default=1)),
-                ('_remote_input_files', tethys_compute.utilities.ListField(default='')),
+                ('_remote_input_files', tethys_compute.graveyard.ListField(default='')),
             ],
         ),
         migrations.CreateModel(
             name='CondorPyWorkflow',
             fields=[
                 ('condorpyworkflow_id', models.AutoField(primary_key=True, serialize=False)),
-                ('_max_jobs', tethys_compute.utilities.DictionaryField(blank=True, default='')),
+                ('_max_jobs', tethys_compute.graveyard.DictionaryField(blank=True, default='')),
                 ('_config', models.CharField(blank=True, max_length=1024, null=True)),
             ],
         ),
@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
                 ('pre_script_args', models.CharField(blank=True, max_length=1024, null=True)),
                 ('post_script', models.CharField(blank=True, max_length=1024, null=True)),
                 ('post_script_args', models.CharField(blank=True, max_length=1024, null=True)),
-                ('variables', tethys_compute.utilities.DictionaryField(blank=True, default='')),
+                ('variables', tethys_compute.graveyard.DictionaryField(blank=True, default='')),
                 ('priority', models.IntegerField(blank=True, null=True)),
                 ('category', models.CharField(blank=True, max_length=128, null=True)),
                 ('retry', models.PositiveSmallIntegerField(blank=True, null=True)),
@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
                 ('start_time', models.DateTimeField(blank=True, null=True)),
                 ('completion_time', models.DateTimeField(blank=True, null=True)),
                 ('workspace', models.CharField(default='', max_length=1024)),
-                ('extended_properties', tethys_compute.utilities.DictionaryField(blank=True, default='')),
+                ('extended_properties', tethys_compute.graveyard.DictionaryField(blank=True, default='')),
                 ('_process_results_function', models.CharField(blank=True, max_length=1024, null=True)),
                 ('_status', models.CharField(choices=[('PEN', 'Pending'), ('SUB', 'Submitted'), ('RUN', 'Running'),
                                                       ('COM', 'Complete'), ('ERR', 'Error'), ('ABT', 'Aborted'),

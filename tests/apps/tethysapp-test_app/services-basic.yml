@@ -1,0 +1,4 @@
+version: 1.0
+
+persistent:
+   temp_db: test_persistent_install
