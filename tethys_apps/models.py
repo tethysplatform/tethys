@@ -872,6 +872,6 @@ class ThreddsServiceSetting(TethysAppSetting):
             return thredds_service.local_file_path
 
         if as_endpoint:
-            return wps_service.wms_endpoint
+            return thredds_service.wms_endpoint
 
         return thredds_service
