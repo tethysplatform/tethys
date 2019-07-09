@@ -26,7 +26,7 @@ log = logging.getLogger('tethys')
 
 try:
     from tethys_services.models import (DatasetService, SpatialDatasetService,
-                                        WebProcessingService, PersistentStoreService)
+                                        WebProcessingService, PersistentStoreService, ThreddsService)
 except RuntimeError:  # pragma: no cover
     log.exception('An error occurred while trying to import tethys service models.')
 
@@ -829,3 +829,49 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         # Update initialization
         self.initialized = True
         self.save()
+
+
+class ThreddsServiceSetting(TethysAppSetting):
+    """
+    Used to define a Thredds Service Setting.
+
+    Attributes:
+        name(str): Unique name used to identify the setting.
+        description(str): Short description of the setting.
+        required(bool): A value will be required if True.
+
+    **Example:**
+
+    ::
+
+        from tethys_sdk.app_settings import ThreddsServiceSetting
+
+        thredds_main_setting = ThreddsServiceSetting(
+            name='main thredds',
+            description='Thredds data server',
+            required=True,
+        )
+
+    """
+    thredds_service = models.ForeignKey(ThreddsService, on_delete=models.CASCADE, blank=True, null=True)
+
+    def clean(self):
+        """
+        Validate prior to saving changes.
+        """
+        if not self.thredds_service and self.required:
+            raise ValidationError('Required.')
+
+    def get_value(self, as_local_dir=False, as_endpoint=False):
+        thredds_service = self.thredds_service
+
+        if not thredds_service:
+            return None
+
+        if as_local_dir:
+            return thredds_service.local_file_path
+
+        if as_endpoint:
+            return wps_service.wms_endpoint
+
+        return thredds_service

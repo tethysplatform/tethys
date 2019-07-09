@@ -67,6 +67,17 @@ def validate_persistent_store_port(value):
         raise ValidationError('Invalid Port: Persistent Store ports must be an integer between 1024 and 65535.')
 
 
+def validate_thredds_service_endpoint(value):
+    """
+    Validator for thredds service endpoints
+    """
+    validate_url(value)
+
+    if '/thredds/wms/' not in value:
+        raise ValidationError('Invalid Endpoint: Thredds WMS endpoints follow the pattern '
+                              '"http://example.com/thredds/wms/defaultCatalogName".')
+
+
 class DatasetService(models.Model):
     """
     ORM for Dataset Service settings.
@@ -267,3 +278,22 @@ class PersistentStoreService(models.Model):
             database=self.database
         )
         return url
+
+
+class ThreddsService(models.Model):
+    """
+    ORM for Thredds Service Settings
+    """
+    name = models.CharField(max_length=30, unique=True)
+    wms_endpoint = models.CharField(max_length=1024, validators=[validate_thredds_service_endpoint])
+    local_file_path = models.CharField(max_length=1024)
+
+    class Meta:
+        verbose_name = 'Thredds Service'
+        verbose_name_plural = 'Thredds Services'
+
+    def __str__(self):
+        return self.name
+
+    def get_url(self):
+        return self.wmsendpoint
