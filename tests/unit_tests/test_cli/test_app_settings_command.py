@@ -60,7 +60,7 @@ class TestCliAppSettingsCommand(unittest.TestCase):
         self.assertIn('Linked Settings:', po_call_args[3][0][0])
         self.assertIn('None', po_call_args[4][0][0])
 
-    @mock.patch('tethys_apps.cli.app_settings_commands.get_setting_type', return_value='setting_type')
+    @mock.patch('tethys_cli.app_settings_commands.get_setting_type', return_value='setting_type')
     @mock.patch('tethys_apps.models.TethysApp')
     @mock.patch('tethys_apps.models.PersistentStoreConnectionSetting')
     @mock.patch('tethys_apps.models.PersistentStoreDatabaseSetting')

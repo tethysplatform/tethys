@@ -10,7 +10,8 @@ from tethys_cli.gen_commands import (
     GEN_NGINX_SERVICE_OPTION,
     GEN_ASGI_SERVICE_OPTION,
     GEN_SERVICES_OPTION,
-    GEN_INSTALL_OPTION
+    GEN_INSTALL_OPTION,
+    GEN_PORTAL_OPTION,
 )
 
 
@@ -74,6 +75,19 @@ class CLIGenCommandsTest(unittest.TestCase):
     def test_generate_command_nginx_service(self, mock_os_path_isfile, mock_file):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_NGINX_SERVICE_OPTION
+        mock_args.directory = None
+        mock_os_path_isfile.return_value = False
+
+        generate_command(args=mock_args)
+
+        mock_os_path_isfile.assert_called_once()
+        mock_file.assert_called()
+
+    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
+    @mock.patch('tethys_cli.gen_commands.os.path.isfile')
+    def test_generate_command_portal_yaml(self, mock_os_path_isfile, mock_file):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_PORTAL_OPTION
         mock_args.directory = None
         mock_os_path_isfile.return_value = False
 

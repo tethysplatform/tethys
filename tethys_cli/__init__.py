@@ -22,6 +22,7 @@ from tethys_cli.scheduler_commands import add_scheduler_parser
 from tethys_cli.services_commands import add_services_parser
 from tethys_cli.syncstores_command import add_syncstores_parser
 from tethys_cli.test_command import add_test_parser
+from tethys_cli.install_commands import add_install_parser
 from tethys_cli.uninstall_command import add_uninstall_parser
 
 
@@ -46,6 +47,7 @@ def tethys_command():
     add_services_parser(subparsers)
     add_syncstores_parser(subparsers)
     add_test_parser(subparsers)
+    add_install_parser(subparsers)
     add_uninstall_parser(subparsers)
 
     # Parse the args and call the default function

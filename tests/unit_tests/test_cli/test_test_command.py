@@ -226,10 +226,11 @@ class TestCommandTests(unittest.TestCase):
         mock_run_process.assert_called_once()
         mock_run_process.assert_called_with(['python', '/foo/manage.py', 'test', '/foo'])
 
+    @mock.patch('tethys_cli.test_command.write_warning')
     @mock.patch('tethys_cli.test_command.subprocess.call')
     @mock.patch('tethysapp.test_app', new=None)
     @mock.patch('tethysext.test_extension', new=None)
-    def test_check_and_install_prereqs(self, mock_run_process):
+    def test_check_and_install_prereqs(self, mock_run_process, mock_write_warning):
         tests_path = os.path.join(TETHYS_SRC_DIRECTORY, 'tests')
         check_and_install_prereqs(tests_path)
         setup_path = os.path.join(tests_path, 'apps', 'tethysapp-test_app')
@@ -240,6 +241,8 @@ class TestCommandTests(unittest.TestCase):
 
         mock_run_process.assert_any_call(['python', 'setup.py', 'develop'], stdout=mock.ANY,
                                          stderr=mock.ANY, cwd=extension_setup_path)
+
+        mock_write_warning.assert_called()
 
     @mock.patch('tethys_cli.test_command.run_process')
     @mock.patch('tethys_cli.test_command.os.path.join')

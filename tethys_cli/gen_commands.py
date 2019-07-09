@@ -25,6 +25,9 @@ GEN_APACHE_OPTION = 'apache'
 GEN_ASGI_SERVICE_OPTION = 'asgi_service'
 GEN_NGINX_OPTION = 'nginx'
 GEN_NGINX_SERVICE_OPTION = 'nginx_service'
+GEN_PORTAL_OPTION = 'portal'
+GEN_SERVICES_OPTION = 'services'
+GEN_INSTALL_OPTION = 'install'
 
 FILE_NAMES = {
     GEN_SETTINGS_OPTION: 'settings.py',
@@ -32,6 +35,9 @@ FILE_NAMES = {
     GEN_ASGI_SERVICE_OPTION: 'asgi_supervisord.conf',
     GEN_NGINX_OPTION: 'tethys_nginx.conf',
     GEN_NGINX_SERVICE_OPTION: 'nginx_supervisord.conf',
+    GEN_PORTAL_OPTION: 'portal.yml',
+    GEN_SERVICES_OPTION: 'services.yml',
+    GEN_INSTALL_OPTION: 'install.yml',
 }
 
 VALID_GEN_OBJECTS = (
@@ -40,6 +46,9 @@ VALID_GEN_OBJECTS = (
     GEN_ASGI_SERVICE_OPTION,
     GEN_NGINX_OPTION,
     GEN_NGINX_SERVICE_OPTION,
+    GEN_PORTAL_OPTION,
+    GEN_SERVICES_OPTION,
+    GEN_INSTALL_OPTION,
 )
 
 TETHYS_SRC = get_tethys_src_dir()
@@ -179,6 +188,21 @@ def gen_nginx_service(args):
     context = {}
     return context
 
+def gen_portal_yaml(args):
+    context = {}
+    return context
+
+def gen_services_yaml(args):
+    context = {}
+    return context
+
+def gen_install(args):
+    print('Please review the generated install.yml file and fill in the appropriate information '
+          '(app name is requited).')
+
+    context = {}
+    return context
+
 
 def get_destination_path(args):
     # Determine destination file name (defaults to type)
@@ -187,12 +211,15 @@ def get_destination_path(args):
     # Default destination path is the tethys_portal source dir
     destination_dir = os.path.join(TETHYS_SRC, 'tethys_portal')
 
+    if args.type in [GEN_SERVICES_OPTION, GEN_INSTALL_OPTION]:
+        destination_dir = os.getcwd()
+
     if args.directory:
         directory = os.path.abspath(args.directory)
         if os.path.isdir(directory):
             destination_dir = directory
         else:
-            print(' -bERROR: "{0}" is not a valid directory.'.format(destination_dir))
+            print('ERROR: "{0}" is not a valid directory.'.format(destination_dir))
             exit(1)
     destination_path = os.path.join(destination_dir, destination_file)
 
@@ -239,6 +266,9 @@ gen_commands = {
     GEN_ASGI_SERVICE_OPTION: gen_asgi_service,
     GEN_NGINX_OPTION: gen_nginx,
     GEN_NGINX_SERVICE_OPTION: gen_nginx_service,
+    GEN_PORTAL_OPTION: gen_portal_yaml,
+    GEN_SERVICES_OPTION: gen_services_yaml,
+    GEN_INSTALL_OPTION: gen_install,
 }
 
 

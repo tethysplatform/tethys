@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from unittest import mock
 from conda.cli.python_api import Commands
-from tethys_apps.cli import install_commands
+from tethys_cli import install_commands
 
 FNULL = open(os.devnull, 'w')
 
@@ -11,8 +11,8 @@ FNULL = open(os.devnull, 'w')
 class TestServiceInstallHelpers(TestCase):
 
     @mock.patch('builtins.open', side_effect=IOError('test'))
-    @mock.patch('tethys_apps.cli.install_commands.exit')
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.exit')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_open_file_error(self, mock_pretty_output, mock_exit, _):
         mock_exit.side_effect = SystemExit
 
@@ -69,17 +69,17 @@ class TestServiceInstallHelpers(TestCase):
         self.assertEqual(install_commands.get_service_from_name("nonexisting").get('service_type'), 'wps')
         mock_get.assert_called_with(name='nonexisting')
 
-    @mock.patch('tethys_apps.cli.install_commands.input')
+    @mock.patch('tethys_cli.install_commands.input')
     def test_get_interactive_input(self, mock_input):
         install_commands.get_interactive_input()
         mock_input.assert_called_with("")
 
-    @mock.patch('tethys_apps.cli.install_commands.input')
+    @mock.patch('tethys_cli.install_commands.input')
     def test_get_service_name_input(self, mock_input):
         install_commands.get_service_name_input()
         mock_input.assert_called_with("")
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_print_unconfigured_settings(self, mock_pretty_output):
         class MockSetting:
             def __init__(self, name, required):
@@ -94,8 +94,8 @@ class TestServiceInstallHelpers(TestCase):
         self.assertEqual(f'\nThe following settings were not configured for app: {app_name}:\n', po_call_args[0][0][0])
         self.assertIn('test_name', po_call_args[2][0][0])
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
-    @mock.patch('tethys_apps.cli.install_commands.call')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.call')
     def test_run_sync_stores(self, mock_call, mock_pretty_output):
         from tethys_apps.models import PersistentStoreConnectionSetting
 
@@ -106,9 +106,9 @@ class TestServiceInstallHelpers(TestCase):
         self.assertEqual(f'Running syncstores for app {app_name}', po_call_args[0][0][0])
         mock_call.assert_called_with(['tethys', 'syncstores', app_name], )
 
-    @mock.patch('tethys_apps.cli.install_commands.get_service_from_name', return_value={'service_type': 'service_type',
+    @mock.patch('tethys_cli.install_commands.get_service_from_name', return_value={'service_type': 'service_type',
                                                                                         'linkParam': 'linkParam'})
-    @mock.patch('tethys_apps.cli.install_commands.link_service_to_app_setting')
+    @mock.patch('tethys_cli.install_commands.link_service_to_app_setting')
     def test_find_and_link(self, mock_link_service_to_app_setting, _):
         service_type = 'service_type'
         setting_name = 'setting_name'
@@ -123,8 +123,8 @@ class TestServiceInstallHelpers(TestCase):
                                                             'linkParam',
                                                             setting_name)
 
-    @mock.patch('tethys_apps.cli.install_commands.get_service_from_name', return_value=False)
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.get_service_from_name', return_value=False)
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_find_and_link_warning(self, mock_pretty_output, _):
         service_type = 'service_type'
         setting_name = 'setting_name'
@@ -139,8 +139,8 @@ class TestServiceInstallHelpers(TestCase):
 
 
 class TestInstallServicesCommands(TestCase):
-    @mock.patch('tethys_apps.cli.install_commands.find_and_link')
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.find_and_link')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_apps.models.CustomSetting')
     def test_configure_services(self, mock_customsettings, mock_pretty_output, mock_find_and_link):
         app_name = 'foo'
@@ -163,18 +163,18 @@ class TestInstallServicesCommands(TestCase):
         mock_find_and_link.assert_called_with('persistent', persistent_setting_name,
                                               persistent_service_name, app_name)
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
-    @mock.patch('tethys_apps.cli.install_commands.os')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.os')
     def test_run_portal_install_path_none(self, mock_os, _):
 
         mock_os.path.exists.return_value = False
 
         self.assertFalse(install_commands.run_portal_install(None, 'foo'))
 
-    @mock.patch('tethys_apps.cli.install_commands.configure_services')
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
-    @mock.patch('tethys_apps.cli.install_commands.open_file')
-    @mock.patch('tethys_apps.cli.install_commands.os')
+    @mock.patch('tethys_cli.install_commands.configure_services')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.open_file')
+    @mock.patch('tethys_cli.install_commands.os')
     def test_run_portal_install(self, mock_os, mock_open_file, mock_pretty_output, mock_configure_services):
         app_name = 'foo'
         services = {'persistent': {'test_setting': 'test_service'}}
@@ -195,8 +195,8 @@ class TestInstallServicesCommands(TestCase):
         self.assertIn(f'No app configuration found for app: {app_name}', po_call_args[2][0][0])
         self.assertIn('No apps configuration found in portal config file.', po_call_args[4][0][0])
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
-    @mock.patch('tethys_apps.cli.install_commands.os')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.os')
     def test_run_services_path_none(self, mock_os, mock_pretty_output):
         args = mock.MagicMock(services_file=None)
 
@@ -207,10 +207,10 @@ class TestInstallServicesCommands(TestCase):
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual('No Services file found.', po_call_args[0][0][0])
 
-    @mock.patch('tethys_apps.cli.install_commands.configure_services')
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
-    @mock.patch('tethys_apps.cli.install_commands.open_file')
-    @mock.patch('tethys_apps.cli.install_commands.os')
+    @mock.patch('tethys_cli.install_commands.configure_services')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.open_file')
+    @mock.patch('tethys_cli.install_commands.os')
     def test_run_services(self, mock_os, mock_open_file, mock_pretty_output, _):
         args = mock.MagicMock(services_file='services_file')
 
@@ -226,7 +226,7 @@ class TestInstallServicesCommands(TestCase):
 class TestInstallCommands(TestCase):
     def setUp(self):
         from tethys_apps.models import TethysApp
-        self.src_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+        self.src_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
         self.root_app_path = os.path.join(self.src_dir, 'apps', 'tethysapp-test_app')
         self.app_model = TethysApp(
             name='test_app',
@@ -239,10 +239,10 @@ class TestInstallCommands(TestCase):
         self.app_model.delete()
         pass
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('builtins.input', side_effect=['x', 'n'])
-    @mock.patch('tethys_apps.cli.install_commands.exit')
-    @mock.patch('tethys_apps.cli.install_commands.call')
+    @mock.patch('tethys_cli.install_commands.exit')
+    @mock.patch('tethys_cli.install_commands.call')
     def test_install_file_not_generate(self, mock_call, mock_exit, _, __):
         args = mock.MagicMock(file=None, quiet=False)
 
@@ -253,10 +253,10 @@ class TestInstallCommands(TestCase):
 
         mock_exit.assert_called_with(0)
 
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('builtins.input', side_effect=['y'])
-    @mock.patch('tethys_apps.cli.install_commands.call')
-    @mock.patch('tethys_apps.cli.install_commands.exit')
+    @mock.patch('tethys_cli.install_commands.call')
+    @mock.patch('tethys_cli.install_commands.exit')
     def test_install_file_generate(self, mock_exit, mock_call, _, __):
         args = mock.MagicMock(file=None, quiet=False)
         check_call = ['tethys', 'gen', 'install']
@@ -267,10 +267,10 @@ class TestInstallCommands(TestCase):
         mock_call.assert_called_with(check_call)
         mock_exit.assert_called_with(0)
 
-    @mock.patch('tethys_apps.cli.install_commands.run_services')
-    @mock.patch('tethys_apps.cli.install_commands.call')
-    @mock.patch('tethys_apps.cli.install_commands.exit')
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.run_services')
+    @mock.patch('tethys_cli.install_commands.call')
+    @mock.patch('tethys_cli.install_commands.exit')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_no_conda_input_file(self, mock_pretty_output, mock_exit, _, __):
         file_path = os.path.join(self.root_app_path, 'install-no-dep.yml')
         args = mock.MagicMock(file=file_path, verbose=False)
@@ -285,10 +285,10 @@ class TestInstallCommands(TestCase):
         self.assertIn("Skipping syncstores.", po_call_args[3][0][0])
         mock_exit.assert_called_with(0)
 
-    @mock.patch('tethys_apps.cli.install_commands.run_services')
-    @mock.patch('tethys_apps.cli.install_commands.call')
-    @mock.patch('tethys_apps.cli.install_commands.exit')
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.run_services')
+    @mock.patch('tethys_cli.install_commands.call')
+    @mock.patch('tethys_cli.install_commands.exit')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_input_file_with_post(self, mock_pretty_output, mock_exit, _, __):
         file_path = os.path.join(self.root_app_path, 'install-with-post.yml')
         args = mock.MagicMock(file=file_path, verbose=False)
@@ -305,14 +305,14 @@ class TestInstallCommands(TestCase):
         self.assertIn("Post Script Result: b'test\\n'", po_call_args[6][0][0])
         mock_exit.assert_called_with(0)
 
-    @mock.patch('tethys_apps.cli.install_commands.run_services')
-    @mock.patch('tethys_apps.cli.install_commands.run_sync_stores')
-    @mock.patch('tethys_apps.cli.install_commands.run_interactive_services')
-    @mock.patch('tethys_apps.cli.install_commands.call')
-    @mock.patch('tethys_apps.cli.install_commands.run_portal_install', return_value=False)
-    @mock.patch('tethys_apps.cli.install_commands.run_services')
-    @mock.patch('tethys_apps.cli.install_commands.exit')
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.run_services')
+    @mock.patch('tethys_cli.install_commands.run_sync_stores')
+    @mock.patch('tethys_cli.install_commands.run_interactive_services')
+    @mock.patch('tethys_cli.install_commands.call')
+    @mock.patch('tethys_cli.install_commands.run_portal_install', return_value=False)
+    @mock.patch('tethys_cli.install_commands.run_services')
+    @mock.patch('tethys_cli.install_commands.exit')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_skip_input_file(self, mock_pretty_output, mock_exit, _, __, ___, ____, _____, ______):
         file_path = os.path.join(self.root_app_path, 'install-skip-setup.yml')
         mock_exit.side_effect = SystemExit
@@ -331,16 +331,15 @@ class TestInstallCommands(TestCase):
         self.assertEqual("Skipping package installation, Skip option found.", po_call_args[0][0][0])
         mock_exit.assert_called_with(0)
 
-    @mock.patch('tethys_apps.cli.install_commands.run_services')
-    @mock.patch('tethys_apps.cli.install_commands.call')
-    @mock.patch('tethys_apps.cli.install_commands.conda_run', return_value=['', '', 1])
-    @mock.patch('tethys_apps.cli.install_commands.exit')
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.run_services')
+    @mock.patch('tethys_cli.install_commands.call')
+    @mock.patch('tethys_cli.install_commands.conda_run', return_value=['', '', 1])
+    @mock.patch('tethys_cli.install_commands.exit')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_conda_and_pip_package_install(self, mock_pretty_output, mock_exit, mock_conda_run, mock_call, _):
         file_path = os.path.join(self.root_app_path, 'install-dep.yml')
         args = mock.MagicMock(file=file_path, develop=False, verbose=False, services_file=None)
         mock_exit.side_effect = SystemExit
-
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
         mock_conda_run.assert_called_with(Commands.INSTALL, '-c', 'tacaswell', 'geojson', use_exception_handler=False,
@@ -363,8 +362,8 @@ class TestInstallCommands(TestCase):
         mock_exit.assert_called_with(0)
 
     @mock.patch('builtins.input', side_effect=['x', 5])
-    @mock.patch('tethys_apps.cli.install_commands.get_app_settings')
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.get_app_settings')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_interactive_custom_setting_set(self, mock_pretty_output, mock_get_settings, _):
         mock_cs = mock.MagicMock()
         mock_cs.name = 'mock_cs'
@@ -382,8 +381,8 @@ class TestInstallCommands(TestCase):
         self.assertEqual(mock_cs.name + " successfully set with value: 5.", po_call_args[7][0][0])
 
     @mock.patch('builtins.input', side_effect=[''])
-    @mock.patch('tethys_apps.cli.install_commands.get_app_settings')
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.get_app_settings')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_interactive_custom_setting_skip(self, mock_pretty_output, mock_get_settings, _):
         mock_cs = mock.MagicMock()
         mock_cs.name = 'mock_cs'
@@ -398,9 +397,9 @@ class TestInstallCommands(TestCase):
         self.assertEqual(f"Skipping setup of {mock_cs.name}", po_call_args[5][0][0])
 
     @mock.patch('builtins.input', side_effect=KeyboardInterrupt)
-    @mock.patch('tethys_apps.cli.install_commands.exit')
-    @mock.patch('tethys_apps.cli.install_commands.get_app_settings')
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.exit')
+    @mock.patch('tethys_cli.install_commands.get_app_settings')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_interactive_custom_setting_interrupt(self, mock_pretty_output, mock_get_settings, mock_exit, _):
         mock_cs = mock.MagicMock()
         mock_cs.name = 'mock_cs'
@@ -419,15 +418,15 @@ class TestInstallCommands(TestCase):
         mock_exit.assert_called_with(0)
 
     @mock.patch('builtins.input', side_effect=['1', '1', '', KeyboardInterrupt])
-    @mock.patch('tethys_apps.cli.install_commands.get_setting_type', return_value='persistent')
-    @mock.patch('tethys_apps.cli.install_commands.get_service_from_id', side_effect=ValueError)
-    @mock.patch('tethys_apps.cli.install_commands.get_service_from_name', side_effect=[False, {'service_type': 'st',
+    @mock.patch('tethys_cli.install_commands.get_setting_type', return_value='persistent')
+    @mock.patch('tethys_cli.install_commands.get_service_from_id', side_effect=ValueError)
+    @mock.patch('tethys_cli.install_commands.get_service_from_name', side_effect=[False, {'service_type': 'st',
                                                                                                'linkParam': 'lp'}])
-    @mock.patch('tethys_apps.cli.install_commands.exit')
-    @mock.patch('tethys_apps.cli.install_commands.services_list_command')
-    @mock.patch('tethys_apps.cli.install_commands.get_app_settings')
-    @mock.patch('tethys_apps.cli.install_commands.link_service_to_app_setting')
-    @mock.patch('tethys_apps.cli.cli_colors.pretty_output')
+    @mock.patch('tethys_cli.install_commands.exit')
+    @mock.patch('tethys_cli.install_commands.services_list_command')
+    @mock.patch('tethys_cli.install_commands.get_app_settings')
+    @mock.patch('tethys_cli.install_commands.link_service_to_app_setting')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_interactive_service_setting_all(self, mock_pretty_output, mock_lstas, mock_get_settings, mock_slc,
                                              mock_exit, ____, ___, __, _):
         mock_ss = mock.MagicMock()

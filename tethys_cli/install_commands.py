@@ -6,8 +6,8 @@ from argparse import Namespace
 from conda.cli.python_api import run_command as conda_run, Commands
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
-from tethys_apps.cli.cli_colors import write_msg, write_error, write_warning, write_success
-from tethys_apps.cli.services_commands import services_list_command
+from tethys_cli.cli_colors import write_msg, write_error, write_warning, write_success
+from tethys_cli.services_commands import services_list_command
 from tethys_apps.utilities import link_service_to_app_setting, get_app_settings
 
 FNULL = open(os.devnull, 'w')
@@ -18,6 +18,33 @@ serviceLinkParam = {
     "persistent": 'ps_database',
     'wps': 'wps'
 }
+
+
+def add_install_parser(subparsers):
+    # Install Commands
+
+    application_install_parser = subparsers.add_parser('install', help='Install and Initialize Applications')
+    application_install_parser.add_argument('-d', '--develop',
+                                            help='Will run setup.py develop instead of setup.py install',
+                                            action="store_true")
+    application_install_parser.add_argument('-f', '--file', type=str, help='The path to the Install file. ')
+    application_install_parser.add_argument('-p', '--portal-file', type=str,
+                                            help='The path to the Portal initialization config file')
+    application_install_parser.add_argument('-s', '--services-file', type=str,
+                                            help='The path to the Services.yml config file')
+    application_install_parser.add_argument('--force-services',
+                                            help='Force Services.yml file over portal.yml file', action="store_true")
+    application_install_parser.add_argument('-q', '--quiet',
+                                            help='Skips interactive mode.',
+                                            action="store_true")
+    application_install_parser.add_argument('-n', '--no-sync',
+                                            help='Skips syncstores when linked persistent stores are found.',
+                                            action="store_true")
+    application_install_parser.add_argument('-v', '--verbose',
+                                            help='Will show all pip install output when enabled.',
+                                            action="store_true")
+    # clean
+    application_install_parser.set_defaults(func=install_command)
 
 
 def open_file(file_path):

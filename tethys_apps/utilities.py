@@ -139,7 +139,7 @@ def get_app_settings(app):
     Returns:
         dict (linked_settings, unlinked_settings): Dictionary with two keys: linked_settings(list) - list of linked settings, unlinked_settings(list) - list of unlinked settings  # noqa: E501
     """
-    from tethys_apps.cli.cli_colors import write_error
+    from tethys_cli.cli_colors import write_error
     from tethys_apps.models import (TethysApp, PersistentStoreConnectionSetting, PersistentStoreDatabaseSetting,
                                     SpatialDatasetServiceSetting, DatasetServiceSetting, WebProcessingServiceSetting,
                                     CustomSetting)
