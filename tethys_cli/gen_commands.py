@@ -188,13 +188,16 @@ def gen_nginx_service(args):
     context = {}
     return context
 
+
 def gen_portal_yaml(args):
     context = {}
     return context
 
+
 def gen_services_yaml(args):
     context = {}
     return context
+
 
 def gen_install(args):
     print('Please review the generated install.yml file and fill in the appropriate information '
