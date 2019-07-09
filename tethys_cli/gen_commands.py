@@ -22,23 +22,25 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
 
 GEN_SETTINGS_OPTION = 'settings'
 GEN_APACHE_OPTION = 'apache'
-GEN_UWSGI_SERVICE_OPTION = 'uwsgi_service'
-GEN_UWSGI_SETTINGS_OPTION = 'uwsgi_settings'
+GEN_ASGI_SERVICE_OPTION = 'asgi_service'
 GEN_NGINX_OPTION = 'nginx'
+GEN_NGINX_SERVICE_OPTION = 'nginx_service'
 
-FILE_NAMES = {GEN_SETTINGS_OPTION: 'settings.py',
-              GEN_APACHE_OPTION: 'tethys-default.conf',
-              GEN_UWSGI_SERVICE_OPTION: 'tethys.uwsgi.service',
-              GEN_UWSGI_SETTINGS_OPTION: 'tethys_uwsgi.yml',
-              GEN_NGINX_OPTION: 'tethys_nginx.conf',
-              }
+FILE_NAMES = {
+    GEN_SETTINGS_OPTION: 'settings.py',
+    GEN_APACHE_OPTION: 'tethys-default.conf',
+    GEN_ASGI_SERVICE_OPTION: 'asgi_supervisord.conf',
+    GEN_NGINX_OPTION: 'tethys_nginx.conf',
+    GEN_NGINX_SERVICE_OPTION: 'nginx_supervisord.conf',
+}
 
-VALID_GEN_OBJECTS = (GEN_SETTINGS_OPTION,
-                     # GEN_APACHE_OPTION,
-                     GEN_UWSGI_SERVICE_OPTION,
-                     GEN_UWSGI_SETTINGS_OPTION,
-                     GEN_NGINX_OPTION,
-                     )
+VALID_GEN_OBJECTS = (
+    GEN_SETTINGS_OPTION,
+    # GEN_APACHE_OPTION,
+    GEN_ASGI_SERVICE_OPTION,
+    GEN_NGINX_OPTION,
+    GEN_NGINX_SERVICE_OPTION,
+)
 
 TETHYS_SRC = get_tethys_src_dir()
 
@@ -58,8 +60,8 @@ def add_gen_parser(subparsers):
                                  'e.g.: "[\'127.0.0.1\', \'localhost\']"')
     gen_parser.add_argument('--client-max-body-size', dest='client_max_body_size',
                             help='Populates the client_max_body_size parameter for nginx config. Defaults to "75M".')
-    gen_parser.add_argument('--uwsgi-processes', dest='uwsgi_processes',
-                            help='The maximum number of uwsgi worker processes. Defaults to 10.')
+    gen_parser.add_argument('--asgi-processes', dest='asgi_processes',
+                            help='The maximum number of asgi worker processes. Defaults to 4.')
     gen_parser.add_argument('--db-name', dest='db_name',
                             help='Name for the Tethys database to be set in the settings file.')
     gen_parser.add_argument('--db-username', dest='db_username',
@@ -74,12 +76,15 @@ def add_gen_parser(subparsers):
                             help='Generate a new settings file for a production server.')
     gen_parser.add_argument('--open-portal', dest='open_portal',
                             help='Allow Open Portal Mode.')
+    gen_parser.add_argument('--tethys-port', dest='tethys_port',
+                            help='Port for the Tethys Server to run on in production. This is used when generating the '
+                                 'Daphne and nginx configuration files. Defaults to 8000.')
     gen_parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                             help='Overwrite existing file without prompting.')
     gen_parser.set_defaults(func=generate_command, allowed_host=None, allowed_hosts=None, client_max_body_size='75M',
-                            uwsgi_processes=10, db_name='tethys_platform', db_username='tethys_default',
+                            asgi_processes=4, db_name='tethys_platform', db_username='tethys_default',
                             db_password='pass', db_port=5436, db_dir='psql', production=False, open_portal=False,
-                            overwrite=False)
+                            tethys_port=8000, overwrite=False)
 
 
 def get_environment_value(value_name):
@@ -133,7 +138,7 @@ def gen_nginx(args):
     return context
 
 
-def gen_uwsgi_service(args):
+def gen_asgi_service(args):
     nginx_user = ''
     nginx_conf_path = '/etc/nginx/nginx.conf'
     if os.path.exists(nginx_conf_path):
@@ -144,6 +149,10 @@ def gen_uwsgi_service(args):
                     nginx_user = tokens[1].strip(';')
                     break
 
+    hostname = str(settings.ALLOWED_HOSTS[0]) if len(settings.ALLOWED_HOSTS) > 0 else '127.0.0.1'
+    conda_home = get_environment_value('CONDA_HOME')
+    conda_env_name = get_environment_value('CONDA_ENV_NAME')
+
     user_option_prefix = ''
 
     try:
@@ -153,24 +162,21 @@ def gen_uwsgi_service(args):
     except Exception:
         pass
 
-    context = gen_uwsgi_settings(args)
-    context.update({
+    context = {
         'nginx_user': nginx_user,
+        'hostname': hostname,
+        'port': args.tethys_port,
+        'asgi_processes': args.asgi_processes,
+        'conda_home': conda_home,
+        'conda_env_name': conda_env_name,
         'tethys_src': TETHYS_SRC,
         'user_option_prefix': user_option_prefix
-    })
+    }
     return context
 
 
-def gen_uwsgi_settings(args):
-    conda_home = get_environment_value('CONDA_HOME')
-    conda_env_name = get_environment_value('CONDA_ENV_NAME')
-
-    context = {
-        'conda_home': conda_home,
-        'conda_env_name': conda_env_name,
-        'uwsgi_processes': args.uwsgi_processes
-    }
+def gen_nginx_service(args):
+    context = {}
     return context
 
 
@@ -230,9 +236,9 @@ def render_template(file_type, context, destination_path):
 
 gen_commands = {
     GEN_SETTINGS_OPTION: gen_settings,
+    GEN_ASGI_SERVICE_OPTION: gen_asgi_service,
     GEN_NGINX_OPTION: gen_nginx,
-    GEN_UWSGI_SERVICE_OPTION: gen_uwsgi_service,
-    GEN_UWSGI_SETTINGS_OPTION: gen_uwsgi_settings,
+    GEN_NGINX_SERVICE_OPTION: gen_nginx_service,
 }
 
 
