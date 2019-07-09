@@ -41,4 +41,19 @@ def tethys_apps_context(request):
             if hasattr(app, 'enable_feedback'):
                 context['tethys_app']['enable_feedback'] = app.enable_feedback
 
+    # Dependency Versions
+    context.update({
+        'tethys': {
+            'jquery': {
+                'version': '3.4.1',
+                'css_integrity': 'sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=',
+                'js_integrity': 'sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd'
+            },
+            'bootstrap': {
+                'version': '3.4.1',
+                'integrity': 'sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu'
+            }
+        }
+    })
+
     return context
