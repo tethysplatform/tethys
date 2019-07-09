@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 import os
+import ast
 import string
 import random
 from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir
@@ -121,15 +122,94 @@ def generate_command(args):
     if args.type == GEN_SETTINGS_OPTION:
         # Generate context variables
         secret_key = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(50)])
+        installed_apps = [
+            'django.contrib.admin',
+            'django.contrib.auth',
+            'django.contrib.contenttypes',
+            'django.contrib.sessions',
+            'django.contrib.messages',
+            'django.contrib.staticfiles',
+            'django_gravatar',
+            'bootstrap3',
+            'termsandconditions',
+            'tethys_config',
+            'tethys_apps',
+            'tethys_gizmos',
+            'tethys_services',
+            'tethys_compute',
+            'tethys_quotas',
+            'social_django',
+            'guardian',
+            'session_security',
+            'captcha',
+            'rest_framework',
+            'rest_framework.authtoken',
+            'analytical',
+            'channels',
+        ]
+
+        if args.add_apps:
+            if settings.INSTALLED_APPS:
+                installed_apps = settings.INSTALLED_APPS
+
+            for i in ast.literal_eval(args.add_apps):
+                if str(i) not in installed_apps:
+                    installed_apps.append(str(i))
+
+        elif args.add_app and str(args.add_app) not in installed_apps:
+            if settings.INSTALLED_APPS:
+                installed_apps = settings.INSTALLED_APPS
+
+            installed_apps.append(str(args.add_app))
+
+        if args.remove_apps:
+            if settings.INSTALLED_APPS:
+                installed_apps = settings.INSTALLED_APPS
+
+            for i in ast.literal_eval(args.remove_apps):
+                if str(i) in installed_apps:
+                    installed_apps.remove(str(i))
+        elif args.remove_app and str(args.remove_app) in installed_apps:
+            if settings.INSTALLED_APPS:
+                installed_apps = settings.INSTALLED_APPS
+
+            installed_apps.remove(str(args.remove_app))
+
+        if args.session_expire_browser and args.session_expire_browser not in [0, '0', 'f', 'F', 'False', 'false']:
+            session_expire_browser = True
+        else:
+            session_expire_browser = False
+
+        try:
+            session_warning = int(args.session_warning)
+        except:
+            session_warning = 840
+
+        try:
+            session_expire = int(args.session_expire)
+        except:
+            session_expire = 900
+
+        if args.static_root and os.path.exists(args.static_root):
+            static_root = args.static_root
+        else:
+            static_root = os.path.join(TETHYS_HOME, 'static')
+
         context.update({'secret_key': secret_key,
                         'allowed_host': args.allowed_host,
                         'allowed_hosts': args.allowed_hosts,
                         'db_username': args.db_username,
                         'db_password': args.db_password,
                         'db_port': args.db_port,
+                        'db_host': args.db_host,
                         'tethys_home': TETHYS_HOME,
                         'production': args.production,
-                        'open_portal': args.open_portal
+                        'open_portal': args.open_portal,
+                        'installed_apps': installed_apps,
+                        'session_expire_browser': session_expire_browser,
+                        'session_warning': session_warning,
+                        'session_expire': session_expire,
+                        'static_root': static_root
                         })
 
     if args.type == GEN_NGINX_OPTION:

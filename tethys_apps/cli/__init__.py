@@ -77,6 +77,8 @@ def tethys_command():
                             help='Password for the Tethys Database server to be set in the settings file.')
     gen_parser.add_argument('--db-port', dest='db_port',
                             help='Port for the Tethys Database server to be set in the settings file.')
+    gen_parser.add_argument('--db-host', dest='db_host',
+                            help='Host for the Tethys Database server to be set in the settings file.')
     gen_parser.add_argument('--production', dest='production', action='store_true',
                             help='Generate a new settings file for a production server.')
     gen_parser.add_argument('--open-portal', dest='open_portal',
@@ -86,9 +88,31 @@ def tethys_command():
                                  'Daphne and nginx configuration files. Defaults to 8000.')
     gen_parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                             help='Overwrite existing file without prompting.')
+    gen_parser.add_argument('--add-apps', dest='add_apps',
+                            help='Enable applications by adding them to the INSTALLED_APPS in settings.py. '
+                                 'e.g.: "[\'grappelli\', \'django_registration\']"')
+    gen_parser.add_argument('--add-app', dest='add_app',
+                            help='Enable an application by adding it to the INSTALLED_APPS in settings.py. '
+                                 'e.g.: grappelli')
+    gen_parser.add_argument('--remove-apps', dest='remove_apps',
+                            help='Remove applications from the INSTALLED_APPS in settings.py. '
+                                 'e.g.: "[\'grappelli\', \'django_registration\']"')
+    gen_parser.add_argument('--remove-app', dest='remove_app',
+                            help='Remove an application from the INSTALLED_APPS in settings.py. '
+                                 'e.g.: grappelli')
+    gen_parser.add_argument('--session-expire-browser', dest='session_expire_browser',
+                            help='Forces user logout once the browser has been closed. Defaults to True')
+    gen_parser.add_argument('--session-warning', dest='session_warning',
+                            help='Warns user of forced logout after indicated number of seconds. Defaults to 840')
+    gen_parser.add_argument('--session-expire', dest='session_expire',
+                            help='Forces user logout after a specified number of seconds. Defaults to 900')
+    gen_parser.add_argument('--static-root', dest='static_root',
+                            help='For production. Path to static files diretory. Defaults to ${TETHYS_HOME}/static}')
     gen_parser.set_defaults(func=generate_command, allowed_host=None, allowed_hosts=None, client_max_body_size='75M',
                             asgi_processes=4, db_username='tethys_default', db_password='pass', db_port=5436,
-                            production=False, open_portal=False, tethys_port=8000, overwrite=False)
+                            db_host='127.0.0.1', production=False, open_portal=False, tethys_port=8000, overwrite=False,
+                            add_apps=None, add_app=None, remove_apps=None, remove_app=None, session_expire_browser=True,
+                            session_warning=840, session_expire=900)
 
     # Setup start server command
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
