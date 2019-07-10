@@ -107,7 +107,7 @@ class TestServiceInstallHelpers(TestCase):
         mock_call.assert_called_with(['tethys', 'syncstores', app_name], )
 
     @mock.patch('tethys_cli.install_commands.get_service_from_name', return_value={'service_type': 'service_type',
-                                                                                        'linkParam': 'linkParam'})
+                                                                                   'linkParam': 'linkParam'})
     @mock.patch('tethys_cli.install_commands.link_service_to_app_setting')
     def test_find_and_link(self, mock_link_service_to_app_setting, _):
         service_type = 'service_type'
@@ -421,7 +421,7 @@ class TestInstallCommands(TestCase):
     @mock.patch('tethys_cli.install_commands.get_setting_type', return_value='persistent')
     @mock.patch('tethys_cli.install_commands.get_service_from_id', side_effect=ValueError)
     @mock.patch('tethys_cli.install_commands.get_service_from_name', side_effect=[False, {'service_type': 'st',
-                                                                                               'linkParam': 'lp'}])
+                                                                                          'linkParam': 'lp'}])
     @mock.patch('tethys_cli.install_commands.exit')
     @mock.patch('tethys_cli.install_commands.services_list_command')
     @mock.patch('tethys_cli.install_commands.get_app_settings')

@@ -1,5 +1,5 @@
 from tethys_apps.utilities import get_app_settings
-from tethys_cli.cli_colors import pretty_output, BOLD, FG_RED
+from tethys_cli.cli_colors import pretty_output, BOLD
 from tethys_cli.cli_helpers import load_apps
 
 

@@ -2,16 +2,19 @@ import unittest
 from unittest import mock
 
 import tethys_cli.manage_commands as manage_commands
-from tethys_cli.manage_commands import MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC, \
-    MANAGE_COLLECTWORKSPACES, MANAGE_COLLECT, MANAGE_CREATESUPERUSER, MANAGE_SYNC
+from tethys_cli.manage_commands import (
+    MANAGE_START,
+    MANAGE_COLLECTSTATIC,
+    MANAGE_COLLECTWORKSPACES,
+    MANAGE_COLLECT,
+    MANAGE_CREATESUPERUSER
+)
 
 
 class TestManageCommands(unittest.TestCase):
 
     def setUp(self):
-        load_apps_patcher = mock.patch('tethys_cli.manage_commands.load_apps')
-        load_apps_patcher.start()
-        self.addCleanup(load_apps_patcher.stop)
+        pass
 
     def tearDown(self):
         pass
@@ -48,22 +51,6 @@ class TestManageCommands(unittest.TestCase):
         self.assertEqual('python', process_call_args[0][0][0][0])
         self.assertIn('manage.py', process_call_args[0][0][0][1])
         self.assertEqual('runserver', process_call_args[0][0][0][2])
-
-    @mock.patch('tethys_cli.manage_commands.run_process')
-    def test_manage_command_manage_syncdb(self, mock_run_process):
-        # mock the input args
-        args = mock.MagicMock(manage='', command=MANAGE_SYNCDB, port='8080')
-
-        # call the testing method with the mock args
-        manage_commands.manage_command(args)
-
-        # get the call arguments for the run process mock method
-        process_call_args = mock_run_process.call_args_list
-
-        # primary process
-        self.assertEquals('python', process_call_args[0][0][0][0])
-        self.assertIn('manage.py', process_call_args[0][0][0][1])
-        self.assertEquals('migrate', process_call_args[0][0][0][2])
 
     @mock.patch('tethys_cli.manage_commands.run_process')
     def test_manage_command_manage_manage_collectstatic(self, mock_run_process):
@@ -212,15 +199,3 @@ class TestManageCommands(unittest.TestCase):
         self.assertEqual('python', process_call_args[0][0][0][0])
         self.assertIn('manage.py', process_call_args[0][0][0][1])
         self.assertEqual('createsuperuser', process_call_args[0][0][0][2])
-
-    @mock.patch('tethys_apps.harvester.SingletonHarvester')
-    def test_manage_command_manage_manage_sync(self, MockSingletonHarvester):
-        # mock the input args
-        args = mock.MagicMock(manage='', command=MANAGE_SYNC, port='8080')
-
-        # call the testing method with the mock args
-        manage_commands.manage_command(args)
-
-        # mock the singleton harvester
-        MockSingletonHarvester.assert_called()
-        MockSingletonHarvester().harvest.assert_called()

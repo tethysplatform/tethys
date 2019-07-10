@@ -254,21 +254,6 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual('5555', call_args[0][0][0].port)
 
     @mock.patch('tethys_cli.manage_commands.manage_command')
-    def test_manage_subcommand_syncdb(self, mock_manage_command):
-        testargs = ['tethys', 'manage', 'syncdb']
-
-        with mock.patch.object(sys, 'argv', testargs):
-            tethys_command()
-
-        mock_manage_command.assert_called()
-        call_args = mock_manage_command.call_args_list
-        self.assertEqual('syncdb', call_args[0][0][0].command)
-        self.assertEqual(False, call_args[0][0][0].force)
-        self.assertEqual(None, call_args[0][0][0].manage)
-        self.assertEqual(False, call_args[0][0][0].noinput)
-        self.assertEqual(None, call_args[0][0][0].port)
-
-    @mock.patch('tethys_cli.manage_commands.manage_command')
     def test_manage_subcommand_collectstatic(self, mock_manage_command):
         testargs = ['tethys', 'manage', 'collectstatic']
 
@@ -323,21 +308,6 @@ class TethysCommandTests(unittest.TestCase):
         mock_manage_command.assert_called()
         call_args = mock_manage_command.call_args_list
         self.assertEqual('createsuperuser', call_args[0][0][0].command)
-        self.assertEqual(False, call_args[0][0][0].force)
-        self.assertEqual(None, call_args[0][0][0].manage)
-        self.assertEqual(False, call_args[0][0][0].noinput)
-        self.assertEqual(None, call_args[0][0][0].port)
-
-    @mock.patch('tethys_cli.manage_commands.manage_command')
-    def test_manage_subcommand_sync(self, mock_manage_command):
-        testargs = ['tethys', 'manage', 'sync']
-
-        with mock.patch.object(sys, 'argv', testargs):
-            tethys_command()
-
-        mock_manage_command.assert_called()
-        call_args = mock_manage_command.call_args_list
-        self.assertEqual('sync', call_args[0][0][0].command)
         self.assertEqual(False, call_args[0][0][0].force)
         self.assertEqual(None, call_args[0][0][0].manage)
         self.assertEqual(False, call_args[0][0][0].noinput)

@@ -82,11 +82,18 @@ def create_tethys_db(port=None, db_name=None, username=None, password=None,
         create_db_user(port=port, username=superuser_name, password=superuser_password, is_superuser=True)
 
 
-def sync_tethys_db(db_alias=None, **kwargs):
+def migrate_tethys_db(db_alias=None, **kwargs):
     manage_path = get_manage_path(None)
     db_alias = db_alias or 'default'
     args = ['python', manage_path, 'migrate', '--database', db_alias]
     run_process(args)
+
+
+def sync_tethys_apps_db(**kwargs):
+    load_apps()
+    from tethys_apps.harvester import SingletonHarvester
+    harvester = SingletonHarvester()
+    harvester.harvest()
 
 
 def create_portal_superuser(portal_superuser_name='admin', portal_superuser_email='', portal_superuser_password='pass',
@@ -97,10 +104,11 @@ def create_portal_superuser(portal_superuser_name='admin', portal_superuser_emai
 
 
 def configure_tethys_db(**kwargs):
-    init_db_server(**kwargs)
-    start_db_server(**kwargs)
+    if kwargs.get('db_dir') is not None:
+        init_db_server(**kwargs)
+        start_db_server(**kwargs)
     create_tethys_db(**kwargs)
-    sync_tethys_db(**kwargs)
+    migrate_tethys_db(**kwargs)
     create_portal_superuser(**kwargs)
 
 
@@ -129,12 +137,13 @@ def process_args(args):
 
 DB_COMMANDS = dict(
     init=init_db_server,
-    create=create_tethys_db,
     start=start_db_server,
     stop=stop_db_server,
-    sync=sync_tethys_db,
+    create=create_tethys_db,
+    migrate=migrate_tethys_db,
     createsuperuser=create_portal_superuser,
     configure=configure_tethys_db,
+    sync=sync_tethys_apps_db,
 )
 
 

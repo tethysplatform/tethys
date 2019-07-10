@@ -103,8 +103,8 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_asgi_service_option_nginx_conf_redhat(self, mock_os_path_isfile, mock_file, mock_env,
-                                                                     mock_os_path_exists, mock_linux_distribution,
-                                                                     mock_render_template):
+                                                                    mock_os_path_exists, mock_linux_distribution,
+                                                                    mock_render_template):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
@@ -132,8 +132,8 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_asgi_service_option_nginx_conf_ubuntu(self, mock_os_path_isfile, mock_file, mock_env,
-                                                                     mock_os_path_exists, mock_linux_distribution,
-                                                                     mock_render_template):
+                                                                    mock_os_path_exists, mock_linux_distribution,
+                                                                    mock_render_template):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
@@ -161,8 +161,8 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_asgi_service_option_nginx_conf_not_linux(self, mock_os_path_isfile, mock_file, mock_env,
-                                                                        mock_os_path_exists, mock_linux_distribution,
-                                                                        mock_render_template):
+                                                                       mock_os_path_exists, mock_linux_distribution,
+                                                                       mock_render_template):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
@@ -205,7 +205,7 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_asgi_service_option_distro(self, mock_os_path_isfile, mock_file, mock_env,
-                                                          mock_distribution):
+                                                         mock_distribution):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
@@ -225,7 +225,7 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_asgi_settings_option_directory(self, mock_os_path_isfile, mock_file, mock_env,
-                                                              mock_os_path_isdir):
+                                                             mock_os_path_isdir):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = '/foo/temp'
@@ -247,7 +247,7 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch('tethys_cli.gen_commands.get_environment_value')
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_asgi_settings_option_bad_directory(self, mock_os_path_isfile, mock_env,
-                                                                  mock_os_path_isdir, mock_exit, mock_print):
+                                                                 mock_os_path_isdir, mock_exit, mock_print):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = '/foo/temp'
@@ -277,7 +277,7 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch('tethys_cli.gen_commands.get_environment_value')
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_asgi_settings_pre_existing_input_exit(self, mock_os_path_isfile, mock_env,
-                                                                     mock_input, mock_exit, mock_print):
+                                                                    mock_input, mock_exit, mock_print):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None

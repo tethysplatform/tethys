@@ -8,15 +8,13 @@
 ********************************************************************************
 """
 
-from tethys_cli.cli_helpers import get_manage_path, run_process, load_apps
+from tethys_cli.cli_helpers import get_manage_path, run_process
 
 MANAGE_START = 'start'
-MANAGE_SYNCDB = 'syncdb'
 MANAGE_COLLECTSTATIC = 'collectstatic'
 MANAGE_COLLECTWORKSPACES = 'collectworkspaces'
 MANAGE_COLLECT = 'collectall'
 MANAGE_CREATESUPERUSER = 'createsuperuser'
-MANAGE_SYNC = 'sync'
 MANAGE_SHELL = 'shell'
 
 
@@ -24,8 +22,8 @@ def add_manage_parser(subparsers):
     # Setup start server command
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
     manage_parser.add_argument('command', help='Management command to run.',
-                               choices=[MANAGE_START, MANAGE_SYNCDB, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
-                                        MANAGE_COLLECT, MANAGE_CREATESUPERUSER, MANAGE_SYNC])
+                               choices=[MANAGE_START, MANAGE_COLLECTSTATIC, MANAGE_COLLECTWORKSPACES,
+                                        MANAGE_COLLECT, MANAGE_CREATESUPERUSER])
     manage_parser.add_argument('-m', '--manage', help='Absolute path to manage.py for Tethys Platform installation.')
     manage_parser.add_argument('-p', '--port', type=str,
                                help='Host and/or port on which to bind the development server.')
@@ -52,8 +50,6 @@ def manage_command(args):
             primary_process = ['python', manage_path, 'runserver', args.port]
         else:
             primary_process = ['python', manage_path, 'runserver']
-    elif args.command == MANAGE_SYNCDB:
-        primary_process = ['python', manage_path, 'migrate']
 
     elif args.command == MANAGE_COLLECTSTATIC:
         # Run pre_collectstatic
@@ -92,12 +88,6 @@ def manage_command(args):
 
     elif args.command == MANAGE_CREATESUPERUSER:
         primary_process = ['python', manage_path, 'createsuperuser']
-
-    elif args.command == MANAGE_SYNC:
-        load_apps()
-        from tethys_apps.harvester import SingletonHarvester
-        harvester = SingletonHarvester()
-        harvester.harvest()
 
     if primary_process:
         run_process(primary_process)

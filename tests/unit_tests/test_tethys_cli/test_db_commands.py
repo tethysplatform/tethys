@@ -142,9 +142,9 @@ class TestCommandTests(unittest.TestCase):
         self.mock_run_process.assert_called_with(['pg_ctl', '-U', 'postgres', '-D', 'foo/data', 'stop'])
 
     @mock.patch('tethys_cli.db_commands.get_manage_path', return_value='foo/manage.py')
-    def test_db_command_sync(self, mock_get_manage_path):
+    def test_db_command_migrate(self, mock_get_manage_path):
         mock_args = mock.MagicMock()
-        mock_args.command = 'sync'
+        mock_args.command = 'migrate'
         db_command(mock_args)
         mock_get_manage_path.assert_called()
         self.mock_run_process.assert_called_with(['python', 'foo/manage.py', 'migrate', '--database', 'test'])
@@ -159,16 +159,28 @@ class TestCommandTests(unittest.TestCase):
         mock_create_superuser.assert_called_with('PFoo', 'PEmail', 'PBar')
 
     @mock.patch('tethys_cli.db_commands.create_portal_superuser')
-    @mock.patch('tethys_cli.db_commands.sync_tethys_db')
+    @mock.patch('tethys_cli.db_commands.migrate_tethys_db')
     @mock.patch('tethys_cli.db_commands.create_tethys_db')
     @mock.patch('tethys_cli.db_commands.start_db_server')
     @mock.patch('tethys_cli.db_commands.init_db_server')
-    def test_db_command_configure(self, mock_init, mock_start, mock_create, mock_sync, mock_createsuperuser):
+    def test_db_command_configure(self, mock_init, mock_start, mock_create, mock_migrate, mock_createsuperuser):
         mock_args = mock.MagicMock()
         mock_args.command = 'configure'
         db_command(mock_args)
         mock_init.assert_called_with(**self.options)
         mock_start.assert_called_with(**self.options)
         mock_create.assert_called_with(**self.options)
-        mock_sync.assert_called_with(**self.options)
+        mock_migrate.assert_called_with(**self.options)
         mock_createsuperuser.assert_called_with(**self.options)
+
+    @mock.patch('tethys_apps.harvester.SingletonHarvester')
+    def test_db_command_sync(self, MockSingletonHarvester):
+        # mock the input args
+        args = mock.MagicMock(manage='', command='sync', port='8080')
+
+        # call the testing method with the mock args
+        db_command(args)
+
+        # mock the singleton harvester
+        MockSingletonHarvester.assert_called()
+        MockSingletonHarvester().harvest.assert_called()
