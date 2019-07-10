@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 from tethys_cli.cli_colors import write_msg, write_error, write_warning, write_success
 from tethys_cli.services_commands import services_list_command
+from tethys_cli.cli_helpers import load_apps
 from tethys_apps.utilities import link_service_to_app_setting, get_app_settings
 
 FNULL = open(os.devnull, 'w')
@@ -376,6 +377,7 @@ def install_command(args):
     """
     install Command
     """
+    load_apps()
     app_name = None
     skip_config = False
     file_path = args.file
