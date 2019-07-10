@@ -67,11 +67,11 @@ def create_db_user(hostname=None, port=None, username=None, password=None, db_na
     else:
         command = f"CREATE USER {username} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '{password}';"
 
-    args = ['psql', '-h', hostname,'-U', 'postgres', '-p', f'{port}', '--command', command]
+    args = ['psql', '-h', hostname, '-U', 'postgres', '-p', f'{port}', '--command', command]
     run_process(args)
     if not is_superuser:
-        args = ['createdb', '-h', hostname, '-U', 'postgres', '-p', f'{port}', '-O', username, db_name, '-E', 'utf-8', '-T',
-                'template0']
+        args = ['createdb', '-h', hostname, '-U', 'postgres', '-p', f'{port}', '-O', username, db_name, '-E', 'utf-8',
+                '-T', 'template0']
         run_process(args)
 
 
@@ -79,7 +79,9 @@ def create_tethys_db(hostname=None, port=None, db_name=None, username=None, pass
                      superuser_name=None, superuser_password=None, **kwargs):
     create_db_user(hostname=hostname, port=port, username=username, password=password, db_name=db_name)
     if superuser_name is not None and superuser_password is not None:
-        create_db_user(hostname=hostname, port=port, username=superuser_name, password=superuser_password, is_superuser=True)
+        create_db_user(hostname=hostname, port=port,
+                       username=superuser_name, password=superuser_password,
+                       is_superuser=True)
 
 
 def migrate_tethys_db(db_alias=None, **kwargs):

@@ -109,7 +109,8 @@ class TestCommandTests(unittest.TestCase):
         self.assertEqual(call_args[0], mock.call(hostname=self.options['hostname'], port=self.options['port'],
                                                  username=self.options['username'], password=self.options['password'],
                                                  db_name=self.options['db_name']))
-        mock_create_db_user.assert_called_with(hostname=self.options['hostname'], port=self.options['port'], username=self.options['superuser_name'],
+        mock_create_db_user.assert_called_with(hostname=self.options['hostname'], port=self.options['port'],
+                                               username=self.options['superuser_name'],
                                                password=self.options['superuser_password'], is_superuser=True)
 
     def test_db_command_create_db_user(self):
@@ -117,9 +118,10 @@ class TestCommandTests(unittest.TestCase):
         call_args = self.mock_run_process.call_args_list
         command = f"CREATE USER {self.options['username']} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD " \
             f"'{self.options['password']}';"
-        self.assertEqual(call_args[0][0][0], ['psql', '-h', self.options['hostname'], '-U', 'postgres', '-p', '0000', '--command', command])
-        args = ['createdb', '-h', self.options['hostname'], '-U', 'postgres', '-p', self.options['port'], '-O', self.options['username'],
-                self.options['db_name'], '-E', 'utf-8', '-T', 'template0']
+        self.assertEqual(call_args[0][0][0], ['psql', '-h', self.options['hostname'], '-U', 'postgres', '-p', '0000',
+                                              '--command', command])
+        args = ['createdb', '-h', self.options['hostname'], '-U', 'postgres', '-p', self.options['port'], '-O',
+                self.options['username'], self.options['db_name'], '-E', 'utf-8', '-T', 'template0']
         self.mock_run_process.assert_called_with(args)
 
     def test_db_command_create_db_user_with_superuser(self):
@@ -127,7 +129,8 @@ class TestCommandTests(unittest.TestCase):
         call_args = self.mock_run_process.call_args_list
         command = f"CREATE USER {self.options['username']} WITH CREATEDB NOCREATEROLE SUPERUSER PASSWORD " \
             f"'{self.options['password']}';"
-        self.assertEqual(call_args[0][0][0], ['psql', '-h', self.options['hostname'], '-U', 'postgres', '-p', '0000', '--command', command])
+        self.assertEqual(call_args[0][0][0], ['psql', '-h', self.options['hostname'], '-U', 'postgres', '-p', '0000',
+                                              '--command', command])
 
     def test_db_command_start(self):
         mock_args = mock.MagicMock()
