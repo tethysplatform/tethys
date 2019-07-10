@@ -24,21 +24,21 @@ def add_db_parser(subparsers):
                            help='DB command to run.',
                            choices=list(DB_COMMANDS.keys()))
     db_parser.add_argument('-d', '--database', dest='db_alias',
-                           help="Name of the database options from settings.py to use.")
+                           help="Name of the database options from settings.py to use (e.g. 'default').")
     db_parser.add_argument('-n', '--username', dest='username',
-                           help="Name of super user to add to database when creating.")
+                           help="Name of database super user to add to database when creating.")
     db_parser.add_argument('-p', '--password', dest='password',
-                           help="Password for super user.")
+                           help="Password for the database super user.")
     db_parser.add_argument('-N', '--superuser-name', dest='superuser_name',
-                           help="Name of super user to add to database when creating.")
+                           help="Name of database super user to add to database when creating.")
     db_parser.add_argument('-P', '--superuser-password', dest='superuser_password',
-                           help="Password for super user.")
+                           help="Password for the database super user.")
     db_parser.add_argument('--portal-superuser-name', '--pn', dest='portal_superuser_name',
-                           help="Password for super user.")
+                           help="Name for the Tethys portal super user.")
     db_parser.add_argument('--portal-superuser-email', '--email', '--pe', dest='portal_superuser_email',
-                           help="Name of super user to add to database when creating.")
+                           help="Email of the Tethys portal super user.")
     db_parser.add_argument('--portal-superuser-password', '--pp', dest='portal_superuser_password',
-                           help="Password for super user.")
+                           help="Password for the Tethys portal super user.")
     db_parser.set_defaults(func=db_command, db_alias='default', username='tethys_default', password='pass',
                            superuser_name='tethys_super', superuser_password='pass',
                            portal_superuser_name='admin', portal_superuser_email='', portal_superuser_password='pass')
@@ -85,9 +85,6 @@ def create_tethys_db(port=None, db_name=None, username=None, password=None,
 def sync_tethys_db(db_alias=None, **kwargs):
     manage_path = get_manage_path(None)
     db_alias = db_alias or 'default'
-    args = ['python', manage_path, 'makemigrations']
-    run_process(args)
-
     args = ['python', manage_path, 'migrate', '--database', db_alias]
     run_process(args)
 
@@ -109,13 +106,15 @@ def configure_tethys_db(**kwargs):
 
 def process_args(args):
     db_settings = settings.DATABASES[args.db_alias]
-    try:
-        db_dir = db_settings['DIR']
-    except KeyError:
-        raise RuntimeError('The tethys db command can only be used with local databases.')
+    db_dir = None
+    if args.command in ['init', 'start', 'stop', 'configure']:
+        try:
+            db_dir = db_settings['DIR']
+        except KeyError:
+            raise RuntimeError(f'The tethys db {args.command} command can only be used with local databases.')
 
-    if not Path(db_dir).is_absolute():
-        db_dir = Path(get_tethys_home_dir()) / db_dir
+        if not Path(db_dir).is_absolute():
+            db_dir = Path(get_tethys_home_dir()) / db_dir
 
     options = vars(args)
     options.update(

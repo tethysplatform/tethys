@@ -160,7 +160,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(4, call_args[0][0][0].asgi_processes)
 
     @mock.patch('tethys_cli.gen_commands.generate_command')
-    def test_generate_subcommand_apache_settings_verbose_options(self, mock_gen_command):
+    def test_generate_subcommand_nginx_settings_verbose_options(self, mock_gen_command):
         testargs = ['tethys', 'gen', 'nginx', '-d', '/tmp/foo/bar', '--allowed-host', '127.0.0.1',
                     '--allowed-hosts', 'localhost', '--client-max-body-size', '123M', '--asgi-processes', '9',
                     '--db-username', 'foo_user', '--db-password', 'foo_pass', '--db-port', '5555',

@@ -51,7 +51,7 @@ class TestCommandTests(unittest.TestCase):
         mock_path.return_value = path
         path.is_absolute.return_value = False
         mock_args = mock.MagicMock()
-        mock_args.command = 'test'
+        mock_args.command = 'init'
         mock_args.db_alias = 'test'
         mock_vars.return_value = dict(
             username='foo',
@@ -80,7 +80,7 @@ class TestCommandTests(unittest.TestCase):
         mock_path.return_value = path
         path.is_absolute.return_value = False
         mock_args = mock.MagicMock()
-        mock_args.command = 'test'
+        mock_args.command = 'init'
         mock_args.db_alias = 'test'
         mock_vars.return_value = dict(
             username='foo',
@@ -147,7 +147,6 @@ class TestCommandTests(unittest.TestCase):
         mock_args.command = 'sync'
         db_command(mock_args)
         mock_get_manage_path.assert_called()
-        self.assertEqual(self.mock_run_process.call_args_list[0][0][0], ['python', 'foo/manage.py', 'makemigrations'])
         self.mock_run_process.assert_called_with(['python', 'foo/manage.py', 'migrate', '--database', 'test'])
 
     @mock.patch('django.contrib.auth.models.User.objects.create_superuser')
