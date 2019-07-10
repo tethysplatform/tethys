@@ -59,7 +59,7 @@ def stop_db_server(db_dir=None, **kwargs):
     run_process(args)
 
 
-def create_db_user(port=None, username=None, password=None, db_name=None, is_superuser=False, **kwargs):
+def create_db_user(hostname=None, port=None, username=None, password=None, db_name=None, is_superuser=False, **kwargs):
     db_name = db_name or username
 
     if is_superuser:
@@ -67,19 +67,19 @@ def create_db_user(port=None, username=None, password=None, db_name=None, is_sup
     else:
         command = f"CREATE USER {username} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '{password}';"
 
-    args = ['psql', '-U', 'postgres', '-p', f'{port}', '--command', command]
+    args = ['psql', '-h', hostname,'-U', 'postgres', '-p', f'{port}', '--command', command]
     run_process(args)
     if not is_superuser:
-        args = ['createdb', '-U', 'postgres', '-p', f'{port}', '-O', username, db_name, '-E', 'utf-8', '-T',
+        args = ['createdb', '-h', hostname, '-U', 'postgres', '-p', f'{port}', '-O', username, db_name, '-E', 'utf-8', '-T',
                 'template0']
         run_process(args)
 
 
-def create_tethys_db(port=None, db_name=None, username=None, password=None,
+def create_tethys_db(hostname=None, port=None, db_name=None, username=None, password=None,
                      superuser_name=None, superuser_password=None, **kwargs):
-    create_db_user(port=port, username=username, password=password, db_name=db_name)
+    create_db_user(hostname=hostname, port=port, username=username, password=password, db_name=db_name)
     if superuser_name is not None and superuser_password is not None:
-        create_db_user(port=port, username=superuser_name, password=superuser_password, is_superuser=True)
+        create_db_user(hostname=hostname, port=port, username=superuser_name, password=superuser_password, is_superuser=True)
 
 
 def migrate_tethys_db(db_alias=None, **kwargs):
@@ -128,6 +128,7 @@ def process_args(args):
     options.update(
         db_alias=args.db_alias,
         db_dir=db_dir,
+        hostname=db_settings.get('HOST'),
         port=db_settings.get('PORT'),
         db_name=db_settings.get('NAME'),
     )
