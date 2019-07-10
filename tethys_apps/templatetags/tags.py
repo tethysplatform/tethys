@@ -11,8 +11,8 @@ def get_tags_from_apps(apps):
     for app in apps:
         apps_list.append(app)
 
-    if len(apps_list) > 5:
-        for app in apps:
+    if len(apps.get('configured', [])) > 5:
+        for app in apps.get('configured'):
             tags = app.tags
             tags = [_f for _f in re.split("[,]+", tags) if _f]
             for tag in tags:
