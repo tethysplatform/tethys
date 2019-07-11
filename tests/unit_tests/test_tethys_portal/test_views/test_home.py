@@ -22,7 +22,7 @@ class TethysPortalHomeTests(unittest.TestCase):
         mock_settings.BYPASS_TETHYS_HOME_PAGE = True
         mock_redirect.return_value = 'foo'
         mock_render.return_value = 'bar'
-        self.assertEquals('foo', home(mock_request))
+        self.assertEqual('foo', home(mock_request))
         mock_render.assert_not_called()
         mock_redirect.assert_called_once_with('app_library')
 
@@ -37,7 +37,7 @@ class TethysPortalHomeTests(unittest.TestCase):
         mock_settings.ENABLE_OPEN_PORTAL = True
         mock_redirect.return_value = 'foo'
         mock_render.return_value = 'bar'
-        self.assertEquals('bar', home(mock_request))
+        self.assertEqual('bar', home(mock_request))
         mock_redirect.assert_not_called()
         mock_render.assert_called_once_with(mock_request, 'tethys_portal/home.html',
                                             {"ENABLE_OPEN_SIGNUP": mock_settings.ENABLE_OPEN_SIGNUP,

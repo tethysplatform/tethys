@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 from django.core.management.base import BaseCommand
-from tethys_apps.cli.cli_colors import TC_BLUE, TC_WARNING, TC_ENDC
+from tethys_cli.cli_colors import TC_BLUE, TC_WARNING, TC_ENDC
 
 ALL_APPS = 'all'
 

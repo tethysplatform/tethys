@@ -33,7 +33,7 @@ class TestTethysAppAdmin(unittest.TestCase):
         expected_template = 'tethys_portal/admin/edit_inline/tabular.html'
         TethysAppSettingInline.model = mock.MagicMock()
         ret = TethysAppSettingInline(mock.MagicMock(), mock.MagicMock())
-        self.assertEquals(expected_template, ret.template)
+        self.assertEqual(expected_template, ret.template)
 
     def test_has_delete_permission(self):
         TethysAppSettingInline.model = mock.MagicMock()
@@ -52,9 +52,9 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         ret = CustomSettingInline(mock.MagicMock(), mock.MagicMock())
 
-        self.assertEquals(expected_readonly_fields, ret.readonly_fields)
-        self.assertEquals(expected_fields, ret.fields)
-        self.assertEquals(expected_model, ret.model)
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_model, ret.model)
 
     def test_DatasetServiceSettingInline(self):
         expected_readonly_fields = ('name', 'description', 'required', 'engine')
@@ -63,9 +63,9 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         ret = DatasetServiceSettingInline(mock.MagicMock(), mock.MagicMock())
 
-        self.assertEquals(expected_readonly_fields, ret.readonly_fields)
-        self.assertEquals(expected_fields, ret.fields)
-        self.assertEquals(expected_model, ret.model)
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_model, ret.model)
 
     def test_SpatialDatasetServiceSettingInline(self):
         expected_readonly_fields = ('name', 'description', 'required', 'engine')
@@ -74,9 +74,9 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         ret = SpatialDatasetServiceSettingInline(mock.MagicMock(), mock.MagicMock())
 
-        self.assertEquals(expected_readonly_fields, ret.readonly_fields)
-        self.assertEquals(expected_fields, ret.fields)
-        self.assertEquals(expected_model, ret.model)
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_model, ret.model)
 
     def test_WebProcessingServiceSettingInline(self):
         expected_readonly_fields = ('name', 'description', 'required')
@@ -85,9 +85,9 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         ret = WebProcessingServiceSettingInline(mock.MagicMock(), mock.MagicMock())
 
-        self.assertEquals(expected_readonly_fields, ret.readonly_fields)
-        self.assertEquals(expected_fields, ret.fields)
-        self.assertEquals(expected_model, ret.model)
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_model, ret.model)
 
     def test_PersistentStoreConnectionSettingInline(self):
         expected_readonly_fields = ('name', 'description', 'required')
@@ -96,9 +96,9 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         ret = PersistentStoreConnectionSettingInline(mock.MagicMock(), mock.MagicMock())
 
-        self.assertEquals(expected_readonly_fields, ret.readonly_fields)
-        self.assertEquals(expected_fields, ret.fields)
-        self.assertEquals(expected_model, ret.model)
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_model, ret.model)
 
     def test_PersistentStoreDatabaseSettingInline(self):
         expected_readonly_fields = ('name', 'description', 'required', 'spatial', 'initialized')
@@ -107,9 +107,9 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         ret = PersistentStoreDatabaseSettingInline(mock.MagicMock(), mock.MagicMock())
 
-        self.assertEquals(expected_readonly_fields, ret.readonly_fields)
-        self.assertEquals(expected_fields, ret.fields)
-        self.assertEquals(expected_model, ret.model)
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_model, ret.model)
 
     # Need to check
     def test_PersistentStoreDatabaseSettingInline_get_queryset(self):
@@ -148,9 +148,9 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         ret = TethysAppAdmin(mock.MagicMock(), mock.MagicMock())
 
-        self.assertEquals(expected_readonly_fields, ret.readonly_fields)
-        self.assertEquals(expected_fields, ret.fields)
-        self.assertEquals(expected_inlines, ret.inlines)
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_inlines, ret.inlines)
 
     def test_TethysAppAdmin_has_delete_permission(self):
         ret = TethysAppAdmin(mock.MagicMock(), mock.MagicMock())
@@ -200,8 +200,8 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         ret = TethysExtensionAdmin(mock.MagicMock(), mock.MagicMock())
 
-        self.assertEquals(expected_readonly_fields, ret.readonly_fields)
-        self.assertEquals(expected_fields, ret.fields)
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_fields, ret.fields)
 
     def test_TethysExtensionAdmin_has_delete_permission(self):
         ret = TethysExtensionAdmin(mock.MagicMock(), mock.MagicMock())
