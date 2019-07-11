@@ -8,11 +8,11 @@ class TestTags(unittest.TestCase):
         # app_list
         self.app_names = ['app1', 'app2', 'app3', 'app4', 'app5', 'app6']
         self.tag_names = ['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6']
-        self.mock_apps = []
+        self.mock_apps = {'configured': []}
         for i, ap in enumerate(self.app_names):
             mock_app = mock.MagicMock(tags=','.join(self.tag_names[:i+1]))
             mock_app.name = ap
-            self.mock_apps.append(mock_app)
+            self.mock_apps['configured'].append(mock_app)
 
     def tearDown(self):
         pass
@@ -22,5 +22,5 @@ class TestTags(unittest.TestCase):
         self.assertEqual(sorted(self.tag_names), sorted(ret_tag_list))
 
     def test_get_tag_class(self):
-        ret_tag_list = t.get_tag_class(self.mock_apps[-1])
+        ret_tag_list = t.get_tag_class(self.mock_apps['configured'][-1])
         self.assertEqual(' '.join(sorted(self.tag_names)), ret_tag_list)

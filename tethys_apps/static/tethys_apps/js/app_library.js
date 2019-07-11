@@ -217,24 +217,22 @@ var TETHYS_APPS_LIBRARY = (function() {
 		//Function for executing the filters/tags
 		var isotopeContainer = $('.isotopeContainer');
 		if( !isotopeContainer.length || !jQuery().isotope ) return;
-		$win.load(function(){
+		$win.on('load', function() {
 			var $isotopeContainer = $('.isotopeContainer').imagesLoaded( function() {
-			isotopeContainer.isotope({
-				itemSelector: '.isotopeSelector',
-				animationEngine:'best-available',
-				animationOptions:{
-					duration: '800'
-				},
-				containerStyle:{
-					position:'relative',
-					overflow:'visible'
-				},
-			});
-				});
+                isotopeContainer.isotope({
+                    itemSelector: '.isotopeSelector',
+                    animationEngine:'best-available',
+                    animationOptions:{
+                        duration: '800'
+                    },
+                    containerStyle:{
+                        position:'relative',
+                        overflow:'visible'
+                    },
+                });
+            });
 
-
-
-		$('.isotopeFilters').on( 'click', 'a', function(e) {
+		    $('.isotopeFilters').on( 'click', 'a', function(e) {
 				$('.isotopeFilters').find('.active').removeClass('active');
 				$(this).parent().addClass('active');
 				var filterValue = $(this).attr('data-filter');

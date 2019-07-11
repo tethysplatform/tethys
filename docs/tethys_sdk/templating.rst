@@ -446,151 +446,7 @@ Add additional JavaScripts to the page. Use ``block.super`` to preserve the exis
       <script href="/path/to/script.js" type="text/javascript"></script>
     {% endblock %}
 
-app_base.html
-=============
 
-This section provides the complete contents of the :file:`app_base.html` template. It is meant to be used as a reference for app developers, so they can be aware of the HTML structure underlying their app templates.
-
-::
-
-    {% load static tethys_gizmos %}
-    <!DOCTYPE html>
-
-    {% block htmltag %}
-    <!--[if IE 7]> <html lang="en" class="ie ie7"> <![endif]-->
-    <!--[if IE 8]> <html lang="en"  class="ie ie8"> <![endif]-->
-    <!--[if IE 9]> <html lang="en"  class="ie9"> <![endif]-->
-    <!--[if gt IE 8]><!--> <html lang="en" > <!--<![endif]-->
-    {% endblock %}
-
-      <head {% block headtag %}{% endblock %}>
-
-        {% block meta %}
-          <meta charset="utf-8" />
-          <meta http-equiv="X-UA-Compatible" content="IE=edge">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <meta name="generator" content="Django" />
-        {% endblock %}
-
-        <title>
-          {% if site_globals.site_title %}
-             {{ site_globals.site_title }}
-          {% elif site_globals.brand_text %}
-            {{ site_globals.brand_text }}
-          {% else %}
-            Tethys
-          {% endif %}
-          {% block title %}{% endblock %}
-        </title>
-
-        {% block links %}
-          {% if site_globals.favicon %}
-            <link rel="shortcut icon" href="{{ site_globals.favicon }}" />
-          {% endif %}
-        {% endblock %}
-
-        {% block styles %}
-          <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" />
-          <link href="{% static 'tethys_apps/css/app_base.css' %}" rel="stylesheet" />
-        {% endblock %}
-
-        {% block global_scripts %}
-          <script src="//code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
-          <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" type="text/javascript"></script>
-        {% endblock %}
-
-      </head>
-
-      <body {% block bodytag %}{% endblock %}>
-
-        {% block app_content_wrapper_override %}
-          <div id="app-content-wrapper" class="show-nav">
-
-            {% block app_header_override %}
-              <div id="app-header" class="clearfix">
-                <div class="tethys-app-header" style="background: {{ tethys_app.color|default:'#1b95dc' }};">
-
-                  {% block app-navigation-toggle-override %}
-                    <a href="javascript:void(0);" class="toggle-nav">
-                      <div></div>
-                      <div></div>
-                      <div></div>
-                    </a>
-                  {% endblock %}
-
-                  {% block app_icon_override %}
-                    <div class="icon-wrapper">
-                      {% block app_icon %}<img src="{% static tethys_app.icon %}">{% endblock %}
-                    </div>
-                  {% endblock %}
-
-                  {% block app_title_override %}
-                    <div class="app-title-wrapper">
-                      <span class="app-title">{% block app_title %}{{ tethys_app.name }}{% endblock %}</span>
-                    </div>
-                  {% endblock %}
-
-                  {% block exit_button_override %}
-                    <div class="exit-button">
-                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'app_library' %}');">Exit</a>
-                    </div>
-                  {% endblock %}
-                </div>
-              </div>
-            {% endblock %}
-
-            {% block app_content_override %}
-              <div id="app-content">
-
-                {% block flash %}
-                  {% if messages %}
-                    <div class="flash-messages">
-
-                      {% for message in messages %}
-                        <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible" role="alert">
-                          <button type="button" class="close" data-dismiss="alert">
-                            <span aria-hidden="true">&times;</span>
-                            <span class="sr-only">Close</span>
-                          </button>
-                          {{ message }}
-                        </div>
-                      {% endfor %}
-                    </div>
-                  {% endif %}
-                {% endblock %}
-
-                {% block app_navigation_override %}
-                  <div id="app-navigation">
-                    {% block app_navigation %}
-                      <ul class="nav nav-pills nav-stacked">
-                        {% block app_navigation_items %}{% endblock %}
-                      </ul>
-                    {% endblock %}
-                  </div>
-                {% endblock %}
-
-                <div id="inner-app-content">
-                  {% block app_content %}{% endblock %}
-
-                  {# App actions are fixed to the bottom #}
-                  {% block app_actions_override %}
-                    <div id="app-actions">
-                      {% block app_actions %}{% endblock %}
-                    </div>
-                  {% endblock %}
-                </div>
-              </div>
-            {% endblock %}
-          </div>
-        {% endblock %}
-
-        {% block scripts %}
-          <script src="{% static 'tethys_apps/vendor/cookies.js' %}" type="text/javascript"></script>
-          <script src="{% static 'tethys_apps/js/app_base.js' %}" type="text/javascript"></script>
-          {% gizmo_dependencies %}
-        {% endblock %}
-      </body>
-    </html>
 
 base.html
 =========
@@ -645,3 +501,11 @@ See the `Blocks`_ section for an explanation of each block.
       {{ block.super }}
       <script src="{% static 'new_template_app/js/main.js' %}" type="text/javascript"></script>
     {% endblock %}
+
+app_base.html
+=============
+
+This section provides the complete contents of the :file:`app_base.html` template. It is meant to be used as a reference for app developers, so they can be aware of the HTML structure underlying their app templates.
+
+.. literalinclude:: ../../tethys_apps/templates/tethys_apps/app_base.html
+    :language: html
