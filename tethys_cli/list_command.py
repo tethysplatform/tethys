@@ -17,7 +17,7 @@ def list_command(args):
     List installed apps.
     """
     if args.settings is True:
-        print(Path(get_tethys_src_dir()) / 'tethys_portal'/ 'settings.py')
+        print(Path(get_tethys_src_dir()) / 'tethys_portal' / 'settings.py')
         return
 
     load_apps()

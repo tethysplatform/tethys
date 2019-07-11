@@ -33,15 +33,6 @@ install:
   - pip install python-coveralls
   - pip install -e $TETHYS_HOME/tethys/[tests]
 
-  # install test apps and extensions
-  - pushd ./tethys/tests/extensions/tethysext-test_extension
-  - python setup.py develop
-  - popd
-
-  - pushd ./tethys/tests/apps/tethysapp-test_app
-  - python setup.py develop
-  - popd
-
 # command to run tests
 script:
   - tethys test -c -u -v 2
