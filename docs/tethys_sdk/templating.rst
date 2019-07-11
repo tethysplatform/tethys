@@ -453,7 +453,7 @@ This section provides the complete contents of the :file:`app_base.html` templat
 
 ::
 
-    {% load staticfiles tethys_gizmos %}
+    {% load static tethys_gizmos %}
     <!DOCTYPE html>
 
     {% block htmltag %}
@@ -605,7 +605,7 @@ See the `Blocks`_ section for an explanation of each block.
 
     {% extends "tethys_apps/app_base.html" %}
 
-    {% load staticfiles %}
+    {% load static %}
 
     {% block title %}- {{ tethys_app.name }}{% endblock %}
 

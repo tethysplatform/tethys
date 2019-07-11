@@ -46,17 +46,23 @@ class CesiumMapView(TethysGizmoOptions):
 
         Basic options for cesium example:
 
-            ::
+        ::
 
-                options={'shouldAnimate': False, 'timeline': False, 'homeButton': False}
+            options={'shouldAnimate': False, 'timeline': False, 'homeButton': False}
+
         **Globe**
         You can specify options that are often set on the Globe object associated with the Cesium viewer. For example, to achieve the equivalent of these calls in the Cesiumm JavaScript API:
+
         ::
+
             // Cesium JS Example
             viewer.scene.globe.enableLighting = true;
             viewer.scene.globe.depthTestAgainstTerrain = true;
+
         Pass the following Globe options to CesiumMapView:
+
         ::
+
             # Tethys CesiumMapView example
             cesium_map_view = CesiumMapView(
                 globe={
@@ -69,80 +75,80 @@ class CesiumMapView(TethysGizmoOptions):
 
         Here is how the view option is defined using the Cesium JavaScript API (https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html?src=Camera.html):
 
-            ::
+        ::
 
-                viewer.camera.flyTo({
-                    destination : Cesium.Cartesian3.fromDegrees(-122.22, 46.12, 5000.0),
-                    orientation : {
-                         heading : Cesium.Math.toRadians(20.0),
-                         pitch : Cesium.Math.toRadians(-35.0),
-                         roll : 0.0
-                    }
-                });
+            viewer.camera.flyTo({
+                destination : Cesium.Cartesian3.fromDegrees(-122.22, 46.12, 5000.0),
+                orientation : {
+                     heading : Cesium.Math.toRadians(20.0),
+                     pitch : Cesium.Math.toRadians(-35.0),
+                     roll : 0.0
+                }
+            });
 
         In Tethys CesiumMapView, you can define this setting using python as follows
 
-            ::
+        ::
 
-                view={'flyTo': {
-                    'destination': {'Cesium.Cartesian3.fromDegrees': [-122.19, 46.25, 5000.0]},
-                    'orientation': {
-                         'heading': {'Cesium.Math.toRadians': [20]},
-                         'pitch': {'Cesium.Math.toRadians': [-35]},
-                         'roll': 0.0,
-                    }
-                }}
+            view={'flyTo': {
+                'destination': {'Cesium.Cartesian3.fromDegrees': [-122.19, 46.25, 5000.0]},
+                'orientation': {
+                     'heading': {'Cesium.Math.toRadians': [20]},
+                     'pitch': {'Cesium.Math.toRadians': [-35]},
+                     'roll': 0.0,
+                }
+            }}
 
         **Layers**
 
         CesiumMapView supports all the imagery layers in cesiumjs: https://cesiumjs.org/tutorials/Imagery-Layers-Tutorial/#imagery-providers
         You can load a imagery layers using the following pattern:
 
-            ::
+        ::
 
-                layers={'Type of Imagery Layers (for your reference only)': {'imageryProvider': 'method/class to load the provider'}
+            layers={'Type of Imagery Layers (for your reference only)': {'imageryProvider': 'method/class to load the provider'}
 
         Examples:
 
         * Bing: The following values can be used for mapStyle: Aerial, AerialWithLabels, CanvasDark, CanvasGray, CanvasLight, CollinsBart, OrdnanceSurvey, Road
 
-            ::
+        ::
 
-                layers={'BingMap': {
-                    'imageryProvider': {'Cesium.BingMapsImageryProvider': {
-                        'url': 'https://dev.virtualearth.net',
-                        'key': 'YouR-api-KEy',
-                        'mapStyle': 'Aerial',
-                    }}
+            layers={'BingMap': {
+                'imageryProvider': {'Cesium.BingMapsImageryProvider': {
+                    'url': 'https://dev.virtualearth.net',
+                    'key': 'YouR-api-KEy',
+                    'mapStyle': 'Aerial',
                 }}
+            }}
 
         * ESRI:
 
-            ::
+        ::
 
-                layers={'EsriArcGISMapServer': {
-                    'imageryProvider': {'Cesium.ArcGisMapServerImageryProvider': [{
-                        'url': 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer'
-                    }]}
-                }}
+            layers={'EsriArcGISMapServer': {
+                'imageryProvider': {'Cesium.ArcGisMapServerImageryProvider': [{
+                    'url': 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer'
+                }]}
+            }}
 
         * OpenStreetMap:
 
-            ::
+        ::
 
-                layers={'OpenStreetMap': {
-                    'imageryProvider': {'Cesium.createOpenStreetMapImageryProvider':[]}
-                }}
+            layers={'OpenStreetMap': {
+                'imageryProvider': {'Cesium.createOpenStreetMapImageryProvider':[]}
+            }}
 
         * MapQuest OpenStreetMap:
 
-            ::
+        ::
 
-                layers={'MapQuestOpenStreetMap': {
-                    'imageryProvider': {Cesium.createOpenStreetMapImageryProvider: [{
-                        'url' : 'https://otile1-s.mqcdn.com/tiles/1.0.0/osm/'
-                    }]}
-                }}
+            layers={'MapQuestOpenStreetMap': {
+                'imageryProvider': {Cesium.createOpenStreetMapImageryProvider: [{
+                    'url' : 'https://otile1-s.mqcdn.com/tiles/1.0.0/osm/'
+                }]}
+            }}
 
         * More examples can be found at https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html
 
@@ -152,35 +158,35 @@ class CesiumMapView(TethysGizmoOptions):
 
         Example loading a czml:
 
-            ::
+        ::
 
-                entities={'czml': [
-                    {
-                        "id": "document",
-                        "name": "CZML Geometries: Polygon",
-                        "version": "1.0"
+            entities={'czml': [
+                {
+                    "id": "document",
+                    "name": "CZML Geometries: Polygon",
+                    "version": "1.0"
+                },
+                {
+                    "id": "redPolygon",
+                    "name": "Red polygon on surface",
+                    "polygon": {"positions": {
+                        "cartographicDegrees": [
+                            -115.0, 37.0, 0,
+                            -115.0, 32.0, 0,
+                            -107.0, 33.0, 0,
+                            -102.0, 31.0, 0,
+                            -102.0, 35.0, 0
+                        ]
                     },
-                    {
-                        "id": "redPolygon",
-                        "name": "Red polygon on surface",
-                        "polygon": {"positions": {
-                            "cartographicDegrees": [
-                                -115.0, 37.0, 0,
-                                -115.0, 32.0, 0,
-                                -107.0, 33.0, 0,
-                                -102.0, 31.0, 0,
-                                -102.0, 35.0, 0
-                            ]
-                        },
-                        "material": {
-                            "solidColor": {
-                                "color": {
-                                    "rgba": [255, 0, 0, 255]
-                                }
+                    "material": {
+                        "solidColor": {
+                            "color": {
+                                "rgba": [255, 0, 0, 255]
                             }
                         }
                     }
-                ]}
+                }
+            ]}
 
         **Terrain**
 
@@ -230,9 +236,13 @@ class CesiumMapView(TethysGizmoOptions):
                 },
                 'position': {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
             }}
+
         **Clock**
+
         You can customize the clock on the viewer such as specifying the starting date and time and specifying the time step interval. For example, to achieve the equivalent of these calls in the Cesiumm JavaScript API:
+
         ::
+
             // Cesium JS Example
             var clock = new Cesium.Clock({
                 startTime : Cesium.JulianDate.fromIso8601('2017-07-11T00:00:00Z'),
@@ -246,8 +256,11 @@ class CesiumMapView(TethysGizmoOptions):
             var viewer = new Cesium.Viewer('cesiumContainer', {
                 clockViewModel : new Cesium.ClockViewModel(clock),
             });
+
         Pass the following Clock options to CesiumMapView:
+
         ::
+
             # Tethys CesiumMapView example
             cesium_map_view = CesiumMapView(
                 clock = {'clock': {'Cesium.Clock': {
@@ -295,6 +308,7 @@ class CesiumMapView(TethysGizmoOptions):
                 {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
                 {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians' : 135}, 0, 0]}
             ]}
+
     """  # noqa: E501
     gizmo_name = "cesium_map_view"
 

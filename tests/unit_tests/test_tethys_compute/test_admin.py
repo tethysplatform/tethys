@@ -35,7 +35,7 @@ class TestTethysComputeAdmin(unittest.TestCase):
         ja = JobAdmin(mock_admin, mock_admin2)
         self.assertListEqual(['name', 'description', 'label', 'user', 'creation_time', 'execute_time',
                               'completion_time', 'status'], ja.list_display)
-        self.assertEquals(('name',), ja.list_display_links)
+        self.assertEqual(('name',), ja.list_display_links)
 
     def test_job_admin_has_add_permission(self):
         mock_admin = mock.MagicMock()

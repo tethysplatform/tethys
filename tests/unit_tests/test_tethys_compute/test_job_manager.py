@@ -157,7 +157,7 @@ class TestJobManager(unittest.TestCase):
         mgr = JobManager(mock_args)
         ret = mgr.list_jobs(user=mock_user)
 
-        self.assertEquals(ret, mock_jobs)
+        self.assertEqual(ret, mock_jobs)
         mock_tethys_job.objects.filter().order_by().select_subclasses.assert_called_once()
 
     @mock.patch('tethys_compute.job_manager.TethysJob')
@@ -174,7 +174,7 @@ class TestJobManager(unittest.TestCase):
         mgr = JobManager(mock_args)
         ret = mgr.get_job(job_id=mock_job_id, user=mock_user)
 
-        self.assertEquals(ret, mock_jobs)
+        self.assertEqual(ret, mock_jobs)
         mock_tethys_job.objects.get_subclass.assert_called_once_with(id='fooid', label=mock_app_package, user='bar')
 
     @mock.patch('tethys_compute.job_manager.TethysJob')
@@ -191,7 +191,7 @@ class TestJobManager(unittest.TestCase):
         mgr = JobManager(mock_args)
         ret = mgr.get_job(job_id=mock_job_id, user=mock_user)
 
-        self.assertEquals(ret, None)
+        self.assertEqual(ret, None)
         mock_tethys_job.objects.get_subclass.assert_called_once_with(id='fooid', label=mock_app_package, user='bar')
 
     def test_JobManager_get_job_status_callback_url(self):
@@ -224,7 +224,7 @@ class TestJobManager(unittest.TestCase):
                     }
 
         ret = JobManager._replace_workspaces(mock_parameters, mock_app_workspace, mock_user_workspace)
-        self.assertEquals(ret, expected)
+        self.assertEqual(ret, expected)
 
     # JobTemplate
 
@@ -234,9 +234,9 @@ class TestJobManager(unittest.TestCase):
         mock_parameters = {list: ['/foo/app/workspace', '/foo/user/workspace']}
 
         ret = JobTemplate(name=mock_name, type=mock_type, parameters=mock_parameters)
-        self.assertEquals(mock_name, ret.name)
-        self.assertEquals(BasicJob, ret.type)
-        self.assertEquals(mock_parameters, ret.parameters)
+        self.assertEqual(mock_name, ret.name)
+        self.assertEqual(BasicJob, ret.type)
+        self.assertEqual(mock_parameters, ret.parameters)
 
     @mock.patch('tethys_compute.job_manager.JobManager._replace_workspaces')
     def test_JobTemplate_create_job(self, mock_replace_workspaces):
@@ -258,9 +258,9 @@ class TestJobManager(unittest.TestCase):
         mock_parameters = {list: ['/foo/app/workspace', '/foo/user/workspace']}
 
         ret = BasicJobTemplate(name=mock_name, parameters=mock_parameters)
-        self.assertEquals(mock_name, ret.name)
-        self.assertEquals(BasicJob, ret.type)
-        self.assertEquals(mock_parameters, ret.parameters)
+        self.assertEqual(mock_name, ret.name)
+        self.assertEqual(BasicJob, ret.type)
+        self.assertEqual(mock_parameters, ret.parameters)
 
     def test_BasicJobTemplate_process_parameters(self):
         mock_name = mock.MagicMock()
@@ -268,9 +268,9 @@ class TestJobManager(unittest.TestCase):
 
         ret = BasicJobTemplate(name=mock_name, parameters=mock_parameters)
         ret.process_parameters()
-        self.assertEquals(mock_name, ret.name)
-        self.assertEquals(BasicJob, ret.type)
-        self.assertEquals(mock_parameters, ret.parameters)
+        self.assertEqual(mock_name, ret.name)
+        self.assertEqual(BasicJob, ret.type)
+        self.assertEqual(mock_parameters, ret.parameters)
 
     # CondorJobTemplate
 
@@ -343,12 +343,12 @@ class TestJobManager(unittest.TestCase):
         ret = CondorWorkflowTemplate(name=input_name, parameters=input_parameters, jobs=input_jobs,
                                      max_jobs=input_max_jobs, config=input_config, additional_param='param1')
 
-        self.assertEquals(input_name, ret.name)
-        self.assertEquals(input_parameters, ret.parameters)
-        self.assertEquals(set(input_jobs), ret.node_templates)
-        self.assertEquals(input_max_jobs, ret.parameters['max_jobs'])
-        self.assertEquals(input_config, ret.parameters['config'])
-        self.assertEquals('param1', ret.parameters['additional_param'])
+        self.assertEqual(input_name, ret.name)
+        self.assertEqual(input_parameters, ret.parameters)
+        self.assertEqual(set(input_jobs), ret.node_templates)
+        self.assertEqual(input_max_jobs, ret.parameters['max_jobs'])
+        self.assertEqual(input_config, ret.parameters['config'])
+        self.assertEqual('param1', ret.parameters['additional_param'])
 
     @mock.patch('tethys_compute.job_manager.JobTemplate.create_job')
     def test_CondorWorkflowTemplate_create_job(self, mock_save):
@@ -383,9 +383,9 @@ class TestJobManager(unittest.TestCase):
         mock_parameters = {}
 
         ret = CondorWorkflowNodeBaseTemplate(name=mock_name, type=mock_type, parameters=mock_parameters)
-        self.assertEquals(mock_name, ret.name)
-        self.assertEquals(CondorWorkflowJobNode, ret.type)
-        self.assertEquals(mock_parameters, ret.parameters)
+        self.assertEqual(mock_name, ret.name)
+        self.assertEqual(CondorWorkflowJobNode, ret.type)
+        self.assertEqual(mock_parameters, ret.parameters)
 
     @mock.patch('tethys_compute.job_manager.issubclass')
     def test_CondorWorkflowNodeBaseTemplate_add_dependency(self, mock_issubclass):
@@ -399,7 +399,7 @@ class TestJobManager(unittest.TestCase):
 
         ret = CondorWorkflowNodeBaseTemplate(name=mock_name, type=mock_type, parameters=mock_parameters)
         ret.add_dependency(mock_dependency)
-        self.assertEquals(dep_set, ret.dependencies)
+        self.assertEqual(dep_set, ret.dependencies)
 
     @mock.patch('tethys_compute.job_manager.CondorWorkflowNode.save')
     @mock.patch('tethys_compute.job_manager.JobManager._replace_workspaces')
@@ -423,9 +423,9 @@ class TestJobManager(unittest.TestCase):
         node = ret.create_node(mock_workflow, mock_app_workspace, mock_user_workspace)
 
         self.assertTrue(isinstance(node, CondorWorkflowJobNode))
-        self.assertEquals(mock_parameters, ret.parameters)
-        self.assertEquals('JOB', node.type)
-        self.assertEquals('.', node.workspace)
+        self.assertEqual(mock_parameters, ret.parameters)
+        self.assertEqual('JOB', node.type)
+        self.assertEqual('.', node.workspace)
 
     # CondorWorkflowJobTemplate
 

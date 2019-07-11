@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from social_django.middleware import SocialAuthExceptionMiddleware
 from social_core import exceptions as social_exceptions
-from tethys_apps.cli.cli_colors import pretty_output, FG_WHITE
+from tethys_cli.cli_colors import pretty_output, FG_WHITE
 
 
 class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):

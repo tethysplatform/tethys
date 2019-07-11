@@ -16,7 +16,7 @@ from django.conf import settings
 from django import template
 from django.template.loader import get_template
 from django.template import TemplateSyntaxError
-from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.templatetags.static import static
 from django.core.serializers.json import DjangoJSONEncoder
 
 from plotly.offline.offline import get_plotlyjs
@@ -146,7 +146,7 @@ class TethysGizmoIncludeDependency(template.Node):
         """
         This loads the rendered gizmos into context
         """
-        # Add gizmo name to 'gizmos_rendered' context variable (used to load static libraries
+        # Add gizmo name to 'gizmos_rendered' context variable (used to load static  libraries
         if 'gizmos_rendered' not in context:
             context.update({'gizmos_rendered': []})
 

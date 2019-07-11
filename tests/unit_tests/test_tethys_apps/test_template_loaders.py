@@ -55,8 +55,8 @@ class TestTethysTemplateLoader(unittest.TestCase):
         expected_template_name = 'foo'
 
         for origin in tethys_template_loader.get_template_sources(expected_template_name):
-            self.assertEquals('/foo/template1/foo', origin.name)
-            self.assertEquals('foo', origin.template_name)
+            self.assertEqual('/foo/template1/foo', origin.name)
+            self.assertEqual('foo', origin.template_name)
             self.assertTrue(isinstance(origin.loader, TethysTemplateLoader))
 
     @mock.patch('tethys_apps.template_loaders.safe_join')
@@ -71,6 +71,6 @@ class TestTethysTemplateLoader(unittest.TestCase):
         expected_template_name = 'foo'
 
         for origin in tethys_template_loader.get_template_sources(expected_template_name):
-            self.assertEquals('/foo/template2/foo', origin.name)
-            self.assertEquals('foo', origin.template_name)
+            self.assertEqual('/foo/template2/foo', origin.name)
+            self.assertEqual('foo', origin.template_name)
             self.assertTrue(isinstance(origin.loader, TethysTemplateLoader))

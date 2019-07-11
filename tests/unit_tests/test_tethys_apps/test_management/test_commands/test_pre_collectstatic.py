@@ -81,10 +81,10 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         info_not_in_second = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_extension".'
 
         for i in range(len(print_args)):
-            self.assertNotEquals(msg_warning_not_in, print_args[i][0][0])
-            self.assertNotEquals(msg_not_in, print_args[i][0][0])
-            self.assertNotEquals(info_not_in_first, print_args[i][0][0])
-            self.assertNotEquals(info_not_in_second, print_args[i][0][0])
+            self.assertNotEqual(msg_warning_not_in, print_args[i][0][0])
+            self.assertNotEqual(msg_not_in, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_first, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_second, print_args[i][0][0])
 
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
@@ -140,10 +140,10 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         self.assertIn(msg_infor_3, check_list)
 
         for i in range(len(print_args)):
-            self.assertNotEquals(warn_not_in, print_args[i][0][0])
-            self.assertNotEquals(msg_not_in, print_args[i][0][0])
-            self.assertNotEquals(info_not_in_first, print_args[i][0][0])
-            self.assertNotEquals(info_not_in_second, print_args[i][0][0])
+            self.assertNotEqual(warn_not_in, print_args[i][0][0])
+            self.assertNotEqual(msg_not_in, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_first, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_second, print_args[i][0][0])
 
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
@@ -195,10 +195,10 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         self.assertIn(msg_info_three, check_list)
 
         for i in range(len(print_args)):
-            self.assertNotEquals(warn_not_in, print_args[i][0][0])
-            self.assertNotEquals(msg_not_in, print_args[i][0][0])
-            self.assertNotEquals(info_not_in_first, print_args[i][0][0])
-            self.assertNotEquals(info_not_in_second, print_args[i][0][0])
+            self.assertNotEqual(warn_not_in, print_args[i][0][0])
+            self.assertNotEqual(msg_not_in, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_first, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_second, print_args[i][0][0])
 
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
@@ -240,9 +240,9 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
         self.assertEqual(msg_info, print_args[0][0][0])
 
         for i in range(len(print_args)):
-            self.assertNotEquals(warn_not_in, print_args[i][0][0])
-            self.assertNotEquals(msg_not_in, print_args[i][0][0])
-            self.assertNotEquals(info_not_in_first, print_args[i][0][0])
-            self.assertNotEquals(info_not_in_second, print_args[i][0][0])
-            self.assertNotEquals(info_not_in_third, print_args[i][0][0])
-            self.assertNotEquals(info_not_in_fourth, print_args[i][0][0])
+            self.assertNotEqual(warn_not_in, print_args[i][0][0])
+            self.assertNotEqual(msg_not_in, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_first, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_second, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_third, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_fourth, print_args[i][0][0])

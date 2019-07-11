@@ -1,5 +1,5 @@
 {% if not original %}
-  {% load staticfiles tethys_gizmos %}
+  {% load static tethys_gizmos %}
 {% endif %}
 <div class="form-group {% if error %} has-error {% endif %}">
   {% if display_text %}<label class="control-label" for="{{ name }}">{{ display_text }}</label>{% endif %}

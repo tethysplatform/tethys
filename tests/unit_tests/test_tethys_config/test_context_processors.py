@@ -26,4 +26,4 @@ class TestTethysConfigContextProcessors(unittest.TestCase):
         mock_terms.get_active_terms_list.assert_called_once()
         mock_terms.get_active_list.assert_not_called()
 
-        self.assertEquals({'site_globals': {'documents': ['active_terms']}}, ret)
+        self.assertEqual({'site_globals': {'documents': ['active_terms']}}, ret)

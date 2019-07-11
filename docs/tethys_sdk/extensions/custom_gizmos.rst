@@ -102,7 +102,7 @@ For the custom select input gizmo, create a new template in the ``templates/gizm
 
 .. code-block:: django
 
-    {% load staticfiles %}
+    {% load static %}
 
     <div class="form-group {% if error %} has-error {% endif %}">
       {% if display_text %}

@@ -243,30 +243,9 @@ class TethysAppTests(TethysTestCase):
         self.assertFalse(ret)
 
     def test_configured_prop_not_assigned_exception(self):
-        # See: test_app.app for expected settings configuration
-        custom_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')
-        custom_setting.value = ''
-        custom_setting.save()
-
         ds_setting = self.test_app.settings_set.select_subclasses().get(name='primary_ckan')
         ds_setting.dataset_service = None
         ds_setting.save()
-
-        sds_setting = self.test_app.settings_set.select_subclasses().get(name='primary_geoserver')
-        sds_setting.spatial_dataset_service = None
-        sds_setting.save()
-
-        wps_setting = self.test_app.settings_set.select_subclasses().get(name='primary_52n')
-        wps_setting.web_processing_service = None
-        wps_setting.save()
-
-        ps_setting = self.test_app.settings_set.select_subclasses().get(name='primary')
-        ps_setting.persistent_store_service = None
-        ps_setting.save()
-
-        psd_setting = self.test_app.settings_set.select_subclasses().get(name='spatial_db')
-        psd_setting.persistent_store_service = None
-        psd_setting.save()
 
         ret = self.test_app.configured
 

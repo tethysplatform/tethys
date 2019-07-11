@@ -31,7 +31,7 @@ class TethysPortalFormsTests(TestCase):
                       'captcha_1': self.response}
         login_form = LoginForm(login_data)
         err_msg = "This value may contain only letters, numbers and @/./+/-/_ characters."
-        self.assertEquals(login_form.errors['username'], [err_msg])
+        self.assertEqual(login_form.errors['username'], [err_msg])
         self.assertFalse(login_form.is_valid())
 
     def test_LoginForm_invalid_password(self):
@@ -59,7 +59,7 @@ class TethysPortalFormsTests(TestCase):
                          'password2': 'abc123', 'captcha_0': self.hashkey, 'captcha_1': self.response}
         register_form = RegisterForm(data=register_data)
         err_msg = "This value may contain only letters, numbers and @/./+/-/_ characters."
-        self.assertEquals(register_form.errors['username'], [err_msg])
+        self.assertEqual(register_form.errors['username'], [err_msg])
         self.assertFalse(register_form.is_valid())
 
     def test_RegisterForm_clean_username(self):
@@ -72,7 +72,7 @@ class TethysPortalFormsTests(TestCase):
 
         ret = register_form.clean_username()
 
-        self.assertEquals('user', ret)
+        self.assertEqual('user', ret)
 
     def test_RegisterForm_clean_username_dup(self):
         register_data = {'username': 'user_exist', 'email': 'foo@aquaveo.com', 'password1': 'abc123',
@@ -98,7 +98,7 @@ class TethysPortalFormsTests(TestCase):
 
         ret = register_form.clean_email()
 
-        self.assertEquals('foo@aquaveo.com', ret)
+        self.assertEqual('foo@aquaveo.com', ret)
 
     def test_RegisterForm_clean_email_dup(self):
         register_data = {'username': 'user12', 'email': 'foo_exist@aquaveo.com', 'password1': 'abc123',
@@ -130,7 +130,7 @@ class TethysPortalFormsTests(TestCase):
 
         mock_vp.assert_called_with('abc123')
 
-        self.assertEquals('abc123', ret)
+        self.assertEqual('abc123', ret)
 
     def test_RegisterForm_clean_password2_diff(self):
         register_data = {'username': 'user1', 'email': 'foo@aquaveo.com', 'password1': 'abcd123',

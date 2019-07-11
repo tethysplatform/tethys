@@ -68,7 +68,7 @@ class TestUtilites(unittest.TestCase):
 
         mock_redirect.assert_called_once()
 
-        self.assertEquals(mock_redirect(), ret)
+        self.assertEqual(mock_redirect(), ret)
 
     @mock.patch('tethys_services.utilities.reverse')
     @mock.patch('tethys_services.utilities.redirect')
@@ -89,7 +89,7 @@ class TestUtilites(unittest.TestCase):
 
         mock_redirect.assert_called_once()
 
-        self.assertEquals(mock_redirect(), ret)
+        self.assertEqual(mock_redirect(), ret)
 
     @mock.patch('tethys_services.utilities.reverse')
     @mock.patch('tethys_services.utilities.redirect')
@@ -150,7 +150,7 @@ class TestUtilites(unittest.TestCase):
 
         mock_user.social_auth.get.assert_called_once_with(provider='hydroshare')
 
-        self.assertEquals('http://localhost/api/3/action', ret.endpoint)
+        self.assertEqual('http://localhost/api/3/action', ret.endpoint)
         self.assertIsInstance(ret, HydroShareDatasetEngine)
 
     def test_initialize_engine_object_ObjectDoesNotExist(self):
@@ -259,7 +259,7 @@ class TestUtilites(unittest.TestCase):
 
         mock_dsmodel.all.assert_called_once()
 
-        self.assertEquals(mock_init_return, ret[0])
+        self.assertEqual(mock_init_return, ret[0])
 
     @mock.patch('tethys_services.utilities.issubclass')
     @mock.patch('tethys_services.utilities.initialize_engine_object')
@@ -319,7 +319,7 @@ class TestUtilites(unittest.TestCase):
                                                          password=mock_site_dataset_services.password,
                                                          request=None)
 
-        self.assertEquals(mock_init_return, ret)
+        self.assertEqual(mock_init_return, ret)
 
     @mock.patch('tethys_services.utilities.initialize_engine_object')
     @mock.patch('tethys_services.utilities.DsModel.objects.all')
@@ -347,7 +347,7 @@ class TestUtilites(unittest.TestCase):
 
         ret = list_spatial_dataset_engines()
 
-        self.assertEquals(mock_ret, ret[0])
+        self.assertEqual(mock_ret, ret[0])
         mock_sds_model.objects.all.assert_called_once()
         mock_initialize.assert_called_once_with(engine=mock_service1.engine,
                                                 endpoint=mock_service1.endpoint,
@@ -391,7 +391,7 @@ class TestUtilites(unittest.TestCase):
 
         ret = get_spatial_dataset_engine(name=name, app_class=None)
 
-        self.assertEquals(mock_sdo, ret)
+        self.assertEqual(mock_sdo, ret)
         mock_initialize_engine_object.assert_called_once_with(engine=mock_site_sds.engine,
                                                               endpoint=mock_site_sds.endpoint,
                                                               apikey=mock_site_sds.apikey,
@@ -562,7 +562,7 @@ class TestUtilites(unittest.TestCase):
 
         mock_issubclass.assert_called_once_with(mock_app_class, TethysAppBase)
 
-        self.assertEquals(mock_activate_wps(), ret[0])
+        self.assertEqual(mock_activate_wps(), ret[0])
 
     @mock.patch('tethys_services.utilities.activate_wps')
     @mock.patch('tethys_services.utilities.WebProcessingService')
@@ -592,4 +592,4 @@ class TestUtilites(unittest.TestCase):
 
         mock_activate_wps.call_once_with(wps=mock_sdo, endpoint=mock_site_ws.endpoint, name=mock_site_ws.name)
 
-        self.assertEquals(mock_activate_wps(), ret[0])
+        self.assertEqual(mock_activate_wps(), ret[0])

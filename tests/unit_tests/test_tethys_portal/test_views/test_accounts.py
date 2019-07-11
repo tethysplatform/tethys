@@ -527,7 +527,7 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
 
         ret = logout_view(mock_request)
 
-        self.assertEquals('home', ret)
+        self.assertEqual('home', ret)
 
         mock_logout.assert_called_once_with(mock_request)
 

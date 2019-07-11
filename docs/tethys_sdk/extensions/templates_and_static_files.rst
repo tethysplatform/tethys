@@ -21,7 +21,7 @@ You can reference static files in your app's templates using the ``static`` tag,
 
 .. code-block:: html
 
-    {% load staticfiles %}
+    {% load static %}
 
     <link href="{% static 'my_first_extension/css/a_css_file.css' %}" rel="stylesheet">
     <script src="{% static 'my_first_extension/js/a_js_file.css' %}" type="text/javascript"></script>

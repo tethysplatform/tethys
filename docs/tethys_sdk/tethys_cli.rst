@@ -28,6 +28,67 @@ Options
 Commands
 ========
 
+.. _tethys_db_cmd:
+
+db <subcommand> [options]
+-------------------------
+
+This command contains several subcommands that are used to help setup and manage a Tethys database.
+
+**Arguments:**
+
+* **subcommand**: The management command to run.
+
+    * *init*: Creates a local postgresql database server using the information from the `DATABASES` section in :file:`settings.py`.
+    * *start*: Starts the local database server.
+    * *stop*: Stops the local database server.
+    * *create*: Creates the Tethys database on the database server connection specified in the `DATABASES` section in :file:`settings.py`.
+    * *migrate*: Initialize the database during installation. Wrapper for ``manage.py migrate``.
+    * *createsuperuser*: Create a new superuser/website admin for your Tethys Portal.
+    * *configure*: Convenience command for running *init*, *start*, *create*, *migrate*, and *createsuperuser*.
+    * *sync*: Sync installed apps and extensions with the TethysApp database.
+
+**Optional Arguments:**
+
+* **-d DATABASE_ALIAS, --db_alias DATABASE_ALIAS**: Name of the database options from settings.py to use (e.g. 'default').
+* **-n USERNAME, --username USERNAME**: Name of database user to add to database when creating.
+* **-p PASSWORD, --password PASSWORD**: Password for the database user.
+* **-N USERNAME, --superuser-name USERNAME**: Name of database super user to add to database when creating.
+* **-P PASSWORD, --superuser-pasword PASSWORD**: Password for the database super user.
+* **--portal-superuser-name USERNAME**: Name for the Tethys portal super user.
+* **--portal-superuser-email EMAIL**: Email of the Tethys portal super user.
+* **--portal-superuser-password PASSWORD**: Password for the Tethys portal super user.
+
+**Examples:**
+
+::
+
+    # Create a new local database server
+    $ tethys db init
+
+    # Start local database server
+    $ tethys db start
+
+    # Stop local database server
+    $ tethys db stop
+
+    # Create Tethys databases
+    $ tethys db create
+
+    # Run database migrations
+    $ tethys db migrate
+
+    # Create a new Tethys portal superuser
+    $ tethys db createsuperuser
+
+    # Shortcut command for init, start, create, migrate, and createsuperuser
+    $ tethys db configure
+
+    # Sync installed apps and extensions with the TethysApp database.
+    $ tethys db sync
+
+
+
 .. _tethys_scaffold_cmd:
 
 scaffold <name>
@@ -90,8 +151,6 @@ This command contains several subcommands that are used to help manage Tethys Pl
 * **subcommand**: The management command to run.
 
     * *start*: Start the Django development server. Wrapper for ``manage.py runserver``.
-    * *syncdb*: Initialize the database during installation. Wrapper for ``manage.py syncdb``.
-    * *sync*: Sync installed apps and extensions with the TethysApp database.
     * *collectstatic*: Link app and extension static/public directories to STATIC_ROOT directory and then run Django's collectstatic command. Preprocessor and wrapper for ``manage.py collectstatic``.
     * *collectworkspaces*: Link app workspace directories to TETHYS_WORKSPACES_ROOT directory.
     * *collectall*: Convenience command for running both *collectstatic* and *collectworkspaces*.
@@ -109,12 +168,6 @@ This command contains several subcommands that are used to help manage Tethys Pl
     # Start the development server
     $ tethys manage start
     $ tethys manage start -p 8888
-
-    # Sync the database
-    $ tethys manage syncdb
-
-    # Sync installed apps with the TethysApp database.
-    $ tethys manage sync
 
     # Collect static files
     $ tethys manage collectstatic

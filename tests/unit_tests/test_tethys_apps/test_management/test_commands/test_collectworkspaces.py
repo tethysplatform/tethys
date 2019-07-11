@@ -225,4 +225,4 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         self.assertEqual(msg_second_info, print_call_args[1][0][0])
 
         for i in range(len(print_call_args)):
-            self.assertNotEquals(msg_warning, print_call_args[i][0][0])
+            self.assertNotEqual(msg_warning, print_call_args[i][0][0])

@@ -20,7 +20,7 @@ class TethysPortalViewsErrorTests(unittest.TestCase):
                    'error_message': "Sorry, but we can't process your request. Try something different.",
                    'error_image': '/static/tethys_portal/images/error_500.png'}
 
-        self.assertEquals('400', handler_400(mock_request))
+        self.assertEqual('400', handler_400(mock_request))
         mock_render.assert_called_once_with(mock_request, 'tethys_portal/error.html', context, status=400)
 
     @mock.patch('tethys_portal.views.error.render')
@@ -32,7 +32,7 @@ class TethysPortalViewsErrorTests(unittest.TestCase):
                    'error_message': 'error message',
                    'error_image': '/static/tethys_portal/images/data.png'}
 
-        self.assertEquals('403', handler_403(mock_request, exception="error message"))
+        self.assertEqual('403', handler_403(mock_request, exception="error message"))
         mock_render.assert_called_once_with(mock_request, 'tethys_portal/403error.html', context, status=403)
 
     @mock.patch('tethys_portal.views.error.render')
@@ -45,7 +45,7 @@ class TethysPortalViewsErrorTests(unittest.TestCase):
                                     "try again.",
                    'error_image': '/static/tethys_portal/images/error_404.png'}
 
-        self.assertEquals('404', handler_404(mock_request))
+        self.assertEqual('404', handler_404(mock_request))
         mock_render.assert_called_once_with(mock_request, 'tethys_portal/error.html', context, status=404)
 
     @mock.patch('tethys_portal.views.error.render')
@@ -58,5 +58,5 @@ class TethysPortalViewsErrorTests(unittest.TestCase):
                                     "Please, come back later and try again.",
                    'error_image': '/static/tethys_portal/images/error_500.png'}
 
-        self.assertEquals('500', handler_500(mock_request))
+        self.assertEqual('500', handler_500(mock_request))
         mock_render.assert_called_once_with(mock_request, 'tethys_portal/error.html', context, status=500)

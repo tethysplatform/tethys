@@ -14,8 +14,8 @@ class HsRestClientHelperTest(unittest.TestCase):
 
     def test_init(self):
         exc = HSClientInitException('foo')
-        self.assertEquals('foo', exc.value)
-        self.assertEquals("'foo'", str(exc))
+        self.assertEqual('foo', exc.value)
+        self.assertEqual("'foo'", str(exc))
 
     @mock.patch('tethys_services.backends.hs_restclient_helper.logger')
     def test_get_get_oauth_hs_main_exception(self, mock_logger):

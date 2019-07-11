@@ -8,7 +8,7 @@
 ********************************************************************************
 """
 from tethys_dataset_services.valid_engines import VALID_ENGINES, VALID_SPATIAL_ENGINES
-from tethys_apps.cli.cli_colors import pretty_output, FG_WHITE
+from tethys_cli.cli_colors import pretty_output, FG_WHITE
 
 
 class DatasetService:

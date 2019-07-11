@@ -417,7 +417,7 @@ class DaskJobTest(TethysTestCase):
 
         # check the result
         mock_log.exception.assert_called_with('Process Results Function Error')
-        self.assertEquals('ERR', djob._status)
+        self.assertEqual('ERR', djob._status)
         mock_save.assert_called()
         mock_re_lock.assert_called()
 
@@ -454,7 +454,7 @@ class DaskJobTest(TethysTestCase):
         ret = djob.result
 
         # Check result
-        self.assertEquals('serialized_results', ret)
+        self.assertEqual('serialized_results', ret)
 
     def test_result_none(self):
         # Create DaskJob

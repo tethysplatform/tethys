@@ -7,16 +7,18 @@ name: tethys
 
 channels:
 - tethysplatform
+- tethysplatform/label/dev
 - conda-forge
 - defaults
 
 dependencies:
-- python=3.6*
+- python
 
 # system dependencies
 - pycrypto
 - pyopenssl
 - docker-py
+- distro
 
 # database dependencies
 - postgresql
@@ -36,6 +38,9 @@ dependencies:
 - social-auth-app-django
 - dask
 - tethys_dask_scheduler>=1.0.2
+- channels
+- service_identity
+- condorpy
 
 # django/plugin dependencies
 - django=2.1.*
@@ -44,6 +49,12 @@ dependencies:
 - django-bootstrap3
 - django-model-utils
 - django-guardian
+- django-gravatar2
+- django-termsandconditions
+- django-session-security
+- django-analytical
+- django-simple-captcha
+- social-auth-app-django
 
 # tests dependencies
 - requests-mock
@@ -59,14 +70,3 @@ dependencies:
 
 # Conda to allow Python API access to Conda Install
 - conda
-
-- pip:
-    - django-gravatar2
-    - django-simple-captcha
-    - django-termsandconditions
-    - django-session-security
-    - channels
-    - service_identity
-    - condorpy
-    - python_social_auth
-    - django-analytical
