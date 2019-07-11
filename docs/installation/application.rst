@@ -141,7 +141,7 @@ Restart tethys portal to effect the changes::
 
 If any required settings were not configured through the installation process go to the application settings page in the Tethys Portal admin pages and configure them there (see :doc:`../../tethys_portal/admin_pages`).
 
-5. (Optional) Initialize Persistent Stores
+5. Initialize Persistent Stores (Optional)
 ==========================================
 
 The install command will automatically run the syncstores command if it detects that the app has persistent stores. However, if you need to run syncstores manually, it can be done like so:
