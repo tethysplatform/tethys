@@ -90,7 +90,7 @@ Prepare_Database_TethysCore:
     - name: {{ TETHYS_DB_USERNAME }}
     - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
   cmd.run:
-    - name: . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && {{ TETHYS_BIN_DIR }}/tethys manage syncdb
+    - name: . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && {{ TETHYS_BIN_DIR }}/tethys db migrate
     - shell: /bin/bash
     - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
