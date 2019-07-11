@@ -224,7 +224,7 @@ class HandoffHandler(TethysFunctionExtractor):
         """
         Returns a list of arguments for the HandoffHandler function.
         """
-        return inspect.getargspec(self.function).args
+        return inspect.getfullargspec(self.function).args
 
     @property
     def json_arguments(self):

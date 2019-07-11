@@ -49,12 +49,12 @@ class HydroShareBackendTest(unittest.TestCase):
 
         ret = hydro_share_auth2_obj.extra_data('user1', '0001-009', mock_response)
 
-        self.assertEquals('foo@gmail.com', ret['email'])
-        self.assertEquals('token1', ret['access_token'])
-        self.assertEquals('type1', ret['token_type'])
-        self.assertEquals(100, ret['expires_in'])
-        self.assertEquals('234234', ret['refresh_token'])
-        self.assertEquals('scope', ret['scope'])
+        self.assertEqual('foo@gmail.com', ret['email'])
+        self.assertEqual('token1', ret['access_token'])
+        self.assertEqual('type1', ret['token_type'])
+        self.assertEqual(100, ret['expires_in'])
+        self.assertEqual('234234', ret['refresh_token'])
+        self.assertEqual('scope', ret['scope'])
 
     def test_get_user_details(self):
         hydro_share_auth2_obj = HydroShareOAuth2()
@@ -75,7 +75,7 @@ class HydroShareBackendTest(unittest.TestCase):
         hydro_share_auth2_obj = HydroShareOAuth2()
         ret = hydro_share_auth2_obj.user_data(access_token)
 
-        self.assertEquals(mock_json_rval, ret)
+        self.assertEqual(mock_json_rval, ret)
         mock_get_json.assert_called_once_with(self.user_data_url, params={'access_token': 'token1'})
 
     @mock.patch('tethys_services.backends.hydroshare.HydroShareOAuth2.get_json')
@@ -86,7 +86,7 @@ class HydroShareBackendTest(unittest.TestCase):
         hydro_share_auth2_obj = HydroShareOAuth2()
         ret = hydro_share_auth2_obj.user_data(access_token)
 
-        self.assertEquals(None, ret)
+        self.assertEqual(None, ret)
         mock_get_json.assert_called_once_with(self.user_data_url, params={'access_token': 'token1'})
 
     @mock.patch('tethys_services.backends.hydroshare.BaseOAuth2.refresh_token')
@@ -109,10 +109,10 @@ class HydroShareBackendTest(unittest.TestCase):
 
         ret = hydro_share_auth2_obj.refresh_token('token1')
 
-        self.assertEquals('foo@gmail.com', ret['email'])
-        self.assertEquals('token1', ret['access_token'])
-        self.assertEquals('type1', ret['token_type'])
-        self.assertEquals(100, ret['expires_in'])
-        self.assertEquals('234234', ret['refresh_token'])
-        self.assertEquals('scope', ret['scope'])
+        self.assertEqual('foo@gmail.com', ret['email'])
+        self.assertEqual('token1', ret['access_token'])
+        self.assertEqual('type1', ret['token_type'])
+        self.assertEqual(100, ret['expires_in'])
+        self.assertEqual('234234', ret['refresh_token'])
+        self.assertEqual('scope', ret['scope'])
         self.assertIsNotNone(mock_response['expires_in'])
