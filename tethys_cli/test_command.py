@@ -51,7 +51,7 @@ def test_command(args):
     args.manage = False
     # Get the path to manage.py
     manage_path = get_manage_path(args)
-    tests_path = os.path.join(TETHYS_SRC_DIRECTORY, 'tests')
+    tests_path = os.path.join(TETHYS_SRC_DIRECTORY, 'tethys_tests')
 
     check_and_install_prereqs(tests_path)
 

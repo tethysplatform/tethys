@@ -74,7 +74,7 @@ class ResourceQuotaTest(TestCase):
         self.assertTrue("must be a subclass of ResourceQuotaHandler" in str(context.exception))
 
     def test_handler_str_valid(self):
-        self.resource_quota_user.handler = "tests.unit_tests.test_tethys_quotas.test_models.test_ResourceQuota.ResourceQuotaHandlerSub"  # noqa: E501
+        self.resource_quota_user.handler = "tethys_tests.unit_tests.test_tethys_quotas.test_models.test_ResourceQuota.ResourceQuotaHandlerSub"  # noqa: E501
         self.assertEqual(ResourceQuotaHandlerSub, self.resource_quota_user.handler)
 
     def test_handler_str_not_subclass(self):

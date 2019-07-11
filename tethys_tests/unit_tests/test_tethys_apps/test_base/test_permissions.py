@@ -3,7 +3,7 @@ import tethys_apps.base.permissions as tethys_permission
 from unittest import mock
 
 from django.test import RequestFactory
-from tests.factories.django_user import UserFactory
+from tethys_tests.factories.django_user import UserFactory
 
 
 class TestPermission(unittest.TestCase):

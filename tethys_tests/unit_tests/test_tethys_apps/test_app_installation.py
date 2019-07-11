@@ -15,7 +15,7 @@ else:
 class TestAppInstallation(unittest.TestCase):
     def setUp(self):
         self.src_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-        self.root = os.path.join(self.src_dir, 'tests', 'apps', 'tethysapp-test_app',
+        self.root = os.path.join(self.src_dir, 'tethys_tests', 'apps', 'tethysapp-test_app',
                                  'tethysapp',  'test_app', 'public')
 
     def tearDown(self):
