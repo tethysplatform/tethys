@@ -122,31 +122,12 @@ def generate_command(args):
     if args.type == GEN_SETTINGS_OPTION:
         # Generate context variables
         secret_key = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(50)])
-        installed_apps = [
-            'django.contrib.admin',
-            'django.contrib.auth',
-            'django.contrib.contenttypes',
-            'django.contrib.sessions',
-            'django.contrib.messages',
-            'django.contrib.staticfiles',
-            'django_gravatar',
-            'bootstrap3',
-            'termsandconditions',
-            'tethys_config',
-            'tethys_apps',
-            'tethys_gizmos',
-            'tethys_services',
-            'tethys_compute',
-            'tethys_quotas',
-            'social_django',
-            'guardian',
-            'session_security',
-            'captcha',
-            'rest_framework',
-            'rest_framework.authtoken',
-            'analytical',
-            'channels',
-        ]
+        installed_apps = ['django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes',
+                          'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles',
+                          'django_gravatar','bootstrap3', 'termsandconditions', 'tethys_config', 'tethys_apps',
+                          'tethys_gizmos', 'tethys_services', 'tethys_compute', 'tethys_quotas', 'social_django',
+                          'guardian', 'session_security', 'captcha', 'rest_framework', 'rest_framework.authtoken',
+                          'analytical', 'channels']
 
         if args.add_apps:
             if settings.INSTALLED_APPS:
@@ -175,7 +156,7 @@ def generate_command(args):
 
             installed_apps.remove(str(args.remove_app))
 
-        if args.session_expire_browser and args.session_expire_browser not in [0, '0', 'f', 'F', 'False', 'false']:
+        if args.session_expire_browser and args.session_expire_browser not in ['0', 'f', 'F', 'false', 'False']:
             session_expire_browser = True
         else:
             session_expire_browser = False
@@ -195,6 +176,26 @@ def generate_command(args):
         else:
             static_root = os.path.join(TETHYS_HOME, 'static')
 
+        if args.workspaces_root and os.path.exists(args.workspaces_root):
+            workspaces_root = args.workspaces_root
+        else:
+            workspaces_root = os.path.join(TETHYS_HOME, 'workspaces')
+
+        if args.bypass_portal_home and args.bypass_portal_home not in ['0', 'f', 'F', 'false', 'False']:
+            bypass_portal_home = True
+        else:
+            bypass_portal_home = False
+
+        if args.open_signup and args.open_signup not in ['0', 'f', 'F', 'false', 'False']:
+            open_signup = True
+        else:
+            open_signup = False
+
+        if args.open_portal and args.open_portal not in ['0', 'f', 'F', 'false', 'False']:
+            open_portal = True
+        else:
+            open_portal = False
+
         context.update({'secret_key': secret_key,
                         'allowed_host': args.allowed_host,
                         'allowed_hosts': args.allowed_hosts,
@@ -204,12 +205,15 @@ def generate_command(args):
                         'db_host': args.db_host,
                         'tethys_home': TETHYS_HOME,
                         'production': args.production,
-                        'open_portal': args.open_portal,
+                        'open_portal': open_portal,
                         'installed_apps': installed_apps,
                         'session_expire_browser': session_expire_browser,
                         'session_warning': session_warning,
                         'session_expire': session_expire,
-                        'static_root': static_root
+                        'static_root': static_root,
+                        'workspaces_root': workspaces_root,
+                        'bypass_portal_home': bypass_portal_home,
+                        'open_signup': open_signup
                         })
 
     if args.type == GEN_NGINX_OPTION:

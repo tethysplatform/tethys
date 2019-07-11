@@ -219,7 +219,7 @@ STATICFILES_FINDERS = (
 {% if not production %}#{% endif %}STATIC_ROOT = '{{ static_root }}'
 
 # Tethys Workspaces
-{% if not production %}#{% endif %}TETHYS_WORKSPACES_ROOT = '{{ tethys_home }}/workspaces'
+{% if not production %}#{% endif %}TETHYS_WORKSPACES_ROOT = '{{ workspaces_root }}'
 
 # Messaging settings
 MESSAGE_TAGS = {message_constants.DEBUG: 'alert-danger',
@@ -239,10 +239,10 @@ GRAVATAR_DFFAULT_SECURE = True
 
 
 # Use this setting to bypass the home page
-BYPASS_TETHYS_HOME_PAGE = False
+BYPASS_TETHYS_HOME_PAGE = {{ bypass_portal_home }}
 
 # Use this setting to disable open account signup
-ENABLE_OPEN_SIGNUP = False
+ENABLE_OPEN_SIGNUP = {{ open_signup }}
 
 # Set to True to allow Open Portal mode.
 ENABLE_OPEN_PORTAL = {{ open_portal }}

@@ -108,11 +108,17 @@ def tethys_command():
                             help='Forces user logout after a specified number of seconds. Defaults to 900')
     gen_parser.add_argument('--static-root', dest='static_root',
                             help='For production. Path to static files diretory. Defaults to ${TETHYS_HOME}/static}')
+    gen_parser.add_argument('--workspaces-root', dest='workspaces_root',
+                            help='For production. Path to workspaces diretory. Defaults to ${TETHYS_HOME}/workspaces}')
+    gen_parser.add_argument('--bypass-portal-home', dest='bypass_portal_home',
+                            help='Bypasses the Tethys home page. Defaults to False')
+    gen_parser.add_argument('--open-signup', dest='open_signup',
+                            help='Enables open account signup. Defaults to False')
     gen_parser.set_defaults(func=generate_command, allowed_host=None, allowed_hosts=None, client_max_body_size='75M',
                             asgi_processes=4, db_username='tethys_default', db_password='pass', db_port=5436,
                             db_host='127.0.0.1', production=False, open_portal=False, tethys_port=8000, overwrite=False,
                             add_apps=None, add_app=None, remove_apps=None, remove_app=None, session_expire_browser=True,
-                            session_warning=840, session_expire=900)
+                            session_warning=840, session_expire=900, bypass_portal_home=False, open_signup=False)
 
     # Setup start server command
     manage_parser = subparsers.add_parser('manage', help='Management commands for Tethys Platform.')
