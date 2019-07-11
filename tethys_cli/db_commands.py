@@ -116,13 +116,11 @@ def configure_tethys_db(**kwargs):
 
 def process_args(args):
     db_settings = settings.DATABASES[args.db_alias]
-    db_dir = None
-    if args.command in ['init', 'start', 'stop']:
-        try:
-            db_dir = db_settings['DIR']
-        except KeyError:
+    db_dir = db_settings.get('DIR')
+    if db_dir is None:
+        if args.command in ['init', 'start', 'stop']:
             raise RuntimeError(f'The tethys db {args.command} command can only be used with local databases.')
-
+    else:
         if not Path(db_dir).is_absolute():
             db_dir = Path(get_tethys_home_dir()) / db_dir
 
