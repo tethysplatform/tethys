@@ -288,7 +288,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 :: Initialze Tethys database
-tethys manage syncdb
+tethys db migrate
 ECHO from django.contrib.auth.models import User; User.objects.create_superuser('!TETHYS_SUPER_USER!', '!TETHYS_SUPER_USER_EMAIL!', '!TETHYS_SUPER_USER_PASS!') | python manage.py shell
 ECHO Stopping database server...
 pg_ctl -U postgres -D "!TETHYS_HOME!\psql\data" stop

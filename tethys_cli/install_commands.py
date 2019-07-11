@@ -444,7 +444,7 @@ def install_command(args):
         else:
             call(['python', 'setup.py', 'install'], stdout=FNULL, stderr=STDOUT)
 
-    call(['tethys', 'manage', 'sync'])
+    call(['tethys', 'db', 'sync'])
 
     # Run Portal Level Config if present
     if not skip_config:
