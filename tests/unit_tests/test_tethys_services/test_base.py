@@ -20,9 +20,9 @@ class TethysServicesBaseTests(unittest.TestCase):
         expected_type = 'ckan'
         expected_endpoint = 'tethys_dataset_services.engines.CkanDatasetEngine'
         ret = DatasetService(name=expected_name, type=expected_type, endpoint=expected_endpoint)
-        self.assertEquals(expected_name, ret.name)
-        self.assertEquals(expected_type, ret.type)
-        self.assertEquals(expected_endpoint, ret.endpoint)
+        self.assertEqual(expected_name, ret.name)
+        self.assertEqual(expected_type, ret.type)
+        self.assertEqual(expected_endpoint, ret.endpoint)
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertIn('DEPRECATION WARNING', po_call_args[0][0][0])
 
@@ -39,7 +39,7 @@ class TethysServicesBaseTests(unittest.TestCase):
         self.assertRaises(ValueError, DatasetService, name=expected_name, type=expected_type,
                           endpoint=expected_endpoint)
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEquals(0, len(po_call_args))
+        self.assertEqual(0, len(po_call_args))
 
     @mock.patch('tethys_services.base.pretty_output')
     def test_DatasetService_init_with_two(self, mock_pretty_output):
@@ -49,7 +49,7 @@ class TethysServicesBaseTests(unittest.TestCase):
         self.assertRaises(ValueError, DatasetService, name=expected_name, type=expected_type,
                           endpoint=expected_endpoint)
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEquals(0, len(po_call_args))
+        self.assertEqual(0, len(po_call_args))
 
     @mock.patch('tethys_services.base.pretty_output')
     @mock.patch('tethys_services.base.len')
@@ -63,7 +63,7 @@ class TethysServicesBaseTests(unittest.TestCase):
         self.assertRaises(ValueError, DatasetService, name=expected_name, type=expected_type,
                           endpoint=expected_endpoint)
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEquals(0, len(po_call_args))
+        self.assertEqual(0, len(po_call_args))
 
     @mock.patch('tethys_services.base.pretty_output')
     def test_DatasetService_repr(self, mock_pretty_output):
@@ -71,10 +71,10 @@ class TethysServicesBaseTests(unittest.TestCase):
         expected_type = 'ckan'
         expected_endpoint = 'tethys_dataset_services.engines.CkanDatasetEngine'
         ret = DatasetService(name=expected_name, type=expected_type, endpoint=expected_endpoint)
-        self.assertEquals('<DatasetService: type=ckan, api_endpoint=tethys_dataset_services.engines.CkanDatasetEngine>',
-                          ret.__repr__())
+        self.assertEqual('<DatasetService: type=ckan, api_endpoint=tethys_dataset_services.engines.CkanDatasetEngine>',
+                         ret.__repr__())
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEquals(1, len(po_call_args))
+        self.assertEqual(1, len(po_call_args))
         self.assertIn('DEPRECATION WARNING', po_call_args[0][0][0])
 
     # Spatial Data Services
@@ -85,9 +85,9 @@ class TethysServicesBaseTests(unittest.TestCase):
         expected_type = 'geoserver'
         expected_endpoint = 'tethys_dataset_services.engines.GeoServerSpatialDatasetEngine'
         ret = SpatialDatasetService(name=expected_name, type=expected_type, endpoint=expected_endpoint)
-        self.assertEquals(expected_name, ret.name)
-        self.assertEquals(expected_type, ret.type)
-        self.assertEquals(expected_endpoint, ret.endpoint)
+        self.assertEqual(expected_name, ret.name)
+        self.assertEqual(expected_type, ret.type)
+        self.assertEqual(expected_endpoint, ret.endpoint)
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertIn('DEPRECATION WARNING', po_call_args[0][0][0])
 
@@ -105,7 +105,7 @@ class TethysServicesBaseTests(unittest.TestCase):
         self.assertRaises(ValueError, SpatialDatasetService, name=expected_name, type=expected_type,
                           endpoint=expected_endpoint)
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEquals(0, len(po_call_args))
+        self.assertEqual(0, len(po_call_args))
 
     @mock.patch('tethys_services.base.pretty_output')
     @mock.patch('tethys_services.base.len')
@@ -121,7 +121,7 @@ class TethysServicesBaseTests(unittest.TestCase):
         self.assertRaises(ValueError, SpatialDatasetService, name=expected_name, type=expected_type,
                           endpoint=expected_endpoint)
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEquals(0, len(po_call_args))
+        self.assertEqual(0, len(po_call_args))
 
     @mock.patch('tethys_services.base.pretty_output')
     @mock.patch('tethys_services.base.len')
@@ -137,7 +137,7 @@ class TethysServicesBaseTests(unittest.TestCase):
         self.assertRaises(ValueError, SpatialDatasetService, name=expected_name, type=expected_type,
                           endpoint=expected_endpoint)
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEquals(0, len(po_call_args))
+        self.assertEqual(0, len(po_call_args))
 
     @mock.patch('tethys_services.base.pretty_output')
     def test_SpatialDatasetService_repr(self, mock_pretty_output):
@@ -145,10 +145,10 @@ class TethysServicesBaseTests(unittest.TestCase):
         expected_type = 'geoserver'
         expected_endpoint = 'tethys_dataset_services.engines.GeoServerSpatialDatasetEngine'
         ret = SpatialDatasetService(name=expected_name, type=expected_type, endpoint=expected_endpoint)
-        self.assertEquals('<SpatialDatasetService: type=geoserver, '
-                          'api_endpoint=tethys_dataset_services.engines.GeoServerSpatialDatasetEngine>', ret.__repr__())
+        self.assertEqual('<SpatialDatasetService: type=geoserver, '
+                         'api_endpoint=tethys_dataset_services.engines.GeoServerSpatialDatasetEngine>', ret.__repr__())
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEquals(1, len(po_call_args))
+        self.assertEqual(1, len(po_call_args))
         self.assertIn('DEPRECATION WARNING', po_call_args[0][0][0])
 
     # WpsService
@@ -158,18 +158,18 @@ class TethysServicesBaseTests(unittest.TestCase):
         expected_name = 'foo'
         expected_endpoint = 'end_point'
         ret = WpsService(name=expected_name, endpoint=expected_endpoint)
-        self.assertEquals(expected_name, ret.name)
-        self.assertEquals(expected_endpoint, ret.endpoint)
+        self.assertEqual(expected_name, ret.name)
+        self.assertEqual(expected_endpoint, ret.endpoint)
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEquals(1, len(po_call_args))
+        self.assertEqual(1, len(po_call_args))
         self.assertIn('DEPRECATION WARNING', po_call_args[0][0][0])
 
     @mock.patch('tethys_services.base.pretty_output')
     def test_WpsService_repr(self, mock_pretty_output):
         expected_name = 'foo'
         expected_endpoint = 'end_point'
-        self.assertEquals('<WpsService: name=foo, endpoint=end_point>',
-                          WpsService(name=expected_name, endpoint=expected_endpoint).__repr__())
+        self.assertEqual('<WpsService: name=foo, endpoint=end_point>',
+                         WpsService(name=expected_name, endpoint=expected_endpoint).__repr__())
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEquals(1, len(po_call_args))
+        self.assertEqual(1, len(po_call_args))
         self.assertIn('DEPRECATION WARNING', po_call_args[0][0][0])

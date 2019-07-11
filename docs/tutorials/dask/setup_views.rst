@@ -240,7 +240,7 @@ Create :file:`jobs_table.html`. Change it so that the contents are as follows:
 ::
 
     {% extends "dask_tutorial/base.html" %}
-    {% load staticfiles tethys_gizmos %}
+    {% load static tethys_gizmos %}
 
     {% load tethys_gizmos %}
 
@@ -323,7 +323,7 @@ Define :file:`results.html` to be the following:
 ::
 
     {% extends "dask_tutorial/base.html" %}
-    {% load staticfiles tethys_gizmos %}
+    {% load static tethys_gizmos %}
 
     {% load tethys_gizmos %}
 
@@ -367,7 +367,7 @@ Edit :file:`base.html` to be the following:
 
     {% extends "tethys_apps/app_base.html" %}
 
-    {% load staticfiles %}
+    {% load static %}
 
     {% block title %}{{ tethys_app.name }}{% endblock %}
 
