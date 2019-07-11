@@ -51,8 +51,8 @@ This command contains several subcommands that are used to help setup and manage
 **Optional Arguments:**
 
 * **-d DATABASE_ALIAS, --db_alias DATABASE_ALIAS**: Name of the database options from settings.py to use (e.g. 'default').
-* **-n USERNAME, --username USERNAME**: Name of database super user to add to database when creating.
-* **-p PASSWORD, --password PASSWORD**: Password for the database super user.
+* **-n USERNAME, --username USERNAME**: Name of database user to add to database when creating.
+* **-p PASSWORD, --password PASSWORD**: Password for the database user.
 * **-N USERNAME, --superuser-name USERNAME**: Name of database super user to add to database when creating.
 * **-P PASSWORD, --superuser-pasword PASSWORD**: Password for the database super user.
 * **--portal-superuser-name USERNAME**: Name for the Tethys portal super user.

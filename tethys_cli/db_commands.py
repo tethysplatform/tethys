@@ -26,9 +26,9 @@ def add_db_parser(subparsers):
     db_parser.add_argument('-d', '--database', dest='db_alias',
                            help="Name of the database options from settings.py to use (e.g. 'default').")
     db_parser.add_argument('-n', '--username', dest='username',
-                           help="Name of database super user to add to database when creating.")
+                           help="Name of database user to add to database when creating.")
     db_parser.add_argument('-p', '--password', dest='password',
-                           help="Password for the database super user.")
+                           help="Password for the database user.")
     db_parser.add_argument('-N', '--superuser-name', dest='superuser_name',
                            help="Name of database super user to add to database when creating.")
     db_parser.add_argument('-P', '--superuser-password', dest='superuser_password',
@@ -117,7 +117,7 @@ def configure_tethys_db(**kwargs):
 def process_args(args):
     db_settings = settings.DATABASES[args.db_alias]
     db_dir = None
-    if args.command in ['init', 'start', 'stop', 'configure']:
+    if args.command in ['init', 'start', 'stop']:
         try:
             db_dir = db_settings['DIR']
         except KeyError:
