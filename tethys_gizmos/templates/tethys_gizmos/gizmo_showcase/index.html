@@ -1,6 +1,6 @@
 {% extends "page.html" %}
 
-{% load staticfiles tethys_gizmos %}
+{% load static tethys_gizmos %}
 
 {% block title %}- Gizmo Showcase{% endblock %}
 
@@ -146,7 +146,7 @@ def my_view(request):
                 </p>
 
                 <pre class="overview-example-code"><code class="language-python">{% templatetag openblock %} extends "tethys_apps/app_base.html" {% templatetag closeblock %}
-{% templatetag openblock %} load staticfiles tethys_gizmos {% templatetag closeblock %}
+{% templatetag openblock %} load static tethys_gizmos {% templatetag closeblock %}
 
 {% templatetag openblock %}  block app_content {% templatetag closeblock %}
   {% templatetag openblock %} gizmo date_picker_options {% templatetag closeblock %}
