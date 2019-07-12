@@ -74,6 +74,13 @@ def stop_db_server(db_dir=None, **kwargs):
     _run_process(args, msg, err_msg)
 
 
+def status_db_server(db_dir=None, **kwargs):
+    msg = 'Checking status of Postgresql database server...'
+    err_msg = ''
+    args = ['pg_ctl', 'status', '-D', f'{db_dir}/data']
+    _run_process(args, msg, err_msg)
+
+
 def create_db_user(hostname=None, port=None, username=None, password=None, db_name=None, is_superuser=False, **kwargs):
     msg = f'Creating Tethys database user "{username}"...'
 
@@ -165,6 +172,7 @@ DB_COMMANDS = dict(
     init=init_db_server,
     start=start_db_server,
     stop=stop_db_server,
+    status=status_db_server,
     create=create_tethys_db,
     migrate=migrate_tethys_db,
     createsuperuser=create_portal_superuser,

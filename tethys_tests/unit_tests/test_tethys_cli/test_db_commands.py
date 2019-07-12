@@ -163,6 +163,13 @@ class TestCommandTests(unittest.TestCase):
         self.mock_run_process.assert_called_with(['pg_ctl', '-U', 'postgres', '-D', 'foo/data', 'stop'],
                                                  'Stopping Postgresql database server...',
                                                  'There was an error while stopping the Posgresql database.')
+    def test_db_command_status(self):
+        mock_args = mock.MagicMock()
+        mock_args.command = 'status'
+        db_command(mock_args)
+        self.mock_run_process.assert_called_with(['pg_ctl', 'status', '-D', 'foo/data'],
+                                                 'Checking status of Postgresql database server...',
+                                                 '')
 
     @mock.patch('tethys_cli.db_commands.get_manage_path', return_value='foo/manage.py')
     def test_db_command_migrate(self, mock_get_manage_path):
