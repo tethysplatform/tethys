@@ -291,7 +291,7 @@ NO_CAPTCHA = {{ no_captcha }}
 
 # Django-recaptcha
 RECAPTCHA_PRIVATE_KEY = {% if recaptcha_private_key %}'{{ recaptcha_private_key }}'{% else %}''{% endif %}
-RECAPTCHA_PUBLIC_KEY =  {% if recaptcha_public_key %}'{{ recaptcha_public_key }}'{% else %}''{% endif %}
+RECAPTCHA_PUBLIC_KEY = {% if recaptcha_public_key %}'{{ recaptcha_public_key }}'{% else %}''{% endif %}
 # If you require reCaptcha to be loaded from somewhere other than https://google.com
 # (e.g. to bypass firewall restrictions), you can specify what proxy to use.
 # RECAPTCHA_PROXY_HOST = 'https://recaptcha.net'
