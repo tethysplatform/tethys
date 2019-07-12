@@ -18,7 +18,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 requires = []
 
-version = '3.0.0'
+version = '3.0.0a2'
 
 setup(
     name='tethys_platform',

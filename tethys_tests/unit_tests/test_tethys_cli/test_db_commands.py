@@ -4,7 +4,7 @@ from unittest import mock
 
 from django.test.utils import override_settings
 
-from tethys_cli.db_commands import db_command, process_args, create_db_user
+from tethys_cli.db_commands import db_command, process_args, create_db_user, _run_process
 
 
 class TestCommandTests(unittest.TestCase):
@@ -39,6 +39,19 @@ class TestCommandTests(unittest.TestCase):
     def tearDown(self):
         # revert to normal warnings
         warnings.simplefilter("default", UserWarning)
+
+    @mock.patch('tethys_cli.db_commands.write_error')
+    @mock.patch('tethys_cli.db_commands.write_info')
+    @mock.patch('tethys_cli.db_commands.run_process')
+    def tests_db_command__run_process(self, mock_run_process, mock_write_info, mock_write_error):
+        mock_args = mock.MagicMock()
+        msg = 'test msg'
+        err_msg = 'test err msg'
+
+        self.assertRaises(SystemExit, _run_process, mock_args, msg, err_msg)
+        mock_run_process.assert_called_with(mock_args)
+        mock_write_info.assert_called_with(msg)
+        mock_write_error.assert_called_with(err_msg)
 
     @mock.patch('tethys_cli.db_commands.Path')
     @mock.patch('tethys_cli.db_commands.vars')
