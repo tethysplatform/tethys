@@ -69,8 +69,10 @@ class TethysPortalFormsTests(TestCase):
     def test_LoginForm_invalid(self):
         login_invalid_data = {'username': 'admin', 'password': 'test1231', 'captcha_0': self.hashkey,
                               'captcha_1': ''}
-        login_form = tethys_portal.forms.LoginForm(login_invalid_data)
-        self.assertFalse(login_form.is_valid())
+        with self.settings(NO_CAPTCHA=False):
+            reload(tethys_portal.forms)
+            login_form = tethys_portal.forms.LoginForm(login_invalid_data)
+            self.assertFalse(login_form.is_valid())
 
     # Register Form
 
