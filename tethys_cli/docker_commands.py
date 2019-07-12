@@ -218,9 +218,7 @@ class PostGisContainerMetadata(ContainerMetadata):
         options = super().default_container_options()
         options.update(
             environment=dict(
-                POSTGRES_USER='postgres',
                 POSTGRES_PASSWORD='mysecretpassword',
-                POSTGRES_DB='postgres'
             ),
         )
         return options
@@ -231,29 +229,16 @@ class PostGisContainerMetadata(ContainerMetadata):
 
         # User environmental variables
         if not defaults:
-            write_pretty_output("Follow the propts to define the username, password, and database name for the "
-                                "database superuser. See: https://hub.docker.com/r/mdillon/postgis/")
-            write_pretty_output("NOTE: Press enter to accept the default value shown in brackets.")
-
-            # POSTGRES_USER
-            prompt = 'Username of superuser (i.e. POSTGRES_USER)'
-            postgres_user = \
-                UserInputHelper.get_verified_password(prompt, options['environment']['POSTGRES_USER'])
+            write_pretty_output("Tethys uses the mdillon/postgis image on Docker Hub. "
+                                "See: https://hub.docker.com/r/mdillon/postgis/")
 
             # POSTGRES_PASSWORD
-            prompt = 'Password for superuser (i.e. POSTGRES_PASSWORD)'
+            prompt = 'Password for postgres user (i.e. POSTGRES_PASSWORD)'
             postgres_password = \
                 UserInputHelper.get_verified_password(prompt, options['environment']['POSTGRES_PASSWORD'])
 
-            # POSTGRES_DB
-            prompt = 'Database name of superuser (i.e. POSTGRES_DB)'
-            postgres_db = \
-                UserInputHelper.get_verified_password(prompt, options['environment']['POSTGRES_DB'])
-
             options['environment'].update(
-                POSTGRES_USER=postgres_user,
                 POSTGRES_PASSWORD=postgres_password,
-                POSTGRES_DB=postgres_db
             )
 
         return options
