@@ -85,7 +85,10 @@ LOGGING = {
 
 # Application definition
 
-INSTALLED_APPS = {{ installed_apps | safe | wordwrap:1 }}
+INSTALLED_APPS = [{% for item in installed_apps %}
+    '{{ item }}',
+{%- endfor %}
+]
 
 MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',

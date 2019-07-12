@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 import os
+import ast
 import string
 import random
 from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir
@@ -77,23 +78,50 @@ def add_gen_parser(subparsers):
                             help='Username for the Tethys Database server to be set in the settings file.')
     gen_parser.add_argument('--db-password', dest='db_password',
                             help='Password for the Tethys Database server to be set in the settings file.')
+    gen_parser.add_argument('--db-host', dest='db_host',
+                            help='Host for the Tethys Database server to be set in the settings file.')
     gen_parser.add_argument('--db-port', dest='db_port',
                             help='Port for the Tethys Database server to be set in the settings file.')
     gen_parser.add_argument('--db-dir', dest='db_dir',
                             help='Directory where the local Tethys Database server is created.')
     gen_parser.add_argument('--production', dest='production', action='store_true',
                             help='Generate a new settings file for a production server.')
-    gen_parser.add_argument('--open-portal', dest='open_portal',
-                            help='Allow Open Portal Mode.')
+    gen_parser.add_argument('--open-portal', dest='open_portal', help='Allow Open Portal Mode.')
+    gen_parser.add_argument('--open-signup', dest='open_signup', help='Enables open account signup. Defaults to False')
     gen_parser.add_argument('--tethys-port', dest='tethys_port',
                             help='Port for the Tethys Server to run on in production. This is used when generating the '
                                  'Daphne and nginx configuration files. Defaults to 8000.')
     gen_parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                             help='Overwrite existing file without prompting.')
+    gen_parser.add_argument('--add-apps', dest='add_apps',
+                            help='Enable applications by adding them to the INSTALLED_APPS in settings.py. '
+                                 'e.g.: "[\'grappelli\', \'django_registration\']"')
+    gen_parser.add_argument('--add-app', dest='add_app',
+                            help='Enable an application by adding it to the INSTALLED_APPS in settings.py. '
+                                 'e.g.: grappelli')
+    gen_parser.add_argument('--remove-apps', dest='remove_apps',
+                            help='Remove applications from the INSTALLED_APPS in settings.py. '
+                                 'e.g.: "[\'grappelli\', \'django_registration\']"')
+    gen_parser.add_argument('--remove-app', dest='remove_app',
+                            help='Remove an application from the INSTALLED_APPS in settings.py. e.g.: grappelli')
+    gen_parser.add_argument('--session-expire-browser', dest='session_expire_browser',
+                            help='Forces user logout once the browser has been closed. Defaults to True')
+    gen_parser.add_argument('--session-warning', dest='session_warning',
+                            help='Warns user of forced logout after indicated number of seconds. Defaults to 840')
+    gen_parser.add_argument('--session-expire', dest='session_expire',
+                            help='Forces user logout after a specified number of seconds. Defaults to 900')
+    gen_parser.add_argument('--static-root', dest='static_root',
+                            help='For production. Path to static files diretory. Defaults to ${TETHYS_HOME}/static}')
+    gen_parser.add_argument('--workspaces-root', dest='workspaces_root',
+                            help='For production. Path to workspaces diretory. Defaults to ${TETHYS_HOME}/workspaces}')
+    gen_parser.add_argument('--bypass-portal-home', dest='bypass_portal_home',
+                            help='Bypasses the Tethys home page. Defaults to False')
     gen_parser.set_defaults(func=generate_command, allowed_host=None, allowed_hosts=None, client_max_body_size='75M',
                             asgi_processes=4, db_name='tethys_platform', db_username='tethys_default',
-                            db_password='pass', db_port=5436, db_dir='psql', production=False, open_portal=False,
-                            tethys_port=8000, overwrite=False)
+                            db_password='pass', db_host='127.0.0.1', db_port=5436, db_dir='psql', production=False,
+                            open_portal=False, open_signup=False, tethys_port=8000, overwrite=False, add_apps=None,
+                            add_app=None, remove_apps=None, remove_app=None, session_expire_browser=True,
+                            session_warning=840, session_expire=900, bypass_portal_home=False)
 
 
 def get_environment_value(value_name):
@@ -117,6 +145,80 @@ def gen_settings(args):
 
     # Generate context variables
     secret_key = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(50)])
+    installed_apps = ['django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes',
+                      'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles',
+                      'django_gravatar', 'bootstrap3', 'termsandconditions', 'tethys_config', 'tethys_apps',
+                      'tethys_gizmos', 'tethys_services', 'tethys_compute', 'tethys_quotas', 'social_django',
+                      'guardian', 'session_security', 'captcha', 'rest_framework', 'rest_framework.authtoken',
+                      'analytical', 'channels']
+
+    if args.add_apps:
+        if settings.INSTALLED_APPS:
+            installed_apps = settings.INSTALLED_APPS
+
+        for i in ast.literal_eval(args.add_apps):
+            if str(i) not in installed_apps:
+                installed_apps.append(str(i))
+
+    elif args.add_app and str(args.add_app) not in installed_apps:
+        if settings.INSTALLED_APPS:
+            installed_apps = settings.INSTALLED_APPS
+
+        installed_apps.append(str(args.add_app))
+
+    if args.remove_apps:
+        if settings.INSTALLED_APPS:
+            installed_apps = settings.INSTALLED_APPS
+
+        for i in ast.literal_eval(args.remove_apps):
+            if str(i) in installed_apps:
+                installed_apps.remove(str(i))
+    elif args.remove_app and str(args.remove_app) in installed_apps:
+        if settings.INSTALLED_APPS:
+            installed_apps = settings.INSTALLED_APPS
+
+        installed_apps.remove(str(args.remove_app))
+
+    if args.session_expire_browser and args.session_expire_browser not in ['0', 'f', 'F', 'false', 'False']:
+        session_expire_browser = True
+    else:
+        session_expire_browser = False
+
+    try:
+        session_warning = int(args.session_warning)
+    except:
+        session_warning = 840
+
+    try:
+        session_expire = int(args.session_expire)
+    except:
+        session_expire = 900
+
+    if args.static_root and os.path.exists(args.static_root):
+        static_root = args.static_root
+    else:
+        static_root = os.path.join(TETHYS_HOME, 'static')
+
+    if args.workspaces_root and os.path.exists(args.workspaces_root):
+        workspaces_root = args.workspaces_root
+    else:
+        workspaces_root = os.path.join(TETHYS_HOME, 'workspaces')
+
+    if args.bypass_portal_home and args.bypass_portal_home not in ['0', 'f', 'F', 'false', 'False']:
+        bypass_portal_home = True
+    else:
+        bypass_portal_home = False
+
+    if args.open_signup and args.open_signup not in ['0', 'f', 'F', 'false', 'False']:
+        open_signup = True
+    else:
+        open_signup = False
+
+    if args.open_portal and args.open_portal not in ['0', 'f', 'F', 'false', 'False']:
+        open_portal = True
+    else:
+        open_portal = False
+
     context = {
         'secret_key': secret_key,
         'allowed_host': args.allowed_host,
@@ -124,11 +226,20 @@ def gen_settings(args):
         'db_name': args.db_name,
         'db_username': args.db_username,
         'db_password': args.db_password,
+        'db_host': args.db_host,
         'db_port': args.db_port,
         'db_dir': args.db_dir,
         'tethys_home': TETHYS_HOME,
         'production': args.production,
-        'open_portal': args.open_portal
+        'open_portal': args.open_portal,
+        'open_signup': open_signup,
+        'installed_apps': installed_apps,
+        'session_expire_browser': session_expire_browser,
+        'session_warning': session_warning,
+        'session_expire': session_expire,
+        'static_root': static_root,
+        'workspaces_root': workspaces_root,
+        'bypass_portal_home': bypass_portal_home
     }
     return context
 
