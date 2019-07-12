@@ -15,7 +15,7 @@ os:
 install:
   - cd ..
   - bash ./tethys/scripts/install_tethys.sh -h
-  - bash ./tethys/scripts/install_tethys.sh --partial-tethys-install mea -t $PWD
+  - bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -t $PWD
 
   # activate conda environment
   - . ~/miniconda/etc/profile.d/conda.sh
@@ -30,7 +30,6 @@ install:
 
   # install test dependencies
   - pip install python-coveralls
-  - pip install -e $TETHYS_HOME/tethys/[tests]
 
 # command to run tests
 script:
