@@ -8,7 +8,6 @@
 ********************************************************************************
 """
 import os
-import ast
 import string
 import random
 from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir
@@ -65,11 +64,11 @@ def add_gen_parser(subparsers):
     gen_parser.add_argument('--allowed-host', dest='allowed_host',
                             help='Single hostname or IP address to add to allowed hosts in the settings file. '
                                  'e.g.: 127.0.0.1')
-    gen_parser.add_argument('--allowed-hosts', dest='allowed_hosts',
-                            help='A list of hostnames or IP addresses to add to allowed hosts in the settings file. '
-                                 'e.g.: "[\'127.0.0.1\', \'localhost\']"')
+    gen_parser.add_argument('--allowed-hosts', dest='allowed_hosts', nargs='+',
+                            help='Add multiple hostnames or IP addresses to allowed hosts in the settings file. '
+                                 'e.g.: 127.0.0.1 localhost')
     gen_parser.add_argument('--client-max-body-size', dest='client_max_body_size',
-                            help='Populates the client_max_body_size parameter for nginx config. Defaults to "75M".')
+                            help='Populate the client_max_body_size parameter for nginx config. Defaults to "75M".')
     gen_parser.add_argument('--asgi-processes', dest='asgi_processes',
                             help='The maximum number of asgi worker processes. Defaults to 4.')
     gen_parser.add_argument('--db-name', dest='db_name',
@@ -86,42 +85,79 @@ def add_gen_parser(subparsers):
                             help='Directory where the local Tethys Database server is created.')
     gen_parser.add_argument('--production', dest='production', action='store_true',
                             help='Generate a new settings file for a production server.')
-    gen_parser.add_argument('--open-portal', dest='open_portal', help='Allow Open Portal Mode.')
-    gen_parser.add_argument('--open-signup', dest='open_signup', help='Enables open account signup. Defaults to False')
+    gen_parser.add_argument('--open-portal', dest='open_portal', help='Allow Open Portal Mode. Defaults to False')
+    gen_parser.add_argument('--open-signup', dest='open_signup', help='Enable open account signup. Defaults to False')
     gen_parser.add_argument('--tethys-port', dest='tethys_port',
                             help='Port for the Tethys Server to run on in production. This is used when generating the '
                                  'Daphne and nginx configuration files. Defaults to 8000.')
     gen_parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                             help='Overwrite existing file without prompting.')
-    gen_parser.add_argument('--add-apps', dest='add_apps',
+    gen_parser.add_argument('--add-apps', dest='add_apps', nargs='+',
                             help='Enable applications by adding them to the INSTALLED_APPS in settings.py. '
-                                 'e.g.: "[\'grappelli\', \'django_registration\']"')
-    gen_parser.add_argument('--add-app', dest='add_app',
-                            help='Enable an application by adding it to the INSTALLED_APPS in settings.py. '
-                                 'e.g.: grappelli')
-    gen_parser.add_argument('--remove-apps', dest='remove_apps',
+                                 'e.g.: grappelli django_registration')
+    gen_parser.add_argument('--remove-apps', dest='remove_apps', nargs='+',
                             help='Remove applications from the INSTALLED_APPS in settings.py. '
-                                 'e.g.: "[\'grappelli\', \'django_registration\']"')
-    gen_parser.add_argument('--remove-app', dest='remove_app',
-                            help='Remove an application from the INSTALLED_APPS in settings.py. e.g.: grappelli')
+                                 'e.g.: grappelli django_registration')
     gen_parser.add_argument('--session-expire-browser', dest='session_expire_browser',
-                            help='Forces user logout once the browser has been closed. Defaults to True')
+                            help='Force user logout once the browser has been closed. Defaults to True')
     gen_parser.add_argument('--session-warning', dest='session_warning',
-                            help='Warns user of forced logout after indicated number of seconds. Defaults to 840')
+                            help='Warn user of forced logout after indicated number of seconds. Defaults to 840')
     gen_parser.add_argument('--session-expire', dest='session_expire',
-                            help='Forces user logout after a specified number of seconds. Defaults to 900')
+                            help='Force user logout after a specified number of seconds. Defaults to 900')
     gen_parser.add_argument('--static-root', dest='static_root',
-                            help='For production. Path to static files diretory. Defaults to ${TETHYS_HOME}/static}')
+                            help='For production. Path to static files diretory. Defaults to ${TETHYS_HOME}/static. '
+                                 'Applies default if directory does not exist.')
     gen_parser.add_argument('--workspaces-root', dest='workspaces_root',
-                            help='For production. Path to workspaces diretory. Defaults to ${TETHYS_HOME}/workspaces}')
+                            help='For production. Path to workspaces diretory. Defaults to ${TETHYS_HOME}/workspaces. '
+                                 'Applies default if directory does not exist.')
     gen_parser.add_argument('--bypass-portal-home', dest='bypass_portal_home',
                             help='Bypasses the Tethys home page. Defaults to False')
+    gen_parser.add_argument('--add-quota-handlers', dest='add_quota_handlers', nargs='+',
+                            help='Append one or more dot-formatted handlers to the resource quota handlers list in '
+                                 'settings.py. Defaults to tethys_quotas.handlers.workspace.WorkspaceQuotaHandler. '
+                                 'e.g.: tethysapp.dam_inventory.dam_quota_handler.DamQuotaHandler')
+    gen_parser.add_argument('--remove-quota-handlers', dest='remove_quota_handlers', nargs='+',
+                            help='Remove one or more dot-formatted handlers from the resource quota handlers list in '
+                                 'settings.py. e.g.: tethysapp.dam_inventory.dam_quota_handler.DamQuotaHandler')
+    gen_parser.add_argument('--django-analytical', dest='django_analytical', nargs='+',
+                            help='Provide one or more ID:SERVICE_ID pair for django analytical options in settings.py. '
+                                 'All IDs default to False. Available IDs are: CLICKMAP_TRACKER_ID, CLICKY_SITE_ID, '
+                                 'CRAZY_EGG_ACCOUNT_NUMBER, GAUGES_SITE_ID, GOOGLE_ANALYTICS_JS_PROPERTY_ID, '
+                                 'GOSQUARED_SITE_TOKEN, HOTJAR_SITE_ID, HUBSPOT_PORTAL_ID, INTERCOM_APP_ID, '
+                                 'KISSINSIGHTS_ACCOUNT_NUMBER, KISSINSIGHTS_SITE_CODE, KISS_METRICS_API_KEY, '
+                                 'MIXPANEL_API_TOKEN, OLARK_SITE_ID, OPTIMIZELY_ACCOUNT_NUMBER, PERFORMABLE_API_KEY, '
+                                 'PIWIK_DOMAIN_PATH, PIWIK_SITE_ID, RATING_MAILRU_COUNTER_ID, SNAPENGAGE_WIDGET_ID, '
+                                 'SPRING_METRICS_TRACKING_ID, USERVOICE_WIDGET_KEY, WOOPRA_DOMAIN, '
+                                 'YANDEX_METRICA_COUNTER_ID. '
+                                 'e.g.: CLICKMAP_TRACKER_ID:123456 CLICKY_SITE_ID:789123')
+    gen_parser.add_argument('--add-backends', dest='add_backends', nargs='+',
+                            help='Add one or more authentication backends to settings.py. Django try these backends in '
+                                 'the same order they are listed. Provide the dot-formatted python path to a custom '
+                                 'backend or one of the following keys: hydroshare, linkedin, google, facebook. '
+                                 'The default backends are django.contrib.auth.backends.ModelBackend and '
+                                 'guardian.backends.ObjectPermissionBackend. '
+                                 'e.g.: project.backend.CustomBackend hydroshare')
+    gen_parser.add_argument('--remove-backends', dest='remove_backends', nargs='+',
+                            help='Remove one or more authentication backends to settings.py. Django try these backends '
+                                 'in the same order they are listed. Provide the dot-formatted python path to a custom '
+                                 'backend or one of the following keys: hydroshare, linkedin, google, facebook. '
+                                 'The default backends are django.contrib.auth.backends.ModelBackend and '
+                                 'guardian.backends.ObjectPermissionBackend. Defaults cannot be removed. '
+                                 'e.g.: project.backend.CustomBackend hydroshare')
+    gen_parser.add_argument('--oauth-options', dest='oauth_options', nargs='+',
+                            help='Add options for oauth providers in the settings.py. '
+                                 'Available options are: SOCIAL_AUTH_GOOGLE_OAUTH2_KEY, '
+                                 'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET, SOCIAL_AUTH_FACEBOOK_KEY, '
+                                 'SOCIAL_AUTH_FACEBOOK_SECRET, SOCIAL_AUTH_FACEBOOK_SCOPE, '
+                                 'SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY, SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET, '
+                                 'SOCIAL_AUTH_HYDROSHARE_KEY, SOCIAL_AUTH_HYDROSHARE_SECRET. '
+                                 'e.g.: SOCIAL_AUTH_GOOGLE_OAUTH2_KEY:123456 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET:789123')
     gen_parser.set_defaults(func=generate_command, allowed_host=None, allowed_hosts=None, client_max_body_size='75M',
                             asgi_processes=4, db_name='tethys_platform', db_username='tethys_default',
                             db_password='pass', db_host='127.0.0.1', db_port=5436, db_dir='psql', production=False,
                             open_portal=False, open_signup=False, tethys_port=8000, overwrite=False, add_apps=None,
-                            add_app=None, remove_apps=None, remove_app=None, session_expire_browser=True,
-                            session_warning=840, session_expire=900, bypass_portal_home=False)
+                            remove_apps=None, session_expire_browser=True, session_warning=840, session_expire=900,
+                            bypass_portal_home=False)
 
 
 def get_environment_value(value_name):
@@ -152,32 +188,41 @@ def gen_settings(args):
                       'guardian', 'session_security', 'captcha', 'rest_framework', 'rest_framework.authtoken',
                       'analytical', 'channels']
 
+    resource_quota_handlers = ['tethys_quotas.handlers.workspace.WorkspaceQuotaHandler']
+
+    django_analytical = dict(CLICKMAP_TRACKER_ID=False, CLICKY_SITE_ID=False, CRAZY_EGG_ACCOUNT_NUMBER=False, 
+                             GAUGES_SITE_ID=False, GOOGLE_ANALYTICS_JS_PROPERTY_ID=False, 
+                             GOSQUARED_SITE_TOKEN=False, HOTJAR_SITE_ID=False, HUBSPOT_PORTAL_ID=False, 
+                             INTERCOM_APP_ID=False, KISSINSIGHTS_ACCOUNT_NUMBER=False, 
+                             KISSINSIGHTS_SITE_CODE=False, KISS_METRICS_API_KEY=False, MIXPANEL_API_TOKEN=False, 
+                             OLARK_SITE_ID=False, OPTIMIZELY_ACCOUNT_NUMBER=False, PERFORMABLE_API_KEY=False, 
+                             PIWIK_DOMAIN_PATH=False, PIWIK_SITE_ID=False, RATING_MAILRU_COUNTER_ID=False, 
+                             SNAPENGAGE_WIDGET_ID=False, SPRING_METRICS_TRACKING_ID=False, 
+                             USERVOICE_WIDGET_KEY=False, WOOPRA_DOMAIN=False, YANDEX_METRICA_COUNTER_ID=False)
+
+    backends = ['django.contrib.auth.backends.ModelBackend', 'guardian.backends.ObjectPermissionBackend']
+    custom_backends = dict(hydroshare='tethys_services.backends.hydroshare.HydroShareOAuth2',
+                           linkedin='social_core.backends.linkedin.LinkedinOAuth2',
+                           google='social_core.backends.google.GoogleOAuth2',
+                           facebook='social_core.backends.facebook.FacebookOAuth2')
+
+    oauth_options = dict(SOCIAL_AUTH_GOOGLE_OAUTH2_KEY='', SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET='',
+                         SOCIAL_AUTH_FACEBOOK_KEY='', SOCIAL_AUTH_FACEBOOK_SECRET='',
+                         SOCIAL_AUTH_FACEBOOK_SCOPE='email', SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY='',
+                         SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET='', SOCIAL_AUTH_HYDROSHARE_KEY='',
+                         SOCIAL_AUTH_HYDROSHARE_SECRET='')
+
     if args.add_apps:
-        if settings.INSTALLED_APPS:
-            installed_apps = settings.INSTALLED_APPS
-
-        for i in ast.literal_eval(args.add_apps):
-            if str(i) not in installed_apps:
-                installed_apps.append(str(i))
-
-    elif args.add_app and str(args.add_app) not in installed_apps:
-        if settings.INSTALLED_APPS:
-            installed_apps = settings.INSTALLED_APPS
-
-        installed_apps.append(str(args.add_app))
+        installed_apps += [i for i in args.add_apps if i not in installed_apps]
 
     if args.remove_apps:
-        if settings.INSTALLED_APPS:
-            installed_apps = settings.INSTALLED_APPS
+        installed_apps = [i for i in installed_apps if i not in args.remove_apps]
 
-        for i in ast.literal_eval(args.remove_apps):
-            if str(i) in installed_apps:
-                installed_apps.remove(str(i))
-    elif args.remove_app and str(args.remove_app) in installed_apps:
-        if settings.INSTALLED_APPS:
-            installed_apps = settings.INSTALLED_APPS
+    if args.add_quota_handlers:
+        resource_quota_handlers += [i for i in args.add_quota_handlers if i not in resource_quota_handlers]
 
-        installed_apps.remove(str(args.remove_app))
+    if args.remove_quota_handlers:
+        resource_quota_handlers = [i for i in resource_quota_handlers if i not in args.remove_quota_handlers]
 
     if args.session_expire_browser and args.session_expire_browser not in ['0', 'f', 'F', 'false', 'False']:
         session_expire_browser = True
@@ -219,6 +264,25 @@ def gen_settings(args):
     else:
         open_portal = False
 
+    if args.django_analytical:
+        for pair in args.django_analytical:
+            key, value = pair.split(':')
+            django_analytical[key.upper()] = value
+
+    if args.add_backends:
+        c = 0
+        for item in args.add_backends:
+            if item in custom_backends:
+                backends.insert(c, custom_backends[item])
+            else:
+                backends.insert(c, item)
+            c += 1
+
+    if args.oauth_options:
+        for pair in args.oauth_options:
+            key, value = pair.split(':')
+            oauth_options[key.upper()] = value
+            
     context = {
         'secret_key': secret_key,
         'allowed_host': args.allowed_host,
@@ -231,7 +295,7 @@ def gen_settings(args):
         'db_dir': args.db_dir,
         'tethys_home': TETHYS_HOME,
         'production': args.production,
-        'open_portal': args.open_portal,
+        'open_portal': open_portal,
         'open_signup': open_signup,
         'installed_apps': installed_apps,
         'session_expire_browser': session_expire_browser,
@@ -239,7 +303,11 @@ def gen_settings(args):
         'session_expire': session_expire,
         'static_root': static_root,
         'workspaces_root': workspaces_root,
-        'bypass_portal_home': bypass_portal_home
+        'bypass_portal_home': bypass_portal_home,
+        'resource_quota_handlers': resource_quota_handlers,
+        'django_analytical': django_analytical,
+        'backends': backends,
+        'oauth_options': oauth_options
     }
     return context
 

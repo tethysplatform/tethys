@@ -34,8 +34,8 @@ ALLOWED_HOSTS = [{% if allowed_host %}'{{ allowed_host }}'{% endif %}]
 {% endif %}
 
 # List those who should be notified of an error when DEBUG = False as a tuple of (name, email address).
-# i.e.: ADMINS = (('John', 'john@example.com'), ('Mary', 'mary@example.com'))
-ADMINS = ()
+# i.e.: ADMINS = [('John', 'john@example.com'), ('Mary', 'mary@example.com')]
+ADMINS = []
 
 # Force user logout once the browser has been closed.
 # If changed, delete all django_session table entries from the tethys_default database to ensure updated behavior
@@ -85,12 +85,13 @@ LOGGING = {
 
 # Application definition
 
-INSTALLED_APPS = [{% for item in installed_apps %}
+INSTALLED_APPS = [
+{%- for item in installed_apps %}
     '{{ item }}',
 {%- endfor %}
 ]
 
-MIDDLEWARE = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -99,7 +100,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
-)
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -110,17 +111,14 @@ REST_FRAMEWORK = {
     )
 }
 
-AUTHENTICATION_BACKENDS = (
-#    'tethys_services.backends.hydroshare.HydroShareOAuth2',
-#    'social_core.backends.linkedin.LinkedinOAuth2',
-#    'social_core.backends.google.GoogleOAuth2',
-#    'social_core.backends.facebook.FacebookOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-    'guardian.backends.ObjectPermissionBackend',
-)
+AUTHENTICATION_BACKENDS = [
+{%- for item in backends %}
+    '{{ item }}',
+{%- endfor %}
+]
 
 # Password validation
-# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
 # AUTH_PASSWORD_VALIDATORS = [
 #     {
@@ -211,13 +209,13 @@ TEMPLATES = [
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 
-STATICFILES_FINDERS = (
+STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'tethys_apps.static_finders.TethysStaticFinder'
-)
+]
 
 # Uncomment the next line for production installation
 {% if not production %}#{% endif %}STATIC_ROOT = '{{ static_root }}'
@@ -269,22 +267,13 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/apps/'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/accounts/login/'
 
 # OAuth Providers
-## Google
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
-
-## Facebook
-SOCIAL_AUTH_FACEBOOK_KEY = ''
-SOCIAL_AUTH_FACEBOOK_SECRET = ''
-SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-
-## LinkedIn
-SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = ''
-SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = ''
-
-## HydroShare
-SOCIAL_AUTH_HYDROSHARE_KEY = ''
-SOCIAL_AUTH_HYDROSHARE_SECRET = ''
+# Google, Facebook, LinkedIn, and HydroShare options available. "tethys gen settings --help" for more info
+{%- for key, value in oauth_options.items() %}
+{% if value %}
+{%- if  key == "SOCIAL_AUTH_FACEBOOK_SCOPE" %}{{ key }} = ['{{ value }}']
+{%- else %}{{ key }} = '{{ value }}'{% endif %}
+{%- else %}{{ key }} = ''{% endif %}
+{%- endfor %}
 
 # Django Guardian Settings
 ANONYMOUS_USER_ID = -1
@@ -295,35 +284,16 @@ ANONYMOUS_USER_ID = -1
 
 # RESOURCE QUOTAS TO INSTALL
 RESOURCE_QUOTA_HANDLERS = [
-    "tethys_quotas.handlers.workspace.WorkspaceQuotaHandler",
+{%- for item in resource_quota_handlers %}
+    '{{ item }}',
+{%- endfor %}
 ]
 
 # Placeholders for the ID's required by various web-analytics services supported by Django-Analytical.
 # Replace False with the tracking ID as a string e.g. SERVICE_ID = 'abcd1234'
-CLICKMAP_TRACKER_ID = False
-CLICKY_SITE_ID = False
-CRAZY_EGG_ACCOUNT_NUMBER = False
-GAUGES_SITE_ID = False
-GOOGLE_ANALYTICS_JS_PROPERTY_ID = False
-GOSQUARED_SITE_TOKEN = False
-HOTJAR_SITE_ID = False
-HUBSPOT_PORTAL_ID = False
-INTERCOM_APP_ID = False
-KISSINSIGHTS_ACCOUNT_NUMBER = False
-KISSINSIGHTS_SITE_CODE = False
-KISS_METRICS_API_KEY = False
-MIXPANEL_API_TOKEN = False
-OLARK_SITE_ID = False
-OPTIMIZELY_ACCOUNT_NUMBER = False
-PERFORMABLE_API_KEY = False
-PIWIK_DOMAIN_PATH = False
-PIWIK_SITE_ID = False
-RATING_MAILRU_COUNTER_ID = False
-SNAPENGAGE_WIDGET_ID = False
-SPRING_METRICS_TRACKING_ID = False
-USERVOICE_WIDGET_KEY = False
-WOOPRA_DOMAIN = False
-YANDEX_METRICA_COUNTER_ID = False
+{%- for key, value in django_analytical.items() %}
+{{ key }} = {{ value }}
+{%- endfor %}
 
 ASGI_APPLICATION = "tethys_portal.routing.application"
 
