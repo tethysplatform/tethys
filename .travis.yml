@@ -39,3 +39,8 @@ script:
 after_success:
   - ls -al
   - coveralls
+
+  # build conda package
+  - conda deactivate
+  - conda install conda-build
+  - conda build -c tethysplatform/label/dev -c tethysplatform -c conda-forge conda.recipe
