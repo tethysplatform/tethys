@@ -41,9 +41,24 @@ class CLIGenCommandsTest(unittest.TestCase):
         self.assertRaises(ValueError, get_settings_value, value_name='foo_bar_baz_bad_setting_foo_bar_baz')
 
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
+    def test_generate_command_settings_option_default(self, mock_file):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_SETTINGS_OPTION
+        mock_args.directory = None
+
+        generate_command(args=mock_args)
+
+        mock_file.assert_called()
+
+    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_settings_option(self, mock_os_path_isfile, mock_file):
-        mock_args = mock.MagicMock()
+        mock_args = mock.MagicMock(session_expire_browser='False', session_warning='no_a_number',
+                                   session_expire='no_a_number', static_root=None, workspaces_root=None,
+                                   bypass_portal_home='False', open_signup='False', open_portal='False',
+                                   django_analytical=['CLICKMAP_TRACKER_ID:123456'],
+                                   add_backends=['hydroshare', 'project.backend.CustomBackend hydroshare'],
+                                   oauth_options=['SOCIAL_AUTH_GOOGLE_OAUTH2_KEY:123456'])
         mock_args.type = GEN_SETTINGS_OPTION
         mock_args.directory = None
         mock_os_path_isfile.return_value = False
@@ -349,8 +364,8 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
 
-    @mock.patch('tethys_apps.cli.gen_commands.open', new_callable=mock.mock_open)
-    @mock.patch('tethys_apps.cli.gen_commands.os.path.isfile')
+    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
+    @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_services_option(self, mock_os_path_isfile, mock_file):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_SERVICES_OPTION
@@ -362,9 +377,9 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
 
-    @mock.patch('tethys_apps.cli.gen_commands.open', new_callable=mock.mock_open)
-    @mock.patch('tethys_apps.cli.gen_commands.os.path.isfile')
-    @mock.patch('tethys_apps.cli.gen_commands.print')
+    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
+    @mock.patch('tethys_cli.gen_commands.os.path.isfile')
+    @mock.patch('tethys_cli.gen_commands.print')
     def test_generate_command_install_option(self, mock_print, mock_os_path_isfile, mock_file):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_INSTALL_OPTION

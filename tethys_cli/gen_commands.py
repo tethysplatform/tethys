@@ -152,12 +152,18 @@ def add_gen_parser(subparsers):
                                  'SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY, SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET, '
                                  'SOCIAL_AUTH_HYDROSHARE_KEY, SOCIAL_AUTH_HYDROSHARE_SECRET. '
                                  'e.g.: SOCIAL_AUTH_GOOGLE_OAUTH2_KEY:123456 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET:789123')
+    'channels.layers.InMemoryChannelLayer'
+    gen_parser.add_argument('--channel-layer', dest='channel_layer',
+                            help='Backend to enable communication between apps via websockets. The Default available '
+                                 'values is channels.layers.InMemoryChannelLayer. For production, it is recommended to '
+                                 'install channel_redis and use channels_redis.core.RedisChannelLayer instead. '
+                                 'A custom backend can be added using dot-formatted path.')
     gen_parser.set_defaults(func=generate_command, allowed_host=None, allowed_hosts=None, client_max_body_size='75M',
                             asgi_processes=4, db_name='tethys_platform', db_username='tethys_default',
                             db_password='pass', db_host='127.0.0.1', db_port=5436, db_dir='psql', production=False,
                             open_portal=False, open_signup=False, tethys_port=8000, overwrite=False, add_apps=None,
                             remove_apps=None, session_expire_browser=True, session_warning=840, session_expire=900,
-                            bypass_portal_home=False)
+                            bypass_portal_home=False, channel_layer='')
 
 
 def get_environment_value(value_name):
@@ -282,7 +288,7 @@ def gen_settings(args):
         for pair in args.oauth_options:
             key, value = pair.split(':')
             oauth_options[key.upper()] = value
-            
+
     context = {
         'secret_key': secret_key,
         'allowed_host': args.allowed_host,
@@ -307,7 +313,8 @@ def gen_settings(args):
         'resource_quota_handlers': resource_quota_handlers,
         'django_analytical': django_analytical,
         'backends': backends,
-        'oauth_options': oauth_options
+        'oauth_options': oauth_options,
+        'channel_layer': args.channel_layer
     }
     return context
 

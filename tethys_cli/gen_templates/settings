@@ -297,8 +297,9 @@ RESOURCE_QUOTA_HANDLERS = [
 
 ASGI_APPLICATION = "tethys_portal.routing.application"
 
-# CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': 'channels.layers.InMemoryChannelLayer'
-#     },
-# }
+{% if not channel_layer %}# {% endif %}CHANNEL_LAYERS = {
+{% if not channel_layer %}# {% endif %}    'default': {
+{% if not channel_layer %}# {% endif %}        'BACKEND': '
+{%- if channel_layer %}{{ channel_layer }}{% else %}channels.layers.InMemoryChannelLayer{% endif %}'
+{% if not channel_layer %}# {% endif %}    },
+{% if not channel_layer %}# {% endif %}}

@@ -162,7 +162,7 @@ class TethysCommandTests(unittest.TestCase):
     @mock.patch('tethys_cli.gen_commands.generate_command')
     def test_generate_subcommand_nginx_settings_verbose_options(self, mock_gen_command):
         testargs = ['tethys', 'gen', 'nginx', '-d', '/tmp/foo/bar', '--allowed-host', '127.0.0.1',
-                    '--allowed-hosts', 'localhost', '--client-max-body-size', '123M', '--asgi-processes', '9',
+                    '--allowed-hosts', 'localhost', '--client-max-body-size', '123M', '--asgi-processes', '4',
                     '--db-username', 'foo_user', '--db-password', 'foo_pass', '--db-port', '5555',
                     '--production', '--overwrite']
 
@@ -172,7 +172,7 @@ class TethysCommandTests(unittest.TestCase):
         mock_gen_command.assert_called()
         call_args = mock_gen_command.call_args_list
         self.assertEqual('127.0.0.1', call_args[0][0][0].allowed_host)
-        self.assertEqual('localhost', call_args[0][0][0].allowed_hosts)
+        self.assertEqual(['localhost'], call_args[0][0][0].allowed_hosts)
         self.assertEqual('123M', call_args[0][0][0].client_max_body_size)
         self.assertEqual('foo_pass', call_args[0][0][0].db_password)
         self.assertEqual('5555', call_args[0][0][0].db_port)
@@ -181,7 +181,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertTrue(call_args[0][0][0].overwrite)
         self.assertTrue(call_args[0][0][0].production)
         self.assertEqual('nginx', call_args[0][0][0].type)
-        self.assertEqual('9', call_args[0][0][0].asgi_processes)
+        self.assertEqual('4', call_args[0][0][0].asgi_processes)
 
     @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_cli.argparse._sys.exit')
