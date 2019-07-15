@@ -42,5 +42,5 @@ after_success:
 
   # build conda package
   - conda deactivate
-  - conda install conda-build
+  - conda install conda-build -y
   - conda build -c tethysplatform/label/dev -c tethysplatform -c conda-forge conda.recipe
