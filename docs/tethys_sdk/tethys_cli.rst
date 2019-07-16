@@ -28,6 +28,20 @@ Options
 Commands
 ========
 
+.. _tethys_version_cmd:
+
+version
+-------
+
+This command prints the current `tethys_platform` version.
+
+**Examples:**
+
+::
+
+    $ tethys version
+
+
 .. _tethys_db_cmd:
 
 db <subcommand> [options]

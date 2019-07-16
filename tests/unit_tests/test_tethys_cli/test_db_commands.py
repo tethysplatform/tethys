@@ -163,6 +163,7 @@ class TestCommandTests(unittest.TestCase):
         self.mock_run_process.assert_called_with(['pg_ctl', '-U', 'postgres', '-D', 'foo/data', 'stop'],
                                                  'Stopping Postgresql database server...',
                                                  'There was an error while stopping the Posgresql database.')
+
     def test_db_command_status(self):
         mock_args = mock.MagicMock()
         mock_args.command = 'status'

@@ -1,6 +1,6 @@
 """
 ********************************************************************************
-* Name: django_user
+* Name: unit_tests
 * Author: nswain
 * Created On: May 15, 2018
 * Copyright: (c) Aquaveo 2018

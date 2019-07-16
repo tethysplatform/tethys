@@ -2,7 +2,7 @@ import os
 import webbrowser
 import subprocess
 from tethys_cli.manage_commands import get_manage_path, run_process
-from tethys_cli.cli_colors import write_warning
+from tethys_cli.cli_colors import write_warning, write_error
 from tethys_apps.utilities import get_tethys_src_dir
 
 TETHYS_SRC_DIRECTORY = get_tethys_src_dir()
@@ -51,9 +51,14 @@ def test_command(args):
     args.manage = False
     # Get the path to manage.py
     manage_path = get_manage_path(args)
-    tests_path = os.path.join(TETHYS_SRC_DIRECTORY, 'tethys_tests')
+    tests_path = os.path.join(TETHYS_SRC_DIRECTORY, 'tests')
 
-    check_and_install_prereqs(tests_path)
+    try:
+        check_and_install_prereqs(tests_path)
+    except FileNotFoundError:
+        write_error('The "tethys test" command will not work because the tests are not installed. '
+                    'To run tests you must download the tethys source code.')
+        exit(1)
 
     # Define the process to be run
     primary_process = ['python', manage_path, 'test']
