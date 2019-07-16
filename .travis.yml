@@ -15,7 +15,7 @@ os:
 install:
   - cd ..
   - bash ./tethys/scripts/install_tethys.sh -h
-  - bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -t $PWD -x
+  - bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -t $PWD
 
   # activate conda environment
   - . ~/miniconda/etc/profile.d/conda.sh
