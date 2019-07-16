@@ -49,6 +49,3 @@ after_success:
   - if [[ "$TRAVIS_EVENT_TYPE" == "push" ]]; then
         echo push
     fi
-
-if: branch = master
-  - echo master

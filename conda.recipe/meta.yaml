@@ -10,13 +10,14 @@ source:
 
 build:
   number: 0
+  string: {% if GIT_DESCRIBE_NUMBER|int > 0 %}dev{{ GIT_BUILD_STR }}{% endif %}
   noarch: python
   script:  python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
   build:
     - python
-    - setuptools
+    - pbr
   run:
     - python >=3.6
 
@@ -73,6 +74,7 @@ requirements:
     - pip
     - future
     - flake8
+    - pbr
 
     # For tethys install
     - conda
