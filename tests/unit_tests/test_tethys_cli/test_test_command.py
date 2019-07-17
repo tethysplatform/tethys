@@ -263,3 +263,23 @@ class TestCommandTests(unittest.TestCase):
         mock_get_manage_path.assert_called()
         mock_join.assert_called()
         mock_run_process.assert_called_with(['python', '/foo/manage.py', 'test', '-v', '2'])
+
+    @mock.patch('tethys_cli.test_command.write_error')
+    @mock.patch('tethys_cli.test_command.check_and_install_prereqs')
+    @mock.patch('tethys_cli.test_command.os.path.join')
+    @mock.patch('tethys_cli.test_command.get_manage_path')
+    def test_test_command_not_installed(self, mock_get_manage_path, mock_join, mock_check_and_install_prereqs,
+                                        mock_write_error):
+        mock_args = mock.MagicMock()
+        mock_args.coverage = False
+        mock_args.coverage_html = False
+        mock_args.file = None
+        mock_args.unit = True
+        mock_args.gui = False
+        mock_args.verbosity = None
+        mock_get_manage_path.return_value = '/foo/manage.py'
+        mock_join.return_value = '/foo'
+        mock_check_and_install_prereqs.side_effect = FileNotFoundError
+
+        self.assertRaises(SystemExit, test_command, mock_args)
+        mock_write_error.assert_called()

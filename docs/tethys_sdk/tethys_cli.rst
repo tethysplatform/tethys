@@ -28,6 +28,20 @@ Options
 Commands
 ========
 
+.. _tethys_version_cmd:
+
+version
+-------
+
+This command prints the current `tethys_platform` version.
+
+**Examples:**
+
+::
+
+    $ tethys version
+
+
 .. _tethys_db_cmd:
 
 db <subcommand> [options]
@@ -42,6 +56,7 @@ This command contains several subcommands that are used to help setup and manage
     * *init*: Creates a local postgresql database server using the information from the `DATABASES` section in :file:`settings.py`.
     * *start*: Starts the local database server.
     * *stop*: Stops the local database server.
+    * *status*: Checks the status of the local database server.
     * *create*: Creates the Tethys database on the database server connection specified in the `DATABASES` section in :file:`settings.py`.
     * *migrate*: Initialize the database during installation. Wrapper for ``manage.py migrate``.
     * *createsuperuser*: Create a new superuser/website admin for your Tethys Portal.
@@ -112,6 +127,8 @@ This command is used to create new Tethys app projects via the scaffold provided
 ::
 
     $ tethys scaffold my_first_app
+
+.. _tethys_gen_cmd:
 
 gen <type>
 ----------

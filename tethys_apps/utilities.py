@@ -35,7 +35,7 @@ def get_tethys_home_dir():
     Returns:
         str: path to TETHYS_HOME.
     """
-    default = os.path.dirname(get_tethys_src_dir())
+    default = os.path.expanduser('~/.tethys')
     return os.environ.get('TETHYS_HOME', default)
 
 
