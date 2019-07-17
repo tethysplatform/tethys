@@ -11,7 +11,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, \
     PasswordResetCompleteView
-from django.conf import settings
+
 from tethys_apps.urls import extension_urls
 
 from tethys_portal.views import accounts as tethys_portal_accounts, developer as tethys_portal_developer, \
@@ -90,9 +90,6 @@ urlpatterns = [
     url(r'session_security/', include('session_security.urls')),
     # url(r'^error/', include(development_error_urls)),
 ]
-
-if settings.DEBUG and 'silk' in settings.INSTALLED_APPS:
-    urlpatterns.append(url(r'^silk/', include('silk.urls', namespace='silk')))
 
 handler400 = tethys_portal_error.handler_400
 handler403 = tethys_portal_error.handler_403

@@ -18,10 +18,10 @@ class TethysConfigAdminTest(unittest.TestCase):
         expected_readonly_fields = ('name', 'date_modified')
         ret = SettingInline(mock.MagicMock(), mock.MagicMock())
 
-        self.assertEquals(expected_fields, ret.fields)
-        self.assertEquals(expected_readonly_fields, ret.readonly_fields)
-        self.assertEquals(Setting, ret.model)
-        self.assertEquals(0, ret.extra)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(Setting, ret.model)
+        self.assertEqual(0, ret.extra)
         self.assertIsNotNone(ret.formfield_overrides)
 
     def test_SettingCategoryAdmin(self):
@@ -30,9 +30,9 @@ class TethysConfigAdminTest(unittest.TestCase):
         expected_inlines = [SettingInline]
         ret = SettingCategoryAdmin(mock.MagicMock(), mock.MagicMock())
 
-        self.assertEquals(expected_fields, ret.fields)
-        self.assertEquals(expected_readonly_fields, ret.readonly_fields)
-        self.assertEquals(expected_inlines, ret.inlines)
+        self.assertEqual(expected_fields, ret.fields)
+        self.assertEqual(expected_readonly_fields, ret.readonly_fields)
+        self.assertEqual(expected_inlines, ret.inlines)
 
     def test_has_delete_permission(self):
         mock_request = mock.MagicMock()

@@ -165,8 +165,7 @@ class HandoffManager:
                     module_path, function_name = handler_str.split(':')
 
                     # Pre-process handler path
-                    full_module_path = '.'.join(('tethys_apps.tethysapp', self.app.package, module_path))
-
+                    full_module_path = '.'.join(('tethysapp', self.app.package, module_path))
                     try:
                         # Import module
                         module = __import__(full_module_path, fromlist=[function_name])
@@ -225,7 +224,7 @@ class HandoffHandler(TethysFunctionExtractor):
         """
         Returns a list of arguments for the HandoffHandler function.
         """
-        return inspect.getargspec(self.function).args
+        return inspect.getfullargspec(self.function).args
 
     @property
     def json_arguments(self):
