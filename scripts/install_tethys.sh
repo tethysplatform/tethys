@@ -370,6 +370,8 @@ then
 
     if [ -n "${SETUP_DB}" ]
     then
+        # Setup local database
+        echo "Setting up the Tethys database..."
         tethys db configure --username ${TETHYS_DB_USERNAME} --password ${TETHYS_DB_PASSWORD} --superuser-name ${TETHYS_DB_SUPER_USERNAME} --superuser-password ${TETHYS_DB_SUPER_PASSWORD} --portal-superuser-name ${TETHYS_SUPER_USER} --portal-superuser-email '${TETHYS_SUPER_USER_EMAIL}' --portal-superuser-pass ${TETHYS_SUPER_USER_PASS}
         tethys db stop
     fi

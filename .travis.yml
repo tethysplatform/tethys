@@ -15,32 +15,21 @@ os:
 install:
   - cd ..
   - bash ./tethys/scripts/install_tethys.sh -h
-  - bash ./tethys/scripts/install_tethys.sh --partial-tethys-install mesdat -t $PWD
+  - bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -t $PWD
 
   # activate conda environment
   - . ~/miniconda/etc/profile.d/conda.sh
   - conda activate tethys
   - conda list
 
-  # start database server
-  - tethys db start
-
   # generate new settings.py file with tethys_super user for tests
-  - rm ./tethys/tethys_portal/settings.py
   - tethys gen settings --db-username tethys_super --db-password pass --db-port 5436
+
+  # start database server
+  - tethys db configure
 
   # install test dependencies
   - pip install python-coveralls
-  - pip install -e $TETHYS_HOME/tethys/[tests]
-
-  # install test apps and extensions
-  - pushd ./tethys/tests/extensions/tethysext-test_extension
-  - python setup.py develop
-  - popd
-
-  - pushd ./tethys/tests/apps/tethysapp-test_app
-  - python setup.py develop
-  - popd
 
 # command to run tests
 script:

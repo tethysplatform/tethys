@@ -3,7 +3,7 @@ import tethys_apps.base.app_base as tethys_app_base
 from unittest import mock
 
 from django.test import RequestFactory
-from tests.factories.django_user import UserFactory
+from ... import UserFactory
 from django.core.exceptions import ObjectDoesNotExist
 from tethys_apps.exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 from types import FunctionType

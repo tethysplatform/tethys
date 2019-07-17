@@ -1,4 +1,4 @@
-from os import environ, unsetenv
+from os import environ
 
 TESTING_DB_FLAG = 'tethys-testing_'
 
@@ -9,7 +9,6 @@ def set_testing_environment(val):
     else:
         environ['TETHYS_TESTING_IN_PROGRESS'] = ''
         del environ['TETHYS_TESTING_IN_PROGRESS']
-        unsetenv('TETHYS_TESTING_IN_PROGRESS')
 
 
 def get_test_db_name(orig_name):
