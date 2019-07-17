@@ -12,6 +12,7 @@ from pathlib import Path
 from django.conf import settings
 
 from tethys_cli.cli_helpers import get_manage_path, run_process, load_apps
+from tethys_cli.cli_colors import write_info, write_error
 from tethys_apps.utilities import get_tethys_home_dir
 
 
@@ -44,22 +45,45 @@ def add_db_parser(subparsers):
                            portal_superuser_name='admin', portal_superuser_email='', portal_superuser_password='pass')
 
 
+def _run_process(args, msg, err_msg='ERROR!!!'):
+    write_info(msg)
+    err_code = run_process(args)
+    if err_code:
+        write_error(err_msg)
+        exit(err_code)
+
+
 def init_db_server(db_dir=None, **kwargs):
+    msg = f'Initializing Postgresql database server in "{db_dir}/data"...'
+    err_msg = 'Could not initialize the Postgresql database.'
     args = ['initdb', '-U', 'postgres', '-D', f'{db_dir}/data']
-    run_process(args)
+    _run_process(args, msg, err_msg)
 
 
 def start_db_server(db_dir=None, port=None, **kwargs):
+    msg = f'Starting Postgresql database server in "{db_dir}/data" on port {port}...'
+    err_msg = 'There was an error while starting the Postgresql database.'
     args = ['pg_ctl', '-U', 'postgres', '-D', f'{db_dir}/data', '-l', f'{db_dir}/logfile', 'start', '-o', f'-p {port}']
-    run_process(args)
+    _run_process(args, msg, err_msg)
 
 
 def stop_db_server(db_dir=None, **kwargs):
+    msg = 'Stopping Postgresql database server...'
+    err_msg = 'There was an error while stopping the Posgresql database.'
     args = ['pg_ctl', '-U', 'postgres', '-D', f'{db_dir}/data', 'stop']
-    run_process(args)
+    _run_process(args, msg, err_msg)
+
+
+def status_db_server(db_dir=None, **kwargs):
+    msg = 'Checking status of Postgresql database server...'
+    err_msg = ''
+    args = ['pg_ctl', 'status', '-D', f'{db_dir}/data']
+    _run_process(args, msg, err_msg)
 
 
 def create_db_user(hostname=None, port=None, username=None, password=None, db_name=None, is_superuser=False, **kwargs):
+    msg = f'Creating Tethys database user "{username}"...'
+
     db_name = db_name or username
 
     if is_superuser:
@@ -68,30 +92,37 @@ def create_db_user(hostname=None, port=None, username=None, password=None, db_na
         command = f"CREATE USER {username} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '{password}';"
 
     args = ['psql', '-h', hostname, '-U', 'postgres', '-p', f'{port}', '--command', command]
-    run_process(args)
+    _run_process(args, msg)
+
     if not is_superuser:
         args = ['createdb', '-h', hostname, '-U', 'postgres', '-p', f'{port}', '-O', username, db_name, '-E', 'utf-8',
                 '-T', 'template0']
-        run_process(args)
+        _run_process(args, msg)
 
 
 def create_tethys_db(hostname=None, port=None, db_name=None, username=None, password=None,
                      superuser_name=None, superuser_password=None, **kwargs):
     create_db_user(hostname=hostname, port=port, username=username, password=password, db_name=db_name)
     if superuser_name is not None and superuser_password is not None:
-        create_db_user(hostname=hostname, port=port,
-                       username=superuser_name, password=superuser_password,
-                       is_superuser=True)
+        create_db_user(
+            hostname=hostname,
+            port=port,
+            username=superuser_name,
+            password=superuser_password,
+            is_superuser=True
+        )
 
 
 def migrate_tethys_db(db_alias=None, **kwargs):
+    msg = 'Running migrations for Tethys database...'
     manage_path = get_manage_path(None)
     db_alias = db_alias or 'default'
     args = ['python', manage_path, 'migrate', '--database', db_alias]
-    run_process(args)
+    _run_process(args, msg)
 
 
 def sync_tethys_apps_db(**kwargs):
+    write_info('Syncing the Tethys database with installed apps and extensions...')
     load_apps()
     from tethys_apps.harvester import SingletonHarvester
     harvester = SingletonHarvester()
@@ -100,6 +131,7 @@ def sync_tethys_apps_db(**kwargs):
 
 def create_portal_superuser(portal_superuser_name='admin', portal_superuser_email='', portal_superuser_password='pass',
                             **kwargs):
+    write_info(f'Creating Tethys Portal superuser "{portal_superuser_name}"...')
     load_apps()
     from django.contrib.auth.models import User  # noqa: E402
     User.objects.create_superuser(portal_superuser_name, portal_superuser_email, portal_superuser_password)
@@ -140,6 +172,7 @@ DB_COMMANDS = dict(
     init=init_db_server,
     start=start_db_server,
     stop=stop_db_server,
+    status=status_db_server,
     create=create_tethys_db,
     migrate=migrate_tethys_db,
     createsuperuser=create_portal_superuser,

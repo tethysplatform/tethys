@@ -11,7 +11,9 @@ except ImportError:
 class ListCommandTests(unittest.TestCase):
 
     def setUp(self):
-        pass
+        write_info_patcher = mock.patch('tethys_cli.list_command.write_info')
+        self.mock_write_info = write_info_patcher.start()
+        self.addCleanup(write_info_patcher.stop)
 
     def tearDown(self):
         pass
@@ -35,7 +37,7 @@ class ListCommandTests(unittest.TestCase):
         for i in range(len(rts_call_args)):
             check_list.append(rts_call_args[i][0][0])
 
-        self.assertIn('Apps:', check_list)
+        self.mock_write_info.assert_called_with('Apps:')
         self.assertIn('  foo', check_list)
         self.assertIn('  bar', check_list)
 
@@ -55,7 +57,7 @@ class ListCommandTests(unittest.TestCase):
         for i in range(len(rts_call_args)):
             check_list.append(rts_call_args[i][0][0])
 
-        self.assertIn('Extensions:', check_list)
+        self.mock_write_info.assert_called_with('Extensions:')
         self.assertIn('  baz', check_list)
 
     @mock.patch('tethys_cli.list_command.print')
@@ -75,8 +77,19 @@ class ListCommandTests(unittest.TestCase):
         for i in range(len(rts_call_args)):
             check_list.append(rts_call_args[i][0][0])
 
-        self.assertIn('Apps:', check_list)
+        self.assertEqual(self.mock_write_info.call_args_list[0][0][0], 'Apps:')
+        self.assertEqual(self.mock_write_info.call_args_list[1][0][0], 'Extensions:')
         self.assertIn('  foo', check_list)
         self.assertIn('  bar', check_list)
-        self.assertIn('Extensions:', check_list)
         self.assertIn('  baz', check_list)
+
+    @mock.patch('tethys_cli.list_command.print')
+    @mock.patch('tethys_cli.list_command.get_tethys_src_dir')
+    def test_list_command_settings(self, mock_src_dir, mock_print):
+        from pathlib import Path
+
+        mock_args = mock.MagicMock(settings=True)
+        test_path = 'test/path'
+        mock_src_dir.return_value = test_path
+        list_command(mock_args)
+        mock_print.assert_called_with(Path(test_path) / 'tethys_portal/settings.py')
