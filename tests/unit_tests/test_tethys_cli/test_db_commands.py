@@ -4,13 +4,13 @@ from unittest import mock
 
 from django.test.utils import override_settings
 
-from tethys_cli.db_commands import db_command, process_args, create_db_user
+from tethys_cli.db_commands import db_command, process_args, create_db_user, _run_process
 
 
 class TestCommandTests(unittest.TestCase):
 
     def setUp(self):
-        run_process_patcher = mock.patch('tethys_cli.db_commands.run_process')
+        run_process_patcher = mock.patch('tethys_cli.db_commands._run_process')
         self.mock_run_process = run_process_patcher.start()
         self.addCleanup(run_process_patcher.stop)
 
@@ -39,6 +39,19 @@ class TestCommandTests(unittest.TestCase):
     def tearDown(self):
         # revert to normal warnings
         warnings.simplefilter("default", UserWarning)
+
+    @mock.patch('tethys_cli.db_commands.write_error')
+    @mock.patch('tethys_cli.db_commands.write_info')
+    @mock.patch('tethys_cli.db_commands.run_process')
+    def tests_db_command__run_process(self, mock_run_process, mock_write_info, mock_write_error):
+        mock_args = mock.MagicMock()
+        msg = 'test msg'
+        err_msg = 'test err msg'
+
+        self.assertRaises(SystemExit, _run_process, mock_args, msg, err_msg)
+        mock_run_process.assert_called_with(mock_args)
+        mock_write_info.assert_called_with(msg)
+        mock_write_error.assert_called_with(err_msg)
 
     @mock.patch('tethys_cli.db_commands.Path')
     @mock.patch('tethys_cli.db_commands.vars')
@@ -98,7 +111,9 @@ class TestCommandTests(unittest.TestCase):
         mock_args = mock.MagicMock()
         mock_args.command = 'init'
         db_command(mock_args)
-        self.mock_run_process.assert_called_with(['initdb', '-U', 'postgres', '-D', 'foo/data'])
+        self.mock_run_process.assert_called_with(['initdb', '-U', 'postgres', '-D', 'foo/data'],
+                                                 'Initializing Postgresql database server in "foo/data"...',
+                                                 'Could not initialize the Postgresql database.')
 
     @mock.patch('tethys_cli.db_commands.create_db_user')
     def test_db_command_create(self, mock_create_db_user):
@@ -122,7 +137,7 @@ class TestCommandTests(unittest.TestCase):
                                               '--command', command])
         args = ['createdb', '-h', self.options['hostname'], '-U', 'postgres', '-p', self.options['port'], '-O',
                 self.options['username'], self.options['db_name'], '-E', 'utf-8', '-T', 'template0']
-        self.mock_run_process.assert_called_with(args)
+        self.mock_run_process.assert_called_with(args, 'Creating Tethys database user "foo"...')
 
     def test_db_command_create_db_user_with_superuser(self):
         create_db_user(is_superuser=True, **self.options)
@@ -137,13 +152,25 @@ class TestCommandTests(unittest.TestCase):
         mock_args.command = 'start'
         db_command(mock_args)
         self.mock_run_process.assert_called_with(['pg_ctl', '-U', 'postgres', '-D', 'foo/data', '-l',
-                                                  'foo/logfile', 'start', '-o', '-p 0000'])
+                                                  'foo/logfile', 'start', '-o', '-p 0000'],
+                                                 'Starting Postgresql database server in "foo/data" on port 0000...',
+                                                 'There was an error while starting the Postgresql database.')
 
     def test_db_command_stop(self):
         mock_args = mock.MagicMock()
         mock_args.command = 'stop'
         db_command(mock_args)
-        self.mock_run_process.assert_called_with(['pg_ctl', '-U', 'postgres', '-D', 'foo/data', 'stop'])
+        self.mock_run_process.assert_called_with(['pg_ctl', '-U', 'postgres', '-D', 'foo/data', 'stop'],
+                                                 'Stopping Postgresql database server...',
+                                                 'There was an error while stopping the Posgresql database.')
+
+    def test_db_command_status(self):
+        mock_args = mock.MagicMock()
+        mock_args.command = 'status'
+        db_command(mock_args)
+        self.mock_run_process.assert_called_with(['pg_ctl', 'status', '-D', 'foo/data'],
+                                                 'Checking status of Postgresql database server...',
+                                                 '')
 
     @mock.patch('tethys_cli.db_commands.get_manage_path', return_value='foo/manage.py')
     def test_db_command_migrate(self, mock_get_manage_path):
@@ -151,11 +178,13 @@ class TestCommandTests(unittest.TestCase):
         mock_args.command = 'migrate'
         db_command(mock_args)
         mock_get_manage_path.assert_called()
-        self.mock_run_process.assert_called_with(['python', 'foo/manage.py', 'migrate', '--database', 'test'])
+        self.mock_run_process.assert_called_with(['python', 'foo/manage.py', 'migrate', '--database', 'test'],
+                                                 'Running migrations for Tethys database...')
 
+    @mock.patch('tethys_cli.db_commands.write_info')
     @mock.patch('django.contrib.auth.models.User.objects.create_superuser')
     @mock.patch('tethys_cli.db_commands.load_apps')
-    def test_db_command_createsuperuser(self, mock_load_apps, mock_create_superuser):
+    def test_db_command_createsuperuser(self, mock_load_apps, mock_create_superuser, _):
         mock_args = mock.MagicMock()
         mock_args.command = 'createsuperuser'
         db_command(mock_args)
@@ -177,8 +206,9 @@ class TestCommandTests(unittest.TestCase):
         mock_migrate.assert_called_with(**self.options)
         mock_createsuperuser.assert_called_with(**self.options)
 
+    @mock.patch('tethys_cli.db_commands.write_info')
     @mock.patch('tethys_apps.harvester.SingletonHarvester')
-    def test_db_command_sync(self, MockSingletonHarvester):
+    def test_db_command_sync(self, MockSingletonHarvester, _):
         # mock the input args
         args = mock.MagicMock(manage='', command='sync', port='8080')
 

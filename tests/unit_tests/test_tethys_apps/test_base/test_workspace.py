@@ -3,7 +3,7 @@ import tethys_apps.base.workspace as base_workspace
 import os
 import shutil
 from unittest import mock
-from tests.factories.django_user import UserFactory
+from ... import UserFactory
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied

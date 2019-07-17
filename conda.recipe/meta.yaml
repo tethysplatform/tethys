@@ -1,0 +1,107 @@
+{% set data = load_setup_py_data() %}
+
+package:
+  name: tethysplatform
+  version: {{ data['version'] }}
+
+
+source:
+  path: ..
+
+build:
+  number: 0
+  string: {% if GIT_DESCRIBE_NUMBER|int > 0 %}dev{{ GIT_BUILD_STR }}{% endif %}
+  noarch: python
+  script:  python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    - python
+    - pbr
+  run:
+    - python >=3.6
+
+    # system dependencies
+    - pycrypto
+    - pyopenssl
+    - docker-py
+    - distro
+
+    # database dependencies
+    - postgresql
+    - psycopg2
+    - sqlalchemy
+    - geoalchemy2
+
+    # plotting dependencies
+    - plotly
+    - bokeh
+
+    # external services dependencies
+    - tethys_dataset_services>=2.0.0
+    - hs_restclient
+    - owslib
+    - requests
+    - social-auth-app-django
+    - dask
+    - tethys_dask_scheduler>=1.0.2
+    - channels
+    - service_identity
+    - condorpy
+
+    # django/plugin dependencies
+    - django=2.1.*
+    - django-filter
+    - djangorestframework
+    - django-bootstrap3
+    - django-model-utils
+    - django-guardian
+    - django-gravatar2
+    - django-termsandconditions
+    - django-session-security
+    - django-analytical
+    - django-simple-captcha
+    - social-auth-app-django
+
+    # tests dependencies
+    - requests-mock
+    - selenium
+    - coverage
+    - factory_boy
+
+    # for now
+    - pillow
+    - pip
+    - future
+    - flake8
+    - pbr
+
+    # For tethys install
+    - conda
+
+test:
+  imports:
+    - tethys_apps
+    - tethys_compute
+    - tethys_config
+    - tethys_gizmos
+    - tethys_portal
+    - tethys_quotas
+    - tethys_sdk
+    - tethys_services
+
+about:
+  home: {{ data['url'] }}
+  license: BSD-2-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: {{ data['description'] }}
+  description: |
+    Tethys Platform provides both a development environment
+    and a hosting environment for earth science web apps.
+  doc_url: http://docs.tethysplatform.org
+  dev_url: https://github.com/tethysplatform/tethys
+
+extra:
+  recipe-maintainers:
+    - sdc50

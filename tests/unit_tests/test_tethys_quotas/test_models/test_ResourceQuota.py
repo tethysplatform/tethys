@@ -4,13 +4,7 @@ from django.db.utils import IntegrityError
 from django.db import transaction
 from django.test import TestCase
 from tethys_quotas.models.resource_quota import ResourceQuota
-from tethys_quotas.handlers.base import ResourceQuotaHandler
-
-
-class ResourceQuotaHandlerSub(ResourceQuotaHandler):
-    # Class used for testing only. Will be implemented elsewhere later
-    # tests will need refactoring when that happens.
-    pass
+from tethys_quotas.handlers.base import ResourceQuotaHandlerSub
 
 
 class ResourceQuotaTest(TestCase):
@@ -74,7 +68,7 @@ class ResourceQuotaTest(TestCase):
         self.assertTrue("must be a subclass of ResourceQuotaHandler" in str(context.exception))
 
     def test_handler_str_valid(self):
-        self.resource_quota_user.handler = "tests.unit_tests.test_tethys_quotas.test_models.test_ResourceQuota.ResourceQuotaHandlerSub"  # noqa: E501
+        self.resource_quota_user.handler = "tethys_quotas.handlers.base.ResourceQuotaHandlerSub"
         self.assertEqual(ResourceQuotaHandlerSub, self.resource_quota_user.handler)
 
     def test_handler_str_not_subclass(self):

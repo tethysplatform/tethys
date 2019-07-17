@@ -57,3 +57,9 @@ class ResourceQuotaHandler(object):
             return False
         else:
             return True
+
+
+class ResourceQuotaHandlerSub(ResourceQuotaHandler):
+    # Class used for testing only. Will be implemented elsewhere later
+    # tests will need refactoring when that happens.
+    pass

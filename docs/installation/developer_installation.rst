@@ -1,10 +1,12 @@
-*********************************
-Installation on Linux and Mac OSX
-*********************************
+.. _developer_installation:
+
+**********************
+Developer Installation
+**********************
 
 **Last Updated:** April 2017
 
-Use these instructions to install a development environment on Mac OSX or Linux systems.
+These instructions are intended for those that want to contribute to the Tethys Platform source code. Use these instructions to install the Tethys source code in a development environment (for Unix based systems only).
 
 .. tip::
 

@@ -1,3 +1,5 @@
+.. _production_installation:
+
 ***********************
 Production Installation
 ***********************

@@ -7,3 +7,6 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import pbr.version
+
+__version__ = pbr.version.VersionInfo('tethys_platform').release_string()

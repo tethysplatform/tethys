@@ -3,7 +3,7 @@ import tethys_gizmos.views.gizmo_showcase as gizmo_showcase
 from requests.exceptions import ConnectionError
 from unittest import mock
 from django.test import RequestFactory
-from tests.factories.django_user import UserFactory
+from ... import UserFactory
 
 
 class TestGizmoShowcase(unittest.TestCase):

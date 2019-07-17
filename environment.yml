@@ -67,6 +67,8 @@ dependencies:
 - pip
 - future
 - flake8
+- pbr
+- git
 
 # Conda to allow Python API access to Conda Install
 - conda

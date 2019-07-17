@@ -1,3 +1,5 @@
+.. _update_tethys:
+
 ********************
 Upgrade to |version|
 ********************
