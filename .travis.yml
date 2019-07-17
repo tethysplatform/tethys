@@ -40,12 +40,9 @@ after_success:
   - ls -al
   - coveralls
 
+if: tag IS present
   # build conda package
   - conda deactivate
   - conda install conda-build -y
   - cd tethys
   - conda build -c tethysplatform/label/dev -c tethysplatform -c conda-forge conda.recipe
-
-  - if [[ "$TRAVIS_EVENT_TYPE" == "push" ]]; then
-        echo push
-    fi
