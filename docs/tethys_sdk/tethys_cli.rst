@@ -128,6 +128,8 @@ This command is used to create new Tethys app projects via the scaffold provided
 
     $ tethys scaffold my_first_app
 
+.. _tethys_gen_cmd:
+
 gen <type>
 ----------
 
