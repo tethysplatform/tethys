@@ -773,10 +773,12 @@ class TethysAppBase(TethysBase):
             username = user.username
         elif isinstance(user, HttpRequest):
             username = user.user.username
+        elif isinstance(user, str):
+            username = user
         elif user is None:
             pass
         else:
-            raise ValueError("Invalid type for argument 'user': must be either an User or HttpRequest object.")
+            raise ValueError("Invalid type for argument 'user': must be a User or HttpRequest object, or an ID string.")
 
         if not username:
             username = 'anonymous_user'
