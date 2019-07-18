@@ -126,17 +126,28 @@ class TethysCommandTests(unittest.TestCase):
 
         mock_gen_command.assert_called()
         call_args = mock_gen_command.call_args_list
-        self.assertEqual(None, call_args[0][0][0].allowed_host)
         self.assertEqual(None, call_args[0][0][0].allowed_hosts)
         self.assertEqual('75M', call_args[0][0][0].client_max_body_size)
         self.assertEqual('pass', call_args[0][0][0].db_password)
+        self.assertEqual('tethys_platform', call_args[0][0][0].db_name)
+        self.assertEqual('127.0.0.1', call_args[0][0][0].db_host)
         self.assertEqual(5436, call_args[0][0][0].db_port)
         self.assertEqual('tethys_default', call_args[0][0][0].db_username)
         self.assertEqual(None, call_args[0][0][0].directory)
+        self.assertEqual(4, call_args[0][0][0].asgi_processes)
+        self.assertEqual('psql', call_args[0][0][0].db_dir)
+        self.assertEqual(8000, call_args[0][0][0].tethys_port)
+        self.assertEqual(840, call_args[0][0][0].session_warning)
+        self.assertEqual(900, call_args[0][0][0].session_expire)
+        self.assertEqual(None, call_args[0][0][0].add_apps)
+        self.assertEqual('', call_args[0][0][0].channel_layer)
+        self.assertFalse(call_args[0][0][0].open_portal)
+        self.assertFalse(call_args[0][0][0].open_signup)
+        self.assertFalse(call_args[0][0][0].bypass_portal_home)
+        self.assertTrue(call_args[0][0][0].session_expire_browser)
         self.assertFalse(call_args[0][0][0].overwrite)
         self.assertFalse(call_args[0][0][0].production)
         self.assertEqual('settings', call_args[0][0][0].type)
-        self.assertEqual(4, call_args[0][0][0].asgi_processes)
 
     @mock.patch('tethys_cli.gen_commands.generate_command')
     def test_generate_subcommand_settings_directory(self, mock_gen_command):
@@ -147,34 +158,54 @@ class TethysCommandTests(unittest.TestCase):
 
         mock_gen_command.assert_called()
         call_args = mock_gen_command.call_args_list
-        self.assertEqual(None, call_args[0][0][0].allowed_host)
         self.assertEqual(None, call_args[0][0][0].allowed_hosts)
         self.assertEqual('75M', call_args[0][0][0].client_max_body_size)
         self.assertEqual('pass', call_args[0][0][0].db_password)
+        self.assertEqual('tethys_platform', call_args[0][0][0].db_name)
+        self.assertEqual('127.0.0.1', call_args[0][0][0].db_host)
         self.assertEqual(5436, call_args[0][0][0].db_port)
         self.assertEqual('tethys_default', call_args[0][0][0].db_username)
-        self.assertEqual('/tmp/foo/bar', call_args[0][0][0].directory)
+        self.assertEqual(4, call_args[0][0][0].asgi_processes)
+        self.assertEqual('psql', call_args[0][0][0].db_dir)
+        self.assertEqual(8000, call_args[0][0][0].tethys_port)
+        self.assertEqual(840, call_args[0][0][0].session_warning)
+        self.assertEqual(900, call_args[0][0][0].session_expire)
+        self.assertEqual(None, call_args[0][0][0].add_apps)
+        self.assertEqual('', call_args[0][0][0].channel_layer)
+        self.assertFalse(call_args[0][0][0].open_portal)
+        self.assertFalse(call_args[0][0][0].open_signup)
+        self.assertFalse(call_args[0][0][0].bypass_portal_home)
+        self.assertTrue(call_args[0][0][0].session_expire_browser)
         self.assertFalse(call_args[0][0][0].overwrite)
         self.assertFalse(call_args[0][0][0].production)
         self.assertEqual('settings', call_args[0][0][0].type)
-        self.assertEqual(4, call_args[0][0][0].asgi_processes)
 
     @mock.patch('tethys_cli.gen_commands.generate_command')
     def test_generate_subcommand_nginx_settings_verbose_options(self, mock_gen_command):
-        testargs = ['tethys', 'gen', 'nginx', '-d', '/tmp/foo/bar', '--allowed-host', '127.0.0.1',
+        testargs = ['tethys', 'gen', 'nginx', '-d', '/tmp/foo/bar', '--db-name', 'tethys_db', '--db-host', '127.0.17.1',
                     '--allowed-hosts', 'localhost', '--client-max-body-size', '123M', '--asgi-processes', '4',
                     '--db-username', 'foo_user', '--db-password', 'foo_pass', '--db-port', '5555',
-                    '--production', '--overwrite']
+                    '--production', '--overwrite', '--open-portal', 'True', '--open-signup', 'True',
+                    '--tethys-port', '8080', '--add-apps', 'django_registration', '--session-expire-browser', 'False',
+                    '--session-warning', '1500', '--session-expire', '1800', '--bypass-portal-home', 'True',
+                    '--add-quota-handlers', 'tethysapp.inventory.quota_handler.QuotaHandler',
+                    '--remove-quota-handlers', 'tethysapp.inventory.quota_handler.QuotaHandler',
+                    '--static-root', '/new/static', '--workspaces-root', '/new/workspace',
+                    '--django-analytical', 'KEY:VALUE', '--add-backends', 'hydroshare', '--add-backends', 'hydroshare',
+                    '--remove-backends', 'hydroshare', '--oauth-options', 'KEY1:VALUE1 KEY2:VALUE2',
+                    '--channel-layer', 'channels_redis.core.RedisChannelLayer']
+
 
         with mock.patch.object(sys, 'argv', testargs):
             tethys_command()
 
         mock_gen_command.assert_called()
         call_args = mock_gen_command.call_args_list
-        self.assertEqual('127.0.0.1', call_args[0][0][0].allowed_host)
         self.assertEqual(['localhost'], call_args[0][0][0].allowed_hosts)
         self.assertEqual('123M', call_args[0][0][0].client_max_body_size)
         self.assertEqual('foo_pass', call_args[0][0][0].db_password)
+        self.assertEqual('tethys_db', call_args[0][0][0].db_name)
+        self.assertEqual('127.0.17.1', call_args[0][0][0].db_host)
         self.assertEqual('5555', call_args[0][0][0].db_port)
         self.assertEqual('foo_user', call_args[0][0][0].db_username)
         self.assertEqual('/tmp/foo/bar', call_args[0][0][0].directory)
@@ -182,6 +213,23 @@ class TethysCommandTests(unittest.TestCase):
         self.assertTrue(call_args[0][0][0].production)
         self.assertEqual('nginx', call_args[0][0][0].type)
         self.assertEqual('4', call_args[0][0][0].asgi_processes)
+        self.assertTrue(call_args[0][0][0].open_portal)
+        self.assertTrue(call_args[0][0][0].open_signup)
+        self.assertEqual('8080', call_args[0][0][0].tethys_port)
+        self.assertEqual(['django_registration'], call_args[0][0][0].add_apps)
+        self.assertEqual('False', call_args[0][0][0].session_expire_browser)
+        self.assertEqual('1500', call_args[0][0][0].session_warning)
+        self.assertEqual('1800', call_args[0][0][0].session_expire)
+        self.assertEqual('/new/static', call_args[0][0][0].static_root)
+        self.assertEqual('/new/workspace', call_args[0][0][0].workspaces_root)
+        self.assertEqual(['tethysapp.inventory.quota_handler.QuotaHandler'], call_args[0][0][0].add_quota_handlers)
+        self.assertEqual(['tethysapp.inventory.quota_handler.QuotaHandler'], call_args[0][0][0].remove_quota_handlers)
+        self.assertTrue(call_args[0][0][0].bypass_portal_home)
+        self.assertEqual(['KEY:VALUE'], call_args[0][0][0].django_analytical)
+        self.assertEqual(['hydroshare'], call_args[0][0][0].add_backends)
+        self.assertEqual(['hydroshare'], call_args[0][0][0].remove_backends)
+        self.assertEqual(['KEY1:VALUE1 KEY2:VALUE2'], call_args[0][0][0].oauth_options)
+        self.assertEqual('channels_redis.core.RedisChannelLayer', call_args[0][0][0].channel_layer)
 
     @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_cli.argparse._sys.exit')
@@ -198,14 +246,33 @@ class TethysCommandTests(unittest.TestCase):
 
         self.assertIn('--help', mock_stdout.getvalue())
         self.assertIn('--directory', mock_stdout.getvalue())
-        self.assertIn('--allowed-host', mock_stdout.getvalue())
+        self.assertIn('--allowed-hosts', mock_stdout.getvalue())
         self.assertIn('--client-max-body-size', mock_stdout.getvalue())
         self.assertIn('--asgi-processes', mock_stdout.getvalue())
         self.assertIn('--db-username', mock_stdout.getvalue())
         self.assertIn('--db-password', mock_stdout.getvalue())
+        self.assertIn('--db-name', mock_stdout.getvalue())
+        self.assertIn('--db-host', mock_stdout.getvalue())
         self.assertIn('--db-port', mock_stdout.getvalue())
         self.assertIn('--production', mock_stdout.getvalue())
         self.assertIn('--overwrite', mock_stdout.getvalue())
+        self.assertIn('--open-portal', mock_stdout.getvalue())
+        self.assertIn('--open-signup', mock_stdout.getvalue())
+        self.assertIn('--tethys-port', mock_stdout.getvalue())
+        self.assertIn('--add-apps', mock_stdout.getvalue())
+        self.assertIn('--session-expire-browser', mock_stdout.getvalue())
+        self.assertIn('--session-warning', mock_stdout.getvalue())
+        self.assertIn('--session-expire', mock_stdout.getvalue())
+        self.assertIn('--static-root', mock_stdout.getvalue())
+        self.assertIn('--workspaces-root', mock_stdout.getvalue())
+        self.assertIn('--bypass-portal-home', mock_stdout.getvalue())
+        self.assertIn('--add-quota-handlers', mock_stdout.getvalue())
+        self.assertIn('--remove-quota-handlers', mock_stdout.getvalue())
+        self.assertIn('--django-analytical', mock_stdout.getvalue())
+        self.assertIn('--add-backends', mock_stdout.getvalue())
+        self.assertIn('--remove-backends', mock_stdout.getvalue())
+        self.assertIn('--oauth-options', mock_stdout.getvalue())
+        self.assertIn('--channel-layer', mock_stdout.getvalue())
 
     @mock.patch('tethys_cli.manage_commands.manage_command')
     def test_manage_subcommand_start(self, mock_manage_command):

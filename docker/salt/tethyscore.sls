@@ -37,7 +37,30 @@
 
 Generate_Tethys_Settings_TethysCore:
   cmd.run:
-    - name: {{ TETHYS_BIN_DIR }}/tethys gen settings --production --allowed-hosts {{ ALLOWED_HOSTS }} --db-name {{ TETHYS_DB_NAME }} --db-username {{ TETHYS_DB_USERNAME }} --db-password {{ TETHYS_DB_PASSWORD }} --db-host {{ TETHYS_DB_HOST }} --db-port {{ TETHYS_DB_PORT }} --bypass-portal-home {{ BYPASS_TETHYS_HOME_PAGE }} --add-apps {{ ADD_DJANGO_APPS }} --session-expire-browser {{ SESSION_EXPIRE_AT_BROWSER_CLOSE }} --open-portal {{ OPEN_PORTAL }} --open-signup {{ OPEN_SIGNUP }} --session-warning {{ SESSION_WARN }} --session-expire {{ SESSION_EXPIRE }} --static-root {{ STATIC_ROOT }} --workspaces-root {{ WORKSPACE_ROOT }} --add-quota-handlers {{ QUOTA_HANDLERS }} --django-analytical {{ DJANGO_ANALYTICAL }} --add-backends {{ ADD_BACKENDS }} --oauth-options {{ OAUTH_OPTIONS }} --channel-layer {{ CHANNEL_LAYER }} --overwrite
+    - name: >
+        {{ TETHYS_BIN_DIR }}/tethys gen settings
+        --production
+        --allowed-hosts {{ ALLOWED_HOSTS }}
+        --db-name {{ TETHYS_DB_NAME }}
+        --db-username {{ TETHYS_DB_USERNAME }}
+        --db-password {{ TETHYS_DB_PASSWORD }}
+        --db-host {{ TETHYS_DB_HOST }}
+        --db-port {{ TETHYS_DB_PORT }}
+        --bypass-portal-home {{ BYPASS_TETHYS_HOME_PAGE }}
+        --add-apps {{ ADD_DJANGO_APPS }}
+        --session-expire-browser {{ SESSION_EXPIRE_AT_BROWSER_CLOSE }}
+        --open-portal {{ OPEN_PORTAL }}
+        --open-signup {{ OPEN_SIGNUP }}
+        --session-warning {{ SESSION_WARN }}
+        --session-expire {{ SESSION_EXPIRE }}
+        --static-root {{ STATIC_ROOT }}
+        --workspaces-root {{ WORKSPACE_ROOT }}
+        --add-quota-handlers {{ QUOTA_HANDLERS }}
+        --django-analytical {{ DJANGO_ANALYTICAL }}
+        --add-backends {{ ADD_BACKENDS }}
+        --oauth-options {{ OAUTH_OPTIONS }}
+        --channel-layer {{ CHANNEL_LAYER }}
+        --overwrite
     - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Generate_NGINX_Settings_TethysCore:
@@ -88,7 +111,11 @@ Link_ASGI_Config_TethysCore:
 
 Prepare_Database_TethysCore:
   cmd.run:
-    - name: . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && PGPASSWORD="{{ POSTGRES_PASSWORD }}" {{ TETHYS_BIN_DIR }}/tethys db configure -N {{ TETHYS_SUPER_USER }} -P {{ TETHYS_SUPER_USER_PASS }}
+    - name: >
+        . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && PGPASSWORD="{{ POSTGRES_PASSWORD }}"
+        {{ TETHYS_BIN_DIR }}/tethys db configure
+        -N {{ TETHYS_SUPER_USER }}
+        -P {{ TETHYS_SUPER_USER_PASS }}
     - shell: /bin/bash
     - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 

@@ -1,9 +1,12 @@
 import unittest
 from unittest import mock
 
+from argparse import Namespace
+
 from tethys_cli.gen_commands import (
     get_environment_value,
     get_settings_value,
+    gen_settings,
     generate_command,
     GEN_SETTINGS_OPTION,
     GEN_NGINX_OPTION,
@@ -67,6 +70,18 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
+
+    def test_gen_settings_value_error(self):
+        mock_args = mock.MagicMock(type=GEN_SETTINGS_OPTION, directory=None, django_analytical=['CLICKMAP_TRACKER_ID'])
+
+        with self.assertRaises(ValueError):
+            generate_command(args=mock_args)
+
+        mock_args = mock.MagicMock(type=GEN_SETTINGS_OPTION, directory=None,
+                                   oauth_options=['SOCIAL_AUTH_GOOGLE_OAUTH2_KEY'])
+
+        with self.assertRaises(ValueError):
+            generate_command(args=mock_args)
 
     @mock.patch('tethys_cli.gen_commands.get_settings_value')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
