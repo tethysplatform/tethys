@@ -28,9 +28,7 @@ SECRET_KEY = '{{ secret_key }}'
 DEBUG = {% if production %}False{% else %}True{% endif %}
 
 {% if allowed_hosts %}
-ALLOWED_HOSTS = {{ allowed_hosts|safe }}
-{% else %}
-ALLOWED_HOSTS = [{% if allowed_host %}'{{ allowed_host }}'{% endif %}]
+ALLOWED_HOSTS = {{ allowed_hosts }}
 {% endif %}
 
 # List those who should be notified of an error when DEBUG = False as a tuple of (name, email address).
@@ -292,7 +290,7 @@ RESOURCE_QUOTA_HANDLERS = [
 # Placeholders for the ID's required by various web-analytics services supported by Django-Analytical.
 # Replace False with the tracking ID as a string e.g. SERVICE_ID = 'abcd1234'
 {%- for key, value in django_analytical.items() %}
-{{ key }} = {{ value }}
+{{ key }} = '{{ value }}'
 {%- endfor %}
 
 ASGI_APPLICATION = "tethys_portal.routing.application"

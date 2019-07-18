@@ -61,9 +61,6 @@ def add_gen_parser(subparsers):
                                                    'creation of supporting files.')
     gen_parser.add_argument('type', help='The type of object to generate.', choices=VALID_GEN_OBJECTS)
     gen_parser.add_argument('-d', '--directory', help='Destination directory for the generated object.')
-    gen_parser.add_argument('--allowed-host', dest='allowed_host',
-                            help='Single hostname or IP address to add to allowed hosts in the settings file. '
-                                 'e.g.: 127.0.0.1')
     gen_parser.add_argument('--allowed-hosts', dest='allowed_hosts', nargs='+',
                             help='Add multiple hostnames or IP addresses to allowed hosts in the settings file. '
                                  'e.g.: 127.0.0.1 localhost')
@@ -94,9 +91,6 @@ def add_gen_parser(subparsers):
                             help='Overwrite existing file without prompting.')
     gen_parser.add_argument('--add-apps', dest='add_apps', nargs='+',
                             help='Enable applications by adding them to the INSTALLED_APPS in settings.py. '
-                                 'e.g.: grappelli django_registration')
-    gen_parser.add_argument('--remove-apps', dest='remove_apps', nargs='+',
-                            help='Remove applications from the INSTALLED_APPS in settings.py. '
                                  'e.g.: grappelli django_registration')
     gen_parser.add_argument('--session-expire-browser', dest='session_expire_browser',
                             help='Force user logout once the browser has been closed. Defaults to True')
@@ -158,11 +152,11 @@ def add_gen_parser(subparsers):
                                  'values is channels.layers.InMemoryChannelLayer. For production, it is recommended to '
                                  'install channel_redis and use channels_redis.core.RedisChannelLayer instead. '
                                  'A custom backend can be added using dot-formatted path.')
-    gen_parser.set_defaults(func=generate_command, allowed_host=None, allowed_hosts=None, client_max_body_size='75M',
-                            asgi_processes=4, db_name='tethys_platform', db_username='tethys_default',
-                            db_password='pass', db_host='127.0.0.1', db_port=5436, db_dir='psql', production=False,
-                            open_portal=False, open_signup=False, tethys_port=8000, overwrite=False, add_apps=None,
-                            remove_apps=None, session_expire_browser=True, session_warning=840, session_expire=900,
+    gen_parser.set_defaults(func=generate_command, allowed_hosts=None, client_max_body_size='75M', asgi_processes=4,
+                            db_name='tethys_platform', db_username='tethys_default', db_password='pass',
+                            db_host='127.0.0.1', db_port=5436, db_dir='psql', production=False, open_portal=False,
+                            open_signup=False, tethys_port=8000, overwrite=False, add_apps=None,
+                            session_expire_browser=True, session_warning=840, session_expire=900,
                             bypass_portal_home=False, channel_layer='')
 
 
@@ -218,14 +212,12 @@ def gen_settings(args):
                          SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET='', SOCIAL_AUTH_HYDROSHARE_KEY='',
                          SOCIAL_AUTH_HYDROSHARE_SECRET='')
 
-    if args.add_apps:
+    if args.add_apps and args.add_apps != ['None']:
         installed_apps += [i for i in args.add_apps if i not in installed_apps]
 
-    if args.remove_apps:
-        installed_apps = [i for i in installed_apps if i not in args.remove_apps]
-
     if args.add_quota_handlers:
-        resource_quota_handlers += [i for i in args.add_quota_handlers if i not in resource_quota_handlers]
+        resource_quota_handlers += [i for i in args.add_quota_handlers if i not in resource_quota_handlers and
+                                    i != 'None']
 
     if args.remove_quota_handlers:
         resource_quota_handlers = [i for i in resource_quota_handlers if i not in args.remove_quota_handlers]
@@ -272,26 +264,34 @@ def gen_settings(args):
 
     if args.django_analytical:
         for pair in args.django_analytical:
-            key, value = pair.split(':')
-            django_analytical[key.upper()] = value
+            if pair != 'None':
+                try:
+                    key, value = pair.split(':')
+                    django_analytical[key.upper()] = value
+                except ValueError:
+                    raise ValueError('Provide key-value pairs in the form of  KEY:VALUE')
 
     if args.add_backends:
         c = 0
         for item in args.add_backends:
-            if item in custom_backends:
-                backends.insert(c, custom_backends[item])
-            else:
-                backends.insert(c, item)
-            c += 1
+            if item != 'None':
+                if item in custom_backends:
+                    backends.insert(c, custom_backends[item])
+                else:
+                    backends.insert(c, item)
+                c += 1
 
     if args.oauth_options:
         for pair in args.oauth_options:
-            key, value = pair.split(':')
-            oauth_options[key.upper()] = value
+            if pair != 'None':
+                try:
+                    key, value = pair.split(':')
+                    oauth_options[key.upper()] = value
+                except ValueError:
+                    raise ValueError('Provide key-value pairs in the form of  KEY:VALUE')
 
     context = {
         'secret_key': secret_key,
-        'allowed_host': args.allowed_host,
         'allowed_hosts': args.allowed_hosts,
         'db_name': args.db_name,
         'db_username': args.db_username,
@@ -328,7 +328,8 @@ def gen_nginx(args):
         'hostname': hostname,
         'workspaces_root': workspaces_root,
         'static_root': static_root,
-        'client_max_body_size': args.client_max_body_size
+        'client_max_body_size': args.client_max_body_size,
+        'port': args.tethys_port
     }
     return context
 

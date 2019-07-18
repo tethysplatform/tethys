@@ -5,27 +5,43 @@ FROM continuumio/miniconda3
 ###############
 ENV  TETHYS_HOME="/usr/lib/tethys" \
      TETHYS_PORT=8000 \
-     TETHYS_PUBLIC_HOST="127.0.0.1" \
+     POSTGRES_PASSWORD="pass" \
+     TETHYS_DB_NAME='tethys_platform' \
      TETHYS_DB_USERNAME="tethys_default" \
      TETHYS_DB_PASSWORD="pass" \
      TETHYS_DB_HOST="db" \
      TETHYS_DB_PORT=5432 \
-     TETHYS_SUPER_USER="" \
-     TETHYS_SUPER_USER_EMAIL="" \
-     TETHYS_SUPER_USER_PASS=""
+     TETHYS_SUPER_USER="admin" \
+     TETHYS_SUPER_USER_PASS="pass"
 
 # Misc
-ENV  ALLOWED_HOSTS="\"['localhost', '127.0.0.1']\"" \
-     BASH_PROFILE=".bashrc" \
+ENV  BASH_PROFILE=".bashrc" \
      CONDA_HOME="/opt/conda" \
      CONDA_ENV_NAME=tethys \
      ASGI_PROCESSES=4 \
      CLIENT_MAX_BODY_SIZE="75M"
 
+# Tethys setting arguments
+ENV  ALLOWED_HOSTS="localhost 127.0.0.1" \
+     BYPASS_TETHYS_HOME_PAGE="True" \
+     ADD_DJANGO_APPS=None \
+     SESSION_EXPIRE_AT_BROWSER_CLOSE="True" \
+     SESSION_WARN=1500 \
+     SESSION_EXPIRE=1800 \
+     OPEN_PORTAL="False" \
+     OPEN_SIGNUP="False" \
+     STATIC_ROOT="${TETHYS_HOME}/static" \
+     WORKSPACE_ROOT="${TETHYS_HOME}/workspaces" \
+     QUOTA_HANDLERS="None" \
+     DJANGO_ANALYTICAL="None" \
+     ADD_BACKENDS="None" \
+     OAUTH_OPTIONS="None" \
+     CHANNEL_LAYER="''"
+
 #########
 # SETUP #
 #########
-RUN mkdir -p "${TETHYS_HOME}/src"
+RUN mkdir -p "${TETHYS_HOME}/tethys"
 WORKDIR ${TETHYS_HOME}
 
 # Speed up APT installs
@@ -40,8 +56,8 @@ RUN apt-get update && apt-get -y install bzip2 git nginx supervisor gcc salt-min
 RUN rm -f /etc/nginx/sites-enabled/default
 
 # Setup Conda Environment
-ADD environment.yml ${TETHYS_HOME}/src/
-WORKDIR ${TETHYS_HOME}/src
+ADD environment.yml ${TETHYS_HOME}/tethys/
+WORKDIR ${TETHYS_HOME}/tethys
 RUN ${CONDA_HOME}/bin/conda env create -n "${CONDA_ENV_NAME}" -f "environment.yml"
 
 ###########
@@ -52,40 +68,32 @@ RUN ${CONDA_HOME}/bin/conda env create -n "${CONDA_ENV_NAME}" -f "environment.ym
 RUN groupadd www;useradd -r -u 1011 -g www www;sed -i 's/^user.*/user www www;/' /etc/nginx/nginx.conf;
 
 # ADD files from repo
-ADD --chown=www:www resources ${TETHYS_HOME}/src/resources/
-ADD --chown=www:www templates ${TETHYS_HOME}/src/templates/
-ADD --chown=www:www tethys_apps ${TETHYS_HOME}/src/tethys_apps/
-ADD --chown=www:www tethys_compute ${TETHYS_HOME}/src/tethys_compute/
-ADD --chown=www:www tethys_config ${TETHYS_HOME}/src/tethys_config/
-ADD --chown=www:www tethys_gizmos ${TETHYS_HOME}/src/tethys_gizmos/
-ADD --chown=www:www tethys_portal ${TETHYS_HOME}/src/tethys_portal/
-ADD --chown=www:www tethys_quotas ${TETHYS_HOME}/src/tethys_quotas/
-ADD --chown=www:www tethys_sdk ${TETHYS_HOME}/src/tethys_sdk/
-ADD --chown=www:www tethys_services ${TETHYS_HOME}/src/tethys_services/
-ADD --chown=www:www README.rst ${TETHYS_HOME}/src/
-ADD --chown=www:www *.py ${TETHYS_HOME}/src/
+ADD --chown=www:www resources ${TETHYS_HOME}/tethys/resources/
+ADD --chown=www:www templates ${TETHYS_HOME}/tethys/templates/
+ADD --chown=www:www tethys_apps ${TETHYS_HOME}/tethys/tethys_apps/
+ADD --chown=www:www tethys_cli ${TETHYS_HOME}/tethys/tethys_cli/
+ADD --chown=www:www tethys_compute ${TETHYS_HOME}/tethys/tethys_compute/
+ADD --chown=www:www tethys_config ${TETHYS_HOME}/tethys/tethys_config/
+ADD --chown=www:www tethys_gizmos ${TETHYS_HOME}/tethys/tethys_gizmos/
+ADD --chown=www:www tethys_portal ${TETHYS_HOME}/tethys/tethys_portal/
+ADD --chown=www:www tethys_quotas ${TETHYS_HOME}/tethys/tethys_quotas/
+ADD --chown=www:www tethys_sdk ${TETHYS_HOME}/tethys/tethys_sdk/
+ADD --chown=www:www tethys_services ${TETHYS_HOME}/tethys/tethys_services/
+ADD --chown=www:www README.rst ${TETHYS_HOME}/tethys/
+ADD --chown=www:www *.py ${TETHYS_HOME}/tethys/
 
 # Remove any apps that may have been installed in tethysapp
-RUN rm -rf ${TETHYS_HOME}/src/tethys_apps/tethysapp \
-  ; mkdir -p ${TETHYS_HOME}/src/tethys_apps/tethysapp
-ADD --chown=www:www tethys_apps/tethysapp/__init__.py ${TETHYS_HOME}/src/tethys_apps/tethysapp/
+#RUN rm -rf ${TETHYS_HOME}/src/tethys_apps/tethysapp \
+#  ; mkdir -p ${TETHYS_HOME}/src/tethys_apps/tethysapp
+#ADD --chown=www:www tethys_apps/tethysapp/__init__.py ${TETHYS_HOME}/src/tethys_apps/tethysapp/
 
 # Run Installer
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; python setup.py develop'
-RUN mkdir ${TETHYS_HOME}/workspaces ${TETHYS_HOME}/apps ${TETHYS_HOME}/static
+RUN mkdir ${WORKSPACE_ROOT} ${TETHYS_HOME}/apps ${STATIC_ROOT}
 
 # Add static files
-ADD --chown=www:www static ${TETHYS_HOME}/src/static/
-
-# Generate Inital Settings Files
-RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
-  ; tethys gen settings --production --allowed-host "${ALLOWED_HOSTS}" --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite \
-  ; sed -i -e "s:#TETHYS_WORKSPACES_ROOT = .*$:TETHYS_WORKSPACES_ROOT = \"/usr/lib/tethys/workspaces\":" ${TETHYS_HOME}/src/tethys_portal/settings.py \
-  ; tethys gen nginx --tethys-port ${TETHYS_PORT} --overwrite \
-  ; tethys gen nginx_service --tethys-port ${TETHYS_PORT} --overwrite \
-  ; tethys gen asgi_service --tethys-port ${TETHYS_PORT} --overwrite \
-  ; tethys manage collectstatic'
+ADD --chown=www:www static ${TETHYS_HOME}/tethys/static/
 
 ############
 # CLEAN UP #
