@@ -135,8 +135,8 @@ class TestCommandTests(unittest.TestCase):
             f"'{self.options['password']}';"
         self.assertEqual(call_args[0][0][0], ['psql', '-h', self.options['hostname'], '-U', 'postgres', '-p', '0000',
                                               '--command', command])
-        args = ['createdb', '-h', self.options['hostname'], '-U', 'postgres', '-p', self.options['port'], '-O',
-                self.options['username'], self.options['db_name'], '-E', 'utf-8', '-T', 'template0']
+        args = ['createdb', '-h', self.options['hostname'], '-U', 'postgres', '-E', 'utf-8', '-T', 'template0',
+                '-p', self.options['port'], '-O', self.options['username'], self.options['db_name']]
         self.mock_run_process.assert_called_with(args, 'Creating Tethys database user "foo"...')
 
     def test_db_command_create_db_user_with_superuser(self):
