@@ -1,3 +1,5 @@
+.. _app_installation:
+
 ************************
 Application Installation
 ************************

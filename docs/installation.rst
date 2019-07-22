@@ -6,15 +6,6 @@ Getting Started
 
 This section describes how to get Tethys Platform up and running as a fresh installation for app development. If you are upgrading an existing installation the refer to the :ref:`update_tethys` docs. If you are deploying a production instance of Tethys Portal refer to the :ref:`production_installation` docs. If you want to contribute to the Tethys Platform source code itself then refer to the :ref:`developer_installation` docs.
 
-.. toctree::
-    :maxdepth: 1
-
-    installation/system_requirements
-    installation/update
-    installation/production
-    installation/developer_installation
-
-
 Prerequisites
 -------------
 
@@ -36,7 +27,7 @@ To install the ``tethysplatform`` into a new conda environment then run the foll
 
     To install a development build of of ``tethysplatform`` prepend the ``tethys/label/dev`` channel to the list of conda channels::
 
-        conda create -n tethys -c tethys/label/dev -c tethysplatform -c conda-forge tethysplatform
+        conda create -n tethys -c tethysplatform/label/dev -c tethysplatform -c conda-forge tethysplatform
 
 
     Alternatively, to install from source refer to the :ref:`developer_installation` docs.
@@ -95,14 +86,26 @@ This will start up a locally running web server. You can access the Tethys Porta
 5. Next Steps
 -------------
 
-There are several directions that you may want to go from here. Refer to the following sections:
+There are several directions that you may want to go from here.
+
+* Checkout the :ref:`web_admin` docs to set up your Tethys Portal.
+* For help gettings started with docker see :ref:`using_docker`
+* To install your app refer to the :ref:`app_installation`
+* You also may want to jump over to the :ref:`tutorials` to begin developing your first app.
+
+
+Related Docs
+------------
 
 .. toctree::
     :maxdepth: 1
 
+    installation/system_requirements
+    installation/update
+    installation/production
+    installation/developer_installation
     installation/platform_settings
     installation/using_docker
     installation/web_admin_setup
     installation/application
 
-You also may want to jump over to the :ref:`tutorials` to begin developing your first app.

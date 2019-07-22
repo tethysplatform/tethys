@@ -95,8 +95,8 @@ def create_db_user(hostname=None, port=None, username=None, password=None, db_na
     _run_process(args, msg)
 
     if not is_superuser:
-        args = ['createdb', '-h', hostname, '-U', 'postgres', '-p', f'{port}', '-O', username, db_name, '-E', 'utf-8',
-                '-T', 'template0']
+        args = ['createdb', '-h', hostname, '-U', 'postgres', '-E', 'utf-8', '-T', 'template0', '-p', f'{port}',
+                '-O', username, db_name]
         _run_process(args, msg)
 
 
