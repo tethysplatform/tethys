@@ -296,4 +296,4 @@ class ThreddsService(models.Model):
         return self.name
 
     def get_url(self):
-        return self.wmsendpoint
+        return self.wms_endpoint

@@ -27,7 +27,7 @@ class TestDockerCommands(unittest.TestCase):
 
     def test_container_metadata_get_containers(self):
         all_containers = cli_docker_commands.ContainerMetadata.get_containers()
-        self.assertEqual(3, len(all_containers))
+        self.assertEqual(4, len(all_containers))
         for container in all_containers:
             self.assertIsInstance(container, cli_docker_commands.ContainerMetadata)
 
@@ -57,7 +57,7 @@ class TestDockerCommands(unittest.TestCase):
     def test_container_metadata_get_containers_with_installed(self, mock_is_installed):
         mock_is_installed.return_value = True
         all_containers = cli_docker_commands.ContainerMetadata.get_containers(installed=True)
-        self.assertEqual(3, len(all_containers))
+        self.assertEqual(4, len(all_containers))
         all_containers = cli_docker_commands.ContainerMetadata.get_containers(installed=False)
         self.assertEqual(0, len(all_containers))
 
@@ -65,7 +65,7 @@ class TestDockerCommands(unittest.TestCase):
         all_containers = cli_docker_commands.ContainerMetadata.get_containers(installed=True)
         self.assertEqual(0, len(all_containers))
         all_containers = cli_docker_commands.ContainerMetadata.get_containers(installed=False)
-        self.assertEqual(3, len(all_containers))
+        self.assertEqual(4, len(all_containers))
 
     @mock.patch('tethys_cli.docker_commands.ContainerMetadata.container', new_callable=mock.PropertyMock)
     def test_container_metadata_is_installed(self, mock_container):

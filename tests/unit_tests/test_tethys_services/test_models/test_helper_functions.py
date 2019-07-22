@@ -38,3 +38,7 @@ class HelperFunctionTests(TethysTestCase):
     def test_validate_persistent_store_port(self):
         test_url = '800'
         self.assertRaises(ValidationError, service_model.validate_persistent_store_port, test_url)
+
+    def test_validate_thredds_service_endpoint(self):
+        test_url = 'http://test_url'
+        self.assertRaises(ValidationError, service_model.validate_thredds_service_endpoint, test_url)
