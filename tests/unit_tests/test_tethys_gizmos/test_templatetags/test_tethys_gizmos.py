@@ -70,6 +70,33 @@ class TestTethysGizmos(unittest.TestCase):
         # Check Result
         self.assertEqual('2018-01-01', result)
 
+    def test_SetVarNode_template_error(self):
+        node = gizmos_templatetags.SetVarNode('test', 'test')
+        result = node.render({})
+        self.assertEqual('', result)
+
+    @mock.patch('tethys_gizmos.templatetags.tethys_gizmos.template.Variable')
+    def test_SetVarNode_render(self, mock_template_var):
+        mock_Variable = mock.MagicMock()
+        mock_Variable.resolve.return_value = 'foo'
+        mock_template_var.return_value = mock_Variable
+        context = {'test1': {}}
+        node = gizmos_templatetags.SetVarNode('test1.test', 'test')
+        result = node.render(context)
+        self.assertDictEqual(context, {'test1': {'test': 'foo'}})
+
+        self.assertEqual('', result)
+
+    @mock.patch('tethys_gizmos.templatetags.tethys_gizmos.SetVarNode')
+    def test_set_var(self, _):
+        token = mock.MagicMock()
+        token.split_contents.return_value = ['set', 'test', '=', 'tests']
+        gizmos_templatetags.set_var(None, token)
+
+    def test_set_var_error(self):
+        token = mock.MagicMock()
+        self.assertRaises(TemplateSyntaxError, gizmos_templatetags.set_var, None, token)
+
     def test_isstring(self):
         result = gizmos_templatetags.isstring(type('string'))
 
