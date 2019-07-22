@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 
 from tethys_sdk.permissions import permission_required
 from tethys_sdk.permissions import login_required
-from tests.factories.django_user import UserFactory
+from .. import UserFactory
 
 
 class DecoratorsTest(unittest.TestCase):

@@ -10,6 +10,7 @@
 # Commandline interface for Tethys
 import argparse
 
+from tethys_cli.version_command import add_version_parser
 from tethys_cli.app_settings_commands import add_app_settings_parser
 from tethys_cli.db_commands import add_db_parser
 from tethys_cli.docker_commands import add_docker_parser
@@ -35,6 +36,7 @@ def tethys_command():
     subparsers = parser.add_subparsers(title='Commands', dest='sub-command')
     subparsers.required = True
 
+    add_version_parser(subparsers)
     add_app_settings_parser(subparsers)
     add_db_parser(subparsers)
     add_docker_parser(subparsers)
