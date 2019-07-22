@@ -97,6 +97,7 @@ class SetVarNode(template.Node):
 
         return ''
 
+
 @register.tag(name='set')
 def set_var(parser, token):
     """
