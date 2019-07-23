@@ -142,13 +142,13 @@ def gen_site_content(args):
             obj = Setting.objects.filter(name=arg_filter[arg])
             obj.update(content=content, date_modified=timezone.now())
 
-        elif args.restore_defaults:
-            from tethys_config.init import setting_defaults
+    if args.restore_defaults:
+        from tethys_config.init import setting_defaults
 
-            Setting.objects.all().delete()
+        Setting.objects.all().delete()
 
-            home_category = SettingsCategory.objects.get(name="Home Page")
-            setting_defaults(home_category)
+        general_category = SettingsCategory.objects.get(name="General Settings")
+        setting_defaults(general_category)
 
-            general_category = SettingsCategory.objects.get(name="General Settings")
-            setting_defaults(general_category)
+        home_category = SettingsCategory.objects.get(name="Home Page")
+        setting_defaults(home_category)
