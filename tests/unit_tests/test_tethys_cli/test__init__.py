@@ -189,10 +189,9 @@ class TethysCommandTests(unittest.TestCase):
                     '--tethys-port', '8080', '--add-apps', 'django_registration', '--session-expire-browser', 'False',
                     '--session-warning', '1500', '--session-expire', '1800', '--bypass-portal-home', 'True',
                     '--add-quota-handlers', 'tethysapp.inventory.quota_handler.QuotaHandler',
-                    '--remove-quota-handlers', 'tethysapp.inventory.quota_handler.QuotaHandler',
                     '--static-root', '/new/static', '--workspaces-root', '/new/workspace',
                     '--django-analytical', 'KEY:VALUE', '--add-backends', 'hydroshare', '--add-backends', 'hydroshare',
-                    '--remove-backends', 'hydroshare', '--oauth-options', 'KEY1:VALUE1 KEY2:VALUE2',
+                    '--oauth-options', 'KEY1:VALUE1 KEY2:VALUE2',
                     '--channel-layer', 'channels_redis.core.RedisChannelLayer']
 
 
@@ -223,11 +222,9 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual('/new/static', call_args[0][0][0].static_root)
         self.assertEqual('/new/workspace', call_args[0][0][0].workspaces_root)
         self.assertEqual(['tethysapp.inventory.quota_handler.QuotaHandler'], call_args[0][0][0].add_quota_handlers)
-        self.assertEqual(['tethysapp.inventory.quota_handler.QuotaHandler'], call_args[0][0][0].remove_quota_handlers)
         self.assertTrue(call_args[0][0][0].bypass_portal_home)
         self.assertEqual(['KEY:VALUE'], call_args[0][0][0].django_analytical)
         self.assertEqual(['hydroshare'], call_args[0][0][0].add_backends)
-        self.assertEqual(['hydroshare'], call_args[0][0][0].remove_backends)
         self.assertEqual(['KEY1:VALUE1 KEY2:VALUE2'], call_args[0][0][0].oauth_options)
         self.assertEqual('channels_redis.core.RedisChannelLayer', call_args[0][0][0].channel_layer)
 
@@ -267,10 +264,8 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('--workspaces-root', mock_stdout.getvalue())
         self.assertIn('--bypass-portal-home', mock_stdout.getvalue())
         self.assertIn('--add-quota-handlers', mock_stdout.getvalue())
-        self.assertIn('--remove-quota-handlers', mock_stdout.getvalue())
         self.assertIn('--django-analytical', mock_stdout.getvalue())
         self.assertIn('--add-backends', mock_stdout.getvalue())
-        self.assertIn('--remove-backends', mock_stdout.getvalue())
         self.assertIn('--oauth-options', mock_stdout.getvalue())
         self.assertIn('--channel-layer', mock_stdout.getvalue())
 

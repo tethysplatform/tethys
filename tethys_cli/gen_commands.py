@@ -110,9 +110,6 @@ def add_gen_parser(subparsers):
                             help='Append one or more dot-formatted handlers to the resource quota handlers list in '
                                  'settings.py. Defaults to tethys_quotas.handlers.workspace.WorkspaceQuotaHandler. '
                                  'e.g.: tethysapp.dam_inventory.dam_quota_handler.DamQuotaHandler')
-    gen_parser.add_argument('--remove-quota-handlers', dest='remove_quota_handlers', nargs='+',
-                            help='Remove one or more dot-formatted handlers from the resource quota handlers list in '
-                                 'settings.py. e.g.: tethysapp.dam_inventory.dam_quota_handler.DamQuotaHandler')
     gen_parser.add_argument('--django-analytical', dest='django_analytical', nargs='+',
                             help='Provide one or more ID:SERVICE_ID pair for django analytical options in settings.py. '
                                  'All IDs default to False. Available IDs are: CLICKMAP_TRACKER_ID, CLICKY_SITE_ID, '
@@ -130,13 +127,6 @@ def add_gen_parser(subparsers):
                                  'backend or one of the following keys: hydroshare, linkedin, google, facebook. '
                                  'The default backends are django.contrib.auth.backends.ModelBackend and '
                                  'guardian.backends.ObjectPermissionBackend. '
-                                 'e.g.: project.backend.CustomBackend hydroshare')
-    gen_parser.add_argument('--remove-backends', dest='remove_backends', nargs='+',
-                            help='Remove one or more authentication backends to settings.py. Django try these backends '
-                                 'in the same order they are listed. Provide the dot-formatted python path to a custom '
-                                 'backend or one of the following keys: hydroshare, linkedin, google, facebook. '
-                                 'The default backends are django.contrib.auth.backends.ModelBackend and '
-                                 'guardian.backends.ObjectPermissionBackend. Defaults cannot be removed. '
                                  'e.g.: project.backend.CustomBackend hydroshare')
     gen_parser.add_argument('--oauth-options', dest='oauth_options', nargs='+',
                             help='Add options for oauth providers in the settings.py. '
@@ -218,9 +208,6 @@ def gen_settings(args):
     if args.add_quota_handlers:
         resource_quota_handlers += [i for i in args.add_quota_handlers if i not in resource_quota_handlers and
                                     i != 'None']
-
-    if args.remove_quota_handlers:
-        resource_quota_handlers = [i for i in resource_quota_handlers if i not in args.remove_quota_handlers]
 
     if args.session_expire_browser and args.session_expire_browser not in ['0', 'f', 'F', 'false', 'False']:
         session_expire_browser = True

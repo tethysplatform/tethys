@@ -55,7 +55,7 @@ RUN apt-get update && apt-get -y install wget gnupg2 \
 RUN apt-get update && apt-get -y install bzip2 git nginx supervisor gcc salt-minion procps pv
 RUN rm -f /etc/nginx/sites-enabled/default
 
-# Setup Conda Environment
+# Setup Conda and Git Environments
 ADD environment.yml ${TETHYS_HOME}/tethys/
 WORKDIR ${TETHYS_HOME}/tethys
 RUN ${CONDA_HOME}/bin/conda env create -n "${CONDA_ENV_NAME}" -f "environment.yml"
@@ -69,7 +69,6 @@ RUN groupadd www;useradd -r -u 1011 -g www www;sed -i 's/^user.*/user www www;/'
 
 # ADD files from repo
 ADD --chown=www:www resources ${TETHYS_HOME}/tethys/resources/
-ADD --chown=www:www templates ${TETHYS_HOME}/tethys/templates/
 ADD --chown=www:www tethys_apps ${TETHYS_HOME}/tethys/tethys_apps/
 ADD --chown=www:www tethys_cli ${TETHYS_HOME}/tethys/tethys_cli/
 ADD --chown=www:www tethys_compute ${TETHYS_HOME}/tethys/tethys_compute/
@@ -81,19 +80,13 @@ ADD --chown=www:www tethys_sdk ${TETHYS_HOME}/tethys/tethys_sdk/
 ADD --chown=www:www tethys_services ${TETHYS_HOME}/tethys/tethys_services/
 ADD --chown=www:www README.rst ${TETHYS_HOME}/tethys/
 ADD --chown=www:www *.py ${TETHYS_HOME}/tethys/
-
-# Remove any apps that may have been installed in tethysapp
-#RUN rm -rf ${TETHYS_HOME}/src/tethys_apps/tethysapp \
-#  ; mkdir -p ${TETHYS_HOME}/src/tethys_apps/tethysapp
-#ADD --chown=www:www tethys_apps/tethysapp/__init__.py ${TETHYS_HOME}/src/tethys_apps/tethysapp/
+ADD --chown=www:www .git ${TETHYS_HOME}/tethys/.git/
+ADD setup.cfg ${TETHYS_HOME}/tethys/
 
 # Run Installer
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; python setup.py develop'
 RUN mkdir ${WORKSPACE_ROOT} ${TETHYS_HOME}/apps ${STATIC_ROOT}
-
-# Add static files
-ADD --chown=www:www static ${TETHYS_HOME}/tethys/static/
 
 ############
 # CLEAN UP #
