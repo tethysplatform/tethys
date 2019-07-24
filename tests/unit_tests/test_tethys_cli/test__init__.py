@@ -1303,3 +1303,49 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('--defaults', mock_stdout.getvalue())
         self.assertIn('--containers', mock_stdout.getvalue())
         self.assertIn('--boot2docker', mock_stdout.getvalue())
+
+    @mock.patch('tethys_cli.site_commands.gen_site_content')
+    def test_site_commands_gen_site_content_options(self, mock_gen_site_content):
+        testargs = ['tethys', 'site', '--tab-title', 'Tethys Portal', '--favicon', '/tethys_portal/images/favicon.png',
+                    '--title', 'Tethys Portal', '--logo', '/tethys_portal/images/tethys-logo.png',
+                    '--logo-height', '60', '--logo-width', '60', '--logo-padding', '0',
+                    '--library-title', 'Apps Library', '--primary-color', '#0a62a9', '--secondary-color', '#1b95dc',
+                    '--background-color', 'white', '--copyright', 'copyright', '--hero-text', 'Hero Text',
+                    '--blurb-text', 'Blurb Text', '--feature1-heading', 'Feature 1 Heading',
+                    '--feature1-body', 'Feature 1 Content', '--feature1-image', '/tethys_portal/images/feature1.png',
+                    '--feature2-heading', 'Feature 2 Heading', '--feature2-body', 'Feature 2 Content',
+                    '--feature2-image', '/tethys_portal/images/feature2.png', '--feature3-heading', 'Feature 3 Heading',
+                    '--feature3-body', 'Feature 3 Content', '--feature3-image', '/tethys_portal/images/feature3.png',
+                    '--action-text', 'Ready?', '--action-button', 'Signup!']
+
+        with mock.patch.object(sys, 'argv', testargs):
+            tethys_command()
+
+        mock_gen_site_content.assert_called()
+        call_args = mock_gen_site_content.call_args_list
+        self.assertEqual('Tethys Portal', call_args[0][0][0].tab_title)
+        self.assertEqual('/tethys_portal/images/favicon.png', call_args[0][0][0].favicon)
+        self.assertEqual('Tethys Portal', call_args[0][0][0].title)
+        self.assertEqual('/tethys_portal/images/tethys-logo.png', call_args[0][0][0].logo)
+        self.assertEqual('60', call_args[0][0][0].logo_height)
+        self.assertEqual('60', call_args[0][0][0].logo_width)
+        self.assertEqual('0', call_args[0][0][0].logo_padding)
+        self.assertEqual('Apps Library', call_args[0][0][0].library_title)
+        self.assertEqual('#0a62a9', call_args[0][0][0].primary_color)
+        self.assertEqual('#1b95dc', call_args[0][0][0].secondary_color)
+        self.assertEqual('white', call_args[0][0][0].background_color)
+        self.assertEqual('copyright', call_args[0][0][0].footer_copyright)
+        self.assertEqual('Hero Text', call_args[0][0][0].hero_text)
+        self.assertEqual('Blurb Text', call_args[0][0][0].blurb_text)
+        self.assertEqual('Feature 1 Heading', call_args[0][0][0].feature1_heading)
+        self.assertEqual('Feature 1 Content', call_args[0][0][0].feature1_body)
+        self.assertEqual('/tethys_portal/images/feature1.png', call_args[0][0][0].feature1_image)
+        self.assertEqual('Feature 2 Heading', call_args[0][0][0].feature2_heading)
+        self.assertEqual('Feature 2 Content', call_args[0][0][0].feature2_body)
+        self.assertEqual('/tethys_portal/images/feature2.png', call_args[0][0][0].feature2_image)
+        self.assertEqual('Feature 3 Heading', call_args[0][0][0].feature3_heading)
+        self.assertEqual('Feature 3 Content', call_args[0][0][0].feature3_body)
+        self.assertEqual('/tethys_portal/images/feature3.png', call_args[0][0][0].feature3_image)
+        self.assertEqual('Ready?', call_args[0][0][0].action_text)
+        self.assertEqual('Signup!', call_args[0][0][0].action_button)
+        self.assertFalse(call_args[0][0][0].restore_defaults)

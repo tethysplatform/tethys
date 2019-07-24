@@ -1,12 +1,9 @@
 import unittest
 from unittest import mock
 
-from argparse import Namespace
-
 from tethys_cli.gen_commands import (
     get_environment_value,
     get_settings_value,
-    gen_settings,
     generate_command,
     GEN_SETTINGS_OPTION,
     GEN_NGINX_OPTION,

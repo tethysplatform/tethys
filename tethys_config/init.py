@@ -23,7 +23,6 @@ def initial_settings(apps, schema_editor):
 
     # Set default values for General Category
     setting_defaults(general_category)
-    general_category.save()
 
     # Create the home page settings category
     home_category = SettingsCategory(name="Home Page")
@@ -31,7 +30,6 @@ def initial_settings(apps, schema_editor):
 
     # Set default values for Home Page
     setting_defaults(home_category)
-    home_category.save()
 
 
 def reverse_init(apps, schema_editor):

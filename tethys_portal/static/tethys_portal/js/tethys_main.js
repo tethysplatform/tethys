@@ -96,7 +96,7 @@ var CIWATER_THEME = (function() {
 
        // Determine what's in
        hero_in = (scroll_position < ($('.blurb').position().top - header_height));
-       get_started_in = (scroll_position >= ($('.get-started').position().top - header_height - $(window).height()));
+       get_started_in = (scroll_position >= ($('.get-started').position().top - $(window).height()));
 
        if (hero_in) {
          var hero_message_position;
