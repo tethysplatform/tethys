@@ -142,12 +142,17 @@ def add_gen_parser(subparsers):
                                  'values is channels.layers.InMemoryChannelLayer. For production, it is recommended to '
                                  'install channel_redis and use channels_redis.core.RedisChannelLayer instead. '
                                  'A custom backend can be added using dot-formatted path.')
+    gen_parser.add_argument('--recaptcha-private-key', dest='recaptcha_private_key',
+                            help='Private key to Google Recaptcha. The Default is None.')
+    gen_parser.add_argument('--recaptcha-public-key', dest='recaptcha_public_key',
+                            help='Public key to Google Recaptcha. The Default is None.')
     gen_parser.set_defaults(func=generate_command, allowed_hosts=None, client_max_body_size='75M', asgi_processes=4,
                             db_name='tethys_platform', db_username='tethys_default', db_password='pass',
                             db_host='127.0.0.1', db_port=5436, db_dir='psql', production=False, open_portal=False,
                             open_signup=False, tethys_port=8000, overwrite=False, add_apps=None,
                             session_expire_browser=True, session_warning=840, session_expire=900,
-                            bypass_portal_home=False, channel_layer='')
+                            bypass_portal_home=False, channel_layer='', recaptcha_private_key=None,
+                            recaptcha_public_key=None)
 
 
 def get_environment_value(value_name):
@@ -175,8 +180,8 @@ def gen_settings(args):
                       'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles',
                       'django_gravatar', 'bootstrap3', 'termsandconditions', 'tethys_config', 'tethys_apps',
                       'tethys_gizmos', 'tethys_services', 'tethys_compute', 'tethys_quotas', 'social_django',
-                      'guardian', 'session_security', 'captcha', 'rest_framework', 'rest_framework.authtoken',
-                      'analytical', 'channels']
+                      'guardian', 'session_security', 'captcha', 'snowpenguin.django.recaptcha2','rest_framework',
+                      'rest_framework.authtoken', 'analytical', 'channels']
 
     resource_quota_handlers = ['tethys_quotas.handlers.workspace.WorkspaceQuotaHandler']
 
@@ -301,7 +306,9 @@ def gen_settings(args):
         'django_analytical': django_analytical,
         'backends': backends,
         'oauth_options': oauth_options,
-        'channel_layer': args.channel_layer
+        'channel_layer': args.channel_layer,
+        'recaptcha_private_key': args.recaptcha_private_key,
+        'recaptcha_public_key': args.recaptcha_public_key
     }
     return context
 

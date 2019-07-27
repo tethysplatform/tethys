@@ -12,6 +12,18 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 
+from django.conf import settings
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
+
+if (settings.RECAPTCHA_PRIVATE_KEY and settings.RECAPTCHA_PUBLIC_KEY):
+    from snowpenguin.django.recaptcha2.fields import ReCaptchaField
+    from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
+
+    captcha_field = ReCaptchaField(widget=ReCaptchaWidget())
+else:
+    captcha_field = CaptchaField(label='')
+
 
 class LoginForm(forms.Form):
 
@@ -35,7 +47,7 @@ class LoginForm(forms.Form):
             attrs={'placeholder': 'Password'}
         )
     )
-    captcha = CaptchaField(label='')
+    captcha = captcha_field
 
 
 class RegisterForm(forms.ModelForm):
@@ -84,7 +96,7 @@ class RegisterForm(forms.ModelForm):
         )
     )
 
-    captcha = CaptchaField(label='')
+    captcha = captcha_field
 
     class Meta:
         model = User

@@ -287,6 +287,13 @@ RESOURCE_QUOTA_HANDLERS = [
 {%- endfor %}
 ]
 
+# Django-recaptcha
+RECAPTCHA_PRIVATE_KEY = {% if recaptcha_private_key %}'{{ recaptcha_private_key }}'{% else %}''{% endif %}
+RECAPTCHA_PUBLIC_KEY =  {% if recaptcha_public_key %}'{{ recaptcha_public_key }}'{% else %}''{% endif %}
+# If you require reCaptcha to be loaded from somewhere other than https://google.com
+# (e.g. to bypass firewall restrictions), you can specify what proxy to use.
+# RECAPTCHA_PROXY_HOST = 'https://recaptcha.net'
+
 # Placeholders for the ID's required by various web-analytics services supported by Django-Analytical.
 # Replace False with the tracking ID as a string e.g. SERVICE_ID = 'abcd1234'
 {%- for key, value in django_analytical.items() %}
