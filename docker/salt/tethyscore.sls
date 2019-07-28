@@ -16,13 +16,9 @@
 {% set TETHYS_PUBLIC_HOST = salt['environ.get']('TETHYS_PUBLIC_HOST') %}
 {% set TETHYS_SUPER_USER = salt['environ.get']('TETHYS_SUPER_USER') %}
 {% set TETHYS_SUPER_USER_PASS = salt['environ.get']('TETHYS_SUPER_USER_PASS') %}
-{% set BYPASS_TETHYS_HOME_PAGE = salt['environ.get']('BYPASS_TETHYS_HOME_PAGE') %}
 {% set ADD_DJANGO_APPS = salt['environ.get']('ADD_DJANGO_APPS') %}
-{% set SESSION_EXPIRE_AT_BROWSER_CLOSE = salt['environ.get']('SESSION_EXPIRE_AT_BROWSER_CLOSE') %}
 {% set SESSION_WARN = salt['environ.get']('SESSION_WARN') %}
 {% set SESSION_EXPIRE = salt['environ.get']('SESSION_EXPIRE') %}
-{% set OPEN_PORTAL = salt['environ.get']('OPEN_PORTAL') %}
-{% set OPEN_SIGNUP = salt['environ.get']('OPEN_SIGNUP') %}
 {% set STATIC_ROOT = salt['environ.get']('STATIC_ROOT') %}
 {% set WORKSPACE_ROOT = salt['environ.get']('WORKSPACE_ROOT') %}
 {% set QUOTA_HANDLERS = salt['environ.get']('QUOTA_HANDLERS') %}
@@ -30,6 +26,10 @@
 {% set ADD_BACKENDS = salt['environ.get']('ADD_BACKENDS') %}
 {% set OAUTH_OPTIONS = salt['environ.get']('OAUTH_OPTIONS') %}
 {% set CHANNEL_LAYER = salt['environ.get']('CHANNEL_LAYER') %}
+{% set RECAPTCHA_PRIVATE_KEY = salt['environ.get']('RECAPTCHA_PRIVATE_KEY') %}
+{% set RECAPTCHA_PUBLIC_KEY = salt['environ.get']('RECAPTCHA_PUBLIC_KEY') %}
+
+{% set TETHYS_SETTINGS_FLAGS = salt['environ.get']('TETHYS_SETTINGS_FLAGS').split(', ')|join(' ') %}
 
 ~/.bashrc:
   file.append:
@@ -39,18 +39,13 @@ Generate_Tethys_Settings_TethysCore:
   cmd.run:
     - name: >
         {{ TETHYS_BIN_DIR }}/tethys gen settings
-        --production
         --allowed-hosts {{ ALLOWED_HOSTS }}
         --db-name {{ TETHYS_DB_NAME }}
         --db-username {{ TETHYS_DB_USERNAME }}
         --db-password {{ TETHYS_DB_PASSWORD }}
         --db-host {{ TETHYS_DB_HOST }}
         --db-port {{ TETHYS_DB_PORT }}
-        --bypass-portal-home {{ BYPASS_TETHYS_HOME_PAGE }}
         --add-apps {{ ADD_DJANGO_APPS }}
-        --session-expire-browser {{ SESSION_EXPIRE_AT_BROWSER_CLOSE }}
-        --open-portal {{ OPEN_PORTAL }}
-        --open-signup {{ OPEN_SIGNUP }}
         --session-warning {{ SESSION_WARN }}
         --session-expire {{ SESSION_EXPIRE }}
         --static-root {{ STATIC_ROOT }}
@@ -60,7 +55,9 @@ Generate_Tethys_Settings_TethysCore:
         --add-backends {{ ADD_BACKENDS }}
         --oauth-options {{ OAUTH_OPTIONS }}
         --channel-layer {{ CHANNEL_LAYER }}
-        --overwrite
+        --recaptcha-private-key {{ RECAPTCHA_PRIVATE_KEY }}
+        --recaptcha-public-key {{ RECAPTCHA_PUBLIC_KEY }}
+        {{ TETHYS_SETTINGS_FLAGS }}
     - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
 
 Generate_NGINX_Settings_TethysCore:

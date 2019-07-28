@@ -21,22 +21,27 @@ ENV  BASH_PROFILE=".bashrc" \
      ASGI_PROCESSES=4 \
      CLIENT_MAX_BODY_SIZE="75M"
 
-# Tethys setting arguments
+# Tethys settings arguments
 ENV  ALLOWED_HOSTS="localhost 127.0.0.1" \
      BYPASS_TETHYS_HOME_PAGE="True" \
      ADD_DJANGO_APPS=None \
-     SESSION_EXPIRE_AT_BROWSER_CLOSE="True" \
      SESSION_WARN=1500 \
      SESSION_EXPIRE=1800 \
-     OPEN_PORTAL="False" \
-     OPEN_SIGNUP="False" \
      STATIC_ROOT="${TETHYS_HOME}/static" \
      WORKSPACE_ROOT="${TETHYS_HOME}/workspaces" \
      QUOTA_HANDLERS="None" \
      DJANGO_ANALYTICAL="None" \
      ADD_BACKENDS="None" \
      OAUTH_OPTIONS="None" \
-     CHANNEL_LAYER="''"
+     CHANNEL_LAYER="''" \
+     RECAPTCHA_PRIVATE_KEY="''" \
+     RECAPTCHA_PUBLIC_KEY="''"
+
+
+# Tethys settings flags
+# Flags do not take arguments. They evaluate to "True" when included. Available flags:
+#   --production, --overwrite, --open-portal, --open-signup, --bypass-portal-home, --session-persist, --no-captcha
+ENV TETHYS_SETTINGS_FLAGS="--production, --overwrite"
 
 #########
 # SETUP #

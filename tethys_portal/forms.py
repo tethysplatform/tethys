@@ -13,16 +13,17 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 
 from django.conf import settings
-import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
 
-if (settings.RECAPTCHA_PRIVATE_KEY and settings.RECAPTCHA_PUBLIC_KEY):
-    from snowpenguin.django.recaptcha2.fields import ReCaptchaField
-    from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
-
-    captcha_field = ReCaptchaField(widget=ReCaptchaWidget())
+if  settings.NO_CAPTCHA:
+    captcha_field = None
 else:
-    captcha_field = CaptchaField(label='')
+    if (settings.RECAPTCHA_PRIVATE_KEY and settings.RECAPTCHA_PUBLIC_KEY):
+        from snowpenguin.django.recaptcha2.fields import ReCaptchaField
+        from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
+
+        captcha_field = ReCaptchaField(label='', widget=ReCaptchaWidget())
+    else:
+        captcha_field = CaptchaField(label='')
 
 
 class LoginForm(forms.Form):

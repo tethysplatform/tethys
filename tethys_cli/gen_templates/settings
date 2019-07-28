@@ -287,6 +287,8 @@ RESOURCE_QUOTA_HANDLERS = [
 {%- endfor %}
 ]
 
+NO_CAPTCHA = {{ no_captcha }}
+
 # Django-recaptcha
 RECAPTCHA_PRIVATE_KEY = {% if recaptcha_private_key %}'{{ recaptcha_private_key }}'{% else %}''{% endif %}
 RECAPTCHA_PUBLIC_KEY =  {% if recaptcha_public_key %}'{{ recaptcha_public_key }}'{% else %}''{% endif %}

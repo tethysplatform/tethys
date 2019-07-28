@@ -82,8 +82,10 @@ def add_gen_parser(subparsers):
                             help='Directory where the local Tethys Database server is created.')
     gen_parser.add_argument('--production', dest='production', action='store_true',
                             help='Generate a new settings file for a production server.')
-    gen_parser.add_argument('--open-portal', dest='open_portal', help='Allow Open Portal Mode. Defaults to False')
-    gen_parser.add_argument('--open-signup', dest='open_signup', help='Enable open account signup. Defaults to False')
+    gen_parser.add_argument('--open-portal', dest='open_portal', action='store_true',
+                            help='Allow Open Portal Mode. Defaults to False')
+    gen_parser.add_argument('--open-signup', dest='open_signup', action='store_true',
+                            help='Enable open account signup. Defaults to False')
     gen_parser.add_argument('--tethys-port', dest='tethys_port',
                             help='Port for the Tethys Server to run on in production. This is used when generating the '
                                  'Daphne and nginx configuration files. Defaults to 8000.')
@@ -92,8 +94,8 @@ def add_gen_parser(subparsers):
     gen_parser.add_argument('--add-apps', dest='add_apps', nargs='+',
                             help='Enable applications by adding them to the INSTALLED_APPS in settings.py. '
                                  'e.g.: grappelli django_registration')
-    gen_parser.add_argument('--session-expire-browser', dest='session_expire_browser',
-                            help='Force user logout once the browser has been closed. Defaults to True')
+    gen_parser.add_argument('--session-persist', dest='session_persist', action='store_true',
+                            help='Disable forced user logout once the browser has been closed. Defaults to False')
     gen_parser.add_argument('--session-warning', dest='session_warning',
                             help='Warn user of forced logout after indicated number of seconds. Defaults to 840')
     gen_parser.add_argument('--session-expire', dest='session_expire',
@@ -104,7 +106,7 @@ def add_gen_parser(subparsers):
     gen_parser.add_argument('--workspaces-root', dest='workspaces_root',
                             help='For production. Path to workspaces diretory. Defaults to ${TETHYS_HOME}/workspaces. '
                                  'Applies default if directory does not exist.')
-    gen_parser.add_argument('--bypass-portal-home', dest='bypass_portal_home',
+    gen_parser.add_argument('--bypass-portal-home', dest='bypass_portal_home', action='store_true',
                             help='Bypasses the Tethys home page. Defaults to False')
     gen_parser.add_argument('--add-quota-handlers', dest='add_quota_handlers', nargs='+',
                             help='Append one or more dot-formatted handlers to the resource quota handlers list in '
@@ -142,6 +144,8 @@ def add_gen_parser(subparsers):
                                  'values is channels.layers.InMemoryChannelLayer. For production, it is recommended to '
                                  'install channel_redis and use channels_redis.core.RedisChannelLayer instead. '
                                  'A custom backend can be added using dot-formatted path.')
+    gen_parser.add_argument('--no-captcha', dest='no_captcha', action='store_true',
+                            help='Disables captcha verification. The Default is False.')
     gen_parser.add_argument('--recaptcha-private-key', dest='recaptcha_private_key',
                             help='Private key to Google Recaptcha. The Default is None.')
     gen_parser.add_argument('--recaptcha-public-key', dest='recaptcha_public_key',
@@ -150,8 +154,8 @@ def add_gen_parser(subparsers):
                             db_name='tethys_platform', db_username='tethys_default', db_password='pass',
                             db_host='127.0.0.1', db_port=5436, db_dir='psql', production=False, open_portal=False,
                             open_signup=False, tethys_port=8000, overwrite=False, add_apps=None,
-                            session_expire_browser=True, session_warning=840, session_expire=900,
-                            bypass_portal_home=False, channel_layer='', recaptcha_private_key=None,
+                            session_persist=False, session_warning=840, session_expire=900,
+                            bypass_portal_home=False, channel_layer='', no_captcha=False, recaptcha_private_key=None,
                             recaptcha_public_key=None)
 
 
@@ -214,11 +218,6 @@ def gen_settings(args):
         resource_quota_handlers += [i for i in args.add_quota_handlers if i not in resource_quota_handlers and
                                     i != 'None']
 
-    if args.session_expire_browser and args.session_expire_browser not in ['0', 'f', 'F', 'false', 'False']:
-        session_expire_browser = True
-    else:
-        session_expire_browser = False
-
     try:
         session_warning = int(args.session_warning)
     except:
@@ -238,21 +237,6 @@ def gen_settings(args):
         workspaces_root = args.workspaces_root
     else:
         workspaces_root = os.path.join(TETHYS_HOME, 'workspaces')
-
-    if args.bypass_portal_home and args.bypass_portal_home not in ['0', 'f', 'F', 'false', 'False']:
-        bypass_portal_home = True
-    else:
-        bypass_portal_home = False
-
-    if args.open_signup and args.open_signup not in ['0', 'f', 'F', 'false', 'False']:
-        open_signup = True
-    else:
-        open_signup = False
-
-    if args.open_portal and args.open_portal not in ['0', 'f', 'F', 'false', 'False']:
-        open_portal = True
-    else:
-        open_portal = False
 
     if args.django_analytical:
         for pair in args.django_analytical:
@@ -293,20 +277,21 @@ def gen_settings(args):
         'db_dir': args.db_dir,
         'tethys_home': TETHYS_HOME,
         'production': args.production,
-        'open_portal': open_portal,
-        'open_signup': open_signup,
+        'open_portal': args.open_portal,
+        'open_signup': args.open_signup,
         'installed_apps': installed_apps,
-        'session_expire_browser': session_expire_browser,
+        'session_expire_browser': not args.session_persist,
         'session_warning': session_warning,
         'session_expire': session_expire,
         'static_root': static_root,
         'workspaces_root': workspaces_root,
-        'bypass_portal_home': bypass_portal_home,
+        'bypass_portal_home': args.bypass_portal_home,
         'resource_quota_handlers': resource_quota_handlers,
         'django_analytical': django_analytical,
         'backends': backends,
         'oauth_options': oauth_options,
         'channel_layer': args.channel_layer,
+        'no_captcha': args.no_captcha,
         'recaptcha_private_key': args.recaptcha_private_key,
         'recaptcha_public_key': args.recaptcha_public_key
     }
