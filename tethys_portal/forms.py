@@ -8,22 +8,14 @@
 ********************************************************************************
 """
 from captcha.fields import CaptchaField
+from snowpenguin.django.recaptcha2.fields import ReCaptchaField
+from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
+
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 
 from django.conf import settings
-
-if  settings.NO_CAPTCHA:
-    captcha_field = None
-else:
-    if (settings.RECAPTCHA_PRIVATE_KEY and settings.RECAPTCHA_PUBLIC_KEY):
-        from snowpenguin.django.recaptcha2.fields import ReCaptchaField
-        from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
-
-        captcha_field = ReCaptchaField(label='', widget=ReCaptchaWidget())
-    else:
-        captcha_field = CaptchaField(label='')
 
 
 class LoginForm(forms.Form):
@@ -48,7 +40,14 @@ class LoginForm(forms.Form):
             attrs={'placeholder': 'Password'}
         )
     )
-    captcha = captcha_field
+
+    if settings.NO_CAPTCHA:
+        captcha = None
+    else:
+        if (settings.RECAPTCHA_PRIVATE_KEY and settings.RECAPTCHA_PUBLIC_KEY):
+            captcha = ReCaptchaField(label='', widget=ReCaptchaWidget())
+        else:
+            captcha = CaptchaField(label='')
 
 
 class RegisterForm(forms.ModelForm):
@@ -97,7 +96,13 @@ class RegisterForm(forms.ModelForm):
         )
     )
 
-    captcha = captcha_field
+    if settings.NO_CAPTCHA:
+        captcha = None
+    else:
+        if (settings.RECAPTCHA_PRIVATE_KEY and settings.RECAPTCHA_PUBLIC_KEY):
+            captcha = ReCaptchaField(label='', widget=ReCaptchaWidget())
+        else:
+            captcha = CaptchaField(label='')
 
     class Meta:
         model = User
