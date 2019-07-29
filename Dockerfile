@@ -43,6 +43,33 @@ ENV  ALLOWED_HOSTS="localhost 127.0.0.1" \
 #   --production, --overwrite, --open-portal, --open-signup, --bypass-portal-home, --session-persist, --no-captcha
 ENV TETHYS_SETTINGS_FLAGS="--production, --overwrite"
 
+# Tethys site arguments
+ENV  TAB_TITLE="" \
+     FAVICON="" \
+     TITLE="" \
+     LOGO="" \
+     LOGO_HEIGHT="" \
+     LOGO_WIDTH="" \
+     LOGO_PADDING="" \
+     LIBRARY_TITLE="" \
+     PRIMARY_COLOR="" \
+     SECONDARY_COLOR="" \
+     BACKGROUND_COLOR="" \
+     COPYRIGHT="" \
+     HERO_TEXT="" \
+     BLURB_TEXT="" \
+     FEATURE1_HEADING="" \
+     FEATURE1_BODY="" \
+     FEATURE1_IMAGE="" \
+     FEATURE2_HEADING="" \
+     FEATURE2_BODY="" \
+     FEATURE2_IMAGE="" \
+     FEATURE3_HEADING="" \
+     FEATURE3_BODY="" \
+     FEATURE3_IMAGE="" \
+     ACTION_TEXT="" \
+     ACTION_BUTTON=""
+
 #########
 # SETUP #
 #########

@@ -41,10 +41,10 @@ class LoginForm(forms.Form):
         )
     )
 
-    if settings.NO_CAPTCHA:
+    if getattr(settings, 'NO_CAPTCHA', False):
         captcha = None
     else:
-        if (settings.RECAPTCHA_PRIVATE_KEY and settings.RECAPTCHA_PUBLIC_KEY):
+        if getattr(settings, 'RECAPTCHA_PRIVATE_KEY', '') and getattr(settings, 'RECAPTCHA_PUBLIC_KEY', ''):
             captcha = ReCaptchaField(label='', widget=ReCaptchaWidget())
         else:
             captcha = CaptchaField(label='')
@@ -96,10 +96,10 @@ class RegisterForm(forms.ModelForm):
         )
     )
 
-    if settings.NO_CAPTCHA:
+    if getattr(settings, 'NO_CAPTCHA', False):
         captcha = None
     else:
-        if (settings.RECAPTCHA_PRIVATE_KEY and settings.RECAPTCHA_PUBLIC_KEY):
+        if getattr(settings, 'RECAPTCHA_PRIVATE_KEY', '') and getattr(settings, 'RECAPTCHA_PUBLIC_KEY', ''):
             captcha = ReCaptchaField(label='', widget=ReCaptchaWidget())
         else:
             captcha = CaptchaField(label='')

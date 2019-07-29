@@ -64,8 +64,7 @@ dependencies:
 
 # for now
 - pillow
-- pip:
-  - django-recaptcha2
+- pip
 - future
 - flake8
 - pbr
