@@ -15,7 +15,18 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 
-from django.conf import settings
+import django
+
+
+def get_captcha():
+    if getattr(django.conf.settings, 'NO_CAPTCHA', False):
+        return None
+    else:
+        if getattr(django.conf.settings, 'RECAPTCHA_PRIVATE_KEY', '') and getattr(django.conf.settings,
+                                                                                  'RECAPTCHA_PUBLIC_KEY', ''):
+            return ReCaptchaField(label='', widget=ReCaptchaWidget())
+        else:
+            return CaptchaField(label='')
 
 
 class LoginForm(forms.Form):
@@ -41,13 +52,7 @@ class LoginForm(forms.Form):
         )
     )
 
-    if getattr(settings, 'NO_CAPTCHA', False):
-        captcha = None
-    else:
-        if getattr(settings, 'RECAPTCHA_PRIVATE_KEY', '') and getattr(settings, 'RECAPTCHA_PUBLIC_KEY', ''):
-            captcha = ReCaptchaField(label='', widget=ReCaptchaWidget())
-        else:
-            captcha = CaptchaField(label='')
+    captcha = get_captcha()
 
 
 class RegisterForm(forms.ModelForm):
@@ -96,13 +101,7 @@ class RegisterForm(forms.ModelForm):
         )
     )
 
-    if getattr(settings, 'NO_CAPTCHA', False):
-        captcha = None
-    else:
-        if getattr(settings, 'RECAPTCHA_PRIVATE_KEY', '') and getattr(settings, 'RECAPTCHA_PUBLIC_KEY', ''):
-            captcha = ReCaptchaField(label='', widget=ReCaptchaWidget())
-        else:
-            captcha = CaptchaField(label='')
+    captcha = get_captcha()
 
     class Meta:
         model = User
