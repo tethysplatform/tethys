@@ -15,15 +15,14 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 
-import django
+from django.conf import settings
 
 
 def get_captcha():
-    if getattr(django.conf.settings, 'NO_CAPTCHA', False):
+    if getattr(settings, 'NO_CAPTCHA', False):
         return None
     else:
-        if getattr(django.conf.settings, 'RECAPTCHA_PRIVATE_KEY', '') and getattr(django.conf.settings,
-                                                                                  'RECAPTCHA_PUBLIC_KEY', ''):
+        if getattr(settings, 'RECAPTCHA_PRIVATE_KEY', '') and getattr(settings, 'RECAPTCHA_PUBLIC_KEY', ''):
             return ReCaptchaField(label='', widget=ReCaptchaWidget())
         else:
             return CaptchaField(label='')
