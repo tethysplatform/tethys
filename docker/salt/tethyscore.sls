@@ -44,10 +44,11 @@
 {% set TETHYS_SETTINGS_FLAGS = salt['environ.get']('TETHYS_SETTINGS_FLAGS').split(', ')|join(' ') %}
 
 {% set TETHYS_SITE_VAR_LIST = ['TAB_TITLE', 'FAVICON', 'TITLE', 'LOGO', 'LOGO_HEIGHT', 'LOGO_WIDTH', 'LOGO_PADDING',
-                               'LIBRARY_TITLE', 'PRIMARY_COLOR', 'SECONDARY_COLOR', 'BACKGROUND_COLOR', 'COPYRIGHT',
-                               'HERO_TEXT', 'BLURB_TEXT', 'FEATURE1_HEADING', 'FEATURE1_BODY', 'FEATURE1_IMAGE',
-                               'FEATURE2_HEADING', 'FEATURE2_BODY', 'FEATURE2_IMAGE', 'FEATURE3_HEADING',
-                               'FEATURE3_BODY', 'FEATURE3_IMAGE', 'ACTION_TEXT', 'ACTION_BUTTON'] %}
+                               'LIBRARY_TITLE', 'PRIMARY_COLOR', 'SECONDARY_COLOR', 'BACKGROUND_COLOR',
+                               'TEXT_COLOR', 'TEXT_HOVER_COLOR', 'SECONDARY_TEXT_COLOR', 'SECONDARY_TEXT_HOVER_COLOR',
+                               'COPYRIGHT', 'HERO_TEXT', 'BLURB_TEXT', 'FEATURE1_HEADING', 'FEATURE1_BODY',
+                               'FEATURE1_IMAGE', 'FEATURE2_HEADING', 'FEATURE2_BODY', 'FEATURE2_IMAGE',
+                               'FEATURE3_HEADING', 'FEATURE3_BODY', 'FEATURE3_IMAGE', 'ACTION_TEXT', 'ACTION_BUTTON'] %}
 
 {% set TETHYS_SITE_CONTENT_LIST = [] %}
 

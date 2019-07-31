@@ -1,5 +1,9 @@
 from tethys_cli.cli_helpers import load_apps
 from django.utils import timezone
+from tethys_cli.cli_colors import write_msg, write_error, write_warning, write_success
+import os
+import yaml
+from subprocess import call
 
 
 # General Settings
@@ -14,8 +18,10 @@ APPS_LIBRARY_TITLE = 'library_title'
 PRIMARY_COLOR = 'primary_color'
 SECONDARY_COLOR = 'secondary_color'
 BACKGROUND_COLOR = 'background_color'
-PRIMARY_TEXT_COLOR = 'text_color'
-PRIMARY_TEXT_HOVER_COLOR = 'hover_text_Color'
+TEXT_COLOR = 'text_color'
+TEXT_HOVER_COLOR = 'text_hover_color'
+SECONDARY_TEXT_COLOR = 'secondary_text_color'
+SECONDARY_TEXT_HOVER_COLOR = 'secondary_text_hover_color'
 FOOTER_COPYRIGHT = 'footer_copyright'
 
 # Home Page
@@ -45,8 +51,10 @@ arg_filter = {
     PRIMARY_COLOR: 'Primary Color',
     SECONDARY_COLOR: 'Secondary Color',
     BACKGROUND_COLOR: 'Background Color',
-    PRIMARY_TEXT_COLOR: 'Primary Text Color',
-    PRIMARY_TEXT_HOVER_COLOR: 'Primary Text Hover Color',
+    TEXT_COLOR: 'Primary Text Color',
+    TEXT_HOVER_COLOR: 'Primary Text Hover Color',
+    SECONDARY_TEXT_COLOR: 'Secondary Text Color',
+    SECONDARY_TEXT_HOVER_COLOR: 'Secondary Text Hover Color',
     FOOTER_COPYRIGHT: 'Footer Copyright',
     HERO_TEXT: 'Hero Text',
     BLURB_TEXT: 'Blurb Text',
@@ -90,6 +98,12 @@ def add_site_parser(subparsers):
     site_parser.add_argument('--secondary-color', dest='secondary_color',
                              help='The secondary color for the portal. Default is #1b95dc.')
     site_parser.add_argument('--background-color', dest='background_color', help='The background color for the portal.')
+    site_parser.add_argument('--text-color', dest='text_color', help='The primary text color for the portal.')
+    site_parser.add_argument('--text-hover-color', dest='text_hover_color', help='The hover text color for the portal.')
+    site_parser.add_argument('--secondary-text-color', dest='secondary_text_color',
+                             help='The secondary text color for the portal.')
+    site_parser.add_argument('--secondary-text-hover-color', dest='secondary_text_hover_color',
+                             help='The secondary hover text color for the portal.')
     site_parser.add_argument('--copyright', dest='footer_copyright',
                              help='A double quoted string with the Footer copyright for the portal. '
                                   'Default is "Copyright © 2019 Your Organization".')
@@ -127,6 +141,7 @@ def add_site_parser(subparsers):
                                   'Default is "Start Using Tethys!".')
     site_parser.add_argument('--restore-defaults', dest='restore_defaults', action='store_true',
                              help='Restores the sites default values.')
+    site_parser.add_argument('-f', '--file', type=str, help='Path to a YAML file with site content.')
 
     site_parser.set_defaults(func=gen_site_content, restore_defaults=False)
 
@@ -152,3 +167,37 @@ def gen_site_content(args):
 
         home_category = SettingsCategory.objects.get(name="Home Page")
         setting_defaults(home_category)
+
+    if args.file:
+        try:
+            if os.path.exists(args.file):
+                with open(args.file) as f:
+                    file_path = yaml.safe_load(f)
+                    for arg in file_path:
+                        if file_path[arg]:
+                            content = file_path[arg]
+                            obj = Setting.objects.filter(name=arg_filter[arg.lower()])
+                            obj.update(content=content, date_modified=timezone.now())
+            else:
+                valid_inputs = ('y', 'n', 'yes', 'no')
+                no_inputs = ('n', 'no')
+
+                generate_input = input('Would you like to generate a template site_content.yml file that you can then'
+                                       'customize? (y/n): ')
+
+                while generate_input not in valid_inputs:
+                    generate_input = input('Invalid option. Try again. (y/n): ').lower()
+
+                if generate_input in no_inputs:
+                    write_msg('Generation of site_content file cancelled. Please generate one manually or provide '
+                              'specific site content arguments.')
+                else:
+                    call(['tethys', 'gen', 'site_content'])
+                    write_msg('\nRe-run the tethys site command with the --file argument pointing to the location of '
+                              'this new file.')
+                    exit(0)
+
+        except Exception as e:
+            write_error(str(e))
+            write_error('An unexpected error occurred reading the file. Please try again.')
+            exit(1)

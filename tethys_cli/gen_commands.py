@@ -28,6 +28,7 @@ GEN_NGINX_SERVICE_OPTION = 'nginx_service'
 GEN_PORTAL_OPTION = 'portal'
 GEN_SERVICES_OPTION = 'services'
 GEN_INSTALL_OPTION = 'install'
+GEN_SITE_YAML_OPTION = 'site_content'
 
 FILE_NAMES = {
     GEN_SETTINGS_OPTION: 'settings.py',
@@ -38,6 +39,7 @@ FILE_NAMES = {
     GEN_PORTAL_OPTION: 'portal.yml',
     GEN_SERVICES_OPTION: 'services.yml',
     GEN_INSTALL_OPTION: 'install.yml',
+    GEN_SITE_YAML_OPTION: 'site_content.yml',
 }
 
 VALID_GEN_OBJECTS = (
@@ -49,6 +51,7 @@ VALID_GEN_OBJECTS = (
     GEN_PORTAL_OPTION,
     GEN_SERVICES_OPTION,
     GEN_INSTALL_OPTION,
+    GEN_SITE_YAML_OPTION
 )
 
 TETHYS_SRC = get_tethys_src_dir()
@@ -377,6 +380,13 @@ def gen_install(args):
     return context
 
 
+def gen_site_content_yaml(args):
+    print('Please review the generated site_content.yml file and fill in the appropriate information.')
+
+    context = {}
+    return context
+
+
 def get_destination_path(args):
     # Determine destination file name (defaults to type)
     destination_file = FILE_NAMES[args.type]
@@ -384,7 +394,7 @@ def get_destination_path(args):
     # Default destination path is the tethys_portal source dir
     destination_dir = os.path.join(TETHYS_SRC, 'tethys_portal')
 
-    if args.type in [GEN_SERVICES_OPTION, GEN_INSTALL_OPTION]:
+    if args.type in [GEN_SERVICES_OPTION, GEN_INSTALL_OPTION, GEN_SITE_YAML_OPTION]:
         destination_dir = os.getcwd()
 
     if args.directory:
@@ -442,6 +452,7 @@ gen_commands = {
     GEN_PORTAL_OPTION: gen_portal_yaml,
     GEN_SERVICES_OPTION: gen_services_yaml,
     GEN_INSTALL_OPTION: gen_install,
+    GEN_SITE_YAML_OPTION: gen_site_content_yaml,
 }
 
 

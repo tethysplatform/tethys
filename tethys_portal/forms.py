@@ -7,10 +7,6 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from captcha.fields import CaptchaField
-from snowpenguin.django.recaptcha2.fields import ReCaptchaField
-from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
-
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
@@ -20,12 +16,17 @@ from django.conf import settings
 
 def get_captcha():
     if getattr(settings, 'ENABLE_CAPTCHA', False):
-        return CaptchaField(label='')
-    else:
         if getattr(settings, 'RECAPTCHA_PRIVATE_KEY', '') and getattr(settings, 'RECAPTCHA_PUBLIC_KEY', ''):
+            from snowpenguin.django.recaptcha2.fields import ReCaptchaField
+            from snowpenguin.django.recaptcha2.widgets import ReCaptchaWidget
+
             return ReCaptchaField(label='', widget=ReCaptchaWidget())
         else:
-            return None
+            from captcha.fields import CaptchaField
+
+            return CaptchaField(label='')
+    else:
+        return None
 
 
 class LoginForm(forms.Form):
