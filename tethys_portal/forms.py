@@ -20,12 +20,12 @@ from django.conf import settings
 
 def get_captcha():
     if getattr(settings, 'ENABLE_CAPTCHA', False):
-        return None
+        return CaptchaField(label='')
     else:
         if getattr(settings, 'RECAPTCHA_PRIVATE_KEY', '') and getattr(settings, 'RECAPTCHA_PUBLIC_KEY', ''):
             return ReCaptchaField(label='', widget=ReCaptchaWidget())
         else:
-            return CaptchaField(label='')
+            return None
 
 
 class LoginForm(forms.Form):
