@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-from django.test import TestCase, override_settings
+from django.test import override_settings
 from tethys_portal.views.accounts import login_view, register, logout_view, reset_confirm, reset
 
 
