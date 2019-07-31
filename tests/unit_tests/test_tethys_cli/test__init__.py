@@ -147,7 +147,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertFalse(call_args[0][0][0].open_signup)
         self.assertFalse(call_args[0][0][0].bypass_portal_home)
         self.assertFalse(call_args[0][0][0].session_persist)
-        self.assertFalse(call_args[0][0][0].no_captcha)
+        self.assertFalse(call_args[0][0][0].captcha)
         self.assertFalse(call_args[0][0][0].overwrite)
         self.assertFalse(call_args[0][0][0].production)
         self.assertEqual('settings', call_args[0][0][0].type)
@@ -181,7 +181,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertFalse(call_args[0][0][0].open_signup)
         self.assertFalse(call_args[0][0][0].bypass_portal_home)
         self.assertFalse(call_args[0][0][0].session_persist)
-        self.assertFalse(call_args[0][0][0].no_captcha)
+        self.assertFalse(call_args[0][0][0].captcha)
         self.assertFalse(call_args[0][0][0].overwrite)
         self.assertFalse(call_args[0][0][0].production)
         self.assertEqual('settings', call_args[0][0][0].type)
@@ -198,7 +198,7 @@ class TethysCommandTests(unittest.TestCase):
                     '--static-root', '/new/static', '--workspaces-root', '/new/workspace',
                     '--django-analytical', 'KEY:VALUE', '--add-backends', 'hydroshare', '--add-backends', 'hydroshare',
                     '--oauth-options', 'KEY1:VALUE1 KEY2:VALUE2',
-                    '--channel-layer', 'channels_redis.core.RedisChannelLayer', '--no-captcha',
+                    '--channel-layer', 'channels_redis.core.RedisChannelLayer', '--captcha',
                     '--recaptcha-private-key', '123456', '--recaptcha-public-key', '123456']
 
 
@@ -234,7 +234,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertEqual(['hydroshare'], call_args[0][0][0].add_backends)
         self.assertEqual(['KEY1:VALUE1 KEY2:VALUE2'], call_args[0][0][0].oauth_options)
         self.assertEqual('channels_redis.core.RedisChannelLayer', call_args[0][0][0].channel_layer)
-        self.assertTrue(call_args[0][0][0].no_captcha)
+        self.assertTrue(call_args[0][0][0].captcha)
         self.assertEqual('123456', call_args[0][0][0].recaptcha_private_key)
         self.assertEqual('123456', call_args[0][0][0].recaptcha_public_key)
 
@@ -279,7 +279,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('--add-backends', mock_stdout.getvalue())
         self.assertIn('--oauth-options', mock_stdout.getvalue())
         self.assertIn('--channel-layer', mock_stdout.getvalue())
-        self.assertIn('--no-captcha', mock_stdout.getvalue())
+        self.assertIn('--captcha', mock_stdout.getvalue())
         self.assertIn('--recaptcha-private-key', mock_stdout.getvalue())
         self.assertIn('--recaptcha-public-key', mock_stdout.getvalue())
 

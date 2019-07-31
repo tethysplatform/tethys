@@ -40,7 +40,7 @@ ENV  ALLOWED_HOSTS="localhost 127.0.0.1" \
 
 # Tethys settings flags
 # Flags do not take arguments. They evaluate to "True" when included. Available flags:
-#   --production, --overwrite, --open-portal, --open-signup, --bypass-portal-home, --session-persist, --no-captcha
+#   --production, --overwrite, --open-portal, --open-signup, --bypass-portal-home, --session-persist, --captcha
 ENV TETHYS_SETTINGS_FLAGS="--production, --overwrite"
 
 # Tethys site arguments

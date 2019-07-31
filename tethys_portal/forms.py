@@ -19,7 +19,7 @@ from django.conf import settings
 
 
 def get_captcha():
-    if getattr(settings, 'NO_CAPTCHA', False):
+    if getattr(settings, 'ENABLE_CAPTCHA', False):
         return None
     else:
         if getattr(settings, 'RECAPTCHA_PRIVATE_KEY', '') and getattr(settings, 'RECAPTCHA_PUBLIC_KEY', ''):

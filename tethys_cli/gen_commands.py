@@ -144,20 +144,24 @@ def add_gen_parser(subparsers):
                                  'values is channels.layers.InMemoryChannelLayer. For production, it is recommended to '
                                  'install channel_redis and use channels_redis.core.RedisChannelLayer instead. '
                                  'A custom backend can be added using dot-formatted path.')
-    gen_parser.add_argument('--no-captcha', dest='no_captcha', action='store_true',
-                            help='Disables captcha verification. The Default is False.')
+    gen_parser.add_argument('--captcha', dest='captcha', action='store_true',
+                            help='Enable captcha verification. Choices include an image captcha or Google recaptcha. '
+                                 'The Default is False for development environments and True for production '
+                                 'environments. If no recaptcha keys are provided, the image captcha will be used. See '
+                                 '--recaptcha-private-key and --recaptcha-public-key arguments.')
     gen_parser.add_argument('--recaptcha-private-key', dest='recaptcha_private_key',
-                            help='Private key to Google Recaptcha. The Default is None.')
+                            help='Private key to Google Recaptcha. The Default is None. A private key can be obtained '
+                                 'from https://www.google.com/recaptcha/admin')
     gen_parser.add_argument('--recaptcha-public-key', dest='recaptcha_public_key',
-                            help='Public key to Google Recaptcha. The Default is None.')
+                            help='Public key to Google Recaptcha. The Default is None. A public key can be obtained '
+                                 'from https://www.google.com/recaptcha/admin')
     gen_parser.set_defaults(func=generate_command, allowed_hosts=None, client_max_body_size='75M', asgi_processes=4,
                             db_name='tethys_platform', db_username='tethys_default', db_password='pass',
                             db_host='127.0.0.1', db_port=5436, db_dir='psql', production=False, open_portal=False,
                             open_signup=False, tethys_port=8000, overwrite=False, add_apps=None,
                             session_persist=False, session_warning=840, session_expire=900,
-                            bypass_portal_home=False, channel_layer='', no_captcha=False, recaptcha_private_key=None,
+                            bypass_portal_home=False, channel_layer='', recaptcha_private_key=None,
                             recaptcha_public_key=None)
-
 
 def get_environment_value(value_name):
     value = os.environ.get(value_name)
@@ -291,7 +295,7 @@ def gen_settings(args):
         'backends': backends,
         'oauth_options': oauth_options,
         'channel_layer': args.channel_layer,
-        'no_captcha': args.no_captcha,
+        'captcha': args.captcha if args.captcha else args.production,
         'recaptcha_private_key': args.recaptcha_private_key,
         'recaptcha_public_key': args.recaptcha_public_key
     }
