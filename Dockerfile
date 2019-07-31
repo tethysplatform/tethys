@@ -29,13 +29,13 @@ ENV  ALLOWED_HOSTS="localhost 127.0.0.1" \
      SESSION_EXPIRE=1800 \
      STATIC_ROOT="${TETHYS_HOME}/static" \
      WORKSPACE_ROOT="${TETHYS_HOME}/workspaces" \
-     QUOTA_HANDLERS="None" \
-     DJANGO_ANALYTICAL="None" \
-     ADD_BACKENDS="None" \
-     OAUTH_OPTIONS="None" \
-     CHANNEL_LAYER="''" \
-     RECAPTCHA_PRIVATE_KEY="''" \
-     RECAPTCHA_PUBLIC_KEY="''"
+     QUOTA_HANDLERS=None \
+     DJANGO_ANALYTICAL=None \
+     ADD_BACKENDS=None \
+     OAUTH_OPTIONS=None \
+     CHANNEL_LAYER="" \
+     RECAPTCHA_PRIVATE_KEY="" \
+     RECAPTCHA_PUBLIC_KEY=""
 
 
 # Tethys settings flags

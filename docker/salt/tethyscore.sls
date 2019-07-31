@@ -25,11 +25,41 @@
 {% set DJANGO_ANALYTICAL = salt['environ.get']('DJANGO_ANALYTICAL') %}
 {% set ADD_BACKENDS = salt['environ.get']('ADD_BACKENDS') %}
 {% set OAUTH_OPTIONS = salt['environ.get']('OAUTH_OPTIONS') %}
+{% if salt['environ.get']('CHANNEL_LAYER') %}
 {% set CHANNEL_LAYER = salt['environ.get']('CHANNEL_LAYER') %}
+{% else %}
+{% set CHANNEL_LAYER = "''" %}
+{% endif %}
+{% if salt['environ.get']('RECAPTCHA_PRIVATE_KEY') %}
 {% set RECAPTCHA_PRIVATE_KEY = salt['environ.get']('RECAPTCHA_PRIVATE_KEY') %}
+{% else %}
+{% set RECAPTCHA_PRIVATE_KEY = "''" %}
+{% endif %}
+{% if salt['environ.get']('RECAPTCHA_PUBLIC_KEY') %}
 {% set RECAPTCHA_PUBLIC_KEY = salt['environ.get']('RECAPTCHA_PUBLIC_KEY') %}
+{% else %}
+{% set RECAPTCHA_PUBLIC_KEY = "''" %}
+{% endif %}
 
 {% set TETHYS_SETTINGS_FLAGS = salt['environ.get']('TETHYS_SETTINGS_FLAGS').split(', ')|join(' ') %}
+
+{% set TETHYS_SITE_VAR_LIST = ['TAB_TITLE', 'FAVICON', 'TITLE', 'LOGO', 'LOGO_HEIGHT', 'LOGO_WIDTH', 'LOGO_PADDING',
+                               'LIBRARY_TITLE', 'PRIMARY_COLOR', 'SECONDARY_COLOR', 'BACKGROUND_COLOR', 'COPYRIGHT',
+                               'HERO_TEXT', 'BLURB_TEXT', 'FEATURE1_HEADING', 'FEATURE1_BODY', 'FEATURE1_IMAGE',
+                               'FEATURE2_HEADING', 'FEATURE2_BODY', 'FEATURE2_IMAGE', 'FEATURE3_HEADING',
+                               'FEATURE3_BODY', 'FEATURE3_IMAGE', 'ACTION_TEXT', 'ACTION_BUTTON'] %}
+
+{% set TETHYS_SITE_CONTENT_LIST = [] %}
+
+{% for ARG in TETHYS_SITE_VAR_LIST %}
+  {% if salt['environ.get'](ARG) %}
+    {% set ARG_KEY = ['--', ARG.replace('_', '-')|lower]|join %}
+    {% set CONTENT = [ARG_KEY, salt['environ.get'](ARG)|quote]|join(' ') %}
+    {% do TETHYS_SITE_CONTENT_LIST.append(CONTENT) %}
+  {% endif %}
+{% endfor %}
+
+{% set TETHYS_SITE_CONTENT = TETHYS_SITE_CONTENT_LIST|join(' ') %}
 
 ~/.bashrc:
   file.append:
@@ -115,6 +145,13 @@ Prepare_Database_TethysCore:
         -P {{ TETHYS_SUPER_USER_PASS }}
     - shell: /bin/bash
     - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+
+{% if TETHYS_SITE_CONTENT %}
+Modify_Tethys_Site_TethysCore:
+  cmd.run:
+    - name: {{ TETHYS_BIN_DIR }}/tethys site {{ TETHYS_SITE_CONTENT }}
+    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+{% endif %}
 
 Collect_Static_Files:
   cmd.run:
