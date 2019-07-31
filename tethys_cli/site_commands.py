@@ -169,35 +169,29 @@ def gen_site_content(args):
         setting_defaults(home_category)
 
     if args.file:
-        try:
-            if os.path.exists(args.file):
-                with open(args.file) as f:
-                    file_path = yaml.safe_load(f)
-                    for arg in file_path:
-                        if file_path[arg]:
-                            content = file_path[arg]
-                            obj = Setting.objects.filter(name=arg_filter[arg.lower()])
-                            obj.update(content=content, date_modified=timezone.now())
+        if os.path.exists(args.file):
+            with open(args.file) as f:
+                file_path = yaml.safe_load(f)
+                for arg in file_path:
+                    if file_path[arg]:
+                        content = file_path[arg]
+                        obj = Setting.objects.filter(name=arg_filter[arg.lower()])
+                        obj.update(content=content, date_modified=timezone.now())
+        else:
+            valid_inputs = ('y', 'n', 'yes', 'no')
+            no_inputs = ('n', 'no')
+
+            generate_input = input('Would you like to generate a template site_content.yml file that you can then'
+                                   'customize? (y/n): ')
+
+            while generate_input not in valid_inputs:
+                generate_input = input('Invalid option. Try again. (y/n): ').lower()
+
+            if generate_input in no_inputs:
+                write_msg('Generation of site_content file cancelled. Please generate one manually or provide '
+                          'specific site content arguments.')
             else:
-                valid_inputs = ('y', 'n', 'yes', 'no')
-                no_inputs = ('n', 'no')
-
-                generate_input = input('Would you like to generate a template site_content.yml file that you can then'
-                                       'customize? (y/n): ')
-
-                while generate_input not in valid_inputs:
-                    generate_input = input('Invalid option. Try again. (y/n): ').lower()
-
-                if generate_input in no_inputs:
-                    write_msg('Generation of site_content file cancelled. Please generate one manually or provide '
-                              'specific site content arguments.')
-                else:
-                    call(['tethys', 'gen', 'site_content'])
-                    write_msg('\nRe-run the tethys site command with the --file argument pointing to the location of '
-                              'this new file.')
-                    exit(0)
-
-        except Exception as e:
-            write_error(str(e))
-            write_error('An unexpected error occurred reading the file. Please try again.')
-            exit(1)
+                call(['tethys', 'gen', 'site_content'])
+                write_msg('\nRe-run the tethys site command with the --file argument pointing to the location of '
+                          'this new file.')
+                exit(0)

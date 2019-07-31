@@ -26,7 +26,7 @@ class TethysPortalFormsTests(TestCase):
 
         login_data = {'username': 'admin', 'password': 'test1231'}
 
-        with self.settings(ENABLE_CAPTCHA=True):
+        with self.settings(ENABLE_CAPTCHA=False):
             reload(tethys_portal.forms)
             login_form = tethys_portal.forms.LoginForm(login_data)
             self.assertTrue(login_form.is_valid())
@@ -35,7 +35,7 @@ class TethysPortalFormsTests(TestCase):
 
         login_data = {'username': 'admin', 'password': 'test1231', 'captcha_0': self.hashkey,
                       'captcha_1': self.response}
-        with self.settings(ENABLE_CAPTCHA=False, RECAPTCHA_PRIVATE_KEY='', RECAPTCHA_PUBLIC_KEY=''):
+        with self.settings(ENABLE_CAPTCHA=True, RECAPTCHA_PRIVATE_KEY='', RECAPTCHA_PUBLIC_KEY=''):
             reload(tethys_portal.forms)
             login_form = tethys_portal.forms.LoginForm(login_data)
             self.assertTrue(login_form.is_valid())
@@ -44,7 +44,7 @@ class TethysPortalFormsTests(TestCase):
         os.environ['RECAPTCHA_DISABLE'] = 'True'
         login_data = {'username': 'admin', 'password': 'test1231'}
 
-        with self.settings(ENABLE_CAPTCHA=False, RECAPTCHA_PRIVATE_KEY='my-fake-private-key',
+        with self.settings(ENABLE_CAPTCHA=True, RECAPTCHA_PRIVATE_KEY='my-fake-private-key',
                            RECAPTCHA_PUBLIC_KEY='my-fake-public-key'):
             reload(tethys_portal.forms)
             login_form = tethys_portal.forms.LoginForm(login_data)
@@ -69,7 +69,7 @@ class TethysPortalFormsTests(TestCase):
     def test_LoginForm_invalid(self):
         login_invalid_data = {'username': 'admin', 'password': 'test1231', 'captcha_0': self.hashkey,
                               'captcha_1': ''}
-        with self.settings(ENABLE_CAPTCHA=False):
+        with self.settings(ENABLE_CAPTCHA=True):
             reload(tethys_portal.forms)
             login_form = tethys_portal.forms.LoginForm(login_invalid_data)
             self.assertFalse(login_form.is_valid())
