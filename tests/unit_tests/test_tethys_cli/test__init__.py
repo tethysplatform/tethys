@@ -201,7 +201,6 @@ class TethysCommandTests(unittest.TestCase):
                     '--channel-layer', 'channels_redis.core.RedisChannelLayer', '--captcha',
                     '--recaptcha-private-key', '123456', '--recaptcha-public-key', '123456']
 
-
         with mock.patch.object(sys, 'argv', testargs):
             tethys_command()
 
@@ -237,7 +236,6 @@ class TethysCommandTests(unittest.TestCase):
         self.assertTrue(call_args[0][0][0].captcha)
         self.assertEqual('123456', call_args[0][0][0].recaptcha_private_key)
         self.assertEqual('123456', call_args[0][0][0].recaptcha_public_key)
-
 
     @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_cli.argparse._sys.exit')

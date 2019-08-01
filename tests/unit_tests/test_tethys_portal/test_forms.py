@@ -200,12 +200,14 @@ class TethysPortalFormsTests(TestCase):
 
     def test_UserPasswordChangeForm_valid(self):
         user_password_change_data = {'old_password': 'glass_onion', 'new_password1': 'pass2', 'new_password2': 'pass2'}
-        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user, data=user_password_change_data)
+        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user,
+                                                                               data=user_password_change_data)
         self.assertTrue(user_password_change_form.is_valid())
 
     def test_UserPasswordChangeForm_clean_old_password(self):
         user_password_change_data = {'old_password': 'glass_onion', 'new_password1': 'pass2', 'new_password2': 'pass2'}
-        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user, data=user_password_change_data)
+        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user,
+                                                                               data=user_password_change_data)
 
         self.assertTrue(user_password_change_form.is_valid())
 
@@ -215,7 +217,8 @@ class TethysPortalFormsTests(TestCase):
 
     def test_UserPasswordChangeForm_clean_old_password_invalid(self):
         user_password_change_data = {'old_password': 'abc123', 'new_password1': 'pass2', 'new_password2': 'pass2'}
-        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user, data=user_password_change_data)
+        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user,
+                                                                               data=user_password_change_data)
 
         # is_valid to get cleaned_data
         self.assertFalse(user_password_change_form.is_valid())
@@ -228,7 +231,8 @@ class TethysPortalFormsTests(TestCase):
     @mock.patch('tethys_portal.forms.validate_password')
     def test_UserPasswordChangeForm_clean_new_password2(self, mock_vp):
         user_password_change_data = {'old_password': 'glass_onion', 'new_password1': 'pass2', 'new_password2': 'pass2'}
-        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user, data=user_password_change_data)
+        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user,
+                                                                               data=user_password_change_data)
 
         self.assertTrue(user_password_change_form.is_valid())
 
@@ -239,7 +243,8 @@ class TethysPortalFormsTests(TestCase):
 
     def test_UserPasswordChangeForm_clean_new_password2_diff(self):
         user_password_change_data = {'old_password': 'glass_onion', 'new_password1': 'pass1', 'new_password2': 'pass2'}
-        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user, data=user_password_change_data)
+        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user,
+                                                                               data=user_password_change_data)
 
         # run is_valid to get cleaned_data
         self.assertFalse(user_password_change_form.is_valid())
@@ -256,7 +261,8 @@ class TethysPortalFormsTests(TestCase):
 
         # Update new password
         user_password_change_data = {'old_password': 'glass_onion', 'new_password1': 'pass2', 'new_password2': 'pass2'}
-        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user, data=user_password_change_data)
+        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user,
+                                                                               data=user_password_change_data)
 
         # run is_valid to get cleaned_data attributes.
         self.assertTrue(user_password_change_form.is_valid())

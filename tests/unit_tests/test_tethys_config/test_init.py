@@ -99,7 +99,6 @@ class TestInit(unittest.TestCase):
 
         mock_settings().save.assert_called()
 
-
         # Home page settings
         type(mock_settings()).name = mock.PropertyMock(return_value="Home Page")
         setting_defaults(category=mock_settings())

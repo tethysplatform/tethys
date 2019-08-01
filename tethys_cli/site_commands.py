@@ -1,6 +1,6 @@
 from tethys_cli.cli_helpers import load_apps
 from django.utils import timezone
-from tethys_cli.cli_colors import write_msg, write_error, write_warning, write_success
+from tethys_cli.cli_colors import write_msg
 import os
 import yaml
 from subprocess import call

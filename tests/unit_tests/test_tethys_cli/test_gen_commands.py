@@ -392,33 +392,3 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
-
-    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
-    @mock.patch('tethys_cli.gen_commands.os.path.isfile')
-    def test_generate_command_services_option(self, mock_os_path_isfile, mock_file):
-        mock_args = mock.MagicMock()
-        mock_args.type = GEN_SERVICES_OPTION
-        mock_args.directory = None
-        mock_os_path_isfile.return_value = False
-
-        generate_command(args=mock_args)
-
-        mock_os_path_isfile.assert_called_once()
-        mock_file.assert_called()
-
-    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
-    @mock.patch('tethys_cli.gen_commands.os.path.isfile')
-    @mock.patch('tethys_cli.gen_commands.print')
-    def test_generate_command_install_option(self, mock_print, mock_os_path_isfile, mock_file):
-        mock_args = mock.MagicMock()
-        mock_args.type = GEN_INSTALL_OPTION
-        mock_args.directory = None
-        mock_os_path_isfile.return_value = False
-
-        generate_command(args=mock_args)
-
-        rts_call_args = mock_print.call_args_list
-        self.assertIn('Please review the generated install.yml', rts_call_args[0][0][0])
-
-        mock_os_path_isfile.assert_called_once()
-        mock_file.assert_called()

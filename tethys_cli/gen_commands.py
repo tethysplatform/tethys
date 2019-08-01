@@ -166,6 +166,7 @@ def add_gen_parser(subparsers):
                             bypass_portal_home=False, channel_layer='', recaptcha_private_key=None,
                             recaptcha_public_key=None)
 
+
 def get_environment_value(value_name):
     value = os.environ.get(value_name)
     if value is not None:
@@ -191,22 +192,23 @@ def gen_settings(args):
                       'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles',
                       'django_gravatar', 'bootstrap3', 'termsandconditions', 'tethys_config', 'tethys_apps',
                       'tethys_gizmos', 'tethys_services', 'tethys_compute', 'tethys_quotas', 'social_django',
-                      'guardian', 'session_security', 'captcha', 'snowpenguin.django.recaptcha2','rest_framework',
+                      'guardian', 'session_security', 'captcha', 'snowpenguin.django.recaptcha2', 'rest_framework',
                       'rest_framework.authtoken', 'analytical', 'channels']
 
     resource_quota_handlers = ['tethys_quotas.handlers.workspace.WorkspaceQuotaHandler']
 
-    django_analytical = dict(CLICKMAP_TRACKER_ID=False, CLICKY_SITE_ID=False, CRAZY_EGG_ACCOUNT_NUMBER=False, 
-                             GAUGES_SITE_ID=False, GOOGLE_ANALYTICS_JS_PROPERTY_ID=False, 
-                             GOSQUARED_SITE_TOKEN=False, HOTJAR_SITE_ID=False, HUBSPOT_PORTAL_ID=False, 
-                             INTERCOM_APP_ID=False, KISSINSIGHTS_ACCOUNT_NUMBER=False, 
-                             KISSINSIGHTS_SITE_CODE=False, KISS_METRICS_API_KEY=False, MIXPANEL_API_TOKEN=False, 
-                             OLARK_SITE_ID=False, OPTIMIZELY_ACCOUNT_NUMBER=False, PERFORMABLE_API_KEY=False, 
-                             PIWIK_DOMAIN_PATH=False, PIWIK_SITE_ID=False, RATING_MAILRU_COUNTER_ID=False, 
-                             SNAPENGAGE_WIDGET_ID=False, SPRING_METRICS_TRACKING_ID=False, 
+    django_analytical = dict(CLICKMAP_TRACKER_ID=False, CLICKY_SITE_ID=False, CRAZY_EGG_ACCOUNT_NUMBER=False,
+                             GAUGES_SITE_ID=False, GOOGLE_ANALYTICS_JS_PROPERTY_ID=False,
+                             GOSQUARED_SITE_TOKEN=False, HOTJAR_SITE_ID=False, HUBSPOT_PORTAL_ID=False,
+                             INTERCOM_APP_ID=False, KISSINSIGHTS_ACCOUNT_NUMBER=False,
+                             KISSINSIGHTS_SITE_CODE=False, KISS_METRICS_API_KEY=False, MIXPANEL_API_TOKEN=False,
+                             OLARK_SITE_ID=False, OPTIMIZELY_ACCOUNT_NUMBER=False, PERFORMABLE_API_KEY=False,
+                             PIWIK_DOMAIN_PATH=False, PIWIK_SITE_ID=False, RATING_MAILRU_COUNTER_ID=False,
+                             SNAPENGAGE_WIDGET_ID=False, SPRING_METRICS_TRACKING_ID=False,
                              USERVOICE_WIDGET_KEY=False, WOOPRA_DOMAIN=False, YANDEX_METRICA_COUNTER_ID=False)
 
     backends = ['django.contrib.auth.backends.ModelBackend', 'guardian.backends.ObjectPermissionBackend']
+
     custom_backends = dict(hydroshare='tethys_services.backends.hydroshare.HydroShareOAuth2',
                            linkedin='social_core.backends.linkedin.LinkedinOAuth2',
                            google='social_core.backends.google.GoogleOAuth2',
@@ -227,12 +229,12 @@ def gen_settings(args):
 
     try:
         session_warning = int(args.session_warning)
-    except:
+    except Exception:
         session_warning = 840
 
     try:
         session_expire = int(args.session_expire)
-    except:
+    except Exception:
         session_expire = 900
 
     if args.static_root and os.path.exists(args.static_root):
