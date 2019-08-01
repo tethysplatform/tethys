@@ -91,7 +91,7 @@ RUN apt-get update && apt-get -y install wget gnupg2 \
 RUN apt-get update && apt-get -y install bzip2 git nginx supervisor gcc salt-minion procps pv
 RUN rm -f /etc/nginx/sites-enabled/default
 
-# Setup Conda and Git Environments
+# Setup Conda Environment
 ADD environment.yml ${TETHYS_HOME}/tethys/
 WORKDIR ${TETHYS_HOME}/tethys
 RUN ${CONDA_HOME}/bin/conda env create -n "${CONDA_ENV_NAME}" -f "environment.yml"

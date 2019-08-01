@@ -144,7 +144,7 @@ def add_gen_parser(subparsers):
     'channels.layers.InMemoryChannelLayer'
     gen_parser.add_argument('--channel-layer', dest='channel_layer',
                             help='Backend to enable communication between apps via websockets. The Default available '
-                                 'values is channels.layers.InMemoryChannelLayer. For production, it is recommended to '
+                                 'value is channels.layers.InMemoryChannelLayer. For production, it is recommended to '
                                  'install channel_redis and use channels_redis.core.RedisChannelLayer instead. '
                                  'A custom backend can be added using dot-formatted path.')
     gen_parser.add_argument('--captcha', dest='captcha', action='store_true',
