@@ -6,8 +6,7 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
-import datetime
-from hashlib import md5
+import uuid
 import factory
 from django.contrib.auth.models import User
 
@@ -24,7 +23,7 @@ class UserFactory(factory.Factory):
         abstract = False
 
     username = factory.LazyAttribute(
-        lambda x: md5(datetime.datetime.now().strftime('%Y%,%d%H%M%S').encode('utf-8')).hexdigest()[0:30]
+        lambda x: str(uuid.uuid4())[:30]
     )
     email = factory.Sequence(lambda n: 'user{0}@example.com'.format(n))
 

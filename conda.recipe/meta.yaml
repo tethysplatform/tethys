@@ -13,6 +13,8 @@ build:
   string: {% if GIT_DESCRIBE_NUMBER|int > 0 %}dev{{ GIT_BUILD_STR }}{% endif %}
   noarch: python
   script:  python setup.py install --single-version-externally-managed --record=record.txt
+  entry_points:
+    - tethys = tethys_cli:tethys_command
 
 requirements:
   build:
