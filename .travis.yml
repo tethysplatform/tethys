@@ -15,42 +15,45 @@ os:
 services:
   - docker
 
+stages:
+  - name: test
+    if: (branch = master) OR ((type = pull_request) AND (branch = master)) OR (tag IS present)
+  - name: build
+    if: (branch = master) OR (tag IS present)
+
+install:
+  - cd ..
+  - bash ./tethys/scripts/install_tethys.sh -h
+  - bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -t $PWD
+
+  # activate conda environment
+  - . ~/miniconda/etc/profile.d/conda.sh
+  - conda activate tethys
+  - conda list
+
+  # generate new settings.py file with tethys_super user for tests
+  - tethys gen settings --db-username tethys_super --db-password pass --db-port 5436
+
+  # start database server
+  - tethys db configure
+
+  # install test dependencies
+  - pip install python-coveralls
+
+# command to run tests
+script:
+  - tethys test -c -u -v 2
+
+# generate test coverage information
+after_success:
+  - ls -al
+  - coveralls
+
 jobs:
   include:
-    - stage: test
-      name: "Tethys Unit Tests"
-      # Run on every commit to master, pull requests to master, and tag
-      if: (branch = master) OR ((type = pull_request) AND (branch = master)) OR (tag IS present)
-      install:
-        - cd ..
-        - bash ./tethys/scripts/install_tethys.sh -h
-        - bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -t $PWD
-
-        # activate conda environment
-        - . ~/miniconda/etc/profile.d/conda.sh
-        - conda activate tethys
-        - conda list
-
-        # generate new settings.py file with tethys_super user for tests
-        - tethys gen settings --db-username tethys_super --db-password pass --db-port 5436
-
-        # start database server
-        - tethys db configure
-
-        # install test dependencies
-        - pip install python-coveralls
-
-      # command to run tests
-      script:
-        - tethys test -c -u -v 2
-
-      # generate test coverage information
-      after_success:
-        - ls -al
-        - coveralls
     - stage: build
-      name: "Build Tethys"
-      if: (branch = master) OR (tag IS present)
+      install:
+        - skip
       script:
         - if [ -z "$TRAVIS_TAG"]; then export LATEST_TAG="dev"; else docker build -t thetethysplatform/tethys-core:$TRAVIS_TAG; export LATEST_TAG="latest"; fi
         - echo "$LATEST_TAG"
