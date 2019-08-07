@@ -22,3 +22,7 @@ tests/coverage_html_report
 .DS_Store
 dask-worker-space
 portal.yml
+tests/extensions/*/build/*
+tests/apps/*/build/*
+tests/extensions/*/dist/*
+tests/apps/*/dist/*

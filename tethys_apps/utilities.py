@@ -140,8 +140,9 @@ def get_app_settings(app):
         dict (linked_settings, unlinked_settings): Dictionary with two keys: linked_settings(list) - list of linked settings, unlinked_settings(list) - list of unlinked settings  # noqa: E501
     """
     from tethys_cli.cli_colors import write_error
-    from tethys_apps.models import (TethysApp, PersistentStoreConnectionSetting, PersistentStoreDatabaseSetting,
-                                    SpatialDatasetServiceSetting, DatasetServiceSetting, WebProcessingServiceSetting,
+    from tethys_apps.models import (TethysApp, TethysExtension, PersistentStoreConnectionSetting,
+                                    PersistentStoreDatabaseSetting, SpatialDatasetServiceSetting,
+                                    DatasetServiceSetting, WebProcessingServiceSetting,
                                     CustomSetting)
 
     try:
@@ -180,7 +181,12 @@ def get_app_settings(app):
         }
 
     except ObjectDoesNotExist:
-        write_error('The app you specified ("{0}") does not exist. Command aborted.'.format(app))
+        try:
+            # Fail silently if the object is an Extension
+            TethysExtension.objects.get(package=app)
+        except ObjectDoesNotExist:
+            # Write an error if the object is not a TethysApp or Extension
+            write_error('The app or extension you specified ("{0}") does not exist. Command aborted.'.format(app))
     except Exception as e:
         write_error(str(e))
         write_error('Something went wrong. Please try again.')

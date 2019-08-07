@@ -27,23 +27,28 @@ def add_install_parser(subparsers):
     application_install_parser = subparsers.add_parser('install', help='Install and Initialize Applications')
     application_install_parser.add_argument('-d', '--develop',
                                             help='Will run setup.py develop instead of setup.py install',
-                                            action="store_true")
+                                            action='store_true')
     application_install_parser.add_argument('-f', '--file', type=str, help='The path to the Install file. ')
     application_install_parser.add_argument('-p', '--portal-file', type=str,
                                             help='The path to the Portal initialization config file')
     application_install_parser.add_argument('-s', '--services-file', type=str,
                                             help='The path to the Services.yml config file')
     application_install_parser.add_argument('--force-services',
-                                            help='Force Services.yml file over portal.yml file', action="store_true")
+                                            help='Force Services.yml file over portal.yml file', action='store_true')
     application_install_parser.add_argument('-q', '--quiet',
                                             help='Skips interactive mode.',
-                                            action="store_true")
+                                            action='store_true')
     application_install_parser.add_argument('-n', '--no-sync',
                                             help='Skips syncstores when linked persistent stores are found.',
-                                            action="store_true")
+                                            action='store_true')
     application_install_parser.add_argument('-v', '--verbose',
                                             help='Will show all pip install output when enabled.',
-                                            action="store_true")
+                                            action='store_true')
+    application_install_parser.add_argument('-u', '--update-installed',
+                                            help='Will attempt to update already installed dependencies to versions '
+                                                 'listed in the install.yml. WARNING: This may break your Tethys '
+                                                 'installation and is not recommended.',
+                                            action='store_true')
     # clean
     application_install_parser.set_defaults(func=install_command)
 
@@ -187,6 +192,13 @@ def run_interactive_services(app_name):
     write_msg('Hit return at any time to skip a step.')
 
     app_settings = get_app_settings(app_name)
+
+    # In the case the app isn't installed, has no settings, or it is an extension,
+    # skip configuring services/settings
+    if not app_settings:
+        write_msg(f'No settings found for app "{app_name}". Skipping interactive configuration...')
+        return
+
     unlinked_settings = app_settings['unlinked_settings']
 
     for setting in unlinked_settings:
@@ -355,7 +367,7 @@ def run_services(app_name, args):
         write_msg("No Services listed in Services file.")
 
 
-def install_packages(conda_config):
+def install_packages(conda_config, update_installed=False):
     # Compile channels arguments
     install_args = []
     if validate_schema('channels', conda_config):
@@ -365,6 +377,8 @@ def install_packages(conda_config):
 
     # Install all Packages
     if validate_schema('packages', conda_config):
+        if not update_installed:
+            install_args.extend(['--freeze-installed'])
         install_args.extend(conda_config['packages'])
         write_msg("Running conda installation tasks...")
         [resp, err, code] = conda_run(
@@ -424,7 +438,7 @@ def install_command(args):
             else:
                 if validate_schema('conda', requirements_config):  # noqa: E501
                     conda_config = requirements_config['conda']
-                    install_packages(conda_config)
+                    install_packages(conda_config, update_installed=args.update_installed)
                 if validate_schema('pip', requirements_config):
                     write_msg("Running pip installation tasks...")
                     call(['pip', 'install', *requirements_config["pip"]])
@@ -463,6 +477,7 @@ def install_command(args):
         write_success("Services Configuration Completed.")
 
         app_settings = get_app_settings(app_name)
+
         if app_settings is not None:
             linked_settings = app_settings['linked_settings']
             unlinked_settings = app_settings['unlinked_settings']
