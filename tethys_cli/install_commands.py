@@ -1,5 +1,6 @@
 import yaml
 import os
+from pathlib import Path
 
 from subprocess import (call, Popen, PIPE, STDOUT)
 from argparse import Namespace
@@ -9,7 +10,12 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from tethys_cli.cli_colors import write_msg, write_error, write_warning, write_success
 from tethys_cli.services_commands import services_list_command
 from tethys_cli.cli_helpers import load_apps
-from tethys_apps.utilities import link_service_to_app_setting, get_app_settings, get_service_model_from_type
+from tethys_apps.utilities import (
+    link_service_to_app_setting,
+    get_app_settings,
+    get_service_model_from_type,
+    get_tethys_home_dir,
+)
 
 FNULL = open(os.devnull, 'w')
 
@@ -22,8 +28,6 @@ def add_install_parser(subparsers):
                                             help='Will run setup.py develop instead of setup.py install',
                                             action='store_true')
     application_install_parser.add_argument('-f', '--file', type=str, help='The path to the Install file. ')
-    application_install_parser.add_argument('-p', '--portal-file', type=str,
-                                            help='The path to the Portal initialization config file')
     application_install_parser.add_argument('-s', '--services-file', type=str,
                                             help='The path to the Services.yml config file')
     application_install_parser.add_argument('--force-services',
@@ -55,7 +59,7 @@ def add_install_parser(subparsers):
 
 def open_file(file_path):
     try:
-        with open(file_path) as f:
+        with file_path.open() as f:
             return yaml.safe_load(f)
 
     except Exception as e:
@@ -337,12 +341,11 @@ def configure_services_from_file(services, app_name):
                                       f'"{app_name}". Skipping...')
 
 
-def run_portal_install(file_path, app_name):
+def run_portal_install(app_name):
 
-    if file_path is None:
-        file_path = './portal.yml'
+    file_path = Path(get_tethys_home_dir()) / 'portal.yml'
 
-    if not os.path.exists(file_path):
+    if not file_path.exists():
         write_msg("No Portal Services file found. Searching for local app level services.yml...")
         return False
 
@@ -367,14 +370,9 @@ def run_portal_install(file_path, app_name):
 
 
 def run_services(app_name, args):
-    services_file = args.services_file
+    file_path = Path('./services.yml') if args.services_file is None else Path(args.services_file)
 
-    if services_file is None:
-        file_path = './services.yml'
-    else:
-        file_path = services_file
-
-    if not os.path.exists(file_path):
+    if not file_path.exists():
         write_msg("No Services file found.")
         return
 
@@ -415,13 +413,10 @@ def install_command(args):
     load_apps()
     app_name = None
     skip_config = False
-    file_path = args.file
-
-    if file_path is None:
-        file_path = './install.yml'
+    file_path = Path('./install.yml') if args.file is None else Path(args.file)
 
     # Check for install.yml file
-    if not os.path.exists(file_path):
+    if not file_path.exists():
         write_warning('WARNING: No install file found.')
         if not args.quiet:
             valid_inputs = ('y', 'n', 'yes', 'no')
@@ -495,7 +490,7 @@ def install_command(args):
         if args.force_services:
             run_services(app_name, args)
         else:
-            portal_result = run_portal_install(args.portal_file, app_name)
+            portal_result = run_portal_install(app_name)
             if not portal_result:
                 run_services(app_name, args)
 
@@ -522,9 +517,9 @@ def install_command(args):
         if validate_schema('post', install_options):
             write_msg("Running post installation tasks...")
             for post in install_options["post"]:
-                path_to_post = os.path.join(os.path.dirname(os.path.realpath(file_path)), post)
+                path_to_post = file_path.resolve().parent / post
                 # Attempting to run processes.
-                process = Popen(path_to_post, shell=True, stdout=PIPE)
+                process = Popen(str(path_to_post), shell=True, stdout=PIPE)
                 stdout = process.communicate()[0]
                 write_msg("Post Script Result: {}".format(stdout))
     exit(0)

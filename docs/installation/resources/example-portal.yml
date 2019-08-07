@@ -1,6 +1,68 @@
 # Portal Level Config File
 version: 1.0
 name: Tethys Main Portal
+local_settings:
+  SECRET_KEY: 'gij28v16WhZ4v18WtlHqusP5VYnVUslxEvRQoXLj7hvJ2ZRN7f'
+  DEBUG: True
+#  ALLOWED_HOSTS: []
+#  ADMINS: ()
+#  SESSION_EXPIRE_AT_BROWSER_CLOSE: True
+#  SESSION_SECURITY_WARN_AFTER: 840
+#  SESSION_SECURITY_EXPIRE_AFTER: 900
+
+############################
+#    LOGGING
+###########################
+##  LOGGING_OVERRIDE:
+#  TETHYS_LOGGING: {}
+#  TETHYS_APPS_LOGGING: {}
+#  LOGGING_FORMATTERS: {}
+#  LOGGING_HANDLERS: {}
+#  LOGGERS: {}
+
+
+##  INSTALLED_APPS_OVERRIDE:
+#  INSTALLED_APPS:
+#    -
+
+##  MIDDLEWARE_OVERRIDE:
+#  MIDDLEWARE: ()
+
+##  REST_FRAMEWORK_OVERRIDE:
+
+##  AUTHENTICATION_BACKENDS_OVERRIDE:
+#  AUTHENTICATION_BACKENDS:
+##    - tethys_services.backends.hydroshare.HydroShareOAuth2
+##    - social_core.backends.linkedin.LinkedinOAuth2
+##    - social_core.backends.google.GoogleOAuth2
+##    - social_core.backends.facebook.FacebookOAuth2
+
+#  ANALYTICS_CONFIGS:
+#    CLICKMAP_TRACKER_ID: False
+#    CLICKY_SITE_ID: False
+#    CRAZY_EGG_ACCOUNT_NUMBER: False
+#    GAUGES_SITE_ID: False
+#    GOOGLE_ANALYTICS_JS_PROPERTY_ID: False
+#    GOSQUARED_SITE_TOKEN: False
+#    HOTJAR_SITE_ID: False
+#    HUBSPOT_PORTAL_ID: False
+#    INTERCOM_APP_ID: False
+#    KISSINSIGHTS_ACCOUNT_NUMBER: False
+#    KISSINSIGHTS_SITE_CODE: False
+#    KISS_METRICS_API_KEY: False
+#    MIXPANEL_API_TOKEN: False
+#    OLARK_SITE_ID: False
+#    OPTIMIZELY_ACCOUNT_NUMBER: False
+#    PERFORMABLE_API_KEY: False
+#    PIWIK_DOMAIN_PATH: False
+#    PIWIK_SITE_ID: False
+#    RATING_MAILRU_COUNTER_ID: False
+#    SNAPENGAGE_WIDGET_ID: False
+#    SPRING_METRICS_TRACKING_ID: False
+#    USERVOICE_WIDGET_KEY: False
+#    WOOPRA_DOMAIN: False
+#    YANDEX_METRICA_COUNTER_ID: False
+
 apps:
   my_first_app:
     services:

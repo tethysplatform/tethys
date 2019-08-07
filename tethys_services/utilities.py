@@ -188,8 +188,8 @@ def get_dataset_engine(name, app_class=None, request=None):
                 dataset_service_object.public_endpoint = site_dataset_service.public_endpoint
                 return dataset_service_object
 
-    raise NameError('Could not find dataset service with name "{0}". Please check that dataset service with that name '
-                    'exists in settings.py or in your app.py.'.format(name))
+    raise NameError(f'Could not find dataset service with name "{name}". Please check that dataset service with that '
+                    f'name exists in your app.py.')
 
 
 def list_spatial_dataset_engines():
@@ -310,9 +310,8 @@ def activate_wps(wps, endpoint, name):
         wps.getcapabilities()
     except HTTPError as e:
         if e.code == 404:
-            e.msg = 'The WPS service could not be found at given endpoint "{0}" for site WPS service ' \
-                    'named "{1}". Check the configuration of the WPS service in your ' \
-                    'settings.py.'.format(endpoint, name)
+            e.msg = f'The WPS service could not be found at given endpoint "{endpoint}" for site WPS service ' \
+                    f'named "{name}". Check the configuration of the WPS service'
             raise e
         else:
             raise e

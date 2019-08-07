@@ -76,12 +76,6 @@ Use start up the development server:
 
     (tethys) $ tethys manage start
 
-OR use the `tms` alias:
-
-::
-
-    (tethys) $ tms
-
 .. note::
 
     If you get errors related to Tethys not being able to connect to the database, start the database by running:

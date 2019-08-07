@@ -134,9 +134,6 @@ Restart tethys portal to effect the changes::
 
     (tethys) $ tethys manage start
 
-.. tip::
-
-    Use the alias `tms` as a shortcut
 
 4. Configure Additional App Settings
 ====================================

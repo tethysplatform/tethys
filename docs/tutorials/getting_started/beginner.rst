@@ -78,7 +78,7 @@ b. Open the ``app.py`` and add the ``custom_settings()`` method to the ``DamInve
 
         Ellipsis in code blocks in Tethys tutorials indicate code that is not shown for brevity. When there are ellipsis in the code, DO NOT COPY AND PASTE THE BLOCK VERBATIM.
 
-c. Save changes to ``app.py`` then restart your development server (press ``CTRL-C`` to stop followed by the ``tms`` command to start it again).
+c. Save changes to ``app.py`` then restart your development server (press ``CTRL-C`` to stop followed by the ``tethys manage start`` command to start it again).
 
 d. Navigate to the settings page of your app and scroll down to the **Custom Settings** section and you should see an entry for the ``max_dams`` settings. Enter a value and save changes to the setting. You will learn how to use this custom setting in the app later on in the tutorial.
 
