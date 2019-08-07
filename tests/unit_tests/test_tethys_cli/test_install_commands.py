@@ -338,7 +338,38 @@ class TestInstallCommands(TestCase):
     @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_conda_and_pip_package_install(self, mock_pretty_output, mock_exit, mock_conda_run, mock_call, _):
         file_path = os.path.join(self.root_app_path, 'install-dep.yml')
-        args = mock.MagicMock(file=file_path, develop=False, verbose=False, services_file=None)
+        args = mock.MagicMock(file=file_path, develop=False, verbose=False, services_file=None, update_installed=False)
+        mock_exit.side_effect = SystemExit
+        self.assertRaises(SystemExit, install_commands.install_command, args)
+
+        mock_conda_run.assert_called_with(Commands.INSTALL, '-c', 'tacaswell', '--freeze-installed', 'geojson',
+                                          use_exception_handler=False, stdout=None, stderr=None)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual("Running conda installation tasks...", po_call_args[0][0][0])
+        self.assertIn("Warning: Packages installation ran into an error.", po_call_args[1][0][0])
+        self.assertEqual("Running pip installation tasks...", po_call_args[2][0][0])
+        self.assertEqual("Running application install....", po_call_args[3][0][0])
+        self.assertEqual("Quiet mode: No additional service setting validation will be performed.",
+                         po_call_args[4][0][0])
+        self.assertEqual("Services Configuration Completed.", po_call_args[5][0][0])
+
+        self.assertEqual(['pip', 'install', 'see'], mock_call.mock_calls[0][1][0])
+        self.assertEqual(['python', 'setup.py', 'clean', '--all'], mock_call.mock_calls[1][1][0])
+        self.assertEqual(['python', 'setup.py', 'install'], mock_call.mock_calls[2][1][0])
+        self.assertEqual(['tethys', 'db', 'sync'], mock_call.mock_calls[3][1][0])
+
+        mock_exit.assert_called_with(0)
+
+    @mock.patch('tethys_cli.install_commands.run_services')
+    @mock.patch('tethys_cli.install_commands.call')
+    @mock.patch('tethys_cli.install_commands.conda_run', return_value=['', '', 1])
+    @mock.patch('tethys_cli.install_commands.exit')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
+    def test_conda_and_pip_package_install_update_installed(self, mock_pretty_output, mock_exit, mock_conda_run,
+                                                            mock_call, _):
+        file_path = os.path.join(self.root_app_path, 'install-dep.yml')
+        args = mock.MagicMock(file=file_path, develop=False, verbose=False, services_file=None, update_installed=True)
         mock_exit.side_effect = SystemExit
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
@@ -454,6 +485,20 @@ class TestInstallCommands(TestCase):
 
         mock_lstas.assert_called_with('st', '1', 'foo', 'lp', 'mock_ss')
         mock_exit.assert_called_with(0)
+
+    @mock.patch('builtins.input', side_effect=['x', 5])
+    @mock.patch('tethys_cli.install_commands.get_app_settings')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
+    def test_interactive_no_settings(self, mock_pretty_output, mock_get_settings, _):
+        mock_cs = mock.MagicMock()
+        mock_cs.name = 'mock_cs'
+        mock_cs.save.side_effect = [ValidationError('error'), mock.DEFAULT]
+        mock_get_settings.return_value = None
+
+        install_commands.run_interactive_services('foo')
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertIn('No settings found for app "foo". Skipping interactive configuration...', po_call_args[2][0][0])
 
     def test_get_setting_type(self):
         from tethys_apps.models import PersistentStoreDatabaseSetting
