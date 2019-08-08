@@ -17,9 +17,9 @@ services:
 
 stages:
   - name: test
-    if: (branch = master) OR ((type = pull_request) AND (branch = master)) OR (tag IS present)
+#    if: (branch = master) OR ((type = pull_request) AND (branch = master)) OR (tag IS present)
   - name: build
-    if: (branch = master) OR (tag IS present)
+#    if: (branch = master) OR (tag IS present)
 
 install:
   - cd ..
@@ -55,10 +55,12 @@ jobs:
       install:
         - skip
       script:
-        - if [ -z "$TRAVIS_TAG"]; then export LATEST_TAG="dev"; else docker build -t thetethysplatform/tethys-core:$TRAVIS_TAG; export LATEST_TAG="latest"; fi
-        - echo "$LATEST_TAG"
-        - docker build -t thetethysplatform/tethys-core:$LATEST_TAG .
-        - echo "$TRAVIS_TAG"
-        - if [ -z "$TRAVIS_TAG"]; then echo "No Tag is Present"; else docker push thetethysplatform/tethys-core:$TRAVIS_TAG; fi
+        - if [ -z "$TRAVIS_TAG"]; then export LATEST_TAG="master" \
+            ; else export LATEST_TAG="latest" \
+            ; docker build . -t tethysplatform/tethys-core:$TRAVIS_TAG -t tethysplatform/tethys-core:$TRAVIS_TAG \
+            ; echo "Branch tag is $TRAVIS_TAG and Main tag is $LATEST_TAG"; fi
+        - echo "Main tag is $LATEST_TAG"
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - docker push thetethysplatform/tethys-core:$LATEST_TAG
+        - if [ -z "$TRAVIS_TAG"]; then echo "No Branch tag is Present" \
+            ; else docker push tethysplatform/tethys-core:$TRAVIS_TAG; fi
+        - docker push tethysplatform/tethys-core:$LATEST_TAG
