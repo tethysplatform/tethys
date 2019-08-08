@@ -377,13 +377,15 @@ class TestInstallCommands(TestCase):
                                           stdout=None, stderr=None)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual("Running conda installation tasks...", po_call_args[0][0][0])
-        self.assertIn("Warning: Packages installation ran into an error.", po_call_args[1][0][0])
-        self.assertEqual("Running pip installation tasks...", po_call_args[2][0][0])
-        self.assertEqual("Running application install....", po_call_args[3][0][0])
+        self.assertEqual("Warning: Updating previously installed packages. This could break your Tethys environment.",
+                         po_call_args[0][0][0])
+        self.assertEqual("Running conda installation tasks...", po_call_args[1][0][0])
+        self.assertIn("Warning: Packages installation ran into an error.", po_call_args[2][0][0])
+        self.assertEqual("Running pip installation tasks...", po_call_args[3][0][0])
+        self.assertEqual("Running application install....", po_call_args[4][0][0])
         self.assertEqual("Quiet mode: No additional service setting validation will be performed.",
-                         po_call_args[4][0][0])
-        self.assertEqual("Services Configuration Completed.", po_call_args[5][0][0])
+                         po_call_args[5][0][0])
+        self.assertEqual("Services Configuration Completed.", po_call_args[6][0][0])
 
         self.assertEqual(['pip', 'install', 'see'], mock_call.mock_calls[0][1][0])
         self.assertEqual(['python', 'setup.py', 'clean', '--all'], mock_call.mock_calls[1][1][0])

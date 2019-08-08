@@ -50,7 +50,7 @@ def add_install_parser(subparsers):
                                                  'installation and is not recommended.',
                                             action='store_true')
     # clean
-    application_install_parser.set_defaults(func=install_command)
+    application_install_parser.set_defaults(func=install_command, update_installed=False)
 
 
 def open_file(file_path):
@@ -379,6 +379,8 @@ def install_packages(conda_config, update_installed=False):
     if validate_schema('packages', conda_config):
         if not update_installed:
             install_args.extend(['--freeze-installed'])
+        else:
+            write_warning('Warning: Updating previously installed packages. This could break your Tethys environment.')
         install_args.extend(conda_config['packages'])
         write_msg("Running conda installation tasks...")
         [resp, err, code] = conda_run(
