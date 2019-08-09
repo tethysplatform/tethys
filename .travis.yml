@@ -1,3 +1,5 @@
+{% set data = load_setup_py_data() %}
+
 # Build and Test Tethys Platform on Travis
 language: c
 
@@ -18,7 +20,9 @@ services:
 stages:
   - name: test
 #    if: (branch = master) OR ((type = pull_request) AND (branch = master)) OR (tag IS present)
-  - name: build
+  - name: docker-build
+#    if: (branch = master) OR (tag IS present)
+  - name: conda-build
 #    if: (branch = master) OR (tag IS present)
 
 install:
@@ -51,11 +55,11 @@ after_success:
 
 jobs:
   include:
-    - stage: build
+    - stage: docker-build
       install:
         - skip
       script:
-        - echo "Building images"
+        - echo "Building docker images"
         - >
           if [ -z "$TRAVIS_TAG"]; then export LATEST_TAG="master";
           echo "Main tag is $LATEST_TAG";
@@ -64,10 +68,30 @@ jobs:
           echo "Branch tag is $TRAVIS_TAG and Main tag is $LATEST_TAG";
           docker build -t tethysplatform/tethys-core:$TRAVIS_TAG -t tethysplatform/tethys-core:$LATEST_TAG .;
           fi
-        - echo "Pushing to registry"
+        - echo "Pushing to docker registry"
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - >
           if [ -z "$TRAVIS_TAG"]; then echo "No Branch tag is Present";
           else docker push tethysplatform/tethys-core:$TRAVIS_TAG;
           fi
         - docker push tethysplatform/tethys-core:$LATEST_TAG
+    - stage: conda-build
+      install:
+        - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+        - bash miniconda.sh -b -p $HOME/miniconda
+        - export PATH="$HOME/miniconda/bin:$PATH"
+        - hash -r
+        - conda config --set always_yes yes --set changeps1 no
+        - conda update -q conda
+        - conda install conda-build anaconda-client
+      script:
+        - echo "Building conda package"
+        - mkdir ~/conda-bld
+        - cd ./conda.recipe
+        - conda config --set anaconda_upload no
+        - export CONDA_BLD_PATH=~/conda-bld
+        - export VERSION={{ data['version'] }}
+        - conda build .
+        - >
+          anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l test
+          $CONDA_BLD_PATH/$TRAVIS_OS_NAME-64/tethysplatform-$VERSION-0.tar.bz2 --force
