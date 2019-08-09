@@ -198,7 +198,7 @@ class TestInstallServicesCommands(TestCase):
     @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_cli.install_commands.os')
     def test_run_services_path_none(self, mock_os, mock_pretty_output):
-        args = mock.MagicMock(services_file=None)
+        args = mock.MagicMock(services_file=None, only_dependencies=False)
 
         mock_os.path.exists.return_value = False
 
@@ -212,7 +212,7 @@ class TestInstallServicesCommands(TestCase):
     @mock.patch('tethys_cli.install_commands.open_file')
     @mock.patch('tethys_cli.install_commands.os')
     def test_run_services(self, mock_os, mock_open_file, mock_pretty_output, _):
-        args = mock.MagicMock(services_file='services_file')
+        args = mock.MagicMock(services_file='services_file', only_dependencies=False)
 
         mock_os.path.exists.return_value = True
         mock_open_file.side_effect = ['service_file', '']
@@ -233,18 +233,16 @@ class TestInstallCommands(TestCase):
             package='test_app'
         )
         self.app_model.save()
-        pass
 
     def tearDown(self):
         self.app_model.delete()
-        pass
 
     @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('builtins.input', side_effect=['x', 'n'])
     @mock.patch('tethys_cli.install_commands.exit')
     @mock.patch('tethys_cli.install_commands.call')
     def test_install_file_not_generate(self, mock_call, mock_exit, _, __):
-        args = mock.MagicMock(file=None, quiet=False)
+        args = mock.MagicMock(file=None, quiet=False, only_dependencies=False)
 
         mock_exit.side_effect = SystemExit
 
@@ -258,7 +256,7 @@ class TestInstallCommands(TestCase):
     @mock.patch('tethys_cli.install_commands.call')
     @mock.patch('tethys_cli.install_commands.exit')
     def test_install_file_generate(self, mock_exit, mock_call, _, __):
-        args = mock.MagicMock(file=None, quiet=False)
+        args = mock.MagicMock(file=None, quiet=False, only_dependencies=False)
         check_call = ['tethys', 'gen', 'install']
 
         mock_exit.side_effect = SystemExit
@@ -273,7 +271,7 @@ class TestInstallCommands(TestCase):
     @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_no_conda_input_file(self, mock_pretty_output, mock_exit, _, __):
         file_path = os.path.join(self.root_app_path, 'install-no-dep.yml')
-        args = mock.MagicMock(file=file_path, verbose=False)
+        args = mock.MagicMock(file=file_path, verbose=False, only_dependencies=False)
         mock_exit.side_effect = SystemExit
 
         self.assertRaises(SystemExit, install_commands.install_command, args)
@@ -291,7 +289,7 @@ class TestInstallCommands(TestCase):
     @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_input_file_with_post(self, mock_pretty_output, mock_exit, _, __):
         file_path = os.path.join(self.root_app_path, 'install-with-post.yml')
-        args = mock.MagicMock(file=file_path, verbose=False)
+        args = mock.MagicMock(file=file_path, verbose=False, only_dependencies=False)
         mock_exit.side_effect = SystemExit
 
         self.assertRaises(SystemExit, install_commands.install_command, args)
@@ -317,14 +315,14 @@ class TestInstallCommands(TestCase):
         file_path = os.path.join(self.root_app_path, 'install-skip-setup.yml')
         mock_exit.side_effect = SystemExit
 
-        args = mock.MagicMock(file=file_path, verbose=False)
+        args = mock.MagicMock(file=file_path, verbose=False, only_dependencies=False)
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
-        args = mock.MagicMock(file=file_path, develop=False)
+        args = mock.MagicMock(file=file_path, develop=False, only_dependencies=False)
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
         args = mock.MagicMock(file=file_path, verbose=False, develop=False, force_services=False, quiet=False,
-                              no_sync=False)
+                              no_sync=False, only_dependencies=False)
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
@@ -338,7 +336,8 @@ class TestInstallCommands(TestCase):
     @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_conda_and_pip_package_install(self, mock_pretty_output, mock_exit, mock_conda_run, mock_call, _):
         file_path = os.path.join(self.root_app_path, 'install-dep.yml')
-        args = mock.MagicMock(file=file_path, develop=False, verbose=False, services_file=None, update_installed=False)
+        args = mock.MagicMock(file=file_path, develop=False, verbose=False, services_file=None, update_installed=False,
+                              only_dependencies=False)
         mock_exit.side_effect = SystemExit
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
@@ -366,10 +365,38 @@ class TestInstallCommands(TestCase):
     @mock.patch('tethys_cli.install_commands.conda_run', return_value=['', '', 1])
     @mock.patch('tethys_cli.install_commands.exit')
     @mock.patch('tethys_cli.cli_colors.pretty_output')
+    def test_conda_and_pip_package_install_only_dependencies(self, mock_pretty_output, mock_exit, mock_conda_run,
+                                                             mock_call, _):
+        file_path = os.path.join(self.root_app_path, 'install-dep.yml')
+        args = mock.MagicMock(file=file_path, develop=False, verbose=False, services_file=None, update_installed=False,
+                              only_dependencies=True)
+        mock_exit.side_effect = SystemExit
+        self.assertRaises(SystemExit, install_commands.install_command, args)
+
+        mock_conda_run.assert_called_with(Commands.INSTALL, '-c', 'tacaswell', '--freeze-installed', 'geojson',
+                                          use_exception_handler=False, stdout=None, stderr=None)
+
+        po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual("Running conda installation tasks...", po_call_args[0][0][0])
+        self.assertIn("Warning: Packages installation ran into an error.", po_call_args[1][0][0])
+        self.assertEqual("Running pip installation tasks...", po_call_args[2][0][0])
+        self.assertEqual("Installed dependencies only. Skipping remaining installation.", po_call_args[3][0][0])
+
+        self.assertEqual(1, len(mock_call.mock_calls))
+        self.assertEqual(['pip', 'install', 'see'], mock_call.mock_calls[0][1][0])
+
+        mock_exit.assert_called_with(0)
+
+    @mock.patch('tethys_cli.install_commands.run_services')
+    @mock.patch('tethys_cli.install_commands.call')
+    @mock.patch('tethys_cli.install_commands.conda_run', return_value=['', '', 1])
+    @mock.patch('tethys_cli.install_commands.exit')
+    @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_conda_and_pip_package_install_update_installed(self, mock_pretty_output, mock_exit, mock_conda_run,
                                                             mock_call, _):
         file_path = os.path.join(self.root_app_path, 'install-dep.yml')
-        args = mock.MagicMock(file=file_path, develop=False, verbose=False, services_file=None, update_installed=True)
+        args = mock.MagicMock(file=file_path, develop=False, verbose=False, services_file=None, update_installed=True,
+                              only_dependencies=False)
         mock_exit.side_effect = SystemExit
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
