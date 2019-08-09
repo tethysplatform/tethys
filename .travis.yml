@@ -1,5 +1,3 @@
-{% set data = load_setup_py_data() %}
-
 # Build and Test Tethys Platform on Travis
 language: c
 
@@ -46,6 +44,7 @@ install:
 
 # command to run tests
 script:
+  - export TETHYS_VERSION=`tethys version`
   - tethys test -c -u -v 2
 
 # generate test coverage information
@@ -90,6 +89,8 @@ jobs:
         - cd ./conda.recipe
         - conda config --set anaconda_upload no
         - export CONDA_BLD_PATH=~/conda-bld
-        - export VERSION={{ data['version'] }}
+        - echo $TETHYS_VERSION
         - conda build .
-        - anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l test $CONDA_BLD_PATH/$TRAVIS_OS_NAME-64/tethysplatform-$VERSION-0.tar.bz2 --force
+        - >
+          anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l test
+          $CONDA_BLD_PATH/$TRAVIS_OS_NAME-64/tethysplatform-$TETHYS_VERSION-0.tar.bz2 --force
