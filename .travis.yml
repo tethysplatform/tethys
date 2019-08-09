@@ -92,6 +92,4 @@ jobs:
         - export CONDA_BLD_PATH=~/conda-bld
         - export VERSION={{ data['version'] }}
         - conda build .
-        - >
-          anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l test
-          $CONDA_BLD_PATH/$TRAVIS_OS_NAME-64/tethysplatform-$VERSION-0.tar.bz2 --force
+        - anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l test $CONDA_BLD_PATH/$TRAVIS_OS_NAME-64/tethysplatform-$VERSION-0.tar.bz2 --force
