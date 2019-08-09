@@ -55,13 +55,16 @@ jobs:
       install:
         - skip
       script:
+        - echo "Building images"
         - >
           if [ -z "$TRAVIS_TAG"]; then export LATEST_TAG="master";
+          echo "Main tag is $LATEST_TAG";
+          docker build -t tethysplatform/tethys-core:$LATEST_TAG .;
           else export LATEST_TAG="latest";
-          docker build . -t tethysplatform/tethys-core:$TRAVIS_TAG -t tethysplatform/tethys-core:$TRAVIS_TAG;
           echo "Branch tag is $TRAVIS_TAG and Main tag is $LATEST_TAG";
+          docker build -t tethysplatform/tethys-core:$TRAVIS_TAG -t tethysplatform/tethys-core:$LATEST_TAG .;
           fi
-        - echo "Main tag is $LATEST_TAG"
+        - echo "Pushing to registry"
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - >
           if [ -z "$TRAVIS_TAG"]; then echo "No Branch tag is Present";
