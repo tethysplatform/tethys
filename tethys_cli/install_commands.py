@@ -49,8 +49,10 @@ def add_install_parser(subparsers):
                                                  'listed in the install.yml. WARNING: This may break your Tethys '
                                                  'installation and is not recommended.',
                                             action='store_true')
-    # clean
-    application_install_parser.set_defaults(func=install_command, update_installed=False)
+    application_install_parser.add_argument('-o', '--only-dependencies',
+                                            help='Install only the dependencies of an app or extension.',
+                                            action='store_true')
+    application_install_parser.set_defaults(func=install_command)
 
 
 def open_file(file_path):
@@ -401,6 +403,7 @@ def install_command(args):
     if file_path is None:
         file_path = './install.yml'
 
+    # Check for install.yml file
     if not os.path.exists(file_path):
         write_warning('WARNING: No install file found.')
         if not args.quiet:
@@ -423,6 +426,7 @@ def install_command(args):
 
         write_warning('Continuing install without configuration.')
 
+    # Install Dependencies
     if not skip_config:
         install_options = open_file(file_path)
 
@@ -444,6 +448,11 @@ def install_command(args):
                 if validate_schema('pip', requirements_config):
                     write_msg("Running pip installation tasks...")
                     call(['pip', 'install', *requirements_config["pip"]])
+
+    # Skip the rest if we are installing dependencies only
+    if args.only_dependencies:
+        write_msg("Installed dependencies only. Skipping remaining installation.")
+        exit(0)
 
     # Run Setup.py
     write_msg("Running application install....")
