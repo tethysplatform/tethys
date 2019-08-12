@@ -90,6 +90,7 @@ jobs:
         - conda config --set always_yes yes --set changeps1 no
 
         - conda install conda-build anaconda-client
+        - conda config --add channels conda-forge
         - conda config --add channels tethysplatform/label/dev
         - conda config --add channels tethysplatform
         - conda config --set anaconda_upload no
@@ -100,7 +101,7 @@ jobs:
         - conda config --get channels
         - export CONDA_BLD_PATH=~/conda-bld
         - export TETHYS_VERSION=`tethys version`
-        - conda build ./tethys/conda.recipe -c tethysplatform/label/dev
+        - conda build ./tethys/conda.recipe
 
         - >
           anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l test
