@@ -87,9 +87,11 @@ jobs:
         - . ~/miniconda/etc/profile.d/conda.sh
         - conda activate tethys
 
-        - conda install conda-build anaconda-client
-        - conda config --add channels tethysplatform/label/dev tethysplatform
         - conda config --set always_yes yes --set changeps1 no
+
+        - conda install conda-build anaconda-client
+        - conda config --add channels tethysplatform/label/dev
+        - conda config --add channels tethysplatform
         - conda config --set anaconda_upload no
 
         - mkdir /home/travis/miniconda/envs/tethys/conda-bld
