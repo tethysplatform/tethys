@@ -94,13 +94,13 @@ jobs:
         - conda config --add channels tethysplatform
         - conda config --set anaconda_upload no
 
-        - mkdir /home/travis/miniconda/envs/tethys/conda-bld
+        - mkdir ~/conda-bld
       script:
         - echo "Building conda package"
-        - export CONDA_BLD_PATH=/home/travis/miniconda/envs/tethys/conda-bld
+        - conda config --get channels
+        - export CONDA_BLD_PATH=~/conda-bld
         - export TETHYS_VERSION=`tethys version`
-        - echo $TETHYS_VERSION
-        - conda build ./tethys/conda.recipe
+        - conda build ./tethys/conda.recipe -c tethysplatform/label/dev
 
         - >
           anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l test
