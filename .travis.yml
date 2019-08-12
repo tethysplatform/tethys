@@ -91,15 +91,13 @@ jobs:
         - conda install conda-build anaconda-client
       script:
         - echo "Building conda package"
-        - mkdir /home/travis/conda-bld
+        - ls /home/travis/miniconda/envs/tethys
+        - mkdir /home/travis/miniconda/envs/tethys/conda-bld
         - cd ./tethys/conda.recipe
         - conda config --set anaconda_upload no
-        - export CONDA_BLD_PATH=/home/travis/conda-bld
-        - which python
+        - export CONDA_BLD_PATH=/home/travis/miniconda/envs/tethys/conda-bld
         - export TETHYS_VERSION=`tethys version`
         - echo $TETHYS_VERSION
-        - conda activate tethys
-        - which python
         - conda build .
 
         - >
