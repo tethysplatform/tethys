@@ -102,6 +102,7 @@ jobs:
         - export CONDA_BLD_PATH=~/conda-bld
         - export TETHYS_VERSION=`tethys version`
         - conda build ./tethys/conda.recipe
+        - ls ~/conda-bld
 
         - >
           anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l test
