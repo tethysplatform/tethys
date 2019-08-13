@@ -21,7 +21,7 @@ stages:
   - name: docker-build
     if: (branch = master) OR (tag IS present)
   - name: conda-build
-#    if: (branch = master) OR (tag IS present)
+    if: (branch = master) OR (tag IS present)
 
 install:
   - cd ..
@@ -77,6 +77,8 @@ jobs:
           fi
 
         - docker push tethysplatform/tethys-core:$LATEST_TAG
+      after_success:
+        - skip
     - stage: conda-build
       install:
         - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -103,9 +105,11 @@ jobs:
 
         - >
           if [ -z "$TRAVIS_TAG"]; then echo "No Branch tag is Present. Uploading to dev";
-          anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l test
+          anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l dev
           $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
           else echo "Branch tag is $TRAVIS_TAG. Uploading to master";
           anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform
           $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
           fi
+      after_success:
+        - skip
