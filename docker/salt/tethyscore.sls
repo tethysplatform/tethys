@@ -19,6 +19,7 @@
 {% set ADD_DJANGO_APPS = salt['environ.get']('ADD_DJANGO_APPS') %}
 {% set SESSION_WARN = salt['environ.get']('SESSION_WARN') %}
 {% set SESSION_EXPIRE = salt['environ.get']('SESSION_EXPIRE') %}
+{% set TETHYS_PERSIST = salt['environ.get']('TETHYS_PERSIST') %}
 {% set STATIC_ROOT = salt['environ.get']('STATIC_ROOT') %}
 {% set WORKSPACE_ROOT = salt['environ.get']('WORKSPACE_ROOT') %}
 {% set QUOTA_HANDLERS = salt['environ.get']('QUOTA_HANDLERS') %}
@@ -89,40 +90,40 @@ Generate_Tethys_Settings_TethysCore:
         --recaptcha-private-key {{ RECAPTCHA_PRIVATE_KEY }}
         --recaptcha-public-key {{ RECAPTCHA_PUBLIC_KEY }}
         {{ TETHYS_SETTINGS_FLAGS }}
-    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 Generate_NGINX_Settings_TethysCore:
   cmd.run:
     - name: {{ TETHYS_BIN_DIR }}/tethys gen nginx --client-max-body-size {{ CLIENT_MAX_BODY_SIZE }} --overwrite
-    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 Generate_NGINX_Service_TethysCore:
   cmd.run:
     - name: {{ TETHYS_BIN_DIR }}/tethys gen nginx_service --overwrite
-    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 Generate_ASGI_Service_TethysCore:
   cmd.run:
     - name: {{ TETHYS_BIN_DIR }}/tethys gen asgi_service --asgi-processes {{ ASGI_PROCESSES }} --overwrite
-    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 Link_NGINX_Config_TethysCore:
   file.symlink:
     - name: /etc/nginx/sites-enabled/tethys_nginx.conf
     - target: {{ TETHYS_HOME }}/tethys/tethys_portal/tethys_nginx.conf
-    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 Link_NGINX_Service_TethysCore:
   file.symlink:
     - name: /etc/supervisor/conf.d/nginx_supervisord.conf
     - target: {{ TETHYS_HOME }}/tethys/tethys_portal/nginx_supervisord.conf
-    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 Link_ASGI_Config_TethysCore:
   file.symlink:
     - name: /etc/supervisor/conf.d/asgi_supervisord.conf
     - target: {{ TETHYS_HOME }}/tethys/tethys_portal/asgi_supervisord.conf
-    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 /run/asgi:
   file.directory:
@@ -145,22 +146,22 @@ Prepare_Database_TethysCore:
         -N {{ TETHYS_SUPER_USER }}
         -P {{ TETHYS_SUPER_USER_PASS }}
     - shell: /bin/bash
-    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 {% if TETHYS_SITE_CONTENT %}
 Modify_Tethys_Site_TethysCore:
   cmd.run:
     - name: {{ TETHYS_BIN_DIR }}/tethys site {{ TETHYS_SITE_CONTENT }}
-    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 {% endif %}
 
 Collect_Static_Files:
   cmd.run:
     - name: . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && {{ TETHYS_BIN_DIR }}/tethys manage collectstatic
     - shell: /bin/bash
-    - unless: /bin/bash -c "[ -f "/usr/lib/tethys/setup_complete" ];"
+    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 Flag_Complete_Setup_TethysCore:
   cmd.run:
-    - name: touch /usr/lib/tethys/setup_complete
+    - name: touch {{ TETHYS_PERSIST }}/setup_complete
     - shell: /bin/bash

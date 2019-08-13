@@ -4,6 +4,8 @@ FROM continuumio/miniconda3
 # ENVIRONMENT #
 ###############
 ENV  TETHYS_HOME="/usr/lib/tethys" \
+     TETHYS_PERSIST="/var/lib/tethys_persist" \
+     APPS_ROOT="${TETHYS_PERSIST}/apps" \
      TETHYS_PORT=8000 \
      POSTGRES_PASSWORD="pass" \
      TETHYS_DB_NAME='tethys_platform' \
@@ -27,8 +29,8 @@ ENV  ALLOWED_HOSTS="localhost 127.0.0.1" \
      ADD_DJANGO_APPS=None \
      SESSION_WARN=1500 \
      SESSION_EXPIRE=1800 \
-     STATIC_ROOT="${TETHYS_HOME}/static" \
-     WORKSPACE_ROOT="${TETHYS_HOME}/workspaces" \
+     STATIC_ROOT="${TETHYS_PERSIST}/static" \
+     WORKSPACE_ROOT="${TETHYS_PERSIST}/workspaces" \
      QUOTA_HANDLERS=None \
      DJANGO_ANALYTICAL=None \
      ADD_BACKENDS=None \
@@ -122,7 +124,8 @@ ADD --chown=www:www .git ${TETHYS_HOME}/tethys/.git/
 # Run Installer
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; python setup.py develop'
-RUN mkdir ${WORKSPACE_ROOT} ${TETHYS_HOME}/apps ${STATIC_ROOT}
+RUN mkdir -p ${TETHYS_PERSIST}
+RUN mkdir ${APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT}
 
 ############
 # CLEAN UP #
