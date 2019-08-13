@@ -96,12 +96,10 @@ jobs:
         - mkdir ~/conda-bld
       script:
         - echo "Building conda package"
+        - export CONDA_BLD_PATH=~/conda-bld
         - conda build ./conda.recipe
 
         - echo "Uploading conda package"
-        - export CONDA_BLD_PATH=~/conda-bld
-        - ls ~/conda-bld
-        - ls ~/conda-bld/noarch
 
         - >
           anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l test
