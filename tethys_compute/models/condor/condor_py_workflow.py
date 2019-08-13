@@ -63,7 +63,7 @@ class CondorPyWorkflow(models.Model):
         return self.condorpy_workflow.num_jobs
 
     def load_nodes(self):
-        workflow = self.condorpy_workflow
+        workflow = self.condor_object
         node_dict = dict()
 
         def add_node_to_dict(node):
@@ -73,6 +73,7 @@ class CondorPyWorkflow(models.Model):
         for node in self.nodes:
             add_node_to_dict(node)
             condorpy_node = node_dict[node]
+            condorpy_node.job._remote = workflow.scheduler
             parents = node.parents
             for parent in parents:
                 add_node_to_dict(parent)
