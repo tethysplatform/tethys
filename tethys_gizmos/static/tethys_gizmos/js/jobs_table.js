@@ -281,7 +281,7 @@ function update_workflow_nodes_row(table_elem){
     var target_selector = "#" + $(table_elem).attr('id') + " td .workflow-nodes-graph";
     var error_selector = target_selector + ' .loading-error';
     var update_url = '/developer/gizmos/ajax/' + job_id + '/update-workflow-nodes-row';
-    test_error += 1;
+
     $.ajax({
         method: 'POST',
         url: update_url,
