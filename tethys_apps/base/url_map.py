@@ -114,9 +114,9 @@ def django_url_preprocessor(url, root_url, protocol, custom_regex=None):
             django_url = r'^$'
     elif protocol == 'websocket':
         if django_url_joined != '':
-            django_url = r'^ws/{0}/{1}/$'.format(root_url, django_url_joined)
+            django_url = r'^{0}/{1}/ws/$'.format(root_url, django_url_joined)
         else:
             # Handle empty string case
-            django_url = r'^ws/{0}/$'.format(root_url)
+            django_url = r'^{0}/ws/$'.format(root_url)
 
     return django_url
