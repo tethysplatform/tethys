@@ -148,11 +148,10 @@ Prepare_Database_TethysCore:
         PGPASSWORD="{{ POSTGRES_PASSWORD }}" {{ TETHYS_BIN_DIR }}/tethys db configure
         -N {{ TETHYS_SUPER_USER }}
         -P {{ TETHYS_SUPER_USER_PASS }}
-        {% if PORTAL_SUPERUSER_NAME and PORTAL_SUPERUSER_PASSWORD %}
-        --portal-superuser-name {{ PORTAL_SUPERUSER_NAME }}
-        --portal-superuser-password {{ PORTAL_SUPERUSER_PASSWORD }}
+        {%- if PORTAL_SUPERUSER_NAME and PORTAL_SUPERUSER_PASSWORD %}
+        --pn {{ PORTAL_SUPERUSER_NAME }} --pp {{ PORTAL_SUPERUSER_PASSWORD }}
         {% endif %}
-        {% if PORTAL_SUPERUSER_EMAIL %}--portal-superuser-email {{ PORTAL_SUPERUSER_EMAIL }}{% endif %}
+        {%- if PORTAL_SUPERUSER_EMAIL %}--pe {{ PORTAL_SUPERUSER_EMAIL }}{% endif %}
     - shell: /bin/bash
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
