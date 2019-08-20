@@ -157,7 +157,9 @@ Modify_Tethys_Site_TethysCore:
 
 Collect_Static_Files:
   cmd.run:
-    - name: . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && {{ TETHYS_BIN_DIR }}/tethys manage collectstatic
+    - name: >
+        . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }}
+        && {{ TETHYS_BIN_DIR }}/tethys manage collectstatic --no-input
     - shell: /bin/bash
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 

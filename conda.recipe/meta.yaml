@@ -52,7 +52,7 @@ requirements:
     - condorpy
 
     # django/plugin dependencies
-    - django=2.1.*
+    - django=2.2.*
     - django-filter
     - djangorestframework
     - django-bootstrap3

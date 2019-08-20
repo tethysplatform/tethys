@@ -86,7 +86,7 @@ Class-based Controllers
 * UrlMaps can take class-based Views as the controller argument: ``MyClassBasedController.as_controller(...)``
 * More to come in the future.
 
-See: `Django Class-based views <https://docs.djangoproject.com/en/2.1/topics/class-based-views/>`_ to get started.
+See: `Django Class-based views <https://docs.djangoproject.com/en/2.2/topics/class-based-views/>`_ to get started.
 
 Partial Install Options
 -----------------------

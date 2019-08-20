@@ -74,19 +74,20 @@ arg_filter = {
 
 def add_site_parser(subparsers):
     # Setup site command
-    site_parser = subparsers.add_parser('site', help='Add/Change portal home content and display.')
+    site_parser = subparsers.add_parser('site', help='Add/Change the Tethys Portal content and theme.')
     site_parser.add_argument('--tab-title', dest='tab_title',
                              help='A double quoted string with the title that will display in the browser tab. '
                                   'Default is "Tethys Portal".')
     site_parser.add_argument('--favicon', dest='favicon',
-                             help='Local path to the icon that will display in the browser tab. '
+                             help='Local or external path to the icon that will display in the browser tab. '
                                   'We recommend storing the favicon in the static directory of tethys_portal. '
-                                  'Default is "/tethys_portal/images/default_favicon.png".')
+                                  'Default is "tethys_portal/images/default_favicon.png".')
     site_parser.add_argument('--title', dest='title',
                              help='A double quoted string with the title of the portal. Default is "Tethys Portal".')
     site_parser.add_argument('--logo', dest='logo',
-                             help='Local path to the portal logo. We recommend storing the logo in the static '
-                                  'directory of tethys_portal. Default is "/tethys_portal/images/tethys-logo-75.png".')
+                             help='Local or external path to the portal logo. We recommend storing the logo in the '
+                                  'static directory of tethys_portal. '
+                                  'Default is "tethys_portal/images/tethys-logo-75.png".')
     site_parser.add_argument('--logo-height', dest='logo_height', help='The height of the portal logo.')
     site_parser.add_argument('--logo-width', dest='logo_width', help='The width of the portal logo.')
     site_parser.add_argument('--logo-padding', dest='logo_padding', help='The padding for the portal logo.')
@@ -94,7 +95,7 @@ def add_site_parser(subparsers):
                              help='A double quoted string with the Title for the Apps library. '
                                   'Default is "Apps Library".')
     site_parser.add_argument('--primary-color', dest='primary_color',
-                             help='The main color for the portal. Default is #0a62a9.')
+                             help='The primary color for the portal. Default is #0a62a9.')
     site_parser.add_argument('--secondary-color', dest='secondary_color',
                              help='The secondary color for the portal. Default is #1b95dc.')
     site_parser.add_argument('--background-color', dest='background_color', help='The background color for the portal.')

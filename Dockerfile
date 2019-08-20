@@ -5,7 +5,7 @@ FROM continuumio/miniconda3
 ###############
 ENV  TETHYS_HOME="/usr/lib/tethys" \
      TETHYS_PERSIST="/var/lib/tethys_persist" \
-     APPS_ROOT="${TETHYS_PERSIST}/apps" \
+     TETHYS_APPS_ROOT="${TETHYS_HOME}/apps" \
      TETHYS_PORT=8000 \
      POSTGRES_PASSWORD="pass" \
      TETHYS_DB_NAME='tethys_platform' \

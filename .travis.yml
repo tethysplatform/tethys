@@ -60,20 +60,24 @@ jobs:
         - echo "Building docker images"
 
         - >
-          if [ -z "$TRAVIS_TAG"]; then export LATEST_TAG="master";
-          echo "Main tag is $LATEST_TAG";
-          docker build -t tethysplatform/tethys-core:$LATEST_TAG .;
-          else export LATEST_TAG="latest";
-          echo "Branch tag is $TRAVIS_TAG and Main tag is $LATEST_TAG";
-          docker build -t tethysplatform/tethys-core:$TRAVIS_TAG -t tethysplatform/tethys-core:$LATEST_TAG .;
+          if [ -z "$TRAVIS_TAG"]; then
+            export LATEST_TAG="master";
+            echo "Main tag is $LATEST_TAG";
+            docker build -t tethysplatform/tethys-core:$LATEST_TAG .;
+          else
+            export LATEST_TAG="latest";
+            echo "Branch tag is $TRAVIS_TAG and Main tag is $LATEST_TAG";
+            docker build -t tethysplatform/tethys-core:$TRAVIS_TAG -t tethysplatform/tethys-core:$LATEST_TAG .;
           fi
 
         - echo "Pushing to docker registry"
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
         - >
-          if [ -z "$TRAVIS_TAG"]; then echo "No Branch tag is Present";
-          else docker push tethysplatform/tethys-core:$TRAVIS_TAG;
+          if [ -z "$TRAVIS_TAG"]; then
+            echo "No Branch tag is Present";
+          else
+            docker push tethysplatform/tethys-core:$TRAVIS_TAG;
           fi
 
         - docker push tethysplatform/tethys-core:$LATEST_TAG
@@ -104,12 +108,14 @@ jobs:
         - echo "Uploading conda package"
 
         - >
-          if [ -z "$TRAVIS_TAG"]; then echo "No Branch tag is Present. Uploading to dev";
-          anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l dev
-          $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
-          else echo "Branch tag is $TRAVIS_TAG. Uploading to master";
-          anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform
-          $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
+          if [ -z "$TRAVIS_TAG"]; then
+            echo "No Branch tag is Present. Uploading to dev";
+            anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l dev
+            $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
+          else
+            echo "Branch tag is $TRAVIS_TAG. Uploading to master";
+            anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform
+            CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
           fi
       after_success:
         - skip
