@@ -17,7 +17,7 @@ class UrlMapBase:
 
     root_url = ''
 
-    def __init__(self, name, url, controller, protocol='http', regex=None):
+    def __init__(self, name, url, controller, protocol='http', regex=None, handler=None, handler_type=None):
         """
         Constructor
 
@@ -37,12 +37,15 @@ class UrlMapBase:
         self.controller = controller
         self.protocol = protocol
         self.custom_match_regex = regex
+        self.handler = handler
+        self.handler_type = handler_type
 
     def __repr__(self):
         """
         String representation
         """
-        return '<UrlMap: name={0}, url={1}, controller={2}>'.format(self.name, self.url, self.controller)
+        return f'<UrlMap: name={self.name}, url={self.url}, controller={self.controller}, protocol={self.protocol}, ' \
+            f'handler={self.handler}, handler_type={self.handler_type}>'
 
 
 def url_map_maker(root_url):

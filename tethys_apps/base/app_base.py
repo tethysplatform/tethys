@@ -26,6 +26,10 @@ from .workspace import TethysWorkspace
 from .mixins import TethysBaseMixin
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
+from channels.http import AsgiHandler
+
+from bokeh.server.django.consumers import WSConsumer, AutoloadJsConsumer
+from bokeh.server.django import autoload
 
 tethys_log = logging.getLogger('tethys.app_base')
 
@@ -41,6 +45,7 @@ class TethysBase(TethysBaseMixin):
 
     def __init__(self):
         self._url_patterns = None
+        self._handler_patterns = None
         self._namespace = None
 
     def url_maps(self):
@@ -65,16 +70,16 @@ class TethysBase(TethysBaseMixin):
                     # Create UrlMap class that is bound to the root url.
                     UrlMap = url_map_maker(self.root_url)
 
-                    url_maps = (UrlMap(name='home',
-                                       url='my-first-app',
-                                       controller='my_first_app.controllers.home',
-                                       ),
-                    ),
-                    url_maps = (UrlMap(name='home_ws',
-                                       url='my-first-ws',
-                                       controller='my_first_app.controllers.HomeConsumer',
-                                       protocol='websocket'
-                                       ),
+                    url_maps = (
+                        UrlMap(name='home',
+                            url='my-first-app',
+                            controller='my_first_app.controllers.home',
+                        ),
+                        UrlMap(name='home_ws',
+                            url='my-first-ws',
+                            controller='my_first_app.controllers.HomeConsumer',
+                            protocol='websocket'
+                        ),
                     )
 
                     return url_maps
@@ -130,6 +135,70 @@ class TethysBase(TethysBaseMixin):
             self._url_patterns = url_patterns
 
         return self._url_patterns
+
+    @property
+    def handler_patterns(self):
+        """
+        Generate the url pattern lists for  app and namespace them accordingly.
+        """
+        if self._handler_patterns is None:
+            is_extension = isinstance(self, TethysExtensionBase)
+
+            handler_patterns = {'http': dict(), 'websocket': dict()}
+
+            if hasattr(self, 'url_maps'):
+                url_maps = self.url_maps()
+
+            for url_map in url_maps:
+                if url_map.handler:
+                    namespace = self.namespace
+
+                    if namespace not in handler_patterns['http']:
+                        handler_patterns['http'][namespace] = []
+
+                    if namespace not in handler_patterns['websocket']:
+                        handler_patterns['websocket'][namespace] = []
+
+                    # Create django url object
+                    if isinstance(url_map.handler, str):
+                        root_handler_path = 'tethysext' if is_extension else 'tethysapp'
+                        full_handler_path = '.'.join([root_handler_path, url_map.handler])
+                        handler_parts = full_handler_path.split('.')
+                        module_name = '.'.join(handler_parts[:-1])
+                        function_name = handler_parts[-1]
+                        try:
+                            module = __import__(module_name, fromlist=[function_name])
+                        except Exception as e:
+                            error_msg = 'The following error occurred while trying to import the handler function ' \
+                                        '"{0}":\n {1}'.format(url_map.handler, traceback.format_exc(2))
+                            tethys_log.error(error_msg)
+                            raise e
+                        try:
+                            handler_function = getattr(module, function_name)
+                        except AttributeError as e:
+                            error_msg = 'The following error occurred while trying to access the handler function ' \
+                                        '"{0}":\n {1}'.format(url_map.handler, traceback.format_exc(2))
+                            tethys_log.error(error_msg)
+                            raise e
+                    else:
+                        handler_function = url_map.handler
+
+                    if url_map.handler_type == 'bokeh':
+                        bokeh_app = autoload(url_map.name, handler_function)
+                        kwargs = dict(app_context=bokeh_app.app_context)
+
+                        http_url = url(url_map.url.replace('^', f'^{self.root_url}/').replace('$', 'autoload.js$'),
+                                       AutoloadJsConsumer, kwargs=kwargs)
+                        ws_url = url(url_map.url.replace('^', f'^{self.root_url}/').replace('$', 'ws/$'),
+                                     WSConsumer, kwargs=kwargs)
+
+                        # Append to namespace list
+                        handler_patterns['http'][namespace].append(http_url)
+                        handler_patterns['websocket'][namespace].append(ws_url)
+
+            self._handler_patterns = handler_patterns
+
+        return self._handler_patterns
 
     def sync_with_tethys_db(self):
         """
