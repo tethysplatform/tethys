@@ -65,7 +65,7 @@ def add_gen_parser(subparsers):
     gen_parser.add_argument('type', help='The type of object to generate.', choices=VALID_GEN_OBJECTS)
     gen_parser.add_argument('-d', '--directory', help='Destination directory for the generated object.')
     gen_parser.add_argument('--allowed-hosts', dest='allowed_hosts', nargs='+',
-                            help='Add multiple hostnames or IP addresses to allowed hosts in the settings file. '
+                            help='Add one or more hostnames or IP addresses to ALLOWED_HOSTS in the settings file. '
                                  'e.g.: 127.0.0.1 localhost')
     gen_parser.add_argument('--client-max-body-size', dest='client_max_body_size',
                             help='Populate the client_max_body_size parameter for nginx config. Defaults to "75M".')
@@ -86,7 +86,7 @@ def add_gen_parser(subparsers):
     gen_parser.add_argument('--production', dest='production', action='store_true',
                             help='Generate a new settings file for a production server.')
     gen_parser.add_argument('--open-portal', dest='open_portal', action='store_true',
-                            help='Allow Open Portal Mode. Defaults to False')
+                            help='Enable open portal mode. Defaults to False')
     gen_parser.add_argument('--open-signup', dest='open_signup', action='store_true',
                             help='Enable open account signup. Defaults to False')
     gen_parser.add_argument('--tethys-port', dest='tethys_port',
@@ -95,7 +95,7 @@ def add_gen_parser(subparsers):
     gen_parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                             help='Overwrite existing file without prompting.')
     gen_parser.add_argument('--add-apps', dest='add_apps', nargs='+',
-                            help='Enable applications by adding them to the INSTALLED_APPS in settings.py. '
+                            help='Enable additional Django apps by adding them to the INSTALLED_APPS in settings.py. '
                                  'e.g.: grappelli django_registration')
     gen_parser.add_argument('--session-persist', dest='session_persist', action='store_true',
                             help='Disable forced user logout once the browser has been closed. Defaults to False')
@@ -104,20 +104,22 @@ def add_gen_parser(subparsers):
     gen_parser.add_argument('--session-expire', dest='session_expire',
                             help='Force user logout after a specified number of seconds. Defaults to 900')
     gen_parser.add_argument('--static-root', dest='static_root',
-                            help='For production. Path to static files diretory. Defaults to ${TETHYS_HOME}/static. '
+                            help='Path to static files directory for production configuration. '
+                                 'Defaults to ${TETHYS_HOME}/static. '
                                  'Applies default if directory does not exist.')
     gen_parser.add_argument('--workspaces-root', dest='workspaces_root',
-                            help='For production. Path to workspaces diretory. Defaults to ${TETHYS_HOME}/workspaces. '
-                                 'Applies default if directory does not exist.')
+                            help='Path to workspaces directory for production configuration. '
+                                 'Defaults to ${TETHYS_HOME}/workspaces. Applies default if directory does not exist.')
     gen_parser.add_argument('--bypass-portal-home', dest='bypass_portal_home', action='store_true',
-                            help='Bypasses the Tethys home page. Defaults to False')
+                            help='Enable bypassing the Tethys Portal home page. When the home page is accessed, '
+                                 'users are redirected to the Apps Library page. Defaults to False')
     gen_parser.add_argument('--add-quota-handlers', dest='add_quota_handlers', nargs='+',
-                            help='Append one or more dot-formatted handlers to the resource quota handlers list in '
-                                 'settings.py. Defaults to tethys_quotas.handlers.workspace.WorkspaceQuotaHandler. '
+                            help='Add one or more dot-formatted paths to custom ResourceQuotaHandler classes. '
+                                 'Defaults to tethys_quotas.handlers.workspace.WorkspaceQuotaHandler. '
                                  'e.g.: tethysapp.dam_inventory.dam_quota_handler.DamQuotaHandler')
     gen_parser.add_argument('--django-analytical', dest='django_analytical', nargs='+',
-                            help='Provide one or more ID:SERVICE_ID pair for django analytical options in settings.py. '
-                                 'All IDs default to False. Available IDs are: CLICKMAP_TRACKER_ID, CLICKY_SITE_ID, '
+                            help='Provide one or more KEY:VALUE pairs for django analytical options in settings.py. '
+                                 'All VALUEs default to False. Available KEYs: CLICKMAP_TRACKER_ID, CLICKY_SITE_ID, '
                                  'CRAZY_EGG_ACCOUNT_NUMBER, GAUGES_SITE_ID, GOOGLE_ANALYTICS_JS_PROPERTY_ID, '
                                  'GOSQUARED_SITE_TOKEN, HOTJAR_SITE_ID, HUBSPOT_PORTAL_ID, INTERCOM_APP_ID, '
                                  'KISSINSIGHTS_ACCOUNT_NUMBER, KISSINSIGHTS_SITE_CODE, KISS_METRICS_API_KEY, '
@@ -127,36 +129,37 @@ def add_gen_parser(subparsers):
                                  'YANDEX_METRICA_COUNTER_ID. '
                                  'e.g.: CLICKMAP_TRACKER_ID:123456 CLICKY_SITE_ID:789123')
     gen_parser.add_argument('--add-backends', dest='add_backends', nargs='+',
-                            help='Add one or more authentication backends to settings.py. Django try these backends in '
-                                 'the same order they are listed. Provide the dot-formatted python path to a custom '
-                                 'backend or one of the following keys: hydroshare, linkedin, google, facebook. '
-                                 'The default backends are django.contrib.auth.backends.ModelBackend and '
-                                 'guardian.backends.ObjectPermissionBackend. '
+                            help='Add one or more authentication backends to settings.py. Provide the dot-formatted '
+                                 'python path to a custom backend or one of the following keys: hydroshare, linkedin, '
+                                 'google, facebook. The default backends are django.contrib.auth.backends.ModelBackend '
+                                 'and guardian.backends.ObjectPermissionBackend. '
                                  'e.g.: project.backend.CustomBackend hydroshare')
     gen_parser.add_argument('--oauth-options', dest='oauth_options', nargs='+',
-                            help='Add options for oauth providers in the settings.py. '
-                                 'Available options are: SOCIAL_AUTH_GOOGLE_OAUTH2_KEY, '
+                            help='Provide KEY:VALUE pairs of parameters for oauth providers in the settings.py. '
+                                 'Available Keys are: SOCIAL_AUTH_GOOGLE_OAUTH2_KEY, '
                                  'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET, SOCIAL_AUTH_FACEBOOK_KEY, '
                                  'SOCIAL_AUTH_FACEBOOK_SECRET, SOCIAL_AUTH_FACEBOOK_SCOPE, '
                                  'SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY, SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET, '
                                  'SOCIAL_AUTH_HYDROSHARE_KEY, SOCIAL_AUTH_HYDROSHARE_SECRET. '
                                  'e.g.: SOCIAL_AUTH_GOOGLE_OAUTH2_KEY:123456 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET:789123')
-    'channels.layers.InMemoryChannelLayer'
     gen_parser.add_argument('--channel-layer', dest='channel_layer',
-                            help='Backend to enable communication between apps via websockets. The Default available '
-                                 'value is channels.layers.InMemoryChannelLayer. For production, it is recommended to '
-                                 'install channel_redis and use channels_redis.core.RedisChannelLayer instead. '
-                                 'A custom backend can be added using dot-formatted path.')
+                            help='Specify a backend to handle communication between apps via websockets. '
+                                 'The Default available value is channels.layers.InMemoryChannelLayer. '
+                                 'For production, it is recommended to install channels_redis and use '
+                                 'channels_redis.core.RedisChannelLayer instead. '
+                                 'A custom backend can be added using a dot-formatted path.')
     gen_parser.add_argument('--captcha', dest='captcha', action='store_true',
                             help='Enable captcha verification. Choices include an image captcha or Google recaptcha. '
-                                 'The Default is False for development environments and True for production '
-                                 'environments. If no recaptcha keys are provided, the image captcha will be used. See '
+                                 'The default is True when the --production flag is used and False when it is omitted. '
+                                 'If no recaptcha keys are provided, the image captcha will be used. See '
                                  '--recaptcha-private-key and --recaptcha-public-key arguments.')
     gen_parser.add_argument('--recaptcha-private-key', dest='recaptcha_private_key',
-                            help='Private key to Google Recaptcha. The Default is None. A private key can be obtained '
+                            help='Provide a private key to enable Google Recaptcha. '
+                                 'The Default is None. A private key can be obtained '
                                  'from https://www.google.com/recaptcha/admin')
     gen_parser.add_argument('--recaptcha-public-key', dest='recaptcha_public_key',
-                            help='Public key to Google Recaptcha. The Default is None. A public key can be obtained '
+                            help='Provide a public key to enable Google Recaptcha. '
+                                 'The Default is None. A public key can be obtained '
                                  'from https://www.google.com/recaptcha/admin')
     gen_parser.set_defaults(func=generate_command, allowed_hosts=None, client_max_body_size='75M', asgi_processes=4,
                             db_name='tethys_platform', db_username='tethys_default', db_password='pass',
@@ -254,7 +257,7 @@ def gen_settings(args):
                     key, value = pair.split(':')
                     django_analytical[key.upper()] = value
                 except ValueError:
-                    raise ValueError('Provide key-value pairs in the form of  KEY:VALUE')
+                    raise ValueError('Provide key-value pairs in the form of KEY:VALUE')
 
     if args.add_backends:
         c = 0
@@ -273,7 +276,7 @@ def gen_settings(args):
                     key, value = pair.split(':')
                     oauth_options[key.upper()] = value
                 except ValueError:
-                    raise ValueError('Provide key-value pairs in the form of  KEY:VALUE')
+                    raise ValueError('Provide key-value pairs in the form of KEY:VALUE')
 
     context = {
         'secret_key': secret_key,
