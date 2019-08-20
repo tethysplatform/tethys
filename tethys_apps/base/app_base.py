@@ -184,17 +184,20 @@ class TethysBase(TethysBaseMixin):
                         handler_function = url_map.handler
 
                     if url_map.handler_type == 'bokeh':
-                        bokeh_app = autoload(url_map.name, handler_function)
+                        bokeh_app = autoload(namespace, handler_function)
                         kwargs = dict(app_context=bokeh_app.app_context)
 
-                        http_url = url(url_map.url.replace('^', f'^{self.root_url}/').replace('$', 'autoload.js$'),
+                        http_url = url(url_map.url.replace('^', f'^apps/{self.root_url}/autoload.js'),
                                        AutoloadJsConsumer, kwargs=kwargs)
-                        ws_url = url(url_map.url.replace('^', f'^{self.root_url}/').replace('$', 'ws/$'),
+                        ws_url = url(url_map.url.replace('^', f'^{self.root_url}/ws/'),
                                      WSConsumer, kwargs=kwargs)
 
                         # Append to namespace list
                         handler_patterns['http'][namespace].append(http_url)
                         handler_patterns['websocket'][namespace].append(ws_url)
+
+                        if handler_patterns['http'][namespace]:
+                            handler_patterns['http'][namespace].append(url(r'', AsgiHandler))
 
             self._handler_patterns = handler_patterns
 

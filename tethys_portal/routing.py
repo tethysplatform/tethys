@@ -1,7 +1,5 @@
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
-from django.conf.urls import url
-from channels.http import AsgiHandler
 
 from tethys_apps.harvester import SingletonHarvester
 
@@ -21,13 +19,8 @@ http_routing_patterns = []
 
 for namespace, urls in app_http_handler_patterns.items():
     for url in urls:
-        print(namespace, url, '##################################000')
         http_routing_patterns.append(url)
 
-if http_routing_patterns:
-    http_routing_patterns.append(url(r'', AsgiHandler))
-
-print(http_routing_patterns, '##################################')
 for namespace, urls in app_ws_handler_patterns.items():
     for url in urls:
         ws_routing_patterns.append(url)
