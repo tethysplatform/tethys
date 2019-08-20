@@ -16,6 +16,9 @@
 {% set TETHYS_PUBLIC_HOST = salt['environ.get']('TETHYS_PUBLIC_HOST') %}
 {% set TETHYS_SUPER_USER = salt['environ.get']('TETHYS_SUPER_USER') %}
 {% set TETHYS_SUPER_USER_PASS = salt['environ.get']('TETHYS_SUPER_USER_PASS') %}
+{% set PORTAL_SUPERUSER_NAME = salt['environ.get']('PORTAL_SUPERUSER_NAME') %}
+{% set PORTAL_SUPERUSER_EMAIL = salt['environ.get']('PORTAL_SUPERUSER_EMAIL') %}
+{% set PORTAL_SUPERUSER_PASSWORD = salt['environ.get']('PORTAL_SUPERUSER_PASSWORD') %}
 {% set ADD_DJANGO_APPS = salt['environ.get']('ADD_DJANGO_APPS') %}
 {% set SESSION_WARN = salt['environ.get']('SESSION_WARN') %}
 {% set SESSION_EXPIRE = salt['environ.get']('SESSION_EXPIRE') %}
@@ -141,10 +144,15 @@ Link_ASGI_Config_TethysCore:
 Prepare_Database_TethysCore:
   cmd.run:
     - name: >
-        . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && PGPASSWORD="{{ POSTGRES_PASSWORD }}"
-        {{ TETHYS_BIN_DIR }}/tethys db configure
+        . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} &&
+        PGPASSWORD="{{ POSTGRES_PASSWORD }}" {{ TETHYS_BIN_DIR }}/tethys db configure
         -N {{ TETHYS_SUPER_USER }}
         -P {{ TETHYS_SUPER_USER_PASS }}
+        {% if PORTAL_SUPERUSER_NAME and PORTAL_SUPERUSER_PASSWORD %}
+        --portal-superuser-name {{ PORTAL_SUPERUSER_NAME }}
+        --portal-superuser-password {{ PORTAL_SUPERUSER_PASSWORD }}
+        {% endif %}
+        {% if PORTAL_SUPERUSER_EMAIL %}--portal-superuser-email {{ PORTAL_SUPERUSER_EMAIL }}{% endif %}
     - shell: /bin/bash
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
@@ -159,7 +167,7 @@ Collect_Static_Files:
   cmd.run:
     - name: >
         . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }}
-        && {{ TETHYS_BIN_DIR }}/tethys manage collectstatic --no-input
+        && {{ TETHYS_BIN_DIR }}/tethys manage collectstatic --noinput
     - shell: /bin/bash
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 

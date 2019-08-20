@@ -144,7 +144,7 @@ def add_gen_parser(subparsers):
                                  'e.g.: SOCIAL_AUTH_GOOGLE_OAUTH2_KEY:123456 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET:789123')
     gen_parser.add_argument('--channel-layer', dest='channel_layer',
                             help='Specify a backend to handle communication between apps via websockets. '
-                                 'The Default available value is channels.layers.InMemoryChannelLayer. '
+                                 'The default backend is channels.layers.InMemoryChannelLayer. '
                                  'For production, it is recommended to install channels_redis and use '
                                  'channels_redis.core.RedisChannelLayer instead. '
                                  'A custom backend can be added using a dot-formatted path.')

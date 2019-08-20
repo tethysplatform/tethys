@@ -14,7 +14,11 @@ ENV  TETHYS_HOME="/usr/lib/tethys" \
      TETHYS_DB_HOST="db" \
      TETHYS_DB_PORT=5432 \
      TETHYS_SUPER_USER="admin" \
-     TETHYS_SUPER_USER_PASS="pass"
+     TETHYS_SUPER_USER_PASS="pass" \
+     PORTAL_SUPERUSER_NAME="" \
+     PORTAL_SUPERUSER_EMAIL="" \
+     PORTAL_SUPERUSER_PASSWORD=""
+
 
 # Misc
 ENV  BASH_PROFILE=".bashrc" \
