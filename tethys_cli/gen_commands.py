@@ -336,7 +336,6 @@ def gen_asgi_service(args):
                     nginx_user = tokens[1].strip(';')
                     break
 
-    hostname = str(settings.ALLOWED_HOSTS[0]) if len(settings.ALLOWED_HOSTS) > 0 else '127.0.0.1'
     conda_home = get_environment_value('CONDA_HOME')
     conda_env_name = get_environment_value('CONDA_ENV_NAME')
 
@@ -351,7 +350,6 @@ def gen_asgi_service(args):
 
     context = {
         'nginx_user': nginx_user,
-        'hostname': hostname,
         'port': args.tethys_port,
         'asgi_processes': args.asgi_processes,
         'conda_home': conda_home,
