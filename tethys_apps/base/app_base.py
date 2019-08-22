@@ -29,8 +29,10 @@ from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssign
 
 from channels.http import AsgiHandler
 
-from bokeh.server.django.consumers import WSConsumer, AutoloadJsConsumer
+from bokeh.server.django.consumers import WSConsumer
 from bokeh.server.django import autoload
+
+from tethys_portal.consumers.bokeh_consumers import BokehAutoloadJsCDN
 
 tethys_log = logging.getLogger('tethys.app_base')
 
@@ -186,13 +188,13 @@ class TethysBase(TethysBaseMixin):
 
                     if url_map.handler_type == 'bokeh':
                         if url_map.url in [r'', r'/', r'^$', r'^/$']:
-                            app_endpoint = os.path.join('apps', self.root_url)
+                            app_endpoint = '/'.join(['apps', self.root_url])
                         else:
                             stripped_url = url_map.url.replace("^", "").replace("$", "")
                             if stripped_url.endswith('/'):
                                 stripped_url = stripped_url[:-1]
 
-                            app_endpoint = os.path.join('apps', self.root_url, stripped_url)
+                            app_endpoint = '/'.join(['apps', self.root_url, stripped_url])
 
                         bokeh_app = autoload(app_endpoint, handler_function)
                         kwargs = dict(app_context=bokeh_app.app_context)
@@ -201,7 +203,7 @@ class TethysBase(TethysBaseMixin):
                             url_pattern = os.path.join(re.escape(bokeh_app.url)) + suffix
                             return f'^{url_pattern}$'
 
-                        http_url = url(urlpattern('/autoload.js'), AutoloadJsConsumer, name=f'{url_map.name}_autoload',
+                        http_url = url(urlpattern('/autoload.js'), BokehAutoloadJsCDN, name=f'{url_map.name}_autoload',
                                        kwargs=kwargs)
                         ws_url = url(urlpattern('/ws'), WSConsumer, name=f'{url_map.name}_ws', kwargs=kwargs)
 
@@ -209,8 +211,8 @@ class TethysBase(TethysBaseMixin):
                         handler_patterns['http'][namespace].append(http_url)
                         handler_patterns['websocket'][namespace].append(ws_url)
 
-                        if handler_patterns['http'][namespace]:
-                            handler_patterns['http'][namespace].append(url(r'', AsgiHandler))
+                    if len(handler_patterns['http'][namespace]) == len(url_maps):
+                        handler_patterns['http'][namespace].append(url(r'', AsgiHandler))
 
             self._handler_patterns = handler_patterns
 
