@@ -16,6 +16,7 @@ from tethys_apps.base.app_base import TethysAppBase
 from tethys_apps.models import TethysApp
 from tethys_apps.utilities import get_active_app
 from tethys_compute.models import TethysJob, DaskJob
+from tethys_apps.models import ProxyApp
 
 log = logging.getLogger('tethys.' + __name__)
 
@@ -37,6 +38,22 @@ def library(request):
         else:
             if request.user.is_staff:
                 unconfigured_apps.append(app)
+
+    # Fetch any proxied apps (these are always assumed to be configured)
+    proxy_apps = ProxyApp.objects.all()
+
+    for proxy_app in proxy_apps:
+        new_app = {
+            'proxied': True,
+            'show_in_apps_library': proxy_app.show_in_apps_library,
+            'enabled': proxy_app.enabled,
+            'url': proxy_app.endpoint,
+            'icon': proxy_app.logo_url,
+            'name': proxy_app.name,
+            'description': proxy_app.description,
+            'tags': proxy_app.tags
+        }
+        configured_apps.append(new_app)
 
     # Define the context object
     context = {'apps': {'configured': configured_apps, 'unconfigured': unconfigured_apps}}
