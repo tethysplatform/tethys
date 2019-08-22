@@ -9,6 +9,7 @@
 """
 import logging
 import os
+import re
 import sys
 import traceback
 import warnings
@@ -184,13 +185,25 @@ class TethysBase(TethysBaseMixin):
                         handler_function = url_map.handler
 
                     if url_map.handler_type == 'bokeh':
-                        bokeh_app = autoload(namespace, handler_function)
+                        if url_map.url in [r'', r'/', r'^$', r'^/$']:
+                            app_endpoint = os.path.join('apps', self.root_url)
+                        else:
+                            stripped_url = url_map.url.replace("^", "").replace("$", "")
+                            if stripped_url.endswith('/'):
+                                stripped_url = stripped_url[:-1]
+
+                            app_endpoint = os.path.join('apps', self.root_url, stripped_url)
+
+                        bokeh_app = autoload(app_endpoint, handler_function)
                         kwargs = dict(app_context=bokeh_app.app_context)
 
-                        http_url = url(url_map.url.replace('^', f'^apps/{self.root_url}/autoload.js'),
-                                       AutoloadJsConsumer, kwargs=kwargs)
-                        ws_url = url(url_map.url.replace('^', f'^{self.root_url}/ws/'),
-                                     WSConsumer, kwargs=kwargs)
+                        def urlpattern(suffix=""):
+                            url_pattern = os.path.join(re.escape(bokeh_app.url)) + suffix
+                            return f'^{url_pattern}$'
+
+                        http_url = url(urlpattern('/autoload.js'), AutoloadJsConsumer, name=f'{url_map.name}_autoload',
+                                       kwargs=kwargs)
+                        ws_url = url(urlpattern('/ws'), WSConsumer, name=f'{url_map.name}_ws', kwargs=kwargs)
 
                         # Append to namespace list
                         handler_patterns['http'][namespace].append(http_url)

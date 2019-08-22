@@ -99,7 +99,7 @@ def django_url_preprocessor(url, root_url, protocol, custom_regex=None):
             else:
                 expression = DEFAULT_EXPRESSION
 
-            part = '(?P<{0}>{1})'.format(variable_name, expression)
+            part = f'(?P<{variable_name}>{expression})'
             url_variable_count += 1
 
         # Collect processed parts
@@ -111,15 +111,15 @@ def django_url_preprocessor(url, root_url, protocol, custom_regex=None):
     # Final django-formatted url
     if protocol == 'http':
         if django_url_joined != '':
-            django_url = r'^{0}/$'.format(django_url_joined)
+            django_url = f'^{django_url_joined}/$'
         else:
             # Handle empty string case
             django_url = r'^$'
     elif protocol == 'websocket':
         if django_url_joined != '':
-            django_url = r'^{0}/{1}/ws/$'.format(root_url, django_url_joined)
+            django_url = f'^{root_url}/{django_url_joined}/ws/$'
         else:
             # Handle empty string case
-            django_url = r'^{0}/ws/$'.format(root_url)
+            django_url = f'^{root_url}/ws/$'
 
     return django_url
