@@ -13,8 +13,12 @@ import os.path
 
 class CondorWorkflowNodeTest(TethysTestCase):
     def set_up(self):
-        path = os.path.dirname(__file__)
-        self.workspace_dir = os.path.join(path, 'workspace')
+        test_models_dir = os.path.dirname(__file__)
+        self.workspace_dir = os.path.join(test_models_dir, 'workspace')
+
+        files_dir = os.path.join(os.path.dirname(test_models_dir), 'files')
+        self.private_key = os.path.join(files_dir, 'keys', 'testkey')
+        self.private_key_pass = 'password'
 
         self.user = User.objects.create_user('tethys_super', 'user@example.com', 'pass')
 
@@ -23,8 +27,8 @@ class CondorWorkflowNodeTest(TethysTestCase):
             host='localhost',
             username='tethys_super',
             password='pass',
-            private_key_path='test_path',
-            private_key_pass='test_pass'
+            private_key_path=self.private_key,
+            private_key_pass=self.private_key_pass
         )
         self.scheduler.save()
 

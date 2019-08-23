@@ -36,14 +36,14 @@ dependencies:
 - owslib
 - requests
 - social-auth-app-django
-- dask
+- dask=1.2.*
 - tethys_dask_scheduler>=1.0.2
 - channels
 - service_identity
 - condorpy
 
 # django/plugin dependencies
-- django=2.1.*
+- django=2.2.*
 - django-filter
 - djangorestframework
 - django-bootstrap3
