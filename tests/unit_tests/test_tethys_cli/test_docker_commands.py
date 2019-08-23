@@ -166,11 +166,9 @@ class TestDockerCommands(unittest.TestCase):
         mock_port_bindings_prop.return_value = mock_port_bindings
         expected_options = dict(
             name='tethys_postgis',
-            image='ciwater/postgis:2.1.2',
+            image='mdillon/postgis:latest',
             environment=dict(
-                TETHYS_DEFAULT_PASS='pass',
-                TETHYS_DB_MANAGER_PASS='pass',
-                TETHYS_SUPER_PASS='pass',
+                POSTGRES_PASSWORD='mysecretpassword',
             ),
             host_config=dict(
                 port_bindings=mock_port_bindings
@@ -183,17 +181,13 @@ class TestDockerCommands(unittest.TestCase):
     @mock.patch('tethys_cli.docker_commands.UserInputHelper.get_verified_password')
     @mock.patch('tethys_cli.docker_commands.PostGisContainerMetadata.default_container_options')
     def test_cm_get_container_options_postgis(self, mock_default_options, mock_getpass, mock_pretty_output):
-        mock_default_options.return_value = dict(environment={})
+        mock_default_options.return_value = dict(environment=dict(POSTGRES_PASSWORD='mysecretpassword'))
         mock_getpass.side_effect = [
-            'pass',  # tethys_default password
-            'passmgr',  # tethys_db_manager password
-            'passmgr',  # tethys_super password
+            'pass',  # POSTGRES_PASSWORD
         ]
 
         expected_environment = dict(
-            TETHYS_DEFAULT_PASS='pass',
-            TETHYS_DB_MANAGER_PASS='passmgr',
-            TETHYS_SUPER_PASS='passmgr',
+            POSTGRES_PASSWORD='pass',
         )
 
         container = cli_docker_commands.PostGisContainerMetadata()
@@ -201,7 +195,8 @@ class TestDockerCommands(unittest.TestCase):
 
         po_call_args = mock_pretty_output.call_args_list
         self.assertEqual(1, len(po_call_args))
-        self.assertIn('Provide passwords for the three Tethys database users or press enter', po_call_args[0][0][0])
+        self.assertIn('Tethys uses the mdillon/postgis image on Docker Hub. '
+                      'See: https://hub.docker.com/r/mdillon/postgis/', po_call_args[0][0][0])
         mock_default_options.assert_called()
 
     @mock.patch('tethys_cli.docker_commands.GeoServerContainerMetadata.port_bindings',
