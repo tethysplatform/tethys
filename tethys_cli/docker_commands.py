@@ -59,7 +59,8 @@ class ContainerMetadata(ABC):
     input = None
     name = None
     display_name = None
-    image = None
+    image_name = None
+    tag = 'latest'
     host_port = None
     container_port = None
     default_host = '127.0.0.1'
@@ -133,6 +134,10 @@ class ContainerMetadata(ABC):
         )
 
     @property
+    def image(self):
+        return f'{self.image_name}:{self.tag}'
+
+    @property
     @abstractmethod
     def endpoint(self):
         """URL for accessing the service running in the container."""
@@ -198,7 +203,7 @@ class PostGisContainerMetadata(ContainerMetadata):
     input = 'postgis'
     name = 'tethys_postgis'
     display_name = 'PostGIS/Database'
-    image = 'ciwater/postgis:2.1.2'
+    image_name = 'mdillon/postgis'
     host_port = 5435
     container_port = 5432
 
@@ -213,9 +218,7 @@ class PostGisContainerMetadata(ContainerMetadata):
         options = super().default_container_options()
         options.update(
             environment=dict(
-                TETHYS_DEFAULT_PASS='pass',
-                TETHYS_DB_MANAGER_PASS='pass',
-                TETHYS_SUPER_PASS='pass',
+                POSTGRES_PASSWORD='mysecretpassword',
             ),
         )
         return options
@@ -226,27 +229,16 @@ class PostGisContainerMetadata(ContainerMetadata):
 
         # User environmental variables
         if not defaults:
-            write_pretty_output("Provide passwords for the three Tethys database users or press enter to accept the "
-                                "default passwords shown in square brackets:")
+            write_pretty_output("Tethys uses the mdillon/postgis image on Docker Hub. "
+                                "See: https://hub.docker.com/r/mdillon/postgis/")
 
-            default_password = 'pass'
-
-            # tethys_default
-            prompt = 'Password for "tethys_default" database user'
-            tethys_default_pass = UserInputHelper.get_verified_password(prompt, default_password)
-
-            # tethys_db_manager
-            prompt = 'Password for "tethys_db_manager" database user'
-            tethys_db_manager_pass = UserInputHelper.get_verified_password(prompt, default_password)
-
-            # tethys_super
-            prompt = 'Password for "tethys_super" database user'
-            tethys_super_pass = UserInputHelper.get_verified_password(prompt, default_password)
+            # POSTGRES_PASSWORD
+            prompt = 'Password for postgres user (i.e. POSTGRES_PASSWORD)'
+            postgres_password = \
+                UserInputHelper.get_verified_password(prompt, options['environment']['POSTGRES_PASSWORD'])
 
             options['environment'].update(
-                TETHYS_DEFAULT_PASS=tethys_default_pass,
-                TETHYS_DB_MANAGER_PASS=tethys_db_manager_pass,
-                TETHYS_SUPER_PASS=tethys_super_pass
+                POSTGRES_PASSWORD=postgres_password,
             )
 
         return options
@@ -256,7 +248,8 @@ class GeoServerContainerMetadata(ContainerMetadata):
     input = 'geoserver'
     name = 'tethys_geoserver'
     display_name = 'GeoServer'
-    image = 'ciwater/geoserver:2.8.2-clustered'
+    image_name = 'ciwater/geoserver'
+    tag = '2.8.2-clustered'
     host_port = 8181
     container_port = 8080  # only for backwards compatibility with non-clustered containers
 
@@ -433,7 +426,8 @@ class N52WpsContainerMetadata(ContainerMetadata):
     input = 'wps'
     name = 'tethys_wps'
     display_name = '52 North WPS'
-    image = 'ciwater/n52wps:3.3.1'
+    image_name = 'ciwater/n52wps'
+    tag = '3.3.1'
     host_port = 8282
     container_port = 8080
 
