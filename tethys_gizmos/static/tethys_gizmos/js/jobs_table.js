@@ -149,7 +149,7 @@ function render_workflow_nodes_graph(dag, target_selector) {
     }
 
     // Setup SVG and group so we can translate the final graph.
-    $(target_selector).html('<svg></svg>');
+    $(target_selector).html('<svg></svg><p class="loading-error">');
     let svg_selector = target_selector + " svg";
     let svg = d3.select(svg_selector);
     let inner = svg.append('g');
@@ -231,7 +231,6 @@ function update_row(table_elem){
             }
             if(status == 'Running' || status == 'Submitted' || status == 'Various') {
                 active_counter++;
-                var run_time_field = $('#run_time-' + job_id);
                 setTimeout(function(){
                     update_row(table_elem);
                 }, refresh_interval);
@@ -244,8 +243,6 @@ function update_row(table_elem){
             $(table_elem).find('.btn-job-delete').each(function(){
                 bind_delete_button(this);
             });
-
-
         }
     });
 }
@@ -282,19 +279,24 @@ function update_workflow_nodes_row(table_elem){
     var refresh_interval = $(table).data('refresh-interval');
     var job_id = $(table_elem).data('job-id');
     var target_selector = "#" + $(table_elem).attr('id') + " td .workflow-nodes-graph";
+    var error_selector = target_selector + ' .loading-error';
     var update_url = '/developer/gizmos/ajax/' + job_id + '/update-workflow-nodes-row';
+
     $.ajax({
         method: 'POST',
         url: update_url,
         data: {}
     }).done(function(json){
         if(json.success){
+            // Clear errors
+            $(error_selector).html('');
+
+            // Render graph
             render_workflow_nodes_graph(json.dag, target_selector);
 
             // Update again?
             status = json.status;
             if(status == 'Running' || status == 'Submitted' || status == 'Various'){
-                var run_time_field = $('#run_time-' + job_id)
                 setTimeout(function(){
                     update_workflow_nodes_row(table_elem);
                 }, refresh_interval);
@@ -302,10 +304,17 @@ function update_workflow_nodes_row(table_elem){
         }
         else
         {
-            $(target_selector).html('<p class="loading-error">An unexpected error occured while retrieving node status.</p>');
+            // Display error
+            $(error_selector).html('An unexpected error occurred while updating. Trying again in '
+                                   + refresh_interval / 1000 + ' seconds.');
+            // Update again
+            setTimeout(function(){
+                update_workflow_nodes_row(table_elem);
+            }, refresh_interval);
         }
     });
 }
+
 function bokeh_nodes_row(table_elem){
     var table = $(table_elem).closest('table');
     var refresh_interval = $(table).data('refresh-interval');

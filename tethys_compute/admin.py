@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 from django.contrib import admin
+from django.utils.html import format_html
 from tethys_compute.models import TethysJob
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler
@@ -22,7 +23,7 @@ class DaskSchedulerAdmin(admin.ModelAdmin):
         if obj.dashboard:
             dask_status_link = '<a href="%s" target="_blank">%s</a>' % ('../../dask-dashboard/status/' + str(obj.id),
                                                                         'Launch DashBoard')
-            return dask_status_link
+            return format_html(dask_status_link)
 
     append_link.allow_tags = True
     append_link.short_description = 'dashboard'
