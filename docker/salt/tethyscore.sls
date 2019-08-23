@@ -14,8 +14,8 @@
 {% set TETHYS_HOME = salt['environ.get']('TETHYS_HOME') %}
 {% set TETHYS_PORT = salt['environ.get']('TETHYS_PORT') %}
 {% set TETHYS_PUBLIC_HOST = salt['environ.get']('TETHYS_PUBLIC_HOST') %}
-{% set TETHYS_SUPER_USER = salt['environ.get']('TETHYS_SUPER_USER') %}
-{% set TETHYS_SUPER_USER_PASS = salt['environ.get']('TETHYS_SUPER_USER_PASS') %}
+{% set TETHYS_DB_SUPERUSER = salt['environ.get']('TETHYS_DB_SUPERUSER') %}
+{% set TETHYS_DB_SUPERUSER_PASS = salt['environ.get']('TETHYS_DB_SUPERUSER_PASS') %}
 {% set PORTAL_SUPERUSER_NAME = salt['environ.get']('PORTAL_SUPERUSER_NAME') %}
 {% set PORTAL_SUPERUSER_EMAIL = salt['environ.get']('PORTAL_SUPERUSER_EMAIL') %}
 {% set PORTAL_SUPERUSER_PASSWORD = salt['environ.get']('PORTAL_SUPERUSER_PASSWORD') %}
@@ -146,8 +146,8 @@ Prepare_Database_TethysCore:
     - name: >
         . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} &&
         PGPASSWORD="{{ POSTGRES_PASSWORD }}" {{ TETHYS_BIN_DIR }}/tethys db configure
-        -N {{ TETHYS_SUPER_USER }}
-        -P {{ TETHYS_SUPER_USER_PASS }}
+        -N {{ TETHYS_DB_SUPERUSER }}
+        -P {{ TETHYS_DB_SUPERUSER_PASS }}
         {%- if PORTAL_SUPERUSER_NAME and PORTAL_SUPERUSER_PASSWORD %}
         --pn {{ PORTAL_SUPERUSER_NAME }} --pp {{ PORTAL_SUPERUSER_PASSWORD }}
         {% endif %}

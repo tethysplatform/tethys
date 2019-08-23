@@ -10,8 +10,8 @@ services:
     ports:
       - "80:80"
     environment:
-      TETHYS_SUPER_USER: "admin"
-      TETHYS_SUPER_USER_PASS: "pass"
+      TETHYS_DB_SUPERUSER: "tethys_super"
+      TETHYS_DB_SUPERUSER_PASS: "pass"
       ASGI_PROCESSES: 4
       CLIENT_MAX_BODY_SIZE: "75M"
     links:
