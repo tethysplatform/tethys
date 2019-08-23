@@ -28,24 +28,24 @@ SECRET_KEY = '{{ secret_key }}'
 DEBUG = {% if production %}False{% else %}True{% endif %}
 
 {% if allowed_hosts %}
-ALLOWED_HOSTS = {{ allowed_hosts|safe }}
-{% else %}
-ALLOWED_HOSTS = [{% if allowed_host %}'{{ allowed_host }}'{% endif %}]
+ALLOWED_HOSTS = {{ allowed_hosts }}
 {% endif %}
 
 # List those who should be notified of an error when DEBUG = False as a tuple of (name, email address).
-# i.e.: ADMINS = (('John', 'john@example.com'), ('Mary', 'mary@example.com'))
-ADMINS = ()
+# i.e.: ADMINS = [('John', 'john@example.com'), ('Mary', 'mary@example.com')]
+ADMINS = []
 
 # Force user logout once the browser has been closed.
 # If changed, delete all django_session table entries from the tethys_default database to ensure updated behavior
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
+SESSION_EXPIRE_AT_BROWSER_CLOSE = {{ session_expire_browser }}
+{% if not session_expire_browser %}
+SESSION_SECURITY_INSECURE = True
+{% endif %}
 # Warn user of forced logout after indicated number of seconds
-SESSION_SECURITY_WARN_AFTER = 840
+SESSION_SECURITY_WARN_AFTER = {{ session_warning }}
 
 # Force user logout after a certain number of seconds
-SESSION_SECURITY_EXPIRE_AFTER = 900
+SESSION_SECURITY_EXPIRE_AFTER = {{ session_expire }}
 
 # See https://docs.djangoproject.com/en/1.8/topics/logging/#configuring-logging for more logging configuration options.
 LOGGING = {
@@ -83,33 +83,13 @@ LOGGING = {
 
 # Application definition
 
-INSTALLED_APPS = (
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django_gravatar',
-    'bootstrap3',
-    'termsandconditions',
-    'tethys_config',
-    'tethys_apps',
-    'tethys_gizmos',
-    'tethys_services',
-    'tethys_compute',
-    'tethys_quotas',
-    'social_django',
-    'guardian',
-    'session_security',
-    'captcha',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'analytical',
-    'channels',
-)
+INSTALLED_APPS = [
+{%- for item in installed_apps %}
+    '{{ item }}',
+{%- endfor %}
+]
 
-MIDDLEWARE = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -118,7 +98,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
-)
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -129,17 +109,14 @@ REST_FRAMEWORK = {
     )
 }
 
-AUTHENTICATION_BACKENDS = (
-#    'tethys_services.backends.hydroshare.HydroShareOAuth2',
-#    'social_core.backends.linkedin.LinkedinOAuth2',
-#    'social_core.backends.google.GoogleOAuth2',
-#    'social_core.backends.facebook.FacebookOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-    'guardian.backends.ObjectPermissionBackend',
-)
+AUTHENTICATION_BACKENDS = [
+{%- for item in backends %}
+    '{{ item }}',
+{%- endfor %}
+]
 
 # Password validation
-# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 # AUTH_PASSWORD_VALIDATORS = [
 #     {
@@ -173,7 +150,7 @@ DATABASES = {
         'NAME': '{{ db_name }}',
         'USER': '{{ db_username }}',
         'PASSWORD': '{{ db_password }}',
-        'HOST': '127.0.0.1',
+        'HOST': '{{ db_host }}',
         'PORT': '{{ db_port }}',
         {% if not production %}'DIR': '{{ db_dir }}',{% endif %}
     }
@@ -230,19 +207,19 @@ TEMPLATES = [
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 
-STATICFILES_FINDERS = (
+STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'tethys_apps.static_finders.TethysStaticFinder'
-)
+]
 
 # Uncomment the next line for production installation
-{% if not production %}#{% endif %}STATIC_ROOT = '{{ tethys_home }}/static'
+{% if not production %}#{% endif %}STATIC_ROOT = '{{ static_root }}'
 
 # Tethys Workspaces
-{% if not production %}#{% endif %}TETHYS_WORKSPACES_ROOT = '{{ tethys_home }}/workspaces'
+{% if not production %}#{% endif %}TETHYS_WORKSPACES_ROOT = '{{ workspaces_root }}'
 
 # Messaging settings
 MESSAGE_TAGS = {message_constants.DEBUG: 'alert-danger',
@@ -262,10 +239,10 @@ GRAVATAR_DFFAULT_SECURE = True
 
 
 # Use this setting to bypass the home page
-BYPASS_TETHYS_HOME_PAGE = False
+BYPASS_TETHYS_HOME_PAGE = {{ bypass_portal_home }}
 
 # Use this setting to disable open account signup
-ENABLE_OPEN_SIGNUP = False
+ENABLE_OPEN_SIGNUP = {{ open_signup }}
 
 # Set to True to allow Open Portal mode.
 ENABLE_OPEN_PORTAL = {{ open_portal }}
@@ -288,22 +265,13 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/apps/'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/accounts/login/'
 
 # OAuth Providers
-## Google
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
-
-## Facebook
-SOCIAL_AUTH_FACEBOOK_KEY = ''
-SOCIAL_AUTH_FACEBOOK_SECRET = ''
-SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-
-## LinkedIn
-SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = ''
-SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = ''
-
-## HydroShare
-SOCIAL_AUTH_HYDROSHARE_KEY = ''
-SOCIAL_AUTH_HYDROSHARE_SECRET = ''
+# Google, Facebook, LinkedIn, and HydroShare options available. "tethys gen settings --help" for more info
+{%- for key, value in oauth_options.items() %}
+{% if value %}
+{%- if  key == "SOCIAL_AUTH_FACEBOOK_SCOPE" %}{{ key }} = ['{{ value }}']
+{%- else %}{{ key }} = '{{ value }}'{% endif %}
+{%- else %}{{ key }} = ''{% endif %}
+{%- endfor %}
 
 # Django Guardian Settings
 ANONYMOUS_USER_ID = -1
@@ -314,40 +282,31 @@ ANONYMOUS_USER_ID = -1
 
 # RESOURCE QUOTAS TO INSTALL
 RESOURCE_QUOTA_HANDLERS = [
-    "tethys_quotas.handlers.workspace.WorkspaceQuotaHandler",
+{%- for item in resource_quota_handlers %}
+    '{{ item }}',
+{%- endfor %}
 ]
+
+ENABLE_CAPTCHA = {{ captcha }}
+
+# Django-recaptcha
+RECAPTCHA_PRIVATE_KEY = {% if recaptcha_private_key %}'{{ recaptcha_private_key }}'{% else %}''{% endif %}
+RECAPTCHA_PUBLIC_KEY = {% if recaptcha_public_key %}'{{ recaptcha_public_key }}'{% else %}''{% endif %}
+# If you require reCaptcha to be loaded from somewhere other than https://google.com
+# (e.g. to bypass firewall restrictions), you can specify what proxy to use.
+# RECAPTCHA_PROXY_HOST = 'https://recaptcha.net'
 
 # Placeholders for the ID's required by various web-analytics services supported by Django-Analytical.
 # Replace False with the tracking ID as a string e.g. SERVICE_ID = 'abcd1234'
-CLICKMAP_TRACKER_ID = False
-CLICKY_SITE_ID = False
-CRAZY_EGG_ACCOUNT_NUMBER = False
-GAUGES_SITE_ID = False
-GOOGLE_ANALYTICS_JS_PROPERTY_ID = False
-GOSQUARED_SITE_TOKEN = False
-HOTJAR_SITE_ID = False
-HUBSPOT_PORTAL_ID = False
-INTERCOM_APP_ID = False
-KISSINSIGHTS_ACCOUNT_NUMBER = False
-KISSINSIGHTS_SITE_CODE = False
-KISS_METRICS_API_KEY = False
-MIXPANEL_API_TOKEN = False
-OLARK_SITE_ID = False
-OPTIMIZELY_ACCOUNT_NUMBER = False
-PERFORMABLE_API_KEY = False
-PIWIK_DOMAIN_PATH = False
-PIWIK_SITE_ID = False
-RATING_MAILRU_COUNTER_ID = False
-SNAPENGAGE_WIDGET_ID = False
-SPRING_METRICS_TRACKING_ID = False
-USERVOICE_WIDGET_KEY = False
-WOOPRA_DOMAIN = False
-YANDEX_METRICA_COUNTER_ID = False
+{%- for key, value in django_analytical.items() %}
+{{ key }} = '{{ value }}'
+{%- endfor %}
 
 ASGI_APPLICATION = "tethys_portal.routing.application"
 
-# CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': 'channels.layers.InMemoryChannelLayer'
-#     },
-# }
+{% if not channel_layer %}# {% endif %}CHANNEL_LAYERS = {
+{% if not channel_layer %}# {% endif %}    'default': {
+{% if not channel_layer %}# {% endif %}        'BACKEND': '
+{%- if channel_layer %}{{ channel_layer }}{% else %}channels.layers.InMemoryChannelLayer{% endif %}'
+{% if not channel_layer %}# {% endif %}    },
+{% if not channel_layer %}# {% endif %}}

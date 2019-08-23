@@ -263,7 +263,7 @@ CALL activate !CONDA_ENV_NAME!
 python setup.py develop
 
 IF NOT "!ALLOWED_HOST!"=="127.0.0.1" (
-    SET ALLOWED_HOST_OPT=--allowed-host !ALLOWED_HOST!
+    SET ALLOWED_HOST_OPT=--allowed-hosts !ALLOWED_HOST!
 )
 
 tethys gen settings !ALLOWED_HOST_OPT! --db-username !TETHYS_DB_USERNAME! --db-password !TETHYS_DB_PASSWORD! --db-port !TETHYS_DB_PORT!
@@ -350,7 +350,7 @@ ECHO.
 ECHO OPTIONS:
 ECHO     -t, --tethys-home [PATH]            Path for tethys home directory. Default is 'C:\%HOMEPATH%\tethys'.
 ECHO     -s, --tethys-src [PATH]             Path for tethys source directory. Default is %%TETHYS_HOME%%\src.
-ECHO     -a, --allowed-host [HOST]           Hostname or IP address on which to serve tethys. Default is 127.0.0.1.
+ECHO     -a, --allowed-hosts [HOST]           Hostname or IP address on which to serve tethys. Default is 127.0.0.1.
 ECHO     -p, --port [PORT]                   Port on which to serve tethys. Default is 8000.
 ECHO     -b, --branch [BRANCH_NAME]          Branch to checkout from version control. Default is 'release'.
 ECHO     -c, --conda-home [PATH]             Path to conda home directory where Miniconda will be installed. Default is %%TETHYS_HOME%%\miniconda.

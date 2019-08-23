@@ -22,3 +22,4 @@ tests/coverage_html_report
 .DS_Store
 dask-worker-space
 portal.yml
+*site_content.yml

@@ -18,7 +18,7 @@ Follow the default :doc:`../linux_and_mac` instructions to install Tethys Portal
 
 For a production installation the installation script should be run with all of the following settings::
 
-    $ bash install_tethys.sh --allowed-host <YOUR_SERVERS_HOSTNAME> --db-username <SECURE_DB_USERNAME> --db-password <SECURE_DB_PASSWORD> --db-port <PORT_FOR_YOUR_DB_SERVER> --superuser <PORTAL_ADMIN_USERNAME> --superuser-email <PORTAL_ADMIN_EMAIL> --superuser-pass <PORTAL_ADMIN_PASSWORD> --production
+    $ bash install_tethys.sh --allowed-hosts <YOUR_SERVERS_HOSTNAME> --db-username <SECURE_DB_USERNAME> --db-password <SECURE_DB_PASSWORD> --db-port <PORT_FOR_YOUR_DB_SERVER> --superuser <PORTAL_ADMIN_USERNAME> --superuser-email <PORTAL_ADMIN_EMAIL> --superuser-pass <PORTAL_ADMIN_PASSWORD> --production
 
 .. note::
 

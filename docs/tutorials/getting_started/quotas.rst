@@ -313,7 +313,7 @@ b. Now go into the portal's ``settings.py`` file and add the dot-path of the han
     # RESOURCE QUOTAS TO INSTALL
     RESOURCE_QUOTA_HANDLERS = [
         "tethys_quotas.handlers.workspace.WorkspaceQuotaHandler",
-        "tethys_apps.tethysapp.dam_inventory.dam_quota_handler.DamQuotaHandler",
+        "tethysapp.dam_inventory.dam_quota_handler.DamQuotaHandler",
         # your path `may` be different
     ]
 

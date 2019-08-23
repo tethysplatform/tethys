@@ -1,6 +1,6 @@
 [fcgi-program:asgi]
 # TCP socket used by Nginx backend upstream
-socket=tcp://{{ hostname }}:{{ port }}
+socket=tcp://127.0.0.1:{{ port }}
 
 # Project files directory location
 directory={{ tethys_src }}
