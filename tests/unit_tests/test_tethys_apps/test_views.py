@@ -1,6 +1,7 @@
 import unittest
 from unittest import mock
 
+from tethys_apps.models import ProxyApp, TethysApp
 from tethys_apps.views import library, handoff_capabilities, handoff, send_beta_feedback_email, update_job_status, \
     update_dask_job_status
 
@@ -15,39 +16,80 @@ class TethysAppsViewsTest(unittest.TestCase):
 
     @mock.patch('tethys_apps.views.render')
     @mock.patch('tethys_apps.views.TethysApp')
-    def test_library(self, mock_tethys_app, mock_render):
+    @mock.patch('tethys_apps.views.ProxyApp')
+    def test_library_staff(self, mock_ProxyApp, mock_TethysApp, mock_render):
         mock_request = mock.MagicMock()
         mock_request.user.is_staff = True
-        mock_app1 = mock.MagicMock()
+
+        mock_app1 = mock.MagicMock(spec=TethysApp)
         mock_app1.configured = True
-        mock_app2 = mock.MagicMock()
+        mock_app2 = mock.MagicMock(spec=TethysApp)
         mock_app2.configured = False
-        mock_tethys_app.objects.all.return_value = [mock_app1, mock_app2]
+        mock_TethysApp.objects.all.return_value = [mock_app1, mock_app2]
+
+        mock_proxy_app1 = mock.MagicMock(spec=ProxyApp)
+        mock_ProxyApp.objects.all.return_value = [mock_proxy_app1]
+
         mock_render.return_value = True
 
         ret = library(mock_request)
+
         self.assertEqual(ret, mock_render.return_value)
-        mock_tethys_app.objects.all.assert_called_once()
-        mock_render.assert_called_once_with(mock_request, 'tethys_apps/app_library.html',
-                                            {'apps': {'configured': [mock_app1], 'unconfigured': [mock_app2]}})
+        mock_TethysApp.objects.all.assert_called_once()
+        mock_ProxyApp.objects.all.assert_called_once()
+
+        proxy_app_dict = {
+            'proxied': True,
+            'show_in_apps_library': mock_proxy_app1.show_in_apps_library,
+            'enabled': mock_proxy_app1.enabled,
+            'url': mock_proxy_app1.endpoint,
+            'icon': mock_proxy_app1.logo_url,
+            'name': mock_proxy_app1.name,
+            'description': mock_proxy_app1.description,
+            'tags': mock_proxy_app1.tags
+        }
+
+        # Unconfigured apps shown to staff users
+        expected_context = {'apps': {'configured': [mock_app1, proxy_app_dict], 'unconfigured': [mock_app2]}}
+        mock_render.assert_called_with(mock_request, 'tethys_apps/app_library.html', expected_context)
 
     @mock.patch('tethys_apps.views.render')
     @mock.patch('tethys_apps.views.TethysApp')
-    def test_library_no_staff(self, mock_tethys_app, mock_render):
+    @mock.patch('tethys_apps.views.ProxyApp')
+    def test_library_not_staff(self, mock_ProxyApp, mock_TethysApp, mock_render):
         mock_request = mock.MagicMock()
         mock_request.user.is_staff = False
+
         mock_app1 = mock.MagicMock()
         mock_app1.configured = True
         mock_app2 = mock.MagicMock()
         mock_app2.configured = False
-        mock_tethys_app.objects.all.return_value = [mock_app1, mock_app2]
+        mock_TethysApp.objects.all.return_value = [mock_app1, mock_app2]
+
+        mock_proxy_app1 = mock.MagicMock(spec=ProxyApp)
+        mock_ProxyApp.objects.all.return_value = [mock_proxy_app1]
+
         mock_render.return_value = True
 
         ret = library(mock_request)
         self.assertEqual(ret, mock_render.return_value)
-        mock_tethys_app.objects.all.assert_called_once()
-        mock_render.assert_called_once_with(mock_request, 'tethys_apps/app_library.html',
-                                            {'apps': {'configured': [mock_app1], 'unconfigured': []}})
+        mock_TethysApp.objects.all.assert_called_once()
+        mock_ProxyApp.objects.all.assert_called_once()
+
+        proxy_app_dict = {
+            'proxied': True,
+            'show_in_apps_library': mock_proxy_app1.show_in_apps_library,
+            'enabled': mock_proxy_app1.enabled,
+            'url': mock_proxy_app1.endpoint,
+            'icon': mock_proxy_app1.logo_url,
+            'name': mock_proxy_app1.name,
+            'description': mock_proxy_app1.description,
+            'tags': mock_proxy_app1.tags
+        }
+
+        # Unconfigured apps hidden to non-staff users
+        expected_context = {'apps': {'configured': [mock_app1, proxy_app_dict], 'unconfigured': []}}
+        mock_render.assert_called_with(mock_request, 'tethys_apps/app_library.html', expected_context)
 
     @mock.patch('tethys_apps.views.HttpResponse')
     @mock.patch('tethys_apps.views.TethysAppBase')

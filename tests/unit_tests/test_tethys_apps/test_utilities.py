@@ -484,7 +484,7 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertIn('was successfully linked to', po_call_args[0][0][0])
 
     @mock.patch('tethys_cli.cli_colors.pretty_output')
-    @mock.patch('tethys_sdk.app_settings.SpatialDatasetServiceSetting')
+    @mock.patch('tethys_sdk.app_settings.SpatialDatasetServiceSetting', __name__='SpatialDatasetServiceSetting')
     @mock.patch('tethys_services.models.SpatialDatasetService')
     @mock.patch('tethys_apps.models.TethysApp')
     def test_link_service_to_app_setting_spatial_link_does_not_exist(self, mock_app, mock_service, mock_setting,
@@ -509,5 +509,5 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         mock_setting.objects.get.assert_called()
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual(1, len(po_call_args))
-        self.assertIn('with ID/Name', po_call_args[0][0][0])
+        self.assertIn('A SpatialDatasetServiceSetting with ID/Name', po_call_args[0][0][0])
         self.assertIn('does not exist.', po_call_args[0][0][0])

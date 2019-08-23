@@ -35,6 +35,8 @@ def delete(request, job_id):
 
 
 def update_row(request, job_id):
+    filters = []
+
     try:
         data = {key: _parse_value(val) for key, val in request.POST.items()}
         filter_string = data.pop('column_fields')
@@ -77,10 +79,17 @@ def update_row(request, job_id):
         html = render_to_string('tethys_gizmos/gizmos/job_row.html', data)
     except Exception as e:
         error_msg = 'Updating row for job {} failed: {}'.format(job_id, str(e))
-        log.error(error_msg)
+        log.warning(error_msg)
+        user_friendly_error = 'An unexpected error occurred while updating this row. Press the "Refresh Status" ' \
+                              'button to update the row manually.'
         success = False
         status = None
-        html = render_to_string('tethys_gizmos/gizmos/job_row_error.html', {'job_id': job_id, 'error_msg': error_msg})
+        html = render_to_string('tethys_gizmos/gizmos/job_row_error.html',
+                                {
+                                    'job_id': job_id,
+                                    'error_msg': user_friendly_error,
+                                    'num_cols': len(filters) - 1 if filters else 1
+                                })
 
     return JsonResponse({'success': success, 'status': status, 'html': html})
 

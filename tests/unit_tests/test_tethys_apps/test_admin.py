@@ -18,7 +18,8 @@ from tethys_apps.models import (TethysApp,
                                 SpatialDatasetServiceSetting,
                                 WebProcessingServiceSetting,
                                 PersistentStoreConnectionSetting,
-                                PersistentStoreDatabaseSetting)
+                                PersistentStoreDatabaseSetting,
+                                ProxyApp)
 
 
 class TestTethysAppAdmin(unittest.TestCase):
@@ -233,3 +234,8 @@ class TestTethysAppAdmin(unittest.TestCase):
         registry = admin.site._registry
         self.assertIn(TethysExtension, registry)
         self.assertIsInstance(registry[TethysExtension], TethysExtensionAdmin)
+
+    def test_admin_site_register_proxy_app(self):
+        from django.contrib import admin
+        registry = admin.site._registry
+        self.assertIn(ProxyApp, registry)

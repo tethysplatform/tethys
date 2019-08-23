@@ -1,0 +1,4 @@
+This directory contains ssh keys for testing:
+private key: testkey
+public key: testkey.pub
+password: password

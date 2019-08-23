@@ -14,13 +14,14 @@ class TethysPortalViewsErrorTests(unittest.TestCase):
     @mock.patch('tethys_portal.views.error.render')
     def test_handler_400(self, mock_render):
         mock_request = mock.MagicMock()
+        mock_exception = mock.MagicMock()
         mock_render.return_value = '400'
         context = {'error_code': '400',
                    'error_title': 'Bad Request',
                    'error_message': "Sorry, but we can't process your request. Try something different.",
                    'error_image': '/static/tethys_portal/images/error_500.png'}
 
-        self.assertEqual('400', handler_400(mock_request))
+        self.assertEqual('400', handler_400(mock_request, mock_exception))
         mock_render.assert_called_once_with(mock_request, 'tethys_portal/error.html', context, status=400)
 
     @mock.patch('tethys_portal.views.error.render')
@@ -38,6 +39,7 @@ class TethysPortalViewsErrorTests(unittest.TestCase):
     @mock.patch('tethys_portal.views.error.render')
     def test_handler_404(self, mock_render):
         mock_request = mock.MagicMock()
+        mock_exception = mock.MagicMock()
         mock_render.return_value = '404'
         context = {'error_code': '404',
                    'error_title': 'Page Not Found',
@@ -45,7 +47,7 @@ class TethysPortalViewsErrorTests(unittest.TestCase):
                                     "try again.",
                    'error_image': '/static/tethys_portal/images/error_404.png'}
 
-        self.assertEqual('404', handler_404(mock_request))
+        self.assertEqual('404', handler_404(mock_request, mock_exception))
         mock_render.assert_called_once_with(mock_request, 'tethys_portal/error.html', context, status=404)
 
     @mock.patch('tethys_portal.views.error.render')

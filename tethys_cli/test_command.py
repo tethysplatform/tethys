@@ -32,7 +32,7 @@ def check_and_install_prereqs(tests_path):
         import tethysapp.test_app  # noqa: F401
         if tethysapp.test_app is None:
             raise ImportError
-    except Exception:
+    except ImportError:
         write_warning("Test App not found. Installing.....")
         setup_path = os.path.join(tests_path, 'apps', 'tethysapp-test_app')
         subprocess.call(['python', 'setup.py', 'develop'], stdout=FNULL, stderr=subprocess.STDOUT, cwd=setup_path)
@@ -41,7 +41,7 @@ def check_and_install_prereqs(tests_path):
         import tethysext.test_extension  # noqa: F401
         if tethysext.test_extension is None:
             raise ImportError
-    except Exception:
+    except ImportError:
         write_warning("Test Extension not found. Installing.....")
         setup_path = os.path.join(tests_path, 'extensions', 'tethysext-test_extension')
         subprocess.call(['python', 'setup.py', 'develop'], stdout=FNULL, stderr=subprocess.STDOUT, cwd=setup_path)
@@ -123,15 +123,14 @@ def test_command(args):
                 tests_path, report_dirname, index_fname))
 
     # Removing Test App
+    try:
+        subprocess.call(['tethys', 'uninstall', 'test_app', '-f'], stdout=FNULL)
+    except Exception:
+        pass
 
-    # try:
-    #     subprocess.call(['tethys', 'uninstall', 'test_app', '-f'], stdout=FNULL)
-    # except Exception:
-    #     pass
-
-    # try:
-    #     subprocess.call(['tethys', 'uninstall', 'test_extension', '-ef'], stdout=FNULL)
-    # except Exception:
-    #     pass
+    try:
+        subprocess.call(['tethys', 'uninstall', 'test_extension', '-ef'], stdout=FNULL)
+    except Exception:
+        pass
 
     exit(test_status)

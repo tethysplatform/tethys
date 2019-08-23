@@ -9,16 +9,9 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from tethys_cli.cli_colors import write_msg, write_error, write_warning, write_success
 from tethys_cli.services_commands import services_list_command
 from tethys_cli.cli_helpers import load_apps
-from tethys_apps.utilities import link_service_to_app_setting, get_app_settings
+from tethys_apps.utilities import link_service_to_app_setting, get_app_settings, get_service_model_from_type
 
 FNULL = open(os.devnull, 'w')
-
-serviceLinkParam = {
-    'spatial': 'ds_spatial',
-    "dataset": 'ds_dataset',
-    "persistent": 'ps_database',
-    'wps': 'wps'
-}
 
 
 def add_install_parser(subparsers):
@@ -27,24 +20,36 @@ def add_install_parser(subparsers):
     application_install_parser = subparsers.add_parser('install', help='Install and Initialize Applications')
     application_install_parser.add_argument('-d', '--develop',
                                             help='Will run setup.py develop instead of setup.py install',
-                                            action="store_true")
+                                            action='store_true')
     application_install_parser.add_argument('-f', '--file', type=str, help='The path to the Install file. ')
     application_install_parser.add_argument('-p', '--portal-file', type=str,
                                             help='The path to the Portal initialization config file')
     application_install_parser.add_argument('-s', '--services-file', type=str,
                                             help='The path to the Services.yml config file')
     application_install_parser.add_argument('--force-services',
-                                            help='Force Services.yml file over portal.yml file', action="store_true")
+                                            help='Force Services.yml file over portal.yml file', action='store_true')
     application_install_parser.add_argument('-q', '--quiet',
                                             help='Skips interactive mode.',
-                                            action="store_true")
+                                            action='store_true')
     application_install_parser.add_argument('-n', '--no-sync',
                                             help='Skips syncstores when linked persistent stores are found.',
-                                            action="store_true")
+                                            action='store_true')
     application_install_parser.add_argument('-v', '--verbose',
                                             help='Will show all pip install output when enabled.',
-                                            action="store_true")
-    # clean
+                                            action='store_true')
+    application_install_parser.add_argument('-u', '--update-installed',
+                                            help='Will attempt to update already installed dependencies to versions '
+                                                 'listed in the install.yml. WARNING: This may break your Tethys '
+                                                 'installation and is not recommended.',
+                                            action='store_true')
+    application_install_parser.add_argument('-o', '--only-dependencies',
+                                            help='Install only the dependencies of an app or extension.',
+                                            action='store_true')
+
+    application_install_parser.add_argument('-w', '--without-dependencies',
+                                            help='Install the app or extension without installing its dependencies.',
+                                            action='store_true')
+
     application_install_parser.set_defaults(func=install_command)
 
 
@@ -59,80 +64,66 @@ def open_file(file_path):
         exit(1)
 
 
-def get_service_from_id(service_id):
-
-    from tethys_services.models import (SpatialDatasetService, PersistentStoreService,
-                                        DatasetService, WebProcessingService)
-
+def validate_service_id(service_type, service_id):
+    service_model = get_service_model_from_type(service_type)
     try:
-        PersistentStoreService.objects.get(id=service_id)  # noqa: F841
-        return {"service_type": "persistent",
-                "linkParam": serviceLinkParam['persistent']}
-    except ObjectDoesNotExist:
-        pass
-
-    try:
-        entries = SpatialDatasetService.objects.get(id=service_id)  # noqa: F841
-        return {"service_type": "spatial",
-                "linkParam": serviceLinkParam['spatial']}
-    except ObjectDoesNotExist:
-        pass
-
-    try:
-        entries = DatasetService.objects.get(id=service_id)  # noqa: F841
-        return {"service_type": "dataset",
-                "linkParam": serviceLinkParam['dataset']}
-    except ObjectDoesNotExist:
-        pass
-
-    try:
-        entries = WebProcessingService.objects.get(id=service_id)  # noqa: F841
-        return {"service_type": "wps",
-                "linkParam": serviceLinkParam['persistent']}
-    except ObjectDoesNotExist:
-        pass
+        service_model.objects.get(id=service_id)  # noqa: F841
+        return True
+    except (ObjectDoesNotExist, ValueError):
+        try:
+            service_model.objects.get(name=service_id)  # noqa: F841
+            return True
+        except ObjectDoesNotExist:
+            pass
 
     return False
 
 
-def get_service_from_name(name):
+def get_setting_type_from_setting(setting):
+    from tethys_apps.models import PersistentStoreDatabaseSetting, PersistentStoreConnectionSetting, \
+        SpatialDatasetServiceSetting, DatasetServiceSetting, WebProcessingServiceSetting
 
-    from tethys_services.models import (SpatialDatasetService, PersistentStoreService,
-                                        DatasetService, WebProcessingService)
+    if setting.__class__ == PersistentStoreDatabaseSetting or isinstance(setting, PersistentStoreDatabaseSetting):
+        return 'ps_database'
 
-    try:
-        PersistentStoreService.objects.get(name=name)  # noqa: F841
-        return {"service_type": "persistent",
-                "linkParam": serviceLinkParam['persistent']}
-    except ObjectDoesNotExist:
-        pass
+    elif setting.__class__ == PersistentStoreConnectionSetting or isinstance(setting, PersistentStoreConnectionSetting):
+        return 'ps_connection'
 
-    try:
-        SpatialDatasetService.objects.get(name=name)  # noqa: F841
-        return {"service_type": "spatial",
-                "linkParam": serviceLinkParam['spatial']}
-    except ObjectDoesNotExist:
-        pass
+    elif setting.__class__ == SpatialDatasetServiceSetting or isinstance(setting, SpatialDatasetServiceSetting):
+        return 'ds_spatial'
 
-    try:
-        DatasetService.objects.get(name=name)  # noqa: F841
-        return {"service_type": "dataset",
-                "linkParam": serviceLinkParam['dataset']}
-    except ObjectDoesNotExist:
-        pass
+    elif setting.__class__ == DatasetServiceSetting or isinstance(setting, DatasetServiceSetting):
+        return 'ds_dataset'
 
-    try:
-        WebProcessingService.objects.get(name=name)  # noqa: F841
-        return {"service_type": "wps",
-                "linkParam": serviceLinkParam['wps']}
-    except ObjectDoesNotExist:
-        pass
+    elif setting.__class__ == WebProcessingServiceSetting or isinstance(setting, WebProcessingServiceSetting):
+        return 'wps'
 
-    return False
+    raise RuntimeError(f'Could not determine setting type for setting: {setting}')
+
+
+def get_service_type_from_setting(setting):
+    from tethys_apps.models import PersistentStoreDatabaseSetting, PersistentStoreConnectionSetting, \
+        SpatialDatasetServiceSetting, DatasetServiceSetting, WebProcessingServiceSetting
+
+    if setting.__class__ == PersistentStoreDatabaseSetting or isinstance(setting, PersistentStoreDatabaseSetting):
+        return 'persistent'
+
+    elif setting.__class__ == PersistentStoreConnectionSetting or isinstance(setting, PersistentStoreConnectionSetting):
+        return 'persistent'
+
+    elif setting.__class__ == SpatialDatasetServiceSetting or isinstance(setting, SpatialDatasetServiceSetting):
+        return 'spatial'
+
+    elif setting.__class__ == DatasetServiceSetting or isinstance(setting, DatasetServiceSetting):
+        return 'dataset'
+
+    elif setting.__class__ == WebProcessingServiceSetting or isinstance(setting, WebProcessingServiceSetting):
+        return 'wps'
+
+    raise RuntimeError(f'Could not determine service type for setting: {setting}')
 
 
 # Pulling this function out so I can mock this for inputs to the interactive mode
-
 def get_interactive_input():
     return input("")
 
@@ -183,10 +174,17 @@ def get_setting_type(setting):
 
 def run_interactive_services(app_name):
     write_msg('Running Interactive Service Mode. '
-              'Any configuration options in install.yml for services will be ignored...')
+              'Any configuration options in services.yml or portal.yml will be ignored...')
     write_msg('Hit return at any time to skip a step.')
 
     app_settings = get_app_settings(app_name)
+
+    # In the case the app isn't installed, has no settings, or it is an extension,
+    # skip configuring services/settings
+    if not app_settings:
+        write_msg(f'No settings found for app "{app_name}". Skipping interactive configuration...')
+        return
+
     unlinked_settings = app_settings['unlinked_settings']
 
     for setting in unlinked_settings:
@@ -242,16 +240,20 @@ def run_interactive_services(app_name):
                     service_id = get_interactive_input()
                     if service_id != "":
                         try:
-                            int(service_id)
-                            service = get_service_from_id(service_id)
-                        except ValueError:
-                            service = get_service_from_name(service_id)
+                            setting_type = get_setting_type_from_setting(setting)
+                            service_type = get_service_type_from_setting(setting)
+                        except RuntimeError as e:
+                            write_error(str(e) + ' Skipping...')
+                            break
 
-                        if service:
-                            link_service_to_app_setting(service['service_type'],
+                        # Validate the given service id
+                        valid_service = validate_service_id(service_type, service_id)
+
+                        if valid_service:
+                            link_service_to_app_setting(service_type,
                                                         service_id,
                                                         app_name,
-                                                        service['linkParam'],
+                                                        setting_type,
                                                         setting.name)
 
                             valid = True
@@ -267,21 +269,16 @@ def run_interactive_services(app_name):
                     exit(0)
 
 
-def find_and_link(service_type, setting_name, service_name, app_name):
-
-    service = get_service_from_name(service_name)
-    if service:
-        link_service_to_app_setting(service['service_type'],
-                                    service_name,
-                                    app_name,
-                                    service['linkParam'],
-                                    setting_name)
+def find_and_link(service_type, setting_name, service_id, app_name, setting):
+    valid_service = validate_service_id(service_type, service_id)
+    setting_type = get_setting_type_from_setting(setting)
+    if valid_service:
+        link_service_to_app_setting(service_type, service_id, app_name, setting_type, setting_name)
     else:
-        write_error('Warning: Could not find service of type: {} with the name/id: {}'.format(service_type,
-                                                                                              service_name))
+        write_error(f'Warning: Could not find service of type: "{service_type}" with the Name/ID: "{service_id}"')
 
 
-def configure_services(services, app_name):
+def configure_services_from_file(services, app_name):
     from tethys_apps.models import CustomSetting
 
     if services['version']:
@@ -289,21 +286,55 @@ def configure_services(services, app_name):
     for service_type in services:
         if services[service_type] is not None:
             current_services = services[service_type]
-            for service_setting_name in current_services:
+            for setting_name in current_services:
                 if service_type == 'custom_setting':
-                    custom_setting = CustomSetting.objects.get(name=service_setting_name)
+                    try:
+                        custom_setting = CustomSetting.objects.get(name=setting_name)
+                    except ObjectDoesNotExist:
+                        write_warning(f'Custom setting named "{setting_name}" could not be found in app "{app_name}". '
+                                      f'Skipping...')
+                        continue
 
                     try:
-                        custom_setting.value = current_services[service_setting_name]
+                        custom_setting.value = current_services[setting_name]
                         custom_setting.clean()
                         custom_setting.save()
+                        write_success(f'CustomSetting: "{setting_name}" was assigned the value: '
+                                      f'"{current_services[setting_name]}"')
                     except ValidationError:
                         write_error("Incorrect value type given for custom setting '{}'. Please adjust "
                                     "services.yml or set the value in the app's settings page."
-                                    .format(service_setting_name))
+                                    .format(setting_name))
                 else:
-                    find_and_link(service_type, service_setting_name,
-                                  current_services[service_setting_name], app_name)
+                    app_settings = get_app_settings(app_name)
+
+                    # In the case the app isn't installed, has no settings, or it is an extension,
+                    # skip configuring services/settings
+                    if not app_settings:
+                        write_msg(f'No settings found for app "{app_name}". Skipping automated configuration...')
+                        return
+
+                    unlinked_settings = app_settings['unlinked_settings']
+
+                    setting_found = False
+
+                    for setting in unlinked_settings:
+
+                        if setting.name != setting_name:
+                            continue
+
+                        setting_found = True
+
+                        service_id = current_services[setting_name]
+                        if not service_id:
+                            write_warning(f'No service given for setting "{setting_name}". Skipping...')
+                            continue
+
+                        find_and_link(service_type, setting_name, service_id, app_name, setting)
+
+                    if not setting_found:
+                        write_warning(f'Service setting "{setting_name}" already configured or does not exist in app '
+                                      f'"{app_name}". Skipping...')
 
 
 def run_portal_install(file_path, app_name):
@@ -312,7 +343,7 @@ def run_portal_install(file_path, app_name):
         file_path = './portal.yml'
 
     if not os.path.exists(file_path):
-        write_msg("No Portal Services file found. Moving to look for local app level services.yml...")
+        write_msg("No Portal Services file found. Searching for local app level services.yml...")
         return False
 
     write_msg("Portal install file found...Processing...")
@@ -321,15 +352,15 @@ def run_portal_install(file_path, app_name):
     if app_check and app_name in portal_options['apps'] and 'services' in portal_options['apps'][app_name]:
         services = portal_options['apps'][app_name]['services']
         if services and len(services) > 0:
-            configure_services(services, app_name)
+            configure_services_from_file(services, app_name)
         else:
             write_msg("No app configuration found for app: {} in portal config file. "
-                      "Moving to look for local app level services.yml... ".format(app_name))
+                      "Searching for local app level services.yml... ".format(app_name))
             return False
 
     else:
         write_msg("No apps configuration found in portal config file. "
-                  "Moving to look for local app level services.yml... ")
+                  "Searching for local app level services.yml... ")
         return False
 
     return True
@@ -350,12 +381,12 @@ def run_services(app_name, args):
     services = open_file(file_path)
 
     if services and len(services) > 0:
-        configure_services(services, app_name)
+        configure_services_from_file(services, app_name)
     else:
         write_msg("No Services listed in Services file.")
 
 
-def install_packages(conda_config):
+def install_packages(conda_config, update_installed=False):
     # Compile channels arguments
     install_args = []
     if validate_schema('channels', conda_config):
@@ -365,6 +396,10 @@ def install_packages(conda_config):
 
     # Install all Packages
     if validate_schema('packages', conda_config):
+        if not update_installed:
+            install_args.extend(['--freeze-installed'])
+        else:
+            write_warning('Warning: Updating previously installed packages. This could break your Tethys environment.')
         install_args.extend(conda_config['packages'])
         write_msg("Running conda installation tasks...")
         [resp, err, code] = conda_run(
@@ -385,6 +420,7 @@ def install_command(args):
     if file_path is None:
         file_path = './install.yml'
 
+    # Check for install.yml file
     if not os.path.exists(file_path):
         write_warning('WARNING: No install file found.')
         if not args.quiet:
@@ -407,6 +443,7 @@ def install_command(args):
 
         write_warning('Continuing install without configuration.')
 
+    # Install Dependencies
     if not skip_config:
         install_options = open_file(file_path)
 
@@ -420,14 +457,21 @@ def install_command(args):
                 skip = requirements_config['skip']
 
             if skip:
-                write_msg("Skipping package installation, Skip option found.")
+                write_warning("Skipping package installation, Skip option found.")
+            elif args.without_dependencies:
+                write_warning("Skipping package installation.")
             else:
                 if validate_schema('conda', requirements_config):  # noqa: E501
                     conda_config = requirements_config['conda']
-                    install_packages(conda_config)
+                    install_packages(conda_config, update_installed=args.update_installed)
                 if validate_schema('pip', requirements_config):
                     write_msg("Running pip installation tasks...")
                     call(['pip', 'install', *requirements_config["pip"]])
+
+    # Skip the rest if we are installing dependencies only
+    if args.only_dependencies:
+        write_msg("Installed dependencies only. Skipping remaining installation.")
+        exit(0)
 
     # Run Setup.py
     write_msg("Running application install....")
@@ -463,6 +507,7 @@ def install_command(args):
         write_success("Services Configuration Completed.")
 
         app_settings = get_app_settings(app_name)
+
         if app_settings is not None:
             linked_settings = app_settings['linked_settings']
             unlinked_settings = app_settings['unlinked_settings']

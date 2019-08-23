@@ -94,9 +94,6 @@ var TETHYS_MAP_VIEW = (function() {
       m_feature_selection_options,                          // Feature selection options json
       m_disable_base_map;                                   // Disable base map option json
 
-  // Others
-  var m_draw_id_counter;                                    // Draw id counter
-
   /************************************************************************
    *                       PRIVATE METHOD DECLARATIONS
    *************************************************************************/
@@ -1121,8 +1118,6 @@ var TETHYS_MAP_VIEW = (function() {
     m_selectable_wms_layers = [];
     m_zoom_on_selection = false;
 
-    m_draw_id_counter = 1;
-
     // Parse options
     parse_options();
 
@@ -1477,9 +1472,28 @@ var TETHYS_MAP_VIEW = (function() {
    * Attribute Table Methods
    ***********************************/
   generate_feature_id = function() {
-    var id = m_draw_id_counter;
-    ++m_draw_id_counter;
-    return id;
+    //// return uuid of form xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+    var uuid = '', ii;
+    for (ii = 0; ii < 32; ii += 1) {
+      switch (ii) {
+      case 8:
+      case 20:
+        uuid += '-';
+        uuid += (Math.random() * 16 | 0).toString(16);
+        break;
+      case 12:
+        uuid += '-';
+        uuid += '4';
+        break;
+      case 16:
+        uuid += '-';
+        uuid += (Math.random() * 4 | 8).toString(16);
+        break;
+      default:
+        uuid += (Math.random() * 16 | 0).toString(16);
+      }
+    }
+    return uuid;
   };
 
   get_feature_properties = function(feature) {

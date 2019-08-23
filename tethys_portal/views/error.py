@@ -10,7 +10,7 @@
 from django.shortcuts import render
 
 
-def handler_400(request):
+def handler_400(request, exception, *args, **kwargs):
     """
     Handle 400 errors
     """
@@ -21,13 +21,14 @@ def handler_400(request):
     return render(request, 'tethys_portal/error.html', context, status=400)
 
 
-def handler_403(request, *args, **argv):
+def handler_403(request, exception, *args, **kwargs):
     """
     Handle 403 errors
     """
     error_message = "Permission Denied"
-    if 'exception' in argv and str(argv['exception']):
-        error_message = argv['exception']
+
+    if exception:
+        error_message = str(exception)
 
     context = {'error_code': '403',
                'error_title': 'Sorry, you are unable to access this page right now.',
@@ -36,7 +37,7 @@ def handler_403(request, *args, **argv):
     return render(request, 'tethys_portal/403error.html', context, status=403)
 
 
-def handler_404(request):
+def handler_404(request, exception, *args, **kwargs):
     """
     Handle 404 errors
     """

@@ -187,7 +187,8 @@ class TestCliAppSettingsCommand(unittest.TestCase):
         # get the called arguments from the mock print
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
 
-        self.assertIn('The app you specified ("foo") does not exist. Command aborted.', po_call_args[0][0][0])
+        self.assertIn('The app or extension you specified ("foo") does not exist. Command aborted.',
+                      po_call_args[0][0][0])
 
     @mock.patch('tethys_apps.models.TethysApp')
     @mock.patch('tethys_cli.cli_colors.pretty_output')
