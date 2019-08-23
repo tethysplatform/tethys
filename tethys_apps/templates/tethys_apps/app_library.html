@@ -1,6 +1,7 @@
+
 {% extends "page.html" %}
 
-{% load static tags %}
+{% load staticfiles tags %}
 
 {% block title %}- Apps Library{% endblock %}
 
@@ -47,22 +48,29 @@
       <div id="app-list" class="isotopeContainer">
         {% for app in apps.configured %}
           {% if app.show_in_apps_library and app.enabled %}
-          <a class="app-container isotopeSelector {{ app|get_tag_class }}" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '{% url app.index %}');" data-app-theme-color="{{ app.color }}">
-            <div class="app-icon">
-              <img {% if app.icon %}src="{% static app.icon %}"{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} />
-            </div>
-            <div class="app-title" data-app-theme-color="{{ app.color }}">
-              <span>{{ app.name }}</span>
-            </div>
-            <div class="color-effect" data-app-theme-color="{{ app.color }}"></div>
-            <div class="app-help-icon">
-                <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-            </div>
-            <div class="app-help-info hidden">
-                <p>{% if app.description %}{{ app.description }}{% else %}{% endif %}</p>
-            </div>
-            <div class="app-help-close hidden">X</div>
-          </a>
+            {% if app.proxied %}
+            <a class="app-container isotopeSelector {{ app|get_tag_class }}" href="{{ app.url }}">
+               <div class="app-icon">
+                <img {% if app.icon %}src="{{ app.icon }}"{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} />
+              </div>
+            {% else %}
+            <a class="app-container isotopeSelector {{ app|get_tag_class }}" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '{% url app.index %}');" data-app-theme-color="{{ app.color }}">
+               <div class="app-icon">
+                <img {% if app.icon %}src="{% static app.icon %}"{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} />
+              </div>
+            {% endif %}
+              <div class="app-title" data-app-theme-color="{{ app.color }}">
+                <span>{{ app.name }}</span>
+              </div>
+              <div class="color-effect" data-app-theme-color="{{ app.color }}"></div>
+              <div class="app-help-icon">
+                  <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              </div>
+              <div class="app-help-info hidden">
+                  <p>{% if app.description %}{{ app.description }}{% else %}{% endif %}</p>
+              </div>
+              <div class="app-help-close hidden">X</div>
+            </a>
           {% endif %}
         {% endfor %}
         {% for app in apps.unconfigured %}

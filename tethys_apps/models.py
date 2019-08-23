@@ -19,6 +19,7 @@ from tethys_apps.exceptions import TethysAppSettingNotAssigned, PersistentStoreP
 from django.contrib.postgres.fields import ArrayField
 from sqlalchemy.orm import sessionmaker
 from tethys_apps.base.mixins import TethysBaseMixin
+from tethys_services.models import validate_url
 from tethys_sdk.testing import is_testing_environment, get_test_db_name
 
 from tethys_apps.base.function_extractor import TethysFunctionExtractor
@@ -829,3 +830,24 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
         # Update initialization
         self.initialized = True
         self.save()
+
+
+class ProxyApp(models.Model):
+    """
+    DB model for Proxy Apps which allows you to redirect an app to another host.
+    """
+
+    name = models.CharField(max_length=100, unique=True)
+    endpoint = models.CharField(max_length=1024, validators=[validate_url])
+    logo_url = models.CharField(max_length=100, validators=[validate_url], blank=True)
+    description = models.TextField(max_length=2048, blank=True)
+    tags = models.CharField(max_length=200, blank=True, default='')
+    enabled = models.BooleanField(default=True)
+    show_in_apps_library = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = 'Proxy App'
+        verbose_name_plural = 'Proxy Apps'
+
+    def __str__(self):
+        return self.name

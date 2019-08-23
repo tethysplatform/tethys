@@ -23,3 +23,11 @@ tests/coverage_html_report
 dask-worker-space
 portal.yml
 *site_content.yml
+tests/extensions/*/build/*
+tests/apps/*/build/*
+tests/extensions/*/dist/*
+tests/apps/*/dist/*
+tests/extensions/*/build/*
+tests/apps/*/build/*
+tests/extensions/*/dist/*
+tests/apps/*/dist/*
