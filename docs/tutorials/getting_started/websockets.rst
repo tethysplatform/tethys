@@ -166,6 +166,9 @@ b. ``Channel layers`` require a backend to store the ``WebSocket messages`` comi
 
     ``Django Channels`` recommends the use of an external backend store for production environments. The ``channels-redis`` python package plus ``Redis Server`` are the default recommendation. For more information see ``Django Channels`` `channel layers <https://channels.readthedocs.io/en/latest/topics/channel_layers.html>`_ and `deploying <https://channels.readthedocs.io/en/latest/deploying.html>`_ sections.
 
+.. tip::
+    A ``Channel layer`` can be added to the settings.py using the ``tethys gen settings --channel-layer`` followed by the python dot-formatted path of the channel layer. See ``tethys gen settings --help`` for details.
+
 Channel Layer Definitions
 -------------------------
 

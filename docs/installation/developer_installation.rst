@@ -47,7 +47,7 @@ Install Script Options
                 Path for tethys home directory. Default is ~/tethys.
         * `-s, --tethys-src <PATH>`:
                 Path to the tethys source directory. Default is ${TETHYS_HOME}/src.
-        * `-a, --allowed-host <HOST>`:
+        * `-a, --allowed-hosts <HOST>`:
                 Hostname or IP address on which to serve Tethys. Default is 127.0.0.1.
         * `-p, --port <PORT>`:
                 Port on which to serve Tethys. Default is 8000.

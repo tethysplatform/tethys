@@ -128,7 +128,9 @@
 <div class="header-wrapper" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
   <header class="site-header">
     <div class="header-logo">
-      {% if site_globals.brand_image %}
+      {% if site_globals.brand_image and 'http' in site_globals.brand_image %}
+        <a class="logo-image" href="/"><img  src="{{ site_globals.brand_image }}"></a>
+      {% elif site_globals.brand_image %}
         <a class="logo-image" href="/"><img  src="{% static site_globals.brand_image %}"></a>
       {% endif %}
 

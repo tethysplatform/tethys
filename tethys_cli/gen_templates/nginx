@@ -2,7 +2,7 @@
 
 # the upstream component nginx needs to connect to
 upstream channels-backend {
-    server {{ hostname }}:{{ port }};
+    server 127.0.0.1:{{ port }};
 }
 # configuration of the server
 server {

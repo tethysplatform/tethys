@@ -6,10 +6,7 @@ from datetime import datetime, date
 from django.template import base
 from django.template import TemplateSyntaxError
 from django.template import Context
-try:
-    reload
-except NameError:   # Python 3
-    from imp import reload
+from importlib import reload
 
 
 class TestGizmo(TethysGizmoOptions):

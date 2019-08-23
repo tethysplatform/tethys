@@ -63,6 +63,7 @@ requirements:
     - django-session-security
     - django-analytical
     - django-simple-captcha
+    - django-recaptcha2
     - social-auth-app-django
 
     # tests dependencies

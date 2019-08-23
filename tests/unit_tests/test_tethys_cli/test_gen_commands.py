@@ -12,6 +12,7 @@ from tethys_cli.gen_commands import (
     GEN_SERVICES_OPTION,
     GEN_INSTALL_OPTION,
     GEN_PORTAL_OPTION,
+    GEN_SITE_YAML_OPTION
 )
 
 
@@ -41,9 +42,23 @@ class CLIGenCommandsTest(unittest.TestCase):
         self.assertRaises(ValueError, get_settings_value, value_name='foo_bar_baz_bad_setting_foo_bar_baz')
 
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
+    def test_generate_command_settings_option_default(self, mock_file):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_SETTINGS_OPTION
+        mock_args.directory = None
+
+        generate_command(args=mock_args)
+
+        mock_file.assert_called()
+
+    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_settings_option(self, mock_os_path_isfile, mock_file):
-        mock_args = mock.MagicMock()
+        mock_args = mock.MagicMock(session_warning='no_a_number', session_expire='no_a_number',
+                                   static_root=None, workspaces_root=None,
+                                   django_analytical=['CLICKMAP_TRACKER_ID:123456'],
+                                   add_backends=['hydroshare', 'project.backend.CustomBackend hydroshare'],
+                                   oauth_options=['SOCIAL_AUTH_GOOGLE_OAUTH2_KEY:123456'])
         mock_args.type = GEN_SETTINGS_OPTION
         mock_args.directory = None
         mock_os_path_isfile.return_value = False
@@ -52,6 +67,18 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
+
+    def test_gen_settings_value_error(self):
+        mock_args = mock.MagicMock(type=GEN_SETTINGS_OPTION, directory=None, django_analytical=['CLICKMAP_TRACKER_ID'])
+
+        with self.assertRaises(ValueError):
+            generate_command(args=mock_args)
+
+        mock_args = mock.MagicMock(type=GEN_SETTINGS_OPTION, directory=None,
+                                   oauth_options=['SOCIAL_AUTH_GOOGLE_OAUTH2_KEY'])
+
+        with self.assertRaises(ValueError):
+            generate_command(args=mock_args)
 
     @mock.patch('tethys_cli.gen_commands.get_settings_value')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
@@ -345,6 +372,23 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         rts_call_args = mock_print.call_args_list
         self.assertIn('Please review the generated install.yml', rts_call_args[0][0][0])
+
+        mock_os_path_isfile.assert_called_once()
+        mock_file.assert_called()
+
+    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
+    @mock.patch('tethys_cli.gen_commands.os.path.isfile')
+    @mock.patch('tethys_cli.gen_commands.print')
+    def test_generate_command_site_content_yaml_option(self, mock_print, mock_os_path_isfile, mock_file):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_SITE_YAML_OPTION
+        mock_args.directory = None
+        mock_os_path_isfile.return_value = False
+
+        generate_command(args=mock_args)
+
+        rts_call_args = mock_print.call_args_list
+        self.assertIn('Please review the generated site_content.yml', rts_call_args[0][0][0])
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()

@@ -10,7 +10,7 @@ USAGE="USAGE: . install_tethys.sh [options]\n
 OPTIONS:\n
 \t    -t, --tethys-home <PATH>            \t\t Path for tethys home directory. Default is ~/tethys.\n
 \t    -s, --tethys-src <PATH>             \t\t Path for tethys source directory. Default is \${TETHYS_HOME}/tethys.\n
-\t    -a, --allowed-host <HOST>           \t\t Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
+\t    -a, --allowed-hosts <HOST>           \t\t Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
 \t    -p, --port <PORT>                   \t\t\t Port on which to serve tethys. Default is 8000.\n
 \t    -b, --branch <BRANCH_NAME>          \t\t Branch to checkout from version control. Default is 'release'.\n
 \t    -c, --conda-home <PATH>             \t\t Path where Miniconda will be installed, or to an existing installation of Miniconda. Default is ~/miniconda.\n
@@ -133,7 +133,7 @@ case $key in
     set_option_value TETHYS_SRC "$2"
     shift # past argument
     ;;
-    -a|--allowed-host)
+    -a|--allowed-hosts)
     set_option_value ALLOWED_HOST "$2"
     shift # past argument
     ;;
@@ -363,7 +363,7 @@ then
         # only pass --allowed-hosts option to gen settings command if it is not the default
         if [ ${ALLOWED_HOST} != "127.0.0.1" ]
         then
-            ALLOWED_HOST_OPT="--allowed-host ${ALLOWED_HOST}"
+            ALLOWED_HOST_OPT="--allowed-hosts ${ALLOWED_HOST}"
         fi
         tethys gen settings ${ALLOWED_HOST_OPT} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --db-dir ${TETHYS_DB_DIR}
     fi
@@ -510,7 +510,7 @@ then
     conda activate ${CONDA_ENV_NAME}
     pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" -l "${TETHYS_DB_DIR}/logfile" start -o "-p ${TETHYS_DB_PORT}"
     echo "Waiting for databases to startup..."; sleep 5
-    tethys gen settings --production --allowed-host=${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite
+    tethys gen settings --production --allowed-hosts ${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite
     tethys gen nginx --overwrite
     tethys gen nginx_service --overwrite
     tethys gen asgi_service --overwrite
