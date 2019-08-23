@@ -1,6 +1,8 @@
+import os
+from importlib import reload
 from django.test import TestCase
 from captcha.models import CaptchaStore
-from tethys_portal.forms import LoginForm, RegisterForm, UserSettingsForm, UserPasswordChangeForm
+import tethys_portal.forms
 from django.contrib.auth.models import User
 from django import forms
 from unittest import mock
@@ -20,16 +22,40 @@ class TethysPortalFormsTests(TestCase):
         pass
     # Login Form
 
-    def test_LoginForm(self):
+    def test_LoginForm_no_captcha(self):
+
+        login_data = {'username': 'admin', 'password': 'test1231'}
+
+        with self.settings(ENABLE_CAPTCHA=False):
+            reload(tethys_portal.forms)
+            login_form = tethys_portal.forms.LoginForm(login_data)
+            self.assertTrue(login_form.is_valid())
+
+    def test_LoginForm_simple_captcha(self):
+
         login_data = {'username': 'admin', 'password': 'test1231', 'captcha_0': self.hashkey,
                       'captcha_1': self.response}
-        login_form = LoginForm(login_data)
-        self.assertTrue(login_form.is_valid())
+        with self.settings(ENABLE_CAPTCHA=True, RECAPTCHA_PRIVATE_KEY='', RECAPTCHA_PUBLIC_KEY=''):
+            reload(tethys_portal.forms)
+            login_form = tethys_portal.forms.LoginForm(login_data)
+            self.assertTrue(login_form.is_valid())
+
+    def test_LoginForm_recaptcha(self):
+        os.environ['RECAPTCHA_DISABLE'] = 'True'
+        login_data = {'username': 'admin', 'password': 'test1231'}
+
+        with self.settings(ENABLE_CAPTCHA=True, RECAPTCHA_PRIVATE_KEY='my-fake-private-key',
+                           RECAPTCHA_PUBLIC_KEY='my-fake-public-key'):
+            reload(tethys_portal.forms)
+            login_form = tethys_portal.forms.LoginForm(login_data)
+            self.assertTrue(login_form.is_valid())
+
+        del os.environ['RECAPTCHA_DISABLE']
 
     def test_LoginForm_invalid_username(self):
         login_data = {'username': '$!admin', 'password': 'test1231', 'captcha_0': self.hashkey,
                       'captcha_1': self.response}
-        login_form = LoginForm(login_data)
+        login_form = tethys_portal.forms.LoginForm(login_data)
         err_msg = "This value may contain only letters, numbers and @/./+/-/_ characters."
         self.assertEqual(login_form.errors['username'], [err_msg])
         self.assertFalse(login_form.is_valid())
@@ -37,27 +63,29 @@ class TethysPortalFormsTests(TestCase):
     def test_LoginForm_invalid_password(self):
         login_data = {'username': 'admin', 'password': '', 'captcha_0': self.hashkey,
                       'captcha_1': self.response}
-        login_form = LoginForm(login_data)
+        login_form = tethys_portal.forms.LoginForm(login_data)
         self.assertFalse(login_form.is_valid())
 
     def test_LoginForm_invalid(self):
         login_invalid_data = {'username': 'admin', 'password': 'test1231', 'captcha_0': self.hashkey,
                               'captcha_1': ''}
-        login_form = LoginForm(login_invalid_data)
-        self.assertFalse(login_form.is_valid())
+        with self.settings(ENABLE_CAPTCHA=True):
+            reload(tethys_portal.forms)
+            login_form = tethys_portal.forms.LoginForm(login_invalid_data)
+            self.assertFalse(login_form.is_valid())
 
     # Register Form
 
     def test_RegisterForm(self):
         register_data = {'username': 'user1', 'email': 'foo@aquaveo.com', 'password1': 'abc123',
                          'password2': 'abc123', 'captcha_0': self.hashkey, 'captcha_1': self.response}
-        register_form = RegisterForm(data=register_data)
+        register_form = tethys_portal.forms.RegisterForm(data=register_data)
         self.assertTrue(register_form.is_valid())
 
     def test_RegisterForm_invalid_user(self):
         register_data = {'username': 'user1&!$', 'email': 'foo@aquaveo.com', 'password1': 'abc123',
                          'password2': 'abc123', 'captcha_0': self.hashkey, 'captcha_1': self.response}
-        register_form = RegisterForm(data=register_data)
+        register_form = tethys_portal.forms.RegisterForm(data=register_data)
         err_msg = "This value may contain only letters, numbers and @/./+/-/_ characters."
         self.assertEqual(register_form.errors['username'], [err_msg])
         self.assertFalse(register_form.is_valid())
@@ -66,7 +94,7 @@ class TethysPortalFormsTests(TestCase):
         register_data = {'username': 'user', 'email': 'foo@aquaveo.com', 'password1': 'abc123',
                          'password2': 'abc123', 'captcha_0': self.hashkey, 'captcha_1': self.response}
 
-        register_form = RegisterForm(data=register_data)
+        register_form = tethys_portal.forms.RegisterForm(data=register_data)
 
         self.assertTrue(register_form.is_valid())
 
@@ -78,7 +106,7 @@ class TethysPortalFormsTests(TestCase):
         register_data = {'username': 'user_exist', 'email': 'foo@aquaveo.com', 'password1': 'abc123',
                          'password2': 'abc123', 'captcha_0': self.hashkey, 'captcha_1': self.response}
 
-        register_form = RegisterForm(data=register_data)
+        register_form = tethys_portal.forms.RegisterForm(data=register_data)
 
         # validate form, false because duplicated user
         self.assertFalse(register_form.is_valid())
@@ -92,7 +120,7 @@ class TethysPortalFormsTests(TestCase):
         register_data = {'username': 'user1', 'email': 'foo@aquaveo.com', 'password1': 'abc123',
                          'password2': 'abc123', 'captcha_0': self.hashkey, 'captcha_1': self.response}
 
-        register_form = RegisterForm(data=register_data)
+        register_form = tethys_portal.forms.RegisterForm(data=register_data)
 
         self.assertTrue(register_form.is_valid())
 
@@ -104,7 +132,7 @@ class TethysPortalFormsTests(TestCase):
         register_data = {'username': 'user12', 'email': 'foo_exist@aquaveo.com', 'password1': 'abc123',
                          'password2': 'abc123', 'captcha_0': self.hashkey, 'captcha_1': self.response}
 
-        register_form = RegisterForm(data=register_data)
+        register_form = tethys_portal.forms.RegisterForm(data=register_data)
 
         register_form.is_valid()
 
@@ -121,7 +149,7 @@ class TethysPortalFormsTests(TestCase):
         register_data = {'username': 'user1', 'email': 'foo@aquaveo.com', 'password1': 'abc123',
                          'password2': 'abc123', 'captcha_0': self.hashkey, 'captcha_1': self.response}
 
-        register_form = RegisterForm(data=register_data)
+        register_form = tethys_portal.forms.RegisterForm(data=register_data)
 
         # Check if form is valid and to generate cleaned_data
         self.assertTrue(register_form.is_valid())
@@ -136,7 +164,7 @@ class TethysPortalFormsTests(TestCase):
         register_data = {'username': 'user1', 'email': 'foo@aquaveo.com', 'password1': 'abcd123',
                          'password2': 'abc123', 'captcha_0': self.hashkey, 'captcha_1': self.response}
 
-        register_form = RegisterForm(data=register_data)
+        register_form = tethys_portal.forms.RegisterForm(data=register_data)
 
         # use is_valid to get cleaned_data attributes
         self.assertFalse(register_form.is_valid())
@@ -150,7 +178,7 @@ class TethysPortalFormsTests(TestCase):
         register_data = {'username': 'user1', 'email': 'foo@aquaveo.com', 'password1': 'abc123',
                          'password2': 'abc123', 'captcha_0': self.hashkey, 'captcha_1': self.response}
 
-        register_form = RegisterForm(data=register_data)
+        register_form = tethys_portal.forms.RegisterForm(data=register_data)
 
         ret = register_form.save()
 
@@ -165,19 +193,21 @@ class TethysPortalFormsTests(TestCase):
 
     def test_UserSettingsForm(self):
         user_settings_data = {'first_name': 'fname', 'last_name': 'lname', 'email': 'user@aquaveo.com'}
-        user_settings_form = UserSettingsForm(data=user_settings_data)
+        user_settings_form = tethys_portal.forms.UserSettingsForm(data=user_settings_data)
         self.assertTrue(user_settings_form.is_valid())
 
     # UserPasswordChange Form
 
     def test_UserPasswordChangeForm_valid(self):
         user_password_change_data = {'old_password': 'glass_onion', 'new_password1': 'pass2', 'new_password2': 'pass2'}
-        user_password_change_form = UserPasswordChangeForm(self.user, data=user_password_change_data)
+        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user,
+                                                                               data=user_password_change_data)
         self.assertTrue(user_password_change_form.is_valid())
 
     def test_UserPasswordChangeForm_clean_old_password(self):
         user_password_change_data = {'old_password': 'glass_onion', 'new_password1': 'pass2', 'new_password2': 'pass2'}
-        user_password_change_form = UserPasswordChangeForm(self.user, data=user_password_change_data)
+        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user,
+                                                                               data=user_password_change_data)
 
         self.assertTrue(user_password_change_form.is_valid())
 
@@ -187,7 +217,8 @@ class TethysPortalFormsTests(TestCase):
 
     def test_UserPasswordChangeForm_clean_old_password_invalid(self):
         user_password_change_data = {'old_password': 'abc123', 'new_password1': 'pass2', 'new_password2': 'pass2'}
-        user_password_change_form = UserPasswordChangeForm(self.user, data=user_password_change_data)
+        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user,
+                                                                               data=user_password_change_data)
 
         # is_valid to get cleaned_data
         self.assertFalse(user_password_change_form.is_valid())
@@ -200,7 +231,8 @@ class TethysPortalFormsTests(TestCase):
     @mock.patch('tethys_portal.forms.validate_password')
     def test_UserPasswordChangeForm_clean_new_password2(self, mock_vp):
         user_password_change_data = {'old_password': 'glass_onion', 'new_password1': 'pass2', 'new_password2': 'pass2'}
-        user_password_change_form = UserPasswordChangeForm(self.user, data=user_password_change_data)
+        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user,
+                                                                               data=user_password_change_data)
 
         self.assertTrue(user_password_change_form.is_valid())
 
@@ -211,7 +243,8 @@ class TethysPortalFormsTests(TestCase):
 
     def test_UserPasswordChangeForm_clean_new_password2_diff(self):
         user_password_change_data = {'old_password': 'glass_onion', 'new_password1': 'pass1', 'new_password2': 'pass2'}
-        user_password_change_form = UserPasswordChangeForm(self.user, data=user_password_change_data)
+        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user,
+                                                                               data=user_password_change_data)
 
         # run is_valid to get cleaned_data
         self.assertFalse(user_password_change_form.is_valid())
@@ -228,7 +261,8 @@ class TethysPortalFormsTests(TestCase):
 
         # Update new password
         user_password_change_data = {'old_password': 'glass_onion', 'new_password1': 'pass2', 'new_password2': 'pass2'}
-        user_password_change_form = UserPasswordChangeForm(self.user, data=user_password_change_data)
+        user_password_change_form = tethys_portal.forms.UserPasswordChangeForm(self.user,
+                                                                               data=user_password_change_data)
 
         # run is_valid to get cleaned_data attributes.
         self.assertTrue(user_password_change_form.is_valid())
