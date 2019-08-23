@@ -27,3 +27,7 @@ tests/extensions/*/build/*
 tests/apps/*/build/*
 tests/extensions/*/dist/*
 tests/apps/*/dist/*
+tests/extensions/*/build/*
+tests/apps/*/build/*
+tests/extensions/*/dist/*
+tests/apps/*/dist/*
