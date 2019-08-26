@@ -99,10 +99,10 @@ jobs:
         - conda config --add channels tethysplatform
         - conda config --set anaconda_upload no
 
-        - mkdir ~/conda-bld
+        - mkdir -p ~/miniconda/conda-bld
       script:
         - echo "Building conda package"
-        - export CONDA_BLD_PATH=~/conda-bld
+        - export CONDA_BLD_PATH=~/miniconda/conda-bld
         - conda build ./conda.recipe
 
         - echo "Uploading conda package"
