@@ -74,7 +74,7 @@ jobs:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
         - >
-          if [ -z "$TRAVIS_TAG"]; then
+          if [ -z "$TRAVIS_TAG" ]; then
             echo "No Branch tag is Present";
           else
             docker push tethysplatform/tethys-core:$TRAVIS_TAG;
@@ -106,9 +106,11 @@ jobs:
         - conda build ./conda.recipe
 
         - echo "Uploading conda package"
+        
+        - chmod 777 $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2
 
         - >
-          if [ -z "$TRAVIS_TAG"]; then
+          if [ -z "$TRAVIS_TAG" ]; then
             echo "No Branch tag is Present. Uploading to dev";
             anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l dev
             $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
