@@ -47,7 +47,8 @@ class TestUrlMap(unittest.TestCase):
 
         # TEST __repre__
         expected_result = '<UrlMap: name=test_name, url=^example/resource/(?P<variable_name>[0-9A-Za-z-_.]+)/' \
-                          '(?P<variable_name2>[0-9A-Za-z-_.]+)/$, controller=test_controller>'
+                          '(?P<variable_name2>[0-9A-Za-z-_.]+)/$, controller=test_controller, protocol=http, ' \
+                          'handler=None, handler_type=None>'
         result = base_url_map.UrlMapBase(name=name, url=url, controller=controller).__repr__()
         self.assertEqual(expected_result, result)
 
