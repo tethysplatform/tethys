@@ -78,6 +78,10 @@ def home(request):
     return render(request, 'test_app/home.html', context)
 
 
+def home_handler(doc):
+    pass
+
+
 class TestWS(WebsocketConsumer):
     def connect(self):
         self.accept()

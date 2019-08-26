@@ -10,6 +10,8 @@ from tethys_apps.exceptions import TethysAppSettingDoesNotExist, TethysAppSettin
 from types import FunctionType
 from tethys_apps.base.permissions import Permission, PermissionGroup
 
+from tethysapp.test_app.controllers import home_handler
+
 
 class TethysAppChild(tethys_app_base.TethysAppBase):
     """
