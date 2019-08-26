@@ -107,8 +107,6 @@ jobs:
 
         - echo "Uploading conda package"
         
-        - chmod 777 $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2
-
         - >
           if [ -z "$TRAVIS_TAG" ]; then
             echo "No Branch tag is Present. Uploading to dev";
