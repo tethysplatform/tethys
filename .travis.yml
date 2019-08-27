@@ -99,13 +99,15 @@ jobs:
         - conda config --add channels tethysplatform
         - conda config --set anaconda_upload no
 
-        - mkdir -p ~/conda-bld
+        - mkdir -p ~/miniconda/conda-bld
       script:
         - echo "Building conda package"
-        - export CONDA_BLD_PATH=~/conda-bld
+        - export CONDA_BLD_PATH=~/miniconda/conda-bld
         - conda build ./conda.recipe
 
         - echo "Uploading conda package"
+        
+        - chmod 777 $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2
         
         - >
           if [ -z "$TRAVIS_TAG" ]; then
