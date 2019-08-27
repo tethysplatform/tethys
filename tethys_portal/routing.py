@@ -27,14 +27,16 @@ for namespace, urls in app_ws_handler_patterns.items():
         ws_routing_patterns.append(url)
 
 application = ProtocolTypeRouter({
-    'http': AuthMiddlewareStack(
-        URLRouter(
-            http_routing_patterns
-        )
-    ),
     'websocket': AuthMiddlewareStack(
         URLRouter(
             ws_routing_patterns
         )
     )
 })
+
+if http_routing_patterns:
+    application.application_mapping['http'] = AuthMiddlewareStack(
+        URLRouter(
+            http_routing_patterns
+        )
+    )
