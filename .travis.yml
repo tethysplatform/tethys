@@ -99,10 +99,10 @@ jobs:
         - conda config --add channels tethysplatform
         - conda config --set anaconda_upload no
 
-        - mkdir -p ~/miniconda/conda-bld
+        - mkdir -p ~/conda-bld
       script:
         - echo "Building conda package"
-        - export CONDA_BLD_PATH=~/miniconda/conda-bld
+        - export CONDA_BLD_PATH=~/conda-bld
         - conda build ./conda.recipe
 
         - echo "Uploading conda package"
@@ -115,7 +115,7 @@ jobs:
           else
             echo "Branch tag is $TRAVIS_TAG. Uploading to master";
             anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform
-            CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
+            $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
           fi
       after_success:
         - skip
