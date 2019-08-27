@@ -12,10 +12,11 @@ channels:
 
 dependencies:
 - python
+- pip
 - tethys_dataset_services>=2.0.0
-- django=2.1.*
+- django>=2.1
 - sphinx
 - sphinx_rtd_theme
+- sphinx-argparse
 - pbr
-- pip:
-    - sphinxcontrib-napoleon
+- sphinxcontrib-napoleon
