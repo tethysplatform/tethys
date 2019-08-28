@@ -2,14 +2,14 @@
 Production Installation
 ***********************
 
-**Last Updated:** June, 2017
+**Last Updated:** June 2017
 
 This article will provide an overview of how to install Tethys Portal in a production setup ready to host apps. Currently production installation of Tethys is only supported on Linux. Some parts of these instructions are optimized for Ubuntu 16.04, though installation on other Linux distributions will be similar.
 
 1. Install Tethys Portal
 ========================
 
-Follow the default :doc:`../linux_and_mac` instructions to install Tethys Portal with the following considerations
+Follow the default :doc:`../../installation` instructions to install Tethys Portal with the following considerations
 
 * Make sure to checkout the correct branch. The master branch provides the latest stable release.
 * Assign strong passwords to the database users.
