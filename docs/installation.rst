@@ -2,7 +2,7 @@
 Getting Started
 ***************
 
-**Last Updated:** July 17, 2019
+**Last Updated:** July 2019
 
 This section describes how to get Tethys Platform up and running as a fresh installation for app development. If you are upgrading an existing installation the refer to the :ref:`update_tethys` docs. If you are deploying a production instance of Tethys Portal refer to the :ref:`production_installation` docs. If you want to contribute to the Tethys Platform source code itself then refer to the :ref:`developer_installation` docs.
 
@@ -88,8 +88,8 @@ This will start up a locally running web server. You can access the Tethys Porta
 
 There are several directions that you may want to go from here.
 
-* Checkout the :ref:`web_admin` docs to set up your Tethys Portal.
-* For help gettings started with docker see :ref:`using_docker`
+* Checkout the :doc:`./installation/web_admin_setup` docs to set up your Tethys Portal.
+* For help getting started with docker see :ref:`using_docker`
 * To install your app refer to the :ref:`app_installation`
 * You also may want to jump over to the :ref:`tutorials` to begin developing your first app.
 

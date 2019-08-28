@@ -40,7 +40,7 @@ TethysWorkspace Objects
 Centralize Workspaces
 =====================
 
-The Workspaces API includes a command, ``collectworkspaces``, for moving all workspaces to a central location and symbolically linking them back to the app project directories. This is especially useful for production where the administrator may want to locate workspace content on a mounted drive to optimize storage. A brief explanation of how to use this command will follow. Refer to the :doc:`./tethys_cli` documentation for details about the ``collectworkspaces`` command.
+The Workspaces API includes a command, ``collectworkspaces``, for moving all workspaces to a central location and symbolically linking them back to the app project directories. This is especially useful for production where the administrator may want to locate workspace content on a mounted drive to optimize storage. A brief explanation of how to use this command will follow. Refer to the :doc:`../tethys_cli` documentation for details about the ``collectworkspaces`` command.
 
 Setting
 -------
