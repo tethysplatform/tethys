@@ -27,8 +27,6 @@ from .workspace import TethysWorkspace
 from .mixins import TethysBaseMixin
 from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 
-from channels.http import AsgiHandler
-
 from bokeh.server.django.consumers import WSConsumer
 from bokeh.server.django import autoload
 
@@ -200,19 +198,16 @@ class TethysBase(TethysBaseMixin):
                         kwargs = dict(app_context=bokeh_app.app_context)
 
                         def urlpattern(suffix=""):
-                            url_pattern = os.path.join(re.escape(bokeh_app.url)) + suffix
+                            url_pattern = re.escape(bokeh_app.url) + suffix
                             return f'^{url_pattern}$'
 
-                        http_url = url(urlpattern('/autoload.js'), BokehAutoloadJsCDN, name=f'{url_map.name}_autoload',
-                                       kwargs=kwargs)
-                        ws_url = url(urlpattern('/ws'), WSConsumer, name=f'{url_map.name}_ws', kwargs=kwargs)
+                        http_url = url(urlpattern('/autoload.js'), BokehAutoloadJsCDN,
+                                       name=f'{url_map.name}_bokeh_autoload', kwargs=kwargs)
+                        ws_url = url(urlpattern('/ws'), WSConsumer, name=f'{url_map.name}_bokeh_ws', kwargs=kwargs)
 
                         # Append to namespace list
                         handler_patterns['http'][namespace].append(http_url)
                         handler_patterns['websocket'][namespace].append(ws_url)
-
-                    if len(handler_patterns['http'][namespace]) == len(url_maps):
-                        handler_patterns['http'][namespace].append(url(r'', AsgiHandler))
 
             self._handler_patterns = handler_patterns
 
