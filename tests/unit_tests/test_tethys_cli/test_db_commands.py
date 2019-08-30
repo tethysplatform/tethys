@@ -219,7 +219,6 @@ class TestCommandTests(unittest.TestCase):
         mock_init.assert_called_with(**self.options)
         mock_start.assert_called_with(**self.options)
 
-
     @mock.patch('tethys_cli.db_commands.write_info')
     @mock.patch('tethys_apps.harvester.SingletonHarvester')
     def test_db_command_sync(self, MockSingletonHarvester, _):
