@@ -132,7 +132,7 @@ RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; python setup.py install'
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; tethys gen settings'
-RUN mkdir -p ${TETHYS_PERSIST}; mkdir ${APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT}
+RUN mkdir -p ${TETHYS_PERSIST} ${APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT}
 
 ############
 # CLEAN UP #
