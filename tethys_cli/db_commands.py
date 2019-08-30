@@ -94,10 +94,9 @@ def create_db_user(hostname=None, port=None, username=None, password=None, db_na
     args = ['psql', '-h', hostname, '-U', 'postgres', '-p', f'{port}', '--command', command]
     _run_process(args, msg)
 
-    if not is_superuser:
-        args = ['createdb', '-h', hostname, '-U', 'postgres', '-E', 'utf-8', '-T', 'template0', '-p', f'{port}',
-                '-O', username, db_name]
-        _run_process(args, msg)
+    args = ['createdb', '-h', hostname, '-U', 'postgres', '-E', 'utf-8', '-T', 'template0', '-p', f'{port}',
+            '-O', username, db_name]
+    _run_process(args, msg)
 
 
 def create_tethys_db(hostname=None, port=None, db_name=None, username=None, password=None,
