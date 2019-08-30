@@ -28,7 +28,7 @@ from tethys_cli.install_commands import add_install_parser
 from tethys_cli.uninstall_command import add_uninstall_parser
 
 
-def tethys_command():
+def tethys_command_parser():
     """
     Tethys commandline interface function.
     """
@@ -42,6 +42,8 @@ def tethys_command():
     add_db_parser(subparsers)
     add_docker_parser(subparsers)
     add_gen_parser(subparsers)
+    add_install_parser(subparsers)
+    add_uninstall_parser(subparsers)
     add_link_parser(subparsers)
     add_list_parser(subparsers)
     add_manage_parser(subparsers)
@@ -51,9 +53,12 @@ def tethys_command():
     add_site_parser(subparsers)
     add_syncstores_parser(subparsers)
     add_test_parser(subparsers)
-    add_install_parser(subparsers)
-    add_uninstall_parser(subparsers)
 
+    return parser
+
+
+def tethys_command():
+    parser = tethys_command_parser()
     # Parse the args and call the default function
     args = parser.parse_args()
     args.func(args)

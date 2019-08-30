@@ -9,7 +9,6 @@ The Tethys Platform provides a Python Software Development Kit (SDK) to make it 
 .. toctree::
    :maxdepth: 2
 
-   tethys_sdk/tethys_cli
    tethys_sdk/app_class
    tethys_sdk/templating
    tethys_sdk/app_settings
