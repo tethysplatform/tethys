@@ -18,7 +18,7 @@ ENV  TETHYS_HOME="/usr/lib/tethys" \
      PORTAL_SUPERUSER_NAME="" \
      PORTAL_SUPERUSER_EMAIL="" \
      PORTAL_SUPERUSER_PASSWORD="" \
-     TETHYS_MANAGE="/usr/lib/tethys/tethys_portal/manage.py"
+     TETHYS_MANAGE="${TETHYS_HOME}/tethys/tethys_portal/manage.py"
 
 
 # Misc
