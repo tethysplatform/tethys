@@ -28,10 +28,13 @@ import django
 MOCK_MODULES = [
     'bokeh', 'bokeh.embed', 'bokeh.resources',
     'channels',
+    'conda', 'conda.cli', 'conda.cli.python_api',
     'condorpy',
     'django_gravatar',
     'dask', 'dask.delayed', 'dask.distributed',
     'distributed', 'distributed.protocol', 'distributed.protocol.serialize',
+    'distro',
+    'docker', 'docker.types', 'docker.errors',
     'guardian', 'guardian.admin',
     'model_utils', 'model_utils.managers',
     'plotly', 'plotly.offline',
@@ -39,7 +42,8 @@ MOCK_MODULES = [
     'social_django',
     'sqlalchemy', 'sqlalchemy.orm',
     'tethys_apps.harvester',  # Mocked to prevent issues with loading apps during docs build.
-    'tethys_compute.utilities'  # Mocked to prevent issues with DictionaryField and List Field during docs build.
+    'tethys_compute.utilities',  # Mocked to prevent issues with DictionaryField and List Field during docs build.
+    'yaml'
 ]
 
 
@@ -89,7 +93,13 @@ django.setup()
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinxcontrib.napoleon', 'sphinx.ext.extlinks', 'sphinx.ext.todo']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinxcontrib.napoleon',
+    'sphinx.ext.extlinks',
+    'sphinx.ext.todo',
+    'sphinxarg.ext'
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

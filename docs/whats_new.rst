@@ -96,7 +96,7 @@ Partial Install Options
 * Upgrade using the install script!
 * Linux and Mac only.
 
-See: :doc:`./installation/linux_and_mac` and :doc:`./installation/update`
+See: :doc:`./installation/developer_installation` and :doc:`./installation/update`
 
 Command Line Interface
 ----------------------
