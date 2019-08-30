@@ -254,7 +254,7 @@ class SingletonHarvester:
                             # register app permissions
                             try:
                                 app_instance.register_app_permissions()
-                            except ProgrammingError as e:
+                            except ProgrammingError:
                                 tethys_log.warning("Unable to register app permissions. django_contetn_type "
                                                    "table does not exist")
                             except ObjectDoesNotExist as e:
