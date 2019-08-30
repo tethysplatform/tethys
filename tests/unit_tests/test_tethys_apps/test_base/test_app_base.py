@@ -2,6 +2,7 @@ import unittest
 import tethys_apps.base.app_base as tethys_app_base
 from unittest import mock
 
+from django.db.utils import ProgrammingError
 from django.test import RequestFactory
 from ... import UserFactory
 from django.core.exceptions import ObjectDoesNotExist
@@ -188,6 +189,19 @@ class TestTethysExtensionBase(unittest.TestCase):
         # Check_result
         rts_call_args = mock_error.call_args_list
         self.assertEqual('test_error', rts_call_args[0][0][0].args[0])
+
+    @mock.patch('tethys_apps.base.app_base.tethys_log')
+    @mock.patch('tethys_apps.models.TethysExtension')
+    def test_sync_with_tethys_db_exists_progamming_error(self, mock_te, mock_log):
+        mock_warning = mock_log.warning
+        ext = tethys_app_base.TethysExtensionBase()
+        ext.root_url = 'test_url'
+        mock_te.objects.filter().all.side_effect = ProgrammingError('test_error')
+        ext.sync_with_tethys_db()
+
+        # Check_result
+        mock_warning.assert_called_with("Unable to sync extension with database. "
+                                        "tethys_apps_tethysextension table does not exist")
 
 
 class TestTethysAppBase(unittest.TestCase):
@@ -892,6 +906,15 @@ class TestTethysAppBase(unittest.TestCase):
         self.app.sync_with_tethys_db()
 
         mock_log.error.assert_called()
+
+    @mock.patch('tethys_apps.base.app_base.tethys_log')
+    @mock.patch('tethys_apps.models.TethysApp')
+    def test_sync_with_tethys_db_programming_error(self, mock_ta, mock_log):
+        mock_ta.objects.filter().all.side_effect = ProgrammingError
+        self.app.sync_with_tethys_db()
+
+        mock_log.warning.assert_called_with("Unable to sync app with database. "
+                                            "tethys_apps_tethysapp table does not exist")
 
     @mock.patch('tethys_apps.models.TethysApp')
     def test_remove_from_db(self, mock_ta):
