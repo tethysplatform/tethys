@@ -17,7 +17,8 @@ ENV  TETHYS_HOME="/usr/lib/tethys" \
      TETHYS_DB_SUPERUSER_PASS="pass" \
      PORTAL_SUPERUSER_NAME="" \
      PORTAL_SUPERUSER_EMAIL="" \
-     PORTAL_SUPERUSER_PASSWORD=""
+     PORTAL_SUPERUSER_PASSWORD="" \
+     TETHYS_MANAGE="/usr/lib/tethys/tethys_portal/manage.py"
 
 
 # Misc
@@ -120,6 +121,7 @@ ADD --chown=www:www tethys_portal ${TETHYS_HOME}/tethys/tethys_portal/
 ADD --chown=www:www tethys_quotas ${TETHYS_HOME}/tethys/tethys_quotas/
 ADD --chown=www:www tethys_sdk ${TETHYS_HOME}/tethys/tethys_sdk/
 ADD --chown=www:www tethys_services ${TETHYS_HOME}/tethys/tethys_services/
+ADD --chown=www:www tests ${TETHYS_HOME}/tethys/tests/
 ADD --chown=www:www README.rst ${TETHYS_HOME}/tethys/
 ADD --chown=www:www *.py ${TETHYS_HOME}/tethys/
 ADD --chown=www:www *.cfg ${TETHYS_HOME}/tethys/
@@ -127,9 +129,10 @@ ADD --chown=www:www .git ${TETHYS_HOME}/tethys/.git/
 
 # Run Installer
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
-  ; python setup.py develop'
-RUN mkdir -p ${TETHYS_PERSIST}
-RUN mkdir ${APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT}
+  ; python setup.py install'
+RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
+  ; tethys gen settings'
+RUN mkdir -p ${TETHYS_PERSIST}; mkdir ${APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT}
 
 ############
 # CLEAN UP #
