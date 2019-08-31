@@ -115,7 +115,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Tethys Platform'
-copyright = u'2014, Nathan Swain'
+copyright = u'2019, Tethys Platform'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -301,8 +301,7 @@ latex_documents = [
 # markup to shorten external links (see: http://www.sphinx-doc.org/en/stable/ext/extlinks.html)
 install_tethys_link = 'https://raw.githubusercontent.com/tethysplatform/tethys/{}/scripts/install_tethys.%s'.\
     format(branch)
-extlinks = {'install_tethys': (install_tethys_link, None),
-            }
+extlinks = {'install_tethys': (install_tethys_link, None)}
 
 # If true, show URL addresses after external links.
 # latex_show_urls = False
