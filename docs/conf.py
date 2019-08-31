@@ -353,16 +353,13 @@ texinfo_documents = [
 # on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
-if not on_rtd:  # only import and set the theme if we're building docs locally
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
-# otherwise, readthedocs.org uses their theme by default, so no need to specify it
-
-
 # If this is True, todo and todolist produce output, else they produce nothing. The default is False.
 todo_include_todos = True
 
 # If this is True, todo emits a warning for each TODO entries. The default is False.
 todo_emit_warnings = True
+
+# ---sphinx-themes-----
+html_theme = 'sphinx_drove_theme'
+import sphinx_drove_theme
+html_theme_path = [sphinx_drove_theme.get_html_theme_path()]
