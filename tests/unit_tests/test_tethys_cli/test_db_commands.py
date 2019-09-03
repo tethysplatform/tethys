@@ -2,6 +2,7 @@ import unittest
 import warnings
 from unittest import mock
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.test.utils import override_settings
 
 from tethys_cli.db_commands import db_command, process_args, create_db_user, _run_process
@@ -205,6 +206,18 @@ class TestCommandTests(unittest.TestCase):
         mock_create.assert_called_with(**self.options)
         mock_migrate.assert_called_with(**self.options)
         mock_createsuperuser.assert_called_with(**self.options)
+
+    def mock_all(self):
+        raise ObjectDoesNotExist("test")
+
+    @mock.patch('tethys_cli.db_commands.init_db_server')
+    @mock.patch('tethys_cli.db_commands.start_db_server')
+    def test_db_command_configure_error(self, mock_init, mock_start):
+        mock_args = mock.MagicMock()
+        mock_args.command = 'configure'
+        db_command(mock_args)
+        mock_init.assert_called_with(**self.options)
+        mock_start.assert_called_with(**self.options)
 
     @mock.patch('tethys_cli.db_commands.write_info')
     @mock.patch('tethys_apps.harvester.SingletonHarvester')
