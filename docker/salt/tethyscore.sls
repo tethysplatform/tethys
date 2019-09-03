@@ -74,6 +74,7 @@ Generate_Tethys_Settings_TethysCore:
   cmd.run:
     - name: >
         {{ TETHYS_BIN_DIR }}/tethys gen settings
+        --overwrite
         --allowed-hosts {{ ALLOWED_HOSTS }}
         --db-name {{ TETHYS_DB_NAME }}
         --db-username {{ TETHYS_DB_USERNAME }}
