@@ -13,6 +13,7 @@ import sys
 import traceback
 import warnings
 
+from django.db.utils import ProgrammingError
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
@@ -224,6 +225,9 @@ class TethysExtensionBase(TethysBase):
                     db_extension.name = self.name
                     db_extension.description = self.description
                     db_extension.save()
+        except ProgrammingError:
+            tethys_log.warning("Unable to sync extension with database. tethys_apps_tethysextension "
+                               "table does not exist")
         except Exception as e:
             tethys_log.error(e)
 
@@ -1351,6 +1355,9 @@ class TethysAppBase(TethysBase):
             # More than one instance of the app in db... (what to do here?)
             elif len(db_apps) >= 2:
                 pass
+        except ProgrammingError:
+            tethys_log.warning("Unable to sync app with database. tethys_apps_tethysapp "
+                               "table does not exist")
         except Exception as e:
             tethys_log.error(e)
 
