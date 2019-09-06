@@ -1,9 +1,10 @@
 import asyncio
 import asynctest
+from unittest import mock
 from tethys_sdk.testing import TethysTestCase
 
 from bokeh.server.django import autoload
-from bokeh.server.django.consumers import SessionConsumer
+from bokeh.server.django.consumers import SessionConsumer, ConsumerHelper
 from tethys_portal.consumers.bokeh_consumers import BokehAutoloadJsCDN
 from tethysapp.test_app.controllers import home_handler
 
@@ -53,7 +54,17 @@ class BokehAutoloadJsCDNTests(TethysTestCase):
         self.assertEqual([(b"Content-Type", b"application/javascript")], aal[0][1]['headers'])
 
     def test_handle_no_element_id(self):
-        pass
+        self.scope['query_string'] = b''
+
+        with self.assertRaises(RuntimeError):
+            self.event_loop.run_until_complete(self.consumer.handle(self.body))
 
     def test_handle_resources_param_none(self):
-        pass
+        side_effect = ['1234', '/apps/test-app', 'http://localhost:8000/apps/test-app', 'none']
+
+        with mock.patch.object(ConsumerHelper, 'get_argument', side_effect=side_effect):
+            self.event_loop.run_until_complete(self.consumer.handle(self.body))
+
+            aal = self.consumer.send_response.await_args_list
+            self.assertIn(b'var js_urls = []', aal[0][0][1])
+            self.assertIn(b'css_urls = []', aal[0][0][1])
