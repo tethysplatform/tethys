@@ -184,6 +184,33 @@ class TestTethysBase(unittest.TestCase):
         self.assertEqual('home_bokeh_ws', rts_call_args[1][1]['name'])
         self.assertIs(rts_call_args[0][1]['kwargs']['app_context']._application._handlers[0]._func, test_func)
 
+    @mock.patch('tethys_apps.base.app_base.url')
+    @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
+    def test_handler_patterns_url_basename(self, mock_tbm, mock_url):
+        app = tethys_app_base.TethysBase()
+        app._namespace = 'foo'
+        app.root_url = 'test-url'
+
+        def test_func(mock_doc):
+            return ''
+
+        url_map = mock.MagicMock(controller='test_app.controllers.home',
+                                 handler=test_func, handler_type='bokeh')
+        url_map.name = 'basename'
+        url_map.url = 'basename/'
+        app.url_maps = mock.MagicMock(return_value=[url_map, ])
+        mock_tbm.return_value = mock.MagicMock(url_maps=['basename/', ])
+
+        app.handler_patterns
+
+        rts_call_args = mock_url.call_args_list
+        self.assertEqual(r'^apps/test\-url/basename/autoload.js$', rts_call_args[0][0][0])
+        self.assertIn('name', rts_call_args[0][1])
+        self.assertIn('name', rts_call_args[1][1])
+        self.assertEqual('basename_bokeh_autoload', rts_call_args[0][1]['name'])
+        self.assertEqual('basename_bokeh_ws', rts_call_args[1][1]['name'])
+        self.assertIs(rts_call_args[0][1]['kwargs']['app_context']._application._handlers[0]._func, test_func)
+
     @mock.patch('tethys_apps.base.app_base.tethys_log')
     @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
     def test_handler_patterns_import_error(self, mock_tbm, mock_log):
