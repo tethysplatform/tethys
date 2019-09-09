@@ -10,8 +10,6 @@ from tethys_apps.exceptions import TethysAppSettingDoesNotExist, TethysAppSettin
 from types import FunctionType
 from tethys_apps.base.permissions import Permission, PermissionGroup
 
-from tethysapp.test_app.controllers import home_handler
-
 
 class TethysAppChild(tethys_app_base.TethysAppBase):
     """
@@ -137,13 +135,13 @@ class TestTethysBase(unittest.TestCase):
         # import pdb; pdb.set_trace()
         app = tethys_app_base.TethysBase()
         app._namespace = 'foo'
-        app.root_url='test-url'
+        app.root_url = 'test-url'
         url_map = mock.MagicMock(controller='test_app.controllers.home',
                                  handler='test_app.controllers.home_handler', handler_type='bokeh', url='')
         url_map.name = 'home'
 
-        app.url_maps = mock.MagicMock(return_value=[url_map,])
-        mock_tbm.return_value = mock.MagicMock(url_maps=['test-app',])
+        app.url_maps = mock.MagicMock(return_value=[url_map, ])
+        mock_tbm.return_value = mock.MagicMock(url_maps=['test-app', ])
 
         # Execute
         result = app.handler_patterns
@@ -167,16 +165,14 @@ class TestTethysBase(unittest.TestCase):
         app._namespace = 'foo'
         app.root_url = 'test-url'
 
-        mock_doc = mock.MagicMock()
-
         def test_func(mock_doc):
             return ''
 
         url_map = mock.MagicMock(controller='test_app.controllers.home',
                                  handler=test_func, handler_type='bokeh', url='')
         url_map.name = 'home'
-        app.url_maps = mock.MagicMock(return_value=[url_map,])
-        mock_tbm.return_value = mock.MagicMock(url_maps=['test-app',])
+        app.url_maps = mock.MagicMock(return_value=[url_map, ])
+        mock_tbm.return_value = mock.MagicMock(url_maps=['test-app', ])
 
         app.handler_patterns
 
@@ -197,7 +193,7 @@ class TestTethysBase(unittest.TestCase):
                                  handler='1module.1function', handler_type='bokeh', url='')
         url_map.name = 'home'
         app.url_maps = mock.MagicMock(return_value=[url_map])
-        mock_tbm.return_value = mock.MagicMock(url_maps=['test-app',])
+        mock_tbm.return_value = mock.MagicMock(url_maps=['test-app', ])
 
         # assertRaises needs a callable, not a property
         def test_handler_patterns():

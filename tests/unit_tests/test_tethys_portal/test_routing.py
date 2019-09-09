@@ -1,5 +1,4 @@
 from tethys_sdk.testing import TethysTestCase
-from channels.http import AsgiHandler
 
 import tethys_portal.routing as routing
 
