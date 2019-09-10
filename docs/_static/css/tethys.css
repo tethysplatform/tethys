@@ -1,0 +1,54 @@
+@import 'main.css';
+
+
+.wy-nav-top a:before, .wy-side-nav-search a.fa.fa-home:before {
+       content: '';
+}
+
+/* Nav Background */
+.rst-versions .rst-current-version,
+.wy-nav-top, .wy-body-for-nav,
+.wy-side-nav-search, .wy-nav-side,
+.rst-versions, .rst-versions .rst-current-version {
+    background: #0a62a9;
+}
+
+/* Nav Items */
+.wy-menu-vertical a {
+    font-family: "Quicksand", sans-serif;
+    height: auto;
+    padding-top: 1em;
+    padding: 1em 1.618em;
+    font-size: 100%;
+    font-weight: 700;
+    color: #fcfcfc;
+}
+
+.wy-menu-vertical li.on a,
+.wy-menu-vertical li.current>a {
+    padding: 1em 1.618em;
+}
+
+wy-menu-vertical li.current a {
+    padding: 1em 1.618em;
+}
+
+.wy-menu-vertical li.toctree-l2.current>a {
+    padding: 1em 2.427em;
+}
+
+.wy-menu-vertical .toctree-l1 a:hover {
+    color: #0a62a9;
+    background: #fff;
+}
+
+.wy-menu-vertical li.on a,
+.wy-menu-vertical li.current>a {
+    color: #0a62a9;
+    padding: 1em 2.427em;
+}
+
+/* Hide Drove Copyright */
+div[role=contentinfo] {
+    display: none;
+}
