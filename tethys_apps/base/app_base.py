@@ -9,7 +9,6 @@
 """
 import logging
 import os
-import re
 import sys
 import traceback
 import warnings
@@ -198,7 +197,7 @@ class TethysBase(TethysBaseMixin):
                         kwargs = dict(app_context=bokeh_app.app_context)
 
                         def urlpattern(suffix=""):
-                            url_pattern = re.escape(bokeh_app.url) + suffix
+                            url_pattern = bokeh_app.url + suffix
                             return f'^{url_pattern}$'
 
                         http_url = url(urlpattern('/autoload.js'), BokehAutoloadJsCDN,

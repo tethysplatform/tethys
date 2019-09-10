@@ -147,8 +147,8 @@ class TestTethysBase(unittest.TestCase):
         result = app.handler_patterns
         # Check url call at django_url = url...
         rts_call_args = mock_url.call_args_list
-        self.assertEqual(r'^apps/test\-url/autoload.js$', rts_call_args[0][0][0])
-        self.assertEqual(r'^apps/test\-url/ws$', rts_call_args[1][0][0])
+        self.assertEqual(r'^apps/test-url/autoload.js$', rts_call_args[0][0][0])
+        self.assertEqual(r'^apps/test-url/ws$', rts_call_args[1][0][0])
         self.assertIn('name', rts_call_args[0][1])
         self.assertIn('name', rts_call_args[1][1])
         self.assertEqual('home_bokeh_autoload', rts_call_args[0][1]['name'])
@@ -177,7 +177,7 @@ class TestTethysBase(unittest.TestCase):
         app.handler_patterns
 
         rts_call_args = mock_url.call_args_list
-        self.assertEqual(r'^apps/test\-url/autoload.js$', rts_call_args[0][0][0])
+        self.assertEqual(r'^apps/test-url/autoload.js$', rts_call_args[0][0][0])
         self.assertIn('name', rts_call_args[0][1])
         self.assertIn('name', rts_call_args[1][1])
         self.assertEqual('home_bokeh_autoload', rts_call_args[0][1]['name'])
@@ -204,7 +204,7 @@ class TestTethysBase(unittest.TestCase):
         app.handler_patterns
 
         rts_call_args = mock_url.call_args_list
-        self.assertEqual(r'^apps/test\-url/basename/autoload.js$', rts_call_args[0][0][0])
+        self.assertEqual(r'^apps/test-url/basename/autoload.js$', rts_call_args[0][0][0])
         self.assertIn('name', rts_call_args[0][1])
         self.assertIn('name', rts_call_args[1][1])
         self.assertEqual('basename_bokeh_autoload', rts_call_args[0][1]['name'])
