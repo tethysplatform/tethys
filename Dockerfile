@@ -130,7 +130,7 @@ ADD --chown=www:www .git ${TETHYS_HOME}/tethys/.git/
 # Run Installer
 # we need to have a settings.py file for some commands to work in the Dockerfile (like tethys install)
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
-  ; python setup.py install'
+  ; python setup.py develop'
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; tethys gen settings'
 RUN mkdir -p ${TETHYS_PERSIST} ${APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT}
