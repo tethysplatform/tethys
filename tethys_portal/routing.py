@@ -30,6 +30,7 @@ for namespace, urls in app_ws_handler_patterns.items():
         ws_routing_patterns.append(url)
 
 application = ProtocolTypeRouter({
+    # 'http' -> django views are added automatically
     'websocket': AuthMiddlewareStack(
         URLRouter(
             ws_routing_patterns

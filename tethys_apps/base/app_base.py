@@ -48,6 +48,56 @@ class TethysBase(TethysBaseMixin):
         self._handler_patterns = None
         self._namespace = None
 
+    @staticmethod
+    def _resolve_ref_function(is_extension, ref, ref_type):
+        if isinstance(ref, str):
+            root_controller_path = 'tethysext' if is_extension else 'tethysapp'
+            full_controller_path = '.'.join([root_controller_path, ref])
+            controller_parts = full_controller_path.split('.')
+            module_name = '.'.join(controller_parts[:-1])
+            function_name = controller_parts[-1]
+            try:
+                module = __import__(module_name, fromlist=[function_name])
+            except Exception as e:
+                error_msg = f'The following error occurred while trying to import the {ref_type} function ' \
+                            f'"{ref}":\n {traceback.format_exc(2)}'
+                tethys_log.error(error_msg)
+                raise e
+            try:
+                ref_function = getattr(module, function_name)
+            except AttributeError as e:
+                error_msg = f'The following error occurred while trying to access the {ref_type} function ' \
+                            f'"{ref}":\n {traceback.format_exc(2)}'
+                tethys_log.error(error_msg)
+                raise e
+        else:
+            ref_function = ref
+        return ref_function
+
+    def _resolve_bokeh_handler(self, namespace, url_map, handler_function, handler_patterns):
+        if url_map.url in [r'', r'/', r'^$', r'^/$']:
+            app_endpoint = '/'.join(['apps', self.root_url])
+        else:
+            stripped_url = url_map.url.replace("^", "").replace("$", "")
+            if stripped_url.endswith('/'):
+                stripped_url = stripped_url[:-1]
+
+            app_endpoint = '/'.join(['apps', self.root_url, stripped_url])
+        bokeh_app = autoload(app_endpoint, handler_function)
+        kwargs = dict(app_context=bokeh_app.app_context)
+
+        def urlpattern(suffix=""):
+            url_pattern = bokeh_app.url + suffix
+            return f'^{url_pattern}$'
+
+        http_url = url(urlpattern('/autoload.js'), BokehAutoloadJsCDN,
+                       name=f'{url_map.name}_bokeh_autoload', kwargs=kwargs)
+        ws_url = url(urlpattern('/ws'), WSConsumer, name=f'{url_map.name}_bokeh_ws', kwargs=kwargs)
+
+        # Append to namespace list
+        handler_patterns['http'][namespace].append(http_url)
+        handler_patterns['websocket'][namespace].append(ws_url)
+
     def url_maps(self):
         """
         Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically. Starting in Tethys 3.0, the ``WebSocket`` protocol is supported along with the ``HTTP`` protocol. To create a ``WebSocket UrlMap``, follow the same pattern used for the ``HTTP`` protocol. In addition, provide a ``Consumer`` path in the controllers parameter as well as a ``WebSocket`` string value for the new protocol parameter for the ``WebSocket UrlMap``.
@@ -80,6 +130,12 @@ class TethysBase(TethysBaseMixin):
                             controller='my_first_app.controllers.HomeConsumer',
                             protocol='websocket'
                         ),
+                        UrlMap(name='bokeh_handler',
+                            url='my-first-app/bokeh-example',
+                            controller='my_first_app.controllers.bokeh_example',
+                            handler='my_first_app.controllers.bokeh_example_handler',
+                            handler_type='bokeh'
+                        ),
                     )
 
                     return url_maps
@@ -106,28 +162,7 @@ class TethysBase(TethysBaseMixin):
                     url_patterns[url_map.protocol][namespace] = []
 
                 # Create django url object
-                if isinstance(url_map.controller, str):
-                    root_controller_path = 'tethysext' if is_extension else 'tethysapp'
-                    full_controller_path = '.'.join([root_controller_path, url_map.controller])
-                    controller_parts = full_controller_path.split('.')
-                    module_name = '.'.join(controller_parts[:-1])
-                    function_name = controller_parts[-1]
-                    try:
-                        module = __import__(module_name, fromlist=[function_name])
-                    except Exception as e:
-                        error_msg = 'The following error occurred while trying to import the controller function ' \
-                                    '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
-                        tethys_log.error(error_msg)
-                        raise e
-                    try:
-                        controller_function = getattr(module, function_name)
-                    except AttributeError as e:
-                        error_msg = 'The following error occurred while trying to access the controller function ' \
-                                    '"{0}":\n {1}'.format(url_map.controller, traceback.format_exc(2))
-                        tethys_log.error(error_msg)
-                        raise e
-                else:
-                    controller_function = url_map.controller
+                controller_function = self._resolve_ref_function(is_extension, url_map.controller, 'controller')
                 django_url = url(url_map.url, controller_function, name=url_map.name)
 
                 # Append to namespace list
@@ -159,54 +194,10 @@ class TethysBase(TethysBaseMixin):
                     if namespace not in handler_patterns['websocket']:
                         handler_patterns['websocket'][namespace] = []
 
-                    # Create django url object
-                    if isinstance(url_map.handler, str):
-                        root_handler_path = 'tethysext' if is_extension else 'tethysapp'
-                        full_handler_path = '.'.join([root_handler_path, url_map.handler])
-                        handler_parts = full_handler_path.split('.')
-                        module_name = '.'.join(handler_parts[:-1])
-                        function_name = handler_parts[-1]
-                        try:
-                            module = __import__(module_name, fromlist=[function_name])
-                        except Exception as e:
-                            error_msg = 'The following error occurred while trying to import the handler function ' \
-                                        '"{0}":\n {1}'.format(url_map.handler, traceback.format_exc(2))
-                            tethys_log.error(error_msg)
-                            raise e
-                        try:
-                            handler_function = getattr(module, function_name)
-                        except AttributeError as e:
-                            error_msg = 'The following error occurred while trying to access the handler function ' \
-                                        '"{0}":\n {1}'.format(url_map.handler, traceback.format_exc(2))
-                            tethys_log.error(error_msg)
-                            raise e
-                    else:
-                        handler_function = url_map.handler
-
+                    # Create django url routing objects
+                    handler_function = self._resolve_ref_function(is_extension, url_map.handler, 'handler')
                     if url_map.handler_type == 'bokeh':
-                        if url_map.url in [r'', r'/', r'^$', r'^/$']:
-                            app_endpoint = '/'.join(['apps', self.root_url])
-                        else:
-                            stripped_url = url_map.url.replace("^", "").replace("$", "")
-                            if stripped_url.endswith('/'):
-                                stripped_url = stripped_url[:-1]
-
-                            app_endpoint = '/'.join(['apps', self.root_url, stripped_url])
-
-                        bokeh_app = autoload(app_endpoint, handler_function)
-                        kwargs = dict(app_context=bokeh_app.app_context)
-
-                        def urlpattern(suffix=""):
-                            url_pattern = bokeh_app.url + suffix
-                            return f'^{url_pattern}$'
-
-                        http_url = url(urlpattern('/autoload.js'), BokehAutoloadJsCDN,
-                                       name=f'{url_map.name}_bokeh_autoload', kwargs=kwargs)
-                        ws_url = url(urlpattern('/ws'), WSConsumer, name=f'{url_map.name}_bokeh_ws', kwargs=kwargs)
-
-                        # Append to namespace list
-                        handler_patterns['http'][namespace].append(http_url)
-                        handler_patterns['websocket'][namespace].append(ws_url)
+                        self._resolve_bokeh_handler(namespace, url_map, handler_function, handler_patterns)
 
             self._handler_patterns = handler_patterns
 

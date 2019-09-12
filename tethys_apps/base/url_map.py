@@ -25,7 +25,10 @@ class UrlMapBase:
           name (str): Name of the url map. Letters and underscores only (_).
           url (str): Url pattern to map to the controller.
           controller (str): Dot-notation path to the controller.
+          protocol (str): http or websocket.
           regex (str or iterable, optional): Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
+          handler (str): Dot-notation path to the handler.
+          handler_type (str): Tethys supported handler type (bokeh).
         """  # noqa: E501
         # Validate
         if regex and (not isinstance(regex, str) and not isinstance(regex, tuple)
@@ -45,7 +48,7 @@ class UrlMapBase:
         String representation
         """
         return f'<UrlMap: name={self.name}, url={self.url}, controller={self.controller}, protocol={self.protocol}, ' \
-            f'handler={self.handler}, handler_type={self.handler_type}>'
+               f'handler={self.handler}, handler_type={self.handler_type}>'
 
 
 def url_map_maker(root_url):
