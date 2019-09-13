@@ -10,3 +10,49 @@ img[alt='_images/tethys_logo_inverse.png'] {
     float: left;
     margin: 20px 10px 10px 0px;
 }
+
+.rst-versions.rst-badge {
+    top: 16px;
+    height: auto;
+    bottom: auto;
+}
+
+.rst-versions .rst-current-version {
+    background-color: #1662A9;
+    color: #ffffff;
+}
+
+#idbutton-show-source {
+    display: none;
+}
+
+form[action="search.html"] {
+    margin-right: 160px;
+}
+
+.rst-versions.rst-badge.shift-up .rst-current-version {
+    background-color: #5081ba;
+}
+
+.rst-versions .rst-other-versions {
+    background-color: #ffffff;
+    color: black;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12);
+}
+
+.rst-versions .rst-other-versions dd a {
+    color: black;
+}
+
+.rst-versions .rst-other-versions dd a:hover {
+    color: gray;
+}
+
+.mdl-layout-title:before {
+    content: url(http://docs.tethysplatform.org/en/docs-theme-material/_images/tethys_logo_inverse.png);
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+}
+
+
