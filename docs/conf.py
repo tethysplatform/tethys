@@ -11,16 +11,12 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
-
 import sys
 import os
 from unittest import mock
-
 import pbr.version
 import pbr.git
-
 import sphinx_drove_theme
-
 from django.conf import settings
 import django
 
@@ -146,6 +142,15 @@ pygments_style = 'sphinx'
 
 # -- Options for HTML output ----------------------------------------------
 
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named "default.css" will overwrite the builtin "default.css".
+html_static_path = ['_static']
+
+html_css_files = [
+    'css/tethys.css',
+]
+
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
@@ -169,6 +174,7 @@ latex_documents = [
 # markup to shorten external links (see: http://www.sphinx-doc.org/en/stable/ext/extlinks.html)
 install_tethys_link = 'https://raw.githubusercontent.com/tethysplatform/tethys/{}/scripts/install_tethys.%s'.\
     format(branch)
+
 extlinks = {'install_tethys': (install_tethys_link, None)}
 
 
@@ -177,8 +183,7 @@ extlinks = {'install_tethys': (install_tethys_link, None)}
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'tethysplatform', u'Tethys Platform Documentation',
-     [u'Nathan Swain'], 1)
+    ('index', 'tethysplatform', u'Tethys Platform Documentation', [u'Nathan Swain'], 1)
 ]
 
 # -- Options for Texinfo output -------------------------------------------
@@ -201,14 +206,3 @@ todo_emit_warnings = True
 # ---sphinx-themes-----
 html_theme = 'sphinx_drove_theme'
 html_theme_path = [sphinx_drove_theme.get_html_theme_path()]
-
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
-html_css_files = [
-    'css/tethys.css',
-]
-
-
