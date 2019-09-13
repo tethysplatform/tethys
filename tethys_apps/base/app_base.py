@@ -49,7 +49,23 @@ class TethysBase(TethysBaseMixin):
         self._namespace = None
 
     @staticmethod
-    def _resolve_ref_function(is_extension, ref, ref_type):
+    def _resolve_ref_function(ref, ref_type, is_extension):
+        """
+        This method retrieves a controller or handler function.
+
+        Args:
+            ref: The function of dot-formatted string path to the function
+            ref_type: Handler or controller
+            is_extension: Boolean. True if working with a Tethys Extension
+
+        Returns:
+            func: If the reference is a string returns the attribute value of the function.
+            If the reference is a function returns the referenced function itself.
+
+        Example:
+            controller_function = self._resolve_ref_function(url_map.controller, 'controller', is_extension)
+        """
+
         if isinstance(ref, str):
             root_controller_path = 'tethysext' if is_extension else 'tethysapp'
             full_controller_path = '.'.join([root_controller_path, ref])
@@ -75,6 +91,22 @@ class TethysBase(TethysBaseMixin):
         return ref_function
 
     def _resolve_bokeh_handler(self, namespace, url_map, handler_function, handler_patterns):
+        """
+        Create and add url patterns for bokeh handler
+
+        Args:
+            namespace: App name
+            url_map: Mapping containing url name, controller, and handler information
+            handler_function: The function returned by _resolve_ref_function
+            handler_patterns: dictionary to add http and websocket patterns to
+
+        Returns:
+            None
+
+        Example:
+            self._resolve_bokeh_handler(namespace, url_map, handler_function, handler_patterns)
+        """
+
         if url_map.url in [r'', r'/', r'^$', r'^/$']:
             app_endpoint = '/'.join(['apps', self.root_url])
         else:
@@ -100,7 +132,7 @@ class TethysBase(TethysBaseMixin):
 
     def url_maps(self):
         """
-        Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically. Starting in Tethys 3.0, the ``WebSocket`` protocol is supported along with the ``HTTP`` protocol. To create a ``WebSocket UrlMap``, follow the same pattern used for the ``HTTP`` protocol. In addition, provide a ``Consumer`` path in the controllers parameter as well as a ``WebSocket`` string value for the new protocol parameter for the ``WebSocket UrlMap``.
+        Override this method to define the URL Maps for your app. Your ``UrlMap`` objects must be created from a ``UrlMap`` class that is bound to the ``root_url`` of your app. Use the ``url_map_maker()`` function to create the bound ``UrlMap`` class. If you generate your app project from the scaffold, this will be done automatically. Starting in Tethys 3.0, the ``WebSocket`` protocol is supported along with the ``HTTP`` protocol. To create a ``WebSocket UrlMap``, follow the same pattern used for the ``HTTP`` protocol. In addition, provide a ``Consumer`` path in the controllers parameter as well as a ``WebSocket`` string value for the new protocol parameter for the ``WebSocket UrlMap``. Alternatively, Bokeh Server can also be integrated into Tethys using ``Django Channels`` and ``Websockets``. Tethys will automatically set these up for you if a ``handler`` and ``handler_type`` parameters are provided as part of the ``UrlMap``.
 
         Returns:
           iterable: A list or tuple of ``UrlMap`` objects.
@@ -162,7 +194,7 @@ class TethysBase(TethysBaseMixin):
                     url_patterns[url_map.protocol][namespace] = []
 
                 # Create django url object
-                controller_function = self._resolve_ref_function(is_extension, url_map.controller, 'controller')
+                controller_function = self._resolve_ref_function(url_map.controller, 'controller', is_extension)
                 django_url = url(url_map.url, controller_function, name=url_map.name)
 
                 # Append to namespace list
