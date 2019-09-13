@@ -360,3 +360,65 @@ todo_include_todos = True
 todo_emit_warnings = True
 
 html_theme = 'sphinx_materialdesign_theme'
+
+html_theme_options = {
+    # Specify a list of menu in Header.
+    # Tuples forms:
+    #  ('Name', 'external url or path of pages in the document', boolean, 'icon name')
+    #
+    # Third argument:
+    # True indicates an external link.
+    # False indicates path of pages in the document.
+    #
+    # Fourth argument:
+    # Specify the icon name.
+    # For details see link.
+    # https://material.io/icons/
+    'header_links' : [
+        ('Home', 'index', False, 'home'),
+        ('Tutorials', 'tutorials', False, 'assignment'),
+        ('SDK', 'tethys_sdk', False, 'build'),
+        ('CLI', 'tethys_cli', False, 'keyboard_arrow_right'),
+        ('Tethys Portal', 'tethys_portal', False, 'web'),
+        ('Software Suite', 'software_suite', False, 'developer_board'),
+        ("Issues", "https://github.com/tethysplatform/tethys/issues", True, 'bug_report'),
+        ("GitHub", "https://github.com/tethysplatform/tethys", True, 'launch')
+    ],
+
+    # Customize css colors.
+    # For details see link.
+    # https://getmdl.io/customize/index.html
+    #
+    # Values: amber, blue, brown, cyan deep_orange, deep_purple, green, grey, indigo, light_blue,
+    #         light_green, lime, orange, pink, purple, red, teal, yellow(Default: indigo)
+    'primary_color': 'blue',
+    # Values: Same as primary_color. (Default: pink)
+    'accent_color': 'light_blue',
+
+    # Customize layout.
+    # For details see link.
+    # https://getmdl.io/components/index.html#layout-section
+    'fixed_drawer': False,
+    'fixed_header': True,
+    'header_waterfall': True,
+    'header_scroll': False,
+
+    # Render title in header.
+    # Values: True, False (Default: False)
+    'show_header_title': True,
+    # Render title in drawer.
+    # Values: True, False (Default: True)
+    'show_drawer_title': False,
+    # Render footer.
+    # Values: True, False (Default: True)
+    'show_footer': True
+}
+
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named "default.css" will overwrite the builtin "default.css".
+html_static_path = ['_static']
+html_css_files = [
+    'css/tethys.css',
+]
+

@@ -1,0 +1,12 @@
+.mdl-layout__header {
+    background: #1662a9!important;
+}
+
+.mdl-layout__drawer>.mdl-layout-title .title-text {
+    text-align: left!important;
+}
+
+img[alt='_images/tethys_logo_inverse.png'] {
+    float: left;
+    margin: 20px 10px 10px 0px;
+}
