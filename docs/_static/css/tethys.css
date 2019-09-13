@@ -1,8 +1,9 @@
 @import 'main.css';
 
 
-.wy-nav-top a:before, .wy-side-nav-search a.fa.fa-home:before {
-       content: '';
+.wy-nav-top a:before,
+.wy-side-nav-search a.fa.fa-home:before {
+    content: '';
 }
 
 /* Nav Background */
@@ -17,38 +18,58 @@
 .wy-menu-vertical a {
     font-family: "Quicksand", sans-serif;
     height: auto;
-    padding-top: 1em;
-    padding: 1em 1.618em;
+    padding-top: 0.618em;
+    padding: 0.75em 1.618em;
     font-size: 100%;
     font-weight: 700;
     color: #fcfcfc;
 }
 
-.wy-menu-vertical li.on a,
-.wy-menu-vertical li.current>a {
-    padding: 1em 1.618em;
+.wy-menu-vertical li.current a {
+    padding: 0.675em 2.427em;
 }
 
-wy-menu-vertical li.current a {
-    padding: 1em 1.618em;
+.wy-menu-vertical li.on a,
+.wy-menu-vertical li.current>a {
+    color: #0a62a9;
+    padding: 0.75em 1.618em;
 }
 
 .wy-menu-vertical li.toctree-l2.current>a {
-    padding: 1em 2.427em;
+    padding: 0.675em 2.427em;
 }
 
 .wy-menu-vertical .toctree-l1 a:hover {
     color: #0a62a9;
-    background: #fff;
-}
-
-.wy-menu-vertical li.on a,
-.wy-menu-vertical li.current>a {
-    color: #0a62a9;
-    padding: 1em 2.427em;
+    background: #ffffff;
 }
 
 /* Hide Drove Copyright */
 div[role=contentinfo] {
     display: none;
+}
+
+/* Code Block */
+.codeblock div[class^='highlight'],
+pre.literal-block div[class^='highlight'],
+.rst-content .literal-block div[class^='highlight'],
+div[class^='highlight'] div[class^='highlight'] {
+    background: #eeffcc;
+}
+
+.codeblock, pre.literal-block,
+.rst-content .literal-block,
+.rst-content pre.literal-block,
+div[class^='highlight'] {
+    background: #eeffcc;
+}
+
+code, .rst-content tt {
+    padding: 0;
+}
+
+code.file {
+    padding: 3px;
+    border: solid 1px #e1e4e5;
+    background: #ffffff;
 }
