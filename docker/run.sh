@@ -27,7 +27,7 @@ db_check_count=0
 until ${CONDA_HOME}/envs/${CONDA_ENV_NAME}/bin/pg_isready -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} -U postgres; do
   if [ $db_check_count -gt 24 ]; then
     >&2 echo "DB was not available in time - exiting"
-    exit
+    exit 1
   fi
   >&2 echo "DB is unavailable - sleeping"
   db_check_count=`expr $db_check_count + 1`
