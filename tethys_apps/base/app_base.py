@@ -227,7 +227,7 @@ class TethysBase(TethysBaseMixin):
                         handler_patterns['websocket'][namespace] = []
 
                     # Create django url routing objects
-                    handler_function = self._resolve_ref_function(is_extension, url_map.handler, 'handler')
+                    handler_function = self._resolve_ref_function(url_map.handler, 'handler', is_extension)
                     if url_map.handler_type == 'bokeh':
                         self._resolve_bokeh_handler(namespace, url_map, handler_function, handler_patterns)
 

@@ -1,6 +1,6 @@
-************************
-Bokeh Server Integration
-************************
+****************************
+Bokeh Server Integration API
+****************************
 
 **Last Updated:** September 2019
 
