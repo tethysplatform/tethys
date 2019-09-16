@@ -92,10 +92,16 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
   ; echo "Acquire::http {No-Cache=True;};" > /etc/apt/apt.conf.d/no-cache
 
 # Install APT packages
-RUN apt-get update && apt-get -y install wget gnupg2 \
+RUN rm -rf /var/lib/apt/lists/*\
+ && apt-get update \
+ && apt-get -y install wget gnupg2 \
+ && rm -rf /var/lib/apt/lists/*\
  && wget -O - https://repo.saltstack.com/apt/debian/9/amd64/latest/SALTSTACK-GPG-KEY.pub | apt-key add - \
  && echo "deb http://repo.saltstack.com/apt/debian/9/amd64/latest stretch main" > /etc/apt/sources.list.d/saltstack.list
-RUN apt-get update && apt-get -y install bzip2 git nginx supervisor gcc salt-minion procps pv
+RUN rm -rf /var/lib/apt/lists/*\
+ && apt-get update \
+ && apt-get -y install bzip2 git nginx supervisor gcc salt-minion procps pv
+ && rm -rf /var/lib/apt/lists/*\
 RUN rm -f /etc/nginx/sites-enabled/default
 
 # Setup Conda Environment
