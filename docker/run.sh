@@ -22,6 +22,17 @@ echo "postgres.pass: '${TETHYS_DB_PASSWORD}'" >> /etc/salt/minion
 echo "postgres.bins_dir: '${CONDA_HOME}/envs/${CONDA_ENV_NAME}/bin'" >> /etc/salt/minion 
 
 # Apply States
+echo_status "Checking if DB is ready"
+db_check_count=0
+until ${CONDA_HOME}/envs/${CONDA_ENV_NAME}/bin/pg_isready -h ${TETHYS_DB_HOST} -p ${TETHYS_DB_PORT} -U postgres; do
+  if [ $db_check_count -gt 24 ]; then
+    >&2 echo "DB was not available in time - exiting"
+    exit 1
+  fi
+  >&2 echo "DB is unavailable - sleeping"
+  db_check_count=`expr $db_check_count + 1`
+  sleep 5
+done
 echo_status "Enforcing start state... (This might take a bit)"
 salt-call --local state.apply
 echo_status "Fixing permissions"
