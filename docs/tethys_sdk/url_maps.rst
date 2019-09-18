@@ -1,8 +1,58 @@
-****************************
-Bokeh Server Integration API
-****************************
+************
+URL Maps API
+************
 
 **Last Updated:** September 2019
+
+Tethys usually manages url maps from the ``app.py`` file of each individual app using a url map constructor. This
+constructor normally accepts a ``name``, a ``url``, and a ``controller``. However, there are other parameters such as
+``protocol``, ``regex``, ``handler``, and ``handler_type``. This section provides information on how to use the url
+maps API.
+
+URL Maps Contructor
+-------------------
+
+.. autoclass:: tethys_apps.base.url_map.UrlMapBase
+   :members:
+
+   .. automethod:: __init__
+
+URL Maps Function
+-----------------
+
+The ``url_maps`` function is tightly related to the App Base Class API.
+
+.. automethod:: tethys_apps.base.app_base.TethysBase.url_maps
+   :noindex:
+
+Websockets
+----------
+
+Tethys Platform supports WebSocket connections using `Django Channels
+<https://channels.readthedocs.io/en/latest/index.html/>`_. The WebSocket protocol provides as persistent connection
+between client and server. In contrast to the traditional HTTP protocol, the webscoket protocol allows for
+bidirectional communication between client and server (i.e. the server can trigger a response without the client
+sending a request). Django Channels uses Consumers to structure code and handle client/server communication in a s
+imilar way Controllers are used with the HTTP protocol.
+
+.. note::
+    For more information about Django Channels and Consumers visit
+    `the Django Channels docummentation <https://channels.readthedocs.io/en/latest/>`_.
+
+.. note::
+    For more information on establishing a WebSocket connection see
+    `the JavaScript WebSocket API <https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/>`_. Alternatively, other existing JavaScript or Python WebSocket clients can we used.
+
+.. tip::
+    To create a URL mapping using the WebSocket protocol see the example provided in the
+    `App Base Class API documentation <./tethys_sdk/url_maps.html#url-maps-function>`_.
+
+.. tip::
+    For an example demonstrating all the necessary components to integrating websockets into you app see `This
+    Websockets Tutorial <./tutorials/getting_started/websockets.html>`_.
+
+Bokeh Server Integration
+------------------------
 
 Bokeh Server Integration in Tethys takes advantage of ``Websockets`` and ``Django Channels`` to leverage Bokeh's
 flexible architecture. In particular, the ability to sync model objects to the client allows for a responsive user
@@ -81,12 +131,6 @@ The ``controller`` from the same ``UrlMap`` where the ``handler`` is defined nee
         }
 
         return render(request, 'test_app/home.html', context)
-
-The ``url_maps`` documentation below provides more detail regarding the use of ``Bokeh handlers`` as well as other
-related functionality.
-
-.. automethod:: tethys_apps.base.app_base.TethysBase.url_maps
-   :noindex:
 
 .. tip::
     For more information regarding Bokeh Server and available widgets visit the `Bokeh Server Documentation

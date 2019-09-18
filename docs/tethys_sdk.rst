@@ -12,7 +12,6 @@ The Tethys Platform provides a Python Software Development Kit (SDK) to make it 
    tethys_sdk/app_class
    tethys_sdk/templating
    tethys_sdk/app_settings
-   tethys_sdk/bokeh_server_integration
    tethys_sdk/compute
    tethys_sdk/handoff
    tethys_sdk/jobs
@@ -23,4 +22,5 @@ The Tethys Platform provides a Python Software Development Kit (SDK) to make it 
    tethys_sdk/extensions
    tethys_sdk/tethys_quotas
    tethys_sdk/tethys_services
+   tethys_sdk/url_maps
    tethys_sdk/workspaces
