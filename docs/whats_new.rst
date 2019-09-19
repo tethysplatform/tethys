@@ -2,145 +2,212 @@
 What's New
 **********
 
-**Last Updated:** December 2018
+**Last Updated:** September 2019
 
 Refer to this article for information about each new release of Tethys Platform.
-
-UnReleased |version|
-====================
-
-
-Automatic Application Installation
-----------------------------------
-
-* Support for an install.yml app specific file that will setup dependencies
-* Support for a services.yml app-portal specific file that will link services
-* Support for tethys install command
-
-See: :ref:`Install Command <tethys_cli_install>`
-
-
-Application Migration
-=====================
-
-.. toctree::
-   :maxdepth: 1
-
-   whats_new/app_migration
-
 
 Release |version|
 =================
 
-Python 3 Support
-----------------
-
-* Python 3 officially supported in Tethys Platform.
-* Python 2 support officially deprecated and will be dropped when Tethys Platform 3.0 is released.
-* Tethys needs to migrate to Python 3 only so we can upgrade to Django 2.0, which only supports Python 3.
-
-.. important::
-
-    Migrate your apps to Python 3. After Tethys Platform 3.0 is released, Python 2 will no longer be supported by Tethys Platform.
-
-
-100% Unit Test Coverage
------------------------
-
-* Tests pass in Python 2 and Python 3.
-* Unit tests cover 100% of testable code.
-* Code base linted using flake8 to enforce PEP-8 and other Python coding best practices.
-* Automated test execution on Travis-CI and Stickler-CI whenever a Pull Request is submitted.
-* Added badges to the README to display build/testing, coverage, and docs status on github repository.
-* All of this will lead to increased stability in this and future releases.
-
-See: `Tethys Platform Repo <https://github.com/tethysplatform/tethys>`_ for build and coverage information.
-
-Tethys Extensions
------------------
-
-* Customize Tethys Platform functionality.
-* Create your own gizmos.
-* Centralize app logic that is common to multiple apps in an extension.
-
-See: :doc:`./tethys_sdk/extensions`
-
-Map View Gizmo
---------------
-
-* Added support for many more basemaps.
-* Added Esri, Stamen, CartoDB.
-* Support for custom XYZ services as basemaps.
-* User can set OpenLayers version.
-* Uses jsdelivr to load custom versions (see: `<https://cdn.jsdelivr.net/npm/openlayers>`_)
-* Default OpenLayers version updated to 5.3.0.
-
-See: :doc:`tethys_sdk/gizmos/map_view`
-
-Class-based Controllers
------------------------
-
-* Added ``TethysController`` to SDK to support class-based views in Tethys apps.
-* Inherits from django ``View`` class.
-* Includes ``as_controller`` method, which is a thin wrapper around ``as_view`` method to better match Tethys terminology.
-* UrlMaps can take class-based Views as the controller argument: ``MyClassBasedController.as_controller(...)``
-* More to come in the future.
-
-See: `Django Class-based views <https://docs.djangoproject.com/en/2.2/topics/class-based-views/>`_ to get started.
-
-Partial Install Options
------------------------
-
-* The Tethys Platform installation scripts now allow for partial installation.
-* Install in existing Conda environment or against existing database.
-* Upgrade using the install script!
-* Linux and Mac only.
-
-See: :doc:`./installation/developer_installation` and :doc:`./installation/update`
-
-Command Line Interface
-----------------------
-
-* New commands to manage app settings and services.
-* ``tethys app_settings`` - List settings for an app.
-* ``tethys services`` - List, create, and remove Tethys services (only supports persistent store services and spatial dataset services for now).
-* ``tethys link`` - Link/Assign a Tethys service to a corresponding app setting.
-* ``tethys schedulers`` - List, create, and remove job Schedulers.
-* ``tethys manage sync`` - Sync app and extensions with Tethys database without a full Tethys start.
-
-See: :ref:`tethys_cli_app_settings`, :ref:`tethys_cli_services`, :ref:`tethys_cli_link`, :ref:`tethys_cli_schedulers`, and :ref:`tethys_manage_cmd`
-
-Dockerfile
+Django 2.2
 ----------
 
-* New Dockerfile for Tethys Platform.
-* Use it to build Docker images.
-* Use it as a base for your own Docker images that have your apps installed.
-* Includes supporting salt files.
-* Dockerfile has been optimized to minimize the size of the produced image.
-* Threading is enabled in the Docker container.
+* Django was updated to version 2.2, the next LTS version of Django.
+* It will be supported until April 2022.
+* Includes the latest security updates.
 
-See: `Docker Documentation <https://docs.docker.com/get-started/>`_ to learn how to use Docker in your workflows.
+See: `Django Supported Versions <https://www.djangoproject.com/download/#supported-versions>`_
 
-API Tokens for Users
---------------------
-* API tokens are automatically generated for users when they are created.
-* Use User API tokens to access protected REST API views.
-
-Documentation
+Python 3 Only
 -------------
-* Added SSL setup instruction to Production Installation (see: :ref:`production_installation_ssl`)
 
-Bugs
-----
+* Tethys Platform no longer supports Python 2.
+* This is in large part because Django no longer supports Python 2 as of version 2.0.
+* Python 2 is also reaching its `end of life in 2020 <https://pythonclock.org/>`_ (supposedly).
 
-* Fixed grammar in forget password link.
-* Refactored various methods and decorators to use new way of using Django methods ``is_authenticated`` and ``is_anonymous``.
-* Fixed bug with Gizmos that was preventing errors from being displayed when in debug mode.
-* Fixed various bugs with uninstalling apps and extensions.
-* Fixed bugs with get_persistent_store_setting methods.
-* Fixed a naming conflict in the SelectInput gizmo.
-* Fixed numerous bugs identified by new tests.
+See: `Automated Python 2 to 3 code translation <https://docs.python.org/3.7/library/2to3.html>`_ and `Should I use Python 2 or Python 3 for my development activity? <https://wiki.python.org/moin/Python2orPython3>`_
+
+Conda Package
+-------------
+
+* Tethys has been Conda packaged
+* It can be installed from our `Conda channel <https://anaconda.org/tethysplatform/tethysplatform>`_.
+
+See: :doc:`./installation`
+
+Upgraded JQuery and Bootstrap
+-----------------------------
+
+* The JQuery and Bootstrap libraries that Tethys provides were upgraded to address known security vulnerabilities (see: https://snyk.io/test/npm/bootstrap/3.2.0 and https://snyk.io/test/npm/jquery/1.11.1).
+* Bootstrap has been upgraded to version 3.4.1 (not 4 yet, sorry).
+* Coincidentally, JQuery was also upgraded to version 3.4.1.
+
+Django Channels
+---------------
+
+* Tethys comes with `Django Channels <https://channels.readthedocs.io/en/latest/>`_
+* Django Channels wraps the synchronous Django process in an asynchronous process, allowing developers to use modern web protocols like WebSockets.
+* WebSockets allow for a bidirectional, long-lived connections between the server and client.
+
+See: :doc:`./tutorials/getting_started/websockets`
+
+Django Analytical
+-----------------
+
+* Tethys comes with `Django Analytical <https://django-analytical.readthedocs.io/en/latest/>`_ installed to enable support form a number of analytics and tracking services.
+* You can now enable analytics tracking (e.g. Google Analytics) to every page of your apps and portal with a few settings in the settings file.
+
+See: :doc:`./tethys_portal/webanalytics`
+
+Tethys Quotas
+-------------
+
+* Tethys Quotas allow portal administrators to have better control over the resources being used by users and apps (e.g. disk storage).
+* Tethys ships with quotas for workspace storage implemented, but it is disabled by default. When enabled, portal administrators can set limits on the storage users or apps are able to use.
+* Tethys Quotas are completely extensible, allowing developer to create custom quotas for other resources (e.g. memory usage, database storage, wall time hours, etc.).
+
+See: :doc:`./tutorials/getting_started/quotas` and :doc:`./tethys_sdk/tethys_quotas`
+
+Workspace Storage Management Pages
+----------------------------------
+
+* The User Profile now includes a page for managing storage in the user's workspace accross all apps in the portal. Users can choose to clear the storage in their workspace for an app.
+* The App Settings page now includes information about storage in the app's workspace and provides a method for clearing that workspace.
+* New endpoints on the App class allow app developers to respond to requests to clear storage from users.
+
+See: :ref:`admin_pages_tethys_quotas`
+
+New Portal Configuration File
+-----------------------------
+
+* Tethys will now use a new configuration file: ``portal.yml``
+* The ``portal.yml`` will store information about which services should be used for installed apps and the portal settings
+* Tethys Portal settings will now be configured in the new ``portal.yml`` file, rather than the ``settings.py``
+* This will allow for the local settings to be retained when Tethys is updated in the future (no more regenerating the ``settings.py`` file when you update).
+* Site settings will also be able to be configured via the ``portal.yml`` (e.g. primary color, logo, home page content).
+
+See:
+
+``tethys db`` command
+---------------------
+
+* The CLI has a new command for managing the Tethys database.
+* It includes subcommands for initializing the tethys database, starting and stopping the local database, migrating the database between releases, and creating the tethys superuser.
+
+See: :ref:`tethys_db_cmd`
+
+Updated the ``tethys docker`` command
+-------------------------------------
+
+* The ``tethys docker`` command now uses the latest version of the Docker Python API.
+
+See: :ref:`tethys_cli_docker`
+
+Extended Services and Link Commands
+-----------------------------------
+
+* The ``tethys services`` command has been extended to support creating all Tethys services programatically.
+* The ``tethys link`` command has been extended to support link all types of Tethys services to applicable App Settings programatically.
+
+See: :ref:`tethys_cli_services` and :ref:`tethys_cli_link`
+
+Improved CLI Documentation
+--------------------------
+
+* The documentation for the command line interface has moved to a new location.
+* The CLI documenation is automatically generated from the code to ensure accuracy.
+
+See: :doc:`./tethys_cli`
+
+Automatic Application Installation
+----------------------------------
+
+* App now require an ``install.yml`` file which allows dependencies to be installed using conda or pip.
+* Apps can also use an optional ``services.yml`` portal specific file that will automatically link services.
+* The CLI has a new command for installing apps: `tethys install`.
+
+See: :doc:`./installation/application`, :ref:`tethys_install_yml`, :ref:`tethys_services_yml`, and :ref:`Install Command <tethys_cli_install>`
+
+
+New App Installation Approach
+-----------------------------
+
+* The structure of apps and the way they are installed has changed.
+* The changes will allow Tethys to be updated in the future without the need to reinstall apps afterward.
+* Tethys 2 Apps will need to be migrated to work in Tethys 3.
+
+.. toctree::
+   :maxdepth: 2
+
+   whats_new/app_migration
+
+Dask Job Type
+-------------
+
+* New TethysJob types for submitting and managing Dask Jobs.
+* Dask allows pure Python code to be automagically parallelized and executed accross a distributed cluster of nodes.
+
+See: `./tethys_sdk/jobs/dask_job_type` and :doc:`./tutorials/dask`
+
+CesiumMapView Gizmo
+-------------------
+
+* New Gizmo for adding Cesium 3D globes to Tethys Apps.
+* The initial view can be configured almost entirely using Python in the controller.
+* The JavaScript API for the Gizmo allows full access to the underlying Cesium objects to all developers to fully customize.
+
+See: :ref:`cesium-map-view`
+
+MapView Gizmo
+-------------
+
+* The MapView Gizmo now includes an overview map control.
+* Features on the drawing layer can no be made selectable.
+* Initial features can now be specified for the drawing layer.
+* New snapping capabilities: a layer can be specified as the layer to snap to.
+* Adds full API support for styles on vector-based MVLayers.
+
+See: :ref:`map-view`
+
+JobsTable Gizmo
+---------------
+
+* Fixed an issue that prevented the DAG view of Condor Workflow jobs from working with jobs submitted to a remote Condor Scheduler.
+* Improved usability of JobsTable in general.
+* Changes to allow the JobsTable to work with custom TethysJobs.
+
+See: :ref:`jobs-table`
+
+Open Portal Mode
+----------------
+
+* Adds setting to allow Tethys to be run in an open-portal mode.
+* When running in open-portal mode, no login will be required, even for views decorated with the ``login_required`` decorator.
+* Note: you should use the ``login_required`` decorator provided by Tethys.
+
+Updated PostGIS Docker Image
+----------------------------
+
+* We have retired the custom PostGIS image that Tethys has been using since it's first release.
+* The ``tethys docker`` command will now install the excellent ``mdillon/postgis`` image.
+
+See: `Docker Hub: mdillon/postgis <https://hub.docker.com/r/mdillon/postgis/>`_
+
+Official Tethys Docker Image
+----------------------------
+
+* Tethys now builds and maintains an official Docker image on Docker Hub.
+
+See: `Tethys Platform Docker Image <https://hub.docker.com/r/tethysplatform/tethys-core>`_
+
+Bug Fixes
+---------
+
+* Several bugs with the JobsTable gizmo (see above).
+* The ``tethys docker ip`` command returning the incorrect port for GeoServer.
+* The ``tethys uninstall`` command would not remove the database entry if the files were removed manually.
+* Removed hardcoded "src" directory to allow tethys to be installed in directories of any name.
+
 
 Prior Release Notes
 ===================
