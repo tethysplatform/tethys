@@ -124,7 +124,7 @@ d. Clear the default ``home.html`` template and add the following code to it.
       {{ script|safe }}
     {% endblock %}
 
-As you can see, the script context variable has been added to the app_content block. If you start tethys and go the home page of this app you should see something like this:
+As you can see, the script context variable has been added to the app_content block. If you start tethys and go to the home page of this app you should see something like this:
 
 .. figure:: ../../images/tutorial/bokeh_integration/bokeh_integration_1.png
     :width: 650px
@@ -161,7 +161,7 @@ e. Modify the ``handler function`` from ``controller.py`` to look like this.
 
         document.add_root(column(slider, plot))
 
-If you start tethys and go the home page of this app you should see something like this:
+If you start tethys and go to the home page of this app you should see something like this:
 
 .. figure:: ../../images/tutorial/bokeh_integration/bokeh_integration_2.png
     :width: 650px
@@ -324,7 +324,7 @@ f. To add the new endpoint to the app navigation bar, go to the ``base.html`` te
       <li class="{% if request.path == shapes_url %}active{% endif %}"><a href="{{ shapes_url }}">Shapes</a></li>
     {% endblock %}
 
-If you start tethys and go the shapes endpoint of this app you should see something like this:
+If you start tethys and go to the shapes endpoint of this app you should see something like this:
 
 .. figure:: ../../images/tutorial/bokeh_integration/bokeh_integration_3.png
     :width: 650px
