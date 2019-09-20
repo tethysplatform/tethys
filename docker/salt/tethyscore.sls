@@ -147,6 +147,8 @@ Prepare_Database_TethysCore:
     - name: >
         . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} &&
         PGPASSWORD="{{ POSTGRES_PASSWORD }}" {{ TETHYS_BIN_DIR }}/tethys db configure
+        -n {{ TETHYS_DB_USERNAME }}
+        -p {{ TETHYS_DB_PASSWORD }}
         -N {{ TETHYS_DB_SUPERUSER }}
         -P {{ TETHYS_DB_SUPERUSER_PASS }}
         {%- if PORTAL_SUPERUSER_NAME and PORTAL_SUPERUSER_PASSWORD %}
