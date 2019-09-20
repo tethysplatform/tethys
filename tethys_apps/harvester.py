@@ -271,6 +271,15 @@ class SingletonHarvester:
                                 app_instance.remove_from_db()
                                 continue
 
+                            # load/validate app handler patterns
+                            try:
+                                app_instance.handler_patterns
+                            except Exception:
+                                tethys_log.exception(
+                                    'App {0} not loaded because of an issue with loading handlers:'.format(app_package))
+                                app_instance.remove_from_db()
+                                continue
+
                             # register app permissions
                             try:
                                 app_instance.register_app_permissions()

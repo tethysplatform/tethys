@@ -10,23 +10,26 @@ This tutorial introduces ``Bokeh Server`` integration concepts for Tethys develo
 * Handler functions using Bokeh Widgets
 * Handler functions using Param and Panel
 
-Create a new Tethys app named bokeh_tutorial.
+Create a and install a new Tethys app named bokeh_tutorial.
 
 ::
 
-    $ tethys scaffold bokeh_tutorial
+    $ t
+    (tethys) $ tethys scaffold bokeh_tutorial
+    (tethys) $ cd tethysapp-bokeh_tutorial
+    (tethys) $ tethys install -d
 
 1. Bokeh Server
 ===============
 
-``Bokeh`` is an interactive visualization library for Python. ``Bokeh Server`` is a component of the ``Bokeh`` architecture. It provides a way to sync model objects from Python to the client. This is done by levering the ``Websocket`` protocol. With the addition of ``Django Channels`` to Tethys, this ability to sync python objects and frontend plots has also been integrated without the need of other components such as a ``Tornado`` server (see `Tethys Bokeh Integration documentation <../../tethys_sdk/url_maps.html#bokeh-integration>`_). This integration facilitates the linking of objects and ``Bokeh`` widgets as well as the creation of the necessary ``websocket`` and ``http`` ``consumers``.
+``Bokeh`` is an interactive visualization library for Python. ``Bokeh Server`` is a component of the ``Bokeh`` architecture. It provides a way to sync model objects in Python on the backend to JavaScript model objects on the client. This is done by levering the ``Websocket`` protocol. With the addition of ``Django Channels`` to Tethys, this ability to sync backend python objects and frontend plots has also been integrated without the need of other components such as a ``Tornado`` server (see `Tethys Bokeh Integration documentation <../../tethys_sdk/url_maps.html#bokeh-integration>`_). This integration facilitates the linking of objects and ``Bokeh`` widgets as well as the creation of the necessary ``websocket`` and ``http`` ``consumers``.
 
 The logic for creating a Bokeh widget along with other related functionality is provided in a ``handler function``. This handler will be associated to a specific ``controller function`` where the resulting Bokeh widget will be displayed in a later step.
 
 2. Handler Functions Using Bokeh Widgets
 ========================================
 
-Let's use Bokeh's sea temperature sample data to create a time series plot and link it to a slider that will provide the value to perform a rolling-window analysis on the time series. This a common example use in Bokeh's main documentation.
+Let's use Bokeh's sea temperature sample data to create a time series plot and link it to a slider that will provide the value to perform a rolling-window analysis on the time series. This example is based on a similar example in Bokeh's main documentation.
 
 a. Create a ``handler function`` by adding the following imports and logic to ``controller.py``.
 
@@ -65,7 +68,7 @@ b. Clear the default home function in ``controller.py`` and add the following co
 
 The home controller can now load the time series plot from (a) using the Bokeh ``server_document`` function. However, we still need to link the ``handler`` and the ``controller`` in the ``app.py``, and add the script context variable to the template as with any other variable.
 
-c. Modify ``app.py`` by adding a dot-formatter path to the handler function created in (a) to the ``handler`` parameter and providing a ``handler_type`` with a value equal to 'bokeh' as shown in the code below.
+c. Modify ``app.py`` by adding a dot-formatted path to the handler function created in (a) to the ``handler`` parameter and providing a ``handler_type`` with a value equal to 'bokeh' as shown in the code below.
 
 .. code-block:: Python
 
@@ -172,7 +175,7 @@ The ``Slider`` and ``Plot`` will appear in the order they were added to the ``Co
 3. Handler Functions Using Param and Panel
 ==========================================
 
-``Param`` is a Python library for providing parameters with dinamically generated values. One of the main advantages of ``Param`` is that parameters are provided using declarative programming. ``Panel``, on the other hand, is a visualization library for creating custom dashboards that rely on the use of widgets to render plots, images, and tables. These libraries can be used in combination with ``Bokeh Server`` to attain the same result of creating interactive tools within an app that are connected to Python objects. Given the depth of these libraries, the resulting code structure, and the level of difficulty for creating complex visualizations may be simplified.
+``Param`` is a Python library for providing parameters with dynamically generated values. One of the main advantages of ``Param`` is that parameters are provided using declarative programming. ``Panel``, on the other hand, is a visualization library for creating custom dashboards that rely on the use of widgets to render plots, images, and tables. These libraries can be used in combination with ``Bokeh Server`` to attain the same result of creating interactive tools within an app that are connected to Python objects. Given the depth of these libraries, the resulting code structure, and the level of difficulty for creating complex visualizations may be simplified.
 
 In this example we will build on top of the ``bokeh_tutorial`` app to demonstrate how to use ``Param`` and ``Panel`` in combination with ``bokeh Server``. This same example can be found in `Panel's documentation <https://panel.pyviz.org/gallery/param/param_subobjects.html#gallery-param-subobjects>`_.
 

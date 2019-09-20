@@ -22,7 +22,7 @@ class UrlMapBase:
         Constructor
 
         Args:
-          name (str): Name of the url map. Letters and underscores only (_). Most be unique within the app.
+          name (str): Name of the url map. Letters and underscores only (_). Must be unique within the app.
           url (str): Url pattern to map the endpoint for the controller or consumer.
           controller (str): Dot-notation path to the controller function or consumer class.
           protocol (str): 'http' for consumers or 'websocket' for consumers. Default is http.
