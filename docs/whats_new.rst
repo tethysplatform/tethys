@@ -56,15 +56,16 @@ Bokeh Integration
 
 * Bokeh's functionality to link backend Python objects to frontend JavaScript objects has been added.
 
-See: :doc:`./tutorials/tethys_sdk/url_maps#bokeh-integration`
-See: :doc:`./tutorials/getting_started/bokeh_integration`
+See: `Bokeh Integration Documentation <./tethys_sdk/url_maps.html#bokeh-integration>`_
+
+See: `Bokeh Integration Tutorial <./tutorials/getting_started/bokeh_integration.html>`_
 
 URL Maps API
 ------------
 
 * Documentation for Tethys ``url_maps`` and ``UrlMap`` has been added. This includes a description of the newly added ``UrlMap parameters with ``Websockets`` and ``Bokeh Integration``.
 
-See: :doc:`./tutorials/tethys_sdk/url_maps`
+See: :doc:`./tethys_sdk/url_maps`
 
 Django Analytical
 -----------------
