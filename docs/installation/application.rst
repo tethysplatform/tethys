@@ -4,7 +4,7 @@
 Application Installation
 ************************
 
-**Last Updated:** March 13, 2019
+**Last Updated:** March 2019
 
 Once you have the portal configured and setup with all the required services, the next step is to install Tethys applications on to your portal.
 

@@ -15,10 +15,6 @@ Tethys is a platform that can be used to develop and host environmental web apps
 
     Tethys Platform |version| has arrived! Check out the :doc:`./whats_new` article for a description of the new features and changes.
 
-.. warning::
-
-    Python 2 support is officially deprecated in this release. It will no longer be supported in the next release of Tethys Platform. Migrate now!
-
 Contents
 ========
 

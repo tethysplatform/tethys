@@ -160,6 +160,8 @@ The links under the ``TETHYS PORTAL`` heading can be used to customize the look 
 
     For more information on customizing the Tethys Portal see the :doc:`./customize` documentation.
 
+.. _admin_pages_tethys_quotas:
+
 Tethys Quotas
 =============
 
