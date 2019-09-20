@@ -63,7 +63,7 @@ See: `Bokeh Integration Tutorial <./tutorials/getting_started/bokeh_integration.
 URL Maps API
 ------------
 
-* Documentation for Tethys ``url_maps`` and ``UrlMap`` has been added. This includes a description of the newly added ``UrlMap parameters with ``Websockets`` and ``Bokeh Integration``.
+* Documentation for Tethys ``url_maps`` and ``UrlMap`` has been added. This includes a description of the newly added ``UrlMap`` parameters with ``Websockets`` and ``Bokeh Integration``.
 
 See: :doc:`./tethys_sdk/url_maps`
 
