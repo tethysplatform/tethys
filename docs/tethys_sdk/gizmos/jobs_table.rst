@@ -1,3 +1,5 @@
+.. _jobs-table:
+
 **********
 Jobs Table
 **********
