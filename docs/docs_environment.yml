@@ -16,7 +16,8 @@ dependencies:
 - tethys_dataset_services>=2.0.0
 - django>=2.1
 - sphinx
-- sphinx_rtd_theme
 - sphinx-argparse
 - pbr
 - sphinxcontrib-napoleon
+- pip:
+    - sphinx_materialdesign_theme
