@@ -1,0 +1,58 @@
+.mdl-layout__header {
+    background: #1662a9!important;
+}
+
+.mdl-layout__drawer>.mdl-layout-title .title-text {
+    text-align: left!important;
+}
+
+img[alt='_images/tethys_logo_inverse.png'] {
+    float: left;
+    margin: 20px 10px 10px 0px;
+}
+
+#idbutton-show-source {
+    display: none;
+}
+
+form[action="search.html"] {
+    margin-right: 125px;
+}
+
+.brand {
+    background-image: url(http://www.tethysplatform.org/images/tethys-logo-75.png);
+    background-size: 30px;
+    padding: 2px 0 10px 35px;
+    background-repeat: no-repeat;
+    text-align: center;
+}
+
+/* Read the docs version picker */
+.rst-versions.rst-badge {
+    top: 16px!important;
+    height: auto!important;
+    bottom: auto!important;
+}
+
+.rst-versions .rst-current-version {
+    background-color: #1662A9!important;
+    color: #ffffff!important;
+}
+
+.rst-versions.rst-badge.shift-up .rst-current-version {
+    background-color: #5081ba!important;
+}
+
+.rst-versions .rst-other-versions {
+    background-color: #ffffff!important;
+    color: black!important;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12)!important;
+}
+
+.rst-versions .rst-other-versions dd a {
+    color: black!important;
+}
+
+.rst-versions .rst-other-versions dd a:hover {
+    color: gray!important;
+}
