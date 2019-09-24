@@ -43,7 +43,7 @@ dependencies:
 - djangorestframework
 - django-bootstrap3
 - django-model-utils
-- django-guardian
+- django-guardian=1.5
 
 # tests dependencies
 - requests-mock
