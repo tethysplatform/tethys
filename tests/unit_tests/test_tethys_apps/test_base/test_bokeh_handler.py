@@ -6,12 +6,17 @@ from bokeh.document import Document
 
 from django.contrib.auth.models import User
 from django.http import HttpRequest
-from tethys_apps.base.bokeh_handler import add_request_to_document
+from tethys_apps.base.bokeh_handler import with_request, with_workspaces
 
 
-@add_request_to_document
-def user_dec_bokeh_handler(doc: Document):
+@with_request
+def bokeh_to_http_request_handler(doc: Document):
     return doc.request
+
+
+@with_workspaces
+def add_workspaces_to_document_handler(doc: Document):
+    return doc.user_workspace, doc.app_workspace
 
 
 class MockSessionContext(object):
@@ -25,13 +30,23 @@ class MockSessionContext(object):
 
 
 class TestBokehHandler(unittest.TestCase):
-    @mock.patch('tethys_apps.base.workspace._get_user_workspace')
-    @mock.patch('tethys_apps.utilities.get_active_app')
-    def test_app_bokeh_handler(self, _, __):
+    def test_bokeh_to_http_request(self):
         app = baa.Application()
         doc = app.create_document()
         session_context = MockSessionContext(doc)
         doc._session_context = session_context
 
-        ret = user_dec_bokeh_handler(doc)
+        ret = bokeh_to_http_request_handler(doc)
         self.assertIsInstance(ret, HttpRequest)
+
+    @mock.patch('tethys_apps.utilities.get_active_app')
+    @mock.patch('tethys_apps.base.workspace._get_user_workspace')
+    def test_add_workspaces_to_document(self, _, __):
+        app = baa.Application()
+        doc = app.create_document()
+        session_context = MockSessionContext(doc)
+        doc._session_context = session_context
+
+        ret = add_workspaces_to_document_handler(doc)
+        self.assertIn('_get_user_workspace', ret[0].__repr__())
+        self.assertIn('app_workspace', ret[1].__repr__())

@@ -46,11 +46,11 @@ Bokeh Integration
 
 Bokeh Integration in Tethys takes advantage of ``Websockets`` and ``Django Channels`` to leverage Bokeh's flexible architecture. In particular, the ability to sync model objects to the client allows for a responsive user interface that can receive updates from the server using Python. This is referred to as ``Bokeh Server`` in the `Bokeh Documentation <https://bokeh.pydata.org/en/latest/docs/user_guide/server.html>`_.
 
-Tethys facilitates the use of the ``Bokeh Server`` component of ``Bokeh`` by taking care of creating the routings necessary to link the models and the front end bokeh widgets. This is done by providing a ``handler`` in addition that the other common parameters in a ``UrlMap``.
+Tethys facilitates the use of the ``Bokeh Server`` component of ``Bokeh`` by taking care of creating the routings necessary to link the models and the front end bokeh models. This is done by providing a ``handler`` in addition that the other common parameters in a ``UrlMap``.
 
 .. note::
 
-    Interactive ``Bokeh`` widgets can be entirely created using only Python with the help of ``Bokeh Server``. However, this usually requires the use of an additional server (``Tornado``). One of the alternatives to ``Tornado`` is using ``Django Channels``, which is already supported with Tethys. Therefore, interactive ``Bokeh Widgets`` along with the all the advantages of using ``Bokeh Server`` can be leveraged in Tethys without the need of an additional server.
+    Interactive ``Bokeh`` visualization tools can be entirely created using only Python with the help of ``Bokeh Server``. However, this usually requires the use of an additional server (``Tornado``). One of the alternatives to ``Tornado`` is using ``Django Channels``, which is already supported with Tethys. Therefore, interactive ``Bokeh`` models along with the all the advantages of using ``Bokeh Server`` can be leveraged in Tethys without the need of an additional server.
 
 .. code-block:: python
 
@@ -77,9 +77,11 @@ Tethys facilitates the use of the ``Bokeh Server`` component of ``Bokeh`` by tak
 
             return url_maps
 
-A handler in this context represents a function that contains the main logic needed for a Bokeh widget to be displayed. It contains the widget or group of widgets as well as the callback functions that will help link them to the client.
+A ``Handler`` in this context represents a function that contains the main logic needed for a Bokeh model to be displayed. It contains the model or group of models as well as the callback functions that will help link them to the client. ``Handlers`` are added to the ``Bokeh Document``, the smallest serialization unit in ``Bokeh Server``. This same ``Document`` is later retrieved and added to the template variables in the ``Controller`` that will be linked to the ``Handler function`` using Bokeh's `server_document` function.
 
-The example below adds a column layout containing a slider and a plot widget. A callback function linked to the slider value change event is also included.
+A ``Bokeh Document comes with a ``Bokeh Request``. This request contains most of the common attibutes of a normal ``HTTPRequest``, and can be easily converted to HTTP using the ``with_request`` decorator from ``tethys_sdk.base``. A second handler decorator named ``with_workspaces`` can be used to add ``user_workspace`` and ``app_workspace`` to the ``Bokeh Document``. This latter decorator will also convert the ``Bokeh Request`` of the ``Document`` to an ``HTTPRequest, meaning it will do the same thing as the ``with_request`` decorator in addtion to adding workspaces.
+
+The example below adds a column layout containing a slider and a plot. A callback function linked to the slider value change event is also included.
 
 .. code-block:: python
 
@@ -103,7 +105,7 @@ The example below adds a column layout containing a slider and a plot widget. A 
 
         doc.add_root(column(slider, plot))
 
-The ``controller`` from the same ``UrlMap`` where the ``handler`` is defined needs to provide a mechanism to load the ``Bokeh`` widgets to the client.
+The ``controller`` from the same ``UrlMap`` where the ``handler`` is defined needs to provide a mechanism to load the ``Bokeh`` models to the client.
 
 .. code-block:: python
 
@@ -120,4 +122,4 @@ The ``controller`` from the same ``UrlMap`` where the ``handler`` is defined nee
         return render(request, 'test_app/home.html', context)
 
 .. tip::
-    For more information regarding Bokeh Server and available widgets visit the `Bokeh Server Documentation <https://bokeh.pydata.org/en/latest/docs/user_guide/server.html>`_ and the `Bokeh model widgets reference guide <https://bokeh.pydata.org/en/latest/docs/reference/models.html#bokeh-models>`_.
+    For more information regarding Bokeh Server and available models visit the `Bokeh Server Documentation <https://bokeh.pydata.org/en/latest/docs/user_guide/server.html>`_ and the `Bokeh model widgets reference guide <https://bokeh.pydata.org/en/latest/docs/reference/models.html#bokeh-models>`_.

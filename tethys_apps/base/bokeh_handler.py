@@ -19,7 +19,7 @@ from django.http.request import HttpRequest
 from tethys_sdk.workspaces import user_workspace, app_workspace
 
 
-def add_request_to_document(handler):
+def with_request(handler):
     @wraps(handler)
     def wrapper(doc: Document):
         bokeh_request = doc.session_context.request
@@ -28,8 +28,16 @@ def add_request_to_document(handler):
         for k, v in bokeh_request.items():
             setattr(django_request, k, v)
         doc.request = django_request
-        doc.user_workspace = get_user_workspace(django_request)
-        doc.app_workspace = get_app_workspace(django_request)
+        return handler(doc)
+    return wrapper
+
+
+def with_workspaces(handler):
+    @with_request
+    @wraps(handler)
+    def wrapper(doc: Document):
+        doc.user_workspace = get_user_workspace(doc.request)
+        doc.app_workspace = get_app_workspace(doc.request)
         return handler(doc)
     return wrapper
 
