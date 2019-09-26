@@ -58,7 +58,7 @@ Bokeh Integration
 
 See: `Bokeh Integration Documentation <./tethys_sdk/url_maps.html#bokeh-integration>`_
 
-See: `Bokeh Integration Tutorial <./tutorials/getting_started/bokeh_integration.html>`_
+See: :doc:`./tutorials/getting_started/bokeh_integration`
 
 URL Maps API
 ------------
