@@ -79,19 +79,27 @@ Tethys facilitates the use of the ``Bokeh Server`` component of ``Bokeh`` by tak
 
 A ``Handler`` in this context represents a function that contains the main logic needed for a Bokeh model to be displayed. It contains the model or group of models as well as the callback functions that will help link them to the client. ``Handlers`` are added to the ``Bokeh Document``, the smallest serialization unit in ``Bokeh Server``. This same ``Document`` is later retrieved and added to the template variables in the ``Controller`` that will be linked to the ``Handler function`` using Bokeh's `server_document` function.
 
-A ``Bokeh Document comes with a ``Bokeh Request``. This request contains most of the common attibutes of a normal ``HTTPRequest``, and can be easily converted to HTTP using the ``with_request`` decorator from ``tethys_sdk.base``. A second handler decorator named ``with_workspaces`` can be used to add ``user_workspace`` and ``app_workspace`` to the ``Bokeh Document``. This latter decorator will also convert the ``Bokeh Request`` of the ``Document`` to an ``HTTPRequest, meaning it will do the same thing as the ``with_request`` decorator in addtion to adding workspaces.
+A ``Bokeh Document comes with a ``Bokeh Request``. This request contains most of the common attibutes of a normal ``HTTPRequest``, and can be easily converted to HTTP using the ``with_request`` decorator from ``tethys_sdk.base``. A second handler decorator named ``with_workspaces`` can be used to add ``user_workspace`` and ``app_workspace`` to the ``Bokeh Document``. This latter decorator will also convert the ``Bokeh Request`` of the ``Document`` to an ``HTTPRequest, meaning it will do the same thing as the ``with_request`` decorator besides adding workspaces.
 
-The example below adds a column layout containing a slider and a plot. A callback function linked to the slider value change event is also included.
+The example below adds a column layout containing a slider and a plot. A callback function linked to the slider value change event and a demonstration of how to use the ``with_workspaces`` decorator are also included.
 
 .. code-block:: python
 
+    from tethys_sdk.base import with_workspaces
+
+    ...
+
+    @with_workspaces
     def home_handler(doc):
+        # create data source for plot
         data = {'x': [0, 1, 2, 3], 'y': [0, 10, 20, 30]}
         source = ColumnDataSource(data=data)
 
+        # create plot
         plot = figure(x_axis_type="linear", y_range=(0, 30), title="Bokeh Plot")
         plot.line(x="x", y="y", source=source)
 
+        # callback function
         def callback(attr: str, old: Any, new: Any) -> None:
             if new == 1:
                 data['y'] = [0, 10, 20, 30]
@@ -100,9 +108,16 @@ The example below adds a column layout containing a slider and a plot. A callbac
             source.data = ColumnDataSource(data=data).data
             plot.y_range.end = max(data['y'])
 
+        # create slider and add callback to it
         slider = Slider(start=1, end=5, value=1, step=1, title="Bokeh Slider")
         slider.on_change("value", callback)
 
+        # attributes available when using "with_workspaces" decorator
+        request = doc.request
+        user_workspace = doc.user_workspace
+        app_workspace = doc.app_workspace
+
+        # add layout with bokeh models to document
         doc.add_root(column(slider, plot))
 
 The ``controller`` from the same ``UrlMap`` where the ``handler`` is defined needs to provide a mechanism to load the ``Bokeh`` models to the client.
