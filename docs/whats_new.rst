@@ -56,7 +56,7 @@ Bokeh Integration
 
 * Bokeh's functionality to link backend Python objects to frontend JavaScript objects has been added.
 
-See: `Bokeh Integration Documentation <./tethys_sdk/url_maps.html#bokeh-integration>`_
+See: :ref:`bokeh_integration`
 
 See: :doc:`./tutorials/getting_started/bokeh_integration`
 

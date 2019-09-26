@@ -41,6 +41,8 @@ Tethys Platform supports WebSocket connections using `Django Channels <https://c
 .. tip::
     For an example demonstrating all the necessary components to integrating websockets into your app see `This Websockets Tutorial <./tutorials/getting_started/websockets.html>`_.
 
+.. _bokeh_integration:
+
 Bokeh Integration
 -----------------
 
