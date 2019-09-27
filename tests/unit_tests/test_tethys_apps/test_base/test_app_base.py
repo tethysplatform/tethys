@@ -129,6 +129,132 @@ class TestTethysBase(unittest.TestCase):
                         ' the controller function "test_app.controllers.home1"'
         self.assertIn(error_message, rts_call_args[0][0][0])
 
+    @mock.patch('tethys_apps.base.app_base.url')
+    @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
+    def test_handler_patterns(self, mock_tbm, mock_url):
+        # import pdb; pdb.set_trace()
+        app = tethys_app_base.TethysBase()
+        app._namespace = 'foo'
+        app.root_url = 'test-url'
+        url_map = mock.MagicMock(controller='test_app.controllers.home',
+                                 handler='test_app.controllers.home_handler', handler_type='bokeh', url='')
+        url_map.name = 'home'
+
+        app.url_maps = mock.MagicMock(return_value=[url_map, ])
+        mock_tbm.return_value = mock.MagicMock(url_maps=['test-app', ])
+
+        # Execute
+        result = app.handler_patterns
+        # Check url call at django_url = url...
+        rts_call_args = mock_url.call_args_list
+        self.assertEqual(r'^apps/test-url/autoload.js$', rts_call_args[0][0][0])
+        self.assertEqual(r'^apps/test-url/ws$', rts_call_args[1][0][0])
+        self.assertIn('name', rts_call_args[0][1])
+        self.assertIn('name', rts_call_args[1][1])
+        self.assertEqual('home_bokeh_autoload', rts_call_args[0][1]['name'])
+        self.assertEqual('home_bokeh_ws', rts_call_args[1][1]['name'])
+        self.assertIn('foo', result['http'])
+        self.assertIn('foo', result['websocket'])
+        self.assertIsInstance(rts_call_args[0][0][1], type)
+        self.assertIsInstance(rts_call_args[1][0][1], type)
+
+    @mock.patch('tethys_apps.base.app_base.url')
+    @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
+    def test_handler_patterns_from_function(self, mock_tbm, mock_url):
+        app = tethys_app_base.TethysBase()
+        app._namespace = 'foo'
+        app.root_url = 'test-url'
+
+        def test_func(mock_doc):
+            return ''
+
+        url_map = mock.MagicMock(controller='test_app.controllers.home',
+                                 handler=test_func, handler_type='bokeh', url='')
+        url_map.name = 'home'
+        app.url_maps = mock.MagicMock(return_value=[url_map, ])
+        mock_tbm.return_value = mock.MagicMock(url_maps=['test-app', ])
+
+        app.handler_patterns
+
+        rts_call_args = mock_url.call_args_list
+        self.assertEqual(r'^apps/test-url/autoload.js$', rts_call_args[0][0][0])
+        self.assertIn('name', rts_call_args[0][1])
+        self.assertIn('name', rts_call_args[1][1])
+        self.assertEqual('home_bokeh_autoload', rts_call_args[0][1]['name'])
+        self.assertEqual('home_bokeh_ws', rts_call_args[1][1]['name'])
+        self.assertIs(rts_call_args[0][1]['kwargs']['app_context']._application._handlers[0]._func, test_func)
+
+    @mock.patch('tethys_apps.base.app_base.url')
+    @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
+    def test_handler_patterns_url_basename(self, mock_tbm, mock_url):
+        app = tethys_app_base.TethysBase()
+        app._namespace = 'foo'
+        app.root_url = 'test-url'
+
+        def test_func(mock_doc):
+            return ''
+
+        url_map = mock.MagicMock(controller='test_app.controllers.home',
+                                 handler=test_func, handler_type='bokeh')
+        url_map.name = 'basename'
+        url_map.url = 'basename/'
+        app.url_maps = mock.MagicMock(return_value=[url_map, ])
+        mock_tbm.return_value = mock.MagicMock(url_maps=['basename/', ])
+
+        app.handler_patterns
+
+        rts_call_args = mock_url.call_args_list
+        self.assertEqual(r'^apps/test-url/basename/autoload.js$', rts_call_args[0][0][0])
+        self.assertIn('name', rts_call_args[0][1])
+        self.assertIn('name', rts_call_args[1][1])
+        self.assertEqual('basename_bokeh_autoload', rts_call_args[0][1]['name'])
+        self.assertEqual('basename_bokeh_ws', rts_call_args[1][1]['name'])
+        self.assertIs(rts_call_args[0][1]['kwargs']['app_context']._application._handlers[0]._func, test_func)
+
+    @mock.patch('tethys_apps.base.app_base.tethys_log')
+    @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
+    def test_handler_patterns_import_error(self, mock_tbm, mock_log):
+        mock_error = mock_log.error
+        app = tethys_app_base.TethysBase()
+        url_map = mock.MagicMock(controller='test_app.controllers.home',
+                                 handler='1module.1function', handler_type='bokeh', url='')
+        url_map.name = 'home'
+        app.url_maps = mock.MagicMock(return_value=[url_map])
+        mock_tbm.return_value = mock.MagicMock(url_maps=['test-app', ])
+
+        # assertRaises needs a callable, not a property
+        def test_handler_patterns():
+            return app.handler_patterns
+
+        # Check Error Message
+        self.assertRaises(ImportError, test_handler_patterns)
+        rts_call_args = mock_error.call_args_list
+        error_message = 'The following error occurred while trying to import' \
+                        ' the handler function "1module.1function"'
+        self.assertIn(error_message, rts_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.base.app_base.tethys_log')
+    @mock.patch('tethys_apps.base.app_base.TethysBaseMixin')
+    def test_handler_patterns_attribute_error(self, mock_tbm, mock_log):
+        mock_error = mock_log.error
+        app = tethys_app_base.TethysBase()
+        url_map = mock.MagicMock(controller='test_app.controllers.home',
+                                 handler='test_app.controllers.home_handler1', handler_type='bokeh', url='')
+        url_map.name = 'home'
+        app.url_maps = mock.MagicMock(return_value=[url_map])
+        mock_tbm.return_value = mock.MagicMock(url_maps='test-app')
+
+        # assertRaises needs a callable, not a property
+        def test_handler_patterns():
+            return app.handler_patterns
+
+        # Check Error Message
+        self.assertRaises(AttributeError, test_handler_patterns)
+        rts_call_args = mock_error.call_args_list
+        error_message = 'The following error occurred while trying to access' \
+                        ' the handler function "test_app.controllers.home_handler1"'
+        self.assertIn(error_message, rts_call_args[0][0][0])
+
     def test_sync_with_tethys_db(self):
         self.assertRaises(NotImplementedError, tethys_app_base.TethysBase().sync_with_tethys_db)
 
