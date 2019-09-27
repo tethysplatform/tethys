@@ -112,9 +112,9 @@ WebSocket Communication
    :width: 200px
    :align: right
 
-Tethys Platform supports WebSocket connections using `Django Channels <https://channels.readthedocs.io/en/latest/index.html/>`_. Django Channels is an official Django project that brings asynchronous and long-running connections to the synchronous Django.
+Tethys Platform supports WebSocket connections using `Django Channels <https://channels.readthedocs.io/en/latest/>`_. Django Channels is an official Django project that brings asynchronous and long-running connections to the synchronous Django.
 
-The WebSocket protocol provides as persistent connection between client and server. In contrast to the traditional HTTP protocol, the webscoket protocol allows for bidirectional communication between client and server (i.e. the server can trigger a response without the client sending a request). Django Channels uses Consumers to structure code and handle client/server communication in a similar way Controllers are used with the HTTP protocol. When creating a WebSocket connection, a "handshake" needs to be established between the client and server.
+The WebSocket protocol provides a persistent connection between the client and the server. In contrast to the traditional HTTP protocol, the webscoket protocol allows for bidirectional communication between the client and the server (i.e. the server can trigger a response without the client sending a request). Django Channels uses Consumers to structure code and handle client/server communication in a similar way Controllers are used with the HTTP protocol. When creating a WebSocket connection, a "handshake" needs to be established between the client and server.
 
 For more information about Django Channels and Consumers visit `the Django Channels docummentation <https://channels.readthedocs.io/en/latest/>`_.
 

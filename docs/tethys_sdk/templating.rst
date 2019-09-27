@@ -22,7 +22,7 @@ In Django templates, variables are denoted by double curly brace syntax: ``{{ va
 
 Examples:
 
-::
+.. code-block:: html+django
 
   # Examples of Django template variable syntax
   {{ variable }}
@@ -47,7 +47,7 @@ Variables can be modified by filters which look like this: ``{{ variable|filter:
 
 Examples:
 
-::
+.. code-block:: html+django
 
     # The default filter can be used to print a default value when the variable is falsy
     {{ variable|default:"nothing" }}
@@ -66,7 +66,7 @@ Tags use curly brace percent sign syntax like this: ``{% tag %}``. Tags perform 
 
 Examples:
 
-::
+.. code-block:: html+django
 
     # The if tag only prints its contents when the condition evaluates to True
     {% if name %}
@@ -140,7 +140,7 @@ Override the ``<html>`` element open tag.
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block htmltag %}<html lang="es">{% endblock %}
 
@@ -151,7 +151,7 @@ Add attributes to the ``<head>`` element.
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block headtag %}style="display: block;"{% endblock %}
 
@@ -162,7 +162,7 @@ Override or append ``<meta>`` elements to the ``<head>`` element. To append to e
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block meta %}
       {{ block.super }}
@@ -176,7 +176,7 @@ Change title for the page. The title is used as metadata for the site and shows 
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block title %}{{ block.super }} - My Sub Title{% endblock %}
 
@@ -187,7 +187,7 @@ Add content before the stylesheets such as rss feeds and favicons. Use ``block.s
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block links %}
       <link rel="shortcut icon" href="/path/to/favicon.ico" />
@@ -200,7 +200,7 @@ The import_gizmos block allows you register gizmos to be added to your page so t
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block import_gizmos %}
       {% import_gizmo_dependency map_view %}
@@ -213,7 +213,7 @@ Add additional stylesheets to the page. Use ``block.super`` to preserve the exis
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block styles %}
       {{ block.super }}
@@ -227,7 +227,7 @@ Add JavaScript libraries that need to be loaded prior to the page being loaded. 
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block global_scripts %}
       {{ block.super }}
@@ -241,7 +241,7 @@ Add attributes to the ``body`` element.
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block bodytag %}class="a-class" onload="run_this();"{% endblock %}
 
@@ -256,7 +256,7 @@ app_header_override, app_navigation_toggle_override, app_icon_override, app_icon
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block app_content_wrapper_override %}
       <div>
@@ -280,7 +280,7 @@ Override the app navigation toggle button. This is useful if you want to create 
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block app_navigation_toggle_override %}{% endblock %}
 
@@ -301,7 +301,7 @@ Override the app icon ``<img>`` element in the header.
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block app_icon %}<img src="/path/to/icon.png">{% endblock %}
 
@@ -321,7 +321,7 @@ Override the app title element in the header.
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block app_title %}My App Title{% endblock %}
 
@@ -337,7 +337,7 @@ Use this block to add custom buttons to the app header. Use an anchor/link tag f
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block header_buttons %}
       <div class="header-button glyphicon-button">
@@ -394,7 +394,7 @@ Add content to the app content area. This should be the primary block used to ad
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block app_content %}
       <p>Content for my app.</p>
@@ -407,7 +407,7 @@ Use this block for adding elements after the app content such as Bootstrap modal
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block after_app_content %}
       {% gizmo my_modal %}
@@ -425,7 +425,7 @@ Override or append actions to the action area. These are typically buttons or li
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block app_actions %}
       <a href="" class="btn btn-default">Next</a>
@@ -439,14 +439,12 @@ Add additional JavaScripts to the page. Use ``block.super`` to preserve the exis
 
 *Example:*
 
-::
+.. code-block:: html+django
 
     {% block scripts %}
       {{ block.super }}
       <script href="/path/to/script.js" type="text/javascript"></script>
     {% endblock %}
-
-
 
 base.html
 =========
@@ -457,7 +455,7 @@ All of the blocks provided by the :file:`base.html` template are inherited from 
 
 See the `Blocks`_ section for an explanation of each block.
 
-::
+.. code-block:: html+django
 
     {% extends "tethys_apps/app_base.html" %}
 
@@ -508,4 +506,4 @@ app_base.html
 This section provides the complete contents of the :file:`app_base.html` template. It is meant to be used as a reference for app developers, so they can be aware of the HTML structure underlying their app templates.
 
 .. literalinclude:: ../../tethys_apps/templates/tethys_apps/app_base.html
-    :language: html
+    :language: html+django

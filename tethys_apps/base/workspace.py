@@ -255,7 +255,7 @@ def _get_user_workspace(app_class, user_or_request):
     return TethysWorkspace(workspace_directory)
 
 
-def user_workspace():
+def user_workspace(controller):
     """
     **Decorator:** Get the file workspace (directory) for the given User.
 
@@ -270,7 +270,7 @@ def user_workspace():
         from my_first_app.app import MyFirstApp as app
         from tethys_sdk.workspaces import user_workspace
 
-        @user_workspace()
+        @user_workspace
         def a_controller(request, user_workspace):
             \"""
             Example controller that uses @user_workspace() decorator.
@@ -285,41 +285,40 @@ def user_workspace():
             return render(request, 'my_first_app/template.html', context)
 
     """
-    def decorator(controller):
-        def wrapper(*args, **kwargs):
-            from tethys_quotas.models import ResourceQuota
-            from tethys_apps.utilities import get_active_app
+    @wraps(controller)
+    def wrapper(*args, **kwargs):
+        from tethys_quotas.models import ResourceQuota
+        from tethys_apps.utilities import get_active_app
 
-            request = None
-            for index, arg in enumerate(args):
-                if isinstance(arg, HttpRequest):
-                    request = arg
-                    break
+        request = None
+        for index, arg in enumerate(args):
+            if isinstance(arg, HttpRequest):
+                request = arg
+                break
 
-            if request is None:
-                raise ValueError('No request given. The user_workspace decorator only works on controllers.')
+        if request is None:
+            raise ValueError('No request given. The user_workspace decorator only works on controllers.')
 
-            # Get user
-            user = request.user
+        # Get user
+        user = request.user
 
-            try:
-                codename = 'user_workspace_quota'
-                rq = ResourceQuota.objects.get(codename=codename)
+        try:
+            codename = 'user_workspace_quota'
+            rq = ResourceQuota.objects.get(codename=codename)
 
-                if not passes_quota(user, codename):
-                    raise PermissionDenied(rq.help)
+            if not passes_quota(user, codename):
+                raise PermissionDenied(rq.help)
 
-            except ResourceQuota.DoesNotExist:
-                log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
+        except ResourceQuota.DoesNotExist:
+            log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
 
-            # Get the active app
-            app = get_active_app(request, get_class=True)
+        # Get the active app
+        app = get_active_app(request, get_class=True)
 
-            the_workspace = _get_user_workspace(app, user)
+        the_workspace = _get_user_workspace(app, user)
 
-            return controller(*args, the_workspace, **kwargs)
-        return wraps(controller)(wrapper)
-    return decorator
+        return controller(*args, the_workspace, **kwargs)
+    return wrapper
 
 
 def _get_app_workspace(app_class):
@@ -363,7 +362,7 @@ def _get_app_workspace(app_class):
     return TethysWorkspace(workspace_directory)
 
 
-def app_workspace():
+def app_workspace(controller):
     """
     **Decorator:** Get the file workspace (directory) for the app.
 
@@ -378,7 +377,7 @@ def app_workspace():
         from my_first_app.app import MyFirstApp as app
         from tethys_sdk.workspaces import app_workspace
 
-        @app_workspace()
+        @app_workspace
         def a_controller(request, app_workspace):
             \"""
             Example controller that uses @app_workspace() decorator.
@@ -393,35 +392,34 @@ def app_workspace():
             return render(request, 'my_first_app/template.html', context)
 
     """
-    def decorator(controller):
-        def wrapper(*args, **kwargs):
-            from tethys_quotas.models import ResourceQuota
-            from tethys_apps.utilities import get_active_app
+    @wraps(controller)
+    def wrapper(*args, **kwargs):
+        from tethys_quotas.models import ResourceQuota
+        from tethys_apps.utilities import get_active_app
 
-            request = None
-            for index, arg in enumerate(args):
-                if isinstance(arg, HttpRequest):
-                    request = arg
-                    break
+        request = None
+        for index, arg in enumerate(args):
+            if isinstance(arg, HttpRequest):
+                request = arg
+                break
 
-            if request is None:
-                raise ValueError('No request given. The app_workspace decorator only works on controllers.')
+        if request is None:
+            raise ValueError('No request given. The app_workspace decorator only works on controllers.')
 
-            try:
-                codename = 'app_workspace_quota'
-                rq = ResourceQuota.objects.get(codename=codename)
+        try:
+            codename = 'app_workspace_quota'
+            rq = ResourceQuota.objects.get(codename=codename)
 
-            except ResourceQuota.DoesNotExist:
-                log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
+        except ResourceQuota.DoesNotExist:
+            log.warning('ResourceQuota with codename {} does not exist.'.format(codename))
 
-            # Get the active app
-            app = get_active_app(request, get_class=True)
+        # Get the active app
+        app = get_active_app(request, get_class=True)
 
-            if not passes_quota(app, codename):
-                raise PermissionDenied(rq.help)
+        if not passes_quota(app, codename):
+            raise PermissionDenied(rq.help)
 
-            the_workspace = _get_app_workspace(app)
+        the_workspace = _get_app_workspace(app)
 
-            return controller(*args, the_workspace, **kwargs)
-        return wraps(controller)(wrapper)
-    return decorator
+        return controller(*args, the_workspace, **kwargs)
+    return wrapper

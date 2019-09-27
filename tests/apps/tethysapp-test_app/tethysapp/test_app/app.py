@@ -31,7 +31,9 @@ class TestApp(TethysAppBase):
             UrlMap(
                 name='home',
                 url='test-app/',
-                controller='test_app.controllers.home'
+                controller='test_app.controllers.home',
+                handler='test_app.controllers.home_handler',
+                handler_type='bokeh'
             ),
             UrlMap(
                 name='ws',
