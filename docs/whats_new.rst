@@ -51,6 +51,22 @@ Django Channels
 
 See: :doc:`./tutorials/getting_started/websockets`
 
+Bokeh Integration
+-----------------
+
+* Bokeh's functionality to link backend Python objects to frontend JavaScript objects has been added.
+
+See: :ref:`bokeh_integration`
+
+See: :doc:`./tutorials/getting_started/bokeh_integration`
+
+URL Maps API
+------------
+
+* Documentation for Tethys ``url_maps`` and ``UrlMap`` has been added. This includes a description of the newly added ``UrlMap`` parameters with ``Websockets`` and ``Bokeh Integration``.
+
+See: :doc:`./tethys_sdk/url_maps`
+
 Django Analytical
 -----------------
 
