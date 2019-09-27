@@ -105,6 +105,26 @@ class SingletonHarvester:
 
         return url_patterns
 
+    def get_handler_patterns(self):
+        """
+        Generate the url handler pattern lists for each app and namespace them accordingly.
+        """
+        http_handler_patterns = dict()
+        ws_handler_patterns = dict()
+
+        for app in self.apps:
+            http_handler_patterns.update(app.handler_patterns['http'])
+
+        for app in self.apps:
+            ws_handler_patterns.update(app.handler_patterns['websocket'])
+
+        handler_patterns = {
+            'http_handler_patterns': http_handler_patterns,
+            'ws_handler_patterns': ws_handler_patterns
+        }
+
+        return handler_patterns
+
     def __new__(cls):
         """
         Make App Harvester a Singleton
@@ -248,6 +268,15 @@ class SingletonHarvester:
                             except Exception:
                                 tethys_log.exception(
                                     'App {0} not loaded because of an issue with loading urls:'.format(app_package))
+                                app_instance.remove_from_db()
+                                continue
+
+                            # load/validate app handler patterns
+                            try:
+                                app_instance.handler_patterns
+                            except Exception:
+                                tethys_log.exception(
+                                    'App {0} not loaded because of an issue with loading handlers:'.format(app_package))
                                 app_instance.remove_from_db()
                                 continue
 

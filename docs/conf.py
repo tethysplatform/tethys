@@ -26,7 +26,8 @@ import django
 # NOTE: No obvious way to automatically anticipate all the sub modules without
 # installing the package, which is what we are trying to avoid.
 MOCK_MODULES = [
-    'bokeh', 'bokeh.embed', 'bokeh.resources',
+    'bokeh', 'bokeh.core.templates', 'bokeh.document', 'bokeh.embed', 'bokeh.embed.elements', 'bokeh.embed.util',
+    'bokeh.resources', 'bokeh.server.django', 'bokeh.server.django.consumers', 'bokeh.util.compiler',
     'channels',
     'conda', 'conda.cli', 'conda.cli.python_api',
     'condorpy',

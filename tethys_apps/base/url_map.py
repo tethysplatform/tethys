@@ -12,20 +12,23 @@ DEFAULT_EXPRESSION = r'[0-9A-Za-z-_.]+'
 
 class UrlMapBase:
     """
-    Abstract base class for Tethys app controllers
+    Abstract URL base class for Tethys app controllers and consumers
     """
 
     root_url = ''
 
-    def __init__(self, name, url, controller, protocol='http', regex=None):
+    def __init__(self, name, url, controller, protocol='http', regex=None, handler=None, handler_type=None):
         """
         Constructor
 
         Args:
-          name (str): Name of the url map. Letters and underscores only (_).
-          url (str): Url pattern to map to the controller.
-          controller (str): Dot-notation path to the controller.
+          name (str): Name of the url map. Letters and underscores only (_). Must be unique within the app.
+          url (str): Url pattern to map the endpoint for the controller or consumer.
+          controller (str): Dot-notation path to the controller function or consumer class.
+          protocol (str): 'http' for consumers or 'websocket' for consumers. Default is http.
           regex (str or iterable, optional): Custom regex pattern(s) for url variables. If a string is provided, it will be applied to all variables. If a list or tuple is provided, they will be applied in variable order.
+          handler (str): Dot-notation path a handler function. A handler is associated to a specific controller and contains the main logic for creating and establishing a communication between the client and the server.
+          handler_type (str): Tethys supported handler type. 'bokeh' is the only handler type currently supported.
         """  # noqa: E501
         # Validate
         if regex and (not isinstance(regex, str) and not isinstance(regex, tuple)
@@ -37,12 +40,15 @@ class UrlMapBase:
         self.controller = controller
         self.protocol = protocol
         self.custom_match_regex = regex
+        self.handler = handler
+        self.handler_type = handler_type
 
     def __repr__(self):
         """
         String representation
         """
-        return '<UrlMap: name={0}, url={1}, controller={2}>'.format(self.name, self.url, self.controller)
+        return f'<UrlMap: name={self.name}, url={self.url}, controller={self.controller}, protocol={self.protocol}, ' \
+               f'handler={self.handler}, handler_type={self.handler_type}>'
 
 
 def url_map_maker(root_url):
@@ -96,7 +102,7 @@ def django_url_preprocessor(url, root_url, protocol, custom_regex=None):
             else:
                 expression = DEFAULT_EXPRESSION
 
-            part = '(?P<{0}>{1})'.format(variable_name, expression)
+            part = f'(?P<{variable_name}>{expression})'
             url_variable_count += 1
 
         # Collect processed parts
@@ -108,15 +114,15 @@ def django_url_preprocessor(url, root_url, protocol, custom_regex=None):
     # Final django-formatted url
     if protocol == 'http':
         if django_url_joined != '':
-            django_url = r'^{0}/$'.format(django_url_joined)
+            django_url = f'^{django_url_joined}/$'
         else:
             # Handle empty string case
             django_url = r'^$'
     elif protocol == 'websocket':
         if django_url_joined != '':
-            django_url = r'^ws/{0}/{1}/$'.format(root_url, django_url_joined)
+            django_url = f'^{root_url}/{django_url_joined}/ws/$'
         else:
             # Handle empty string case
-            django_url = r'^ws/{0}/$'.format(root_url)
+            django_url = f'^{root_url}/ws/$'
 
     return django_url

@@ -221,17 +221,16 @@ class HarvesterTest(unittest.TestCase):
     @mock.patch('sys.stdout', new_callable=io.StringIO)
     @mock.patch('tethys_apps.harvester.tethys_log.exception')
     @mock.patch('tethysapp.test_app.app.TestApp.url_maps')
-    def test_harvest_app_instances_Exceptions1(self, mock_url_maps, mock_logexception, mock_stdout):
+    def test_harvest_app_instances_load_url_patterns_exception(self, mock_url_maps, mock_logexception, mock_stdout):
         """
         Test for SingletonHarvester._harvest_app_instances
-        For the exception on lines 230-234
+        For the app url patterns exception
         With an exception mocked up for the url_patterns
-        :param mock_url_maps:  mock for url_patterns to thrown an Exception
+        :param mock_url_maps:  mock for url_patterns to throw an Exception
         :param mock_logexception:  mock for the tethys_log exception
         :param mock_stdout:  mock for the text output
         :return:
         """
-        mock_args = mock.MagicMock()
         list_apps = {'test_app': 'tethysapp.test_app'}
         mock_args = list_apps
         mock_url_maps.side_effect = ImportError
@@ -244,12 +243,36 @@ class HarvesterTest(unittest.TestCase):
         self.assertIn('Tethys Apps Loaded:', mock_stdout.getvalue())
 
     @mock.patch('sys.stdout', new_callable=io.StringIO)
-    @mock.patch('tethys_apps.harvester.tethys_log.warning')
-    @mock.patch('tethysapp.test_app.app.TestApp.register_app_permissions')
-    def test_harvest_app_instances_Exceptions2(self, mock_permissions, mock_logwarning, mock_stdout):
+    @mock.patch('tethys_apps.harvester.tethys_log.exception')
+    @mock.patch('tethysapp.test_app.app.TestApp.url_maps')
+    def test_harvest_app_instances_load_handler_patterns_exception(self, mock_url_maps, mock_logexception, mock_stdout):
         """
         Test for SingletonHarvester._harvest_app_instances
-        For the exception on lines 239-240
+        For the app url patterns exception
+        With an exception mocked up for the url_patterns
+        :param mock_url_maps:  mock for url_patterns to throw an Exception
+        :param mock_logexception:  mock for the tethys_log exception
+        :param mock_stdout:  mock for the text output
+        :return:
+        """
+        list_apps = {'test_app': 'tethysapp.test_app'}
+        mock_args = list_apps
+        mock_url_maps.side_effect = ['', ImportError]
+
+        shv = SingletonHarvester()
+        shv._harvest_app_instances(mock_args)
+
+        mock_logexception.assert_called()
+        mock_url_maps.assert_called()
+        self.assertIn('Tethys Apps Loaded:', mock_stdout.getvalue())
+
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    @mock.patch('tethys_apps.harvester.tethys_log.warning')
+    @mock.patch('tethysapp.test_app.app.TestApp.register_app_permissions')
+    def test_harvest_app_instances_programming_error(self, mock_permissions, mock_logwarning, mock_stdout):
+        """
+        Test for SingletonHarvester._harvest_app_instances
+        For the app permissions exception (ProgrammingError)
         With an exception mocked up for register_app_permissions
         :param mock_permissions:  mock for throwing a ProgrammingError exception
         :param mock_logerror:  mock for the tethys_log error
@@ -271,10 +294,10 @@ class HarvesterTest(unittest.TestCase):
     @mock.patch('sys.stdout', new_callable=io.StringIO)
     @mock.patch('tethys_apps.harvester.tethys_log.warning')
     @mock.patch('tethysapp.test_app.app.TestApp.register_app_permissions')
-    def test_harvest_app_instances_object_doesn_not_exist(self, mock_permissions, mock_logwarning, mock_stdout):
+    def test_harvest_app_instances_object_does_not_exist(self, mock_permissions, mock_logwarning, mock_stdout):
         """
         Test for SingletonHarvester._harvest_app_instances
-        For the exception on lines 239-240
+        For the app permissions exception (ObjectDoesNotExist)
         With an exception mocked up for register_app_permissions
         :param mock_permissions:  mock for throwing a ObjectDoesNotExist exception
         :param mock_logerror:  mock for the tethys_log error
