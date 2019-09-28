@@ -233,6 +233,7 @@ html_theme_options = {
         ('Home', 'index', False, 'home'),
         ('Tutorials', 'tutorials', False, 'assignment'),
         ('SDK', 'tethys_sdk', False, 'build'),
+        ('Template Gizmos', 'tethys_sdk/gizmos', False, 'widgets'),
         ('CLI', 'tethys_cli', False, 'keyboard_arrow_right'),
         ('Tethys Portal', 'tethys_portal', False, 'web'),
         ('Software Suite', 'software_suite', False, 'developer_board'),
