@@ -323,7 +323,7 @@ The following code snippet shows the settings in the ``settings.py`` that are re
         'social_django',
     )
 
-    MIDDLEWARE_CLASSES = (
+    MIDDLEWARE = (
         ...
         'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
     )
