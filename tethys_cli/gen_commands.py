@@ -7,14 +7,19 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-import os
 import string
 import random
-from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir
+import os
+from conda.cli.python_api import run_command, Commands
+from yaml import load
 from distro import linux_distribution
-
 from django.conf import settings
 from jinja2 import Template
+from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir
+try:
+    from yaml import CLoader as Loader  # noqa
+except ImportError:
+    from yaml import Loader  # noqa
 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
@@ -29,6 +34,7 @@ GEN_PORTAL_OPTION = 'portal'
 GEN_SERVICES_OPTION = 'services'
 GEN_INSTALL_OPTION = 'install'
 GEN_SITE_YAML_OPTION = 'site_content'
+GEN_META_YAML_OPTION = 'metayaml'
 
 FILE_NAMES = {
     GEN_SETTINGS_OPTION: 'settings.py',
@@ -40,6 +46,7 @@ FILE_NAMES = {
     GEN_SERVICES_OPTION: 'services.yml',
     GEN_INSTALL_OPTION: 'install.yml',
     GEN_SITE_YAML_OPTION: 'site_content.yml',
+    GEN_META_YAML_OPTION: 'meta.yaml'
 }
 
 VALID_GEN_OBJECTS = (
@@ -51,7 +58,8 @@ VALID_GEN_OBJECTS = (
     GEN_PORTAL_OPTION,
     GEN_SERVICES_OPTION,
     GEN_INSTALL_OPTION,
-    GEN_SITE_YAML_OPTION
+    GEN_SITE_YAML_OPTION,
+    GEN_META_YAML_OPTION
 )
 
 TETHYS_SRC = get_tethys_src_dir()
@@ -375,6 +383,75 @@ def gen_services_yaml(args):
     return context
 
 
+def gen_meta_yaml(args):
+
+    def derive_version_from_conda_environment(dep_str, level='minor'):
+        """
+        Determine dependency string based on the current tethys environment.
+
+        Args:
+            dep_str(str): The dep string from the environment.yml (e.g. 'python>=3.6').
+            level(str): Level to lock dependencies to. One of 'major', 'minor', 'patch', or None. Defaults to 'minor'.
+
+        Returns:
+            str: the dependency string.
+        """
+        stdout, stderr, ret = run_command(Commands.LIST, dep_str)
+
+        if ret != 0:
+            print("ERROR: Something went wrong writing the meta.yml!")
+            print(stderr)
+            return dep_str
+
+        lines = stdout.split('\n')
+
+        for line in lines:
+            if line.startswith('#'):
+                continue
+
+            try:
+                package, version, build, channel = line.split()
+            except ValueError:
+                continue
+
+            if package != dep_str:
+                continue
+
+            version_numbers = version.split('.')
+
+            if level == 'major':
+                if len(version_numbers) >= 2:
+                    dep_str = f'{package}>={version_numbers[0]}.*'
+            elif level == 'minor':
+                if len(version_numbers) == 3:
+                    dep_str = f'{package}>={version_numbers[0]}.{version_numbers[1]}.*'
+                elif len(version_numbers) == 2:
+                    dep_str = f'{package}>={version_numbers[0]}.{version_numbers[1]}*'
+            elif level == 'patch':
+                if len(version_numbers) == 3:
+                    dep_str = f'{package}>={version_numbers[0]}.{version_numbers[1]}.{version_numbers[2]}'
+                elif len(version_numbers) == 2:
+                    dep_str = f'{package}>={version_numbers[0]}.{version_numbers[1]}'
+
+        return dep_str
+
+    environment_file_path = os.path.join(TETHYS_SRC, 'environment.yml')
+    with open(environment_file_path, 'r') as env_file:
+        environment = load(env_file, Loader=Loader)
+
+    dependencies = environment.get('dependencies', [])
+    run_requirements = []
+
+    for dependency in dependencies:
+        if '=' not in dependency and '>' not in dependency:
+            run_requirements.append(derive_version_from_conda_environment(dependency, level='minor'))
+        else:
+            run_requirements.append(dependency)
+
+    context = dict(run_requirements=run_requirements)
+    return context
+
+
 def gen_install(args):
     print('Please review the generated install.yml file and fill in the appropriate information '
           '(app name is requited).')
@@ -399,6 +476,9 @@ def get_destination_path(args):
 
     if args.type in [GEN_SERVICES_OPTION, GEN_INSTALL_OPTION, GEN_SITE_YAML_OPTION]:
         destination_dir = os.getcwd()
+
+    elif args.type == GEN_META_YAML_OPTION:
+        destination_dir = os.path.join(TETHYS_SRC, 'conda.recipe')
 
     if args.directory:
         directory = os.path.abspath(args.directory)
@@ -447,7 +527,7 @@ def render_template(file_type, context, destination_path):
             f.write(template.render(context))
 
 
-gen_commands = {
+GEN_COMMANDS = {
     GEN_SETTINGS_OPTION: gen_settings,
     GEN_ASGI_SERVICE_OPTION: gen_asgi_service,
     GEN_NGINX_OPTION: gen_nginx,
@@ -456,6 +536,7 @@ gen_commands = {
     GEN_SERVICES_OPTION: gen_services_yaml,
     GEN_INSTALL_OPTION: gen_install,
     GEN_SITE_YAML_OPTION: gen_site_content_yaml,
+    GEN_META_YAML_OPTION: gen_meta_yaml
 }
 
 
@@ -464,7 +545,7 @@ def generate_command(args):
     Generate a settings file for a new installation.
     """
     # Setup variables
-    context = gen_commands[args.type](args)
+    context = GEN_COMMANDS[args.type](args)
 
     destination_path = get_destination_path(args)
 

@@ -1,0 +1,59 @@
+{% raw -%}
+{% set data = load_setup_py_data() %}
+
+package:
+  name: tethysplatform
+  version: {{ data['version'] }}
+
+source:
+  path: ..
+
+build:
+  number: 0
+  string: {% if GIT_DESCRIBE_NUMBER|int > 0 %}dev{{ GIT_BUILD_STR }}{% endif %}
+  noarch: python
+  script:  python setup.py install --single-version-externally-managed --record=record.txt
+  entry_points:
+    - tethys = tethys_cli:tethys_command
+{%- endraw %}
+
+requirements:
+  build:
+    - python
+    - pbr
+  run:
+    {% for requirement in run_requirements -%}
+    - {{ requirement }}
+    {% endfor -%}
+
+
+{%- raw %}
+test:
+  imports:
+    - tethys_apps
+    - tethys_compute
+    - tethys_config
+    - tethys_gizmos
+    - tethys_portal
+    - tethys_quotas
+    - tethys_sdk
+    - tethys_services
+
+about:
+  home: {{ data['url'] }}
+  license: BSD-2-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: {{ data['description'] }}
+  description: |
+    Tethys Platform provides both a development environment
+    and a hosting environment for earth science web apps.
+  doc_url: http://docs.tethysplatform.org
+  dev_url: https://github.com/tethysplatform/tethys
+
+extra:
+  recipe-maintainers:
+    - sdc50
+    - swainn
+
+{%- endraw %}
