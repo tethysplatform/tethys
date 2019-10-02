@@ -1,3 +1,6 @@
+# Conda Recipe for Tethys Platform
+# WARNING: THIS IS A GENERATED FILE. DO NOT EDIT.
+# TO CHANGE THIS FILE, SEE $TETHYS_SRC/tethys_cli/gen_templates/meta yaml
 {% raw -%}
 {% set data = load_setup_py_data() %}
 
@@ -31,6 +34,7 @@ requirements:
 test:
   imports:
     - tethys_apps
+    - tethys_cli
     - tethys_compute
     - tethys_config
     - tethys_gizmos
