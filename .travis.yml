@@ -7,6 +7,12 @@ sudo: false
 # Turn off email notifications
 notifications:
   email: false
+  
+addons:
+  artifacts:
+    debug: true
+    paths:
+      - $TRAVIS_BUILD_DIR/conda.recipe
 
 os:
   - linux
@@ -43,15 +49,17 @@ script:
   - tethys test -c -u -v 2
 
 after_success:
-  # generate test coverage information
-  - ls -al
-  - coveralls
-  # create conda recipe
   - >
-    if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      # generate test coverage information
+      ls -al
+      coveralls
+      # create conda recipe
       mkdir -p ./tethys/conda.recipe
       tethys gen --overwrite metayaml --pin-level minor
       cat ./tethys/conda.recipe/meta.yaml
+    else
+      echo "Skipping after_success b/c not linux run."
     fi
 
 jobs:
