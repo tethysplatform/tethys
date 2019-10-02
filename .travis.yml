@@ -38,14 +38,18 @@ install:
   # install test dependencies
   - pip install python-coveralls
 
-# command to run tests
 script:
+  # command to run tests
   - tethys test -c -u -v 2
 
-# generate test coverage information
 after_success:
+  # generate test coverage information
   - ls -al
   - coveralls
+  # create conda recipe
+  - mkdir -p ./tethys/conda.recipe
+  - tethys gen --overwrite metayaml --pin-level minor
+  - cat ./tethys/conda.recipe/meta.yaml
 
 jobs:
   include:
