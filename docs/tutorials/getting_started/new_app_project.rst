@@ -64,7 +64,7 @@ Now that you have a new Tethys app project, you need to install the app on your 
 
 .. tip::
 
-    Windows Users: If you get an error when running ``python setup.py develop``, then you have insufficient permissions to install your app in development mode. Either try opening the ``tethys_cmd.bat`` as an administrator and run the commands again, or run ``python setup.py install``. The disadvantage to this method is that each time you want Tethys to reflect changes to your app code, you will need to run ``python setup.py install`` again.
+    Windows Users: If you get an error when running ``tethys install -d``, then you have insufficient permissions to install your app in development mode. Either try opening the ``tethys_cmd.bat`` as an administrator and run the commands again, or run ``tethys install``. The disadvantage to this method is that each time you want Tethys to reflect changes to your app code, you will need to run ``tethys install`` again.
 
 
 3. View Your New App
