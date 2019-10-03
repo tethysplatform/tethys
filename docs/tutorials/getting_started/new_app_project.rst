@@ -46,21 +46,21 @@ In a file browser change into your :file:`Home` directory and open the :file:`te
 2. Development Installation
 ===========================
 
-Now that you have a new Tethys app project, you need to install the app on your development Tethys Portal. In a terminal, change into the :file:`tethysapp-dam_inventory` directory and execute the :command:`python setup.py develop` command. Be sure to activate the Tethys :term:`Python conda environment` if it is not already activated (see line 1 of the first code block):
+Now that you have a new Tethys app project, you need to install the app on your development Tethys Portal. In a terminal, change into the :file:`tethysapp-dam_inventory` directory and execute the :command:`tethys install -d` command. Be sure to activate the Tethys :term:`Python conda environment` if it is not already activated (see line 1 of the first code block):
 
 **Linux and Mac:**
 
 ::
 
     (tethys) $ cd ~/tethysdev/tethysapp-dam_inventory
-    (tethys) $ python setup.py develop
+    (tethys) $ tethys install -d
 
 **Windows:**
 
 ::
 
     (tethys) $ cd C:%HOMEPATH%\tethysdev\tethysapp-dam_inventory
-    (tethys) $ python setup.py develop
+    (tethys) $ tethys install -d
 
 .. tip::
 
@@ -88,13 +88,13 @@ OR use the `tms` alias:
 
     ::
 
-        (tethys) $ tstartdb
+        (tethys) $ tethys db start
 
     You can also stop the Tethys database by running:
 
     ::
 
-        (tethys) $tstopdb
+        (tethys) $tethys db stop
 
 Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser. If all has gone well, you should see your app listed on the app library page. Exploring your new app won't take long, because there is only one page. Familiarize yourself with different parts of the app interface (see below).
 
