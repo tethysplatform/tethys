@@ -397,7 +397,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
 
     @mock.patch('tethys_cli.gen_commands.Template')
-    @mock.patch('tethys_cli.gen_commands.load')
+    @mock.patch('tethys_cli.gen_commands.safe_load')
     @mock.patch('tethys_cli.gen_commands.run_command')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
@@ -440,7 +440,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
 
     @mock.patch('tethys_cli.gen_commands.derive_version_from_conda_environment')
-    @mock.patch('tethys_cli.gen_commands.load')
+    @mock.patch('tethys_cli.gen_commands.safe_load')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     def test_gen_meta_yaml_overriding_dependencies(self, _, mock_load, mock_dvfce):
         mock_args = mock.MagicMock()

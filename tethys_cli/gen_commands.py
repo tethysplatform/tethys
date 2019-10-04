@@ -11,15 +11,11 @@ import string
 import random
 import os
 from conda.cli.python_api import run_command, Commands
-from yaml import load
+from yaml import safe_load
 from distro import linux_distribution
 from django.conf import settings
 from jinja2 import Template
 from tethys_apps.utilities import get_tethys_home_dir, get_tethys_src_dir
-try:  # pragma: no cover
-    from yaml import CLoader as Loader
-except ImportError:  # pragma: no cover
-    from yaml import Loader
 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tethys_portal.settings")
@@ -442,7 +438,7 @@ def derive_version_from_conda_environment(dep_str, level='minor'):
 def gen_meta_yaml(args):
     environment_file_path = os.path.join(TETHYS_SRC, 'environment.yml')
     with open(environment_file_path, 'r') as env_file:
-        environment = load(env_file, Loader=Loader)
+        environment = safe_load(env_file)
 
     dependencies = environment.get('dependencies', [])
     run_requirements = []
