@@ -1,6 +1,7 @@
 # Conda Recipe for Tethys Platform
 # WARNING: THIS IS A GENERATED FILE. DO NOT EDIT.
 # TO CHANGE THIS FILE, SEE $TETHYS_SRC/tethys_cli/gen_templates/meta yaml
+{% raw -%}
 {% set data = load_setup_py_data() %}
 
 package:
@@ -17,59 +18,19 @@ build:
   script:  python setup.py install --single-version-externally-managed --record=record.txt
   entry_points:
     - tethys = tethys_cli:tethys_command
+{%- endraw %}
 
 requirements:
   build:
     - python
     - pbr
   run:
-    - python
-    - pycrypto
-    - pyopenssl
-    - docker-py
-    - distro
-    - postgresql
-    - psycopg2
-    - sqlalchemy
-    - geoalchemy2
-    - plotly
-    - bokeh>=1.3.5*
-    - tethys_dataset_services>=2.0.0
-    - hs_restclient
-    - owslib
-    - requests
-    - social-auth-app-django
-    - dask=1.2.*
-    - tethys_dask_scheduler>=1.0.2
-    - channels
-    - service_identity
-    - condorpy
-    - django=2.2.*
-    - django-filter
-    - djangorestframework
-    - django-bootstrap3
-    - django-model-utils
-    - django-guardian
-    - django-gravatar2
-    - django-termsandconditions
-    - django-session-security
-    - django-analytical
-    - django-simple-captcha
-    - django-recaptcha2
-    - social-auth-app-django
-    - requests-mock
-    - selenium
-    - coverage
-    - factory_boy
-    - asynctest
-    - pillow
-    - pip
-    - future
-    - flake8
-    - pbr
-    - git
-    - conda
-    
+    {% for requirement in run_requirements -%}
+    - {{ requirement }}
+    {% endfor -%}
+
+
+{%- raw %}
 test:
   imports:
     - tethys_apps
@@ -98,3 +59,5 @@ extra:
   recipe-maintainers:
     - sdc50
     - swainn
+
+{%- endraw %}

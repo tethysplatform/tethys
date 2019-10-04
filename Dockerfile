@@ -100,7 +100,7 @@ RUN rm -rf /var/lib/apt/lists/*\
  && echo "deb http://repo.saltstack.com/apt/debian/9/amd64/latest stretch main" > /etc/apt/sources.list.d/saltstack.list
 RUN rm -rf /var/lib/apt/lists/*\
  && apt-get update \
- && apt-get -y install bzip2 git nginx supervisor gcc salt-minion procps pv
+ && apt-get -y install bzip2 git nginx supervisor gcc salt-minion procps pv \
  && rm -rf /var/lib/apt/lists/*\
 RUN rm -f /etc/nginx/sites-enabled/default
 
