@@ -21,14 +21,14 @@ This will create a new directory called ``tethysext-my_first_extension``. To ins
 ::
 
     $ cd tethysext-my_first_extension
-    $ python setup.py develop
+    $ tethys install -d
 
 Alternatively, to install the extension on a production Tethys Portal:
 
 ::
 
     $ cd tethysext-my_first_extension
-    $ python setup.py install
+    $ tethys install
 
 If the installation was successful, you should see something similar to this when Tethys Platform loads:
 
