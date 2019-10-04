@@ -7,10 +7,19 @@ sudo: false
 # Turn off email notifications
 notifications:
   email: false
+  
+addons:
+  artifacts:
+    debug: true
+    paths:
+      - $TRAVIS_BUILD_DIR/conda.recipe
 
 os:
   - linux
   - osx
+
+env:
+  - CONDA_BUILD_PIN_LEVEL=minor
 
 services:
   - docker
@@ -19,37 +28,43 @@ stages:
   - name: test
     if: (branch = master) AND (tag IS NOT present)
   - name: docker-build
-    if: (tag IS present) OR ((branch = master) AND (type != pull_request))
+    if: branch = master
   - name: conda-build
-    if: (tag IS present) OR ((branch = master) AND (type != pull_request))
+    if: branch = master
 
 install:
   - cd ..
   - bash ./tethys/scripts/install_tethys.sh -h
   - bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -t $PWD
-
   # activate conda environment
   - . ~/miniconda/etc/profile.d/conda.sh
   - conda activate tethys
   - conda list
-
   # generate new settings.py file with tethys_super user for tests
   - tethys gen settings --db-username tethys_super --db-password pass --db-port 5436
-
   # start database server
   - tethys db configure
-
   # install test dependencies
   - pip install python-coveralls
 
-# command to run tests
 script:
+  # command to run tests
   - tethys test -c -u -v 2
 
-# generate test coverage information
 after_success:
-  - ls -al
-  - coveralls
+  - >
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      # generate test coverage information
+      ls -al
+      coveralls
+      # create conda recipe
+      mkdir -p ./tethys/conda.recipe
+      # Change pin level here to control how the meta.yaml dependencies are constrained
+      tethys gen --overwrite metayaml --pin-level $CONDA_BUILD_PIN_LEVEL
+      cat ./tethys/conda.recipe/meta.yaml
+    else
+      echo "Skipping after_success b/c not linux run."
+    fi
 
 jobs:
   include:
@@ -58,7 +73,6 @@ jobs:
         - skip
       script:
         - echo "Building docker images"
-
         - >
           if [ -z "$TRAVIS_TAG"]; then
             export LATEST_TAG="master";
@@ -69,18 +83,19 @@ jobs:
             echo "Branch tag is $TRAVIS_TAG and Main tag is $LATEST_TAG";
             docker build -t tethysplatform/tethys-core:$TRAVIS_TAG -t tethysplatform/tethys-core:$LATEST_TAG .;
           fi
-
-        - echo "Pushing to docker registry"
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-
         - >
-          if [ -z "$TRAVIS_TAG" ]; then
-            echo "No Branch tag is Present";
+          if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+            echo "Pushing to docker registry";
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
+            if [ -z "$TRAVIS_TAG" ]; then
+              echo "No Branch tag is Present";
+            else
+              docker push tethysplatform/tethys-core:$TRAVIS_TAG;
+            fi 
+            docker push tethysplatform/tethys-core:$LATEST_TAG;
           else
-            docker push tethysplatform/tethys-core:$TRAVIS_TAG;
+            echo "Uploading is skipped for pull requests.";
           fi
-
-        - docker push tethysplatform/tethys-core:$LATEST_TAG
       after_success:
         - skip
     - stage: conda-build
@@ -89,31 +104,31 @@ jobs:
         - bash miniconda.sh -b -p $HOME/miniconda
         - export PATH="$HOME/miniconda/bin:$PATH"
         - hash -r
-
         - conda config --set always_yes yes --set changeps1 no
         - conda update -q conda
-
         - conda install conda-build anaconda-client
+        - conda config --add channels bokeh/label/dev
         - conda config --add channels conda-forge
         - conda config --add channels tethysplatform/label/dev
         - conda config --add channels tethysplatform
         - conda config --set anaconda_upload no
-
         - mkdir -p ~/conda-bld
       script:
         - echo "Building conda package"
         - export CONDA_BLD_PATH=~/conda-bld
         - conda build ./conda.recipe
-
-        - echo "Uploading conda package"
-                
         - >
-          if [ -z "$TRAVIS_TAG" ]; then
-            echo "No Branch tag is Present. Uploading to dev";
-            anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l dev $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
+          if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+            echo "Uploading conda package";
+            if [ -z "$TRAVIS_TAG" ]; then
+              echo "No Branch tag is Present. Uploading to dev";
+              anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l dev $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
+            else
+              echo "Branch tag is $TRAVIS_TAG. Uploading to master";
+              anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
+            fi
           else
-            echo "Branch tag is $TRAVIS_TAG. Uploading to master";
-            anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
+            echo "Uploading is skipped for pull requests.";
           fi
       after_success:
         - skip
