@@ -4,6 +4,8 @@ from unittest import mock
 from tethys_cli.gen_commands import (
     get_environment_value,
     get_settings_value,
+    derive_version_from_conda_environment,
+    gen_meta_yaml,
     generate_command,
     GEN_SETTINGS_OPTION,
     GEN_NGINX_OPTION,
@@ -12,7 +14,8 @@ from tethys_cli.gen_commands import (
     GEN_SERVICES_OPTION,
     GEN_INSTALL_OPTION,
     GEN_PORTAL_OPTION,
-    GEN_SITE_YAML_OPTION
+    GEN_SITE_YAML_OPTION,
+    GEN_META_YAML_OPTION
 )
 
 
@@ -392,3 +395,269 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
+
+    @mock.patch('tethys_cli.gen_commands.Template')
+    @mock.patch('tethys_cli.gen_commands.safe_load')
+    @mock.patch('tethys_cli.gen_commands.run_command')
+    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
+    @mock.patch('tethys_cli.gen_commands.os.path.isfile')
+    @mock.patch('tethys_cli.gen_commands.print')
+    def test_generate_command_metayaml(self, mock_print, mock_os_path_isfile, mock_file, mock_run_command,
+                                       mock_load, mock_Template):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_META_YAML_OPTION
+        mock_args.directory = None
+        mock_args.pin_level = 'minor'
+        mock_os_path_isfile.return_value = False
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1.2.3                     py37_0    conda-forge\n' \
+                 'bar                       4.5.6                     py37h516909a_0    conda-forge\n' \
+                 'goo                       7.8                       py37h516909a_0    conda-forge\n'
+        mock_run_command.return_value = (stdout, '', 0)
+        mock_load.return_value = {'dependencies': ['foo', 'bar=4.5', 'goo']}
+        mock_Template().render.return_value = 'out'
+
+        generate_command(args=mock_args)
+
+        mock_run_command.assert_any_call('list', 'foo')
+        mock_run_command.assert_any_call('list', 'goo')
+
+        rts_call_args = mock_print.call_args_list
+        self.assertListEqual([], rts_call_args)
+
+        render_context = mock_Template().render.call_args_list[0][0][0]
+        expected_context = {
+            'run_requirements': [
+                'foo=1.2.*',
+                'bar=4.5',
+                'goo=7.8'
+            ]
+        }
+        self.assertDictEqual(expected_context, render_context)
+
+        mock_file.assert_called()
+
+    @mock.patch('tethys_cli.gen_commands.derive_version_from_conda_environment')
+    @mock.patch('tethys_cli.gen_commands.safe_load')
+    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
+    def test_gen_meta_yaml_overriding_dependencies(self, _, mock_load, mock_dvfce):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_META_YAML_OPTION
+        mock_args.directory = None
+        mock_args.pin_level = 'minor'
+
+        mock_load.return_value = {
+            'dependencies': ['foo', 'foo=1.2.3', 'foo>=1.2.3', 'foo<=1.2.3', 'foo>1.2.3', 'foo<1.2.3']
+        }
+
+        ret = gen_meta_yaml(mock_args)
+
+        self.assertEqual(1, len(mock_dvfce.call_args_list))
+        mock_dvfce.assert_called_with('foo', level='minor')
+
+        expected_context = {
+            'run_requirements': [mock_dvfce(), 'foo=1.2.3', 'foo>=1.2.3', 'foo<=1.2.3', 'foo>1.2.3', 'foo<1.2.3']
+        }
+        self.assertDictEqual(expected_context, ret)
+
+    @mock.patch('tethys_cli.gen_commands.run_command')
+    def test_derive_version_from_conda_environment_minor(self, mock_run_command):
+        # More than three version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1.2.3.4.5                 py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'minor')
+
+        self.assertEqual('foo=1.2.*', ret)
+
+        # Three version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1.2.3                     py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'minor')
+
+        self.assertEqual('foo=1.2.*', ret)
+
+        # Two version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1.2                       py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'minor')
+
+        self.assertEqual('foo=1.2', ret)
+
+        # Less than two version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1                         py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'minor')
+
+        self.assertEqual('foo', ret)
+
+    @mock.patch('tethys_cli.gen_commands.run_command')
+    def test_derive_version_from_conda_environment_major(self, mock_run_command):
+        # More than three version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1.2.3.4.5                 py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'major')
+
+        self.assertEqual('foo=1.*', ret)
+
+        # Three version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1.2.3                     py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'major')
+
+        self.assertEqual('foo=1.*', ret)
+
+        # Two version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1.2                       py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'major')
+
+        self.assertEqual('foo=1.*', ret)
+
+        # Less than two version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1                         py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'major')
+
+        self.assertEqual('foo=1', ret)
+
+    @mock.patch('tethys_cli.gen_commands.run_command')
+    def test_derive_version_from_conda_environment_patch(self, mock_run_command):
+        # More than three version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1.2.3.4.5                 py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'patch')
+
+        self.assertEqual('foo=1.2.3.*', ret)
+
+        # Three version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1.2.3                     py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'patch')
+
+        self.assertEqual('foo=1.2.3', ret)
+
+        # Two version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1.2                       py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'patch')
+
+        self.assertEqual('foo=1.2', ret)
+
+        # Less than two version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1                         py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'patch')
+
+        self.assertEqual('foo=1', ret)
+
+    @mock.patch('tethys_cli.gen_commands.run_command')
+    def test_derive_version_from_conda_environment_none(self, mock_run_command):
+        # More than three version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1.2.3.4.5                 py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'none')
+
+        self.assertEqual('foo', ret)
+
+        # Three version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1.2.3                     py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'none')
+
+        self.assertEqual('foo', ret)
+
+        # Two version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1.2                       py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'none')
+
+        self.assertEqual('foo', ret)
+
+        # Less than two version numbers
+        stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
+                 '#\n' \
+                 '# Name                    Version                   Build  Channel\n' \
+                 'foo                       1                         py37_0    conda-forge'
+        mock_run_command.return_value = (stdout, '', 0)
+
+        ret = derive_version_from_conda_environment('foo', 'none')
+
+        self.assertEqual('foo', ret)
+
+    @mock.patch('tethys_cli.gen_commands.print')
+    @mock.patch('tethys_cli.gen_commands.run_command')
+    def test_derive_version_from_conda_environment_conda_list_error(self, mock_run_command, mock_print):
+        # More than three version numbers
+        mock_run_command.return_value = ('', 'Some error', 1)
+
+        ret = derive_version_from_conda_environment('foo', 'minor')
+
+        self.assertEqual('foo', ret)
+
+        rts_call_args = mock_print.call_args_list
+        self.assertEqual('ERROR: Something went wrong looking up dependency "foo" in environment',
+                         rts_call_args[0][0][0])
+        self.assertEqual('Some error',
+                         rts_call_args[1][0][0])
