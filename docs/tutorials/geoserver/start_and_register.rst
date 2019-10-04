@@ -54,7 +54,7 @@ Install GeoServer and Start Tethys Development Server
 ::
 
     (tethys) $ cd tethysapp-geoserver_app
-    (tethys) $ python setup.py develop
+    (tethys) $ tethys install -d
     (tethys) $ tms
 
 
@@ -103,7 +103,7 @@ Assign the "primary_geoserver" Spatial Dataset Service to the "main_geoserver" s
 
         (tethys) $ tethys uninstall geoserver_app
         (tethys) $ cd tethysapp-geoserver_app
-        (tethys) $ python setup.py develop
+        (tethys) $ tethys install -d
         (tethys) $ tms
 
 
