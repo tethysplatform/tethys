@@ -18,6 +18,9 @@ os:
   - linux
   - osx
 
+env:
+  - CONDA_BUILD_PIN_LEVEL=minor
+
 services:
   - docker
 
@@ -56,7 +59,8 @@ after_success:
       coveralls
       # create conda recipe
       mkdir -p ./tethys/conda.recipe
-      tethys gen --overwrite metayaml --pin-level minor
+      # Change pin level here to control how the meta.yaml dependencies are constrained
+      tethys gen --overwrite metayaml --pin-level $CONDA_BUILD_PIN_LEVEL
       cat ./tethys/conda.recipe/meta.yaml
     else
       echo "Skipping after_success b/c not linux run."

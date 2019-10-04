@@ -382,7 +382,7 @@ def gen_services_yaml(args):
     return context
 
 
-def derive_version_from_conda_environment(dep_str, level='minor'):
+def derive_version_from_conda_environment(dep_str, level='none'):
     """
     Determine dependency string based on the current tethys environment.
 
