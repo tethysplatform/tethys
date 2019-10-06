@@ -26,18 +26,38 @@ class TestTags(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_get_tags_from_apps(self):
-        ret_tag_list = t.get_tags_from_apps(self.mock_object_apps)
-        self.assertEqual(sorted(self.tag_names), sorted(ret_tag_list))
-
     def test_get_tag_class(self):
         ret_tag_list = t.get_tag_class(self.mock_object_apps['configured'][-1])
         self.assertEqual(' '.join(sorted(self.tag_names)), ret_tag_list)
+
+    def test_get_tag_class_dict(self):
+        ret_tag_list = t.get_tag_class(self.mock_dict_apps['configured'][-1])
+        self.assertEqual(' '.join(sorted(self.tag_names)), ret_tag_list)
+
+    def test_get_tags_from_apps(self):
+        ret_tag_list = t.get_tags_from_apps(self.mock_object_apps)
+        self.assertEqual(sorted(self.tag_names), sorted(ret_tag_list))
 
     def test_get_tags_from_apps_dict(self):
         ret_tag_list = t.get_tags_from_apps(self.mock_dict_apps)
         self.assertEqual(sorted(self.tag_names), sorted(ret_tag_list))
 
-    def test_get_tag_class_dict(self):
-        ret_tag_list = t.get_tag_class(self.mock_dict_apps['configured'][-1])
-        self.assertEqual(' '.join(sorted(self.tag_names)), ret_tag_list)
+    def test_get_tags_from_apps_object_disabled(self):
+        self.mock_object_apps['configured'].append(mock.MagicMock(tags='disabled', enabled=False))
+        ret_tag_list = t.get_tags_from_apps(self.mock_object_apps)
+        self.assertNotIn('disabled', ret_tag_list)
+
+    def test_get_tags_from_apps_dict_disabled(self):
+        self.mock_dict_apps['configured'].append({'tags': 'disabled', 'enabled': False})
+        ret_tag_list = t.get_tags_from_apps(self.mock_dict_apps)
+        self.assertNotIn('disabled', ret_tag_list)
+
+    def test_get_tags_from_apps_object_dont_show(self):
+        self.mock_object_apps['configured'].append(mock.MagicMock(tags='disabled', show_in_apps_library=False))
+        ret_tag_list = t.get_tags_from_apps(self.mock_object_apps)
+        self.assertNotIn('disabled', ret_tag_list)
+
+    def test_get_tags_from_apps_dict_dont_show(self):
+        self.mock_dict_apps['configured'].append({'tags': 'disabled', 'show_in_apps_library': False})
+        ret_tag_list = t.get_tags_from_apps(self.mock_dict_apps)
+        self.assertNotIn('disabled', ret_tag_list)
