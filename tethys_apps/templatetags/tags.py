@@ -16,12 +16,14 @@ def get_tags_from_apps(apps):
                 get_tags = app.tags
 
             tags = [_f for _f in re.split("[,]+ *", get_tags) if _f]
+
             for tag in tags:
                 tag = tag.replace('"', '')
                 tag = tag.replace("'", '')
                 tag = re.sub(r"\s+", '-', tag)
                 tags_list.append(tag)
-                tags_list = list(set(tags_list))
+
+            tags_list = list(set(tags_list))
 
     return tags_list
 
