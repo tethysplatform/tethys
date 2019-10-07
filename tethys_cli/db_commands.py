@@ -87,11 +87,22 @@ def create_db_user(hostname=None, port=None, username=None, password=None, db_na
     db_name = db_name or username
 
     if is_superuser:
-        command = f"CREATE USER {username} WITH CREATEDB NOCREATEROLE SUPERUSER PASSWORD '{password}';"
+        create_user_command = f"CREATE USER {username} WITH CREATEDB NOCREATEROLE SUPERUSER PASSWORD '{password}';"
     else:
-        command = f"CREATE USER {username} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '{password}';"
+        create_user_command = f"CREATE USER {username} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD '{password}';"
 
-    args = ['psql', '-h', hostname, '-U', 'postgres', '-p', f'{port}', '--command', command]
+    # Check if the user already exists when we create it
+    # See: https://stackoverflow.com/questions/8092086/create-postgresql-role-user-if-it-doesnt-exist/13863830
+    create_user_command = f"DO " \
+                          f"$do$ " \
+                          f"BEGIN " \
+                          f"  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '{username}') THEN " \
+                          f"    {create_user_command} " \
+                          f"  END IF; " \
+                          f"END " \
+                          f"$do$;"
+
+    args = ['psql', '-h', hostname, '-U', 'postgres', '-p', f'{port}', '--command', create_user_command]
     _run_process(args, msg)
 
     args = ['createdb', '-h', hostname, '-U', 'postgres', '-E', 'utf-8', '-T', 'template0', '-p', f'{port}',
@@ -101,7 +112,7 @@ def create_db_user(hostname=None, port=None, username=None, password=None, db_na
 
 def create_tethys_db(hostname=None, port=None, db_name=None, username=None, password=None,
                      superuser_name=None, superuser_password=None, **kwargs):
-    create_db_user(hostname=hostname, port=port, username=username, password=password, db_name=db_name)
+    # Create superusers first, so that if there are conflicts in the names, the user created will be a superuser
     if superuser_name is not None and superuser_password is not None:
         create_db_user(
             hostname=hostname,
@@ -110,6 +121,8 @@ def create_tethys_db(hostname=None, port=None, db_name=None, username=None, pass
             password=superuser_password,
             is_superuser=True
         )
+    # Create Tethys db user next
+    create_db_user(hostname=hostname, port=port, username=username, password=password, db_name=db_name)
 
 
 def migrate_tethys_db(db_alias=None, **kwargs):
