@@ -102,6 +102,18 @@ Example of new ``setup.py`` file:
     Do not list app dependencies in the ``setup.py``. Dependencies should now be listed using the ``install.yml`` file
     (see :doc:`../installation/application`).
 
+App Base Template
+-----------------
+
+If you'd like your app to support setting the app icon to use an image from an external source (e.g. "http://example.com/example.jpg"), you'll need to update the `base.html` located in your templates directory. Either remove the `app_icon` block or change it to:
+
+.. code-block:: html+django
+
+    {% block app_icon %}
+      {# The path you provided in your app.py is accessible through the tethys_app.icon context variable #}
+      <img src="{% if 'http' in tethys_app.icon %}{{ tethys_app.icon }}{% else %}{% static tethys_app.icon %}{% endif %}" />
+    {% endblock %}
+
 App Installation
 ----------------
 

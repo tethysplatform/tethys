@@ -1428,11 +1428,10 @@ class TethysAppBase(TethysBase):
 
                 db_app.save()
 
-            # If the app is in the database, update developer-first attributes
+            # If the app is in the database, update developer priority attributes
             elif len(db_apps) == 1:
                 db_app = db_apps[0]
                 db_app.index = self.index
-                db_app.icon = self.icon
                 db_app.root_url = self.root_url
                 db_app.color = self.color
 
@@ -1448,9 +1447,11 @@ class TethysAppBase(TethysBase):
                 db_app.add_settings(self.persistent_store_settings())
                 db_app.save()
 
+                # In debug mode, update all fields, not just developer priority attributes
                 if hasattr(settings, 'DEBUG') and settings.DEBUG:
                     db_app.name = self.name
                     db_app.description = self.description
+                    db_app.icon = self.icon
                     db_app.tags = self.tags
                     db_app.enable_feedback = self.enable_feedback
                     db_app.feedback_emails = self.feedback_emails

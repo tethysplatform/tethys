@@ -56,7 +56,7 @@
             {% else %}
             <a class="app-container isotopeSelector {{ app|get_tag_class }}" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '{% url app.index %}');" data-app-theme-color="{{ app.color }}">
                <div class="app-icon">
-                <img {% if app.icon %}src="{% static app.icon %}"{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} />
+                <img src="{% if app.icon %}{% if 'http' in app.icon %}{{ app.icon }}{% else %}{% static app.icon %}{% endif %}{% else %}{% static 'tethys_apps/images/default_app_icon.gif' %}{% endif %}" />
               </div>
             {% endif %}
               <div class="app-title" data-app-theme-color="{{ app.color }}">
@@ -76,7 +76,7 @@
         {% for app in apps.unconfigured %}
           <a class="app-container isotopeSelector {{ app|get_tag_class }} unconfigured" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '/admin/tethys_apps/tethysapp/{{ app.id }}/change/');" data-app-theme-color="{{ app.color }}">
             <div class="app-icon">
-              <img {% if app.icon %}src="{% static app.icon %}"{% else %}src="{% static 'tethys_apps/images/default_app_icon.gif' %}"{% endif %} />
+              <img src="{% if app.icon %}{% if 'http' in app.icon %}{{ app.icon }}{% else %}{% static app.icon %}{% endif %}{% else %}{% static 'tethys_apps/images/default_app_icon.gif' %}{% endif %}" />
             </div>
             <div class="app-title" data-app-theme-color="{{ app.color }}">
               <span>{{ app.name }}</span>
