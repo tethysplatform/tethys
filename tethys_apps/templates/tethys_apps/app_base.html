@@ -131,7 +131,7 @@
                   {% endblock %}
                   {% block app_icon_override %}
                     <div class="icon-wrapper">
-                      {% block app_icon %}<img src="{% static tethys_app.icon %}">{% endblock %}
+                      {% block app_icon %}<img src="{% if tethys_app.icon %}{% if 'http' in tethys_app.icon %}{{ tethys_app.icon }}{% else %}{% static tethys_app.icon %}{% endif %}{% else %}{% static 'tethys_apps/images/default_app_icon.gif' %}{% endif %}" />{% endblock %}
                     </div>
                   {% endblock %}
                   {% block app_title_override %}

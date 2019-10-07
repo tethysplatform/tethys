@@ -81,7 +81,7 @@ class PersistentStoreDatabaseSettingInline(TethysAppSettingInline):
 
 class TethysAppAdmin(GuardedModelAdmin):
     readonly_fields = ('package', 'manage_app_storage',)
-    fields = ('package', 'name', 'description', 'tags', 'enabled', 'show_in_apps_library', 'enable_feedback',
+    fields = ('package', 'name', 'description', 'icon', 'tags', 'enabled', 'show_in_apps_library', 'enable_feedback',
               'manage_app_storage',)
     inlines = [CustomSettingInline,
                PersistentStoreConnectionSettingInline,

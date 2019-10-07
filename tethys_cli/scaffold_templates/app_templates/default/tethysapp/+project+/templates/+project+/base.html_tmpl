@@ -6,7 +6,7 @@
 
 {{ '{%' }} block app_icon {{ '%}' }}
   {{ '{#' }} The path you provided in your app.py is accessible through the tethys_app.icon context variable {{ '#}' }}
-  <img src="{{ '{%' }} static tethys_app.icon {{ '%}' }}">
+  <img src="{{ '{%' }} if 'http' in tethys_app.icon {{ '%}' }}{{ '{{' }} tethys_app.icon {{ '}}' }}{{ '{%' }} else {{ '%}' }}{{ '{%' }} static tethys_app.icon {{ '%}' }}{{ '{%' }} endif {{ '%}' }}" />
 {{ '{%' }} endblock {{ '%}' }}
 
 {{ '{#' }} The name you provided in your app.py is accessible through the tethys_app.name context variable {{ '#}' }}
