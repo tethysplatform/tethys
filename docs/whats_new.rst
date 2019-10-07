@@ -216,6 +216,11 @@ Official Tethys Docker Image
 
 See: `Tethys Platform Docker Image <https://hub.docker.com/r/tethysplatform/tethys-core>`_
 
+Tethys Apps Settings
+--------------------
+
+* The icon for an app can now be set and overriden by portal admins via the App Settings page.
+
 Bug Fixes
 ---------
 
@@ -223,6 +228,7 @@ Bug Fixes
 * The ``tethys docker ip`` command returning the incorrect port for GeoServer.
 * The ``tethys uninstall`` command would not remove the database entry if the files were removed manually.
 * Removed hardcoded "src" directory to allow tethys to be installed in directories of any name.
+* Fixed issue where tags for disabled or not shown apps were still showing up.
 
 
 Prior Release Notes
