@@ -123,17 +123,25 @@ class TestCommandTests(unittest.TestCase):
         db_command(mock_args)
         call_args = mock_create_db_user.call_args_list
         self.assertEqual(call_args[0], mock.call(hostname=self.options['hostname'], port=self.options['port'],
+                                                 username=self.options['superuser_name'],
+                                                 password=self.options['superuser_password'], is_superuser=True))
+        self.assertEqual(call_args[1], mock.call(hostname=self.options['hostname'], port=self.options['port'],
                                                  username=self.options['username'], password=self.options['password'],
                                                  db_name=self.options['db_name']))
-        mock_create_db_user.assert_called_with(hostname=self.options['hostname'], port=self.options['port'],
-                                               username=self.options['superuser_name'],
-                                               password=self.options['superuser_password'], is_superuser=True)
 
     def test_db_command_create_db_user(self):
         create_db_user(**self.options)
         call_args = self.mock_run_process.call_args_list
         command = f"CREATE USER {self.options['username']} WITH NOCREATEDB NOCREATEROLE NOSUPERUSER PASSWORD " \
             f"'{self.options['password']}';"
+        command = f"DO " \
+            f"$do$ " \
+            f"BEGIN " \
+            f"  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '{self.options['username']}') THEN " \
+            f"    {command} " \
+            f"  END IF; " \
+            f"END " \
+            f"$do$;"
         self.assertEqual(call_args[0][0][0], ['psql', '-h', self.options['hostname'], '-U', 'postgres', '-p', '0000',
                                               '--command', command])
         args = ['createdb', '-h', self.options['hostname'], '-U', 'postgres', '-E', 'utf-8', '-T', 'template0',
@@ -145,6 +153,14 @@ class TestCommandTests(unittest.TestCase):
         call_args = self.mock_run_process.call_args_list
         command = f"CREATE USER {self.options['username']} WITH CREATEDB NOCREATEROLE SUPERUSER PASSWORD " \
             f"'{self.options['password']}';"
+        command = f"DO " \
+            f"$do$ " \
+            f"BEGIN " \
+            f"  IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '{self.options['username']}') THEN " \
+            f"    {command} " \
+            f"  END IF; " \
+            f"END " \
+            f"$do$;"
         self.assertEqual(call_args[0][0][0], ['psql', '-h', self.options['hostname'], '-U', 'postgres', '-p', '0000',
                                               '--command', command])
 
