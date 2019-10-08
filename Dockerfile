@@ -96,8 +96,8 @@ RUN rm -rf /var/lib/apt/lists/*\
  && apt-get update \
  && apt-get -y install wget gnupg2 \
  && rm -rf /var/lib/apt/lists/*\
- && wget -O - https://repo.saltstack.com/apt/debian/9/amd64/latest/SALTSTACK-GPG-KEY.pub | apt-key add - \
- && echo "deb http://repo.saltstack.com/apt/debian/9/amd64/latest stretch main" > /etc/apt/sources.list.d/saltstack.list
+ && wget -O - http://repo.saltstack.com/apt/debian/9/amd64/archive/2019.2.0/SALTSTACK-GPG-KEY.pub | apt-key add - \
+ && echo "deb http://repo.saltstack.com/apt/debian/9/amd64/archive/2019.2.0 stretch main" > /etc/apt/sources.list.d/saltstack.list
 RUN rm -rf /var/lib/apt/lists/*\
  && apt-get update \
  && apt-get -y install bzip2 git nginx supervisor gcc salt-minion procps pv \
@@ -138,7 +138,7 @@ ADD --chown=www:www .git ${TETHYS_HOME}/tethys/.git/
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; python setup.py develop'
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
-  ; tethys gen settings'
+  ; tethys gen --overwrite settings'
 RUN mkdir -p ${TETHYS_PERSIST} ${APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT}
 
 ############
