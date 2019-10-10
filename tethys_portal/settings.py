@@ -1,6 +1,16 @@
 """
 Settings for Tethys Platform
 
+***************************************************************************
+*
+*   WARNING!!!!
+*
+*   The settings.py file should no longer be edited to customize your local
+*   settings. All portal configuration should now happen in the portal.yml
+*   file (See docs/tethys_portal/configuration.rst).
+*
+***************************************************************************
+
 This file contains default Django and other settings for the Tethys Platform.
 
 For more information on this file, see
@@ -28,7 +38,8 @@ TETHYS_HOME = get_tethys_home_dir()
 
 local_settings = {}
 try:
-    local_settings = yaml.safe_load(open(os.path.join(TETHYS_HOME, 'portal.yml'))).get('settings', {}) or {}
+    with open(os.path.join(TETHYS_HOME, 'portal.yml')) as portal_yaml:
+        local_settings = yaml.safe_load(portal_yaml).get('settings', {}) or {}
 except FileNotFoundError:
     log.info('Could not find the portal.yml file. To generate a new portal.yml run the command "tethys gen portal"')
 except Exception:

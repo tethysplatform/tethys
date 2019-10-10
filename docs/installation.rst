@@ -39,7 +39,7 @@ To add custom configurations such as the database and other local settings you w
 
     tethys gen portal
 
-You can customize your settings in the :file:`portal.yml` file after you generate it by manually editing the file or by using the :ref:`tethys_settings_cmd` command. Refer to the :ref:`tethys_configuration` documentation for me information.
+You can customize your settings in the :file:`portal.yml` file after you generate it by manually editing the file or by using the :ref:`tethys_settings_cmd` command. Refer to the :ref:`tethys_configuration` documentation for more information.
 
 
 3. Configure the Tethys Database

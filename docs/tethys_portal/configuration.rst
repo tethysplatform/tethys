@@ -12,7 +12,7 @@ Once you have installed Tethys you can generate a new :file:`portal.yml` file us
 
   tethys gen portal
 
-This will create a new :file:`portal.yml` file in you ``TETHYS_HOME`` directory that looks like this:
+This will create a new :file:`portal.yml` file in your ``TETHYS_HOME`` directory that looks like this:
 
 .. code-block:: yaml
 

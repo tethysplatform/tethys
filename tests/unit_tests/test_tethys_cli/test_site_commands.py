@@ -53,7 +53,7 @@ class CLISiteCommandsTest(unittest.TestCase):
     @mock.patch('tethys_cli.site_commands.timezone.now')
     @mock.patch('tethys_cli.site_commands.load_apps')
     def test_gen_site_content_with_yaml(self, mock_load_apps, mock_now, mock_filter, mock_path):
-        file_path = os.path.join(self.root_app_path, 'test-site-content.yml')
+        file_path = os.path.join(self.root_app_path, 'test-portal.yml')
         mock_file_path = mock.MagicMock()
         mock_path.return_value = mock_file_path
         mock_file_path.__truediv__().exists.return_value = True

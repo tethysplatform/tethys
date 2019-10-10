@@ -1,5 +1,10 @@
-# site_content.yml
-# Configuration file for portal content.
+# Portal Level Config File
+
+# see tethys documentation for how to setup this file
+version: 1.0
+name:
+apps:
+settings:
 site_content:
   TAB_TITLE:
   FAVICON:

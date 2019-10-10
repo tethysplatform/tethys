@@ -13,15 +13,17 @@ class TestSettingsCommands(TestCase):
     def tear_down(self):
         pass
 
+    @mock.patch('tethys_cli.settings_commands.Path.open')
     @mock.patch('tethys_cli.settings_commands.yaml.safe_load', return_value={'settings': {'test': 'test'}})
-    def test_read_settings(self, _):
+    def test_read_settings(self, _, __):
         settings = cmds.read_settings()
         self.assertDictEqual(settings, {'test': 'test'})
 
-    @mock.patch('tethys_cli.settings_commands.Path.open', return_value='mock_file')
+    @mock.patch('tethys_cli.settings_commands.Path.open')
     @mock.patch('tethys_cli.settings_commands.yaml.safe_load', return_value={})
     @mock.patch('tethys_cli.settings_commands.yaml.safe_dump')
-    def test_write_settings(self, mock_dump, _, __):
+    def test_write_settings(self, mock_dump, _, mock_open):
+        mock_open().__enter__.return_value = 'mock_file'
         cmds.write_settings({'test': 'test'})
         mock_dump.assert_called_with({'settings': {'test': 'test'}}, 'mock_file')
 
@@ -40,14 +42,22 @@ class TestSettingsCommands(TestCase):
         test_settings = {'test_key': 'test_value'}
         mock_get_key.return_value = (test_settings, 'test_key')
         cmds.get_setting(test_settings, 'test_key')
-        mock_write_info.assert_called_with('test_key: test_value')
+        mock_write_info.assert_called_with("test_key: 'test_value'")
 
     @override_settings(test_key='test_value')
     @mock.patch('tethys_cli.settings_commands.write_info')
     def test_get_setting_from_django_settings(self, mock_write_info):
         test_settings = {'test_key': 'test_value'}
         cmds.get_setting(test_settings, 'test_key')
-        mock_write_info.assert_called_with('test_key: test_value')
+        mock_write_info.assert_called_with("test_key: 'test_value'")
+
+    @mock.patch('tethys_cli.settings_commands.dir', return_value=['one', 'two'])
+    @mock.patch('tethys_cli.settings_commands.settings', new=mock.MagicMock(one=1, two=2))
+    @mock.patch('tethys_cli.settings_commands.write_info')
+    def test_get_all_settings_from_django_settings(self, mock_write_info, _):
+        test_settings = {}
+        cmds.get_setting(test_settings, 'all')
+        mock_write_info.assert_called_with("{'one': 1, 'two': 2}")
 
     @mock.patch('tethys_cli.settings_commands._get_dict_key_handle')
     @mock.patch('tethys_cli.settings_commands.write_settings')
@@ -87,10 +97,10 @@ class TestSettingsCommands(TestCase):
     @mock.patch('tethys_cli.settings_commands.get_setting')
     @mock.patch('tethys_cli.settings_commands.read_settings', return_value={})
     def test_settings_command_get(self, _, mock_get_setting):
-        get_key = ['key']
+        get_key = 'key'
         mock_args = mock.MagicMock(set_kwargs=None, get_key=get_key)
         cmds.settings_command(mock_args)
-        mock_get_setting.assert_called_with({}, get_key[0])
+        mock_get_setting.assert_called_with({}, get_key)
 
     @mock.patch('tethys_cli.settings_commands.remove_setting')
     @mock.patch('tethys_cli.settings_commands.read_settings', return_value={})

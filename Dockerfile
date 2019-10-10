@@ -29,7 +29,7 @@ ENV  BASH_PROFILE=".bashrc" \
      CLIENT_MAX_BODY_SIZE="75M"
 
 # Tethys settings arguments
-ENV  DEBUG="True" \
+ENV  DEBUG="False" \
      ALLOWED_HOSTS="localhost 127.0.0.1" \
      BYPASS_TETHYS_HOME_PAGE="True" \
      ADD_DJANGO_APPS=None \

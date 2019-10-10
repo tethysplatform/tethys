@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 from pathlib import Path
+from pprint import pformat
 
 import yaml
 
@@ -35,7 +36,8 @@ def add_settings_parser(subparsers):
         dest='get_key',
         help='Retrieve the resolved value of a key from settings if it exists. Otherwise, attempt to return the value '
              'of the key from the portal.yml',
-        nargs=1,
+        nargs='?',
+        const='all',
     )
     settings_parser.add_argument(
         '-r', '--rm', '--remove',
@@ -51,15 +53,18 @@ def add_settings_parser(subparsers):
 
 def read_settings():
     portal_yaml_file = TETHYS_HOME / 'portal.yml'
-    tethys_settings = yaml.safe_load(portal_yaml_file.open()).get('settings', {}) or {}
+    with portal_yaml_file.open() as portal_yaml:
+        tethys_settings = yaml.safe_load(portal_yaml).get('settings', {}) or {}
     return tethys_settings
 
 
 def write_settings(tethys_settings):
     portal_yaml_file = TETHYS_HOME / 'portal.yml'
-    portal_settings = yaml.safe_load(portal_yaml_file.open()) or {}
+    with portal_yaml_file.open('r') as portal_yaml:
+        portal_settings = yaml.safe_load(portal_yaml) or {}
     portal_settings['settings'] = tethys_settings
-    yaml.safe_dump(portal_settings, portal_yaml_file.open('w'))
+    with portal_yaml_file.open('w') as portal_yaml:
+        yaml.safe_dump(portal_settings, portal_yaml)
 
 
 def set_settings(tethys_settings, kwargs):
@@ -73,14 +78,19 @@ def set_settings(tethys_settings, kwargs):
 
 
 def get_setting(tethys_settings, key):
+    if key == 'all':
+        all_settings = {k: getattr(settings, k) for k in dir(settings) if not k.startswith('_')
+                        and not k == 'is_overridden'}
+        write_info(pformat(all_settings))
+        return
     try:
         value = getattr(settings, key)
-        write_info(f'{key}: {value}')
+        write_info(f'{key}: {pformat(value)}')
     except AttributeError:
         result = _get_dict_key_handle(tethys_settings, key)
         if result is not None:
             d, k = result
-            write_info(f'{key}: {d[k]}')
+            write_info(f'{key}: {pformat(d[k])}')
 
 
 def remove_setting(tethys_settings, key):
@@ -123,6 +133,6 @@ def settings_command(args):
     if args.set_kwargs:
         set_settings(tethys_settings, args.set_kwargs)
     elif args.get_key:
-        get_setting(tethys_settings, args.get_key[0])
+        get_setting(tethys_settings, args.get_key)
     elif args.rm_key:
         remove_setting(tethys_settings, args.rm_key[0])

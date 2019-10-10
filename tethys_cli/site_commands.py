@@ -166,37 +166,36 @@ def gen_site_content(args):
         home_category = SettingsCategory.objects.get(name="Home Page")
         setting_defaults(home_category)
 
-    else:
-        if args.from_file:
-            portal_yaml = Path(get_tethys_home_dir()) / 'portal.yml'
-            if portal_yaml.exists():
-                with portal_yaml.open() as f:
-                    site_content_settings = yaml.safe_load(f).get('site_content', {})
-                    for arg in site_content_settings:
-                        if site_content_settings[arg]:
-                            content = site_content_settings[arg]
-                            obj = Setting.objects.filter(name=arg_filter[arg.lower()])
-                            obj.update(content=content, date_modified=timezone.now())
+    if args.from_file:
+        portal_yaml = Path(get_tethys_home_dir()) / 'portal.yml'
+        if portal_yaml.exists():
+            with portal_yaml.open() as f:
+                site_content_settings = yaml.safe_load(f).get('site_content', {})
+                for arg in site_content_settings:
+                    if site_content_settings[arg]:
+                        content = site_content_settings[arg]
+                        obj = Setting.objects.filter(name=arg_filter[arg.lower()])
+                        obj.update(content=content, date_modified=timezone.now())
+        else:
+            valid_inputs = ('y', 'n', 'yes', 'no')
+            no_inputs = ('n', 'no')
+
+            generate_input = input('Would you like to generate a template portal.yml file that you can then'
+                                   'customize? (y/n): ')
+
+            while generate_input not in valid_inputs:
+                generate_input = input('Invalid option. Try again. (y/n): ').lower()
+
+            if generate_input in no_inputs:
+                write_msg('Generation of portal.yml file cancelled. Please generate one manually or provide '
+                          'specific site content arguments.')
             else:
-                valid_inputs = ('y', 'n', 'yes', 'no')
-                no_inputs = ('n', 'no')
+                call(['tethys', 'gen', 'portal'])
+                write_msg('\nRe-run the tethys site command with the --from-file argument.')
+                exit(0)
 
-                generate_input = input('Would you like to generate a template portal.yml file that you can then'
-                                       'customize? (y/n): ')
-
-                while generate_input not in valid_inputs:
-                    generate_input = input('Invalid option. Try again. (y/n): ').lower()
-
-                if generate_input in no_inputs:
-                    write_msg('Generation of portal.yml file cancelled. Please generate one manually or provide '
-                              'specific site content arguments.')
-                else:
-                    call(['tethys', 'gen', 'portal'])
-                    write_msg('\nRe-run the tethys site command with the --from-file argument.')
-                    exit(0)
-
-        for arg in vars(args):
-            if vars(args)[arg] and arg in arg_filter:
-                content = vars(args)[arg].replace('\\n', '\n')
-                obj = Setting.objects.filter(name=arg_filter[arg])
-                obj.update(content=content, date_modified=timezone.now())
+    for arg in vars(args):
+        if vars(args)[arg] and arg in arg_filter:
+            content = vars(args)[arg].replace('\\n', '\n')
+            obj = Setting.objects.filter(name=arg_filter[arg])
+            obj.update(content=content, date_modified=timezone.now())

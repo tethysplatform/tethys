@@ -17,7 +17,7 @@ Many significant changes were made since Tethys Platform 2.1. Please note the fo
 Source Code
 -----------
 
-Tethys in now a conda package! This means that when installing tethys you will no longer clone the source code into TETHYS_HOME. Now the conda package will just be installed in you conda environment.
+Tethys in now a conda package! This means that when installing tethys you will no longer clone the source code into TETHYS_HOME. Now Tethys will be installed in your conda environment instead.
 
 TETHYS_HOME
 -----------
@@ -68,7 +68,7 @@ Upgrade Steps
       * SOCIAL_OAUTH_XXXX_KEY, SOCIAL_OAUTH_XXXX_SECRET
       * BYPASS_TETHYS_HOME_PAGE
 
-    Refer to :ref:`tethys_configuration` for more details on specifying settings int he :file:`portal.yml` file.
+    Refer to :ref:`tethys_configuration` for more details on specifying settings in the :file:`portal.yml` file.
 
 6.  Migrate the database:
 

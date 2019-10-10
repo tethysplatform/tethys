@@ -11,7 +11,7 @@ This article will provide an overview of how to install Tethys Portal in a produ
 
 Follow the default :doc:`../../installation` instructions to install Tethys Portal with the following considerations
 
-* Make sure install the correct version.
+* Make sure to install the correct version.
 * Assign strong passwords to the database users.
 * You must edit the :file:`portal.yml` file to ensure production settings (i.e. ``DEBUG: False``, etc.)
 * Optionally, Follow the :doc:`./distributed` instructions to install Docker and the components of the software suite on separate servers.
@@ -41,7 +41,7 @@ Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` 
 
 .. important::
 
-    Review the `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ carefully.
+    Review the `Deployment Checklist <https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/>`_ carefully.
 
 .. _setup_email_capabilities:
 

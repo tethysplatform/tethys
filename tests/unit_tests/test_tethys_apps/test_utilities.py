@@ -518,4 +518,3 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         mock_os.environ.get.side_effect = ['tethys-dev', None]
         utilities.get_tethys_home_dir()
         mock_os.path.join.assert_called_with('test', 'tethys-dev')
-
