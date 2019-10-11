@@ -96,11 +96,11 @@ See: :ref:`admin_pages_tethys_quotas`
 New Portal Configuration File
 -----------------------------
 
-* Tethys will now use a new configuration file: ``portal.yml``
-* The ``portal.yml`` will store information about which services should be used for installed apps and the portal settings
-* Tethys Portal settings will now be configured in the new ``portal.yml`` file, rather than the ``settings.py``
+* Tethys will now use a new configuration file: ``portal_config.yml``
+* The ``portal_config.yml`` will store information about which services should be used for installed apps and the portal settings
+* Tethys Portal settings will now be configured in the new ``portal_config.yml`` file, rather than the ``settings.py``
 * This will allow for the local settings to be retained when Tethys is updated in the future (no more regenerating the ``settings.py`` file when you update).
-* Site settings will also be able to be configured via the ``portal.yml`` (e.g. primary color, logo, home page content).
+* Site settings will also be able to be configured via the ``portal_config.yml`` (e.g. primary color, logo, home page content).
 
 See:
 

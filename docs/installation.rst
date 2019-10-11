@@ -32,24 +32,15 @@ To install the ``tethysplatform`` into a new conda environment then run the foll
 
     Alternatively, to install from source refer to the :ref:`developer_installation` docs.
 
-2. Create a :file:`settings.py` File
+2. Create a :file:`portal_config.yml` File
 ------------------------------------
 
-Tethys requires a :file:`settings.py` file to configure the database and other local settings. To generate a new :file:`settings.py` with default values for your local installation run::
+To add custom configurations such as the database and other local settings you will need to generate a :file:`portal_config.yml` file. To generate a new template :file:`portal_config.yml` run::
 
-    tethys gen settings
+    tethys gen portal_config
 
-You can customize your :file:`settings.py` file when you generate it by passing in command line options. Refer to the :ref:`tethys_gen_cmd` docs to see what options are available.
+You can customize your settings in the :file:`portal_config.yml` file after you generate it by manually editing the file or by using the :ref:`tethys_settings_cmd` command. Refer to the :ref:`tethys_configuration` documentation for more information.
 
-.. tip::
-
-    To see where the :file:`settings.py` file is saved on disk run the following command::
-
-        tethys list -s
-
-    If you want to edit the file manually and have a commandline editor, such as ``vi`` installed then you can run::
-
-        vi $(tethys list -s)
 
 3. Configure the Tethys Database
 --------------------------------
@@ -60,7 +51,7 @@ Tethys Platform requires a PostgreSQL database server. There are several options
 
 .. note::
 
-    The tethys db command (:ref:`tethys_db_cmd`) will create a local database server in the directory specified by the ``DIR`` setting in the ``DATABASES`` section of the :file:`settings.py` file. If the value of ``DIR`` is a relative path then the database server will be created relative to directory specified by the ``TETHYS_HOME`` environment variable. By default ``TETHYS_HOME`` is at `~/.tethys`.
+    The tethys db command (:ref:`tethys_db_cmd`) will create a local database server in the directory specified by the ``DIR`` setting in the ``DATABASES`` section of the :file:`portal_config.yml` file. If the value of ``DIR`` is a relative path then the database server will be created relative to directory specified by the ``TETHYS_HOME`` environment variable. By default ``TETHYS_HOME`` is at `~/.tethys`.
 
     As an alternative to creating a local database server you can also configure a Docker DB server (see :ref:`using_docker`). A local database server is only recommended for development environments. For production environments please refer to :ref:`production_installation`.
 
@@ -104,7 +95,7 @@ Related Docs
     installation/update
     installation/production
     installation/developer_installation
-    installation/platform_settings
+    tethys_portal/configuration
     installation/using_docker
     installation/web_admin_setup
     installation/application

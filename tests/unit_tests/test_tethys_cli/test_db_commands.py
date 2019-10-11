@@ -226,9 +226,10 @@ class TestCommandTests(unittest.TestCase):
     def mock_all(self):
         raise ObjectDoesNotExist("test")
 
+    @mock.patch('tethys_cli.db_commands.write_info')
     @mock.patch('tethys_cli.db_commands.init_db_server')
     @mock.patch('tethys_cli.db_commands.start_db_server')
-    def test_db_command_configure_error(self, mock_init, mock_start):
+    def test_db_command_configure_error(self, mock_init, mock_start, _):
         mock_args = mock.MagicMock()
         mock_args.command = 'configure'
         db_command(mock_args)

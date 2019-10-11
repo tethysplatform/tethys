@@ -7,7 +7,7 @@ sudo: false
 # Turn off email notifications
 notifications:
   email: false
-  
+
 addons:
   artifacts:
     debug: true
@@ -35,15 +35,13 @@ stages:
 install:
   - cd ..
   - bash ./tethys/scripts/install_tethys.sh -h
-  - bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -t $PWD
+  - bash ./tethys/scripts/install_tethys.sh --partial-tethys-install meds -n tethys -s $PWD/tethys
+
   # activate conda environment
   - . ~/miniconda/etc/profile.d/conda.sh
   - conda activate tethys
   - conda list
-  # generate new settings.py file with tethys_super user for tests
-  - tethys gen settings --db-username tethys_super --db-password pass --db-port 5436
-  # start database server
-  - tethys db configure
+  - tethys db start
   # install test dependencies
   - pip install python-coveralls
 
@@ -91,7 +89,7 @@ jobs:
               echo "No Branch tag is Present";
             else
               docker push tethysplatform/tethys-core:$TRAVIS_TAG;
-            fi 
+            fi
             docker push tethysplatform/tethys-core:$LATEST_TAG;
           else
             echo "Uploading is skipped for pull requests.";

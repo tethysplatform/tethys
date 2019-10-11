@@ -4,7 +4,7 @@
 Developer Installation
 **********************
 
-**Last Updated:** April 2017
+**Last Updated:** October 2019
 
 These instructions are intended for those that want to contribute to the Tethys Platform source code. Use these instructions to install the Tethys source code in a development environment (for Unix based systems only).
 
@@ -37,113 +37,115 @@ For Systems with `curl` (e.g. Mac OSX and CentOS):
 Install Script Options
 ......................
 
-    You can customize your tethys installation by passing command line options to the installation script. The available options can be listed by running::
+You can customize your tethys installation by passing command line options to the installation script. The available options can be listed by running::
 
-         $ bash install_tethys.sh --help
+     $ bash install_tethys.sh --help
 
-    Each option is also descriped here:
+Each option is also descriped here:
+  * `-n, --conda-env-name <NAME>`:
+          Name for tethys conda environment. Default is 'tethys-dev'.
+  * `-t, --tethys-home <PATH>`:
+          Path for tethys home directory. Default is ~/.tethys/${CONDA_ENV_NAME}/.
 
-        * `-t, --tethys-home <PATH>`:
-                Path for tethys home directory. Default is ~/tethys.
-        * `-s, --tethys-src <PATH>`:
-                Path to the tethys source directory. Default is ${TETHYS_HOME}/src.
-        * `-a, --allowed-hosts <HOST>`:
-                Hostname or IP address on which to serve Tethys. Default is 127.0.0.1.
-        * `-p, --port <PORT>`:
-                Port on which to serve Tethys. Default is 8000.
-        * `-b, --branch <BRANCH_NAME>`:
-                Branch to checkout from version control. Default is 'release'.
-        * `-c, --conda-home <PATH>`:
-                Path to conda home directory where Miniconda will be installed, or to an existing installation of Miniconda. Default is ${TETHYS_HOME}/miniconda.
+          .. note::
 
-                .. tip::
+              If ``${CONDA_ENV_NAME}`` is "tethys" then the default for ``TETHYS_HOME`` is just :file:`~/.tethys/`
 
-                    The conda home path cannot contain spaces. If the the tethys home path contains spaces then the `--conda-home` option must be specified and point to a path without spaces.
+  * `-s, --tethys-src <PATH>`:
+          Path to the tethys source directory. Default is ${TETHYS_HOME}/tethys/.
+  * `-a, --allowed-hosts <HOST>`:
+          Hostname or IP address on which to serve Tethys. Default is 127.0.0.1.
+  * `-p, --port <PORT>`:
+          Port on which to serve Tethys. Default is 8000.
+  * `-b, --branch <BRANCH_NAME>`:
+          Branch to checkout from version control. Default is 'master'.
+  * `-c, --conda-home <PATH>`:
+          Path to conda home directory where Miniconda will be installed, or to an existing installation of Miniconda. Default is ~/miniconda/.
 
-        * `-n, --conda-env-name <NAME>`:
-                Name for tethys conda environment. Default is 'tethys'.
-        * `--python-version <PYTHON_VERSION>` (deprecated):
-                Main python version to install tethys environment into (2-deprecated or 3). Default is 3.
-                .. note::
+          .. tip::
 
-                    Support for Python 2 is deprecated and will be dropped in Tethys version 3.0.
+              The conda home path cannot contain spaces. If the your home path contains spaces then the `--conda-home` option must be specified and point to a path without spaces.
 
-        * `--db-username <USERNAME>`:
-                Username that the tethys database server will use. Default is 'tethys_default'.
-        * `--db-password <PASSWORD>`:
-                Password that the tethys database server will use. Default is 'pass'.
-        * `--db-super-username <USERNAME>`:
-                Username for super user on the tethys database server. Default is 'tethys_super'.
-        * `--db-super-password <PASSWORD>`:
-                Password for super user on the tethys database server. Default is 'pass'.
-        * `--db-port <PORT>`:
-                Port that the tethys database server will use. Default is 5436.
-        * `--db-dir <PATH>`:
-                Path where the local PostgreSQL database will be created. Default is ${TETHYS_HOME}/psql.
-        * `-S, --superuser <USERNAME>`:
-                Tethys super user name. Default is 'admin'.
-        * `-E, --superuser-email <EMAIL>`:
-                Tethys super user email. Default is ''.
-        * `-P, --superuser-pass <PASSWORD>`:
-                Tethys super user password. Default is 'pass'.
-        * `--skip-tethys-install`:
-                Flag to skip the Tethys installation so that the Docker installation or production installation can be added to an existing Tethys installation.
+  * `--db-username <USERNAME>`:
+          Username that the tethys database server will use. Default is 'tethys_super'.
 
-                .. tip::
+          .. note::
 
-                    If conda home is not in the default location then the `--conda-home` options must also be specified with this option.
+             The default ``DB_USERNAME`` is the same as the default ``DB_SUPER_USERNAME`` so that tests can be run.
 
-        * `--partial-tethys-install <FLAGS>`:
-                List of flags to indicate which steps of the installation to do.
+  * `--db-password <PASSWORD>`:
+          Password that the tethys database server will use. Default is 'pass'.
+  * `--db-super-username <USERNAME>`:
+          Username for super user on the tethys database server. Default is 'tethys_super'.
+  * `--db-super-password <PASSWORD>`:
+          Password for super user on the tethys database server. Default is 'pass'.
+  * `--db-port <PORT>`:
+          Port that the tethys database server will use. Default is 5436.
+  * `--db-dir <PATH>`:
+          Path where the local PostgreSQL database will be created. Default is ${TETHYS_HOME}/psql/.
+  * `-S, --superuser <USERNAME>`:
+          Tethys super user name. Default is 'admin'.
+  * `-E, --superuser-email <EMAIL>`:
+          Tethys super user email. Default is ''.
+  * `-P, --superuser-pass <PASSWORD>`:
+          Tethys super user password. Default is 'pass'.
+  * `--skip-tethys-install`:
+          Flag to skip the Tethys installation so that the Docker installation or production installation can be added to an existing Tethys installation.
 
-                Flags:
-                    * `m` - Install Miniconda
-                    * `r` - Clone Tethys repository (the `--tethys-src` option is required if you omit this flag).
-                    * `c` - Checkout the branch specified by the option `--branch` (specifying the flag `r` will also trigger this flag)
-                    * `e` - Create Conda environment
-                    * `s` - Create `settings.py` file
-                    * `d` - Create a local database server
-                    * `i` - Initialize database server with the Tethys database (specifying the flag `d` will also trigger this flag)
-                    * `u` - Add a Tethys Portal Super User to the user database (specifying the flag `d` will also trigger this flag)
-                    * `a` - Create activation/deactivation scripts for the Tethys Conda environment
-                    * `t` - Create the `t` alias to activate the Tethys Conda environment
+          .. tip::
 
-                For example, if you already have Miniconda installed and you have the repository cloned and have generated a `settings.py` file, but you want to use the install script to:
+              If conda home is not in the default location then the `--conda-home` options must also be specified with this option.
 
-                    * create a conda environment,
-                    * setup a local database server,
-                    * create the conda activation/deactivation scripts, and
-                    * create the `t` shortcut,
+  * `--partial-tethys-install <FLAGS>`:
+          List of flags to indicate which steps of the installation to do.
 
-                then you can run the following command::
+          Flags:
+              * `m` - Install Miniconda
+              * `r` - Clone Tethys repository (the `--tethys-src` option is required if you omit this flag).
+              * `c` - Checkout the branch specified by the option `--branch` (specifying the flag `r` will also trigger this flag)
+              * `e` - Create Conda environment
+              * `s` - Create :file:`portal_config.yml` file and configure settings
+              * `d` - Create a local database server
+              * `i` - Initialize database server with the Tethys database (specifying the flag `d` will also trigger this flag)
+              * `u` - Add a Tethys Portal Super User to the user database (specifying the flag `d` will also trigger this flag)
+              * `a` - Create activation/deactivation scripts for the Tethys Conda environment
+              * `t` - Create the `t` alias to activate the Tethys Conda environment
 
-                    bash install_tethys.sh --partial-tethys-install edat
+          For example, if you already have Miniconda installed and you have the repository cloned and have generated a :file:`portal_config.yml` file, but you want to use the install script to:
+              * create a conda environment,
+              * setup a local database server,
+              * create the conda activation/deactivation scripts, and
+              * create the `t` shortcut
 
-                .. warning::
+          then you can run the following command::
 
-                    If `--skip-tethys-install` is used then this option will be ignored.
+              bash install_tethys.sh --partial-tethys-install edat
 
-        * `--install-docker`:
-                Flag to include Docker installation as part of the install script (Linux only). See `2. Install Docker (OPTIONAL)`_ for more details.
+          .. warning::
 
-        * `--docker-options <OPTIONS>`:
-                Command line options to pass to the `tethys docker init` call if --install-docker is used. Default is "'-d'".
+              If `--skip-tethys-install` is used then this option will be ignored.
 
-                .. tip::
+  * `--install-docker`:
+          Flag to include Docker installation as part of the install script (Linux only). See `2. Install Docker (OPTIONAL)`_ for more details.
 
-                    The value for the `--docker-options` option must have nested quotes. For example "'-d -c geoserver'" or '"-d -c geoserver"'.
-        * `--production`
-                Flag to install Tethys in a production configuration.
-        * `--configure-selinux`
-                Flag to perform configuration of SELinux for production installation. (Linux only).
-        * `-x`:
-                Flag to turn on shell command echoing.
-        * `-h, --help`:
-                Print this help information.
+  * `--docker-options <OPTIONS>`:
+          Command line options to pass to the `tethys docker init` call if --install-docker is used. Default is "'-d'".
 
-    Here is an example of calling the installation script with customized options::
+          .. tip::
 
-        $ bash install_tethys.sh -t ~/Workspace/tethys -a localhost -p 8005 -c ~/miniconda3 --db-username tethys_db_user --db-password db_user_pass --db-port 5437 -S tethys -E email@example.com -P tpass
+              The value for the `--docker-options` option must have nested quotes. For example "'-d -c geoserver'" or '"-d -c geoserver"'.
+  * `--production`
+          Flag to install Tethys in a production configuration.
+  * `--configure-selinux`
+          Flag to perform configuration of SELinux for production installation. (Linux only).
+  * `-x`:
+          Flag to turn on shell command echoing.
+  * `-h, --help`:
+          Print this help information.
+
+Here is an example of calling the installation script with customized options::
+
+    $ bash install_tethys.sh -t ~/Workspace/tethys -a localhost -p 8005 -c ~/miniconda3 --db-username tethys_db_user --db-password db_user_pass --db-port 5437 -S tethys -E email@example.com -P tpass
 
 The installation script may take several minutes to run. Once it is completed you will need to activate the new conda environment so you can start the Tethys development server. This is most easily done using an alias created by the install script. To enable the alias you need to open a new terminal or re-run the :file:`.bashrc` (Linux) or :file:`.bash_profile` (Mac) file.
 
@@ -182,14 +184,6 @@ or simply just::
 
     Also, the following aliases are available:
 
-    - `tethys_start_db`:
-            Starts the local Tethys database server
-    - `tstartdb`:
-            Another alias for `tethys_start_db`
-    - `tethys_stop_db`:
-            Stops the localTethys database server
-    - `tstopdb`:
-            Another alias for `tethys_stop_db`
     - `tms`:
             An alias to start the Tethys development server. It calls the command `tethys manage start -p <HOST>:${TETHYS_PORT}` where `<HOST>` is the value of the `--allowed-host` option that was passed to the install script and `${TETHYS_PORT}` is the value of the environmental variable which is set from the `--port` option of the install script.
     - `tstart`:
@@ -210,16 +204,15 @@ or simply just::
     - `tso`:
             Another alias for `tethys_server_own`
 
-     When you start up a new terminal there are three steps to get the Tethys development server running again:
-
-        1. Activate the Tethys conda environment
-        2. Start the Tethys database server
-        3. start the Tethys development server
+    When you start up a new terminal there are three steps to get the Tethys development server running again:
+      1. Activate the Tethys conda environment
+      2. Start the Tethys database server
+      3. start the Tethys development server
 
     Using the supplied aliases, starting the Tethys development server from a fresh terminal can be done with the following two commands::
 
-        $ t
-        (tethys) $ tstart
+          $ t
+          (tethys) $ tstart
 
 Congratulations! You now have Tethys Platform running a in a development server on your machine. Tethys Platform provides a web interface that is called the Tethys Portal. You can access your Tethys Portal by opening `<http://localhost:8000/>`_ (or if you provided custom host and port options to the install script then it will be `<HOST>:<PORT>`) in a new tab in your web browser.
 
@@ -228,7 +221,6 @@ Congratulations! You now have Tethys Platform running a in a development server 
 
 
 To log in, use the credentials that you specified with the `-S` or `--superuser` and the `-P` or `--superuser-pass` options. If you did not specify these options then the default credentials are:
-
     * username: `admin`
     * password:  `pass`
 
@@ -254,4 +246,4 @@ If you would like to test the Docker containers, see :doc:`../supplementary/dock
 3. Customize Settings (OPTIONAL)
 --------------------------------
 
-The Tethys installation script created a settings file called :file:`settings.py` in the directory :file:`$TETHYS_HOME/src/tethys_apps`. The installation script has defined the most essential settings that will allow the Tethys development server to function based on the options that were passed to the script or based on the default values of those options. If you would like to further customize the settings then open the :file:`settings.py` file and make any desired changes. Refer to the :doc:`./platform_settings` documentation for a description of each of the settings.
+The Tethys installation script created a portal configuration file called :file:`portal_config.yml` in the directory :file:`$TETHYS_HOME/`. The installation script has defined the most essential settings that will allow the Tethys development server to function based on the options that were passed to the script or based on the default values of those options. If you would like to further customize the settings then open the :file:`portal_config.yml` file and make any desired changes. Refer to the :ref:`tethys_configuration` documentation for a description of each of the settings.

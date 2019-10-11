@@ -23,7 +23,7 @@ class GoogleMapView(TethysGizmoOptions):
     Attributes:
         height(string, required): Height of map container in normal css units
         width(string, required): Width of map container in normal css units
-        maps_api_key(string, required): The Google Maps API key. If the API key is provided in the settings.py via the TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY option, this parameter is not required.
+        maps_api_key(string, required): The Google Maps API key. If the API key is provided in the portal_config.yml via the TETHYS_GIZMOS_GOOGLE_MAPS_API_KEY option, this parameter is not required.
         reference_kml_action(url string): The action that returns the background kml datasets. These datasets are used for reference only.
         drawing_types_enabled(list of strings): A list of the types of geometries the user will be allowed to draw (POLYGONS, POINTS, POLYLINES).
         initial_drawing_mode(string): A string representing the drawing mode that will be enabled by default. Valid modes are: 'POLYGONS', 'POINTS', 'POLYLINES'. The mode used must be one of the drawing_types_enabled that the user is allowed to draw.
