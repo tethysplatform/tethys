@@ -3,6 +3,7 @@ from unittest import mock
 import time
 from tethys_services.backends.hs_restclient_helper import HSClientInitException
 import tethys_services.backends.hs_restclient_helper as hs_client_init_exception
+from django.test import override_settings
 
 
 class HsRestClientHelperTest(unittest.TestCase):
@@ -25,6 +26,7 @@ class HsRestClientHelperTest(unittest.TestCase):
         self.assertRaises(HSClientInitException, hs_client_init_exception.get_oauth_hs, mock_request)
         mock_logger.exception.assert_called_once_with('Failed to initialize hs object: foo')
 
+    @override_settings(SOCIAL_AUTH_HYDROSHARE_KEY='', SOCIAL_AUTH_HYDROSHARE_SECRET='')
     @mock.patch('tethys_services.backends.hs_restclient_helper.hs_r')
     @mock.patch('tethys_services.backends.hs_restclient_helper.refresh_user_token')
     @mock.patch('tethys_services.backends.hs_restclient_helper.logger')
@@ -60,6 +62,7 @@ class HsRestClientHelperTest(unittest.TestCase):
                                              format(mock_social_auth_obj.extra_data['id'],
                                                     mock_backend_instance.auth_server_hostname))
 
+    @override_settings(SOCIAL_AUTH_HYDROSHARE_KEY='', SOCIAL_AUTH_HYDROSHARE_SECRET='')
     @mock.patch('tethys_services.backends.hs_restclient_helper.hs_r')
     @mock.patch('tethys_services.backends.hs_restclient_helper.refresh_user_token')
     @mock.patch('tethys_services.backends.hs_restclient_helper.logger')

@@ -4,3 +4,6 @@
 version: 1.0
 name:
 apps:
+settings:
+  SECRET_KEY: {{ SECRET_KEY }}
+site_content:

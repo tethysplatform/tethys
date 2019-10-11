@@ -39,9 +39,11 @@ class TestBokehHandler(unittest.TestCase):
         ret = bokeh_to_http_request_handler(doc)
         self.assertIsInstance(ret, HttpRequest)
 
+    @mock.patch('tethys_quotas.utilities.log')
+    @mock.patch('tethys_apps.base.workspace.log')
     @mock.patch('tethys_apps.utilities.get_active_app')
     @mock.patch('tethys_apps.base.workspace._get_user_workspace')
-    def test_add_workspaces_to_document(self, _, __):
+    def test_add_workspaces_to_document(self, _, __, ___, ____):
         app = baa.Application()
         doc = app.create_document()
         session_context = MockSessionContext(doc)

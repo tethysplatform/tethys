@@ -2,7 +2,7 @@
 Social Authentication
 *********************
 
-**Last Updated:** September 2019
+**Last Updated:** October 2019
 
 Tethys Portal supports authenticating users with Google, Facebook, LinkedIn and HydroShare via the OAuth 2.0 method. The social authentication and authorization features have been implemented using the `Python Social Auth <http://psa.matiasaguirre.net/>`_ module and the social buttons provided by the `Social Buttons for Bootstrap <http://lipis.github.io/bootstrap-social/>`_. Social login is disabled by default, because enabling it requires registering your tethys portal instance with each provider.
 
@@ -14,7 +14,7 @@ Use the following instructions to setup social login for the providers you desir
 
 .. caution::
 
-    These instructions assume that you have generated a new settings file after upgrading to **Tethys Platform 1.2.0** or later. If this is not the case, please review the :ref:`social_auth_settings` section.
+    Beginning with Tethys Platform 3.0 you must configure the social auth settings in the :file:`portal_config.yml` file. See :ref:`tethys_configuration` for more details on how to create and configure this file. For instructions on how to configure social auth for previous versions of Tethys Platform please refer to the documentation specific to your version.
 
 Google
 ------
@@ -47,25 +47,24 @@ Google
       Some Google APIs are free to use up to a certain quota of hits. Be sure to familiarize yourself with the terms of use for each service.
 
 
-2. Open  ``settings.py`` script located in :file:`${TETHYS_SRC}/tethys_portal/settings.py`
+4. Open  :file:`portal_config.yml` file located in :file:`${TETHYS_HOME}/portal_config.yml`
 
 
   Add the ``social_core.backends.google.GoogleOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
 
   ::
 
-      AUTHENTICATION_BACKENDS = (
-          ...
-          'social_core.backends.google.GoogleOAuth2',
-          'django.contrib.auth.backends.ModelBackend',
-      )
+    AUTHENTICATION_BACKENDS:
+      ...
+      - social_core.backends.google.GoogleOAuth2
 
   Copy the ``Client ID`` and ``Client secret`` into the ``SOCIAL_AUTH_GOOGLE_OAUTH2_KEY`` and ``SOCIAL_AUTH_GOOGLE_AUTH2_SECRET`` settings, respectively:
 
   ::
 
-      SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '...'
-      SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '...'
+    OAUTH_CONFIGS:
+      SOCIAL_AUTH_GOOGLE_OAUTH2_KEY: '...'
+      SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET: '...'
 
 References
 ++++++++++
@@ -111,25 +110,25 @@ Facebook
 
 4. Expand the ``Settings`` menu on the left and select ``Basic``. Note the ``App ID`` and ``App Secret``.
 
-5. Open  ``settings.py`` script located in :file:`${TETHYS_SRC}/tethys_portal/settings.py`
+5. Open  :file:`portal_config.yml` file located in :file:`${TETHYS_HOME}/portal_config.yml`
 
 
   Add the ``social_core.backends.facebook.FacebookOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
 
   ::
 
-      AUTHENTICATION_BACKENDS = (
-          ...
-          'social_core.backends.facebook.FacebookOAuth2',
-          'django.contrib.auth.backends.ModelBackend',
-      )
+      AUTHENTICATION_BACKENDS:
+        ...
+        - social_core.backends.facebook.FacebookOAuth2
 
   Copy the ``App ID`` and ``App Secret`` to the ``SOCIAL_AUTH_FACEBOOK_KEY`` and ``SOCIAL_AUTH_FACEBOOK_SECRET`` settings, respectively:
 
   ::
 
-      SOCIAL_AUTH_FACEBOOK_KEY = '...'
-      SOCIAL_AUTH_FACEBOOK_SECRET = '...'
+    OAUTH_CONFIGS:
+      ...
+      SOCIAL_AUTH_FACEBOOK_KEY: '...'
+      SOCIAL_AUTH_FACEBOOK_SECRET: '...'
 
 References
 ++++++++++
@@ -162,25 +161,25 @@ LinkedIn
         https://www.example.org/oauth2/complete/linkedin-oauth2/
         http://localhost:8000/oauth2/complete/linkedin-oauth2/
 
-5. Open  ``settings.py`` script located in :file:`${TETHYS_SRC}/tethys_portal/settings.py`
+5. Open  the :file:`portal_config.yml` file located in :file:`${TETHYS_HOME}/portal_config.yml`
 
 
   Add the ``social_core.backends.linkedin.LinkedinOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
 
   ::
 
-      AUTHENTICATION_BACKENDS = (
-          ...
-          'social_core.backends.linkedin.LinkedinOAuth2',
-          'django.contrib.auth.backends.ModelBackend',
-      )
+      AUTHENTICATION_BACKENDS:
+        ...
+        - social_core.backends.linkedin.LinkedinOAuth2
 
   Copy the ``Client ID`` and ``Client Secret`` to the ``SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY`` and ``SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET`` settings, respectively:
 
   ::
 
-      SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = '...'
-      SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = '...'
+    OAUTH_CONFIGS:
+      ...
+      - SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY: '...'
+      - SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET: '...'
 
 References
 ++++++++++
@@ -225,24 +224,24 @@ HydroShare
 
   h. Press the "Save" button.
 
-3. Open  ``settings.py`` script located in :file:`${TETHYS_SRC}/tethys_portal/settings.py`
+3. Open  :file:`portal_config.yml` file located in :file:`${TETHYS_HOME}/portal_config.yml`
 
   Add the ``tethys_services.backends.hydroshare.HydroShareOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
 
   ::
 
-      AUTHENTICATION_BACKENDS = (
-          'tethys_services.backends.hydroshare.HydroShareOAuth2',
-          ...
-          'django.contrib.auth.backends.ModelBackend',
-      )
+      AUTHENTICATION_BACKENDS:
+        - tethys_services.backends.hydroshare.HydroShareOAuth2
+        ...
 
   Assign the ``Client id`` and ``Client secret`` to the ``SOCIAL_AUTH_HYDROSHARE_KEY`` and ``SOCIAL_AUTH_HYDROSHARE_SECRET`` settings, respectively:
 
   ::
 
-      SOCIAL_AUTH_HYDROSHARE_KEY = '...'
-      SOCIAL_AUTH_HYDROSHARE_SECRET = '...'
+    OAUTH_CONFIGS:
+      ...
+      - SOCIAL_AUTH_HYDROSHARE_KEY: '...'
+      - SOCIAL_AUTH_HYDROSHARE_SECRET: '...'
 
 4. Work with HydroShare in your app
 
@@ -313,66 +312,33 @@ For more detailed information about using HydroShare social authentication see t
 Social Auth Settings
 ====================
 
-The following code snippet shows the settings in the ``settings.py`` that are relevant to social auth in Tethys Platform:
+
+Beginning with Tethys Platform 3.0.0 the social auth settings are configured in the :file:`portal_config.yml` file. The following is a summary of all the settings that would need to be added for the various supported social auth backends.
+
+.. caution::
+
+  Social authentication requires Tethys Platform 1.2.0 or later. For instructions on how to configure social auth for previous versions of Tethys Platform please refer to the documentation specific to your version.
 
 
 ::
 
-    INSTALLED_APPS = (
-        ...
-        'social_django',
-    )
+  AUTHENTICATION_BACKENDS:
+    - social.backends.google.GoogleOAuth2
+    - social.backends.facebook.FacebookOAuth2
+    - social.backends.linkedin.LinkedinOAuth2
+    - tethys_services.backends.hydroshare.HydroShareOAuth2
 
-    MIDDLEWARE = (
-        ...
-        'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
-    )
+  OAUTH_CONFIGS:
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY: ''
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET: ''
 
-    AUTHENTICATION_BACKENDS = (
-        'tethys_services.backends.hydroshare.HydroShareOAuth2',
-        'social_core.backends.linkedin.LinkedinOAuth2',
-        'social_core.backends.google.GoogleOAuth2',
-        'social_core.backends.facebook.FacebookOAuth2',
-        'django.contrib.auth.backends.ModelBackend',
-        'guardian.backends.ObjectPermissionBackend',
-    )
+    SOCIAL_AUTH_FACEBOOK_KEY: ''
+    SOCIAL_AUTH_FACEBOOK_SECRET: ''
+    SOCIAL_AUTH_FACEBOOK_SCOPE: ['email']
 
-    TEMPLATES = [
-        {
-            ...
-            'OPTIONS': {
-                'context_processors': [
-                    ...
-                    'django.contrib.messages.context_processors.messages',
-                    'social_django.context_processors.backends',
-                    'social_django.context_processors.login_redirect',
-                    ...
-                ],
-                ...
-            }
-        }
-    ]
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY: ''
+    SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET: ''
 
-    # OAuth Settings
-    SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
-    SOCIAL_AUTH_SLUGIFY_USERNAMES = True
-    SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/apps/'
-    SOCIAL_AUTH_LOGIN_ERROR_URL = '/accounts/login/'
+    SOCIAL_AUTH_HYDROSHARE_KEY: ''
+    SOCIAL_AUTH_HYDROSHARE_SECRET: ''
 
-    # OAuth Providers
-    ## Google
-    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
-    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
-
-    ## Facebook
-    SOCIAL_AUTH_FACEBOOK_KEY = ''
-    SOCIAL_AUTH_FACEBOOK_SECRET = ''
-    SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-
-    ## LinkedIn
-    SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY = ''
-    SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET = ''
-
-    ## HydroShare
-    SOCIAL_AUTH_HYDROSHARE_KEY = ''
-    SOCIAL_AUTH_HYDROSHARE_SECRET = ''

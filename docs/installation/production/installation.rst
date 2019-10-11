@@ -11,29 +11,21 @@ This article will provide an overview of how to install Tethys Portal in a produ
 
 Follow the default :doc:`../../installation` instructions to install Tethys Portal with the following considerations
 
-* Make sure to checkout the correct branch. The master branch provides the latest stable release.
+* Make sure to install the correct version.
 * Assign strong passwords to the database users.
-* A new settings file with production specific settings will be generated and will overwrite an existing settings file. If you want to preserve existing settings make sure to rename or move the existing :file:`settings.py` file.
+* You must edit the :file:`portal_config.yml` file to ensure production settings (i.e. ``DEBUG: False``, etc.)
 * Optionally, Follow the :doc:`./distributed` instructions to install Docker and the components of the software suite on separate servers.
-
-For a production installation the installation script should be run with all of the following settings::
-
-    $ bash install_tethys.sh --allowed-hosts <YOUR_SERVERS_HOSTNAME> --db-username <SECURE_DB_USERNAME> --db-password <SECURE_DB_PASSWORD> --db-port <PORT_FOR_YOUR_DB_SERVER> --superuser <PORTAL_ADMIN_USERNAME> --superuser-email <PORTAL_ADMIN_EMAIL> --superuser-pass <PORTAL_ADMIN_PASSWORD> --production
-
-.. note::
-
-    The parameters indicated with angle brackets `<>` should be replaced with appropriate values for your production server.
 
 2. Customize Production Settings
 ================================
 
-A new :file:`settings.py` file will have been generated during the production installation specifically for a production environment. Notwithstanding, the internet is a hostile environment and you need to take every precaution to make sure your Tethys Platform installation is secure. Django provides a `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ that points out critical settings. You should review this checklist carefully before launching your site. Follow the process described below to review and edit settings. Only a few examples are included here, but be sure to review and update any settings that are needed to provide a secure production server environment.
+The internet is a hostile environment and you need to take every precaution to make sure your Tethys Platform installation is secure. There are several settings in the :file:`portal_config.yml` file that should be added for a production environment. Django provides a `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ that points out critical settings. You should review this checklist carefully before launching your site. Follow the process described below to review and edit settings. Only a few examples are included here, but be sure to review and update any settings that are needed to provide a secure production server environment.
 
-Open the :file:`settings.py` module for editing using ``vim`` or another text editor:
+Open the :file:`portal_config.yml` module for editing using ``vim`` or another text editor:
 
 ::
 
-    sudo vim $TETHYS_HOME/src/tethys_portal/settings.py
+    sudo vim $TETHYS_HOME/portal_config.yml
 
 Press :kbd:`i` to start editing and change settings as necessary for your production environment. Some settings you may want to customize include:
 
@@ -49,7 +41,7 @@ Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` 
 
 .. important::
 
-    Review the `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ carefully.
+    Review the `Deployment Checklist <https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/>`_ carefully.
 
 .. _setup_email_capabilities:
 
@@ -92,17 +84,17 @@ Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` 
 
     sudo service postfix restart
 
-Several email settings need to be configured for the forget password functionality to work properly. The following exampled illustrates how to setup email in the :file:`settings.py` file.
+Several email settings need to be configured for the forget password functionality to work properly. The following exampled illustrates how to setup email in the :file:`portal_config.yml` file.
 
   ::
 
-      EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-      EMAIL_HOST = 'localhost'
-      EMAIL_PORT = 25
-      EMAIL_HOST_USER = ''
-      EMAIL_HOST_PASSWORD = ''
-      EMAIL_USE_TLS = False
-      DEFAULT_FROM_EMAIL = 'Example <noreply@exmaple.com>'
+      EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
+      EMAIL_HOST: localhost
+      EMAIL_PORT: 25
+      EMAIL_HOST_USER: ''
+      EMAIL_HOST_PASSWORD: ''
+      EMAIL_USE_TLS: False
+      DEFAULT_FROM_EMAIL: Example <noreply@exmaple.com>
 
 For more information about setting up email capabilities for Tethys Platform, refer to the `Sending email <https://docs.djangoproject.com/en/1.8/topics/email/>`_ documentation.
 

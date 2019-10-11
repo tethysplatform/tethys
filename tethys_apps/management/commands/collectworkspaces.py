@@ -32,9 +32,9 @@ class Command(BaseCommand):
         """
         if not hasattr(settings, 'TETHYS_WORKSPACES_ROOT') or (hasattr(settings, 'TETHYS_WORKSPACES_ROOT')
                                                                and not settings.TETHYS_WORKSPACES_ROOT):
-            print('WARNING: Cannot find the TETHYS_WORKSPACES_ROOT setting in the settings.py file. '
+            print('WARNING: Cannot find the TETHYS_WORKSPACES_ROOT setting. '
                   'Please provide the path to the static directory using the TETHYS_WORKSPACES_ROOT '
-                  'setting and try again.')
+                  'setting in the portal_config.yml file and try again.')
             exit(1)
         # Get optional force arg
         force = options['force']
@@ -46,7 +46,7 @@ class Command(BaseCommand):
         installed_apps = get_installed_tethys_apps()
 
         # Provide feedback to user
-        print('INFO: Moving workspace directories of apps to "{0}" and linking back.'.format(workspaces_root))
+        print(f'INFO: Moving workspace directories of apps to "{workspaces_root}" and linking back.')
 
         for app, path in installed_apps.items():
             # Check for both variants of the static directory (public and static)
@@ -55,7 +55,7 @@ class Command(BaseCommand):
 
             # Only perform if workspaces_path is a directory
             if not os.path.isdir(app_ws_path):
-                print('WARNING: The workspace_path for app "{}" is not a directory. Skipping...'.format(app))
+                print(f'WARNING: The workspace_path for app "{app}" is not a directory. Skipping...')
                 continue
 
             if not os.path.islink(app_ws_path):
@@ -74,10 +74,9 @@ class Command(BaseCommand):
                         # Move the directory to workspace root path
                         shutil.move(app_ws_path, tethys_ws_root_path)
                     else:
-                        print('WARNING: Workspace directory for app "{}" already exists in the TETHYS_WORKSPACES_ROOT '
-                              'directory. A symbolic link is being created to the existing directory. '
-                              'To force overwrite '
-                              'the existing directory, re-run the command with the "-f" argument.'.format(app))
+                        print(f'WARNING: Workspace directory for app "{app}" already exists in the TETHYS_WORKSPACES_'
+                              f'ROOT directory. A symbolic link is being created to the existing directory. To force '
+                              f'overwrite the existing directory, re-run the command with the "-f" argument.')
                         shutil.rmtree(app_ws_path, ignore_errors=True)
 
                 # Create appropriate symbolic link

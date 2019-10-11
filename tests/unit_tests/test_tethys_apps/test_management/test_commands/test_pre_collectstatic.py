@@ -26,8 +26,9 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
 
         print_args = mock_print.call_args_list
 
-        msg_warning = 'WARNING: Cannot find the STATIC_ROOT setting in the settings.py file. Please provide the ' \
-                      'path to the static directory using the STATIC_ROOT setting and try again.'
+        msg_warning = 'WARNING: Cannot find the STATIC_ROOT setting. Please provide the ' \
+                      'path to the static directory using the STATIC_ROOT setting in the portal_config.yml ' \
+                      'file and try again.'
         self.assertEqual(msg_warning, print_args[0][0][0])
 
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')

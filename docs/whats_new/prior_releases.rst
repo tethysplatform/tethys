@@ -245,8 +245,6 @@ Security
 * When user closes browser, they are automatically logged out now.
 * Expiration times can be configured in settings.
 
-See: :doc:`../installation/platform_settings`
-
 HydroShare OAuth Backend and Helper Function
 --------------------------------------------
 
