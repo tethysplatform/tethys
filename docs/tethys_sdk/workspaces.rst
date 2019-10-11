@@ -45,7 +45,7 @@ The Workspaces API includes a command, ``collectworkspaces``, for moving all wor
 Setting
 -------
 
-To enable centralized workspaces create a directory for the workspaces and specify its path in the :file:`portal.yml` file using the ``TETHYS_WORKSPACES_ROOT`` setting.
+To enable centralized workspaces create a directory for the workspaces and specify its path in the :file:`portal_config.yml` file using the ``TETHYS_WORKSPACES_ROOT`` setting.
 
 ::
 

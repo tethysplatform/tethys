@@ -26,8 +26,8 @@ def add_settings_parser(subparsers):
     settings_parser.add_argument(
         '-s', '--set',
         dest='set_kwargs',
-        help='Key Value pairs to add to the settings in the portal.yml file. Hierarchical keys can be specified with '
-             'dot notation. (e.g. DATABASES.default.NAME)',
+        help='Key Value pairs to add to the settings in the portal_config.yml file. Hierarchical keys can be '
+             'specified with dot notation. (e.g. DATABASES.default.NAME)',
         nargs=2,
         action='append',
     )
@@ -35,14 +35,14 @@ def add_settings_parser(subparsers):
         '-g', '--get',
         dest='get_key',
         help='Retrieve the resolved value of a key from settings if it exists. Otherwise, attempt to return the value '
-             'of the key from the portal.yml',
+             'of the key from the portal_config.yml',
         nargs='?',
         const='all',
     )
     settings_parser.add_argument(
         '-r', '--rm', '--remove',
         dest='rm_key',
-        help='Removes a key from the portal.yml file if it exists. Hierarchical keys can be specified with '
+        help='Removes a key from the portal_config.yml file if it exists. Hierarchical keys can be specified with '
              'dot notation. (e.g. DATABASES.default.NAME)',
         nargs=1,
     )
@@ -52,14 +52,14 @@ def add_settings_parser(subparsers):
 
 
 def read_settings():
-    portal_yaml_file = TETHYS_HOME / 'portal.yml'
+    portal_yaml_file = TETHYS_HOME / 'portal_config.yml'
     with portal_yaml_file.open() as portal_yaml:
         tethys_settings = yaml.safe_load(portal_yaml).get('settings', {}) or {}
     return tethys_settings
 
 
 def write_settings(tethys_settings):
-    portal_yaml_file = TETHYS_HOME / 'portal.yml'
+    portal_yaml_file = TETHYS_HOME / 'portal_config.yml'
     with portal_yaml_file.open('r') as portal_yaml:
         portal_settings = yaml.safe_load(portal_yaml) or {}
     portal_settings['settings'] = tethys_settings

@@ -34,7 +34,7 @@ class Command(BaseCommand):
                                                                and not settings.TETHYS_WORKSPACES_ROOT):
             print('WARNING: Cannot find the TETHYS_WORKSPACES_ROOT setting. '
                   'Please provide the path to the static directory using the TETHYS_WORKSPACES_ROOT '
-                  'setting in the portal.yml file and try again.')
+                  'setting in the portal_config.yml file and try again.')
             exit(1)
         # Get optional force arg
         force = options['force']

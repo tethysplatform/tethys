@@ -31,7 +31,7 @@ In 2.1 ``TETHYS_HOME`` by default was located at :file:`~/tethys/`. In 3.0 ``TET
 Settings
 --------
 
-In 2.1 custom settings were specified directly in the :file:`settings.py` file. Now settings must be configured in the :file:`portal.yml` file which is generated in ``TETHYS_HOME``
+In 2.1 custom settings were specified directly in the :file:`settings.py` file. Now settings must be configured in the :file:`portal_config.yml` file which is generated in ``TETHYS_HOME``
 
 
 
@@ -52,12 +52,12 @@ Upgrade Steps
 
     mv ~/tethys ~/.tethys
 
-4. Generate a :file:`portal.yml` file::
+4. Generate a :file:`portal_config.yml` file::
 
-    tethys gen portal
+    tethys gen portal_config
 
 
-5.  Port any custom settings from your old :file:`settings.py` to the new :file:`portal.yml`:
+5.  Port any custom settings from your old :file:`settings.py` to the new :file:`portal_config.yml`:
 
     Common settings that need to be copied include:
       * DEBUG
@@ -68,11 +68,11 @@ Upgrade Steps
       * SOCIAL_OAUTH_XXXX_KEY, SOCIAL_OAUTH_XXXX_SECRET
       * BYPASS_TETHYS_HOME_PAGE
 
-    Refer to :ref:`tethys_configuration` for more details on specifying settings in the :file:`portal.yml` file.
+    Refer to :ref:`tethys_configuration` for more details on specifying settings in the :file:`portal_config.yml` file.
 
 6.  Migrate the database:
 
-    If you have a locally installed database then you will need to add a ``DIR`` setting in the ``DATABASES`` setting of the :file:`portal.yml` file:
+    If you have a locally installed database then you will need to add a ``DIR`` setting in the ``DATABASES`` setting of the :file:`portal_config.yml` file:
       ::
 
         DATABASES:

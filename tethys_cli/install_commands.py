@@ -31,7 +31,8 @@ def add_install_parser(subparsers):
     application_install_parser.add_argument('-s', '--services-file', type=str,
                                             help='The path to the Services.yml config file')
     application_install_parser.add_argument('--force-services',
-                                            help='Force Services.yml file over portal.yml file', action='store_true')
+                                            help='Force Services.yml file over portal_config.yml file',
+                                            action='store_true')
     application_install_parser.add_argument('-q', '--quiet',
                                             help='Skips interactive mode.',
                                             action='store_true')
@@ -178,7 +179,7 @@ def get_setting_type(setting):
 
 def run_interactive_services(app_name):
     write_msg('Running Interactive Service Mode. '
-              'Any configuration options in services.yml or portal.yml will be ignored...')
+              'Any configuration options in services.yml or portal_config.yml will be ignored...')
     write_msg('Hit return at any time to skip a step.')
 
     app_settings = get_app_settings(app_name)
@@ -343,7 +344,7 @@ def configure_services_from_file(services, app_name):
 
 def run_portal_install(app_name):
 
-    file_path = Path(get_tethys_home_dir()) / 'portal.yml'
+    file_path = Path(get_tethys_home_dir()) / 'portal_config.yml'
 
     if not file_path.exists():
         write_msg("No Portal Services file found. Searching for local app level services.yml...")

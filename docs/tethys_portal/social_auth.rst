@@ -14,7 +14,7 @@ Use the following instructions to setup social login for the providers you desir
 
 .. caution::
 
-    Beginning with Tethys Platform 3.0 you must configure the social auth settings in the :file:`portal.yml` file. See :ref:`tethys_configuration` for more details on how to create and configure this file. For instructions on how to configure social auth for previous versions of Tethys Platform please refer to the documentation specific to your version.
+    Beginning with Tethys Platform 3.0 you must configure the social auth settings in the :file:`portal_config.yml` file. See :ref:`tethys_configuration` for more details on how to create and configure this file. For instructions on how to configure social auth for previous versions of Tethys Platform please refer to the documentation specific to your version.
 
 Google
 ------
@@ -47,7 +47,7 @@ Google
       Some Google APIs are free to use up to a certain quota of hits. Be sure to familiarize yourself with the terms of use for each service.
 
 
-4. Open  :file:`portal.yml` file located in :file:`${TETHYS_HOME}/portal.yml`
+4. Open  :file:`portal_config.yml` file located in :file:`${TETHYS_HOME}/portal_config.yml`
 
 
   Add the ``social_core.backends.google.GoogleOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
@@ -110,7 +110,7 @@ Facebook
 
 4. Expand the ``Settings`` menu on the left and select ``Basic``. Note the ``App ID`` and ``App Secret``.
 
-5. Open  :file:`portal.yml` file located in :file:`${TETHYS_HOME}/portal.yml`
+5. Open  :file:`portal_config.yml` file located in :file:`${TETHYS_HOME}/portal_config.yml`
 
 
   Add the ``social_core.backends.facebook.FacebookOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
@@ -161,7 +161,7 @@ LinkedIn
         https://www.example.org/oauth2/complete/linkedin-oauth2/
         http://localhost:8000/oauth2/complete/linkedin-oauth2/
 
-5. Open  the :file:`portal.yml` file located in :file:`${TETHYS_HOME}/portal.yml`
+5. Open  the :file:`portal_config.yml` file located in :file:`${TETHYS_HOME}/portal_config.yml`
 
 
   Add the ``social_core.backends.linkedin.LinkedinOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
@@ -224,7 +224,7 @@ HydroShare
 
   h. Press the "Save" button.
 
-3. Open  :file:`portal.yml` file located in :file:`${TETHYS_HOME}/portal.yml`
+3. Open  :file:`portal_config.yml` file located in :file:`${TETHYS_HOME}/portal_config.yml`
 
   Add the ``tethys_services.backends.hydroshare.HydroShareOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
 
@@ -313,7 +313,7 @@ Social Auth Settings
 ====================
 
 
-Beginning with Tethys Platform 3.0.0 the social auth settings are configured in the :file:`portal.yml` file. The following is a summary of all the settings that would need to be added for the various supported social auth backends.
+Beginning with Tethys Platform 3.0.0 the social auth settings are configured in the :file:`portal_config.yml` file. The following is a summary of all the settings that would need to be added for the various supported social auth backends.
 
 .. caution::
 

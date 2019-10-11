@@ -40,7 +40,7 @@ To create a custom quota you will have to create a new quota handler class. Your
 
     The abstract method, ``get_current_use``, which needs to be overridden in any custom quota handler class, is essential as it holds the logic for what the quota is measuring (time, storage, etc.).
 
-To load a custom quota, append the classpath to the ``RESOURCE_QUOTA_HANDLERS`` section of the :file:`portal.yml` file (see snippet of :file:`portal.yml` below).
+To load a custom quota, append the classpath to the ``RESOURCE_QUOTA_HANDLERS`` section of the :file:`portal_config.yml` file (see snippet of :file:`portal_config.yml` below).
 
 ::
 
@@ -48,11 +48,11 @@ To load a custom quota, append the classpath to the ``RESOURCE_QUOTA_HANDLERS`` 
     RESOURCE_QUOTA_HANDLERS:
       - tethys_quotas.handlers.workspace.WorkspaceQuotaHandler
 
-**Figure 1.** :file:`portal.yml` file showing the ``RESOURCE_QUOTA_HANDLERS`` section.
+**Figure 1.** :file:`portal_config.yml` file showing the ``RESOURCE_QUOTA_HANDLERS`` section.
 
 .. note::
 
-    Delete or comment out classpath strings in the :file:`portal.yml` file to remove certain quota types from the portal.
+    Delete or comment out classpath strings in the :file:`portal_config.yml` file to remove certain quota types from the portal.
 
 Enforcing Quotas
 ================

@@ -831,7 +831,7 @@ class TestInstallCommands(TestCase):
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
         self.assertEqual('Running Interactive Service Mode. Any configuration options in services.yml or '
-                         'portal.yml will be ignored...', po_call_args[0][0][0])
+                         'portal_config.yml will be ignored...', po_call_args[0][0][0])
         self.assertIn("Hit return at any time to skip a step.", po_call_args[1][0][0])
         self.assertIn("Configuring mock_ss", po_call_args[2][0][0])
         self.assertIn("Type: MagicMock", po_call_args[3][0][0])

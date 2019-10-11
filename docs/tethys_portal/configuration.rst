@@ -4,15 +4,15 @@
 Tethys Portal Configuration
 ***************************
 
-Beginning in Tethys Platform 3.0 the Tethys Portal is configured via a :file:`portal.yml` file in the :file:`$TETHYS_HOME/` directory. This instructions outline the various settings that can be added to the :file:`portal.yml` file.
+Beginning in Tethys Platform 3.0 the Tethys Portal is configured via a :file:`portal_config.yml` file in the :file:`$TETHYS_HOME/` directory. This instructions outline the various settings that can be added to the :file:`portal_config.yml` file.
 
-Once you have installed Tethys you can generate a new :file:`portal.yml` file using the ``gen`` command. (See :ref:`tethys_gen_cmd` for more information).
+Once you have installed Tethys you can generate a new :file:`portal_config.yml` file using the ``gen`` command. (See :ref:`tethys_gen_cmd` for more information).
 
 ::
 
-  tethys gen portal
+  tethys gen portal_config
 
-This will create a new :file:`portal.yml` file in your ``TETHYS_HOME`` directory that looks like this:
+This will create a new :file:`portal_config.yml` file in your ``TETHYS_HOME`` directory that looks like this:
 
 .. code-block:: yaml
 
@@ -32,14 +32,14 @@ You can now customize this file either by manually editing it, or by using the :
 
 .. caution::
 
-  The :ref:`tethys_settings_cmd` will rewrite the :file:`portal.yml` file each time it is run and will not preserve comments.
+  The :ref:`tethys_settings_cmd` will rewrite the :file:`portal_config.yml` file each time it is run and will not preserve comments.
 
 Portal Yaml Keys
 ----------------
 
-The following is a list of keys that can be added to the :file:`portal.yml` file:
+The following is a list of keys that can be added to the :file:`portal_config.yml` file:
 
-* ``version``: The version of the :file:`portal.yml` file schema
+* ``version``: The version of the :file:`portal_config.yml` file schema
 * ``name``:
 * ``apps``:
 * ``settings``:
@@ -206,7 +206,7 @@ The following is a list of keys that can be added to the :file:`portal.yml` file
 
 
 
-Sample portal.yml file:
+Sample portal_config.yml file:
 
 .. code-block:: yaml
 

@@ -13,19 +13,19 @@ Follow the default :doc:`../../installation` instructions to install Tethys Port
 
 * Make sure to install the correct version.
 * Assign strong passwords to the database users.
-* You must edit the :file:`portal.yml` file to ensure production settings (i.e. ``DEBUG: False``, etc.)
+* You must edit the :file:`portal_config.yml` file to ensure production settings (i.e. ``DEBUG: False``, etc.)
 * Optionally, Follow the :doc:`./distributed` instructions to install Docker and the components of the software suite on separate servers.
 
 2. Customize Production Settings
 ================================
 
-The internet is a hostile environment and you need to take every precaution to make sure your Tethys Platform installation is secure. There are several settings in the :file:`portal.yml` file that should be added for a production environment. Django provides a `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ that points out critical settings. You should review this checklist carefully before launching your site. Follow the process described below to review and edit settings. Only a few examples are included here, but be sure to review and update any settings that are needed to provide a secure production server environment.
+The internet is a hostile environment and you need to take every precaution to make sure your Tethys Platform installation is secure. There are several settings in the :file:`portal_config.yml` file that should be added for a production environment. Django provides a `Deployment Checklist <https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/>`_ that points out critical settings. You should review this checklist carefully before launching your site. Follow the process described below to review and edit settings. Only a few examples are included here, but be sure to review and update any settings that are needed to provide a secure production server environment.
 
-Open the :file:`portal.yml` module for editing using ``vim`` or another text editor:
+Open the :file:`portal_config.yml` module for editing using ``vim`` or another text editor:
 
 ::
 
-    sudo vim $TETHYS_HOME/portal.yml
+    sudo vim $TETHYS_HOME/portal_config.yml
 
 Press :kbd:`i` to start editing and change settings as necessary for your production environment. Some settings you may want to customize include:
 
@@ -84,7 +84,7 @@ Press :kbd:`ESC` to exit ``INSERT`` mode and then press ``:x`` and :kbd:`ENTER` 
 
     sudo service postfix restart
 
-Several email settings need to be configured for the forget password functionality to work properly. The following exampled illustrates how to setup email in the :file:`portal.yml` file.
+Several email settings need to be configured for the forget password functionality to work properly. The following exampled illustrates how to setup email in the :file:`portal_config.yml` file.
 
   ::
 

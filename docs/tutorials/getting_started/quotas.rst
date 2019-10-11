@@ -306,7 +306,7 @@ a. Creating a custom quota is pretty simple. Create a new file called ``dam_quot
 
     See :ref:`tethys_quotas_rqh` for an explanation of the different parameters.
 
-b. Now go into the portal's :file:`portal.yml` file and add the dot-path of the handler class you just created in the ``RESOURCE_QUOTA_HANDLERS`` array.
+b. Now go into the portal's :file:`portal_config.yml` file and add the dot-path of the handler class you just created in the ``RESOURCE_QUOTA_HANDLERS`` array.
 
 ::
 

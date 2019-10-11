@@ -104,14 +104,14 @@ Each option is also descriped here:
               * `r` - Clone Tethys repository (the `--tethys-src` option is required if you omit this flag).
               * `c` - Checkout the branch specified by the option `--branch` (specifying the flag `r` will also trigger this flag)
               * `e` - Create Conda environment
-              * `s` - Create :file:`portal.yml` file and configure settings
+              * `s` - Create :file:`portal_config.yml` file and configure settings
               * `d` - Create a local database server
               * `i` - Initialize database server with the Tethys database (specifying the flag `d` will also trigger this flag)
               * `u` - Add a Tethys Portal Super User to the user database (specifying the flag `d` will also trigger this flag)
               * `a` - Create activation/deactivation scripts for the Tethys Conda environment
               * `t` - Create the `t` alias to activate the Tethys Conda environment
 
-          For example, if you already have Miniconda installed and you have the repository cloned and have generated a :file:`portal.yml` file, but you want to use the install script to:
+          For example, if you already have Miniconda installed and you have the repository cloned and have generated a :file:`portal_config.yml` file, but you want to use the install script to:
               * create a conda environment,
               * setup a local database server,
               * create the conda activation/deactivation scripts, and
@@ -246,4 +246,4 @@ If you would like to test the Docker containers, see :doc:`../supplementary/dock
 3. Customize Settings (OPTIONAL)
 --------------------------------
 
-The Tethys installation script created a portal configuration file called :file:`portal.yml` in the directory :file:`$TETHYS_HOME/`. The installation script has defined the most essential settings that will allow the Tethys development server to function based on the options that were passed to the script or based on the default values of those options. If you would like to further customize the settings then open the :file:`portal.yml` file and make any desired changes. Refer to the :ref:`tethys_configuration` documentation for a description of each of the settings.
+The Tethys installation script created a portal configuration file called :file:`portal_config.yml` in the directory :file:`$TETHYS_HOME/`. The installation script has defined the most essential settings that will allow the Tethys development server to function based on the options that were passed to the script or based on the default values of those options. If you would like to further customize the settings then open the :file:`portal_config.yml` file and make any desired changes. Refer to the :ref:`tethys_configuration` documentation for a description of each of the settings.

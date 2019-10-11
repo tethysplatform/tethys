@@ -145,7 +145,7 @@ def add_site_parser(subparsers):
                                   'Default is "Start Using Tethys!".')
     site_parser.add_argument('--restore-defaults', dest='restore_defaults', action='store_true',
                              help='Restores the sites default values.')
-    site_parser.add_argument('-f', '--from-file', type=str, help='Load site content from portal.yml file.')
+    site_parser.add_argument('-f', '--from-file', type=str, help='Load site content from portal_config.yml file.')
 
     site_parser.set_defaults(func=gen_site_content, restore_defaults=False, from_file=True)
 
@@ -167,7 +167,7 @@ def gen_site_content(args):
         setting_defaults(home_category)
 
     if args.from_file:
-        portal_yaml = Path(get_tethys_home_dir()) / 'portal.yml'
+        portal_yaml = Path(get_tethys_home_dir()) / 'portal_config.yml'
         if portal_yaml.exists():
             with portal_yaml.open() as f:
                 site_content_settings = yaml.safe_load(f).get('site_content', {})
@@ -180,14 +180,14 @@ def gen_site_content(args):
             valid_inputs = ('y', 'n', 'yes', 'no')
             no_inputs = ('n', 'no')
 
-            generate_input = input('Would you like to generate a template portal.yml file that you can then'
+            generate_input = input('Would you like to generate a template portal_config.yml file that you can then'
                                    'customize? (y/n): ')
 
             while generate_input not in valid_inputs:
                 generate_input = input('Invalid option. Try again. (y/n): ').lower()
 
             if generate_input in no_inputs:
-                write_msg('Generation of portal.yml file cancelled. Please generate one manually or provide '
+                write_msg('Generation of portal_config.yml file cancelled. Please generate one manually or provide '
                           'specific site content arguments.')
             else:
                 call(['tethys', 'gen', 'portal'])

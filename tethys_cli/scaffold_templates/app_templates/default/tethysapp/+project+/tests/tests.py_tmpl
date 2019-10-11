@@ -18,7 +18,7 @@ from tethys_sdk.testing import TethysTestCase
 To run any tests:
     1. Open a terminal
     2. Enter command ". /usr/lib/tethys/bin/activate" to activate the Tethys python environment
-    3. In portal.yml make sure that the default database user is set to tethys_super or is a super user of the database
+    3. In portal_config.yml make sure that the default database user is set to tethys_super or is a super user of the database
         DATABASES:
             default:
                 ENGINE: django.db.backends.postgresql_psycopg2

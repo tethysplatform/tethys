@@ -53,7 +53,7 @@ class CLISiteCommandsTest(unittest.TestCase):
     @mock.patch('tethys_cli.site_commands.timezone.now')
     @mock.patch('tethys_cli.site_commands.load_apps')
     def test_gen_site_content_with_yaml(self, mock_load_apps, mock_now, mock_filter, mock_path):
-        file_path = os.path.join(self.root_app_path, 'test-portal.yml')
+        file_path = os.path.join(self.root_app_path, 'test-portal_config.yml')
         mock_file_path = mock.MagicMock()
         mock_path.return_value = mock_file_path
         mock_file_path.__truediv__().exists.return_value = True
@@ -83,7 +83,7 @@ class CLISiteCommandsTest(unittest.TestCase):
 
         gen_site_content(mock_args)
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertIn('Generation of portal.yml file cancelled', po_call_args[0][0][0])
+        self.assertIn('Generation of portal_config.yml file cancelled', po_call_args[0][0][0])
 
         gen_site_content(mock_args)
         self.assertIn('portal', mock_call.call_args_list[0][0][0])

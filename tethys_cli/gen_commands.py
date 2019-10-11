@@ -27,7 +27,7 @@ GEN_APACHE_OPTION = 'apache'
 GEN_ASGI_SERVICE_OPTION = 'asgi_service'
 GEN_NGINX_OPTION = 'nginx'
 GEN_NGINX_SERVICE_OPTION = 'nginx_service'
-GEN_PORTAL_OPTION = 'portal'
+GEN_PORTAL_OPTION = 'portal_config'
 GEN_SERVICES_OPTION = 'services'
 GEN_INSTALL_OPTION = 'install'
 GEN_META_YAML_OPTION = 'metayaml'
@@ -37,7 +37,7 @@ FILE_NAMES = {
     GEN_ASGI_SERVICE_OPTION: 'asgi_supervisord.conf',
     GEN_NGINX_OPTION: 'tethys_nginx.conf',
     GEN_NGINX_SERVICE_OPTION: 'nginx_supervisord.conf',
-    GEN_PORTAL_OPTION: 'portal.yml',
+    GEN_PORTAL_OPTION: 'portal_config.yml',
     GEN_SERVICES_OPTION: 'services.yml',
     GEN_INSTALL_OPTION: 'install.yml',
     GEN_META_YAML_OPTION: 'meta.yaml'
@@ -156,7 +156,7 @@ def gen_nginx_service(args):
 
 
 def gen_portal_yaml(args):
-    write_info('Please review the generated portal.yml file and fill in the appropriate information.')
+    write_info('Please review the generated portal_config.yml file and fill in the appropriate information.')
 
     context = {'SECRET_KEY': generate_secret_key()}
     return context
@@ -241,7 +241,7 @@ def gen_meta_yaml(args):
 
 def gen_install(args):
     write_info('Please review the generated install.yml file and fill in the appropriate information '
-               '(app name is requited).')
+               '(app name is required).')
 
     context = {}
     return context

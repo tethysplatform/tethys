@@ -32,7 +32,7 @@ OPTIONS:\n
 \t        \t\t r - Clone Tethys repository\n
 \t        \t\t c - Checkout the branch specified by the option '--branch' (specifying the flag 'r' will also trigger this flag)\n
 \t        \t\t e - Create Conda environment\n
-\t        \t\t s - Create 'portal.yml' file and configure settings\n
+\t        \t\t s - Create 'portal_config.yml' file and configure settings\n
 \t        \t\t d - Create a local database server\n
 \t        \t\t a - Create activation/deactivation scripts for the Tethys Conda environment\n
 \t        \t\t t - Create the 't' alias t\n\n
@@ -362,7 +362,7 @@ then
 
     if [ -n "${CREATE_SETTINGS}" ]
     then
-        tethys gen portal
+        tethys gen portal_config
         tethys settings \
           --set ALLOWED_HOSTS "${ALLOWED_HOST}" \
           --set DATABASES.default.USER ${TETHYS_DB_USERNAME} \

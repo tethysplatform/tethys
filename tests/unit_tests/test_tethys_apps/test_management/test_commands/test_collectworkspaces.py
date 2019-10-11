@@ -36,7 +36,7 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
 
         check_msg = 'WARNING: Cannot find the TETHYS_WORKSPACES_ROOT setting. ' \
                     'Please provide the path to the static directory using the TETHYS_WORKSPACES_ROOT ' \
-                    'setting in the portal.yml file and try again.'
+                    'setting in the portal_config.yml file and try again.'
 
         mock_print.assert_called_with(check_msg)
 

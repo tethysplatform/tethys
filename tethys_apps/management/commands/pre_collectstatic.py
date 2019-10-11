@@ -28,7 +28,7 @@ class Command(BaseCommand):
         """  # noqa: E501
         if not settings.STATIC_ROOT:
             print('WARNING: Cannot find the STATIC_ROOT setting. Please provide the path to the static directory using '
-                  'the STATIC_ROOT setting in the portal.yml file and try again.')
+                  'the STATIC_ROOT setting in the portal_config.yml file and try again.')
             exit(1)
 
         # Read settings
