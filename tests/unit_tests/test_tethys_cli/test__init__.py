@@ -118,124 +118,21 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('--overwrite', mock_stdout.getvalue())
 
     @mock.patch('tethys_cli.gen_commands.generate_command')
-    def test_generate_subcommand_settings_defaults(self, mock_gen_command):
-        testargs = ['tethys', 'gen', 'settings']
-
-        with mock.patch.object(sys, 'argv', testargs):
-            tethys_command()
-
-        mock_gen_command.assert_called()
-        call_args = mock_gen_command.call_args_list
-        self.assertEqual(None, call_args[0][0][0].allowed_hosts)
-        self.assertEqual('75M', call_args[0][0][0].client_max_body_size)
-        self.assertEqual('pass', call_args[0][0][0].db_password)
-        self.assertEqual('tethys_platform', call_args[0][0][0].db_name)
-        self.assertEqual('127.0.0.1', call_args[0][0][0].db_host)
-        self.assertEqual(5436, call_args[0][0][0].db_port)
-        self.assertEqual('tethys_default', call_args[0][0][0].db_username)
-        self.assertEqual(None, call_args[0][0][0].directory)
-        self.assertEqual(4, call_args[0][0][0].asgi_processes)
-        self.assertEqual('psql', call_args[0][0][0].db_dir)
-        self.assertEqual(8000, call_args[0][0][0].tethys_port)
-        self.assertEqual(840, call_args[0][0][0].session_warning)
-        self.assertEqual(900, call_args[0][0][0].session_expire)
-        self.assertEqual(None, call_args[0][0][0].add_apps)
-        self.assertEqual('', call_args[0][0][0].channel_layer)
-        self.assertEqual(None, call_args[0][0][0].recaptcha_private_key)
-        self.assertEqual(None, call_args[0][0][0].recaptcha_public_key)
-        self.assertFalse(call_args[0][0][0].open_portal)
-        self.assertFalse(call_args[0][0][0].open_signup)
-        self.assertFalse(call_args[0][0][0].bypass_portal_home)
-        self.assertFalse(call_args[0][0][0].session_persist)
-        self.assertFalse(call_args[0][0][0].captcha)
-        self.assertFalse(call_args[0][0][0].overwrite)
-        self.assertFalse(call_args[0][0][0].production)
-        self.assertEqual('settings', call_args[0][0][0].type)
-
-    @mock.patch('tethys_cli.gen_commands.generate_command')
-    def test_generate_subcommand_settings_directory(self, mock_gen_command):
-        testargs = ['tethys', 'gen', 'settings', '--directory', '/tmp/foo/bar']
-
-        with mock.patch.object(sys, 'argv', testargs):
-            tethys_command()
-
-        mock_gen_command.assert_called()
-        call_args = mock_gen_command.call_args_list
-        self.assertEqual(None, call_args[0][0][0].allowed_hosts)
-        self.assertEqual('75M', call_args[0][0][0].client_max_body_size)
-        self.assertEqual('pass', call_args[0][0][0].db_password)
-        self.assertEqual('tethys_platform', call_args[0][0][0].db_name)
-        self.assertEqual('127.0.0.1', call_args[0][0][0].db_host)
-        self.assertEqual(5436, call_args[0][0][0].db_port)
-        self.assertEqual('tethys_default', call_args[0][0][0].db_username)
-        self.assertEqual(4, call_args[0][0][0].asgi_processes)
-        self.assertEqual('psql', call_args[0][0][0].db_dir)
-        self.assertEqual(8000, call_args[0][0][0].tethys_port)
-        self.assertEqual(840, call_args[0][0][0].session_warning)
-        self.assertEqual(900, call_args[0][0][0].session_expire)
-        self.assertEqual(None, call_args[0][0][0].add_apps)
-        self.assertEqual('', call_args[0][0][0].channel_layer)
-        self.assertEqual(None, call_args[0][0][0].recaptcha_private_key)
-        self.assertEqual(None, call_args[0][0][0].recaptcha_public_key)
-        self.assertFalse(call_args[0][0][0].open_portal)
-        self.assertFalse(call_args[0][0][0].open_signup)
-        self.assertFalse(call_args[0][0][0].bypass_portal_home)
-        self.assertFalse(call_args[0][0][0].session_persist)
-        self.assertFalse(call_args[0][0][0].captcha)
-        self.assertFalse(call_args[0][0][0].overwrite)
-        self.assertFalse(call_args[0][0][0].production)
-        self.assertEqual('settings', call_args[0][0][0].type)
-
-    @mock.patch('tethys_cli.gen_commands.generate_command')
     def test_generate_subcommand_nginx_settings_verbose_options(self, mock_gen_command):
-        testargs = ['tethys', 'gen', 'nginx', '-d', '/tmp/foo/bar', '--db-name', 'tethys_db', '--db-host', '127.0.17.1',
-                    '--allowed-hosts', 'localhost', '--client-max-body-size', '123M', '--asgi-processes', '4',
-                    '--db-username', 'foo_user', '--db-password', 'foo_pass', '--db-port', '5555',
-                    '--production', '--overwrite', '--open-portal', '--open-signup', '--tethys-port', '8080',
-                    '--add-apps', 'django_registration', '--session-persist', '--session-warning', '1500',
-                    '--session-expire', '1800', '--bypass-portal-home',
-                    '--add-quota-handlers', 'tethysapp.inventory.quota_handler.QuotaHandler',
-                    '--static-root', '/new/static', '--workspaces-root', '/new/workspace',
-                    '--django-analytical', 'KEY:VALUE', '--add-backends', 'hydroshare', '--add-backends', 'hydroshare',
-                    '--oauth-options', 'KEY1:VALUE1 KEY2:VALUE2',
-                    '--channel-layer', 'channels_redis.core.RedisChannelLayer', '--captcha',
-                    '--recaptcha-private-key', '123456', '--recaptcha-public-key', '123456']
+        testargs = ['tethys', 'gen', 'nginx', '-d', '/tmp/foo/bar', '--client-max-body-size', '123M',
+                    '--asgi-processes', '4', '--overwrite', '--tethys-port', '8080']
 
         with mock.patch.object(sys, 'argv', testargs):
             tethys_command()
 
         mock_gen_command.assert_called()
         call_args = mock_gen_command.call_args_list
-        self.assertEqual(['localhost'], call_args[0][0][0].allowed_hosts)
         self.assertEqual('123M', call_args[0][0][0].client_max_body_size)
-        self.assertEqual('foo_pass', call_args[0][0][0].db_password)
-        self.assertEqual('tethys_db', call_args[0][0][0].db_name)
-        self.assertEqual('127.0.17.1', call_args[0][0][0].db_host)
-        self.assertEqual('5555', call_args[0][0][0].db_port)
-        self.assertEqual('foo_user', call_args[0][0][0].db_username)
         self.assertEqual('/tmp/foo/bar', call_args[0][0][0].directory)
         self.assertTrue(call_args[0][0][0].overwrite)
-        self.assertTrue(call_args[0][0][0].production)
         self.assertEqual('nginx', call_args[0][0][0].type)
         self.assertEqual('4', call_args[0][0][0].asgi_processes)
-        self.assertTrue(call_args[0][0][0].open_portal)
-        self.assertTrue(call_args[0][0][0].open_signup)
         self.assertEqual('8080', call_args[0][0][0].tethys_port)
-        self.assertEqual(['django_registration'], call_args[0][0][0].add_apps)
-        self.assertTrue(call_args[0][0][0].session_persist)
-        self.assertEqual('1500', call_args[0][0][0].session_warning)
-        self.assertEqual('1800', call_args[0][0][0].session_expire)
-        self.assertEqual('/new/static', call_args[0][0][0].static_root)
-        self.assertEqual('/new/workspace', call_args[0][0][0].workspaces_root)
-        self.assertEqual(['tethysapp.inventory.quota_handler.QuotaHandler'], call_args[0][0][0].add_quota_handlers)
-        self.assertTrue(call_args[0][0][0].bypass_portal_home)
-        self.assertEqual(['KEY:VALUE'], call_args[0][0][0].django_analytical)
-        self.assertEqual(['hydroshare'], call_args[0][0][0].add_backends)
-        self.assertEqual(['KEY1:VALUE1 KEY2:VALUE2'], call_args[0][0][0].oauth_options)
-        self.assertEqual('channels_redis.core.RedisChannelLayer', call_args[0][0][0].channel_layer)
-        self.assertTrue(call_args[0][0][0].captcha)
-        self.assertEqual('123456', call_args[0][0][0].recaptcha_private_key)
-        self.assertEqual('123456', call_args[0][0][0].recaptcha_public_key)
 
     @mock.patch('sys.stdout', new_callable=StringIO)
     @mock.patch('tethys_cli.argparse._sys.exit')
@@ -252,34 +149,10 @@ class TethysCommandTests(unittest.TestCase):
 
         self.assertIn('--help', mock_stdout.getvalue())
         self.assertIn('--directory', mock_stdout.getvalue())
-        self.assertIn('--allowed-hosts', mock_stdout.getvalue())
         self.assertIn('--client-max-body-size', mock_stdout.getvalue())
         self.assertIn('--asgi-processes', mock_stdout.getvalue())
-        self.assertIn('--db-username', mock_stdout.getvalue())
-        self.assertIn('--db-password', mock_stdout.getvalue())
-        self.assertIn('--db-name', mock_stdout.getvalue())
-        self.assertIn('--db-host', mock_stdout.getvalue())
-        self.assertIn('--db-port', mock_stdout.getvalue())
-        self.assertIn('--production', mock_stdout.getvalue())
         self.assertIn('--overwrite', mock_stdout.getvalue())
-        self.assertIn('--open-portal', mock_stdout.getvalue())
-        self.assertIn('--open-signup', mock_stdout.getvalue())
         self.assertIn('--tethys-port', mock_stdout.getvalue())
-        self.assertIn('--add-apps', mock_stdout.getvalue())
-        self.assertIn('--session-persist', mock_stdout.getvalue())
-        self.assertIn('--session-warning', mock_stdout.getvalue())
-        self.assertIn('--session-expire', mock_stdout.getvalue())
-        self.assertIn('--static-root', mock_stdout.getvalue())
-        self.assertIn('--workspaces-root', mock_stdout.getvalue())
-        self.assertIn('--bypass-portal-home', mock_stdout.getvalue())
-        self.assertIn('--add-quota-handlers', mock_stdout.getvalue())
-        self.assertIn('--django-analytical', mock_stdout.getvalue())
-        self.assertIn('--add-backends', mock_stdout.getvalue())
-        self.assertIn('--oauth-options', mock_stdout.getvalue())
-        self.assertIn('--channel-layer', mock_stdout.getvalue())
-        self.assertIn('--captcha', mock_stdout.getvalue())
-        self.assertIn('--recaptcha-private-key', mock_stdout.getvalue())
-        self.assertIn('--recaptcha-public-key', mock_stdout.getvalue())
 
     @mock.patch('tethys_cli.manage_commands.manage_command')
     def test_manage_subcommand_start(self, mock_manage_command):
@@ -1315,49 +1188,3 @@ class TethysCommandTests(unittest.TestCase):
         self.assertIn('--defaults', mock_stdout.getvalue())
         self.assertIn('--containers', mock_stdout.getvalue())
         self.assertIn('--boot2docker', mock_stdout.getvalue())
-
-    @mock.patch('tethys_cli.site_commands.gen_site_content')
-    def test_site_commands_gen_site_content_options(self, mock_gen_site_content):
-        testargs = ['tethys', 'site', '--tab-title', 'Tethys Portal', '--favicon', '/tethys_portal/images/favicon.png',
-                    '--title', 'Tethys Portal', '--logo', '/tethys_portal/images/tethys-logo.png',
-                    '--logo-height', '60', '--logo-width', '60', '--logo-padding', '0',
-                    '--library-title', 'Apps Library', '--primary-color', '#0a62a9', '--secondary-color', '#1b95dc',
-                    '--background-color', 'white', '--copyright', 'copyright', '--hero-text', 'Hero Text',
-                    '--blurb-text', 'Blurb Text', '--feature1-heading', 'Feature 1 Heading',
-                    '--feature1-body', 'Feature 1 Content', '--feature1-image', '/tethys_portal/images/feature1.png',
-                    '--feature2-heading', 'Feature 2 Heading', '--feature2-body', 'Feature 2 Content',
-                    '--feature2-image', '/tethys_portal/images/feature2.png', '--feature3-heading', 'Feature 3 Heading',
-                    '--feature3-body', 'Feature 3 Content', '--feature3-image', '/tethys_portal/images/feature3.png',
-                    '--action-text', 'Ready?', '--action-button', 'Signup!']
-
-        with mock.patch.object(sys, 'argv', testargs):
-            tethys_command()
-
-        mock_gen_site_content.assert_called()
-        call_args = mock_gen_site_content.call_args_list
-        self.assertEqual('Tethys Portal', call_args[0][0][0].tab_title)
-        self.assertEqual('/tethys_portal/images/favicon.png', call_args[0][0][0].favicon)
-        self.assertEqual('Tethys Portal', call_args[0][0][0].title)
-        self.assertEqual('/tethys_portal/images/tethys-logo.png', call_args[0][0][0].logo)
-        self.assertEqual('60', call_args[0][0][0].logo_height)
-        self.assertEqual('60', call_args[0][0][0].logo_width)
-        self.assertEqual('0', call_args[0][0][0].logo_padding)
-        self.assertEqual('Apps Library', call_args[0][0][0].library_title)
-        self.assertEqual('#0a62a9', call_args[0][0][0].primary_color)
-        self.assertEqual('#1b95dc', call_args[0][0][0].secondary_color)
-        self.assertEqual('white', call_args[0][0][0].background_color)
-        self.assertEqual('copyright', call_args[0][0][0].footer_copyright)
-        self.assertEqual('Hero Text', call_args[0][0][0].hero_text)
-        self.assertEqual('Blurb Text', call_args[0][0][0].blurb_text)
-        self.assertEqual('Feature 1 Heading', call_args[0][0][0].feature1_heading)
-        self.assertEqual('Feature 1 Content', call_args[0][0][0].feature1_body)
-        self.assertEqual('/tethys_portal/images/feature1.png', call_args[0][0][0].feature1_image)
-        self.assertEqual('Feature 2 Heading', call_args[0][0][0].feature2_heading)
-        self.assertEqual('Feature 2 Content', call_args[0][0][0].feature2_body)
-        self.assertEqual('/tethys_portal/images/feature2.png', call_args[0][0][0].feature2_image)
-        self.assertEqual('Feature 3 Heading', call_args[0][0][0].feature3_heading)
-        self.assertEqual('Feature 3 Content', call_args[0][0][0].feature3_body)
-        self.assertEqual('/tethys_portal/images/feature3.png', call_args[0][0][0].feature3_image)
-        self.assertEqual('Ready?', call_args[0][0][0].action_text)
-        self.assertEqual('Signup!', call_args[0][0][0].action_button)
-        self.assertFalse(call_args[0][0][0].restore_defaults)

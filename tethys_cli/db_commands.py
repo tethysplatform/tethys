@@ -25,7 +25,7 @@ def add_db_parser(subparsers):
                            help='DB command to run.',
                            choices=list(DB_COMMANDS.keys()))
     db_parser.add_argument('-d', '--database', dest='db_alias',
-                           help="Name of the database options from settings.py to use (e.g. 'default').")
+                           help="Name of the database options from portal_config.yml to use (e.g. 'default').")
     db_parser.add_argument('-n', '--username', dest='username',
                            help="Name of database user to add to database when creating.")
     db_parser.add_argument('-p', '--password', dest='password',

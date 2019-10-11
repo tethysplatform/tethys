@@ -511,3 +511,10 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertEqual(1, len(po_call_args))
         self.assertIn('A SpatialDatasetServiceSetting with ID/Name', po_call_args[0][0][0])
         self.assertIn('does not exist.', po_call_args[0][0][0])
+
+    @mock.patch('tethys_apps.utilities.os')
+    def test_get_tethys_home_dir(self, mock_os):
+        mock_os.path.expanduser.return_value = 'test'
+        mock_os.environ.get.side_effect = ['tethys-dev', None]
+        utilities.get_tethys_home_dir()
+        mock_os.path.join.assert_called_with('test', 'tethys-dev')

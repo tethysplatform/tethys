@@ -82,14 +82,3 @@ class ListCommandTests(unittest.TestCase):
         self.assertIn('  foo', check_list)
         self.assertIn('  bar', check_list)
         self.assertIn('  baz', check_list)
-
-    @mock.patch('tethys_cli.list_command.print')
-    @mock.patch('tethys_cli.list_command.get_tethys_src_dir')
-    def test_list_command_settings(self, mock_src_dir, mock_print):
-        from pathlib import Path
-
-        mock_args = mock.MagicMock(settings=True)
-        test_path = 'test/path'
-        mock_src_dir.return_value = test_path
-        list_command(mock_args)
-        mock_print.assert_called_with(Path(test_path) / 'tethys_portal/settings.py')

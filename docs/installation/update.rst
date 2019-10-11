@@ -4,78 +4,104 @@
 Upgrade to |version|
 ********************
 
-**Last Updated:** December 2018
+**Last Updated:** October 2019
 
 This document provides a recommendation for how to upgrade Tethys Platform from the last release version. If you have not updated Tethys Platform to the last release version previously, please revisit the documentation for that version and follow those upgrade instructions first.
 
 
-1. Activate Tethys environment and start your Tethys Database:
+Significant Changes
+===================
 
-::
+Many significant changes were made since Tethys Platform 2.1. Please note the following differences:
+
+Source Code
+-----------
+
+Tethys in now a conda package! This means that when installing tethys you will no longer clone the source code into TETHYS_HOME. Now Tethys will be installed in your conda environment instead.
+
+TETHYS_HOME
+-----------
+
+In 2.1 ``TETHYS_HOME`` by default was located at :file:`~/tethys/`. In 3.0 ``TETHYS_HOME`` is now, by default at :file:`~/.tethys/`
+
+.. note::
+
+  If your tethys conda environment is named something other than ``tethys`` then ``TETHYS_HOME`` will be at :file:`~/.tethys/<ENV_NAME>/`. For example if your conda environment were named ``tethys-dev`` then ``TETHYS_HOME`` would be at :file:`~/.tethys/tethys-dev/`
+
+Settings
+--------
+
+In 2.1 custom settings were specified directly in the :file:`settings.py` file. Now settings must be configured in the :file:`portal_config.yml` file which is generated in ``TETHYS_HOME``
+
+
+
+Upgrade Steps
+=============
+
+1. Activate Tethys environment uninstall the previous version of ``tethys-platform``::
 
     . t
-    tstartdb
+    pip uninstall tethys-platform
 
-2. Backup your ``settings.py`` (Note: If you do not backup your ``settings.py`` you will be prompted to overwrite your settings file during upgrade):
+2. Install the new conda packaged version of ``tethysplatform``::
 
-::
-
-    mv $TETHYS_HOME/src/tethys_portal/settings.py $TETHYS_HOME/src/tethys_portal/settings_20.py
-
-.. caution::
-
-    Don't forget to copy any settings from the backup settings script (``settings.py_bak``) to the new settings script. Common settings that need to be copied include:
-
-    * DEBUG
-    * ALLOWED_HOSTS
-    * DATABASES, TETHYS_DATABASES
-    * STATIC_ROOT, TETHYS_WORKSPACES_ROOT
-    * EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_USE_TLS, DEFAULT_FROM_EMAIL
-    * SOCIAL_OAUTH_XXXX_KEY, SOCIAL_OAUTH_XXXX_SECRET
-    * BYPASS_TETHYS_HOME_PAGE
-
-3. (Optional) If you want the new environment to be called ``tethys`` remove the old environment:
-
-::
-
-    conda activate base
-    conda env remove -n tethys
-
-.. tip::
-
-    If these commands don't work, you may need to update your conda installation:
-
-    ::
-
-        conda update conda -n root -c defaults
-
-4. Download and execute the new install tethys script with the following options (Note: if you removed your previous tethys environment, then you can omit the ``-n tethys21`` option to have the new environment called ``tethys``):
-
-.. parsed-literal::
-
-    wget :install_tethys:`sh`
-    bash install_tethys.sh -b |branch| --partial-tethys-install cieast -n tethys21
-
-5. (Optional) If you have a locally installed database server then you need to downgrade postgresql to the version that the database was created with. If it was created by the 2.0 Tethys install script then it was created with postgresql version 9.5. (Note: be sure to open a new terminal so that the newly created tethys environment is activated):
-
-::
-
-    t
-    conda install -c conda-forge postgresql=9.5
+    conda install -c tethysplatform -c conda-forge tethysplatform
 
 
-.. tip::
+3. Rename :file:`~/tethys/` to :file:`~/.tethys/`::
 
-    These instructions assume your previous installation was done using the install script with the default configuration. If you used any custom options when installing the environment initially, you will need to specify those same options. For an explanation of the installation script options, see: :ref:`install_script_options`.
+    mv ~/tethys ~/.tethys
 
+4. Generate a :file:`portal_config.yml` file::
 
-
-
-
-
+    tethys gen portal_config
 
 
+5.  Port any custom settings from your old :file:`settings.py` to the new :file:`portal_config.yml`:
+
+    Common settings that need to be copied include:
+      * DEBUG
+      * ALLOWED_HOSTS
+      * DATABASES
+      * STATIC_ROOT, TETHYS_WORKSPACES_ROOT
+      * EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_USE_TLS, DEFAULT_FROM_EMAIL
+      * SOCIAL_OAUTH_XXXX_KEY, SOCIAL_OAUTH_XXXX_SECRET
+      * BYPASS_TETHYS_HOME_PAGE
+
+    Refer to :ref:`tethys_configuration` for more details on specifying settings in the :file:`portal_config.yml` file.
+
+6.  Migrate the database:
+
+    If you have a locally installed database then you will need to add a ``DIR`` setting in the ``DATABASES`` setting of the :file:`portal_config.yml` file:
+      ::
+
+        DATABASES:
+          default:
+            NAME: tethys_platform
+            USER: tethys_default
+            PASSWORD: pass
+            HOST: localhost
+            PORT: 5436
+            DIR: psql
+
+    .. note::
+
+      The ``DIR`` setting is relative to ``TETHYS_HOME``. By default the locally installed database would have been at :file:`~/tethys/psql/`, but now that ``TETHYS_HOME`` has moved the default location is :file:`~/.tethys/psql/`.
+
+    .. tip::
+
+      If you have a locally installed database server then you need to downgrade postgresql to the version that the database was created with.
+      ::
+
+        t
+        conda install -c conda-forge postgresql=9.5
+
+    Once you have the database settings and dependencies configured properly then you can migrate the database by running:
+      ::
+
+        tethys db migrate
 
 
+    .. tip::
 
-
+      Refer to the :ref:`tethys_db_cmd` docs for more information on how to use the new ``tethys db`` command.
