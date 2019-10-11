@@ -196,9 +196,9 @@ class WebProcessingService(models.Model):
             wps.getcapabilities()
         except HTTPError as e:
             if e.code == 404:
-                e.msg = 'The WPS service could not be found at given endpoint "{0}" for site WPS service ' \
-                        'named "{1}". Check the configuration of the WPS service in your ' \
-                        'settings.py.'.format(self.endpoint, self.name)
+                e.msg = f'The WPS service could not be found at given endpoint "{self.endpoint}" for site WPS ' \
+                    f'service named "{self.name}". Check the configuration of the WPS service in your ' \
+                    f'portal_config.yml.'
                 raise e
             else:
                 raise e

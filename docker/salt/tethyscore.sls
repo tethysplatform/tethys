@@ -1,3 +1,4 @@
+{% set DEBUG = salt['environ.get']('DEBUG') %}
 {% set ALLOWED_HOSTS = salt['environ.get']('ALLOWED_HOSTS') %}
 {% set CONDA_ENV_NAME = salt['environ.get']('CONDA_ENV_NAME') %}
 {% set CONDA_HOME = salt['environ.get']('CONDA_HOME') %}
@@ -45,8 +46,6 @@
 {% set RECAPTCHA_PUBLIC_KEY = "''" %}
 {% endif %}
 
-{% set TETHYS_SETTINGS_FLAGS = salt['environ.get']('TETHYS_SETTINGS_FLAGS').split(', ')|join(' ') %}
-
 {% set TETHYS_SITE_VAR_LIST = ['TAB_TITLE', 'FAVICON', 'TITLE', 'LOGO', 'LOGO_HEIGHT', 'LOGO_WIDTH', 'LOGO_PADDING',
                                'LIBRARY_TITLE', 'PRIMARY_COLOR', 'SECONDARY_COLOR', 'BACKGROUND_COLOR',
                                'TEXT_COLOR', 'TEXT_HOVER_COLOR', 'SECONDARY_TEXT_COLOR', 'SECONDARY_TEXT_HOVER_COLOR',
@@ -73,27 +72,26 @@
 Generate_Tethys_Settings_TethysCore:
   cmd.run:
     - name: >
-        {{ TETHYS_BIN_DIR }}/tethys gen settings
-        --overwrite
-        --allowed-hosts {{ ALLOWED_HOSTS }}
-        --db-name {{ TETHYS_DB_NAME }}
-        --db-username {{ TETHYS_DB_USERNAME }}
-        --db-password {{ TETHYS_DB_PASSWORD }}
-        --db-host {{ TETHYS_DB_HOST }}
-        --db-port {{ TETHYS_DB_PORT }}
-        --add-apps {{ ADD_DJANGO_APPS }}
-        --session-warning {{ SESSION_WARN }}
-        --session-expire {{ SESSION_EXPIRE }}
-        --static-root {{ STATIC_ROOT }}
-        --workspaces-root {{ WORKSPACE_ROOT }}
-        --add-quota-handlers {{ QUOTA_HANDLERS }}
-        --django-analytical {{ DJANGO_ANALYTICAL }}
-        --add-backends {{ ADD_BACKENDS }}
-        --oauth-options {{ OAUTH_OPTIONS }}
-        --channel-layer {{ CHANNEL_LAYER }}
-        --recaptcha-private-key {{ RECAPTCHA_PRIVATE_KEY }}
-        --recaptcha-public-key {{ RECAPTCHA_PUBLIC_KEY }}
-        {{ TETHYS_SETTINGS_FLAGS }}
+        {{ TETHYS_BIN_DIR }}/tethys settings
+        --set DEBUG {{ DEBUG }}
+        --set ALLOWED_HOSTS {{ ALLOWED_HOSTS }}
+        --set DATABASES.default.NAME {{ TETHYS_DB_NAME }}
+        --set DATABASES.default.USER {{ TETHYS_DB_USERNAME }}
+        --set DATABASES.default.PASSWORD {{ TETHYS_DB_PASSWORD }}
+        --set DATABASES.default.HOST {{ TETHYS_DB_HOST }}
+        --set DATABASES.default.PORT {{ TETHYS_DB_PORT }}
+        --set INSTALLED_APPS {{ ADD_DJANGO_APPS }}
+        --set SESSION_CONFIG.SECURITY_WARN_AFTER {{ SESSION_WARN }}
+        --set SESSION_CONFIG.SECURITY_EXPIRE_AFTER {{ SESSION_EXPIRE }}
+        --set TETHYS_PORTAL_CONFIG.STATIC_ROOT {{ STATIC_ROOT }}
+        --set TETHYS_PORTAL_CONFIG.TETHYS_WORKSPACES_ROOT {{ WORKSPACE_ROOT }}
+        --set RESOURCE_QUOTA_HANDLERS {{ QUOTA_HANDLERS }}
+        --set ANALYTICS_CONFIGS {{ DJANGO_ANALYTICAL }}
+        --set AUTHENTICATION_BACKENDS {{ ADD_BACKENDS }}
+        --set OAUTH_CONFIGS {{ OAUTH_OPTIONS }}
+        --set CHANNEL_LAYERS.default.BACKEND {{ CHANNEL_LAYER }}
+        --set CAPTCHA_CONFIG.RECAPTCHA_PRIVATE_KEY {{ RECAPTCHA_PRIVATE_KEY }}
+        --set CAPTCHA_CONFIG.RECAPTCHA_PUBLIC_KEY {{ RECAPTCHA_PUBLIC_KEY }}
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 Generate_NGINX_Settings_TethysCore:

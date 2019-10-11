@@ -16,34 +16,35 @@ Web-Analytics generally work by adding an asynchronous script to the head of htm
 
 Enabling Services
 =================
-After installing tethys in either a development or production environment, the tracking ID numbers or character strings can be specified in the Tethys portal's settings.py file found at ``tethys/src/tethys_portal/settings.py``. At the bottom of the file is a section containing a placeholder for the ID's for many of the services supported by Django-Anlytical.
+After installing tethys in either a development or production environment, the tracking ID numbers or character strings can be specified in the Tethys portal's :file:`portal_config.yml` file found at ``$TETHYS_HOME/portal_config.yml``. In the ``settings`` section of the file you can add an ``AUTHENTICATION_CONFIGS`` tag and then add any of the following ID's for many of the services supported by Django-Anlytical that are applicable.
 
 ::
 
-    CLICKMAP_TRACKER_ID = False
-    CLICKY_SITE_ID = False
-    CRAZY_EGG_ACCOUNT_NUMBER = False
-    GAUGES_SITE_ID = False
-    GOOGLE_ANALYTICS_JS_PROPERTY_ID = False
-    GOSQUARED_SITE_TOKEN = False
-    HOTJAR_SITE_ID = False
-    HUBSPOT_PORTAL_ID = False
-    INTERCOM_APP_ID = False
-    KISSINSIGHTS_ACCOUNT_NUMBER = False
-    KISSINSIGHTS_SITE_CODE = False
-    KISS_METRICS_API_KEY = False
-    MIXPANEL_API_TOKEN = False
-    OLARK_SITE_ID = False
-    OPTIMIZELY_ACCOUNT_NUMBER = False
-    PERFORMABLE_API_KEY = False
-    PIWIK_DOMAIN_PATH = False
-    PIWIK_SITE_ID = False
-    RATING_MAILRU_COUNTER_ID = False
-    SNAPENGAGE_WIDGET_ID = False
-    SPRING_METRICS_TRACKING_ID = False
-    USERVOICE_WIDGET_KEY = False
-    WOOPRA_DOMAIN = False
-    YANDEX_METRICA_COUNTER_ID = False
+    AUTHENTICATION_CONFIGS:
+      CLICKMAP_TRACKER_ID: False
+      CLICKY_SITE_ID: False
+      CRAZY_EGG_ACCOUNT_NUMBER: False
+      GAUGES_SITE_ID: False
+      GOOGLE_ANALYTICS_JS_PROPERTY_ID: False
+      GOSQUARED_SITE_TOKEN: False
+      HOTJAR_SITE_ID: False
+      HUBSPOT_PORTAL_ID: False
+      INTERCOM_APP_ID: False
+      KISSINSIGHTS_ACCOUNT_NUMBER: False
+      KISSINSIGHTS_SITE_CODE: False
+      KISS_METRICS_API_KEY: False
+      MIXPANEL_API_TOKEN: False
+      OLARK_SITE_ID: False
+      OPTIMIZELY_ACCOUNT_NUMBER: False
+      PERFORMABLE_API_KEY: False
+      PIWIK_DOMAIN_PATH: False
+      PIWIK_SITE_ID: False
+      RATING_MAILRU_COUNTER_ID: False
+      SNAPENGAGE_WIDGET_ID: False
+      SPRING_METRICS_TRACKING_ID: False
+      USERVOICE_WIDGET_KEY: False
+      WOOPRA_DOMAIN: False
+      YANDEX_METRICA_COUNTER_ID: False
 
 To start using one of these services to track your Tethys portal's usage, replace ``False`` with a string containing the tracking ID for that service. Be sure to follow the exact format for the ID provided by the service provider.
 

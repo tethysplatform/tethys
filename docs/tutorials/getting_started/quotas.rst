@@ -306,16 +306,15 @@ a. Creating a custom quota is pretty simple. Create a new file called ``dam_quot
 
     See :ref:`tethys_quotas_rqh` for an explanation of the different parameters.
 
-b. Now go into the portal's ``settings.py`` file and add the dot-path of the handler class you just created in the ``RESOURCE_QUOTA_HANDLERS`` array.
+b. Now go into the portal's :file:`portal_config.yml` file and add the dot-path of the handler class you just created in the ``RESOURCE_QUOTA_HANDLERS`` array.
 
 ::
 
     # RESOURCE QUOTAS TO INSTALL
-    RESOURCE_QUOTA_HANDLERS = [
-        "tethys_quotas.handlers.workspace.WorkspaceQuotaHandler",
-        "tethysapp.dam_inventory.dam_quota_handler.DamQuotaHandler",
-        # your path `may` be different
-    ]
+    RESOURCE_QUOTA_HANDLERS
+      - tethys_quotas.handlers.workspace.WorkspaceQuotaHandler
+      - tethysapp.dam_inventory.dam_quota_handler.DamQuotaHandler
+      # your path `may` be different
 
 c. After re-starting tethys the ``User Dam Quota`` should be visible in the ``Resource Quota`` section of the admin pages. Click on it and make sure `Active` and `Impose default` are both ``Enabled``.
 

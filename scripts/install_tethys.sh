@@ -8,14 +8,14 @@ RESET_COLOR=`tput sgr0`
 USAGE="USAGE: . install_tethys.sh [options]\n
 \n
 OPTIONS:\n
-\t    -t, --tethys-home <PATH>            \t\t Path for tethys home directory. Default is ~/tethys.\n
+\t    -n, --conda-env-name <NAME>         \t\t Name for tethys conda environment. Default is 'tethys-dev'.\nls
+\t    -t, --tethys-home <PATH>            \t\t Path for tethys home directory. Default is ~/.tethys/${CONDA_ENV_NAME}.\n
 \t    -s, --tethys-src <PATH>             \t\t Path for tethys source directory. Default is \${TETHYS_HOME}/tethys.\n
-\t    -a, --allowed-hosts <HOST>           \t\t Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
+\t    -a, --allowed-hosts <HOST>          \t\t Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
 \t    -p, --port <PORT>                   \t\t\t Port on which to serve tethys. Default is 8000.\n
-\t    -b, --branch <BRANCH_NAME>          \t\t Branch to checkout from version control. Default is 'release'.\n
+\t    -b, --branch <BRANCH_NAME>          \t\t Branch to checkout from version control. Default is 'master'.\n
 \t    -c, --conda-home <PATH>             \t\t Path where Miniconda will be installed, or to an existing installation of Miniconda. Default is ~/miniconda.\n
-\t    -n, --conda-env-name <NAME>         \t\t Name for tethys conda environment. Default is 'tethys'.\n
-\t    --db-username <USERNAME>            \t\t Username that the tethys database server will use. Default is 'tethys_default'.\n
+\t    --db-username <USERNAME>            \t\t Username that the tethys database server will use. Default is 'tethys_super'.\n
 \t    --db-password <PASSWORD>            \t\t Password that the tethys database server will use. Default is 'pass'.\n
 \t    --db-super-username <USERNAME>      \t Username for super user on the tethys database server. Default is 'tethys_super'.\n
 \t    --db-super-password <PASSWORD>      \t Password for super user on the tethys database server. Default is 'pass'.\n
@@ -32,7 +32,7 @@ OPTIONS:\n
 \t        \t\t r - Clone Tethys repository\n
 \t        \t\t c - Checkout the branch specified by the option '--branch' (specifying the flag 'r' will also trigger this flag)\n
 \t        \t\t e - Create Conda environment\n
-\t        \t\t s - Create 'settings.py' file\n
+\t        \t\t s - Create 'portal_config.yml' file and configure settings\n
 \t        \t\t d - Create a local database server\n
 \t        \t\t a - Create activation/deactivation scripts for the Tethys Conda environment\n
 \t        \t\t t - Create the 't' alias t\n\n
@@ -83,16 +83,16 @@ fi
 
 # Set default options
 ALLOWED_HOST='127.0.0.1'
-TETHYS_HOME=~/tethys
 TETHYS_PORT=8000
-TETHYS_DB_USERNAME='tethys_default'
+TETHYS_DB_USERNAME='tethys_super'
 TETHYS_DB_PASSWORD='pass'
 TETHYS_DB_SUPER_USERNAME='tethys_super'
 TETHYS_DB_SUPER_PASSWORD='pass'
 TETHYS_DB_PORT=5436
+TETHYS_DB_DIR='psql'
 CONDA_HOME=~/miniconda
-CONDA_ENV_NAME='tethys'
-BRANCH='release'
+CONDA_ENV_NAME='tethys-dev'
+BRANCH='master'
 
 TETHYS_SUPER_USER='admin'
 TETHYS_SUPER_USER_EMAIL=''
@@ -271,8 +271,18 @@ esac
 shift # past argument or value
 done
 
+if [ -z "${TETHYS_HOME}" ]
+then
+  TETHYS_HOME=~/.tethys
+  if [ "${CONDA_ENV_NAME}" != "tethys" ]
+  then
+    TETHYS_HOME=${TETHYS_HOME}/${CONDA_ENV_NAME}
+  fi
+fi
+
 # resolve relative paths
 resolve_relative_path TETHYS_HOME ${TETHYS_HOME}
+export TETHYS_HOME=${TETHYS_HOME}
 
 resolve_relative_path CONDA_HOME ${CONDA_HOME}
 
@@ -282,14 +292,6 @@ then
     TETHYS_SRC="${TETHYS_HOME}/tethys"
 else
     resolve_relative_path TETHYS_SRC ${TETHYS_SRC}
-fi
-
-# set TETHYS_DB_DIR relative to TETHYS_HOME if not already set
-if [ -z "${TETHYS_DB_DIR}" ]
-then
-    TETHYS_DB_DIR="${TETHYS_HOME}/psql"
-else
-    resolve_relative_path TETHYS_DB_DIR ${TETHYS_DB_DIR}
 fi
 
 if [ -n "${ECHO_COMMANDS}" ]
@@ -360,12 +362,13 @@ then
 
     if [ -n "${CREATE_SETTINGS}" ]
     then
-        # only pass --allowed-hosts option to gen settings command if it is not the default
-        if [ ${ALLOWED_HOST} != "127.0.0.1" ]
-        then
-            ALLOWED_HOST_OPT="--allowed-hosts ${ALLOWED_HOST}"
-        fi
-        tethys gen settings ${ALLOWED_HOST_OPT} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --db-dir ${TETHYS_DB_DIR}
+        tethys gen portal_config
+        tethys settings \
+          --set ALLOWED_HOSTS "${ALLOWED_HOST}" \
+          --set DATABASES.default.USER ${TETHYS_DB_USERNAME} \
+          --set DATABASES.default.PASSWORD ${TETHYS_DB_PASSWORD} \
+          --set DATABASES.default.PORT ${TETHYS_DB_PORT} \
+          --set DATABASES.default.DIR ${TETHYS_DB_DIR}
     fi
 
     if [ -n "${SETUP_DB}" ]
@@ -386,10 +389,6 @@ then
         echo "export TETHYS_PORT='${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
         echo "export CONDA_HOME='${CONDA_HOME}'" >> "${ACTIVATE_SCRIPT}"
         echo "export CONDA_ENV_NAME='${CONDA_ENV_NAME}'" >> "${ACTIVATE_SCRIPT}"
-        echo "alias tethys_start_db='tethys db start'" >> "${ACTIVATE_SCRIPT}"
-        echo "alias tstartdb=tethys_start_db" >> "${ACTIVATE_SCRIPT}"
-        echo "alias tethys_stop_db='tethys db stop'" >> "${ACTIVATE_SCRIPT}"
-        echo "alias tstopdb=tethys_stop_db" >> "${ACTIVATE_SCRIPT}"
         echo "alias tms='tethys manage start -p ${ALLOWED_HOST}:\${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
         echo "alias tstart='tethys db start; tms'" >> "${ACTIVATE_SCRIPT}"
     fi
@@ -411,14 +410,8 @@ then
         echo "unset TETHYS_HOME" >> "${DEACTIVATE_SCRIPT}"
         echo "unset TETHYS_SRC" >> "${DEACTIVATE_SCRIPT}"
         echo "unset TETHYS_PORT" >> "${DEACTIVATE_SCRIPT}"
-        echo "unset TETHYS_DB_PORT" >> "${DEACTIVATE_SCRIPT}"
-        echo "unset TETHYS_DB_DIR" >> "${DEACTIVATE_SCRIPT}"
         echo "unset CONDA_HOME" >> "${DEACTIVATE_SCRIPT}"
         echo "unset CONDA_ENV_NAME" >> "${DEACTIVATE_SCRIPT}"
-        echo "unalias tethys_start_db" >> "${DEACTIVATE_SCRIPT}"
-        echo "unalias tstartdb" >> "${DEACTIVATE_SCRIPT}"
-        echo "unalias tethys_stop_db" >> "${DEACTIVATE_SCRIPT}"
-        echo "unalias tstopdb" >> "${DEACTIVATE_SCRIPT}"
         echo "unalias tms" >> "${DEACTIVATE_SCRIPT}"
         echo "unalias tstart" >> "${DEACTIVATE_SCRIPT}"
     fi
@@ -508,9 +501,8 @@ then
 
     source "${CONDA_HOME}/etc/profile.d/conda.sh"
     conda activate ${CONDA_ENV_NAME}
-    pg_ctl -U postgres -D "${TETHYS_DB_DIR}/data" -l "${TETHYS_DB_DIR}/logfile" start -o "-p ${TETHYS_DB_PORT}"
-    echo "Waiting for databases to startup..."; sleep 5
-    tethys gen settings --production --allowed-hosts ${ALLOWED_HOST} --db-username ${TETHYS_DB_USERNAME} --db-password ${TETHYS_DB_PASSWORD} --db-port ${TETHYS_DB_PORT} --overwrite
+    tethys db start
+    tethys settings --set DEBUG False
     tethys gen nginx --overwrite
     tethys gen nginx_service --overwrite
     tethys gen asgi_service --overwrite

@@ -26,6 +26,7 @@ Command Line Interface
    tethys_cli/scaffold
    tethys_cli/schedulers
    tethys_cli/services
+   tethys_cli/settings
    tethys_cli/site
    tethys_cli/syncstores
    tethys_cli/test

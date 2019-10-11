@@ -34,9 +34,9 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         cmd = collectworkspaces.Command()
         self.assertRaises(SystemExit, cmd.handle)
 
-        check_msg = 'WARNING: Cannot find the TETHYS_WORKSPACES_ROOT setting in the settings.py file. ' \
+        check_msg = 'WARNING: Cannot find the TETHYS_WORKSPACES_ROOT setting. ' \
                     'Please provide the path to the static directory using the TETHYS_WORKSPACES_ROOT ' \
-                    'setting and try again.'
+                    'setting in the portal_config.yml file and try again.'
 
         mock_print.assert_called_with(check_msg)
 

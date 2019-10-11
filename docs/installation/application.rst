@@ -31,7 +31,7 @@ Using the :ref:`install cli command <tethys_cli_install>`, you can install the a
     $ tethys install
 
     # Tethys install with custom options
-    $ tethys install -f ../install.yml -p $TETHYS_HOME/src/configs/portal.yml
+    $ tethys install -f ../install.yml -p $TETHYS_HOME/src/configs/portal_config.yml
 
 
 The install command uses three configuration files:
@@ -97,17 +97,17 @@ In the above example, ``catalog_db`` is the name of the setting in your :file:`a
 
 .. _tethys_portal_yml:
 
-portal.yml 
+portal_config.yml
 ------------
 
 The file is designed to be maintained by Tethys Portal administrators to automatically assign services defined in their Tethys Portal to apps they are installing.
 
-.. literalinclude:: resources/example-portal.yml
+.. literalinclude:: resources/example-portal_config.yml
    :language: yaml
 
-**portal.yml Options:**
+**portal_config.yml Options:**
 
-* **version**: Indicated the version of the :file:`portal.yml` file. Current default : 1.0
+* **version**: Indicated the version of the :file:`portal_config.yml` file. Current default : 1.0
 * **name**: Name of the portal
 
 * **apps/<app-name>/services/persistent** : List of persistent store settings in the app and the service to link to each.
@@ -124,7 +124,7 @@ In the above example, ``catalog_db`` is the name of the setting in your :file:`a
 
 .. tip::
 
-    Run ``tethys gen portal`` to create a blank template of this file. By default the file will be saved to ``$TETHYS_SRC/tethy_portal``.
+    Run ``tethys gen portal_config`` to create a blank template of this file. By default the file will be saved to ``$TETHYS_SRC/tethy_portal``.
 
 
 3. Restart Tethys Server
@@ -134,9 +134,6 @@ Restart tethys portal to effect the changes::
 
     (tethys) $ tethys manage start
 
-.. tip::
-
-    Use the alias `tms` as a shortcut
 
 4. Configure Additional App Settings
 ====================================

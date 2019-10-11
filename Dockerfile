@@ -29,7 +29,8 @@ ENV  BASH_PROFILE=".bashrc" \
      CLIENT_MAX_BODY_SIZE="75M"
 
 # Tethys settings arguments
-ENV  ALLOWED_HOSTS="localhost 127.0.0.1" \
+ENV  DEBUG="False" \
+     ALLOWED_HOSTS="localhost 127.0.0.1" \
      BYPASS_TETHYS_HOME_PAGE="True" \
      ADD_DJANGO_APPS=None \
      SESSION_WARN=1500 \
@@ -43,12 +44,6 @@ ENV  ALLOWED_HOSTS="localhost 127.0.0.1" \
      CHANNEL_LAYER="" \
      RECAPTCHA_PRIVATE_KEY="" \
      RECAPTCHA_PUBLIC_KEY=""
-
-
-# Tethys settings flags
-# Flags do not take arguments. They evaluate to "True" when included. Available flags:
-#   --production, --overwrite, --open-portal, --open-signup, --bypass-portal-home, --session-persist, --captcha
-ENV TETHYS_SETTINGS_FLAGS="--production, --overwrite"
 
 # Tethys site arguments
 ENV  TAB_TITLE="" \
@@ -134,11 +129,10 @@ ADD --chown=www:www *.cfg ${TETHYS_HOME}/tethys/
 ADD --chown=www:www .git ${TETHYS_HOME}/tethys/.git/
 
 # Run Installer
-# we need to have a settings.py file for some commands to work in the Dockerfile (like tethys install)
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; python setup.py develop'
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
-  ; tethys gen --overwrite settings'
+  ; tethys gen portal_config'
 RUN mkdir -p ${TETHYS_PERSIST} ${APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT}
 
 ############

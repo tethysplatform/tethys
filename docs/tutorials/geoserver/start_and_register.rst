@@ -55,7 +55,7 @@ Install GeoServer and Start Tethys Development Server
 
     (tethys) $ cd tethysapp-geoserver_app
     (tethys) $ tethys install -d
-    (tethys) $ tms
+    (tethys) $ tethys manage start
 
 
 Start GeoServer
@@ -104,7 +104,7 @@ Assign the "primary_geoserver" Spatial Dataset Service to the "main_geoserver" s
         (tethys) $ tethys uninstall geoserver_app
         (tethys) $ cd tethysapp-geoserver_app
         (tethys) $ tethys install -d
-        (tethys) $ tms
+        (tethys) $ tethys manage start
 
 
 GeoServer Web Admin Interface

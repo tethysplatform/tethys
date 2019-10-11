@@ -41,7 +41,7 @@ Execute the install command in the app directory to make Python aware of the app
 4. Collect and Static Files and Workspaces
 ==========================================
 
-The static files and files in app workspaces are hosted by Nginx, which necessitates collecting all of the static files to a single directory and all workspaces to another single directory. These directory is configured through the ``STATIC_ROOT`` and ``TETHYS_WORKSPACES_ROOT`` setting in the :file:`settings.py` file. Collect the static files and workspaces with this command::
+The static files and files in app workspaces are hosted by Nginx, which necessitates collecting all of the static files to a single directory and all workspaces to another single directory. By default these directories are are set to be ``$TETHYS_HOME/static`` and ``$TETHYS_HOME/workspaces`` respectively, but may be configured through the ``STATIC_ROOT`` and ``TETHYS_WORKSPACES_ROOT`` setting in the :file:`portal_config.yml` file. Collect the static files and workspaces with this command::
 
     (tethys) $ tethys manage collectall
 

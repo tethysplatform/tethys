@@ -1,9 +1,12 @@
-from tethys_cli.cli_helpers import load_apps
-from django.utils import timezone
-from tethys_cli.cli_colors import write_msg
-import os
 import yaml
 from subprocess import call
+from pathlib import Path
+
+from django.utils import timezone
+
+from tethys_cli.cli_helpers import load_apps
+from tethys_cli.cli_colors import write_msg
+from tethys_apps.utilities import get_tethys_home_dir
 
 
 # General Settings
@@ -142,21 +145,15 @@ def add_site_parser(subparsers):
                                   'Default is "Start Using Tethys!".')
     site_parser.add_argument('--restore-defaults', dest='restore_defaults', action='store_true',
                              help='Restores the sites default values.')
-    site_parser.add_argument('-f', '--file', type=str, help='Path to a YAML file with site content.')
+    site_parser.add_argument('-f', '--from-file', type=str, help='Load site content from portal_config.yml file.')
 
-    site_parser.set_defaults(func=gen_site_content, restore_defaults=False)
+    site_parser.set_defaults(func=gen_site_content, restore_defaults=False, from_file=True)
 
 
 def gen_site_content(args):
     load_apps()
 
     from tethys_config.models import Setting, SettingsCategory
-
-    for arg in vars(args):
-        if vars(args)[arg] and arg in arg_filter:
-            content = vars(args)[arg].replace('\\n', '\n')
-            obj = Setting.objects.filter(name=arg_filter[arg])
-            obj.update(content=content, date_modified=timezone.now())
 
     if args.restore_defaults:
         from tethys_config.init import setting_defaults
@@ -169,30 +166,36 @@ def gen_site_content(args):
         home_category = SettingsCategory.objects.get(name="Home Page")
         setting_defaults(home_category)
 
-    if args.file:
-        if os.path.exists(args.file):
-            with open(args.file) as f:
-                file_path = yaml.safe_load(f)
-                for arg in file_path:
-                    if file_path[arg]:
-                        content = file_path[arg]
+    if args.from_file:
+        portal_yaml = Path(get_tethys_home_dir()) / 'portal_config.yml'
+        if portal_yaml.exists():
+            with portal_yaml.open() as f:
+                site_content_settings = yaml.safe_load(f).get('site_content', {})
+                for arg in site_content_settings:
+                    if site_content_settings[arg]:
+                        content = site_content_settings[arg]
                         obj = Setting.objects.filter(name=arg_filter[arg.lower()])
                         obj.update(content=content, date_modified=timezone.now())
         else:
             valid_inputs = ('y', 'n', 'yes', 'no')
             no_inputs = ('n', 'no')
 
-            generate_input = input('Would you like to generate a template site_content.yml file that you can then'
+            generate_input = input('Would you like to generate a template portal_config.yml file that you can then'
                                    'customize? (y/n): ')
 
             while generate_input not in valid_inputs:
                 generate_input = input('Invalid option. Try again. (y/n): ').lower()
 
             if generate_input in no_inputs:
-                write_msg('Generation of site_content file cancelled. Please generate one manually or provide '
+                write_msg('Generation of portal_config.yml file cancelled. Please generate one manually or provide '
                           'specific site content arguments.')
             else:
-                call(['tethys', 'gen', 'site_content'])
-                write_msg('\nRe-run the tethys site command with the --file argument pointing to the location of '
-                          'this new file.')
+                call(['tethys', 'gen', 'portal'])
+                write_msg('\nRe-run the tethys site command with the --from-file argument.')
                 exit(0)
+
+    for arg in vars(args):
+        if vars(args)[arg] and arg in arg_filter:
+            content = vars(args)[arg].replace('\\n', '\n')
+            obj = Setting.objects.filter(name=arg_filter[arg])
+            obj.update(content=content, date_modified=timezone.now())

@@ -18,17 +18,16 @@ from tethys_sdk.testing import TethysTestCase
 To run any tests:
     1. Open a terminal
     2. Enter command ". /usr/lib/tethys/bin/activate" to activate the Tethys python environment
-    3. In settings.py make sure that the tethys_default database user is set to tethys_super
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql_psycopg2',
-                'NAME': 'tethys_default',
-                'USER': 'tethys_super',
-                'PASSWORD': 'pass',
-                'HOST': '127.0.0.1',
-                'PORT': '5435'
-            }
-        }
+    3. In portal_config.yml make sure that the default database user is set to tethys_super or is a super user of the database
+        DATABASES:
+            default:
+                ENGINE: django.db.backends.postgresql_psycopg2
+                NAME: tethys_platform
+                USER: tethys_super
+                PASSWORD: pass
+                HOST: 127.0.0.1
+                PORT: 5435
+
     4. Enter tethys test command.
        The general form is: "tethys test -f tethys_apps.tethysapp.<app_name>.<folder_name>.<file_name>.<class_name>.<function_name>"
        See below for specific examples

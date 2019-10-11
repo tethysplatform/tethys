@@ -7,14 +7,12 @@ from tethys_cli.gen_commands import (
     derive_version_from_conda_environment,
     gen_meta_yaml,
     generate_command,
-    GEN_SETTINGS_OPTION,
     GEN_NGINX_OPTION,
     GEN_NGINX_SERVICE_OPTION,
     GEN_ASGI_SERVICE_OPTION,
     GEN_SERVICES_OPTION,
     GEN_INSTALL_OPTION,
     GEN_PORTAL_OPTION,
-    GEN_SITE_YAML_OPTION,
     GEN_META_YAML_OPTION
 )
 
@@ -43,45 +41,6 @@ class CLIGenCommandsTest(unittest.TestCase):
 
     def test_get_settings_value_bad(self):
         self.assertRaises(ValueError, get_settings_value, value_name='foo_bar_baz_bad_setting_foo_bar_baz')
-
-    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
-    def test_generate_command_settings_option_default(self, mock_file):
-        mock_args = mock.MagicMock()
-        mock_args.type = GEN_SETTINGS_OPTION
-        mock_args.directory = None
-
-        generate_command(args=mock_args)
-
-        mock_file.assert_called()
-
-    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
-    @mock.patch('tethys_cli.gen_commands.os.path.isfile')
-    def test_generate_command_settings_option(self, mock_os_path_isfile, mock_file):
-        mock_args = mock.MagicMock(session_warning='no_a_number', session_expire='no_a_number',
-                                   static_root=None, workspaces_root=None,
-                                   django_analytical=['CLICKMAP_TRACKER_ID:123456'],
-                                   add_backends=['hydroshare', 'project.backend.CustomBackend hydroshare'],
-                                   oauth_options=['SOCIAL_AUTH_GOOGLE_OAUTH2_KEY:123456'])
-        mock_args.type = GEN_SETTINGS_OPTION
-        mock_args.directory = None
-        mock_os_path_isfile.return_value = False
-
-        generate_command(args=mock_args)
-
-        mock_os_path_isfile.assert_called_once()
-        mock_file.assert_called()
-
-    def test_gen_settings_value_error(self):
-        mock_args = mock.MagicMock(type=GEN_SETTINGS_OPTION, directory=None, django_analytical=['CLICKMAP_TRACKER_ID'])
-
-        with self.assertRaises(ValueError):
-            generate_command(args=mock_args)
-
-        mock_args = mock.MagicMock(type=GEN_SETTINGS_OPTION, directory=None,
-                                   oauth_options=['SOCIAL_AUTH_GOOGLE_OAUTH2_KEY'])
-
-        with self.assertRaises(ValueError):
-            generate_command(args=mock_args)
 
     @mock.patch('tethys_cli.gen_commands.get_settings_value')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
@@ -113,9 +72,11 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
 
+    @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
-    def test_generate_command_portal_yaml(self, mock_os_path_isfile, mock_file):
+    @mock.patch('tethys_cli.gen_commands.os.makedirs')
+    def test_generate_command_portal_yaml(self, _, mock_os_path_isfile, mock_file, mock_write_info):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_PORTAL_OPTION
         mock_args.directory = None
@@ -125,6 +86,9 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
+
+        rts_call_args = mock_write_info.call_args_list
+        self.assertIn('Please review the generated portal_config.yml', rts_call_args[0][0][0])
 
     @mock.patch('tethys_cli.gen_commands.render_template')
     @mock.patch('tethys_cli.gen_commands.linux_distribution')
@@ -271,13 +235,13 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
 
-    @mock.patch('tethys_cli.gen_commands.print')
+    @mock.patch('tethys_cli.gen_commands.write_error')
     @mock.patch('tethys_cli.gen_commands.exit')
     @mock.patch('tethys_cli.gen_commands.os.path.isdir')
     @mock.patch('tethys_cli.gen_commands.get_environment_value')
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_asgi_settings_option_bad_directory(self, mock_os_path_isfile, mock_env,
-                                                                 mock_os_path_isdir, mock_exit, mock_print):
+                                                                 mock_os_path_isdir, mock_exit, mock_write_error):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = '/foo/temp'
@@ -294,20 +258,20 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isdir.assert_called_once_with(mock_args.directory)
 
         # Check if print is called correctly
-        rts_call_args = mock_print.call_args_list
+        rts_call_args = mock_write_error.call_args_list
         self.assertIn('ERROR: ', rts_call_args[0][0][0])
         self.assertIn('is not a valid directory', rts_call_args[0][0][0])
 
         mock_env.assert_any_call('CONDA_HOME')
         mock_env.assert_called_with('CONDA_ENV_NAME')
 
-    @mock.patch('tethys_cli.gen_commands.print')
+    @mock.patch('tethys_cli.gen_commands.write_warning')
     @mock.patch('tethys_cli.gen_commands.exit')
     @mock.patch('tethys_cli.gen_commands.input')
     @mock.patch('tethys_cli.gen_commands.get_environment_value')
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_asgi_settings_pre_existing_input_exit(self, mock_os_path_isfile, mock_env,
-                                                                    mock_input, mock_exit, mock_print):
+                                                                    mock_input, mock_exit, mock_write_warning):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
@@ -324,7 +288,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
 
         # Check if print is called correctly
-        rts_call_args = mock_print.call_args_list
+        rts_call_args = mock_write_warning.call_args_list
         self.assertIn('Generation of', rts_call_args[0][0][0])
         self.assertIn('cancelled', rts_call_args[0][0][0])
 
@@ -364,8 +328,8 @@ class CLIGenCommandsTest(unittest.TestCase):
 
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
-    @mock.patch('tethys_cli.gen_commands.print')
-    def test_generate_command_install_option(self, mock_print, mock_os_path_isfile, mock_file):
+    @mock.patch('tethys_cli.gen_commands.write_info')
+    def test_generate_command_install_option(self, mock_write_info, mock_os_path_isfile, mock_file):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_INSTALL_OPTION
         mock_args.directory = None
@@ -373,25 +337,8 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         generate_command(args=mock_args)
 
-        rts_call_args = mock_print.call_args_list
+        rts_call_args = mock_write_info.call_args_list
         self.assertIn('Please review the generated install.yml', rts_call_args[0][0][0])
-
-        mock_os_path_isfile.assert_called_once()
-        mock_file.assert_called()
-
-    @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
-    @mock.patch('tethys_cli.gen_commands.os.path.isfile')
-    @mock.patch('tethys_cli.gen_commands.print')
-    def test_generate_command_site_content_yaml_option(self, mock_print, mock_os_path_isfile, mock_file):
-        mock_args = mock.MagicMock()
-        mock_args.type = GEN_SITE_YAML_OPTION
-        mock_args.directory = None
-        mock_os_path_isfile.return_value = False
-
-        generate_command(args=mock_args)
-
-        rts_call_args = mock_print.call_args_list
-        self.assertIn('Please review the generated site_content.yml', rts_call_args[0][0][0])
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()

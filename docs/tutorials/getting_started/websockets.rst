@@ -150,24 +150,22 @@ a. Update the ``consumer class`` from step (1.a) to look like this.
 
 The respective print messages set on connect and disconnect will appear in the terminal when the app home is opened or closed.
 
-b. ``Channel layers`` require a backend to store the ``WebSocket messages`` coming from different app instances. These messages can be stored in memory. Add the following peace of code to tethys' ``settings.py``.
+b. ``Channel layers`` require a backend to store the ``WebSocket messages`` coming from different app instances. These messages can be stored in memory. Add the following peace of code to the :file:`portal_config.yml` file.
 
 ::
 
     ...
 
-    CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels.layers.InMemoryChannelLayer'
-        },
-    }
+    CHANNEL_LAYERS:
+      default:
+        BACKEND: channels.layers.InMemoryChannelLayer
 
 .. note::
 
     ``Django Channels`` recommends the use of an external backend store for production environments. The ``channels-redis`` python package plus ``Redis Server`` are the default recommendation. For more information see ``Django Channels`` `channel layers <https://channels.readthedocs.io/en/latest/topics/channel_layers.html>`_ and `deploying <https://channels.readthedocs.io/en/latest/deploying.html>`_ sections.
 
 .. tip::
-    A ``Channel layer`` can be added to the settings.py using the ``tethys gen settings --channel-layer`` followed by the python dot-formatted path of the channel layer. See ``tethys gen settings --help`` for details.
+    A ``Channel layer`` can be added to the `settings` section of the :file:`portal_config.yml` by manually editing the file or by running ``tethys settings --set CHANNEL_LAYERS.default.BACKEND <<CHANNEL_LAYER>>`` where ``<<CHANNEL_LAYER>>`` is the python dot-formatted path of the channel layer. See :ref:`tethys_configuration` for details.
 
 Channel Layer Definitions
 -------------------------
