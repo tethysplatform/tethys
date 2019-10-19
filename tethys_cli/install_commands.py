@@ -352,7 +352,7 @@ def run_portal_install(app_name):
 
     write_msg("Portal install file found...Processing...")
     portal_options = open_file(file_path)
-    app_check = 'apps' in portal_options
+    app_check = portal_options and 'apps' in portal_options and portal_options['apps']
     if app_check and app_name in portal_options['apps'] and 'services' in portal_options['apps'][app_name]:
         services = portal_options['apps'][app_name]['services']
         if services and len(services) > 0:
