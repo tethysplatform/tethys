@@ -129,7 +129,7 @@ d. Clear the default ``home.html`` template and add the following code to it.
 
 As you can see, the script context variable has been added to the app_content block. If you start tethys and go to the home page of this app you should see something like this:
 
-.. figure:: ../../images/tutorial/bokeh_integration/bokeh_integration_1.png
+.. figure:: ../images/tutorial/bokeh_integration/bokeh_integration_1.png
     :width: 650px
 
 This is a simple Bokeh plot. We will now add the rest of the logic to make it an interactive plot. We will add a ``Slider`` widget. Then, we will create a callback function to modify the time-series plot based on the slider. Finally, we will add both our plot and slider to the document tree using a ``Column`` layout.
@@ -166,7 +166,7 @@ e. Modify the ``handler function`` from ``controller.py`` to look like this.
 
 If you start tethys and go to the home page of this app you should see something like this:
 
-.. figure:: ../../images/tutorial/bokeh_integration/bokeh_integration_2.png
+.. figure:: ../images/tutorial/bokeh_integration/bokeh_integration_2.png
     :width: 650px
 
 The ``Slider`` and ``Plot`` will appear in the order they were added to the ``Column`` layout. If the value of the ``Slider`` changes, the data in the ``Plot`` will reflect this change based on this expression: `data = df.rolling(f'{new}D').mean()`. Where `df` is the sample data and `new` is the new ``Slider`` value.
@@ -329,7 +329,7 @@ f. To add the new endpoint to the app navigation bar, go to the ``base.html`` te
 
 If you start tethys and go to the shapes endpoint of this app you should see something like this:
 
-.. figure:: ../../images/tutorial/bokeh_integration/bokeh_integration_3.png
+.. figure:: ../images/tutorial/bokeh_integration/bokeh_integration_3.png
     :width: 650px
 
 4. Solution

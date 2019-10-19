@@ -114,7 +114,7 @@ A ``WebSocket URL`` follows a pattern similar to tethys app ``HTTP URLs``. The d
 
 Upon loading the app home page, the "WebSocket Connected" message will be printed to the terminal. The ``WebSocket connection`` can also be accessed from the browser by right-clicking and selecting inspect, network and filtering by "WS" as displayed in the image below.
 
-.. image:: ../../images/tutorial/advanced/ws-conn-browser.png
+.. image:: ../images/tutorial/advanced/ws-conn-browser.png
    :width: 600px
    :align: center
 

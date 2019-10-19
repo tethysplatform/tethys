@@ -27,7 +27,7 @@ If you wish to use the advanced solution as a starting point:
 1. Workspace Quotas
 ===================
 
-In the :doc:`./advanced` tutorial we refactored the Model to use an SQL database, rather than files. However, we might want to store some data as files in case we want to export them later. This will also allow us to demonstrate the use of the built-in workspace qutoas that come with the :doc:`../../tethys_sdk/tethys_quotas`.
+In the :doc:`./getting_started/advanced` tutorial we refactored the Model to use an SQL database, rather than files. However, we might want to store some data as files in case we want to export them later. This will also allow us to demonstrate the use of the built-in workspace qutoas that come with the :doc:`../../tethys_sdk/tethys_quotas`.
 
 a.Add the :ref:`user_workspace` decorator and a `user_workspace` argument to the ``assign_hydrograph`` controller. Write the hydrograph CSV with the dam id prepended to the filename to the user's workspace. The prepended id will be used later when handling a user deleting a dam they have created.
 
@@ -318,13 +318,13 @@ b. Now go into the portal's :file:`portal_config.yml` file and add the dot-path 
 
 c. After re-starting tethys the ``User Dam Quota`` should be visible in the ``Resource Quota`` section of the admin pages. Click on it and make sure `Active` and `Impose default` are both ``Enabled``.
 
-.. figure:: ../../images/tutorial/quotas/ResourceQuotaView.png
+.. figure:: ../images/tutorial/quotas/ResourceQuotaView.png
     :width: 600px
     :align: center
 
 d. Go into the app's settings page through the portal admin pages and delete the value for ``max_dams`` in the ``CUSTOM SETTINGS`` section. This will ensure that our custom quota is handling the amount of dams that can be added instead of the custom setting.
 
-.. figure:: ../../images/tutorial/quotas/MaxDamsView.png
+.. figure:: ../images/tutorial/quotas/MaxDamsView.png
     :width: 600px
     :align: center
 
