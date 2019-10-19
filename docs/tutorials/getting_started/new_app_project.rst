@@ -20,10 +20,10 @@ To generate a new app using the scaffold, open a terminal, press :kbd:`CTRL-C` t
 
 ::
 
-             $ t
-    (tethys) $ mkdir ~/tethysdev
-    (tethys) $ cd ~/tethysdev
-    (tethys) $ tethys scaffold dam_inventory
+    t
+    mkdir ~/tethysdev
+    cd ~/tethysdev
+    tethys scaffold dam_inventory
 
 **Windows:**
 
@@ -31,9 +31,9 @@ Locate the ``tethys_cmd.bat`` (in the TETHYS_HOME directory) and double-click it
 
 ::
 
-    (tethys) $ mkdir C:%HOMEPATH%\tethysdev
-    (tethys) $ cd %HOMEPATH%\tethysdev
-    (tethys) $ tethys scaffold dam_inventory
+    mkdir C:%HOMEPATH%\tethysdev
+    cd %HOMEPATH%\tethysdev
+    tethys scaffold dam_inventory
 
 .. tip::
 
@@ -52,15 +52,15 @@ Now that you have a new Tethys app project, you need to install the app on your 
 
 ::
 
-    (tethys) $ cd ~/tethysdev/tethysapp-dam_inventory
-    (tethys) $ tethys install -d
+    cd ~/tethysdev/tethysapp-dam_inventory
+    tethys install -d
 
 **Windows:**
 
 ::
 
-    (tethys) $ cd C:%HOMEPATH%\tethysdev\tethysapp-dam_inventory
-    (tethys) $ tethys install -d
+    cd C:%HOMEPATH%\tethysdev\tethysapp-dam_inventory
+    tethys install -d
 
 .. tip::
 
@@ -74,7 +74,7 @@ Use start up the development server:
 
 ::
 
-    (tethys) $ tethys manage start
+    tethys manage start
 
 .. note::
 
@@ -82,13 +82,13 @@ Use start up the development server:
 
     ::
 
-        (tethys) $ tethys db start
+        tethys db start
 
     You can also stop the Tethys database by running:
 
     ::
 
-        (tethys) $tethys db stop
+        tethys db stop
 
 Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser. If all has gone well, you should see your app listed on the app library page. Exploring your new app won't take long, because there is only one page. Familiarize yourself with different parts of the app interface (see below).
 

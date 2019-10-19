@@ -247,8 +247,8 @@ Next, go to your Geoserver web interface (http://domain-name:8181/geoserver/web)
 
 Finally, restart uWSGI and Nginx services to effect the changes::
 
-    $ sudo systemctl restart tethys.uwsgi.service
-    $ sudo systemctl restart nginx
+    sudo systemctl restart tethys.uwsgi.service
+    sudo systemctl restart nginx
 
 .. tip::
 

@@ -22,9 +22,9 @@ If you wish to use the intermediate solution as a starting point:
 
 ::
 
-    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
-    $ cd tethysapp-dam_inventory
-    $ git checkout intermediate-solution
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    cd tethysapp-dam_inventory
+    git checkout intermediate-solution
 
 1. Persistent Store Database
 ============================
@@ -290,7 +290,7 @@ i. Execute **syncstores** command to initialize Persistent Store database:
 
     ::
 
-        (tethys) $ tethys syncstores dam_inventory
+        tethys syncstores dam_inventory
 
 2. Use Custom Settings
 ======================
@@ -673,7 +673,7 @@ b. Execute **syncstores** command again to add the new tables to the database:
 
     ::
 
-        (tethys) $ tethys syncstores dam_inventory
+        tethys syncstores dam_inventory
 
 
 6. File Upload
@@ -1299,6 +1299,6 @@ This concludes the Advanced Tutorial. You can view the solution on GitHub at `<h
 
 ::
 
-    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
-    $ cd tethysapp-dam_inventory
-    $ git checkout advanced-solution
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    cd tethysapp-dam_inventory
+    git checkout advanced-solution

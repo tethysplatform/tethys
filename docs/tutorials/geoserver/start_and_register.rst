@@ -12,8 +12,8 @@ Create a new app, but don't install it yet:
 
 ::
 
-    $ t
-    (tethys) $ tethys scaffold geoserver_app
+    t
+    tethys scaffold geoserver_app
 
 Create Spatial Dataset Service Setting
 ======================================
@@ -53,9 +53,9 @@ Install GeoServer and Start Tethys Development Server
 
 ::
 
-    (tethys) $ cd tethysapp-geoserver_app
-    (tethys) $ tethys install -d
-    (tethys) $ tethys manage start
+    cd tethysapp-geoserver_app
+    tethys install -d
+    tethys manage start
 
 
 Start GeoServer
@@ -65,7 +65,7 @@ If you are using the Docker containers, start up your :doc:`../../software_suite
 
 ::
 
-	(tethys) $ tethys docker start -c geoserver
+	tethys docker start -c geoserver
 
 Otherwise ensure that you have GeoServer installed and running. Refer to the `GeoServer Installation Guide <http://docs.geoserver.org/stable/en/user/installation/>`_ for system specific instructions.
 
@@ -101,10 +101,10 @@ Assign the "primary_geoserver" Spatial Dataset Service to the "main_geoserver" s
 
     ::
 
-        (tethys) $ tethys uninstall geoserver_app
-        (tethys) $ cd tethysapp-geoserver_app
-        (tethys) $ tethys install -d
-        (tethys) $ tethys manage start
+        tethys uninstall geoserver_app
+        cd tethysapp-geoserver_app
+        tethys install -d
+        tethys manage start
 
 
 GeoServer Web Admin Interface

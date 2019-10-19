@@ -39,7 +39,7 @@ Install Script Options
 
 You can customize your tethys installation by passing command line options to the installation script. The available options can be listed by running::
 
-     $ bash install_tethys.sh --help
+     bash install_tethys.sh --help
 
 Each option is also descriped here:
   * `-n, --conda-env-name <NAME>`:
@@ -145,27 +145,27 @@ Each option is also descriped here:
 
 Here is an example of calling the installation script with customized options::
 
-    $ bash install_tethys.sh -t ~/Workspace/tethys -a localhost -p 8005 -c ~/miniconda3 --db-username tethys_db_user --db-password db_user_pass --db-port 5437 -S tethys -E email@example.com -P tpass
+    bash install_tethys.sh -t ~/Workspace/tethys -a localhost -p 8005 -c ~/miniconda3 --db-username tethys_db_user --db-password db_user_pass --db-port 5437 -S tethys -E email@example.com -P tpass
 
 The installation script may take several minutes to run. Once it is completed you will need to activate the new conda environment so you can start the Tethys development server. This is most easily done using an alias created by the install script. To enable the alias you need to open a new terminal or re-run the :file:`.bashrc` (Linux) or :file:`.bash_profile` (Mac) file.
 
 For Linux::
 
-    $ . ~/.bashrc
+    . ~/.bashrc
 
 For Mac::
 
-    $ . ~/.bash_profile
+    . ~/.bash_profile
 
  You can then activate the Tethys conda environment and start the Tethys development server by running::
 
-    $ t
-    (tethys) $ tethys manage start
+    t
+    tethys manage start
 
 or simply just::
 
-    $ t
-    (tethys) $ tms
+    t
+    tms
 
 .. tip::
 
@@ -209,10 +209,12 @@ or simply just::
       2. Start the Tethys database server
       3. start the Tethys development server
 
-    Using the supplied aliases, starting the Tethys development server from a fresh terminal can be done with the following two commands::
+    Using the supplied aliases, starting the Tethys development server from a fresh terminal can be done with the following two commands:
 
-          $ t
-          (tethys) $ tstart
+    ::
+
+        t
+        tstart
 
 Congratulations! You now have Tethys Platform running a in a development server on your machine. Tethys Platform provides a web interface that is called the Tethys Portal. You can access your Tethys Portal by opening `<http://localhost:8000/>`_ (or if you provided custom host and port options to the install script then it will be `<HOST>:<PORT>`) in a new tab in your web browser.
 

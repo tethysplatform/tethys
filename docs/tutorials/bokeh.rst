@@ -14,10 +14,10 @@ Create a and install a new Tethys app named bokeh_tutorial.
 
 ::
 
-    $ t
-    (tethys) $ tethys scaffold bokeh_tutorial
-    (tethys) $ cd tethysapp-bokeh_tutorial
-    (tethys) $ tethys install -d
+    t
+    tethys scaffold bokeh_tutorial
+    cd tethysapp-bokeh_tutorial
+    tethys install -d
 
 1. Bokeh Server
 ===============
@@ -339,4 +339,4 @@ This concludes the ``Bokeh Integration`` tutorial. You can view the solution on 
 
 ::
 
-    $ git clone https://github.com/tethysplatform/tethysapp-bokeh_tutorial
+    git clone https://github.com/tethysplatform/tethysapp-bokeh_tutorial

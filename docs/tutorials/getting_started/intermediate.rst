@@ -23,9 +23,9 @@ If you wish to use the beginner solution of the last tutorial as a starting poin
 
 ::
 
-    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
-    $ cd tethysapp-dam_inventory
-    $ git checkout beginner-solution
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    cd tethysapp-dam_inventory
+    git checkout beginner-solution
 
 1. Forms and User Input
 =======================
@@ -745,8 +745,8 @@ This concludes the Intermediate Tutorial. You can view the solution on GitHub at
 
 ::
 
-    $ mkdir ~/tethysdev
-    $ cd ~/tethysdev
-    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
-    $ cd tethysapp-dam_inventory
-    $ git checkout intermediate-solution
+    mkdir ~/tethysdev
+    cd ~/tethysdev
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    cd tethysapp-dam_inventory
+    git checkout intermediate-solution

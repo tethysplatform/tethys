@@ -11,7 +11,7 @@ Scaffolding Tethys Extensions is done in the same way scaffolding of apps is per
 
 ::
 
-    $ tethys scaffold -e my_first_extension
+    tethys scaffold -e my_first_extension
 
 Installing an Extension
 -----------------------
@@ -20,15 +20,15 @@ This will create a new directory called ``tethysext-my_first_extension``. To ins
 
 ::
 
-    $ cd tethysext-my_first_extension
-    $ tethys install -d
+    cd tethysext-my_first_extension
+    tethys install -d
 
 Alternatively, to install the extension on a production Tethys Portal:
 
 ::
 
-    $ cd tethysext-my_first_extension
-    $ tethys install
+    cd tethysext-my_first_extension
+    tethys install
 
 If the installation was successful, you should see something similar to this when Tethys Platform loads:
 
@@ -46,5 +46,5 @@ An extension can be easily uninstalled using the ``uninstall`` command provided 
 
 ::
 
-    $ tethys uninstall -e my_first_extension
+    tethys uninstall -e my_first_extension
 

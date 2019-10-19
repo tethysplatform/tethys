@@ -20,9 +20,9 @@ If you wish to use the advanced solution as a starting point:
 
 ::
 
-    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
-    $ cd tethysapp-dam_inventory
-    $ git checkout advanced-solution
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    cd tethysapp-dam_inventory
+    git checkout advanced-solution
 
 1. Workspace Quotas
 ===================
@@ -202,11 +202,11 @@ Then make the following changes to the ``add_dam`` controller:
 
     ...
 
-Now that we have changed the model in the persistent store we will need to re-run ``$ tethys syncstores dam_inventory`` through the command line.
+Now that we have changed the model in the persistent store we will need to re-run ``tethys syncstores dam_inventory`` through the command line.
 
 .. important::
 
-    Don't forget to run ``$ tethys syncstores dam_inventory``!
+    Don't forget to run ``tethys syncstores dam_inventory``!
 
 f. Modify the ``assign_hydrograph`` controller again, this time to only allow users to assign hydrographs to dams that they have created.
 
@@ -446,6 +446,6 @@ This concludes the Quotas Tutorial. You can view the solution on GitHub at `<htt
 
 ::
 
-    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
-    $ cd tethysapp-dam_inventory
-    $ git checkout quotas-solution
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    cd tethysapp-dam_inventory
+    git checkout quotas-solution

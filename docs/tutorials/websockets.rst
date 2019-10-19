@@ -18,9 +18,9 @@ If you wish to use the advanced solution as a starting point:
 
 ::
 
-    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
-    $ cd tethysapp-dam_inventory
-    $ git checkout advanced-solution
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    cd tethysapp-dam_inventory
+    git checkout advanced-solution
 
 .. note::
 
@@ -310,6 +310,6 @@ This concludes the WebSockets tutorial. You can view the solution on GitHub at `
 
 ::
 
-    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
-    $ cd tethysapp-dam_inventory
-    $ git checkout websocket-solution
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    cd tethysapp-dam_inventory
+    git checkout websocket-solution

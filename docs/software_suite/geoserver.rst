@@ -26,8 +26,8 @@ Installing the GeoServer Docker is done using the Tethys Command Line Interface 
 
 ::
 
-    $ . /usr/lib/tethys/bin/activate
-    $ tethys docker init -c geoserver
+    . /usr/lib/tethys/bin/activate
+    tethys docker init -c geoserver
 
 This command will initiate the download of the GeoServer Docker image. Once the image finishes downloading it will be used to create a Docker container and you will be prompted to configure it. Here is a brief explanation of each of the configuration options:
 
@@ -65,23 +65,23 @@ Use these instructions to migrate the data in a GeoServer 2.7.0 Docker to a newe
 
   ::
 
-      $ mkdir ~/backup
-      $ cd ~/backup
-      $ docker run --rm --volumes-from tethys_geoserver -v $(pwd):/backup ubuntu:14.04 tar cvf /backup/backup.tar /var/lib/geoserver/data
+      mkdir ~/backup
+      cd ~/backup
+      docker run --rm --volumes-from tethys_geoserver -v $(pwd):/backup ubuntu:14.04 tar cvf /backup/backup.tar /var/lib/geoserver/data
 
 2. Rename old GeoServer docker container as a backup and verify that it was renamed
 
   ::
 
-      $ docker rename tethys_geoserver tethys_geoserver_bak
-      $ docker ps -a
+      docker rename tethys_geoserver tethys_geoserver_bak
+      docker ps -a
 
 3. Pull new docker container (only in Tethys versions 1.4.0+)
 
   ::
 
-      $ . /usr/lib/tethys/bin/activate
-      (tethys) $ tethys docker init
+      . /usr/lib/tethys/bin/activate
+      tethys docker init
 
 4. Respond to the prompts to configure the new GeoServer container, which can be configured to run in a clustered mode (refer to the explanation of the configuration parameters in the installation instructions).
 
@@ -89,36 +89,36 @@ Use these instructions to migrate the data in a GeoServer 2.7.0 Docker to a newe
 
   ::
 
-      (tethys) $ tethys docker start -c geoserver
-      (tethys) $ tethys docker stop -c geoserver
+      tethys docker start -c geoserver
+      tethys docker stop -c geoserver
 
 6. Browse to the directory where you bound the GeoServer data directory (default is /usr/lib/tethys/geoserver):
 
   ::
 
-      $ cd /usr/lib/tethys/geoserver
-      $ ls -alh data/
+      cd /usr/lib/tethys/geoserver
+      ls -alh data/
 
 7. You should see the contents of the data directory for the GeoServer docker container. Notice that everything is owned by root. This is because the container runs with the root user. To restore the data from your old container, you will need to delete the contents of this directory and copy over the the data in the tar file in ~/backup.
 
   ::
 
-      $ sudo rm -rf data/
-      $ cp ~/backup/backup.tar .
-      $ tar xvf backup.tar --strip 3
-      $ rm backup.tar
+      sudo rm -rf data/
+      cp ~/backup/backup.tar .
+      tar xvf backup.tar --strip 3
+      rm backup.tar
 
 8. Listing the contents of data again, you should see the data restored from your previous GeoServer docker:
 
   ::
 
-      $ ls -alh data/
+      ls -alh data/
 
 9. Start up the GeoServer container again.
 
   ::
 
-      (tethys) $ tethys docker start -c geoserver
+      tethys docker start -c geoserver
 
 10. The layer preview and some other features of GeoServer will not work properly until you set the Proxy Base URL due to the clustered configuration of the GeoServer. Navigate to `Settings > Global` and locate the Proxy Base URL field and enter the external URL of your GeoServer (e.g.: http://localhost:8181/geoserver).
 
@@ -130,4 +130,4 @@ Use these instructions to migrate the data in a GeoServer 2.7.0 Docker to a newe
 
   ::
 
-      $ docker rm tethys_geoserver_bak
+      docker rm tethys_geoserver_bak
