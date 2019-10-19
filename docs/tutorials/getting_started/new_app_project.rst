@@ -2,7 +2,7 @@
 New Tethys App Project
 **********************
 
-**Last Updated:** June 2017
+**Last Updated:** October 2019
 
 Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../../supplementary/app_project`).
 
@@ -90,7 +90,13 @@ Use start up the development server:
 
         tethys db stop
 
-Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser. If all has gone well, you should see your app listed on the app library page. Exploring your new app won't take long, because there is only one page. Familiarize yourself with different parts of the app interface (see below).
+Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login the default portal user is:
+
+* **username**: admin
+* **password**: pass
+
+
+If all has gone well, you should see your app listed on the app library page. Click on the app tile to launch it. Exploring your new app won't take long, because there is only one page. Familiarize yourself with different parts of the app interface (see below).
 
 .. figure:: ../../images/app_controls.png
     :width: 650px
@@ -130,4 +136,11 @@ For convenience, all paths in the following tutorials will be given relative to 
 
 .. tip::
 
-    As you explore the contents of your app project, you will notice that many of the directories have files named :file:`\_\_init\_\_.py`. Though many of these files are empty, they are important and should not be deleted. They inform Python that the containing directory is a Python package. Python packages and their contents can be imported in Python scripts. Removing the :file:`\_\_init\_\_.py` files will result in breaking import statements and it could make some of your code inaccessible. Similarly, if you add a directory to your project that contains Python modules and you would like them to be made available to your code, add a :file:`\_\_init\_\_.py` file to the directory to make it a package.
+    As you explore the contents of your app project, you will notice that many of the directories have files named :file:`\_\_init\_\_.py`. Though many of these files are empty, they are important and should not be deleted. They inform Python that the containing directory is a Python package. Python packages and their contents can be imported in Python scripts. Removing the :file:`\_\_init\_\_.py` files will result in breaking import statements and it could make some of your code inaccessible.
+
+    Similarly, if you add a directory to your project that contains Python modules and you would like them to be made available to your code, add a :file:`\_\_init\_\_.py` file to the directory to make it a package.
+
+
+.. warning::
+
+    The :file:`tethysapp` directory should no longer contain an :file:`\_\_init\_\_.py` as it did in version of Tethys Platform prior to 3.0. This directory is a Python namespace directory and in Tethys Platform 3.0 the implicit namespace pattern is used. Adding an :file:`\_\_init\_\_.py` to this directory will break the app.
