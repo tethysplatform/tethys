@@ -98,11 +98,11 @@ In the above example, ``catalog_db`` is the name of the setting in your :file:`a
 .. _tethys_portal_yml:
 
 portal_config.yml
-------------
+-----------------
 
 The file is designed to be maintained by Tethys Portal administrators to automatically assign services defined in their Tethys Portal to apps they are installing.
 
-.. literalinclude:: resources/example-portal_config.yml
+.. literalinclude:: resources/example-portal-config.yml
    :language: yaml
 
 **portal_config.yml Options:**
