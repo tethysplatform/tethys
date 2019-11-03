@@ -2,7 +2,7 @@
 Quotas Concepts
 ***************
 
-**Last Updated:** April 2019
+**Last Updated:** October 2019
 
 This tutorial introduces Tethys Quotas API concepts for Tethys developers. The topics covered include:
 
@@ -385,8 +385,9 @@ b. Now go into the portal's :file:`portal_config.yml` file and add the dot-path 
 
 ::
 
-    RESOURCE_QUOTA_HANDLERS:
-      - tethysapp.dam_inventory.dam_quota_handler.DamQuotaHandler
+    settings:
+      RESOURCE_QUOTA_HANDLERS:
+        - tethysapp.dam_inventory.dam_quota_handler.DamQuotaHandler
 
 c. After re-starting tethys the ``User Dam Quota`` should be visible in the ``Resource Quota`` section of the admin pages. Click on it and make sure `Active` and `Impose default` are both ``Enabled``.
 
