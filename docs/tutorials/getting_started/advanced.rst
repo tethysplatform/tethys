@@ -20,11 +20,11 @@ This tutorial introduces advanced concepts for Tethys developers. The topics cov
 
 If you wish to use the intermediate solution as a starting point:
 
-::
+.. parsed-literal::
 
     git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     cd tethysapp-dam_inventory
-    git checkout intermediate-solution
+    git checkout -b intermediate-solution intermediate-|version|
 
 1. Persistent Store Database
 ============================
@@ -1348,8 +1348,8 @@ f. Update ``map.css``:
 
 This concludes the Advanced Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
 
-::
+.. parsed-literal::
 
     git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     cd tethysapp-dam_inventory
-    git checkout advanced-solution
+    git checkout -b advanced-solution advanced-|version|

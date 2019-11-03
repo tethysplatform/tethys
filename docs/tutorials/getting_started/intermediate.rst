@@ -21,11 +21,11 @@ This tutorial introduces intermediate concepts for Tethys developers. The topics
 
 If you wish to use the beginner solution of the last tutorial as a starting point:
 
-::
+.. parsed-literal::
 
     git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     cd tethysapp-dam_inventory
-    git checkout beginner-solution
+    git checkout -b beginner-solution beginner-|version|
 
 1. Forms and User Input
 =======================
@@ -819,10 +819,8 @@ a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
 
 This concludes the Intermediate Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
 
-::
+.. parsed-literal::
 
-    mkdir ~/tethysdev
-    cd ~/tethysdev
     git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     cd tethysapp-dam_inventory
-    git checkout intermediate-solution
+    git checkout -b intermediate-solution intermediate-|version|

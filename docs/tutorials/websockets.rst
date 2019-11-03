@@ -16,11 +16,11 @@ This tutorial introduces ``WebSocket`` communication concepts for Tethys develop
 
 If you wish to use the advanced solution as a starting point:
 
-::
+.. parsed-literal::
 
     git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     cd tethysapp-dam_inventory
-    git checkout advanced-solution
+    git checkout -b advanced-solution advanced-|version|
 
 .. note::
 
@@ -281,8 +281,8 @@ Test the ``WebSocket communication`` by opening two instances of the dam invento
 
 This concludes the WebSockets tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
 
-::
+.. parsed-literal::
 
     git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     cd tethysapp-dam_inventory
-    git checkout websocket-solution
+    git checkout -b websocket-solution websocket-|version|

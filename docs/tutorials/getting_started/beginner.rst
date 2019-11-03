@@ -401,8 +401,8 @@ The ``url`` tag is used in templates to lookup URLs using the name of the UrlMap
 
 This concludes the Beginner Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
 
-::
+.. parsed-literal::
 
     git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
     cd tethysapp-dam_inventory
-    git checkout beginner-solution-30
+    git checkout -b beginner-solution beginner-|version|
