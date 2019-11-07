@@ -92,7 +92,7 @@ Add JavaScript for Dynamic Control Behavior
       <script src="{% static 'earth_engine/js/gee_datasets.js' %}" type="text/javascript"></script>
     {% endblock %}
 
-1. Implement Methods
+2. Implement Methods
 ====================
 
 1. Implement the `bind_controls` method as follows:
