@@ -1,5 +1,0 @@
-conda:
-    file: docs/docs_environment.yml
-python:
-    version: 3
-    pip_install: true
