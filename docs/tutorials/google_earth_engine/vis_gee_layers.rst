@@ -120,6 +120,10 @@ Visualize Google Earth Engine Datasets
 
 4. Implement the `get_image_collection_asset` function as follows:
 
+.. todo::
+
+    Discuss Map Services and the XYZ services that we will be building a URL for. Find GEE docs on this.
+
 .. code-block:: python
 
     def get_image_collection_asset(platform, sensor, product, date_from=None, date_to=None, reducer='median'):
@@ -265,14 +269,14 @@ Visualize Google Earth Engine Datasets
  	var m_map,
  	    m_gee_layer;
 
-2. Add the following module method declarations in :file:`public/js/gee_datasets.js`:
+2. Add the following module function declarations in :file:`public/js/gee_datasets.js` below the dataset select function declarations:
 
 .. code-block:: javascript
 
     // Map Methods
  	var update_map, update_data_layer, create_data_layer, clear_map;
 
-3. Add the following module method stubs in :file:`public/js/gee_datasets.js`:
+3. Add the following module function stubs in :file:`public/js/gee_datasets.js`, just below the `collect_data` implementation:
 
 .. code-block:: javascript
 
@@ -284,6 +288,31 @@ Visualize Google Earth Engine Datasets
     create_data_layer = function(url) {};
 
     clear_map = function() {};
+
+4. Retrieve the `TethyMapView` OpenLayers `Map` object when the module initializes:
+
+.. code-block:: javascript
+
+    /************************************************************************
+    *                  INITIALIZATION / CONSTRUCTOR
+    *************************************************************************/
+    $(function() {
+        // Initialize Global Variables
+        bind_controls();
+
+        // EE Products
+        EE_PRODUCTS = $('#ee-products').data('ee-products');
+
+        // Initialize values
+        m_platform = $('#platform').val();
+        m_sensor = $('#sensor').val();
+        m_product = $('#product').val();
+        INITIAL_START_DATE = m_start_date = $('#start_date').val();
+        INITIAL_END_DATE = m_end_date = $('#end_date').val();
+        m_reducer = $('#reducer').val();
+
+        m_map = TETHYS_MAP_VIEW.getMap();
+    });
 
 4. Implement Adding Layers to the Map
 =====================================
@@ -310,8 +339,6 @@ Visualize Google Earth Engine Datasets
                 alert('Oops, there was a problem loading the map you requested. Please try again.');
             }
         });
-
-
     };
 
 2. Call `update_map` when the `Load` button is clicked (in `bind_controls` method):
@@ -322,7 +349,49 @@ Visualize Google Earth Engine Datasets
         update_map();
     });
 
-3. Implement the `update_data_layer` method in :file:`public/js/gee_datasets.js`
+    .. todo::
+
+        Testing at this point will demonstrate the need for the csrf_token, b/c it sends an AJAX POST request. Discuss the cookie that is used for this purpose.
+
+3. Add the following code to the :file:`public/js/main.js` file to automatically attach the CSRF Token to each AJAX request:
+
+.. code-block:: javascript
+
+    // Get a cookie
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // find if method is csrf safe
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    // add csrf token to appropriate ajax requests
+    $(function() {
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+                }
+            }
+        });
+    }); //document ready;
+
+4. Implement the `update_data_layer` method in :file:`public/js/gee_datasets.js`
 
 .. code-block:: javascript
 
@@ -334,7 +403,7 @@ Visualize Google Earth Engine Datasets
         }
     };
 
-4. Implement the `create_data_layer` method in :file:`public/js/gee_datasets.js`
+5. Implement the `create_data_layer` method in :file:`public/js/gee_datasets.js`
 
 .. code-block:: javascript
 
@@ -360,17 +429,137 @@ Visualize Google Earth Engine Datasets
 
 .. code-block:: python
 
+    clear_button = Button(
+        name='clear_map',
+        display_text='Clear',
+        style='default',
+        attributes={'id': 'clear_map'}
+    )
+
+    context = {
+        'platform_select': platform_select,
+        'sensor_select': sensor_select,
+        'product_select': product_select,
+        'start_date': start_date,
+        'end_date': end_date,
+        'reducer_select': reducer_select,
+        'load_button': load_button,
+        'clear_button': clear_button,
+        'ee_products': EE_PRODUCTS,
+        'map_view': map_view
+    }
+
+
+
 2. Add `Clear` button to :file:`home.html` template:
 
 .. code-block:: html+django
+
+    {% block app_navigation_items %}
+      <li class="title">Select Dataset</li>
+      {% gizmo platform_select %}
+      {% gizmo sensor_select %}
+      {% gizmo product_select %}
+      {% gizmo start_date %}
+      {% gizmo end_date %}
+      {% gizmo reducer_select %}
+      <p class="help">Change variables to select a data product, then press "Load" to add that product to the map.</p>
+      {% gizmo load_button %}
+      {% gizmo clear_button %}
+    {% endblock %}
 
 3. Implement `clear_map` method in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
+    clear_map = function() {
+        if (m_gee_layer) {
+            m_map.removeLayer(m_gee_layer);
+            m_gee_layer = null;
+        }
+    };
 
+4. Bind the `clear_map` method to the `on-click` event of the `clear_map` button (in the `bind_controls` method):
+
+.. code-block:: javascript
+
+    $('#clear_map').on('click', function() {
+        clear_map();
+    });
 
 6. Implement Map Loading Indicator
 ==================================
 
-1. Add
+1. Download this :download:`Google Earth Engine App Icon <./resources/map-loader.gif>` or find one that you like and save it to the :file:`public/images` directory.
+
+2. Create a new stylesheet called :file:`public/css/loader.css` with styles for the loader image:
+
+.. code-block:: css
+
+    #loader {
+        display: none;
+        position: absolute;
+        top: calc(50vh - 185px);
+        left: calc(50vw - 186px);
+    }
+
+    #loader img {
+        border-radius: 10%;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    #loader.show {
+        display: block;
+    }
+
+3. Add the image to the `after_app_content` block of the :file:`templates/earth_engine/home.html` template and include the new :file:`public/css/loader.css`:
+
+.. code-block:: html+django
+
+    {% block content_dependent_styles %}
+        {{ block.super }}
+        <link rel="stylesheet" href="{% static 'earth_engine/css/map.css' %}" />
+        <link rel="stylesheet" href="{% static 'earth_engine/css/loader.css' %}" />
+    {% endblock %}
+
+.. code-block:: html+django
+
+    {% block after_app_content %}
+      <div id="ee-products" data-ee-products="{{ ee_products|jsonify }}"></div>
+      <div id="loader">
+        <img src="{% static 'earth_engine/images/map-loader.gif' %}">
+      </div>
+    {% endblock %}
+
+
+
+4. Show the loader image when the map starts loading tiles by binding to tile load events on the layer `Source`. Update the `create_data_layer` method in :file:`public/js/gee_datasets.js`:
+
+.. code-block:: javascript
+
+    create_data_layer = function(url) {
+        let source = new ol.source.XYZ({
+            url: url,
+            attributions: '<a href="https://earthengine.google.com" target="_">Google Earth Engine</a>'
+        });
+
+        source.on('tileloadstart', function() {
+            $('#loader').addClass('show');
+        });
+
+        source.on('tileloadend', function() {
+            $('#loader').removeClass('show');
+        });
+
+        source.on('tileloaderror', function() {
+            $('#loader').removeClass('show');
+        });
+
+        m_gee_layer = new ol.layer.Tile({
+            source: source,
+            opacity: 0.7
+        });
+
+        // Insert below the draw layer (so drawn polygons and points render on top of data layer).
+        m_map.getLayers().insertAt(1, m_gee_layer);
+    };
