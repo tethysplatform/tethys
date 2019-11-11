@@ -2,7 +2,7 @@
 Bokeh Integration Concepts
 **************************
 
-**Last Updated:** September 2019
+**Last Updated:** November 2019
 
 This tutorial introduces ``Bokeh Server`` integration concepts for Tethys developers. Two ``bokeh`` handlers will be created to demonstrate how to link Bokeh plots or widgets to Python functions in the brackground using both a plain Bokeh approach as well as a ``Param`` approach. The topics covered include:
 
@@ -366,6 +366,8 @@ If you start tethys and go to the shapes endpoint of this app you should see som
 
 This concludes the ``Bokeh Integration`` tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-bokeh_tutorial>`_ or clone it as follows:
 
-::
+.. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-bokeh_tutorial
+    git clone https://github.com/tethysplatform/tethysapp-bokeh_tutorial.git
+    cd tethysapp-bokeh_tutorial
+    git checkout -b solution solution-|version|
