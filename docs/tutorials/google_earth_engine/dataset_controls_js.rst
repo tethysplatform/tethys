@@ -95,7 +95,7 @@ Add JavaScript for Dynamic Control Behavior
 2. Implement Methods
 ====================
 
-1. Implement the `bind_controls` method as follows:
+1. Implement the ``bind_controls`` method as follows:
 
 .. code-block:: javascript
 
@@ -161,7 +161,7 @@ Add JavaScript for Dynamic Control Behavior
 
 
 
-2. Implement the `update_sensor_options` method as follows:
+2. Implement the ``update_sensor_options`` method as follows:
 
 .. code-block:: javascript
 
@@ -187,7 +187,7 @@ Add JavaScript for Dynamic Control Behavior
         update_date_bounds();
     };
 
-3. Implement the `update_product_options` method as follows:
+3. Implement the ``update_product_options`` method as follows:
 
 .. code-block:: javascript
 
@@ -214,7 +214,7 @@ Add JavaScript for Dynamic Control Behavior
         update_date_bounds();
     };
 
-4. Implement the `update_date_bounds` method as follows:
+4. Implement the ``update_date_bounds`` method as follows:
 
 .. code-block:: javascript
 
@@ -259,7 +259,7 @@ Add JavaScript for Dynamic Control Behavior
         console.log('Date Bounds Changed To: ' + earliest_valid_date + ' - ' + latest_valid_date);
     };
 
-5. Add the new methods to the appropriate change events in the `bind_controls` method as follows:
+5. Add the new methods to the appropriate change events in the ``bind_controls`` method as follows:
 
 .. code-block:: javascript
 
@@ -296,7 +296,7 @@ Add JavaScript for Dynamic Control Behavior
         }
     });
 
-6. Implement the `collect_data` method as follows:
+6. Implement the ``collect_data`` method as follows:
 
 .. code-block:: javascript
 
@@ -312,7 +312,7 @@ Add JavaScript for Dynamic Control Behavior
         return data;
     };
 
-7. Bind to the click event of the `load_map` button by adding the following to the bottom of the `bind_controls` method:
+7. Bind to the click event of the ``load_map`` button by adding the following to the bottom of the ``bind_controls`` method:
 
 .. code-block:: javascript
 

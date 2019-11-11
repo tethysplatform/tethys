@@ -8,7 +8,7 @@ Build Dataset Selection Controls
 1. Define Target GEE Products
 =============================
 
-Create a new package (a folder with an empty :file:`__init__.py`) called :file:`gee` to house Google Earth Engine related logic in the :file:`earth_engine` directory. Add a Python module called :file:`products.py` to this package with the following contents:
+Create a new package (a folder with an empty :file:`__init__.py`) called :file:``gee`` to house Google Earth Engine related logic in the :file:`earth_engine` directory. Add a Python module called :file:`products.py` to this package with the following contents:
 
 .. code-block:: python
 
@@ -205,7 +205,7 @@ Create a new package (a folder with an empty :file:`__init__.py`) called :file:`
 2. Add Controls to Home Controller and Template
 ===============================================
 
-1. Modify the `home` controller in :file:`controllers.py` as follows:
+1. Modify the ``home`` controller in :file:`controllers.py` as follows:
 
 .. code-block:: python
 

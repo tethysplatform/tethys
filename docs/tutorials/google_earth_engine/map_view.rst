@@ -7,14 +7,14 @@ Add Map View
 1. Remove App Actions Bar
 =========================
 
-1. Replace the `app_actions` block with the `app_actions_override` block in :file:`templates/earth_engine/base.html`:
+1. Replace the ``app_actions`` block with the ``app_actions_override`` block in :file:`templates/earth_engine/base.html`:
 
 .. code-block:: html+django
 
     {% block app_actions_override %}
     {% endblock %}
 
-2. Restyle the `app-content` area to take up full height in :file:`public/css/main.css`:
+2. Restyle the ``app-content`` area to take up full height in :file:`public/css/main.css`:
 
 .. code-block:: css
 
@@ -26,7 +26,7 @@ Add Map View
 
 .. tip::
 
-    To verify that the app content area is indeed filling the whole area, you could temporarily add the following to `main.css`:
+    To verify that the app content area is indeed filling the whole area, you could temporarily add the following to :file:`public/css/main.css`:
 
     .. code-block:: css
 
@@ -38,7 +38,7 @@ Add Map View
 2. Add Map View
 ===============
 
-1. Add `MapView` gizmo to `home` controller in :file:`controllers.py`:
+1. Add ``MapView`` gizmo to ``home`` controller in :file:`controllers.py`:
 
 .. code-block:: python
 
@@ -85,7 +85,7 @@ Add Map View
     }
 
 
-2. Add `MapView` gizmo to the `app_content` block of the :file:`templates/earth_engine/home.html`:
+2. Add ``MapView`` gizmo to the ``app_content`` block of the :file:`templates/earth_engine/home.html`:
 
 .. code-block:: html+django
 
