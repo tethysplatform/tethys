@@ -118,7 +118,7 @@ Visualize Google Earth Engine Datasets
         """
         pass
 
-4. Implement the `get_image_collection_asset` function as follows:
+4. Implement the ``get_image_collection_asset`` function as follows:
 
 .. todo::
 
@@ -168,7 +168,7 @@ Visualize Google Earth Engine Datasets
         except EEException:
             log.exception('An error occurred while attempting to retrieve the image collection asset.')
 
-5. Implement the `image_to_map_id` function as follows:
+5. Implement the ``image_to_map_id`` function as follows:
 
 .. code-block:: python
 
@@ -191,7 +191,7 @@ Visualize Google Earth Engine Datasets
 2. Create Endpoint for Getting Map Images
 =========================================
 
-1. Add a new controller called `get_image_collection` to :file:`controllers.py`:
+1. Add a new controller called ``get_image_collection`` to :file:`controllers.py`:
 
 .. todo::
 
@@ -248,7 +248,7 @@ Visualize Google Earth Engine Datasets
 
         return JsonResponse(response_data)
 
-2. Add a new `UrlMap` to the `url_maps` method of the :term:`app class` in :file:`app.py`:
+2. Add a new ``UrlMap`` to the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
 
 .. code-block:: python
 
@@ -258,7 +258,7 @@ Visualize Google Earth Engine Datasets
         controller='earth_engine.controllers.get_image_collection'
     ),
 
-3. Stub out the Map JavaScript Methods
+3. Stub Out the Map JavaScript Methods
 ======================================
 
 1. Add the following module level variables in :file:`public/js/gee_datasets.js`:
@@ -276,7 +276,7 @@ Visualize Google Earth Engine Datasets
     // Map Methods
  	var update_map, update_data_layer, create_data_layer, clear_map;
 
-3. Add the following module function stubs in :file:`public/js/gee_datasets.js`, just below the `collect_data` implementation:
+3. Add the following module function stubs in :file:`public/js/gee_datasets.js`, just below the ``collect_data`` implementation:
 
 .. code-block:: javascript
 
@@ -289,7 +289,7 @@ Visualize Google Earth Engine Datasets
 
     clear_map = function() {};
 
-4. Retrieve the `TethyMapView` OpenLayers `Map` object when the module initializes:
+4. Retrieve the ``TethyMapView`` OpenLayers ``Map`` object when the module initializes:
 
 .. code-block:: javascript
 
@@ -317,7 +317,7 @@ Visualize Google Earth Engine Datasets
 4. Implement Adding Layers to the Map
 =====================================
 
-1. Implement the `update_map` method in :file:`public/js/gee_datasets.js`:
+1. Implement the ``update_map`` method in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -341,7 +341,7 @@ Visualize Google Earth Engine Datasets
         });
     };
 
-2. Call `update_map` when the `Load` button is clicked (in `bind_controls` method):
+2. Call ``update_map`` when the ``Load`` button is clicked (in ``bind_controls`` method):
 
 .. code-block:: javascript
 
@@ -349,9 +349,9 @@ Visualize Google Earth Engine Datasets
         update_map();
     });
 
-    .. todo::
+.. todo::
 
-        Testing at this point will demonstrate the need for the csrf_token, b/c it sends an AJAX POST request. Discuss the cookie that is used for this purpose.
+    Testing at this point will demonstrate the need for the csrf_token, b/c it sends an AJAX POST request. Discuss the cookie that is used for this purpose.
 
 3. Add the following code to the :file:`public/js/main.js` file to automatically attach the CSRF Token to each AJAX request:
 
@@ -391,7 +391,7 @@ Visualize Google Earth Engine Datasets
         });
     }); //document ready;
 
-4. Implement the `update_data_layer` method in :file:`public/js/gee_datasets.js`
+4. Implement the ``update_data_layer`` method in :file:`public/js/gee_datasets.js`
 
 .. code-block:: javascript
 
@@ -403,7 +403,7 @@ Visualize Google Earth Engine Datasets
         }
     };
 
-5. Implement the `create_data_layer` method in :file:`public/js/gee_datasets.js`
+5. Implement the ``create_data_layer`` method in :file:`public/js/gee_datasets.js`
 
 .. code-block:: javascript
 
@@ -425,7 +425,7 @@ Visualize Google Earth Engine Datasets
 5. Implement Clearing Layers on the Map
 =======================================
 
-1. Add `Clear` button to `home` controller in :file:`controllers.py`:
+1. Add ``Clear`` button to ``home`` controller in :file:`controllers.py`:
 
 .. code-block:: python
 
@@ -435,6 +435,8 @@ Visualize Google Earth Engine Datasets
         style='default',
         attributes={'id': 'clear_map'}
     )
+
+    ...
 
     context = {
         'platform_select': platform_select,
@@ -451,7 +453,7 @@ Visualize Google Earth Engine Datasets
 
 
 
-2. Add `Clear` button to :file:`home.html` template:
+2. Add ``Clear`` button to the ``app_navigation_items`` block of the :file:`templates/earth_engine/home.html` template:
 
 .. code-block:: html+django
 
@@ -468,7 +470,7 @@ Visualize Google Earth Engine Datasets
       {% gizmo clear_button %}
     {% endblock %}
 
-3. Implement `clear_map` method in :file:`public/js/gee_datasets.js`:
+3. Implement ``clear_map`` method in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -479,7 +481,7 @@ Visualize Google Earth Engine Datasets
         }
     };
 
-4. Bind the `clear_map` method to the `on-click` event of the `clear_map` button (in the `bind_controls` method):
+4. Bind the ``clear_map`` method to the ``on-click`` event of the ``clear_map`` button (in the ``bind_controls`` method):
 
 .. code-block:: javascript
 
@@ -533,7 +535,7 @@ Visualize Google Earth Engine Datasets
 
 
 
-4. Show the loader image when the map starts loading tiles by binding to tile load events on the layer `Source`. Update the `create_data_layer` method in :file:`public/js/gee_datasets.js`:
+4. Show the loader image when the map starts loading tiles by binding to tile load events on the layer ``Source``. Update the ``create_data_layer`` method in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 

@@ -38,7 +38,7 @@ In a file browser change into your :file:`Home` directory and open the :file:`te
 2. Add App Dependencies to :file:`install.yml`
 ==============================================
 
-App dependencies should be managed using the :file:`install.yml` instead of the :file:`setup.py`. This app will require the `earthengine-api` and `oauthclient` packages to allow it to use Google Earth Engine services. Both packages are available on `conda-forge`, which is the preferred Conda channel for Tethys. Open :file:`tethysapp-earth_engine/install.yml` and add these dependences to the `requirements.conda` section of the file:
+App dependencies should be managed using the :file:`install.yml` instead of the :file:`setup.py`. This app will require the ``earthengine-api`` and ``oauthclient`` packages to allow it to use Google Earth Engine services. Both packages are available on ``conda-forge``, which is the preferred Conda channel for Tethys. Open :file:`tethysapp-earth_engine/install.yml` and add these dependences to the ``requirements.conda`` section of the file:
 
 ::
 
@@ -109,7 +109,7 @@ Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login the default
 5. Customize App Icon and Theme Color
 =====================================
 
-Download this :download:`Google Earth Engine App Icon <./resources/earth-engine-logo.png>` or find one that you like and save it to the :file:`public/images` directory. Modify the `icon` property of your :term:`app class` to reference the new image. Also change the `color` property to the `#524745` color:
+Download this :download:`Google Earth Engine App Icon <./resources/earth-engine-logo.png>` or find one that you like and save it to the :file:`public/images` directory. Modify the ``icon`` property of your :term:`app class` to reference the new image. Also change the ``color`` property to the `#524745` color:
 
 ::
 
