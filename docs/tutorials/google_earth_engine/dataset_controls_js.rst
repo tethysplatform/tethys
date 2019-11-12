@@ -4,6 +4,17 @@ Add JavaScript for Dynamic Control Behavior
 
 **Last Updated:** November 2019
 
+0. Start From Previous Solution (Optional)
+==========================================
+
+If you wish to use the previous solution as a starting point:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    cd tethysapp-earth_engine
+    git checkout -b dataset-controls-solution dataset-controls-solution-|version|
+
 1. Stub out new JavaScript file
 ===============================
 
@@ -321,3 +332,13 @@ Add JavaScript for Dynamic Control Behavior
         console.log(data);
     });
 
+3. Solution
+===========
+
+This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/dataset-controls-js-solution-3.0>`_ or clone it as follows:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    cd tethysapp-earth_engine
+    git checkout -b dataset-controls-js-solution dataset-controls-js-solution-|version|

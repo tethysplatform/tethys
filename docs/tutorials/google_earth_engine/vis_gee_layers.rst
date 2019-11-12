@@ -4,6 +4,17 @@ Visualize Google Earth Engine Datasets
 
 **Last Updated:** November 2019
 
+0. Start From Previous Solution (Optional)
+==========================================
+
+If you wish to use the previous solution as a starting point:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    cd tethysapp-earth_engine
+    git checkout -b map-view-solution map-view-solution-|version|
+
 1. Write Needed GEE Logic
 =========================
 
@@ -565,3 +576,14 @@ Visualize Google Earth Engine Datasets
         // Insert below the draw layer (so drawn polygons and points render on top of data layer).
         m_map.getLayers().insertAt(1, m_gee_layer);
     };
+
+7. Solution
+===========
+
+This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/vis-gee-layers-solution-3.0>`_ or clone it as follows:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    cd tethysapp-earth_engine
+    git checkout -b vis-gee-layers-solution vis-gee-layers-solution-|version|
