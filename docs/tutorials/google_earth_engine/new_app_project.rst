@@ -125,3 +125,14 @@ Download this :download:`Google Earth Engine App Icon <./resources/earth-engine-
         root_url = 'earth-engine'
         color = '#524745'
         ...
+
+6. Solution
+===========
+
+This concludes the New App Project portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/new-app-project-solution-3.0>`_ or clone it as follows:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    cd tethysapp-earth_engine
+    git checkout -b new-app-project-solution new-app-project-solution-|version|

@@ -4,6 +4,17 @@ Plot Data at a Location
 
 **Last Updated:** November 2019
 
+0. Start From Previous Solution (Optional)
+==========================================
+
+If you wish to use the previous solution as a starting point:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    cd tethysapp-earth_engine
+    git checkout -b vis-gee-layers-solution vis-gee-layers-solution-|version|
+
 1. Create New GEE Function to Extract Time Series
 =================================================
 
@@ -536,3 +547,13 @@ Plot Data at a Location
         $('#plot-container').load('get-time-series-plot/', data);
     };
 
+7. Solution
+===========
+
+This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/plot-data-solution-3.0>`_ or clone it as follows:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    cd tethysapp-earth_engine
+    git checkout -b plot-data-solution plot-data-solution-|version|

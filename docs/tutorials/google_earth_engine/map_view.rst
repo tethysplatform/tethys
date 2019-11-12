@@ -4,6 +4,17 @@ Add Map View
 
 **Last Updated:** November 2019
 
+0. Start From Previous Solution (Optional)
+==========================================
+
+If you wish to use the previous solution as a starting point:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    cd tethysapp-earth_engine
+    git checkout -b dataset-controls-js-solution dataset-controls-js-solution-|version|
+
 1. Remove App Actions Bar
 =========================
 
@@ -118,3 +129,13 @@ Add Map View
         <link rel="stylesheet" href="{% static 'earth_engine/css/map.css' %}" />
     {% endblock %}
 
+3. Solution
+===========
+
+This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/map-view-solution-3.0>`_ or clone it as follows:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    cd tethysapp-earth_engine
+    git checkout -b map-view-solution map-view-solution-|version|
