@@ -42,6 +42,8 @@ Create a new Conda environment with Google Earth Engine installed:
     conda activate ee
     conda install -c conda-forge earthengine-api
 
+.. _authenticate_gee_locally:
+
 6. Authenticate with Google Earth Engine
 ========================================
 

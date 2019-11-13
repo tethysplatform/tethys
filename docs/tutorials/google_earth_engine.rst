@@ -6,6 +6,10 @@ Google Earth Engine
 
 This tutorial demonstrates how to use Google Earth Engine in a Tethys app.
 
+.. figure:: ./google_earth_engine/resources/earth_engine_app.png
+    :width: 800px
+    :align: center
+
 Prerequisites
 -------------
 

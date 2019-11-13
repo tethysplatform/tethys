@@ -4,6 +4,13 @@ Plot Data at a Location
 
 **Last Updated:** November 2019
 
+In the final tutorial we will add the abiltiy for users to drop a point or draw a polygon and generate a time series of the selected dataset at that location. The following topics will be reviewed in this tutorial:
+
+* Tethys MapView Gizmo Drawing API
+* JQuery Load + Gizmo Strategy
+* GEE Geoprocessing
+* Adding New App Dependencies
+
 0. Start From Previous Solution (Optional)
 ==========================================
 
@@ -17,6 +24,8 @@ If you wish to use the previous solution as a starting point:
 
 1. Create New GEE Function to Extract Time Series
 =================================================
+
+In this step we'll expand the GEE functions to include a function that can extract time series at one or more points or polygons.
 
 1. Install new dependency, ``geojson``, in Tethys environment:
 
@@ -48,10 +57,6 @@ If you wish to use the previous solution as a starting point:
     post:
 
 3. Add ``get_time_series_from_image_collection`` function to the :file:`gee/methods.py` module:
-
-.. todo:
-
-    Create figure of the pandas data structure we are using to hold our time series.
 
 .. code-block:: python
 
@@ -123,11 +128,15 @@ If you wish to use the previous solution as a starting point:
         log.debug(f'Time Series: {time_series}')
         return time_series
 
+   This function uses a `Pandas DataFrame <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html>`_ to store each time series. The DataFrame consists of two columns: Time and the name of the index. The column names will be used for the plot axes.
+
 
 2. Create Endpoint for Extracting Time Series
 =============================================
 
-1. Create a new module called :file:`helpers.py` in the :file:`earth_engine` package with the following contents:
+The technique that will be demonstrated in this step will leverage the `jQuery.load() <https://api.jquery.com/load/>`_ method, which calls a URL and inserts the HTML returned into a target element. We'll create an endpoint that will call the ``get_time_series_from_image_collection`` function to get the times series and then render a plot using the Tethys ``PlotlyView`` gizmo. Then we simply call the endpoint with ``jQuery.load()`` and target the content area of the plot modal to load the plot into the modal.
+
+1. The ``generate_figure`` helper function creates a Plotly figure object from the given time series. Create a new module called :file:`helpers.py` in the :file:`earth_engine` package with the following contents:
 
 .. code-block:: python
 
@@ -183,7 +192,7 @@ If you wish to use the previous solution as a starting point:
 
         return figure
 
-2. Add a new controller called ``get_time_series_plot`` to :file:`controllers.py`:
+2. The ``get_time_series_plot`` function will call the ``get_time_series_from_image_collection`` function with the parameters given and render a ``PlotlyView`` gizmo from the results. Add a new controller called ``get_time_series_plot`` to :file:`controllers.py`:
 
 .. code-block:: python
 
@@ -282,6 +291,12 @@ If you wish to use the previous solution as a starting point:
       </div>
     {% endif %}
 
+.. important::
+
+    Notice that this template **does not** extend from any template like other Tethys templates. It should contain only the HTML that will be inserted into the modal.
+
+    Notice also that the template will render an error message instead of the plot if an error is provided.
+
 4. Add a new ``UrlMap`` to the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
 
 .. code-block:: python
@@ -294,6 +309,8 @@ If you wish to use the previous solution as a starting point:
 
 3. Create a Modal for the Plot
 ==============================
+
+In this step we'll add a Plot button and the modal for the plot to the controller and template.
 
 1. Add `Plot AOI` button to ``home`` controller in :file:`controllers.py`:
 
@@ -367,7 +384,7 @@ If you wish to use the previous solution as a starting point:
       </div>
     {% endblock %}
 
-4. Temporarily bind the ``on-click`` event of the ``load_plot`` button to the show modal action (in the ``bind_controls`` method of :file:`public/js/gee_datasets.js`):
+4. Temporarily bind the ``click`` event of the ``Plot AOI`` button to the show modal action (in the ``bind_controls`` method of :file:`public/js/gee_datasets.js`):
 
 .. code-block:: javascript
 
@@ -398,6 +415,8 @@ If you wish to use the previous solution as a starting point:
 
 5. Add a Loading GIF for the Plot Modal
 =======================================
+
+In this step we'll add a loading image to the modal whenever it is shown, replacing whatever contents was there previously. This will be replaced by the loaded plot once it is finished loading. Launching the modal again, will replace the previous plot with the loading image and so on.
 
 1. Download this :download:`Google Earth Engine App Icon <./resources/plot-loader.gif>` or find one that you like and save it to the :file:`public/images` directory.
 
@@ -452,6 +471,8 @@ If you wish to use the previous solution as a starting point:
 
 6. Implement Plotting Capability
 ================================
+
+In this step we'll use the native drawing capabilities of the Tethys ``MapView`` to allow the user to draw points and polygons on the map. Then we'll retrieve the drawn geometry in our JavaScript and send it with the other control values to the ``jQuery.load()`` call to the ``get-time-series-plot`` endpoint.
 
 1. Enable the drawing controls in the ``MapView`` definition in the ``home`` controller in :file:`controllers.py`:
 

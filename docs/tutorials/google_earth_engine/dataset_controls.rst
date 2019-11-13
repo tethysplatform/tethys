@@ -4,6 +4,12 @@ Build Dataset Selection Controls
 
 **Last Updated:** November 2019
 
+In this tutorial we will add controls to the app that will eventually be used to select various Google Earth Engine datasets to display. The following topics will be reviewed in this tutorial:
+
+* Tethys Gizmos API
+* Tethys Templating API
+
+
 0. Start From Previous Solution (Optional)
 ==========================================
 
@@ -18,6 +24,29 @@ If you wish to use the previous solution as a starting point:
 
 1. Define Target GEE Products
 =============================
+
+Google Earth Engine hosts a huge offering of remote sensing datasets (see: `Earth Engine Data Catalog <https://developers.google.com/earth-engine/datasets>`_. For the purposes of this tutorial, we'll only expose a few of the datasets in the app.
+
+In this step, we'll define a variable that will effectively contain a list of all of the datasets we plan to support with some metadata for each that we will need in the interface and for processing. The data is organized in nested dictionaries with the following structure:
+
+.. code-block:: python
+
+    EE_PRODUCTS = {
+        '<SATELLITE_PLATFORM>': {
+            '<SENSOR>': {
+                '<PRODUCT>': {
+                    'display': 'Display name of the product',
+                    'collection': 'Image collection name.',
+                    'index': 'Index(es) of the image collection to render, if applicable.',
+                    'vis_params': 'A dictionary of visualization parameters to use when rendering the index.',
+                    'start_date': 'The valid start date of the dataset.'
+                    'end_date': 'The valid end date of the dataset or None if current.'
+                }
+            }
+        }
+    }
+
+The metadata parameters for each dataset were derived from the examples of each dataset that can be found in the `Earth Engine Data Catalog <https://developers.google.com/earth-engine/datasets>`_ or the `Earth Engine Code Editor <https://code.earthengine.google.com/>`_ example scripts. Additional datasets can be easily added to the app by following this pattern.
 
 Create a new package (a folder with an empty :file:`__init__.py`) called :file:``gee`` to house Google Earth Engine related logic in the :file:`earth_engine` directory. Add a Python module called :file:`products.py` to this package with the following contents:
 
@@ -215,6 +244,16 @@ Create a new package (a folder with an empty :file:`__init__.py`) called :file:`
 
 2. Add Controls to Home Controller and Template
 ===============================================
+
+The datasets are organized based on the satellite platform and sensor they were captured with. The controls will allow users to drill down to the subset of the dataset product they want to see and include the following controls:
+
+* Satellite Platform
+* Sensor
+* Product
+* Start Date
+* End Date
+
+In this step, we'll create controls using Tethys Gizmos with their initial values. We'll also pass the ``EE_PRODUCTS`` dictionary to the template so that it can be used by JavaScript in future steps.
 
 1. Modify the ``home`` controller in :file:`controllers.py` as follows:
 
