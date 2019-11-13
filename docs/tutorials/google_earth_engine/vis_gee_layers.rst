@@ -4,6 +4,14 @@ Visualize Google Earth Engine Datasets
 
 **Last Updated:** November 2019
 
+In this tutorial we will load the GEE dataset the user has selected into the map view. The following topics will be reviewed in this tutorial:
+
+* Tethys MapView Gizmo JavaScript API
+* JQuery AJAX Calls
+* Authenticating with GEE in Tethys Apps
+* Retrieving GEE XYZ Tile Layer Endpoints
+* Logging in Tethys
+
 0. Start From Previous Solution (Optional)
 ==========================================
 
@@ -15,8 +23,10 @@ If you wish to use the previous solution as a starting point:
     cd tethysapp-earth_engine
     git checkout -b map-view-solution map-view-solution-|version|
 
-1. Write Needed GEE Logic
-=========================
+1. Handle GEE Authentication
+============================
+
+To use GEE services, your app will need to authenticate using a GEE Account. This step will illustrate *one* way that this can be handled.
 
 1. Create a new Python module in the :file:`gee` package called :file:`params.py` with the following contents:
 
@@ -25,65 +35,7 @@ If you wish to use the previous solution as a starting point:
     service_account = ''  # your google service account
     private_key = ''  # path to the json private key for the service account
 
-2. Create a new Python module in the :file:`gee` package called :file:`cloud_mask.py` with the following contents:
-
-.. code-block:: python
-
-    import ee
-
-
-    def mask_l8_sr(image):
-        """
-        Derived From: https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_LC08_C01_T1_SR
-        """
-        # Bits 3 and 5 are cloud shadow and cloud, respectively.
-        cloudShadowBitMask = (1 << 3)
-        cloudsBitMask = (1 << 5)
-
-        # Get the pixel QA band.
-        qa = image.select('pixel_qa')
-
-        # Both flags should be set to zero, indicating clear conditions.
-        mask = qa.bitwiseAnd(cloudShadowBitMask).eq(0).And(qa.bitwiseAnd(cloudsBitMask).eq(0))
-        return image.updateMask(mask)
-
-
-    def cloud_mask_l457(image):
-        """
-        Derived From: https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_LE07_C01_T1_SR
-        """
-        qa = image.select('pixel_qa')
-
-        # If the cloud bit (5) is set and the cloud confidence (7) is high
-        # or the cloud shadow bit is set (3), then it's a bad pixel.
-        cloud = qa.bitwiseAnd(1 << 5).And(qa.bitwiseAnd(1 << 7)).Or(qa.bitwiseAnd(1 << 3))
-
-        # Remove edge pixels that don't occur in all bands
-        mask2 = image.mask().reduce(ee.Reducer.min())
-
-        return image.updateMask(cloud.Not()).updateMask(mask2)
-
-
-    def mask_s2_clouds(image):
-        """
-        Derived from: https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2
-        """
-        qa = image.select('QA60')
-
-        # Bits 10 and 11 are clouds and cirrus, respectively.
-        cloudBitMask = 1 << 10
-        cirrusBitMask = 1 << 11
-
-        # Both flags should be set to zero, indicating clear conditions.
-        mask = qa.bitwiseAnd(cloudBitMask).eq(0).And(qa.bitwiseAnd(cirrusBitMask).eq(0))
-
-        return image.updateMask(mask).divide(10000)
-
-3. Create a new Python module in the :file:`gee` package called :file:`methods.py` with the following contents:
-
-.. todo::
-
-    Discuss authentication with Google Earth Engine in production: https://developers.google.com/earth-engine/service_account
+2. Create a new Python module in the :file:`gee` package called :file:`methods.py` with the following contents:
 
 .. code-block:: python
 
@@ -129,11 +81,70 @@ If you wish to use the previous solution as a starting point:
         """
         pass
 
-4. Implement the ``get_image_collection_asset`` function as follows:
+.. important::
 
-.. todo::
+    The code at the top of this module handles authenticating with Google Earth Engine automatically when it is imported. By default it will check the ``params.py`` module for service account credentials and then fall back to checking the credentials file we generated earlier (see: :ref:`authenticate_gee_locally` of :doc:`./gee_primer`). Authenticating using the credential file works well for development but it will not work when you deploy the app. For production you will need to obtain and use a `Google Earth Engine Service Account <https://developers.google.com/earth-engine/service_account>`_. Then add the credentials to the ``gee.param.py`` module. **DO NOT COMMIT THESE CREDENTIALS IN A PUBLIC REPOSITORY**.
 
-    Discuss Map Services and the XYZ services that we will be building a URL for. Find GEE docs on this.
+2. Implement GEE Methods
+========================
+
+Google Earth Engine provides XYZ tile services for each of their datasets. In this step, we'll write the necessary GEE logic to retrieve a tile service endpoint for a given dataset product.
+
+1. Some of the datasets require functions for filtering out the clouds in the images, so we'll create a module with functions for removing the clouds. Create a new Python module in the :file:`gee` package called :file:`cloud_mask.py` with the following contents:
+
+.. code-block:: python
+
+    import ee
+
+
+    def mask_l8_sr(image):
+        """
+        Cloud Mask for Landsat 8 surface reflectance. Derived From: https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_LC08_C01_T1_SR
+        """
+        # Bits 3 and 5 are cloud shadow and cloud, respectively.
+        cloudShadowBitMask = (1 << 3)
+        cloudsBitMask = (1 << 5)
+
+        # Get the pixel QA band.
+        qa = image.select('pixel_qa')
+
+        # Both flags should be set to zero, indicating clear conditions.
+        mask = qa.bitwiseAnd(cloudShadowBitMask).eq(0).And(qa.bitwiseAnd(cloudsBitMask).eq(0))
+        return image.updateMask(mask)
+
+
+    def cloud_mask_l457(image):
+        """
+        Cloud Mask for Landsat 7 surface reflectance. Derived From: https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_LE07_C01_T1_SR
+        """
+        qa = image.select('pixel_qa')
+
+        # If the cloud bit (5) is set and the cloud confidence (7) is high
+        # or the cloud shadow bit is set (3), then it's a bad pixel.
+        cloud = qa.bitwiseAnd(1 << 5).And(qa.bitwiseAnd(1 << 7)).Or(qa.bitwiseAnd(1 << 3))
+
+        # Remove edge pixels that don't occur in all bands
+        mask2 = image.mask().reduce(ee.Reducer.min())
+
+        return image.updateMask(cloud.Not()).updateMask(mask2)
+
+
+    def mask_s2_clouds(image):
+        """
+        Cloud Mask for Sentinel 2 surface reflectance. Derived from: https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2
+        """
+        qa = image.select('QA60')
+
+        # Bits 10 and 11 are clouds and cirrus, respectively.
+        cloudBitMask = 1 << 10
+        cirrusBitMask = 1 << 11
+
+        # Both flags should be set to zero, indicating clear conditions.
+        mask = qa.bitwiseAnd(cloudBitMask).eq(0).And(qa.bitwiseAnd(cirrusBitMask).eq(0))
+
+        return image.updateMask(mask).divide(10000)
+
+2. The ``get_image_collection_asset`` function builds the map tile service URL for the given platform, sensor, and product and filters it by the dates and reducer method. Implement the ``get_image_collection_asset`` function as follows:
 
 .. code-block:: python
 
@@ -179,7 +190,7 @@ If you wish to use the previous solution as a starting point:
         except EEException:
             log.exception('An error occurred while attempting to retrieve the image collection asset.')
 
-5. Implement the ``image_to_map_id`` function as follows:
+3. Implement the ``image_to_map_id`` function as follows:
 
 .. code-block:: python
 
@@ -199,14 +210,12 @@ If you wish to use the previous solution as a starting point:
         except EEException:
             log.exception('An error occurred while attempting to retrieve the map id.')
 
-2. Create Endpoint for Getting Map Images
+3. Create Endpoint for Getting Map Images
 =========================================
 
+In this step we'll create a new endpoint that we can used to call the ``get_image_collection_asset`` function from the client-side of the application.
+
 1. Add a new controller called ``get_image_collection`` to :file:`controllers.py`:
-
-.. todo::
-
-    Introduce logging
 
 .. code-block:: python
 
@@ -259,6 +268,10 @@ If you wish to use the previous solution as a starting point:
 
         return JsonResponse(response_data)
 
+.. tip::
+
+    In this step we added ``logging`` to the new endpoint. Tethys and Django leverage Python's built-in logging capabilities. Use logging statements in your code to provide useful debugging information, system status, or error capture in your production logs. The logging for a portal can be configured in the :ref:`tethys_configuration`. To learn more about logging in Tethys/Django see: `Django Logging <https://docs.djangoproject.com/en/2.2/topics/logging/>`_
+
 2. Add a new ``UrlMap`` to the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
 
 .. code-block:: python
@@ -269,10 +282,12 @@ If you wish to use the previous solution as a starting point:
         controller='earth_engine.controllers.get_image_collection'
     ),
 
-3. Stub Out the Map JavaScript Methods
+4. Stub Out the Map JavaScript Methods
 ======================================
 
-1. Add the following module level variables in :file:`public/js/gee_datasets.js`:
+In this step we'll stub out the methods and variables we'll need to add the GEE layers to the map.
+
+1. Create new variables to store a reference to the Tethys ``MapView`` object and the GEE layer in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -300,7 +315,7 @@ If you wish to use the previous solution as a starting point:
 
     clear_map = function() {};
 
-4. Retrieve the ``TethyMapView`` OpenLayers ``Map`` object when the module initializes:
+4. Use the Tethys ``MapView`` JavaScript API to retrieve the underlying OpenLayers Map object when the module initializes. Having a handle on this object gives us full control over the map using the `OpenLayers JavaScript API <https://openlayers.org/en/latest/apidoc/>`_.
 
 .. code-block:: javascript
 
@@ -325,10 +340,12 @@ If you wish to use the previous solution as a starting point:
         m_map = TETHYS_MAP_VIEW.getMap();
     });
 
-4. Implement Adding Layers to the Map
+5. Implement Adding Layers to the Map
 =====================================
 
-1. Implement the ``update_map`` method in :file:`public/js/gee_datasets.js`:
+In this step we'll implement the new methods with logic to (1) retrieve the XYZ map service URL by calling the new ``get-image-collection`` endpoint using AJAX and then (2) create a new OpenLayers ``Layer`` with an XYZ ``Source`` and add it to the map.
+
+1. Call the ``get-image-collection`` endpoint using `jQuery.ajax() <https://api.jquery.com/jquery.ajax/>`_ passing it the parameters from the controls in the``update_map`` method in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -352,7 +369,7 @@ If you wish to use the previous solution as a starting point:
         });
     };
 
-2. Call ``update_map`` when the ``Load`` button is clicked (in ``bind_controls`` method):
+2. Bind the ``update_map`` method to the ``Load`` button i``click`` event in ``bind_controls`` the method:
 
 .. code-block:: javascript
 
@@ -360,11 +377,11 @@ If you wish to use the previous solution as a starting point:
         update_map();
     });
 
-.. todo::
+.. tip::
 
-    Testing at this point will demonstrate the need for the csrf_token, b/c it sends an AJAX POST request. Discuss the cookie that is used for this purpose.
+    If you test the ``Load`` button at this point, the AJAX call to the ``get-image-collection`` endpoint will fail because it is missing the CSRF token. The token is used to verify that the call came from our client-side code and not from a site posing to be our site. As a security precaution, the server will reject any POST requests that don't include this token. We'll add the CSRF token in the next step. For more information about CSRF see: `Cross Site Request Forgery protection <https://docs.djangoproject.com/en/2.2/ref/csrf/>`_.
 
-3. Add the following code to the :file:`public/js/main.js` file to automatically attach the CSRF Token to each AJAX request:
+3. Add the following code to the :file:`public/js/main.js` file to automatically attach the CSRF Token to every AJAX request that needs it:
 
 .. code-block:: javascript
 
@@ -402,7 +419,7 @@ If you wish to use the previous solution as a starting point:
         });
     }); //document ready;
 
-4. Implement the ``update_data_layer`` method in :file:`public/js/gee_datasets.js`
+4. The ``update_data_layer`` method lazily creates the ``m_gee_layer`` if it doesn't exist or reuses it if it does exist. Implement the ``update_data_layer`` method in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -414,7 +431,7 @@ If you wish to use the previous solution as a starting point:
         }
     };
 
-5. Implement the ``create_data_layer`` method in :file:`public/js/gee_datasets.js`
+5. The ``create_data_layer`` method creates a new ``ol.layer.Tile`` layer with an ``ol.source.XYZ`` source using the URL provided. The new layer is assigned to ``m_gee_layer`` so it can be reused in subsquent calls and then added to the map below the drawing layer so that drawn features will show up on top. Implement the ``create_data_layer`` method in :file:`public/js/gee_datasets.js`.
 
 .. code-block:: javascript
 
@@ -433,7 +450,7 @@ If you wish to use the previous solution as a starting point:
     };
 
 
-5. Implement Clearing Layers on the Map
+6. Implement Clearing Layers on the Map
 =======================================
 
 1. Add ``Clear`` button to ``home`` controller in :file:`controllers.py`:
@@ -481,7 +498,7 @@ If you wish to use the previous solution as a starting point:
       {% gizmo clear_button %}
     {% endblock %}
 
-3. Implement ``clear_map`` method in :file:`public/js/gee_datasets.js`:
+3. The ``clear_map`` method removes the layer from the map and removes all references to it. Implement ``clear_map`` method in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -492,7 +509,7 @@ If you wish to use the previous solution as a starting point:
         }
     };
 
-4. Bind the ``clear_map`` method to the ``on-click`` event of the ``clear_map`` button (in the ``bind_controls`` method):
+4. Bind the ``clear_map`` method to the ``click`` event of the ``Clear`` button (in the ``bind_controls`` method):
 
 .. code-block:: javascript
 
@@ -500,8 +517,10 @@ If you wish to use the previous solution as a starting point:
         clear_map();
     });
 
-6. Implement Map Loading Indicator
+7. Implement Map Loading Indicator
 ==================================
+
+You may have noticed while testing the app, that it can take some time for a layer to load. In this step we add a loading image to indicate to the user that the map is loading, so they don't keep pressing the load button impatiently.
 
 1. Download this :download:`Google Earth Engine App Icon <./resources/map-loader.gif>` or find one that you like and save it to the :file:`public/images` directory.
 
@@ -577,7 +596,7 @@ If you wish to use the previous solution as a starting point:
         m_map.getLayers().insertAt(1, m_gee_layer);
     };
 
-7. Solution
+8. Solution
 ===========
 
 This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/vis-gee-layers-solution-3.0>`_ or clone it as follows:

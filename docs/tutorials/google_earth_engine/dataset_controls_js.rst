@@ -4,6 +4,12 @@ Add JavaScript for Dynamic Control Behavior
 
 **Last Updated:** November 2019
 
+In this tutorial we will add dynamic behavior to the dataset controls created in the previous step using JavaScript. The following topics will be reviewed in this tutorial:
+
+* JavaScript Fundamentals
+* JavaScript Closure Module Method
+* Using JavaScript with Tethys Gizmos
+
 0. Start From Previous Solution (Optional)
 ==========================================
 
@@ -17,6 +23,8 @@ If you wish to use the previous solution as a starting point:
 
 1. Stub out new JavaScript file
 ===============================
+
+In this step we'll illustrate how to create a JavaScript module using the closure method. For more on JavaScript closures see: `<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures>`_. The basic module developed here will contain variables for storing the current value of each control and it will also read in the ``EE_PRODUCTS`` data we embedded in the template in the previous tutorial.
 
 1. Create a new JavaScript file at :file:`public/js/gee_datasets.js` with the following contents:
 
@@ -106,7 +114,13 @@ If you wish to use the previous solution as a starting point:
 2. Implement Methods
 ====================
 
-1. Implement the ``bind_controls`` method as follows:
+In this step we'll implement the methods that will update the options in the dataset controls dynamically. For example when the user selects a new Satellite Platform, the options of the Sensor select box will be updated to the sensors for that platform. The general approach will be to:
+
+* Save the value of a control anytime it changes.
+* Create functions that update the controls with the currently saved values.
+* Call the appropriate update functions when a control's value changes.
+
+1. The ``bind_controls`` method is called when the module initializes at page load time and is used to bind our custom functionality to the ``change`` event of each control. Implement the ``bind_controls`` method as follows:
 
 .. code-block:: javascript
 
@@ -172,7 +186,7 @@ If you wish to use the previous solution as a starting point:
 
 
 
-2. Implement the ``update_sensor_options`` method as follows:
+2. The ``update_sensor_options`` method updates the options of the sensor select box with options that correspond with the current satellite platform. Implement the ``update_sensor_options`` method as follows:
 
 .. code-block:: javascript
 
@@ -198,7 +212,7 @@ If you wish to use the previous solution as a starting point:
         update_date_bounds();
     };
 
-3. Implement the ``update_product_options`` method as follows:
+3. The ``update_product_options`` method updates the options of the product select box with options that correspond with the current satellite platform and sensor. Implement the ``update_product_options`` method as follows:
 
 .. code-block:: javascript
 
@@ -225,7 +239,7 @@ If you wish to use the previous solution as a starting point:
         update_date_bounds();
     };
 
-4. Implement the ``update_date_bounds`` method as follows:
+4. The ``update_date_bounds`` method updates the date range that is selectable for both date pickers based on the current product. The value of the datepickers is also reset to fit within the new range if necessary. Implement the ``update_date_bounds`` method as follows:
 
 .. code-block:: javascript
 
@@ -270,7 +284,7 @@ If you wish to use the previous solution as a starting point:
         console.log('Date Bounds Changed To: ' + earliest_valid_date + ' - ' + latest_valid_date);
     };
 
-5. Add the new methods to the appropriate change events in the ``bind_controls`` method as follows:
+5. Call the new methods in the appropriate change events in the ``bind_controls`` method as follows:
 
 .. code-block:: javascript
 
@@ -307,7 +321,7 @@ If you wish to use the previous solution as a starting point:
         }
     });
 
-6. Implement the ``collect_data`` method as follows:
+6. The ``collect_data`` method is used to collect the current values of all of the controls, as stored in our module, for use in our request for the map imagery later on. Implement the ``collect_data`` method as follows:
 
 .. code-block:: javascript
 
@@ -323,7 +337,7 @@ If you wish to use the previous solution as a starting point:
         return data;
     };
 
-7. Bind to the click event of the ``load_map`` button by adding the following to the bottom of the ``bind_controls`` method:
+7. Temporarily log the result of ``collect_data`` when the user clicks on the ``load_map`` button to verify the module is working correctly. Add the following to the bottom of the ``bind_controls`` method:
 
 .. code-block:: javascript
 
