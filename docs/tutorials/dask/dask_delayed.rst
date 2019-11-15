@@ -2,7 +2,7 @@
 Dask Delayed
 ************
 
-**Last Updated:** November 2018
+**Last Updated:** November 2019
 
 The ``DaskJob`` can be used with either the ``dask.delayed`` or ``dask.distributed`` APIs. The next three sections will illustrate how to use each Dask API with TethysJobs. This section will illustrate how to use the ``dask.delayed`` API with ``DaskJob`` in Tethys.
 
@@ -45,7 +45,7 @@ Add the URL for the ``run-dask`` command to the url map in the :file:`app.py` mo
                 ),
                 UrlMap(
                     name='run-dask',
-                    url='dask-tutorial/dask/add/{job-type}',
+                    url='dask-tutorial/dask/add/{job_type}',
                     controller='dask_tutorial.controllers.run_job'
                 ),
                 UrlMap(
@@ -148,7 +148,7 @@ Add the ``run_job`` controller to the :file:`controller.py` module as well:
             delayed = delayed_job()
             dask = job_manager.create_job(
                 job_type='DASK',
-                name='dask_distributed',
+                name='dask_delayed',
                 user=request.user,
                 scheduler=scheduler,
             )
@@ -182,11 +182,13 @@ Add the ``app_content`` block to the :file:`home.html` so that it looks like the
 If your tethys project does not restart on its own, you may need to do so manually by ending the server with ``ctrl+c``, and then entering the command ``tethys manage start`` again. Now when you navigate to your app page, you should see this:
 
 .. figure:: ../../images/tutorial/NewPostDaskDelayedHome.png
+    :width: 900px
     :align: center
 
 Click on the ``Dask Delayed Job`` button to launch the new job type. It will submit the job and redirect to the jobs table page:
 
 .. figure:: ../../images/tutorial/NewPostDaskDelayedJobsTable.png
+    :width: 900px
     :align: center
 
 .. tip::

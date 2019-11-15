@@ -2,7 +2,7 @@
 New Tethys App Project
 **********************
 
-**Last Updated:** November 2018
+**Last Updated:** November 2019
 
 1. Setting up the scaffold
 ==========================

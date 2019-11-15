@@ -2,7 +2,7 @@
 Multiple Leaf Job
 *****************
 
-**Last Updated:** November 2018
+**Last Updated:** November 2019
 
 This section will illustrate how to use the ``dask.distributed`` API with a dask job that ends in multiple leafs. The recommended approach is to create a new ``DaskJob`` for each leaf and track them as though they were separate jobs. A similar approach can be followed using the ``dask.delayed`` API.
 
@@ -125,7 +125,7 @@ Modify the ``home`` controller in the :file:`controller.py` module, adding a but
             delayed = delayed_job()
             dask = job_manager.create_job(
                 job_type='DASK',
-                name='dask_distributed',
+                name='dask_delayed',
                 user=request.user,
                 scheduler=scheduler,
             )
@@ -284,13 +284,26 @@ Modify the ``app_content`` block in the :file:`home.html` so that it looks like 
 If your tethys project does not restart on its own, you may need to do so manually by ending the server with ``ctrl+c``, and then entering the command ``tethys manage start`` again. Now when you navigate to your app page, you should see this:
 
 .. figure:: ../../images/tutorial/NewPostMultipleLeafHome.png
+    :width: 900px
     :align: center
 
 Click on the ``Dask Multiple Leaf Jobs`` button to launch the new job type. You will see multiple jobs being tracked by the jobs table, one for each leaf:
 
 .. figure:: ../../images/tutorial/NewPostMultipleLeafJobsTable.png
+    :width: 900px
     :align: center
 
 .. tip::
 
     If you get stuck, compare with the solution here: `<https://github.com/tethysplatform/tethysapp-dask_tutorial>`_
+
+5. Solution
+===========
+
+This concludes the Dask Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dask_tutorial>`_ or clone it as follows:
+
+.. parsed-literal::
+
+    git clone git@github.com:tethysplatform/tethysapp-dask_tutorial.git
+    cd tethysapp-dask_tutorial
+    git checkout -b solution solution-|version|
