@@ -61,7 +61,7 @@ d. Provide an endpoint to the 52 North WPS that is running in Docker. The endpoi
 
   ::
 
-    (tethys)$ tethys docker ip
+    tethys docker ip
     ...
     52 North WPS:
       Host: 192.168.59.103
@@ -101,7 +101,7 @@ d. Select *"GeoServer"* as the engine and provide an endpoint to the Spatial Dat
 
   ::
 
-    (tethys)$ tethys docker ip
+    tethys docker ip
     ...
     GeoServer:
       Host: 127.0.0.1

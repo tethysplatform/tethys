@@ -2,7 +2,7 @@
 Bokeh Integration Concepts
 **************************
 
-**Last Updated:** September 2019
+**Last Updated:** November 2019
 
 This tutorial introduces ``Bokeh Server`` integration concepts for Tethys developers. Two ``bokeh`` handlers will be created to demonstrate how to link Bokeh plots or widgets to Python functions in the brackground using both a plain Bokeh approach as well as a ``Param`` approach. The topics covered include:
 
@@ -14,10 +14,10 @@ Create a and install a new Tethys app named bokeh_tutorial.
 
 ::
 
-    $ t
-    (tethys) $ tethys scaffold bokeh_tutorial
-    (tethys) $ cd tethysapp-bokeh_tutorial
-    (tethys) $ tethys install -d
+    t
+    tethys scaffold bokeh_tutorial
+    cd tethysapp-bokeh_tutorial
+    tethys install -d
 
 1. Bokeh Server
 ===============
@@ -31,7 +31,7 @@ The logic for creating a Bokeh widget along with other related functionality is 
 
 Let's use Bokeh's sea temperature sample data to create a time series plot and link it to a slider that will provide the value to perform a rolling-window analysis on the time series. This example is based on a similar example in Bokeh's main documentation.
 
-a. Create a ``handler function`` by adding the following imports and logic to ``controller.py``.
+1. Create a ``handler function`` by adding the following imports and logic to ``controller.py``.
 
 .. code-block:: Python
 
@@ -49,18 +49,17 @@ a. Create a ``handler function`` by adding the following imports and logic to ``
                       height=500, width=800, title="Sea Surface Temperature at 43.18, -70.43")
         plot.line("time", "temperature", source=source)
 
-        doc.add_root(plot)
+        document.add_root(plot)
 
 This simple handler contains the logic for a time series plot of the sea surface temperature sample data provided by ``Bokeh``.
 
-b. Clear the default home function in ``controller.py`` and add the following code to it.
+2. Clear the default home function in ``controller.py`` and add the following code to it.
 
 .. code-block:: Python
 
     from bokeh.embed import server_document
 
-    ...
-
+    @login_required()
     def home(request):
         script = server_document(request.build_absolute_uri())
         context = {'script': script}
@@ -68,7 +67,7 @@ b. Clear the default home function in ``controller.py`` and add the following co
 
 The home controller can now load the time series plot from (a) using the Bokeh ``server_document`` function. However, we still need to link the ``handler`` and the ``controller`` in the ``app.py``, and add the script context variable to the template as with any other variable.
 
-c. Modify ``app.py`` by adding a dot-formatted path to the handler function created in (a) to the ``handler`` parameter and providing a ``handler_type`` with a value equal to 'bokeh' as shown in the code below.
+3. Modify ``app.py`` by adding a dot-formatted path to the handler function created in (1) to the ``handler`` parameter and providing a ``handler_type`` with a value equal to 'bokeh' as shown in the code below.
 
 .. code-block:: Python
 
@@ -109,18 +108,12 @@ c. Modify ``app.py`` by adding a dot-formatted path to the handler function crea
 
             return url_maps
 
-d. Clear the default ``home.html`` template and add the following code to it.
+4. Clear the default ``home.html`` template and add the following code to it.
 
 .. code-block:: html+django
 
     {% extends "bokeh_tutorial/base.html" %}
     {% load tethys_gizmos %}
-
-    {% block header_buttons %}
-      <div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="Help">
-        <a data-toggle="modal" data-target="#help-modal"><span class="glyphicon glyphicon-question-sign"></span></a>
-      </div>
-    {% endblock %}
 
     {% block app_content %}
       <h1>Bokeh Integration Example</h1>
@@ -129,12 +122,12 @@ d. Clear the default ``home.html`` template and add the following code to it.
 
 As you can see, the script context variable has been added to the app_content block. If you start tethys and go to the home page of this app you should see something like this:
 
-.. figure:: ../../images/tutorial/bokeh_integration/bokeh_integration_1.png
+.. figure:: ../images/tutorial/bokeh_integration/bokeh_integration_1.png
     :width: 650px
 
 This is a simple Bokeh plot. We will now add the rest of the logic to make it an interactive plot. We will add a ``Slider`` widget. Then, we will create a callback function to modify the time-series plot based on the slider. Finally, we will add both our plot and slider to the document tree using a ``Column`` layout.
 
-e. Modify the ``handler function`` from ``controller.py`` to look like this.
+5. Modify the ``handler function`` from ``controller.py`` to look like this.
 
 .. code-block:: python
 
@@ -166,7 +159,7 @@ e. Modify the ``handler function`` from ``controller.py`` to look like this.
 
 If you start tethys and go to the home page of this app you should see something like this:
 
-.. figure:: ../../images/tutorial/bokeh_integration/bokeh_integration_2.png
+.. figure:: ../images/tutorial/bokeh_integration/bokeh_integration_2.png
     :width: 650px
 
 The ``Slider`` and ``Plot`` will appear in the order they were added to the ``Column`` layout. If the value of the ``Slider`` changes, the data in the ``Plot`` will reflect this change based on this expression: `data = df.rolling(f'{new}D').mean()`. Where `df` is the sample data and `new` is the new ``Slider`` value.
@@ -179,13 +172,44 @@ The ``Slider`` and ``Plot`` will appear in the order they were added to the ``Co
 
 In this example we will build on top of the ``bokeh_tutorial`` app to demonstrate how to use ``Param`` and ``Panel`` in combination with ``bokeh Server``. This same example can be found in `Panel's documentation <https://panel.pyviz.org/gallery/param/param_subobjects.html#gallery-param-subobjects>`_.
 
-a. Add the following objects to ``controller.py``.
+1. Install the ``param`` library by running the following with your Tethys environment activated:
+
+.. code-block:: bash
+
+    conda install -c conda-forge panel param
+
+2. Add the new dependencies to your :file:`install.yml` as follows so that the app will work when installed in a new environment:
+
+.. code-block:: yaml
+
+    # This file should be committed to your app code.
+    version: 1.0
+    # This should match the app - package name in your setup.py
+    name: bokeh_tutorial
+
+    requirements:
+      # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
+      skip: false
+      conda:
+        channels:
+          - conda-forge
+        packages:
+          - panel
+          - param
+
+      pip:
+
+    post:
+
+
+3. Add the following objects to a new file called ``param_model.py``.
 
 .. code-block:: python
 
     import param
     import panel as pn
     import numpy as np
+    from bokeh.plotting import figure
 
     ...
 
@@ -250,16 +274,21 @@ a. Add the following objects to ``controller.py``.
 
 The added classes depend on ``Bokeh``.  The `Circle` and `NGon` classes depend on the `Shape` class, while the `ShapeViewer` allows the user to pick one of the two available shapes.
 
-b. Add a ``handler function`` that uses the classes created in the previous step by adding the following code to ``controller.py``.
+4. Add a ``handler function`` that uses the classes created in the previous step by adding the following code to ``controller.py``.
 
 .. code-block:: python
+
+    import panel as pn
+    from .param_model import ShapeViewer
+
+    ...
 
     def shapes_handler(document):
         viewer = ShapeViewer()
         panel = pn.Row(viewer.param, viewer.panel())
         panel.server_doc(document)
 
-c. Add a ``controller function`` to pass the ``Panel`` object to a template and to link it with the ``handler`` created in the previous step.
+5. Add a ``controller function`` to pass the ``Panel`` object to a template and to link it with the ``handler`` created in the previous step.
 
 .. code-block:: python
 
@@ -268,7 +297,7 @@ c. Add a ``controller function`` to pass the ``Panel`` object to a template and 
         context = {'script': script}
         return render(request, "bokeh_tutorial/shapes.html", context)
 
-d. Create a new ``UrlMap`` in ``app.py`` to link the new ``handler-controller pair`` to an endpoint.
+6. Create a new ``UrlMap`` in ``app.py`` to link the new ``handler-controller pair`` to an endpoint.
 
 .. code-block:: python
 
@@ -297,7 +326,7 @@ d. Create a new ``UrlMap`` in ``app.py`` to link the new ``handler-controller pa
 
         return url_maps
 
-e. Add a new template to match the path rendered in the new ``controller`` from (c) (`bokeh_tutorial/shapes.html`).
+7. Add a new template to match the path rendered in the new ``controller`` from (c) (`bokeh_tutorial/shapes.html`).
 
 .. code-block:: html+django
 
@@ -315,7 +344,7 @@ e. Add a new template to match the path rendered in the new ``controller`` from 
       {{ script|safe }}
     {% endblock %}
 
-f. To add the new endpoint to the app navigation bar, go to the ``base.html`` template and replace the ``app_navigation`` block content with the code below.
+8. To add the new endpoint to the app navigation bar, go to the ``base.html`` template and replace the ``app_navigation`` block content with the code below.
 
 .. code-block:: html+django
 
@@ -329,7 +358,7 @@ f. To add the new endpoint to the app navigation bar, go to the ``base.html`` te
 
 If you start tethys and go to the shapes endpoint of this app you should see something like this:
 
-.. figure:: ../../images/tutorial/bokeh_integration/bokeh_integration_3.png
+.. figure:: ../images/tutorial/bokeh_integration/bokeh_integration_3.png
     :width: 650px
 
 4. Solution
@@ -337,6 +366,8 @@ If you start tethys and go to the shapes endpoint of this app you should see som
 
 This concludes the ``Bokeh Integration`` tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-bokeh_tutorial>`_ or clone it as follows:
 
-::
+.. parsed-literal::
 
-    $ git clone https://github.com/tethysplatform/tethysapp-bokeh_tutorial
+    git clone https://github.com/tethysplatform/tethysapp-bokeh_tutorial.git
+    cd tethysapp-bokeh_tutorial
+    git checkout -b solution solution-|version|
