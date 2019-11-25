@@ -15,7 +15,7 @@ Within the command line interface, navigate to the directory of the app you wish
 
 ::
 
-    $ cd /directory/of/app
+    cd /directory/of/app
 
 2. Install the App
 ==================
@@ -28,10 +28,10 @@ Using the :ref:`install cli command <tethys_cli_install>`, you can install the a
 ::
 
     # Run Init
-    $ tethys install
+    tethys install
 
     # Tethys install with custom options
-    $ tethys install -f ../install.yml -p $TETHYS_HOME/src/configs/portal_config.yml
+    tethys install -f ../install.yml -p $TETHYS_HOME/src/configs/portal_config.yml
 
 
 The install command uses three configuration files:
@@ -98,11 +98,11 @@ In the above example, ``catalog_db`` is the name of the setting in your :file:`a
 .. _tethys_portal_yml:
 
 portal_config.yml
-------------
+-----------------
 
 The file is designed to be maintained by Tethys Portal administrators to automatically assign services defined in their Tethys Portal to apps they are installing.
 
-.. literalinclude:: resources/example-portal_config.yml
+.. literalinclude:: resources/example-portal-config.yml
    :language: yaml
 
 **portal_config.yml Options:**
@@ -132,7 +132,7 @@ In the above example, ``catalog_db`` is the name of the setting in your :file:`a
 
 Restart tethys portal to effect the changes::
 
-    (tethys) $ tethys manage start
+    tethys manage start
 
 
 4. Configure Additional App Settings
@@ -147,5 +147,5 @@ The install command will automatically run the syncstores command if it detects 
 
 ::
 
-    $ t
-    (tethys) $ tethys syncstores {app_name}
+    t
+    tethys syncstores {app_name}

@@ -2,21 +2,21 @@
 Start and Register
 ******************
 
-**Last Updated:** May 2017
+**Last Updated:** November 2019
 
 
-Scaffold New App
-================
+1. Scaffold New App
+===================
 
 Create a new app, but don't install it yet:
 
 ::
 
-    $ t
-    (tethys) $ tethys scaffold geoserver_app
+    t
+    tethys scaffold geoserver_app
 
-Create Spatial Dataset Service Setting
-======================================
+2. Create Spatial Dataset Service Setting
+=========================================
 
 Open the ``app.py`` and add the following method to the ``GeoserverApp`` class:
 
@@ -48,31 +48,31 @@ Open the ``app.py`` and add the following method to the ``GeoserverApp`` class:
 
 
 
-Install GeoServer and Start Tethys Development Server
-=====================================================
+3. Install GeoServer and Start Tethys Development Server
+========================================================
 
 ::
 
-    (tethys) $ cd tethysapp-geoserver_app
-    (tethys) $ tethys install -d
-    (tethys) $ tethys manage start
+    cd tethysapp-geoserver_app
+    tethys install -d
+    tethys manage start
 
 
-Start GeoServer
-===============
+4. Start GeoServer
+==================
 
 If you are using the Docker containers, start up your :doc:`../../software_suite/geoserver` container:
 
 ::
 
-	(tethys) $ tethys docker start -c geoserver
+	tethys docker start -c geoserver
 
 Otherwise ensure that you have GeoServer installed and running. Refer to the `GeoServer Installation Guide <http://docs.geoserver.org/stable/en/user/installation/>`_ for system specific instructions.
 
 
 
-Create GeoServer Spatial Dataset Service
-========================================
+5. Create GeoServer Spatial Dataset Service
+===========================================
 
 Register the GeoServer with Tethys Portal admin page by creating a Spatial Dataset Service:
 
@@ -84,8 +84,12 @@ Register the GeoServer with Tethys Portal admin page by creating a Spatial Datas
 6. No API Key is required.
 7. Press "Save".
 
-Assign Spatial Dataset Service to App Setting
-=============================================
+.. important::
+
+    In a production deployment of Tethys, the public endpoint should point to the publicly accessible host and port of the geoserver (e.g.: http://www.example.com:8181/geoserver/rest/)
+
+6. Assign Spatial Dataset Service to App Setting
+================================================
 
 Assign the "primary_geoserver" Spatial Dataset Service to the "main_geoserver" setting for the app.
 
@@ -101,22 +105,22 @@ Assign the "primary_geoserver" Spatial Dataset Service to the "main_geoserver" s
 
     ::
 
-        (tethys) $ tethys uninstall geoserver_app
-        (tethys) $ cd tethysapp-geoserver_app
-        (tethys) $ tethys install -d
-        (tethys) $ tethys manage start
+        tethys uninstall geoserver_app
+        cd tethysapp-geoserver_app
+        tethys install -d
+        tethys manage start
 
 
-GeoServer Web Admin Interface
-=============================
-
-Explore the GeoServer web admin interface by visiting link: `<http://\<host\>:\<port\>/geoserver/web/>`_.
-
-
-Download Test Files
-===================
+7. Download Test Files
+======================
 
 Download the sample shapefiles that you will use to test your app:
 
 :download:`geoserver_app_data.zip`
 
+The archive contains several shapefiles organized into folders. Unzip the archive to your preferred location and inspect the files.
+
+8. GeoServer Web Admin Interface
+================================
+
+Explore the GeoServer web admin interface by visiting link: `<http://localhost:8181/geoserver/web/>`_.
