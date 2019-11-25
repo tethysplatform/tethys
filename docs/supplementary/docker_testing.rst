@@ -8,8 +8,8 @@ Activate the virtual environment if you have not done so already and use the fol
 
 ::
 
-  $ . /usr/lib/tethys/bin/activate
-  $ tethys docker start
+  . /usr/lib/tethys/bin/activate
+  tethys docker start
 
 .. note::
 
@@ -19,7 +19,7 @@ Use the following command in the terminal to obtain the ports that each software
 
 ::
 
-  $ tethys docker ip
+  tethys docker ip
 
 You will be able to access each software on ``localhost`` at the appropriate port. For example, GeoServer and 52 North WPS both have web administrative interfaces. In a web browser, enter the following URLs replacing the ``<port>`` with the appropriate port number from the previous command:
 

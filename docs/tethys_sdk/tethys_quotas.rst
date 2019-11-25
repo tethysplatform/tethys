@@ -101,4 +101,4 @@ passes_quota
 Additional Resources
 ====================
 
-For more information and examples on how to use the Tethys Quotas API (including creating and enforcing custom quotas) see the :doc:`../tutorials/getting_started/quotas` tutorial.
+For more information and examples on how to use the Tethys Quotas API (including creating and enforcing custom quotas) see the :doc:`../tutorials/quotas` tutorial.

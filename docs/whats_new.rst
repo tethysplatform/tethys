@@ -49,7 +49,7 @@ Django Channels
 * Django Channels wraps the synchronous Django process in an asynchronous process, allowing developers to use modern web protocols like WebSockets.
 * WebSockets allow for a bidirectional, long-lived connections between the server and client.
 
-See: :doc:`./tutorials/getting_started/websockets`
+See: :doc:`./tutorials/websockets`
 
 Bokeh Integration
 -----------------
@@ -58,7 +58,7 @@ Bokeh Integration
 
 See: :ref:`bokeh_integration`
 
-See: :doc:`./tutorials/getting_started/bokeh_integration`
+See: :doc:`./tutorials/bokeh`
 
 URL Maps API
 ------------
@@ -82,7 +82,7 @@ Tethys Quotas
 * Tethys ships with quotas for workspace storage implemented, but it is disabled by default. When enabled, portal administrators can set limits on the storage users or apps are able to use.
 * Tethys Quotas are completely extensible, allowing developer to create custom quotas for other resources (e.g. memory usage, database storage, wall time hours, etc.).
 
-See: :doc:`./tutorials/getting_started/quotas` and :doc:`./tethys_sdk/tethys_quotas`
+See: :doc:`./tutorials/quotas` and :doc:`./tethys_sdk/tethys_quotas`
 
 Workspace Storage Management Pages
 ----------------------------------

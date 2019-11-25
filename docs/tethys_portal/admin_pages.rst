@@ -17,7 +17,7 @@ Tethys Portal includes administration pages that can be used to manage the websi
 
     ::
 
-        $ tethys manage createsuperuser
+        tethys manage createsuperuser
 
 .. _tethys_portal_permissions:
 

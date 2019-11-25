@@ -52,16 +52,16 @@ To run any tests at an app level:
 
     1. Open a terminal
     2. Enter the Tethys Platform python environment:
-        ``$ . /usr/lib/tethys/bin/activate``
+        ``. /usr/lib/tethys/bin/activate``
     3. Enter app-level ``tethys test`` command.
-        ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name(required)>.<folder_name>.<file_name>.<class_name>.<function_name>``
+        ``tethys test -f tethys_apps.tethysapp.<app_name(required)>.<folder_name>.<file_name>.<class_name>.<function_name>``
 
     More specifically:
 
 To run all tests across an app:
-    Test command: ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name>``
+    Test command: ``tethys test -f tethys_apps.tethysapp.<app_name>``
 To run all tests within specific directory of an app:
-    Test command: ``(tethys)$ tethys test -f tethys_apps.tethysapp.<app_name>.<folder_name>``
+    Test command: ``tethys test -f tethys_apps.tethysapp.<app_name>.<folder_name>``
 
 And so forth... Thus, you can hone in on the exact tests that you want to run.
 

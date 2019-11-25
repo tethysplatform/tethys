@@ -2,7 +2,7 @@
 Getting Started
 ***************
 
-**Last Updated:** June 2017
+**Last Updated:** October 2019
 
 This tutorial will walk you through the steps of setting up a new Tethys App project using Tethys Platform. If you have not already installed Tethys Platform, follow the :doc:`../installation` documentation and then return.
 
@@ -15,6 +15,3 @@ You will need to use the command line/terminal to manage your app and run the de
    getting_started/beginner
    getting_started/intermediate
    getting_started/advanced
-   getting_started/quotas
-   getting_started/websockets
-   getting_started/bokeh_integration

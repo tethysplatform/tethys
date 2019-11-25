@@ -2,7 +2,7 @@
 Dask Distributed
 ****************
 
-**Last Updated:** November 2018
+**Last Updated:** November 2019
 
 This section will illustrate how to use the ``dask.distributed`` API with ``DaskJob`` in Tethys. This example also illustrates how to use a custom process results function.
 
@@ -101,7 +101,7 @@ Additionally update the ``run_job`` controller in :file:`controller.py` to look 
             delayed = delayed_job()
             dask = job_manager.create_job(
                 job_type='DASK',
-                name='dask_distributed',
+                name='dask_delayed',
                 user=request.user,
                 scheduler=scheduler,
             )
@@ -155,11 +155,13 @@ Modify the ``app_content`` block in the :file:`home.html` so that it looks like 
 If your tethys project does not restart on its own, you may need to do so manually by ending the server with ``ctrl+c``, and then entering the command ``tethys manage start`` again. Now when you navigate to your app page, you should see this:
 
 .. figure:: ../../images/tutorial/NewPostDaskDistributedHome.png
+    :width: 900px
     :align: center
 
 Click on the ``Dask Distributed Job`` button to launch the new job type. It will submit the job and redirect to the jobs table page:
 
 .. figure:: ../../images/tutorial/NewPostDaskDistributedJobsTable.png
+    :width: 900px
     :align: center
 
 .. tip::

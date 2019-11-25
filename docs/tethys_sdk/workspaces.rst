@@ -58,7 +58,7 @@ Run the ``collectworkspaces`` command to automatically move all of the workspace
 
 ::
 
-    $ tethys manage collectworkspaces
+    tethys manage collectworkspaces
 
 .. tip::
 
@@ -66,7 +66,7 @@ Run the ``collectworkspaces`` command to automatically move all of the workspace
 
     ::
 
-        $ tethys manage collectall
+        tethys manage collectall
 
 .. _tethys_quotas_workspace_manage:
 

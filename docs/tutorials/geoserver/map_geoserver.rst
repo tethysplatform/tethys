@@ -2,11 +2,11 @@
 Map GeoServer Layers
 ********************
 
-**Last Updated:** May 2017
+**Last Updated:** November 2019
 
 
-Map Page UrlMap
-===============
+1. Map Page UrlMap
+==================
 
 Add a new ``UrlMap`` to the ``url_maps`` method of the :file:`app.py` module:
 
@@ -19,14 +19,14 @@ Add a new ``UrlMap`` to the ``url_maps`` method of the :file:`app.py` module:
     ),
 
 
-Map Page Controller
-===================
+2. Map Page Controller
+======================
 
 Add a new controller to the :file:`controller.py` module:
 
 ::
 
-    @login_required
+    @login_required()
     def map(request):
         """
         Controller for the map page
@@ -91,8 +91,8 @@ Add a new controller to the :file:`controller.py` module:
 
         return render(request, 'geoserver_app/map.html', context)
 
-Map Page Template
-=================
+3. Map Page Template
+====================
 
 Create a new :file:`map.html` template in your template directory and add the following contents:
 
@@ -112,7 +112,7 @@ Create a new :file:`map.html` template in your template directory and add the fo
     {% endblock %}
 
 
-Test Map Page
-=============
+4. Test Map Page
+================
 
 Navigate to the map page (`<http://localhost:8000/apps/geoserver-app/map/>`_). Use the select box to select a layer to display on the map. Press the submit button to effect the change.

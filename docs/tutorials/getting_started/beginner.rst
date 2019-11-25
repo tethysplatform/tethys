@@ -2,7 +2,7 @@
 Beginner Concepts
 *****************
 
-**Last Updated:** June 2017
+**Last Updated:** October 2019
 
 This tutorial introduces important concepts for first-time or beginner Tethys developers. The topics covered include:
 
@@ -78,9 +78,11 @@ b. Open the ``app.py`` and add the ``custom_settings()`` method to the ``DamInve
 
         Ellipsis in code blocks in Tethys tutorials indicate code that is not shown for brevity. When there are ellipsis in the code, DO NOT COPY AND PASTE THE BLOCK VERBATIM.
 
-c. Save changes to ``app.py`` then restart your development server (press ``CTRL-C`` to stop followed by the ``tethys manage start`` command to start it again).
+c. Save changes to ``app.py``.
 
-d. Navigate to the settings page of your app and scroll down to the **Custom Settings** section and you should see an entry for the ``max_dams`` settings. Enter a value and save changes to the setting. You will learn how to use this custom setting in the app later on in the tutorial.
+d. The development server should automatically restart when it detects changes to files. However if it does not restart, you can manually restart it by pressing ``CTRL-C`` to stop the server followed by the ``tethys manage start`` command to start it again.
+
+e. Navigate to the settings page of your app and scroll down to the **Custom Settings** section and you should see an entry for the ``max_dams`` settings. Enter a value and save changes to the setting. You will learn how to use this custom setting in the app later on in the tutorial.
 
 .. tip::
 
@@ -89,7 +91,7 @@ d. Navigate to the settings page of your app and scroll down to the **Custom Set
 3. Model View Controller
 ========================
 
-Tethys apps are developed using the :term:`Model View Controller` (MVC) software architecture pattern. Model refers to the data model and associated code, View refers to the representations of the data, and Controller refers of the code that coordinates data from the Model for rendering in the View. In Tethys apps, the Model is usually an SQL database or files and the code for accessing them, the Views are most often the templates or HTML files, and Controllers are implemented as Python functions.
+Tethys apps are developed using the :term:`Model View Controller` (MVC) software architecture pattern. Model refers to the data model and associated code, View refers to the representations of the data, and Controller refers of the code that coordinates data from the Model for rendering in the View. In Tethys apps, the Model is usually an SQL database or files and the code for accessing them, the Views are most often the templates or HTML files, and Controllers are implemented as Python functions or classes.
 
 .. tip::
 
@@ -99,7 +101,7 @@ Tethys apps are developed using the :term:`Model View Controller` (MVC) software
 4. Views
 ========
 
-Views for Tethys apps are constructed using the standard web programming tools: HTML, JavaScript, and CSS. Additionally, Tethys Platform provides the Django Python templating language allowing you to insert Python code into your HTML documents. The result is dynamic, reusable templates for the web pages of your app.
+Views for Tethys apps are constructed using the standard web programming tools: HTML, JavaScript, and CSS. Additionally, HTML templates can use the Django Template Language, because Tethys Platform is build on Django. This allows you to insert Python code into your HTML documents making the web pages of your app dynamic and reusable.
 
 a. Open ``/templates/dam_inventory/home.html`` and replace it's contents with the following:
 
@@ -118,24 +120,24 @@ a. Open ``/templates/dam_inventory/home.html`` and replace it's contents with th
 
 .. tip::
 
-    **Django TemplateLanguage**: If you are familiar with HTML, the contents of this file may seem strange. That's because the file is actually a Django template, which contains special syntax (i.e.: ``{% ... %}`` and ``{{ ... }}`` to make the template dynamic. Django templates can contain variables, filters, and tags.
+    **Django Template Language**: If you are familiar with HTML, the contents of this file may seem strange. That's because the file is actually a Django template, which contains special syntax (i.e.: ``{% ... %}`` and ``{{ ... }}`` to make the template dynamic. Django templates can contain variables, filters, and tags.
 
-    **Variables.** Variables are denoted by double curly brace syntax like this: ``{{ variable }}``. Template variables are replaced by the value of the variable. Dot notation can be used access attributes of a variable, keys of dictionaries, and items in lists: ``{{ my_object.attribute }}`` , ``{{ my_dict.key }}``, and ``{{ my_list.3 }}``.
+    **Variables.** Variables are denoted by double curly brace syntax like this: ``{{ variable }}``. Template variables are replaced by the value of the variable. Dot notation can be used to access attributes of an object, keys of dictionaries, and items in lists or tuples: ``{{ my_object.attribute }}`` , ``{{ my_dict.key }}``, and ``{{ my_list.3 }}``.
 
-    **Filters.** Variables can be modified by filters which look like this: ``{{ variable|filter:argument }}``. Filters perform modifying functions on variable output such as formatting dates, formatting numbers, changing the letter case, and concatenating multiple variables.
+    **Filters.** Variables can be modified by filters which look like this: ``{{ variable|filter:argument }}``. Filters modify the value of the variable output such as formatting dates, formatting numbers, changing the letter case, or concatenating multiple variables.
 
     **Tags.** Tags use curly-brace-percent-sign syntax like this: ``{% tag %}``. Tags perform many different functions including creating text, controlling flow, or loading external information to be used in the app. Some commonly used tags include ``for``, ``if``, ``block``, and ``extends``.
 
-    **Blocks.** The block tags in the Tethys templates coorespond with different areas in the app. For example, any HTML written inside the ``app_content`` block will render in the app content area of the app.
+    **Blocks.** The block tags in the Tethys templates are used to override the content in the different areas of the app base template. For example, any HTML written inside the ``app_content`` block will render in the app content area of the app.
 
     For a better explanation of the Django Template Language and the blocks available in Tethys apps see the :doc:`../../tethys_sdk/templating`.
 
 5. Controllers
 ==============
 
-Controllers consist of a Python function that takes a ``request`` object as an argument. The ``request`` object contains all the information about the incoming request including any data being passed to the server, information about the user that is logged in, and the HTTP headers. Each controller function is associated with one view or template. Any variable assigned to the ``context`` variable in a controller becomes a variable on the template specified in the ``render`` function.
+Basic controllers consist of a Python function that takes a ``request`` object as an argument. The ``request`` object contains all the information about the incoming request including any data being passed to the server, information about the user that is logged in, and the HTTP headers. Each controller function is associated with one view or template. Any variable assigned to the ``context`` variable in a controller becomes a variable on the template specified in the ``render`` function.
 
-a. Open ``controllers.py`` and define the ``dam_inventory_map`` and ``add_dam_button`` gizmos in your home controller. Open ``controllers.py`` and change the ``home`` controller function as follows:
+a. Open ``controllers.py`` define the ``dam_inventory_map`` and ``add_dam_button`` gizmos in your home controller:
 
 ::
 
@@ -197,11 +199,11 @@ a. Create a new file ``/public/css/map.css`` and add the following contents:
         height: 100%;
     }
 
-b. Load the styles on the ``/templates/dam_inventory/home.html`` template by adding a link to the ``public/css/map.css`` to it. To do this add ``staticfiles`` to the load statement at the top of the template and add the ``styles`` block to the end of the file:
+b. Load the styles on the ``/templates/dam_inventory/home.html`` template by adding a link to the ``public/css/map.css`` to it. To do this add ``static`` to the load statement at the top of the template and add the ``styles`` block to the end of the file:
 
 ::
 
-    {% load tethys_gizmos staticfiles %}
+    {% load tethys_gizmos static %}
 
     ...
 
@@ -333,7 +335,7 @@ a. Modify the ``template/dam_inventory/add_dam.html`` with a title in the app co
       {% gizmo add_button %}
     {% endblock %}
 
-b. Define the options for the ``Add`` and ``Cancel`` button gizmos in the ``add_app`` controller in ``controllers.py``. Also add the variables to the context so they are available to the template:
+b. Define the options for the ``Add`` and ``Cancel`` button gizmos in the ``add_dam`` controller in ``controllers.py``. Also add the variables to the context so they are available to the template:
 
 ::
 
@@ -399,8 +401,8 @@ The ``url`` tag is used in templates to lookup URLs using the name of the UrlMap
 
 This concludes the Beginner Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
 
-::
+.. parsed-literal::
 
-    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
-    $ cd tethysapp-dam_inventory
-    $ git checkout beginner-solution
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    cd tethysapp-dam_inventory
+    git checkout -b beginner-solution beginner-|version|

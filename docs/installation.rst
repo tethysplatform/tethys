@@ -33,7 +33,7 @@ To install the ``tethysplatform`` into a new conda environment then run the foll
     Alternatively, to install from source refer to the :ref:`developer_installation` docs.
 
 2. Create a :file:`portal_config.yml` File
-------------------------------------
+------------------------------------------
 
 To add custom configurations such as the database and other local settings you will need to generate a :file:`portal_config.yml` file. To generate a new template :file:`portal_config.yml` run::
 

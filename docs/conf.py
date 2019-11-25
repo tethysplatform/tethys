@@ -122,10 +122,12 @@ copyright = u'2019, Tethys Platform'
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
-# The short X.Y version.
-version = pbr.version.VersionInfo('tethys_platform').version_string()
+pbr_version_info = pbr.version.VersionInfo('tethys_platform')
 # The full version, including alpha/beta/rc tags.
-release = pbr.version.VersionInfo('tethys_platform').version_string_with_vcs()
+release = pbr_version_info.version_string_with_vcs()
+version_tuple = pbr_version_info.semantic_version().version_tuple()
+# IMPORTANT: version NEEDS TO BE X.Y FOR TUTORIAL SOLUTIONS TO RESOLVED CORRECTLY!!!
+version = f'{version_tuple[0]}.{version_tuple[1]}'
 
 # A string of reStructuredText that will be included at the end of every source
 # file that is read. This is the right place to add substitutions that should be

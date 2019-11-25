@@ -18,13 +18,13 @@ Pull the Docker image for GeoServer using the following command:
 
 ::
 
-    $ sudo docker pull ciwater/geoserver
+    sudo docker pull ciwater/geoserver
 
 After the image has been pulled, run a new Docker container as follows:
 
 ::
 
-    $ sudo docker run -d -p 80:8080 --restart=always --name geoserver ciwater/geoserver
+    sudo docker run -d -p 80:8080 --restart=always --name geoserver ciwater/geoserver
 
 Refer to the `Docker Run Reference <https://docs.docker.com/reference/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name.
 
@@ -48,7 +48,7 @@ Pull the Docker image for PostgreSQL with PostGIS using the following command:
 
 ::
 
-    $ sudo docker pull ciwater/postgis
+    sudo docker pull ciwater/postgis
 
 The PostgreSQL with PostGIS Docker automatically initializes with the three database users that are needed for Tethys Platform:
 
@@ -66,7 +66,7 @@ Here is an example of how to use the environmental variables to set passwords wh
 
 ::
 
-    $ sudo docker run -d -p 80:5432 -e TETHYS_DEFAULT_PASS="pass" -e TETHYS_DB_MANAGER_PASS="pass" -e TETHYS_SUPER_PASS="pass" --restart=always --name postgis ciwater/postgis
+    sudo docker run -d -p 80:5432 -e TETHYS_DEFAULT_PASS="pass" -e TETHYS_DB_MANAGER_PASS="pass" -e TETHYS_SUPER_PASS="pass" --restart=always --name postgis ciwater/postgis
 
 Refer to the `Docker Run Reference <https://docs.docker.com/reference/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name. It also set the passwords for each database at startup.
 
@@ -89,13 +89,13 @@ Pull the Docker image for 52 North WPS using the following command:
 
 ::
 
-    $ sudo docker pull ciwater/n52wps
+    sudo docker pull ciwater/n52wps
 
 After the image has been pulled, run a new Docker container as follows:
 
 ::
 
-    $ sudo docker run -d -p 80:8080 -e USERNAME="foo" -e PASSWORD="bar" --restart=always --name n52wps ciwater/n52wps
+    sudo docker run -d -p 80:8080 -e USERNAME="foo" -e PASSWORD="bar" --restart=always --name n52wps ciwater/n52wps
 
 
 Refer to the `Docker Run Reference <https://docs.docker.com/reference/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name. It also sets the username and password for the admin user.
@@ -119,7 +119,7 @@ Here is an example of how to use the environmental variables to set metadata whe
 
 ::
 
-    $ sudo docker run -d -p 80:8080 -e USERNAME="foo" -e PASSWORD="bar" -e NAME="Roger" -e COUNTRY="USA"  --restart=always --name n52wps ciwater/n52wps
+    sudo docker run -d -p 80:8080 -e USERNAME="foo" -e PASSWORD="bar" -e NAME="Roger" -e COUNTRY="USA"  --restart=always --name n52wps ciwater/n52wps
 
 More information about the 52 North WPS Docker can be found on the Docker Registry:
 
@@ -142,10 +142,10 @@ You can view the status of containers using the following commands:
 ::
 
     # Running containers
-    $ sudo docker ps
+    sudo docker ps
 
     # All containers
-    $ sudo docker ps -a
+    sudo docker ps -a
 
 Start and Stop
 --------------
@@ -154,8 +154,8 @@ Docker containers can be stopped and started using the names assigned to them. F
 
 ::
 
-    $ sudo docker stop postgis
-    $ sudo docker start postgis
+    sudo docker stop postgis
+    sudo docker start postgis
 
 Attach to Container
 -------------------
@@ -164,4 +164,4 @@ You can attach to running containers to give you a command prompt to the contain
 
 ::
 
-    $ sudo docker exec --rm -it postgis bash
+    sudo docker exec --rm -it postgis bash
