@@ -8,13 +8,14 @@
 ********************************************************************************
 """
 from .base import TethysGizmoOptions
+from django.conf import settings
 
 __all__ = ['DatePicker']
 
 
 class DatePicker(TethysGizmoOptions):
     """
-    Date pickers are used to make the input of dates streamlined and easy. Rather than typing the date, the user is  presented with a calendar to select the date. This date picker was implemented using `Bootstrap Datepicker <http://bootstrap-datepicker.readthedocs.org/en/release/index.html>`_.
+    Date pickers are used to make the input of dates streamlined and easy. Rather than typing the date, the user is  presented with a calendar to select the date. This date picker was implemented using `Bootstrap Datepicker <https://bootstrap-datepicker.readthedocs.io/en/v1.7.1/>`_.
 
     Attributes:
         name (str, required): Name of the input element that will be used for form submission.
@@ -24,7 +25,7 @@ class DatePicker(TethysGizmoOptions):
         clear_button (bool): Set whether the clear button is displayed or not.
         days_of_week_disabled (str): Days of the week that are disabled 0-6 with 0 being Sunday and 6 being Saturday. Multiple days are comma separated (e.g.: '0,6').
         end_date (str): Last date that can be selected. All other dates after this date are shown as disabled.
-        format (str): String representing date format. For valid formats see Bootstrap Datepicker documentation `here <http://bootstrap-datepicker.readthedocs.org/en/release/options.html#format>`_.
+        format (str): String representing date format. For valid formats see Bootstrap Datepicker documentation `here <https://bootstrap-datepicker.readthedocs.io/en/v1.7.1/options.html#format>`_.
         min_view_mode (str): Set the minimum view mode. Possible values are 'days', 'months', 'years'.
         multidate (int): Enables multi-selection of dates up to the number given.
         start_date (str): First date that can be selected. All other dates before this date are shown as disabled.
@@ -76,6 +77,11 @@ class DatePicker(TethysGizmoOptions):
 
     """  # noqa: E501
     gizmo_name = "date_picker"
+    version = '1.7.1'
+
+    @classmethod
+    def cdn(cls):
+        return f'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/{cls.version}'
 
     def __init__(self, name, display_text='', autoclose=False, calendar_weeks=False, clear_button=False,
                  days_of_week_disabled='', end_date='', format='', min_view_mode='days', multidate=1, start_date='',
@@ -106,18 +112,26 @@ class DatePicker(TethysGizmoOptions):
         self.disabled = disabled
         self.error = error
 
-    @staticmethod
-    def get_vendor_css():
+    @classmethod
+    def get_vendor_css(cls):
         """
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return ('tethys_gizmos/vendor/bootstrap_datepicker/css/datepicker3.css',)
+        if settings.DEBUG:
+            ret = (f'{cls.cdn()}/css/bootstrap-datepicker3.css',)
+        else:
+            ret = (f'{cls.cdn()}/css/bootstrap-datepicker3.min.css',)
+        return ret
 
-    @staticmethod
-    def get_vendor_js():
+    @classmethod
+    def get_vendor_js(cls):
         """
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        return ('tethys_gizmos/vendor/bootstrap_datepicker/js/bootstrap_datepicker.js',)
+        if settings.DEBUG:
+            ret = (f'{cls.cdn()}/js/bootstrap-datepicker.js',)
+        else:
+            ret = (f'{cls.cdn()}/js/bootstrap-datepicker.min.js',)
+        return ret

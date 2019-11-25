@@ -124,13 +124,13 @@ available parameters.
 ::
 
     # Install Tethys App
-    $ tethys install
+    tethys install
 
     # Install Tethys App with develop
-    $ tethys install -d
+    tethys install -d
 
     # Skip interactive mode
-    $ tethys install -q
+    tethys install -q
 
     # Tethys install with custom options
-    $ tethys install -d -f install.yml
+    tethys install -d -f install.yml

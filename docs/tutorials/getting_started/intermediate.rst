@@ -2,7 +2,7 @@
 Intermediate Concepts
 *********************
 
-**Last Updated:** June 2017
+**Last Updated:** October 2019
 
 This tutorial introduces intermediate concepts for Tethys developers. The topics covered include:
 
@@ -21,11 +21,11 @@ This tutorial introduces intermediate concepts for Tethys developers. The topics
 
 If you wish to use the beginner solution of the last tutorial as a starting point:
 
-::
+.. parsed-literal::
 
-    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
-    $ cd tethysapp-dam_inventory
-    $ git checkout beginner-solution
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    cd tethysapp-dam_inventory
+    git checkout -b beginner-solution beginner-|version|
 
 1. Forms and User Input
 =======================
@@ -238,7 +238,7 @@ a. Change the ``add_dam`` controller to handle the form data using the form vali
         a. extract the value of each input from the GET or POST parameters and overwrite the appropriate value variable from step 1
         b. validate the value of each input, assigning an error message (if any) to the appropriate error variable from step 2 for each input with errors.
         c. if there are no errors, save or process the data, and then redirect to a different page
-        d. if there are errors continue on and re-render from with error messages
+        d. if there are errors continue on and re-render the form with error messages
     4. **define all gizmos and variables used to populate the form:**
         a. pass the value variable created in step 1 to the ``initial`` argument of the corresponding gizmo
         b. pass the error variable created in step 2 to the ``error`` argument of the corresponding gizmo
@@ -276,17 +276,16 @@ In this tutorial we will start with a file database model to illustrate how to w
 
     File database models can be problematic for web applications, especially in a production environment. We recommend using and SQL or other database that can handle concurrent requests and heavy traffic.
 
-a. Open ``model.py`` and add a new function called ``add_new_dam``:
+a. Create a new file called ``model.py`` in the ``dam_inventory`` directory and add a new function called ``add_new_dam``:
 
 ::
 
     import os
     import uuid
     import json
-    from .app import DamInventory as app
 
 
-    def add_new_dam(name, owner, river, date_built):
+    def add_new_dam(db_directory, name, owner, river, date_built):
         """
         Persist new dam.
         """
@@ -302,10 +301,9 @@ a. Open ``model.py`` and add a new function called ``add_new_dam``:
 
         dam_json = json.dumps(dam_dict)
 
-        # Write to file in app_workspace/dams/{{uuid}}.json
+        # Write to file in {{db_directory}}/dams/{{uuid}}.json
         # Make dams dir if it doesn't exist
-        app_workspace = app.get_app_workspace()
-        dams_dir = os.path.join(app_workspace.path, 'dams')
+        dams_dir = os.path.join(db_directory, 'dams')
         if not os.path.exists(dams_dir):
             os.mkdir(dams_dir)
 
@@ -323,12 +321,14 @@ b. Modify ``add_dam`` controller to use the new ``add_new_dam`` model function t
 
 ::
 
+    from tethys_sdk.workspaces import app_workspace
     from .model import add_new_dam
 
     ...
 
+    @app_workspace
     @login_required()
-    def add_dam(request):
+    def add_dam(request, app_workspace):
         """
         Controller for the Add Dam page.
         """
@@ -340,7 +340,7 @@ b. Modify ``add_dam`` controller to use the new ``add_new_dam`` model function t
             ...
 
             if not has_errors:
-                add_new_dam(name=name, owner=owner, river=river, date_built=date_built)
+                add_new_dam(db_directory=app_workspace.path, name=name, owner=owner, river=river, date_built=date_built)
                 return redirect(reverse('dam_inventory:home'))
 
             ...
@@ -358,14 +358,13 @@ a. Open ``models.py`` and add a model method for listing the dams called ``get_a
 
 ::
 
-    def get_all_dams():
+    def get_all_dams(db_directory):
         """
         Get all persisted dams.
         """
-        # Write to file in app_workspace/dams/{{uuid}}.json
+        # Write to file in {{db_directory}}/dams/{{uuid}}.json
         # Make dams dir if it doesn't exist
-        app_workspace = app.get_app_workspace()
-        dams_dir = os.path.join(app_workspace.path, 'dams')
+        dams_dir = os.path.join(db_directory, 'dams')
         if not os.path.exists(dams_dir):
             os.mkdir(dams_dir)
 
@@ -405,12 +404,13 @@ c. Create a new controller function in ``controllers.py`` called ``list_dams``:
 
     ...
 
+    @app_workspace
     @login_required()
-    def list_dams(request):
+    def list_dams(request, app_workspace):
         """
         Show all dams in a table view.
         """
-        dams = get_all_dams()
+        dams = get_all_dams(app_workspace.path)
         table_rows = []
 
         for dam in dams:
@@ -519,40 +519,99 @@ b. Add the definition of the ``location_input`` gizmo and validation code to the
 
     ...
 
+    @app_workspace
     @login_required()
-    def add_dam(request):
+    def add_dam(request, app_workspace):
         """
         Controller for the Add Dam page.
         """
         # Default Values
+        name = ''
+        owner = 'Reclamation'
+        river = ''
+        date_built = ''
         location = ''
-        ...
 
         # Errors
+        name_error = ''
+        owner_error = ''
+        river_error = ''
+        date_error = ''
         location_error = ''
-        ...
 
         # Handle form submission
         if request.POST and 'add-button' in request.POST:
             # Get values
             has_errors = False
+            name = request.POST.get('name', None)
+            owner = request.POST.get('owner', None)
+            river = request.POST.get('river', None)
+            date_built = request.POST.get('date-built', None)
             location = request.POST.get('geometry', None)
-            ...
 
             # Validate
+            if not name:
+                has_errors = True
+                name_error = 'Name is required.'
+
+            if not owner:
+                has_errors = True
+                owner_error = 'Owner is required.'
+
+            if not river:
+                has_errors = True
+                river_error = 'River is required.'
+
+            if not date_built:
+                has_errors = True
+                date_error = 'Date Built is required.'
+
             if not location:
                 has_errors = True
                 location_error = 'Location is required.'
 
-            ...
-
             if not has_errors:
-                add_new_dam(location=location, name=name, owner=owner, river=river, date_built=date_built)
+                add_new_dam(db_directory=app_workspace.path, location=location, name=name, owner=owner, river=river, date_built=date_built)
                 return redirect(reverse('dam_inventory:home'))
 
             messages.error(request, "Please fix errors.")
 
         # Define form gizmos
+        name_input = TextInput(
+            display_text='Name',
+            name='name',
+            initial=name,
+            error=name_error
+        )
+
+        owner_input = SelectInput(
+            display_text='Owner',
+            name='owner',
+            multiple=False,
+            options=[('Reclamation', 'Reclamation'), ('Army Corp', 'Army Corp'), ('Other', 'Other')],
+            initial=owner,
+            error=owner_error
+        )
+
+        river_input = TextInput(
+            display_text='River',
+            name='river',
+            placeholder='e.g.: Mississippi River',
+            initial=river,
+            error=river_error
+        )
+
+        date_built = DatePicker(
+            name='date-built',
+            display_text='Date Built',
+            autoclose=True,
+            format='MM d, yyyy',
+            start_view='decade',
+            today_button=True,
+            initial=date_built,
+            error=date_error
+        )
+
         initial_view = MVView(
             projection='EPSG:4326',
             center=[-98.6, 39.8],
@@ -574,12 +633,30 @@ b. Add the definition of the ``location_input`` gizmo and validation code to the
             view=initial_view
         )
 
-        ...
+        add_button = Button(
+            display_text='Add',
+            name='add-button',
+            icon='glyphicon glyphicon-plus',
+            style='success',
+            attributes={'form': 'add-dam-form'},
+            submit=True
+        )
+
+        cancel_button = Button(
+            display_text='Cancel',
+            name='cancel-button',
+            href=reverse('dam_inventory:home')
+        )
 
         context = {
+            'name_input': name_input,
+            'owner_input': owner_input,
+            'river_input': river_input,
+            'date_built_input': date_built,
             'location_input': location_input,
             'location_error': location_error,
-            ...
+            'add_button': add_button,
+            'cancel_button': cancel_button,
         }
 
         return render(request, 'dam_inventory/add_dam.html', context)
@@ -588,7 +665,7 @@ c. Modify the ``add_new_dam`` Model Method to store spatial data:
 
 ::
 
-    def add_new_dam(location, name, owner, river, date_built):
+    def add_new_dam(db_directory, location, name, owner, river, date_built):
         """
         Persist new dam.
         """
@@ -608,10 +685,9 @@ c. Modify the ``add_new_dam`` Model Method to store spatial data:
 
         dam_json = json.dumps(dam_dict)
 
-        # Write to file in app_workspace/dams/{{uuid}}.json
+        # Write to file in {{db_directory}}/dams/{{uuid}}.json
         # Make dams dir if it doesn't exist
-        app_workspace = app.get_app_workspace()
-        dams_dir = os.path.join(app_workspace.path, 'dams')
+        dams_dir = os.path.join(db_directory, 'dams')
         if not os.path.exists(dams_dir):
             os.mkdir(dams_dir)
 
@@ -640,13 +716,14 @@ a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
 
     ...
 
+    @app_workspace
     @login_required()
-    def home(request):
+    def home(request, app_workspace):
         """
         Controller for the app home page.
         """
         # Get list of dams and create dams MVLayer:
-        dams = get_all_dams()
+        dams = get_all_dams(app_workspace.path)
         features = []
         lat_list = []
         lng_list = []
@@ -698,7 +775,6 @@ a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
             options=dams_feature_collection,
             legend_title='Dams',
             layer_options={'style': style}
-            }
         )
 
         # Define view centered on dam locations
@@ -743,10 +819,8 @@ a. Modify the ``home`` controller in ``controllers.py`` to map the list of dams:
 
 This concludes the Intermediate Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
 
-::
+.. parsed-literal::
 
-    $ mkdir ~/tethysdev
-    $ cd ~/tethysdev
-    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
-    $ cd tethysapp-dam_inventory
-    $ git checkout intermediate-solution
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    cd tethysapp-dam_inventory
+    git checkout -b intermediate-solution intermediate-|version|

@@ -2,7 +2,7 @@
 WebSockets Concepts
 *******************
 
-**Last Updated:** May 2019
+**Last Updated:** October 2019
 
 This tutorial introduces ``WebSocket`` communication concepts for Tethys developers. A consumer will be created to notify other users when a dam has been added to the app database by someone else, giving the user the option to reload the app to visualize the location of the new dam. The topics covered include:
 
@@ -16,11 +16,11 @@ This tutorial introduces ``WebSocket`` communication concepts for Tethys develop
 
 If you wish to use the advanced solution as a starting point:
 
-::
+.. parsed-literal::
 
-    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
-    $ cd tethysapp-dam_inventory
-    $ git checkout advanced-solution
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    cd tethysapp-dam_inventory
+    git checkout -b advanced-solution advanced-|version|
 
 .. note::
 
@@ -31,15 +31,14 @@ If you wish to use the advanced solution as a starting point:
 
 ``Consumer classes`` are the equivalent of ``controller functions`` when working with `WebSockets` on Tethys.
 
-a. Add the following code to the ``controller``.
+a. Create a new file called ``consumers.py`` and add the following code:
 
 ::
 
     from channels.generic.websocket import AsyncWebsocketConsumer
 
-    ...
 
-    class notificationsConsumer(AsyncWebsocketConsumer):
+    class NotificationsConsumer(AsyncWebsocketConsumer):
         async def connect(self):
             await self.accept()
             print("-----------WebSocket Connected-----------")
@@ -51,36 +50,12 @@ b. Create a ``UrlMap`` for the ``consumer`` in ``app.py`` by adding the followin
 
 ::
 
-    ...
-
-    class DamInventory(TethysAppBase):
-
-    ...
-
-        def url_maps(self):
-
-            UrlMap = url_map_maker(self.root_url)
-
-            url_maps = (
-                UrlMap(
-                    name='home',
-                    url='dam-inventory',
-                    controller='dam_inventory.controllers.home'
-                ),
-
-    ...
-
-                UrlMap(
-                    name='dam_notification',
-                    url='dam-inventory/dams/notifications',
-                    controller='dam_inventory.controllers.notificationsConsumer',
-                    protocol='websocket'
-                ),
-            )
-
-            return url_maps
-
-    ...
+    UrlMap(
+        name='dam_notification',
+        url='dam-inventory/dams/notifications',
+        controller='dam_inventory.consumers.NotificationsConsumer',
+        protocol='websocket'
+    ),
 
 .. note::
 
@@ -104,17 +79,17 @@ Create a ``WebSocket connection`` by adding the following code to the ``home.htm
 
     {% block after_app_content %}
       <script>
-        var notification_ws = new WebSocket('ws://' + window.location.host + '/ws/dam-inventory/dams/notifications/');
+        var notification_ws = new WebSocket('ws://' + window.location.host + '/dam-inventory/dams/notifications/ws/');
       </script>
     {% endblock %}
 
     ...
 
-A ``WebSocket URL`` follows a pattern similar to tethys app ``HTTP URLs``. The differences being that the URL starts with ``ws://`` instead of ``http(s)://``, and the "apps" part of the URL in between the host and the app name is substituted with a "ws". For example: ws://tethys.host.com/ws/base-app-name/base-ws-url. If the base name of the app is included in the ``WebSocket URL``, it will not be duplicated. This is the same behavior for ``HTTP URLs``.
+A ``WebSocket URL`` follows a pattern similar to tethys app ``HTTP URLs``. The differences being that the URL starts with ``ws://`` instead of ``http(s)://``, and instead of the "apps" part at the beginning of the URL pattern, the URL ends with a "ws". For example: ``ws://tethys.host.com/base-app-name/base-ws-url/ws/``. If the base name of the app is included in the ``WebSocket URL``, it will not be duplicated. This is the same behavior for ``HTTP URLs``.
 
 Upon loading the app home page, the "WebSocket Connected" message will be printed to the terminal. The ``WebSocket connection`` can also be accessed from the browser by right-clicking and selecting inspect, network and filtering by "WS" as displayed in the image below.
 
-.. image:: ../../images/tutorial/advanced/ws-conn-browser.png
+.. image:: ../images/tutorial/advanced/ws-conn-browser.png
    :width: 600px
    :align: center
 
@@ -123,7 +98,7 @@ Upon loading the app home page, the "WebSocket Connected" message will be printe
 
 A ``channel layer`` is needed for two or more app instances to communicate between each other (e.g. two different users interacting with the same app at the same time). A ``channel layer`` provides a backend where ``WebSocket messages`` can be stored and then accessed by the different app instances. The updated ``consumer`` in this step opens a communication link (channel_name) in the "notification" channel group on connect, and closes it on disconnect. A new async function has also been added to handle messages.
 
-a. Update the ``consumer class`` from step (1.a) to look like this.
+a. Update the ``consumer class`` to look like this.
 
 ::
 
@@ -133,7 +108,7 @@ a. Update the ``consumer class`` from step (1.a) to look like this.
 
     ...
 
-    class notificationsConsumer(AsyncWebsocketConsumer):
+    class NotificationsConsumer(AsyncWebsocketConsumer):
         async def connect(self):
             await self.accept()
             await self.channel_layer.group_add("notifications", self.channel_name)
@@ -154,11 +129,10 @@ b. ``Channel layers`` require a backend to store the ``WebSocket messages`` comi
 
 ::
 
-    ...
-
-    CHANNEL_LAYERS:
-      default:
-        BACKEND: channels.layers.InMemoryChannelLayer
+    settings:
+      CHANNEL_LAYERS:
+        default:
+          BACKEND: channels.layers.InMemoryChannelLayer
 
 .. note::
 
@@ -220,7 +194,7 @@ a. Add the following code to the ``add_dam controller`` in ``controllers.py``.
 
     messages.error(request, "Please fix errors.")
 
-This piece of code checks to see if a new dam has been added and if so it sends a message to the notification group. Notice that the type of the group message is ``dam_notifications``; this is the same consumer function defined in step (3.a) and therefore the print message assigned to this function will appear on the terminal when the condition is triggered and the message is sent.
+This piece of code checks to see if a new dam has been added and if so it sends a message to the notification group. Notice that the type of the group message is ``dam_notifications``.
 
 .. note::
 
@@ -234,10 +208,7 @@ b. Let's create a message box to display our notification when a new app is adde
 
 ::
 
-    ...
-
-    from tethys_sdk.gizmos import (MapView, Button, TextInput, DatePicker, SelectInput, DataTableView, MVDraw, MVView,
-                                   MVLayer, MessageBox)
+    from tethys_sdk.gizmos import MessageBox
 
     ...
 
@@ -245,11 +216,13 @@ b. Let's create a message box to display our notification when a new app is adde
 
     ...
 
-        message_box = MessageBox(name='notification',
-                                 title='',
-                                 dismiss_button='Nevermind',
-                                 affirmative_button='Refresh',
-                                 affirmative_attributes='onClick=window.location.href=window.location.href;')
+        message_box = MessageBox(
+            name='notification',
+            title='',
+            dismiss_button='Nevermind',
+            affirmative_button='Refresh',
+            affirmative_attributes='onClick=window.location.href=window.location.href;'
+        )
 
         context = {
             'dam_inventory_map': dam_inventory_map,
@@ -265,7 +238,7 @@ b. Let's create a message box to display our notification when a new app is adde
 
 This ``gizmo`` creates an empty message box with a current page refresh. It will be populated in the next step based on our ``WebSocket connection``.
 
-c. Now that the logic has been added, lets add the tethys ``message box gizmo`` and modify the ``WebSocket connection`` from step (2) to listen for any ``New Dam`` messages and populate our message box accordingly. Update the code in home.html as follows.
+c. Now that the logic has been added, lets add the tethys ``message box gizmo`` and modify the ``WebSocket connection`` to listen for any ``New Dam`` messages and populate our message box accordingly. Update the code in ``home.html`` as follows.
 
 .. code-block:: html+django
 
@@ -279,7 +252,7 @@ c. Now that the logic has been added, lets add the tethys ``message box gizmo`` 
     {% block after_app_content %}
     {% gizmo message_box %}
       <script>
-        var notification_ws = new WebSocket('ws://' + window.location.host + '/ws/dam-inventory/dams/notifications/');
+        var notification_ws = new WebSocket('ws://' + window.location.host + '/dam-inventory/dams/notifications/ws/');
         var n_div = $("#notification");
         var n_title = $("#notificationLabel");
         var n_content = $('#notification .lead');
@@ -308,8 +281,8 @@ Test the ``WebSocket communication`` by opening two instances of the dam invento
 
 This concludes the WebSockets tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-dam_inventory>`_ or clone it as follows:
 
-::
+.. parsed-literal::
 
-    $ git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
-    $ cd tethysapp-dam_inventory
-    $ git checkout websocket-solution
+    git clone https://github.com/tethysplatform/tethysapp-dam_inventory.git
+    cd tethysapp-dam_inventory
+    git checkout -b websocket-solution websocket-|version|

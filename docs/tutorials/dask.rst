@@ -2,7 +2,7 @@
 Dask Job Type
 *************
 
-**Last Updated:** November 2018
+**Last Updated:** November 2019
 
 This tutorial will walk you through the steps of working with Dask using the Tethys Platform. If you have not already installed Tethys Platform, follow the :doc:`../installation` documentation and then return.
 

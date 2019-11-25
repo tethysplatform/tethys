@@ -2,10 +2,10 @@
 Upload Shapefile
 ****************
 
-**Last Updated:** May 2017
+**Last Updated:** November 2019
 
-Add Form to Home Page
-=====================
+1. Add Form to Home Page
+========================
 
 Replace the contents of the existing :file:`home.html` template with:
 
@@ -26,8 +26,8 @@ Replace the contents of the existing :file:`home.html` template with:
     {% endblock %}
 
 
-Handle File Upload in Home Controller
-=====================================
+2. Handle File Upload in Home Controller
+========================================
 
 Replace the contents of :file:`controllers.py` module with the following:
 
@@ -47,7 +47,7 @@ Replace the contents of :file:`controllers.py` module with the following:
     GEOSERVER_URI = 'http://www.example.com/geoserver-app'
 
 
-    @login_required
+    @login_required()
     def home(request):
         """
         Controller for the app home page.
@@ -85,8 +85,8 @@ Replace the contents of :file:`controllers.py` module with the following:
         return render(request, 'geoserver_app/home.html', context)
 
 
-Test Shapefile Upload
-=====================
+3. Test Shapefile Upload
+========================
 
 Go to the home page of your app located at `<http://localhost:8000/apps/geoserver-app/>`_. You should see a form with a file input ("Browse" button or similar) and a submit button. To test this page, select the "Browse" button and upload one of the shapefiles from the data that you downloaded earlier. Remember that for the shapefile to be valid, you need to select at least the files with the extensions "shp", "shx", and "dbf". Press submit to upload the files.
 
