@@ -18,3 +18,4 @@ Use the following tutorials to learn the basics about Tethys Platform.
    tutorials/dask
    tutorials/geoserver
    tutorials/google_earth_engine
+   tutorials/thredds
