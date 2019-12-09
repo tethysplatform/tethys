@@ -43,10 +43,6 @@ def validate_spatial_dataset_service_endpoint(value):
     """
     validate_url(value)
 
-    if '/geoserver/rest' not in value:
-        raise ValidationError('Invalid Endpoint: GeoServer endpoints follow the pattern '
-                              '"http://example.com/geoserver/rest".')
-
 
 def validate_wps_service_endpoint(value):
     """
@@ -98,7 +94,7 @@ class DatasetService(models.Model):
 
     def get_engine(self, request=None):
         """
-        Retrives dataset service engine
+        Retrieves dataset service engine
         """
         # Get Token for HydroShare interactions
         if self.engine == self.HYDROSHARE:
@@ -132,9 +128,11 @@ class SpatialDatasetService(models.Model):
     ORM for Spatial Dataset Service settings.
     """
     GEOSERVER = VALID_SPATIAL_ENGINES['geoserver']
+    THREDDS = 'thredds-engine'
 
     ENGINE_CHOICES = (
         (GEOSERVER, 'GeoServer'),
+        (THREDDS, 'THREDDS')
     )
 
     name = models.CharField(max_length=30, unique=True)
@@ -155,12 +153,15 @@ class SpatialDatasetService(models.Model):
 
     def get_engine(self):
         """
-        Retrives GeoServer engine
+        Retrieves spatial dataset engine
         """
-        engine = GeoServerSpatialDatasetEngine(endpoint=self.endpoint,
-                                               username=self.username,
-                                               password=self.password)
-        engine.public_endpoint = self.public_endpoint
+        if self.engine == self.GEOSERVER:
+            engine = GeoServerSpatialDatasetEngine(endpoint=self.endpoint,
+                                                   username=self.username,
+                                                   password=self.password)
+            engine.public_endpoint = self.public_endpoint
+        elif self.engine == self.THREDDS:
+            engine = None
         return engine
 
 
