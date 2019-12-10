@@ -155,13 +155,23 @@ class SpatialDatasetService(models.Model):
         """
         Retrieves spatial dataset engine
         """
+        engine = None
+
         if self.engine == self.GEOSERVER:
             engine = GeoServerSpatialDatasetEngine(endpoint=self.endpoint,
                                                    username=self.username,
                                                    password=self.password)
             engine.public_endpoint = self.public_endpoint
+
         elif self.engine == self.THREDDS:
-            engine = None
+            from siphon.catalog import TDSCatalog
+            from siphon.http_util import session_manager
+
+            if self.username and self.password:
+                session_manager.set_session_options(auth=(str(self.username), str(self.password)))
+
+            engine = TDSCatalog(str(self.endpoint))
+
         return engine
 
 

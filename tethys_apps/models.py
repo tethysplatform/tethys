@@ -401,7 +401,7 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
     Attributes:
         name(str): Unique name used to identify the setting.
         description(str): Short description of the setting.
-        engine(enum): Only SpatialDatasetServiceSetting.GEOSERVER at this time.
+        engine(enum): One of SpatialDatasetServiceSetting.GEOSERVER or SpatialDatasetServiceSetting.THREDDS at this time.
         required(bool): A value will be required if True.
 
     **Example:**
@@ -417,7 +417,7 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
             required=True,
         )
 
-    """
+    """  # noqa: E501
     GEOSERVER = SpatialDatasetService.GEOSERVER
     THREDDS = SpatialDatasetService.THREDDS
 
@@ -435,7 +435,7 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
             raise ValidationError('Required.')
 
     def get_value(self, as_public_endpoint=False, as_endpoint=False, as_wms=False,
-                  as_wfs=False, as_engine=False):
+                  as_wfs=False, as_engine=False, as_wcs=False):
 
         if not self.spatial_dataset_service:
             raise TethysAppSettingNotAssigned(f'Cannot create engine or endpoint for SpatialDatasetServiceSetting '
@@ -446,17 +446,31 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
         if as_engine:
             return self.spatial_dataset_service.get_engine()
 
-        if as_wms:
-            return self.spatial_dataset_service.endpoint.split('/rest')[0] + '/wms'
-
-        if as_wfs:
-            return self.spatial_dataset_service.endpoint.split('/rest')[0] + '/ows'
-
         if as_endpoint:
             return self.spatial_dataset_service.endpoint
 
         if as_public_endpoint:
             return self.spatial_dataset_service.public_endpoint
+
+        if self.engine == self.GEOSERVER:
+            if as_wms:
+                return self.spatial_dataset_service.endpoint.split('/rest')[0] + '/wms'
+
+            if as_wfs:
+                return self.spatial_dataset_service.endpoint.split('/rest')[0] + '/ows'
+
+            if as_wcs:
+                return self.spatial_dataset_service.endpoint.split('/rest')[0] + '/wcs'
+
+        elif self.engine == self.THREDDS:
+            if as_wms:
+                return self.spatial_dataset_service.endpoint.split('/catalog')[0] + 'wms'
+
+            if as_wcs:
+                return self.spatial_dataset_service.endpoint.split('/catalog')[0] + 'wcs'
+
+            if as_wfs:
+                raise ValueError('THREDDS does not support the WFS interface.')
 
         return self.spatial_dataset_service
 
