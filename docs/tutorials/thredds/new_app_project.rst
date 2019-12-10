@@ -2,7 +2,7 @@
 New Tethys App Project
 **********************
 
-**Last Updated:** November 2019
+**Last Updated:** December 2019
 
 In this tutorial we will create a new Tethys App project using the scaffold. The following topics will be reviewed in this tutorial:
 
@@ -29,23 +29,23 @@ To generate a new Tethys App using the scaffold, open a terminal and execute the
     cd ~/tethysdev
 
     # Scaffold a new Tethys app
-    tethys scaffold earth_engine
+    tethys scaffold thredds_tutorial
 
 You will be prompted to enter metadata about the app such as, proper name, version, author, and description. All of these metadata are optional. You can accept the default values by pressing enter, repeatedly.
 
-In a file browser change into your :file:`Home` directory and open the :file:`tethysdev` directory. If the scaffolding worked, you should see a directory called :file:`tethysapp-earth_engine`. All of the source code for your app is located in this directory. For more information about the app project structure, see :doc:`../../supplementary/app_project`.
+In a file browser change into your :file:`Home` directory and open the :file:`tethysdev` directory. If the scaffolding worked, you should see a directory called :file:`tethysapp-thredds_tutorial`. All of the source code for your app is located in this directory. For more information about the app project structure, see :doc:`../../supplementary/app_project`.
 
 2. Add App Dependencies to :file:`install.yml`
 ==============================================
 
-App dependencies should be managed using the :file:`install.yml` instead of the :file:`setup.py`. This app will require the ``earthengine-api`` and ``oauthclient`` packages to allow it to use Google Earth Engine services. Both packages are available on ``conda-forge``, which is the preferred Conda channel for Tethys. Open :file:`tethysapp-earth_engine/install.yml` and add these dependencies to the ``requirements.conda`` section of the file:
+App dependencies should be managed using the :file:`install.yml` instead of the :file:`setup.py`. This app will require the ``netcdf4``, ``siphon``, and ``owslib`` packages to allow it to use THREDDS services. All three packages are available on ``conda-forge``, which is the preferred Conda channel for Tethys. Open :file:`tethysapp-thredds_tutorial/install.yml` and add these dependencies to the ``requirements.conda`` section of the file:
 
 ::
 
     # This file should be committed to your app code.
     version: 1.0
     # This should match the app - package name in your setup.py
-    name: earth_engine
+    name: thredds_tutorial
 
     requirements:
       # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
@@ -54,8 +54,9 @@ App dependencies should be managed using the :file:`install.yml` instead of the 
         channels:
           - conda-forge
         packages:
-          - earthengine-api
-          - oauth2client
+          - netcdf4
+          - siphon
+          - owslib
       pip:
 
     post:
@@ -64,34 +65,33 @@ App dependencies should be managed using the :file:`install.yml` instead of the 
 3. Development Installation
 ===========================
 
-Install the app and it's dependencies into your development Tethys Portal. In a terminal, change into the :file:`tethysapp-earth_engine` directory and execute the :command:`tethys install -d` command.
+Install the app and it's dependencies into your development Tethys Portal. In a terminal, change into the :file:`tethysapp-thredds_tutorial` directory and execute the :command:`tethys install -d` command.
 
 **Linux and Mac:**
 
 ::
 
-    cd ~/tethysdev/tethysapp-earth_engine
+    cd ~/tethysdev/tethysapp-thredds_tutorial
     tethys install -d
-
 
 4. Customize App Icon and Theme Color
 =====================================
 
-Download this :download:`Google Earth Engine App Icon <./resources/earth-engine-logo.png>` or find one that you like and save it to the :file:`public/images` directory. Modify the ``icon`` property of your :term:`app class` to reference the new image. Also change the ``color`` property to the ``#524745`` color:
+Download this :download:`Unidata App Icon <./resources/unidata_logo.png>` or find one that you like and save it to the :file:`public/images` directory. Modify the ``icon`` property of your :term:`app class` to reference the new image. Also change the ``color`` property to the ``#008e8d`` color:
 
 ::
 
-    class EarthEngine(TethysAppBase):
+    class ThreddsTutorial(TethysAppBase):
         """
-        Tethys app class for Google Earth Engine Tutorial.
+        Tethys app class for Thredds Tutorial.
         """
 
-        name = 'Google Earth Engine Tutorial'
-        index = 'earth_engine:home'
-        icon = 'earth_engine/images/earth-engine-logo.png'
-        package = 'earth_engine'
-        root_url = 'earth-engine'
-        color = '#524745'
+        name = 'THREDDS Tutorial'
+        index = 'thredds_tutorial:home'
+        icon = 'thredds_tutorial/images/unidata_logo.png'
+        package = 'thredds_tutorial'
+        root_url = 'thredds-tutorial'
+        color = '#008e8d'
         ...
 
 5. View Your New App
@@ -129,10 +129,10 @@ Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login the default
 6. Solution
 ===========
 
-This concludes the New App Project portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/new-app-project-solution-3.0>`_ or clone it as follows:
+This concludes the New App Project portion of the THREDDS Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-thredds_tutorial/tree/new-app-project-solution-3.0>`_ or clone it as follows:
 
 .. parsed-literal::
 
-    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
-    cd tethysapp-earth_engine
+    git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial.git
+    cd tethysapp-thredds_tutorial
     git checkout -b new-app-project-solution new-app-project-solution-|version|
