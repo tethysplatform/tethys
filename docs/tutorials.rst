@@ -4,7 +4,7 @@
 Tutorials
 *********
 
-**Last Updated:** November 2019
+**Last Updated:** December 2019
 
 Use the following tutorials to learn the basics about Tethys Platform.
 
