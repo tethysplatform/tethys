@@ -1,6 +1,6 @@
-*********************
-Setup THREDDS Service
-*********************
+********************
+Visualize with Bokeh
+********************
 
 **Last Updated:** December 2019
 
@@ -13,30 +13,11 @@ If you wish to use the previous solution as a starting point:
 
     git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial.git
     cd tethysapp-thredds_tutorial
-    git checkout -b new-app-project-solution new-app-project-solution-|version|
+    git checkout -b visualize-cesium-solution visualize-cesium-solution-|version|
 
+1.
 
-1. Create a Spatial Dataset Service App Setting
-===============================================
-
-
-2. Start the THREDDS Docker
-===========================
-
-
-3. Add Tutorial Data to THREDDS
-===============================
-
-
-4. Create THREDDS Spatial Dataset Service
-=========================================
-
-
-5. Assign THREDDS Service to App Setting
-========================================
-
-
-6. Solution
+4. Solution
 ===========
 
 This concludes the New App Project portion of the THREDDS Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-thredds_tutorial/tree/thredds-service-solution-3.0>`_ or clone it as follows:
@@ -45,4 +26,4 @@ This concludes the New App Project portion of the THREDDS Tutorial. You can view
 
     git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial.git
     cd tethysapp-thredds_tutorial
-    git checkout -b thredds-service-solution thredds-service-solution-|version|
+    git checkout -b visualize-bokeh-solution visualize-bokeh-solution-|version|

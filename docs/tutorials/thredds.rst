@@ -18,4 +18,9 @@ Outline
    :maxdepth: 1
 
    thredds/thredds_primer
+   thredds/new_app_project
    thredds/setup_thredds_service
+   thredds/visualize_leaflet
+   thredds/plot_at_point
+   thredds/visualize_cesium
+   thredds/visualize_bokeh
