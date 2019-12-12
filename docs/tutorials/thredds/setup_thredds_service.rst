@@ -58,7 +58,11 @@ Add the following method to your :term:`app class` to define a new spatial datas
 
 .. code-block:: bash
 
-    tethys docker start -c thredds
+    tethys docker init -c thredds
+
+.. note::
+
+    The command ``tethys docker init`` only needs to be run the first time you are creating a container. If it already exists, you can skip to the next step.
 
 
 2. Start the THREDDS Docker container:
@@ -77,6 +81,12 @@ Add the following method to your :term:`app class` to define a new spatial datas
 
     For more information about the Docker interface in Tethys Platform see the :ref:`tethys_cli_docker` reference.
 
+3. Obtain the endpoint for the THREDDS Docker container:
+
+.. code-block:: bash
+
+    tethys docker ip
+
 .. todo::
 
     Alternatively, you may use an existing THREDDS server for this tutorial.
@@ -84,6 +94,10 @@ Add the following method to your :term:`app class` to define a new spatial datas
 
 3. Add Tutorial Data to THREDDS
 ===============================
+
+.. todo::
+
+    Add tutorial data to THREDDS
 
 
 4. Create THREDDS Spatial Dataset Service
@@ -101,8 +115,8 @@ Add the following method to your :term:`app class` to define a new spatial datas
 
     * Name: primary_thredds
     * Engine: THREDDS
-    * Endpoint: http://localhost:8383/tds/catalog
-    * Public Endpoint: http://localhost:8383/tds/catalog
+    * Endpoint: <endpoint from step 2.3>
+    * Public Endpoint: <endpoint from step 2.3>
     * ApiKey: (LEAVE BLANK)
     * Username: admin
     * Password: <password you defined in step 2.1>
@@ -116,8 +130,6 @@ Add the following method to your :term:`app class` to define a new spatial datas
 .. todo:
 
     * Add screen capture of the filled out new sds form.
-
-
 
 5. Assign THREDDS Service to App Setting
 ========================================
