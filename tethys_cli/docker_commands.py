@@ -496,7 +496,7 @@ class ThreddsContainerMetadata(ContainerMetadata):
 
     @property
     def endpoint(self):
-        return 'http://{host}:{port}/thredds/catalog'.format(
+        return 'http://{host}:{port}/thredds/catalog.xml'.format(
             host=self.default_host,
             port=self.host_port
         )
