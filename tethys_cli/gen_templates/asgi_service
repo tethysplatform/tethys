@@ -6,7 +6,7 @@ socket=tcp://127.0.0.1:{{ port }}
 directory={{ tethys_src }}
 
 # Each process needs to have a separate socket file, so we use process_num
-command={{ conda_home }}/envs/{{ conda_env_name }}/bin/daphne -u /run/asgi/tethys_asgi%(process_num)d.sock --fd 0 --access-log - --proxy-headers tethys_portal.asgi:application
+command={{ conda_prefix }}/bin/daphne -u /run/asgi/tethys_asgi%(process_num)d.sock --fd 0 --access-log - --proxy-headers tethys_portal.asgi:application
 
 # Number of processes to startup, roughly the number of CPUs you have
 numprocs={{ asgi_processes }}
