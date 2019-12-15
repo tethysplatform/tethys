@@ -1,5 +1,6 @@
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import TethysApp
+from tethys_apps.exceptions import TethysAppSettingNotAssigned
 from django.core.exceptions import ValidationError
 from tethys_services.models import SpatialDatasetService
 
@@ -45,13 +46,14 @@ class SpatialDatasetServiceTests(TethysTestCase):
         self.assertEqual('foo', ret.username)
         self.assertEqual('password', ret.password)
 
-    def test_get_value_none(self):
+    def test_get_value_NotAssigned(self):
         sds_setting = self.test_app.settings_set.select_subclasses().get(name='primary_geoserver')
         sds_setting.spatial_dataset_service = None
         sds_setting.save()
-
-        ret = self.test_app.settings_set.select_subclasses().get(name='primary_geoserver').get_value()
-        self.assertIsNone(ret)
+        self.assertRaises(
+            TethysAppSettingNotAssigned,
+            self.test_app.settings_set.select_subclasses().get(name='primary_geoserver').get_value
+        )
 
     def test_get_value_check_if(self):
         sds = SpatialDatasetService(
