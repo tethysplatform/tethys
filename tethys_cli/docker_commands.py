@@ -21,6 +21,7 @@ import docker
 from docker.types import Mount
 from docker.errors import NotFound as DockerNotFound
 from tethys_cli.cli_colors import write_pretty_output
+from tethys_apps.utilities import get_tethys_home_dir
 
 
 __all__ = ['docker_init', 'docker_start',
@@ -409,8 +410,7 @@ class GeoServerContainerMetadata(ContainerMetadata):
             )
 
             if mount_data_dir.lower() == 'y':
-                # TODO: Remove dependence on TETHYS_HOME env variable
-                tethys_home = os.environ.get('TETHYS_HOME', os.path.expanduser('~/.tethys/'))
+                tethys_home = get_tethys_home_dir()
                 default_mount_location = os.path.join(tethys_home, 'geoserver', 'data')
                 gs_data_volume = '/var/geoserver/data'
                 mount_location = UserInputHelper.get_valid_directory_input(
@@ -567,8 +567,7 @@ class ThreddsContainerMetadata(ContainerMetadata):
             )
 
             if mount_data_dir.lower() == 'y':
-                # TODO: Remove dependence on TETHYS_HOME env variable
-                tethys_home = os.environ.get('TETHYS_HOME', os.path.expanduser('~/.tethys/'))
+                tethys_home = get_tethys_home_dir()
                 default_mount_location = os.path.join(tethys_home, 'thredds')
                 thredds_data_volume = '/usr/local/tomcat/content/thredds'
                 mount_location = UserInputHelper.get_valid_directory_input(
