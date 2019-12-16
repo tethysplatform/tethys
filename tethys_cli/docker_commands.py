@@ -528,7 +528,7 @@ class ThreddsContainerMetadata(ContainerMetadata):
             write_pretty_output("Provide configuration options for the THREDDS container or or press enter to "
                                 "accept the defaults shown in square brackets: ")
 
-            environment['TDM_PW'] = UserInputHelper.get_input_with_default(
+            environment['TDM_PW'] = UserInputHelper.get_verified_password(
                 prompt='TDM Password',
                 default=options['environment']['TDM_PW'],
             )

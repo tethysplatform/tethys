@@ -464,10 +464,10 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
 
         elif self.engine == self.THREDDS:
             if as_wms:
-                return self.spatial_dataset_service.endpoint.split('/catalog')[0] + 'wms'
+                return self.spatial_dataset_service.endpoint.split('/catalog')[0] + '/wms'
 
             if as_wcs:
-                return self.spatial_dataset_service.endpoint.split('/catalog')[0] + 'wcs'
+                return self.spatial_dataset_service.endpoint.split('/catalog')[0] + '/wcs'
 
             if as_wfs:
                 raise ValueError('THREDDS does not support the WFS interface.')
