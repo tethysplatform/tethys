@@ -2,7 +2,7 @@
 Spatial Dataset Services API
 ****************************
 
-**Last Updated:** May 2017
+**Last Updated:** December 2019
 
 Spatial dataset services are web services that can be used to store and publish file-based :term:`spatial datasets` (e.g.: Shapefile, GeoTiff, NetCDF). The spatial datasets published using spatial dataset services are made available in a variety of formats, many of which or more web friendly than the native format (e.g.: PNG, JPEG, GeoJSON, OGC Services).
 
@@ -15,7 +15,7 @@ Tethys app developers can use this Spatial Dataset Services API to store and acc
 Spatial Dataset Engine References
 =================================
 
-The engines for some spatial dataset service engines in Tethys implement the ``SpatialDatasetEngine`` interface, which means they implement a minimum set of base methods. The ``GeoServerSpatialDatasetEngine`` is an example of this pattern. Other engines are powered by excellent 3rd-party libraries, such as `Siphon <https://unidata.github.io/siphon/latest/examples/Basic_Usage.html>`_ for THREDDS spatial dataset services. Refer to the following references for the methods that are offered by each ``SpatailDatasetEngine``.
+The engines for some spatial dataset service engines in Tethys implement the ``SpatialDatasetEngine`` interface, which means they implement a common set of base methods for interacting with the service. The ``GeoServerSpatialDatasetEngine`` is an example of this pattern. Other engines are powered by excellent 3rd-party libraries, such as `Siphon <https://unidata.github.io/siphon/latest/examples/Basic_Usage.html>`_ for THREDDS spatial dataset services. Refer to the following references for the APIs that are available for each spatial dataset service supported by Tethys.
 
 .. toctree::
     :maxdepth: 1
@@ -28,7 +28,7 @@ The engines for some spatial dataset service engines in Tethys implement the ``S
 Spatial Dataset Service Settings
 ================================
 
-Using dataset services in your app is accomplished by adding the ``spatial_dataset_service_settings()`` method to your :term:`app class`, which is located in your :term:`app configuration file` (:file:`app.py`). This method should return a list or tuple of ``SpatialDatasetServiceSetting``. For example:
+Using dataset services in your app is accomplished by adding the ``spatial_dataset_service_settings()`` method to your :term:`app class`, which is located in your :term:`app configuration file` (:file:`app.py`). This method should return a list or tuple of ``SpatialDatasetServiceSetting`` objects. For example:
 
 ::
 
@@ -46,9 +46,15 @@ Using dataset services in your app is accomplished by adding the ``spatial_datas
             sds_settings = (
                 SpatialDatasetServiceSetting(
                     name='primary_geoserver',
-                    description='spatial dataset service for app to use',
+                    description='GeoServer service for app to use.',
                     engine=SpatialDatasetServiceSetting.GEOSERVER,
                     required=True,
+                ),
+                SpatialDatasetServiceSetting(
+                    name='primary_thredds',
+                    description='THREDDS service for the app to use.',
+                    engine=SpatialDatasetServiceSetting.THREDDS,
+                    required=True
                 ),
             )
 
@@ -67,7 +73,7 @@ The ``SpatialDatasetServiceSetting`` can be thought of as a socket for a connect
 
     a. Access the Admin interface of Tethys Portal by clicking on the drop down menu next to your user name and selecting the "Site Admin" option.
 
-    b. Scroll to the **Tethys Service** section of the Admin Interface and select the link titled **Spatial Dataset Services**.
+    b. Scroll down to the **Tethys Services** section of the Admin Interface and select the link titled **Spatial Dataset Services**.
 
     c. Click on the **Add Spatial Dataset Service** button.
 
@@ -83,11 +89,9 @@ The ``SpatialDatasetServiceSetting`` can be thought of as a socket for a connect
 
     a. Return to the Home page of the Admin Interface using the **Home** link in the breadcrumbs or as you did in step 1a.
 
-    b. Scroll to the **Tethys Apps** section of the Admin Interface and select the **Installed Apps** linke.
+    b. Scroll to the **Tethys Apps** section of the Admin Interface and select the **Installed Apps** link.
 
     c. Select the link for your app from the list of installed apps.
-
-
 
 3. Assign ``SpatialDatasetService`` to the appropriate ``SpatialDatasetServiceSetting``
 
@@ -111,10 +115,10 @@ Working with Spatial Dataset Services
 After spatial dataset services have been properly configured, you can use the services to store, publish, and retrieve data for your apps. This process typically involves the following steps:
 
 
-1. Get a Spatial Dataset Engine
--------------------------------
+1. Get an Engine for the Spatial Dataset Service
+------------------------------------------------
 
-Call the ``get_spatial_dataset_service()`` method of the app class to get a ``SpatialDatasetEngine``::
+Call the ``get_spatial_dataset_service()`` method of the app class to get the engine for the Spatial Dataset Service::
 
     from my_first_app.app import MyFirstApp as app
 
@@ -128,14 +132,12 @@ You can also create a ``SpatialDatasetEngine`` object directly. This can be usef
 
 .. caution::
 
-  Take care not to store API keys, usernames, or passwords in the source files of your app--especially if the source code is made public. This could compromise the security of the spatial dataset service.
+  Take care not to store API keys, usernames, or passwords in the source files of your app--especially if the source code is made public. This could compromise the security of your app and the spatial dataset service.
 
 2. Use the Spatial Dataset Engine
 ---------------------------------
 
-After you have a ``SpatialDatasetEngine`` object, simply call the desired method on it. All ``SpatialDatasetEngine`` methods return a dictionary with an item named 'success' that contains a boolean. If the operation was successful, 'success' will be true, otherwise it will be false. If 'success' is true, the dictionary will have an item named 'result' that will contain the results. If it is false, the dictionary will have an item named 'error' that will contain information about the error that occurred. This can be very useful for debugging and error catching purposes.
-
-Consider the following example for uploading a shapefile to spatial dataset services:
+After you have an engine object, simply call the desired methods on it. Consider the following example for uploading a shapefile to a GeoServer spatial dataset service:
 
 ::
 
@@ -158,62 +160,6 @@ Consider the following example for uploading a shapefile to spatial dataset serv
     if not result['success']:
         raise
 
+.. note::
 
-A new shapefile Data Store will be created called 'foo' in workspace 'my_app' and a resource will be created for the shapefile called 'foo'. A layer will also automatically be configured for the new shapefile resource.
-
-.. tip::
-
-    When you are learning how to use the spatial dataset engine methods, run the commands with the debug parameter set to true. This will automatically pretty print the result dictionary to the console so that you can inspect its contents:
-
-    ::
-
-      # Example method with debug option
-      engine.list_layers(debug=True)
-
-
-3. Get OGC Web Service URL
---------------------------
-
-Publishing the spatial dataset with a spatial dataset service would be pointless without using the service to render the data on a map. This can be done by querying the data using the OGC web services WFS, WCS, or WMS. The dictionary that is returned when retrieving layers, layer groups, or resources will include a key for appropriate OGC services for the object returned. Feature type resources will provide a "wfs" key, coverage resources will provide a "wcs" key, and layers and layergroups will provide a "wms" key. The value will be another dictionary of OGC queries for different endpoints. For example:
-
-::
-
-    # Get a feature type layer
-    response = engine.get_layer(layer_id='sf:roads', debug=True)
-
-    # Response dictionary includes "wms" key with links to maps in various formats
-    {'result': {'advertised': True,
-                'attribution': None,
-                'catalog': 'http://localhost:8181/geoserver/',
-                'default_style': 'simple_roads',
-                'enabled': None,
-                'href': 'http://localhost:8181/geoserver/rest/layers/sf%3Aroads.xml',
-                'name': 'sf:roads',
-                'resource': 'sf:roads',
-                'resource_type': 'layer',
-                'styles': ['sf:line'],
-                'wms': {'georss': 'http://localhost:8181/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=sf:roads&styles=simple_roads&transparent=true&tiled=no&srs=EPSG:26713&bbox=589434.8564686741,4914006.337837095,609527.2102150217,4928063.398014731&width=731&height=512&format=rss',
-                        'geotiff8': 'http://localhost:8181/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=sf:roads&styles=simple_roads&transparent=true&tiled=no&srs=EPSG:26713&bbox=589434.8564686741,4914006.337837095,609527.2102150217,4928063.398014731&width=731&height=512&format=image/geotiff8',
-                        'geptiff': 'http://localhost:8181/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=sf:roads&styles=simple_roads&transparent=true&tiled=no&srs=EPSG:26713&bbox=589434.8564686741,4914006.337837095,609527.2102150217,4928063.398014731&width=731&height=512&format=image/geotiff',
-                        'gif': 'http://localhost:8181/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=sf:roads&styles=simple_roads&transparent=true&tiled=no&srs=EPSG:26713&bbox=589434.8564686741,4914006.337837095,609527.2102150217,4928063.398014731&width=731&height=512&format=image/gif',
-                        'jpeg': 'http://localhost:8181/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=sf:roads&styles=simple_roads&transparent=true&tiled=no&srs=EPSG:26713&bbox=589434.8564686741,4914006.337837095,609527.2102150217,4928063.398014731&width=731&height=512&format=image/jpeg',
-                        'kml': 'http://localhost:8181/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=sf:roads&styles=simple_roads&transparent=true&tiled=no&srs=EPSG:26713&bbox=589434.8564686741,4914006.337837095,609527.2102150217,4928063.398014731&width=731&height=512&format=kml',
-                        'kmz': 'http://localhost:8181/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=sf:roads&styles=simple_roads&transparent=true&tiled=no&srs=EPSG:26713&bbox=589434.8564686741,4914006.337837095,609527.2102150217,4928063.398014731&width=731&height=512&format=kmz',
-                        'openlayers': 'http://localhost:8181/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=sf:roads&styles=simple_roads&transparent=true&tiled=no&srs=EPSG:26713&bbox=589434.8564686741,4914006.337837095,609527.2102150217,4928063.398014731&width=731&height=512&format=application/openlayers',
-                        'pdf': 'http://localhost:8181/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=sf:roads&styles=simple_roads&transparent=true&tiled=no&srs=EPSG:26713&bbox=589434.8564686741,4914006.337837095,609527.2102150217,4928063.398014731&width=731&height=512&format=application/pdf',
-                        'png': 'http://localhost:8181/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=sf:roads&styles=simple_roads&transparent=true&tiled=no&srs=EPSG:26713&bbox=589434.8564686741,4914006.337837095,609527.2102150217,4928063.398014731&width=731&height=512&format=image/png',
-                        'png8': 'http://localhost:8181/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=sf:roads&styles=simple_roads&transparent=true&tiled=no&srs=EPSG:26713&bbox=589434.8564686741,4914006.337837095,609527.2102150217,4928063.398014731&width=731&height=512&format=image/png8',
-                        'svg': 'http://localhost:8181/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=sf:roads&styles=simple_roads&transparent=true&tiled=no&srs=EPSG:26713&bbox=589434.8564686741,4914006.337837095,609527.2102150217,4928063.398014731&width=731&height=512&format=image/svg',
-                        'tiff': 'http://localhost:8181/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=sf:roads&styles=simple_roads&transparent=true&tiled=no&srs=EPSG:26713&bbox=589434.8564686741,4914006.337837095,609527.2102150217,4928063.398014731&width=731&height=512&format=image/tiff',
-                        'tiff8': 'http://localhost:8181/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=sf:roads&styles=simple_roads&transparent=true&tiled=no&srs=EPSG:26713&bbox=589434.8564686741,4914006.337837095,609527.2102150217,4928063.398014731&width=731&height=512&format=image/tiff8'}},
-     'success': True}
-
-These links could be passed on to a web mapping client like OpenLayers or Google Maps to render the map interactively on a web page. Note that the OGC mapping services are very powerful and the links provided represent only a simple query. You can construct custom OGC URLs queries without much difficulty. For excellent primers on WFS, WCS, and WMS with GeoServer, visit these links:
-
-* `GeoServer Web Feature Service Overview <http://docs.geoserver.org/stable/en/user/services/wfs/index.html>`_
-* `GeoServer Web Coverage Service Overview <http://docs.geoserver.org/stable/en/user/services/wcs/index.html>`_
-* `GeoServer Web Map Service Overview <http://docs.geoserver.org/stable/en/user/services/wms/index.html>`_
-
-
-
-
+    The type of engine object returned and the methods available vary depending on the type of spatial dataset service.
