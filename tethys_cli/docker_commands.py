@@ -506,9 +506,9 @@ class ThreddsContainerMetadata(ContainerMetadata):
         options.update(
             environment=dict(
                 TDM_PW='CHANGEME!',
-                TDS_HOST='http://localhost/',
+                TDS_HOST='http://localhost',
                 THREDDS_XMX_SIZE='4G',
-                THREDDS_XMS_SIZE='4G',
+                THREDDS_XMS_SIZE='1G',
                 TDM_XMX_SIZE='6G',
                 TDM_XMS_SIZE='1G'
             ),

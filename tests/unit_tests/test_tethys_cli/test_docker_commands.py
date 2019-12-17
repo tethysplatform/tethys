@@ -442,9 +442,9 @@ class TestDockerCommands(unittest.TestCase):
             image='unidata/thredds-docker:4.6.13',
             environment=dict(
                 TDM_PW='CHANGEME!',
-                TDS_HOST='http://localhost/',
+                TDS_HOST='http://localhost',
                 THREDDS_XMX_SIZE='4G',
-                THREDDS_XMS_SIZE='4G',
+                THREDDS_XMS_SIZE='1G',
                 TDM_XMX_SIZE='6G',
                 TDM_XMS_SIZE='1G'
             ),
