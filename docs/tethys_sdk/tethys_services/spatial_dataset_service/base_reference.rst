@@ -2,7 +2,7 @@
 SpatialDatasetEngine Interface
 ******************************
 
-**Last Updated**: December 2017
+**Last Updated**: December 2019
 
 All objects that implement the ``SpatialDatasetEngine`` interface provide a minimum set of methods for interacting with layers and resources. Specifically, the methods allow the standard CRUD operations (Create, Read, Update, Delete) for both layers and resources.
 

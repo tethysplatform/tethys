@@ -4,10 +4,12 @@ GeoServer SpatialDatasetEngine Reference
 
 **Last Updated**: December 2019
 
+This guide provides and overview the ``GeoServerSpatialDatasetEngine``, which implements the ``SpatialDatasetEngine`` pattern.
+
 Key Concepts
 ============
 
-There are quite a few concepts that you should understand before working with GeoServer and spatial dataset services. Definitions of each are provided here for quick reference.
+There are quite a few concepts to understand before working with GeoServer and spatial dataset services. Definitions of each are provided here for quick reference.
 
 **Resources** are the spatial datasets. These can vary in format ranging from a single file or multiple files to database tables depending on the type resource.
 
@@ -36,7 +38,7 @@ There are quite a few concepts that you should understand before working with Ge
 Example Usage
 =============
 
-All ``SpatialDatasetEngine`` methods return a dictionary with an item named 'success' that contains a boolean. If the operation was successful, 'success' will be true, otherwise it will be false. If 'success' is true, the dictionary will have an item named 'result' that will contain the results. If it is false, the dictionary will have an item named 'error' that will contain information about the error that occurred. This can be very useful for debugging and error catching purposes. Consider the following example for uploading a shapefile to a GeoServer spatial dataset service:
+Consider the following example for uploading a shapefile to a GeoServer spatial dataset service:
 
 Upload Shapefile
 ----------------
