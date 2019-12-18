@@ -21,6 +21,7 @@ import docker
 from docker.types import Mount
 from docker.errors import NotFound as DockerNotFound
 from tethys_cli.cli_colors import write_pretty_output
+from tethys_apps.utilities import get_tethys_home_dir
 
 
 __all__ = ['docker_init', 'docker_start',
@@ -409,8 +410,7 @@ class GeoServerContainerMetadata(ContainerMetadata):
             )
 
             if mount_data_dir.lower() == 'y':
-                # TODO: Remove dependence on TETHYS_HOME env variable
-                tethys_home = os.environ.get('TETHYS_HOME', os.path.expanduser('~/.tethys/'))
+                tethys_home = get_tethys_home_dir()
                 default_mount_location = os.path.join(tethys_home, 'geoserver', 'data')
                 gs_data_volume = '/var/geoserver/data'
                 mount_location = UserInputHelper.get_valid_directory_input(
@@ -496,7 +496,7 @@ class ThreddsContainerMetadata(ContainerMetadata):
 
     @property
     def endpoint(self):
-        return 'http://{host}:{port}/thredds/catalog.xml'.format(
+        return 'http://{host}:{port}/thredds/'.format(
             host=self.default_host,
             port=self.host_port
         )
@@ -506,9 +506,9 @@ class ThreddsContainerMetadata(ContainerMetadata):
         options.update(
             environment=dict(
                 TDM_PW='CHANGEME!',
-                TDS_HOST='http://localhost/',
+                TDS_HOST='http://localhost',
                 THREDDS_XMX_SIZE='4G',
-                THREDDS_XMS_SIZE='4G',
+                THREDDS_XMS_SIZE='1G',
                 TDM_XMX_SIZE='6G',
                 TDM_XMS_SIZE='1G'
             ),
@@ -528,7 +528,7 @@ class ThreddsContainerMetadata(ContainerMetadata):
             write_pretty_output("Provide configuration options for the THREDDS container or or press enter to "
                                 "accept the defaults shown in square brackets: ")
 
-            environment['TDM_PW'] = UserInputHelper.get_input_with_default(
+            environment['TDM_PW'] = UserInputHelper.get_verified_password(
                 prompt='TDM Password',
                 default=options['environment']['TDM_PW'],
             )
@@ -567,8 +567,7 @@ class ThreddsContainerMetadata(ContainerMetadata):
             )
 
             if mount_data_dir.lower() == 'y':
-                # TODO: Remove dependence on TETHYS_HOME env variable
-                tethys_home = os.environ.get('TETHYS_HOME', os.path.expanduser('~/.tethys/'))
+                tethys_home = get_tethys_home_dir()
                 default_mount_location = os.path.join(tethys_home, 'thredds')
                 thredds_data_volume = '/usr/local/tomcat/content/thredds'
                 mount_location = UserInputHelper.get_valid_directory_input(

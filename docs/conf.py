@@ -39,6 +39,7 @@ MOCK_MODULES = [
     'guardian', 'guardian.admin',
     'model_utils', 'model_utils.managers',
     'plotly', 'plotly.offline',
+    'siphon', 'siphon.catalog', 'siphon.http_util',
     'social_core', 'social_core.exceptions',
     'social_django',
     'sqlalchemy', 'sqlalchemy.orm',

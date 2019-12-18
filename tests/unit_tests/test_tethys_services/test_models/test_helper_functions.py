@@ -28,7 +28,7 @@ class HelperFunctionTests(TethysTestCase):
         self.assertRaises(ValidationError, service_model.validate_dataset_service_endpoint, test_url)
 
     def test_validate_spatial_dataset_service_endpoint(self):
-        test_url = 'http://test_url'
+        test_url = 'test_url'  # Not HTTP
         self.assertRaises(ValidationError, service_model.validate_spatial_dataset_service_endpoint, test_url)
 
     def test_validate_wps_service_endpoint(self):

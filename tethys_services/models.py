@@ -11,6 +11,8 @@ from django.db import models
 from django.core.exceptions import (ObjectDoesNotExist, ValidationError)
 from owslib.wps import WebProcessingService as WPS
 from social_core.exceptions import AuthException
+from siphon.catalog import TDSCatalog
+from siphon.http_util import session_manager
 from tethys_dataset_services.valid_engines import VALID_ENGINES, VALID_SPATIAL_ENGINES
 from tethys_dataset_services.engines import (CkanDatasetEngine,
                                              GeoServerSpatialDatasetEngine,
@@ -164,13 +166,11 @@ class SpatialDatasetService(models.Model):
             engine.public_endpoint = self.public_endpoint
 
         elif self.engine == self.THREDDS:
-            from siphon.catalog import TDSCatalog
-            from siphon.http_util import session_manager
-
             if self.username and self.password:
                 session_manager.set_session_options(auth=(str(self.username), str(self.password)))
 
-            engine = TDSCatalog(str(self.endpoint))
+            catalog_endpoint = str(self.endpoint).rstrip('/') + '/catalog.xml'
+            engine = TDSCatalog(str(catalog_endpoint))
 
         return engine
 
