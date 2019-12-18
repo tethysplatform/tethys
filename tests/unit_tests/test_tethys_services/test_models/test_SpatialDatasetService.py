@@ -39,8 +39,8 @@ class SpatialDatasetServiceTests(TethysTestCase):
         sds = service_model.SpatialDatasetService(
             name='test_sds',
             engine=service_model.SpatialDatasetService.THREDDS,
-            endpoint='http://localhost/thredds/catalog.xml',
-            public_endpoint='http://publichost/thredds/catalog.xml',
+            endpoint='http://localhost/thredds/',
+            public_endpoint='http://publichost/thredds/',
             username='foo',
             password='password'
         )
@@ -48,6 +48,44 @@ class SpatialDatasetServiceTests(TethysTestCase):
         ret = sds.get_engine()
 
         mock_session_manager.set_session_options.assert_called_with(auth=('foo', 'password'))
+        mock_TDSCatalog.assert_called_with('http://localhost/thredds/catalog.xml')
+
+        # Check result
+        self.assertEqual(mock_TDSCatalog(), ret)
+
+    @mock.patch('tethys_services.models.TDSCatalog')
+    @mock.patch('tethys_services.models.session_manager')
+    def test_get_engine_thredds_no_trailing_slashes(self, mock_session_manager, mock_TDSCatalog):
+        sds = service_model.SpatialDatasetService(
+            name='test_sds',
+            engine=service_model.SpatialDatasetService.THREDDS,
+            endpoint='http://localhost/thredds',
+            public_endpoint='http://publichost/thredds',
+            username='foo',
+            password='password'
+        )
+        sds.save()
+        ret = sds.get_engine()
+
+        mock_session_manager.set_session_options.assert_called_with(auth=('foo', 'password'))
+        mock_TDSCatalog.assert_called_with('http://localhost/thredds/catalog.xml')
+
+        # Check result
+        self.assertEqual(mock_TDSCatalog(), ret)
+
+    @mock.patch('tethys_services.models.TDSCatalog')
+    @mock.patch('tethys_services.models.session_manager')
+    def test_get_engine_thredds_no_username_password(self, mock_session_manager, mock_TDSCatalog):
+        sds = service_model.SpatialDatasetService(
+            name='test_sds',
+            engine=service_model.SpatialDatasetService.THREDDS,
+            endpoint='http://localhost/thredds',
+            public_endpoint='http://publichost/thredds',
+        )
+        sds.save()
+        ret = sds.get_engine()
+
+        mock_session_manager.set_session_options.assert_not_called()
         mock_TDSCatalog.assert_called_with('http://localhost/thredds/catalog.xml')
 
         # Check result

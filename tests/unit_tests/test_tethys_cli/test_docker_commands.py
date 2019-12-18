@@ -169,7 +169,7 @@ class TestDockerCommands(unittest.TestCase):
         expected_msg = "\nTHREDDS:" \
                        "\n  Host: 127.0.0.1" \
                        "\n  Port: 8383" \
-                       "\n  Endpoint: http://127.0.0.1:8383/thredds/catalog.xml"
+                       "\n  Endpoint: http://127.0.0.1:8383/thredds/"
         self.assertEqual(expected_msg, cm.ip)
 
     @mock.patch('tethys_cli.docker_commands.ContainerMetadata.port_bindings', new_callable=mock.PropertyMock)

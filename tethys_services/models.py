@@ -169,7 +169,8 @@ class SpatialDatasetService(models.Model):
             if self.username and self.password:
                 session_manager.set_session_options(auth=(str(self.username), str(self.password)))
 
-            engine = TDSCatalog(str(self.endpoint))
+            catalog_endpoint = str(self.endpoint).rstrip('/') + '/catalog.xml'
+            engine = TDSCatalog(str(catalog_endpoint))
 
         return engine
 

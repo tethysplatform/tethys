@@ -108,8 +108,8 @@ class SpatialDatasetServiceTests(TethysTestCase):
         sds = SpatialDatasetService(
             name='test_sds',
             engine=SpatialDatasetService.THREDDS,
-            endpoint='http://localhost/thredds/catalog.xml',
-            public_endpoint='http://publichost/thredds/catalog.xml',
+            endpoint='http://localhost/thredds/',
+            public_endpoint='http://publichost/thredds/',
             apikey='test_api',
             username='foo',
             password='password',
@@ -143,10 +143,10 @@ class SpatialDatasetServiceTests(TethysTestCase):
         # Check as_endpoint
         ret = self.test_app.settings_set.select_subclasses().get(name='primary_thredds').get_value(as_endpoint=True)
         # Check result
-        self.assertEqual('http://localhost/thredds/catalog.xml', ret)
+        self.assertEqual('http://localhost/thredds/', ret)
 
         # Check as_endpoint
         ret = self.test_app.settings_set.select_subclasses().get(name='primary_thredds').\
             get_value(as_public_endpoint=True)
         # Check result
-        self.assertEqual('http://publichost/thredds/catalog.xml', ret)
+        self.assertEqual('http://publichost/thredds/', ret)
