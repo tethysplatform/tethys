@@ -225,42 +225,42 @@ This example is adapted from Time Dimension `Example 1 <https://github.com/socib
 .. code-block:: javascript
 
     init_map = function() {
- 	    // Create Map
- 	    m_map = L.map('leaflet-map', {
- 	        zoom: 5,
- 	        center: [38.0, 15.0],
- 	        fullscreenControl: true,
+        // Create Map
+        m_map = L.map('leaflet-map', {
+            zoom: 5,
+            center: [38.0, 15.0],
+            fullscreenControl: true,
             timeDimension: true,
             timeDimensionControl: true
- 	    });
+        });
 
         // Add Basemap
- 	    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(m_map);
- 	};
+    };
 
 3. Create a new method :file:`public/js/leaflet_map.js` in that will add a wms tile layer to the Leaflet map:
 
 .. code-block:: javascript
 
     /************************************************************************
- 	*                    PRIVATE FUNCTION DECLARATIONS
- 	*************************************************************************/
- 	var init_map, init_layers, add_wms_layer;
+    *                    PRIVATE FUNCTION DECLARATIONS
+    *************************************************************************/
+    var init_map, init_layers, add_wms_layer;
 
 .. code-block:: javascript
 
     add_wms_layer = function(wms_layer, update_td) {
- 	    // Wrap WMS layer in Time Dimension Layer
- 	    let td_layer = L.timeDimension.layer.wms(wms_layer, {
- 	        updateTimeDimension: update_td
- 	    });
+        // Wrap WMS layer in Time Dimension Layer
+        let td_layer = L.timeDimension.layer.wms(wms_layer, {
+            updateTimeDimension: update_td
+        });
 
- 	    // Add Time-Dimension-Wrapped WMS layer to the Map
- 	    td_layer.addTo(m_map);
+        // Add Time-Dimension-Wrapped WMS layer to the Map
+        td_layer.addTo(m_map);
 
- 	    return td_layer;
+        return td_layer;
     };
 
 .. code-block:: javascript
