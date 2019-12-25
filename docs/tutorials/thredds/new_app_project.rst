@@ -57,6 +57,8 @@ App dependencies should be managed using the :file:`install.yml` instead of the 
           - netcdf4
           - siphon
           - owslib
+          - numpy
+          - pandas
       pip:
 
     post:

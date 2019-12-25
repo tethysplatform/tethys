@@ -522,7 +522,7 @@ In this step we'll implement the new methods with logic to (1) retrieve the XYZ 
 
 You may have noticed while testing the app, that it can take some time for a layer to load. In this step we add a loading image to indicate to the user that the map is loading, so they don't keep pressing the load button impatiently.
 
-1. Download this :download:`Google Earth Engine App Icon <./resources/map-loader.gif>` or find one that you like and save it to the :file:`public/images` directory.
+1. Download this :download:`animated map loading image <./resources/map-loader.gif>` or find one that you like and save it to the :file:`public/images` directory.
 
 2. Create a new stylesheet called :file:`public/css/loader.css` with styles for the loader image:
 

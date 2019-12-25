@@ -418,7 +418,7 @@ In this step we'll add a Plot button and the modal for the plot to the controlle
 
 In this step we'll add a loading image to the modal whenever it is shown, replacing whatever contents was there previously. This will be replaced by the loaded plot once it is finished loading. Launching the modal again, will replace the previous plot with the loading image and so on.
 
-1. Download this :download:`Google Earth Engine App Icon <./resources/plot-loader.gif>` or find one that you like and save it to the :file:`public/images` directory.
+1. Download this :download:`animated plot loading image <./resources/plot-loader.gif>` or find one that you like and save it to the :file:`public/images` directory.
 
 2. Create a new stylesheet called :file:`plot.css` in :file:`public/css` with the following contents:
 

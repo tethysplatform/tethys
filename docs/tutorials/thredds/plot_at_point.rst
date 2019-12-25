@@ -38,4 +38,4 @@ This concludes the New App Project portion of the THREDDS Tutorial. You can view
 
     git clone https://github.com/tethysplatform/tethysapp-thredds_tutorial.git
     cd tethysapp-thredds_tutorial
-    git checkout -b plot-at-point-solition plot-at-point-solution-|version|
+    git checkout -b plot-at-point-solution plot-at-point-solution-|version|
