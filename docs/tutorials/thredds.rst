@@ -6,6 +6,10 @@ THREDDS
 
 This tutorial demonstrates how to use THREDDS in a Tethys app.
 
+.. figure:: ./thredds/resources/thredds_tutorial_app.png
+    :width: 800px
+    :align: center
+
 Prerequisites
 -------------
 
