@@ -63,13 +63,6 @@ If you wish to use the previous solution as a starting point:
     {% block app_actions_override %}
     {% endblock %}
 
-.. todo::
-
-    Add explanation on the differences between the different blocks:
-
-        * styles vs. content_dependent_styles
-        * scripts vs. global_scripts
-
 2. Create :file:`public/js/leaflet_map.js`, with the following contents:
 
 .. code-block:: javascript

@@ -7,7 +7,7 @@ THREDDS Primer
 In this tutorial we will get a brief overview of THREDDS using the Docker container that is included with Tethys Platform:
 
 * Tethys Docker Containers
-* THREDDS ......
+* THREDDS
 
 1. Start the THREDDS Docker
 ===========================
@@ -45,6 +45,6 @@ In this tutorial we will get a brief overview of THREDDS using the Docker contai
 
     tethys docker ip
 
-.. todo::
+.. tip::
 
     Alternatively, you may use an existing THREDDS server for this tutorial.
