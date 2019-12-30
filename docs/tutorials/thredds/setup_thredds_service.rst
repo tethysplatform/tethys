@@ -32,6 +32,8 @@ This app will need a THREDDS service, so add the following method to the :term:`
 
     from tethys_sdk.app_settings import SpatialDatasetServiceSetting
 
+.. code-block:: python
+
     class ThreddsTutorial(TethysAppBase):
         ...
 

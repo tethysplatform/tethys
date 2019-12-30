@@ -63,9 +63,7 @@ In this step you'll expand the GEE functions to include a function that can extr
     import geojson
     import pandas as pd
 
-
-    ...
-
+.. code-block:: python
 
     def get_time_series_from_image_collection(platform, sensor, product, index_name, scale=30, geometry=None,
                                           date_from=None, date_to=None, reducer='median'):
@@ -202,7 +200,7 @@ The technique that will be demonstrated in this step will leverage the `jQuery.l
     from .helpers import generate_figure
     from .gee.methods import get_time_series_from_image_collection
 
-    ...
+.. code-block:: python
 
     @login_required()
     def get_time_series_plot(request):
@@ -480,7 +478,7 @@ In this step you'll use the native drawing capabilities of the Tethys ``MapView`
 
     from tethys_sdk.gizmos import MVDraw
 
-    ...
+.. code-block:: python
 
     map_view = MapView(
         height='100%',

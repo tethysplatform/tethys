@@ -199,7 +199,7 @@ If you wish to use the previous solution as a starting point:
     from .figure import generate_figure
     from .thredds_methods import parse_datasets, get_layers_for_wms, extract_time_series_at_location
 
-    ...
+.. code-block:: python
 
     @login_required()
     def get_time_series_plot(request):

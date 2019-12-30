@@ -322,6 +322,7 @@ At this point the select controls are empty and don't do anything. In this step,
     from .app import ThreddsTutorial as app
     from .thredds_methods import parse_datasets
 
+.. code-block:: python
 
     @login_required()
     def home(request):
@@ -375,7 +376,7 @@ Each time a new dataset is selected, the options in the variable and style contr
 
     from owslib.wms import WebMapService
 
-    ...
+.. code-block:: python
 
     def get_layers_for_wms(wms_url):
         """
@@ -434,7 +435,7 @@ Each time a new dataset is selected, the options in the variable and style contr
     from django.http import HttpResponseNotAllowed, JsonResponse
     from .thredds_methods import parse_datasets, get_layers_for_wms
 
-    ...
+.. code-block:: python
 
     @login_required()
     def get_wms_layers(request):

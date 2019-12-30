@@ -225,7 +225,7 @@ In this step you'll create a new endpoint that can be used to call the ``get_ima
 
     log = logging.getLogger(f'tethys.apps.{__name__}')
 
-    ...
+.. code-block:: python
 
     @login_required()
     def get_image_collection(request):
