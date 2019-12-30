@@ -4,7 +4,7 @@ Visualize Google Earth Engine Datasets
 
 **Last Updated:** November 2019
 
-In this tutorial we will load the GEE dataset the user has selected into the map view. The following topics will be reviewed in this tutorial:
+In this tutorial you will load the GEE dataset the user has selected into the map view. The following topics will be reviewed in this tutorial:
 
 * Tethys MapView Gizmo JavaScript API
 * JQuery AJAX Calls
@@ -83,14 +83,14 @@ To use GEE services, your app will need to authenticate using a GEE Account. Thi
 
 .. important::
 
-    The code at the top of this module handles authenticating with Google Earth Engine automatically when it is imported. By default it will check the ``params.py`` module for service account credentials and then fall back to checking the credentials file we generated earlier (see: :ref:`authenticate_gee_locally` of :doc:`./gee_primer`). Authenticating using the credential file works well for development but it will not work when you deploy the app. For production you will need to obtain and use a `Google Earth Engine Service Account <https://developers.google.com/earth-engine/service_account>`_. Then add the credentials to the ``gee.param.py`` module. **DO NOT COMMIT THESE CREDENTIALS IN A PUBLIC REPOSITORY**.
+    The code at the top of this module handles authenticating with Google Earth Engine automatically when it is imported. By default it will check the ``params.py`` module for service account credentials and then fall back to checking the credentials file you generated earlier (see: :ref:`authenticate_gee_locally` of :doc:`./gee_primer`). Authenticating using the credential file works well for development but it will not work when you deploy the app. For production you will need to obtain and use a `Google Earth Engine Service Account <https://developers.google.com/earth-engine/service_account>`_. Then add the credentials to the ``gee.param.py`` module. **DO NOT COMMIT THESE CREDENTIALS IN A PUBLIC REPOSITORY**.
 
 2. Implement GEE Methods
 ========================
 
-Google Earth Engine provides XYZ tile services for each of their datasets. In this step, we'll write the necessary GEE logic to retrieve a tile service endpoint for a given dataset product.
+Google Earth Engine provides XYZ tile services for each of their datasets. In this step, you'll write the necessary GEE logic to retrieve a tile service endpoint for a given dataset product.
 
-1. Some of the datasets require functions for filtering out the clouds in the images, so we'll create a module with functions for removing the clouds. Create a new Python module in the :file:`gee` package called :file:`cloud_mask.py` with the following contents:
+1. Some of the datasets require functions for filtering out the clouds in the images, so you'll create a module with functions for removing the clouds. Create a new Python module in the :file:`gee` package called :file:`cloud_mask.py` with the following contents:
 
 .. code-block:: python
 
@@ -213,7 +213,7 @@ Google Earth Engine provides XYZ tile services for each of their datasets. In th
 3. Create Endpoint for Getting Map Images
 =========================================
 
-In this step we'll create a new endpoint that we can used to call the ``get_image_collection_asset`` function from the client-side of the application.
+In this step you'll create a new endpoint that can be used to call the ``get_image_collection_asset`` function from the client-side of the application.
 
 1. Add a new controller called ``get_image_collection`` to :file:`controllers.py`:
 
@@ -270,7 +270,7 @@ In this step we'll create a new endpoint that we can used to call the ``get_imag
 
 .. tip::
 
-    In this step we added ``logging`` to the new endpoint. Tethys and Django leverage Python's built-in logging capabilities. Use logging statements in your code to provide useful debugging information, system status, or error capture in your production logs. The logging for a portal can be configured in the :ref:`tethys_configuration`. To learn more about logging in Tethys/Django see: `Django Logging <https://docs.djangoproject.com/en/2.2/topics/logging/>`_
+    In this step you added ``logging`` to the new endpoint. Tethys and Django leverage Python's built-in logging capabilities. Use logging statements in your code to provide useful debugging information, system status, or error capture in your production logs. The logging for a portal can be configured in the :ref:`tethys_configuration`. To learn more about logging in Tethys/Django see: `Django Logging <https://docs.djangoproject.com/en/2.2/topics/logging/>`_
 
 2. Add a new ``UrlMap`` to the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
 
@@ -285,7 +285,7 @@ In this step we'll create a new endpoint that we can used to call the ``get_imag
 4. Stub Out the Map JavaScript Methods
 ======================================
 
-In this step we'll stub out the methods and variables we'll need to add the GEE layers to the map.
+In this step you'll stub out the methods and variables you'll need to add the GEE layers to the map.
 
 1. Create new variables to store a reference to the Tethys ``MapView`` object and the GEE layer in :file:`public/js/gee_datasets.js`:
 
@@ -343,7 +343,7 @@ In this step we'll stub out the methods and variables we'll need to add the GEE 
 5. Implement Adding Layers to the Map
 =====================================
 
-In this step we'll implement the new methods with logic to (1) retrieve the XYZ map service URL by calling the new ``get-image-collection`` endpoint using AJAX and then (2) create a new OpenLayers ``Layer`` with an XYZ ``Source`` and add it to the map.
+In this step you'll implement the new methods with logic to (1) retrieve the XYZ map service URL by calling the new ``get-image-collection`` endpoint using AJAX and then (2) create a new OpenLayers ``Layer`` with an XYZ ``Source`` and add it to the map.
 
 1. Call the ``get-image-collection`` endpoint using `jQuery.ajax() <https://api.jquery.com/jquery.ajax/>`_ passing it the parameters from the controls in the``update_map`` method in :file:`public/js/gee_datasets.js`:
 
@@ -379,7 +379,7 @@ In this step we'll implement the new methods with logic to (1) retrieve the XYZ 
 
 .. tip::
 
-    If you test the ``Load`` button at this point, the AJAX call to the ``get-image-collection`` endpoint will fail because it is missing the CSRF token. The token is used to verify that the call came from our client-side code and not from a site posing to be our site. As a security precaution, the server will reject any POST requests that don't include this token. We'll add the CSRF token in the next step. For more information about CSRF see: `Cross Site Request Forgery protection <https://docs.djangoproject.com/en/2.2/ref/csrf/>`_.
+    If you test the ``Load`` button at this point, the AJAX call to the ``get-image-collection`` endpoint will fail because it is missing the CSRF token. The token is used to verify that the call came from our client-side code and not from a site posing to be our site. As a security precaution, the server will reject any POST requests that don't include this token. you'll add the CSRF token in the next step. For more information about CSRF see: `Cross Site Request Forgery protection <https://docs.djangoproject.com/en/2.2/ref/csrf/>`_.
 
 3. Add the following code to the :file:`public/js/main.js` file to automatically attach the CSRF Token to every AJAX request that needs it:
 
@@ -520,7 +520,7 @@ In this step we'll implement the new methods with logic to (1) retrieve the XYZ 
 7. Implement Map Loading Indicator
 ==================================
 
-You may have noticed while testing the app, that it can take some time for a layer to load. In this step we add a loading image to indicate to the user that the map is loading, so they don't keep pressing the load button impatiently.
+You may have noticed while testing the app, that it can take some time for a layer to load. In this step you will add a loading image to indicate to the user that the map is loading, so they don't keep pressing the load button impatiently.
 
 1. Download this :download:`animated map loading image <./resources/map-loader.gif>` or find one that you like and save it to the :file:`public/images` directory.
 

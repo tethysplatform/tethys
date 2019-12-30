@@ -4,7 +4,7 @@ Build Dataset Selection Controls
 
 **Last Updated:** November 2019
 
-In this tutorial we will add controls to the app that will eventually be used to select various Google Earth Engine datasets to display. The following topics will be reviewed in this tutorial:
+In this tutorial you will add controls to the app that will eventually be used to select various Google Earth Engine datasets to display. The following topics will be reviewed in this tutorial:
 
 * Tethys Gizmos API
 * Tethys Templating API
@@ -25,9 +25,9 @@ If you wish to use the previous solution as a starting point:
 1. Define Target GEE Products
 =============================
 
-Google Earth Engine hosts a huge offering of remote sensing datasets (see: `Earth Engine Data Catalog <https://developers.google.com/earth-engine/datasets>`_. For the purposes of this tutorial, we'll only expose a few of the datasets in the app.
+Google Earth Engine hosts a huge offering of remote sensing datasets (see: `Earth Engine Data Catalog <https://developers.google.com/earth-engine/datasets>`_. For the purposes of this tutorial, you'll only expose a few of the datasets in the app.
 
-In this step, we'll define a variable that will effectively contain a list of all of the datasets we plan to support with some metadata for each that we will need in the interface and for processing. The data is organized in nested dictionaries with the following structure:
+In this step, you'll define a variable that will effectively contain a list of all of the datasets you plan to support with some metadata for each that you will need in the interface and for processing. The data is organized in nested dictionaries with the following structure:
 
 .. code-block:: python
 
@@ -253,7 +253,7 @@ The datasets are organized based on the satellite platform and sensor they were 
 * Start Date
 * End Date
 
-In this step, we'll create controls using Tethys Gizmos with their initial values. We'll also pass the ``EE_PRODUCTS`` dictionary to the template so that it can be used by JavaScript in future steps.
+In this step, you'll create controls using Tethys Gizmos with their initial values. You'll also pass the ``EE_PRODUCTS`` dictionary to the template so that it can be used by JavaScript in future steps.
 
 1. Modify the ``home`` controller in :file:`controllers.py` as follows:
 

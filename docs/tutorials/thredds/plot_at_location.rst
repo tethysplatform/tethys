@@ -4,7 +4,7 @@ Plot Time Series at Location
 
 **Last Updated:** December 2019
 
-In this tutorial we will add a tool for querying the active THREDDS dataset for time series data at a location. Topics covered in this tutorial include:
+In this tutorial you will add a tool for querying the active THREDDS dataset for time series data at a location. Topics covered in this tutorial include:
 
 * THREDDS NCSS
 * Plotly

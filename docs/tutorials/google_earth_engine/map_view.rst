@@ -4,7 +4,7 @@ Add Map View
 
 **Last Updated:** November 2019
 
-In this tutorial we will add a map to the Home Page using the Tethys MapView Gizmo. The following topics will be reviewed in this tutorial:
+In this tutorial you will add a map to the Home Page using the Tethys MapView Gizmo. The following topics will be reviewed in this tutorial:
 
 * Tethys MapView Gizmo
 * Overriding the Default Template
@@ -25,7 +25,7 @@ If you wish to use the previous solution as a starting point:
 1. Remove App Actions Bar
 =========================
 
-We will not be using the app actions bar at the bottom of the content area and we'd like the map to fill the whole content area, so we'll remove the app actions bar to give the map a little more real estate.
+You will not be using the app actions bar at the bottom of the content area and you'd like the map to fill the whole content area, so you'll remove the app actions bar to give the map a little more real estate.
 
 1. Replace the ``app_actions`` block with the ``app_actions_override`` block in :file:`templates/earth_engine/base.html`:
 
@@ -58,7 +58,7 @@ We will not be using the app actions bar at the bottom of the content area and w
 2. Add Map View
 ===============
 
-In this step we'll add the ``MapView`` to the home view. We'll also add a custom stylesheet to ensure the map fills the content area.
+In this step you'll add the ``MapView`` to the home view. You'll also add a custom stylesheet to ensure the map fills the content area.
 
 1. Add ``MapView`` gizmo to ``home`` controller in :file:`controllers.py`:
 

@@ -26,3 +26,4 @@ Outline
    thredds/setup_thredds_service
    thredds/visualize_leaflet
    thredds/plot_at_location
+   thredds/additional_exercises

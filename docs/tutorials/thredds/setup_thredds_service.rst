@@ -54,7 +54,7 @@ Add the following method to your :term:`app class` to define a new spatial datas
 2. Create THREDDS Spatial Dataset Service
 =========================================
 
-For this tutorial we'll be using UCAR's THREDDS Data Server: `<http://thredds.ucar.edu/thredds>`_
+For this tutorial you'll be using UCAR's THREDDS Data Server: `<http://thredds.ucar.edu/thredds>`_
 
 1. Exit the app and navigate to the **Site Administration** page by selecting ``Site Admin`` from the drop down menu located to the right of your user name.
 

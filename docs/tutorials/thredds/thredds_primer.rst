@@ -4,7 +4,7 @@ THREDDS Primer
 
 **Last Updated:** December 2019
 
-In this tutorial we will get a brief overview of THREDDS using the Docker container that is included with Tethys Platform:
+In this tutorial you will discover a brief overview of THREDDS using the Docker container that is included with Tethys Platform:
 
 * Tethys Docker Containers
 * THREDDS

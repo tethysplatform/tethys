@@ -4,7 +4,7 @@ Visualize THREDDS Services with Leaflet
 
 **Last Updated:** December 2019
 
-In this tutorial we will learn how to add a `Leaflet <https://leafletjs.com/>`_ map to a Tethys App for visualizing layers from a THREDDS server. This tutorial is adapted from Time Dimension `Example 1 <https://github.com/socib/Leaflet.TimeDimension/blob/master/examples/js/example1.js>`_. The following topics will be covered in this tutorial:
+In this tutorial you will learn how to add a `Leaflet <https://leafletjs.com/>`_ map to a Tethys App for visualizing layers from a THREDDS server. This tutorial is adapted from Time Dimension `Example 1 <https://github.com/socib/Leaflet.TimeDimension/blob/master/examples/js/example1.js>`_. The following topics will be covered in this tutorial:
 
 * AJAX calls with JavaScript
 * Logging in Python
@@ -32,7 +32,7 @@ If you wish to use the previous solution as a starting point:
 1. Add Leaflet Map to Home View
 ===============================
 
-1. Add leaflet libraries to your app. Leaflet can be added a number of different ways as documented on their `Download page <https://leafletjs.com/download.html>`_. For this tutorial we will use the CDN option. Replace the contents of :file:`templates/thredds_tutorial/home.html` with:
+1. Add leaflet libraries to your app. Leaflet can be added a number of different ways as documented on their `Download page <https://leafletjs.com/download.html>`_. For this tutorial you will use the CDN option. Replace the contents of :file:`templates/thredds_tutorial/home.html` with:
 
 .. code-block:: html+django
 
@@ -358,7 +358,7 @@ If you wish to use the previous solution as a starting point:
 4. Initialize Variable and Style Select Controls
 ================================================
 
-Each time a new dataset is selected, the options in the variable and style controls need to be updated to match the variables and styles of the new dataset. This information can be found by querying the WMS endpoint of the dataset provided by THREDDS. Querying the WMS endpoint is most easily accomplished by using the `OWSLib <https://geopython.github.io/OWSLib/>`_ Python library. Therefore, we will implement a new controller that will use OWSLib to retrieve the information and call it using AJAX anytime a new dataset is selected.
+Each time a new dataset is selected, the options in the variable and style controls need to be updated to match the variables and styles of the new dataset. This information can be found by querying the WMS endpoint of the dataset provided by THREDDS. Querying the WMS endpoint is most easily accomplished by using the `OWSLib <https://geopython.github.io/OWSLib/>`_ Python library. Therefore, you will implement a new controller that will use OWSLib to retrieve the information and call it using AJAX anytime a new dataset is selected.
 
 1. Add the following functions to :file:`thredds_methods.py`:
 

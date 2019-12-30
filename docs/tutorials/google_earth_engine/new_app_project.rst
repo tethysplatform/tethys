@@ -4,7 +4,7 @@ New Tethys App Project
 
 **Last Updated:** November 2019
 
-In this tutorial we will create a new Tethys App project using the scaffold. The following topics will be reviewed in this tutorial:
+In this tutorial you will create a new Tethys App project using the scaffold. The following topics will be reviewed in this tutorial:
 
 * Scaffolding a New Apps
 * Managing App Dependencies
