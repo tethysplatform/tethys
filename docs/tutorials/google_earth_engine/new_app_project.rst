@@ -6,7 +6,7 @@ New Tethys App Project
 
 In this tutorial you will create a new Tethys App project using the scaffold. The following topics will be reviewed in this tutorial:
 
-* Scaffolding a New Apps
+* Scaffolding New Tethys Apps
 * Managing App Dependencies
 * Adding a Custom Icon
 * Customizing App Theme Color
@@ -17,16 +17,18 @@ In this tutorial you will create a new Tethys App project using the scaffold. Th
 To generate a new Tethys App using the scaffold, open a terminal and execute the following commands:
 
 
-**Linux and Mac:**
-
-::
+.. code-block:: bash
 
     # Activate the tethys environment
     conda activate tethys
 
+.. code-block:: bash
+
     # Create a working directory (if it doesn't exist already)
     mkdir ~/tethysdev
     cd ~/tethysdev
+
+.. code-block:: bash
 
     # Scaffold a new Tethys app
     tethys scaffold earth_engine
@@ -40,7 +42,7 @@ In a file browser change into your :file:`Home` directory and open the :file:`te
 
 App dependencies should be managed using the :file:`install.yml` instead of the :file:`setup.py`. This app will require the ``earthengine-api`` and ``oauthclient`` packages to allow it to use Google Earth Engine services. Both packages are available on ``conda-forge``, which is the preferred Conda channel for Tethys. Open :file:`tethysapp-earth_engine/install.yml` and add these dependencies to the ``requirements.conda`` section of the file:
 
-::
+.. code-block:: yaml
 
     # This file should be committed to your app code.
     version: 1.0
@@ -66,9 +68,7 @@ App dependencies should be managed using the :file:`install.yml` instead of the 
 
 Install the app and it's dependencies into your development Tethys Portal. In a terminal, change into the :file:`tethysapp-earth_engine` directory and execute the :command:`tethys install -d` command.
 
-**Linux and Mac:**
-
-::
+.. code-block:: bash
 
     cd ~/tethysdev/tethysapp-earth_engine
     tethys install -d
@@ -79,7 +79,7 @@ Install the app and it's dependencies into your development Tethys Portal. In a 
 
 Download this :download:`Google Earth Engine App Icon <./resources/earth-engine-logo.png>` or find one that you like and save it to the :file:`public/images` directory. Modify the ``icon`` property of your :term:`app class` to reference the new image. Also change the ``color`` property to the ``#524745`` color:
 
-::
+.. code-block:: python
 
     class EarthEngine(TethysAppBase):
         """
@@ -99,7 +99,7 @@ Download this :download:`Google Earth Engine App Icon <./resources/earth-engine-
 
 Start up the development server to view the new app:
 
-::
+.. code-block:: bash
 
     tethys manage start
 
@@ -107,13 +107,13 @@ Start up the development server to view the new app:
 
     If you get errors related to Tethys not being able to connect to the database, start the database by running:
 
-    ::
+    .. code-block:: bash
 
         tethys db start
 
     You can also stop the Tethys database by running:
 
-    ::
+    .. code-block:: bash
 
         tethys db stop
 

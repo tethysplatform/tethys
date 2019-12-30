@@ -6,7 +6,7 @@ New Tethys App Project
 
 In this tutorial you will create a new Tethys App project using the scaffold. The following topics will be reviewed in this tutorial:
 
-* Scaffolding a New Apps
+* Scaffolding New Tethys Apps
 * Managing App Dependencies
 * Adding a Custom Icon
 * Customizing App Theme Color
@@ -16,17 +16,18 @@ In this tutorial you will create a new Tethys App project using the scaffold. Th
 
 To generate a new Tethys App using the scaffold, open a terminal and execute the following commands:
 
-
-**Linux and Mac:**
-
-::
+.. code-block:: bash
 
     # Activate the tethys environment
     conda activate tethys
 
+.. code-block:: bash
+
     # Create a working directory (if it doesn't exist already)
     mkdir ~/tethysdev
     cd ~/tethysdev
+
+.. code-block:: bash
 
     # Scaffold a new Tethys app
     tethys scaffold thredds_tutorial
@@ -40,7 +41,7 @@ In a file browser change into your :file:`Home` directory and open the :file:`te
 
 App dependencies should be managed using the :file:`install.yml` instead of the :file:`setup.py`. This app will require the ``netcdf4``, ``siphon``, and ``owslib`` packages to allow it to use THREDDS services. All three packages are available on ``conda-forge``, which is the preferred Conda channel for Tethys. Open :file:`tethysapp-thredds_tutorial/install.yml` and add these dependencies to the ``requirements.conda`` section of the file:
 
-::
+.. code-block:: yaml
 
     # This file should be committed to your app code.
     version: 1.0
@@ -57,8 +58,6 @@ App dependencies should be managed using the :file:`install.yml` instead of the 
           - netcdf4
           - siphon
           - owslib
-          - numpy
-          - pandas
       pip:
 
     post:
@@ -69,9 +68,7 @@ App dependencies should be managed using the :file:`install.yml` instead of the 
 
 Install the app and it's dependencies into your development Tethys Portal. In a terminal, change into the :file:`tethysapp-thredds_tutorial` directory and execute the :command:`tethys install -d` command.
 
-**Linux and Mac:**
-
-::
+.. code-block:: bash
 
     cd ~/tethysdev/tethysapp-thredds_tutorial
     tethys install -d
@@ -81,7 +78,7 @@ Install the app and it's dependencies into your development Tethys Portal. In a 
 
 Download this :download:`Unidata App Icon <./resources/unidata_logo.png>` or find one that you like and save it to the :file:`public/images` directory. Modify the ``icon`` property of your :term:`app class` to reference the new image. Also change the ``color`` property to the ``#008e8d`` color:
 
-::
+.. code-block:: python
 
     class ThreddsTutorial(TethysAppBase):
         """
@@ -99,9 +96,9 @@ Download this :download:`Unidata App Icon <./resources/unidata_logo.png>` or fin
 5. View Your New App
 ====================
 
-Start up the development server to view the new app:
+1. Start up the development server to view the new app:
 
-::
+.. code-block:: bash
 
     tethys manage start
 
@@ -109,17 +106,17 @@ Start up the development server to view the new app:
 
     If you get errors related to Tethys not being able to connect to the database, start the database by running:
 
-    ::
+    .. code-block:: bash
 
         tethys db start
 
     You can also stop the Tethys database by running:
 
-    ::
+    .. code-block:: bash
 
         tethys db stop
 
-Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login the default portal user is:
+2. Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login the default portal user is:
 
 * **username**: admin
 * **password**: pass
