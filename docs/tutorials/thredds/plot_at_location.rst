@@ -4,11 +4,12 @@ Plot Time Series at Location
 
 **Last Updated:** December 2019
 
-In this tutorial you will add a tool for querying the active THREDDS dataset for time series data at a location. Topics covered in this tutorial include:
+In this tutorial you will add a tool for querying the active THREDDS dataset for time series data at a location and display it on a plot. Topics covered in this tutorial include:
 
-* THREDDS NCSS
-* Plotly
-* JQuery Load
+* :ref:`plotly_view_gizmo`
+* `Leaflet Plugins <https://leafletjs.com/plugins.html>`_: `Leaflet.Draw <http://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html>`_
+* `THREDDS NetCDF Subset Service (NCSS) <https://www.unidata.ucar.edu/software/tds/current/reference/NetcdfSubsetServiceReference.html>`_
+* `JQuery Load <https://api.jquery.com/load/>`_
 
 
 0. Start From Previous Solution (Optional)
@@ -27,11 +28,12 @@ If you wish to use the previous solution as a starting point:
 
 1. Add two new methods to the :file:`thredds_methods.py` module:
 
+
 .. code-block:: python
 
     from datetime import datetime, timedelta
 
-    ...
+.. code-block:: python
 
     def find_dataset(catalog, dataset):
         """
@@ -54,6 +56,7 @@ If you wish to use the previous solution as a starting point:
 
         return None
 
+.. code-block:: python
 
     def extract_time_series_at_location(catalog, geometry, dataset, variable, start_time=None, end_time=None,
                                         vertical_level=None):
@@ -111,7 +114,13 @@ If you wish to use the previous solution as a starting point:
 
         return data
 
-2. Create a new Python module, :file:`figure.py`, with the following contents:
+.. note::
+
+    The ``find_dataset`` method is another recursive function similar to the ``parse_datasets`` function, except that it searches for and returns a single dataset with the name given.
+
+    The ``extract_time_series_at_location`` method uses the NetCDF Subset Service (NCSS) to subset the dataset, in this case at a specific location over a period of time.
+
+2. You'll plot the time series data using the Plotly graphing library. Create a new function that will generate the Plotly figure given the time series dataset in a new Python module, :file:`figure.py`:
 
 .. code-block:: python
 
@@ -179,7 +188,7 @@ If you wish to use the previous solution as a starting point:
 
         return figure
 
-3. Add the ``get_time_series_plot`` controller to :file:`controllers.py`:
+3. Create a new controller, ``get_time_series_plot``, that to handle plot requests. Add the following to :file:`controllers.py`:
 
 .. code-block:: python
 
@@ -290,6 +299,8 @@ If you wish to use the previous solution as a starting point:
 2. Add Drawing Tool to Map
 ==========================
 
+In this step you'll learn to use another Leaflet plugin: `Leaflet.Draw <http://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html>`_. This plugin adds a toolbar of controls for drawing different shapes on the map, including a point/marker tool. You'll implement the plot at location tool using the marker tool and bind to its on-draw event to load the plot for that location.
+
 1. Include Leaflet Draw scripts and stylesheets in :file:`templates/thredds_tutorial/home.html`:
 
 .. code-block:: html+django
@@ -351,7 +362,7 @@ If you wish to use the previous solution as a starting point:
     // Plot Methods
     var init_plot_at_location;
 
-3. Implement the ``init_plot_at_location`` method in :file:`public/js/leaflet_map.js`:
+3. The Leaflet.Draw toolbar can be customized to show or hide controls as desired. Since the plot at location tool will use the draw toolbar, you'll initialize it as part of the intialization of the plot at location tool. Implement the ``init_plot_at_location`` method in :file:`public/js/leaflet_map.js`:
 
 .. code-block:: javascript
 
@@ -403,6 +414,8 @@ If you wish to use the previous solution as a starting point:
 
 3. Load Plot Using JQuery Load
 ==============================
+
+The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL and load the returned HTML into the target element. In this step, you'll use ``jQuery.load()`` to call the ``get-time-series-plot`` endpoint and load the markup for the plot that is returned into a modal for display to the user. This pattern allows you to render the plot dynamically, while still defining it using Python and the Plotly gizmo.
 
 1. Download this :download:`animated plot loading image <./resources/plot-loader.gif>` or find one that you like and save it to the :file:`public/images` directory.
 
@@ -466,6 +479,10 @@ If you wish to use the previous solution as a starting point:
       </div>
     {% endblock %}
 
+.. note::
+
+    The empty **#plot-container** ``div`` is the element that you will target with the ``jQuery.load()`` method and thus where the plot will be rendered.
+
 5. Declare two new plot methods in :file:`public/js/leaflet_map.js`:
 
 .. code-block:: javascript
@@ -473,7 +490,7 @@ If you wish to use the previous solution as a starting point:
     // Plot Methods
     var init_plot_at_location, show_plot_modal, update_plot;
 
-6. Implement the ``show_plot_modal`` method in :file:`public/js/leaflet_map.js`:
+6. The ``show_plot_modal`` will reset the modal with the loading gif and show the modal if it is not already showing. Implement the ``show_plot_modal`` method in :file:`public/js/leaflet_map.js`:
 
 .. code-block:: javascript
 
@@ -490,7 +507,7 @@ If you wish to use the previous solution as a starting point:
         $('#plot-modal').modal('show');
     };
 
-7. Implement the ``update_plot`` method in :file:`public/js/leaflet_map.js`:
+7. The ``update_plot`` method will gather the needed parameters for the ``get-time-series-plot`` endpoint and call it with ``jQuery.load()``. Implement the ``update_plot`` method in :file:`public/js/leaflet_map.js`:
 
 .. code-block:: javascript
 
@@ -526,7 +543,49 @@ If you wish to use the previous solution as a starting point:
         $('#plot-container').load('get-time-series-plot/', data);
     };
 
-8. Call ``update_plot`` in the on-draw handler at the bottom of ``init_plot_at_location``:
+.. note::
+
+    ``$`` is shorthand for ``jQuery``.
+
+8. When ``jQuery.load()`` is called with the data parameter, as it is in this case, the request is submitted using the ``POST`` method. You must include the CSRF token with any POST request for Django to accept the request. Add the following to :file:`public/js/main.js` to allow ``jQuery.load()`` to use the ``POST`` method:
+
+.. code-block:: javascript
+
+    // Get a cookie
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // find if method is csrf safe
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    // add csrf token to appropriate ajax requests
+    $(function() {
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+                }
+            }
+        });
+    }); //document ready;
+
+9. Call ``update_plot`` in the on-draw handler at the bottom of ``init_plot_at_location``:
 
 .. code-block:: javascript
 
@@ -542,7 +601,7 @@ If you wish to use the previous solution as a starting point:
         update_plot(new_features_layer);
     });
 
-9. Clear the drawn features whenever the layer updates:
+10. Clear the drawn features whenever the layer updates:
 
 .. code-block:: javascript
 
@@ -592,43 +651,7 @@ If you wish to use the previous solution as a starting point:
         update_legend();
     };
 
-10. Add the following to :file:`public/js/main.js` to allow ``jQuery.load()`` to use the ``POST`` method:
 
-.. code-block:: javascript
-
-    // Get a cookie
-    function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie != '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-    // find if method is csrf safe
-    function csrfSafeMethod(method) {
-        // these HTTP methods do not require CSRF protection
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-
-    // add csrf token to appropriate ajax requests
-    $(function() {
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
-                }
-            }
-        });
-    }); //document ready;
 
 4. Solution
 ===========

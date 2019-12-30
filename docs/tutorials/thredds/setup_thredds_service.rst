@@ -4,7 +4,7 @@ Setup THREDDS Service
 
 **Last Updated:** December 2019
 
-In this tutorial you will register a public THREDDS server as a Tethys Service so can be more easily used in the app. The following topics will be covered in this tutorial:
+In this tutorial you will register a THREDDS server as a Tethys Spatial Dataset **Service** so can be more easily used by the app. You will also create a Spatial Dataset Service **Setting** in the app to allow it to consume this service. The following topics will be covered in this tutorial:
 
 * Tethys Services
 * Tethys Service App Settings
@@ -24,7 +24,9 @@ If you wish to use the previous solution as a starting point:
 1. Create a Spatial Dataset Service App Setting
 ===============================================
 
-Add the following method to your :term:`app class` to define a new spatial dataset services setting for your app:
+Service settings are a special class of setting for Tethys Apps that allow you to specify an external service (e.g. THREDDS, GeoServer, PostGIS) as a requirement of your app. Portal administrators can then either setup a new service or assign an existing service of that type to the app for it to consume.
+
+This app will need a THREDDS service, so add the following method to the :term:`app class` to define a new THREDDS Spatial Dataset Service Setting for the app:
 
 .. code-block:: python
 
@@ -50,11 +52,18 @@ Add the following method to your :term:`app class` to define a new spatial datas
 
             return sds_settings
 
+.. note::
+
+    The name of the setting is used as a key for retrieving the service assigned to the setting. If you are not careful, the name of the setting could end up hard-coded all over the app, making it difficult to change in the future. In this example, the name of the setting is saved as a class property of the app class: ``THREDDS_SERVICE_NAME``. The class property can be used for look-up operations rather than the hard-coded string:
+
+    .. code-block:: python
+
+        engine = app.get_spatial_dataset_service(app.THREDDS_SERVICE_NAME, as_engine=True)
 
 2. Create THREDDS Spatial Dataset Service
 =========================================
 
-For this tutorial you'll be using UCAR's THREDDS Data Server: `<http://thredds.ucar.edu/thredds>`_
+For this tutorial you'll be using the publicly accesible UCAR THREDDS Data Server: `<http://thredds.ucar.edu/thredds>`_. Complete the following steps to register the service as a Tethys Spatial Dataset Service:
 
 1. Exit the app and navigate to the **Site Administration** page by selecting ``Site Admin`` from the drop down menu located to the right of your user name.
 
@@ -77,6 +86,10 @@ For this tutorial you'll be using UCAR's THREDDS Data Server: `<http://thredds.u
     .. important::
 
          For the purposes of this tutorial, the Public Endpoint is the same as the (internal) Endpoint. However, in a production deployment of Tethys Platform, **the Public Endpoint needs to be the publicly accessible address** of the THREDDS server.
+
+    .. tip::
+
+        The UCAR THREDDS server is open access, so no **username** or **password** is required. To use a private THREDDS server, enter the **username** and **password**. Currently, only simple authentication is supported for THREDDS services in Tethys.
 
 6. Press the ``Save`` button to save the new Spatial Dataset Service.
 
@@ -106,10 +119,7 @@ For this tutorial you'll be using UCAR's THREDDS Data Server: `<http://thredds.u
 
 .. note::
 
-    This app is meant to be somewhat of a THREDDS datase browser. It should be able to support other THREDDS services provided the following services are enabled on the datasets you wish to view:
-
-    * WMS
-    * NCSS
+    This app is meant to be somewhat of a THREDDS dataset browser. It should be able to support other THREDDS services provided the following services are enabled on the datasets you wish to view: (1) WMS and (2) NCSS.
 
     To use the app with other THREDDS services, repeat steps 2 to create additional Spatial Dataset Services for each additional THREDDS service. Then repeat step 3 to swap out the THREDDS service that the app is using.
 
