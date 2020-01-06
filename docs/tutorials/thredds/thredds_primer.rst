@@ -19,12 +19,12 @@ In this tutorial you will be introduced to THREDDS using the Docker container th
 * Tethys Docker Containers
 * THREDDS Docker Image
 
-1. Install TDS
-==============
+1. Install TDS with Tethys Docker Command
+=========================================
 
-The THREDDS Data Server (TDS) can be installed either manually or using their Docker container. For this tutorial recommend using the `THREDDS Docker image <https://hub.docker.com/r/unidata/thredds-docker/dockerfile>`_, which has been integrated with the Tethys Docker command for convenience.
+The THREDDS Data Server (TDS) can be installed either manually or using their Docker container. For this tutorial we recommend using the `THREDDS Docker image <https://hub.docker.com/r/unidata/thredds-docker/dockerfile>`_, which has been integrated with the Tethys Docker command for convenience.
 
-1. Initialize the THREDDS Docker container, making sure to bind the data directory when prompted:
+1. Initialize the THREDDS Docker container, **making sure to bind the data directory** when prompted:
 
 .. code-block:: bash
 
