@@ -27,7 +27,7 @@ class TestDockerCommands(unittest.TestCase):
 
     def test_container_metadata_get_containers(self):
         all_containers = cli_docker_commands.ContainerMetadata.get_containers()
-        self.assertEqual(3, len(all_containers))
+        self.assertEqual(4, len(all_containers))
         for container in all_containers:
             self.assertIsInstance(container, cli_docker_commands.ContainerMetadata)
 
@@ -57,7 +57,7 @@ class TestDockerCommands(unittest.TestCase):
     def test_container_metadata_get_containers_with_installed(self, mock_is_installed):
         mock_is_installed.return_value = True
         all_containers = cli_docker_commands.ContainerMetadata.get_containers(installed=True)
-        self.assertEqual(3, len(all_containers))
+        self.assertEqual(4, len(all_containers))
         all_containers = cli_docker_commands.ContainerMetadata.get_containers(installed=False)
         self.assertEqual(0, len(all_containers))
 
@@ -65,7 +65,7 @@ class TestDockerCommands(unittest.TestCase):
         all_containers = cli_docker_commands.ContainerMetadata.get_containers(installed=True)
         self.assertEqual(0, len(all_containers))
         all_containers = cli_docker_commands.ContainerMetadata.get_containers(installed=False)
-        self.assertEqual(3, len(all_containers))
+        self.assertEqual(4, len(all_containers))
 
     @mock.patch('tethys_cli.docker_commands.ContainerMetadata.container', new_callable=mock.PropertyMock)
     def test_container_metadata_is_installed(self, mock_container):
@@ -125,6 +125,10 @@ class TestDockerCommands(unittest.TestCase):
         cm = cli_docker_commands.N52WpsContainerMetadata()
         self.assertDictEqual({8080: 8282}, cm.port_bindings)
 
+    def test_port_bindings_thredds(self):
+        cm = cli_docker_commands.ThreddsContainerMetadata()
+        self.assertDictEqual({8080: 8383}, cm.port_bindings)
+
     def test_cm_ip_postgis(self):
         cm = cli_docker_commands.PostGisContainerMetadata()
         expected_msg = "\nPostGIS/Database:" \
@@ -158,6 +162,14 @@ class TestDockerCommands(unittest.TestCase):
                        "\n  Host: 127.0.0.1" \
                        "\n  Port: 8282" \
                        "\n  Endpoint: http://127.0.0.1:8282/wps/WebProcessingService"
+        self.assertEqual(expected_msg, cm.ip)
+
+    def test_cm_ip_thredds(self):
+        cm = cli_docker_commands.ThreddsContainerMetadata()
+        expected_msg = "\nTHREDDS:" \
+                       "\n  Host: 127.0.0.1" \
+                       "\n  Port: 8383" \
+                       "\n  Endpoint: http://127.0.0.1:8383/thredds/"
         self.assertEqual(expected_msg, cm.ip)
 
     @mock.patch('tethys_cli.docker_commands.ContainerMetadata.port_bindings', new_callable=mock.PropertyMock)
@@ -419,6 +431,86 @@ class TestDockerCommands(unittest.TestCase):
         po_call_args = mock_pretty_output.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertIn('Provide contact information for the 52 North Web Processing Service', po_call_args[0][0][0])
+        mock_default_options.assert_called()
+
+    @mock.patch('tethys_cli.docker_commands.ContainerMetadata.port_bindings', new_callable=mock.PropertyMock)
+    def test_cm_default_container_options_thredds(self, mock_port_bindings_prop):
+        mock_port_bindings = mock.Mock()
+        mock_port_bindings_prop.return_value = mock_port_bindings
+        expected_options = dict(
+            name='tethys_thredds',
+            image='unidata/thredds-docker:4.6.13',
+            environment=dict(
+                TDM_PW='CHANGEME!',
+                TDS_HOST='http://localhost',
+                THREDDS_XMX_SIZE='4G',
+                THREDDS_XMS_SIZE='1G',
+                TDM_XMX_SIZE='6G',
+                TDM_XMS_SIZE='1G'
+            ),
+            volumes=[
+                '/usr/local/tomcat/content/thredds:rw'
+            ],
+            host_config=dict(
+                port_bindings=mock_port_bindings
+            ),
+        )
+        container = cli_docker_commands.ThreddsContainerMetadata()
+        self.assertDictEqual(expected_options, container.default_container_options())
+
+    @mock.patch('tethys_cli.docker_commands.Mount')
+    @mock.patch('tethys_cli.docker_commands.write_pretty_output')
+    @mock.patch('tethys_cli.docker_commands.UserInputHelper.get_valid_directory_input')
+    @mock.patch('tethys_cli.docker_commands.UserInputHelper.get_valid_choice_input')
+    @mock.patch('tethys_cli.docker_commands.UserInputHelper.get_verified_password')
+    @mock.patch('tethys_cli.docker_commands.UserInputHelper.get_input_with_default')
+    @mock.patch('tethys_cli.docker_commands.ContainerMetadata.default_container_options')
+    def test_cm_get_container_options_thredds(self, mock_default_options, mock_input, mock_getpass, mock_choice_input,
+                                              mock_dir_input, mock_pretty_output, mock_mount):
+        mock_default_options.return_value = dict(environment={}, host_config={})
+
+        mock_getpass.side_effect = ['please-dont-use-default-passwords']  # TDM Password
+
+        mock_input.side_effect = [
+            'https://example.com',  # TDS Host
+            '6G',  # THREDDS XMX
+            '2G',  # THREDDS XMS
+            '8G',  # TDM XMX
+            '3G',  # TDM XMS
+        ]
+
+        mock_choice_input.side_effect = [
+            'y',  # Bind the THREDDS data directory to the host?
+        ]
+
+        mock_dir_input.side_effect = [
+            '/tmp'  # Specify location to bind data directory
+        ]
+
+        expected_options = dict(
+            environment=dict(
+                TDM_PW='please-dont-use-default-passwords',
+                TDS_HOST='https://example.com',
+                THREDDS_XMX_SIZE='6G',
+                THREDDS_XMS_SIZE='2G',
+                TDM_XMX_SIZE='8G',
+                TDM_XMS_SIZE='3G'
+            ),
+            host_config=dict(
+                mounts=[mock_mount.return_value]
+            ),
+            volumes=[
+                '/usr/local/tomcat/content/thredds:rw'
+            ]
+        )
+
+        container = cli_docker_commands.ThreddsContainerMetadata()
+        self.assertDictEqual(expected_options, container.get_container_options(defaults=False))
+
+        po_call_args = mock_pretty_output.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual('Provide configuration options for the THREDDS container or or press enter to accept the '
+                         'defaults shown in square brackets: ', po_call_args[0][0][0])
         mock_default_options.assert_called()
 
     @mock.patch('tethys_cli.docker_commands.log_pull_stream')
@@ -962,6 +1054,32 @@ class TestDockerCommands(unittest.TestCase):
         po_call_args = mock_pretty_output.call_args_list
         self.assertEqual(1, len(po_call_args))
         self.assertEqual(u'foo', po_call_args[0][0][0])
+
+    @mock.patch('tethys_cli.docker_commands.write_pretty_output')
+    @mock.patch('tethys_cli.docker_commands.curses')
+    @mock.patch('tethys_cli.docker_commands.platform.system')
+    def test_log_pull_stream_linux_with_curses_error(self, mock_platform_system, mock_curses, mock_pretty_output):
+        import curses
+        mock_stream = [b'{      "id":"358464",      "status":"Downloading",      "progress":"bar"   }\r\n']
+        mock_platform_system.return_value = 'Linux'
+        mock_curses.initscr().getmaxyx.return_value = 1, 80
+        mock_curses.error = curses.error  # Since curses is mocked, need to reinstate this as a curses error
+        mock_curses.initscr().addstr.side_effect = curses.error  # Raise Curses Error
+
+        cli_docker_commands.log_pull_stream(mock_stream)
+
+        mock_curses.initscr().addstr.assert_called_with(0, 0, '358464: Downloading bar                             '
+                                                              '                           ')
+        mock_curses.initscr().refresh.assert_called_once()
+        mock_curses.noecho.assert_called_once()
+        mock_curses.cbreak.assert_called_once()
+        mock_curses.echo.assert_called_once()
+        mock_curses.nocbreak.assert_called_once()
+        mock_curses.endwin.assert_called_once()
+
+        po_call_args = mock_pretty_output.call_args_list
+        self.assertEqual(1, len(po_call_args))
+        self.assertEqual('', po_call_args[0][0][0])
 
     @mock.patch('tethys_cli.docker_commands.write_pretty_output')
     @mock.patch('tethys_cli.docker_commands.platform.system')

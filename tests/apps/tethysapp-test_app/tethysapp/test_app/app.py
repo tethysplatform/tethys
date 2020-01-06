@@ -147,6 +147,12 @@ class TestApp(TethysAppBase):
                 engine=SpatialDatasetServiceSetting.GEOSERVER,
                 required=True,
             ),
+            SpatialDatasetServiceSetting(
+                name='primary_thredds',
+                description='spatial dataset service for app to use',
+                engine=SpatialDatasetServiceSetting.THREDDS,
+                required=False,
+            ),
         )
 
         return sds_settings

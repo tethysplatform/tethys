@@ -1,12 +1,12 @@
-*************************************
-Base Spatial Dataset Engine Reference
-*************************************
+******************************
+SpatialDatasetEngine Interface
+******************************
 
-**Last Updated**: January 30, 2015
+**Last Updated**: December 2019
 
-All ``SpatialDatasetEngine`` objects provide a minimum set of methods for interacting with layers and resources. Specifically, the methods allow the standard CRUD operations (Create, Read, Update, Delete) for both layers and resources.
+All objects that implement the ``SpatialDatasetEngine`` interface provide a minimum set of methods for interacting with layers and resources. Specifically, the methods allow the standard CRUD operations (Create, Read, Update, Delete) for both layers and resources.
 
-All ``SpatialSpatialDatasetEngine`` methods return a dictionary called the response dictionary. The Response dictionary contains an item named 'success' that is a boolean indicating whether the operation was successful or not. If 'success' is ``True``, then the the dictionary will also have an item named 'result' that contains the result of the operation. If 'success' is ``False``, then the Response dictionary will contain an item called 'error' with information about what went wrong.
+All ``SpatialDatasetEngine`` methods return a dictionary called the response dictionary. The Response dictionary contains an item named ``'success'`` whose value is a boolean indicating whether the operation was successful or not. If ``'success'`` is ``True``, then the the dictionary will also have a ``'result'`` key that contains the result of the operation. If ``'success'`` is ``False``, then the Response dictionary will contain an ``'error'`` key with information about what went wrong.
 
 The following reference provides a summary of the base methods and properties provided by all ``SpatialDatasetEngine`` objects.
 
