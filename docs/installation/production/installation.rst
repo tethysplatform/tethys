@@ -33,7 +33,7 @@ Some of the following steps are dependent on the specific distribution where ``t
 
     .. code-block::
 
-        $ tethys gen portal_cofig
+        $ tethys gen portal_config
 
 * Set allowed hosts:
 
