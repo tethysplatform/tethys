@@ -112,8 +112,7 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
-        mock_env.assert_any_call('CONDA_HOME')
-        mock_env.assert_called_with('CONDA_ENV_NAME')
+        mock_env.assert_called_with('CONDA_PREFIX')
         mock_os_path_exists.assert_called_once_with('/etc/nginx/nginx.conf')
         context = mock_render_template.call_args_list[0][0][1]
         self.assertEqual('http-', context['user_option_prefix'])
@@ -141,8 +140,7 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
-        mock_env.assert_any_call('CONDA_HOME')
-        mock_env.assert_called_with('CONDA_ENV_NAME')
+        mock_env.assert_called_with('CONDA_PREFIX')
         mock_os_path_exists.assert_called_once_with('/etc/nginx/nginx.conf')
         context = mock_render_template.call_args_list[0][0][1]
         self.assertEqual('', context['user_option_prefix'])
@@ -170,8 +168,7 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
-        mock_env.assert_any_call('CONDA_HOME')
-        mock_env.assert_called_with('CONDA_ENV_NAME')
+        mock_env.assert_called_with('CONDA_PREFIX')
         mock_os_path_exists.assert_called_once_with('/etc/nginx/nginx.conf')
         context = mock_render_template.call_args_list[0][0][1]
         self.assertEqual('', context['user_option_prefix'])
@@ -191,8 +188,7 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called()
         mock_file.assert_called()
-        mock_env.assert_any_call('CONDA_HOME')
-        mock_env.assert_called_with('CONDA_ENV_NAME')
+        mock_env.assert_called_with('CONDA_PREFIX')
 
     @mock.patch('tethys_cli.gen_commands.linux_distribution')
     @mock.patch('tethys_cli.gen_commands.get_environment_value')
@@ -211,8 +207,7 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
-        mock_env.assert_any_call('CONDA_HOME')
-        mock_env.assert_called_with('CONDA_ENV_NAME')
+        mock_env.assert_called_with('CONDA_PREFIX')
 
     @mock.patch('tethys_cli.gen_commands.os.path.isdir')
     @mock.patch('tethys_cli.gen_commands.get_environment_value')
@@ -232,8 +227,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
         mock_os_path_isdir.assert_called_with(mock_args.directory)
-        mock_env.assert_any_call('CONDA_HOME')
-        mock_env.assert_called_with('CONDA_ENV_NAME')
+        mock_env.assert_called_with('CONDA_PREFIX')
 
     @mock.patch('tethys_cli.gen_commands.write_error')
     @mock.patch('tethys_cli.gen_commands.exit')
@@ -262,8 +256,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         self.assertIn('ERROR: ', rts_call_args[0][0][0])
         self.assertIn('is not a valid directory', rts_call_args[0][0][0])
 
-        mock_env.assert_any_call('CONDA_HOME')
-        mock_env.assert_called_with('CONDA_ENV_NAME')
+        mock_env.assert_called_with('CONDA_PREFIX')
 
     @mock.patch('tethys_cli.gen_commands.write_warning')
     @mock.patch('tethys_cli.gen_commands.exit')
@@ -292,8 +285,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         self.assertIn('Generation of', rts_call_args[0][0][0])
         self.assertIn('cancelled', rts_call_args[0][0][0])
 
-        mock_env.assert_any_call('CONDA_HOME')
-        mock_env.assert_called_with('CONDA_ENV_NAME')
+        mock_env.assert_called_with('CONDA_PREFIX')
 
     @mock.patch('tethys_cli.gen_commands.get_environment_value')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
@@ -310,8 +302,7 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
-        mock_env.assert_any_call('CONDA_HOME')
-        mock_env.assert_called_with('CONDA_ENV_NAME')
+        mock_env.assert_called_with('CONDA_PREFIX')
 
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')

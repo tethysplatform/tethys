@@ -126,8 +126,7 @@ def gen_asgi_service(args):
                     nginx_user = tokens[1].strip(';')
                     break
 
-    conda_home = get_environment_value('CONDA_HOME')
-    conda_env_name = get_environment_value('CONDA_ENV_NAME')
+    conda_prefix = get_environment_value('CONDA_PREFIX')
 
     user_option_prefix = ''
 
@@ -142,8 +141,7 @@ def gen_asgi_service(args):
         'nginx_user': nginx_user,
         'port': args.tethys_port,
         'asgi_processes': args.asgi_processes,
-        'conda_home': conda_home,
-        'conda_env_name': conda_env_name,
+        'conda_prefix': conda_prefix,
         'tethys_src': TETHYS_SRC,
         'user_option_prefix': user_option_prefix
     }
