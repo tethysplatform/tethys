@@ -28,13 +28,43 @@ Some of the following steps are dependent on the specific distribution where ``t
 
 * Install Supervisor (See `<http://supervisord.org/installing.html>`_)
 * Install NGINX (See `<https://www.nginx.com/resources/wiki/start/topics/tutorials/install/>`_)
-* Generate Tethys portal configuration:
+* *Optionally*, install Docker (See `<https://docs.docker.com/v17.09/engine/installation/>`_)
+* Create `portal_config.yml`:
 
     .. code-block::
 
-        $ tethys gen portal_config
+        $ tethys gen portal_cofig
 
-        $ tethys settings --set ALLOWED_HOSTS "<ALLOWED_HOST>" --set DATABASES.default.USER <TETHYS_DB_USERNAME> --set DATABASES.default.PASSWORD <TETHYS_DB_PASSWORD> --set DATABASES.default.PORT <TETHYS_DB_PORT> --set DATABASES.default.DIR <TETHYS_DB_DIR>
+* Set allowed hosts:
+
+    .. code-block::
+
+        $ tethys settings --set ALLOWED_HOSTS "<ALLOWED_HOST>"
+
+* Set database parameters:
+
+    .. code-block::
+
+        $ tethys settings --set DATABASES.default.USER <TETHYS_DB_USERNAME> --set DATABASES.default.PASSWORD <TETHYS_DB_PASSWORD> --set DATABASES.default.PORT <TETHYS_DB_PORT> --set DATABASES.default.DIR <TETHYS_DB_DIR>
+
+* Disable Debug:
+
+    .. code-block::
+
+        $ tethys settings --set DEBUG False
+
+* Install PostgresSQL
+
+    1. Manual installation: See `<https://www.postgresql.org/download/>`_
+    2. Docker Alternative (*requires previous Docker installation*): Get Postgres Docker image with the PostGIS extension from `<https://hub.docker.com/r/mdillon/postgis/>`_
+
+    .. tip::
+
+        the tethys Docker command can be used to get the Postgress Docker image
+
+        .. code-block:: bash
+
+            $ tethys docker init -c postgis
 
 * Setup Tethys database:
 
@@ -42,12 +72,13 @@ Some of the following steps are dependent on the specific distribution where ``t
 
         $ tethys db configure --username <TETHYS_DB_USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD> --portal-superuser-name <TETHYS_SUPER_USER> --portal-superuser-email '<TETHYS_SUPER_USER_EMAIL>' --portal-superuser-pass <TETHYS_SUPER_USER_PASS>
 
-* Install Docker (See `<https://docs.docker.com/v17.09/engine/installation/>`_)
-* Disable Debug:
+    .. tip::
 
-    .. code-block::
+        The postgres password from the Docker container is needed to configure the database with a Docker or a local install.
 
-        $ tethys settings --set DEBUG False
+        .. code-block:: bash
+
+            $ PGPASSWORD="<POSTGRES_PASSWORD>" tethys db configure --username <USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD> --portal-superuser-name <TETHYS_SUPER_USER> --portal-superuser-email '<TETHYS_SUPER_USER_EMAIL>' --portal-superuser-pass <TETHYS_SUPER_USER_PASS>
 
 * Generate NGINX AND ASGI templates
 
@@ -58,6 +89,7 @@ Some of the following steps are dependent on the specific distribution where ``t
         $ tethys gen asgi_service --overwrite
 
 .. note::
+
     If the distribution is Secure Linux, the security policy will also need to be configured.
 
 b) Install with Script
