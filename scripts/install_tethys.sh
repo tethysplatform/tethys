@@ -52,6 +52,13 @@ print_usage ()
     echo -e ${USAGE}
     exit
 }
+
+resolve_relative_path ()
+{
+    local __path_var="$1"
+    eval $__path_var="'$(python -c "import os; print(os.path.abspath('$2'))")'"
+}
+
 set -e  # exit on error
 
 # Set platform specific default options
@@ -62,20 +69,10 @@ then
     LINUX_DISTRIBUTION=${LINUX_DISTRIBUTION,,}
     MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh"
     BASH_PROFILE=".bashrc"
-    resolve_relative_path ()
-    {
-        local __path_var="$1"
-        eval $__path_var="'$(readlink -f $2)'"
-    }
 elif [ "$(uname)" = "Darwin" ]  # i.e. MacOSX
 then
     MINICONDA_URL="https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh"
     BASH_PROFILE=".bash_profile"
-    resolve_relative_path ()
-    {
-        local __path_var="$1"
-        eval $__path_var="'$(python -c "import os; print(os.path.abspath('$2'))")'"
-    }
 else
     echo $(uname) is not a supported operating system.
     exit
