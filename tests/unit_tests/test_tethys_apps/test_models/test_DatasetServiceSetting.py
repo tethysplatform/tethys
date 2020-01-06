@@ -1,5 +1,6 @@
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import TethysApp, DatasetServiceSetting
+from tethys_apps.exceptions import TethysAppSettingNotAssigned
 from django.core.exceptions import ValidationError
 from tethys_services.models import DatasetService
 
@@ -20,13 +21,14 @@ class DatasetServiceSettingTests(TethysTestCase):
         # Check ValidationError
         self.assertRaises(ValidationError, DatasetServiceSetting.objects.get(name='primary_ckan').clean)
 
-    def test_get_value_None(self):
+    def test_get_value_NotAssigned(self):
         ds_setting = self.test_app.settings_set.select_subclasses().get(name='primary_ckan')
         ds_setting.dataset_service = None
         ds_setting.save()
-
-        ret = DatasetServiceSetting.objects.get(name='primary_ckan').get_value()
-        self.assertIsNone(ret)
+        self.assertRaises(
+            TethysAppSettingNotAssigned,
+            DatasetServiceSetting.objects.get(name='primary_ckan').get_value
+        )
 
     def test_get_value(self):
         ds = DatasetService(

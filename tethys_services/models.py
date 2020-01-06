@@ -11,6 +11,8 @@ from django.db import models
 from django.core.exceptions import (ObjectDoesNotExist, ValidationError)
 from owslib.wps import WebProcessingService as WPS
 from social_core.exceptions import AuthException
+from siphon.catalog import TDSCatalog
+from siphon.http_util import session_manager
 from tethys_dataset_services.valid_engines import VALID_ENGINES, VALID_SPATIAL_ENGINES
 from tethys_dataset_services.engines import (CkanDatasetEngine,
                                              GeoServerSpatialDatasetEngine,
@@ -42,10 +44,6 @@ def validate_spatial_dataset_service_endpoint(value):
     Validator for spatial dataset service endpoints
     """
     validate_url(value)
-
-    if '/geoserver/rest' not in value:
-        raise ValidationError('Invalid Endpoint: GeoServer endpoints follow the pattern '
-                              '"http://example.com/geoserver/rest".')
 
 
 def validate_wps_service_endpoint(value):
@@ -98,7 +96,7 @@ class DatasetService(models.Model):
 
     def get_engine(self, request=None):
         """
-        Retrives dataset service engine
+        Retrieves dataset service engine
         """
         # Get Token for HydroShare interactions
         if self.engine == self.HYDROSHARE:
@@ -132,9 +130,11 @@ class SpatialDatasetService(models.Model):
     ORM for Spatial Dataset Service settings.
     """
     GEOSERVER = VALID_SPATIAL_ENGINES['geoserver']
+    THREDDS = 'thredds-engine'
 
     ENGINE_CHOICES = (
         (GEOSERVER, 'GeoServer'),
+        (THREDDS, 'THREDDS')
     )
 
     name = models.CharField(max_length=30, unique=True)
@@ -155,12 +155,23 @@ class SpatialDatasetService(models.Model):
 
     def get_engine(self):
         """
-        Retrives GeoServer engine
+        Retrieves spatial dataset engine
         """
-        engine = GeoServerSpatialDatasetEngine(endpoint=self.endpoint,
-                                               username=self.username,
-                                               password=self.password)
-        engine.public_endpoint = self.public_endpoint
+        engine = None
+
+        if self.engine == self.GEOSERVER:
+            engine = GeoServerSpatialDatasetEngine(endpoint=self.endpoint,
+                                                   username=self.username,
+                                                   password=self.password)
+            engine.public_endpoint = self.public_endpoint
+
+        elif self.engine == self.THREDDS:
+            if self.username and self.password:
+                session_manager.set_session_options(auth=(str(self.username), str(self.password)))
+
+            catalog_endpoint = str(self.endpoint).rstrip('/') + '/catalog.xml'
+            engine = TDSCatalog(str(catalog_endpoint))
+
         return engine
 
 

@@ -168,3 +168,4 @@ References
    :maxdepth: 1
 
    software_suite/geoserver
+   software_suite/thredds

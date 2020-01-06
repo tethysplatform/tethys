@@ -1,5 +1,6 @@
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import TethysApp, WebProcessingServiceSetting
+from tethys_apps.exceptions import TethysAppSettingNotAssigned
 from django.core.exceptions import ValidationError
 from unittest import mock
 
@@ -20,13 +21,14 @@ class WebProcessingServiceSettingTests(TethysTestCase):
         # Check ValidationError
         self.assertRaises(ValidationError, WebProcessingServiceSetting.objects.get(name='primary_52n').clean)
 
-    def test_get_value_None(self):
+    def test_get_value_NotAssigned(self):
         wps_setting = self.test_app.settings_set.select_subclasses().get(name='primary_52n')
         wps_setting.web_processing_service = None
         wps_setting.save()
-
-        ret = WebProcessingServiceSetting.objects.get(name='primary_52n').get_value()
-        self.assertIsNone(ret)
+        self.assertRaises(
+            TethysAppSettingNotAssigned,
+            WebProcessingServiceSetting.objects.get(name='primary_52n').get_value
+        )
 
     @mock.patch('tethys_apps.models.WebProcessingServiceSetting.web_processing_service')
     def test_get_value(self, mock_wps):

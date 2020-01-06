@@ -1,42 +1,73 @@
+import mock
 import unittest
 import tethys_gizmos.gizmo_options.date_picker as gizmo_date_picker
 
 
 class TestButton(unittest.TestCase):
     def setUp(self):
-        pass
+        self.name = 'Date Picker'
+        self.display_text = 'Unit Test'
+        self.autoclose = True
+        self.calendar_weeks = True
+        self.clear_button = True
+        self.days_of_week_disabled = '6'
+        self.min_view_mode = 'days'
+
+        self.gizmo = gizmo_date_picker.DatePicker(
+            name=self.name,
+            display_text=self.display_text,
+            autoclose=self.autoclose,
+            calendar_weeks=self.calendar_weeks,
+            clear_button=self.clear_button,
+            days_of_week_disabled=self.days_of_week_disabled,
+            min_view_mode=self.min_view_mode
+        )
 
     def tearDown(self):
         pass
 
     def test_DatePicker(self):
-        name = 'Date Picker'
-        display_text = 'Unit Test'
-        autoclose = True
-        calendar_weeks = True
-        clear_button = True
-        days_of_week_disabled = '6'
-        min_view_mode = 'days'
-
-        result = gizmo_date_picker.DatePicker(name=name, display_text=display_text, autoclose=autoclose,
-                                              calendar_weeks=calendar_weeks, clear_button=clear_button,
-                                              days_of_week_disabled=days_of_week_disabled, min_view_mode=min_view_mode)
-
         # Check Result
-        self.assertIn(name, result['name'])
-        self.assertIn(display_text, result['display_text'])
-        self.assertTrue(result['autoclose'])
-        self.assertTrue(result['calendar_weeks'])
-        self.assertTrue(result['clear_button'])
-        self.assertIn(days_of_week_disabled, result['days_of_week_disabled'])
-        self.assertIn(min_view_mode, result['min_view_mode'])
+        self.assertIn(self.name, self.gizmo['name'])
+        self.assertIn(self.display_text, self.gizmo['display_text'])
+        self.assertTrue(self.gizmo['autoclose'])
+        self.assertTrue(self.gizmo['calendar_weeks'])
+        self.assertTrue(self.gizmo['clear_button'])
+        self.assertIn(self.days_of_week_disabled, self.gizmo['days_of_week_disabled'])
+        self.assertIn(self.min_view_mode, self.gizmo['min_view_mode'])
+
+    @mock.patch('tethys_gizmos.gizmo_options.date_picker.settings')
+    def test_get_vendor_css_debug(self, mock_settings):
+        mock_settings.DEBUG = True
 
         result = gizmo_date_picker.DatePicker.get_vendor_css()
 
-        # Check Result
-        self.assertIn('.css', result[0])
-        self.assertNotIn('.js', result[0])
+        self.assertIn('bootstrap-datepicker3.css', result[0])
+        self.assertNotIn('bootstrap-datepicker.js', result[0])
+
+    @mock.patch('tethys_gizmos.gizmo_options.date_picker.settings')
+    def test_get_vendor_js_debug(self, mock_settings):
+        mock_settings.DEBUG = True
 
         result = gizmo_date_picker.DatePicker.get_vendor_js()
-        self.assertIn('.js', result[0])
-        self.assertNotIn('.css', result[0])
+
+        self.assertIn('bootstrap-datepicker.js', result[0])
+        self.assertNotIn('bootstrap-datepicker3.css', result[0])
+
+    @mock.patch('tethys_gizmos.gizmo_options.date_picker.settings')
+    def test_get_vendor_css_not_debug(self, mock_settings):
+        mock_settings.DEBUG = False
+
+        result = gizmo_date_picker.DatePicker.get_vendor_css()
+
+        self.assertIn('bootstrap-datepicker3.min.css', result[0])
+        self.assertNotIn('bootstrap-datepicker.min.js', result[0])
+
+    @mock.patch('tethys_gizmos.gizmo_options.date_picker.settings')
+    def test_get_vendor_js_not_debug(self, mock_settings):
+        mock_settings.DEBUG = False
+
+        result = gizmo_date_picker.DatePicker.get_vendor_js()
+
+        self.assertIn('bootstrap-datepicker.min.js', result[0])
+        self.assertNotIn('bootstrap-datepicker3.min.css', result[0])
