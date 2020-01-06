@@ -295,7 +295,8 @@ class CustomSetting(TethysAppSetting):
                 self.value = self.default
 
         if self.value == '' or self.value is None:
-            return None  # TODO Why don't we raise a NotAssigned error here?
+            # None is a valid value to return in the case the value has not been set for this setting type
+            return None
 
         if self.type == self.TYPE_STRING:
             return self.value
@@ -376,9 +377,11 @@ class DatasetServiceSetting(TethysAppSetting):
     def get_value(self, as_public_endpoint=False, as_endpoint=False, as_engine=False):
 
         if not self.dataset_service:
-            return None  # TODO Why don't we raise a NotAssigned error here?
+            raise TethysAppSettingNotAssigned(f'Cannot create engine or endpoint for DatasetServiceSetting '
+                                              f'"{self.name}" for app "{self.tethys_app.package}": '
+                                              f'no DatasetService assigned.')
 
-        # TODO order here manters. Is this the order we want?
+        # Order here matters. Think carefully before changing.
         if as_engine:
             return self.dataset_service.get_engine()
 
@@ -398,7 +401,7 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
     Attributes:
         name(str): Unique name used to identify the setting.
         description(str): Short description of the setting.
-        engine(enum): Only SpatialDatasetServiceSetting.GEOSERVER at this time.
+        engine(enum): One of SpatialDatasetServiceSetting.GEOSERVER or SpatialDatasetServiceSetting.THREDDS at this time.
         required(bool): A value will be required if True.
 
     **Example:**
@@ -414,8 +417,9 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
             required=True,
         )
 
-    """
+    """  # noqa: E501
     GEOSERVER = SpatialDatasetService.GEOSERVER
+    THREDDS = SpatialDatasetService.THREDDS
 
     spatial_dataset_service = models.ForeignKey(SpatialDatasetService, on_delete=models.CASCADE, blank=True, null=True)
 
@@ -431,26 +435,42 @@ class SpatialDatasetServiceSetting(TethysAppSetting):
             raise ValidationError('Required.')
 
     def get_value(self, as_public_endpoint=False, as_endpoint=False, as_wms=False,
-                  as_wfs=False, as_engine=False):
+                  as_wfs=False, as_engine=False, as_wcs=False):
 
         if not self.spatial_dataset_service:
-            return None  # TODO Why don't we raise a NotAssigned error here?
+            raise TethysAppSettingNotAssigned(f'Cannot create engine or endpoint for SpatialDatasetServiceSetting '
+                                              f'"{self.name}" for app "{self.tethys_app.package}": '
+                                              f'no SpatialDatasetService assigned.')
 
-        # TODO order here manters. Is this the order we want?
+        # Order here matters. Think carefully before changing.
         if as_engine:
             return self.spatial_dataset_service.get_engine()
-
-        if as_wms:
-            return self.spatial_dataset_service.endpoint.split('/rest')[0] + '/wms'
-
-        if as_wfs:
-            return self.spatial_dataset_service.endpoint.split('/rest')[0] + '/ows'
 
         if as_endpoint:
             return self.spatial_dataset_service.endpoint
 
         if as_public_endpoint:
             return self.spatial_dataset_service.public_endpoint
+
+        if self.engine == self.GEOSERVER:
+            if as_wms:
+                return self.spatial_dataset_service.endpoint.split('/rest')[0] + '/wms'
+
+            if as_wfs:
+                return self.spatial_dataset_service.endpoint.split('/rest')[0] + '/ows'
+
+            if as_wcs:
+                return self.spatial_dataset_service.endpoint.split('/rest')[0] + '/wcs'
+
+        elif self.engine == self.THREDDS:
+            if as_wms:
+                return self.spatial_dataset_service.endpoint.rstrip('/') + '/wms'
+
+            if as_wcs:
+                return self.spatial_dataset_service.endpoint.rstrip('/') + '/wcs'
+
+            if as_wfs:
+                raise ValueError('THREDDS does not support the WFS interface.')
 
         return self.spatial_dataset_service
 
@@ -491,9 +511,11 @@ class WebProcessingServiceSetting(TethysAppSetting):
         wps_service = self.web_processing_service
 
         if not wps_service:
-            return None  # TODO Why don't we raise a NotAssigned error here?
+            raise TethysAppSettingNotAssigned(f'Cannot create engine or endpoint for WebProcessingServiceSetting '
+                                              f'"{self.name}" for app "{self.tethys_app.package}": '
+                                              f'no WebProcessingService assigned.')
 
-        # TODO order here manters. Is this the order we want?
+        # Order here matters. Think carefully before changing.
         if as_engine:
             return wps_service.get_engine()
 
@@ -546,10 +568,11 @@ class PersistentStoreConnectionSetting(TethysAppSetting):
 
         # Validate connection service
         if ps_service is None:
-            raise TethysAppSettingNotAssigned('Cannot create engine or url for PersistentStoreConnection "{0}" for app '
-                                              '"{1}": no PersistentStoreService found.'.format(self.name,
-                                                                                               self.tethys_app.package))
-        # Order matters here. Think carefully before changing...
+            raise TethysAppSettingNotAssigned(f'Cannot create engine or endpoint for PersistentStoreConnectionSetting '
+                                              f'"{self.name}" for app "{self.tethys_app.package}": '
+                                              f'no PersistentStoreService assigned.')
+
+        # Order here matters. Think carefully before changing.
         if as_engine:
             return ps_service.get_engine()
 
@@ -634,13 +657,14 @@ class PersistentStoreDatabaseSetting(TethysAppSetting):
 
         # Validate connection service
         if ps_service is None:
-            raise TethysAppSettingNotAssigned('Cannot create engine or url for PersistentStoreDatabase "{0}" for app '
-                                              '"{1}": no PersistentStoreService found.'.format(self.name,
-                                                                                               self.tethys_app.package))
+            raise TethysAppSettingNotAssigned(f'Cannot create engine or endpoint for PersistentStoreDatabaseSetting '
+                                              f'"{self.name}" for app "{self.tethys_app.package}": '
+                                              f'no PersistentStoreService assigned.')
+
         if with_db:
             ps_service.database = self.get_namespaced_persistent_store_name()
 
-        # Order matters here. Think carefully before changing...
+        # Order here matters. Think carefully before changing.
         if as_engine:
             return ps_service.get_engine()
 

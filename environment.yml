@@ -42,6 +42,7 @@ dependencies:
 - channels
 - service_identity
 - condorpy
+- siphon
 
 # django/plugin dependencies
 - django=2.2.*
