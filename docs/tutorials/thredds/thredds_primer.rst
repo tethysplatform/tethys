@@ -6,18 +6,17 @@ THREDDS Primer
 
 In this tutorial you will be introduced to THREDDS using the Docker container that is included with Tethys Platform. This primer is adapted from the `THREDDS Data Server Documentation <https://docs.unidata.ucar.edu/tds/5.0/userguide/index.html>`_. Topics covered include:
 
-* Tethys Docker Containers
-* THREDDS
-* TDS
-* OpeNDAP
-* NCSS
-* WMS
-* WCS
+* Thematic Real-Time Environmental Distributed Data Services (THREDDS)
+* THREDDS Data Server (TDS)
+* Open-source Project for a Network Data Access Protocol (OpeNDAP)
+* NetCDF Subset Serivce (NCSS)
+* Web Mapping Service (WMS)
+* Web Coverage Service (WCS)
 * TDS Content Directory
 * Catalog
 * Datasets
 * Services
-* Docker
+* Tethys Docker Containers
 * THREDDS Docker Image
 
 1. Install TDS
@@ -148,6 +147,89 @@ The TDS Configuration File (:file:`threddsConfig.xml`) is used to control the be
 
     * TDS Root Configuration Catalog (:file:`catalog.xml`): Used to define and configure datasets hosted by the TDS server.
     * TDS Configuration File (:file:`threddsConfig.xml`): Used to customize TDS server information and behaviour.
+
+5. NetCDF Data Exercise
+=======================
+
+1. Download this :download:`National Water Model Short Range Forecast <./resources/nwm_20200106_short_range_forecast.zip>` data and extract it. The archive should contain 18 NetCDF files each representing a 1-hour increment in an 18 hour forecast produced by the `National Water Model <https://water.noaa.gov/about/nwm>`_. Each file contains over 2.7 million forecast points where each point is associated a different stream reach on the `National Hydrogrophy Dataset <https://nhd.usgs.gov/>`_.
+
+2. Create a new :file:`nwm` directory in the :file:`public` directory of the TDS Content Directory (i.e.: :file:`<TDS_CONTENT_DIRECTORY>/pubilc/nwm`).
+
+3. Copy the 18 NetCDF files from step 1 into :file:`<TDS_CONTENT_DIRECTORY>/pubilc/nwm`.
+
+4. Create a new catalog coniguration file at the root of the TDS Content Directory called :file:`nwmCatalog.xml` with the following contents:
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink"
+       name="Unidata THREDDS-IDD NetCDF-OpenDAP Server" version="1.0.1">
+
+      <service name="latest" serviceType="Resolver" base="" />
+      <service name="all" serviceType="Compound" base="">
+        <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+        <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+      </service>
+
+      <dataset name="National Water Model Data" collectionType="TimeSeries">
+        <metadata inherited="true">
+          <serviceName>all</serviceName>
+          <authority>edu.ucar.unidata</authority>
+          <dataType>Points</dataType>
+          <dataFormat>NetCDF</dataFormat>
+          <documentation type="rights">Freely available</documentation>
+          <documentation xlink:href="https://water.noaa.gov/about/nwm" xlink:title="National Water Model documentation"></documentation>
+          <creator>
+            <name vocabulary="DIF">DOC/NOAA/NWS/OWP</name>
+            <contact url="https://water.noaa.gov/" email="nws.nwc.ops@noaa.gov" />
+          </creator>
+          <timeCoverage>
+            <start>2020-01-06T00:00:00</start>
+            <duration>18 hours</duration>
+          </timeCoverage>
+        </metadata>
+
+        <datasetScan name="NWM Short Range Data" ID="nwm_short_range" path="nwm" location="content/nwm/" harvest="true">
+          <metadata inherited="true">
+            <documentation type="summary">National Water Model (NWM) - a hydrologic modelling framework that simulates observed and forecast streamflow over the entire continental United States.</documentation>
+            <geospatialCoverage>
+              <northsouth>
+                <start>24.637987</start>
+                <size>24.795109</size>
+                <units>degrees_north</units>
+              </northsouth>
+              <eastwest>
+                <start>-125.946552</start>
+                <size>60.346914</size>
+                <units>degrees_east</units>
+              </eastwest>
+              <updown>
+                <start>0.0</start>
+                <size>0.0</size>
+                <units>km</units>
+              </updown>
+            </geospatialCoverage>
+          </metadata>
+          <sort>
+            <lexigraphicByName increasing="true"/>
+          </sort>
+        </datasetScan>
+      </dataset>
+    </catalog>
+
+5. Add a new catalog reference to the :file:`nwmCatalog.xml` at the bottom of the ``catalog`` section of :file:`catalog.xml`:
+
+.. code-block:: xml
+
+    <catalogRef xlink:title="National Water Model Catalog" xlink:href="nwmCatalog.xml" name=""/>
+
+6. Restart the THREDDS server:
+
+.. code-block:: bash
+
+    tethys docker restart -c thredds
+
+7. Navigate to `<http://localhost:8383/thredds/catalog/nwm/catalog.html>`_ to verify that the new data is available.
 
 
 
