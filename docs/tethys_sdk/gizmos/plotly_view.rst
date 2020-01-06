@@ -1,3 +1,5 @@
+.. _plotly_view_gizmo:
+
 ***********
 Plotly View
 ***********
