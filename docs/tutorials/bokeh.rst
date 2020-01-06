@@ -1,3 +1,5 @@
+.. _bokeh-tutorial:
+
 **************************
 Bokeh Integration Concepts
 **************************
