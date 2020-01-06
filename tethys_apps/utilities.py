@@ -35,10 +35,13 @@ def get_tethys_home_dir():
     Returns:
         str: path to TETHYS_HOME.
     """
-    default = os.path.expanduser('~/.tethys')
-    conda_env_name = os.environ.get('CONDA_DEFAULT_ENV')
-    if conda_env_name != 'tethys':
-        default = os.path.join(default, conda_env_name)
+    try:
+        default = os.path.expanduser('~/.tethys')
+        conda_env_name = os.environ.get('CONDA_DEFAULT_ENV')
+        if conda_env_name != 'tethys':
+            default = os.path.join(default, conda_env_name)
+    except Exception:
+        default = None
 
     return os.environ.get('TETHYS_HOME', default)
 
@@ -48,7 +51,7 @@ def get_directories_in_tethys(directory_names, with_app_name=False):
     # Locate given directories in tethys apps and extensions.
     Args:
         directory_names: directory to get path to.
-        with_app_name: inlcud the app name if True.
+        with_app_name: include the app name if True.
 
     Returns:
         list: list of paths to directories in apps and extensions.
