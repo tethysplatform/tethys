@@ -88,7 +88,7 @@ class TethysAppTests(TethysTestCase):
 
     def test_settings_prop(self):
         ret = self.test_app.settings
-        self.assertEqual(12, len(ret))
+        self.assertEqual(13, len(ret))
 
         for r in ret:
             self.assertIsInstance(r, TethysAppSetting)

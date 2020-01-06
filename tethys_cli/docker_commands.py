@@ -21,6 +21,7 @@ import docker
 from docker.types import Mount
 from docker.errors import NotFound as DockerNotFound
 from tethys_cli.cli_colors import write_pretty_output
+from tethys_apps.utilities import get_tethys_home_dir
 
 
 __all__ = ['docker_init', 'docker_start',
@@ -409,7 +410,7 @@ class GeoServerContainerMetadata(ContainerMetadata):
             )
 
             if mount_data_dir.lower() == 'y':
-                tethys_home = os.environ.get('TETHYS_HOME', os.path.expanduser('~/tethys/'))
+                tethys_home = get_tethys_home_dir()
                 default_mount_location = os.path.join(tethys_home, 'geoserver', 'data')
                 gs_data_volume = '/var/geoserver/data'
                 mount_location = UserInputHelper.get_valid_directory_input(
@@ -480,6 +481,101 @@ class N52WpsContainerMetadata(ContainerMetadata):
                 USERNAME=UserInputHelper.get_input_with_default('Admin Username', 'wps'),
                 PASSWORD=UserInputHelper.get_verified_password('Admin Password', 'wps')
             )
+
+        return options
+
+
+class ThreddsContainerMetadata(ContainerMetadata):
+    input = 'thredds'
+    name = 'tethys_thredds'
+    display_name = 'THREDDS'
+    image_name = 'unidata/thredds-docker'
+    tag = '4.6.13'
+    host_port = 8383
+    container_port = 8080
+
+    @property
+    def endpoint(self):
+        return 'http://{host}:{port}/thredds/'.format(
+            host=self.default_host,
+            port=self.host_port
+        )
+
+    def default_container_options(self):
+        options = super().default_container_options()
+        options.update(
+            environment=dict(
+                TDM_PW='CHANGEME!',
+                TDS_HOST='http://localhost',
+                THREDDS_XMX_SIZE='4G',
+                THREDDS_XMS_SIZE='1G',
+                TDM_XMX_SIZE='6G',
+                TDM_XMS_SIZE='1G'
+            ),
+            volumes=[
+                '/usr/local/tomcat/content/thredds:rw'
+            ],
+        )
+        return options
+
+    def get_container_options(self, defaults):
+        # Default environmental vars
+        options = self.default_container_options()
+
+        if not defaults:
+            environment = dict()
+
+            write_pretty_output("Provide configuration options for the THREDDS container or or press enter to "
+                                "accept the defaults shown in square brackets: ")
+
+            environment['TDM_PW'] = UserInputHelper.get_verified_password(
+                prompt='TDM Password',
+                default=options['environment']['TDM_PW'],
+            )
+
+            environment['TDS_HOST'] = UserInputHelper.get_input_with_default(
+                prompt='TDS Host',
+                default=options['environment']['TDS_HOST'],
+            )
+
+            environment['THREDDS_XMX_SIZE'] = UserInputHelper.get_input_with_default(
+                prompt='TDS JVM Max Heap Size',
+                default=options['environment']['THREDDS_XMX_SIZE'],
+            )
+
+            environment['THREDDS_XMS_SIZE'] = UserInputHelper.get_input_with_default(
+                prompt='TDS JVM Min Heap Size',
+                default=options['environment']['THREDDS_XMS_SIZE'],
+            )
+
+            environment['TDM_XMX_SIZE'] = UserInputHelper.get_input_with_default(
+                prompt='TDM JVM Max Heap Size',
+                default=options['environment']['TDM_XMX_SIZE'],
+            )
+
+            environment['TDM_XMS_SIZE'] = UserInputHelper.get_input_with_default(
+                prompt='TDM JVM Min Heap Size',
+                default=options['environment']['TDM_XMS_SIZE'],
+            )
+
+            options.update(environment=environment)
+
+            mount_data_dir = UserInputHelper.get_valid_choice_input(
+                prompt='Bind the THREDDS data directory to the host?',
+                choices=['y', 'n'],
+                default='y',
+            )
+
+            if mount_data_dir.lower() == 'y':
+                tethys_home = get_tethys_home_dir()
+                default_mount_location = os.path.join(tethys_home, 'thredds')
+                thredds_data_volume = '/usr/local/tomcat/content/thredds'
+                mount_location = UserInputHelper.get_valid_directory_input(
+                    prompt='Specify location to bind the THREDDS data directory',
+                    default=default_mount_location
+                )
+                mounts = [Mount(thredds_data_volume, mount_location, type='bind')]
+                options['host_config'].update(mounts=mounts)
 
         return options
 
@@ -879,7 +975,10 @@ def log_pull_stream(stream):
                         for row, message in enumerate(rows):
                             message += ' ' * number_of_columns
                             message = message[:number_of_columns - 1]
-                            stdscr.addstr(row, 0, message)
+                            try:
+                                stdscr.addstr(row, 0, message)
+                            except curses.error:
+                                pass
 
                         stdscr.refresh()
 
