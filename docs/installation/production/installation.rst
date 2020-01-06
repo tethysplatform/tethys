@@ -9,12 +9,113 @@ This article will provide an overview of how to install Tethys Portal in a produ
 1. Install Tethys Portal
 ========================
 
-Follow the default :doc:`../../installation` instructions to install Tethys Portal with the following considerations
+Follow these steps to install Tethys Portal with the following considerations
 
 * Make sure to install the correct version.
 * Assign strong passwords to the database users.
 * You must edit the :file:`portal_config.yml` file to ensure production settings (i.e. ``DEBUG: False``, etc.)
 * Optionally, Follow the :doc:`./distributed` instructions to install Docker and the components of the software suite on separate servers.
+
+a) Install with Conda
+---------------------
+
+To install the ``tethysplatform`` into a new conda environment then run the following commands::
+
+    conda create -n tethys -c tethysplatform -c conda-forge tethysplatform
+    conda activate tethys
+
+Some of the following steps are dependent on the specific distribution where ``tethysplatform`` is installed.
+
+* Install Supervisor (See `<http://supervisord.org/installing.html>`_)
+* Install NGINX (See `<https://www.nginx.com/resources/wiki/start/topics/tutorials/install/>`_)
+* *Optionally*, install Docker (See `<https://docs.docker.com/v17.09/engine/installation/>`_)
+* Create `portal_config.yml`:
+
+    .. code-block::
+
+        $ tethys gen portal_config
+
+* Set allowed hosts:
+
+    .. code-block::
+
+        $ tethys settings --set ALLOWED_HOSTS "<ALLOWED_HOST>"
+
+* Set database parameters:
+
+    .. code-block::
+
+        $ tethys settings --set DATABASES.default.USER <TETHYS_DB_USERNAME> --set DATABASES.default.PASSWORD <TETHYS_DB_PASSWORD> --set DATABASES.default.PORT <TETHYS_DB_PORT> --set DATABASES.default.DIR <TETHYS_DB_DIR>
+
+* Disable Debug:
+
+    .. code-block::
+
+        $ tethys settings --set DEBUG False
+
+* Install PostgresSQL
+
+    1. Manual installation: See `<https://www.postgresql.org/download/>`_
+    2. Docker Alternative (*requires previous Docker installation*): Get Postgres Docker image with the PostGIS extension from `<https://hub.docker.com/r/mdillon/postgis/>`_
+
+    .. tip::
+
+        the tethys Docker command can be used to get the Postgress Docker image
+
+        .. code-block:: bash
+
+            $ tethys docker init -c postgis
+
+* Setup Tethys database:
+
+    .. code-block::
+
+        $ tethys db configure --username <TETHYS_DB_USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD> --portal-superuser-name <TETHYS_SUPER_USER> --portal-superuser-email '<TETHYS_SUPER_USER_EMAIL>' --portal-superuser-pass <TETHYS_SUPER_USER_PASS>
+
+    .. tip::
+
+        The postgres password from the Docker container is needed to configure the database with a Docker or a local install.
+
+        .. code-block:: bash
+
+            $ PGPASSWORD="<POSTGRES_PASSWORD>" tethys db configure --username <USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD> --portal-superuser-name <TETHYS_SUPER_USER> --portal-superuser-email '<TETHYS_SUPER_USER_EMAIL>' --portal-superuser-pass <TETHYS_SUPER_USER_PASS>
+
+* Generate NGINX AND ASGI templates
+
+    .. code-block::
+
+        $ tethys gen nginx --overwrite
+        $ tethys gen nginx_service --overwrite
+        $ tethys gen asgi_service --overwrite
+
+.. note::
+
+    If the distribution is Secure Linux, the security policy will also need to be configured.
+
+b) Install with Script
+----------------------
+
+A script to automatically install ``tethysplatform`` is provided mainly for development installations. However, this script can also be used for production installations at the developer's discretion.
+
+The script can be downloaded and run from the terminal using the following command:
+
+For systems with `wget` (most Linux distributions):
+
+.. parsed-literal::
+
+      wget :install_tethys:`sh`
+      bash install_tethys.sh -b |branch| --production
+
+For Systems with curl (e.g. Mac OSX and CentOS):
+
+.. parsed-literal::
+
+      curl :install_tethys:`sh` -o ./install_tethys.sh
+      bash install_tethys.sh -b |branch| --production
+
+.. note::
+
+    See :ref:`developer_installation` for more detailed instructions about the script and its options.
 
 2. Customize Production Settings
 ================================
