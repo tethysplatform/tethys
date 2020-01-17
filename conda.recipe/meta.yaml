@@ -44,6 +44,7 @@ requirements:
     - channels
     - service_identity
     - condorpy
+    - siphon
     - django=2.2.*
     - django-filter
     - djangorestframework
