@@ -3,7 +3,7 @@
 # see tethys documentation for how to setup this file
 version: 1.0
 name:
-apps:
+apps: {}
 settings:
   SECRET_KEY: {{ SECRET_KEY }}
-site_content:
+site_content: {}

@@ -56,7 +56,7 @@ print_usage ()
 resolve_relative_path ()
 {
     local __path_var="$1"
-    eval $__path_var="'$(python -c "import os; print(os.path.abspath('$2'))")'"
+    eval $__path_var="'$($(which python || which python3) -c "import os; print(os.path.abspath('$2'))")'"
 }
 
 set -e  # exit on error
@@ -361,7 +361,7 @@ then
     then
         tethys gen portal_config
         tethys settings \
-          --set ALLOWED_HOSTS "${ALLOWED_HOST}" \
+          --set ALLOWED_HOSTS "[${ALLOWED_HOST}]" \
           --set DATABASES.default.USER ${TETHYS_DB_USERNAME} \
           --set DATABASES.default.PASSWORD ${TETHYS_DB_PASSWORD} \
           --set DATABASES.default.PORT ${TETHYS_DB_PORT} \
@@ -381,12 +381,7 @@ then
         # Create environment activatescripts
         mkdir -p "${ACTIVATE_DIR}"
 
-        echo "export TETHYS_HOME='${TETHYS_HOME}'" >> "${ACTIVATE_SCRIPT}"
-        echo "export TETHYS_SRC='${TETHYS_SRC}'" >> "${ACTIVATE_SCRIPT}"
-        echo "export TETHYS_PORT='${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
-        echo "export CONDA_HOME='${CONDA_HOME}'" >> "${ACTIVATE_SCRIPT}"
-        echo "export CONDA_ENV_NAME='${CONDA_ENV_NAME}'" >> "${ACTIVATE_SCRIPT}"
-        echo "alias tms='tethys manage start -p ${ALLOWED_HOST}:\${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
+        echo "alias tms='tethys manage start -p ${ALLOWED_HOST}:${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
         echo "alias tstart='tethys db start; tms'" >> "${ACTIVATE_SCRIPT}"
     fi
 
@@ -404,11 +399,6 @@ then
         # Create environment deactivate scripts
         mkdir -p "${DEACTIVATE_DIR}"
 
-        echo "unset TETHYS_HOME" >> "${DEACTIVATE_SCRIPT}"
-        echo "unset TETHYS_SRC" >> "${DEACTIVATE_SCRIPT}"
-        echo "unset TETHYS_PORT" >> "${DEACTIVATE_SCRIPT}"
-        echo "unset CONDA_HOME" >> "${DEACTIVATE_SCRIPT}"
-        echo "unset CONDA_ENV_NAME" >> "${DEACTIVATE_SCRIPT}"
         echo "unalias tms" >> "${DEACTIVATE_SCRIPT}"
         echo "unalias tstart" >> "${DEACTIVATE_SCRIPT}"
     fi
@@ -530,9 +520,9 @@ then
 
     echo "export NGINX_USER='${NGINX_USER}'" >> "${ACTIVATE_SCRIPT}"
     echo "export NGINX_HOME='${NGINX_HOME}'" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tethys_user_own='sudo chown -R \${USER} \"\${TETHYS_SRC}\" \"\${TETHYS_HOME}/static\" \"\${TETHYS_HOME}/workspaces\" \"\${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_user_own='sudo chown -R \${USER} \"${TETHYS_SRC}\" \"${TETHYS_HOME}/static\" \"${TETHYS_HOME}/workspaces\" \"${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
     echo "alias tuo=tethys_user_own" >> "${ACTIVATE_SCRIPT}"
-    echo "alias tethys_server_own='sudo chown -R \${NGINX_USER}:\${NGINX_USER} \"\${TETHYS_SRC}\" \"\${TETHYS_HOME}/static\" \"\${TETHYS_HOME}/workspaces\" \"\${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
+    echo "alias tethys_server_own='sudo chown -R \${NGINX_USER}:\${NGINX_USER} \"${TETHYS_SRC}\" \"${TETHYS_HOME}/static\" \"${TETHYS_HOME}/workspaces\" \"${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
     echo "alias tso=tethys_server_own" >> "${ACTIVATE_SCRIPT}"
     echo "alias tethys_server_restart='tso; sudo supervisorctl restart all;'" >> "${ACTIVATE_SCRIPT}"
     echo "alias tsr=tethys_server_restart" >> "${ACTIVATE_SCRIPT}"

@@ -19,6 +19,7 @@ from django.template import TemplateSyntaxError
 from django.templatetags.static import static
 from django.core.serializers.json import DjangoJSONEncoder
 
+import plotly  # noqa: F401
 from plotly.offline.offline import get_plotlyjs
 from tethys_apps.harvester import SingletonHarvester
 
