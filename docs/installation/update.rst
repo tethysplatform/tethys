@@ -43,9 +43,9 @@ Upgrade Steps
     . t
     pip uninstall tethys-platform
 
-2. Install the new conda packaged version of ``tethysplatform``::
+2. Install the new conda packaged version of ``tethys-platform``::
 
-    conda install -c tethysplatform -c conda-forge tethysplatform
+    conda install -c tethysplatform -c conda-forge tethys-platform
 
 
 3. Rename :file:`~/tethys/` to :file:`~/.tethys/`::

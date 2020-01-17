@@ -19,12 +19,12 @@ Follow these steps to install Tethys Portal with the following considerations
 a) Install with Conda
 ---------------------
 
-To install the ``tethysplatform`` into a new conda environment then run the following commands::
+To install ``tethys-platform`` into a new conda environment then run the following commands::
 
-    conda create -n tethys -c tethysplatform -c conda-forge tethysplatform
+    conda create -n tethys -c tethysplatform -c conda-forge tethys-platform
     conda activate tethys
 
-Some of the following steps are dependent on the specific distribution where ``tethysplatform`` is installed.
+Some of the following steps are dependent on the specific distribution where ``tethys-platform`` is installed.
 
 * Install Supervisor (See `<http://supervisord.org/installing.html>`_)
 * Install NGINX (See `<https://www.nginx.com/resources/wiki/start/topics/tutorials/install/>`_)
@@ -95,7 +95,7 @@ Some of the following steps are dependent on the specific distribution where ``t
 b) Install with Script
 ----------------------
 
-A script to automatically install ``tethysplatform`` is provided mainly for development installations. However, this script can also be used for production installations at the developer's discretion.
+A script to automatically install ``tethys-platform`` is provided mainly for development installations. However, this script can also be used for production installations at the developer's discretion.
 
 The script can be downloaded and run from the terminal using the following command:
 

@@ -14,20 +14,20 @@ Tethys Platform requires the `conda packaging system <https://docs.conda.io/en/l
 Also, be sure that the system you are using meets the minimum :ref:`system_reqs`.
 
 
-1. Install the ``tethysplatform`` Conda Package
+1. Install the ``tethys-platform`` Conda Package
 -----------------------------------------------
 
-To install the ``tethysplatform`` into a new conda environment then run the following commands::
+To install the ``tethys-platform`` into a new conda environment then run the following commands::
 
-    conda create -n tethys -c tethysplatform -c conda-forge tethysplatform
+    conda create -n tethys -c tethysplatform -c conda-forge tethys-platform
     conda activate tethys
 
 
 .. tip::
 
-    To install a development build of of ``tethysplatform`` prepend the ``tethys/label/dev`` channel to the list of conda channels::
+    To install a development build of of ``tethys-platform`` prepend the ``tethys/label/dev`` channel to the list of conda channels::
 
-        conda create -n tethys -c tethysplatform/label/dev -c tethysplatform -c conda-forge tethysplatform
+        conda create -n tethys -c tethysplatform/label/dev -c tethysplatform -c conda-forge tethys-platform
 
 
     Alternatively, to install from source refer to the :ref:`developer_installation` docs.

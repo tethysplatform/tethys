@@ -5,7 +5,7 @@
 {% set data = load_setup_py_data() %}
 
 package:
-  name: tethysplatform
+  name: tethys-platform
   version: {{ data['version'] }}
 
 source:
