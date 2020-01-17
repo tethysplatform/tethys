@@ -361,7 +361,7 @@ then
     then
         tethys gen portal_config
         tethys settings \
-          --set ALLOWED_HOSTS "${ALLOWED_HOST}" \
+          --set ALLOWED_HOSTS "[${ALLOWED_HOST}]" \
           --set DATABASES.default.USER ${TETHYS_DB_USERNAME} \
           --set DATABASES.default.PASSWORD ${TETHYS_DB_PASSWORD} \
           --set DATABASES.default.PORT ${TETHYS_DB_PORT} \
@@ -381,8 +381,7 @@ then
         # Create environment activatescripts
         mkdir -p "${ACTIVATE_DIR}"
 
-        echo "export TETHYS_PORT='${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
-        echo "alias tms='tethys manage start -p ${ALLOWED_HOST}:\${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
+        echo "alias tms='tethys manage start -p ${ALLOWED_HOST}:${TETHYS_PORT}'" >> "${ACTIVATE_SCRIPT}"
         echo "alias tstart='tethys db start; tms'" >> "${ACTIVATE_SCRIPT}"
     fi
 
@@ -400,7 +399,6 @@ then
         # Create environment deactivate scripts
         mkdir -p "${DEACTIVATE_DIR}"
 
-        echo "unset TETHYS_PORT" >> "${DEACTIVATE_SCRIPT}"
         echo "unalias tms" >> "${DEACTIVATE_SCRIPT}"
         echo "unalias tstart" >> "${DEACTIVATE_SCRIPT}"
     fi
