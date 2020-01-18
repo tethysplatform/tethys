@@ -111,7 +111,7 @@ jobs:
       script:
         - echo "Building conda package"
         - export CONDA_BLD_PATH=~/conda-bld
-        - conda build ./conda.recipe
+        - conda build ./tethys/conda.recipe
         - >
           if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
             echo "Uploading conda package";
