@@ -698,7 +698,7 @@ class TestTethysAppBase(unittest.TestCase):
         TethysAppChild.get_persistent_store_connection(name=self.fake_name)
 
         # Check log
-        rts_call_args = mock_log.warn.call_args_list
+        rts_call_args = mock_log.warning.call_args_list
         self.assertIn('Tethys app setting is not assigned.', rts_call_args[0][0][0])
         check_string = 'PersistentStoreConnectionSetting named "{}" has not been assigned'. format(self.fake_name)
         self.assertIn(check_string, rts_call_args[0][0][0])
@@ -735,7 +735,7 @@ class TestTethysAppBase(unittest.TestCase):
         TethysAppChild.get_persistent_store_database(name=self.fake_name)
 
         # Check log
-        rts_call_args = mock_log.warn.call_args_list
+        rts_call_args = mock_log.warning.call_args_list
         self.assertIn('Tethys app setting is not assigned.', rts_call_args[0][0][0])
         check_string = 'PersistentStoreDatabaseSetting named "{}" has not been assigned'. format(self.fake_name)
         self.assertIn(check_string, rts_call_args[0][0][0])
