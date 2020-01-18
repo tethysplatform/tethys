@@ -530,15 +530,12 @@ class TestTethysAppBase(unittest.TestCase):
         self.assertIn(':delete_test', check_list)
         self.assertIn('test_get', check_list)
 
-    def test_job_templates(self):
-        self.assertIsNone(tethys_app_base.TethysAppBase().job_templates())
-
     @mock.patch('tethys_apps.base.app_base.HandoffManager')
     def test_get_handoff_manager(self, mock_hom):
         mock_hom.return_value = 'test_handoff'
         self.assertEqual('test_handoff', self.app.get_handoff_manager())
 
-    @mock.patch('tethys_sdk.jobs.JobManager')
+    @mock.patch('tethys_compute.job_manager.JobManager')
     def test_get_job_manager(self, mock_jm):
         mock_jm.return_value = 'test_job_manager'
         self.assertEqual('test_job_manager', self.app.get_job_manager())
