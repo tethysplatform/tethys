@@ -1447,17 +1447,17 @@ class TethysAppBase(TethysBase):
         to access a non-existent setting is made.
 
         Args:
-            settings_type (str, required):
+            setting_type (str, required):
                 Name of specific settings class (e.g. CustomTethysAppSetting, PersistentStoreDatabaseSetting etc).
             setting_name (str, required):
                 Name attribute of the setting.
         """
-        tethys_log.warn('Tethys app setting is not assigned.\nTraceback (most recent call last):\n{0} '
-                        'TethysAppSettingNotAssigned: {1} named "{2}" has not been assigned. '
-                        'Please visit the setting page for the app {3} and assign all required settings.'
-                        .format(traceback.format_stack(limit=3)[0], setting_type, setting_name,
-                                cls.name.encode('utf-8'))
-                        )
+        tethys_log.warning('Tethys app setting is not assigned.\nTraceback (most recent call last):\n{0} '
+                           'TethysAppSettingNotAssigned: {1} named "{2}" has not been assigned. '
+                           'Please visit the setting page for the app {3} and assign all required settings.'
+                           .format(traceback.format_stack(limit=3)[0], setting_type, setting_name,
+                                   cls.name.encode('utf-8'))
+                           )
 
     @classmethod
     def pre_delete_user_workspace(cls, user):
