@@ -8,14 +8,14 @@ RESET_COLOR=`tput sgr0`
 USAGE="USAGE: . install_tethys.sh [options]\n
 \n
 OPTIONS:\n
-\t    -n, --conda-env-name <NAME>         \t\t Name for tethys conda environment. Default is 'tethys-dev'.\nls
+\t    -n, --conda-env-name <NAME>         \t\t Name for tethys conda environment. Default is 'tethys-dev'.\n
 \t    -t, --tethys-home <PATH>            \t\t Path for tethys home directory. Default is ~/.tethys/${CONDA_ENV_NAME}.\n
 \t    -s, --tethys-src <PATH>             \t\t Path for tethys source directory. Default is \${TETHYS_HOME}/tethys.\n
 \t    -a, --allowed-hosts <HOST>          \t\t Hostname or IP address on which to serve tethys. Default is 127.0.0.1.\n
 \t    -p, --port <PORT>                   \t\t\t Port on which to serve tethys. Default is 8000.\n
 \t    -b, --branch <BRANCH_NAME>          \t\t Branch to checkout from version control. Default is 'master'.\n
 \t    -c, --conda-home <PATH>             \t\t Path where Miniconda will be installed, or to an existing installation of Miniconda. Default is ~/miniconda.\n
-\t    --db-username <USERNAME>            \t\t Username that the tethys database server will use. Default is 'tethys_super'.\n
+\t    --db-username <USERNAME>            \t\t Username that the tethys database server will use. Default is 'tethys_default'.\n
 \t    --db-password <PASSWORD>            \t\t Password that the tethys database server will use. Default is 'pass'.\n
 \t    --db-super-username <USERNAME>      \t Username for super user on the tethys database server. Default is 'tethys_super'.\n
 \t    --db-super-password <PASSWORD>      \t Password for super user on the tethys database server. Default is 'pass'.\n
@@ -81,7 +81,7 @@ fi
 # Set default options
 ALLOWED_HOST='127.0.0.1'
 TETHYS_PORT=8000
-TETHYS_DB_USERNAME='tethys_super'
+TETHYS_DB_USERNAME='tethys_default'
 TETHYS_DB_PASSWORD='pass'
 TETHYS_DB_SUPER_USERNAME='tethys_super'
 TETHYS_DB_SUPER_PASSWORD='pass'
@@ -362,7 +362,7 @@ then
         tethys gen portal_config
         tethys settings \
           --set ALLOWED_HOSTS "[${ALLOWED_HOST}]" \
-          --set DATABASES.default.USER ${TETHYS_DB_USERNAME} \
+          --set DATABASES.default.USER ${TETHYS_DB_SUPER_USERNAME} \
           --set DATABASES.default.PASSWORD ${TETHYS_DB_PASSWORD} \
           --set DATABASES.default.PORT ${TETHYS_DB_PORT} \
           --set DATABASES.default.DIR ${TETHYS_DB_DIR}

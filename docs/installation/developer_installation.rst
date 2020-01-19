@@ -67,11 +67,11 @@ Each option is also descriped here:
               The conda home path cannot contain spaces. If the your home path contains spaces then the `--conda-home` option must be specified and point to a path without spaces.
 
   * `--db-username <USERNAME>`:
-          Username that the tethys database server will use. Default is 'tethys_super'.
+          Username for the normal tethys database user. Default is 'tethys_default'.
 
           .. note::
 
-             The default ``DB_USERNAME`` is the same as the default ``DB_SUPER_USERNAME`` so that tests can be run.
+             The developer install script configures the database user to be the ``db-super-username`` rather than the ``db-username`` so that tests can be run.
 
   * `--db-password <PASSWORD>`:
           Password that the tethys database server will use. Default is 'pass'.
