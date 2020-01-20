@@ -111,17 +111,18 @@ jobs:
       script:
         - echo "Building conda package"
         - export CONDA_BLD_PATH=~/conda-bld
-        - conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
         - >
           if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
             echo "Uploading conda package";
             if [ -z "$TRAVIS_TAG" ]; then
               echo "No Branch tag is Present. Uploading to dev";
               tethys gen metayaml --overwrite
+              conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
               anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l dev $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
             else
               echo "Branch tag is $TRAVIS_TAG. Uploading to master";
               tethys gen metayaml -p minor --overwrite
+              conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
               anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
             fi
           else
