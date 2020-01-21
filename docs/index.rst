@@ -32,8 +32,6 @@ Contents
    repos
    tethys_development
    supplementary
-   summary
-   glossary
 
 Acknowledgements
 ================
