@@ -108,21 +108,28 @@ jobs:
         - conda install conda-build anaconda-client
         - conda config --set anaconda_upload no
         - mkdir -p ~/conda-bld
-      script:
-        - echo "Building conda package"
         - export CONDA_BLD_PATH=~/conda-bld
+      script:
+        - echo "Generating conda recipe."
+        - >
+          if [ -z "$TRAVIS_TAG" ]; then
+            echo "No Branch tag is Present. Generating without constrained dependencies.";
+            tethys gen metayaml --overwrite;
+          else
+            echo "Branch tag is $TRAVIS_TAG. Generating with constrained dependencies.";
+            tethys gen metayaml -p minor --overwrite;
+          fi
+        - cat ./tethys/conda.recipe/meta.yaml
+        - echo "Building conda package..."
+        - conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
         - >
           if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-            echo "Uploading conda package";
+            echo "Uploading conda package.";
             if [ -z "$TRAVIS_TAG" ]; then
-              echo "No Branch tag is Present. Uploading to dev";
-              tethys gen metayaml --overwrite
-              conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
+              echo "No tag found. Uploading to dev...";
               anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l dev $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
             else
-              echo "Branch tag is $TRAVIS_TAG. Uploading to master";
-              tethys gen metayaml -p minor --overwrite
-              conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
+              echo "Branch tag is $TRAVIS_TAG. Uploading to main...";
               anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
             fi
           else
