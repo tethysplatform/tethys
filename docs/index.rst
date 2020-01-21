@@ -25,10 +25,11 @@ Contents
    whats_new
    installation
    tutorials
-   software_suite
+   tethys_cli
    tethys_sdk
    tethys_portal
-   tethys_cli
+   software_suite
+   installation/production
    repos
    tethys_development
    supplementary

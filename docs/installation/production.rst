@@ -1,10 +1,10 @@
 .. _production_installation:
 
-***********************
-Production Installation
-***********************
+********************
+Deploy to Production
+********************
 
-**Last Updated:** August 12, 2015
+**Last Updated:** January 2020
 
 The following instructions can be used to install Tethys Platform on a production server.
 
