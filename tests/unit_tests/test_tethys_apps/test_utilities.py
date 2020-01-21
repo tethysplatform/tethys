@@ -518,3 +518,9 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         mock_os.environ.get.side_effect = ['tethys-dev', None]
         utilities.get_tethys_home_dir()
         mock_os.path.join.assert_called_with('test', 'tethys-dev')
+
+    @mock.patch('tethys_apps.utilities.os')
+    def test_get_tethys_home_dir_exception(self, mock_os):
+        mock_os.path.expanduser.side_effect = Exception
+        utilities.get_tethys_home_dir()
+        mock_os.environ.get.assert_called_with('TETHYS_HOME', None)

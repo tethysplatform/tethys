@@ -41,11 +41,13 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         mock_print.assert_called_with(check_msg)
 
     @mock.patch('tethys_apps.management.commands.collectworkspaces.print')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.shutil.move')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.makedirs')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
     @mock.patch('tethys_apps.management.commands.collectworkspaces.get_installed_tethys_apps')
     @mock.patch('tethys_apps.management.commands.collectworkspaces.settings')
     def test_collectworkspaces_handle_no_force_not_dir(self, mock_settings, mock_get_apps, mock_os_path_isdir,
-                                                       mock_print):
+                                                       mock_os_makedirs, mock_shutil_move, mock_print):
         mock_settings.TETHYS_WORKSPACES_ROOT = '/foo/workspace'
         mock_get_apps.return_value = {'foo_app': '/foo/testing/tests/foo_app'}
         mock_os_path_isdir.return_value = False
@@ -54,11 +56,13 @@ class ManagementCommandsCollectWorkspacesTests(unittest.TestCase):
         cmd.handle(force=False)
 
         mock_get_apps.assert_called_once()
-        mock_os_path_isdir.assert_called_once_with('/foo/testing/tests/foo_app/workspaces')
+        mock_os_path_isdir.assert_called()
+        mock_os_makedirs.assert_called_once_with('/foo/testing/tests/foo_app/workspaces', exist_ok=True)
+        mock_shutil_move.assert_called_once_with('/foo/testing/tests/foo_app/workspaces', '/foo/workspace/foo_app')
 
         msg_info = 'INFO: Moving workspace directories of apps to "/foo/workspace" and linking back.'
 
-        msg_warning = 'WARNING: The workspace_path for app "foo_app" is not a directory. Skipping...'
+        msg_warning = 'WARNING: The workspace_path for app "foo_app" is not a directory. Making workspace directory...'
 
         print_call_args = mock_print.call_args_list
 

@@ -98,31 +98,38 @@ jobs:
         - skip
     - stage: conda-build
       install:
-        - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-        - bash miniconda.sh -b -p $HOME/miniconda
-        - export PATH="$HOME/miniconda/bin:$PATH"
+        - cd ../
+        - bash ./tethys/scripts/install_tethys.sh --partial-tethys-install me -n tethys -s $PWD/tethys
+        - . ~/miniconda/etc/profile.d/conda.sh
+        - conda activate tethys
         - hash -r
         - conda config --set always_yes yes --set changeps1 no
         - conda update -q conda
         - conda install conda-build anaconda-client
-        - conda config --add channels bokeh/label/dev
-        - conda config --add channels conda-forge
-        - conda config --add channels tethysplatform/label/dev
-        - conda config --add channels tethysplatform
         - conda config --set anaconda_upload no
         - mkdir -p ~/conda-bld
-      script:
-        - echo "Building conda package"
         - export CONDA_BLD_PATH=~/conda-bld
-        - conda build ./conda.recipe
+      script:
+        - echo "Generating conda recipe."
+        - >
+          if [ -z "$TRAVIS_TAG" ]; then
+            echo "No Branch tag is Present. Generating without constrained dependencies.";
+            tethys gen metayaml --overwrite;
+          else
+            echo "Branch tag is $TRAVIS_TAG. Generating with constrained dependencies.";
+            tethys gen metayaml -p minor --overwrite;
+          fi
+        - cat ./tethys/conda.recipe/meta.yaml
+        - echo "Building conda package..."
+        - conda build -c tethysplatform -c conda-forge ./tethys/conda.recipe
         - >
           if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-            echo "Uploading conda package";
+            echo "Uploading conda package.";
             if [ -z "$TRAVIS_TAG" ]; then
-              echo "No Branch tag is Present. Uploading to dev";
+              echo "No tag found. Uploading to dev...";
               anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l dev $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
             else
-              echo "Branch tag is $TRAVIS_TAG. Uploading to master";
+              echo "Branch tag is $TRAVIS_TAG. Uploading to main...";
               anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
             fi
           else
