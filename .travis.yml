@@ -127,10 +127,10 @@ jobs:
             echo "Uploading conda package.";
             if [ -z "$TRAVIS_TAG" ]; then
               echo "No tag found. Uploading to dev...";
-              anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l dev $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
+              anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform -l dev $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
             else
               echo "Branch tag is $TRAVIS_TAG. Uploading to main...";
-              anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform $CONDA_BLD_PATH/noarch/tethysplatform*.tar.bz2 --force;
+              anaconda -t $CONDA_UPLOAD_TOKEN upload -u tethysplatform $CONDA_BLD_PATH/noarch/tethys-platform*.tar.bz2 --force;
             fi
           else
             echo "Uploading is skipped for pull requests.";
