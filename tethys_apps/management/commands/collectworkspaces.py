@@ -55,8 +55,8 @@ class Command(BaseCommand):
 
             # Only perform if workspaces_path is a directory
             if not os.path.isdir(app_ws_path):
-                print(f'WARNING: The workspace_path for app "{app}" is not a directory. Skipping...')
-                continue
+                print(f'WARNING: The workspace_path for app "{app}" is not a directory. Making workspace directory...')
+                os.makedirs(app_ws_path, exist_ok=True)
 
             if not os.path.islink(app_ws_path):
                 if not os.path.exists(tethys_ws_root_path):
