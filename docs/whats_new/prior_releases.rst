@@ -193,7 +193,7 @@ Tutorials
 * Brand new Getting Started Tutorial
 * Demonstration of most Tethys SDK APIs
 
-See: :doc:`../tutorials/getting_started`
+See: :ref:`key_concepts_tutorial`
 
 Gizmos
 ------
