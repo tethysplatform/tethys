@@ -250,14 +250,13 @@ def get_destination_path(args):
     destination_file = FILE_NAMES[args.type]
 
     # Default destination path is the tethys_portal source dir
-    destination_dir = os.path.join(TETHYS_SRC, 'tethys_portal')
+    destination_dir = get_tethys_home_dir()
+
+    # Make Tethys Home if it doesn't exist yet
+    os.makedirs(destination_dir, exist_ok=True)
 
     if args.type in [GEN_SERVICES_OPTION, GEN_INSTALL_OPTION]:
         destination_dir = os.getcwd()
-
-    elif args.type == GEN_PORTAL_OPTION:
-        destination_dir = get_tethys_home_dir()
-        os.makedirs(destination_dir, exist_ok=True)
 
     elif args.type == GEN_META_YAML_OPTION:
         destination_dir = os.path.join(TETHYS_SRC, 'conda.recipe')
@@ -269,6 +268,7 @@ def get_destination_path(args):
         else:
             write_error('ERROR: "{0}" is not a valid directory.'.format(destination_dir))
             exit(1)
+
     destination_path = os.path.join(destination_dir, destination_file)
 
     check_for_existing_file(destination_path, destination_file, args.overwrite)
