@@ -55,6 +55,7 @@ VALID_GEN_OBJECTS = (
 )
 
 TETHYS_SRC = get_tethys_src_dir()
+TETHYS_HOME = get_tethys_home_dir()
 
 
 def add_gen_parser(subparsers):
@@ -143,6 +144,7 @@ def gen_asgi_service(args):
         'asgi_processes': args.asgi_processes,
         'conda_prefix': conda_prefix,
         'tethys_src': TETHYS_SRC,
+        'tethys_home': TETHYS_HOME,
         'user_option_prefix': user_option_prefix
     }
     return context
@@ -250,7 +252,7 @@ def get_destination_path(args):
     destination_file = FILE_NAMES[args.type]
 
     # Default destination path is the tethys_portal source dir
-    destination_dir = get_tethys_home_dir()
+    destination_dir = TETHYS_HOME
 
     # Make Tethys Home if it doesn't exist yet
     os.makedirs(destination_dir, exist_ok=True)

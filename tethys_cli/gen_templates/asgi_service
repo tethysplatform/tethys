@@ -1,4 +1,8 @@
 [fcgi-program:asgi]
+# Define Tethys Home
+environment=
+    TETHYS_HOME={{ tethys_home }}
+
 # TCP socket used by Nginx backend upstream
 socket=tcp://127.0.0.1:{{ port }}
 
