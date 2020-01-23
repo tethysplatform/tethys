@@ -18,7 +18,7 @@ This will create a new :file:`portal_config.yml` file in your ``TETHYS_HOME`` di
 
     # Portal Level Config File
 
-    # see tethys documentation for how to setup this file
+    # See tethys documentation for how to setup this file
     version: 1.0
     name: test
     apps:
@@ -44,33 +44,33 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
 * ``apps``:
 * ``settings``:
 
-  * ``SECRET_KEY``:
-  * ``DEBUG``:
-  * ``ALLOWED_HOSTS``:
-  * ``ADMINS``:
+  * ``SECRET_KEY``: See the `SECRET_KEY <https://docs.djangoproject.com/en/2.2/ref/settings/#secret-key>`_ Django setting.
+  * ``DEBUG``: See the `DEBUG <https://docs.djangoproject.com/en/2.2/ref/settings/#debug>`_ Django setting.
+  * ``ALLOWED_HOSTS``: See the `ALLOWED_HOSTS <https://docs.djangoproject.com/en/2.2/ref/settings/#allowed-hosts>`_ Django setting.
+  * ``ADMINS``: See the `ADMINS <https://docs.djangoproject.com/en/2.2/ref/settings/#admins>`_ Django setting.
   * ``TETHYS_PORTAL_CONFIG``:
 
     * ``BYPASS_TETHYS_HOME_PAGE``:
     * ``ENABLE_OPEN_SIGNUP``:
     * ``ENABLE_OPEN_PORTAL``:
-    * ``STATIC_ROOT``:
+    * ``STATIC_ROOT``: See the `STATIC_ROOT <https://docs.djangoproject.com/en/2.2/ref/settings/#static-root>`_ Django setting.
     * ``TETHYS_WORKSPACES_ROOT``:
 
   * ``SESSION_CONFIG``:
 
-    * ``EXPIRE_AT_BROWSER_CLOSE``:
+    * ``EXPIRE_AT_BROWSER_CLOSE``: See the `SESSION_EXPIRE_AT_BROWSER_CLOSE <https://docs.djangoproject.com/en/2.2/ref/settings/#session-expire-at-browser-close>`_ Django setting.
     * ``SECURITY_WARN_AFTER``:
     * ``SECURITY_EXPIRE_AFTER``:
 
-  * ``DATABASES``:
+  * ``DATABASES``: See the `DATABASES <https://docs.djangoproject.com/en/2.2/ref/settings/#databases>`_ Django setting.
 
     * ``default``:
 
-      * ``NAME``:
-      * ``USER``:
-      * ``PASSWORD``:
-      * ``HOST``:
-      * ``PORT``:
+      * ``NAME``: See the `NAME <https://docs.djangoproject.com/en/2.2/ref/settings/#name>`_ Django setting.
+      * ``USER``: See the `USER <https://docs.djangoproject.com/en/2.2/ref/settings/#user>`_ Django setting.
+      * ``PASSWORD``: See the `PASSWORD <https://docs.djangoproject.com/en/2.2/ref/settings/#password>`_ Django setting.
+      * ``HOST``: See the `HOST <https://docs.djangoproject.com/en/2.2/ref/settings/#host>`_ Django setting.
+      * ``PORT``: See the `PORT <https://docs.djangoproject.com/en/2.2/ref/settings/#port>`_ Django setting.
       * ``DIR``:
 
   * ``LOGGING_CONFIG``:
@@ -89,40 +89,40 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
     * ``LOGGING_HANDLERS``:
     * ``LOGGERS``:
 
+  * ``INSTALLED_APPS``: See the `INSTALLED_APPS <https://docs.djangoproject.com/en/2.2/ref/settings/#installed-apps>`_ Django setting.
+
   * ``INSTALLED_APPS_OVERRIDE``:
 
-  * ``INSTALLED_APPS``:
+  * ``MIDDLEWARE``: See the `MIDDLEWARE <https://docs.djangoproject.com/en/2.2/ref/settings/#middleware>`_ Django setting.
 
   * ``MIDDLEWARE_OVERRIDE``:
 
-  * ``MIDDLEWARE``:
+  * ``AUTHENTICATION_BACKENDS``: See the `AUTHENTICATION_BACKENDS <https://docs.djangoproject.com/en/2.2/ref/settings/#authentication-backends>`_ Django setting.
 
   * ``AUTHENTICATION_BACKENDS_OVERRIDE``:
 
-  * ``AUTHENTICATION_BACKENDS``:
+  * ``RESOURCE_QUOTA_HANDLERS``:
 
   * ``RESOURCE_QUOTA_HANDLERS_OVERRIDE``:
 
-  * ``RESOURCE_QUOTA_HANDLERS``:
-
   * ``CAPTCHA_CONFIG``:
 
-    * ``ENABLE_CAPTCHA``:
-    * ``RECAPTCHA_PRIVATE_KEY``:
-    * ``RECAPTCHA_PUBLIC_KEY``:
-    * ``RECAPTCHA_PROXY_HOST``:
+    * ``ENABLE_CAPTCHA``: Set to True to enable the simple captcha on the login screen. Defaults to False.
+    * ``RECAPTCHA_PRIVATE_KEY``: Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.
+    * ``RECAPTCHA_PUBLIC_KEY``: Public key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.
+    * ``RECAPTCHA_PROXY_HOST``: Proxy host for Google ReCaptcha. Optional. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.
 
   * ``OAUTH_CONFIGS``:
 
-    * ``SOCIAL_AUTH_GOOGLE_OAUTH2_KEY``:
-    * ``SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET``:
-    * ``SOCIAL_AUTH_FACEBOOK_KEY``:
-    * ``SOCIAL_AUTH_FACEBOOK_SECRET``:
-    * ``SOCIAL_AUTH_FACEBOOK_SCOPE``:
-    * ``SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY``:
-    * ``SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET``:
-    * ``SOCIAL_AUTH_HYDROSHARE_KEY``:
-    * ``SOCIAL_AUTH_HYDROSHARE_SECRET``:
+    * ``SOCIAL_AUTH_GOOGLE_OAUTH2_KEY``: Key for authenticating with Google using their OAuth2 service. See :ref:`social_auth_google` OAuth2 Setup.
+    * ``SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET``: Secret for authenticating with Google using their OAuth2 service. See :ref:`social_auth_google` OAuth2 Setup.
+    * ``SOCIAL_AUTH_FACEBOOK_KEY``: Key for authenticating with Facebook using their OAuth2 service. See :ref:`social_auth_facebook` OAuth2 Setup.
+    * ``SOCIAL_AUTH_FACEBOOK_SECRET``: Secret for authenticating with Facebook using their OAuth2 service. See :ref:`social_auth_facebook` OAuth2 Setup.
+    * ``SOCIAL_AUTH_FACEBOOK_SCOPE``: List of scopes for authenticating with Facebook using their OAuth2 service. See :ref:`social_auth_facebook` OAuth2 Setup.
+    * ``SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY``: Key for authenticating with LinkedIn using their OAuth2 service. See :ref:`social_auth_linkedin` OAuth2 Setup.
+    * ``SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET``: Secret for authenticating with LinkedIn using their OAuth2 service. See :ref:`social_auth_linkedin` OAuth2 Setup.
+    * ``SOCIAL_AUTH_HYDROSHARE_KEY``: Key for authenticating with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` OAuth2 Setup.
+    * ``SOCIAL_AUTH_HYDROSHARE_SECRET``: Secret for authentication with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` OAuth2 Setup.
 
   * ``ANALYTICS_CONFIGS``:
 
@@ -153,13 +153,13 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
 
   * ``EMAIL_CONFIG``:
 
-    * ``EMAIL_BACKEND``:
-    * ``EMAIL_HOST``:
-    * ``EMAIL_PORT``:
-    * ``EMAIL_HOST_USER``:
-    * ``EMAIL_HOST_PASSWORD``:
-    * ``EMAIL_USE_TLS``:
-    * ``DEFAULT_FROM_EMAIL``:
+    * ``EMAIL_BACKEND``: See the `EMAIL_BACKEND <https://docs.djangoproject.com/en/2.2/ref/settings/#email-backend>`_ Django setting.
+    * ``EMAIL_HOST``: See the `EMAIL_HOST <https://docs.djangoproject.com/en/2.2/ref/settings/#email-host>`_ Django setting.
+    * ``EMAIL_PORT``: See the `EMAIL_PORT <https://docs.djangoproject.com/en/2.2/ref/settings/#email-port>`_ Django setting.
+    * ``EMAIL_HOST_USER``: See the `EMAIL_HOST_USER <https://docs.djangoproject.com/en/2.2/ref/settings/#email-host-user>`_ Django setting.
+    * ``EMAIL_HOST_PASSWORD``: See the `EMAIL_HOST_PASSWORD <https://docs.djangoproject.com/en/2.2/ref/settings/#email-host-password>`_ Django setting.
+    * ``EMAIL_USE_TLS``: See the `EMAIL_USE_TLS <https://docs.djangoproject.com/en/2.2/ref/settings/#email-use-tls>`_ Django setting.
+    * ``DEFAULT_FROM_EMAIL``: See the `DEFAULT_FROM_EMAIL <https://docs.djangoproject.com/en/2.2/ref/settings/#default-from-email>`_ Django setting.
 
   * ``CHANNEL_LAYERS``:
 
@@ -204,7 +204,9 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
   * ``ACTION_TEXT``:
   * ``ACTION_BUTTON``:
 
+.. note::
 
+    You may define any Django Setting as a key under the ``settings`` key. Only the most common Django settings are listed above. For a complete reference of Django settings see: `Django Settings Reference <https://docs.djangoproject.com/en/2.2/ref/settings/>`_.
 
 Sample portal_config.yml file:
 
@@ -212,7 +214,7 @@ Sample portal_config.yml file:
 
   # Portal Level Config File
   
-  # see tethys documentation for how to setup this file
+  # See tethys documentation for how to setup this file
   version: 1.0
   name: test
   apps:
