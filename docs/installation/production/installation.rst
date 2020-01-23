@@ -2,100 +2,29 @@
 Production Installation
 ***********************
 
-**Last Updated:** June 2017
+**Last Updated:** January 2020
 
-This article will provide an overview of how to install Tethys Portal in a production setup ready to host apps. Currently production installation of Tethys is only supported on Linux. Some parts of these instructions are optimized for Ubuntu 16.04, though installation on other Linux distributions will be similar.
+This article will provide an overview of how to install Tethys Portal in a production setup ready to host apps. Currently production installation of Tethys is only supported on Linux. Some parts of these instructions are optimized for Ubuntu, though installation on other Linux distributions will be similar.
 
-1. Install Tethys Portal
-========================
+1) Install Tethys Platform Configured for Production
+====================================================
 
-Follow these steps to install Tethys Portal with the following considerations
+There are two methods for installing Tethys Platform configured for production: (a) install using the script with the ``production`` flag or (b) install with the conda package and perform configuration manually. Follow these steps to install Tethys Portal with the following considerations
 
 * Make sure to install the correct version.
 * Assign strong passwords to the database users.
-* You must edit the :file:`portal_config.yml` file to ensure production settings (i.e. ``DEBUG: False``, etc.)
+* You must edit the :file:`portal_config.yml` file to ensure production settings (i.e. ``DEBUG: False``, etc.).
 * Optionally, Follow the :doc:`./distributed` instructions to install Docker and the components of the software suite on separate servers.
+* For Linux distributions with SELinux enabled (e.g.: CentOS, RedHat, Fedora), set correct SELinux permissions.
 
-a) Install with Conda
----------------------
-
-To install ``tethys-platform`` into a new conda environment then run the following commands::
-
-    conda create -n tethys -c tethysplatform -c conda-forge tethys-platform
-    conda activate tethys
-
-Some of the following steps are dependent on the specific distribution where ``tethys-platform`` is installed.
-
-* Install Supervisor (See `<http://supervisord.org/installing.html>`_)
-* Install NGINX (See `<https://www.nginx.com/resources/wiki/start/topics/tutorials/install/>`_)
-* *Optionally*, install Docker (See `<https://docs.docker.com/v17.09/engine/installation/>`_)
-* Create `portal_config.yml`:
-
-    .. code-block::
-
-        $ tethys gen portal_config
-
-* Set allowed hosts:
-
-    .. code-block::
-
-        $ tethys settings --set ALLOWED_HOSTS "<ALLOWED_HOST>"
-
-* Set database parameters:
-
-    .. code-block::
-
-        $ tethys settings --set DATABASES.default.USER <TETHYS_DB_USERNAME> --set DATABASES.default.PASSWORD <TETHYS_DB_PASSWORD> --set DATABASES.default.PORT <TETHYS_DB_PORT> --set DATABASES.default.DIR <TETHYS_DB_DIR>
-
-* Disable Debug:
-
-    .. code-block::
-
-        $ tethys settings --set DEBUG False
-
-* Install PostgresSQL
-
-    1. Manual installation: See `<https://www.postgresql.org/download/>`_
-    2. Docker Alternative (*requires previous Docker installation*): Get Postgres Docker image with the PostGIS extension from `<https://hub.docker.com/r/mdillon/postgis/>`_
-
-    .. tip::
-
-        the tethys Docker command can be used to get the Postgress Docker image
-
-        .. code-block:: bash
-
-            $ tethys docker init -c postgis
-
-* Setup Tethys database:
-
-    .. code-block::
-
-        $ tethys db configure --username <TETHYS_DB_USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD> --portal-superuser-name <TETHYS_SUPER_USER> --portal-superuser-email '<TETHYS_SUPER_USER_EMAIL>' --portal-superuser-pass <TETHYS_SUPER_USER_PASS>
-
-    .. tip::
-
-        The postgres password from the Docker container is needed to configure the database with a Docker or a local install.
-
-        .. code-block:: bash
-
-            $ PGPASSWORD="<POSTGRES_PASSWORD>" tethys db configure --username <USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD> --portal-superuser-name <TETHYS_SUPER_USER> --portal-superuser-email '<TETHYS_SUPER_USER_EMAIL>' --portal-superuser-pass <TETHYS_SUPER_USER_PASS>
-
-* Generate NGINX AND ASGI templates
-
-    .. code-block::
-
-        $ tethys gen nginx --overwrite
-        $ tethys gen nginx_service --overwrite
-        $ tethys gen asgi_service --overwrite
-
-.. note::
-
-    If the distribution is Secure Linux, the security policy will also need to be configured.
-
-b) Install with Script
+a) Install with Script
 ----------------------
 
-A script to automatically install ``tethys-platform`` is provided mainly for development installations. However, this script can also be used for production installations at the developer's discretion.
+A script to automatically install ``tethys-platform`` is provided mainly for development installations. However, this script can also be used for production installations at the developer's discretion. The script is convenient, but likely does not do everything you need to satisfy security concerns for your organization. We strongly recommend you review the script and understand what it is doing before deciding to use it for your production installation. USE AT YOUR OWN RISK.
+
+.. important::
+
+    When run with the ``production`` flag, the script will install additional software such as nginx and supervisor. It will also attempt to configure Tethys with appropriate production settings, like turning Debug mode off. However, it will install with default usernames and passwords for the database and portal admin user by default. Use the script options to change these for a secure production installation. See :ref:`developer_installation` for more detailed instructions about the script and its options.
 
 The script can be downloaded and run from the terminal using the following command:
 
@@ -113,9 +42,282 @@ For Systems with curl (e.g. Mac OSX and CentOS):
       curl :install_tethys:`sh` -o ./install_tethys.sh
       bash install_tethys.sh -b |branch| --production
 
-.. note::
+b) Install and Setup Manually
+-----------------------------
 
-    See :ref:`developer_installation` for more detailed instructions about the script and its options.
+1) Install Tethys Platform using the Conda package.
+
+
+    To install ``tethys-platform`` into a new conda environment then run the following commands:
+
+    .. code-block:: bash
+
+        conda create -n tethys -c tethysplatform -c conda-forge tethys-platform
+        conda activate tethys
+
+
+
+2) Install Additional Software:
+
+    The method of installing each of the following software is dependent on the specific Linux distribution you are using. Please refer to the installation instructions for each software to find instructions appropriate for your Linux distribution.
+
+    * Supervisor (**install using system package if possible**, see `<http://supervisord.org/installing.html>`_).
+    * NGINX (See `<https://www.nginx.com/resources/wiki/start/topics/tutorials/install/>`_).
+    * Install Docker (**Optional**, see `<https://docs.docker.com/install/>`_).
+    * Install PostgresSQL
+
+        We recommend not using the Postgresql database installed in the Tethys Conda environment for production installations. Instead, use one of these methods:
+
+        1. System installation: see `<https://www.postgresql.org/download/>`_ to find instructions for your Linux distribution.
+        2. Docker Alternative (*requires previous Docker installation*): Get Postgres Docker image with the PostGIS extension from `<https://hub.docker.com/r/mdillon/postgis/>`_
+
+        .. tip::
+
+            The tethys Docker command can be used to get the PostGIS Docker image
+
+            .. code-block:: bash
+
+                tethys docker init -c postgis
+
+3) Create :file:`portal_config.yml`:
+
+    Generate the portal configuration file with the following command:
+
+    .. code-block::
+
+        tethys gen portal_config
+
+    .. note::
+
+        This file is generated in your ``TETHYS_HOME`` directory. It can be edited directly or using the ``tethys settings`` command. See: :ref:`tethys_configuration` and :ref:`tethys_settings_cmd`.
+
+4) Note the Location of ``TETHYS_HOME``
+
+    The directory where the :file:`portal_config.yml` is generated is the ``TETHYS_HOME`` directory for your installation.  The default location is :file:`~/.tethys/` if your environment is named Tethys, otherwise it is :file:`~/.tethys/<env_name>/.
+
+    Note this location and uses it in the following steps where you see ``<TETHYS_HOME>``.
+
+5) Configure Settings for Production:
+
+    Use the ``tethys settings`` command to set the following settings (see :ref:`tethys_settings_cmd`). **DO NOT EDIT settings.py DIRECTLY IN TETHYS 3+**.
+
+    * Set Allowed Hosts:
+
+        .. code-block::
+
+            tethys settings --set ALLOWED_HOSTS "['my.example.host', 'localhost']"
+
+        .. note::
+
+            The first entry in ``ALLOWED_HOSTS`` will be used to set the server name in the nginx configuration file.
+
+    * Set Database Parameters:
+
+        .. code-block::
+
+            tethys settings --set DATABASES.default.USER <TETHYS_DB_USERNAME> --set DATABASES.default.PASSWORD <TETHYS_DB_PASSWORD> --set DATABASES.default.HOST <TETHYS_DB_HOST> --set DATABASES.default.PORT <TETHYS_DB_PORT>
+
+        .. important::
+
+            Do not use the default username or password for the production Tethys database. Also ensure the host and port match the host and port that your database is running on.
+
+    * Disable Debug:
+
+        .. code-block::
+
+            tethys settings --set DEBUG False
+
+6) Setup Tethys Database:
+
+    Create the Tethys Database using the ``tethys db`` command (see :ref:`tethys_db_cmd`):
+
+    .. code-block::
+
+        tethys db configure --username <TETHYS_DB_USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD> --portal-superuser-name <TETHYS_SUPER_USER> --portal-superuser-email '<TETHYS_SUPER_USER_EMAIL>' --portal-superuser-pass <TETHYS_SUPER_USER_PASS>
+
+    .. tip::
+
+        The ``TETHYS_DB_USERNAME`` and ``TETHYS_DB_PASSWORD`` need to be the same as those set in the portal config (see pervious step).
+
+    .. note::
+
+        Running ``tethys db configure`` is equivalent of running the following commands:
+
+        * ``tethys db init`` (skip if using a Docker or system database)
+        * ``tethys db start`` (skip if using a Docker or system database)
+        * ``tethys db create --username <TETHYS_DB_USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD>``
+        * ``tethys db migrate``
+        * ``tethys db createsuperuser --portal-superuser-name <TETHYS_SUPER_USER> --portal-superuser-email '<TETHYS_SUPER_USER_EMAIL>' --portal-superuser-pass <TETHYS_SUPER_USER_PASS>``
+
+    .. tip::
+
+        You need to prepend the ``tethys db`` commands with the password for the postgres user of the database when using a Docker or a system install:
+
+        .. code-block:: bash
+
+            $ PGPASSWORD="<POSTGRES_PASSWORD>" tethys db configure --username <USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD> --portal-superuser-name <TETHYS_SUPER_USER> --portal-superuser-email '<TETHYS_SUPER_USER_EMAIL>' --portal-superuser-pass <TETHYS_SUPER_USER_PASS>
+
+7) Generate ``nginx`` and ``supervisor`` Configuration Files:
+
+    Generate and review the contents of the following configuration files for ``nginx`` and ``supervisor``. Adjust to match your deployment's needs if necessary.
+
+    .. code-block::
+
+        tethys gen nginx --overwrite
+        tethys gen nginx_service --overwrite
+        tethys gen asgi_service --overwrite
+
+    .. tip::
+
+        These files are generated in the ``TETHYS_HOME`` directory.
+
+8) Configure ``nginx`` and ``supervisor`` to Use Tethys Configurations:
+
+    Creates symbolic links to configuration file in the appropriate ``/etc`` directories:
+
+    Debian and Ubuntu:
+
+    .. code-block::
+
+        sudo ln -s <TETHYS_HOME>/asgi_supervisord.conf /etc/supervisor/conf.d/asgi_supervisord.conf
+        sudo ln -s <TETHYS_HOME>/nginx_supervisord.conf /etc/supervisor/conf.d/nginx_supervisord.conf
+        sudo ln -s <TETHYS_HOME>/tethys_nginx.conf /etc/nginx/sites-enabled/tethys_nginx.conf
+
+        # Remove the default nginx configuration
+        sudo rm /etc/nginx/sites-enabled/default
+
+    Fedora, CentOS, RedHat
+
+    .. code-block::
+
+        sudo sed -i '$ s@$@ /etc/supervisord.d/*.conf@' "/etc/supervisord.conf"
+        sudo ln -s <TETHYS_HOME>/asgi_supervisord.conf /etc/supervisor.d/asgi_supervisord.conf
+        sudo ln -s <TETHYS_HOME>/nginx_supervisord.conf /etc/supervisor.d/nginx_supervisord.conf
+        sudo ln -s <TETHYS_HOME>/tethys_nginx.conf /etc/nginx/conf.d/tethys_nginx.conf
+
+9) Reload and Update ``supervisor`` configuration:
+
+    .. code-block::
+
+        sudo supervisorctl reread
+        sudo supervisorctl update
+
+    .. note::
+
+        This step needs to be performed anytime you make changes to the ``nginx_supervisord.conf`` or ``asgi_supervisord.conf``
+
+10) Get ``nginx`` User for Permissions
+
+
+    Get the ``nginx`` user for permissions changes in the follow steps.
+
+    .. code-block::
+
+        echo $(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')
+
+11) Make Directories for Workspaces and Static Files
+
+    Get the values of the static and workspace directories in settings:
+
+    .. code-block::
+
+        tethys settings -g STATIC_ROOT
+        tethys settings -g TETHYS_WORKSPACES_ROOT
+
+    Create the directories if they do not already exist
+
+    .. code-block::
+
+        mkdir -p <STATIC_ROOT>
+        mkdir -p <TETHYS_WORKSPACE_ROOT>
+
+    Change Permissions to ``nginx`` User
+
+    .. code-block::
+
+        sudo chown -R <STATIC_ROOT>
+        sudo chown -R <TETHYS_WORKSPACE_ROOT>
+
+12) Collect Static Files and App Workspaces:
+
+    .. code-block::
+
+        tethys manage collectall --noinput
+
+    .. tip::
+
+        The ``tethys manage collectall`` command is equivalent of:
+
+        .. code-block::
+
+            tethys manage collectstatic
+            tethys manage collectworkspaces
+
+13) Setup Log File
+
+    This is the file to which Tethys logs will be written.
+
+    .. code-block::
+
+        sudo mkdir -p /var/log/tethys
+        sudo touch /var/log/tethys/tethys.log
+
+    .. code-block::
+
+        sudo chown -R <NGINX_USER>: /var/log/tethys
+
+14) Setup ASGI Run Directory
+
+    This directory is used for housing the socket files for the Daphne/ASGI processes.
+
+    .. code-block::
+
+        sudo mkdir -p /run/asgi
+
+    .. code-block::
+
+        sudo chown -R <NGINX_USER>: /run/asgi
+
+15) Open HTTP Port on Firewall (if applicable)
+
+    If your server employs a firewall, open the HTTP port like so:
+
+    .. code-block::
+
+        sudo firewall-cmd --permanent --zone=public --add-service=http
+        sudo firewall-cmd --reload
+
+    .. note::
+
+        The commands to manage your firewall may differ. Ensure the HTTP port (80) is open.
+
+16) Configure SELinux (CentOS, RedHat, Fedora)
+
+    If your server is running Security Enhanced Linux, you will need to create a security policy for Tethys. This is typically the case on CentOS, RedHat, and Fedora systems. The following is what the installation script does to configure SELinux, but you should not rely on this for your own deployment without understanding what it is doing (see: `Security-Enhanced Linux <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_, `CentOS SELinux <https://wiki.centos.org/HowTos/SELinux>`_, `RedHat SELinux <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/5/html/deployment_guide/ch-selinux>`_). **USE AT YOUR OWN RISK**:
+
+    .. code-block::
+
+        sudo yum install setroubleshoot -y
+        sudo semanage fcontext -a -t httpd_config_t <TETHYS_HOME>/tethys_nginx.conf
+        sudo restorecon -v <TETHYS_HOME>/tethys_nginx.conf
+        sudo semanage fcontext -a -t httpd_sys_content_t "<TETHYS_HOME>(/.*)?"
+        sudo semanage fcontext -a -t httpd_sys_content_t "<TETHYS_HOME>/static(/.*)?"
+        sudo semanage fcontext -a -t httpd_sys_rw_content_t "<TETHYS_HOME>/workspaces(/.*)?"
+        sudo restorecon -R -v <TETHYS_HOME> > /dev/null
+        echo $'module tethys-selinux-policy 1.0;\nrequire {type httpd_t; type init_t; class unix_stream_socket connectto; }\n#============= httpd_t ==============\nallow httpd_t init_t:unix_stream_socket connectto;' > <TETHYS_HOME>/tethys-selinux-policy.te
+
+        checkmodule -M -m -o <TETHYS_HOME>/tethys-selinux-policy.mod <TETHYS_HOME>/tethys-selinux-policy.te
+        semodule_package -o <TETHYS_HOME>/tethys-selinux-policy.pp -m <TETHYS_HOME>/tethys-selinux-policy.mod
+        sudo semodule -i <TETHYS_HOME>/tethys-selinux-policy.pp
+
+17) Enable ``supervisor`` to Start at Startup
+
+
+    .. code-block::
+
+        sudo systemctl enable supervisord
+        sudo systemctl start supervisord
+
 
 2. Customize Production Settings
 ================================

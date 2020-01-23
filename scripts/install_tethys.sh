@@ -422,7 +422,6 @@ enterprise_linux_production_install() {
     sudo systemctl enable supervisord
     sudo systemctl start supervisord
     sudo firewall-cmd --permanent --zone=public --add-service=http
-#    sudo firewall-cmd --permanent --zone=public --add-service=https
     sudo firewall-cmd --reload
 
     NGINX_SITES_DIR='conf.d'
