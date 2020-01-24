@@ -62,6 +62,15 @@ b) Install and Setup Manually
     The method of installing each of the following software is dependent on the specific Linux distribution you are using. Please refer to the installation instructions for each software to find instructions appropriate for your Linux distribution.
 
     * Supervisor (**install using system package if possible**, see `<http://supervisord.org/installing.html>`_).
+        .. note::
+
+            On **CentOS** run the following after installing to get supervisor running:
+
+            .. code-block::
+
+                sudo systemctl enable supervisord
+                sudo systemctl start supervisord
+
     * NGINX (See `<https://www.nginx.com/resources/wiki/start/topics/tutorials/install/>`_).
     * Install Docker (**Optional**, see `<https://docs.docker.com/install/>`_).
     * Install PostgresSQL
@@ -93,9 +102,9 @@ b) Install and Setup Manually
 
 4) Note the Location of ``TETHYS_HOME``
 
-    The directory where the :file:`portal_config.yml` is generated is the ``TETHYS_HOME`` directory for your installation.  The default location is :file:`~/.tethys/` if your environment is named Tethys, otherwise it is :file:`~/.tethys/<env_name>/.
+    The directory where the :file:`portal_config.yml` is generated is the ``TETHYS_HOME`` directory for your installation.  The default location is :file:`~/.tethys/` if your environment is named Tethys, otherwise it is :file:`~/.tethys/<env_name>/'.
 
-    Note this location and uses it in the following steps where you see ``<TETHYS_HOME>``.
+    Note this location and use it in the following steps where you see ``<TETHYS_HOME>``.
 
 5) Configure Settings for Production:
 
@@ -157,7 +166,117 @@ b) Install and Setup Manually
 
             $ PGPASSWORD="<POSTGRES_PASSWORD>" tethys db configure --username <USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD> --portal-superuser-name <TETHYS_SUPER_USER> --portal-superuser-email '<TETHYS_SUPER_USER_EMAIL>' --portal-superuser-pass <TETHYS_SUPER_USER_PASS>
 
-7) Generate ``nginx`` and ``supervisor`` Configuration Files:
+7) Note ``nginx`` User
+
+
+    Get the ``nginx`` user for permissions changes in the follow steps.
+
+    .. code-block::
+
+        grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}'
+
+    Note this user and use it in the following steps where you see ``<NGINX_USER>``.
+
+8) Make Directories for Workspaces and Static Files
+
+    Get the values of the static and workspace directories in settings:
+
+    .. code-block::
+
+        tethys settings -g STATIC_ROOT
+        tethys settings -g TETHYS_WORKSPACES_ROOT
+
+    Create the directories if they do not already exist
+
+    .. code-block::
+
+        mkdir -p <STATIC_ROOT>
+        mkdir -p <TETHYS_WORKSPACE_ROOT>
+
+9) Collect Static Files and App Workspaces:
+
+    .. code-block::
+
+        tethys manage collectall --noinput
+
+    .. tip::
+
+        The ``tethys manage collectall`` command is equivalent of:
+
+        .. code-block::
+
+            tethys manage collectstatic
+            tethys manage collectworkspaces
+
+10) Setup Log File
+
+    This is the file to which Tethys logs will be written.
+
+    .. code-block::
+
+        sudo mkdir -p /var/log/tethys
+        sudo touch /var/log/tethys/tethys.log
+
+    .. code-block::
+
+        sudo chown -R <NGINX_USER>: /var/log/tethys
+
+11) Setup ASGI Run Directory
+
+    This directory is used for housing the socket files for the Daphne/ASGI processes.
+
+    .. code-block::
+
+        sudo mkdir -p /run/asgi
+
+    .. code-block::
+
+        sudo chown -R <NGINX_USER>: /run/asgi
+
+12) Change Permissions to ``nginx`` User
+
+    Many of the directories and files need to be owned by the ``nginx`` user for Tethys to access them while running in production.
+
+    .. code-block::
+
+        sudo chown -R <NGINX_USER>: <TETHYS_HOME>
+        sudo chown -R <NGINX_USER>: <STATIC_ROOT>
+        sudo chown -R <NGINX_USER>: <TETHYS_WORKSPACE_ROOT>
+
+    Change access to the home directory to full access for owners, no access for group, and read execute for other:
+
+    .. code-block::
+
+        sudo chmod 705 ~
+
+    .. tip::
+
+        You will often need to change the permissions of ``TETHYS_HOME``, ``STATIC_ROOT``, and ``TETHYS_WORKSPACES_ROOT`` to your user and back to the ``nginx`` user when performing maintenance operations. Define these aliases in the activate script of your environment to make it easier:
+
+        .. code-block::
+
+            export ACTIVATE_SCRIPT="<CONDA_HOME>/envs/<CONDA_ENV_NAME>/etc/conda/activate.d/tethys-activate.sh"
+            export DEACTIVATE_SCRIPT="<CONDA_HOME>/envs/<CONDA_ENV_NAME>/etc/conda/deactivate.d/tethys-deactivate.sh"
+            export STATIC_ROOT="<STATIC_ROOT>"
+            export TETHYS_WORKSPACE_ROOT="<TETHYS_WORKSPACE_ROOT>"
+            export TETHYS_HOME="<TETHYS_HOME>"
+            export NGINX_USER="<NGINX_USER>"
+
+            echo "alias tethys_user_own='sudo chown -R \${USER} \"${TETHYS_SRC}\" \"${TETHYS_HOME}/static\" \"${TETHYS_HOME}/workspaces\" \"${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
+            echo "alias tuo=tethys_user_own" >> "${ACTIVATE_SCRIPT}"
+            echo "alias tethys_server_own='sudo chown -R ${NGINX_USER}: \"${TETHYS_SRC}\" \"${TETHYS_HOME}/static\" \"${TETHYS_HOME}/workspaces\" \"${TETHYS_HOME}/apps\"'" >> "${ACTIVATE_SCRIPT}"
+            echo "alias tso=tethys_server_own" >> "${ACTIVATE_SCRIPT}"
+            echo "alias tethys_server_restart='tso; sudo supervisorctl restart all;'" >> "${ACTIVATE_SCRIPT}"
+            echo "alias tsr=tethys_server_restart" >> "${ACTIVATE_SCRIPT}"
+
+            echo "unalias tethys_user_own" >> "${DEACTIVATE_SCRIPT}"
+            echo "unalias tuo" >> "${DEACTIVATE_SCRIPT}"
+            echo "unalias tethys_server_own" >> "${DEACTIVATE_SCRIPT}"
+            echo "unalias tso" >> "${DEACTIVATE_SCRIPT}"
+            echo "unalias tethys_server_restart" >> "${DEACTIVATE_SCRIPT}"
+            echo "unalias tsr" >> "${DEACTIVATE_SCRIPT}"
+
+13) Generate ``nginx`` and ``supervisor`` Configuration Files:
 
     Generate and review the contents of the following configuration files for ``nginx`` and ``supervisor``. Adjust to match your deployment's needs if necessary.
 
@@ -171,7 +290,7 @@ b) Install and Setup Manually
 
         These files are generated in the ``TETHYS_HOME`` directory.
 
-8) Configure ``nginx`` and ``supervisor`` to Use Tethys Configurations:
+14) Configure ``nginx`` and ``supervisor`` to Use Tethys Configurations:
 
     Creates symbolic links to configuration file in the appropriate ``/etc`` directories:
 
@@ -191,11 +310,11 @@ b) Install and Setup Manually
     .. code-block::
 
         sudo sed -i '$ s@$@ /etc/supervisord.d/*.conf@' "/etc/supervisord.conf"
-        sudo ln -s <TETHYS_HOME>/asgi_supervisord.conf /etc/supervisor.d/asgi_supervisord.conf
-        sudo ln -s <TETHYS_HOME>/nginx_supervisord.conf /etc/supervisor.d/nginx_supervisord.conf
+        sudo ln -s <TETHYS_HOME>/asgi_supervisord.conf /etc/supervisord.d/asgi_supervisord.conf
+        sudo ln -s <TETHYS_HOME>/nginx_supervisord.conf /etc/supervisord.d/nginx_supervisord.conf
         sudo ln -s <TETHYS_HOME>/tethys_nginx.conf /etc/nginx/conf.d/tethys_nginx.conf
 
-9) Reload and Update ``supervisor`` configuration:
+15) Reload and Update ``supervisor`` configuration:
 
     .. code-block::
 
@@ -206,79 +325,7 @@ b) Install and Setup Manually
 
         This step needs to be performed anytime you make changes to the ``nginx_supervisord.conf`` or ``asgi_supervisord.conf``
 
-10) Get ``nginx`` User for Permissions
-
-
-    Get the ``nginx`` user for permissions changes in the follow steps.
-
-    .. code-block::
-
-        echo $(grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}')
-
-11) Make Directories for Workspaces and Static Files
-
-    Get the values of the static and workspace directories in settings:
-
-    .. code-block::
-
-        tethys settings -g STATIC_ROOT
-        tethys settings -g TETHYS_WORKSPACES_ROOT
-
-    Create the directories if they do not already exist
-
-    .. code-block::
-
-        mkdir -p <STATIC_ROOT>
-        mkdir -p <TETHYS_WORKSPACE_ROOT>
-
-    Change Permissions to ``nginx`` User
-
-    .. code-block::
-
-        sudo chown -R <STATIC_ROOT>
-        sudo chown -R <TETHYS_WORKSPACE_ROOT>
-
-12) Collect Static Files and App Workspaces:
-
-    .. code-block::
-
-        tethys manage collectall --noinput
-
-    .. tip::
-
-        The ``tethys manage collectall`` command is equivalent of:
-
-        .. code-block::
-
-            tethys manage collectstatic
-            tethys manage collectworkspaces
-
-13) Setup Log File
-
-    This is the file to which Tethys logs will be written.
-
-    .. code-block::
-
-        sudo mkdir -p /var/log/tethys
-        sudo touch /var/log/tethys/tethys.log
-
-    .. code-block::
-
-        sudo chown -R <NGINX_USER>: /var/log/tethys
-
-14) Setup ASGI Run Directory
-
-    This directory is used for housing the socket files for the Daphne/ASGI processes.
-
-    .. code-block::
-
-        sudo mkdir -p /run/asgi
-
-    .. code-block::
-
-        sudo chown -R <NGINX_USER>: /run/asgi
-
-15) Open HTTP Port on Firewall (if applicable)
+16) Open HTTP Port on Firewall (if applicable)
 
     If your server employs a firewall, open the HTTP port like so:
 
@@ -291,7 +338,7 @@ b) Install and Setup Manually
 
         The commands to manage your firewall may differ. Ensure the HTTP port (80) is open.
 
-16) Configure SELinux (CentOS, RedHat, Fedora)
+17) Configure SELinux (CentOS, RedHat, Fedora)
 
     If your server is running Security Enhanced Linux, you will need to create a security policy for Tethys. This is typically the case on CentOS, RedHat, and Fedora systems. The following is what the installation script does to configure SELinux, but you should not rely on this for your own deployment without understanding what it is doing (see: `Security-Enhanced Linux <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_, `CentOS SELinux <https://wiki.centos.org/HowTos/SELinux>`_, `RedHat SELinux <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/5/html/deployment_guide/ch-selinux>`_). **USE AT YOUR OWN RISK**:
 
@@ -301,22 +348,14 @@ b) Install and Setup Manually
         sudo semanage fcontext -a -t httpd_config_t <TETHYS_HOME>/tethys_nginx.conf
         sudo restorecon -v <TETHYS_HOME>/tethys_nginx.conf
         sudo semanage fcontext -a -t httpd_sys_content_t "<TETHYS_HOME>(/.*)?"
-        sudo semanage fcontext -a -t httpd_sys_content_t "<TETHYS_HOME>/static(/.*)?"
-        sudo semanage fcontext -a -t httpd_sys_rw_content_t "<TETHYS_HOME>/workspaces(/.*)?"
+        sudo semanage fcontext -a -t httpd_sys_content_t "<STATIC_ROOT>(/.*)?"
+        sudo semanage fcontext -a -t httpd_sys_rw_content_t "<TETHYS_WORKSPACE_ROOT>(/.*)?"
         sudo restorecon -R -v <TETHYS_HOME> > /dev/null
         echo $'module tethys-selinux-policy 1.0;\nrequire {type httpd_t; type init_t; class unix_stream_socket connectto; }\n#============= httpd_t ==============\nallow httpd_t init_t:unix_stream_socket connectto;' > <TETHYS_HOME>/tethys-selinux-policy.te
 
         checkmodule -M -m -o <TETHYS_HOME>/tethys-selinux-policy.mod <TETHYS_HOME>/tethys-selinux-policy.te
         semodule_package -o <TETHYS_HOME>/tethys-selinux-policy.pp -m <TETHYS_HOME>/tethys-selinux-policy.mod
         sudo semodule -i <TETHYS_HOME>/tethys-selinux-policy.pp
-
-17) Enable ``supervisor`` to Start at Startup
-
-
-    .. code-block::
-
-        sudo systemctl enable supervisord
-        sudo systemctl start supervisord
 
 
 2. Customize Production Settings
