@@ -113,7 +113,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
         mock_env.assert_called_with('CONDA_PREFIX')
-        mock_os_path_exists.assert_called_once_with('/etc/nginx/nginx.conf')
+        mock_os_path_exists.assert_called_with('/etc/nginx/nginx.conf')
         context = mock_render_template.call_args_list[0][0][1]
         self.assertEqual('http-', context['user_option_prefix'])
         self.assertEqual('foo_user', context['nginx_user'])
@@ -141,7 +141,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
         mock_env.assert_called_with('CONDA_PREFIX')
-        mock_os_path_exists.assert_called_once_with('/etc/nginx/nginx.conf')
+        mock_os_path_exists.assert_called_with('/etc/nginx/nginx.conf')
         context = mock_render_template.call_args_list[0][0][1]
         self.assertEqual('', context['user_option_prefix'])
         self.assertEqual('foo_user', context['nginx_user'])
@@ -169,7 +169,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
         mock_env.assert_called_with('CONDA_PREFIX')
-        mock_os_path_exists.assert_called_once_with('/etc/nginx/nginx.conf')
+        mock_os_path_exists.assert_called_with('/etc/nginx/nginx.conf')
         context = mock_render_template.call_args_list[0][0][1]
         self.assertEqual('', context['user_option_prefix'])
         self.assertEqual('foo_user', context['nginx_user'])
