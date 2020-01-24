@@ -13,5 +13,7 @@ The following instructions can be used to install Tethys Platform on a productio
 
     production/system_requirements
     production/installation
+    production/ssl_config
+    production/email_config
     production/app_installation
     production/distributed
