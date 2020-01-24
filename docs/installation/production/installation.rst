@@ -358,6 +358,7 @@ b) Install and Setup Manually
 
     .. code-block::
 
+        sudo chown ${USER} <TETHYS_HOME>
         sudo yum install setroubleshoot -y
         sudo semanage fcontext -a -t httpd_config_t <TETHYS_HOME>/tethys_nginx.conf
         sudo restorecon -v <TETHYS_HOME>/tethys_nginx.conf
@@ -370,6 +371,7 @@ b) Install and Setup Manually
         checkmodule -M -m -o <TETHYS_HOME>/tethys-selinux-policy.mod <TETHYS_HOME>/tethys-selinux-policy.te
         semodule_package -o <TETHYS_HOME>/tethys-selinux-policy.pp -m <TETHYS_HOME>/tethys-selinux-policy.mod
         sudo semodule -i <TETHYS_HOME>/tethys-selinux-policy.pp
+        sudo chown <NGINX_USER> <TETHYS_HOME>
 
 
 2. Customize Production Settings
