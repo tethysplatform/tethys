@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 import os
+from pathlib import Path
 import string
 import random
 
@@ -128,6 +129,7 @@ def gen_asgi_service(args):
                     break
 
     conda_prefix = get_environment_value('CONDA_PREFIX')
+    conda_home = Path(conda_prefix).parents[1]
 
     user_option_prefix = ''
 
@@ -143,6 +145,7 @@ def gen_asgi_service(args):
         'port': args.tethys_port,
         'asgi_processes': args.asgi_processes,
         'conda_prefix': conda_prefix,
+        'conda_home': conda_home,
         'tethys_src': TETHYS_SRC,
         'tethys_home': TETHYS_HOME,
         'user_option_prefix': user_option_prefix
