@@ -9,41 +9,13 @@ This article will provide an overview of how to install Tethys Portal in a produ
 1. Install Tethys Platform Configured for Production
 ====================================================
 
-There are two methods for installing Tethys Platform configured for production: (a) install using the script with the ``production`` flag or (b) install with the conda package and perform configuration manually. Follow these steps to install Tethys Portal with the following considerations
+Follow these steps to install Tethys Portal with the following considerations:
 
 * Make sure to install the correct version.
 * Assign strong passwords to the database users.
 * You must edit the :file:`portal_config.yml` file to ensure production settings (i.e. ``DEBUG: False``, etc.).
 * Optionally, Follow the :doc:`./distributed` instructions to install Docker and the components of the software suite on separate servers.
 * For Linux distributions with SELinux enabled (e.g.: CentOS, RedHat, Fedora), set correct SELinux permissions.
-
-a) Install with Script
-----------------------
-
-A script to automatically install ``tethys-platform`` is provided mainly for development installations. However, this script can also be used for production installations at the developer's discretion. The script is convenient, but likely does not do everything you need to satisfy security concerns for your organization. We strongly recommend you review the script and understand what it is doing before deciding to use it for your production installation. USE AT YOUR OWN RISK.
-
-.. important::
-
-    When run with the ``production`` flag, the script will install additional software such as nginx and supervisor. It will also attempt to configure Tethys with appropriate production settings, like turning Debug mode off. However, it will install with default usernames and passwords for the database and portal admin user by default. Use the script options to change these for a secure production installation. See :ref:`developer_installation` for more detailed instructions about the script and its options.
-
-The script can be downloaded and run from the terminal using the following command:
-
-For systems with `wget` (most Linux distributions):
-
-.. parsed-literal::
-
-      wget :install_tethys:`sh`
-      bash install_tethys.sh -b |branch| --production
-
-For Systems with curl (e.g. Mac OSX and CentOS):
-
-.. parsed-literal::
-
-      curl :install_tethys:`sh` -o ./install_tethys.sh
-      bash install_tethys.sh -b |branch| --production
-
-b) Install and Setup Manually
------------------------------
 
 1) Install Tethys Platform using the Conda package.
 
@@ -54,8 +26,6 @@ b) Install and Setup Manually
 
         conda create -n tethys -c tethysplatform -c conda-forge tethys-platform
         conda activate tethys
-
-
 
 2) Install Additional Software:
 
