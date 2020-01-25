@@ -72,21 +72,26 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
 
+    @mock.patch('tethys_cli.gen_commands.os.path.isdir')
     @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     @mock.patch('tethys_cli.gen_commands.os.makedirs')
-    def test_generate_command_portal_yaml(self, _, mock_os_path_isfile, mock_file, mock_write_info):
+    def test_generate_command_portal_yaml__tethys_home_not_exists(self, mock_makedirs, mock_os_path_isfile, mock_file,
+                                                                  mock_write_info, mock_isdir):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_PORTAL_OPTION
         mock_args.directory = None
         mock_os_path_isfile.return_value = False
+        mock_isdir.side_effect = [False, True]  # TETHYS_HOME dir exists, computed dir exists
 
         generate_command(args=mock_args)
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
 
+        # Verify it makes the Tethys Home directory
+        mock_makedirs.assert_called()
         rts_call_args = mock_write_info.call_args_list
         self.assertIn('Please review the generated portal_config.yml', rts_call_args[0][0][0])
 
@@ -220,13 +225,42 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.directory = '/foo/temp'
         mock_os_path_isfile.return_value = False
         mock_env.side_effect = ['/foo/conda', 'conda_env']
-        mock_os_path_isdir.return_value = True
+        mock_os_path_isdir.side_effect = [True, True]  # TETHYS_HOME exists, computed directory exists
 
         generate_command(args=mock_args)
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
         mock_os_path_isdir.assert_called_with(mock_args.directory)
+        mock_env.assert_called_with('CONDA_PREFIX')
+
+    @mock.patch('tethys_cli.gen_commands.write_error')
+    @mock.patch('tethys_cli.gen_commands.exit')
+    @mock.patch('tethys_cli.gen_commands.os.path.isdir')
+    @mock.patch('tethys_cli.gen_commands.get_environment_value')
+    @mock.patch('tethys_cli.gen_commands.os.path.isfile')
+    def test_generate_command_asgi_settings_option_bad_directory(self, mock_os_path_isfile, mock_env,
+                                                                 mock_os_path_isdir, mock_exit, mock_write_error):
+        mock_args = mock.MagicMock()
+        mock_args.type = GEN_ASGI_SERVICE_OPTION
+        mock_args.directory = '/foo/temp'
+        mock_os_path_isfile.return_value = False
+        mock_env.side_effect = ['/foo/conda', 'conda_env']
+        mock_os_path_isdir.side_effect = [True, False]  # TETHYS_HOME exists, computed directory exists
+        # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
+        # to break the code execution, which we catch below.
+        mock_exit.side_effect = SystemExit
+
+        self.assertRaises(SystemExit, generate_command, args=mock_args)
+
+        mock_os_path_isfile.assert_not_called()
+        mock_os_path_isdir.assert_any_call(mock_args.directory)
+
+        # Check if print is called correctly
+        rts_call_args = mock_write_error.call_args_list
+        self.assertIn('ERROR: ', rts_call_args[0][0][0])
+        self.assertIn('is not a valid directory', rts_call_args[0][0][0])
+
         mock_env.assert_called_with('CONDA_PREFIX')
 
     @mock.patch('tethys_cli.gen_commands.write_warning')
