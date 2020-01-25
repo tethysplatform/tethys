@@ -113,7 +113,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
         mock_env.assert_called_with('CONDA_PREFIX')
-        mock_os_path_exists.assert_called_with('/etc/nginx/nginx.conf')
+        mock_os_path_exists.assert_any_call('/etc/nginx/nginx.conf')
         context = mock_render_template.call_args_list[0][0][1]
         self.assertEqual('http-', context['user_option_prefix'])
         self.assertEqual('foo_user', context['nginx_user'])
@@ -141,7 +141,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
         mock_env.assert_called_with('CONDA_PREFIX')
-        mock_os_path_exists.assert_called_with('/etc/nginx/nginx.conf')
+        mock_os_path_exists.assert_any_call('/etc/nginx/nginx.conf')
         context = mock_render_template.call_args_list[0][0][1]
         self.assertEqual('', context['user_option_prefix'])
         self.assertEqual('foo_user', context['nginx_user'])
@@ -169,7 +169,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
         mock_env.assert_called_with('CONDA_PREFIX')
-        mock_os_path_exists.assert_called_with('/etc/nginx/nginx.conf')
+        mock_os_path_exists.assert_any_call('/etc/nginx/nginx.conf')
         context = mock_render_template.call_args_list[0][0][1]
         self.assertEqual('', context['user_option_prefix'])
         self.assertEqual('foo_user', context['nginx_user'])
@@ -227,35 +227,6 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
         mock_os_path_isdir.assert_called_with(mock_args.directory)
-        mock_env.assert_called_with('CONDA_PREFIX')
-
-    @mock.patch('tethys_cli.gen_commands.write_error')
-    @mock.patch('tethys_cli.gen_commands.exit')
-    @mock.patch('tethys_cli.gen_commands.os.path.isdir')
-    @mock.patch('tethys_cli.gen_commands.get_environment_value')
-    @mock.patch('tethys_cli.gen_commands.os.path.isfile')
-    def test_generate_command_asgi_settings_option_bad_directory(self, mock_os_path_isfile, mock_env,
-                                                                 mock_os_path_isdir, mock_exit, mock_write_error):
-        mock_args = mock.MagicMock()
-        mock_args.type = GEN_ASGI_SERVICE_OPTION
-        mock_args.directory = '/foo/temp'
-        mock_os_path_isfile.return_value = False
-        mock_env.side_effect = ['/foo/conda', 'conda_env']
-        mock_os_path_isdir.return_value = False
-        # NOTE: to prevent our tests from exiting prematurely, we change the behavior of exit to raise an exception
-        # to break the code execution, which we catch below.
-        mock_exit.side_effect = SystemExit
-
-        self.assertRaises(SystemExit, generate_command, args=mock_args)
-
-        mock_os_path_isfile.assert_not_called()
-        mock_os_path_isdir.assert_called_once_with(mock_args.directory)
-
-        # Check if print is called correctly
-        rts_call_args = mock_write_error.call_args_list
-        self.assertIn('ERROR: ', rts_call_args[0][0][0])
-        self.assertIn('is not a valid directory', rts_call_args[0][0][0])
-
         mock_env.assert_called_with('CONDA_PREFIX')
 
     @mock.patch('tethys_cli.gen_commands.write_warning')
