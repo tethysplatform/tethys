@@ -314,6 +314,10 @@ def render_template(file_type, context, destination_path):
             f.write(template.render(context))
 
 
+def write_path_to_console(file_path):
+    write_info(f'File generated at "{file_path}".')
+
+
 GEN_COMMANDS = {
     GEN_ASGI_SERVICE_OPTION: gen_asgi_service,
     GEN_NGINX_OPTION: gen_nginx,
@@ -335,3 +339,5 @@ def generate_command(args):
     destination_path = get_destination_path(args)
 
     render_template(args.type, context, destination_path)
+
+    write_path_to_console(destination_path)

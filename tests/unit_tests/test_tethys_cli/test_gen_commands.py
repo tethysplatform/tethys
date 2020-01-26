@@ -42,10 +42,11 @@ class CLIGenCommandsTest(unittest.TestCase):
     def test_get_settings_value_bad(self):
         self.assertRaises(ValueError, get_settings_value, value_name='foo_bar_baz_bad_setting_foo_bar_baz')
 
+    @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.get_settings_value')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
-    def test_generate_command_nginx_option(self, mock_os_path_isfile, mock_file, mock_settings):
+    def test_generate_command_nginx_option(self, mock_os_path_isfile, mock_file, mock_settings, mock_write_info):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_NGINX_OPTION
         mock_args.directory = None
@@ -59,9 +60,12 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_settings.assert_any_call('TETHYS_WORKSPACES_ROOT')
         mock_settings.assert_called_with('STATIC_ROOT')
 
+        mock_write_info.assert_called_once()
+
+    @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
-    def test_generate_command_nginx_service(self, mock_os_path_isfile, mock_file):
+    def test_generate_command_nginx_service(self, mock_os_path_isfile, mock_file, mock_write_info):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_NGINX_SERVICE_OPTION
         mock_args.directory = None
@@ -71,6 +75,8 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
+
+        mock_write_info.assert_called_once()
 
     @mock.patch('tethys_cli.gen_commands.os.path.isdir')
     @mock.patch('tethys_cli.gen_commands.write_info')
@@ -95,6 +101,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         rts_call_args = mock_write_info.call_args_list
         self.assertIn('Please review the generated portal_config.yml', rts_call_args[0][0][0])
 
+    @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.render_template')
     @mock.patch('tethys_cli.gen_commands.linux_distribution')
     @mock.patch('tethys_cli.gen_commands.os.path.exists')
@@ -103,7 +110,7 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_asgi_service_option_nginx_conf_redhat(self, mock_os_path_isfile, mock_file, mock_env,
                                                                     mock_os_path_exists, mock_linux_distribution,
-                                                                    mock_render_template):
+                                                                    mock_render_template, mock_write_info):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
@@ -123,6 +130,9 @@ class CLIGenCommandsTest(unittest.TestCase):
         self.assertEqual('http-', context['user_option_prefix'])
         self.assertEqual('foo_user', context['nginx_user'])
 
+        mock_write_info.assert_called()
+
+    @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.render_template')
     @mock.patch('tethys_cli.gen_commands.linux_distribution')
     @mock.patch('tethys_cli.gen_commands.os.path.exists')
@@ -131,7 +141,7 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_asgi_service_option_nginx_conf_ubuntu(self, mock_os_path_isfile, mock_file, mock_env,
                                                                     mock_os_path_exists, mock_linux_distribution,
-                                                                    mock_render_template):
+                                                                    mock_render_template, mock_write_info):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
@@ -151,6 +161,9 @@ class CLIGenCommandsTest(unittest.TestCase):
         self.assertEqual('', context['user_option_prefix'])
         self.assertEqual('foo_user', context['nginx_user'])
 
+        mock_write_info.assert_called()
+
+    @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.render_template')
     @mock.patch('tethys_cli.gen_commands.linux_distribution')
     @mock.patch('tethys_cli.gen_commands.os.path.exists')
@@ -159,7 +172,7 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_asgi_service_option_nginx_conf_not_linux(self, mock_os_path_isfile, mock_file, mock_env,
                                                                        mock_os_path_exists, mock_linux_distribution,
-                                                                       mock_render_template):
+                                                                       mock_render_template, mock_write_info):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
@@ -179,10 +192,13 @@ class CLIGenCommandsTest(unittest.TestCase):
         self.assertEqual('', context['user_option_prefix'])
         self.assertEqual('foo_user', context['nginx_user'])
 
+        mock_write_info.assert_called()
+
+    @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.get_environment_value')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
-    def test_generate_command_asgi_service_option(self, mock_os_path_isfile, mock_file, mock_env):
+    def test_generate_command_asgi_service_option(self, mock_os_path_isfile, mock_file, mock_env, mock_write_info):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
@@ -195,12 +211,15 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
         mock_env.assert_called_with('CONDA_PREFIX')
 
+        mock_write_info.assert_called()
+
+    @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.linux_distribution')
     @mock.patch('tethys_cli.gen_commands.get_environment_value')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_asgi_service_option_distro(self, mock_os_path_isfile, mock_file, mock_env,
-                                                         mock_distribution):
+                                                         mock_distribution, mock_write_info):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
@@ -214,12 +233,15 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
         mock_env.assert_called_with('CONDA_PREFIX')
 
+        mock_write_info.assert_called()
+
+    @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.os.path.isdir')
     @mock.patch('tethys_cli.gen_commands.get_environment_value')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_asgi_settings_option_directory(self, mock_os_path_isfile, mock_file, mock_env,
-                                                             mock_os_path_isdir):
+                                                             mock_os_path_isdir, mock_write_info):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = '/foo/temp'
@@ -233,6 +255,8 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
         mock_os_path_isdir.assert_called_with(mock_args.directory)
         mock_env.assert_called_with('CONDA_PREFIX')
+
+        mock_write_info.assert_called()
 
     @mock.patch('tethys_cli.gen_commands.write_error')
     @mock.patch('tethys_cli.gen_commands.exit')
@@ -263,13 +287,15 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_env.assert_called_with('CONDA_PREFIX')
 
+    @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.write_warning')
     @mock.patch('tethys_cli.gen_commands.exit')
     @mock.patch('tethys_cli.gen_commands.input')
     @mock.patch('tethys_cli.gen_commands.get_environment_value')
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     def test_generate_command_asgi_settings_pre_existing_input_exit(self, mock_os_path_isfile, mock_env,
-                                                                    mock_input, mock_exit, mock_write_warning):
+                                                                    mock_input, mock_exit, mock_write_warning,
+                                                                    mock_write_info):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
@@ -292,10 +318,12 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_env.assert_called_with('CONDA_PREFIX')
 
+    @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.get_environment_value')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
-    def test_generate_command_asgi_settings_pre_existing_overwrite(self, mock_os_path_isfile, mock_file, mock_env):
+    def test_generate_command_asgi_settings_pre_existing_overwrite(self, mock_os_path_isfile, mock_file, mock_env,
+                                                                   mock_write_info):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_ASGI_SERVICE_OPTION
         mock_args.directory = None
@@ -309,9 +337,12 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
         mock_env.assert_called_with('CONDA_PREFIX')
 
+        mock_write_info.assert_called()
+
+    @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
-    def test_generate_command_services_option(self, mock_os_path_isfile, mock_file):
+    def test_generate_command_services_option(self, mock_os_path_isfile, mock_file, mock_write_info):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_SERVICES_OPTION
         mock_args.directory = None
@@ -339,6 +370,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_os_path_isfile.assert_called_once()
         mock_file.assert_called()
 
+    @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.Template')
     @mock.patch('tethys_cli.gen_commands.safe_load')
     @mock.patch('tethys_cli.gen_commands.run_command')
@@ -346,7 +378,7 @@ class CLIGenCommandsTest(unittest.TestCase):
     @mock.patch('tethys_cli.gen_commands.os.path.isfile')
     @mock.patch('tethys_cli.gen_commands.print')
     def test_generate_command_metayaml(self, mock_print, mock_os_path_isfile, mock_file, mock_run_command,
-                                       mock_load, mock_Template):
+                                       mock_load, mock_Template, mock_write_info):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_META_YAML_OPTION
         mock_args.directory = None
@@ -382,10 +414,11 @@ class CLIGenCommandsTest(unittest.TestCase):
 
         mock_file.assert_called()
 
+    @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.derive_version_from_conda_environment')
     @mock.patch('tethys_cli.gen_commands.safe_load')
     @mock.patch('tethys_cli.gen_commands.open', new_callable=mock.mock_open)
-    def test_gen_meta_yaml_overriding_dependencies(self, _, mock_load, mock_dvfce):
+    def test_gen_meta_yaml_overriding_dependencies(self, _, mock_load, mock_dvfce, mock_write_info):
         mock_args = mock.MagicMock()
         mock_args.type = GEN_META_YAML_OPTION
         mock_args.directory = None
