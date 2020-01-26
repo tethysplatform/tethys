@@ -55,7 +55,7 @@ Visualization
    :width: 75px
    :align: right
 
-`OpenLayers 3 <http://openlayers.org/>`_ is a JavaScript web-mapping client library for rendering interactive maps on a web page. It is capable of displaying 2D maps of OGC web services and a myriad of other spatial formats and sources including GeoJSON, KML, GML, TopoJSON, ArcGIS REST, and XYZ.
+`OpenLayers <http://openlayers.org/>`_ is a JavaScript web-mapping client library for rendering interactive maps on a web page. It is capable of displaying 2D maps of OGC web services and a myriad of other spatial formats and sources including GeoJSON, KML, GML, TopoJSON, ArcGIS REST, and XYZ.
 
 To use an OpenLayers map in your app use the **Map View Gizmo** of the :doc:`./tethys_sdk/gizmos`.
 
