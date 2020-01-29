@@ -44,34 +44,34 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
 * ``apps``:
 * ``settings``:
 
-  * ``SECRET_KEY``: See the `SECRET_KEY <https://docs.djangoproject.com/en/2.2/ref/settings/#secret-key>`_ Django setting.
-  * ``DEBUG``: See the `DEBUG <https://docs.djangoproject.com/en/2.2/ref/settings/#debug>`_ Django setting.
-  * ``ALLOWED_HOSTS``: See the `ALLOWED_HOSTS <https://docs.djangoproject.com/en/2.2/ref/settings/#allowed-hosts>`_ Django setting.
-  * ``ADMINS``: See the `ADMINS <https://docs.djangoproject.com/en/2.2/ref/settings/#admins>`_ Django setting.
+  * ``SECRET_KEY``: the Django `SECRET_KEY <https://docs.djangoproject.com/en/2.2/ref/settings/#secret-key>`_ setting. Automatically generated if not set, however setting it manually is recommended.
+  * ``DEBUG``: the Django `DEBUG <https://docs.djangoproject.com/en/2.2/ref/settings/#debug>`_ setting. Defaults to True.
+  * ``ALLOWED_HOSTS``: the Django `ALLOWED_HOSTS <https://docs.djangoproject.com/en/2.2/ref/settings/#allowed-hosts>`_ setting. Defaults to ``[]``.
+  * ``ADMINS``: the Django `ADMINS <https://docs.djangoproject.com/en/2.2/ref/settings/#admins>`_ setting.
   * ``TETHYS_PORTAL_CONFIG``:
 
-    * ``BYPASS_TETHYS_HOME_PAGE``:
-    * ``ENABLE_OPEN_SIGNUP``:
-    * ``ENABLE_OPEN_PORTAL``:
-    * ``STATIC_ROOT``: See the `STATIC_ROOT <https://docs.djangoproject.com/en/2.2/ref/settings/#static-root>`_ Django setting.
-    * ``TETHYS_WORKSPACES_ROOT``:
+    * ``BYPASS_TETHYS_HOME_PAGE``: the home page of Tethys Portal redirects to the Apps Library when ``True``. Defaults to ``False``.
+    * ``ENABLE_OPEN_SIGNUP``: anyone can create a Tethys Portal account using a "Sign Up" link on the home page when ``True``. Defaults to ``False``.
+    * ``ENABLE_OPEN_PORTAL``: no login required for Tethys Portal when ``True``. Defaults to ``False``. Controllers in apps need to use the ``login_required`` decorator from the Tethys SDK, rather than Django's ``login_required`` decorator.
+    * ``TETHYS_WORKSPACES_ROOT``: location to which app workspaces will be synced when ``tethys manage collectworkspaces`` is executed. Gathering all workspaces to one location is recommended for production deployments to allow for easier updating and backing up of app data. Defaults to :file:`<TETHYS_HOME>/workspaces`.
+    * ``STATIC_ROOT``: the Django `STATIC_ROOT <https://docs.djangoproject.com/en/2.2/ref/settings/#static-root>`_ setting. Defaults to :file:`<TETHYS_HOME>/static`.
 
   * ``SESSION_CONFIG``:
 
-    * ``EXPIRE_AT_BROWSER_CLOSE``: See the `SESSION_EXPIRE_AT_BROWSER_CLOSE <https://docs.djangoproject.com/en/2.2/ref/settings/#session-expire-at-browser-close>`_ Django setting.
-    * ``SECURITY_WARN_AFTER``:
-    * ``SECURITY_EXPIRE_AFTER``:
+    * ``EXPIRE_AT_BROWSER_CLOSE``: the Django `SESSION_EXPIRE_AT_BROWSER_CLOSE <https://docs.djangoproject.com/en/2.2/ref/settings/#session-expire-at-browser-close>`_ setting. Defaults to True.
+    * ``SECURITY_WARN_AFTER``: the Django Session Security `WARN_AFTER <https://django-session-security.readthedocs.io/en/latest/full.html#module-session_security.settings>`_ setting. Defaults to 840 seconds.
+    * ``SECURITY_EXPIRE_AFTER``: the Django Session Security `EXPIRE_AFTER <https://django-session-security.readthedocs.io/en/latest/full.html#module-session_security.settings>`_ setting. Defaults to 900 seconds.
 
-  * ``DATABASES``: See the `DATABASES <https://docs.djangoproject.com/en/2.2/ref/settings/#databases>`_ Django setting.
+  * ``DATABASES``: the Django `DATABASES <https://docs.djangoproject.com/en/2.2/ref/settings/#databases>`_ setting.
 
     * ``default``:
 
-      * ``NAME``: See the `NAME <https://docs.djangoproject.com/en/2.2/ref/settings/#name>`_ Django setting.
-      * ``USER``: See the `USER <https://docs.djangoproject.com/en/2.2/ref/settings/#user>`_ Django setting.
-      * ``PASSWORD``: See the `PASSWORD <https://docs.djangoproject.com/en/2.2/ref/settings/#password>`_ Django setting.
-      * ``HOST``: See the `HOST <https://docs.djangoproject.com/en/2.2/ref/settings/#host>`_ Django setting.
-      * ``PORT``: See the `PORT <https://docs.djangoproject.com/en/2.2/ref/settings/#port>`_ Django setting.
-      * ``DIR``:
+      * ``NAME``: the Django default database `NAME <https://docs.djangoproject.com/en/2.2/ref/settings/#name>`_ setting.
+      * ``USER``: the Django default database `USER <https://docs.djangoproject.com/en/2.2/ref/settings/#user>`_ setting.
+      * ``PASSWORD``: the Django default database `PASSWORD <https://docs.djangoproject.com/en/2.2/ref/settings/#password>`_ setting.
+      * ``HOST``: the Django default database `HOST <https://docs.djangoproject.com/en/2.2/ref/settings/#host>`_ setting.
+      * ``PORT``: the Django default database `PORT <https://docs.djangoproject.com/en/2.2/ref/settings/#port>`_ setting.
+      * ``DIR``: name of psql directory for conda installation of PostgreSQL that ships with Tethys. This directory will be created in the ``TETHYS_HOME`` directory when ``tethys db create`` is executed. Defaults to "psql".
 
   * ``LOGGING_CONFIG``:
 
@@ -89,21 +89,21 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
     * ``LOGGING_HANDLERS``:
     * ``LOGGERS``:
 
-  * ``INSTALLED_APPS``: See the `INSTALLED_APPS <https://docs.djangoproject.com/en/2.2/ref/settings/#installed-apps>`_ Django setting.
+  * ``INSTALLED_APPS``: the Django `INSTALLED_APPS <https://docs.djangoproject.com/en/2.2/ref/settings/#installed-apps>`_ setting. For convenience, any Django apps listed here will be appended to default list of Django apps required by Tethys. To override ``INSTALLED_APPS`` completely, use the ``INSTALLED_APPS_OVERRIDE`` setting.
 
-  * ``INSTALLED_APPS_OVERRIDE``:
+  * ``INSTALLED_APPS_OVERRIDE``: override for ``INSTALLED_APPS`` setting. CAUTION: improper use of this setting can break Tethys.
 
-  * ``MIDDLEWARE``: See the `MIDDLEWARE <https://docs.djangoproject.com/en/2.2/ref/settings/#middleware>`_ Django setting.
+  * ``MIDDLEWARE``: the Django `MIDDLEWARE <https://docs.djangoproject.com/en/2.2/ref/settings/#middleware>`_ setting. For convenience, any middleware listed here will be appended to default list of middleware required by Tethys. To override ``MIDDLEWARE`` completely, use the ``MIDDLEWARE_OVERRIDE`` setting.
 
-  * ``MIDDLEWARE_OVERRIDE``:
+  * ``MIDDLEWARE_OVERRIDE``: override for ``MIDDLEWARE`` setting. CAUTION: improper use of this setting can break Tethys.
 
-  * ``AUTHENTICATION_BACKENDS``: See the `AUTHENTICATION_BACKENDS <https://docs.djangoproject.com/en/2.2/ref/settings/#authentication-backends>`_ Django setting.
+  * ``AUTHENTICATION_BACKENDS``: the Django `AUTHENTICATION_BACKENDS <https://docs.djangoproject.com/en/2.2/ref/settings/#authentication-backends>`_ setting. For convenience, any authentication backends listed here will be appended to default list of authentication backends required by Tethys. To override ``AUTHENTICATION_BACKENDS`` completely, use the ``AUTHENTICATION_BACKENDS_OVERRIDE`` setting.
 
-  * ``AUTHENTICATION_BACKENDS_OVERRIDE``:
+  * ``AUTHENTICATION_BACKENDS_OVERRIDE``: override for ``AUTHENTICATION_BACKENDS`` setting. CAUTION: improper use of this setting can break Tethys.
 
   * ``RESOURCE_QUOTA_HANDLERS``:
 
-  * ``RESOURCE_QUOTA_HANDLERS_OVERRIDE``:
+  * ``RESOURCE_QUOTA_HANDLERS_OVERRIDE``: override for ``RESOURCE_QUOTA_HANDLERS`` setting. CAUTION: improper use of this setting can break Tethys.
 
   * ``CAPTCHA_CONFIG``:
 
@@ -153,13 +153,13 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
 
   * ``EMAIL_CONFIG``:
 
-    * ``EMAIL_BACKEND``: See the `EMAIL_BACKEND <https://docs.djangoproject.com/en/2.2/ref/settings/#email-backend>`_ Django setting.
-    * ``EMAIL_HOST``: See the `EMAIL_HOST <https://docs.djangoproject.com/en/2.2/ref/settings/#email-host>`_ Django setting.
-    * ``EMAIL_PORT``: See the `EMAIL_PORT <https://docs.djangoproject.com/en/2.2/ref/settings/#email-port>`_ Django setting.
-    * ``EMAIL_HOST_USER``: See the `EMAIL_HOST_USER <https://docs.djangoproject.com/en/2.2/ref/settings/#email-host-user>`_ Django setting.
-    * ``EMAIL_HOST_PASSWORD``: See the `EMAIL_HOST_PASSWORD <https://docs.djangoproject.com/en/2.2/ref/settings/#email-host-password>`_ Django setting.
-    * ``EMAIL_USE_TLS``: See the `EMAIL_USE_TLS <https://docs.djangoproject.com/en/2.2/ref/settings/#email-use-tls>`_ Django setting.
-    * ``DEFAULT_FROM_EMAIL``: See the `DEFAULT_FROM_EMAIL <https://docs.djangoproject.com/en/2.2/ref/settings/#default-from-email>`_ Django setting.
+    * ``EMAIL_BACKEND``: the Django `EMAIL_BACKEND <https://docs.djangoproject.com/en/2.2/ref/settings/#email-backend>`_ setting.
+    * ``EMAIL_HOST``: the Django `EMAIL_HOST <https://docs.djangoproject.com/en/2.2/ref/settings/#email-host>`_ setting.
+    * ``EMAIL_PORT``: the Django `EMAIL_PORT <https://docs.djangoproject.com/en/2.2/ref/settings/#email-port>`_ setting.
+    * ``EMAIL_HOST_USER``: the Django `EMAIL_HOST_USER <https://docs.djangoproject.com/en/2.2/ref/settings/#email-host-user>`_ setting.
+    * ``EMAIL_HOST_PASSWORD``: the Django `EMAIL_HOST_PASSWORD <https://docs.djangoproject.com/en/2.2/ref/settings/#email-host-password>`_ setting.
+    * ``EMAIL_USE_TLS``: the Django `EMAIL_USE_TLS <https://docs.djangoproject.com/en/2.2/ref/settings/#email-use-tls>`_ setting.
+    * ``DEFAULT_FROM_EMAIL``: the Django `DEFAULT_FROM_EMAIL <https://docs.djangoproject.com/en/2.2/ref/settings/#default-from-email>`_ setting.
 
   * ``CHANNEL_LAYERS``:
 
