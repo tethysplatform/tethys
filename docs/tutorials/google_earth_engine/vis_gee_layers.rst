@@ -144,7 +144,7 @@ Google Earth Engine provides XYZ tile services for each of their datasets. In th
 
         return image.updateMask(mask).divide(10000)
 
-2. The ``get_image_collection_asset`` function builds the map tile service URL for the given platform, sensor, and product and filters it by the dates and reducer method. Implement the ``get_image_collection_asset`` function as follows:
+2. The ``get_image_collection_asset`` function builds the map tile service URL for the given platform, sensor, and product and filters it by the dates and reducer method. Implement the ``get_image_collection_asset`` function as follows in :file:`methods.py`:
 
 .. code-block:: python
 
@@ -190,7 +190,7 @@ Google Earth Engine provides XYZ tile services for each of their datasets. In th
         except EEException:
             log.exception('An error occurred while attempting to retrieve the image collection asset.')
 
-3. Implement the ``image_to_map_id`` function as follows:
+3. Implement the ``image_to_map_id`` function as follows in :file:`methods.py`:
 
 .. code-block:: python
 

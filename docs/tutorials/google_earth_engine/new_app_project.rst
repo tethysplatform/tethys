@@ -56,7 +56,7 @@ App dependencies should be managed using the :file:`install.yml` instead of the 
         channels:
           - conda-forge
         packages:
-          - earthengine-api
+          - earthengine-api=0.1.205
           - oauth2client
       pip:
 

@@ -585,7 +585,7 @@ The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL
         });
     }); //document ready;
 
-9. Call ``update_plot`` in the on-draw handler at the bottom of ``init_plot_at_location``:
+9. Call ``update_plot`` in the on-draw handler at the bottom of ``init_plot_at_location`` in :file:`public/js/leaflet_map.js`:
 
 .. code-block:: javascript
 

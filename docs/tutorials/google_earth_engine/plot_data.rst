@@ -35,7 +35,7 @@ In this step you'll expand the GEE functions to include a function that can extr
 
 2. Add ``geojson`` as a dependency in the :file:`install.yml`:
 
-.. code-block:: python
+.. code-block:: yaml
 
     # This file should be committed to your app code.
     version: 1.0
@@ -49,7 +49,7 @@ In this step you'll expand the GEE functions to include a function that can extr
         channels:
           - conda-forge
         packages:
-          - earthengine-api
+          - earthengine-api=0.1.205
           - oauth2client
           - geojson
       pip:
@@ -459,7 +459,7 @@ In this step you'll add a loading image to the modal whenever it is shown, repla
         $('#plot-modal').modal('show');
     };
 
-5. Update ``on-click`` event on the ``load_plot`` button to call the new ``show_plot_modal`` method (in the ``bind_controls`` method):
+5. To allow us to verify that the loading GIF appears in the modal when we update it, change ``on-click`` event on the ``load_plot`` button to temporarily call the new ``show_plot_modal`` method (in the ``bind_controls`` method):
 
 .. code-block:: javascript
 
