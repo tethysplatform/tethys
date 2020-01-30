@@ -34,8 +34,8 @@ def add_db_parser(subparsers):
                                 '  * migrate - Runs migrations on the Tethys Portal database.\n'
                                 '  * createsuperuser - Creates a Tethys Portal superuser account.\n'
                                 '  * configure - A shortcut for running: init, start, create, migrate, and '
-                                'createsuperuser. Note: if the database server that is configured in '
-                                '`portal_config.yml` is remote then the init and start commands are skipped.\n'
+                                'createsuperuser. Note: if the DIR parameter is not defined in your DATABASES.default '
+                                'configuration in portal_config.yml then the init and start commands are skipped.\n'
                                 '  * sync - Syncs the Tethys Portal database with installed apps and extensions.\n'
                                 '  * purge - Stops database server and removes the database cluster directory.\n',
                            choices=list(DB_COMMANDS.keys()))

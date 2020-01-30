@@ -348,4 +348,3 @@ class TestCommandTests(unittest.TestCase):
         mock_stop.assert_called_with(**kwargs)
         mock_write_error.assert_called_once()
         mock_rmtree.assert_not_called()
-
