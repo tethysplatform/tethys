@@ -24,7 +24,7 @@ If you wish to use the previous solution as a starting point:
 1. Stub out new JavaScript file
 ===============================
 
-In this step you'll illustrate how to create a JavaScript module using the closure method. For more on JavaScript closures see: `<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures>`_. The basic module developed here will contain variables for storing the current value of each control and it will also read in the ``EE_PRODUCTS`` data you embedded in the template in the previous tutorial.
+In this step you'll learn how to create a JavaScript module using the closure method. For more on JavaScript closures see: `JavaScript Closures - MDN <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures>`_. The basic module developed in this step will contain variables for storing the current value of each control and it will also read in the ``EE_PRODUCTS`` data you embedded in the template in the previous tutorial.
 
 1. Create a new JavaScript file at :file:`public/js/gee_datasets.js` with the following contents:
 
@@ -337,7 +337,7 @@ In this step you'll implement the methods in the :file:`public/js/gee_datasets.j
         return data;
     };
 
-7. Temporarily log the result of ``collect_data`` when the user clicks on the ``load_map`` button to verify the module is working correctly. Add the following to the bottom of the ``bind_controls`` method in :file:`public/js/gee_datasets.js`:
+7. Temporarily log the result of ``collect_data`` when the user clicks on the **Load** button to verify the module is working correctly. Add the following to the bottom of the ``bind_controls`` method in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -346,7 +346,22 @@ In this step you'll implement the methods in the :file:`public/js/gee_datasets.j
         console.log(data);
     });
 
-3. Solution
+3. Test and Verify
+==================
+
+Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and login if necessary. Verify the following:
+
+1. Open a JavaScript console in your web browser (in Chrome press :kbd:`CTRL-SHIFT-i`  or :kbd:`F12` and select the **Console** tab).
+2. Change the values of each control and note the output being logged to the console.
+3. The value of the each control that changes should be logged. For example, when the **Satellite Platform** control is changed, the **Sensor**, **Product**, and date controls should be updated.
+4. The **Start Date** control should not allow users to select dates before the beginning date of the selected dataset.
+5. Press the **Load** button and inspect the object that is logged to the JavaScript console. It should display the currently selected values of each control.
+
+.. figure:: ./resources/dataset_controls_js_solution.png
+    :width: 800px
+    :align: center
+
+4. Solution
 ===========
 
 This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/dataset-controls-js-solution-3.0>`_ or clone it as follows:

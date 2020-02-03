@@ -126,7 +126,7 @@ In this step you'll expand the GEE functions to include a function that can extr
         log.debug(f'Time Series: {time_series}')
         return time_series
 
-   This function uses a `Pandas DataFrame <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html>`_ to store each time series. The DataFrame consists of two columns: Time and the name of the index. The column names will be used for the plot axes.
+This function uses a `Pandas DataFrame <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html>`_ to store each time series. The DataFrame consists of two columns: Time and the name of the index. The column names will be used for the plot axes.
 
 
 2. Create Endpoint for Extracting Time Series
@@ -310,7 +310,7 @@ The technique that will be demonstrated in this step will leverage the `jQuery.l
 
 In this step you'll add a Plot button and the modal for the plot to the controller and template.
 
-1. Add `Plot AOI` button to ``home`` controller in :file:`controllers.py`:
+1. Add **Plot AOI** button to ``home`` controller in :file:`controllers.py`:
 
 .. code-block:: python
 
@@ -337,7 +337,7 @@ In this step you'll add a Plot button and the modal for the plot to the controll
         'map_view': map_view
     }
 
-2. Add `Plot AOI` button to the ``app_navigation_items`` block of the :file:`templates/earth_engine/home.html` template:
+2. Add **Plot AOI** button to the ``app_navigation_items`` block of the :file:`templates/earth_engine/home.html` template:
 
 .. code-block:: html+django
 
@@ -382,7 +382,7 @@ In this step you'll add a Plot button and the modal for the plot to the controll
       </div>
     {% endblock %}
 
-4. Temporarily bind the ``click`` event of the ``Plot AOI`` button to the show modal action (in the ``bind_controls`` method of :file:`public/js/gee_datasets.js`):
+4. Temporarily bind the ``click`` event of the **Plot AOI** button to the show modal action (in the ``bind_controls`` method of :file:`public/js/gee_datasets.js`):
 
 .. code-block:: javascript
 
@@ -398,7 +398,7 @@ In this step you'll add a Plot button and the modal for the plot to the controll
 .. code-block:: javascript
 
     // Time Series Plot Methods
- 	var get_geometry, update_plot, show_plot_modal;
+    var get_geometry, update_plot, show_plot_modal;
 
 2. Add the following module function stubs in :file:`public/js/gee_datasets.js`, just below the ``collect_data`` implementation:
 
@@ -466,6 +466,8 @@ In this step you'll add a loading image to the modal whenever it is shown, repla
     $('#load_plot').on('click', function() {
        show_plot_modal();
     });
+
+6. Verify that the loading GIF appears in the modal when it is opened. Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and login if necessary. Click on the **Plot AOI** button to open the modal. The modal should show the loading GIF and it should be centered in the modal.
 
 6. Implement Plotting Capability
 ================================
@@ -566,7 +568,22 @@ In this step you'll use the native drawing capabilities of the Tethys ``MapView`
         $('#plot-container').load('get-time-series-plot/', data);
     };
 
-7. Solution
+7. Test and Verify
+==================
+
+Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and login if necessary. Verify the following:
+
+1. Load approximately one year of the the *MODIS TERRA Land Servica Temperature and Emissivity* dataset on the map.
+2. Use the **Point** drawing tool to add a point to the map.
+3. Press the **Plot AOI** button to initiate the time series query and plotting.
+4. The plot should show a single time series of temperatures. The gaps in the time series indicate where data is missing, usually due to cloud cover.
+5. Repeat the process using one of the polygon tools to verify that the data is being aggregated properly.
+
+.. figure:: ./resources/plot_data_solution.png
+    :width: 800px
+    :align: center
+
+8. Solution
 ===========
 
 This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/plot-data-solution-3.0>`_ or clone it as follows:

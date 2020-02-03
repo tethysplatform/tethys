@@ -103,7 +103,9 @@ Start up the development server to view the new app:
 
     tethys manage start
 
-.. note::
+.. tip::
+
+    To stop the development server press :kbd:`CTRL-C`.
 
     If you get errors related to Tethys not being able to connect to the database, start the database by running:
 
@@ -117,14 +119,19 @@ Start up the development server to view the new app:
 
         tethys db stop
 
-Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login the default portal user is:
+Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and login. The default portal user is:
 
 * **username**: admin
 * **password**: pass
 
-.. tip::
+Verify the following:
 
-    To stop the development server press :kbd:`CTRL-C`.
+1. The default app icon should be replaced with the custom image you added in step 4.
+2. The primary color for the app should be a dark grey (see screenshot below).
+
+.. figure:: ./resources/new_app_project_solution.png
+    :width: 800px
+    :align: center
 
 6. Solution
 ===========
