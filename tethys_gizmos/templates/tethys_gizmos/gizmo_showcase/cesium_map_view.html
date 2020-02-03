@@ -36,6 +36,9 @@
           margin-top: 60px;
           align: left;
         }
+        .gizmo-page-wrapper {
+            margin-top: 60px;
+        }
     </style>
 {% endblock %}
 
@@ -52,6 +55,7 @@
           <li><a href="{{ map_layers_link }}">Map Layers</a></li>
           <li><a href="{{ terrain_link }}">Terrain</a></li>
           <li><a href="{{ czml_link }}">CZML</a></li>
+          <li><a href="{{ geojson_link }}">GeoJSON</a></li>
           <li><a href="{{ model_link }}">Model</a></li>
           <li><a href="{{ model2_link }}">Models</a></li>
           <li><a href="{% url 'gizmos:showcase'%}">Back</a></li>
@@ -61,6 +65,16 @@
   </nav>
 
 <div class="gizmo-page-wrapper">
+    {% if not cesium_ion_token %}
+    <form action="" method="get">
+        <div class="form-group has-warning">
+            <label for="cesium-ion-token">Please enter a valid Cesium Ion Access Token to enable Cesium demos:</label>
+            <textarea id="cesium-ion-token" name="cesium-ion-token" class="form-control"></textarea>
+            <span id="cesium-ion-token-help" class="help-block">To obtain a token, see: <a href="https://cesium.com/docs/tutorials/rest-api/#authentication" target="_blank">Cesium ion REST API: Authentication</a></span>
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+    {% endif %}
     <form action="" method="post">
         {% csrf_token %}
         <div id="cesium-title"><h2>Cesium Map View</h2></div>
@@ -75,6 +89,9 @@
         {% endif %}
         {%if page_type == 'czml' %}
             <div id="example_description">This example displays multiple <a href="https://github.com/AnalyticalGraphicsInc/czml-writer/wiki/CZML-Guide">CZML data</a> on 3D Map with CesiumJS.</div>
+        {% endif %}
+        {%if page_type == 'geojson' %}
+            <div id="example_description">This example displays GeoJSON data on a 3D Map with CesiumJS.</div>
         {% endif %}
         {%if page_type == 'model' %}
             <div id="example_description">This example displays a GLB 3D model on 3D Map with CesiumJS. </div>
@@ -97,7 +114,7 @@
             {% endfor %}
           </div>
         {% endif %}
-        <input type="submit" name="submit" style="margin-top: 20px;">
+        <input type="submit" name="submit" class="btn btn-default" style="margin-top: 20px;">
     </form>
 </div>
 {% endblock %}
