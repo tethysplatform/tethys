@@ -4,7 +4,7 @@ Setup THREDDS Service
 
 **Last Updated:** December 2019
 
-In this tutorial you will register a THREDDS server as a Tethys Spatial Dataset **Service** so can be more easily used by the app. You will also create a Spatial Dataset Service **Setting** in the app to allow it to consume this service. The following topics will be covered in this tutorial:
+In this tutorial you will register a THREDDS server as a Tethys Spatial Dataset **Service** so it can be more easily used by the app. You will also create a Spatial Dataset Service **Setting** in the app to allow it to consume this service. The following topics will be covered in this tutorial:
 
 * Tethys Services
 * Tethys Service App Settings
@@ -125,6 +125,9 @@ For this tutorial you'll be using the publicly accesible UCAR THREDDS Data Serve
 
     To use the app with other THREDDS services, repeat steps 2 to create additional Spatial Dataset Services for each additional THREDDS service. Then repeat step 3 to swap out the THREDDS service that the app is using.
 
+.. figure:: ./resources/setup_thredds_service_solution.png
+    :width: 800px
+    :align: center
 
 4. Solution
 ===========
