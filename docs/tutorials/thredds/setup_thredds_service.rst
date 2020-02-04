@@ -9,6 +9,10 @@ In this tutorial you will register a THREDDS server as a Tethys Spatial Dataset 
 * Tethys Services
 * Tethys Service App Settings
 
+.. figure:: ./resources/setup_thredds_service_solution.png
+    :width: 800px
+    :align: center
+
 0. Start From Previous Solution (Optional)
 ==========================================
 
@@ -124,10 +128,6 @@ For this tutorial you'll be using the publicly accesible UCAR THREDDS Data Serve
     This app is meant to be somewhat of a THREDDS dataset browser. It should be able to support other THREDDS services provided the following services are enabled on the datasets you wish to view: (1) WMS and (2) NCSS.
 
     To use the app with other THREDDS services, repeat steps 2 to create additional Spatial Dataset Services for each additional THREDDS service. Then repeat step 3 to swap out the THREDDS service that the app is using.
-
-.. figure:: ./resources/setup_thredds_service_solution.png
-    :width: 800px
-    :align: center
 
 4. Solution
 ===========

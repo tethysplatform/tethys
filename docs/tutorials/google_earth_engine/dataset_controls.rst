@@ -9,6 +9,10 @@ In this tutorial you will add controls to the app that will eventually be used t
 * Tethys Gizmos API
 * Tethys Templating API
 
+.. figure:: ./resources/dataset_controls_solution.png
+    :width: 800px
+    :align: center
+
 
 0. Start From Previous Solution (Optional)
 ==========================================
@@ -427,10 +431,6 @@ Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and logi
 3. Confirm that each control is being rendered with the values you expect.
 4. Verify that the controls function properly (i.e. select controls display options in drop down when selected and the date picker appears when you select one of the date controls.
 5. Notice that if you select a different satellite platform, the sensor options do not update. This is because we have not implemented the dynamic behaviour of the controls yet. We have used Tethys Gizmos to create the controls with their initial state, but we'll need to write some JavaScript to update the controls when the state of one changes. We'll do that in the next tutorial.
-
-.. figure:: ./resources/dataset_controls_solution.png
-    :width: 800px
-    :align: center
 
 4. Solution
 ===========

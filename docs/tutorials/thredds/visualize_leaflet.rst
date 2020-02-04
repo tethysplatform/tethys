@@ -15,6 +15,10 @@ In this tutorial you will learn how to add a `Leaflet <https://leafletjs.com/>`_
 * `Siphon <https://unidata.github.io/siphon/latest/index.html>`_
 * `OWSLib <https://geopython.github.io/OWSLib/>`_
 
+.. figure:: ./resources/visualize_leaflet_solution.png
+    :width: 800px
+    :align: center
+
 
 0. Start From Previous Solution (Optional)
 ==========================================
@@ -1146,10 +1150,6 @@ Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and 
 3. There should be a legend for the current layer under the control in the navigation menu.
 4. The map should feature an animation slider. If the dataset selected has time varying data, the slider should display a time step. Otherwise it will say "Time not available".
 5. Select the "Best GFS Half Degree Forecast Time Series" dataset using the **Dataset** control to test a time-varying layer. Press the **Play** button on the Time-Dimension control to animate the layer.
-
-.. figure:: ./resources/visualize_leaflet_solution.png
-    :width: 800px
-    :align: center
 
 12. Solution
 ============

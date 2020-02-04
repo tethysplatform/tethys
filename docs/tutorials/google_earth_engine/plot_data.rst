@@ -11,6 +11,10 @@ In the final tutorial you will add the ability for users to drop a point or draw
 * GEE Geoprocessing
 * Adding New App Dependencies
 
+.. figure:: ./resources/plot_data_solution.png
+    :width: 800px
+    :align: center
+
 0. Start From Previous Solution (Optional)
 ==========================================
 
@@ -578,10 +582,6 @@ Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and logi
 3. Press the **Plot AOI** button to initiate the time series query and plotting.
 4. The plot should show a single time series of temperatures. The gaps in the time series indicate where data is missing, usually due to cloud cover.
 5. Repeat the process using one of the polygon tools to verify that the data is being aggregated properly.
-
-.. figure:: ./resources/plot_data_solution.png
-    :width: 800px
-    :align: center
 
 8. Solution
 ===========

@@ -11,6 +11,10 @@ In this tutorial you will create a new Tethys App project using the scaffold. Th
 * Adding a Custom Icon
 * Customizing App Theme Color
 
+.. figure:: ./resources/new_app_project_solution.png
+    :width: 800px
+    :align: center
+
 1. Generate Scaffold
 ====================
 
@@ -127,11 +131,7 @@ Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and logi
 Verify the following:
 
 1. The default app icon should be replaced with the custom image you added in step 4.
-2. The primary color for the app should be a dark grey (see screenshot below).
-
-.. figure:: ./resources/new_app_project_solution.png
-    :width: 800px
-    :align: center
+2. The primary color for the app should be a dark grey (see screenshot at the beginning of the tutorial).
 
 6. Solution
 ===========

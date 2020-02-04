@@ -10,6 +10,10 @@ In this tutorial you will add dynamic behavior to the dataset controls created i
 * JavaScript Closure Module Method
 * Using JavaScript with Tethys Gizmos
 
+.. figure:: ./resources/dataset_controls_js_solution.png
+    :width: 800px
+    :align: center
+
 0. Start From Previous Solution (Optional)
 ==========================================
 
@@ -356,10 +360,6 @@ Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and logi
 3. The value of the each control that changes should be logged. For example, when the **Satellite Platform** control is changed, the **Sensor**, **Product**, and date controls should be updated.
 4. The **Start Date** control should not allow users to select dates before the beginning date of the selected dataset.
 5. Press the **Load** button and inspect the object that is logged to the JavaScript console. It should display the currently selected values of each control.
-
-.. figure:: ./resources/dataset_controls_js_solution.png
-    :width: 800px
-    :align: center
 
 4. Solution
 ===========

@@ -11,6 +11,10 @@ In this tutorial you will add a tool for querying the active THREDDS dataset for
 * `THREDDS NetCDF Subset Service (NCSS) <https://www.unidata.ucar.edu/software/tds/current/reference/NetcdfSubsetServiceReference.html>`_
 * `JQuery Load <https://api.jquery.com/load/>`_
 
+.. figure:: ./resources/plot_at_location_solution.png
+    :width: 800px
+    :align: center
+
 
 0. Start From Previous Solution (Optional)
 ==========================================
@@ -664,10 +668,6 @@ Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and 
 3. Drop a marker somewhere on the map.
 4. Verify that the plot dialog appears automatically after dropping the marker with the loading image showing.
 5. Verify that the plot appears after the data has been queried.
-
-.. figure:: ./resources/plot_at_location_solution.png
-    :width: 800px
-    :align: center
 
 5. Solution
 ===========

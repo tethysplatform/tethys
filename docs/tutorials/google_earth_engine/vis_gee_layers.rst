@@ -12,6 +12,10 @@ In this tutorial you will load the GEE dataset the user has selected into the ma
 * Retrieving GEE XYZ Tile Layer Endpoints
 * Logging in Tethys
 
+.. figure:: ./resources/vis_gee_layers_solution.png
+    :width: 800px
+    :align: center
+
 0. Start From Previous Solution (Optional)
 ==========================================
 
@@ -612,9 +616,7 @@ Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and logi
 3. Use the **Clear** button to clear the map.
 4. When a layer is loading tiles, a loading image should display to indicate to the user that the app is working.
 
-.. figure:: ./resources/vis_gee_layers_solution.png
-    :width: 800px
-    :align: center
+
 
 
 9. Solution
