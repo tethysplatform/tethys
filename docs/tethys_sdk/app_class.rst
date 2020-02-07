@@ -35,8 +35,6 @@ Override Methods
 
 .. automethod:: tethys_apps.base.TethysAppBase.handoff_handlers
 
-.. automethod:: tethys_apps.base.TethysAppBase.job_templates
-
 .. automethod:: tethys_apps.base.app_base.TethysAppBase.pre_delete_app_workspace
 
 .. automethod:: tethys_apps.base.app_base.TethysAppBase.post_delete_app_workspace
@@ -70,11 +68,11 @@ Class Methods
 
 .. automethod:: tethys_apps.base.TethysAppBase.get_job_manager
 
-.. deprecated:: 2.1
+.. deprecated:: 3.0
 .. automethod:: tethys_apps.base.TethysAppBase.get_app_workspace
    :noindex:
 
-.. deprecated:: 2.1
+.. deprecated:: 3.0
 .. automethod:: tethys_apps.base.TethysAppBase.get_user_workspace
    :noindex:
 

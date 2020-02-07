@@ -11,9 +11,6 @@ Key Concepts
 ============
 To facilitate interacting with jobs asynchronously, the details of the jobs are stored in a database. The Jobs API provides a job manager to handle the details of working with the database, and provides a simple interface for creating and retrieving jobs. The Jobs API supports various types of jobs (see `Job Types`_).
 
-.. deprecated::2.1
-    Creating jobs used to be done via job templates. This method is now deprecated.
-
 .. seealso::
     The Condor Job and the Condor Workflow job types use the CondorPy library to submit jobs to HTCondor compute pools. For more information on CondorPy and HTCondor see the `CondorPy documentation <http://condorpy.readthedocs.org/en/latest/>`_ and specifically the `Overview of HTCondor <http://condorpy.readthedocs.org/en/latest/htcondor.html>`_.
 
@@ -216,11 +213,3 @@ API Documentation
     :members: create_job, list_jobs, get_job, get_job_status_callback_url
 
 .. autoclass:: tethys_compute.models.TethysJob
-
-References
-==========
-
-.. toctree::
-   :maxdepth: 1
-
-   jobs/condor_job_description

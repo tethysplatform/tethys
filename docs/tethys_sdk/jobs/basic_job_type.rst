@@ -16,7 +16,7 @@ To create a job call the ``create_job`` method on the job manager. The required 
     job = job_manager.create_job(
         name='unique_job_name',
         user=request.user,
-        template_name='BASIC',
+        job_type='BASIC',
         description='This is a sample basic job. It can't actually compute anything.',
         extended_properties={
             'app_spcific_property': 'default_value',
@@ -29,5 +29,3 @@ API Documentation
 =================
 
 .. autoclass:: tethys_compute.models.BasicJob
-
-.. autoclass:: tethys_sdk.jobs.BasicJobTemplate
