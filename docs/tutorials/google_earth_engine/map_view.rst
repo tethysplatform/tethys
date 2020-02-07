@@ -11,6 +11,10 @@ In this tutorial you will add a map to the Home Page using the Tethys MapView Gi
 * Remove Padding from App Content Area
 * Custom CSS
 
+.. figure:: ./resources/map_view_solution.png
+    :width: 800px
+    :align: center
+
 0. Start From Previous Solution (Optional)
 ==========================================
 
@@ -140,7 +144,17 @@ In this step you'll add the ``MapView`` to the home view. You'll also add a cust
         <link rel="stylesheet" href="{% static 'earth_engine/css/map.css' %}" />
     {% endblock %}
 
-3. Solution
+3. Test and Verify
+==================
+
+Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and login if necessary. Verify the following:
+
+1. The app actions bar that used to be at the bottom of the page should be gone.
+2. The page should now feature a map that fills the content area including where the app actions bar used to be.
+3. The map should be zoomed in and centered on Kenya.
+4. Use the **Basemap** control to change the basemap.
+
+4. Solution
 ===========
 
 This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/map-view-solution-3.0>`_ or clone it as follows:

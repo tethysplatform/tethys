@@ -13,7 +13,7 @@ This tutorial demonstrates how to use THREDDS in a Tethys app.
 Prerequisites
 -------------
 
-* Complete the :doc:`./getting_started` Tutorial
+* Complete the :ref:`key_concepts_tutorial` Tutorial
 
 Outline
 -------

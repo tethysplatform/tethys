@@ -23,7 +23,6 @@ from tethys_sdk.gizmos import Button, ButtonGroup, DatePicker, RangeSlider, Sele
     LinePlot, ScatterPlot, PolarPlot, PiePlot, BarPlot, TimeSeries, AreaRange, PlotlyView, BokehView, TableView, \
     DataTableView, MessageBox, GoogleMapView, MVView, MVDraw, MVLayer, MVLegendClass, MapView, JobsTable, EMView, \
     EMLayer, ESRIMap, CesiumMapView
-from tethys_sdk.services import list_spatial_dataset_engines
 from tethys_compute.models import TethysJob, BasicJob, CondorWorkflow
 
 
@@ -32,20 +31,7 @@ def get_geoserver_wms():
     Try to get the built in geoserver wms for this installation if possible.
     Otherwise point at the chpc geoserver.
     """
-    spatial_dataset_engines = list_spatial_dataset_engines()
-    geoserver_wms = "http://ciwmap.chpc.utah.edu:8080/geoserver/wms"
-
-    for spatial_dataset_engine in spatial_dataset_engines:
-        if spatial_dataset_engine.type == 'GEOSERVER':
-            try:
-                spatial_dataset_engine.validate()
-                geoserver_endpoint = spatial_dataset_engine.endpoint
-                geoserver_wms = geoserver_endpoint.replace('rest', 'wms')
-                break
-            except ConnectionError:
-                pass
-
-    return geoserver_wms
+    return 'https://demo.geo-solutions.it/geoserver/wms'
 
 
 @login_required()

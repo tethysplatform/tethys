@@ -1,3 +1,5 @@
+.. _thredds_engine_reference:
+
 *********************************
 THREDDS Engine (Siphon) Reference
 *********************************
