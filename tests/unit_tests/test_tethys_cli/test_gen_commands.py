@@ -88,7 +88,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_file.assert_called()
 
         rts_call_args = mock_write_info.call_args_list
-        self.assertIn('Please review the generated portal_config.yml', rts_call_args[0][0][0])
+        self.assertIn('A Tethys Portal configuration file was generated at', rts_call_args[0][0][0])
 
     @mock.patch('tethys_cli.gen_commands.render_template')
     @mock.patch('tethys_cli.gen_commands.linux_distribution')

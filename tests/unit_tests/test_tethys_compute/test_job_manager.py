@@ -16,15 +16,12 @@ class TestJobManager(unittest.TestCase):
     def test_JobManager_init(self):
         mock_app = mock.MagicMock()
         mock_app.package = 'test_label'
-        mock_app.get_app_workspace.return_value = 'test_app_workspace'
 
-        #
         ret = JobManager(mock_app)
 
         # Check Result
         self.assertEqual(mock_app, ret.app)
         self.assertEqual('test_label', ret.label)
-        self.assertEqual('test_app_workspace', ret.app_workspace)
 
     @mock.patch('tethys_compute.job_manager.CondorJob')
     def test_JobManager_create_job_custom_class(self, mock_cj):
