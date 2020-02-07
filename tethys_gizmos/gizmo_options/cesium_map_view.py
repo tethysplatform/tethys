@@ -1,4 +1,4 @@
-from .base import TethysGizmoOptions
+from .base import TethysGizmoOptions, SecondaryGizmoOptions
 import logging
 log = logging.getLogger('tethys.tethys_gizmos.gizmo_options.cesium_map_view')
 
@@ -10,21 +10,20 @@ class CesiumMapView(TethysGizmoOptions):
         Shapes that are drawn on the map by users can be retrieved from the map via a hidden text field named 'geometry' and it is updated every time the map is changed. If the Cesium Map View is embedded in a form, the geometry that is drawn on the map will automatically be submitted with the rest of the form via the hidden text field.
 
         Attributes:
-            height(str): Height of the map element. Any valid css unit of length (e.g.: '500px'). Defaults to '100%'.
-            width(str): Width of the map element. Any valid css unit of length (e.g.: '100%'). Defaults to '100%'.
+            cesium_ion_token(str): Cesium Ion Access Token. See: `Cesium Rest API - Authentication <https://cesium.com/docs/tutorials/rest-api/#authentication>`_.
             options(dict): Viewer basic options. One item in dictionary per option.
             globe(dict): Options to set on the Globe of the view.
             view(dict): Set the initial view of the map using various methods(e.g.: flyTo, setView)
-            layers(dict): Add imagery layer to map. One item in dictionary per imagery layer.
-            entities(dict):: Add entities to map. One item in dictionary per entity
+            layers(list): Add one or more imagery layers to the map.
+            entities(list):: Add one or more entities to the map.
             terrain(dict): Add terrain provider to the map.
             models(dict): Add 3D model to map. One item in dictionary per model.
             clock(dict): Define custom clock options for viewer.
+            height(str): Height of the map element. Any valid css unit of length (e.g.: '500px'). Defaults to '100%'.
+            width(str): Width of the map element. Any valid css unit of length (e.g.: '100%'). Defaults to '100%'.
             draw(boolean): Turn drawing tools on/off.
             attributes(dict): A dictionary representing additional HTML attributes to add to the primary element (e.g. {"onclick": "run_me();"}).
             classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
-
-
 
         **Cesium Version**
 
@@ -32,7 +31,7 @@ class CesiumMapView(TethysGizmoOptions):
 
         ::
 
-            CesiumMapView.cesium_version = "1.51"
+            CesiumMapView.cesium_version = "1.63.1"
             my_cesium_view = CesiumMapView(...)
 
         Or you can choose to use the latest release by setting the version to the empty string:
@@ -41,6 +40,14 @@ class CesiumMapView(TethysGizmoOptions):
 
             CesiumMapView.cesium_version = ""
             my_cesium_view = CesiumMapView(...)
+
+        **Cesium Ion Token**
+
+        This is your Cesium Ion Access token that grants you access to the Cesium REST APIs. In newer version of Cesium this token is required for proper functioning of the map viewer. To learn how to obtain a token, see `Cesium REST API - Authentication <https://cesium.com/docs/tutorials/rest-api/#authentication>`_.
+
+        ::
+
+            cesium_access_token='mYf8k3t0KEn--asdfsdf98as7uj34n5a8-yvzhnj23q098-zdvnkj'
 
         **Options**
 
@@ -59,7 +66,7 @@ class CesiumMapView(TethysGizmoOptions):
             viewer.scene.globe.enableLighting = true;
             viewer.scene.globe.depthTestAgainstTerrain = true;
 
-        Pass the following Globe options to CesiumMapView:
+        Pass the following Globe options to ``CesiumMapView``:
 
         ::
 
@@ -73,7 +80,7 @@ class CesiumMapView(TethysGizmoOptions):
 
         **View**
 
-        Here is how the view option is defined using the Cesium JavaScript API (https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html?src=Camera.html):
+        Here is how the view option is defined using the Cesium JavaScript API (`Sandcastle - Camera <https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html?src=Camera.html>`_):
 
         ::
 
@@ -86,7 +93,7 @@ class CesiumMapView(TethysGizmoOptions):
                 }
             });
 
-        In Tethys CesiumMapView, you can define this setting using python as follows
+        In Tethys ``CesiumMapView``, you can define this setting using python as follows
 
         ::
 
@@ -101,12 +108,20 @@ class CesiumMapView(TethysGizmoOptions):
 
         **Layers**
 
-        CesiumMapView supports all the imagery layers in cesiumjs: https://cesiumjs.org/tutorials/Imagery-Layers-Tutorial/#imagery-providers
-        You can load a imagery layers using the following pattern:
+        ``CesiumMapView`` supports all the imagery layers in the CesiumJS API (see `Imagery Providers <https://cesiumjs.org/tutorials/Imagery-Layers-Tutorial/#imagery-providers>`_). It also support ``ImageWMS`` and ``TileWMS`` ``MVLayers`` (see: :ref:`gizmo_mvlayer`).
+        You can load one or more imagery layers using the following pattern:
 
         ::
 
-            layers={'Type of Imagery Layers (for your reference only)': {'imageryProvider': 'method/class to load the provider'}
+            layers=[
+                {<layer_name>: {
+                    'imageryProvider': {<imagery_provider_class>: {
+                        <option1>: <value1>,
+                        <option2>: <value2>
+                    }
+                },
+                <MVLayer Object>
+            ]
 
         Examples:
 
@@ -114,89 +129,221 @@ class CesiumMapView(TethysGizmoOptions):
 
         ::
 
-            layers={'BingMap': {
-                'imageryProvider': {'Cesium.BingMapsImageryProvider': {
-                    'url': 'https://dev.virtualearth.net',
-                    'key': 'YouR-api-KEy',
-                    'mapStyle': 'Aerial',
+            layers=[
+                {'Bing Map': {
+                    'imageryProvider': {'Cesium.BingMapsImageryProvider': {
+                        'url': 'https://dev.virtualearth.net',
+                        'key': 'YouR-api-KEy',
+                        'mapStyle': 'Aerial',
+                    }}
                 }}
-            }}
+            ]
 
         * ESRI:
 
         ::
 
-            layers={'EsriArcGISMapServer': {
-                'imageryProvider': {'Cesium.ArcGisMapServerImageryProvider': [{
-                    'url': 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer'
-                }]}
-            }}
+            layers=[
+                {'Esri Arc GIS Map Server': {
+                    'imageryProvider': {'Cesium.ArcGisMapServerImageryProvider': [{
+                        'url': 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer'
+                    }]}
+                }}
+            ]
 
         * OpenStreetMap:
 
         ::
 
-            layers={'OpenStreetMap': {
-                'imageryProvider': {'Cesium.createOpenStreetMapImageryProvider':[]}
-            }}
+            layers=[
+                {'Open Street Map': {
+                    'imageryProvider': {'Cesium.OpenStreetMapImageryProvider': {
+                        'url': 'https://a.tile.openstreetmap.org/'
+                    }}
+                }}
+            ]
 
-        * MapQuest OpenStreetMap:
+        * WMS Imagery Service:
 
         ::
 
-            layers={'MapQuestOpenStreetMap': {
-                'imageryProvider': {Cesium.createOpenStreetMapImageryProvider: [{
-                    'url' : 'https://otile1-s.mqcdn.com/tiles/1.0.0/osm/'
-                }]}
-            }}
+            layers=[
+                {'WMS Imagery Provider': {
+                    'imageryProvider': {'Cesium.WebMapServiceImageryProvider': [{
+                        'url': 'https://sampleserver1.arcgisonline.com/ArcGIS/services/Specialty/ESRI_StatesCitiesRivers_USA/MapServer/WMSServer',
+                        'layers': '0',
+                        'proxy': {'Cesium.DefaultProxy': ['/proxy/']}
+                    }]}
+                }}
+            ]
 
-        * More examples can be found at https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html
+        * Mix with MVLayer Objects
+
+        ::
+
+            layers=[
+                {'Open Street Map': {
+                    'imageryProvider': {'Cesium.OpenStreetMapImageryProvider': {
+                        'url': 'https://a.tile.openstreetmap.org/'
+                    }}
+                }},
+                MVLayer(
+                    source='ImageWMS',
+                    legend_title='MVLayer ImageWMS',
+                    options={
+                        'url': 'https://demo.geo-solutions.it/geoserver/wms',
+                        'params': {'LAYERS': 'topp:states'},
+                        'serverType': 'geoserver'
+                    },
+                )
+            ]
+
+        * More examples can be found at `Sandcastle - Imagery Layers Manipulation <https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html?src=Imagery%20Layers%20Manipulation.html>`_
 
         **Entities**
 
-        Support most entities in Cesium: https://cesiumjs.org/tutorials/Visualizing-Spatial-Data/#shapes-and-volumes
+        Supports CZML and GeoJSON entities. Also supports ``GeoJSON`` ``MVLayers`` (see: :ref:`gizmo_mvlayer`).
 
-        Example loading a czml:
+        * CZML Example:
 
         ::
 
-            entities={'czml': [
+            entities=[
                 {
-                    "id": "document",
-                    "name": "CZML Geometries: Polygon",
-                    "version": "1.0"
-                },
-                {
-                    "id": "redPolygon",
-                    "name": "Red polygon on surface",
-                    "polygon": {"positions": {
-                        "cartographicDegrees": [
-                            -115.0, 37.0, 0,
-                            -115.0, 32.0, 0,
-                            -107.0, 33.0, 0,
-                            -102.0, 31.0, 0,
-                            -102.0, 35.0, 0
-                        ]
-                    },
-                    "material": {
-                        "solidColor": {
-                            "color": {
-                                "rgba": [255, 0, 0, 255]
+                    'source': 'czml',
+                    'options': [
+                        {
+                            "id": "document",
+                            "name": "CZML Geometries: Polygon",
+                            "version": "1.0"
+                        },
+                        {
+                            "id": "whitePolygon",
+                            "name": "White polygon on surface",
+                            "polygon": {"positions": {
+                                "cartographicDegrees": [
+                                    -115.0, 37.0, 0,
+                                    -115.0, 32.0, 0,
+                                    -107.0, 33.0, 0,
+                                    -102.0, 31.0, 0,
+                                    -102.0, 35.0, 0
+                                ]
+                            }},
+                            "material": {
+                                "solidColor": {
+                                    "color": {
+                                        "rgba": [255, 0, 0, 255]
+                                    }
+                                }
                             }
                         }
+                    ]
+                }
+            ]
+
+        * GeoJSON Example:
+
+        ::
+
+            entities=[
+                {
+                    'source': 'geojson',
+                    'options': {
+                        'type': 'FeatureCollection',
+                        'crs': {
+                            'type': 'name',
+                            'properties': {
+                                'name': 'EPSG:4326'
+                            }
+                        },
+                        'features': [
+                            {
+                                'type': 'Feature',
+                                'geometry': {
+                                    'type': 'Point',
+                                    'coordinates': [0, 0]
+                                }
+                            },
+                            {
+                                'type': 'Feature',
+                                'geometry': {
+                                    'type': 'LineString',
+                                    'coordinates': [[35.9326113, -17.6789142], [71.8652227, 17.6789142]]
+                                }
+                            },
+                            {
+                                'type': 'Feature',
+                                'geometry': {
+                                    'type': 'Polygon',
+                                    'coordinates': [
+                                        [[-44.9157642, -8.9465739], [-35.9326114, 8.9465739], [-26.9494585, -8.9465739]]
+                                    ]
+                                }
+                            }
+                        ]
                     }
                 }
-            ]}
+            ]
+
+        * GeoJSON MVLayer
+
+        ::
+
+            entities=[
+                MVLayer(
+                    source='GeoJSON',
+                    legend_title='MVLayer GeoJSON Example',
+                    options={
+                        'type': 'FeatureCollection',
+                        'crs': {
+                            'type': 'name',
+                            'properties': {
+                                'name': 'EPSG:4326'
+                            }
+                        },
+                        'features': [
+                            {
+                                'type': 'Feature',
+                                'geometry': {
+                                    'type': 'Point',
+                                    'coordinates': [0, 0]
+                                }
+                            },
+                            {
+                                'type': 'Feature',
+                                'geometry': {
+                                    'type': 'LineString',
+                                    'coordinates': [[35.9326113, -17.6789142], [71.8652227, 17.6789142]]
+                                }
+                            },
+                            {
+                                'type': 'Feature',
+                                'geometry': {
+                                    'type': 'Polygon',
+                                    'coordinates': [
+                                        [[-44.9157642, -8.9465739], [-35.9326114, 8.9465739], [-26.9494585, -8.9465739]]
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                )
+            ]
 
         **Terrain**
 
-        Support all the terrain provider available in Cesium: https://cesiumjs.org/tutorials/Terrain-Tutorial/#terrain-providers
+        Supports all the terrain providers available in Cesium (see `Cesium Terrain Providers <https://cesiumjs.org/tutorials/Terrain-Tutorial/#terrain-providers>`_
 
         You can load a terrain provider using the following pattern:
 
         ::
 
-            terrain={'terrainProvider': 'method/class and args to load the provider'}
+            terrain={
+                'terrainProvider': {<terrain_provider_class>: {
+                    <option1>: <value1>,
+                    <option2>: <value2>
+                }
+            }
 
         For example:
 
@@ -257,7 +404,7 @@ class CesiumMapView(TethysGizmoOptions):
                 clockViewModel : new Cesium.ClockViewModel(clock),
             });
 
-        Pass the following Clock options to CesiumMapView:
+        Pass the following Clock options to ``CesiumMapView``:
 
         ::
 
@@ -293,7 +440,7 @@ class CesiumMapView(TethysGizmoOptions):
 
         **Translate Cesium Attributes from Javascript to Python**
 
-        You can find a lots of way to define cesium attributes in the sandcastle page: https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html
+        You can find a lots of way to define cesium attributes in the sandcastle page: `Sandcastle <https://cesiumjs.org/Cesium/Build/Apps/Sandcastle/index.html>`_
 
         Here are a few things to remember:
 
@@ -308,15 +455,14 @@ class CesiumMapView(TethysGizmoOptions):
                 {'Cesium.Cartesian3.fromDegrees': [-123.0744619, 44.0503706, 5000]},
                 {'Cesium.HeadingPitchRoll': [{'Cesium.Math.toRadians' : 135}, 0, 0]}
             ]}
-
     """  # noqa: E501
     gizmo_name = "cesium_map_view"
 
     # Set Cesium Default Release Version.
-    cesium_version = ""
+    cesium_version = "1.63.1"
 
-    def __init__(self, options={}, globe={}, view={}, layers={}, entities={}, terrain={}, models={}, clock={},
-                 height='100%', width='100%', draw=False, attributes={}, classes=''):
+    def __init__(self, options={}, globe={}, view={}, layers=[], entities=[], terrain={}, models={}, clock={},
+                 height='100%', width='100%', draw=False, attributes={}, classes='', cesium_ion_token=''):
         """
         Constructor
         """
@@ -333,6 +479,7 @@ class CesiumMapView(TethysGizmoOptions):
         self.terrain = terrain
         self.models = models
         self.draw = draw
+        self.cesium_ion_token = cesium_ion_token
 
     @classmethod
     def get_vendor_js(cls):
@@ -340,11 +487,7 @@ class CesiumMapView(TethysGizmoOptions):
         JavaScript vendor libraries to be placed in the
         {% block global_scripts %} block
         """
-        # To use build version, cesium_version is blank. Otherwise, it will use the specified release version.
-        if cls.cesium_version:
-            cesium_js = 'https://cesiumjs.org/releases/' + cls.cesium_version + '/Build/Cesium/Cesium.js'
-        else:
-            cesium_js = 'https://cesiumjs.org/Cesium/Build/Cesium/Cesium.js'
+        cesium_js = 'https://cesium.com/downloads/cesiumjs/releases/' + cls.cesium_version + '/Build/Cesium/Cesium.js'
         return (cesium_js,)
 
     @staticmethod
@@ -363,10 +506,8 @@ class CesiumMapView(TethysGizmoOptions):
         CSS vendor libraries to be placed in the
         {% block styles %} block
         """
-        if cls.cesium_version:
-            cesium_css = 'https://cesiumjs.org/releases/' + cls.cesium_version + '/Build/Cesium/Widgets/widgets.css'
-        else:
-            cesium_css = 'https://cesiumjs.org/Cesium/Build/Cesium/Widgets/widgets.css'
+        cesium_css = 'https://cesium.com/downloads/cesiumjs/releases/' + cls.cesium_version + \
+                     '/Build/Cesium/Widgets/widgets.css'
         return (cesium_css,)
 
     @staticmethod
@@ -377,3 +518,71 @@ class CesiumMapView(TethysGizmoOptions):
         """
         return ('tethys_gizmos/css/cesium_map_view.min.css',
                 'tethys_gizmos/css/DrawHelper.min.css')
+
+
+class CMVEntity(SecondaryGizmoOptions):
+    """
+    CMVEntity objects are used to define map layers for the Map View Gizmo.
+
+    Attributes:
+        options (dict, required): A dictionary representation of the OpenLayers options object for ol.source.
+        layer_options (dict): A dictionary representation of the OpenLayers options object for ol.layer.
+        editable (bool): If true the layer will be editable with the tethys_map_view drawing/editing tools.
+        data (dict): Dictionary representation of layer data
+
+    Example
+
+    ::
+
+        # Define GeoJSON layer
+        geojson_object = {
+          'type': 'FeatureCollection',
+          'crs': {
+            'type': 'name',
+            'properties': {
+              'name': 'EPSG:3857'
+            }
+          },
+          'features': [
+            {
+              'type': 'Feature',
+              'geometry': {
+                'type': 'Point',
+                'coordinates': [0, 0]
+              }
+            },
+            {
+              'type': 'Feature',
+              'geometry': {
+                'type': 'LineString',
+                'coordinates': [[4e6, -2e6], [8e6, 2e6]]
+              }
+            },
+            {
+              'type': 'Feature',
+              'geometry': {
+                'type': 'Polygon',
+                'coordinates': [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
+              }
+            }
+          ]
+        }
+
+        geojson_layer = CMVLayer(source='GeoJSON',
+                                options=geojson_object,
+                                layer_options={'style_map': style_map},
+                                )
+    """  # noqa: E501
+
+    def __init__(self, source, document, legend_title, layer_options=None, editable=False, data=None):
+        """
+        Constructor
+        """
+        super().__init__()
+
+        self.source = source
+        self.document = document
+        self.legend_title = legend_title
+        self.editable = editable
+        self.layer_options = layer_options
+        self.data = data or dict()

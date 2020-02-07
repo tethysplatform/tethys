@@ -6,6 +6,8 @@ Map View
 
 .. autoclass:: tethys_sdk.gizmos.MapView
 
+.. _gizmo_mvlayer:
+
 MVLayer
 -------
 

@@ -132,6 +132,25 @@ class TestGizmoShowcase(unittest.TestCase):
         self.assertIn('map_layers', render_call_args[0][0][2]['page_type'])
 
     @mock.patch('tethys_gizmos.views.gizmo_showcase.render')
+    def test_cesium_map_view_map_token(self, mock_render):
+        request = self.request_factory.get('/jobs', data={'cesium-ion-token': 'cesium-token-goes-here'})
+        request.user = self.user
+
+        # Execute
+        gizmo_showcase.cesium_map_view(request, 'map_layers')
+
+        # Check render
+        render_call_args = mock_render.call_args_list
+
+        self.assertIn('cesium-token-goes-here', render_call_args[0][0][2]['home_link'])
+        self.assertIn('cesium-token-goes-here', render_call_args[0][0][2]['map_layers_link'])
+        self.assertIn('cesium-token-goes-here', render_call_args[0][0][2]['terrain_link'])
+        self.assertIn('cesium-token-goes-here', render_call_args[0][0][2]['czml_link'])
+        self.assertIn('cesium-token-goes-here', render_call_args[0][0][2]['geojson_link'])
+        self.assertIn('cesium-token-goes-here', render_call_args[0][0][2]['model_link'])
+        self.assertIn('cesium-token-goes-here', render_call_args[0][0][2]['model2_link'])
+
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.render')
     def test_cesium_map_view_terrain(self, mock_render):
         request = self.request_factory.get('/jobs')
         request.user = self.user
@@ -154,6 +173,18 @@ class TestGizmoShowcase(unittest.TestCase):
         # Check render
         render_call_args = mock_render.call_args_list
         self.assertIn('czml', render_call_args[0][0][2]['page_type'])
+
+    @mock.patch('tethys_gizmos.views.gizmo_showcase.render')
+    def test_cesium_map_view_geojson(self, mock_render):
+        request = self.request_factory.get('/jobs')
+        request.user = self.user
+
+        # Execute
+        gizmo_showcase.cesium_map_view(request, 'geojson')
+
+        # Check render
+        render_call_args = mock_render.call_args_list
+        self.assertIn('geojson', render_call_args[0][0][2]['page_type'])
 
     @mock.patch('tethys_gizmos.views.gizmo_showcase.render')
     def test_cesium_map_view_model(self, mock_render):

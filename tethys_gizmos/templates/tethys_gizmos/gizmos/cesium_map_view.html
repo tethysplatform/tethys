@@ -10,6 +10,7 @@
                     {{ key }}="{{ value }}"
                 {% endfor %}
             {% endif %}
+            data-cesium-ion-token="{{ cesium_ion_token }}"
             data-options="{{ options|jsonify }}"
             data-globe="{{ globe|jsonify }}"
             data-view="{{ view|jsonify }}"

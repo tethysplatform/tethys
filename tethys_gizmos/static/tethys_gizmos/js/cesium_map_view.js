@@ -14,7 +14,8 @@ var CESIUM_MAP_VIEW = (function() {
     // Objects
     var m_viewer;					    // The map object
 
-    var m_options,                      // The map basic options
+    var m_token,
+        m_options,                      // The map basic options
         m_globe,                        // The map globe options
         m_view_options,                 // The map view options
         m_terrain_options,              // The map terrain options
@@ -52,7 +53,10 @@ var CESIUM_MAP_VIEW = (function() {
     {
         // Get view settings from data attribute
         var $map_element = $('#' + m_map_target);
+        m_token = $map_element.data('cesium-ion-token');
         m_options = $map_element.data('options');
+
+        Cesium.Ion.defaultAccessToken = m_token;
 
         // Initialize the clock options
         clock_options_init();
@@ -174,14 +178,48 @@ var CESIUM_MAP_VIEW = (function() {
             return;
         }
 
-        var layer_options = cesium_options(m_image_layer_options);
-        for (var layer_option in layer_options)
-        {
-            var key = layer_options[layer_option]['imageryProvider']['key'];
-            if (key) {
-                Cesium.MapboxApi.defaultAccessToken = key;
+        for (var i = 0; i < m_image_layer_options.length; i++) {
+            var curr_layer = m_image_layer_options[i];
+
+            if ('source' in curr_layer) {
+                if (curr_layer.source == 'TileWMS' || curr_layer.source == 'ImageWMS') {
+                    var tile_wms = new Cesium.WebMapServiceImageryProvider({
+                        url: curr_layer.options.url,
+                        layers: curr_layer.options.params.LAYERS,
+                        parameters: {
+                            format: 'image/png',
+                            transparent: true,
+                        }
+                    });
+                    var img_layer = m_viewer.imageryLayers.addImageryProvider(tile_wms);
+                    img_layer['tethys_data'] = curr_layer.data;
+                    img_layer['legend_title'] = curr_layer.legend_title;
+                    img_layer['legend_classes'] = curr_layer.legend_classes;
+                    img_layer['legend_extent'] = curr_layer.legend_extent;
+                    img_layer['legend_extent_projection'] = curr_layer.legend_extent_projection;
+                    img_layer['feature_selection'] = curr_layer.feature_selection;
+                    img_layer['geometry_attribute'] = curr_layer.geometry_attribute;
+                }
+
+            } else {
+                var layer_options = cesium_options(curr_layer);
+                for (var layer_option in layer_options) {
+                    var imagery_provider = layer_options[layer_option]['imageryProvider'];
+                    var key = layer_options[layer_option]['imageryProvider']['key'];
+                    if (key) {
+                        Cesium.MapboxApi.defaultAccessToken = key;
+                    }
+                    var img_layer = m_viewer.imageryLayers.addImageryProvider(
+                        layer_options[layer_option]['imageryProvider']);
+                    img_layer['tethys_data'] = curr_layer.data;
+                    img_layer['legend_title'] = curr_layer.legend_title;
+                    img_layer['legend_classes'] = curr_layer.legend_classes;
+                    img_layer['legend_extent'] = curr_layer.legend_extent;
+                    img_layer['legend_extent_projection'] = curr_layer.legend_extent_projection;
+                    img_layer['feature_selection'] = curr_layer.feature_selection;
+                    img_layer['geometry_attribute'] = curr_layer.geometry_attribute;
+                }
             }
-            m_viewer.imageryLayers.addImageryProvider(layer_options[layer_option]['imageryProvider'])
         }
     }
 
@@ -232,27 +270,62 @@ var CESIUM_MAP_VIEW = (function() {
     cesium_load_entities = function()
     {
         var $map_element = $('#' + m_map_target);
-        m_entities_options = $map_element.data('entities');
+        var m_entities_options = [];
+        var raw_entities_options = $map_element.data('entities');
 
-        if(is_empty_or_undefined(m_entities_options))
+        if(is_empty_or_undefined(raw_entities_options))
         {
             return;
         }
 
-        // Loop through each object in the list and return the processed object
-        for (let entity_option in m_entities_options) {
-            for (var i=0; i < m_entities_options[entity_option].length; i++) {
-                m_entities_options[entity_option][i] = cesium_options(m_entities_options[entity_option][i]);
-            }
-
-        }
         // load entity object.
-        for (let entity_option in m_entities_options) {
+        for (let i = 0; i < raw_entities_options.length; i++) {
+            var curr_entity_options  = raw_entities_options[i];
+
+            if (!'source' in curr_entity_options) {
+                continue;
+            }
             // process object to handle object.
-            var czml = m_entities_options[entity_option];
-            var dataSourcePromise = Cesium.CzmlDataSource.load(czml);
-            m_viewer.dataSources.add(dataSourcePromise);
-            m_viewer.zoomTo(dataSourcePromise);
+            if (curr_entity_options.source.toLowerCase() == 'czml')
+            {
+                var czml = curr_entity_options.options;
+                var dataSourcePromise = Cesium.CzmlDataSource.load(czml).then(function(source_result) {
+                    source_result['tethys_data'] = curr_entity_options.data;
+                    source_result['legend_title'] = curr_entity_options.legend_title;
+                    source_result['legend_classes'] = curr_entity_options.legend_classes;
+                    source_result['legend_extent'] = curr_entity_options.legend_extent;
+                    source_result['legend_extent_projection'] = curr_entity_options.legend_extent_projection;
+                    source_result['feature_selection'] = curr_entity_options.feature_selection;
+                    source_result['geometry_attribute'] = curr_entity_options.geometry_attribute;
+
+                    if ('layer_options' in curr_entity_options && curr_entity_options.layer_options &&
+                        'visible' in curr_entity_options.layer_options) {
+                        source_result.show = curr_entity_options.layer_options.visible;
+                    }
+                    return source_result;
+                });
+                m_viewer.dataSources.add(dataSourcePromise);
+            }
+            else if (curr_entity_options.source.toLowerCase() == 'geojson')
+            {
+                var gjson = curr_entity_options.options;
+                var dataSourcePromise = Cesium.GeoJsonDataSource.load(gjson).then(function(source_result) {
+                    source_result['tethys_data'] = curr_entity_options.data;
+                    source_result['legend_title'] = curr_entity_options.legend_title;
+                    source_result['legend_classes'] = curr_entity_options.legend_classes;
+                    source_result['legend_extent'] = curr_entity_options.legend_extent;
+                    source_result['legend_extent_projection'] = curr_entity_options.legend_extent_projection;
+                    source_result['feature_selection'] = curr_entity_options.feature_selection;
+                    source_result['geometry_attribute'] = curr_entity_options.geometry_attribute;
+
+                    if ('layer_options' in curr_entity_options && curr_entity_options.layer_options &&
+                        'visible' in curr_entity_options.layer_options) {
+                        source_result.show = curr_entity_options.layer_options.visible;
+                    }
+                    return source_result;
+                });
+                m_viewer.dataSources.add(dataSourcePromise);
+            }
         }
     }
 
