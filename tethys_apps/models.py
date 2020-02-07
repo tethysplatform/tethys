@@ -294,6 +294,10 @@ class CustomSetting(TethysAppSetting):
             if self.value == '':
                 self.value = self.default
 
+        if not self.value and self.required:
+            raise TethysAppSettingNotAssigned(f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
+                                              f'has not been assigned.')
+
         if self.value == '' or self.value is None:
             # None is a valid value to return in the case the value has not been set for this setting type
             return None

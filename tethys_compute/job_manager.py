@@ -45,7 +45,6 @@ class JobManager:
     def __init__(self, app):
         self.app = app
         self.label = app.package
-        self.app_workspace = app.get_app_workspace()
         self.job_templates = dict()
 
     def create_job(self, name, user, job_type=None, **kwargs):
