@@ -74,6 +74,7 @@ class CustomSettingTests(TethysTestCase):
     def test_get_value_empty(self):
         custom_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')
         custom_setting.value = ''
+        custom_setting.required = False
         custom_setting.save()
 
         self.assertIsNone(CustomSetting.objects.get(name='default_name').get_value())

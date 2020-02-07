@@ -147,36 +147,7 @@ class HandoffManager:
         """
         Returns a list of valid HandoffHandler objects.
         """
-        valid_handlers = [handler for handler in self.handlers if handler.valid]
-
-        # Code for backwards compatibility TODO: delete this code block when deprecated
-        valid_handlers = []
-        for handler in self.handlers:
-            if handler.valid:
-                valid_handlers.append(handler)
-            else:
-                handler_str = handler.handler
-                if ':' in handler_str:
-                    warnings.warn('The handler attribute of a HandoffHandler should now be in the '
-                                  'form: "my_first_app.controllers.my_handler". The form "handoff:my_handler" '
-                                  'is now deprecated.', DeprecationWarning)
-
-                    # Split into module name and function name
-                    module_path, function_name = handler_str.split(':')
-
-                    # Pre-process handler path
-                    full_module_path = '.'.join(('tethysapp', self.app.package, module_path))
-                    try:
-                        # Import module
-                        module = __import__(full_module_path, fromlist=[function_name])
-                    except ImportError:
-                        pass
-                    else:
-                        handler._function = getattr(module, function_name)
-                        handler._valid = True
-                        valid_handlers.append(handler)
-
-        return valid_handlers
+        return [handler for handler in self.handlers if handler.valid]
 
 
 class HandoffHandler(TethysFunctionExtractor):

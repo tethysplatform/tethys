@@ -56,29 +56,3 @@ class TestAppInstallation(unittest.TestCase):
     def test_get_tethysapp_directory(self):
         ret = tethys_app_installation.get_tethysapp_directory()
         self.assertIn('tethys_apps/tethysapp', ret)
-
-    @mock.patch('warnings.warn')
-    def test_custom_install_command(self, mock_warn):
-        app_package = 'tethys_apps'
-        app_package_dir = '/test_app/'
-        dependencies = 'foo'
-
-        ret = tethys_app_installation.custom_install_command(app_package, app_package_dir, dependencies)
-
-        self.assertEqual(install, ret)
-
-        check_message = "The setup script for {} is outdated. Please run 'tethys gen setup' to update it.".format(app_package)  # noqa: E501
-        mock_warn.assert_called_with(check_message, DeprecationWarning)
-
-    @mock.patch('warnings.warn')
-    def test_custom_develop_command(self, mock_warn):
-        app_package = 'tethys_apps1'
-        app_package_dir = '/test_app/'
-        dependencies = 'foo'
-
-        ret = tethys_app_installation.custom_develop_command(app_package, app_package_dir, dependencies)
-
-        self.assertEqual(develop, ret)
-
-        check_message = "The setup script for {} is outdated. Please run 'tethys gen setup' to update it.".format(app_package)  # noqa: E501
-        mock_warn.assert_called_with(check_message, DeprecationWarning)

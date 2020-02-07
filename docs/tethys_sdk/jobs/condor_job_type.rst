@@ -65,5 +65,3 @@ API Documentation
 =================
 
 .. autoclass:: tethys_compute.models.CondorJob
-
-.. autoclass:: tethys_sdk.jobs.CondorJobTemplate

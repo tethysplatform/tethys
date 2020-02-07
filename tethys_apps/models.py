@@ -123,8 +123,7 @@ class TethysApp(models.Model, TethysBaseMixin):
         required_settings = [s for s in self.settings if s.required]
         for setting in required_settings:
             try:
-                if setting.get_value() is None:
-                    return False
+                setting.get_value()
             except TethysAppSettingNotAssigned:
                 return False
         return True
@@ -295,6 +294,11 @@ class CustomSetting(TethysAppSetting):
                 self.value = self.default
 
         if self.value == '' or self.value is None:
+            if self.required:
+                raise TethysAppSettingNotAssigned(
+                    f'The required setting "{self.name}" for app "{self.tethys_app.package}":'
+                    f'has not been assigned.')
+
             # None is a valid value to return in the case the value has not been set for this setting type
             return None
 
