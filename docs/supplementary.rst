@@ -1,8 +1,8 @@
-*************
-Supplementary
-*************
+************
+Supplemental
+************
 
-**Last Updated:** May 27, 2015
+**Last Updated:** January 2020
 
 This section provides a list of miscellaneous reference material that can be used to help you understand Tethys Platform and Tethys app development in more detail.
 
@@ -15,4 +15,6 @@ This section provides a list of miscellaneous reference material that can be use
    supplementary/install_ubuntu
    supplementary/docker_testing
    supplementary/pgadmin
+   ./glossary
+   ./summary
 

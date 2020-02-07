@@ -1,3 +1,5 @@
+.. _key_concepts_beginner_tutorial:
+
 *****************
 Beginner Concepts
 *****************

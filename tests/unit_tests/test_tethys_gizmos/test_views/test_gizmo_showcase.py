@@ -14,27 +14,8 @@ class TestGizmoShowcase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    @mock.patch('tethys_gizmos.views.gizmo_showcase.list_spatial_dataset_engines')
-    def test_get_geoserver_wms(self, mock_list_sdes):
-        endpoint = 'http://localhost:8080/geoserver/rest'
-        expected_endpoint = 'http://localhost:8080/geoserver/wms'
-        mock_sde = mock.MagicMock(type='GEOSERVER',
-                                  endpoint=endpoint)
-        mock_list_sdes.return_value = [mock_sde]
-        result = gizmo_showcase.get_geoserver_wms()
-
-        # Check Result
-        self.assertEqual(expected_endpoint, result)
-
-    @mock.patch('tethys_gizmos.views.gizmo_showcase.list_spatial_dataset_engines')
-    def test_get_geoserver_wms_connection_error(self, mock_list_sdes):
-        # Connection Error Case
-        endpoint = 'http://localhost:8080/geoserver/rest'
-        expected_endpoint = 'http://ciwmap.chpc.utah.edu:8080/geoserver/wms'
-        mock_sde = mock.MagicMock(type='GEOSERVER',
-                                  endpoint=endpoint)
-        mock_sde.validate.side_effect = ConnectionError
-        mock_list_sdes.return_value = [mock_sde]
+    def test_get_geoserver_wms(self):
+        expected_endpoint = 'https://demo.geo-solutions.it/geoserver/wms'
         result = gizmo_showcase.get_geoserver_wms()
 
         # Check Result

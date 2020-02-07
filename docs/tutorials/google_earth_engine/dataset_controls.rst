@@ -9,6 +9,10 @@ In this tutorial you will add controls to the app that will eventually be used t
 * Tethys Gizmos API
 * Tethys Templating API
 
+.. figure:: ./resources/dataset_controls_solution.png
+    :width: 800px
+    :align: center
+
 
 0. Start From Previous Solution (Optional)
 ==========================================
@@ -25,7 +29,7 @@ If you wish to use the previous solution as a starting point:
 1. Define Target GEE Products
 =============================
 
-Google Earth Engine hosts a huge offering of remote sensing datasets (see: `Earth Engine Data Catalog <https://developers.google.com/earth-engine/datasets>`_. For the purposes of this tutorial, you'll only expose a few of the datasets in the app.
+Google Earth Engine hosts a huge offering of remote sensing datasets (see: `Earth Engine Data Catalog <https://developers.google.com/earth-engine/datasets>`_). For the purposes of this tutorial, you'll only expose a few of the datasets in the app.
 
 In this step, you'll define a variable that will effectively contain a list of all of the datasets you plan to support with some metadata for each that you will need in the interface and for processing. The data is organized in nested dictionaries with the following structure:
 
@@ -417,7 +421,18 @@ In this step, you'll create controls using Tethys Gizmos with their initial valu
       <div id="ee-products" data-ee-products="{{ ee_products|jsonify }}"></div>
     {% endblock %}
 
-3. Solution
+3. Test and Verify
+==================
+
+Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and login if necessary. Verify the following:
+
+1. The content area should be blank and the controls should be located in the navigation pane on the left. If the navigation pane is not open, press the hamburger button to the left of the app logo and name to open it.
+2. There should be six controls: **Satellite Platform**, **Sensor**, **Product**, **Start Date**, **End Date**, and **Reduction Method**.
+3. Confirm that each control is being rendered with the values you expect.
+4. Verify that the controls function properly (i.e. select controls display options in drop down when selected and the date picker appears when you select one of the date controls.
+5. Notice that if you select a different satellite platform, the sensor options do not update. This is because we have not implemented the dynamic behaviour of the controls yet. We have used Tethys Gizmos to create the controls with their initial state, but we'll need to write some JavaScript to update the controls when the state of one changes. We'll do that in the next tutorial.
+
+4. Solution
 ===========
 
 This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/dataset-controls-solution-3.0>`_ or clone it as follows:

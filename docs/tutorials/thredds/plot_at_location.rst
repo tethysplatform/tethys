@@ -11,6 +11,10 @@ In this tutorial you will add a tool for querying the active THREDDS dataset for
 * `THREDDS NetCDF Subset Service (NCSS) <https://www.unidata.ucar.edu/software/tds/current/reference/NetcdfSubsetServiceReference.html>`_
 * `JQuery Load <https://api.jquery.com/load/>`_
 
+.. figure:: ./resources/plot_at_location_solution.png
+    :width: 800px
+    :align: center
+
 
 0. Start From Previous Solution (Optional)
 ==========================================
@@ -23,280 +27,7 @@ If you wish to use the previous solution as a starting point:
     cd tethysapp-thredds_tutorial
     git checkout -b visualize-leaflet-solution visualize-leaflet-solution-|version|
 
-1. Create New Plot Controller
-=============================
-
-1. Add two new methods to the :file:`thredds_methods.py` module:
-
-
-.. code-block:: python
-
-    from datetime import datetime, timedelta
-
-.. code-block:: python
-
-    def find_dataset(catalog, dataset):
-        """
-        Recursively search a TDSCatalog for a dataset with the given name.
-
-        Args:
-            catalog(siphon.catalog.TDSCatalog): A Siphon catalog object bound to a valid THREDDS service.
-            dataset(str): The name of the dataset to find.
-
-        Returns:
-            siphon.catalog.Dataset: The catalog dataset object or None if not found.
-        """
-        if dataset in catalog.datasets:
-            return catalog.datasets[dataset]
-
-        for catalog_name, catalog_obj in catalog.catalog_refs.items():
-            d = find_dataset(catalog_obj.follow(), dataset)
-            if d is not None:
-                return d
-
-        return None
-
-.. code-block:: python
-
-    def extract_time_series_at_location(catalog, geometry, dataset, variable, start_time=None, end_time=None,
-                                        vertical_level=None):
-        """
-        Extract a time series from a THREDDS dataset at the given location.
-
-        Args:
-            catalog(siphon.catalog.TDSCatalog): a Siphon catalog object bound to a valid THREDDS service.
-            geometry(geojson): A geojson object representing the location.
-            dataset(str): Name of the dataset to query.
-            variable(str): Name of the variable to query.
-            start_time(datetime): Start of time range to query. Defaults to datetime.utcnow().
-            end_time(datetime): End of time range to query. Defaults to 7 days after start_time.
-            vertical_level(number): The vertical level to query. Defaults to 100000.
-
-        Returns:
-            netCDF5.Dataset: The data from the NCSS query.
-        """
-        try:
-            d = find_dataset(catalog, dataset)
-            ncss = d.subset()
-            query = ncss.query()
-
-            # Filter by location
-            coordinates = geometry.geometry.coordinates
-            query.lonlat_point(coordinates[0], coordinates[1])
-
-            # Filter by time
-            if start_time is None:
-                start_time = datetime.utcnow()
-
-            if end_time is None:
-                end_time = start_time + timedelta(days=7)
-
-            query.time_range(start_time, end_time)
-
-            # Filter by variable
-            query.variables(variable).accept('netcdf')
-
-            # Filter by vertical level
-            if vertical_level is not None:
-                query.vertical_level(vertical_level)
-            else:
-                query.vertical_level(100000)
-
-            # Get the data
-            data = ncss.get_data(query)
-
-        except OSError as e:
-            if 'NetCDF: Unknown file format' in str(e):
-                raise ValueError("We're sorry, but we don't support querying this type of dataset at this time. "
-                                 "Please try another dataset.")
-            else:
-                raise e
-
-        return data
-
-.. note::
-
-    The ``find_dataset`` method is another recursive function similar to the ``parse_datasets`` function, except that it searches for and returns a single dataset with the name given.
-
-    The ``extract_time_series_at_location`` method uses the NetCDF Subset Service (NCSS) to subset the dataset, in this case at a specific location over a period of time.
-
-2. You'll plot the time series data using the Plotly graphing library. Create a new function that will generate the Plotly figure given the time series dataset in a new Python module, :file:`figure.py`:
-
-.. code-block:: python
-
-    from plotly import graph_objs as go
-    from netCDF4 import num2date
-
-
-    def generate_figure(time_series, dataset, variable):
-        """
-        Generate a figure from a netCDF4.Dataset.
-
-        Args:
-            time_series(netCDF4.Dataset): A time series NetCDF4 Dataset.
-            dataset(str): The name of the time series dataset.
-            variable(str): The name of the variable to plot.
-        """
-        figure_data = []
-        figure_title = dataset
-
-        column_name = variable.replace('_', ' ').title()
-
-        yaxis_title = column_name
-        series_name = column_name
-
-        # Add units to yaxis title
-        variable_units = time_series.variables[variable].units
-        if variable_units:
-            yaxis_title += f' ({variable_units})'
-
-        # Extract needed arrays for plot from NetCDF4 Dataset
-        variable_array = time_series.variables[variable][:].squeeze()
-        time = time_series.variables['time']
-        time_array = num2date(time[:].squeeze(), time.units)
-
-        series_plot = go.Scatter(
-            x=time_array,
-            y=variable_array,
-            name=series_name,
-            mode='lines'
-        )
-
-        figure_data.append(series_plot)
-
-        figure = {
-            'data': figure_data,
-            'layout': {
-                'title': {
-                    'text': figure_title,
-                    'pad': {
-                        'b': 5,
-                    },
-                },
-                'yaxis': {'title': yaxis_title},
-                'legend': {
-                    'orientation': 'h'
-                },
-                'margin': {
-                    'l': 40,
-                    'r': 10,
-                    't': 80,
-                    'b': 10
-                }
-            }
-        }
-
-        return figure
-
-3. Create a new controller, ``get_time_series_plot``, that to handle plot requests. Add the following to :file:`controllers.py`:
-
-.. code-block:: python
-
-    import geojson
-    from datetime import datetime
-    from simplejson.errors import JSONDecodeError
-    from tethys_sdk.gizmos import SelectInput, PlotlyView
-    from .figure import generate_figure
-    from .thredds_methods import parse_datasets, get_layers_for_wms, extract_time_series_at_location
-
-.. code-block:: python
-
-    @login_required()
-    def get_time_series_plot(request):
-        context = {'success': False}
-
-        if request.method != 'POST':
-            return HttpResponseNotAllowed(['POST'])
-
-        try:
-            log.debug(f'POST: {request.POST}')
-
-            geojson_str = str(request.POST.get('geometry', None))
-            dataset = request.POST.get('dataset', None)
-            variable = request.POST.get('variable', None)
-            start_time = request.POST.get('start_time', None)
-            end_time = request.POST.get('end_time', None)
-            vertical_level = request.POST.get('vertical_level', None)
-
-            # Deserialize GeoJSON string into Python objects
-            try:
-                geometry = geojson.loads(geojson_str)
-            except JSONDecodeError:
-                raise ValueError('Please draw an area of interest.')
-
-            # Convert milliseconds from epoch to date time
-            if start_time is not None:
-                s = int(start_time) / 1000.0
-                start_time = datetime.fromtimestamp(s)
-
-            if end_time is not None:
-                e = int(end_time) / 1000.0
-                end_time = datetime.fromtimestamp(e)
-
-            # Retrieve the connection to the THREDDS server
-            catalog = app.get_spatial_dataset_service(app.THREDDS_SERVICE_NAME, as_engine=True)
-
-            time_series = extract_time_series_at_location(
-                catalog=catalog,
-                geometry=geometry,
-                dataset=dataset,
-                variable=variable,
-                start_time=start_time,
-                end_time=end_time,
-                vertical_level=vertical_level
-            )
-
-            log.debug(f'Time Series: {time_series}')
-
-            figure = generate_figure(
-                time_series=time_series,
-                dataset=dataset,
-                variable=variable
-            )
-
-            plot_view = PlotlyView(figure, height='200px', width='100%')
-
-            context.update({
-                'success': True,
-                'plot_view': plot_view
-            })
-
-        except ValueError as e:
-            context['error'] = str(e)
-
-        except Exception:
-            context['error'] = f'An unexpected error has occurred. Please try again.'
-            log.exception('An unexpected error occurred.')
-
-        return render(request, 'thredds_tutorial/plot.html', context)
-
-4. Create a new template for the ``get_time_series_plot`` controller, :file:`templates/thredds_tutorial/plot.html`, with the following contents:
-
-.. code-block:: html+django
-
-    {% load tethys_gizmos %}
-
-    {% if plot_view %}
-      {% gizmo plot_view %}
-    {% endif %}
-
-    {% if error %}
-      <div class="alert alert-danger" role="alert">
-        <span>{{ error }}</span>
-      </div>
-    {% endif %}
-
-5. Add a ``UrlMap`` for the ``get_time_series_plot`` controller in :file:`app.py`:
-
-.. code-block:: python
-
-    UrlMap(
-        name='get_time_series_plot',
-        url='thredds-tutorial/get-time-series-plot',
-        controller='thredds_tutorial.controllers.get_time_series_plot'
-    ),
-
-2. Add Drawing Tool to Map
+1. Add Drawing Tool to Map
 ==========================
 
 In this step you'll learn to use another Leaflet plugin: `Leaflet.Draw <http://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html>`_. This plugin adds a toolbar of controls for drawing different shapes on the map, including a point/marker tool. You'll implement the plot at location tool using the marker tool and bind to its on-draw event to load the plot for that location.
@@ -411,6 +142,282 @@ In this step you'll learn to use another Leaflet plugin: `Leaflet.Draw <http://l
         init_plot_at_location();
     });
 
+5. Verify that the drawing tool has been added to the map. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. A single tool for drawing markers/points should appear near the top left-hand corner of the map, just below the zoom controls.
+
+2. Create New Plot Controller
+=============================
+
+In this step you will create a new controller that will query the dataset at the given location using the NCSS service and then build a plotly plot with the results.
+
+1. Add two new methods to the :file:`thredds_methods.py` module:
+
+
+.. code-block:: python
+
+    from datetime import datetime, timedelta
+
+.. code-block:: python
+
+    def find_dataset(catalog, dataset):
+        """
+        Recursively search a TDSCatalog for a dataset with the given name.
+
+        Args:
+            catalog(siphon.catalog.TDSCatalog): A Siphon catalog object bound to a valid THREDDS service.
+            dataset(str): The name of the dataset to find.
+
+        Returns:
+            siphon.catalog.Dataset: The catalog dataset object or None if not found.
+        """
+        if dataset in catalog.datasets:
+            return catalog.datasets[dataset]
+
+        for catalog_name, catalog_obj in catalog.catalog_refs.items():
+            d = find_dataset(catalog_obj.follow(), dataset)
+            if d is not None:
+                return d
+
+        return None
+
+.. code-block:: python
+
+    def extract_time_series_at_location(catalog, geometry, dataset, variable, start_time=None, end_time=None,
+                                        vertical_level=None):
+        """
+        Extract a time series from a THREDDS dataset at the given location.
+
+        Args:
+            catalog(siphon.catalog.TDSCatalog): a Siphon catalog object bound to a valid THREDDS service.
+            geometry(geojson): A geojson object representing the location.
+            dataset(str): Name of the dataset to query.
+            variable(str): Name of the variable to query.
+            start_time(datetime): Start of time range to query. Defaults to datetime.utcnow().
+            end_time(datetime): End of time range to query. Defaults to 7 days after start_time.
+            vertical_level(number): The vertical level to query. Defaults to 100000.
+
+        Returns:
+            netCDF5.Dataset: The data from the NCSS query.
+        """
+        try:
+            d = find_dataset(catalog, dataset)
+            ncss = d.subset()
+            query = ncss.query()
+
+            # Filter by location
+            coordinates = geometry.geometry.coordinates
+            query.lonlat_point(coordinates[0], coordinates[1])
+
+            # Filter by time
+            if start_time is None:
+                start_time = datetime.utcnow()
+
+            if end_time is None:
+                end_time = start_time + timedelta(days=7)
+
+            query.time_range(start_time, end_time)
+
+            # Filter by variable
+            query.variables(variable).accept('netcdf')
+
+            # Filter by vertical level
+            if vertical_level is not None:
+                query.vertical_level(vertical_level)
+            else:
+                query.vertical_level(100000)
+
+            # Get the data
+            data = ncss.get_data(query)
+
+        except OSError as e:
+            if 'NetCDF: Unknown file format' in str(e):
+                raise ValueError("We're sorry, but we don't support querying this type of dataset at this time. "
+                                 "Please try another dataset.")
+            else:
+                raise e
+
+        return data
+
+.. note::
+
+    The ``find_dataset`` method is another recursive function similar to the ``parse_datasets`` function, except that it searches for and returns a single dataset with the name given.
+
+    The ``extract_time_series_at_location`` method uses the NetCDF Subset Service (NCSS) to subset the dataset, in this case at a specific location over a period of time.
+
+2. Create a new function that will generate the Plotly figure in a new Python module, :file:`figure.py`:
+
+.. code-block:: python
+
+    from plotly import graph_objs as go
+    from netCDF4 import num2date
+
+
+    def generate_figure(time_series, dataset, variable):
+        """
+        Generate a figure from a netCDF4.Dataset.
+
+        Args:
+            time_series(netCDF4.Dataset): A time series NetCDF4 Dataset.
+            dataset(str): The name of the time series dataset.
+            variable(str): The name of the variable to plot.
+        """
+        figure_data = []
+        figure_title = dataset
+
+        column_name = variable.replace('_', ' ').title()
+
+        yaxis_title = column_name
+        series_name = column_name
+
+        # Add units to yaxis title
+        variable_units = time_series.variables[variable].units
+        if variable_units:
+            yaxis_title += f' ({variable_units})'
+
+        # Extract needed arrays for plot from NetCDF4 Dataset
+        variable_array = time_series.variables[variable][:].squeeze()
+        time = time_series.variables['time']
+        time_array = num2date(time[:].squeeze(), time.units)
+
+        series_plot = go.Scatter(
+            x=time_array,
+            y=variable_array,
+            name=series_name,
+            mode='lines'
+        )
+
+        figure_data.append(series_plot)
+
+        figure = {
+            'data': figure_data,
+            'layout': {
+                'title': {
+                    'text': figure_title,
+                    'pad': {
+                        'b': 5,
+                    },
+                },
+                'yaxis': {'title': yaxis_title},
+                'legend': {
+                    'orientation': 'h'
+                },
+                'margin': {
+                    'l': 40,
+                    'r': 10,
+                    't': 80,
+                    'b': 10
+                }
+            }
+        }
+
+        return figure
+
+3. Create a new controller, ``get_time_series_plot``, to handle plot requests. Add the following to :file:`controllers.py`:
+
+.. code-block:: python
+
+    import geojson
+    from datetime import datetime
+    from simplejson.errors import JSONDecodeError
+    from tethys_sdk.gizmos import SelectInput, PlotlyView
+    from .figure import generate_figure
+    from .thredds_methods import parse_datasets, get_layers_for_wms, extract_time_series_at_location
+
+.. code-block:: python
+
+    @login_required()
+    def get_time_series_plot(request):
+        context = {'success': False}
+
+        if request.method != 'POST':
+            return HttpResponseNotAllowed(['POST'])
+
+        try:
+            log.debug(f'POST: {request.POST}')
+
+            geojson_str = str(request.POST.get('geometry', None))
+            dataset = request.POST.get('dataset', None)
+            variable = request.POST.get('variable', None)
+            start_time = request.POST.get('start_time', None)
+            end_time = request.POST.get('end_time', None)
+            vertical_level = request.POST.get('vertical_level', None)
+
+            # Deserialize GeoJSON string into Python objects
+            try:
+                geometry = geojson.loads(geojson_str)
+            except JSONDecodeError:
+                raise ValueError('Please draw an area of interest.')
+
+            # Convert milliseconds from epoch to date time
+            if start_time is not None:
+                s = int(start_time) / 1000.0
+                start_time = datetime.fromtimestamp(s)
+
+            if end_time is not None:
+                e = int(end_time) / 1000.0
+                end_time = datetime.fromtimestamp(e)
+
+            # Retrieve the connection to the THREDDS server
+            catalog = app.get_spatial_dataset_service(app.THREDDS_SERVICE_NAME, as_engine=True)
+
+            time_series = extract_time_series_at_location(
+                catalog=catalog,
+                geometry=geometry,
+                dataset=dataset,
+                variable=variable,
+                start_time=start_time,
+                end_time=end_time,
+                vertical_level=vertical_level
+            )
+
+            log.debug(f'Time Series: {time_series}')
+
+            figure = generate_figure(
+                time_series=time_series,
+                dataset=dataset,
+                variable=variable
+            )
+
+            plot_view = PlotlyView(figure, height='200px', width='100%')
+
+            context.update({
+                'success': True,
+                'plot_view': plot_view
+            })
+
+        except ValueError as e:
+            context['error'] = str(e)
+
+        except Exception:
+            context['error'] = f'An unexpected error has occurred. Please try again.'
+            log.exception('An unexpected error occurred.')
+
+        return render(request, 'thredds_tutorial/plot.html', context)
+
+4. Create a new template for the ``get_time_series_plot`` controller, :file:`templates/thredds_tutorial/plot.html`, with the following contents:
+
+.. code-block:: html+django
+
+    {% load tethys_gizmos %}
+
+    {% if plot_view %}
+      {% gizmo plot_view %}
+    {% endif %}
+
+    {% if error %}
+      <div class="alert alert-danger" role="alert">
+        <span>{{ error }}</span>
+      </div>
+    {% endif %}
+
+5. Add a ``UrlMap`` for the ``get_time_series_plot`` controller in :file:`app.py`:
+
+.. code-block:: python
+
+    UrlMap(
+        name='get_time_series_plot',
+        url='thredds-tutorial/get-time-series-plot',
+        controller='thredds_tutorial.controllers.get_time_series_plot'
+    ),
 
 3. Load Plot Using JQuery Load
 ==============================
@@ -585,7 +592,7 @@ The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL
         });
     }); //document ready;
 
-9. Call ``update_plot`` in the on-draw handler at the bottom of ``init_plot_at_location``:
+9. Call ``update_plot`` in the on-draw handler at the bottom of ``init_plot_at_location`` in :file:`public/js/leaflet_map.js`:
 
 .. code-block:: javascript
 
@@ -651,9 +658,18 @@ The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL
         update_legend();
     };
 
+4. Test and Verify
+==================
 
+Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. Verify the following:
 
-4. Solution
+1. Select the "Best GFS Half Degree Forecast Time Series" dataset using the **Dataset** control to test a time-varying layer.
+2. Click on the **Draw a Marker** button, located just below the zoom controls on the map.
+3. Drop a marker somewhere on the map.
+4. Verify that the plot dialog appears automatically after dropping the marker with the loading image showing.
+5. Verify that the plot appears after the data has been queried.
+
+5. Solution
 ===========
 
 This concludes the New App Project portion of the THREDDS Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-thredds_tutorial/tree/thredds-service-solution-3.0>`_ or clone it as follows:

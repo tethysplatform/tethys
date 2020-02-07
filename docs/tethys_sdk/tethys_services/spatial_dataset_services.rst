@@ -1,3 +1,6 @@
+.. _spatial_dataset_services_api:
+
+
 ****************************
 Spatial Dataset Services API
 ****************************

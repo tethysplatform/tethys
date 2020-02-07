@@ -1,8 +1,8 @@
-*********************
-Summary of References
-*********************
+**********
+References
+**********
 
-**Last Updated:** November 17, 2014
+**Last Updated:** November 2014
 
 This page is provides a list of all the external resources referred too during the documentation for convenience.
 

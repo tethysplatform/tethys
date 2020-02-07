@@ -13,7 +13,7 @@ This tutorial demonstrates how to use Google Earth Engine in a Tethys app.
 Prerequisites
 -------------
 
-* Complete the :doc:`./getting_started` Tutorial
+* Complete the :ref:`key_concepts_tutorial` Tutorial
 * Sign up for a `Google Earth Engine Account <https://signup.earthengine.google.com>`_
 
 Outline

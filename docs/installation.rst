@@ -15,7 +15,7 @@ Also, be sure that the system you are using meets the minimum :ref:`system_reqs`
 
 
 1. Install the ``tethys-platform`` Conda Package
------------------------------------------------
+------------------------------------------------
 
 To install the ``tethys-platform`` into a new conda environment then run the following commands::
 

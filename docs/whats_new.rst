@@ -163,7 +163,7 @@ Dask Job Type
 * New TethysJob types for submitting and managing Dask Jobs.
 * Dask allows pure Python code to be automagically parallelized and executed accross a distributed cluster of nodes.
 
-See: `./tethys_sdk/jobs/dask_job_type` and :doc:`./tutorials/dask`
+See: :doc:`./tethys_sdk/jobs/dask_job_type` API documentation and the :doc:`./tutorials/dask` tutorial
 
 CesiumMapView Gizmo
 -------------------
@@ -208,6 +208,15 @@ Updated PostGIS Docker Image
 * The ``tethys docker`` command will now install the excellent ``mdillon/postgis`` image.
 
 See: `Docker Hub: mdillon/postgis <https://hub.docker.com/r/mdillon/postgis/>`_
+
+THREDDS Integration as Tethys Service
+-------------------------------------
+
+* THREDDS is now supported as a Tethys Spatial Dataset Service.
+* A `Siphon <https://unidata.github.io/siphon/latest/index.html>`_ `TDSCatalog <https://unidata.github.io/siphon/latest/api/catalog.html#siphon.catalog.TDSCatalog>`_ object is returned as the engine.
+* The official `Unidata THREDDS docker <https://hub.docker.com/r/unidata/thredds-docker>`_ can be installed with the Tethys docker command.
+
+See: :ref:`spatial_dataset_services_api`, :ref:`thredds_engine_reference`, and :ref:`tethys_cli_docker`
 
 Official Tethys Docker Image
 ----------------------------

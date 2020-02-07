@@ -1,8 +1,10 @@
-***************
-Getting Started
-***************
+.. _key_concepts_tutorial:
 
-**Last Updated:** October 2019
+************
+Key Concepts
+************
+
+**Last Updated:** January 2020
 
 This tutorial will walk you through the steps of setting up a new Tethys App project using Tethys Platform. If you have not already installed Tethys Platform, follow the :doc:`../installation` documentation and then return.
 
@@ -11,7 +13,7 @@ You will need to use the command line/terminal to manage your app and run the de
 .. toctree::
    :maxdepth: 1
 
-   getting_started/new_app_project
-   getting_started/beginner
-   getting_started/intermediate
-   getting_started/advanced
+   key_concepts/new_app_project
+   key_concepts/beginner
+   key_concepts/intermediate
+   key_concepts/advanced

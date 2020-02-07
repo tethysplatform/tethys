@@ -1,3 +1,5 @@
+.. _key_concepts_new_app_project_tutorial:
+
 **********************
 New Tethys App Project
 **********************

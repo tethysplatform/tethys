@@ -19,10 +19,15 @@ In this tutorial you will be introduced to THREDDS using the Docker container th
 * Tethys Docker Containers
 * THREDDS Docker Image
 
-1. Install TDS with Tethys Docker Command
-=========================================
+1. Install TDS
+==============
 
-The THREDDS Data Server (TDS) can be installed either manually or using their Docker container. For this tutorial we recommend using the `THREDDS Docker image <https://hub.docker.com/r/unidata/thredds-docker/dockerfile>`_, which has been integrated with the Tethys Docker command for convenience.
+The THREDDS Data Server (TDS) can be installed either manually (see: `Getting Started with the TDS <https://www.unidata.ucar.edu/software/tds/current/tutorial/GettingStarted.html>`_) or using the Docker image developed by Unidata (see `THREDDS Docker image <https://hub.docker.com/r/unidata/thredds-docker/dockerfile>`_). For this tutorial, we recommend using the Docker image to install THREDDS. We have made it easier to install the THREDDS Docker image by adding it as an option to the Tethys Docker command.
+
+.. warning::
+
+    Docker needs to be installed to use the ``tethys docker`` command (see `Install Docker <https://docs.docker.com/install/>`_). You will also need to add your user to the docker group and logout and log back in (see `Linux Post Install <https://docs.docker.com/install/linux/linux-postinstall/>`_).
+
 
 1. Initialize the THREDDS Docker container, **making sure to bind the data directory** when prompted:
 
@@ -151,7 +156,7 @@ The TDS Configuration File (:file:`threddsConfig.xml`) is used to control the be
 5. NetCDF Data Exercise
 =======================
 
-1. Download this :download:`National Water Model Short Range Forecast <./resources/nwm_20200106_short_range_forecast.zip>` data and extract it. The archive should contain the **first 3** of 18 NetCDF files each representing a 1-hour increment in an 18 hour forecast produced by the `National Water Model <https://water.noaa.gov/about/nwm>`_. Each file contains over 2.7 million forecast points where each point is associated a different stream reach on the `National Hydrogrophy Dataset <https://nhd.usgs.gov/>`_.
+1. Download this :download:`National Water Model Short Range Forecast <https://drive.google.com/open?id=1TIGAe-03ju_sOEpjTJMxvPUBXYpzWkjI>` data and extract it. The archive should contain the **first 3** of 18 NetCDF files each representing a 1-hour increment in an 18 hour forecast produced by the `National Water Model <https://water.noaa.gov/about/nwm>`_. Each file contains over 2.7 million forecast points where each point is associated a different stream reach on the `National Hydrogrophy Dataset <https://nhd.usgs.gov/>`_.
 
 2. Create a new :file:`nwm` directory in the :file:`public` directory of the TDS Content Directory (i.e.: :file:`<TDS_CONTENT_DIRECTORY>/pubilc/nwm`).
 

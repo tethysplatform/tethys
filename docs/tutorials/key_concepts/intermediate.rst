@@ -1,3 +1,5 @@
+.. _key_concepts_intermediate_tutorial:
+
 *********************
 Intermediate Concepts
 *********************

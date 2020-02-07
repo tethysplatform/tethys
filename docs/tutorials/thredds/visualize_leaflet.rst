@@ -15,6 +15,10 @@ In this tutorial you will learn how to add a `Leaflet <https://leafletjs.com/>`_
 * `Siphon <https://unidata.github.io/siphon/latest/index.html>`_
 * `OWSLib <https://geopython.github.io/OWSLib/>`_
 
+.. figure:: ./resources/visualize_leaflet_solution.png
+    :width: 800px
+    :align: center
+
 
 0. Start From Previous Solution (Optional)
 ==========================================
@@ -199,6 +203,8 @@ Leaflet is not officially supported by Tethys Platform as a Gizmo, but it can ea
     {% block app_navigation_items %}
     {% endblock %}
 
+6. Verify that the Leaflet map is now in the app. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. The leaflet map should appear in the content area of the app and fill it.
+
 2. Create Controls for Selecting Datasets
 =========================================
 
@@ -276,6 +282,12 @@ In this step, you'll create controls to allow the user to search for and select 
         padding-left: 0;
     }
 
+4. Verify that the controls are in the app and functioning properly. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. There should be three controls in the app navigation area on the left: **Dataset**, **Variable**, and **Style**.
+
+.. tip::
+
+    If the app navigation window is not open, use the hamburger menu next to the app icon to open it.
+
 3. Initialize Dataset Select Control
 ====================================
 
@@ -310,7 +322,7 @@ At this point the select controls are empty and don't do anything. In this step,
 
 .. note::
 
-    This function is recursive, meaning it calls itself. Since THREDDS datasets can be located at arbitrary paths, sometimes nested in deep folder hierarchies, the function needs to be able to follow the paths down to find all the datasets. In this case, it searches for both dataset and new catalogs. When it encounters a new catalog, it calls itself again, initiating a search for dataset and new catalogs at that level. The dataset are collected and returned back up the call stack.
+    This function is recursive, meaning it calls itself. Since THREDDS datasets can be located at arbitrary paths, sometimes nested in deep folder hierarchies, the function needs to be able to follow the paths down to find all the datasets. In this case, it searches for both datasets and new catalogs. When it encounters a new catalog, it calls itself again, initiating a search for dataset and new catalogs at that level. The dataset are collected and returned back up the call stack.
 
 2. Modify the ``home`` controller in :file:`controllers.py` to call the ``parse_datasets`` function to get a list of all datasets available on the THREDDS service:
 
@@ -364,6 +376,8 @@ At this point the select controls are empty and don't do anything. In this step,
     .. warning::
 
         DO NOT DISABLE SSL VERIFICATION FOR APPS IN PRODUCTION.
+
+3. Verify that ``home`` controller is using the new ``parse_dataset`` function to find THREDDS datasets. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. After the home page loads, inspect the log messages in the terminal where Tethys is running. The ``pprint`` calls in our controller should print the object being returned from the ``parse_dataset`` function in the terminal. It should also populate the options for the **Dataset** control.
 
 4. Create Endpoint for Getting Available WMS Layers
 ===================================================
@@ -623,6 +637,8 @@ In this step you will use the new ``get-wms-layers`` endpoint to get a list of l
         $('#style').trigger('change');
     };
 
+5. Verify that the **Variable** and **Style** controls are updated properly when the dataset changes. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. Use the **Dataset** control to select a new dataset and verify that the **Variable** and **Style** options update accordingly. Inspect the terminal where Tethys is running to see the output from the print statement we added for debugging in Step 4.
+
 6. Add Time-Dimension Plugin to Leaflet Map
 ===========================================
 
@@ -669,6 +685,8 @@ Many of the datasets hosted on THREDDS servers have time as a dimension. In this
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(m_map);
     };
+
+3. Verify that the Time-Dimension control is enabled. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. There should now be a time slider control at the bottom of the map.
 
 7. Add Selected Dataset Layer to Map
 ====================================
@@ -759,7 +777,7 @@ In this step, you'll create the ``update_layer`` method that will add the THREDD
         m_map.fitBounds(bbox);
     });
 
-5. At this point in the tutorial, the layers should show up on the map. Select the "Best GFS Half Degree Forecast Time Series" dataset using the **Dataset** control to test a time-varying layer. Press the **Play** button on the Time-Dimension control to animate the layer.
+5. Verify that the layers show up on the map. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. Select the "Best GFS Half Degree Forecast Time Series" dataset using the **Dataset** control to test a time-varying layer. Press the **Play** button on the Time-Dimension control to animate the layer.
 
 8. Implement Legend for Layers
 ==============================
@@ -848,6 +866,8 @@ The THREDDS implementation of the WMS standard includes support for the ``GetLay
         // Update the legend graphic
         update_legend();
     };
+
+6. Verify that the legend has been added to the app. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. The legend should appear under the Query controls in the navigation window on the left. Change the style and verify that the legend update accordingly.
 
 9. Implement a Map Loading Indicator
 ====================================
@@ -1120,7 +1140,18 @@ During development it is common to use print statements. Rather than delete thes
 
     Logging excessively can impact the performance of your app. Use ``info``, ``error``, and ``warning`` to log minimal, summary information that is useful for monitoring normal operation of the app. Use ``debug`` to log more detailed information to help you assess bugs or other issues with your app without needing to modify the code. In production, the Tethys Portal can be configured to log at different levels of detail using these classifications. See: `Python Logging HOWTO <https://docs.python.org/3.7/howto/logging.html>`_ and :ref:`tethys_configuration`.
 
-11. Solution
+11. Test and Verify
+===================
+
+Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. Verify the following:
+
+1. A Leaflet map should be loaded on the page with one of the datasets visualized
+2. There should be 3 controls in the navigation menu on the left: **Dataset**, **Variable**, and **Style**
+3. There should be a legend for the current layer under the control in the navigation menu.
+4. The map should feature an animation slider. If the dataset selected has time varying data, the slider should display a time step. Otherwise it will say "Time not available".
+5. Select the "Best GFS Half Degree Forecast Time Series" dataset using the **Dataset** control to test a time-varying layer. Press the **Play** button on the Time-Dimension control to animate the layer.
+
+12. Solution
 ============
 
 This concludes the New App Project portion of the THREDDS Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-thredds_tutorial/tree/thredds-service-solution-3.0>`_ or clone it as follows:

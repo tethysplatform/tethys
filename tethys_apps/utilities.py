@@ -35,15 +35,24 @@ def get_tethys_home_dir():
     Returns:
         str: path to TETHYS_HOME.
     """
+    env_tethys_home = os.environ.get('TETHYS_HOME')
+
+    # Return environment value if set
+    if env_tethys_home:
+        return env_tethys_home
+
+    # Initialize to default TETHYS_HOME
+    tethys_home = os.path.expanduser('~/.tethys')
+
     try:
-        default = os.path.expanduser('~/.tethys')
         conda_env_name = os.environ.get('CONDA_DEFAULT_ENV')
         if conda_env_name != 'tethys':
-            default = os.path.join(default, conda_env_name)
+            tethys_home = os.path.join(tethys_home, conda_env_name)
     except Exception:
-        default = None
+        tethys_log.warning(f'Running Tethys outside of active Conda environment detected. Using default '
+                           f'TETHYS_HOME "{tethys_home}". Set TETHYS_HOME environment to override.')
 
-    return os.environ.get('TETHYS_HOME', default)
+    return tethys_home
 
 
 def get_directories_in_tethys(directory_names, with_app_name=False):

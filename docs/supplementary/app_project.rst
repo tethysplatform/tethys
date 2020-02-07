@@ -36,7 +36,7 @@ The :term:`app package` contains all of the source code and resources that are n
 
 The data structures, classes, and methods that are used to define the data model :file:`model.py` module. The :file:`templates` directory contains all the Django HTML templates that are used to generate the views of the app. The :file:`controllers.py` module contains Python files for each controller of the app. The :file:`public` directory is used for static resources such as images, JavaScript and CSS files. The :file:`app.py` file contains all the configuration parameters for the app.
 
-To learn how to work with the files in the :term:`app package`, see the :doc:`../tutorials/getting_started` tutorial.
+To learn how to work with the files in the :term:`app package`, see the :ref:`key_concepts_tutorial` tutorial.
 
 Naming Conventions
 ==================

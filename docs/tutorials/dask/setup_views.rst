@@ -4,7 +4,7 @@ Setup Views
 
 **Last Updated:** November 2019
 
-In this section, you will setup most of the views needed for this app. For a refresher on setting up url maps, controllers, and templates, see: :doc:`../getting_started`.
+In this section, you will setup most of the views needed for this app. For a refresher on setting up url maps, controllers, and templates, see: :ref:`key_concepts_tutorial`.
 
 1. Link URL
 ===========

@@ -1,3 +1,5 @@
+.. _sdk_quotas_api:
+
 *****************
 Tethys Quotas API
 *****************

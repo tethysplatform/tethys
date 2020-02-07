@@ -513,14 +513,75 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
         self.assertIn('does not exist.', po_call_args[0][0][0])
 
     @mock.patch('tethys_apps.utilities.os')
-    def test_get_tethys_home_dir(self, mock_os):
-        mock_os.path.expanduser.return_value = 'test'
-        mock_os.environ.get.side_effect = ['tethys-dev', None]
-        utilities.get_tethys_home_dir()
-        mock_os.path.join.assert_called_with('test', 'tethys-dev')
+    def test_get_tethys_home_dir__default_env_name__tethys_home_not_defined(self, mock_os):
+        env_tethys_home = None
+        conda_default_env = 'tethys'  # Default Tethys environment name
+        default_tethys_home = '/home/tethys/.tethys'
+
+        mock_os.environ.get.side_effect = [env_tethys_home, conda_default_env]  # [TETHYS_HOME, CONDA_DEFAULT_ENV]
+        mock_os.path.expanduser.return_value = default_tethys_home
+
+        ret = utilities.get_tethys_home_dir()
+
+        mock_os.environ.get.assert_any_call('TETHYS_HOME')
+        mock_os.environ.get.assert_any_call('CONDA_DEFAULT_ENV')
+        mock_os.path.expanduser.assert_called_with('~/.tethys')
+
+        # Returns default tethys home environment
+        self.assertEqual(default_tethys_home, ret)
 
     @mock.patch('tethys_apps.utilities.os')
-    def test_get_tethys_home_dir_exception(self, mock_os):
-        mock_os.path.expanduser.side_effect = Exception
-        utilities.get_tethys_home_dir()
-        mock_os.environ.get.assert_called_with('TETHYS_HOME', None)
+    def test_get_tethys_home_dir__non_default_env_name__tethys_home_not_defined(self, mock_os):
+        env_tethys_home = None
+        conda_default_env = 'foo'  # Non-default Tethys environment name
+        default_tethys_home = '/home/tethys/.tethys'
+
+        mock_os.environ.get.side_effect = [env_tethys_home, conda_default_env]  # [TETHYS_HOME, CONDA_DEFAULT_ENV]
+        mock_os.path.expanduser.return_value = default_tethys_home
+
+        ret = utilities.get_tethys_home_dir()
+
+        mock_os.environ.get.assert_any_call('TETHYS_HOME')
+        mock_os.environ.get.assert_any_call('CONDA_DEFAULT_ENV')
+        mock_os.path.expanduser.assert_called_with('~/.tethys')
+        mock_os.path.join.assert_called_with(default_tethys_home, conda_default_env)
+
+        # Returns joined path of default tethys home path and environment name
+        self.assertEqual(mock_os.path.join(), ret)
+
+    @mock.patch('tethys_apps.utilities.os')
+    def test_get_tethys_home_dir__tethys_home_defined(self, mock_os):
+        env_tethys_home = '/foo/.bar'
+        conda_default_env = 'foo'
+        mock_os.environ.get.side_effect = [env_tethys_home, conda_default_env]  # [TETHYS_HOME, CONDA_DEFAULT_ENV]
+
+        ret = utilities.get_tethys_home_dir()
+
+        mock_os.environ.get.assert_called_once_with('TETHYS_HOME')
+        mock_os.path.expanduser.assert_not_called()
+
+        # Returns path defined by TETHYS_HOME environment variable
+        self.assertEqual(env_tethys_home, ret)
+
+    @mock.patch('tethys_apps.utilities.tethys_log')
+    @mock.patch('tethys_apps.utilities.os')
+    def test_get_tethys_home_dir__exception(self, mock_os, mock_tethys_log):
+        env_tethys_home = None
+        conda_default_env = 'foo'  # Non-default Tethys environment name
+        default_tethys_home = '/home/tethys/.tethys'
+
+        mock_os.environ.get.side_effect = [env_tethys_home, conda_default_env]  # [TETHYS_HOME, CONDA_DEFAULT_ENV]
+        mock_os.path.expanduser.return_value = default_tethys_home
+
+        mock_os.path.join.side_effect = Exception
+
+        ret = utilities.get_tethys_home_dir()
+
+        mock_os.environ.get.assert_any_call('TETHYS_HOME')
+        mock_os.environ.get.assert_any_call('CONDA_DEFAULT_ENV')
+        mock_os.path.expanduser.assert_called_with('~/.tethys')
+        mock_os.path.join.assert_called_with(default_tethys_home, conda_default_env)
+        mock_tethys_log.warning.assert_called()
+
+        # Returns default tethys home environment path
+        self.assertEqual(default_tethys_home, ret)

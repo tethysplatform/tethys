@@ -1,3 +1,5 @@
+.. _key_concepts_advanced_tutorial:
+
 *****************
 Advanced Concepts
 *****************

@@ -11,6 +11,10 @@ In this tutorial you will create a new Tethys App project using the scaffold. Th
 * Adding a Custom Icon
 * Customizing App Theme Color
 
+.. figure:: ./resources/new_app_project_solution.png
+    :width: 800px
+    :align: center
+
 1. Generate Scaffold
 ====================
 
@@ -102,7 +106,9 @@ Download this :download:`Unidata App Icon <./resources/unidata_logo.png>` or fin
 
     tethys manage start
 
-.. note::
+.. tip::
+
+    To stop the development server press :kbd:`CTRL-C`.
 
     If you get errors related to Tethys not being able to connect to the database, start the database by running:
 
@@ -116,14 +122,15 @@ Download this :download:`Unidata App Icon <./resources/unidata_logo.png>` or fin
 
         tethys db stop
 
-2. Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login the default portal user is:
+2. Browse to `<http://127.0.0.1:8000/apps>`_ in a web browser and login. The default portal user is:
 
 * **username**: admin
 * **password**: pass
 
-.. tip::
+Verify the following:
 
-    To stop the development server press :kbd:`CTRL-C`.
+1. The default app icon should be replaced with the custom image you added in step 4.
+2. The primary color for the app should be a dark turquoise (see screenshot at the beginning of the tutorial).
 
 6. Solution
 ===========
