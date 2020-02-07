@@ -782,44 +782,6 @@ class TethysAppBase(TethysBase):
                 for p in app_groups[group]['permissions']:
                     assign_perm(p, g, db_app)
 
-    def job_templates(self):
-        """
-        Override this method to define job templates to easily create and submit jobs in your app.
-
-        Returns:
-            iterable: A list or tuple of ``JobTemplate`` objects.
-
-        **Example:**
-
-        ::
-
-            from tethys_sdk.jobs import CondorJobTemplate
-            from tethys_sdk.compute import list_schedulers
-
-            class MyFirstApp(TethysAppBase):
-
-                def job_templates(cls):
-                    \"""
-                    Example job_templates method.
-                    \"""
-                    my_scheduler = list_schedulers()[0]
-
-                    job_templates = (CondorJobTemplate(name='example',
-                                                       parameters={'executable': '$(APP_WORKSPACE)/example_exe.py',
-                                                                   'condorpy_template_name': 'vanilla_transfer_files',
-                                                                   'attributes': {'transfer_input_files': ('../input_1.in', '../input_2.in'),
-                                                                                  'transfer_output_files': ('example_output1.out', 'example_output2.out'),
-                                                                                 },
-                                                                   'scheduler': my_scheduler,
-                                                                   'remote_input_files': ('$(APP_WORKSPACE)/example_exe.py', '$(APP_WORKSPACE)/input_1.in', '$(USER_WORKSPACE)/input_2.in'),
-                                                                  }
-                                                      ),
-                                    )
-
-                    return job_templates
-        """  # noqa: E501
-        return None
-
     @classmethod
     def get_handoff_manager(cls):
         """
@@ -834,7 +796,7 @@ class TethysAppBase(TethysBase):
         """
         Get the JobManager for the app.
         """
-        from tethys_sdk.jobs import JobManager
+        from tethys_compute.job_manager import JobManager
         app = cls()
         job_manager = JobManager(app)
         return job_manager
@@ -1485,17 +1447,17 @@ class TethysAppBase(TethysBase):
         to access a non-existent setting is made.
 
         Args:
-            settings_type (str, required):
+            setting_type (str, required):
                 Name of specific settings class (e.g. CustomTethysAppSetting, PersistentStoreDatabaseSetting etc).
             setting_name (str, required):
                 Name attribute of the setting.
         """
-        tethys_log.warn('Tethys app setting is not assigned.\nTraceback (most recent call last):\n{0} '
-                        'TethysAppSettingNotAssigned: {1} named "{2}" has not been assigned. '
-                        'Please visit the setting page for the app {3} and assign all required settings.'
-                        .format(traceback.format_stack(limit=3)[0], setting_type, setting_name,
-                                cls.name.encode('utf-8'))
-                        )
+        tethys_log.warning('Tethys app setting is not assigned.\nTraceback (most recent call last):\n{0} '
+                           'TethysAppSettingNotAssigned: {1} named "{2}" has not been assigned. '
+                           'Please visit the setting page for the app {3} and assign all required settings.'
+                           .format(traceback.format_stack(limit=3)[0], setting_type, setting_name,
+                                   cls.name.encode('utf-8'))
+                           )
 
     @classmethod
     def pre_delete_user_workspace(cls, user):

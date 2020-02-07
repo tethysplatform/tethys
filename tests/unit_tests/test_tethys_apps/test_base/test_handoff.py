@@ -168,28 +168,18 @@ class TestHandoffManager(unittest.TestCase):
             format('test manager name', 'test_handler')
         self.assertIn(check_message, rts_call_args[0][0][0])
 
-    @mock.patch('warnings.warn')
-    def test_get_valid_handlers(self, mock_warn):
+    def test_get_valid_handlers(self):
         app = mock.MagicMock(package='test_app')
 
         # Mock handoff_handlers
         handler1 = mock.MagicMock(handler='controllers.home', valid=True)
-        # Cover Import Error Case
-        handler2 = mock.MagicMock(handler='controllers1:home1', valid=False)
-        # Cover Deprecated format
-        handler3 = mock.MagicMock(handler='controllers:home', valid=False)
 
-        app.handoff_handlers.return_value = [handler1, handler2, handler3]
+        app.handoff_handlers.return_value = [handler1]
 
         # mock _get_valid_handlers
         result = tethys_handoff.HandoffManager(app=app)._get_valid_handlers()
         # Check result
         self.assertEqual('controllers.home', result[0].handler)
-        self.assertEqual('controllers:home', result[1].handler)
-
-        check_message = 'The handler attribute of a HandoffHandler should now be in the form:' \
-                        ' "my_first_app.controllers.my_handler". The form "handoff:my_handler" is now deprecated.'
-        mock_warn.assert_called_with(check_message, DeprecationWarning)
 
 
 class TestHandoffHandler(unittest.TestCase):
