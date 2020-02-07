@@ -9,7 +9,7 @@ New Tethys App Project
 
 Tethys Platform provides an easy way to create new app projects called a scaffold. The scaffold generates a Tethys app project with the minimum files and the folder structure that is required (see :doc:`../../supplementary/app_project`).
 
-Create a new app using the instructions here: :doc:`../getting_started/new_app_project`. For this tutorial we will be calling our project ``dask_tutorial``, so replace all instances of ``dam_inventory`` with ``dask_tutorial`` in the tutorial.
+Create a new app using the instructions here: :ref:`key_concepts_new_app_project_tutorial`. For this tutorial we will be calling our project ``dask_tutorial``, so replace all instances of ``dam_inventory`` with ``dask_tutorial`` in the tutorial.
 
 
 2. Dask

@@ -39,7 +39,7 @@ Tethys Platform supports WebSocket connections using `Django Channels <https://c
     To create a URL mapping using the WebSocket protocol see the example provided in the `App Base Class API documentation <./tethys_sdk/url_maps.html#url-maps-method>`_.
 
 .. tip::
-    For an example demonstrating all the necessary components to integrating websockets into your app see `This Websockets Tutorial <./tutorials/getting_started/websockets.html>`_.
+    For an example demonstrating all the necessary components to integrating websockets into your app see :doc:`../tutorials/websockets`.
 
 .. _bokeh_integration:
 

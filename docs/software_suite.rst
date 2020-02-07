@@ -2,15 +2,15 @@
 Software Suite
 **************
 
-**Last Updated:** May 18, 2016
+**Last Updated:** January 2020
 
-The Software Suite is the component of Tethys Platform that provides access to resources and functionality that are commonly required to develop water resources web apps. The primary motivation of creating the Tethys Software Suite was overcome the hurdle associated with selecting a GIS software stack to support spatial capabilities in apps. Some of the more specialized needs for water resources app development arise from the spatial data components of the models that are used in the apps. Distributed hydrologic models, for example, are parameterized using raster or vector layers such as land use maps, digital elevation models, and rainfall intensity grids.
+The Tethys Software Suite is a collection of recommended software that can be used with Tethys Platform. The primary motivation of creating the Tethys Software Suite was overcome the hurdle associated with selecting a GIS software stack to support spatial capabilities in apps.
 
 .. figure:: images/features/tethys_platform_diagram.png
     :width: 600px
     :align: center
 
-A majority of the software projects included in the software suite are web GIS projects that can be used to acquire, modify, store, visualize, and analyze spatial data, but Tethys Software Suite also includes other software projects to address computing and visualization needs of water resources web apps. This article will describe the components included in the Tethys Software Suite in terms of the functionality provided by the software.
+A majority of the software projects included in the Tethys Software Suite are web GIS projects that can be used to acquire, modify, store, visualize, and analyze spatial data, but it also includes other software to address computing and plotting needs of spatial web apps.
 
 
 Spatial Database Storage
@@ -20,7 +20,7 @@ Spatial Database Storage
    :width: 170px
    :align: right
 
-Tethys Software Suite includes the `PostgreSQL <http://www.postgresql.org/>`_ database with `PostGIS <http://postgis.net/>`_, a spatial database extension, to provide spatial data storage capabilities for Tethys web apps. PostGIS adds spatial column types including raster, geometry, and geography. The extension also provides database functions for basic analysis of GIS objects.
+Tethys Platform includes support for the `PostgreSQL <http://www.postgresql.org/>`_ database with `PostGIS <http://postgis.net/>`_, a spatial database extension, to provide spatial data storage capabilities for Tethys web apps. PostGIS adds spatial column types including raster, geometry, and geography. The extension also provides database functions for basic analysis of GIS objects.
 
 To use a PostgreSQL database in your app use the :doc:`./tethys_sdk/tethys_services/persistent_store`. To use a spatially enabled database with PostGIS use the :doc:`./tethys_sdk/tethys_services/spatial_persistent_store`.
 
@@ -31,9 +31,16 @@ Map Publishing
    :width: 200px
    :align: right
 
-Tethys Software Suite provides `GeoServer <http://geoserver.org/>`_ for publishing spatial data as web services. GeoServer is used to publish common spatial files such as Shapefiles and GeoTIFFs in web-friendly formats.
+Tethys Platform provides support for `GeoServer <http://geoserver.org/>`_ as one option for publishing spatial data as web services. GeoServer is used to publish common spatial files such as Shapefiles and GeoTIFFs in web-friendly formats.
 
 To use the map publishing capabilities of GeoServer in your app refer to the :doc:`./software_suite/geoserver` documentation and use the :doc:`./tethys_sdk/tethys_services/spatial_dataset_services`.
+
+THREDDS Data Server
+-------------------
+
+Tethys Platform supports the `THREDDS Data Server <https://www.unidata.ucar.edu/software/tds/current/>`_ as an alternative option for publishing spatial data as web services. "The THREDDS Data Server (TDS) is a web server that provides metadata and data access for scientific datasets, using OPeNDAP, OGC WMS and WCS, HTTP, and other remote data access protocols. The TDS is developed and supported by Unidata, a division of the University Corporation for Atmospheric Research, and is sponsored by the National Science Foundation."
+
+To use the map publishing capabilities of the THREDDS Data Server in your app refer to :doc:`./software_suite/thredds` documentation and use the :doc:`./tethys_sdk/tethys_services/spatial_dataset_services`.
 
 Geoprocessing
 =============
@@ -42,7 +49,7 @@ Geoprocessing
    :width: 150px
    :align: right
 
-`52°North Web Processing Service (WPS) <http://52north.org/communities/geoprocessing/wps/>`_ is included in Tethys Software Suite as one means for supporting geoprocessing needs in water resources web app development. It can be linked with geoprocessing libraries such as `GRASS <http://grass.osgeo.org/>`_, `Sextante <http://www.wikiwand.com/es/SEXTANTE_(SIG)>`_, and `ArcGIS® Server <http://www.esri.com/software/arcgis/arcgisserver>`_ for out-of-the-box geoprocessing capabilities.
+`52°North Web Processing Service (WPS) <http://52north.org/communities/geoprocessing/wps/>`_ is supported in Tethys Platform as one means for supporting geoprocessing needs in water resources web app development. It can be linked with geoprocessing libraries such as `GRASS <http://grass.osgeo.org/>`_, `Sextante <http://www.wikiwand.com/es/SEXTANTE_(SIG)>`_, and `ArcGIS® Server <http://www.esri.com/software/arcgis/arcgisserver>`_ for out-of-the-box geoprocessing capabilities.
 
 The PostGIS extension, included in the software suite, can also provide geoprocessing capabilities on data that is stored in a spatially-enabled database. PostGIS includes SQL geoprocessing functions for splicing, dicing, morphing, reclassifying, and collecting/unioning raster and vector types. It also includes functions for vectorizing rasters, clipping rasters with vectors, and running stats on rasters by geometric region.
 
@@ -55,17 +62,18 @@ Visualization
    :width: 75px
    :align: right
 
-`OpenLayers 3 <http://openlayers.org/>`_ is a JavaScript web-mapping client library for rendering interactive maps on a web page. It is capable of displaying 2D maps of OGC web services and a myriad of other spatial formats and sources including GeoJSON, KML, GML, TopoJSON, ArcGIS REST, and XYZ.
+`OpenLayers <http://openlayers.org/>`_ is a JavaScript web-mapping client library for rendering interactive maps on a web page. It is capable of displaying 2D maps of OGC web services and a myriad of other spatial formats and sources including GeoJSON, KML, GML, TopoJSON, ArcGIS REST, and XYZ.
 
 To use an OpenLayers map in your app use the **Map View Gizmo** of the :doc:`./tethys_sdk/gizmos`.
 
-.. image:: images/software/googlemaps.png
+.. image:: images/software/cesium_color_black.png
    :width: 75px
    :align: right
 
-`Google Maps™ <https://developers.google.com/maps/web/>`_ provides the ability to render spatial data in a 2D mapping environment similar to OpenLayers, but it only supports displaying data in KML formats and data that are added via JavaScript API. Both maps provide a mechanism for drawing on the map for user input.
+`Cesium JS™ <https://cesium.com/>`_ is an open-source Javascript library for creating world-class 3D globes and maps with the best possible performance, precision, visual quality and ease of use.
 
-To use an OpenLayers map in your app use the **Google Map View Gizmo** of the :doc:`./tethys_sdk/gizmos`.
+
+To use a Cesium map in your app use the **Cesium Map View Gizmo** of the :doc:`./tethys_sdk/gizmos`.
 
 .. image:: images/software/highcharts.png
    :width: 75px
@@ -73,7 +81,15 @@ To use an OpenLayers map in your app use the **Google Map View Gizmo** of the :d
 
 Plotting capabilities are provided by `Highcharts <http://www.highcharts.com/>`_, a JavaScript library created by Highsoft AS. The plots created using Highcharts are interactive with hovering effects, pan and zoom capabilities, and the ability to export the plots as images.
 
-To use an OpenLayers map in your app use the **Plot View Gizmo** of the :doc:`./tethys_sdk/gizmos`.
+To use an Highcharts in your app use the **Plot View Gizmo** of the :doc:`./tethys_sdk/gizmos`.
+
+.. image:: images/software/plotly_logo.jpeg
+   :width: 75px
+   :align: right
+
+The `Plotly Python Library <https://plot.ly/python/>`_ makes interactive, publication-quality graphs. Examples of how to make line plots, scatter plots, area charts, bar charts, error bars, box plots, histograms, heatmaps, subplots, multiple-axes, polar charts, and bubble charts. Plotly.py is free and open source and you can view the source, report issues or contribute on GitHub.
+
+To use an Plotly in your app use the **Plotly View Gizmo** of the :doc:`./tethys_sdk/gizmos`.
 
 Distributed Computing
 =====================
@@ -82,14 +98,14 @@ Distributed Computing
    :width: 300px
    :align: right
 
-To facilitate the large-scale computing that is often required by water resources applications, Tethys Software Suite leverages the computing management middleware `HTCondor <http://research.cs.wisc.edu/htcondor/>`_. HTCondor is both a resource management and a job scheduling software.
+To facilitate the large-scale computing that is often required by water resources applications, Tethys Platform leverages the computing management middleware `HTCondor <http://research.cs.wisc.edu/htcondor/>`_. HTCondor is both a resource management and a job scheduling software.
 
 To use the HTCondor and the computing capabilities in your app use the :doc:`./tethys_sdk/jobs` and the :doc:`./tethys_sdk/compute`.
 
 File Dataset Storage
 ====================
 
-Tethys Software Suite does not include software for handling flat file storage. However, Tethys SDK provides APIs for working with CKAN and HydroShare to address flat file storage needs. Descriptions of CKAN and HydroShare are provided here for convenience.
+Tethys Platform does not include software for handling flat file storage. However, Tethys SDK provides APIs for working with CKAN and HydroShare to address flat file storage needs. Descriptions of CKAN and HydroShare are provided here for convenience.
 
 .. image:: images/software/ckan.png
    :width: 150px
@@ -129,13 +145,14 @@ Docker Installation
    :width: 300px
    :align: right
 
-Tethys Software Suite uses `Docker <https://www.docker.com/>`_ virtual container system to simplify the installation of some elements. Docker images are created and used to create containers, which are essentially stripped down virtual machines running only the software included in the image. Unlike virtual machines, the Docker containers do not partition the resources of your computer (processors, RAM, storage), but instead run as processes with full access to the resources of the computer.
+Tethys Platform uses `Docker <https://www.docker.com/>`_ virtual container system as an optional component to simplify the installation of some elements. Docker images are created and used to create containers, which are essentially stripped down virtual machines running only the software included in the image. Unlike virtual machines, the Docker containers do not partition the resources of your computer (processors, RAM, storage), but instead run as processes with full access to the resources of the computer.
 
-Three Docker images are provided as part of Tethys Software Suite including:
+Four Docker images are supported as part of Tethys Platform including:
 
 * PostgreSQL with PostGIS
 * 52° North WPS
-* GeoServer.
+* GeoServer
+* THREDDS
 
 The installation procedure for each software has been encapsulated in a Docker image reducing the installation procedure to three simple steps:
 
@@ -154,6 +171,7 @@ Software                               API                                      
 PostgreSQL                             :doc:`./tethys_sdk/tethys_services/persistent_store`             SQL Database Storage
 PostGIS                                :doc:`./tethys_sdk/tethys_services/spatial_persistent_store`     Spatial Database Storage and Geoprocessing
 GeoServer                              :doc:`./tethys_sdk/tethys_services/spatial_dataset_services`     Spatial File Publishing
+THREDDS Data Server                    :doc:`./tethys_sdk/tethys_services/spatial_dataset_services`     Spatial File Publishing
 52° North WPS                          :doc:`./tethys_sdk/tethys_services/web_processing_services`      Geoprocessing Services
 OpenLayers, Google Maps, HighCharts    :doc:`./tethys_sdk/gizmos`                                       Spatial and Tabular Visualization
 HTCondor                               :doc:`./tethys_sdk/compute` and                                  Computing and Job Management

@@ -422,7 +422,6 @@ enterprise_linux_production_install() {
     sudo systemctl enable supervisord
     sudo systemctl start supervisord
     sudo firewall-cmd --permanent --zone=public --add-service=http
-#    sudo firewall-cmd --permanent --zone=public --add-service=https
     sudo firewall-cmd --reload
 
     NGINX_SITES_DIR='conf.d'
@@ -446,17 +445,17 @@ centos_production_install() {
 
 configure_selinux() {
     sudo yum install setroubleshoot -y
-    sudo semanage fcontext -a -t httpd_config_t ${TETHYS_SRC}/tethys_portal/tethys_nginx.conf
-    sudo restorecon -v ${TETHYS_SRC}/tethys_portal/tethys_nginx.conf
+    sudo semanage fcontext -a -t httpd_config_t ${TETHYS_HOME}/tethys_nginx.conf
+    sudo restorecon -v ${TETHYS_HOME}/tethys_nginx.conf
     sudo semanage fcontext -a -t httpd_sys_content_t "${TETHYS_HOME}(/.*)?"
     sudo semanage fcontext -a -t httpd_sys_content_t "${TETHYS_HOME}/static(/.*)?"
     sudo semanage fcontext -a -t httpd_sys_rw_content_t "${TETHYS_HOME}/workspaces(/.*)?"
     sudo restorecon -R -v ${TETHYS_HOME} > /dev/null
-    echo $'module tethys-selinux-policy 1.0;\nrequire {type httpd_t; type init_t; class unix_stream_socket connectto; }\n#============= httpd_t ==============\nallow httpd_t init_t:unix_stream_socket connectto;' > ${TETHYS_SRC}/tethys_portal/tethys-selinux-policy.te
+    echo $'module tethys-selinux-policy 1.0;\nrequire {type httpd_t; type init_t; class unix_stream_socket connectto; }\n#============= httpd_t ==============\nallow httpd_t init_t:unix_stream_socket connectto;' > ${TETHYS_HOME}/tethys-selinux-policy.te
 
-    checkmodule -M -m -o ${TETHYS_SRC}/tethys_portal/tethys-selinux-policy.mod ${TETHYS_SRC}/tethys_portal/tethys-selinux-policy.te
-    semodule_package -o ${TETHYS_SRC}/tethys_portal/tethys-selinux-policy.pp -m ${TETHYS_SRC}/tethys_portal/tethys-selinux-policy.mod
-    sudo semodule -i ${TETHYS_SRC}/tethys_portal/tethys-selinux-policy.pp
+    checkmodule -M -m -o ${TETHYS_HOME}/tethys-selinux-policy.mod ${TETHYS_HOME}/tethys-selinux-policy.te
+    semodule_package -o ${TETHYS_HOME}/tethys-selinux-policy.pp -m ${TETHYS_HOME}/tethys-selinux-policy.mod
+    sudo semodule -i ${TETHYS_HOME}/tethys-selinux-policy.pp
 }
 
 if [ -n "${LINUX_DISTRIBUTION}" -a "${PRODUCTION}" = "true" ]
@@ -502,7 +501,7 @@ then
     sudo chmod 705 ~
     sudo mkdir /var/log/tethys
     sudo touch /var/log/tethys/tethys.log
-    sudo ln -s ${TETHYS_SRC}/tethys_portal/tethys_nginx.conf /etc/nginx/${NGINX_SITES_DIR}/
+    sudo ln -s ${TETHYS_HOME}/tethys_nginx.conf /etc/nginx/${NGINX_SITES_DIR}/
 
     if [ -n "${SELINUX}" ]
     then
@@ -511,8 +510,8 @@ then
 
     sudo chown -R ${NGINX_USER}:${NGINX_GROUP} ${TETHYS_SRC} /var/log/tethys/tethys.log
     sudo mkdir -p /run/asgi; sudo chown ${NGINX_USER}:${NGINX_USER} /run/asgi
-    sudo ln -s ${TETHYS_SRC}/tethys_portal/asgi_supervisord.conf /etc/${SUPERVISOR_SITES_DIR}/asgi_supervisord.conf
-    sudo ln -s ${TETHYS_SRC}/tethys_portal/nginx_supervisord.conf /etc/${SUPERVISOR_SITES_DIR}/nginx_supervisord.conf
+    sudo ln -s ${TETHYS_HOME}/asgi_supervisord.conf /etc/${SUPERVISOR_SITES_DIR}/asgi_supervisord.conf
+    sudo ln -s ${TETHYS_HOME}/nginx_supervisord.conf /etc/${SUPERVISOR_SITES_DIR}/nginx_supervisord.conf
     sudo supervisorctl reread
     sudo supervisorctl update
     set +x
