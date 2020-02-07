@@ -108,7 +108,3 @@ API Documentation
 .. autoclass:: tethys_compute.models.CondorWorkflowNode
 
 .. autoclass:: tethys_compute.models.CondorWorkflowJobNode
-
-.. autoclass:: tethys_sdk.jobs.CondorWorkflowTemplate
-
-.. autoclass:: tethys_sdk.jobs.CondorWorkflowJobTemplate
