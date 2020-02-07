@@ -243,8 +243,8 @@ class TethysAppTests(TethysTestCase):
         self.assertFalse(ret)
 
     def test_configured_prop_not_assigned_exception(self):
-        ds_setting = self.test_app.settings_set.select_subclasses().get(name='primary_ckan')
-        ds_setting.dataset_service = None
+        ds_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')
+        ds_setting.value = 'not None'
         ds_setting.save()
 
         ret = self.test_app.configured
