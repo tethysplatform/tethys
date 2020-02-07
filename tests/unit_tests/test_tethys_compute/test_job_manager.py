@@ -54,7 +54,7 @@ class TestJobManager(unittest.TestCase):
 
         # Execute
         ret_jm = JobManager(mock_app)
-        with mock.patch.dict(JOB_TYPES, {'CONDOR': mock_cj}) as mock_jt:
+        with mock.patch.dict(JOB_TYPES, {'CONDOR': mock_cj}):
             ret_jm.create_job(name='test_name', user='test_user', job_type='CONDOR')
         mock_cj.assert_called_with(label='test_label', name='test_name', user='test_user',
                                    workspace='test_user_workspace')
