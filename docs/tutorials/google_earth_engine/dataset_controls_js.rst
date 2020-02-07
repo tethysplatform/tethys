@@ -10,6 +10,10 @@ In this tutorial you will add dynamic behavior to the dataset controls created i
 * JavaScript Closure Module Method
 * Using JavaScript with Tethys Gizmos
 
+.. figure:: ./resources/dataset_controls_js_solution.png
+    :width: 800px
+    :align: center
+
 0. Start From Previous Solution (Optional)
 ==========================================
 
@@ -24,7 +28,7 @@ If you wish to use the previous solution as a starting point:
 1. Stub out new JavaScript file
 ===============================
 
-In this step you'll illustrate how to create a JavaScript module using the closure method. For more on JavaScript closures see: `<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures>`_. The basic module developed here will contain variables for storing the current value of each control and it will also read in the ``EE_PRODUCTS`` data you embedded in the template in the previous tutorial.
+In this step you'll learn how to create a JavaScript module using the closure method. For more on JavaScript closures see: `JavaScript Closures - MDN <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures>`_. The basic module developed in this step will contain variables for storing the current value of each control and it will also read in the ``EE_PRODUCTS`` data you embedded in the template in the previous tutorial.
 
 1. Create a new JavaScript file at :file:`public/js/gee_datasets.js` with the following contents:
 
@@ -114,13 +118,13 @@ In this step you'll illustrate how to create a JavaScript module using the closu
 2. Implement Methods
 ====================
 
-In this step you'll implement the methods that will update the options in the dataset controls dynamically. For example when the user selects a new Satellite Platform, the options of the Sensor select box will be updated to the sensors for that platform. The general approach will be to:
+In this step you'll implement the methods in the :file:`public/js/gee_datasets.js` file that will update the options in the dataset controls dynamically. For example when the user selects a new Satellite Platform, the options of the Sensor select box will be updated to the sensors for that platform. The general approach will be to:
 
-* Save the value of a control anytime it changes.
 * Create functions that update the controls with the currently saved values.
+* Save the value of a control anytime it changes.
 * Call the appropriate update functions when a control's value changes.
 
-1. The ``bind_controls`` method is called when the module initializes at page load time and is used to bind our custom functionality to the ``change`` event of each control. Implement the ``bind_controls`` method as follows:
+1. The ``bind_controls`` method is called when the module initializes at page load time and is used to bind our custom functionality to the ``change`` event of each control. Implement the ``bind_controls`` method as follows in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -186,7 +190,7 @@ In this step you'll implement the methods that will update the options in the da
 
 
 
-2. The ``update_sensor_options`` method updates the options of the sensor select box with options that correspond with the current satellite platform. Implement the ``update_sensor_options`` method as follows:
+2. The ``update_sensor_options`` method updates the options of the sensor select box with options that correspond with the current satellite platform. Implement the ``update_sensor_options`` method as follows in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -212,7 +216,7 @@ In this step you'll implement the methods that will update the options in the da
         update_date_bounds();
     };
 
-3. The ``update_product_options`` method updates the options of the product select box with options that correspond with the current satellite platform and sensor. Implement the ``update_product_options`` method as follows:
+3. The ``update_product_options`` method updates the options of the product select box with options that correspond with the current satellite platform and sensor. Implement the ``update_product_options`` method as follows in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -239,7 +243,7 @@ In this step you'll implement the methods that will update the options in the da
         update_date_bounds();
     };
 
-4. The ``update_date_bounds`` method updates the date range that is selectable for both date pickers based on the current product. The value of the datepickers is also reset to fit within the new range if necessary. Implement the ``update_date_bounds`` method as follows:
+4. The ``update_date_bounds`` method updates the date range that is selectable for both date pickers based on the current product. The value of the datepickers is also reset to fit within the new range if necessary. Implement the ``update_date_bounds`` method as follows in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -284,7 +288,7 @@ In this step you'll implement the methods that will update the options in the da
         console.log('Date Bounds Changed To: ' + earliest_valid_date + ' - ' + latest_valid_date);
     };
 
-5. Call the new methods in the appropriate change events in the ``bind_controls`` method as follows:
+5. Call the new methods in the appropriate change events in the ``bind_controls`` method as follows in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -321,7 +325,7 @@ In this step you'll implement the methods that will update the options in the da
         }
     });
 
-6. The ``collect_data`` method is used to collect the current values of all of the controls, as stored in our module, for use in our request for the map imagery later on. Implement the ``collect_data`` method as follows:
+6. The ``collect_data`` method is used to collect the current values of all of the controls, as stored in our module, for use in our request for the map imagery later on. Implement the ``collect_data`` method as follows in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -337,7 +341,7 @@ In this step you'll implement the methods that will update the options in the da
         return data;
     };
 
-7. Temporarily log the result of ``collect_data`` when the user clicks on the ``load_map`` button to verify the module is working correctly. Add the following to the bottom of the ``bind_controls`` method:
+7. Temporarily log the result of ``collect_data`` when the user clicks on the **Load** button to verify the module is working correctly. Add the following to the bottom of the ``bind_controls`` method in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -346,7 +350,18 @@ In this step you'll implement the methods that will update the options in the da
         console.log(data);
     });
 
-3. Solution
+3. Test and Verify
+==================
+
+Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and login if necessary. Verify the following:
+
+1. Open a JavaScript console in your web browser (in Chrome press :kbd:`CTRL-SHIFT-i`  or :kbd:`F12` and select the **Console** tab).
+2. Change the values of each control and note the output being logged to the console.
+3. The value of the each control that changes should be logged. For example, when the **Satellite Platform** control is changed, the **Sensor**, **Product**, and date controls should be updated.
+4. The **Start Date** control should not allow users to select dates before the beginning date of the selected dataset.
+5. Press the **Load** button and inspect the object that is logged to the JavaScript console. It should display the currently selected values of each control.
+
+4. Solution
 ===========
 
 This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/dataset-controls-js-solution-3.0>`_ or clone it as follows:

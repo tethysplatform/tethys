@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 import os
+from pathlib import Path
 import string
 import random
 
@@ -55,6 +56,7 @@ VALID_GEN_OBJECTS = (
 )
 
 TETHYS_SRC = get_tethys_src_dir()
+TETHYS_HOME = get_tethys_home_dir()
 
 
 def add_gen_parser(subparsers):
@@ -127,6 +129,7 @@ def gen_asgi_service(args):
                     break
 
     conda_prefix = get_environment_value('CONDA_PREFIX')
+    conda_home = Path(conda_prefix).parents[1]
 
     user_option_prefix = ''
 
@@ -142,7 +145,9 @@ def gen_asgi_service(args):
         'port': args.tethys_port,
         'asgi_processes': args.asgi_processes,
         'conda_prefix': conda_prefix,
+        'conda_home': conda_home,
         'tethys_src': TETHYS_SRC,
+        'tethys_home': TETHYS_HOME,
         'user_option_prefix': user_option_prefix
     }
     return context
@@ -250,25 +255,25 @@ def get_destination_path(args):
     destination_file = FILE_NAMES[args.type]
 
     # Default destination path is the tethys_portal source dir
-    destination_dir = os.path.join(TETHYS_SRC, 'tethys_portal')
+    destination_dir = TETHYS_HOME
+
+    # Make the Tethys Home directory if it doesn't exist yet.
+    if not os.path.isdir(destination_dir):
+        os.makedirs(destination_dir, exist_ok=True)
 
     if args.type in [GEN_SERVICES_OPTION, GEN_INSTALL_OPTION]:
         destination_dir = os.getcwd()
-
-    elif args.type == GEN_PORTAL_OPTION:
-        destination_dir = get_tethys_home_dir()
-        os.makedirs(destination_dir, exist_ok=True)
 
     elif args.type == GEN_META_YAML_OPTION:
         destination_dir = os.path.join(TETHYS_SRC, 'conda.recipe')
 
     if args.directory:
-        directory = os.path.abspath(args.directory)
-        if os.path.isdir(directory):
-            destination_dir = directory
-        else:
-            write_error('ERROR: "{0}" is not a valid directory.'.format(destination_dir))
-            exit(1)
+        destination_dir = os.path.abspath(args.directory)
+
+    if not os.path.isdir(destination_dir):
+        write_error('ERROR: "{0}" is not a valid directory.'.format(destination_dir))
+        exit(1)
+
     destination_path = os.path.join(destination_dir, destination_file)
 
     check_for_existing_file(destination_path, destination_file, args.overwrite)
@@ -309,6 +314,10 @@ def render_template(file_type, context, destination_path):
             f.write(template.render(context))
 
 
+def write_path_to_console(file_path):
+    write_info(f'File generated at "{file_path}".')
+
+
 GEN_COMMANDS = {
     GEN_ASGI_SERVICE_OPTION: gen_asgi_service,
     GEN_NGINX_OPTION: gen_nginx,
@@ -330,3 +339,5 @@ def generate_command(args):
     destination_path = get_destination_path(args)
 
     render_template(args.type, context, destination_path)
+
+    write_path_to_console(destination_path)

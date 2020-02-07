@@ -12,6 +12,10 @@ In this tutorial you will load the GEE dataset the user has selected into the ma
 * Retrieving GEE XYZ Tile Layer Endpoints
 * Logging in Tethys
 
+.. figure:: ./resources/vis_gee_layers_solution.png
+    :width: 800px
+    :align: center
+
 0. Start From Previous Solution (Optional)
 ==========================================
 
@@ -144,7 +148,7 @@ Google Earth Engine provides XYZ tile services for each of their datasets. In th
 
         return image.updateMask(mask).divide(10000)
 
-2. The ``get_image_collection_asset`` function builds the map tile service URL for the given platform, sensor, and product and filters it by the dates and reducer method. Implement the ``get_image_collection_asset`` function as follows:
+2. The ``get_image_collection_asset`` function builds the map tile service URL for the given platform, sensor, and product and filters it by the dates and reducer method. Implement the ``get_image_collection_asset`` function as follows in :file:`methods.py`:
 
 .. code-block:: python
 
@@ -190,7 +194,7 @@ Google Earth Engine provides XYZ tile services for each of their datasets. In th
         except EEException:
             log.exception('An error occurred while attempting to retrieve the image collection asset.')
 
-3. Implement the ``image_to_map_id`` function as follows:
+3. Implement the ``image_to_map_id`` function as follows in :file:`methods.py`:
 
 .. code-block:: python
 
@@ -369,7 +373,7 @@ In this step you'll implement the new methods with logic to (1) retrieve the XYZ
         });
     };
 
-2. Bind the ``update_map`` method to the ``Load`` button i``click`` event in ``bind_controls`` the method:
+2. Bind the ``update_map`` method to the **Load** button ``click`` event in ``bind_controls`` the method:
 
 .. code-block:: javascript
 
@@ -377,9 +381,9 @@ In this step you'll implement the new methods with logic to (1) retrieve the XYZ
         update_map();
     });
 
-.. tip::
+.. note::
 
-    If you test the ``Load`` button at this point, the AJAX call to the ``get-image-collection`` endpoint will fail because it is missing the CSRF token. The token is used to verify that the call came from our client-side code and not from a site posing to be our site. As a security precaution, the server will reject any POST requests that don't include this token. you'll add the CSRF token in the next step. For more information about CSRF see: `Cross Site Request Forgery protection <https://docs.djangoproject.com/en/2.2/ref/csrf/>`_.
+    If you test the **Load** button at this point, the AJAX call to the ``get-image-collection`` endpoint will fail because it is missing the CSRF token. The token is used to verify that the call came from our client-side code and not from a site posing to be our site. As a security precaution, the server will reject any POST requests that don't include this token. you'll add the CSRF token in the next step. For more information about CSRF see: `Cross Site Request Forgery protection <https://docs.djangoproject.com/en/2.2/ref/csrf/>`_.
 
 3. Add the following code to the :file:`public/js/main.js` file to automatically attach the CSRF Token to every AJAX request that needs it:
 
@@ -449,11 +453,15 @@ In this step you'll implement the new methods with logic to (1) retrieve the XYZ
         m_map.getLayers().insertAt(1, m_gee_layer);
     };
 
+6. Verify that the layers are being loaded on the map at this point. Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and login if necessary. Use the dataset controls to select a dataset product and press the **Load** button. Changing to a new dataset and pressing **Load** should replace the current layer with the new one.
+
 
 6. Implement Clearing Layers on the Map
 =======================================
 
-1. Add ``Clear`` button to ``home`` controller in :file:`controllers.py`:
+Users can now visualize GEE layers on the map, but there is no way to clear the data from the map. In this step, you'll add a button that will remove layers and clear the map.
+
+1. Add **Clear** button to ``home`` controller in :file:`controllers.py`:
 
 .. code-block:: python
 
@@ -481,7 +489,7 @@ In this step you'll implement the new methods with logic to (1) retrieve the XYZ
 
 
 
-2. Add ``Clear`` button to the ``app_navigation_items`` block of the :file:`templates/earth_engine/home.html` template:
+2. Add **Clear** button to the ``app_navigation_items`` block of the :file:`templates/earth_engine/home.html` template:
 
 .. code-block:: html+django
 
@@ -509,7 +517,7 @@ In this step you'll implement the new methods with logic to (1) retrieve the XYZ
         }
     };
 
-4. Bind the ``clear_map`` method to the ``click`` event of the ``Clear`` button (in the ``bind_controls`` method):
+4. Bind the ``clear_map`` method to the ``click`` event of the **Clear** button (in the ``bind_controls`` method):
 
 .. code-block:: javascript
 
@@ -517,10 +525,12 @@ In this step you'll implement the new methods with logic to (1) retrieve the XYZ
         clear_map();
     });
 
+5. Verify that the **Clear** button works. Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and login if necessary. Load a dataset as before and then press the **Clear** button. The currently displayed layer should be removed from the map. Repeat this process a few times, loading several datasets before clearing at least one of the times, to ensure it is working properly.
+
 7. Implement Map Loading Indicator
 ==================================
 
-You may have noticed while testing the app, that it can take some time for a layer to load. In this step you will add a loading image to indicate to the user that the map is loading, so they don't keep pressing the load button impatiently.
+You may have noticed while testing the app, that it can take some time for a layer to load. In this step you will add a loading image to indicate to the user that the map is loading, so they don't keep pressing the **Load** button impatiently.
 
 1. Download this :download:`animated map loading image <./resources/map-loader.gif>` or find one that you like and save it to the :file:`public/images` directory.
 
@@ -596,7 +606,20 @@ You may have noticed while testing the app, that it can take some time for a lay
         m_map.getLayers().insertAt(1, m_gee_layer);
     };
 
-8. Solution
+8. Test and Verify
+==================
+
+Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and login if necessary. Verify the following:
+
+1. Use the dataset controls to select a dataset and press the **Load** button to add it to the map.
+2. Subsequent dataset loads should replace the previous dataset.
+3. Use the **Clear** button to clear the map.
+4. When a layer is loading tiles, a loading image should display to indicate to the user that the app is working.
+
+
+
+
+9. Solution
 ===========
 
 This concludes this portion of the GEE Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-earth_engine/tree/vis-gee-layers-solution-3.0>`_ or clone it as follows:

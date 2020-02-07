@@ -16,6 +16,8 @@ Use the following instructions to setup social login for the providers you desir
 
     Beginning with Tethys Platform 3.0 you must configure the social auth settings in the :file:`portal_config.yml` file. See :ref:`tethys_configuration` for more details on how to create and configure this file. For instructions on how to configure social auth for previous versions of Tethys Platform please refer to the documentation specific to your version.
 
+.. _social_auth_google:
+
 Google
 ------
 
@@ -73,6 +75,8 @@ For more detailed information about using Google social authentication see the f
 
 * `Developer Console Help <https://developers.google.com/console/help/new/?hl=en_US#generatingoauth2>`_
 * `Google Identity Platform <https://developers.google.com/identity/protocols/OAuth2>`_
+
+.. _social_auth_facebook:
 
 Facebook
 --------
@@ -138,6 +142,8 @@ For more detailed information about using Facebook social authentication see the
 * `Facebook Login <https://developers.facebook.com/docs/facebook-login/v2.4>`_
 * `Facebook Login for the Web with the JavaScript SDK <https://developers.facebook.com/docs/facebook-login/login-flow-for-web/v2.4>`_
 
+.. _social_auth_linkedin:
+
 LinkedIn
 --------
 
@@ -188,6 +194,7 @@ For more detailed information about using LinkedIn social authentication see the
 
 * `LinkedIn: Authenticating with OAuth 2.0 <https://developer.linkedin.com/docs/oauth2>`_
 
+.. _social_auth_hydroshare:
 
 HydroShare
 ----------
