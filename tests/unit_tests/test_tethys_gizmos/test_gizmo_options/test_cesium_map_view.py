@@ -40,9 +40,9 @@ class TestCesiumMapView(unittest.TestCase):
         self.assertFalse(result['draw'])
 
         # Check sources
-        self.assertIn('https://cesiumjs.org/releases/1.51/Build/Cesium/Cesium.js',
+        self.assertIn('https://cesium.com/downloads/cesiumjs/releases/1.51/Build/Cesium/Cesium.js',
                       gizmo_map_view.CesiumMapView.get_vendor_js()[0])
-        self.assertIn('https://cesiumjs.org/releases/1.51/Build/Cesium/Widgets/widgets.css',
+        self.assertIn('https://cesium.com/downloads/cesiumjs/releases/1.51/Build/Cesium/Widgets/widgets.css',
                       gizmo_map_view.CesiumMapView.get_vendor_css()[0])
         self.assertIn('.js', gizmo_map_view.CesiumMapView.get_gizmo_js()[0])
         self.assertIn('.css', gizmo_map_view.CesiumMapView.get_vendor_css()[0])
@@ -73,10 +73,18 @@ class TestCesiumMapView(unittest.TestCase):
         self.assertTrue(result['draw'])
 
         # Check sources
-        self.assertIn('https://cesiumjs.org/Cesium/Build/Cesium/Cesium.js',
+        self.assertIn('https://cesium.com/downloads/cesiumjs/releases//Build/Cesium/Cesium.js',
                       gizmo_map_view.CesiumMapView.get_vendor_js()[0])
-        self.assertIn('https://cesiumjs.org/Cesium/Build/Cesium/Widgets/widgets.css',
+        self.assertIn('https://cesium.com/downloads/cesiumjs/releases//Build/Cesium/Widgets/widgets.css',
                       gizmo_map_view.CesiumMapView.get_vendor_css()[0])
         self.assertIn('.js', gizmo_map_view.CesiumMapView.get_gizmo_js()[0])
         self.assertIn('.css', gizmo_map_view.CesiumMapView.get_vendor_css()[0])
         self.assertIn('.css', gizmo_map_view.CesiumMapView.get_gizmo_css()[0])
+
+    def test_CMVEntity(self):
+        ent = gizmo_map_view.CMVEntity(
+            source='my_source',
+            document='my_document',
+            legend_title='Legend Title',
+        )
+        self.assertEqual(ent.source, 'my_source')
