@@ -28,9 +28,9 @@ stages:
   - name: test
     if: (branch = master) AND (tag IS NOT present)
   - name: docker-build
-    if: branch = master
+    if: branch = master OR branch = release
   - name: conda-build
-    if: branch = master
+    if: branch = master OR branch = release
 
 install:
   - cd ..
@@ -48,21 +48,6 @@ install:
 script:
   # command to run tests
   - tethys test -c -u -v 2
-
-after_success:
-  - >
-    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      # generate test coverage information
-      ls -al
-      coveralls
-      # create conda recipe
-      mkdir -p ./tethys/conda.recipe
-      # Change pin level here to control how the meta.yaml dependencies are constrained
-      tethys gen --overwrite metayaml --pin-level $CONDA_BUILD_PIN_LEVEL
-      cat ./tethys/conda.recipe/meta.yaml
-    else
-      echo "Skipping after_success b/c not linux run."
-    fi
 
 jobs:
   include:
