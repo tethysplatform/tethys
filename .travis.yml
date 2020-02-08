@@ -28,9 +28,9 @@ stages:
   - name: test
     if: (branch = master) AND (tag IS NOT present)
   - name: docker-build
-    if: branch = master OR branch = release
+    if: (branch = master) OR (tag IS present)
   - name: conda-build
-    if: branch = master OR branch = release
+    if: (branch = master) OR (tag IS present)
 
 install:
   - cd ..
