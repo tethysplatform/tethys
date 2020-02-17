@@ -42,6 +42,7 @@ after_success:
   - >
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
       # generate test coverage information
+      cd $TRAVIS_BUILD_DIR
       coveralls
     fi
 
