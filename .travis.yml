@@ -8,12 +8,6 @@ sudo: false
 notifications:
   email: false
 
-addons:
-  artifacts:
-    debug: true
-    paths:
-      - $TRAVIS_BUILD_DIR/conda.recipe
-
 os:
   - linux
   - osx
