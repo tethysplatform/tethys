@@ -38,17 +38,18 @@ install:
   - tethys db start
   # install test dependencies
   - pip install coveralls
-after_success:
-  - >
-    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      # generate test coverage information
-      cd $TRAVIS_BUILD_DIR
-      coveralls
-    fi
+  - cd $TRAVIS_BUILD_DIR
 
 script:
   # command to run tests
   - tethys test -c -u -v 2
+
+after_success:
+  - >
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      # generate test coverage information
+      coveralls
+    fi
 
 jobs:
   include:
