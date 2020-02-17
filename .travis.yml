@@ -43,7 +43,7 @@ install:
   - conda list
   - tethys db start
   # install test dependencies
-  - pip install python-coveralls
+  - pip install coveralls
 after_success:
   - >
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
