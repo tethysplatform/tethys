@@ -8,12 +8,6 @@ sudo: false
 notifications:
   email: false
 
-addons:
-  artifacts:
-    debug: true
-    paths:
-      - $TRAVIS_BUILD_DIR/conda.recipe
-
 os:
   - linux
   - osx
@@ -43,11 +37,19 @@ install:
   - conda list
   - tethys db start
   # install test dependencies
-  - pip install python-coveralls
+  - pip install coveralls
+  - cd $TRAVIS_BUILD_DIR
 
 script:
   # command to run tests
   - tethys test -c -u -v 2
+
+after_success:
+  - >
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      # generate test coverage information
+      coveralls
+    fi
 
 jobs:
   include:
