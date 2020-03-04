@@ -369,7 +369,7 @@ At this point the select controls are empty and don't do anything. In this step,
 
     .. code-block:: python
 
-        from siphon.http_url import session_manager
+        from siphon.http_util import session_manager
         session_manager.set_session_options(verify=False)
         catalog = app.get_spatial_dataset_service('my_thredds_service', as_engine=True)
 
