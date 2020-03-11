@@ -9,6 +9,10 @@ Refer to this article for information about each new release of Tethys Platform.
 Release |version|
 =================
 
+.. tip::
+
+    Use this presentation in workshops and training courses to provide an overview of the latest features in Tethys Platform 3.0: `Tethys Platform 3.0 Overview Presentation <https://docs.google.com/presentation/d/1e1pVLDFBJMA2FXryFHo2TdhYGwUUVnPsVHW75i6QhVo/edit>`_.
+
 Django 2.2
 ----------
 
