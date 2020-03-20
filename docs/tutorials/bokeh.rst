@@ -153,7 +153,7 @@ This is a simple Bokeh plot. We will now add the rest of the logic to make it an
                 data = df
             else:
                 data = df.rolling(f'{new}D').mean()
-            source.data = ColumnDataSource(data=data).data
+            source.data = dict(ColumnDataSource(data=data).data)
 
         slider.on_change("value", callback)
 

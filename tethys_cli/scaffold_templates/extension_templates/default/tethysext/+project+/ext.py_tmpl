@@ -9,4 +9,4 @@ class {{class_name}}(TethysExtensionBase):
     name = '{{proper_name}}'
     package = '{{project}}'
     root_url = '{{project_url}}'
-    description = '{{description|default:"Place a brief description of your extension here."}}'
+    description = '{{description|default("Place a brief description of your extension here.")}}'

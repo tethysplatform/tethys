@@ -107,7 +107,7 @@ The example below adds a column layout containing a slider and a plot. A callbac
                 data['y'] = [0, 10, 20, 30]
             else:
                 data['y'] = [i * new for i in [0, 10, 20, 30]]
-            source.data = ColumnDataSource(data=data).data
+            source.data = dict(ColumnDataSource(data=data).data)
             plot.y_range.end = max(data['y'])
 
         # create slider and add callback to it

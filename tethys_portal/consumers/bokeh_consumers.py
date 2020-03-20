@@ -36,7 +36,7 @@ class BokehAutoloadJsCDN(SessionConsumer):
 
         bundle = bundle_all_models() or ""
 
-        render_items = [RenderItem(sessionid=session.id, elementid=element_id, use_for_title=False)]
+        render_items = [RenderItem(token=session.token, elementid=element_id, use_for_title=False)]
         script = script_for_render_items(None, render_items, app_path=app_path, absolute_url=absolute_url)
 
         resources_param = self.get_argument("resources", "default")
@@ -57,4 +57,11 @@ class BokehAutoloadJsCDN(SessionConsumer):
             elementid=element_id,
         )
 
-        await self.send_response(200, js.encode(), headers=[(b"Content-Type", b"application/javascript")])
+        headers = [
+            (b"Access-Control-Allow-Headers", b"*"),
+            (b"Access-Control-Allow-Methods", b"PUT, GET, OPTIONS"),
+            (b"Access-Control-Allow-Origin", b"*"),
+            (b"Content-Type", b"application/javascript")
+        ]
+
+        await self.send_response(200, js.encode(), headers=headers)
