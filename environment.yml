@@ -9,7 +9,6 @@ channels:
 - tethysplatform
 - tethysplatform/label/dev
 - conda-forge
-- bokeh
 - defaults
 
 dependencies:
