@@ -100,7 +100,7 @@ def home_handler(doc):
             data['y'] = [0, 10, 20, 30, 40, 50]
         else:
             data['y'] = [i * new for i in [0, 10, 20, 30, 40, 50]]
-        source.data = ColumnDataSource(data=data).data
+        source.data = dict(ColumnDataSource(data=data).data)
         plot.y_range.end = max(data['y'])
 
     slider = Slider(start=1, end=5, value=1, step=1, title="Test App Bokeh + Channels Controller")

@@ -20,6 +20,13 @@ class BokehAutoloadJsCDNTests(TethysTestCase):
             'url_route': {
                 'kwargs': self.kwargs,
             },
+            'headers': [
+                (b"Access-Control-Allow-Headers", b"*"),
+                (b"Access-Control-Allow-Methods", b"PUT, GET, OPTIONS"),
+                (b"Access-Control-Allow-Origin", b"*"),
+                (b"Content-Type", b"application/javascript")
+            ],
+            'cookies': {},
             'query_string': b'bokeh-autoload-element=1234&'
                             b'bokeh-app-path=/apps/test-app&'
                             b'bokeh-absolute-url=http://localhost:8000/apps/test-app'
@@ -51,7 +58,10 @@ class BokehAutoloadJsCDNTests(TethysTestCase):
         self.assertIn(b'"elementid":"1234"', aal[0][0][1])
         self.assertIn(b'root.Bokeh.embed.embed_items(docs_json, render_items, "/apps/test-app", '
                       b'"http://localhost:8000/apps/test-app");', aal[0][0][1])
-        self.assertEqual([(b"Content-Type", b"application/javascript")], aal[0][1]['headers'])
+        self.assertEqual([(b"Access-Control-Allow-Headers", b"*"),
+                          (b"Access-Control-Allow-Methods", b"PUT, GET, OPTIONS"),
+                          (b"Access-Control-Allow-Origin", b"*"), (b"Content-Type", b"application/javascript")],
+                         aal[0][1]['headers'])
 
     def test_handle_no_element_id(self):
         self.scope['query_string'] = b''
