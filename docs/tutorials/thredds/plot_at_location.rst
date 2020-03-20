@@ -409,15 +409,35 @@ In this step you will create a new controller that will query the dataset at the
       </div>
     {% endif %}
 
-5. Add a ``UrlMap`` for the ``get_time_series_plot`` controller in :file:`app.py`:
+5. Create a new endpoint for the ``get_time_series_plot`` controller by adding a new ``UrlMap`` to the tuple located in the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
 
 .. code-block:: python
 
-    UrlMap(
-        name='get_time_series_plot',
-        url='thredds-tutorial/get-time-series-plot',
-        controller='thredds_tutorial.controllers.get_time_series_plot'
-    ),
+    def url_maps(self):
+        """
+        Add controllers
+        """
+        UrlMap = url_map_maker(self.root_url)
+
+        url_maps = (
+            UrlMap(
+                name='home',
+                url='thredds-tutorial',
+                controller='thredds_tutorial.controllers.home'
+            ),
+            UrlMap(
+                name='get_wms_layers',
+                url='thredds-tutorial/get-wms-layers',
+                controller='thredds_tutorial.controllers.get_wms_layers'
+            ),
+            UrlMap(
+                name='get_time_series_plot',
+                url='thredds-tutorial/get-time-series-plot',
+                controller='thredds_tutorial.controllers.get_time_series_plot'
+            ),
+        )
+
+        return url_maps
 
 3. Load Plot Using JQuery Load
 ==============================

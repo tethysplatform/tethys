@@ -276,15 +276,30 @@ In this step you'll create a new endpoint that can be used to call the ``get_ima
 
     In this step you added ``logging`` to the new endpoint. Tethys and Django leverage Python's built-in logging capabilities. Use logging statements in your code to provide useful debugging information, system status, or error capture in your production logs. The logging for a portal can be configured in the :ref:`tethys_configuration`. To learn more about logging in Tethys/Django see: `Django Logging <https://docs.djangoproject.com/en/2.2/topics/logging/>`_
 
-2. Add a new ``UrlMap`` to the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
+2. Create a new endpoint for the ``get_image_collection`` controller by adding a new ``UrlMap`` to the tuple located in the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
 
 .. code-block:: python
 
-    UrlMap(
-        name='get_image_collection',
-        url='earth-engine/get-image-collection',
-        controller='earth_engine.controllers.get_image_collection'
-    ),
+    def url_maps(self):
+        """
+        Add controllers
+        """
+        UrlMap = url_map_maker(self.root_url)
+
+        url_maps = (
+            UrlMap(
+                name='home',
+                url='earth-engine',
+                controller='earth_engine.controllers.home'
+            ),
+            UrlMap(
+                name='get_image_collection',
+                url='earth-engine/get-image-collection',
+                controller='earth_engine.controllers.get_image_collection'
+            ),
+        )
+
+        return url_maps
 
 4. Stub Out the Map JavaScript Methods
 ======================================

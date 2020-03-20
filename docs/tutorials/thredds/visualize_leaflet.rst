@@ -474,16 +474,30 @@ Each time a new dataset is selected, the options in the variable and style contr
 
         return JsonResponse(json_response)
 
-3. Create a new ``UrlMap`` for the ``get_wms_layers`` controller in :file:`app.py`:
+3. Create a new endpoint for the ``get_wms_layers`` controller by adding a new ``UrlMap`` to the tuple located in the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
 
 .. code-block:: python
 
-    UrlMap(
-        name='get_wms_layers',
-        url='thredds-tutorial/get-wms-layers',
-        controller='thredds_tutorial.controllers.get_wms_layers'
-    ),
+    def url_maps(self):
+        """
+        Add controllers
+        """
+        UrlMap = url_map_maker(self.root_url)
 
+        url_maps = (
+            UrlMap(
+                name='home',
+                url='thredds-tutorial',
+                controller='thredds_tutorial.controllers.home'
+            ),
+            UrlMap(
+                name='get_wms_layers',
+                url='thredds-tutorial/get-wms-layers',
+                controller='thredds_tutorial.controllers.get_wms_layers'
+            ),
+        )
+
+        return url_maps
 
 5. Initialize Variable and Style Select Controls
 ================================================

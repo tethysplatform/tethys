@@ -299,15 +299,35 @@ The technique that will be demonstrated in this step will leverage the `jQuery.l
 
     Notice also that the template will render an error message instead of the plot if an error is provided.
 
-4. Add a new ``UrlMap`` to the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
+4. Create a new endpoint for the ``get_time_series_plot`` controller by adding a new ``UrlMap`` to the tuple located in the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
 
 .. code-block:: python
 
-    UrlMap(
-        name='get_time_series_plot',
-        url='earth-engine/get-time-series-plot',
-        controller='earth_engine.controllers.get_time_series_plot'
-    ),
+    def url_maps(self):
+        """
+        Add controllers
+        """
+        UrlMap = url_map_maker(self.root_url)
+
+        url_maps = (
+            UrlMap(
+                name='home',
+                url='earth-engine',
+                controller='earth_engine.controllers.home'
+            ),
+            UrlMap(
+                name='get_image_collection',
+                url='earth-engine/get-image-collection',
+                controller='earth_engine.controllers.get_image_collection'
+            ),
+            UrlMap(
+                name='get_time_series_plot',
+                url='earth-engine/get-time-series-plot',
+                controller='earth_engine.controllers.get_time_series_plot'
+            ),
+        )
+
+        return url_maps
 
 3. Create a Modal for the Plot
 ==============================
