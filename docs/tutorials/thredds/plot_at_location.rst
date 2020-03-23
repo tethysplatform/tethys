@@ -57,43 +57,20 @@ In this step you'll learn to use another Leaflet plugin: `Leaflet.Draw <http://l
       <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
     {% endblock %}
 
-2. Declare the following variables in :file:`public/js/leaflet_map.js`:
+2. Add the following new variables to the *MODULE LEVEL / GLOBAL VARIABLES* section of :file:`public/js/leafet_map.js`:
 
 .. code-block:: javascript
 
-    /************************************************************************
-    *                      MODULE LEVEL / GLOBAL VARIABLES
-    *************************************************************************/
-    var public_interface,    // Object returned by the module
-        m_map,               // The Leaflet Map
-        m_layer,             // The layer
-        m_layer_meta,        // Map of layer metadata indexed by variable
-        m_td_layer,          // The time dimension layer
-        m_curr_dataset,      // The current selected dataset
-        m_curr_variable,     // The current selected variable/layer
-        m_curr_style,        // The current selected style
-        m_curr_wms_url,      // The current WMS url
-        m_drawn_features;    // Layer for drawn items
+    var m_drawn_features;    // Layer for drawn items
 
-    /************************************************************************
-    *                    PRIVATE FUNCTION DECLARATIONS
-    *************************************************************************/
-    // Map Methods
-    var init_map, update_layer;
+3. Add the following module function declarations to the *PRIVATE FUNCTION DECLARATIONS* section of :file:`public/js/leafet_map.js`:
 
-    // Control Methods
-    var init_controls, update_variable_control, update_style_control;
-
-    // Legend Methods
-    var update_legend, clear_legend;
-
-    // Loader Methods
-    var show_loader, hide_loader;
+.. code-block:: javascript
 
     // Plot Methods
     var init_plot_at_location;
 
-3. The Leaflet.Draw toolbar can be customized to show or hide controls as desired. Since the plot at location tool will use the draw toolbar, you'll initialize it as part of the intialization of the plot at location tool. Implement the ``init_plot_at_location`` method in :file:`public/js/leaflet_map.js`:
+4. The Leaflet.Draw toolbar can be customized to show or hide controls as desired. Since the plot at location tool will use the draw toolbar, you'll initialize it as part of the intialization of the plot at location tool. **Add** the ``init_plot_at_location`` method after the ``hide_loader`` method in :file:`public/js/leaflet_map.js`:
 
 .. code-block:: javascript
 
@@ -126,7 +103,7 @@ In this step you'll learn to use another Leaflet plugin: `Leaflet.Draw <http://l
         });
     };
 
-4. Call ``init_plot_at_location`` during initialization of :file:`public/js/leaflet_map.js`:
+5. Call ``init_plot_at_location`` during initialization of :file:`public/js/leaflet_map.js`. **Replace** the *INITIALIZATION / CONSTRUCTOR* section of :file:`public/js/leafet_map.js` with the following updated implementation:
 
 .. code-block:: javascript
 
@@ -442,7 +419,7 @@ In this step you will create a new controller that will query the dataset at the
 3. Load Plot Using JQuery Load
 ==============================
 
-The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL and load the returned HTML into the target element. In this step, you'll use ``jQuery.load()`` to call the ``get-time-series-plot`` endpoint and load the markup for the plot that is returned into a modal for display to the user. This pattern allows you to render the plot dynamically, while still defining it using Python and the Plotly gizmo.
+The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL and load the returned HTML into the target element. In this step, you'll use ``jQuery.load()`` to call the ``get-time-series-plot`` endpoint and load the markup for the plot that is returned into a modal for display to the user. This pattern allows you to render the plot dynamically with minimal JavaScript, because the plot is parameterized using Python on the server.
 
 1. Download this :download:`animated plot loading image <./resources/plot-loader.gif>` or find one that you like and save it to the :file:`public/images` directory.
 
@@ -510,14 +487,14 @@ The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL
 
     The empty **#plot-container** ``div`` is the element that you will target with the ``jQuery.load()`` method and thus where the plot will be rendered.
 
-5. Declare two new plot methods in :file:`public/js/leaflet_map.js`:
+5. Declare two new plot methods in the *PRIVATE FUNCTION DECLARATIONS* section of :file:`public/js/leafet_map.js`:
 
 .. code-block:: javascript
 
     // Plot Methods
     var init_plot_at_location, show_plot_modal, update_plot;
 
-6. The ``show_plot_modal`` will reset the modal with the loading gif and show the modal if it is not already showing. Implement the ``show_plot_modal`` method in :file:`public/js/leaflet_map.js`:
+6. The ``show_plot_modal`` will reset the modal with the loading gif and show the modal if it is not already showing. **Add** the ``show_plot_modal`` method after the ``init_plot_at_location`` method in :file:`public/js/leaflet_map.js`:
 
 .. code-block:: javascript
 
@@ -534,7 +511,7 @@ The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL
         $('#plot-modal').modal('show');
     };
 
-7. The ``update_plot`` method will gather the needed parameters for the ``get-time-series-plot`` endpoint and call it with ``jQuery.load()``. Implement the ``update_plot`` method in :file:`public/js/leaflet_map.js`:
+7. The ``update_plot`` method will gather the needed parameters for the ``get-time-series-plot`` endpoint and call it with ``jQuery.load()``. **Add** the ``update_plot`` method after the ``show_plot_modal`` method in :file:`public/js/leaflet_map.js`:
 
 .. code-block:: javascript
 
@@ -572,9 +549,9 @@ The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL
 
 .. note::
 
-    ``$`` is shorthand for ``jQuery``.
+    ``$`` is an alias or shorthand for ``jQuery``.
 
-8. When ``jQuery.load()`` is called with the data parameter, as it is in this case, the request is submitted using the ``POST`` method. You must include the CSRF token with any POST request for Django to accept the request. Add the following to :file:`public/js/main.js` to allow ``jQuery.load()`` to use the ``POST`` method:
+8. When ``jQuery.load()`` is called with the data parameter, as it is in this case, the request is submitted using the ``POST`` method. You must include the CSRF token with any POST request for Django to accept the request. **Add** the following to :file:`public/js/main.js` to allow ``jQuery.load()`` to use the ``POST`` method:
 
 .. code-block:: javascript
 
@@ -612,23 +589,42 @@ The `JQuery.load() <https://api.jquery.com/load/>`_ method is used to call a URL
         });
     }); //document ready;
 
-9. Call ``update_plot`` in the on-draw handler at the bottom of ``init_plot_at_location`` in :file:`public/js/leaflet_map.js`:
+9.  **Replace** the ``init_plot_at_location`` method in :file:`public/js/leaflet_map.js` with the following new implementation that calls ``update_plot`` in the on-draw handler:
 
 .. code-block:: javascript
 
-    m_map.on(L.Draw.Event.CREATED, function(e) {
-        // Remove all layers (only show one location at a time)
-        m_drawn_features.clearLayers();
+    init_plot_at_location = function() {
+        // Initialize layer for drawn features
+        m_drawn_features = new L.FeatureGroup();
+        m_map.addLayer(m_drawn_features);
 
-        // Add layer with the new features
-        let new_features_layer = e.layer;
-        m_drawn_features.addLayer(new_features_layer);
+        // Initialize draw controls
+        let draw_control = new L.Control.Draw({
+            draw: {
+                polyline: false,
+                polygon: false,
+                circle: false,
+                rectangle: false,
+            }
+        });
 
-        // Load the plot
-        update_plot(new_features_layer);
-    });
+        m_map.addControl(draw_control);
 
-10. Clear the drawn features whenever the layer updates:
+        // Bind to draw event
+        m_map.on(L.Draw.Event.CREATED, function(e) {
+            // Remove all layers (only show one location at a time)
+            m_drawn_features.clearLayers();
+
+            // Add layer with the new features
+            let new_features_layer = e.layer;
+            m_drawn_features.addLayer(new_features_layer);
+
+            // Load the plot
+            update_plot(new_features_layer);
+        });
+    };
+
+10. Clear any drawn features whenever the layer is changed. **Replace** the ``update_layer`` method in :file:`public/js/leaflet_map.js` with the following updated implementation:
 
 .. code-block:: javascript
 
