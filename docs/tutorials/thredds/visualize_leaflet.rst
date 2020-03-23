@@ -2,7 +2,7 @@
 Visualize THREDDS Services with Leaflet
 ***************************************
 
-**Last Updated:** December 2019
+**Last Updated:** March 2020
 
 In this tutorial you will learn how to add a `Leaflet <https://leafletjs.com/>`_ map to a Tethys App for visualizing layers from a THREDDS server. This tutorial is adapted from `Time Dimension Example 1 <https://github.com/socib/Leaflet.TimeDimension/blob/master/examples/js/example1.js>`_ and the `Siphon NCSS Time Series Example <https://unidata.github.io/siphon/latest/examples/ncss/NCSS_Timeseries_Examples.html#sphx-glr-examples-ncss-ncss-timeseries-examples-py>`_. The following topics will be covered in this tutorial:
 
@@ -323,6 +323,56 @@ At this point the select controls are empty and don't do anything. In this step,
 .. note::
 
     This function is recursive, meaning it calls itself. Since THREDDS datasets can be located at arbitrary paths, sometimes nested in deep folder hierarchies, the function needs to be able to follow the paths down to find all the datasets. In this case, it searches for both datasets and new catalogs. When it encounters a new catalog, it calls itself again, initiating a search for dataset and new catalogs at that level. The dataset are collected and returned back up the call stack.
+
+.. tip::
+
+    Depending on the size of the catalog and the connection speed, this function can take quite bit of time to parse all of the datasets. This can be especially annoying when developing. One strategy to deal with slow catalog services during development is to temporarily mock the data.
+
+    If you print the data returned by the function and copy it into a temporary variable, you can have the function return that instead. They the function will run instantaneously during development. Don't forget to change the code back when you are done.
+
+    Mocking the data look something like this:
+
+    .. code-block:: python
+
+        temp_datasets = [('Full Collection (Reference / Forecast Time) Dataset',
+                          'Full Collection (Reference / Forecast Time) '
+                          'Dataset;https://thredds.ucar.edu/thredds/wms/grib/NCEP/GFS/Global_0p5deg/TwoD'),
+                         ('Best GFS Half Degree Forecast Time Series',
+                          'Best GFS Half Degree Forecast Time '
+                          'Series;https://thredds.ucar.edu/thredds/wms/grib/NCEP/GFS/Global_0p5deg/Best'),
+                         ('Latest Collection for GFS Half Degree Forecast',
+                          'Latest Collection for GFS Half Degree Forecast;https://thredds.ucar.edu/thredds/wms/grib/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_20200228_0000.grib2')]
+
+
+        def parse_datasets(catalog):
+            """
+            Collect all available datasets that have the WMS service enabled.
+
+            Args:
+                catalog(siphon.catalog.TDSCatalog): A Siphon catalog object bound to a valid THREDDS service.
+
+            Returns:
+                list<2-tuple<dataset_name, wms_url>: One 2-tuple for each dataset.
+            """
+            # datasets = []
+            #
+            # for dataset_name, dataset_obj in catalog.datasets.items():
+            #     dataset_wms_url = dataset_obj.access_urls.get('wms', None)
+            #     if dataset_wms_url:
+            #         datasets.append((dataset_name, f'{dataset_name};{dataset_wms_url}'))
+            #
+            # for catalog_name, catalog_obj in catalog.catalog_refs.items():
+            #     d = parse_datasets(catalog_obj.follow())
+            #     datasets.extend(d)
+            #
+            # return datasets
+            # TODO: DON'T FORGET TO UNCOMMENT
+            return temp_datasets
+
+    Handling the slow connection or large catalog problem in production is trickier. One option would be to implement a cache. A simple caching mechanism could be implemented by writing the results to a file the first time the function is called and then loading the results from that file every time after that. This introduces new problem though: how do you update the cache when the catalog updates?
+
+    If your app requires only a specific subset of datasets and the entire THREDDS catalog, then it would probably be better to provide a list of hard-coded datasets, similar to what was done in the Google Earth Engine tutorial. How you handle this problem is ultimately dependent on the needs of your application.
+
 
 2. Modify the ``home`` controller in :file:`controllers.py` to call the ``parse_datasets`` function to get a list of all datasets available on the THREDDS service:
 
