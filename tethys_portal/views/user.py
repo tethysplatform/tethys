@@ -12,6 +12,7 @@ from tethys_sdk.permissions import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.contrib import messages
+from django.views.decorators.cache import never_cache
 from rest_framework.authtoken.models import Token
 
 from tethys_apps.harvester import SingletonHarvester
@@ -103,6 +104,7 @@ def settings(request, username=None):
 
 
 @login_required()
+@never_cache
 def change_password(request, username=None):
     """
     Handle change password request.
