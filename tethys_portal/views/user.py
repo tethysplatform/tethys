@@ -25,7 +25,7 @@ from tethys_quotas.utilities import get_quota, _convert_storage_units
 
 
 @login_required()
-@never_cache()
+@never_cache
 def profile(request, username=None):
     """
     Handle the profile view. Profiles could potentially be publicly accessible.
@@ -51,7 +51,7 @@ def profile(request, username=None):
 
 
 @login_required()
-@never_cache()
+@never_cache
 def settings(request, username=None):
     """
     Handle the settings view. Access to change settings are not publicly accessible
