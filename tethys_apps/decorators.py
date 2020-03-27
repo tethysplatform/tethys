@@ -102,7 +102,8 @@ def permission_required(*args, **kwargs):
     """  # noqa: E501
 
     use_or = kwargs.pop('use_or', False)
-    message = kwargs.pop('message', "We're sorry, but you are not allowed to perform this operation.")
+    message = kwargs.get('message', "We're sorry, but you are not allowed to perform this operation.")
+    production_message = kwargs.get('message', "We're sorry, but the operation you requested cannot be found.")
     raise_exception = kwargs.pop('raise_exception', False)
     perms = [arg for arg in args if isinstance(arg, str)]
 
@@ -157,7 +158,10 @@ def permission_required(*args, **kwargs):
                     # If user is authenticated...
                     if request.user.is_authenticated:
                         # User feedback
-                        messages.add_message(request, messages.WARNING, message)
+                        if getattr(settings, 'DEBUG', False) is False:
+                            messages.add_message(request, messages.WARNING, production_message)
+                        else:
+                            messages.add_message(request, messages.WARNING, message)
 
                         # Default redirect URL
                         redirect_url = reverse('app_library')
@@ -189,6 +193,9 @@ def permission_required(*args, **kwargs):
                         return redirect(reverse('accounts:login') + '?next=' + request.path)
 
                 else:
+                    # Return Error 404: Not Found in production to prevent directory enumeration
+                    if getattr(settings, 'DEBUG', False) is False:
+                        return tethys_portal_error.handler_404(request)
                     return tethys_portal_error.handler_403(request)
 
             # Call the controller
