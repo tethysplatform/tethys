@@ -102,8 +102,7 @@ def permission_required(*args, **kwargs):
     """  # noqa: E501
 
     use_or = kwargs.pop('use_or', False)
-    message = kwargs.get('message', "We're sorry, but you are not allowed to perform this operation.")
-    production_message = kwargs.get('message', "We're sorry, but the operation you requested cannot be found.")
+    message = kwargs.pop('message', "We're sorry, but the operation you requested cannot be found.")
     raise_exception = kwargs.pop('raise_exception', False)
     perms = [arg for arg in args if isinstance(arg, str)]
 
@@ -158,10 +157,7 @@ def permission_required(*args, **kwargs):
                     # If user is authenticated...
                     if request.user.is_authenticated:
                         # User feedback
-                        if getattr(settings, 'DEBUG', False) is False:
-                            messages.add_message(request, messages.WARNING, production_message)
-                        else:
-                            messages.add_message(request, messages.WARNING, message)
+                        messages.add_message(request, messages.WARNING, message)
 
                         # Default redirect URL
                         redirect_url = reverse('app_library')
