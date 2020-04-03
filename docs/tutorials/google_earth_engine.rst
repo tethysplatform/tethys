@@ -29,3 +29,8 @@ Outline
    google_earth_engine/map_view
    google_earth_engine/vis_gee_layers
    google_earth_engine/plot_data
+
+Supporting Materials
+--------------------
+
+* `Google Earth Engine Tutorial Presentation <https://docs.google.com/presentation/d/1n43AnLxk_3dSx8dShtWfAnrEuFbwEdw8j9RLQilhLdw/edit>`_
