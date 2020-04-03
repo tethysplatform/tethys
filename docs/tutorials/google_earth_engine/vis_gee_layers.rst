@@ -2,7 +2,7 @@
 Visualize Google Earth Engine Datasets
 **************************************
 
-**Last Updated:** November 2019
+**Last Updated:** March 2020
 
 In this tutorial you will load the GEE dataset the user has selected into the map view. The following topics will be reviewed in this tutorial:
 
@@ -276,37 +276,56 @@ In this step you'll create a new endpoint that can be used to call the ``get_ima
 
     In this step you added ``logging`` to the new endpoint. Tethys and Django leverage Python's built-in logging capabilities. Use logging statements in your code to provide useful debugging information, system status, or error capture in your production logs. The logging for a portal can be configured in the :ref:`tethys_configuration`. To learn more about logging in Tethys/Django see: `Django Logging <https://docs.djangoproject.com/en/2.2/topics/logging/>`_
 
-2. Add a new ``UrlMap`` to the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
+2. Create a new endpoint for the ``get_image_collection`` controller by adding a new ``UrlMap`` to the tuple located in the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
 
 .. code-block:: python
 
-    UrlMap(
-        name='get_image_collection',
-        url='earth-engine/get-image-collection',
-        controller='earth_engine.controllers.get_image_collection'
-    ),
+    def url_maps(self):
+        """
+        Add controllers
+        """
+        UrlMap = url_map_maker(self.root_url)
+
+        url_maps = (
+            UrlMap(
+                name='home',
+                url='earth-engine',
+                controller='earth_engine.controllers.home'
+            ),
+            UrlMap(
+                name='get_image_collection',
+                url='earth-engine/get-image-collection',
+                controller='earth_engine.controllers.get_image_collection'
+            ),
+        )
+
+        return url_maps
 
 4. Stub Out the Map JavaScript Methods
 ======================================
 
 In this step you'll stub out the methods and variables you'll need to add the GEE layers to the map.
 
-1. Create new variables to store a reference to the Tethys ``MapView`` object and the GEE layer in :file:`public/js/gee_datasets.js`:
+1. Add the following new variables to the *MODULE LEVEL / GLOBAL VARIABLES* section of :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
     // Map Variables
- 	var m_map,
- 	    m_gee_layer;
+    var m_map,
+    m_gee_layer;
 
-2. Add the following module function declarations in :file:`public/js/gee_datasets.js` below the dataset select function declarations:
+.. note::
+
+    The prepending an **m** to these variables is a reminder that they are module level variables.
+
+2. Add the following module function declarations to the *PRIVATE FUNCTION DECLARATIONS* section of :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
     // Map Methods
- 	var update_map, update_data_layer, create_data_layer, clear_map;
+    var update_map, update_data_layer, create_data_layer, clear_map;
 
-3. Add the following module function stubs in :file:`public/js/gee_datasets.js`, just below the ``collect_data`` implementation:
+3. Add the following module function stubs to the *PRIVATE FUNCTION IMPLEMENTATIONS* section of :file:`public/js/gee_datasets.js`, just below the ``collect_data`` method:
 
 .. code-block:: javascript
 
@@ -319,7 +338,11 @@ In this step you'll stub out the methods and variables you'll need to add the GE
 
     clear_map = function() {};
 
-4. Use the Tethys ``MapView`` JavaScript API to retrieve the underlying OpenLayers Map object when the module initializes. Having a handle on this object gives us full control over the map using the `OpenLayers JavaScript API <https://openlayers.org/en/latest/apidoc/>`_.
+.. note::
+
+    The lines that define empty functions (e.g.: ``update_map = function() {};``) are method stubs that will be implemented in future steps.
+
+4. Use the Tethys ``MapView`` JavaScript API to retrieve the underlying OpenLayers Map object and save it to the ``m_map`` module variable when the module initializes. Having a handle on this object gives us full control over the map (see: `OpenLayers JavaScript API <https://openlayers.org/en/latest/apidoc/>`_). **Replace** the *INITIALIZATION / CONSTRUCTOR* section of :file:`public/js/gee_datasets.js` with the following:
 
 .. code-block:: javascript
 
@@ -347,9 +370,18 @@ In this step you'll stub out the methods and variables you'll need to add the GE
 5. Implement Adding Layers to the Map
 =====================================
 
-In this step you'll implement the new methods with logic to (1) retrieve the XYZ map service URL by calling the new ``get-image-collection`` endpoint using AJAX and then (2) create a new OpenLayers ``Layer`` with an XYZ ``Source`` and add it to the map.
+In this step you'll implement the new methods with logic to:
 
-1. Call the ``get-image-collection`` endpoint using `jQuery.ajax() <https://api.jquery.com/jquery.ajax/>`_ passing it the parameters from the controls in the``update_map`` method in :file:`public/js/gee_datasets.js`:
+1. retrieve the XYZ map service URL by calling the new ``get-image-collection`` endpoint using AJAX and then
+2. create a new OpenLayers ``Layer`` with an XYZ ``Source`` and add it to the map.
+
+Here is a brief explanation of each method that will be implemented in this step:
+
+* **update_map**: calls the ``get-image-collection`` endpoint using `jQuery.ajax() <https://api.jquery.com/jquery.ajax/>`_ passing it the current values of the controls.
+* **create_data_layer**: creates a new ``ol.layer.Tile`` layer with an ``ol.source.XYZ`` source using the URL provided. The new layer is assigned to ``m_gee_layer`` so it can be reused in subsequent calls and then it is added to the map below the drawing layer (index 1) so that drawn features will show up on top.
+* **update_data_layer**: creates the ``m_gee_layer`` if it doesn't exist or updates it if it does exist.
+
+1. **Replace** the ``update_map`` method stub in :file:`public/js/gee_datasets.js` with the following implementation:
 
 .. code-block:: javascript
 
@@ -373,7 +405,7 @@ In this step you'll implement the new methods with logic to (1) retrieve the XYZ
         });
     };
 
-2. Bind the ``update_map`` method to the **Load** button ``click`` event in ``bind_controls`` the method:
+2. **Update** the **Load** button ``click`` event, defined at the bottom of ``bind_controls`` method in :file:`public/js/gee_datasets.js`, to call ``update_map``:
 
 .. code-block:: javascript
 
@@ -381,9 +413,9 @@ In this step you'll implement the new methods with logic to (1) retrieve the XYZ
         update_map();
     });
 
-.. note::
+.. warning::
 
-    If you test the **Load** button at this point, the AJAX call to the ``get-image-collection`` endpoint will fail because it is missing the CSRF token. The token is used to verify that the call came from our client-side code and not from a site posing to be our site. As a security precaution, the server will reject any POST requests that don't include this token. you'll add the CSRF token in the next step. For more information about CSRF see: `Cross Site Request Forgery protection <https://docs.djangoproject.com/en/2.2/ref/csrf/>`_.
+    If you test the **Load** button at this point, the AJAX call to the ``get-image-collection`` endpoint will fail because it is missing the CSRF token. This token is used to verify that the call came from our client-side code and not from a site posing to be our site. As a security precaution, the server will reject any POST requests that do not include this token. You'll add the CSRF token in the next step. For more information about CSRF see: `Cross Site Request Forgery protection <https://docs.djangoproject.com/en/2.2/ref/csrf/>`_.
 
 3. Add the following code to the :file:`public/js/main.js` file to automatically attach the CSRF Token to every AJAX request that needs it:
 
@@ -423,19 +455,7 @@ In this step you'll implement the new methods with logic to (1) retrieve the XYZ
         });
     }); //document ready;
 
-4. The ``update_data_layer`` method lazily creates the ``m_gee_layer`` if it doesn't exist or reuses it if it does exist. Implement the ``update_data_layer`` method in :file:`public/js/gee_datasets.js`:
-
-.. code-block:: javascript
-
-    update_data_layer = function(url) {
-        if (!m_gee_layer) {
-            create_data_layer(url);
-        } else {
-            m_gee_layer.getSource().setUrl(url);
-        }
-    };
-
-5. The ``create_data_layer`` method creates a new ``ol.layer.Tile`` layer with an ``ol.source.XYZ`` source using the URL provided. The new layer is assigned to ``m_gee_layer`` so it can be reused in subsquent calls and then added to the map below the drawing layer so that drawn features will show up on top. Implement the ``create_data_layer`` method in :file:`public/js/gee_datasets.js`.
+4. **Replace** the ``create_data_layer`` method stub in :file:`public/js/gee_datasets.js` with the following implementation:
 
 .. code-block:: javascript
 
@@ -449,8 +469,21 @@ In this step you'll implement the new methods with logic to (1) retrieve the XYZ
             source: source,
             opacity: 0.7
         });
+
         // Insert below the draw layer (so drawn polygons and points render on top of data layer).
         m_map.getLayers().insertAt(1, m_gee_layer);
+    };
+
+5. **Replace** the ``update_data_layer`` method stub in :file:`public/js/gee_datasets.js` with the following implementation:
+
+.. code-block:: javascript
+
+    update_data_layer = function(url) {
+        if (!m_gee_layer) {
+            create_data_layer(url);
+        } else {
+            m_gee_layer.getSource().setUrl(url);
+        }
     };
 
 6. Verify that the layers are being loaded on the map at this point. Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and login if necessary. Use the dataset controls to select a dataset product and press the **Load** button. Changing to a new dataset and pressing **Load** should replace the current layer with the new one.
@@ -461,7 +494,7 @@ In this step you'll implement the new methods with logic to (1) retrieve the XYZ
 
 Users can now visualize GEE layers on the map, but there is no way to clear the data from the map. In this step, you'll add a button that will remove layers and clear the map.
 
-1. Add **Clear** button to ``home`` controller in :file:`controllers.py`:
+1. Add a **Clear** button to the ``home`` controller in :file:`controllers.py`:
 
 .. code-block:: python
 
@@ -471,8 +504,6 @@ Users can now visualize GEE layers on the map, but there is no way to clear the 
         style='default',
         attributes={'id': 'clear_map'}
     )
-
-    ...
 
     context = {
         'platform_select': platform_select,
@@ -489,7 +520,7 @@ Users can now visualize GEE layers on the map, but there is no way to clear the 
 
 
 
-2. Add **Clear** button to the ``app_navigation_items`` block of the :file:`templates/earth_engine/home.html` template:
+2. Add the **Clear** button to the ``app_navigation_items`` block of the :file:`templates/earth_engine/home.html` template:
 
 .. code-block:: html+django
 
@@ -506,7 +537,7 @@ Users can now visualize GEE layers on the map, but there is no way to clear the 
       {% gizmo clear_button %}
     {% endblock %}
 
-3. The ``clear_map`` method removes the layer from the map and removes all references to it. Implement ``clear_map`` method in :file:`public/js/gee_datasets.js`:
+3. The ``clear_map`` method removes the layer from the map and removes all references to it. **Replace** the ``clear_map`` method stub in :file:`public/js/gee_datasets.js` with the following implementation:
 
 .. code-block:: javascript
 
@@ -517,7 +548,7 @@ Users can now visualize GEE layers on the map, but there is no way to clear the 
         }
     };
 
-4. Bind the ``clear_map`` method to the ``click`` event of the **Clear** button (in the ``bind_controls`` method):
+4. Bind the ``clear_map`` method to the ``click`` event of the **Clear** button. Add the following to the bottom of the ``bind_controls`` method in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -525,7 +556,7 @@ Users can now visualize GEE layers on the map, but there is no way to clear the 
         clear_map();
     });
 
-5. Verify that the **Clear** button works. Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and login if necessary. Load a dataset as before and then press the **Clear** button. The currently displayed layer should be removed from the map. Repeat this process a few times, loading several datasets before clearing at least one of the times, to ensure it is working properly.
+5. Verify that the **Clear** button works. Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and login if necessary. Load a dataset as before and then press the **Clear** button. The currently displayed layer should be removed from the map. Repeat this process a few times, loading several datasets before clearing at least one of the times to ensure it is working properly.
 
 7. Implement Map Loading Indicator
 ==================================
@@ -554,7 +585,7 @@ You may have noticed while testing the app, that it can take some time for a lay
         display: block;
     }
 
-3. Add the image to the `after_app_content` block of the :file:`templates/earth_engine/home.html` template and include the new :file:`public/css/loader.css`:
+3. Include the new :file:`public/css/loader.css` and add the image to the ``after_app_content`` block of the :file:`templates/earth_engine/home.html` template:
 
 .. code-block:: html+django
 
@@ -575,7 +606,7 @@ You may have noticed while testing the app, that it can take some time for a lay
 
 
 
-4. Show the loader image when the map starts loading tiles by binding to tile load events on the layer ``Source``. Update the ``create_data_layer`` method in :file:`public/js/gee_datasets.js`:
+4. Show the loader image when the map starts loading tiles by binding to tile load events on the layer ``Source`` object when the layer is created. **Replace** the ``create_data_layer`` method in :file:`public/js/gee_datasets.js` with this new version:
 
 .. code-block:: javascript
 
@@ -602,7 +633,7 @@ You may have noticed while testing the app, that it can take some time for a lay
             opacity: 0.7
         });
 
-        // Insert below the draw layer (so drawn polygons and points render on top of data layer).
+        // Insert below the draw layer (so drawn polygons and points render on top of the data layer).
         m_map.getLayers().insertAt(1, m_gee_layer);
     };
 
@@ -615,9 +646,6 @@ Browse to `<http://localhost:8000/apps/earth-engine>`_ in a web browser and logi
 2. Subsequent dataset loads should replace the previous dataset.
 3. Use the **Clear** button to clear the map.
 4. When a layer is loading tiles, a loading image should display to indicate to the user that the app is working.
-
-
-
 
 9. Solution
 ===========
