@@ -2,7 +2,7 @@
 Visualize THREDDS Services with Leaflet
 ***************************************
 
-**Last Updated:** December 2019
+**Last Updated:** March 2020
 
 In this tutorial you will learn how to add a `Leaflet <https://leafletjs.com/>`_ map to a Tethys App for visualizing layers from a THREDDS server. This tutorial is adapted from `Time Dimension Example 1 <https://github.com/socib/Leaflet.TimeDimension/blob/master/examples/js/example1.js>`_ and the `Siphon NCSS Time Series Example <https://unidata.github.io/siphon/latest/examples/ncss/NCSS_Timeseries_Examples.html#sphx-glr-examples-ncss-ncss-timeseries-examples-py>`_. The following topics will be covered in this tutorial:
 
@@ -324,6 +324,56 @@ At this point the select controls are empty and don't do anything. In this step,
 
     This function is recursive, meaning it calls itself. Since THREDDS datasets can be located at arbitrary paths, sometimes nested in deep folder hierarchies, the function needs to be able to follow the paths down to find all the datasets. In this case, it searches for both datasets and new catalogs. When it encounters a new catalog, it calls itself again, initiating a search for dataset and new catalogs at that level. The dataset are collected and returned back up the call stack.
 
+.. tip::
+
+    Depending on the size of the catalog and the connection speed, this function can take quite bit of time to parse all of the datasets. This can be especially annoying when developing. One strategy to deal with slow catalog services during development is to temporarily mock the data.
+
+    If you print the data returned by the function and copy it into a temporary variable, you can have the function return that instead. They the function will run instantaneously during development. Don't forget to change the code back when you are done.
+
+    Mocking the data look something like this:
+
+    .. code-block:: python
+
+        temp_datasets = [('Full Collection (Reference / Forecast Time) Dataset',
+                          'Full Collection (Reference / Forecast Time) '
+                          'Dataset;https://thredds.ucar.edu/thredds/wms/grib/NCEP/GFS/Global_0p5deg/TwoD'),
+                         ('Best GFS Half Degree Forecast Time Series',
+                          'Best GFS Half Degree Forecast Time '
+                          'Series;https://thredds.ucar.edu/thredds/wms/grib/NCEP/GFS/Global_0p5deg/Best'),
+                         ('Latest Collection for GFS Half Degree Forecast',
+                          'Latest Collection for GFS Half Degree Forecast;https://thredds.ucar.edu/thredds/wms/grib/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_20200228_0000.grib2')]
+
+
+        def parse_datasets(catalog):
+            """
+            Collect all available datasets that have the WMS service enabled.
+
+            Args:
+                catalog(siphon.catalog.TDSCatalog): A Siphon catalog object bound to a valid THREDDS service.
+
+            Returns:
+                list<2-tuple<dataset_name, wms_url>: One 2-tuple for each dataset.
+            """
+            # datasets = []
+            #
+            # for dataset_name, dataset_obj in catalog.datasets.items():
+            #     dataset_wms_url = dataset_obj.access_urls.get('wms', None)
+            #     if dataset_wms_url:
+            #         datasets.append((dataset_name, f'{dataset_name};{dataset_wms_url}'))
+            #
+            # for catalog_name, catalog_obj in catalog.catalog_refs.items():
+            #     d = parse_datasets(catalog_obj.follow())
+            #     datasets.extend(d)
+            #
+            # return datasets
+            # TODO: DON'T FORGET TO UNCOMMENT
+            return temp_datasets
+
+    Handling the slow connection or large catalog problem in production is trickier. One option would be to implement a cache. A simple caching mechanism could be implemented by writing the results to a file the first time the function is called and then loading the results from that file every time after that. This introduces new problem though: how do you update the cache when the catalog updates?
+
+    If your app requires only a specific subset of datasets and the entire THREDDS catalog, then it would probably be better to provide a list of hard-coded datasets, similar to what was done in the Google Earth Engine tutorial. How you handle this problem is ultimately dependent on the needs of your application.
+
+
 2. Modify the ``home`` controller in :file:`controllers.py` to call the ``parse_datasets`` function to get a list of all datasets available on the THREDDS service:
 
 .. code-block:: python
@@ -369,7 +419,7 @@ At this point the select controls are empty and don't do anything. In this step,
 
     .. code-block:: python
 
-        from siphon.http_url import session_manager
+        from siphon.http_util import session_manager
         session_manager.set_session_options(verify=False)
         catalog = app.get_spatial_dataset_service('my_thredds_service', as_engine=True)
 
@@ -474,45 +524,55 @@ Each time a new dataset is selected, the options in the variable and style contr
 
         return JsonResponse(json_response)
 
-3. Create a new ``UrlMap`` for the ``get_wms_layers`` controller in :file:`app.py`:
+3. Create a new endpoint for the ``get_wms_layers`` controller by adding a new ``UrlMap`` to the tuple located in the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
 
 .. code-block:: python
 
-    UrlMap(
-        name='get_wms_layers',
-        url='thredds-tutorial/get-wms-layers',
-        controller='thredds_tutorial.controllers.get_wms_layers'
-    ),
+    def url_maps(self):
+        """
+        Add controllers
+        """
+        UrlMap = url_map_maker(self.root_url)
 
+        url_maps = (
+            UrlMap(
+                name='home',
+                url='thredds-tutorial',
+                controller='thredds_tutorial.controllers.home'
+            ),
+            UrlMap(
+                name='get_wms_layers',
+                url='thredds-tutorial/get-wms-layers',
+                controller='thredds_tutorial.controllers.get_wms_layers'
+            ),
+        )
 
-5. Initialize Variable and Style Select Controls
-================================================
+        return url_maps
+
+5. Stub Out the Variable and Style Control JavaScript Methods
+=============================================================
 
 In this step you will use the new ``get-wms-layers`` endpoint to get a list of layers and their attributes (e.g. styles) to update the variable and style controls.
 
-1. Stub out the following variables and methods in :file:`public/js/leaflet_map.js`:
+1. Add the following new variables to the *MODULE LEVEL / GLOBAL VARIABLES* section of :file:`public/js/leafet_map.js`:
 
 .. code-block:: javascript
 
-    /************************************************************************
-    *                      MODULE LEVEL / GLOBAL VARIABLES
-    *************************************************************************/
-    var public_interface,    // Object returned by the module
-        m_map,               // The Leaflet Map
-        m_layer_meta,        // Map of layer metadata indexed by variable
+    var m_layer_meta,        // Map of layer metadata indexed by variable
         m_curr_dataset,      // The current selected dataset
         m_curr_variable,     // The current selected variable/layer
         m_curr_style,        // The current selected style
         m_curr_wms_url;      // The current WMS url
 
-    /************************************************************************
-    *                    PRIVATE FUNCTION DECLARATIONS
-    *************************************************************************/
-    // Map Methods
-    var init_map;
+
+2. Add the following module function declarations to the *PRIVATE FUNCTION DECLARATIONS* section of :file:`public/js/leafet_map.js`:
+
+.. code-block:: javascript
 
     // Control Methods
     var init_controls, update_variable_control, update_style_control;
+
+3. Add the following module function stubs to the *PRIVATE FUNCTION IMPLEMENTATIONS* section of :file:`public/js/leafet_map.js`, just below the ``init_map`` method:
 
 .. code-block:: javascript
 
@@ -531,6 +591,12 @@ In this step you will use the new ``get-wms-layers`` endpoint to get a list of l
         console.log('Updating style control...');
     };
 
+.. note::
+
+    These functions are method stubs that will be implemented in the following steps.
+
+4. Call the ``init_controls`` method when the module initializes. **Replace** the *INITIALIZATION / CONSTRUCTOR* section of :file:`public/js/leafet_map.js` with the following updated implementation:
+
 .. code-block:: javascript
 
     /************************************************************************
@@ -544,7 +610,18 @@ In this step you will use the new ``get-wms-layers`` endpoint to get a list of l
         init_controls();
     });
 
-2. Add on-change handlers for each control so that you can implement the logic that happens whenever a control is changed. Implement the ``init_controls`` method in :file:`public/js/leaflet_map.js`:
+6. Implement Variable and Style Control Methods
+===============================================
+
+In this step you will implement the dataset controll JavaScript methods in :file:`public/js/leaflet_map.js`.
+
+Here is a brief explanation of each method that will be implemented in this step:
+
+* **init_controls**: adds on-change handlers for each control so that you can implement the logic that happens whenever a control is changed. Called when the module initializes after page load.
+* **update_variable_control**: will call the new ``get-wms-layers`` endpoint and create new select options for the variable control with the returned list of layers. It will also save the layer data for use by other methods.
+* **update_style_control**: will use the saved layer metadata to generate style options for the style select.
+
+1. **Replace** the ``init_controls`` method stub in :file:`public/js/leaflet_map.js` with the following implementation:
 
 .. code-block:: javascript
 
@@ -576,7 +653,7 @@ In this step you will use the new ``get-wms-layers`` endpoint to get a list of l
         $('#dataset').trigger('change');
     };
 
-3. The ``update_variable_control`` method will call the new ``get-wms-layers`` endpoint and create new select options for the variable control with the returned list of layers. It will also save the layer data for use by other methods. Implement the ``update_variable_control`` method in :file:`public/js/leaflet_map.js`:
+2. **Replace** the ``update_variable_control`` method stub in :file:`public/js/leaflet_map.js` with the following implementation:
 
 .. code-block:: javascript
 
@@ -618,7 +695,7 @@ In this step you will use the new ``get-wms-layers`` endpoint to get a list of l
     };
 
 
-4. The ``update_style_control`` method will used the saved layer metadata to generate style options for the style select. Implement the ``update_style_control`` method in :file:`public/js/leaflet_map.js`:
+3. **Replace** the ``update_style_control`` method stub in :file:`public/js/leaflet_map.js` with the following implementation:
 
 .. code-block:: javascript
 
@@ -637,9 +714,9 @@ In this step you will use the new ``get-wms-layers`` endpoint to get a list of l
         $('#style').trigger('change');
     };
 
-5. Verify that the **Variable** and **Style** controls are updated properly when the dataset changes. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. Use the **Dataset** control to select a new dataset and verify that the **Variable** and **Style** options update accordingly. Inspect the terminal where Tethys is running to see the output from the print statement we added for debugging in Step 4.
+4. Verify that the **Variable** and **Style** controls are updated properly when the dataset changes. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. Use the **Dataset** control to select a new dataset and verify that the **Variable** and **Style** options update accordingly. Inspect the terminal where Tethys is running to see the output from the print statement we added for debugging in Step 4.
 
-6. Add Time-Dimension Plugin to Leaflet Map
+7. Add Time-Dimension Plugin to Leaflet Map
 ===========================================
 
 Many of the datasets hosted on THREDDS servers have time as a dimension. In this step you will add the Time-Dimension plugin to the Leaflet map so that it can visualize data with the time dimension. The plugin adds a time slider control to the map and provides a way to load and visualize WMS layers with a time dimension.
@@ -666,7 +743,7 @@ Many of the datasets hosted on THREDDS servers have time as a dimension. In this
       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/leaflet-timedimension@1.1.1/dist/leaflet.timedimension.min.js"></script>
     {% endblock %}
 
-2. Enable the Time Dimension control when initializing the map in :file:`public/js/leaflet_map.js`:
+2. Enable the Time Dimension control when initializing the map by **replacing** the ``init_map`` method in :file:`public/js/leaflet_map.js` with this updated implementation:
 
 .. code-block:: javascript
 
@@ -688,35 +765,25 @@ Many of the datasets hosted on THREDDS servers have time as a dimension. In this
 
 3. Verify that the Time-Dimension control is enabled. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. There should now be a time slider control at the bottom of the map.
 
-7. Add Selected Dataset Layer to Map
+8. Add Selected Dataset Layer to Map
 ====================================
 
 In this step, you'll create the ``update_layer`` method that will add the THREDDS dataset WMS layer to the Leaflet map.
 
-1. Declare the following variables in :file:`public/js/leaflet_map.js`:
+1. Add the following new variables to the *MODULE LEVEL / GLOBAL VARIABLES* section of :file:`public/js/leafet_map.js`:
 
 .. code-block:: javascript
 
-    /************************************************************************
-    *                      MODULE LEVEL / GLOBAL VARIABLES
-    *************************************************************************/
-    var public_interface,    // Object returned by the module
-        m_map,               // The Leaflet Map
-        m_layer,             // The layer
-        m_td_layer,          // The Time-Dimension layer
-        m_layer_meta,        // Map of layer metadata indexed by variable
-        m_curr_dataset,      // The current selected dataset
-        m_curr_variable,     // The current selected variable/layer
-        m_curr_style,        // The current selected style
-        m_curr_wms_url;      // The current WMS url
+    var m_layer,             // The layer
+        m_td_layer;          // The Time-Dimension layer
 
-    /************************************************************************
-    *                    PRIVATE FUNCTION DECLARATIONS
-    *************************************************************************/
-    // Map Methods
-    var init_map, update_layer;
+2. Add the following module function declarations to the *PRIVATE FUNCTION DECLARATIONS* section of :file:`public/js/leafet_map.js`:
 
-2. Implement the ``update_layer`` method in :file:`public/js/leaflet_map.js`:
+.. code-block:: javascript
+
+    var update_layer;
+
+3. **Insert** the ``update_layer`` method just after the ``init_map`` method in :file:`public/js/leaflet_map.js`:
 
 .. code-block:: javascript
 
@@ -746,7 +813,7 @@ In this step, you'll create the ``update_layer`` method that will add the THREDD
         m_td_layer.addTo(m_map);
     };
 
-3. Call the ``update_layer`` method when the style changes. Update the on-change handler for the style control near the end of the ``init_controls`` method:
+4. Call the ``update_layer`` method when the style changes. **Replace** the on-change handler for the *style control* (i.e. ``$('#style').on('change', ...);``) defined in the ``init_controls`` method in :file:`public/js/leaflet_map.js` with this updated implementation:
 
 .. code-block:: javascript
 
@@ -762,7 +829,7 @@ In this step, you'll create the ``update_layer`` method that will add the THREDD
 
     The style is changed not only when the user selects a new style, but also whenever the dataset or variable changes. Consequently, the ``update_layer`` method will be called anytime the dataset, variable, or style controls changes.
 
-4. Use the bounding box retrieved from the WMS service to automatically frame the selected layer on the map. Update the on-change handler for the variable control defined in the ``init_controls`` method:
+5. Use the bounding box retrieved from the WMS service to automatically frame the selected layer on the map. **Replace** the on-change handler for the *variable control* (i.e. ``$('#variable').on('change', ...);``) defined in the ``init_controls`` method with this updated implementation:
 
 .. code-block:: javascript
 
@@ -779,7 +846,7 @@ In this step, you'll create the ``update_layer`` method that will add the THREDD
 
 5. Verify that the layers show up on the map. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. Select the "Best GFS Half Degree Forecast Time Series" dataset using the **Dataset** control to test a time-varying layer. Press the **Play** button on the Time-Dimension control to animate the layer.
 
-8. Implement Legend for Layers
+9. Implement Legend for Layers
 ==============================
 
 The THREDDS implementation of the WMS standard includes support for the ``GetLayerGraphic`` request. In this step you'll use this request to generate a legend image for the layer and style selected.
@@ -797,23 +864,14 @@ The THREDDS implementation of the WMS standard includes support for the ``GetLay
       </div>
     {% endblock %}
 
-2. Declare the following variables in :file:`public/js/leaflet_map.js`:
+2. Add the following module function declarations to the *PRIVATE FUNCTION DECLARATIONS* section of :file:`public/js/leafet_map.js`:
 
 .. code-block:: javascript
-
-    /************************************************************************
-    *                    PRIVATE FUNCTION DECLARATIONS
-    *************************************************************************/
-    // Map Methods
-    var init_map, update_layer;
-
-    // Control Methods
-    var init_controls, update_variable_control, update_style_control;
 
     // Legend Methods
     var update_legend, clear_legend;
 
-3. To display the legend image, simply set the ``src`` attribute of an image element to the ``GetLegendGraphic`` request URL. Implement the ``update_legend`` method in :file:`public/js/leaflet_map.js`:
+3. To display the legend image, simply add an image element and set the ``src`` attribute to the ``GetLegendGraphic`` request URL. **Add** the ``update_legend`` method after the ``update_style_control`` method in :file:`public/js/leaflet_map.js`:
 
 .. code-block:: javascript
 
@@ -823,7 +881,7 @@ The THREDDS implementation of the WMS standard includes support for the ``GetLay
         $('#legend').html('<li class="title">Legend<h1></li><img src="' + legend + '">');
     };
 
-4. Implement the ``clear_legend`` method in :file:`public/js/leaflet_map.js`:
+4. Clearing the legend is just a matter of removing the image element. **Add** the ``clear_legend`` method after the ``update_legend`` method in :file:`public/js/leaflet_map.js`:
 
 .. code-block:: javascript
 
@@ -831,7 +889,7 @@ The THREDDS implementation of the WMS standard includes support for the ``GetLay
         $('#legend').html('');
     };
 
-5. Update the ``update_layer`` method to call the ``clear_legend`` and ``update_legend`` methods before and after updating the layer, respectively:
+5. **Replace** the ``update_layer`` method in :file:`public/js/leaflet_map.js` with the following implementation. ``update_layer`` will now call the ``clear_legend`` and ``update_legend`` methods before and after updating the layer, respectively:
 
 .. code-block:: javascript
 
@@ -867,10 +925,10 @@ The THREDDS implementation of the WMS standard includes support for the ``GetLay
         update_legend();
     };
 
-6. Verify that the legend has been added to the app. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. The legend should appear under the Query controls in the navigation window on the left. Change the style and verify that the legend update accordingly.
+6. Verify that the legend has been added to the app. Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. The legend should appear under the Query controls in the navigation window on the left. Change the style and verify that the legend updates accordingly.
 
-9. Implement a Map Loading Indicator
-====================================
+10. Implement a Map Loading Indicator
+=====================================
 
 Depending on the speed of the THREDDS server and the user's internet connection, loading the layers on the map may take some time. In this step you'll add a loading indicator so that the user knows when the app is working on loading layers.
 
@@ -896,6 +954,10 @@ Depending on the speed of the THREDDS server and the user's internet connection,
         display: block;
     }
 
+.. note::
+
+    The loading image is set to be hidden by default (``display: none;``). However, if the ``show`` class is added to the loading image it will appear (``display: block``). You can test this by inspecting the page, finding the ``#loader`` element and adding or removing the ``show`` class manually.
+
 3. Include the new :file:`public/css/loader.css` and add the image to the ``after_app_content`` block of the :file:`templates/thredds_tutorial/home.html` template:
 
 .. code-block:: html+django
@@ -918,26 +980,14 @@ Depending on the speed of the THREDDS server and the user's internet connection,
       </div>
     {% endblock %}
 
-4. Declare the map loader methods in :file:`public/js/leaflet_map.js`:
+4. Add the following module function declarations to the *PRIVATE FUNCTION DECLARATIONS* section of :file:`public/js/leafet_map.js`:
 
 .. code-block:: javascript
-
-    /************************************************************************
-    *                    PRIVATE FUNCTION DECLARATIONS
-    *************************************************************************/
-    // Map Methods
-    var init_map, update_layer;
-
-    // Control Methods
-    var init_controls, update_variable_control, update_style_control;
-
-    // Legend Methods
-    var update_legend, clear_legend;
 
     // Loader Methods
     var show_loader, hide_loader;
 
-5. Implement the ``show_loader`` and ``hide_loader`` methods in :file:`public/js/leaflet/map.js`:
+5. **Add** the ``show_loader`` and ``hide_loader`` methods after the ``clear_legend`` method in :file:`public/js/leaflet_map.js`:
 
 .. code-block:: javascript
 
@@ -950,7 +1000,11 @@ Depending on the speed of the THREDDS server and the user's internet connection,
         $('#loader').removeClass('show');
     };
 
-6. Bind the ``show_loader`` and ``hide_loader`` methods to the tile loading events of the layer:
+.. note::
+
+     The ``show_loader`` and ``hide_loader`` methods are very simple, because all they need to do is add or remove the ``show`` class to the ``#loader`` element. The style definitions in :file:`public/css/loader.css` handle the rest.
+
+6. Bind the ``show_loader`` and ``hide_loader`` methods to the tile loading events of the layer when it is created. **Replace** the ``update_layer`` method in :file:`public/js/leaflet_map.js` with this updated implementation:
 
 .. code-block:: javascript
 
@@ -999,7 +1053,7 @@ Depending on the speed of the THREDDS server and the user's internet connection,
 
     The ``loading`` event is called whenever tile layers start loading and the ``load`` event is called when the visible tiles of a tile layer have finished loading. See: `TileLayer.WMS reference <https://leafletjs.com/reference-1.6.0.html#tilelayer-wms>`_.
 
-7. Also show the map loader when the variable control is updating (the AJAX call to get the WMS layers could take some time to run):
+7. Also show the map loader when the variable control is updating (the AJAX call to get the WMS layers could take some time to run). **Replace** the ``update_variable_control`` method in :file:`public/js/leaflet_map.js` with the following updated implementation:
 
 .. code-block:: javascript
 
@@ -1046,7 +1100,7 @@ Depending on the speed of the THREDDS server and the user's internet connection,
         });
     };
 
-10. Clean Up
+11. Clean Up
 ============
 
 During development it is common to use print statements. Rather than delete these when you are done, turn them into log statements so that you can use them for debugging in the future.
@@ -1140,7 +1194,7 @@ During development it is common to use print statements. Rather than delete thes
 
     Logging excessively can impact the performance of your app. Use ``info``, ``error``, and ``warning`` to log minimal, summary information that is useful for monitoring normal operation of the app. Use ``debug`` to log more detailed information to help you assess bugs or other issues with your app without needing to modify the code. In production, the Tethys Portal can be configured to log at different levels of detail using these classifications. See: `Python Logging HOWTO <https://docs.python.org/3.7/howto/logging.html>`_ and :ref:`tethys_configuration`.
 
-11. Test and Verify
+12. Test and Verify
 ===================
 
 Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and login if necessary. Verify the following:
@@ -1151,7 +1205,7 @@ Browse to `<http://localhost:8000/apps/thredds-tutorial>`_ in a web browser and 
 4. The map should feature an animation slider. If the dataset selected has time varying data, the slider should display a time step. Otherwise it will say "Time not available".
 5. Select the "Best GFS Half Degree Forecast Time Series" dataset using the **Dataset** control to test a time-varying layer. Press the **Play** button on the Time-Dimension control to animate the layer.
 
-12. Solution
+13. Solution
 ============
 
 This concludes the New App Project portion of the THREDDS Tutorial. You can view the solution on GitHub at `<https://github.com/tethysplatform/tethysapp-thredds_tutorial/tree/thredds-service-solution-3.0>`_ or clone it as follows:

@@ -24,14 +24,14 @@ This page is provides a list of all the external resources referred too during t
 
 **Django**
 
-* `Writing Views <https://docs.djangoproject.com/en/1.7/topics/http/views/>`_
-* `Django Template Language <https://docs.djangoproject.com/en/1.7/topics/templates/>`_
-* `Django template Variables <https://docs.djangoproject.com/en/1.7/topics/templates/#variables>`_
-* `Django Filter Reference <https://docs.djangoproject.com/en/1.7/ref/templates/builtins/#ref-templates-builtins-filters>`_
-* `Django Tag Reference <https://docs.djangoproject.com/en/1.7/ref/templates/builtins/#ref-templates-builtins-tags>`_
-* `Django Template Inheritance <https://docs.djangoproject.com/en/1.7/topics/templates/#template-inheritance>`_
-* `Django static tag <https://docs.djangoproject.com/en/1.7/ref/contrib/staticfiles/#static>`_
-* `Cross Site Forgery protection <https://docs.djangoproject.com/en/1.7/ref/contrib/csrf/>`_
+* `Writing Views <https://docs.djangoproject.com/en/2.2/topics/http/views/>`_
+* `Django Template Language <https://docs.djangoproject.com/en/2.2/topics/templates/>`_
+* `Django template Variables <https://docs.djangoproject.com/en/2.2/topics/templates/#variables>`_
+* `Django Filter Reference <https://docs.djangoproject.com/en/2.2/ref/templates/builtins/#ref-templates-builtins-filters>`_
+* `Django Tag Reference <https://docs.djangoproject.com/en/2.2/ref/templates/builtins/#ref-templates-builtins-tags>`_
+* `Django Template Inheritance <https://docs.djangoproject.com/en/2.2/topics/templates/#template-inheritance>`_
+* `Django static tag <https://docs.djangoproject.com/en/2.2/ref/contrib/staticfiles/#static>`_
+* `Cross Site Forgery protection <https://docs.djangoproject.com/en/2.2/ref/contrib/csrf/>`_
 
 **CKAN**
 
