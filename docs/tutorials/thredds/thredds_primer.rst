@@ -158,9 +158,9 @@ The TDS Configuration File (:file:`threddsConfig.xml`) is used to control the be
 
 1. Download this :download:`National Water Model Short Range Forecast <https://drive.google.com/open?id=1TIGAe-03ju_sOEpjTJMxvPUBXYpzWkjI>` data and extract it. The archive should contain the **first 3** of 18 NetCDF files each representing a 1-hour increment in an 18 hour forecast produced by the `National Water Model <https://water.noaa.gov/about/nwm>`_. Each file contains over 2.7 million forecast points where each point is associated a different stream reach on the `National Hydrogrophy Dataset <https://nhd.usgs.gov/>`_.
 
-2. Create a new :file:`nwm` directory in the :file:`public` directory of the TDS Content Directory (i.e.: :file:`<TDS_CONTENT_DIRECTORY>/pubilc/nwm`).
+2. Create a new :file:`nwm` directory in the :file:`public` directory of the TDS Content Directory (i.e.: :file:`<TDS_CONTENT_DIRECTORY>/public/nwm`).
 
-3. Copy the 18 NetCDF files from step 1 into :file:`<TDS_CONTENT_DIRECTORY>/pubilc/nwm`.
+3. Copy the NetCDF files from step 1 into :file:`<TDS_CONTENT_DIRECTORY>/public/nwm`.
 
 4. Create a new catalog coniguration file at the root of the TDS Content Directory called :file:`nwmCatalog.xml` with the following contents:
 

@@ -134,3 +134,8 @@ available parameters.
 
     # Tethys install with custom options
     tethys install -d -f install.yml
+
+Presentation
+============
+
+Use this presentation in workshops and training courses to provide an overview of the app migration process: `Migrate Apps from Tethys 2 to Tethys 3 Presentation <https://docs.google.com/presentation/d/16C9Lx4wB84aNrpzW_-PxOwzU_KGgAg54d_g6yfpLdEk/edit>`_.

@@ -240,6 +240,7 @@ html_theme_options = {
         ('CLI', 'tethys_cli', False, 'keyboard_arrow_right'),
         ('Tethys Portal', 'tethys_portal', False, 'web'),
         ('Software Suite', 'software_suite', False, 'developer_board'),
+        ('Migrate Apps', 'whats_new/app_migration', False, 'open_in_browser'),
         ("Issues", "https://github.com/tethysplatform/tethys/issues", True, 'bug_report'),
         ("GitHub", "https://github.com/tethysplatform/tethys", True, 'launch')
     ],

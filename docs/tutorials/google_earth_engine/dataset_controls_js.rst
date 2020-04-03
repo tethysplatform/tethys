@@ -2,7 +2,7 @@
 Add JavaScript for Dynamic Control Behavior
 *******************************************
 
-**Last Updated:** November 2019
+**Last Updated:** March 2020
 
 In this tutorial you will add dynamic behavior to the dataset controls created in the previous step using JavaScript. The following topics will be reviewed in this tutorial:
 
@@ -106,6 +106,11 @@ In this step you'll learn how to create a JavaScript module using the closure me
 
     }()); // End of package wrapper
 
+
+.. note::
+
+    The lines that define empty functions (e.g.: ``bind_controls = function() {};``) are method stubs that will be implemented in the following steps.
+
 2. Include the new :file:`gee_datasets.js` script in the :file:`templates/earth_engine/home.html` template:
 
 .. code-block:: html+django
@@ -124,73 +129,15 @@ In this step you'll implement the methods in the :file:`public/js/gee_datasets.j
 * Save the value of a control anytime it changes.
 * Call the appropriate update functions when a control's value changes.
 
-1. The ``bind_controls`` method is called when the module initializes at page load time and is used to bind our custom functionality to the ``change`` event of each control. Implement the ``bind_controls`` method as follows in :file:`public/js/gee_datasets.js`:
+Here is a brief explanation of each method that will be implemented in this step:
 
-.. code-block:: javascript
+* **update_sensor_options**: updates the options of the sensor select box with options that correspond with the current satellite platform.
+* **update_product_options**: updates the options of the product select box with options that correspond with the current satellite platform and sensor.
+* **update_date_bounds**: updates the date range that is selectable for both date pickers based on the current product. The value of each date picker is also reset to fit within the new range if necessary.
+* **bind_controls**: used to bind the update methods to the ``change`` event of each control. Called when the module initializes after page load.
+* **collect_data**: used to collect the current values of all of the controls, as stored in our module, for use in our request for the map imagery later on.
 
-    bind_controls = function() {
-        $('#platform').on('change', function() {
-            let platform = $('#platform').val();
-
-            if (platform !== m_platform) {
-                m_platform = platform;
-                console.log(`Platform Changed to: ${m_platform}`);
-                // TODO: Update the sensor options when platform changes
-            }
-        });
-
-        $('#sensor').on('change', function() {
-            let sensor = $('#sensor').val();
-
-            if (sensor !== m_sensor) {
-                m_sensor = sensor;
-                console.log(`Sensor Changed to: ${m_sensor}`);
-                // TODO: Update the product options when sensor changes
-            }
-        });
-
-        $('#product').on('change', function() {
-            let product = $('#product').val();
-
-            if (product !== m_product) {
-                m_product = product;
-                console.log(`Product Changed to: ${m_product}`);
-                // TODO: Update the valid date range when product changes
-            }
-        });
-
-        $('#start_date').on('change', function() {
-            let start_date = $('#start_date').val();
-
-            if (start_date !== m_start_date) {
-                m_start_date = start_date;
-                console.log(`Start Date Changed to: ${m_start_date}`);
-            }
-        });
-
-        $('#end_date').on('change', function() {
-            let end_date = $('#end_date').val();
-
-            if (end_date !== m_end_date) {
-                m_end_date = end_date;
-                console.log(`End Date Changed to: ${m_end_date}`);
-            }
-        });
-
-        $('#reducer').on('change', function() {
-            let reducer = $('#reducer').val();
-
-            if (reducer !== m_reducer) {
-                m_reducer = reducer;
-                console.log(`Reducer Changed to: ${m_reducer}`);
-            }
-        });
-    };
-
-
-
-
-2. The ``update_sensor_options`` method updates the options of the sensor select box with options that correspond with the current satellite platform. Implement the ``update_sensor_options`` method as follows in :file:`public/js/gee_datasets.js`:
+1. **Replace** the ``update_sensor_options`` method stub in :file:`public/js/gee_datasets.js` with the following implementation:
 
 .. code-block:: javascript
 
@@ -216,7 +163,7 @@ In this step you'll implement the methods in the :file:`public/js/gee_datasets.j
         update_date_bounds();
     };
 
-3. The ``update_product_options`` method updates the options of the product select box with options that correspond with the current satellite platform and sensor. Implement the ``update_product_options`` method as follows in :file:`public/js/gee_datasets.js`:
+2. **Replace** the ``update_product_options`` method stub in :file:`public/js/gee_datasets.js` with the following implementation:
 
 .. code-block:: javascript
 
@@ -243,7 +190,7 @@ In this step you'll implement the methods in the :file:`public/js/gee_datasets.j
         update_date_bounds();
     };
 
-4. The ``update_date_bounds`` method updates the date range that is selectable for both date pickers based on the current product. The value of the datepickers is also reset to fit within the new range if necessary. Implement the ``update_date_bounds`` method as follows in :file:`public/js/gee_datasets.js`:
+3. **Replace** the ``update_date_bounds`` method stub in :file:`public/js/gee_datasets.js` with the following implementation:
 
 .. code-block:: javascript
 
@@ -288,44 +235,73 @@ In this step you'll implement the methods in the :file:`public/js/gee_datasets.j
         console.log('Date Bounds Changed To: ' + earliest_valid_date + ' - ' + latest_valid_date);
     };
 
-5. Call the new methods in the appropriate change events in the ``bind_controls`` method as follows in :file:`public/js/gee_datasets.js`:
+4. **Replace** the ``bind_controls`` method stub in :file:`public/js/gee_datasets.js` with the following implementation :
 
 .. code-block:: javascript
 
-    $('#platform').on('change', function() {
-        let platform = $('#platform').val();
+        bind_controls = function() {
+            $('#platform').on('change', function() {
+            let platform = $('#platform').val();
 
-        if (platform !== m_platform) {
-            m_platform = platform;
-            console.log(`Platform Changed to: ${m_platform}`);
-            // Update the sensor options when platform changes
-            update_sensor_options();
-        }
-    });
+            if (platform !== m_platform) {
+                m_platform = platform;
+                console.log(`Platform Changed to: ${m_platform}`);
+                // Update the sensor options when platform changes
+                update_sensor_options();
+            }
+        });
 
-    $('#sensor').on('change', function() {
-        let sensor = $('#sensor').val();
+        $('#sensor').on('change', function() {
+            let sensor = $('#sensor').val();
 
-        if (sensor !== m_sensor) {
-            m_sensor = sensor;
-            console.log(`Sensor Changed to: ${m_sensor}`);
-            // Update the product options when sensor changes
-            update_product_options();
-        }
-    });
+            if (sensor !== m_sensor) {
+                m_sensor = sensor;
+                console.log(`Sensor Changed to: ${m_sensor}`);
+                // Update the product options when sensor changes
+                update_product_options();
+            }
+        });
 
-    $('#product').on('change', function() {
-        let product = $('#product').val();
+        $('#product').on('change', function() {
+            let product = $('#product').val();
 
-        if (product !== m_product) {
-            m_product = product;
-            console.log(`Product Changed to: ${m_product}`);
-            // Update the valid date range when product changes
-            update_date_bounds();
-        }
-    });
+            if (product !== m_product) {
+                m_product = product;
+                console.log(`Product Changed to: ${m_product}`);
+                // Update the valid date range when product changes
+                update_date_bounds();
+            }
+        });
 
-6. The ``collect_data`` method is used to collect the current values of all of the controls, as stored in our module, for use in our request for the map imagery later on. Implement the ``collect_data`` method as follows in :file:`public/js/gee_datasets.js`:
+        $('#start_date').on('change', function() {
+            let start_date = $('#start_date').val();
+
+            if (start_date !== m_start_date) {
+                m_start_date = start_date;
+                console.log(`Start Date Changed to: ${m_start_date}`);
+            }
+        });
+
+        $('#end_date').on('change', function() {
+            let end_date = $('#end_date').val();
+
+            if (end_date !== m_end_date) {
+                m_end_date = end_date;
+                console.log(`End Date Changed to: ${m_end_date}`);
+            }
+        });
+
+        $('#reducer').on('change', function() {
+            let reducer = $('#reducer').val();
+
+            if (reducer !== m_reducer) {
+                m_reducer = reducer;
+                console.log(`Reducer Changed to: ${m_reducer}`);
+            }
+        });
+    };
+
+5. **Replace** the ``collect_data`` method stub in :file:`public/js/gee_datasets.js` with the following implementation:
 
 .. code-block:: javascript
 
@@ -341,7 +317,7 @@ In this step you'll implement the methods in the :file:`public/js/gee_datasets.j
         return data;
     };
 
-7. Temporarily log the result of ``collect_data`` when the user clicks on the **Load** button to verify the module is working correctly. Add the following to the bottom of the ``bind_controls`` method in :file:`public/js/gee_datasets.js`:
+6. Temporarily log the result of ``collect_data`` when the user clicks on the **Load** button to verify that everything is working correctly. Add the following to the bottom of the ``bind_controls`` method in :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 

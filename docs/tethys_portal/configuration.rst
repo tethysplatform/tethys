@@ -48,13 +48,11 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
   * **DEBUG**: the Django `DEBUG <https://docs.djangoproject.com/en/2.2/ref/settings/#debug>`_ setting. Defaults to True.
   * **ALLOWED_HOSTS**: the Django `ALLOWED_HOSTS <https://docs.djangoproject.com/en/2.2/ref/settings/#allowed-hosts>`_ setting. Defaults to ``[]``.
   * **ADMINS**: the Django `ADMINS <https://docs.djangoproject.com/en/2.2/ref/settings/#admins>`_ setting.
-  * **TETHYS_PORTAL_CONFIG**:
-
-    * **BYPASS_TETHYS_HOME_PAGE**: the home page of Tethys Portal redirects to the Apps Library when ``True``. Defaults to ``False``.
-    * **ENABLE_OPEN_SIGNUP**: anyone can create a Tethys Portal account using a "Sign Up" link on the home page when ``True``. Defaults to ``False``.
-    * **ENABLE_OPEN_PORTAL**: no login required for Tethys Portal when ``True``. Defaults to ``False``. Controllers in apps need to use the ``login_required`` decorator from the Tethys SDK, rather than Django's ``login_required`` decorator.
-    * **TETHYS_WORKSPACES_ROOT**: location to which app workspaces will be synced when ``tethys manage collectworkspaces`` is executed. Gathering all workspaces to one location is recommended for production deployments to allow for easier updating and backing up of app data. Defaults to :file:`<TETHYS_HOME>/workspaces`.
-    * **STATIC_ROOT**: the Django `STATIC_ROOT <https://docs.djangoproject.com/en/2.2/ref/settings/#static-root>`_ setting. Defaults to :file:`<TETHYS_HOME>/static`.
+  * **BYPASS_TETHYS_HOME_PAGE**: the home page of Tethys Portal redirects to the Apps Library when ``True``. Defaults to ``False``.
+  * **ENABLE_OPEN_SIGNUP**: anyone can create a Tethys Portal account using a "Sign Up" link on the home page when ``True``. Defaults to ``False``.
+  * **ENABLE_OPEN_PORTAL**: no login required for Tethys Portal when ``True``. Defaults to ``False``. Controllers in apps need to use the ``login_required`` decorator from the Tethys SDK, rather than Django's ``login_required`` decorator.
+  * **TETHYS_WORKSPACES_ROOT**: location to which app workspaces will be synced when ``tethys manage collectworkspaces`` is executed. Gathering all workspaces to one location is recommended for production deployments to allow for easier updating and backing up of app data. Defaults to :file:`<TETHYS_HOME>/workspaces`.
+  * **STATIC_ROOT**: the Django `STATIC_ROOT <https://docs.djangoproject.com/en/2.2/ref/settings/#static-root>`_ setting. Defaults to :file:`<TETHYS_HOME>/static`.
 
   * **SESSION_CONFIG**:
 
@@ -189,7 +187,7 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
   * **TEXT_HOVER_COLOR**: primary text color when hovered over.
   * **SECONDARY_TEXT_COLOR**: secondary text color of the Tethys Portal.
   * **SECONDARY_TEXT_HOVER_COLOR**: secondary text color when hovered over.
-  * **COPYRIGHT**: the copyright text to display in the footer of the Tethys Portal.
+  * **FOOTER_COPYRIGHT**: the copyright text to display in the footer of the Tethys Portal.
   * **HERO_TEXT**: the hero text on the home page.
   * **BLURB_TEXT**: the blurb text on the home page.
   * **FEATURE1_HEADING**: the home page feature 1 heading.

@@ -27,3 +27,8 @@ Outline
    thredds/visualize_leaflet
    thredds/plot_at_location
    thredds/additional_exercises
+
+Supporting Materials
+--------------------
+
+* `THREDDS Tutorial Presentation <https://docs.google.com/presentation/d/1qvqg_02qjy3y1ajYQvU2neooqOl9_-lP9dDIF4XxijE/edit>`_

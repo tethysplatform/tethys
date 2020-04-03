@@ -2,7 +2,7 @@
 Plot Data at a Location
 ***********************
 
-**Last Updated:** November 2019
+**Last Updated:** March 2020
 
 In the final tutorial you will add the ability for users to drop a point or draw a polygon and generate a time series of the selected dataset at that location. The following topics will be reviewed in this tutorial:
 
@@ -131,7 +131,6 @@ In this step you'll expand the GEE functions to include a function that can extr
         return time_series
 
 This function uses a `Pandas DataFrame <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html>`_ to store each time series. The DataFrame consists of two columns: Time and the name of the index. The column names will be used for the plot axes.
-
 
 2. Create Endpoint for Extracting Time Series
 =============================================
@@ -297,17 +296,37 @@ The technique that will be demonstrated in this step will leverage the `jQuery.l
 
     Notice that this template **does not** extend from any template like other Tethys templates. It should contain only the HTML that will be inserted into the modal.
 
-    Notice also that the template will render an error message instead of the plot if an error is provided.
+    Notice also that the template will render an error message instead of the plot if an error is provided in the context.
 
-4. Add a new ``UrlMap`` to the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
+4. Create a new endpoint for the ``get_time_series_plot`` controller by adding a new ``UrlMap`` to the tuple located in the ``url_maps`` method of the :term:`app class` in :file:`app.py`:
 
 .. code-block:: python
 
-    UrlMap(
-        name='get_time_series_plot',
-        url='earth-engine/get-time-series-plot',
-        controller='earth_engine.controllers.get_time_series_plot'
-    ),
+    def url_maps(self):
+        """
+        Add controllers
+        """
+        UrlMap = url_map_maker(self.root_url)
+
+        url_maps = (
+            UrlMap(
+                name='home',
+                url='earth-engine',
+                controller='earth_engine.controllers.home'
+            ),
+            UrlMap(
+                name='get_image_collection',
+                url='earth-engine/get-image-collection',
+                controller='earth_engine.controllers.get_image_collection'
+            ),
+            UrlMap(
+                name='get_time_series_plot',
+                url='earth-engine/get-time-series-plot',
+                controller='earth_engine.controllers.get_time_series_plot'
+            ),
+        )
+
+        return url_maps
 
 3. Create a Modal for the Plot
 ==============================
@@ -324,8 +343,6 @@ In this step you'll add a Plot button and the modal for the plot to the controll
         style='default',
         attributes={'id': 'load_plot'}
     )
-
-    ...
 
     context = {
         'platform_select': platform_select,
@@ -397,14 +414,14 @@ In this step you'll add a Plot button and the modal for the plot to the controll
 4. Stub Out the Plot JavaScript Methods
 =======================================
 
-1. Add the following module function declarations in :file:`public/js/gee_datasets.js` below the map function declarations:
+1. Add the following module function declarations to the *PRIVATE FUNCTION DECLARATIONS* section of :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
     // Time Series Plot Methods
     var get_geometry, update_plot, show_plot_modal;
 
-2. Add the following module function stubs in :file:`public/js/gee_datasets.js`, just below the ``collect_data`` implementation:
+2. Add the following module function stubs to the *PRIVATE FUNCTION IMPLEMENTATIONS* section of :file:`public/js/gee_datasets.js`, just below the ``clear_map`` method:
 
 .. code-block:: javascript
 
@@ -414,6 +431,10 @@ In this step you'll add a Plot button and the modal for the plot to the controll
     update_plot = function() {};
 
     show_plot_modal = function() {};
+
+.. note::
+
+    The lines that define empty functions (e.g.: ``update_plot = function() {};``) are method stubs that will be implemented in future steps.
 
 5. Add a Loading GIF for the Plot Modal
 =======================================
@@ -449,7 +470,11 @@ In this step you'll add a loading image to the modal whenever it is shown, repla
         <link rel="stylesheet" href="{% static 'earth_engine/css/plot.css' %}" />
     {% endblock %}
 
-4. Implement ``show_plot_modal`` method in :file:`public/js/gee_datasets.js`:
+.. tip::
+
+    Click on the **Plot AOI** button to open the modal *before* and *after* adding the ``plot.css`` styles to see how the styles change the position of the loading GIF in the modal.
+
+4. **Replace** the ``show_plot_modal`` method stub in :file:`public/js/gee_datasets.js` with the following implementation:
 
 .. code-block:: javascript
 
@@ -463,7 +488,7 @@ In this step you'll add a loading image to the modal whenever it is shown, repla
         $('#plot-modal').modal('show');
     };
 
-5. To allow us to verify that the loading GIF appears in the modal when we update it, change ``on-click`` event on the ``load_plot`` button to temporarily call the new ``show_plot_modal`` method (in the ``bind_controls`` method):
+5. To allow us to verify that the loading GIF appears in the modal when we update it, add a ``click`` event on the ``load_plot`` button to temporarily call the new ``show_plot_modal`` method. **Add** the following to the bottom of the ``bind_controls`` method of :file:`public/js/gee_datasets.js`:
 
 .. code-block:: javascript
 
@@ -525,7 +550,7 @@ In this step you'll use the native drawing capabilities of the Tethys ``MapView`
       {% import_gizmo_dependency plotly_view %}
     {% endblock %}
 
-3. Update ``on-click`` event on the ``load_plot`` button to call the new ``update_plot`` method (in the ``bind_controls`` method):
+3. Update the ``click`` event on the ``load_plot`` button to call the new ``update_plot`` method (in the ``bind_controls`` method):
 
 .. code-block:: javascript
 
@@ -533,7 +558,7 @@ In this step you'll use the native drawing capabilities of the Tethys ``MapView`
         update_plot();
     });
 
-4. Implement ``get_geometry`` method in :file:`public/js/gee_datasets.js`:
+4. **Replace** the ``get_geometry`` method stub in :file:`public/js/gee_datasets.js` with the following implementation:
 
 .. code-block:: javascript
 
@@ -543,7 +568,7 @@ In this step you'll use the native drawing capabilities of the Tethys ``MapView`
         return geometry_json;
     };
 
-5. Update the ``collect_data`` method to call ``get_geometry`` and return it with the other data it collects:
+5. Update the ``collect_data`` method in :file:`public/js/gee_datasets.js` to call ``get_geometry`` and return its result with the other data it collects:
 
 .. code-block:: javascript
 
@@ -560,7 +585,7 @@ In this step you'll use the native drawing capabilities of the Tethys ``MapView`
         return data;
     };
 
-6. Implement ``update_plot`` method in :file:`public/js/gee_datasets.js`:
+6. **Replace** the ``update_plot`` method in :file:`public/js/gee_datasets.js` with the following implementation:
 
 .. code-block:: javascript
 
