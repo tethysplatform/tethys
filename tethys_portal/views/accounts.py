@@ -13,11 +13,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.contrib import messages
-from django.views.decorators.cache import never_cache
 from tethys_portal.forms import LoginForm, RegisterForm
 
 
-@never_cache
 def login_view(request):
     """
     Handle login
@@ -74,7 +72,6 @@ def login_view(request):
     return render(request, 'tethys_portal/accounts/login.html', context)
 
 
-@never_cache
 def register(request):
     """
     Handle new user registration
@@ -149,7 +146,6 @@ def logout_view(request):
     return redirect('home')
 
 
-@never_cache
 def reset_confirm(request, uidb64=None, token=None):
     return PasswordResetConfirmView(
         request,
@@ -160,7 +156,6 @@ def reset_confirm(request, uidb64=None, token=None):
     )
 
 
-@never_cache
 def reset(request):
     return PasswordResetView(
         request,
