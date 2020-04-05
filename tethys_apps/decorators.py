@@ -190,7 +190,7 @@ def permission_required(*args, **kwargs):
 
                 else:
                     # Return Error 404: Not Found in production to prevent directory enumeration
-                    if getattr(settings, 'DEBUG', False) is False:
+                    if not getattr(settings, 'DEBUG', False):
                         return tethys_portal_error.handler_404(request)
                     return tethys_portal_error.handler_403(request)
 

@@ -1,6 +1,10 @@
 import unittest
 from unittest import mock
 from django.test import override_settings
+
+# Fixes the Cache-Control error in tests. Must appear before view imports.
+mock.patch('django.views.decorators.cache.never_cache', lambda x: x).start()
+
 from tethys_portal.views.accounts import login_view, register, logout_view, reset_confirm, reset
 
 
