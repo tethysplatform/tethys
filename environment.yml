@@ -63,7 +63,6 @@ dependencies:
 - selenium
 - coverage
 - factory_boy
-- asynctest
 
 # for now
 - pillow
