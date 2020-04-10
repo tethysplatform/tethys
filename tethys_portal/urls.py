@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 from django.conf.urls import include, url
+from django.views.decorators.cache import never_cache
 from django.contrib import admin
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, \
     PasswordResetCompleteView
@@ -39,12 +40,12 @@ account_urls = [
     url(r'^login/$', tethys_portal_accounts.login_view, name='login'),
     url(r'^logout/$', tethys_portal_accounts.logout_view, name='logout'),
     url(r'^register/$', tethys_portal_accounts.register, name='register'),
-    url(r'^password/reset/$', PasswordResetView.as_view(), {'post_reset_redirect': '/accounts/password/reset/done/'},
-        name='password_reset'),
-    url(r'^password/reset/done/$', PasswordResetDoneView.as_view()),
-    url(r'^password/reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', PasswordResetConfirmView.as_view(),
+    url(r'^password/reset/$', never_cache(PasswordResetView.as_view()),
+        {'post_reset_redirect': '/accounts/password/reset/done/'}, name='password_reset'),
+    url(r'^password/reset/done/$', never_cache(PasswordResetDoneView.as_view())),
+    url(r'^password/reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', never_cache(PasswordResetConfirmView.as_view()),
         {'post_reset_redirect': '/accounts/password/done/'}, name='password_confirm'),
-    url(r'^password/done/$', PasswordResetCompleteView.as_view()),
+    url(r'^password/done/$', never_cache(PasswordResetCompleteView.as_view())),
 ]
 
 user_urls = [
