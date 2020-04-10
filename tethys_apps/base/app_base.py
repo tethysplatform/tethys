@@ -29,7 +29,7 @@ from ..exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssign
 from bokeh.server.django.consumers import WSConsumer
 from bokeh.server.django import autoload
 
-from tethys_portal.consumers.bokeh_consumers import BokehAutoloadJsCDN
+from bokeh.server.django.consumers import AutoloadJsConsumer
 
 tethys_log = logging.getLogger('tethys.app_base')
 
@@ -122,7 +122,7 @@ class TethysBase(TethysBaseMixin):
             url_pattern = bokeh_app.url + suffix
             return f'^{url_pattern}$'
 
-        http_url = url(urlpattern('/autoload.js'), BokehAutoloadJsCDN,
+        http_url = url(urlpattern('/autoload.js'), AutoloadJsConsumer,
                        name=f'{url_map.name}_bokeh_autoload', kwargs=kwargs)
         ws_url = url(urlpattern('/ws'), WSConsumer, name=f'{url_map.name}_bokeh_ws', kwargs=kwargs)
 
