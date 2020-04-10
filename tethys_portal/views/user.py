@@ -12,6 +12,7 @@ from tethys_sdk.permissions import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.contrib import messages
+from django.views.decorators.cache import never_cache
 from rest_framework.authtoken.models import Token
 
 from tethys_apps.harvester import SingletonHarvester
@@ -24,6 +25,7 @@ from tethys_quotas.utilities import get_quota, _convert_storage_units
 
 
 @login_required()
+@never_cache
 def profile(request, username=None):
     """
     Handle the profile view. Profiles could potentially be publicly accessible.
@@ -49,6 +51,7 @@ def profile(request, username=None):
 
 
 @login_required()
+@never_cache
 def settings(request, username=None):
     """
     Handle the settings view. Access to change settings are not publicly accessible
@@ -103,6 +106,7 @@ def settings(request, username=None):
 
 
 @login_required()
+@never_cache
 def change_password(request, username=None):
     """
     Handle change password request.
