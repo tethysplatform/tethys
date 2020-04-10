@@ -30,6 +30,9 @@ from django.contrib.messages import constants as message_constants
 from tethys_apps.utilities import get_tethys_home_dir
 from tethys_cli.gen_commands import generate_secret_key
 
+from bokeh.settings import settings
+settings.resources = 'cdn'
+
 log = logging.getLogger(__name__)
 this_module = sys.modules[__name__]
 

@@ -62,7 +62,6 @@ requirements:
     - selenium
     - coverage
     - factory_boy
-    - asynctest
     - pillow
     - pip
     - future
