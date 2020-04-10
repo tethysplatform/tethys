@@ -48,7 +48,10 @@ class LoginForm(forms.Form):
     password = forms.CharField(
         label='',
         widget=forms.PasswordInput(
-            attrs={'placeholder': 'Password'}
+            attrs={
+                'placeholder': 'Password',
+                'autocomplete': 'off'
+            }
         )
     )
 
@@ -90,14 +93,20 @@ class RegisterForm(forms.ModelForm):
     password1 = forms.CharField(
         label='',
         widget=forms.PasswordInput(
-            attrs={'placeholder': 'Password'}
+            attrs={
+                'placeholder': 'Password',
+                'autocomplete': 'off'
+            }
         )
     )
 
     password2 = forms.CharField(
         label='',
         widget=forms.PasswordInput(
-            attrs={'placeholder': 'Confirm Password'}
+            attrs={
+                'placeholder': 'Confirm Password',
+                'autocomplete': 'off'
+            }
         )
     )
 
@@ -211,7 +220,8 @@ class UserPasswordChangeForm(forms.Form):
         widget=forms.PasswordInput(
             attrs={
                 'placeholder': 'Old Password',
-                'autofocus': 'autofocus'
+                'autofocus': 'autofocus',
+                'autocomplete': 'off'
             }
         )
     )
@@ -219,14 +229,20 @@ class UserPasswordChangeForm(forms.Form):
     new_password1 = forms.CharField(
         label="",
         widget=forms.PasswordInput(
-            attrs={'placeholder': 'New Password'}
+            attrs={
+                'placeholder': 'New Password',
+                'autocomplete': 'off'
+            }
         )
     )
 
     new_password2 = forms.CharField(
         label="",
         widget=forms.PasswordInput(
-            attrs={'placeholder': 'Confirm New Password'}
+            attrs={
+                'placeholder': 'Confirm New Password',
+                'autocomplete': 'off'
+            }
         )
     )
 
