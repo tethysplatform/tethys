@@ -102,7 +102,7 @@ def permission_required(*args, **kwargs):
     """  # noqa: E501
 
     use_or = kwargs.pop('use_or', False)
-    message = kwargs.pop('message', "We're sorry, but you are not allowed to perform this operation.")
+    message = kwargs.pop('message', "We're sorry, but the operation you requested cannot be found.")
     raise_exception = kwargs.pop('raise_exception', False)
     perms = [arg for arg in args if isinstance(arg, str)]
 
@@ -189,6 +189,9 @@ def permission_required(*args, **kwargs):
                         return redirect(reverse('accounts:login') + '?next=' + request.path)
 
                 else:
+                    # Return Error 404: Not Found in production to prevent directory enumeration
+                    if not getattr(settings, 'DEBUG', False):
+                        return tethys_portal_error.handler_404(request)
                     return tethys_portal_error.handler_403(request)
 
             # Call the controller

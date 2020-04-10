@@ -2,6 +2,7 @@ import unittest
 from unittest import mock
 
 from django.contrib.auth.models import AnonymousUser
+from django.conf import settings
 from django.test import RequestFactory
 from django.test.utils import override_settings
 from django.http import HttpResponseRedirect
@@ -162,12 +163,20 @@ class DecoratorsTest(unittest.TestCase):
         request = self.request_factory.get('/apps/test-app')
         request.user = self.user
 
-        @permission_required('create_projects', raise_exception=True)
-        def exception_403(request, *args, **kwargs):
-            return "expected_result"
+        if not getattr(settings, 'DEBUG', False):
+            @permission_required('create_projects', raise_exception=True)
+            def exception_404(request, *args, **kwargs):
+                return "expected_result"
 
-        exception_403(request)
-        mock_tp_error.handler_403.assert_called_with(request)
+            exception_404(request)
+            mock_tp_error.handler_404.assert_called_with(request)
+        else:
+            @permission_required('create_projects', raise_exception=True)
+            def exception_403(request, *args, **kwargs):
+                return "expected_result"
+
+            exception_403(request)
+            mock_tp_error.handler_403.assert_called_with(request)
 
     def test_permission_required_no_request(self):
         @permission_required('create_projects')
