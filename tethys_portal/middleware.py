@@ -13,6 +13,10 @@ from social_django.middleware import SocialAuthExceptionMiddleware
 from social_core import exceptions as social_exceptions
 from tethys_cli.cli_colors import pretty_output, FG_WHITE
 
+from tethys_apps.utilities import get_active_app, user_can_access_app
+from django.core.exceptions import PermissionDenied
+from tethys_portal.views.error import handler_404
+
 
 class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
     def process_exception(self, request, exception):
@@ -50,3 +54,26 @@ class TethysSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
                     return redirect('accounts:login')
                 else:
                     return redirect('user:settings', username=request.user.username)
+
+
+class TethysAppAccessMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        app = get_active_app(request)
+
+        if app is None:
+            return response
+        else:
+            if not app.enabled:
+                if request.user.is_staff:
+                    return handler_404(request, PermissionDenied, "This app is disabled. A user with admin permissions "
+                                                                  "can enable this app from the app settings page.")
+                else:
+                    return handler_404(request, PermissionDenied)
+            elif user_can_access_app(request.user, app):
+                return response
+            else:
+                return handler_404(request, PermissionDenied)
