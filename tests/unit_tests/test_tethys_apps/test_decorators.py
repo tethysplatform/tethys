@@ -159,24 +159,31 @@ class DecoratorsTest(unittest.TestCase):
 
     @mock.patch('tethys_apps.decorators.tethys_portal_error', return_value=False)
     @mock.patch('tethys_apps.decorators.has_permission', return_value=False)
+    @override_settings(DEBUG=True)
     def test_permission_required_exception_403(self, _, mock_tp_error):
         request = self.request_factory.get('/apps/test-app')
         request.user = self.user
 
-        if not getattr(settings, 'DEBUG', False):
-            @permission_required('create_projects', raise_exception=True)
-            def exception_404(request, *args, **kwargs):
-                return "expected_result"
+        @permission_required('create_projects', raise_exception=True)
+        def exception_403(request, *args, **kwargs):
+            return "expected_result"
 
-            exception_404(request)
-            mock_tp_error.handler_404.assert_called_with(request)
-        else:
-            @permission_required('create_projects', raise_exception=True)
-            def exception_403(request, *args, **kwargs):
-                return "expected_result"
+        exception_403(request)
+        mock_tp_error.handler_403.assert_called_with(request)
 
-            exception_403(request)
-            mock_tp_error.handler_403.assert_called_with(request)
+    @mock.patch('tethys_apps.decorators.tethys_portal_error', return_value=False)
+    @mock.patch('tethys_apps.decorators.has_permission', return_value=False)
+    @override_settings(DEBUG=False)
+    def test_permission_required_exception_404(self, _, mock_tp_error):
+        request = self.request_factory.get('/apps/test-app')
+        request.user = self.user
+
+        @permission_required('create_projects', raise_exception=True)
+        def exception_404(request, *args, **kwargs):
+            return "expected_result"
+
+        exception_404(request)
+        mock_tp_error.handler_404.assert_called_with(request)
 
     def test_permission_required_no_request(self):
         @permission_required('create_projects')
