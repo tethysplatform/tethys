@@ -42,10 +42,10 @@ account_urls = [
     url(r'^register/$', tethys_portal_accounts.register, name='register'),
     url(r'^password/reset/$', never_cache(PasswordResetView.as_view()),
         {'post_reset_redirect': '/accounts/password/reset/done/'}, name='password_reset'),
-    url(r'^password/reset/done/$', never_cache(PasswordResetDoneView.as_view())),
+    url(r'^password/reset/done/$', never_cache(PasswordResetDoneView.as_view()), name='password_reset_done'),
     url(r'^password/reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', never_cache(PasswordResetConfirmView.as_view()),
         {'post_reset_redirect': '/accounts/password/done/'}, name='password_confirm'),
-    url(r'^password/done/$', never_cache(PasswordResetCompleteView.as_view())),
+    url(r'^password/done/$', never_cache(PasswordResetCompleteView.as_view()), name='password_done'),
 ]
 
 user_urls = [
