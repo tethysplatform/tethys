@@ -43,7 +43,7 @@ MOCK_MODULES = [
     'social_core', 'social_core.exceptions',
     'social_django',
     'sqlalchemy', 'sqlalchemy.orm',
-    'tethys_apps.harvester', 'tethys_apps.models', # Mocked to prevent issues with loading apps during docs build.
+    'tethys_apps.harvester', 'tethys_apps.models',  # Mocked to prevent issues with loading apps during docs build.
     'tethys_compute.utilities',  # Mocked to prevent issues with DictionaryField and List Field during docs build.
     'yaml'
 ]
