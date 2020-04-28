@@ -20,11 +20,11 @@ services:
 
 stages:
   - name: test
-    if: (branch = master) AND (tag IS NOT present)
+    if: tag IS NOT present
   - name: docker-build
-    if: (branch = master) OR (tag IS present)
+    if: (branch = master) OR (branch = release) OR (tag IS present)
   - name: conda-build
-    if: (branch = master) OR (tag IS present)
+    if: (branch = master) OR (branch = release) OR (tag IS present)
 
 install:
   - cd ..
