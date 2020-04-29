@@ -264,33 +264,34 @@ def make_gop_app_access_form():
 
     properties = {}
 
-    for app_qs in all_apps:
-        all_permissions_queryset = Permission.objects \
-            .filter(codename__icontains=app_qs.package) \
-            .exclude(codename__icontains=':access_app')
+    if all_apps:
+        for app_qs in all_apps:
+            all_permissions_queryset = Permission.objects \
+                .filter(codename__icontains=app_qs.package) \
+                .exclude(codename__icontains=':access_app')
 
-        properties[f'{app_qs.package}_permissions'] = forms.ModelMultipleChoiceField(
-            queryset=all_permissions_queryset,
-            required=False,
-            widget=FilteredSelectMultiple(
-                verbose_name=f'{app_qs.name} Permissions',
-                is_stacked=False
+            properties[f'{app_qs.package}_permissions'] = forms.ModelMultipleChoiceField(
+                queryset=all_permissions_queryset,
+                required=False,
+                widget=FilteredSelectMultiple(
+                    verbose_name=f'{app_qs.name} Permissions',
+                    is_stacked=False
+                )
             )
-        )
 
-        group_with_app_perms = []
-        for g in GroupObjectPermission.objects.filter(object_pk=app_qs.pk).values('group_id').distinct():
-            group_with_app_perms.append(int(g['group_id']))
-        all_groups_queryset = Group.objects.filter(pk__in=group_with_app_perms)
+            group_with_app_perms = []
+            for g in GroupObjectPermission.objects.filter(object_pk=app_qs.pk).values('group_id').distinct():
+                group_with_app_perms.append(int(g['group_id']))
+            all_groups_queryset = Group.objects.filter(pk__in=group_with_app_perms)
 
-        properties[f'{app_qs.package}_groups'] = forms.ModelMultipleChoiceField(
-            queryset=all_groups_queryset,
-            required=False,
-            widget=FilteredSelectMultiple(
-                verbose_name=f'{app_qs.name} Groups',
-                is_stacked=False
+            properties[f'{app_qs.package}_groups'] = forms.ModelMultipleChoiceField(
+                queryset=all_groups_queryset,
+                required=False,
+                widget=FilteredSelectMultiple(
+                    verbose_name=f'{app_qs.name} Groups',
+                    is_stacked=False
+                )
             )
-        )
 
     GOPAppAccessFormDynamic = type(
         'GOPAppAccessFormDynamic',
