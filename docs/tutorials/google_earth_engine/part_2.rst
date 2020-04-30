@@ -20,7 +20,6 @@ Outline
    part_2/primer
    part_2/home_page
    part_2/about_page
-   part_2/disclaimer_modal
    part_2/file_upload
    part_2/clip_by_asset
    part_2/rest_api

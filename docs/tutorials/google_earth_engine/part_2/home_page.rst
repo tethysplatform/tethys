@@ -186,7 +186,7 @@ In this tutorial you will create a home page for the app with introductory infor
 
 Create a responsive two column layout using the `Bootstrap Grid System <https://getbootstrap.com/docs/3.3/css/#grid>`_.
 
-1. First create a ``<div>`` element with class ``container-fluid``:
+1. Create a ``<div>`` element with class ``container-fluid`` in the ``app_content`` block:
 
 .. code-block:: html+django
     :emphasize-lines: 2-3
