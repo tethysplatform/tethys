@@ -4,6 +4,15 @@ Add a Home Page
 
 **Last Updated:** May 2019
 
+In this tutorial you will create a home page for the app with introductory information about that app. This will involve moving the current home page, which contains the map viewer, to a new endpoint and then setting up a new home page view. The following topics will be covered in this tutorial:
+
+* Adding a new view to your app
+* Responsive web design using Bootstrap
+* Bootstrap Grid System
+* Bootstrap Fluid Containers
+* Custom styling with CSS
+* Linking to other pages and navigation
+* Placeholder content for development: lorem ipsum and images
 
 1. Move Map View to Viewer Endpoint
 ===================================
@@ -492,7 +501,6 @@ Create a responsive two column layout using the `Bootstrap Grid System <https://
 
 9. Refresh the page to see how the styles change the look and feel of the page. Hard-refresh if necessary (:kbd:`CTRL-SHIFT-R` or :kbd:`CTRL-F5`).
 
-
 9. Add a Home Button to Viewer Page
 ===================================
 
@@ -508,7 +516,6 @@ Create a responsive two column layout using the `Bootstrap Grid System <https://
 
 2. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and verify that the home button appears in the header and links to the home page.
 
-
 9. Test and Verify
 ==================
 
@@ -518,6 +525,7 @@ Browse to `<http://localhost:8000/apps/earth-engine/>`_ in a web browser and log
 2. The custom styles for the ``info-container`` panels, titles, and Launch Viewer button appear correctly.
 3. The Launch Viewer button on the Home page links to the Viewer page.
 4. The Home button appears in the header of the Viewer page and links to the Home page.
+5. Resize the browser window to different widths. The columns should collapse and stack on top of each other for narrow screens.
 
 10. Solution
 ============
