@@ -1,12 +1,14 @@
 import os
 import unittest
 from unittest import mock
+from django.db.utils import ProgrammingError
 from django.utils.html import format_html
 from django.shortcuts import reverse
 from django.contrib.auth.models import User
 from tethys_apps.admin import TethysAppSettingInline, CustomSettingInline, DatasetServiceSettingInline, \
     SpatialDatasetServiceSettingInline, WebProcessingServiceSettingInline, PersistentStoreConnectionSettingInline, \
-    PersistentStoreDatabaseSettingInline, TethysAppAdmin, TethysExtensionAdmin, CustomUser, make_gop_app_access_form
+    PersistentStoreDatabaseSettingInline, TethysAppAdmin, TethysExtensionAdmin, CustomUser, make_gop_app_access_form, \
+    register_custom_group
 from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
 
 from tethys_quotas.models import TethysAppQuota
@@ -406,3 +408,13 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         mock_remove_perm.assert_called_with('test_perm:test', mock_obj, mock_apps.filter())
         mock_assign_perm.assert_called_with('test_perm:test', mock_obj, mock_apps.filter())
+
+    @mock.patch('tethys_apps.admin.tethys_log.warning')
+    @mock.patch('tethys_apps.admin.make_gop_app_access_form')
+    def test_admin_programming_error(self, mock_gop_form, mock_logwarning):
+        mock_gop_form.side_effect = ProgrammingError
+
+        register_custom_group()
+
+        mock_gop_form.assert_called()
+        mock_logwarning.assert_called_with('Unable to register CustomGroup.')
