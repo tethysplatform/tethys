@@ -2,7 +2,7 @@
 Add a Home Page
 ***************
 
-**Last Updated:** May 2019
+**Last Updated:** May 2020
 
 In this tutorial you will create a home page for the app with introductory information about that app. This will involve moving the current home page, which contains the map viewer, to a new endpoint and then setting up a new home page view. The following topics will be covered in this tutorial:
 
