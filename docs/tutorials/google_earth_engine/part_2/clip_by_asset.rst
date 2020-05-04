@@ -8,10 +8,24 @@ In this tutorial you will learn how to upload a shapefile as a Google Earth Engi
 
 * Google Earth Engine Assets
 
+
 1. Stub out New Method for Uploading Shapefiles to GEE
 ======================================================
 
-1. Create new ``upload_shapefile_to_gee`` function in :file:`gee/methods.py` with the following contents: (print)
+1. Create new ``upload_shapefile_to_gee`` function in :file:`gee/methods.py` with the following contents:
+
+.. code-block:: python
+
+    def upload_shapefile_to_gee(user, shp_file):
+        """
+        Upload a shapefile to Google Earth Engine as an asset.
+
+        Args:
+            user (django.contrib.auth.User): the request user.
+            shp_file (shapefile.Reader): A shapefile reader object.
+        """
+        print(user.username)
+        print(shp_file)
 
 2. Import the new ``upload_shapefile_to_gee`` function and call it in ``handle_shapefile_upload`` function in :file:`controllers.py` after validating the shapefile upload. Also modify the ``try-except`` block to handle any uncaught Google Earth Engine errors:
 
@@ -20,7 +34,7 @@ In this tutorial you will learn how to upload a shapefile as a Google Earth Engi
     from .gee.methods import upload_shapefile_to_gee
 
 .. code-block:: python
-    :emphasize-lines: 48-49, 54-57
+    :emphasize-lines: 51-52, 57-60
 
     def handle_shapefile_upload(request, user_workspace):
         """
@@ -90,9 +104,69 @@ In this tutorial you will learn how to upload a shapefile as a Google Earth Engi
 
 1. Update the ``upload_shapefile_to_gee`` function in :file:`gee/methods.py` to convert the uploaded shapefile to GeoJSON:
 
+.. code-block:: python
+    :emphasize-lines: 9-24
+
+    def upload_shapefile_to_gee(user, shp_file):
+        """
+        Upload a shapefile to Google Earth Engine as an asset.
+
+        Args:
+            user (django.contrib.auth.User): the request user.
+            shp_file (shapefile.Reader): A shapefile reader object.
+        """
+        features = []
+        fields = shp_file.fields[1:]
+        field_names = [field[0] for field in fields]
+
+        # Convert Shapefile to ee.Features
+        for record in shp_file.shapeRecords():
+            # First convert to geojson
+            attributes = dict(zip(field_names, record.record))
+            geojson_geom = record.shape.__geo_interface__
+            geojson_feature = {
+                'type': 'Feature',
+                'geometry': geojson_geom,
+                'properties': attributes
+            }
+
+            print(geojson_feature)
+
 2. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip`. Verify that the GeoJSON is being printed to the terminal where Tethys is running.
 
 3. Update the ``upload_shapefile_to_gee`` function in :file:`gee/methods.py` to convert create ``ee.Features`` and an ``ee.FeatureCollection`` from the GeoJSON:
+
+.. code-block:: python
+    :emphasize-lines: 24-28
+
+    def upload_shapefile_to_gee(user, shp_file):
+        """
+        Upload a shapefile to Google Earth Engine as an asset.
+
+        Args:
+            user (django.contrib.auth.User): the request user.
+            shp_file (shapefile.Reader): A shapefile reader object.
+        """
+        features = []
+        fields = shp_file.fields[1:]
+        field_names = [field[0] for field in fields]
+
+        # Convert Shapefile to ee.Features
+        for record in shp_file.shapeRecords():
+            # First convert to geojson
+            attributes = dict(zip(field_names, record.record))
+            geojson_geom = record.shape.__geo_interface__
+            geojson_feature = {
+                'type': 'Feature',
+                'geometry': geojson_geom,
+                'properties': attributes
+            }
+
+            # Create ee.Feature from geojson (this is the Upload, b/c ee.Feature is a server object)
+            features.append(ee.Feature(geojson_feature))
+
+        feature_collection = ee.FeatureCollection(features)
+        print(feature_collection)
 
 4. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip`. Verify that the new ``ee.FeatureCollection`` is printed to the terminal where Tethys is running.
 
@@ -101,44 +175,334 @@ In this tutorial you will learn how to upload a shapefile as a Google Earth Engi
 
 1. Create a new ``get_asset_dir_for_user`` function in :file:`gee/methods.py` with the following contents:
 
+.. code-block:: python
+
+    import os
+
+.. code-block:: python
+
+    def get_asset_dir_for_user(user):
+        """
+        Get a unique asset directory for given user.
+
+        Args:
+            user (django.contrib.auth.User): the request user.
+
+        Returns:
+            str: asset directory path for given user.
+        """
+        asset_roots = ee.batch.data.getAssetRoots()
+
+        if len(asset_roots) < 1:
+            # Initialize the asset root directory if one doesn't exist already
+            ee.batch.data.createAssetHome('users/earth_engine_app')
+
+        asset_root_dir = asset_roots[0]['id']
+        earth_engine_root_dir = os.path.join(asset_root_dir, 'earth_engine_app')
+        user_root_dir = os.path.join(earth_engine_root_dir, user.username)
+
+        # Create earth engine directory, will raise exception if it already exists
+        try:
+            ee.batch.data.createAsset({
+                'type': 'Folder',
+                'name': earth_engine_root_dir
+            })
+        except EEException as e:
+            if 'Cannot overwrite asset' not in str(e):
+                raise e
+
+        # Create user directory, will raise exception if it already exists
+        try:
+            ee.batch.data.createAsset({
+                'type': 'Folder',
+                'name': user_root_dir
+            })
+        except EEException as e:
+            if 'Cannot overwrite asset' not in str(e):
+                raise e
+
+        return user_root_dir
+
+
 2. Create a new ``get_user_boundary_path`` function in :file:`gee/methods.py` with the following contents:
+
+.. code-block:: python
+
+    def get_user_boundary_path(user):
+        """
+        Get a unique path for the user boundary asset.
+
+        Args:
+            user (django.contrib.auth.User): the request user.
+
+        Returns:
+            str: the unique path for the user boundary asset.
+        """
+        user_asset_dir = get_asset_dir_for_user(user)
+        user_boundary_asset_path = os.path.join(user_asset_dir, 'boundary')
+        return user_boundary_asset_path
 
 3. Update the ``upload_shapefile_to_gee`` function in :file:`gee/methods.py` to call the new ``get_user_boundary_path`` function and then export the ``ee.FeatureCollection`` to an asset at that path: (no try/except)
 
+.. code-block:: python
+    :emphasize-lines: 29-39
+
+    def upload_shapefile_to_gee(user, shp_file):
+        """
+        Upload a shapefile to Google Earth Engine as an asset.
+
+        Args:
+            user (django.contrib.auth.User): the request user.
+            shp_file (shapefile.Reader): A shapefile reader object.
+        """
+        features = []
+        fields = shp_file.fields[1:]
+        field_names = [field[0] for field in fields]
+
+        # Convert Shapefile to ee.Features
+        for record in shp_file.shapeRecords():
+            # First convert to geojson
+            attributes = dict(zip(field_names, record.record))
+            geojson_geom = record.shape.__geo_interface__
+            geojson_feature = {
+                'type': 'Feature',
+                'geometry': geojson_geom,
+                'properties': attributes
+            }
+
+            # Create ee.Feature from geojson (this is the Upload, b/c ee.Feature is a server object)
+            features.append(ee.Feature(geojson_feature))
+
+        feature_collection = ee.FeatureCollection(features)
+
+        # Get unique folder for each user to story boundary asset
+        user_boundary_asset_path = get_user_boundary_path(user)
+
+        # Export ee.Feature to ee.Asset
+        task = ee.batch.Export.table.toAsset(
+            collection=feature_collection,
+            description='uploadToTableAsset',
+            assetId=user_boundary_asset_path
+        )
+
+        task.start()
+
 4. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip`. Verify that the path returned from ``get_user_boundary_path`` is printed to the terminal where Tethys is running.
 
-.. note::
+    .. note::
 
-    If you have already uploaded an asset, doing so again will fail because we haven't handled the case where the file already exists (see Step 3.7). Either manually delete the asset at `<https://code.earthengine.google.com/>`_ or skip to step 3.8 for the implementation that handles this issue.
+        If you have already uploaded an asset, doing so again will fail because we haven't handled the case where the file already exists (see Step 3.7). Either manually delete the asset at `<https://code.earthengine.google.com/>`_ or skip to step 3.8 for the implementation that handles this issue.
 
 5. Navigate to `<https://code.earthengine.google.com/>`_ and select the **Tasks** tab in the top-right pane of the code editor. Verify that a new ``uploadToTableAsset`` task is/was running.
 
 6. Once the ``uploadToTableAsset`` task is complete, select the **Assets** tab in the top-left pane of the code editor and verify that there is a new asset named **boundary** at the path that was printed to the terminal in step 3.4.
 
-.. note::
+    .. tip::
 
-    If the new asset does not appear, try pressing the refresh button.
+        If the new asset does not appear, try pressing the refresh button.
 
 7. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip` again. This should cause an error, because Google Earth Engine won't let you overwrite a file that already exists when exporting an asset.
 
 8. Update the ``upload_shapefile_to_gee`` function in :file:`gee/methods.py` to delete the asset before exporting to asset. This will fail if there is no asset there (the first time), so handle with a ``try-except``: (with try/except this time)
 
+.. code-block:: python
+    :emphasize-lines: 32-39
+
+    def upload_shapefile_to_gee(user, shp_file):
+        """
+        Upload a shapefile to Google Earth Engine as an asset.
+
+        Args:
+            user (django.contrib.auth.User): the request user.
+            shp_file (shapefile.Reader): A shapefile reader object.
+        """
+        features = []
+        fields = shp_file.fields[1:]
+        field_names = [field[0] for field in fields]
+
+        # Convert Shapefile to ee.Features
+        for record in shp_file.shapeRecords():
+            # First convert to geojson
+            attributes = dict(zip(field_names, record.record))
+            geojson_geom = record.shape.__geo_interface__
+            geojson_feature = {
+                'type': 'Feature',
+                'geometry': geojson_geom,
+                'properties': attributes
+            }
+
+            # Create ee.Feature from geojson (this is the Upload, b/c ee.Feature is a server object)
+            features.append(ee.Feature(geojson_feature))
+
+        feature_collection = ee.FeatureCollection(features)
+
+        # Get unique folder for each user to story boundary asset
+        user_boundary_asset_path = get_user_boundary_path(user)
+
+        # Overwrite an existing asset with this name by deleting it first
+        try:
+            ee.batch.data.deleteAsset(user_boundary_asset_path)
+        except EEException as e:
+            # Nothing to delete, so pass
+            if 'Asset not found' not in str(e):
+                log.exception('Encountered an unhandled EEException.')
+                raise e
+
+        # Export ee.Feature to ee.Asset
+        task = ee.batch.Export.table.toAsset(
+            collection=feature_collection,
+            description='uploadToTableAsset',
+            assetId=user_boundary_asset_path
+        )
+
+        task.start()
+
 9. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip` again. Verify that no error is shown this time.
 
-10. Quickly navigate to `<https://code.earthengine.google.com/>`_ after successfully uploading the shapefile. Verify that a new ``uploadToTableAsset`` task is running and that the previous asset has been removed. Once the ``uploadToTableAsset`` job completes, the asset should once again be shown in the assets tab.
+10. Navigate to `<https://code.earthengine.google.com/>`_ after successfully uploading the shapefile. Verify that a new ``uploadToTableAsset`` task is running and that the previous **boundary** asset has been removed. Once the ``uploadToTableAsset`` job completes, the asset should once again be shown in the assets tab.
 
 4. Use Boundary Asset to Clip Images
 ====================================
 
 1. Create a new ``get_boundary_fc_for_user`` function in :file:`gee/methods.py` with the following contents:
 
-2. Modify the ``get_image_collection_asset`` function in :file:`gee/methods.py` to call the new ``get_boundary_fc_for_user`` function and clip the imagery if something is returned:
+.. code-block:: python
+
+    def get_boundary_fc_props_for_user(user):
+        """
+        Get various properties of the boundary FeactureCollection.
+        Args:
+            user (django.contrib.auth.User): Get the properties of the boundary uploaded by this user.
+
+        Returns:
+            dict<zoom,bbox,centroid>: Dictionary containing the centroid and bounding box of the boundary and the approximate OpenLayers zoom level to frame the boundary around the centroid. Empty dictionary if no boundary FeactureCollection is found for the given user.
+        """
+        fc = get_boundary_fc_for_user(user)
+
+        if not fc:
+            return dict()
+
+        # Compute bounding box
+        bounding_rect = fc.geometry().bounds().getInfo()
+        bounding_coords = bounding_rect.get('coordinates')[0]
+        bbox = [bounding_coords[0][0], bounding_coords[0][1], bounding_coords[2][0], bounding_coords[2][1]]
+
+        # Get centroid
+        centroid = fc.geometry().centroid().getInfo()
+
+        # Compute length diagonal of bbox for zoom calulation
+        diag = math.sqrt((bbox[0] - bbox[2])**2 + (bbox[1] - bbox[3])**2)
+        zoom = round((-0.0701 * diag) + 8.34, 0)
+
+        fc_props = {
+            'zoom': zoom,
+            'bbox': bbox,
+            'centroid': centroid.get('coordinates')
+        }
+
+        return fc_props
+
+2. Modify the ``get_image_collection_asset`` function in :file:`gee/methods.py` to call the new ``get_boundary_fc_for_user`` function and clip the imagery if something is returned. Also add the ``request`` as an argument as this is needed to get the current user:
+
+.. code-block:: python
+    :emphasize-lines: 1, 34-38
+
+    def get_image_collection_asset(request, platform, sensor, product, date_from=None, date_to=None, reducer='median'):
+        """
+        Get tile url for image collection asset.
+        """
+        ee_product = EE_PRODUCTS[platform][sensor][product]
+
+        collection = ee_product['collection']
+        index = ee_product.get('index', None)
+        vis_params = ee_product.get('vis_params', {})
+        cloud_mask = ee_product.get('cloud_mask', None)
+
+        log.debug(f'Image Collection Name: {collection}')
+        log.debug(f'Band Selector: {index}')
+        log.debug(f'Vis Params: {vis_params}')
+
+        try:
+            ee_collection = ee.ImageCollection(collection)
+
+            if date_from and date_to:
+                ee_filter_date = ee.Filter.date(date_from, date_to)
+                ee_collection = ee_collection.filter(ee_filter_date)
+
+            if index:
+                ee_collection = ee_collection.select(index)
+
+            if cloud_mask:
+                cloud_mask_func = getattr(cm, cloud_mask, None)
+                if cloud_mask_func:
+                    ee_collection = ee_collection.map(cloud_mask_func)
+
+            if reducer:
+                ee_collection = getattr(ee_collection, reducer)()
+
+            # Attempt to clip the image by the boundary provided by the user
+            clip_features = get_boundary_fc_for_user(request.user)
+
+            if clip_features:
+                ee_collection = ee_collection.clipToCollection(clip_features)
+
+            tile_url = image_to_map_id(ee_collection, vis_params)
+
+            return tile_url
+
+        except EEException:
+            log.exception('An error occurred while attempting to retrieve the image collection asset.')
 
 .. TODO::
 
     Decide how to update the old tutorial with patch for new ``image_to_map_id`` to work with new versions of gee
 
 3. Modify the call of ``get_image_collection_asset`` in the ``get_image_collection`` controller in :file:`controllers.py` to pass the ``request`` as an additional argument:
+
+.. code-block:: python
+    :emphasize-lines: 22
+
+    @login_required()
+    def get_image_collection(request):
+        """
+        Controller to handle image collection requests.
+        """
+        response_data = {'success': False}
+
+        if request.method != 'POST':
+            return HttpResponseNotAllowed(['POST'])
+
+        try:
+            log.debug(f'POST: {request.POST}')
+
+            platform = request.POST.get('platform', None)
+            sensor = request.POST.get('sensor', None)
+            product = request.POST.get('product', None)
+            start_date = request.POST.get('start_date', None)
+            end_date = request.POST.get('end_date', None)
+            reducer = request.POST.get('reducer', None)
+
+            url = get_image_collection_asset(
+                request=request,
+                platform=platform,
+                sensor=sensor,
+                product=product,
+                date_from=start_date,
+                date_to=end_date,
+                reducer=reducer
+            )
+
+            log.debug(f'Image Collection URL: {url}')
+
+            response_data.update({
+                'success': True,
+                'url': url
+            })
+
+        except Exception as e:
+            response_data['error'] = f'Error Processing Request: {e}'
+
+        return JsonResponse(response_data)
 
 4. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and load a dataset of your choice. Verify that the imagery has been clipped to the United States. You'll need to manually pan and zoom to the U.S. to see the imagery.
 
@@ -147,7 +511,94 @@ In this tutorial you will learn how to upload a shapefile as a Google Earth Engi
 
 1. Create a new ``get_boundary_fc_props_for_user`` function in :file:`gee/methods.py` with the following contents:
 
-2. Modify the ``viewer`` controller in :file:`controllers.py` to call the ``get_boundary_fc_props_for_user`` function and use the return properties to set the default extents for the map:
+.. code-block:: python
+
+    import math
+
+.. code-block:: python
+
+    def get_boundary_fc_props_for_user(user):
+        """
+        Get various properties of the boundary FeatureCollection.
+        Args:
+            user (django.contrib.auth.User): Get the properties of the boundary uploaded by this user.
+
+        Returns:
+            dict<zoom,bbox,centroid>: Dictionary containing the centroid and bounding box of the boundary and the approximate OpenLayers zoom level to frame the boundary around the centroid. Empty dictionary if no boundary FeatureCollection is found for the given user.
+        """
+        fc = get_boundary_fc_for_user(user)
+
+        if not fc:
+            return dict()
+
+        # Compute bounding box
+        bounding_rect = fc.geometry().bounds().getInfo()
+        bounding_coords = bounding_rect.get('coordinates')[0]
+
+        # Derive bounding box from two corners of the bounding rectangle
+        bbox = [bounding_coords[0][0], bounding_coords[0][1], bounding_coords[2][0], bounding_coords[2][1]]
+
+        # Get centroid
+        centroid = fc.geometry().centroid().getInfo()
+
+        # Compute length diagonal of bbox for zoom calculation
+        diag = math.sqrt((bbox[0] - bbox[2])**2 + (bbox[1] - bbox[3])**2)
+
+        # Found the diagonal length and zoom level for US and Kenya boundaries
+        # Used equation of a line to develop the relationship between zoom and diagonal of bounding box
+        zoom = round((-0.0701 * diag) + 8.34, 0)
+
+        # The returned ee.FeatureClass properties
+        fc_props = {
+            'zoom': zoom,
+            'bbox': bbox,
+            'centroid': centroid.get('coordinates')
+        }
+
+        return fc_props
+
+2. Use the ``get_boundary_fc_props_for_user`` function to get the bounding box and zoom level to use for the ``MapView``. Replace the definition of the ``MapView`` in the ``viewer`` controller in :file:`controllers.py` with the following:
+
+.. code-block:: python
+
+    from .gee.methods import get_boundary_fc_props_for_user
+
+.. code-block:: python
+    :emphasize-lines: 1-2, 11, 23-24
+
+    # Get bounding box from user boundary if it exists
+    boundary_props = get_boundary_fc_props_for_user(request.user)
+
+    map_view = MapView(
+        height='100%',
+        width='100%',
+        controls=[
+            'ZoomSlider', 'Rotate', 'FullScreen',
+            {'ZoomToExtent': {
+                'projection': 'EPSG:4326',
+                'extent': boundary_props.get('bbox', [29.25, -4.75, 46.25, 5.2])  # Default to Kenya
+            }}
+        ],
+        basemap=[
+            'CartoDB',
+            {'CartoDB': {'style': 'dark'}},
+            'OpenStreetMap',
+            'Stamen',
+            'ESRI'
+        ],
+        view=MVView(
+            projection='EPSG:4326',
+            center=boundary_props.get('centroid', [37.880859, 0.219726]),  # Default to Kenya
+            zoom=boundary_props.get('zoom', 7),  # Default to Kenya
+            maxZoom=18,
+            minZoom=2
+        ),
+        draw=MVDraw(
+            controls=['Pan', 'Modify', 'Delete', 'Move', 'Point', 'Polygon', 'Box'],
+            initial='Pan',
+            output_format='GeoJSON'
+        )
+    )
 
 3. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and verify that the default extent now frames the United States. Pan and zoom away from the United States. Press the **Fit to Extent** button (the **E** button just below the zoom bar in the top-left-hand side of the map) and verify that it zooms to the extents of the United States.
 
