@@ -14,6 +14,17 @@ In this tutorial you will create a home page for the app with introductory infor
 * Linking to other pages and navigation
 * Placeholder content for development: lorem ipsum and images
 
+0. Start From Previous Solution (Optional)
+==========================================
+
+If you wish to use the previous solution as a starting point:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    cd tethysapp-earth_engine
+    git checkout -b plot-data-solution plot-data-solution-|version|
+
 1. Move Map View to Viewer Endpoint
 ===================================
 

@@ -15,6 +15,17 @@ In this tutorial you will add an About page and a disclaimer modal. The requirem
 * Linking to other pages and navigation
 * Placeholder content for development: lorem ipsum and images
 
+0. Start From Previous Solution (Optional)
+==========================================
+
+If you wish to use the previous solution as a starting point:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    cd tethysapp-earth_engine
+    git checkout -b home-page-solution home-page-solution-|version|
+
 1. Create new Template, Controller, and UrlMap for About Page
 =============================================================
 

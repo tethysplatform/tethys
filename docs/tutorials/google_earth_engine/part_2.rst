@@ -2,7 +2,7 @@
 Google Earth Engine: Part 2
 ***************************
 
-**Last Updated:** May 2019
+**Last Updated:** May 2020
 
 This tutorial builds on the app developed in the :ref:`google_earth_engine_part_1` Tutorial.
 

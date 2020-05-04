@@ -11,6 +11,17 @@ In this tutorial you will learn how to upload files using HTML forms. Topics cov
 * User Workspaces
 * pyshp
 
+0. Start From Previous Solution (Optional)
+==========================================
+
+If you wish to use the previous solution as a starting point:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    cd tethysapp-earth_engine
+    git checkout -b about-page-solution about-page-solution-|version|
+
 1. Add a Set Button and Modal for Shapefile Upload
 ==================================================
 

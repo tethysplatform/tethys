@@ -8,6 +8,17 @@ In this tutorial you will learn how to upload a shapefile as a Google Earth Engi
 
 * Google Earth Engine Assets
 
+0. Start From Previous Solution (Optional)
+==========================================
+
+If you wish to use the previous solution as a starting point:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    cd tethysapp-earth_engine
+    git checkout -b file-upload-solution file-upload-solution-|version|
+
 
 1. Stub out New Method for Uploading Shapefiles to GEE
 ======================================================
