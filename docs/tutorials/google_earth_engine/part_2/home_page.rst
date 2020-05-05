@@ -35,8 +35,7 @@ If you wish to use the previous solution as a starting point:
 .. code-block:: python
 
     @login_required()
-    @user_workspace
-    def viewer(request, user_workspace):
+    def viewer(request):
         """
         Controller for the app viewer page.
         """
@@ -90,10 +89,8 @@ If you wish to use the previous solution as a starting point:
     {% extends "earth_engine/base.html" %}
     {% load tethys_gizmos static %}
 
-    {% block app_navigation_items %}
-    {% endblock %}
-
     {% block app_content %}
+    <h1>Home Page</h1>
     {% endblock %}
 
 2. Create a new ``home`` controller in :file:`controllers.py`:
@@ -139,21 +136,16 @@ If you wish to use the previous solution as a starting point:
                 url='earth-engine/viewer/get-time-series-plot',
                 controller='earth_engine.controllers.get_time_series_plot'
             ),
-            UrlMap(
-                name='about',
-                url='earth-engine/about',
-                controller='earth_engine.controllers.about'
-            ),
         )
 
         return url_maps
 
-4. Navigate to `<http://localhost:8000/apps/earth-engine/>`_ and verify that the new home page is functioning properly (the page should be blank).
+4. Navigate to `<http://localhost:8000/apps/earth-engine/>`_ and verify that the new home page loads with text "Home Page".
 
 3. Remove Navigation from Home Page
 ===================================
 
-1. Replace the ``app_navigation_items`` block with the ``app_navigation_override`` block in :file:`templates/earth_engine/home.html` to remove the navigation panel from the home page:
+1. Add the ``app_navigation_override`` block in :file:`templates/earth_engine/home.html` to remove the navigation panel from the home page:
 
 .. code-block:: html+django
 
@@ -203,7 +195,7 @@ Create a responsive two column layout using the `Bootstrap Grid System <https://
     :emphasize-lines: 2-3
 
     {% block app_content %}
-    <div  id="home-content-container" class="container-fluid">
+    <div id="home-content-container" class="container-fluid">
     </div>
     {% endblock %}
 
@@ -288,9 +280,6 @@ Create a responsive two column layout using the `Bootstrap Grid System <https://
       </div>
     </div>
     {% endblock %}
-
-6. TODO: Verify with CSS?
-
 
 5. Create About Panel Content
 =============================
@@ -385,7 +374,7 @@ Create a responsive two column layout using the `Bootstrap Grid System <https://
       </div>
     </div>
 
-4. Navigate to `<http://localhost:8000/apps/earth-engine/>`_ and verify that the title "Resource" and three media elements with images appear in the panel on the top right.
+4. Navigate to `<http://localhost:8000/apps/earth-engine/>`_ and verify that the title "Resource" and three media elements with images appear in the panel on the top right. At this point things may look  a bit messy with images overlapping. We'll take care of these issues in a later step. For now, we'll focus on developing the structure of the page.
 
 7. Create Get Started Panel Content
 ===================================
