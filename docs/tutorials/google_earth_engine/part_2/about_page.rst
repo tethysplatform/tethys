@@ -47,7 +47,11 @@ If you wish to use the previous solution as a starting point:
 
 .. code-block:: python
 
+    @login_required()
     def about(request):
+        """
+        Controller for the app about page.
+        """
         context = {}
         return render(request, 'earth_engine/about.html', context)
 
