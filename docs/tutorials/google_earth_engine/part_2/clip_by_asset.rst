@@ -42,6 +42,7 @@ If you wish to use the previous solution as a starting point:
 
 .. code-block:: python
 
+    import ee
     from .gee.methods import upload_shapefile_to_gee
 
 .. code-block:: python
@@ -312,7 +313,7 @@ If you wish to use the previous solution as a starting point:
 
         If the new asset does not appear, try pressing the refresh button.
 
-7. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip` again. This should cause an error, because Google Earth Engine won't let you overwrite a file that already exists when exporting an asset.
+7. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip` again. The ``uploadToTableAsset task in the Google Earth Engine code editor should fail, because Google Earth Engine won't let you overwrite a file that already exists when exporting an asset.
 
 8. Update the ``upload_shapefile_to_gee`` function in :file:`gee/methods.py` to delete the asset before exporting to asset. This will fail if there is no asset there (the first time), so handle with a ``try-except``: (with try/except this time)
 
@@ -379,39 +380,27 @@ If you wish to use the previous solution as a starting point:
 
 .. code-block:: python
 
-    def get_boundary_fc_props_for_user(user):
+    def get_boundary_fc_for_user(user):
         """
-        Get various properties of the boundary FeactureCollection.
+        Get the boundary FeatureClass for the given user if it exists.
+
         Args:
-            user (django.contrib.auth.User): Get the properties of the boundary uploaded by this user.
+            user (django.contrib.auth.User): the request user.
 
         Returns:
-            dict<zoom,bbox,centroid>: Dictionary containing the centroid and bounding box of the boundary and the approximate OpenLayers zoom level to frame the boundary around the centroid. Empty dictionary if no boundary FeactureCollection is found for the given user.
+            ee.FeatureCollection: boundary feature collection or None
         """
-        fc = get_boundary_fc_for_user(user)
+        try:
+            boundary_path = get_user_boundary_path(user)
+            # If no boundary exists for the user, an exception occur when calling this and clipping will skipped
+            ee.batch.data.getAsset(boundary_path)
+            # Add the clip option
+            fc = ee.FeatureCollection(boundary_path)
+            return fc
+        except EEException:
+            pass
 
-        if not fc:
-            return dict()
-
-        # Compute bounding box
-        bounding_rect = fc.geometry().bounds().getInfo()
-        bounding_coords = bounding_rect.get('coordinates')[0]
-        bbox = [bounding_coords[0][0], bounding_coords[0][1], bounding_coords[2][0], bounding_coords[2][1]]
-
-        # Get centroid
-        centroid = fc.geometry().centroid().getInfo()
-
-        # Compute length diagonal of bbox for zoom calulation
-        diag = math.sqrt((bbox[0] - bbox[2])**2 + (bbox[1] - bbox[3])**2)
-        zoom = round((-0.0701 * diag) + 8.34, 0)
-
-        fc_props = {
-            'zoom': zoom,
-            'bbox': bbox,
-            'centroid': centroid.get('coordinates')
-        }
-
-        return fc_props
+        return None
 
 2. Modify the ``get_image_collection_asset`` function in :file:`gee/methods.py` to call the new ``get_boundary_fc_for_user`` function and clip the imagery if something is returned. Also add the ``request`` as an argument as this is needed to get the current user:
 
@@ -564,6 +553,10 @@ If you wish to use the previous solution as a starting point:
 
         return fc_props
 
+.. note::
+
+    TODO: Explanation of zoom from diagonal equation.
+
 2. Use the ``get_boundary_fc_props_for_user`` function to get the bounding box and zoom level to use for the ``MapView``. Replace the definition of the ``MapView`` in the ``viewer`` controller in :file:`controllers.py` with the following:
 
 .. code-block:: python
@@ -583,7 +576,7 @@ If you wish to use the previous solution as a starting point:
             'ZoomSlider', 'Rotate', 'FullScreen',
             {'ZoomToExtent': {
                 'projection': 'EPSG:4326',
-                'extent': boundary_props.get('bbox', [29.25, -4.75, 46.25, 5.2])  # Default to Kenya
+                'extent': boundary_props.get('bbox', [-180, -90, 180, 90])  # Default to World
             }}
         ],
         basemap=[
@@ -595,8 +588,8 @@ If you wish to use the previous solution as a starting point:
         ],
         view=MVView(
             projection='EPSG:4326',
-            center=boundary_props.get('centroid', [37.880859, 0.219726]),  # Default to Kenya
-            zoom=boundary_props.get('zoom', 7),  # Default to Kenya
+            center=boundary_props.get('centroid', [0, 0]),  # Default to World
+            zoom=boundary_props.get('zoom', 3),  # Default to World
             maxZoom=18,
             minZoom=2
         ),
@@ -608,6 +601,10 @@ If you wish to use the previous solution as a starting point:
     )
 
 3. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and verify that the default extent now frames the United States. Pan and zoom away from the United States. Press the **Fit to Extent** button (the **E** button just below the zoom bar in the top-left-hand side of the map) and verify that it zooms to the extents of the United States.
+
+.. note::
+
+    If a user has not uploaded a boundary, the default zoom will now encompass the globe. You can test this by deleting the boundary asset in the Google Earth Engine code editor.
 
 6. Test and Verify
 ==================
