@@ -227,6 +227,10 @@ Create a responsive two column layout using the `Bootstrap Grid System <https://
     </div>
     {% endblock %}
 
+    .. note::
+
+        TODO: Why 12 divisions?
+
 4. Add two rows to the second column, each containing a full-width (**12**/12) column:
 
 .. code-block:: html+django
@@ -295,6 +299,10 @@ Create a responsive two column layout using the `Bootstrap Grid System <https://
       <p>Ac felis donec et odio pellentesque. Quis ipsum suspendisse ultrices gravida dictum fusce ut. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Sed euismod nisi porta lorem mollis. Nisi scelerisque eu ultrices vitae. Sit amet consectetur adipiscing elit duis. At in tellus integer feugiat scelerisque varius morbi enim.</p>
     </div>
 
+.. tip::
+
+    TODO: lorem ipsum resources tip
+
 2. Download :download:`this screenshot <./resources/earth-engine-viewer.png>` or take your own screenshot of the Earth Engine app and save it as :file:`public/images/earth-engine-viewer.png`.
 
 3. Add the screenshot to the ``<div>`` element with id ``about-container``. Use the built-in ``static`` tag to get the path to the image:
@@ -329,6 +337,10 @@ Create a responsive two column layout using the `Bootstrap Grid System <https://
   * :download:`coast_80_80.jpg <./resources/coast_80_80.jpg>`
   * :download:`condensation_80_80.jpg <./resources/condensation_80_80.jpg>`
   * :download:`waterfall_80_80.jpg <./resources/waterfall_80_80.jpg>`
+
+.. note::
+
+    TODO: Attribution and tip about where these images came from (place holder images)
 
 3. Add three resources to the ``<div>`` element with id ``resources-container``. Use `Boostrap Media Objects <https://getbootstrap.com/docs/3.3/components/#media>`_ to style each resource. Each media object/resource includes, a title, a short description and a thumbnail image. The image is wrapped in an ``<a>`` tag that can be used to provide a link to an external resource. Again, use the built-in ``static`` tag to get the paths for the images.
 

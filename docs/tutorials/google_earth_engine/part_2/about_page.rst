@@ -29,12 +29,17 @@ If you wish to use the previous solution as a starting point:
 1. Create new Template, Controller, and UrlMap for About Page
 =============================================================
 
-1. Create new :file:`templates/earth_engine/about.html` template:
+1. Create new :file:`templates/earth_engine/about.html` template. Include the :file:`public/earth_engine/css/no_nav.css` stylesheet because this template overrides the navigation menu:
 
 .. code-block:: html+django
 
     {% extends "earth_engine/base.html" %}
     {% load static %}
+
+    {% block styles %}
+      {{ block.super }}
+      <link rel="stylesheet" href="{% static 'earth_engine/css/no_nav.css' %}" />
+    {% endblock %}
 
     {% block app_navigation_override %}
     {% endblock %}
@@ -144,6 +149,10 @@ If you wish to use the previous solution as a starting point:
       </div>
     {% endblock %}
 
+.. note::
+
+    TODO: Difference between ``container`` and ``container-fluid``
+
 2. Create a ``<div>`` element with class ``page-header`` and the following contents inside the ``container`` ``<div>``:
 
 .. code-block:: html+django
@@ -245,6 +254,10 @@ If you wish to use the previous solution as a starting point:
       </div>
     </div>
 
+.. tip::
+
+    TODO: placeholder.com tip
+
 7. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify that the content renders as expected. Resize the window to see how the normal Bootstrap ``container`` differs from the ``container-fluid`` that was used on the home page.
 
 4. Customize the About Page Styles
@@ -252,9 +265,10 @@ If you wish to use the previous solution as a starting point:
 
 1. Create a new :file:`public/earth_engine/about.css` stylesheet.
 
-2. Include the new :file:`about.css` as well as the :file:`no_nav.css` stylesheets in :file:`templates/earth_engine/about.html`:
+2. Include the new :file:`about.css` in :file:`templates/earth_engine/about.html`:
 
 .. code-block:: html+django
+    :emphasize-lines: 4
 
     {% block styles %}
       {{ block.super }}
@@ -351,9 +365,42 @@ If you wish to use the previous solution as a starting point:
       </div>
     {% endblock %}
 
-3. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify that the modal opens when the Disclaimer header button is pressed. Also verify that the Disclaimer button is on every page of the app.
+3. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify that the modal opens when the Disclaimer header button is pressed.
 
-4. Add the following content to the ``modal-body`` ``<div>`` element in :file:`templates/earth_engine/base.html`:
+4. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and attempt to open the disclaimer modal. It doesn't work, because the ``viewer.html`` template overrides the ``after_app_content`` block with its own modals for the functionality on the viewer page.
+
+5. Include the ``block.super`` content in the ``after_app_content`` block of :file:`templates/earth_engine/viewer.html` to include the disclaimer modal from the ``base.html`` template when overriding the block in the ``viewer`` template:
+
+.. code-block:: html+django
+    :emphasize-lines: 3
+
+    {# Use the after_app_content block for modals #}
+    {% block after_app_content %}
+      {{ block.super }}
+      <!-- Plot Modal -->
+      <div class="modal fade" id="plot-modal" tabindex="-1" role="dialog" aria-labelledby="plot-modal-label">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h5 class="modal-title" id="plot-modal-label">Area of Interest Plot</h5>
+            </div>
+            <div class="modal-body">
+              <div id="plot-container"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Plot Modal -->
+      <div id="ee-products" data-ee-products="{{ ee_products|jsonify }}"></div>
+      <div id="loader">
+        <img src="{% static 'earth_engine/images/map-loader.gif' %}">
+      </div>
+    {% endblock %}
+
+6. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and verify that the modal opens when the Disclaimer header button is pressed. Press the **Plot AOI** button to verify that the *Area of Interest* modal still opens as well.
+
+7. Add the following content to the ``modal-body`` ``<div>`` element in :file:`templates/earth_engine/base.html`:
 
 .. code-block:: html+django
 
@@ -367,7 +414,7 @@ If you wish to use the previous solution as a starting point:
       </div>
     </div>
 
-5. Add the following content to the ``modal-footer`` ``<div>`` element in :file:`templates/earth_engine/base.html`:
+8. Add the following content to the ``modal-footer`` ``<div>`` element in :file:`templates/earth_engine/base.html`:
 
 .. code-block:: html+django
 
@@ -384,7 +431,7 @@ If you wish to use the previous solution as a starting point:
       </div>
     </div>
 
-6. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify that new content appears in the disclaimer modal.
+9. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify that new content appears in the disclaimer modal.
 
 6. Customize the Disclaimer Modal Styles
 ========================================
@@ -414,7 +461,7 @@ If you wish to use the previous solution as a starting point:
         margin-right: 10px;
     }
 
-2. Include the new stylesheet in :file:`templates/earth_engine/base.html`:
+2. Include the new stylesheet in the ``content_dependent_styles`` block of the :file:`templates/earth_engine/base.html`:
 
 .. code-block:: html+django
     :emphasize-lines: 4
