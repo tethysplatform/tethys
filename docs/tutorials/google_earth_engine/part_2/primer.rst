@@ -6,4 +6,7 @@ Bootstrap for Tethys Developers Primer
 
 
 Bootstrap Grid Primer
+* divisions in 12ths
+* forms
+
 Earth Engine Assets Primer

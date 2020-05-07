@@ -464,10 +464,6 @@ If you wish to use the previous solution as a starting point:
         except EEException:
             log.exception('An error occurred while attempting to retrieve the image collection asset.')
 
-.. TODO::
-
-    Decide how to update the old tutorial with patch for new ``image_to_map_id`` to work with new versions of gee
-
 3. Modify the call of ``get_image_collection_asset`` in the ``get_image_collection`` controller in :file:`controllers.py` to pass the ``request`` as an additional argument:
 
 .. code-block:: python

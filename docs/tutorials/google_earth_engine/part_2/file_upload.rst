@@ -22,10 +22,10 @@ If you wish to use the previous solution as a starting point:
     cd tethysapp-earth_engine
     git checkout -b about-page-solution about-page-solution-|version|
 
-1. Add a Set Button and Modal for Shapefile Upload
-==================================================
+1. Add New Modal for File Upload Form
+=====================================
 
-1. Add a new Set boundary button to the bottom of the ``viewer`` controller in :file:`controllers.py`:
+1. Add a new button titled **Set Boundary** to the bottom of the ``viewer`` controller in :file:`controllers.py`:
 
 .. code-block:: python
     :emphasize-lines: 1-9, 21
@@ -102,7 +102,7 @@ If you wish to use the previous solution as a starting point:
     </div>
     <!-- End Set Boundary Modal -->
 
-4. Add the Bootstrap modal ``data-toggle`` and ``data-target`` attributes to the Set Boundary button so that it opens the modal when pressed:
+4. Add the Bootstrap modal ``data-toggle`` and ``data-target`` attributes to the Set Boundary button so that it opens the modal when pressed. Update the Set Boundary button definition near the bottom of the ``viewer`` controller in :file:`controllers.py` as follows:
 
 .. code-block:: python
     :emphasize-lines: 8-9
@@ -119,7 +119,7 @@ If you wish to use the previous solution as a starting point:
         }
     )
 
-5. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and verify that Set Boundary button opens the Set Boundary Modal.
+5. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and verify that Set Boundary button opens the Set Boundary modal.
 
 2. Add File Upload Form to Set Boundary Modal
 =============================================
@@ -135,6 +135,10 @@ If you wish to use the previous solution as a starting point:
       </form>
     </div>
 
+.. note::
+
+    TODO: Explanation of the different attributes of the form element
+
 2. Add the Cross Site Request Forgery token (``csrf_token``) to the new ``<form>`` element in :file:`templates/earth_engine/viewer.html`:
 
 .. code-block:: html+django
@@ -147,6 +151,10 @@ If you wish to use the previous solution as a starting point:
         {% csrf_token %}
       </form>
     </div>
+
+.. note::
+
+    TODO: explanation of the csrf_token
 
 3. Add a Bootstrap ``form-group`` with an ``<input>`` element of type ``file`` to the new ``<form>`` element in :file:`templates/earth_engine/viewer.html`:
 
@@ -175,6 +183,8 @@ If you wish to use the previous solution as a starting point:
       <input type="submit" class="btn btn-default" value="Set Boundary" name="set-boundary-submit" id="set-boundary-submit" form="set-boundary-form">
     </div>
 
+5. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and press the **Set Boundary** button. Verify that the modal opens and it contains a form with a file chooser button.
+
 3. Handle File Upload in Controller
 ===================================
 
@@ -196,7 +206,7 @@ If you wish to use the previous solution as a starting point:
         uploaded_file = request.FILES['boundary-file']
         print(uploaded_file)
 
-2. Call ``handle_shapefile_upload`` function in ``viewer`` controller in :file:`controllers.py` if a file has been uploaded and pass any error returned to the context for later use in the template:
+2. Call ``handle_shapefile_upload`` function in ``viewer`` controller in :file:`controllers.py` if a file has been uploaded. Also pass any error returned by the ``handle_shapefile_upload`` function to the context so that it can be displayed to the user:
 
 .. code-block:: python
     :emphasize-lines: 1-4, 17
@@ -224,7 +234,7 @@ If you wish to use the previous solution as a starting point:
 
     return render(request, 'earth_engine/viewer.html', context)
 
-3. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload a file. Verify that information about the uploaded file is printed to the console.
+3. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_. Press the **Set Boundary** button to open the Set Boundary form. Choose a file and press the **Set Boundary** button in the modal to upload it. Verify that the name of the file is printed to the console.
 
 4. Write Uploaded File to Temporary Directory
 =============================================
@@ -262,7 +272,11 @@ If you wish to use the previous solution as a starting point:
                     temp_zip.write(chunk)
 
 
-2. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload a file. Verify that the file is written to the temporary location printed to the console.
+2. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload a file. Verify a path in the :file:`/tmp` directory is printed to the console.
+
+.. note::
+
+    The file will no longer be at that path printed to the console because it is a temporary file. It is deleted as soon as the ``with tempfile.TemporaryDirectory() as temp_dir`` statement finishes.
 
 5. Validate File Uploaded is a Zip Archive
 ==========================================
@@ -310,7 +324,7 @@ If you wish to use the previous solution as a starting point:
 
     Any string returned by this function will be displayed as an error message to the user.
 
-2. Modify the Set Boundary Form to display the error message. Replace the ``<div>`` with id ``boundary-file-form-group`` with this updated version in :file:`templates/earth_engine/viewer.html`:
+2. Modify the Set Boundary form to display the error message. Replace the ``<div>`` with id ``boundary-file-form-group`` with this updated version in :file:`templates/earth_engine/viewer.html`:
 
 .. code-block:: html+django
     :emphasize-lines: 1, 4-6
@@ -382,7 +396,7 @@ If you wish to use the previous solution as a starting point:
         channels:
           - conda-forge
         packages:
-          - earthengine-api=0.1.205
+          - earthengine-api
           - oauth2client
           - geojson
           - pyshp
@@ -394,7 +408,7 @@ If you wish to use the previous solution as a starting point:
 
 .. code-block:: python
 
-    import shapefile
+    import os
 
 .. code-block:: python
 
@@ -428,7 +442,7 @@ If you wish to use the previous solution as a starting point:
 .. code-block:: python
 
     import shapefile
-    from tethysapp.earth_engine.helpers import generate_figure, compute_dates_for_product, find_shapefile
+    from .helpers import find_shapefile
 
 .. code-block:: python
     :emphasize-lines: 31-45
@@ -487,8 +501,8 @@ If you wish to use the previous solution as a starting point:
     * Upload the :file:`points.zip` and verify that an error *is* shown.
     * Create a zip archive that does not contain a shapefile and upload it. Verify an error *is* shown.
 
-7. Write Shapefile to the User's Workspace Directory
-====================================================
+7. Save Shapefile to the User's Workspace Directory
+===================================================
 
 1. Add the following imports and create a new helper function ``prep_boundary_dir`` in :file:`helpers.py`:
 
@@ -527,6 +541,10 @@ If you wish to use the previous solution as a starting point:
         return boundary_dir
 
 2. Create a new helper function ``write_boundary_shapefile`` in :file:`helpers.py`:
+
+.. code-block:: python
+
+    import shapefile
 
 .. code-block:: python
 
@@ -569,8 +587,12 @@ If you wish to use the previous solution as a starting point:
     @user_workspace
     def viewer(request, user_workspace):
         """
-        Controller for the app home page.
+        Controller for the app viewer page.
         """
+
+.. tip:
+
+    TODO: workspace API tip
 
 4. Modify the ``handle_shapefile_upload`` helper function to accept the ``user_workspace`` as an additional argument in :file:`controllers.py`:
 
@@ -590,6 +612,10 @@ If you wish to use the previous solution as a starting point:
         """
 
 5. Add logic to write the uploaded shapefile to the user workspace in ``handle_shapefile_upload`` in :file:`controllers.py`:
+
+.. code-block:: python
+
+    from .helpers import write_boundary_shapefile, prep_boundary_dir
 
 .. code-block:: python
     :emphasize-lines: 45-49
@@ -650,6 +676,10 @@ If you wish to use the previous solution as a starting point:
 6. Modify the ``handle_shapefile_upload`` call in the ``viewer`` controller in :file:`controllers.py` to pass the user workspace path:
 
 .. code-block:: python
+
+    from django.http import HttpResponseRedirect
+
+.. code-block:: python
     :emphasize-lines: 4
 
     # Handle Set Boundary Form
@@ -657,7 +687,7 @@ If you wish to use the previous solution as a starting point:
     if request.POST and request.FILES:
         set_boundary_error = handle_shapefile_upload(request, user_workspace)
 
-7. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip`. Verify that the shapefile is saved to the active user's workspace directory with its sidecar files (e.g. :file:`workspaces/user_workspaces/admin/boundary.shp`).
+7. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip`. Verify that the shapefile is saved to the active user's workspace directory with its sidecar files (e.g. :file:`workspaces/user_workspaces/admin/boundary/boundary.shp`).
 
 8. Redirect Upon Successful File Upload
 =======================================
