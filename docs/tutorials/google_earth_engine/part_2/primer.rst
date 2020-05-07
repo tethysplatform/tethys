@@ -1,6 +1,6 @@
-*********************************
-Google Earth Engine Assets Primer
-*********************************
+**************************************
+Bootstrap for Tethys Developers Primer
+**************************************
 
 **Last Updated:** May 2020
 
