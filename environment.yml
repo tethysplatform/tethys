@@ -29,7 +29,7 @@ dependencies:
 
 # plotting dependencies
 - plotly
-- bokeh>=1.3.5*
+- bokeh=1.4.*
 
 # external services dependencies
 - tethys_dataset_services>=2.0.0
