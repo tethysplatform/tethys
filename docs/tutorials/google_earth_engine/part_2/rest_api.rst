@@ -72,20 +72,24 @@ The ``controllers.py`` file is getting quite long...
 
 .. code-block:: python
 
+    import os
+    import tempfile
+    import zipfile
+    import logging
     import datetime as dt
     import geojson
-    import logging
-    from django.http import HttpResponseRedirect, HttpResponseNotAllowed, JsonResponse
+    import ee
+    import shapefile
+    from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponseRedirect
     from django.shortcuts import render
-    from simplejson import JSONDecodeError
+    from simplejson.errors import JSONDecodeError
     from tethys_sdk.gizmos import SelectInput, DatePicker, Button, MapView, MVView, PlotlyView, MVDraw
     from tethys_sdk.permissions import login_required
     from tethys_sdk.workspaces import user_workspace
-    from ..gee.methods import get_boundary_fc_props_for_user, get_image_collection_asset, \
-        get_time_series_from_image_collection, upload_shapefile_to_gee
+    from ..helpers import generate_figure, find_shapefile, write_boundary_shapefile, prep_boundary_dir
+    from ..gee.methods import get_image_collection_asset, get_time_series_from_image_collection, upload_shapefile_to_gee, \
+        get_boundary_fc_props_for_user
     from ..gee.products import EE_PRODUCTS
-    from ..helpers import generate_figure, compute_dates_for_product, find_shapefile, \
-        prep_boundary_dir, write_boundary_shapefile
 
     log = logging.getLogger(f'tethys.apps.{__name__}')
 
@@ -95,7 +99,7 @@ The ``controllers.py`` file is getting quite long...
     @user_workspace
     def viewer(request, user_workspace):
         """
-        Controller for the app home page.
+        Controller for the app viewer page.
         """
 
         ...  # Code not shown for brevity
@@ -140,7 +144,7 @@ The ``controllers.py`` file is getting quite long...
 .. code-block:: python
     :emphasize-lines: 11, 16, 21, 26, 31
 
-    def url_maps(self):
+        def url_maps(self):
         """
         Add controllers
         """
@@ -151,6 +155,11 @@ The ``controllers.py`` file is getting quite long...
                 name='home',
                 url='earth-engine',
                 controller='earth_engine.controllers.home.home'
+            ),
+            UrlMap(
+                name='about',
+                url='earth-engine/about',
+                controller='earth_engine.controllers.home.about'
             ),
             UrlMap(
                 name='viewer',
@@ -166,11 +175,6 @@ The ``controllers.py`` file is getting quite long...
                 name='get_time_series_plot',
                 url='earth-engine/viewer/get-time-series-plot',
                 controller='earth_engine.controllers.viewer.get_time_series_plot'
-            ),
-            UrlMap(
-                name='about',
-                url='earth-engine/about',
-                controller='earth_engine.controllers.home.about'
             ),
         )
 
@@ -199,12 +203,16 @@ The ``controllers.py`` file is getting quite long...
     @authentication_classes((TokenAuthentication,))
     def get_time_series(request):
         """
-        Controller for the app home page.
+        Controller for the get-time-series REST endpoint.
         """
         response_data = {
             "detail": "Hello, World!"
         }
         return JsonResponse(response_data)
+
+.. tip::
+
+    TODO: Django REST Framework support in Tethys Platform.
 
 2. Add a new ``UrlMap`` for the ``get_time_series`` controller to :file:`app.py`:
 
@@ -224,6 +232,11 @@ The ``controllers.py`` file is getting quite long...
                 controller='earth_engine.controllers.home.home'
             ),
             UrlMap(
+                name='about',
+                url='earth-engine/about',
+                controller='earth_engine.controllers.home.about'
+            ),
+            UrlMap(
                 name='viewer',
                 url='earth-engine/viewer',
                 controller='earth_engine.controllers.viewer.viewer'
@@ -239,15 +252,10 @@ The ``controllers.py`` file is getting quite long...
                 controller='earth_engine.controllers.viewer.get_time_series_plot'
             ),
             UrlMap(
-                name='about',
-                url='earth-engine/about',
-                controller='earth_engine.controllers.home.about'
-            ),
-            UrlMap(
                 name='rest_get_time_series',
                 url='earth-engine/api/get-time-series',
                 controller='earth_engine.controllers.rest.get_time_series'
-            )
+            ),
         )
 
         return url_maps
@@ -261,11 +269,11 @@ Testing REST APIs is most easily done with a REST client like Postman.
 
 1. If you have not done so already, `download and install the Postman app <https://www.postman.com/>`_ and then launch it.
 
-2. In Postman click on the **New** and select Collection.
+2. In Postman click on the **New** button and select **Collection**.
 
 3. Name the collection "Earth Engine App API" and press the **Create** button.
 
-4. Right-click on the new *Earth Engine App API* collection or click on it's dot menu and select **Add Request**.
+4. Right-click on the new *Earth Engine App API* collection or click on it's "**...**" button and select **Add Request**.
 
 5. Name the new request "get-time-series" and press the **Save to Earth Engine App API** button.
 
@@ -280,7 +288,7 @@ Testing REST APIs is most easily done with a REST client like Postman.
 4. Add Token Authorization Headers to Postman Request
 =====================================================
 
-1. Navigate to `<http://localhost:8000/>` and sign in if necessary.
+1. Navigate to `<http://localhost:8000/apps/>`_ and sign in if necessary.
 
 2. Click on the button with your username on it in the top-right-hand corner of the page to access your user profile.
 
@@ -301,11 +309,15 @@ Testing REST APIs is most easily done with a REST client like Postman.
 
 .. code-block:: python
 
+    from django.http import HttpResponseBadRequest
+
+.. code-block:: python
+
     @api_view(['GET', 'POST'])
     @authentication_classes((TokenAuthentication,))
     def get_time_series(request):
         """
-        Controller for the app home page.
+        Controller for the get-time-series REST endpoint.
         """
         # Get request parameters.
         if request.method == 'GET':
@@ -336,7 +348,7 @@ Testing REST APIs is most easily done with a REST client like Postman.
                 'start_date': start_date_str,
                 'end_date': end_date_str,
                 'reducer': reducer,
-                'geometry': geometry
+                'geometry': geometry_str
             }
         }
 
@@ -359,7 +371,15 @@ Testing REST APIs is most easily done with a REST client like Postman.
     orient:series
     scale:250
 
-4. Press the **Send** button and verify that the parameters are returned in the response object.
+4. Click on the **Key-Value Edit** link on the right. Notice how the *Query Params* key-value form is populated with values. Also, notice that the same parameters are added to the URL as query parameters (i.e. ``?key1=value1&key2=value2``).
+
+    .. note::
+
+        The ``index`` parameter should be unchecked / disabled.
+
+5. Press the **Send** button and verify that the parameters are returned in the response object.
+
+6. Press the **Save** button to save your changes to the Postman request.
 
 6. Validate Platform, Sensor, Product, and Index
 ================================================
@@ -368,8 +388,7 @@ Testing REST APIs is most easily done with a REST client like Postman.
 
 .. code-block:: python
 
-    from django.http import JsonResponse, HttpResponseBadRequest
-    from tethysapp.earth_engine.gee.products import EE_PRODUCTS
+    from ..gee.products import EE_PRODUCTS
 
 .. code-block:: python
     :emphasize-lines: 25-70
@@ -378,7 +397,7 @@ Testing REST APIs is most easily done with a REST client like Postman.
     @authentication_classes((TokenAuthentication,))
     def get_time_series(request):
         """
-        Controller for the app home page.
+        Controller for the get-time-series REST endpoint.
         """
         # Get request parameters.
         if request.method == 'GET':
@@ -441,13 +460,13 @@ Testing REST APIs is most easily done with a REST client like Postman.
                 'start_date': start_date_str,
                 'end_date': end_date_str,
                 'reducer': reducer,
-                'geometry': geometry
+                'geometry': geometry_str
             }
         }
 
         return JsonResponse(response_data)
 
-2. In Postman, select the **Params** tab if not already active and press the **Key-Value Edit** link at the top-right corner of the tab.
+2. In Postman, select the **Params** tab if not already active.
 
 3. Uncheck all of the parameters so that they are not included in the request.
 
@@ -459,7 +478,9 @@ Testing REST APIs is most easily done with a REST client like Postman.
 
 7. Change the value of the ``platform`` parameter to "landsat" or "sentinel" and verify that the validation message for the ``sensor`` parameter lists the appropriate sensors.
 
-8. Repeat this process, adding first the ``product`` parameter and then the ``index parameter`` to confirm that the validation logic is working as expected.
+8. Change the ``platform`` parameter back to "modis".
+
+9. Repeat this process, adding first the ``sensor`` parameter, then the ``product`` parameter to confirm that the validation logic is working as expected.
 
 7. Validate Dates
 =================
@@ -511,157 +532,123 @@ There is logic that already exists in the ``viewer`` controller that you can use
 
     Compare this function with similar logic in the ``viewer`` controller. Many of the variables have been renamed to make it more general, but the functionality is mostly the same.
 
-2. Refactor the ``viewer`` controller in :file:`controllers/viewer.py`` to use the new ``compute_dates_for_product`` helper function. Replace all of the previous date logic:
+2. Import the new ``compute_dates_for_product`` helper function and then refactor the ``viewer`` controller in :file:`controllers/viewer.py`` to use the new ``compute_dates_for_product`` helper function. Replace all of the previous date logic in the ``viewer`` controller starting with the line with comment ``# Hardcode initial end date ...`` and ending with the ``end_date`` ``DatePicker``:
 
 .. code-block:: python
 
-    from ..helpers import handle_shapefile_upload, generate_figure, compute_dates_for_product
+    from ..helpers import compute_dates_for_product
 
 .. code-block:: python
-    :emphasize-lines: 17-18, 26-28, 39-41
+    :emphasize-lines: 1-2, 11-13, 24-26
 
-    @login_required()
-    @user_workspace
-    def viewer(request, user_workspace):
-        """
-        Controller for the app home page.
-        """
-        ...  # Code not shown for brevity
+    # Get initial default dates and date ranges for date picker controls
+    first_product_dates = compute_dates_for_product(first_product)
 
-        plot_button = Button(
-            name='load_plot',
-            display_text='Plot AOI',
-            style='default',
-            attributes={'id': 'load_plot'}
-        )
+    start_date = DatePicker(
+        name='start_date',
+        display_text='Start Date',
+        format='yyyy-mm-dd',
+        start_view='decade',
+        today_button=True,
+        today_highlight=True,
+        start_date=first_product_dates['beg_valid_date_range'],
+        end_date=first_product_dates['end_valid_date_range'],
+        initial=first_product_dates['default_start_date'],
+        autoclose=True
+    )
 
-        # Get initial default dates and date ranges for date picker controls
-        first_product_dates = compute_dates_for_product(first_product)
+    end_date = DatePicker(
+        name='end_date',
+        display_text='End Date',
+        format='yyyy-mm-dd',
+        start_view='decade',
+        today_button=True,
+        today_highlight=True,
+        start_date=first_product_dates['beg_valid_date_range'],
+        end_date=first_product_dates['end_valid_date_range'],
+        initial=first_product_dates['default_end_date'],
+        autoclose=True
+    )
 
-        start_date = DatePicker(
-            name='start_date',
-            display_text='Start Date',
-            format='yyyy-mm-dd',
-            start_view='decade',
-            today_button=True,
-            today_highlight=True,
-            start_date=first_product_dates['beg_valid_date_range'],
-            end_date=first_product_dates['end_valid_date_range'],
-            initial=first_product_dates['default_start_date'],
-            autoclose=True
-        )
-
-        end_date = DatePicker(
-            name='end_date',
-            display_text='End Date',
-            format='yyyy-mm-dd',
-            start_view='decade',
-            today_button=True,
-            today_highlight=True,
-            start_date=first_product_dates['beg_valid_date_range'],
-            end_date=first_product_dates['end_valid_date_range'],
-            initial=first_product_dates['default_end_date'],
-            autoclose=True
-        )
-
-        # Build reducer method control
-        reducer_select = SelectInput(
-            name='reducer',
-            display_text='Reduction Method',
-            options=(
-                ('Median', 'median'),
-                ('Mosaic', 'mosaic'),
-                ('Mode', 'mode'),
-                ('Mean', 'mean'),
-                ('Minimum', 'min'),
-                ('Maximum', 'max'),
-                ('Sum', 'sum'),
-                ('Count', 'count'),
-                ('Product', 'product'),
-            )
-        )
-       ...  # Code not shown for brevity
-
-3. Modify the ``get_time_series`` controller in :file:`controllers/rest.py` to add validation for the ``start_date`` and ``end_date`` parameters as follows:
+3. Modify the ``get_time_series`` controller in :file:`controllers/rest.py` to also use the ``compute_dates_for_product`` helper function as part of it's validation for the ``start_date`` and ``end_date`` parameters. Replace the ``response_data`` object with the following:
 
 .. code-block:: python
 
     import datetime as dt
-    from tethysapp.earth_engine.helpers import compute_dates_for_product
+    from ..helpers import compute_dates_for_product
 
 .. code-block:: python
 
-    @api_view(['GET', 'POST'])
-    @authentication_classes((TokenAuthentication,))
-    def get_time_series(request):
-        """
-        Controller for the app home page.
-        """
-        ...  # Code not shown for brevity
-        # get valid dates for selected product
-        product_dates = compute_dates_for_product(selected_product)
+    # get valid dates for selected product
+    product_dates = compute_dates_for_product(selected_product)
 
-        # assign default start date if not provided
-        if not start_date_str:
-            start_date_str = product_dates['default_start_date']
+    # assign default start date if not provided
+    if not start_date_str:
+        start_date_str = product_dates['default_start_date']
 
-        # assign default start date if not provided
-        if not end_date_str:
-            end_date_str = product_dates['default_end_date']
+    # assign default start date if not provided
+    if not end_date_str:
+        end_date_str = product_dates['default_end_date']
 
-        # convert to datetime objects for validation
+    # convert to datetime objects for validation
+    try:
         start_date_dt = dt.datetime.strptime(start_date_str, '%Y-%m-%d')
         end_date_dt = dt.datetime.strptime(end_date_str, '%Y-%m-%d')
-        beg_valid_date_range = dt.datetime.strptime(product_dates['beg_valid_date_range'], '%Y-%m-%d')
-        end_valid_date_range = dt.datetime.strptime(product_dates['end_valid_date_range'], '%Y-%m-%d')
+    except ValueError:
+        return HttpResponseBadRequest(
+            'Invalid date format. Please use "YYYY-MM-DD".'
+        )
 
-        # start_date in valid range
-        if start_date_dt < beg_valid_date_range or start_date_dt > end_valid_date_range:
-            return HttpResponseBadRequest(
-                f'The date {start_date_str} is not a valid "start_date" for "{platform} {sensor} {product}". '
-                f'It must occur between {product_dates["beg_valid_date_range"]} '
-                f'and {product_dates["end_valid_date_range"]}.'
-            )
+    beg_valid_date_range = dt.datetime.strptime(product_dates['beg_valid_date_range'], '%Y-%m-%d')
+    end_valid_date_range = dt.datetime.strptime(product_dates['end_valid_date_range'], '%Y-%m-%d')
 
-        # end_date in valid range
-        if end_date_dt < beg_valid_date_range or end_date_dt > end_valid_date_range:
-            return HttpResponseBadRequest(
-                f'The date {end_date_str} is not a valid "end_date" for "{platform} {sensor} {product}". '
-                f'It must occur between {product_dates["beg_valid_date_range"]} '
-                f'and {product_dates["end_valid_date_range"]}.'
-            )
+    # start_date in valid range
+    if start_date_dt < beg_valid_date_range or start_date_dt > end_valid_date_range:
+        return HttpResponseBadRequest(
+            f'The date {start_date_str} is not a valid "start_date" for "{platform} {sensor} {product}". '
+            f'It must occur between {product_dates["beg_valid_date_range"]} '
+            f'and {product_dates["end_valid_date_range"]}.'
+        )
 
-        # start_date before end_date
-        if start_date_dt > end_date_dt:
-            return HttpResponseBadRequest(
-                f'The "start_date" must occur before the "end_date". Dates given: '
-                f'start_date = {start_date_str}; end_date = {end_date_str}.'
-            )
+    # end_date in valid range
+    if end_date_dt < beg_valid_date_range or end_date_dt > end_valid_date_range:
+        return HttpResponseBadRequest(
+            f'The date {end_date_str} is not a valid "end_date" for "{platform} {sensor} {product}". '
+            f'It must occur between {product_dates["beg_valid_date_range"]} '
+            f'and {product_dates["end_valid_date_range"]}.'
+        )
 
-        # compose response object.
-        response_data = {
-            'parameters': {
-                'platform': platform,
-                'sensor': sensor,
-                'product': product,
-                'index': index,
-                'start_date': start_date_str,
-                'end_date': end_date_str,
-                'reducer': reducer,
-                'geometry': geometry
-            }
+    # start_date before end_date
+    if start_date_dt > end_date_dt:
+        return HttpResponseBadRequest(
+            f'The "start_date" must occur before the "end_date". Dates given: '
+            f'start_date = {start_date_str}; end_date = {end_date_str}.'
+        )
+
+    # compose response object.
+    response_data = {
+        'parameters': {
+            'platform': platform,
+            'sensor': sensor,
+            'product': product,
+            'index': index,
+            'start_date': start_date_str,
+            'end_date': end_date_str,
+            'reducer': reducer,
+            'geometry': geometry_str
         }
+    }
 
-        return JsonResponse(response_data)
+4. Use Postman to send a request with only the ``platform``, ``sensor``, and ``product`` parameters. Ensure that the values given for the enabled parameters are valid. Verify that ``end_date`` is returned as today's date and that the ``start_date`` is 30 days prior to today's date.
 
+5. Add the ``start_date`` parameter and send another request. Verify that the same date sent is returned as the ``start_date``.
 
-4. Use the technique from steps 6.5 - 6.8 to test the ``start_date`` and ``end_date`` parameters using Postman.
+6. Add the ``end_date`` parameter and send another request. Verify that the same date sent is returned as the ``end_date``.
 
-5. Also test different values for dates to test the following scenarios:
+7. Also test different values for dates to test the following scenarios:
 
     * ``start_date`` == ``end_date``
     * ``start_date`` > ``end_date``
-    * ``start_date`` < ``end_date``
     * ``start_date`` outside of valid range of selected product (see :file:`gee/products.py`)
     * ``end_date`` outside of valid range of selected product (see :file:`gee/products.py`)
     * ``start_date`` and ``end_date`` outside of valid range of selected product (see :file:`gee/products.py`)
@@ -670,69 +657,74 @@ There is logic that already exists in the ``viewer`` controller that you can use
 8. Validate Reducer, Orient, and Scale
 ======================================
 
-1. Modify the ``get_time_series`` controller in :file:`controllers/rest.py` to add validation for the ``reducer``, ``orient``, and ``scale`` parameters as follows:
+1. Modify the ``get_time_series`` controller in :file:`controllers/rest.py` to add validation for the ``reducer``, ``orient``, and ``scale`` parameters. Replace the ``response_data`` object with the following:
 
 .. code-block:: python
 
-    @api_view(['GET', 'POST'])
-    @authentication_classes((TokenAuthentication,))
-    def get_time_series(request):
-        """
-        Controller for the app home page.
-        """
-        ...  # Code not shown for brevity
-        # reducer
-        valid_reducers = ('median', 'mosaic', 'mode', 'mean', 'min', 'max', 'sum', 'count', 'product')
-        if reducer not in valid_reducers:
-            valid_reducer_str = '", "'.join(valid_reducers)
-            return HttpResponseBadRequest(
-                f'The value "{reducer}" is not valid for parameter "reducer". '
-                f'Must be one of: "{valid_reducer_str}". Defaults to "median" '
-                f'if not given.'
-            )
+    # reducer
+    valid_reducers = ('median', 'mosaic', 'mode', 'mean', 'min', 'max', 'sum', 'count', 'product')
+    if reducer not in valid_reducers:
+        valid_reducer_str = '", "'.join(valid_reducers)
+        return HttpResponseBadRequest(
+            f'The value "{reducer}" is not valid for parameter "reducer". '
+            f'Must be one of: "{valid_reducer_str}". Defaults to "median" '
+            f'if not given.'
+        )
 
-        # orient
-        valid_orient_vals = ('dict', 'list', 'series', 'split', 'records', 'index')
-        if orient not in valid_orient_vals:
-            valid_orient_str = '", "'.join(valid_orient_vals)
-            return HttpResponseBadRequest(
-                f'The value "{orient}" is not valid for parameter "orient". '
-                f'Must be one of: "{valid_orient_str}". Defaults to "dict" '
-                f'if not given.'
-            )
+    # orient
+    valid_orient_vals = ('dict', 'list', 'series', 'split', 'records', 'index')
+    if orient not in valid_orient_vals:
+        valid_orient_str = '", "'.join(valid_orient_vals)
+        return HttpResponseBadRequest(
+            f'The value "{orient}" is not valid for parameter "orient". '
+            f'Must be one of: "{valid_orient_str}". Defaults to "dict" '
+            f'if not given.'
+        )
 
-        # scale
-        try:
-            scale = float(scale_str)
-        except ValueError:
-            return HttpResponseBadRequest(
-                f'The "scale" parameter must be a valid number, but "{scale_str}" was given.'
-            )
+    # scale
+    try:
+        scale = float(scale_str)
+    except ValueError:
+        return HttpResponseBadRequest(
+            f'The "scale" parameter must be a valid number, but "{scale_str}" was given.'
+        )
 
-        # compose response object.
-        response_data = {
-            'parameters': {
-                'platform': platform,
-                'sensor': sensor,
-                'product': product,
-                'index': index,
-                'start_date': start_date_str,
-                'end_date': end_date_str,
-                'reducer': reducer,
-                'geometry': geometry
-            }
+    # compose response object.
+    response_data = {
+        'parameters': {
+            'platform': platform,
+            'sensor': sensor,
+            'product': product,
+            'index': index,
+            'start_date': start_date_str,
+            'end_date': end_date_str,
+            'reducer': reducer,
+            'orient': orient,
+            'scale': scale,
+            'geometry_str': geometry_str
         }
+    }
 
-        return JsonResponse(response_data)
+2. Use Postman to send a request with only the ``platform``, ``sensor``, ``product``, ``start_date`` and ``end_date`` parameters. Ensure that the values given for the enabled parameters are valid. Verify that the default values for ``reducer``, ``orient``, and ``scale`` are returned.
 
+3. Add the ``reducer`` parameter with an invalid value (e.g. ``foo``). Verify that the validation message is displayed and lists valid values for ``reducer``.
 
-2. Use the technique from steps 6.5 - 6.8 to test the ``reducer``, ``orient``, and ``scale`` parameters using Postman.
+4. Change ``reducer`` to a valid value other than the default (e.g.: ``mean``). Verify this value is returned.
+
+5. Add the ``orient`` parameter with an invalid value (e.g. ``foo``). Verify that the validation message is displayed and lists valid values for ``orient``.
+
+6. Change ``orient`` to a valid value other than the default (e.g.: ``series``). Verify this value is returned.
+
+7. Add the ``scale`` parameter with a non-numeric value (e.g.: ``foo``). Verify that the validation message is displayed for ``scale``.
+
+8. Change ``scale`` to a valid value other than the default (e.g.: ``150``). Verify this value is returned.
+
 
 
 9. Validate Geometry
 ====================
 
-1. Modify the ``get_time_series`` controller in :file:`controllers/rest.py` to add validation for the ``geometry`` parameter as follows:
+1. Modify the ``get_time_series`` controller in :file:`controllers/rest.py` to add validation for the ``geometry`` parameter.  Replace the ``response_data`` object with the following:
 
 .. code-block:: python
 
@@ -742,102 +734,170 @@ There is logic that already exists in the ``viewer`` controller that you can use
 .. code-block:: python
     :emphasize-lines: 1
 
-    @api_view(['GET', 'POST'])
-    @authentication_classes((TokenAuthentication,))
-    def get_time_series(request):
-        """
-        Controller for the app home page.
-        """
-        ...  # Code not shown for brevity
-        # geometry
-        bad_geometry_msg = 'The "geometry" parameter is required and must be a valid geojson string.'
-        if not geometry_str:
-            return HttpResponseBadRequest(bad_geometry_msg)
+    # geometry
+    bad_geometry_msg = 'The "geometry" parameter is required and must be a valid geojson string.'
+    if not geometry_str:
+        return HttpResponseBadRequest(bad_geometry_msg)
 
-        try:
-            geometry = geojson.loads(geometry_str)
-        except JSONDecodeError:
-            return HttpResponseBadRequest(bad_geometry_msg)
+    try:
+        geometry = geojson.loads(geometry_str)
+    except JSONDecodeError:
+        return HttpResponseBadRequest(bad_geometry_msg)
 
-        # compose response object.
-        response_data = {
-            'parameters': {
-                'platform': platform,
-                'sensor': sensor,
-                'product': product,
-                'index': index,
-                'start_date': start_date_str,
-                'end_date': end_date_str,
-                'reducer': reducer,
-                'geometry': geometry
-            }
+    # compose response object.
+    response_data = {
+        'parameters': {
+            'platform': platform,
+            'sensor': sensor,
+            'product': product,
+            'index': index,
+            'start_date': start_date_str,
+            'end_date': end_date_str,
+            'reducer': reducer,
+            'orient': orient,
+            'scale': scale,
+            'geometry': geometry
         }
+    }
 
-        return JsonResponse(response_data)
+2. Use Postman to send a request with only the ``platform``, ``sensor``, ``product``, ``start_date``, ``end_date``, ``reducer``, ``orient``, and ``scale`` parameters. Ensure that the values given for the enabled parameters are valid. Verify that a message indicating that the ``geometry`` parameter is required is returned.
 
-2. Use the technique from steps 6.5 - 6.8 to test the ``geometry`` parameter using Postman.
+3. Add the ``geometry`` parameter with an invalid value (e.g. ``foo``). Verify that the validation message is displayed and indicates that the geometry parameter must be GeoJSON.
+
+4. Change ``geometry`` to the following and verify this value is returned:
+
+.. code-block:: json
+
+    {"type":"GeometryCollection","geometries":[{"type":"Point","coordinates":[36.112060546875,-0.03295898255728957],"properties":{"id":"drawing_layer.79c08238-4084-4825-9e76-f018527d45b7"},"crs":{"type":"link","properties":{"href":"http://spatialreference.org/ref/epsg/4326/proj4/","type":"proj4"}}},{"type":"Polygon","coordinates":[[[36.749267578125,0.1867672473697155],[36.6943359375,-0.043945308191354115],[36.99096679687499,-0.043945308191354115],[36.9140625,0.1757809742470755],[36.749267578125,0.1867672473697155]]],"properties":{"id":"drawing_layer.ffa36dfd-5767-4946-890b-f4c0d9c0ff9f"},"crs":{"type":"link","properties":{"href":"http://spatialreference.org/ref/epsg/4326/proj4/","type":"proj4"}}}]}
+
+.. important::
+
+    When pasting the ``geometry`` value from above, ensure that there are no new lines / returns after (i.e. press Backspace after pasting).
 
 10. Reuse Existing Helper Function to Get Time Series
 =====================================================
 
 1. Refactor the ``get_time_series_from_image_collection`` function in :file:`gee/methods.py` to accept the ``orient`` argument by replacing the function with this new definition:
 
-2. Modify the ``get_time_series`` controller in :file:`controllers/rest.py` to call the ``get_time_series_from_image_collection`` function and return the time series in the response object:
+.. code-block:: python
+
+    def get_time_series_from_image_collection(platform, sensor, product, index_name, scale=30, geometry=None,
+                                              date_from=None, date_to=None, reducer='median', orient='df'):
+        """
+        Derive time series at given geometry.
+        """
+        time_series = []
+        ee_product = EE_PRODUCTS[platform][sensor][product]
+        collection_name = ee_product['collection']
+
+        if not isinstance(geometry, geojson.GeometryCollection):
+            raise ValueError('Geometry must be a valid GeoJSON GeometryCollection.')
+
+        for geom in geometry.geometries:
+            log.debug(f'Computing Time Series for Geometry of Type: {geom.type}')
+
+            try:
+                ee_geometry = None
+                if isinstance(geom, geojson.Polygon):
+                    ee_geometry = ee.Geometry.Polygon(geom.coordinates)
+                elif isinstance(geom, geojson.Point):
+                    ee_geometry = ee.Geometry.Point(geom.coordinates)
+                else:
+                    raise ValueError('Only Points and Polygons are supported.')
+
+                if date_from is not None:
+                    if index_name is not None:
+                        indexCollection = ee.ImageCollection(collection_name) \
+                            .filterDate(date_from, date_to) \
+                            .select(index_name)
+                    else:
+                        indexCollection = ee.ImageCollection(collection_name) \
+                            .filterDate(date_from, date_to)
+                else:
+                    indexCollection = ee.ImageCollection(collection_name)
+
+                def get_index(image):
+                    if reducer:
+                        the_reducer = getattr(ee.Reducer, reducer)()
+
+                    if index_name is not None:
+                        index_value = image.reduceRegion(the_reducer, ee_geometry, scale).get(index_name)
+                    else:
+                        index_value = image.reduceRegion(the_reducer, ee_geometry, scale)
+
+                    date = image.get('system:time_start')
+                    index_image = ee.Image().set('indexValue', [ee.Number(date), index_value])
+                    return index_image
+
+                index_collection = indexCollection.map(get_index)
+                index_collection_agg = index_collection.aggregate_array('indexValue')
+                values = index_collection_agg.getInfo()
+                log.debug('Values acquired.')
+                df = pd.DataFrame(values, columns=['Time', index_name.replace("_", " ")])
+
+                if orient == 'df':
+                    time_series.append(df)
+                else:
+                    time_series.append(df.to_dict(orient=orient))
+
+            except EEException:
+                log.exception('An error occurred while attempting to retrieve the time series.')
+
+        log.debug(f'Time Series: {time_series}')
+        return time_series
+
+.. note::
+
+    You don't need to worry about updating existing calls of ``get_time_series_from_image_collection``, because the new ``orient`` argument was added at the end of the argument list with a default value that will cause it to behave as it did before the argument was added.
+
+2. Modify the ``get_time_series`` controller in :file:`controllers/rest.py` to call the ``get_time_series_from_image_collection`` function and return the time series in the response object. Replace the ``response_data`` object with the following:
 
 .. code-block:: python
 
-    from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseServerError
-    from tethysapp.earth_engine.gee.methods import get_time_series_from_image_collection
+    from django.http import HttpResponseServerError
+    from ..gee.methods import get_time_series_from_image_collection
 
 
 .. code-block:: python
     :emphasize-lines: 1
 
-    @api_view(['GET', 'POST'])
-    @authentication_classes((TokenAuthentication,))
-    def get_time_series(request):
-        """
-        Controller for the app home page.
-        """
-        ...  # Code not shown for brevity
-        try:
-            time_series = get_time_series_from_image_collection(
-                platform=platform,
-                sensor=sensor,
-                product=product,
-                index_name=index,
-                scale=scale,
-                geometry=geometry,
-                date_from=start_date_str,
-                date_to=end_date_str,
-                reducer=reducer,
-                orient=orient
-            )
-        except ValueError as e:
-            return HttpResponseBadRequest(str(e))
-        except Exception:
-            log.exception('An unexpected error occurred during execution of get_time_series_from_image_collection.')
-            return HttpResponseServerError('An unexpected error occurred. Please review your parameters and try again.')
+    try:
+        time_series = get_time_series_from_image_collection(
+            platform=platform,
+            sensor=sensor,
+            product=product,
+            index_name=index,
+            scale=scale,
+            geometry=geometry,
+            date_from=start_date_str,
+            date_to=end_date_str,
+            reducer=reducer,
+            orient=orient
+        )
+    except ValueError as e:
+        return HttpResponseBadRequest(str(e))
+    except Exception:
+        log.exception('An unexpected error occurred during execution of get_time_series_from_image_collection.')
+        return HttpResponseServerError('An unexpected error occurred. Please review your parameters and try again.')
 
-        # compose response object.
-        response_data = {
-            'time_series': time_series,
-            'parameters': {
-                'platform': platform,
-                'sensor': sensor,
-                'product': product,
-                'index': index,
-                'start_date': start_date_str,
-                'end_date': end_date_str,
-                'reducer': reducer,
-                'geometry': geometry
-            }
+    # compose response object.
+    response_data = {
+        'time_series': time_series,
+        'parameters': {
+            'platform': platform,
+            'sensor': sensor,
+            'product': product,
+            'index': index,
+            'start_date': start_date_str,
+            'end_date': end_date_str,
+            'reducer': reducer,
+            'orient': orient,
+            'scale': scale,
+            'geometry': geometry
         }
+    }
 
-        return JsonResponse(response_data)
-
-
-3. Enable all of the Query parameters in Postman by checking the box next to each with the exception of the ``index`` parameter.
+3. Enable all of the Query parameters in Postman by checking the box next to each with the exception of the ``index`` parameter. Ensure that the values given for the enabled parameters are valid.
 
 4. Press the **Send** button to submit the request and verify that the time series is included in the response object.
 

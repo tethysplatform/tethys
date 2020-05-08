@@ -23,7 +23,6 @@ Outline
    part_2/file_upload
    part_2/clip_by_asset
    part_2/rest_api
-   part_2/service_account
 
 Supporting Materials
 --------------------
