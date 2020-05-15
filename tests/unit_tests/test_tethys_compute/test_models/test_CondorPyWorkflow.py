@@ -154,6 +154,10 @@ class CondorPyWorkflowTest(TethysTestCase):
         self.assertEqual('Job1_a', list_after[0].job.name)
         self.assertEqual('Job1_a1', list_after[1].job.name)
 
+        # Check returns None if nodes are already loaded
+        ret_after_load = self.condorworkflow.load_nodes()
+        self.assertEqual(ret_after_load, None)
+
     def test_add_max_jobs_throttle(self):
         # Set max_jobs
         self.condorworkflow.add_max_jobs_throttle('foo1', 20)
