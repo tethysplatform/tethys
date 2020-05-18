@@ -43,6 +43,7 @@ CALL_TO_ACTION_TEXT = 'action_text'
 CALL_TO_ACTION_BUTTON = 'action_button'
 
 # Custom Styles
+BASE_CSS = 'base_css'
 HOME_CSS = 'home_css'
 LIBRARY_CSS = 'library_css'
 
@@ -80,6 +81,7 @@ arg_filter = {
     FEATURE3_IMAGE: 'Feature 3 Image',
     CALL_TO_ACTION_TEXT: 'Call to Action',
     CALL_TO_ACTION_BUTTON: 'Call to Action Button',
+    BASE_CSS: 'Portal Base CSS',
     HOME_CSS: 'Home Page CSS',
     LIBRARY_CSS: 'Apps Library CSS',
     HOME_TEMPLATE: 'Home Page Template',
@@ -155,6 +157,10 @@ def add_site_parser(subparsers):
     site_parser.add_argument('--action-button', dest='action_button',
                              help='A double quoted string for the call to action button. '
                                   'Default is "Start Using Tethys!".')
+    site_parser.add_argument('--base-css', dest='base_css',
+                             help='CSS code to modify the Tethys Portal Base Page, which extends most of the portal '
+                                  'pages (i.e. Home, Login, Developer, Admin, etc.). Takes a file path available '
+                                  'through Tethys static files or straight CSS code.')
     site_parser.add_argument('--home-css', dest='home_css',
                              help='CSS code to modify the Tethys Portal Home Page. Takes a file path available through '
                                   'Tethys static files or straight CSS code.')

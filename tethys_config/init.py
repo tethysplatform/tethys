@@ -81,7 +81,8 @@ def reverse_custom(apps, schema_editor):
     settings = Setting.objects.all()
 
     for setting in settings:
-        if setting.name in ['Home Page CSS', 'Apps Library CSS', 'Home Page Template', 'Apps Library Template']:
+        if setting.name in ['Portal Base CSS', 'Home Page CSS', 'Apps Library CSS', 'Home Page Template',
+                            'Apps Library Template']:
             setting.delete()
 
     for category in categories:
@@ -218,6 +219,9 @@ def setting_defaults(category):
                                     date_modified=now)
 
     elif category.name == 'Custom Styles':
+        category.setting_set.create(name="Portal Base CSS",
+                                    content="",
+                                    date_modified=now),
         category.setting_set.create(name="Home Page CSS",
                                     content="",
                                     date_modified=now)

@@ -205,6 +205,10 @@ class TestInit(unittest.TestCase):
         type(mock_settings()).name = mock.PropertyMock(return_value="Custom Styles")
         setting_defaults(category=mock_settings())
 
+        mock_settings().setting_set.create.assert_any_call(name="Portal Base CSS",
+                                                           content="",
+                                                           date_modified=mock_now.return_value)
+
         mock_settings().setting_set.create.assert_any_call(name="Home Page CSS",
                                                            content="",
                                                            date_modified=mock_now.return_value)
