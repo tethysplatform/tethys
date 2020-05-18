@@ -58,13 +58,13 @@ def show_log(request, job_id):
 
         success = True
         message = ''
-        
+
         return JsonResponse({'success': success, 'data': data})
     except Exception as e:
         success = False
         message = str(e)
         log.error('The following error occurred when retrieving log for job %s: %s', job_id, message)
-        
+
         return JsonResponse({'success': success})
 
 
