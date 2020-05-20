@@ -257,6 +257,7 @@ Postfix (Optional)
         Start Postfix and enable it so it starts up automatically when the server restarts:
 
         .. code-block:: bash
+
             sudo systemctl enable postfix
             sudo systemctl start postfix
 

@@ -11,11 +11,11 @@ This article will provide an overview of how to install Tethys Portal in a produ
 
     1. As of version 3.0, Tethys Platform can be installed using `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/>`_. We recommend installing `Miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ as it provides a minimal installation of conda that is appropriate for servers:
 
-    .. code-block:: bash
+        .. code-block:: bash
 
-        cd /tmp
-        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-        sh ./Miniconda3-latest-Linux-x86_64.sh
+            cd /tmp
+            wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+            sh ./Miniconda3-latest-Linux-x86_64.sh
 
     2. Read the license and accept when prompted. Install to the default location (:file:`~/miniconda3`) and configure the shel to start on startup.
 
@@ -24,12 +24,12 @@ This article will provide an overview of how to install Tethys Portal in a produ
 
     1. Create a new conda environment called ``tethys`` with the ``tethys-platform`` package installed:
 
-    .. code-block:: bash
+        .. code-block:: bash
 
-        conda create -n tethys -c tethysplatform -c conda-forge tethys-platform
+            conda create -n tethys -c tethysplatform -c conda-forge tethys-platform
 
     2. Activate the ``tethys`` conda environment after it is created:
 
-    .. code-block:: bash
+        .. code-block:: bash
 
-        conda activate tethys
+            conda activate tethys
