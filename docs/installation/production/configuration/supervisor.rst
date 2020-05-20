@@ -6,86 +6,100 @@ Supervisor & Daphne Configuration
 
 **Last Updated:** May 2020
 
-12) Generate ``nginx`` and ``supervisor`` Configuration Files:
+`Supervisor <http://supervisord.org/>`_ is used to manage the NGINX and Daphne processes. As an ASGI server, Daphne is able to be run with multiple worker processes. It would be cumbersome to manage them individually. Using Supervisor, you will be able to use one command to start, stop, or restart the NGINX process and all of the Daphne processes.
 
-    Generate and review the contents of the following configuration files for ``nginx`` and ``supervisor``. Adjust to match your deployment's needs if necessary.
+1. Generate the Supervisor Configuration Files
+==============================================
 
-    .. code-block::
+One configuration file will be needed for NGINX and another for Daphne. Use the ``tethys gen`` command to generate default versions of these configuration files:
 
-        tethys gen nginx --overwrite
+    .. code-block:: bash
+
         tethys gen nginx_service --overwrite
         tethys gen asgi_service --overwrite
 
+
+2. Review Supervisor Configuration Files
+========================================
+
+1. Review the contents of the NGINX configuration file:
+
+    .. code-block:: bash
+
+        vim <TETHYS_HOME>/asgi_supervisord.conf
+
+    In particular, the locations of the log files. These may be useful for debugging later on.
+
+2. Review the contents of the Daphne (ASGI) configuration file:
+
+    .. code-block:: bash
+
+        vim <TETHYS_HOME>/nginx_supervisord.conf
+
+    In particular, verify the following:
+
+        * The ``TETHYS_HOME`` variable is set correctly
+        * The ``directory`` is the path to the directory where Tethys Platform is installed (usually the :file:`site-packages` directory of your ``tethys`` conda environment).
+        * Adjust the ``numprocs`` to the number of Daphne processes you would like it to run.
+        * Note the location of the ``stdout_logfile``.
+
+
+.. tip::
+
+    Replace ``<TETHYS_HOME>`` with the path to the Tethys home directory as noted in :ref:`production_portal_config` section.
+
+3. Link the Tethys Supervisor Configuration Files
+=================================================
+
+Create a symbolic links from the two configuration files generated in the previous steps to the supervisor configuration directory (:file:`/etc/supervisor`):
+
+    **Ubuntu**:
+
+        .. code-block:: bash
+
+            sudo ln -s <TETHYS_HOME>/asgi_supervisord.conf /etc/supervisor/conf.d/asgi_supervisord.conf
+            sudo ln -s <TETHYS_HOME>/nginx_supervisord.conf /etc/supervisor/conf.d/nginx_supervisord.conf
+
+    **CentOS**:
+
+        .. code-block:: bash
+
+            sudo ln -s <TETHYS_HOME>/asgi_supervisord.conf /etc/supervisord.d/asgi_supervisord.conf
+            sudo ln -s <TETHYS_HOME>/nginx_supervisord.conf /etc/supervisord.d/nginx_supervisord.conf
+
     .. tip::
 
-        These files are generated in the ``TETHYS_HOME`` directory.
+        Replace ``<TETHYS_HOME>`` with the path to the Tethys home directory as noted in :ref:`production_portal_config` section.
 
+4. Modify :file:`supervisord.conf` (CentOS Only)
+================================================
 
+For CentOS systems, modify :file:`supervisord.conf` to recognize our configuration files:
 
-9) Note ``nginx`` User for Permissions
+    **CentOS**:
 
+        .. code-block:: bash
 
-    Get the ``nginx`` user for permissions changes in the follow steps.
+            sudo sed -i '$ s@$@ /etc/supervisord.d/*.conf@' "/etc/supervisord.conf"
 
-    .. code-block::
+5. Setup Tethys Log
+===================
 
-        grep 'user .*;' /etc/nginx/nginx.conf | awk '{print $2}' | awk -F';' '{print $1}'
+Create the log file in the location where supervisor expects it to be (see last item in 2.2).
 
-    Note this user and use it in the following steps where you see ``<NGINX_USER>``.
+1. Create a directory and file for Daphne/Django to write the Tethys Platform logs:
 
-10) Setup Log File
-
-    This is the file to which Tethys logs will be written.
-
-    .. code-block::
+    .. code-block:: bash
 
         sudo mkdir -p /var/log/tethys
         sudo touch /var/log/tethys/tethys.log
 
-    .. code-block::
+2. Change the directory to be owned by the NGINX user:
 
-        sudo chown -R <NGINX_USER>: /var/log/tethys
+    .. code-block:: bash
 
-    .. note::
+        sudo chown -R <NGINX_USER> /var/log/tethys
 
-        Replace ``<NGINX_USER>`` with the user noted in step 9.
+    .. tip::
 
-11) Setup ASGI Run Directory
-
-    This directory is used for housing the socket files for the Daphne/ASGI processes.
-
-    .. code-block::
-
-        sudo mkdir -p /run/asgi
-
-    .. code-block::
-
-        sudo chown -R <NGINX_USER>: /run/asgi
-
-    .. note::
-
-        Replace ``<NGINX_USER>`` with the user noted in step 9.
-
-13) Configure ``nginx`` and ``supervisor`` to Use Tethys Configurations:
-
-    Creates symbolic links to configuration file in the appropriate ``/etc`` directories:
-
-    Debian and Ubuntu:
-
-    .. code-block::
-
-        sudo ln -s <TETHYS_HOME>/asgi_supervisord.conf /etc/supervisor/conf.d/asgi_supervisord.conf
-        sudo ln -s <TETHYS_HOME>/nginx_supervisord.conf /etc/supervisor/conf.d/nginx_supervisord.conf
-        sudo ln -s <TETHYS_HOME>/tethys_nginx.conf /etc/nginx/sites-enabled/tethys_nginx.conf
-
-        # Remove the default nginx configuration
-        sudo rm /etc/nginx/sites-enabled/default
-
-    Fedora, CentOS, RedHat
-
-    .. code-block::
-
-        sudo sed -i '$ s@$@ /etc/supervisord.d/*.conf@' "/etc/supervisord.conf"
-        sudo ln -s <TETHYS_HOME>/asgi_supervisord.conf /etc/supervisord.d/asgi_supervisord.conf
-        sudo ln -s <TETHYS_HOME>/nginx_supervisord.conf /etc/supervisord.d/nginx_supervisord.conf
-        sudo ln -s <TETHYS_HOME>/tethys_nginx.conf /etc/nginx/conf.d/tethys_nginx.conf
+        Replace ``<NGINX_USER>`` with the name of the user noted in the :ref:`production_nginx_config`.

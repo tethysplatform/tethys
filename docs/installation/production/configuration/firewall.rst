@@ -19,3 +19,12 @@ Firewall Configuration
     .. note::
 
         The commands to manage your firewall may differ. Ensure the HTTP port (80) is open.
+
+SSL
+
+Be sure to update your firewall accordingly if applicable. If you followed the production installation instructions exactly, this means you'll need to run:
+
+::
+
+    sudo firewall-cmd --permanent --zone=public --add-service=https
+    sudo firewall-cmd --reload

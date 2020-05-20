@@ -35,3 +35,10 @@ Usernames and Passwords
     * TETHYS_DB_SUPER_USERNAME: _________________________
     * TETHYS_DB_SUPER_PASSWORD: _________________________
 
+Tips
+====
+
+* Don't Rush It: Set aside at least a full day to your production portal.
+* Plan Ahead: Decide on usernames and passwords right now so you aren't tempted to use a default value.
+* Do Google: Use Google or your preferred search engine to look up problems when they occur.
+
