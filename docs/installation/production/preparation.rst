@@ -32,6 +32,6 @@ Usernames and Passwords
     * TETHYS_DB_USERNAME: _________________________
     * TETHYS_DB_PASSWORD: _________________________
 * Tethys Database Superuser
-    * TETHYS_DB_SUPERUSER: _________________________
-    * TETHYS_DB_SUPERUSER_PASS: _________________________
+    * TETHYS_DB_SUPER_USERNAME: _________________________
+    * TETHYS_DB_SUPER_PASSWORD: _________________________
 

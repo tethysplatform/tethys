@@ -10,8 +10,8 @@ Production Configuration
     :maxdepth: 1
 
     configuration/portal_config
-    configuration/static_and_workspaces
     configuration/database
+    configuration/static_and_workspaces
     configuration/nginx
     configuration/ssl_config
     configuration/supervisor

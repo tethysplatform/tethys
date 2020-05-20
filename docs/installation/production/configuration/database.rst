@@ -6,48 +6,82 @@ Production Database
 
 **Last Updated:** May 2020
 
- * Set Database Parameters:
+In this part of the production deployment guide, you will learn how to initialize and configure the Tethys Platform database for production.
 
-        .. code-block::
+1. Set Database Settings
+========================
 
-            tethys settings --set DATABASES.default.USER <TETHYS_DB_USERNAME> --set DATABASES.default.PASSWORD <TETHYS_DB_PASSWORD> --set DATABASES.default.HOST <TETHYS_DB_HOST> --set DATABASES.default.PORT <TETHYS_DB_PORT>
+Set the database settings in the :file:`portal_config.yml` using the ``tethys settings`` command:
 
-        .. important::
+    .. code-block:: bash
 
-            Do not use the default username or password for the production Tethys database. Also ensure the host and port match the host and port that your database is running on.
-
-    * Disable Debug:
-
-        .. code-block::
-
-            tethys settings --set DEBUG False
-
-6) Setup Tethys Database:
-
-    Create the Tethys Database using the ``tethys db`` command (see :ref:`tethys_db_cmd`):
-
-    .. code-block::
-
-        tethys db configure --username <TETHYS_DB_USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD> --portal-superuser-name <TETHYS_SUPER_USER> --portal-superuser-email '<TETHYS_SUPER_USER_EMAIL>' --portal-superuser-pass <TETHYS_SUPER_USER_PASS>
-
-    .. tip::
-
-        The ``TETHYS_DB_USERNAME`` and ``TETHYS_DB_PASSWORD`` need to be the same as those set in the portal config (see pervious step).
+        tethys settings --set DATABASES.default.USER <TETHYS_DB_USERNAME> --set DATABASES.default.PASSWORD <TETHYS_DB_PASSWORD> --set DATABASES.default.HOST <TETHYS_DB_HOST> --set DATABASES.default.PORT <TETHYS_DB_PORT>
 
     .. note::
 
-        Running ``tethys db configure`` is equivalent of running the following commands:
+        Replace ``<TETHYS_DB_USERNAME>`` and ``<TETHYS_DB_PASSWORD>`` with the values you determined during the :ref:`production_preparation` step. Replace ``<TETHYS_DB_HOST>`` and ``<TETHYS_DB_PORT>`` with the host and port of your database. If you installed the database on the same server as your Tethys Portal, these would be ``localhost`` and ``5432``, respectively.
 
-        * ``tethys db init`` (skip if using a Docker or system database)
-        * ``tethys db start`` (skip if using a Docker or system database)
-        * ``tethys db create --username <TETHYS_DB_USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD>``
-        * ``tethys db migrate``
-        * ``tethys db createsuperuser --portal-superuser-name <TETHYS_SUPER_USER> --portal-superuser-email '<TETHYS_SUPER_USER_EMAIL>' --portal-superuser-pass <TETHYS_SUPER_USER_PASS>``
+    .. important::
 
-    .. tip::
+        **DO NOT USE DEFAULT USERNAMES OR PASSWORDS FOR PRODUCTION DATABASE ACCOUNTS**
 
-        You need to prepend the ``tethys db`` commands with the password for the postgres user of the database when using a Docker or a system install:
+2. Create Tethys Database and Database Users
+============================================
 
-        .. code-block:: bash
+Use the ``tethys db create`` command to create the database users and tables required by Tethys Platform:
 
-            $ PGPASSWORD="<POSTGRES_PASSWORD>" tethys db configure --username <USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD> --portal-superuser-name <TETHYS_SUPER_USER> --portal-superuser-email '<TETHYS_SUPER_USER_EMAIL>' --portal-superuser-pass <TETHYS_SUPER_USER_PASS>
+    .. code-block:: bash
+
+        PGPASSWORD=<POSTGRES_PASSWORD> tethys db create --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD>
+
+    .. note::
+
+        Replace ``<TETHYS_DB_SUPER_USERNAME>``, ``<TETHYS_DB_SUPER_PASSWORD>``, and ``<POSTGRES_PASSWORD>`` with the values you determined during the :ref:`production_preparation` step. The ``tethys db create`` command uses the :file:`portal_config.yml` to get the normal database user credentials, host, and port.
+
+    .. important::
+
+        **DO NOT USE DEFAULT USERNAMES OR PASSWORDS FOR PRODUCTION DATABASE ACCOUNTS**
+
+3. Create Tethys Database Tables
+================================
+
+Run the following command to create the Tethys database tables:
+
+  .. code-block:: bash
+
+      tethys db migrate
+
+4. Create Portal Admin User
+===========================
+
+You will need to create at least one Portal Admin account to allow you to login to your Tethys Portal. Create the account as follows:
+
+    .. code-block:: bash
+
+        tethys db createsuperuser --portal-superuser-name <PORTAL_SUPERUSER_USERNAME> --portal-superuser-email '<PORTAL_SUPERUSER_EMAIL>' --portal-superuser-pass <PORTAL_SUPERUSER_PASSWORD>
+
+    .. note::
+
+            Replace ``<PORTAL_SUPERUSER_USERNAME>``, ``<PORTAL_SUPERUSER_EMAIL>``, and ``<PORTAL_SUPERUSER_PASSWORD>`` with the values you determined during the :ref:`production_preparation` step.
+
+    .. important::
+
+        **DO NOT USE DEFAULT USERNAMES OR PASSWORDS FOR PRODUCTION PORTAL ADMIN ACCOUNTS**
+
+
+Tip: One Command
+================
+
+You can accomplish the three steps above using the ``tethys db configure`` command. It is equivalent of running the following commands:
+
+* ``tethys db init`` (skipped if using a Docker or system database)
+* ``tethys db start`` (skipped if using a Docker or system database)
+* ``tethys db create --username <TETHYS_DB_USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD>``
+* ``tethys db migrate``
+* ``tethys db createsuperuser --portal-superuser-name <PORTAL_SUPERUSER_USERNAME> --portal-superuser-email '<PORTAL_SUPERUSER_EMAIL>' --portal-superuser-pass <PORTAL_SUPERUSER_PASSWORD>``
+
+Simply pass all arguments to the command:
+
+.. code-block:: bash
+
+    tethys db configure --username <TETHYS_DB_USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD> --portal-superuser-name <PORTAL_SUPERUSER_USERNAME> --portal-superuser-email '<PORTAL_SUPERUSER_EMAIL>' --portal-superuser-pass <PORTAL_SUPERUSER_PASSWORD>
