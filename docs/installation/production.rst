@@ -1,18 +1,18 @@
 .. _production_installation:
 
-********************
-Deploy to Production
-********************
+*****************************
+Production Installation Guide
+*****************************
 
 **Last Updated:** May 2020
 
-The following instructions can be used to install Tethys Platform on a production server.
+The following guide can be used to install Tethys Platform on a production server.
 
 .. toctree::
     :maxdepth: 1
 
-    production/system_requirements
     production/overview
+    production/system_requirements
     production/preparation
     production/system_dependencies
     production/installation
@@ -22,3 +22,4 @@ The following instructions can be used to install Tethys Platform on a productio
     production/troubleshooting
     production/backup
     production/distributed
+    production/geoserver_ssl_config

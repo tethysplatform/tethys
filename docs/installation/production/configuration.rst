@@ -20,4 +20,3 @@ There is a lot of configuration to be done when setting up a production installa
     configuration/firewall
     configuration/se_linux
     configuration/email_config
-    configuration/ssl_config

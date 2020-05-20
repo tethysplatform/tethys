@@ -1,8 +1,8 @@
 .. _production_overview:
 
-*********************
-Installation Overview
-*********************
+********
+Overview
+********
 
 **Last Updated:** May 2020
 

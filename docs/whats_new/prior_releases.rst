@@ -106,7 +106,7 @@ API Tokens for Users
 
 Documentation
 -------------
-* Added SSL setup instruction to Production Installation (see: :ref:`production_installation_ssl`)
+* Added SSL setup instruction to Production Installation
 
 Bugs
 ----
