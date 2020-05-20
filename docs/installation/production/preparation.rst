@@ -15,7 +15,8 @@ Server Access
 Server Attributes
 =================
 
-* Public Hostname and/or IP Address of Server
+* Public Hostname and/or IP Address of Server (e.g.: my.example.com)
+    * SERVER_DOMAIN_NAME: _________________________
 * SSL Certificate
 
 Usernames and Passwords
