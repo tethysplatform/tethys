@@ -134,6 +134,9 @@ body {
 #app-list .app-container.unconfigured {
   background: #666666;
 }
+#app-list .app-container.veiled {
+  opacity: 0.4;
+}
 #app-list .app-container .app-icon img {
   width: 170px;
   margin: 15px;

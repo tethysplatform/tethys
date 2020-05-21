@@ -36,14 +36,14 @@ MOCK_MODULES = [
     'distributed', 'distributed.protocol', 'distributed.protocol.serialize',
     'distro',
     'docker', 'docker.types', 'docker.errors',
-    'guardian', 'guardian.admin',
+    'guardian', 'guardian.admin', 'guardian.models', 'guardian.shortcuts',
     'model_utils', 'model_utils.managers',
     'plotly', 'plotly.offline',
     'siphon', 'siphon.catalog', 'siphon.http_util',
     'social_core', 'social_core.exceptions',
     'social_django',
     'sqlalchemy', 'sqlalchemy.orm',
-    'tethys_apps.harvester',  # Mocked to prevent issues with loading apps during docs build.
+    'tethys_apps.harvester', 'tethys_apps.models',  # Mocked to prevent issues with loading apps during docs build.
     'tethys_compute.utilities',  # Mocked to prevent issues with DictionaryField and List Field during docs build.
     'yaml'
 ]
