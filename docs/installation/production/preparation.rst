@@ -35,6 +35,12 @@ Usernames and Passwords
     * TETHYS_DB_SUPER_USERNAME: _________________________
     * TETHYS_DB_SUPER_PASSWORD: _________________________
 
+Email Support
+=============
+
+* Default From Address
+    * DEFAULT_FROM_EMAIL: _________________________  (e.g.: <My App Portal noreply@my.domain.com>)
+
 Security Enhanced Linux (SELinux)
 =================================
 
