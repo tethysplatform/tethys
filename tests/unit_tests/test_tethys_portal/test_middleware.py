@@ -1,7 +1,8 @@
 import unittest
 from unittest import mock
 
-from tethys_portal.middleware import TethysSocialAuthExceptionMiddleware
+from tethys_portal.middleware import TethysSocialAuthExceptionMiddleware, TethysAppAccessMiddleware
+from django.core.exceptions import PermissionDenied
 
 
 class TethysPortalMiddlewareTests(unittest.TestCase):
@@ -265,3 +266,58 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         self.assertEqual('Unable to disconnect from this social account.', call_args[0][0][1])
 
         mock_redirect.assert_called_once_with('accounts:login')
+
+    @mock.patch('tethys_portal.middleware.get_active_app')
+    def test_app_access_app_none(self, mock_app):
+        mock_app.return_value = None
+        mock_request = mock.MagicMock()
+        mock_request.return_value = True
+
+        obj = TethysAppAccessMiddleware(mock_request)
+        result = obj.__call__(mock_request)
+
+        self.assertTrue(result)
+
+    @mock.patch('tethys_portal.middleware.handler_404')
+    @mock.patch('tethys_portal.middleware.get_active_app')
+    def test_app_access_disabled(self, mock_app, mock_404):
+        mock_app.return_value = mock.MagicMock(enabled=False)
+        mock_request1 = mock.MagicMock()
+
+        obj1 = TethysAppAccessMiddleware(mock_request1)
+        obj1.__call__(mock_request1)
+
+        self.assertEqual(mock_404.call_args_list[0][0][2], "This app is disabled. A user with admin permissions can "
+                                                           "enable this app from the app settings page.")
+
+        mock_request2 = mock.MagicMock()
+        mock_request2.user.is_staff = False
+
+        obj2 = TethysAppAccessMiddleware(mock_request2)
+        obj2.__call__(mock_request2)
+
+        self.assertEqual(mock_404.call_args_list[0][0][1], PermissionDenied)
+
+    @mock.patch('tethys_portal.middleware.user_can_access_app')
+    @mock.patch('tethys_portal.middleware.get_active_app')
+    def test_app_access_has_permission(self, mock_app, mock_has_perm):
+        mock_app.return_value = mock.MagicMock(enabled=True)
+        mock_request = mock.MagicMock()
+
+        obj = TethysAppAccessMiddleware(mock_request)
+        obj.__call__(mock_request)
+
+        self.assertEqual(mock_has_perm.call_args_list[0][0][1], mock_app())
+
+    @mock.patch('tethys_portal.middleware.handler_404')
+    @mock.patch('tethys_portal.middleware.user_can_access_app')
+    @mock.patch('tethys_portal.middleware.get_active_app')
+    def test_app_access_no_permission(self, mock_app, mock_has_perm, mock_404):
+        mock_app.return_value = mock.MagicMock(enabled=True)
+        mock_request = mock.MagicMock()
+        mock_has_perm.return_value = False
+
+        obj = TethysAppAccessMiddleware(mock_request)
+        obj.__call__(mock_request)
+
+        self.assertEqual(mock_404.call_args_list[0][0][1], PermissionDenied)

@@ -14,7 +14,7 @@ from django.http import HttpResponse, JsonResponse
 from django.core.mail import send_mail
 from tethys_apps.base.app_base import TethysAppBase
 from tethys_apps.models import TethysApp
-from tethys_apps.utilities import get_active_app
+from tethys_apps.utilities import get_active_app, user_can_access_app
 from tethys_compute.models import TethysJob, DaskJob
 from tethys_apps.models import ProxyApp
 
@@ -33,11 +33,14 @@ def library(request):
     unconfigured_apps = list()
 
     for app in apps:
-        if app.configured:
-            configured_apps.append(app)
-        else:
-            if request.user.is_staff:
+        if request.user.is_staff:
+            if app.configured:
+                configured_apps.append(app)
+            else:
                 unconfigured_apps.append(app)
+        elif user_can_access_app(request.user, app):
+            if app.configured and app.show_in_apps_library:
+                configured_apps.append(app)
 
     # Fetch any proxied apps (these are always assumed to be configured)
     proxy_apps = ProxyApp.objects.all()
@@ -53,7 +56,10 @@ def library(request):
             'description': proxy_app.description,
             'tags': proxy_app.tags
         }
-        configured_apps.append(new_app)
+        if request.user.is_staff:
+            configured_apps.append(new_app)
+        elif proxy_app.enabled and proxy_app.show_in_apps_library:
+            configured_apps.append(new_app)
 
     # Define the context object
     context = {'apps': {'configured': configured_apps, 'unconfigured': unconfigured_apps}}

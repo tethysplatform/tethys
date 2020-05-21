@@ -70,7 +70,7 @@ BYPASS_TETHYS_HOME_PAGE = local_settings.pop('BYPASS_TETHYS_HOME_PAGE', False)
 # Use this setting to disable open account signup
 ENABLE_OPEN_SIGNUP = local_settings.pop('ENABLE_OPEN_SIGNUP', False)
 
-# Set to True to allow Open Portal mode.
+# Set to True to allow Open Portal mode. This mode supersedes any specific user/group app access permissions
 ENABLE_OPEN_PORTAL = local_settings.pop('ENABLE_OPEN_PORTAL', False)
 
 SESSION_CONFIG = local_settings.pop('SESSION_CONFIG', {})
@@ -175,6 +175,7 @@ MIDDLEWARE = local_settings.pop('MIDDLEWARE_OVERRIDE', [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
+    'tethys_portal.middleware.TethysAppAccessMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
 
 ])

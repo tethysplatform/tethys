@@ -1,7 +1,10 @@
 import unittest
 from unittest import mock
 
+from tethys_sdk.testing import TethysTestCase
+
 from tethys_apps import utilities
+from guardian.shortcuts import assign_perm
 
 
 class TethysAppsUtilitiesTests(unittest.TestCase):
@@ -585,3 +588,33 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
         # Returns default tethys home environment path
         self.assertEqual(default_tethys_home, ret)
+
+
+class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
+    def set_up(self):
+        self.c = self.get_test_client()
+        self.user = self.create_test_user(username="joe", password="secret", email="joe@some_site.com")
+
+    def tear_down(self):
+        self.user.delete()
+
+    @mock.patch('django.conf.settings')
+    def test_user_can_access_app(self, mock_settings):
+        mock_settings.ENABLE_OPEN_PORTAL = False
+        user = self.user
+        app = utilities.get_active_app(url='/apps/test-app')
+
+        # test no permission
+        result1 = utilities.user_can_access_app(user, app)
+        self.assertFalse(result1)
+
+        # test permission
+        assign_perm(f'{app.package}:access_app', user, app)
+
+        result2 = utilities.user_can_access_app(user, app)
+        self.assertTrue(result2)
+
+        # test open portal mode case
+        mock_settings.ENABLE_OPEN_PORTAL = True
+        result3 = utilities.user_can_access_app(user, app)
+        self.assertTrue(result3)

@@ -665,7 +665,8 @@ class TethysAppBase(TethysBase):
         from tethys_apps.models import TethysApp
 
         perms = self.permissions()
-        app_permissions = dict()
+        # add default access_app permission
+        app_permissions = {f'{self.package}:access_app': f'{self.package} | Can access app'}
         app_groups = dict()
 
         # Name spaced prefix for app permissions

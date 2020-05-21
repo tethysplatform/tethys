@@ -17,7 +17,6 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 import plotly.graph_objs as go
 from bokeh.plotting import figure as bokeh_figure
-from requests.exceptions import ConnectionError
 
 from tethys_sdk.gizmos import Button, ButtonGroup, DatePicker, RangeSlider, SelectInput, TextInput, ToggleSwitch, \
     LinePlot, ScatterPlot, PolarPlot, PiePlot, BarPlot, TimeSeries, AreaRange, PlotlyView, BokehView, TableView, \

@@ -401,3 +401,12 @@ def get_service_model_from_type(service_type):
     }
 
     return service_type_to_model_dict[service_type]
+
+
+def user_can_access_app(user, app):
+    from django.conf import settings
+
+    if getattr(settings, 'ENABLE_OPEN_PORTAL', False):
+        return True
+    else:
+        return user.has_perm(f'{app.package}:access_app', app)

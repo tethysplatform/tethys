@@ -1,0 +1,14 @@
+# This file may be committed to your app code.
+version: 1.0
+# This should match the app - package name in your setup.py
+name: test_app
+
+# see tethys documentation for how to setup this file
+requirements:
+  # Putting in a skip true param will skip the entire section. Ignoring the option will assume it be set to False
+  skip: false
+  conda:
+    channels:
+    packages:
+  pip:
+post:

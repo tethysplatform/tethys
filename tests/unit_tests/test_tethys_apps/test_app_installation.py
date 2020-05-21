@@ -1,9 +1,6 @@
 import unittest
-from unittest import mock
 import os
 import sys
-from setuptools.command.develop import develop
-from setuptools.command.install import install
 import tethys_apps.app_installation as tethys_app_installation
 
 if sys.version_info[0] < 3:

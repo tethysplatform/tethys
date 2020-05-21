@@ -5,9 +5,9 @@ from django.contrib.auth.models import User
 # Fixes the Cache-Control error in tests. Must appear before view imports.
 mock.patch('django.views.decorators.cache.never_cache', lambda x: x).start()
 
-from tethys_portal.views.user \
-    import profile, settings, change_password, social_disconnect, delete_account, manage_storage, clear_workspace
-from tethys_apps.models import TethysApp
+from tethys_portal.views.user import profile, settings, change_password, social_disconnect, delete_account, \
+    manage_storage, clear_workspace  # noqa: E402
+from tethys_apps.models import TethysApp  # noqa: E402
 
 
 class TethysPortalUserTests(unittest.TestCase):

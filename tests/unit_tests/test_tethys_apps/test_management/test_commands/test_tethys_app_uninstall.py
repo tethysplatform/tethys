@@ -48,6 +48,8 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
         self.assertIn('Uninstall cancelled by user.', mock_stdout.getvalue())
 
     @mock.patch('site.getsitepackages', return_value='foo')
+    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.Group.objects')
+    @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.Permission.objects')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.os.path.join')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.os.remove')
     @mock.patch('tethys_apps.management.commands.tethys_app_uninstall.subprocess.Popen')
@@ -63,7 +65,8 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
                                                                                     mock_installed_extensions,
                                                                                     mock_input, mock_stdout,
                                                                                     mock_warnings, mock_popen,
-                                                                                    mock_os_remove, mock_join, _):
+                                                                                    mock_os_remove, mock_join,
+                                                                                    mock_permissions, mock_groups, _):
         mock_app.objects.get.return_value = mock.MagicMock()
         mock_app.objects.get().delete.return_value = True
         mock_extension.objects.get.return_value = mock.MagicMock()
@@ -74,11 +77,17 @@ class ManagementCommandsTethysAppUninstallTests(unittest.TestCase):
         mock_popen.side_effect = KeyboardInterrupt
         mock_os_remove.side_effect = [True, Exception]
         mock_join.return_value = '/foo/tethysapp-foo-app-nspkg.pth'
+        mock_permission = mock.MagicMock(delete=mock.MagicMock())
+        mock_permissions.filter().filter().all.return_value = [mock_permission]
+        mock_group = mock.MagicMock(delete=mock.MagicMock())
+        mock_groups.filter().all.return_value = [mock_group]
 
         cmd = tethys_app_uninstall.Command()
         cmd.handle(app_or_extension=['tethysapp.foo_app'], is_extension=False, is_forced=False)
 
         mock_installed_apps.assert_called_once()
+        mock_permission.delete.assert_called_once()
+        mock_group.delete.assert_called_once()
         mock_installed_extensions.assert_not_called()
         self.assertIn('successfully uninstalled', mock_stdout.getvalue())
         mock_warnings.assert_not_called()  # Don't do the TethysModel.DoesNotExist exception this test
