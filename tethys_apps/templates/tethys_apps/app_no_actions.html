@@ -1,0 +1,18 @@
+{% extends "tethys_apps/app_base.html" %}
+
+{% load static tethys_gizmos %}
+
+{% block styles %}
+  {{ block.super }}
+	<style>
+		#inner-app-content {
+			overflow:auto;
+		}
+		#app-content {
+		  height:100%;
+		  padding-bottom:0 !important;
+		}
+	</style>
+{% endblock %}
+
+{% block app_actions_override %}{% endblock %}

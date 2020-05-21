@@ -1,0 +1,29 @@
+{% extends "tethys_apps/app_header_content.html" %}
+
+{% load static tethys_gizmos %}
+
+{% block inner_app_content %}
+	<div id="inner-app-content" class="container-fluid">
+    <div class="row" style="height:50%;">
+	    <div class="col-xs-6" style="height:100%;overflow: auto;">
+		    {# top left content #}
+	      {% block app_content_tl %}<h1>Top Left</h1>{% endblock %}
+	    </div>
+	    <div class="col-xs-6" style="height:100%;overflow: auto;">
+		    {# top right content #}
+	      {% block app_content_tr %}<h1>Top Right</h1>{% endblock %}
+	    </div>
+    </div>
+    <div class="row" style="height:50%;">
+	    <div class="col-xs-6" style="height:100%;overflow: auto;">
+		    {# bottom left content #}
+		    {% block app_content_bl %}<h1>Bottom Left</h1>{% endblock %}
+	    </div>
+	    <div class="col-xs-6" style="height:100%;overflow: auto;">
+		    {# top right content #}
+	    {% block app_content_br %}<h1>Bottom Right</h1>{% endblock %}
+	    </div>
+    </div>
+  </div>
+{% endblock %}
+
