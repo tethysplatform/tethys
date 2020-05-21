@@ -1,0 +1,17 @@
+{% extends "tethys_apps/app_right_actions.html" %}
+
+{% load static tethys_gizmos %}
+
+{% block styles %}
+  {{ block.super }}
+	<style>
+		#app-content-wrapper #app-content {
+			padding-left:50px;
+			padding-right:0
+		}
+
+		#app-content-wrapper #app-content #app-actions {
+			left:0
+		}
+	</style>
+{% endblock %}

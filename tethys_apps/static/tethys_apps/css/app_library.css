@@ -46,8 +46,8 @@
   color: white;
   font-size: 40px;
   font-weight: 300;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /*-webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;*/
   padding: 21px 0;
   padding-left: 200px;
 }
@@ -131,12 +131,6 @@ body {
   border-radius: 5px;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1);
 }
-#app-list .app-container.unconfigured {
-  background: #666666;
-}
-#app-list .app-container.veiled {
-  opacity: 0.4;
-}
 #app-list .app-container .app-icon img {
   width: 170px;
   margin: 15px;
@@ -150,11 +144,8 @@ body {
   font-size: 20px;
   font-weight: 500;
   border-radius: 0 0 5px 5px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-#app-list .app-container.unconfigured .app-title {
-  color: #ffffff;
+  /*-webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;*/
 }
 #app-list .app-container .app-help-icon {
   position: absolute;
@@ -203,6 +194,15 @@ body {
   height: 100%;
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.15);
+}
+#app-list .app-container.unconfigured {
+  background: #666666;
+}
+#app-list .app-container.unconfigured .app-title {
+  color: #ffffff;
+}
+#app-list .app-container.veiled {
+  opacity: 0.4;
 }
 #app-list .app-container:hover {
   box-shadow: 0px 0 10px 0 rgba(0, 0, 0, 0.1);

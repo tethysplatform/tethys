@@ -1,0 +1,78 @@
+h1, h2, h3,h4, h5, h6 {
+	margin: 10px 0;
+	color: #555;
+	letter-spacing: 1px
+}
+
+h1 {
+	font-size: 36px;
+	font-weight: 400;
+	line-height: 1.2
+}
+
+h2 {
+	font-size: 30px;
+	font-weight: 400;
+	line-height: 1.2
+}
+
+h3 {
+	font-size: 24px;
+	font-weight: 400;
+	line-height: 1.3
+}
+
+h4 {
+	font-size: 24px;
+	font-weight: 300;
+	line-height: 1.3
+}
+
+h5 {
+	font-size: 20px;
+	font-weight: 300;
+	line-height: 1.3
+}
+
+h6 {
+	font-size: 18px;
+	font-weight: 100;
+	line-height: 1.3
+}
+
+p {
+	font-size: 14px;
+	color: #666;
+	font-weight: 400;
+	letter-spacing: .5px
+}
+
+html {
+	height: 100%
+}
+
+body {
+	height: 100%
+}
+
+#app-content-wrapper {
+	position: relative;
+	overflow-x: hidden;
+	width: 100%;
+	height: 100%;
+	min-height: 100%
+}
+
+#app-content-wrapper #app-content.show-app-content {
+	visibility: visible;
+	opacity: 1
+}
+
+#inner-app-content {
+	height: 100%;
+	padding: 20px 15px 10px 15px
+}
+
+.modal-dialog {
+	top: 25px
+}
