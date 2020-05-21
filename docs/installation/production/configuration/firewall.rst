@@ -6,25 +6,83 @@ Firewall Configuration
 
 **Last Updated:** May 2020
 
+If a firewall is enabled on the server on which you are installing Tethys Platform, you may need to configure it to allow connections through the HTTP port(s). This part of the production installation guide will provide instructions for how this is to be done on the default firewall applications installed on Ubuntu (`UWF <https://help.ubuntu.com/community/UFW>`_) and CentOS (`firewalld <https://firewalld.org/documentation/>`_ servers.
 
-16) Open HTTP Port on Firewall (if applicable)
+Configure Firewall Without SSL (HTTP)
+=====================================
 
-    If your server employs a firewall, open the HTTP port like so:
+Run the following commands to open the HTTP port (80):
 
-    .. code-block::
+    **Ubuntu**:
 
-        sudo firewall-cmd --permanent --zone=public --add-service=http
-        sudo firewall-cmd --reload
+        Use the ``ufw app list`` command to list the available configurations:
 
-    .. note::
+        .. code-block:: bash
+        
+            sudo ufw app list  # e.g.: ‘Nginx Full’, ‘Nginx HTTPS’, ‘Nginx HTTP’
 
-        The commands to manage your firewall may differ. Ensure the HTTP port (80) is open.
+        Enable the desired configuration:
 
-SSL
+        .. code-block:: bash
 
-Be sure to update your firewall accordingly if applicable. If you followed the production installation instructions exactly, this means you'll need to run:
+            sudo ufw allow 'Nginx HTTP'
 
-::
+    **CentOS**:
+    
+        .. code-block:: bash
+        
+            sudo firewall-cmd --permanent --zone=public --add-service=http
+            sudo firewall-cmd --reload
 
-    sudo firewall-cmd --permanent --zone=public --add-service=https
-    sudo firewall-cmd --reload
+Configure Firewall With SSL (HTTPS)
+===================================
+
+Run the following commands to open the HTTPS port (443):
+
+    **Ubuntu**:
+
+        Use the ``ufw app list`` command to list the available configurations:
+
+        .. code-block:: bash
+
+            sudo ufw app list  # e.g.: ‘Nginx Full’, ‘Nginx HTTPS’, ‘Nginx HTTP’
+
+        Enable the desired configuration:
+
+        .. code-block:: bash
+
+            sudo ufw allow 'Nginx HTTPS'
+
+    **CentOS**:
+
+        .. code-block:: bash
+
+            sudo firewall-cmd --permanent --zone=public --add-service=https
+            sudo firewall-cmd --reload
+
+Configure Firewall Both (HTTP and HTTPS)
+========================================
+
+Run the following commands to open the HTTPS port (443) and HTTP port (80):
+
+    **Ubuntu**:
+
+        Use the ``ufw app list`` command to list the available configurations:
+
+        .. code-block:: bash
+
+            sudo ufw app list  # e.g.: ‘Nginx Full’, ‘Nginx HTTPS’, ‘Nginx HTTP’
+
+        Enable the desired configuration:
+
+        .. code-block:: bash
+
+            sudo ufw allow 'Nginx Full'
+
+    **CentOS**:
+
+        .. code-block:: bash
+
+            sudo firewall-cmd --permanent --zone=public --add-service=http
+            sudo firewall-cmd --permanent --zone=public --add-service=https
+            sudo firewall-cmd --reload
