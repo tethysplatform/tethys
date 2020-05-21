@@ -1,3 +1,5 @@
+.. _production_install_tethys:
+
 ***********************
 Install Tethys Platform
 ***********************

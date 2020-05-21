@@ -69,8 +69,8 @@ For Ubuntu systems, remove the default NGINX configuration file so NGINX will us
 
             sudo rm /etc/nginx/sites-enabled/default
 
-5. Note ``nginx`` User for Permissions
-======================================
+5. Note ``nginx`` User
+======================
 
 Get the name of the ``nginx`` user for use in later parts of the installation guide:
 
