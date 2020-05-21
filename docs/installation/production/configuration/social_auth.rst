@@ -28,45 +28,49 @@ Google
 
   a. Provide Authorized JavaScript Origins
 
-    As a security precaution, Google will only accept authentication requests from the hosts listed in the ``Authorized JavaScript Origins`` box. Add the domain of your Tethys Portal to the list. Optionally, you may add a localhost domain to the list to be used during testing. For example, if the domain of your Tethys Portal is ``www.example.org``, you would add the following entries:
+    As a security precaution, Google will only accept authentication requests from the hosts listed in the ``Authorized JavaScript Origins`` box. Add the domain of your Tethys Portal to the list. Optionally, you may add a localhost domain to the list to be used during testing:
 
     ::
 
-        https://www.example.org
+        https://<SERVER_DOMAIN_NAME>
         http://localhost:8000
+
+  .. note::
+
+        Replace ``<SERVER_DOMAIN_NAME>`` with the value determined during the :ref:`production_preparation` step.
 
   b. Provide Authorized Redirect URIs
 
-    You also need to provide the callback URI for Google to call once it has authenticated the user. This follows the pattern ``http://<host>/oauth2/complete/google-oauth2/``. For a Tethys Portal at domain ``www.example.org``:
+    You also need to provide the callback URI for Google to call once it has authenticated the user. This follows the pattern ``http://<host>/oauth2/complete/google-oauth2/``:
 
     ::
 
-        https://www.example.org/oauth2/complete/google-oauth2/
+        https://<SERVER_DOMAIN_NAME>/oauth2/complete/google-oauth2/
         https://localhost:8000/oauth2/complete/google-oauth2/
+
+  .. note::
+
+        Replace ``<SERVER_DOMAIN_NAME>`` with the value determined during the :ref:`production_preparation` step.
 
   .. note::
 
       Some Google APIs are free to use up to a certain quota of hits. Be sure to familiarize yourself with the terms of use for each service.
 
 
-4. Open  :file:`portal_config.yml` file located in :file:`${TETHYS_HOME}/portal_config.yml`
+2. Add the backend to the  :file:`portal_config.yml` file using the ``tethys settings`` command:
 
 
   Add the ``social_core.backends.google.GoogleOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
 
-  ::
+  .. code-block:: bash
 
-    AUTHENTICATION_BACKENDS:
-      ...
-      - social_core.backends.google.GoogleOAuth2
+        tethys settings --set AUTHENTICATION_BACKENDS "['social_core.backends.google.GoogleOAuth2']"
 
   Copy the ``Client ID`` and ``Client secret`` into the ``SOCIAL_AUTH_GOOGLE_OAUTH2_KEY`` and ``SOCIAL_AUTH_GOOGLE_AUTH2_SECRET`` settings, respectively:
 
-  ::
+  .. code-block:: bash
 
-    OAUTH_CONFIGS:
-      SOCIAL_AUTH_GOOGLE_OAUTH2_KEY: '...'
-      SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET: '...'
+        tethys settings --set OAUTH_CONFIGS.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY <Client ID> --set OAUTH_CONFIGS.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET <Client secret>
 
 References
 ++++++++++
@@ -94,11 +98,15 @@ Facebook
 
   a. Scroll down and locate the tile titled Facebook Login.
   b. Press the ``Setup`` button on the tile (or ``Settings`` if setup previously).
-  c. If your Tethys Portal were hosted at ``www.example.com``, you would enter the following for the Valid OAuth Redirect URIs field:
+  c. Specify the following for the Valid OAuth Redirect URIs field:
 
     ::
 
-        https://www.example.org/oauth2/complete/facebook/
+        https://<SERVER_DOMAIN_NAME>/oauth2/complete/facebook/
+
+  .. note::
+
+        Replace ``<SERVER_DOMAIN_NAME>`` with the value determined during the :ref:`production_preparation` step.
 
   .. note::
 
@@ -114,25 +122,20 @@ Facebook
 
 4. Expand the ``Settings`` menu on the left and select ``Basic``. Note the ``App ID`` and ``App Secret``.
 
-5. Open  :file:`portal_config.yml` file located in :file:`${TETHYS_HOME}/portal_config.yml`
+5. Add the backend to the  :file:`portal_config.yml` file using the ``tethys settings`` command:
 
 
   Add the ``social_core.backends.facebook.FacebookOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
 
-  ::
+  .. code-block:: bash
 
-      AUTHENTICATION_BACKENDS:
-        ...
-        - social_core.backends.facebook.FacebookOAuth2
+      tethys settings --set AUTHENTICATION_BACKENDS "['social_core.backends.facebook.FacebookOAuth2']"
 
   Copy the ``App ID`` and ``App Secret`` to the ``SOCIAL_AUTH_FACEBOOK_KEY`` and ``SOCIAL_AUTH_FACEBOOK_SECRET`` settings, respectively:
 
-  ::
+  .. code-block:: bash
 
-    OAUTH_CONFIGS:
-      ...
-      SOCIAL_AUTH_FACEBOOK_KEY: '...'
-      SOCIAL_AUTH_FACEBOOK_SECRET: '...'
+        tethys settings --set OAUTH_CONFIGS.SOCIAL_AUTH_FACEBOOK_KEY <App ID> --set OAUTH_CONFIGS.SOCIAL_AUTH_FACEBOOK_SECRET <App Secret>
 
 References
 ++++++++++
@@ -160,32 +163,31 @@ LinkedIn
 
 4. Setup OAuth
 
-  a. Add the call back URLs under the **OAuth 2.0 settings** section. For example, if your Tethys Portal is hosted at the domain ``www.example.org``:
+  a. Add the call back URLs under the **OAuth 2.0 settings** section:
 
     ::
 
-        https://www.example.org/oauth2/complete/linkedin-oauth2/
+        https://<SERVER_DOMAIN_NAME>/oauth2/complete/linkedin-oauth2/
         http://localhost:8000/oauth2/complete/linkedin-oauth2/
+
+    .. note::
+
+        Replace ``<SERVER_DOMAIN_NAME>`` with the value determined during the :ref:`production_preparation` step.
 
 5. Open  the :file:`portal_config.yml` file located in :file:`${TETHYS_HOME}/portal_config.yml`
 
 
   Add the ``social_core.backends.linkedin.LinkedinOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
 
-  ::
+  .. code-block:: bash
 
-      AUTHENTICATION_BACKENDS:
-        ...
-        - social_core.backends.linkedin.LinkedinOAuth2
+      tethys settings --set AUTHENTICATION_BACKENDS "['social_core.backends.linkedin.LinkedinOAuth2']"
 
   Copy the ``Client ID`` and ``Client Secret`` to the ``SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY`` and ``SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET`` settings, respectively:
 
-  ::
+  .. code-block:: bash
 
-    OAUTH_CONFIGS:
-      ...
-      - SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY: '...'
-      - SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET: '...'
+        tethys settings --set OAUTH_CONFIGS.SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY <Client ID> --set OAUTH_CONFIGS.SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET <Client Secret>
 
 References
 ++++++++++
@@ -215,7 +217,7 @@ HydroShare
 
   e. Client type: Select "Confidential".
 
-  f. Authorization grant type: Select "Authorzation code".
+  f. Authorization grant type: Select "Authorization code".
 
   g. Redirect uris: Add the call back URLs. The protocol (http or https) that matches your Tethys Portal settings should be included in this url. For example:
 
@@ -231,24 +233,19 @@ HydroShare
 
   h. Press the "Save" button.
 
-3. Open  :file:`portal_config.yml` file located in :file:`${TETHYS_HOME}/portal_config.yml`
+3. Add the backend to the  :file:`portal_config.yml` file using the ``tethys settings`` command:
 
   Add the ``tethys_services.backends.hydroshare.HydroShareOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
 
-  ::
+  .. code-block:: bash
 
-      AUTHENTICATION_BACKENDS:
-        - tethys_services.backends.hydroshare.HydroShareOAuth2
-        ...
+      tethys settings --set AUTHENTICATION_BACKENDS "['tethys_services.backends.hydroshare.HydroShareOAuth2']"
 
   Assign the ``Client id`` and ``Client secret`` to the ``SOCIAL_AUTH_HYDROSHARE_KEY`` and ``SOCIAL_AUTH_HYDROSHARE_SECRET`` settings, respectively:
 
-  ::
+  .. code-block:: bash
 
-    OAUTH_CONFIGS:
-      ...
-      - SOCIAL_AUTH_HYDROSHARE_KEY: '...'
-      - SOCIAL_AUTH_HYDROSHARE_SECRET: '...'
+        tethys settings --set OAUTH_CONFIGS.SOCIAL_AUTH_HYDROSHARE_KEY <Client id> --set OAUTH_CONFIGS.SOCIAL_AUTH_HYDROSHARE_SECRET <Client secret>
 
 4. Work with HydroShare in your app
 
