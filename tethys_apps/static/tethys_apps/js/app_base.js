@@ -290,7 +290,7 @@ var TETHYS_APP_BASE = (function() {
       check_responsive();
 
       // Initialize tooltips
-      $('[data-toggle="tooltip"]').tooltip();
+      $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
 
   });
 
