@@ -1,8 +1,8 @@
 .. _production_start_stop:
 
-***************
-Startthe Server
-***************
+****************
+Start the Server
+****************
 
 **Last Updated:** May 2020
 

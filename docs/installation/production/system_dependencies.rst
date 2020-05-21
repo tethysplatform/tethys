@@ -284,7 +284,7 @@ You will need a text editor to modify the configuration files during the install
       sudo yum install -y vim nano
 
 wget
-====
+----
 
 Wget is used during the installation to download the installer for Miniconda.
 

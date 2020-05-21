@@ -9,7 +9,7 @@ Production Installation Guide
 The following guide can be used to install Tethys Platform on a production server.
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
 
     production/overview
     production/system_requirements
@@ -20,6 +20,4 @@ The following guide can be used to install Tethys Platform on a production serve
     production/start_stop
     production/app_installation
     production/troubleshooting
-    production/backup
-    production/distributed
-    production/geoserver_ssl_config
+    production/additional
