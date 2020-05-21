@@ -2,7 +2,6 @@ import unittest
 from unittest import mock
 
 from django.contrib.auth.models import AnonymousUser
-from django.conf import settings
 from django.test import RequestFactory
 from django.test.utils import override_settings
 from django.http import HttpResponseRedirect
