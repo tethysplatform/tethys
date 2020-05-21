@@ -42,6 +42,15 @@ FEATURE3_IMAGE = 'feature3_image'
 CALL_TO_ACTION_TEXT = 'action_text'
 CALL_TO_ACTION_BUTTON = 'action_button'
 
+# Custom Styles
+BASE_CSS = 'base_css'
+HOME_CSS = 'home_css'
+LIBRARY_CSS = 'library_css'
+
+# Custom Templates
+HOME_TEMPLATE = 'home_template'
+LIBRARY_TEMPLATE = 'library_template'
+
 arg_filter = {
     TAB_TITLE: 'Site Title',
     FAVICON: 'Favicon',
@@ -71,7 +80,12 @@ arg_filter = {
     FEATURE3_BODY: 'Feature 3 Body',
     FEATURE3_IMAGE: 'Feature 3 Image',
     CALL_TO_ACTION_TEXT: 'Call to Action',
-    CALL_TO_ACTION_BUTTON: 'Call to Action Button'
+    CALL_TO_ACTION_BUTTON: 'Call to Action Button',
+    BASE_CSS: 'Portal Base CSS',
+    HOME_CSS: 'Home Page CSS',
+    LIBRARY_CSS: 'Apps Library CSS',
+    HOME_TEMPLATE: 'Home Page Template',
+    LIBRARY_TEMPLATE: 'Apps Library Template'
 }
 
 
@@ -143,6 +157,22 @@ def add_site_parser(subparsers):
     site_parser.add_argument('--action-button', dest='action_button',
                              help='A double quoted string for the call to action button. '
                                   'Default is "Start Using Tethys!".')
+    site_parser.add_argument('--base-css', dest='base_css',
+                             help='CSS code to modify the Tethys Portal Base Page, which extends most of the portal '
+                                  'pages (i.e. Home, Login, Developer, Admin, etc.). Takes a file path available '
+                                  'through Tethys static files or straight CSS code.')
+    site_parser.add_argument('--home-css', dest='home_css',
+                             help='CSS code to modify the Tethys Portal Home Page. Takes a file path available through '
+                                  'Tethys static files or straight CSS code.')
+    site_parser.add_argument('--library-css', dest='library_css',
+                             help='CSS code to modify the Tethys Portal Apps Library. Takes a file path available '
+                                  'through Tethys static files or straight CSS code.')
+    site_parser.add_argument('--home-template', dest='home_template',
+                             help='Django template to modify the Tethys Portal Home Page. Takes a file path available '
+                                  'through the Tethys template files system.')
+    site_parser.add_argument('--library-template', dest='library_template',
+                             help='Django template to modify the Tethys Portal Apps Library. Takes a file path '
+                                  'available through the Tethys template files system.')
     site_parser.add_argument('--restore-defaults', dest='restore_defaults', action='store_true',
                              help='Restores the sites default values.')
     site_parser.add_argument('-f', '--from-file', type=str, help='Load site content from portal_config.yml file.')
