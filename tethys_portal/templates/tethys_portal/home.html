@@ -1,6 +1,6 @@
 {% extends "page.html" %}
 
-{% load static %}
+{% load static site_settings %}
 
 {% block title %}- Welcome!{% endblock %}
 
@@ -35,6 +35,7 @@
 		  background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};
 		}
   </style>
+  {{ site_globals.home_page_css|load_custom_css|safe }}
 {% endblock %}
 
 {% block content %}

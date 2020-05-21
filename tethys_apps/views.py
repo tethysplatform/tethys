@@ -17,6 +17,7 @@ from tethys_apps.models import TethysApp
 from tethys_apps.utilities import get_active_app, user_can_access_app
 from tethys_compute.models import TethysJob, DaskJob
 from tethys_apps.models import ProxyApp
+from tethys_config.models import Setting
 
 log = logging.getLogger('tethys.' + __name__)
 
@@ -64,7 +65,13 @@ def library(request):
     # Define the context object
     context = {'apps': {'configured': configured_apps, 'unconfigured': unconfigured_apps}}
 
-    return render(request, 'tethys_apps/app_library.html', context)
+    custom_template = Setting.objects.get(name='Apps Library Template').content
+    if custom_template:
+        template = custom_template.lstrip('/') if custom_template.startswith('/') else custom_template
+    else:
+        template = 'tethys_apps/app_library.html'
+
+    return render(request, template, context)
 
 
 @login_required()

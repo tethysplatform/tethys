@@ -1,7 +1,7 @@
 
 {% extends "page.html" %}
 
-{% load staticfiles tags %}
+{% load static tags site_settings %}
 
 {% block title %}- Apps Library{% endblock %}
 
@@ -16,6 +16,7 @@
       color: {{ site_globals.primary_text_color|default:'#ffffff' }};
     }
   </style>
+  {{ site_globals.apps_library_css|load_custom_css|safe }}
 {% endblock %}
 
 {% block primary_content %}

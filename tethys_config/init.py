@@ -32,6 +32,31 @@ def initial_settings(apps, schema_editor):
     setting_defaults(home_category)
 
 
+def custom_settings(apps, schema_editor):
+    """
+    Load the custom settings
+    """
+
+    # make sure initial settings exist
+    categories = SettingsCategory.objects.all()
+    if not categories:
+        initial_settings(apps, schema_editor)
+
+    # Create the custom styles settings category
+    custom_styles_category = SettingsCategory(name="Custom Styles")
+    custom_styles_category.save()
+
+    # Set default values for Custom Styles
+    setting_defaults(custom_styles_category)
+
+    # Create the custom template settings category
+    custom_templates_category = SettingsCategory(name="Custom Templates")
+    custom_templates_category.save()
+
+    # Set default values for Custom Templates
+    setting_defaults(custom_templates_category)
+
+
 def reverse_init(apps, schema_editor):
     """
     Reverse the initial settings
@@ -45,6 +70,24 @@ def reverse_init(apps, schema_editor):
 
     for category in categories:
         category.delete()
+
+
+def reverse_custom(apps, schema_editor):
+    """
+    Reverse the custom settings
+    """
+
+    categories = SettingsCategory.objects.all()
+    settings = Setting.objects.all()
+
+    for setting in settings:
+        if setting.name in ['Portal Base CSS', 'Home Page CSS', 'Apps Library CSS', 'Home Page Template',
+                            'Apps Library Template']:
+            setting.delete()
+
+    for category in categories:
+        if category.name in ['Custom Styles', 'Custom Templates']:
+            category.delete()
 
 
 def setting_defaults(category):
@@ -173,6 +216,27 @@ def setting_defaults(category):
 
         category.setting_set.create(name="Call to Action Button",
                                     content="Start Using Tethys!",
+                                    date_modified=now)
+
+    elif category.name == 'Custom Styles':
+        category.setting_set.create(name="Portal Base CSS",
+                                    content="",
+                                    date_modified=now),
+        category.setting_set.create(name="Home Page CSS",
+                                    content="",
+                                    date_modified=now)
+
+        category.setting_set.create(name="Apps Library CSS",
+                                    content="",
+                                    date_modified=now)
+
+    elif category.name == 'Custom Templates':
+        category.setting_set.create(name="Home Page Template",
+                                    content="",
+                                    date_modified=now)
+
+        category.setting_set.create(name="Apps Library Template",
+                                    content="",
                                     date_modified=now)
 
     category.save()
