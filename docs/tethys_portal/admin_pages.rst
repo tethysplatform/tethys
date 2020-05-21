@@ -49,11 +49,42 @@ To assign an app permission group to a user, select the desired user and locate 
 Assign App Permissions
 ----------------------
 
-To assign a singluar app permission to a user, return to the administrator dashboard and navigate to the ``Installed Apps`` link under the ``Tethys Apps`` heading. Select the link with the app name from the list. In the upper right corner of the ``Change Tethys App`` page click the ``Object Permissions`` button. On the ``Object Permissions`` page you can assign app specific permissions to a user by entering the username in the ``User Identification`` field and press the ``Manage user`` button. Incidentally, you can also manage the app permissions groups from the ``Object Permisions`` page, but changes will be overridden the next time the server restarts and permissions are synced from the app.
+There are two ways to assign app permissions to users and groups. The first one is using the ``object permission`` button from the ``Change Tethys App`` page of each individual installed app. The second one is to using the ``Change Group`` page from the ``Group`` section of the administrator dashboard. The second method is recommended over the first one when working with app permissions at the group level because it offers a more responsive interface and it facilitates working with multiple permissions from different apps and groups at the same time. Both methods are described below.
+
+To assign a singular app permission to a user using the ``Change Tethys App`` page, go to the administrator dashboard and scroll down to the ``Installed Apps`` link under the ``Tethys Apps`` heading. Select the link with the app name from the list. In the upper right corner of the ``Change Tethys App`` page click the ``Object Permissions`` button (see Figure 4). On the ``Object Permissions`` page you can assign app specific permissions to a user by entering the username in the ``User Identification`` field and press the ``Manage user`` button (see Figure 5). The same method can we used to add app permissions to a group using the ``Group`` section of the ``Object Permissions`` page.
+
+.. figure:: ../images/tethys_portal/tethys_portal_assign_perm1.png
+   :width: 900px
+
+**Figure 4.** Object Permissions button.
+
+.. figure:: ../images/tethys_portal/tethys_portal_assign_perm2.png
+   :width: 900px
+
+**Figure 5.** Object Permissions page.
+
+Previously added App permissions can also be edited using this page.
+
+.. figure:: ../images/tethys_portal/tethys_portal_assign_perm3.png
+   :width: 900px
+
+**Figure 6.** Link to edit Object Permissions.
+
+To assign app permissions to a user using the ``Change Group`` method, go to the administrator dashboard and select the ``Groups`` link under the ``Authentication and Authorization`` heading. Select the link with the group name from the list. On the ``Change Group`` page you can assign a group permissions to access a specific app from the ``Apps`` multiselect field by moving an app from the available app box to the chosen app box. Once an app is added to the chosen apps box, the form will dynamically display all the permissions and groups associated with that app if there are any. Individual permissions can be added to the group by moving the permissions from the available box of the specific app to the chosen box. In addition, all the permissions from another group that are associated to the specific app can also be added by moving the specific group from the available groups box to the chosen groups box. The ``Change Group`` form then needs to be saved for changes to take effect.
+
+.. figure:: ../images/tethys_portal/tethys_portal_assign_perm4.png
+   :width: 900px
+
+**Figure 7.** Change Group - Add app access.
+
+.. figure:: ../images/tethys_portal/tethys_portal_assign_perm5.png
+   :width: 900px
+
+**Figure 8.** Change Group - Add permissions from available permissions or groups.
 
 .. note::
 
-    Since assigning the individual app permissions is so difficult, we highly recommend that you use the app permission groups to group app permissions and then assign the permission groups to the users using the ``Change User`` page.
+    Since assigning the individual app permissions one by one can be a cumbersome process, we highly recommend that you use the ``Change Group`` page when working with multiple app permissions.
 
 Anonymous User
 --------------
@@ -77,56 +108,60 @@ Terms and Conditions
 
 Portal administrators can manage and enforce portal wide terms and conditions and other legal documents via the administrator pages.
 
-Use the ``Terms and Conditions`` link to create new legal documents (see Figure 4). To issue an update to a particular document, create a new entry with the same slug (e.g. 'site-terms'), but a different version number (e.g.: 1.10). This allows you to track multiple versions of the legal document and which users have accepted each. The document will not become active until the ``Date active`` field has been set and the date has past.
+Use the ``Terms and Conditions`` link to create new legal documents (see Figure 9). To issue an update to a particular document, create a new entry with the same slug (e.g. 'site-terms'), but a different version number (e.g.: 1.10). This allows you to track multiple versions of the legal document and which users have accepted each. The document will not become active until the ``Date active`` field has been set and the date has past.
 
 .. figure:: ../images/tethys_portal/tethys_portal_toc_new.png
     :width: 675px
 
-**Figure 4.** Creating a new legal document using the terms and conditions feature.
+**Figure 9.** Creating a new legal document using the terms and conditions feature.
 
-When a new document becomes active, users will be presented with a modal prompting them to review and accept the new terms and conditions (see Figure 5). The modal can be dismissed, but will reappear each time a page is refreshed until the user accepts the new versions of the legal documents. The ``User Terms and Conditions`` link shows a record of which users have accepted the terms and conditions.
+When a new document becomes active, users will be presented with a modal prompting them to review and accept the new terms and conditions (see Figure 10). The modal can be dismissed, but will reappear each time a page is refreshed until the user accepts the new versions of the legal documents. The ``User Terms and Conditions`` link shows a record of which users have accepted the terms and conditions.
 
 .. figure:: ../images/tethys_portal/tethys_portal_toc_modal.png
     :width: 675px
 
-**Figure 5.** Terms and conditions modal.
+**Figure 10.** Terms and conditions modal.
 
 Tethys Apps
 ===========
 
 The links under the ``TETHYS APPS`` heading can be used to manage settings for installed apps and extensions. Clicking on the ``Installed Apps`` or ``Installed Extensions`` links will show a list of installed apps or extensions. Clicking on a link for an installed app or extension will bring you to the settings page for that app or extension. There are several different types of app settings: Common Settings, Custom Settings, and Service Settings.
 
+An app can be disabled by unchecking the ``Enabled`` checkbox in the app settings page. A 404 error will be displayed in place of the disabled app if a user tries to open the app. Disabled apps appear as transparent apps in the ``Apps Library`` to admin users and users with permissions to access the app. Other users will not see the app in the ``Apps Library``.
+
+An app can also be hidden from the ``Apps Library`` by unchecking the ``Show in apps library`` checkbox. Hidden apps can still be accessed directly through their ``URL`` endpoints by Admin users and users with app access permissions. In addition, Admin users can still see the app in the ``Apps Library``, but the app icon appears transparent and with the ``hidden`` tag added to the app title. Users without permission to access the app cannot see the app in the ``Apps Library`` or access it directly through its ``URL`` endpoint.
+
 Common Settings
 ---------------
 
-The Common Settings include those settings that are common to all apps or extension such as the ``Name``, ``Description``, ``Tags``, ``Enabled``, ``Show in apps library``, and ``Enable feedback`` (see Figure 6). Many of these settings correspond with attributes of the term:`app class` and can be overridden by the portal administrator. Other control the visibility or accessibility of the app.
+The Common Settings include those settings that are common to all apps or extension such as the ``Name``, ``Description``, ``Tags``, ``Enabled``, ``Show in apps library``, and ``Enable feedback`` (see Figure 11). Many of these settings correspond with attributes of the term:`app class` and can be overridden by the portal administrator. Other control the visibility or accessibility of the app.
 
 .. figure:: ../images/site_admin/app_settings_top.png
     :width: 675px
 
-**Figure 6.** App settings page showing Common Settings.
+**Figure 11.** App settings page showing Common Settings.
 
 Custom Settings
 ---------------
 
-Custom Settings appear under the ``CUSTOM SETTINGS`` heading and are defined by the app developer (see Figure 7). Custom Settings have simple values such as strings, integers, floats, or booleans, but all are entered as text. For boolean type Custom Settings, type a valid boolean value such as ``True`` or ``False``.
+Custom Settings appear under the ``CUSTOM SETTINGS`` heading and are defined by the app developer (see Figure 12). Custom Settings have simple values such as strings, integers, floats, or booleans, but all are entered as text. For boolean type Custom Settings, type a valid boolean value such as ``True`` or ``False``.
 
 .. figure:: ../images/site_admin/custom_settings.png
     :width: 675px
 
-**Figure 7.** Custom Settings section of an app.
+**Figure 12.** Custom Settings section of an app.
 
 .. _tethys_portal_service_settings:
 
 Service Settings
 ----------------
 
-There are several different types of Service Settings including: ``Persistent Store Connection Settings``, ``Persistent Store Database Settings``, ``Dataset Service Settings``, ``Spatial Dataset Service Settings``, and ``Web Processing Service Settings`` (see Figure 8). These settings specify the types of services that the apps require. Use the drop down next to each Service Setting to assign a pre-registered ``Tethys Service`` to that app or use the *plus* button to create a new one.
+There are several different types of Service Settings including: ``Persistent Store Connection Settings``, ``Persistent Store Database Settings``, ``Dataset Service Settings``, ``Spatial Dataset Service Settings``, and ``Web Processing Service Settings`` (see Figure 13). These settings specify the types of services that the apps require. Use the drop down next to each Service Setting to assign a pre-registered ``Tethys Service`` to that app or use the *plus* button to create a new one.
 
 .. figure:: ../images/site_admin/service_settings.png
     :width: 675px
 
-**Figure 8.** Service Settings sections of an app.
+**Figure 13.** Service Settings sections of an app.
 
 .. tip::
 

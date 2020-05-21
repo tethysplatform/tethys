@@ -60,10 +60,6 @@ class TethysApp(models.Model, TethysBaseMixin):
     show_in_apps_library = models.BooleanField(default=True)
 
     class Meta:
-        permissions = (
-            ('view_app', 'Can see app in library'),
-            ('access_app', 'Can access app'),
-        )
         verbose_name = 'Tethys App'
         verbose_name_plural = 'Installed Apps'
 
