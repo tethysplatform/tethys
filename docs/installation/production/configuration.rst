@@ -19,3 +19,5 @@ There is a lot of configuration to be done when setting up a production installa
     configuration/file_permissions
     configuration/firewall
     configuration/email_config
+    configuration/social_auth
+    configuration/webanalytics

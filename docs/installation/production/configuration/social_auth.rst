@@ -1,8 +1,8 @@
-*********************
-Social Authentication
-*********************
+********************************
+Social Authentication (Optional)
+********************************
 
-**Last Updated:** October 2019
+**Last Updated:** May 2020
 
 Tethys Portal supports authenticating users with Google, Facebook, LinkedIn and HydroShare via the OAuth 2.0 method. The social authentication and authorization features have been implemented using the `Python Social Auth <http://psa.matiasaguirre.net/>`_ module and the social buttons provided by the `Social Buttons for Bootstrap <http://lipis.github.io/bootstrap-social/>`_. Social login is disabled by default, because enabling it requires registering your tethys portal instance with each provider.
 

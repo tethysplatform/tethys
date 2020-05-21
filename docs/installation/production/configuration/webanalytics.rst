@@ -1,10 +1,10 @@
-*************
-Web-Analytics
-*************
+************************
+Web-Analytics (Optional)
+************************
 
-**Last Updated:** April 29, 2019
+**Last Updated:** May 2020
 
-.. image:: ../images/software/webanalytics.png
+.. image:: ./images/webanalytics.png
    :width: 300px
    :align: right
 

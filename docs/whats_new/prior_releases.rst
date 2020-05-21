@@ -252,8 +252,6 @@ HydroShare OAuth Backend and Helper Function
 * Include hs_restclient library in requirements.txt; Provide a helper function to help initialize the ``hs`` object based on HydroShare social account.
 * Update python-social-auth to 0.2.21.
 
-See: :doc:`../tethys_portal/social_auth`
-
 
 
 Bugs
