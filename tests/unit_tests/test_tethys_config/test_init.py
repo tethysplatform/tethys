@@ -1,7 +1,8 @@
 import unittest
 from unittest import mock
 
-from tethys_config.init import initial_settings, reverse_init, setting_defaults
+from tethys_config.init import initial_settings, reverse_init, setting_defaults, custom_settings, \
+    reverse_custom
 
 
 class TestInit(unittest.TestCase):
@@ -28,6 +29,24 @@ class TestInit(unittest.TestCase):
 
         self.assertEqual(mock_defaults.call_count, 2)
 
+    @mock.patch('tethys_config.init.initial_settings')
+    @mock.patch('tethys_config.init.setting_defaults')
+    @mock.patch('tethys_config.init.SettingsCategory')
+    def test_custom_settings(self, mock_settings, mock_defaults, mock_init_settings):
+        mock_apps = mock.MagicMock()
+        mock_schema_editor = mock.MagicMock()
+        mock_settings.objects.all.return_value = False
+
+        custom_settings(apps=mock_apps, schema_editor=mock_schema_editor)
+
+        mock_init_settings.called_with(mock_apps, mock_schema_editor)
+        mock_settings.assert_has_calls([mock.call(name='Custom Styles'), mock.call(name='Custom Templates')],
+                                       any_order=True)
+        mock_settings(name='Custom Styles').save.assert_called()
+        mock_settings(name='Custom Templates').save.assert_called()
+
+        self.assertEqual(mock_defaults.call_count, 2)
+
     @mock.patch('tethys_config.init.Setting')
     @mock.patch('tethys_config.init.SettingsCategory')
     def test_reverse_init(self, mock_categories, mock_settings):
@@ -39,6 +58,25 @@ class TestInit(unittest.TestCase):
         mock_settings.objects.all.return_value = [mock_set]
 
         reverse_init(apps=mock_apps, schema_editor=mock_schema_editor)
+
+        mock_categories.objects.all.assert_called_once()
+        mock_settings.objects.all.assert_called_once()
+        mock_cat.delete.assert_called_once()
+        mock_set.delete.assert_called_once()
+
+    @mock.patch('tethys_config.init.Setting')
+    @mock.patch('tethys_config.init.SettingsCategory')
+    def test_reverse_custom(self, mock_categories, mock_settings):
+        mock_apps = mock.MagicMock
+        mock_schema_editor = mock.MagicMock()
+        mock_cat = mock.MagicMock()
+        mock_cat.name = 'Custom Styles'
+        mock_set = mock.MagicMock()
+        mock_set.name = 'Home Page Template'
+        mock_categories.objects.all.return_value = [mock_cat]
+        mock_settings.objects.all.return_value = [mock_set]
+
+        reverse_custom(apps=mock_apps, schema_editor=mock_schema_editor)
 
         mock_categories.objects.all.assert_called_once()
         mock_settings.objects.all.assert_called_once()
@@ -159,6 +197,36 @@ class TestInit(unittest.TestCase):
                                                            date_modified=mock_now.return_value)
         mock_settings().setting_set.create.assert_any_call(name="Call to Action Button",
                                                            content="Start Using Tethys!",
+                                                           date_modified=mock_now.return_value)
+
+        mock_settings().save.assert_called()
+
+        # Custom Styles
+        type(mock_settings()).name = mock.PropertyMock(return_value="Custom Styles")
+        setting_defaults(category=mock_settings())
+
+        mock_settings().setting_set.create.assert_any_call(name="Portal Base CSS",
+                                                           content="",
+                                                           date_modified=mock_now.return_value)
+
+        mock_settings().setting_set.create.assert_any_call(name="Home Page CSS",
+                                                           content="",
+                                                           date_modified=mock_now.return_value)
+        mock_settings().setting_set.create.assert_any_call(name="Apps Library CSS",
+                                                           content="",
+                                                           date_modified=mock_now.return_value)
+
+        mock_settings().save.assert_called()
+
+        # Custom Templates
+        type(mock_settings()).name = mock.PropertyMock(return_value="Custom Templates")
+        setting_defaults(category=mock_settings())
+
+        mock_settings().setting_set.create.assert_any_call(name="Home Page Template",
+                                                           content="",
+                                                           date_modified=mock_now.return_value)
+        mock_settings().setting_set.create.assert_any_call(name="Apps Library Template",
+                                                           content="",
                                                            date_modified=mock_now.return_value)
 
         mock_settings().save.assert_called()

@@ -16,6 +16,7 @@ class SettingsCategory(models.Model):
     class Meta:
         verbose_name = 'Settings Category'
         verbose_name_plural = 'Site Settings'
+        ordering = ['pk']
 
     def __str__(self):
         return self.name
