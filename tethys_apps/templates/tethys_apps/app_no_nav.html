@@ -1,0 +1,14 @@
+{% extends "tethys_apps/app_base.html" %}
+
+{% load static tethys_gizmos %}
+
+{% block styles %}
+  {{ block.super }}
+	<style>
+		#nav-title-wrapper {
+		  margin-left: 15px;
+		}
+	</style>
+{% endblock %}
+
+{% block app_navigation_override %}{% endblock %}

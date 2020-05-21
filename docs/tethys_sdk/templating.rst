@@ -104,9 +104,13 @@ One of the advantages of using the Django template language is that it provides 
 Base Templates
 ==============
 
-There are two layers of templates provided for Tethys app development. The :file:`app_base.html` template provides the HTML skeleton for all Tethys app templates, which includes the base HTML structural elements (e.g.: ``<html>``, ``<head>``, and ``<body>`` elements), the base style sheets and JavaScript libraries, and many blocks for customization. All Tethys app projects also include a :file:`base.html` template that inherits from the :file:`app_base.html` template.
+There are two layers of templates provided for Tethys app development. The :file:`app_base.html` or any of its derivatives (See :ref:`additional_base_templates`) from which all Tethys apps inherit, and the :file:`base.html` at the app level from which all pages in an app project can inherit.
 
-App developers are encouraged to use the :file:`base.html` file as the base template for all of their templates, rather than extending the :file:`app_base.html` file directly. The :file:`base.html` template is easier to work with, because it includes only the blocks that will be used most often from the :file:`app_base.html` template. However, all of the blocks that are available from :file:`app_base.html` template will also be available for use in the :file:`base.html` template and any templates that extend it.
+The :file:`app_base.html` template provides the HTML skeleton for all Tethys app templates, which includes the base HTML structural elements (e.g.: ``<html>``, ``<head>``, and ``<body>`` elements), the base style sheets and JavaScript libraries, and many blocks for customization.
+
+All Tethys app projects also include a :file:`base.html` template that inherits from the :file:`app_base.html` template.
+
+App developers are encouraged to use the :file:`base.html` file as the base template for all of their templates within an app, rather than extending the :file:`app_base.html` file directly. The :file:`base.html` template is easier to work with, because it includes only the blocks that will be used most often from the :file:`app_base.html` template or its derivatives (See :ref:`additional_base_templates`). However, all of the blocks that are available from :file:`app_base.html` template or its selected derivative template will also be available for use in the :file:`base.html` template and any templates that extend it.
 
 Many of the blocks in the template correspond with different portions of the app interface. Figure 1 provides a graphical explanation of these blocks. An explanation of all the blocks provided in the :file:`app_base.html` and :file:`base.html` templates can be found in the section that follows.
 
@@ -127,6 +131,7 @@ Many of the blocks in the template correspond with different portions of the app
     10. app_content
     11. app_actions_override
     12. app_actions
+
 
 Blocks
 ======
@@ -507,3 +512,160 @@ This section provides the complete contents of the :file:`app_base.html` templat
 
 .. literalinclude:: ../../tethys_apps/templates/tethys_apps/app_base.html
     :language: html+django
+
+.. _additional_base_templates:
+
+Additional Base Templates
+=========================
+
+Additional templates that inherit from the :file:`app_base.html` template have been added to Tethys to facilitate app customization. These templates include:
+
+app_content_only.html
+---------------------
+
+This template contains only the app content. Code referencing displays block other than the ``app_content`` block will have no effect on this template. ``Override``, ``JavaScript``, and ``Style`` blocks retain their regular behavior.
+
+.. figure:: ../images/app_content_only.png
+    :width: 700px
+
+    **Figure 2.** Layout of the app_content_only.html file.
+
+app_header_content.html
+-----------------------
+
+This template contains only the header and app content. Code referencing any display block other than the ``app_content`` block or blocks contained in the app header (``app_icon``, ``app_title``, or ``header_buttons``) will have no effect on this template. ``Override``, ``JavaScript``, and ``Style`` blocks retain their regular behavior.
+
+.. figure:: ../images/app_header_content.png
+    :width: 700px
+
+    **Figure 3.** Layout of the app_header_content.html file.
+
+app_no_nav.html
+---------------
+
+This template is the same as normal :file:`app_base.html`, but with the navigation menu strip out. Code referencing the ``app_navigation`` block will have no effect on this template. Other blocks retain their regular behavior.
+
+.. figure:: ../images/app_no_nav.png
+    :width: 700px
+
+    **Figure 4.** Layout of the app_no_nav.html file.
+
+app_no_actions.html
+-------------------
+
+This template is the same as normal :file:`app_base.html`, but with no app actions section. Code referencing the ``app_actions`` block will have no effect on this template. Other blocks retain their regular behavior.
+
+.. figure:: ../images/app_no_actions.png
+    :width: 700px
+
+    **Figure 5.** Layout of the app_no_actions.html file.
+
+app_left_actions.html
+---------------------
+
+This template is the same as :file:`app_header_content.html` with the actions bar on left.
+
+.. figure:: ../images/app_left_actions.png
+    :width: 700px
+
+    **Figure 6.** Layout of the app_left_actions.html file.
+
+app_right_actions.html
+----------------------
+
+This template is the same as :file:`app_header_content.html` with the actions bar on right.
+
+.. figure:: ../images/app_right_actions.png
+    :width: 700px
+
+    **Figure 7.** Layout of the app_right_actions.html file.
+
+app_quad_split.html
+-------------------
+
+This template is the same as :file:`app_header_content.html` but with a 2 x 2 Bootstrap Grid in the content area.
+
+.. figure:: ../images/app_quad_split.png
+    :width: 700px
+
+    **Figure 8.** Layout of the app_quad_split.html file.
+
+Instead of an ``app_content`` block, this app uses the following four blocks:
+
+- **app_content_tl:** The app content that will be displayed in the top left section of the 2 x 2 grid.
+- **app_content_tr:** The app content that will be displayed in the top right section of the 2 x 2 grid.
+- **app_content_bl:** The app content that will be displayed in the bottom left section of the 2 x 2 grid.
+- **app_content_br:** The app content that will be displayed in the bottom right section of the 2 x 2 grid.
+
+*Example:*
+
+.. code-block:: html+django
+
+    {% block app_content_tl %}
+      <p>Top left content for my app.</p>
+    {% endblock %}
+    {% block app_content_tr %}
+      <p>Top right content for my app.</p>
+    {% endblock %}
+    {% block app_content_bl %}
+      <p>Bottom left content for my app.</p>
+    {% endblock %}
+    {% block app_content_br %}
+      <p>Bottom right content for my app.</p>
+    {% endblock %}
+
+app_three_columns.html
+----------------------
+
+This template is the same as :file:`app_header_content.html` but with a three-column Bootstrap Grid in the content area.
+
+.. figure:: ../images/app_three_columns.png
+    :width: 700px
+
+    **Figure 9.** Layout of the app_three_columns.html file.
+
+Instead of an ``app_content`` block, this app uses the following three blocks:
+
+- **app_content_lc:** The app content that will be displayed in the left column of the three-column grid.
+- **app_content_mc:** The app content that will be displayed in the middle column of the three-column grid.
+- **app_content_rc:** The app content that will be displayed in the right column of the three-column grid.
+
+*Example:*
+
+.. code-block:: html+django
+
+    {% block app_content_lc %}
+      <p>Left column content for my app.</p>
+    {% endblock %}
+    {% block app_content_tr %}
+      <p>Middle column content for my app.</p>
+    {% endblock %}
+    {% block app_content_bl %}
+      <p>Right column content for my app.</p>
+    {% endblock %}
+
+app_two_columns.html
+--------------------
+
+This template is the same as :file:`app_header_content.html` but with a two-column Bootstrap Grid in the content area.
+
+.. figure:: ../images/app_two_columns.png
+    :width: 700px
+
+    **Figure 10.** Layout of the app_two_columns.html file.
+
+Instead of an ``app_content`` block, this app uses the following two blocks:
+
+- **app_content_lc:** The app content that will be displayed in the left column of the two-column grid.
+- **app_content_rc:** The app content that will be displayed in the right column of the two-column grid.
+
+*Example:*
+
+.. code-block:: html+django
+
+    {% block app_content_lc %}
+      <p>Left column content for my app.</p>
+    {% endblock %}
+    {% block app_content_bl %}
+      <p>Right column content for my app.</p>
+    {% endblock %}
