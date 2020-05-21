@@ -13,6 +13,8 @@ import subprocess
 import warnings
 
 from django.core.management.base import BaseCommand
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Permission, Group
 from tethys_apps.helpers import get_installed_tethys_apps, get_installed_tethys_extensions
 
 
@@ -83,6 +85,29 @@ class Command(BaseCommand):
         # Remove app from database
         if db_found and db_app:
             db_app.delete()
+
+            # Get the TethysApp content type
+            app_content_type = ContentType.objects.get(
+                app_label='tethys_apps',
+                model='tethysapp' if not options['is_extension'] else 'tethysextension'
+            )
+
+            # Remove any permissions associated to the app/extension
+            db_app_permissions = Permission.objects. \
+                filter(content_type=app_content_type). \
+                filter(name__icontains=f'{db_app.package} | '). \
+                all()
+
+            for db_app_permission in db_app_permissions:
+                db_app_permission.delete()
+
+            # Remove any groups associated to the app/extension
+            db_app_groups = Group.objects. \
+                filter(name__icontains=f'{db_app.package}:'). \
+                all()
+
+            for db_app_group in db_app_groups:
+                db_app_group.delete()
 
         # Uninstall using pip
         process = ['pip', 'uninstall', '-y', '{0}-{1}'.format(PREFIX, item_name)]

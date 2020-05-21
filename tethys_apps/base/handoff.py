@@ -9,7 +9,6 @@
 """
 import inspect
 import json
-import warnings
 from django.shortcuts import redirect
 from django.http import HttpResponseBadRequest
 
