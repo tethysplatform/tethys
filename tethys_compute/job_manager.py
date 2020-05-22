@@ -53,10 +53,10 @@ class JobManager:
 
         Args:
             name (str): The name of the job.
-            user (User): A User object for the user who creates the job.
-            job_type (TethysJob): A subclass of TethysJob.
-            groups(Group, optional): A list of Group object assigned to job. The job will be saved automatically if
+            user (django.contrib.auth.User): A User object for the user who creates the job.
+            groups(django.contrib.auth.Group, optional): A list of Group object assigned to job. The job will be saved automatically if
              groups are passed in. Default is None.
+            job_type (TethysJob): A subclass of TethysJob.
             **kwargs
 
         Returns:
@@ -81,9 +81,9 @@ class JobManager:
         Lists all the jobs from current app for current user.
 
         Args:
-            user (User, optional): The user to filter the jobs by. Default is None. This parameter cannot be passed
+            user (django.contrib.auth.User, optional): The user to filter the jobs by. Default is None. This parameter cannot be passed
             together with the groups parameter. Choose one or the other.
-            groups (Group, optional): One or more Group objects to filter the jobs by. Default is None. This parameter
+            groups (django.contrib.auth.Group, optional): One or more Group objects to filter the jobs by. Default is None. This parameter
             cannot be passed together with the user parameter. Choose one or the other.
             order_by (str, optional): An expression to order jobs. Default is 'id'.
             filters (dict, optional): A list of key-value pairs to filter the jobs by. Default is None.
@@ -113,7 +113,7 @@ class JobManager:
 
         Args:
             job_id (int): The id of the job to get.
-            user (User, optional): The user to filter the jobs by.
+            user (django.contrib.auth.User, optional): The user to filter the jobs by.
 
         Returns:
             A instance of a subclass of TethysJob if a job with job_id exists (and was created by user if the user argument is passed in).
