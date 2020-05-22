@@ -356,3 +356,11 @@ You can use the ``tethys settings`` command to easily set the settings in the :f
     .. code-block:: bash
 
         tethys settings --set OAUTH_CONFIGS.SOCIAL_AUTH_FACEBOOK_KEY <App ID> --set OAUTH_CONFIGS.SOCIAL_AUTH_FACEBOOK_SECRET <App Secret>
+
+.. important::
+
+    Remember to restart the Tethys servers to effect any changes to the :file:`portal_config.yml`:
+
+    .. code-block:: bash
+
+        sudo supervisor restart all
