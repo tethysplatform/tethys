@@ -19,5 +19,4 @@ The following guide can be used to install Tethys Platform on a production serve
     production/configuration
     production/start_stop
     production/app_installation
-    production/troubleshooting
     production/additional

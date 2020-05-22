@@ -11,6 +11,7 @@ The following guides provide additional information on other aspects of producti
 .. toctree::
     :maxdepth: 1
 
+    additional/troubleshooting
     additional/backup
     additional/distributed
     additional/geoserver_ssl_config
