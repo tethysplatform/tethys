@@ -20,7 +20,7 @@ After installing tethys in either a development or production environment, the t
 
 .. code-block:: yaml
 
-    AUTHENTICATION_CONFIGS:
+    ANALYTICS_CONFIGS:
       CLICKMAP_TRACKER_ID: False
       CLICKY_SITE_ID: False
       CRAZY_EGG_ACCOUNT_NUMBER: False
@@ -70,7 +70,7 @@ You can also use the ``tethys settings`` command to set these properties:
 
 .. code-block:: bash
 
-    tethys settings --set GOOGLE_ANALYTICS_JS_PROPERTY_ID 'UA-123456789-1'
+    tethys settings --set ANALYTICS_CONFIGS.GOOGLE_ANALYTICS_JS_PROPERTY_ID 'UA-123456789-1'
 
 .. important::
 
