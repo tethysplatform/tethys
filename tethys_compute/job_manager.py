@@ -61,7 +61,7 @@ class JobManager:
 
         Returns:
             A new job object of the type specified by job_type.
-        """
+        """  # noqa: E501
         # Allow the job class to be passed in as job_type.
         if isinstance(job_type, str):
             job_type = JOB_TYPES[job_type]
@@ -90,7 +90,7 @@ class JobManager:
 
         Returns:
             A list of jobs created in the app (and by the user if the user argument is passed in).
-        """
+        """  # noqa: E501
         if user and groups:
             raise ValueError("The user and groups parameters are mutually exclusive and cannot be passed together. "
                              "Please choose one or the other.")
