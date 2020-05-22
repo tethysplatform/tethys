@@ -12,7 +12,6 @@ The following guide can be used to install Tethys Platform on a production serve
     :maxdepth: 2
 
     production/overview
-    production/system_requirements
     production/preparation
     production/system_dependencies
     production/installation
