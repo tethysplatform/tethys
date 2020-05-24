@@ -29,6 +29,8 @@ If you wish to use the previous solution as a starting point:
 1. Create new Template, Controller, and UrlMap for About Page
 =============================================================
 
+The first step to adding a new page to the app is to create a new controller and template for the page and specify it's URL with a new ``UrlMap``.
+
 1. Create new :file:`templates/earth_engine/about.html` template. Include the :file:`public/earth_engine/css/no_nav.css` stylesheet because this template overrides the navigation menu:
 
 .. code-block:: html+django
@@ -106,7 +108,9 @@ If you wish to use the previous solution as a starting point:
 2. Modify Header Buttons to Navigate between About Page and Home Page
 =====================================================================
 
-1. Move Home header button from :file:`templates/earth_engine/viewer.html` to :file:`templates/earth_engine/base.html` so it is available on all pages:
+In this step you will add a new button to the page header that will link to the new About page. This button will be added in the base templat so the About link is available from any page of the app. You'll also move the Home button from the Viewer page to the base template so that it is available on every page, including the About page.
+
+1. Move Home header button from :file:`templates/earth_engine/viewer.html` to :file:`templates/earth_engine/base.html`:
 
 .. code-block:: html+django
 
@@ -139,6 +143,8 @@ If you wish to use the previous solution as a starting point:
 3. Build out About Page
 =======================
 
+In this step you'll build out the layout of the About page using the `Bootstrap Grid System <https://getbootstrap.com/docs/3.3/css/#grid>`_ as you did with the Home page. However, the about page will use the more rigid ``container`` element instead of a ``container-fluid`` element that was used on the Home page. The ``container`` element has a fixed width with wide margins that gives it a classic website look. The width of a ``container-fluid`` element, on the other hand, resizes dynamically or fluidly with the window.
+
 1. Create a ``<div>`` element with class ``container`` in the ``app_content`` block:
 
 .. code-block:: html+django
@@ -148,10 +154,6 @@ If you wish to use the previous solution as a starting point:
       <div class="container">
       </div>
     {% endblock %}
-
-.. note::
-
-    TODO: Difference between ``container`` and ``container-fluid``
 
 2. Create a ``<div>`` element with class ``page-header`` and the following contents inside the ``container`` ``<div>``:
 
@@ -254,14 +256,13 @@ If you wish to use the previous solution as a starting point:
       </div>
     </div>
 
-.. tip::
-
-    TODO: placeholder.com tip
 
 7. Navigate to `<http://localhost:8000/apps/earth-engine/about/>`_ and verify that the content renders as expected. Resize the window to see how the normal Bootstrap ``container`` differs from the ``container-fluid`` that was used on the home page.
 
 4. Customize the About Page Styles
 ==================================
+
+As with the Home page, the `Bootstrap Grid System <https://getbootstrap.com/docs/3.3/css/#grid>`_ does a good job providing the base layout for the page, but there are a few tweaks that need to be made to finish the About page. In this step you will create a stylesheet for the About page and use it to polish the page styles.
 
 1. Create a new :file:`public/earth_engine/about.css` stylesheet.
 
@@ -321,6 +322,9 @@ If you wish to use the previous solution as a starting point:
 
 5. Create the Disclaimer Modal
 ==============================
+
+In this step you will create a new modal that will contain a disclaimer for the app. This modal will need to be available on all pages, so it will be added to the base template.
+
 
 1. Create a new Bootstrap modal in :file:`templates/earth_engine/base.html`. Modals should be placed in the ``after_app_content`` block:
 
@@ -435,6 +439,8 @@ If you wish to use the previous solution as a starting point:
 
 6. Customize the Disclaimer Modal Styles
 ========================================
+
+In this step, you will add a new stylesheet for the disclaimer modal and add styles to adjust the presetnation of the modal and sponsor images.
 
 1. Create a new :file:`public/earth_engine/disclaimer_modal.css` stylesheet with the following contents:
 

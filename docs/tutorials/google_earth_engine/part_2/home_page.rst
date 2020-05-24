@@ -19,7 +19,7 @@ In this tutorial you will create a home page for the Google Earth Engine app tha
 
 We recommend you use the previous solution as a starting point for Part 2:
 
-.. parsed-literal::=
+.. parsed-literal::
 
     git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
     cd tethysapp-earth_engine
@@ -51,7 +51,6 @@ Currently, the map viewer page is the "home" page of the app as evidenced by it 
 4. Update the ``UrlMaps`` in :file:`app.py` to the following:
 
 .. code-block:: python
-
 
     def url_maps(self):
         """
@@ -212,6 +211,10 @@ In this step, you will create a responsive two column layout using the `Bootstra
     <div id="home-content-container" class="container-fluid">
     </div>
     {% endblock %}
+    
+.. note::
+
+    The ``container-fluid`` allows the width of the container to grow and shrink dynamically or fluidly with screen size. It also has smaller margins than the normal ``container`` class.
 
 2. Add a ``<div>`` element with class ``row``:
 
