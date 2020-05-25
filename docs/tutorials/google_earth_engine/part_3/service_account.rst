@@ -8,7 +8,23 @@ Up to this point, you've been using your personal Google account to authenticate
 
 This tutorial requires you to already have a service account registered with Google Earth Engine. If you do not already have a service account, follow the instructions here: `How do I create a service account? <https://developers.google.com/earth-engine/service_account#how-do-i-create-a-service-account>`_. It may take several days for your registration application to be reviewed and approved.
 
-1) Retrieve Service Account Credentials
+The following topics are covered in this tutorial:
+
+* Create Google Service Account Keys
+* Use Service Account for Google Earth Engine Operations
+
+0. Start From Previous Solution (Optional)
+==========================================
+
+If you wish to use the previous solution as a starting point:
+
+.. parsed-literal::
+
+    git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
+    cd tethysapp-earth_engine
+    git checkout -b rest-api-solution-solution rest-api-solution-solution-|version|
+
+1. Retrieve Service Account Credentials
 =======================================
 
 After you have setup your service account, you will need to create a key that the app can use to authenticate with Google Earth Engine.
@@ -31,7 +47,7 @@ After you have setup your service account, you will need to create a key that th
 
     The only copy of the key you generated is contained in the file that was downloaded. You cannot download it again. If you lose the file, repeat the process to generate a new key and delete the old one.
 
-2) Configure App to Use Service Account
+2. Configure App to Use Service Account
 =======================================
 
 The app needs to be configured to use the service account key that you downloaded in the previous step. Fortunately, the code is already in place to handle service accounts. You simply need to add your credentials to the :file:`gee/params.py` file.
@@ -70,7 +86,7 @@ The app needs to be configured to use the service account key that you downloade
 
     Until now, the app has not had service account credentials, so it has been using the logic in the ``else`` clause of the conditional statement.
 
-3) Test App Functionality with Service Account
+3. Test App Functionality with Service Account
 ==============================================
 
 Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and verify the following:
