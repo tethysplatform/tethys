@@ -1,0 +1,36 @@
+.. _google_earth_engine_part_3:
+
+*******************************
+Part 3: Publish Code and Deploy
+*******************************
+
+**Last Updated:** May 2020
+
+This tutorial builds on the app developed in the :ref:`google_earth_engine_part_1` Tutorial.
+
+Prerequisites
+-------------
+
+* Google Earth Engine Service Account
+* GitHub Account
+* Production Tethys Platform Server
+* Complete the :ref:`google_earth_engine_part_1` and :ref:`google_earth_engine_part_2` Tutorials
+
+Outline
+-------
+
+.. toctree::
+   :maxdepth: 1
+
+   part_3/primer
+   part_3/service_account
+   part_3/prepare
+   part_3/publish
+   part_3/deploy
+   part_3/documentation
+   part_3/ci
+
+Supporting Materials
+--------------------
+
+* TODO: When presentation is complete post here.

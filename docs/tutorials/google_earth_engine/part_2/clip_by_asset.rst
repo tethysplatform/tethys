@@ -313,7 +313,7 @@ If you wish to use the previous solution as a starting point:
 
         If the new asset does not appear, try pressing the refresh button.
 
-7. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip` again. The ``uploadToTableAsset task in the Google Earth Engine code editor should fail, because Google Earth Engine won't let you overwrite a file that already exists when exporting an asset.
+7. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip` again. The ``uploadToTableAsset`` task in the Google Earth Engine code editor should fail, because Google Earth Engine won't let you overwrite a file that already exists when exporting an asset.
 
 8. Update the ``upload_shapefile_to_gee`` function in :file:`gee/methods.py` to delete the asset before exporting to asset. This will fail if there is no asset there (the first time), so handle with a ``try-except``: (with try/except this time)
 

@@ -18,3 +18,4 @@ Outline
 
    google_earth_engine/part_1
    google_earth_engine/part_2
+   google_earth_engine/part_3

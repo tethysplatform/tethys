@@ -1,6 +1,8 @@
-***************************
-Google Earth Engine: Part 2
-***************************
+.. _google_earth_engine_part_2:
+
+*****************************************************
+Part 2: Additional Pages, Clip by Asset, and Rest API
+*****************************************************
 
 **Last Updated:** May 2020
 
