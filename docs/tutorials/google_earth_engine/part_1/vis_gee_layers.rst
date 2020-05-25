@@ -27,6 +27,8 @@ If you wish to use the previous solution as a starting point:
     cd tethysapp-earth_engine
     git checkout -b map-view-solution map-view-solution-|version|
 
+.. _gee_authentication_step:
+
 1. Handle GEE Authentication
 ============================
 
