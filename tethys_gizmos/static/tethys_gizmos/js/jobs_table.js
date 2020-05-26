@@ -109,6 +109,120 @@ function bind_delete_button(btn){
     });
 }
 
+function bind_resubmit_button(btn){
+    btn = $(btn);
+    var job_id = $(btn).data('job-id');
+    $(btn).on('click', function(){
+        $("#jobs_table_overlay").removeClass('hidden');
+        var resubmit_url = '/developer/gizmos/ajax/' + job_id + '/resubmit';
+        $.ajax({
+            url: resubmit_url
+        }).done(function(json){
+            $("#jobs_table_overlay").addClass('hidden');
+            if(json.success){
+                var alert_html = '<div class="alert alert-success alert-dismissible" role="alert">' +
+                                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                    '<strong>Successfully resubmit job: ' + job_id + '.' +
+                                '</div>';
+            }
+            else{
+                var alert_html = '<div class="alert alert-danger alert-dismissible" role="alert">' +
+                                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                    '<strong>Error!</strong> Unable to resubmit job ' + job_id + '.' +
+                                '</div>';
+            }
+            $('#jobs-table-messages').append(alert_html);
+        });
+    });
+}
+
+function load_log_content(job_id) {
+    var show_log_url = '/developer/gizmos/ajax/' + job_id + '/show-log';
+        $.ajax({
+            url: show_log_url
+        }).done(function(json){
+            if(json.success){
+                var contents = json.data;
+                var nav_header = generate_nav_header(contents);
+                $('#modal-dialog-jobs-table-log-nav').html(nav_header);
+                var nav_contents = generate_nav_content(contents);
+                $('#modal-dialog-jobs-table-log-content').html(nav_contents);
+                $('.tethys_job_log_content').hide();
+                // Show the first log
+                var first_content_id = get_first_id_from_content(contents);
+                $(`#${first_content_id}`).show();
+            }
+        });
+}
+
+function bind_show_log_button(btn){
+    btn = $(btn);
+    var job_id = $(btn).data('job-id');
+    $(btn).on('click', function(){
+        load_log_content(job_id);
+    });
+}
+
+function get_first_id_from_content(contents) {
+    let first_id = '';
+    let key1 = Object.keys(contents)[0];
+    if (typeof(contents[key1] == 'string')) {
+        first_id = `logfrom_${key1}`;
+    }
+    else {
+        let key2 = Object.keys(contents[key1])[0];
+        first_id = `logfrom_${key1}_${key2}`;
+    }
+    return first_id
+}
+
+function generate_nav_header(contents) {
+    var nav_header_html = "";
+    nav_header_html += "<nav class='navbar navbar-default' style='border:0'><div class='container-fluid'><ul class='nav navbar-nav'>";
+    $.each( contents, function(key, value) {
+        // Create a nav if content is string
+        if (typeof(value) == "string" || value == null ) {
+            nav_header_html += "<li><a href='#' onclick=display_log_content('logfrom_" + key + "')>" + key + "</a></li>";
+        }
+        else {
+            nav_header_html += "<li class='dropdown'><a href='#' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>" + key + "<span class='caret'></span></a><ul class='dropdown-menu'>";
+            $.each( value, function(key2, value2) {
+                nav_header_html += "<li><a href='#' onclick=display_log_content('logfrom_" + key + "_" + key2 + "')>" + key2 + "</a></li>";
+            });
+            nav_header_html += "</ul></li>";
+        }
+    })
+    nav_header_html +="</ul></div></nav>";
+    return nav_header_html;
+}
+
+function generate_nav_content(contents) {
+    var nav_content_html = "";
+    $.each( contents, function(key, value) {
+        // Create a nav if content is string
+        if (typeof(value) == "string") {
+            nav_content_html += "<div class='tethys_job_log_content' id='logfrom_" + key + "'>" + value + "</div>";
+        }
+        else {
+            $.each( value, function(key2, value2) {
+                nav_content_html += "<div class='tethys_job_log_content' id='logfrom_" + key + "_" + key2 +"'>" + value2 + "</div>";
+            });
+            nav_content_html += "</ul></li>";
+        }
+    })
+    return nav_content_html;
+}
+
+
+function display_log_content(log_content_id) {
+    // Hide all the class first
+    $('.tethys_job_log_content').hide();
+
+    //Display the selected log
+    $('#' + log_content_id).show();
+}
+
+
 function render_workflow_nodes_graph(dag, target_selector) {
     // Create new graph with left-right orientation.
     let g = new dagreD3.graphlib.Graph()
@@ -205,14 +319,17 @@ function update_row(table_elem){
     var column_fields = $(table).data('column-fields');
     var run = $(table).data('run');
     var delete_btn = $(table).data('delete');
+    var resubmit_btn = $(table).data('resubmit');
+    var show_log_btn = $(table).data('show-log')
     var results_url = $(table).data('results-url');
+    var monitor_url = $(table).data('monitor-url');
     var refresh_interval = $(table).data('refresh-interval');
     var job_id = $(table_elem).data('job-id');
     var update_url = '/developer/gizmos/ajax/' + job_id + '/update-row';
     $.ajax({
         method: 'POST',
         url: update_url,
-        data: {column_fields: column_fields, status_actions: status_actions, run: run, delete: delete_btn, results_url: results_url}
+        data: {column_fields: column_fields, status_actions: status_actions, run: run, delete: delete_btn, monitor_url: monitor_url, show_resubmit_btn: resubmit_btn, show_log_btn: show_log_btn, results_url: results_url}
     }).done(function(json){
         if(json.success){
             var current_status = $('#jobs-table-status-'+job_id).children('div').attr('title') || 'None'
@@ -223,6 +340,12 @@ function update_row(table_elem){
                 });
                 $(table_elem).find('.btn-job-delete').each(function(){
                     bind_delete_button(this);
+                });
+                $(table_elem).find('.btn-job-resubmit').each(function(){
+                    bind_resubmit_button(this);
+                });
+                $(table_elem).find('.btn-job-show-log').each(function(){
+                    bind_show_log_button(this);
                 });
                 $(table_elem).find('.btn-refresh-status').each(function(){
                     bind_refresh_button(this);
@@ -243,6 +366,12 @@ function update_row(table_elem){
             $(table_elem).find('.btn-job-delete').each(function(){
                 bind_delete_button(this);
             });
+            $(table_elem).find('.btn-job-resubmit').each(function(){
+                bind_resubmit_button(this);
+            });
+            $(table_elem).find('.btn-job-show-log').each(function(){
+                bind_show_log_button(this);
+            });
         }
     });
 }
@@ -253,6 +382,7 @@ function update_status(table_elem){
     var status_actions = $(table).data('status-actions');
     var run = $(table).data('run');
     var delete_btn = $(table).data('delete');
+    var resubmit_btn = $(table).data('resubmit');
     var results_url = $(table).data('results-url');
     var refresh_interval = $(table).data('refresh-interval');
     var job_id = $(table_elem).data('job-id');
@@ -260,7 +390,7 @@ function update_status(table_elem){
     $.ajax({
         method: 'POST',
         url: update_url,
-        data: {status_actions: status_actions, run: run, delete: delete_btn, results_url: results_url}
+        data: {status_actions: status_actions, run: run, delete: delete_btn, show_resubmit_btn: resubmit_btn, results_url: results_url}
     }).done(function(json){
         if(json.success){
             $(table_elem).html(json.html);
@@ -366,6 +496,14 @@ $('.btn-job-run').each(function(){
 $('.btn-job-delete').each(function(){
     bind_delete_button(this);
 });
+
+$('.btn-job-resubmit').each(function(){
+    bind_resubmit_button(this);
+});
+
+$('.btn-job-show-log').each(function(){
+    bind_show_log_button(this);
+});
 // Keep track of how many job are active. If none of the jobs are active, we won't show bokeh graph.
 var active_counter = 0;
 
@@ -376,6 +514,25 @@ $('.job-row').each(function(){
 $('.workflow-nodes-row').each(function(){
     update_workflow_nodes_row(this);
 });
+
+// Assign job_id to load button
+$(document).on('click', '.btn-job-show-log', function () {
+    $('#modal-dialog-jobs-table-log-content').html("<p>Loading logs...</p>");
+    var refresh_job_id = $(this).data('job-id');
+    $("#tethys_log_refresh_job_id").val(refresh_job_it);
+})
+
+// Reload log content
+$(document).on('click', '#tethys_log_refresh_job_id', function () {
+    var refresh_job_id = $(this).val();
+
+    // Clear content
+    $('#modal-dialog-jobs-table-log-content').html("<p>Refreshing...</p>")
+
+    // Load new content
+    load_log_content(refresh_job_it);
+})
+
 
 // Only show bokeh for the top row.
 var counter = 0;

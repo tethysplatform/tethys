@@ -299,7 +299,31 @@ class TethysJobTest(TethysTestCase):
         self.assertIsInstance(ret.completion_time, datetime)
         self.assertIsNotNone(ret.completion_time)
 
+    @mock.patch('tethys_compute.models.tethys_job.TethysJob._resubmit')
+    def test_resubmit(self, mock__resubmit):
+        ret = TethysJob.objects.get(name='test_tethysjob')
+
+        ret.resubmit()
+
+        # Check result
+        mock__resubmit.assert_called()
+
+    @mock.patch('tethys_compute.models.tethys_job.TethysJob._get_logs')
+    def test_get_logs(self, mock__get_logs):
+        ret = TethysJob.objects.get(name='test_tethysjob')
+
+        ret.get_logs()
+
+        # Check result
+        mock__get_logs.assert_called()
+
     def test_abs_method(self):
+        # Resubmit
+        ret = TethysJob.objects.get(name='test_tethysjob')._resubmit()
+
+        # Check result
+        self.assertIsNone(ret)
+
         # Execute
         ret = TethysJob.objects.get(name='test_tethysjob')._execute()
 
@@ -314,6 +338,12 @@ class TethysJobTest(TethysTestCase):
 
         # Execute
         ret = TethysJob.objects.get(name='test_tethysjob')._process_results()
+
+        # Check result
+        self.assertIsNone(ret)
+
+        # Check get logs
+        ret = TethysJob.objects.get(name='test_tethysjob')._get_logs()
 
         # Check result
         self.assertIsNone(ret)
