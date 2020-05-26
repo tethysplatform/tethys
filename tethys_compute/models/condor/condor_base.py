@@ -6,6 +6,7 @@
 * Copyright: (c) Aquaveo 2018
 ********************************************************************************
 """
+import os
 from abc import abstractmethod
 
 from django.db import models
@@ -99,6 +100,71 @@ class CondorBase(TethysJob):
     def stop(self):
         self.condor_object.remove()
 
+    def _resubmit(self):
+        self.condor_object.close_remote()
+        self._execute()
+
+    @abstractmethod
+    def _log_files(self):
+        """
+            Build a nested dictionary with all the log files we want to retrieve.
+        """
+        pass
+
+    @abstractmethod
+    def _get_logs_from_remote(self, log_files, ):
+        """
+        Define in condor_workflow. Since we need the instance of condorpy_workflow.
+        """
+        pass
+
+    def _get_logs_from_workspace(self, log_files):
+        """
+        Get logs from workspaces in case the job has been deleted over the condor scheduler.
+        :param log_files: the nested dictionaries of all the log files
+        :return: the contents of all the logs files in a nested dictionary.
+        """
+        contents = dict()
+        for log_file_type, log_file_path in log_files.items():
+            if log_file_type == 'workflow':
+                log_file = os.path.join(self.workspace, self.remote_id, log_file_path)
+                if os.path.isfile(log_file):
+                    with open(log_file) as file:
+                        contents['workflow'] = file.read()
+                else:
+                    contents['workflow'] = f"{log_file} does not exist"
+            else:
+                # Parse out logs for each job.
+                contents[log_file_type] = dict()
+                for job_log_type, job_log_path in log_file_path.items():
+                    log_file_folder = os.path.join(self.workspace, self.remote_id, log_file_type, "logs")
+                    log_file_ext = job_log_path[-4:]
+                    file_exist = False
+                    if os.path.isdir(log_file_folder):
+                        for file in os.listdir(log_file_folder):
+                            if file.endswith(log_file_ext):
+                                file_exist = True
+                                file = os.path.join(log_file_folder, file)
+                                with open(file) as log_file:
+                                    contents[log_file_type][job_log_type] = log_file.read()
+                    if not file_exist:
+                        contents[log_file_type][job_log_type] = "File does not exist"
+
+        return contents
+
+    def _get_logs(self):
+        """
+        Get logs contents for condor job.
+        """
+        log_files = self._log_files()
+        log_contents = self._get_logs_from_remote(log_files)
+        # Check to see if log_contents are empty. If it's empty, the job on the condor machine might get removed.
+        # We will try to get from the workspace if this is the case.
+        log_has_content = self._check_log_has_content(log_contents)
+        if not log_has_content:
+            log_contents = self._get_logs_from_workspace(log_files)
+        return log_contents
+
     def pause(self):
         """
         Pauses job during execution
@@ -115,3 +181,18 @@ class CondorBase(TethysJob):
 
     def update_database_fields(self):
         self.remote_id = self.remote_id or self._condor_object._remote_id
+
+    @staticmethod
+    def _check_log_has_content(log_contents):
+        """
+        Return True if log content is not empty.
+        """
+        for key, value in log_contents.items():
+            if isinstance(value, dict):
+                for child_value in value.values():
+                    if child_value:
+                        return True
+            else:
+                if value:
+                    return True
+        return False

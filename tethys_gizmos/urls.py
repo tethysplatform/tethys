@@ -16,6 +16,8 @@ ajax_urls = [
     url(r'^swap-kml/$', gizmo_showcase_views.swap_kml, name='swap_kml'),
     url(r'^swap-overlays/$', gizmo_showcase_views.swap_overlays, name='swap_overlays'),
     url(r'^(?P<job_id>[\d.@+-]+)/delete$', jobs_table_views.delete, name='delete_job'),
+    url(r'^(?P<job_id>[\d.@+-]+)/resubmit$', jobs_table_views.resubmit, name='resubmit_job'),
+    url(r'^(?P<job_id>[\d.@+-]+)/show-log', jobs_table_views.show_log, name='show_log'),
     url(r'^(?P<job_id>[\d.@+-]+)/execute', jobs_table_views.execute, name='execute_job'),
     url(r'^(?P<job_id>[\d.@+-]+)/update-row', jobs_table_views.update_row, name='update_job_row'),
     url(r'^(?P<job_id>[\d.@+-]+)/update-workflow-nodes-row', jobs_table_views.update_workflow_nodes_row,

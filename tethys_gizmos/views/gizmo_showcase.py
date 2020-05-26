@@ -1608,7 +1608,8 @@ def jobs_table_demo(request):
         results_url='gizmos:results',
         refresh_interval=10000,
         delete_btn=True,
-        show_detailed_status=True
+        show_detailed_status=True,
+        show_resubmit_btn=True,
     )
 
     context = {'jobs_table': jobs_table_options}
