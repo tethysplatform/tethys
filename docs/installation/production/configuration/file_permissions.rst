@@ -22,6 +22,8 @@ Change the owner of the ``STATIC_ROOT`` and ``TETHYS_WORKSPACE_ROOT`` directorie
 
         Replace ``<NGINX_USER>`` with the user noted in the :ref:`production_nginx_config` step. Replace ``STATIC_ROOT`` and ``TETHYS_WORKSPACES_ROOT`` with the paths to the directories you set up in the :ref:`production_static_workspaces_dirs` step.
 
+.. _setup_file_permissions_shortcuts:
+
 2. Setup Shortcuts for Changing Permissions (Optional)
 ======================================================
 
