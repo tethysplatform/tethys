@@ -149,6 +149,101 @@ class CondorBaseTest(TethysTestCase):
         # Check result
         mock_co.remove.assert_called()
 
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.save')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
+    def test_resubmit(self, mock_co, _):
+        CondorBase.objects.get(name='test_condorbase')._resubmit()
+
+        # Check result
+        mock_co.close_remote.assert_called()
+
+    def test_get_logs_from_workspace_no_file(self):
+        logs_file = {'workflow': 'Model_Run.dag.dagman.out',
+                     'test_job': {'log': 'test_job/logs/*.log',
+                                  'error': 'test_job/logs/*.err',
+                                  'output': 'test_job/logs/*.out'}
+                     }
+        logs = CondorBase.objects.get(name='test_condorbase')._get_logs_from_workspace(logs_file)
+        expected_results = {'workflow': 'test_machine/Model_Run.dag.dagman.out does not exist',
+                            'test_job': {'log': 'File does not exist',
+                                         'error': 'File does not exist',
+                                         'output': 'File does not exist'}}
+        self.assertEqual(expected_results, logs)
+
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._get_logs_from_workspace')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._get_logs_from_remote')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._log_files')
+    def test_get_logs_no_remote(self, mock_log_files, mock_log_remote, mock_log_workspace):
+        logs_file = {'workflow': 'Model_Run.dag.dagman.out',
+                     'test_job': {'log': 'test_job/logs/*.log',
+                                  'error': 'test_job/logs/*.err',
+                                  'output': 'test_job/logs/*.out'}
+                     }
+        logs_file_contents = {'workspace': '', 'test_job': {'log': '', 'error': '', 'output': ''}}
+        mock_log_files.return_value = logs_file
+        mock_log_remote.return_value = logs_file_contents
+        expected_return = 'log_from_workspace'
+        mock_log_workspace.return_value = expected_return
+
+        logs = CondorBase.objects.get(name='test_condorbase')._get_logs()
+        self.assertEqual(expected_return, logs)
+
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._get_logs_from_workspace')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._get_logs_from_remote')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._log_files')
+    def test_get_logs_remote(self, mock_log_files, mock_log_remote, mock_log_workspace):
+        logs_file = {'workflow': 'Model_Run.dag.dagman.out',
+                     'test_job': {'log': 'test_job/logs/*.log',
+                                  'error': 'test_job/logs/*.err',
+                                  'output': 'test_job/logs/*.out'}
+                     }
+        logs_file_contents = {'workspace': 'has_content', 'test_job': {'log': '', 'error': '', 'output': ''}}
+        mock_log_files.return_value = logs_file
+        mock_log_remote.return_value = logs_file_contents
+        mock_log_workspace.return_value = 'log_from_workspace'
+
+        logs = CondorBase.objects.get(name='test_condorbase')._get_logs()
+
+        self.assertEqual(logs_file_contents, logs)
+
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._get_logs_from_workspace')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._get_logs_from_remote')
+    @mock.patch('tethys_compute.models.condor.condor_base.CondorBase._log_files')
+    def test_get_logs_remote_check_child(self, mock_log_files, mock_log_remote, mock_log_workspace):
+        logs_file = {'workflow': 'Model_Run.dag.dagman.out',
+                     'test_job': {'log': 'test_job/logs/*.log',
+                                  'error': 'test_job/logs/*.err',
+                                  'output': 'test_job/logs/*.out'}
+                     }
+        logs_file_contents = {'workspace': '', 'test_job': {'log': 'has_content', 'error': '', 'output': ''}}
+        mock_log_files.return_value = logs_file
+        mock_log_remote.return_value = logs_file_contents
+        mock_log_workspace.return_value = 'log_from_workspace'
+
+        logs = CondorBase.objects.get(name='test_condorbase')._get_logs()
+
+        self.assertEqual(logs_file_contents, logs)
+
+    @mock.patch('builtins.open')
+    @mock.patch('tethys_compute.models.condor.condor_base.os.listdir')
+    @mock.patch('tethys_compute.models.condor.condor_base.os.path.isdir')
+    @mock.patch('tethys_compute.models.condor.condor_base.os.path.isfile')
+    def test_get_logs_from_workspace_mock_file(self, mock_isfile, mock_isdir, mock_list_dir, mock_open):
+        mock_isfile.return_value = True
+        mock_isdir.return_value = True
+        mock_list_dir.return_value = ['file1.log', 'file2.err', 'file3.out']
+        logs_file = {'workflow': 'Model_Run.dag.dagman.out',
+                     'test_job': {'log': 'test_job/logs/*.log',
+                                  'error': 'test_job/logs/*.err',
+                                  'output': 'test_job/logs/*.out'}
+                     }
+        logs = CondorBase.objects.get(name='test_condorbase')._get_logs_from_workspace(logs_file)
+
+        self.assertIsNotNone(logs['workflow'])
+        self.assertIsNotNone(logs['test_job']['log'])
+        self.assertIsNotNone(logs['test_job']['error'])
+        self.assertIsNotNone(logs['test_job']['output'])
+
     def test_pause(self):
         ret = CondorBase.objects.get(name='test_condorbase_exe').pause()
 
@@ -173,3 +268,16 @@ class CondorBaseTest(TethysTestCase):
 
         # Check result
         self.assertEqual('test_update_remote_id', ret.remote_id)
+
+    def test_abs_method(self):
+        # Resubmit
+        ret = CondorBase.objects.get(name='test_condorbase')._log_files()
+
+        # Check result
+        self.assertIsNone(ret)
+
+        # Resubmit
+        ret = CondorBase.objects.get(name='test_condorbase')._get_logs_from_remote('test')
+
+        # Check result
+        self.assertIsNone(ret)

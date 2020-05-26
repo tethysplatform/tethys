@@ -1,5 +1,11 @@
 {% load static tethys_gizmos %}
 
+<div id="jobs_table_overlay" class="hidden">
+	<div class="cv-spinner" >
+		<span class="spinner"></span>
+	</div>
+</div>
+
 <div id="jobs-table-messages"></div>
 <table class="table{% if bordered %} table-bordered{% endif %}{% if hover %} table-hover{% endif %}{% if striped %} table-striped{% endif %}{% if condensed %} table-condensed{% endif %}{% if classes %} {{ classes }}{% endif %}"
         {% if attributes %}
@@ -7,13 +13,25 @@
                 {{ key }}="{{ value }}"
             {% endfor %}
         {% endif %}
-       data-column-fields="{{ column_fields }}" data-status-actions="{{ status_actions }}" data-run="{{ run }}" data-delete="{{ delete }}" data-results-url="{{ results_url }}" data-refresh-interval="{{ refresh_interval }}">
+       data-column-fields="{{ column_fields }}" data-status-actions="{{ status_actions }}" data-run="{{ run }}" data-delete="{{ delete }}" data-monitor-url="{{ monitor_url }}" data-results-url="{{ results_url }}" data-refresh-interval="{{ refresh_interval }}"  data-resubmit="{{ show_resubmit_btn }}" data-show-log="{{ show_log_btn }}">
   <tr>
     {% for column_name in column_names %}
       <th>{{ column_name }}</th>
     {% endfor %}
     {% if status_actions %}
-      <th class="status-col{% if delete %} span-two" colspan="2"{% else %}"{% endif %}>Status</th>
+      {% if show_resubmit_btn %}
+        {% if show_log_btn %}
+          <th class="status-col{% if delete %} span-four" colspan="4"{% else %} span-three" colspan="3"{% endif %}>Status</th>
+        {% else %}
+          <th class="status-col{% if delete %} span-three" colspan="3"{% else %}  span-two"{% endif %}>Status</th>
+        {% endif %}
+      {% else %}
+        {% if show_log_btn %}
+          <th class="status-col{% if delete %} span-three" colspan="3"{% else %} span-two" colspan="2"{% endif %}>Status</th>
+        {% else %}
+          <th class="status-col{% if delete %} span-two" colspan="2"{% else %}"{% endif %}>Status</th>
+        {% endif %}
+      {% endif %}
     {% endif %}
   </tr>
 
@@ -39,3 +57,24 @@
     </tr>
   {% endfor %}
 </table>
+
+<div id="modal-dialog-jobs-table-show-log" title="Logs" class="modal" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalJobLogTitle">Logs</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="modal-dialog-jobs-table-log-nav"></div>
+      <div class="modal-body" id="modal-dialog-jobs-table-log-body">
+        <div id="modal-dialog-jobs-table-log-content"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" id="tethys_log_refresh_job_id" value="">Refresh</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

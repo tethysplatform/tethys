@@ -53,6 +53,44 @@ class TestJobsTable(unittest.TestCase):
 
         mock_log.error.assert_called_with('The following error occurred when deleting job %s: %s', '1', 'error')
 
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass')
+    def test_resubmit(self, mock_tj):
+        tj = mock_tj()
+        tj.resubmit.return_value = mock.MagicMock()
+
+        result = gizmo_jobs_table.resubmit(request='', job_id='1')
+
+        self.assertEqual(200, result.status_code)
+
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.log')
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
+    def test_resubmit_exception(self, mock_tj, mock_log):
+        tj = mock_tj.objects.get_subclass()
+        tj.resubmit.side_effect = Exception('error')
+
+        gizmo_jobs_table.resubmit(request='', job_id='1')
+
+        mock_log.error.assert_called_with('The following error occurred when resubmiting job %s: %s', '1', 'error')
+
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass')
+    def test_show_log(self, mock_tj):
+        tj = mock_tj()
+        tj.get_logs.return_value = 'log_data'
+
+        result = gizmo_jobs_table.show_log(request='', job_id='1')
+        self.assertEqual(200, result.status_code)
+
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.log')
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
+    def test_show_log_exception(self, mock_tj, mock_log):
+        tj = mock_tj.objects.get_subclass()
+        tj.get_logs.side_effect = Exception('error')
+
+        gizmo_jobs_table.show_log(request='', job_id='1')
+
+        mock_log.error.assert_called_with('The following error occurred when retrieving log for job %s: %s',
+                                          '1', 'error')
+
     @mock.patch('tethys_gizmos.views.gizmos.jobs_table.render_to_string')
     @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
     def test_update_row_showcase(self, mock_tj, mock_rts):

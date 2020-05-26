@@ -47,19 +47,21 @@ class JobManager:
         self.label = app.package
         self.job_templates = dict()
 
-    def create_job(self, name, user, job_type=None, **kwargs):
+    def create_job(self, name, user, groups=None, job_type=None, **kwargs):
         """
         Creates a new job from a JobTemplate.
 
         Args:
             name (str): The name of the job.
-            user (User): A User object for the user who creates the job.
+            user (django.contrib.auth.User): A User object for the user who creates the job.
+            groups(django.contrib.auth.Group, optional): A list of Group object assigned to job. The job will be saved automatically if
+             groups are passed in. Default is None.
             job_type (TethysJob): A subclass of TethysJob.
             **kwargs
 
         Returns:
             A new job object of the type specified by job_type.
-        """
+        """  # noqa: E501
         # Allow the job class to be passed in as job_type.
         if isinstance(job_type, str):
             job_type = JOB_TYPES[job_type]
@@ -68,25 +70,41 @@ class JobManager:
         kwrgs.update(kwargs)
         job = job_type(**kwrgs)
 
+        if groups:
+            # Need to save the job before we can assign the groups
+            job.save()
+            job.groups.add(groups)
         return job
 
-    def list_jobs(self, user=None, order_by='id', filters=None):
+    def list_jobs(self, user=None, groups=None, order_by='id', filters=None):
         """
         Lists all the jobs from current app for current user.
 
         Args:
-            user (User, optional): The user to filter the jobs by. Default is None.
+            user (django.contrib.auth.User, optional): The user to filter the jobs by. Default is None. This parameter cannot be passed
+            together with the groups parameter. Choose one or the other.
+            groups (django.contrib.auth.Group, optional): One or more Group objects to filter the jobs by. Default is None. This parameter
+            cannot be passed together with the user parameter. Choose one or the other.
             order_by (str, optional): An expression to order jobs. Default is 'id'.
             filters (dict, optional): A list of key-value pairs to filter the jobs by. Default is None.
 
         Returns:
             A list of jobs created in the app (and by the user if the user argument is passed in).
-        """
+        """  # noqa: E501
+        if user and groups:
+            raise ValueError("The user and groups parameters are mutually exclusive and cannot be passed together. "
+                             "Please choose one or the other.")
         filters = filters or dict()
-        filters['label'] = self.label
-        if user:
+        if 'label' not in filters.keys():
+            filters['label'] = self.label
+
+        if groups:
+            filters['groups__in'] = groups
+        elif user:
             filters['user'] = user
+
         jobs = TethysJob.objects.filter(**filters).order_by(order_by).select_subclasses()
+
         return jobs
 
     def get_job(self, job_id, user=None, filters=None):
@@ -95,7 +113,7 @@ class JobManager:
 
         Args:
             job_id (int): The id of the job to get.
-            user (User, optional): The user to filter the jobs by.
+            user (django.contrib.auth.User, optional): The user to filter the jobs by.
 
         Returns:
             A instance of a subclass of TethysJob if a job with job_id exists (and was created by user if the user argument is passed in).
