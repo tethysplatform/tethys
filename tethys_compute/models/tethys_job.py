@@ -11,7 +11,7 @@ import datetime
 import inspect
 from abc import abstractmethod
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils import timezone
@@ -50,6 +50,7 @@ class TethysJob(models.Model):
     name = models.CharField(max_length=1024)
     description = models.CharField(max_length=2048, blank=True, default='')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    groups = models.ManyToManyField(Group, verbose_name='groups', related_name='tethys_jobs', blank=True)
     label = models.CharField(max_length=1024)
     creation_time = models.DateTimeField(auto_now_add=True)
     execute_time = models.DateTimeField(blank=True, null=True)
@@ -183,6 +184,20 @@ class TethysJob(models.Model):
         self._status = 'COM'
         self.save()
         log.debug('Finished processing results for job: {}'.format(self))
+
+    def resubmit(self):
+        self._resubmit()
+
+    def get_logs(self):
+        return self._get_logs()
+
+    @abstractmethod
+    def _get_logs(self):
+        pass
+
+    @abstractmethod
+    def _resubmit(self, *args, **kwargs):
+        pass
 
     @abstractmethod
     def _execute(self, *args, **kwargs):

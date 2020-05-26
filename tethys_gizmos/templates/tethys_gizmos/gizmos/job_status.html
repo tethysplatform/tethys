@@ -1,6 +1,12 @@
 <div data-toggle="tooltip" title="{{ job_status }}" align="left">
   {% if job_status == 'Complete' and results_url %}
     <a class='btn btn-primary btn-xs' href="{% url results_url job_id=job_id %}">View Results</a>
+  {% elif job_status == 'Running' and monitor_url %}
+    <div class="progress" style="margin-bottom: 0;">
+      <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" title="Running" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+        <a class='btn btn-xs' href="{% url monitor_url job_id=job_id %}" style="width: 100%">Monitor Status</a>
+      </div>
+    </div>
   {% elif job_status == 'Various-Complete' and results_url %}
     <a class='btn btn-danger btn-xs' title='Complete with Errors' href="{% url results_url job_id=job_id %}">View Results</a>
   {% elif job_status == 'Pending' and run %}

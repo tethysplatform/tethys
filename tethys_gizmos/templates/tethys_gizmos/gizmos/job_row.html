@@ -22,4 +22,14 @@
       <a class='btn btn-danger btn-xs btn-job-delete' href="javascript:void(0)" data-job-id="{{ job_id }}" >Delete</a>
     </td>
   {% endif %}
+  {% if show_resubmit_btn %}
+    <td>
+      <a class='btn btn-warning btn-xs btn-job-resubmit' href="javascript:void(0)" data-job-id="{{ job_id }}" >Resubmit</a>
+    </td>
+  {% endif %}
+  {% if show_log_btn %}
+    <td>
+      <a class='btn btn-info btn-xs btn-job-show-log' href="javascript:void(0)" data-job-id="{{ job_id }}" data-toggle="modal" data-target="#modal-dialog-jobs-table-show-log">Logs</a>
+    </td>
+  {% endif %}
 {% endif %}

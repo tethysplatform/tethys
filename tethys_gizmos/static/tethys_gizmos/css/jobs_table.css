@@ -104,3 +104,89 @@ p.loading-error {
   stroke: #333;
   stroke-width: 1px;
 }
+
+.modal-backdrop {
+    position: relative !important;
+  }
+  #modal-dialog-jobs-table-log-body {
+    height: 500px;
+    padding-left: 0px;
+    padding-top: 0px;
+    padding-right: 0px;
+    background-color: black;
+    font-size: 15px;
+    color: white;
+  }
+
+  #modal-dialog-jobs-table-log-content>p {
+    padding-left: 15px;
+    font-size: 15px;
+    color: white;
+  }
+
+  .tethys_job_log_content {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .show-nav * .modal-content {
+    right:25%;
+  }
+
+  .modal-header .close {
+    position: relative;
+    bottom: 10px;
+  }
+
+  .modal-header h5 {
+    position: relative;
+    top: 10px;
+  }
+
+  .modal-body {
+    border-radius: 0;
+    white-space: pre-line;
+    overflow: auto;
+    word-wrap: break-word;
+  }
+
+  .navbar-nav>li>a {
+    color: black !important;
+    font-size: 20px !important;
+  }
+
+  .navbar {
+    background-color: white;
+    border-radius: 0px;
+    margin-bottom: 0px;
+  }
+  #jobs_table_overlay{
+    position: fixed;
+    top: 100;
+    z-index: 100;
+    width: 100%;
+    height:100%;
+    background: rgba(0,0,0,0.6);
+  }
+  .cv-spinner {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .spinner {
+    position: absolute
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    border: 4px #ddd solid;
+    border-top: 4px #2e93e6 solid;
+    border-radius: 50%;
+    animation: sp-anime 0.8s infinite linear;
+  }
+  @keyframes sp-anime {
+    100% {
+      transform: rotate(360deg);
+    }
+  }

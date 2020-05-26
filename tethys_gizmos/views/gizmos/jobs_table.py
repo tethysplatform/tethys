@@ -24,6 +24,7 @@ def execute(request, job_id):
 def delete(request, job_id):
     try:
         job = TethysJob.objects.get_subclass(id=job_id)
+        job.clean_on_delete = True
         job.delete()
         success = True
         message = ''
@@ -32,6 +33,39 @@ def delete(request, job_id):
         message = str(e)
         log.error('The following error occurred when deleting job %s: %s', job_id, message)
     return JsonResponse({'success': success, 'message': message})
+
+
+def resubmit(request, job_id):
+    try:
+        job = TethysJob.objects.get_subclass(id=job_id)
+        # Resubmit the Job.
+        job.resubmit()
+
+        success = True
+        message = ''
+    except Exception as e:
+        success = True
+        message = str(e)
+        log.error('The following error occurred when resubmiting job %s: %s', job_id, message)
+    return JsonResponse({'success': success, 'message': message})
+
+
+def show_log(request, job_id):
+    try:
+        job = TethysJob.objects.get_subclass(id=job_id)
+        # Get the Job logs.
+        data = job.get_logs()
+
+        success = True
+        message = ''
+
+        return JsonResponse({'success': success, 'data': data})
+    except Exception as e:
+        success = False
+        message = str(e)
+        log.error('The following error occurred when retrieving log for job %s: %s', job_id, message)
+
+        return JsonResponse({'success': success})
 
 
 def update_row(request, job_id):

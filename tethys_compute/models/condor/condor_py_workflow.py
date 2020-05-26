@@ -64,6 +64,11 @@ class CondorPyWorkflow(models.Model):
 
     def load_nodes(self):
         workflow = self.condor_object
+
+        # Skip if nodes are loaded already
+        if len(workflow.node_set):
+            return
+
         node_dict = dict()
 
         def add_node_to_dict(node):

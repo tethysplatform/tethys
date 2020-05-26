@@ -10,6 +10,7 @@ class JobObject:
         self.description = description
         self.creation_time = creation_time
         self.run_time = run_time
+        self.extended_properties = {'processing_results': True}
 
 
 class TestJobsTable(unittest.TestCase):
@@ -26,12 +27,15 @@ class TestJobsTable(unittest.TestCase):
         jobs = [job1, job2]
         column_fields = ['id', 'name', 'description', 'creation_time', 'run_time']
 
-        ret = gizmo_jobs_table.JobsTable(jobs=jobs, column_fields=column_fields)
+        ret = gizmo_jobs_table.JobsTable(jobs=jobs, column_fields=column_fields, show_resubmit_btn=True,
+                                         show_log_btn=True)
 
         mock_set.assert_called_with(jobs,  ['id', 'name', 'description', 'creation_time', 'run_time'])
         self.assertTrue(ret.status_actions)
         self.assertTrue(ret.run)
         self.assertTrue(ret.delete)
+        self.assertTrue(ret.show_resubmit_btn)
+        self.assertTrue(ret.show_log_btn)
         self.assertTrue(ret.delay_loading_status)
         self.assertFalse(ret.hover)
         self.assertFalse(ret.bordered)
@@ -42,7 +46,7 @@ class TestJobsTable(unittest.TestCase):
         self.assertEqual('', ret.classes)
         self.assertEqual(5000, ret.refresh_interval)
         self.assertFalse(ret.show_detailed_status)
-        self.assertEqual(7, ret.num_cols)
+        self.assertEqual(9, ret.num_cols)
 
     @mock.patch('tethys_gizmos.gizmo_options.jobs_table.JobsTable.set_rows_and_columns')
     def test_JobsTable_init_no_status_actions(self, mock_set):
@@ -75,7 +79,7 @@ class TestJobsTable(unittest.TestCase):
         job1 = JobObject(1, 'name1', 'des1', 1, 1)
         job2 = JobObject(2, 'name2', 'des2', 2, 2)
         jobs = [job1, job2]
-        column_fields = ['id', 'name', 'description', 'creation_time', 'run_time']
+        column_fields = [('id', '1'), 'name', 'description', 'creation_time', 'run_time', 'extended_properties']
 
         # This set_rows_and_columns method is called at the init
         result = gizmo_jobs_table.JobsTable(jobs=jobs, column_fields=column_fields)

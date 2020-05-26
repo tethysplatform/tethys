@@ -519,6 +519,33 @@ class DaskJobTest(TethysTestCase):
         # call the done function
         self.assertIsNone(djob.retry())
 
+    @mock.patch('tethys_compute.models.dask.dask_job.DaskJob.future')
+    def test__resubmit(self, mock_future):
+        # Create DaskJob
+        djob = DaskJob(name='test_dj', user=self.user, label='label', scheduler=self.scheduler)
+
+        # call the done function
+        djob._resubmit()
+
+        # Check result
+        mock_future.retry.assert_called()
+
+    @mock.patch('tethys_compute.models.dask.dask_scheduler.Client')
+    def test_get_logs(self, mock_client):
+        mock_get_log = mock.MagicMock()
+        mock_get_log.get_scheduler_logs.return_value = (('INFO', 'dask_scheduler_log1'),
+                                                        ('INFO', 'dask_scheduler_log2'))
+        mock_get_log.get_worker_logs.return_value = {'worker1': (('INFO', 'dask_worker1_log1'),
+                                                                 ('INFO', 'dask_worker1_log2'))}
+        mock_client.return_value = mock_get_log
+        # Create DaskJob
+        djob = DaskJob(name='test_dj', user=self.user, label='label', scheduler=self.scheduler)
+        expected_ret = {'Scheduler': '"INFO", "dask_scheduler_log1"\n"INFO", "dask_scheduler_log2"',
+                        'Workers': {'Worker-1': '"INFO", "dask_worker1_log1"\n"INFO", "dask_worker1_log2"'}}
+        ret = djob._get_logs()
+
+        self.assertEqual(expected_ret, ret)
+
     @mock.patch('tethys_compute.models.dask.dask_job.log')
     def test_fail_acquire_pr_lock(self, mock_log):
         # Create DaskJob
