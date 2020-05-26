@@ -1,3 +1,5 @@
+.. _publish_app_to_github:
+
 **************************
 Publish App Code to GitHub
 **************************

@@ -24,8 +24,10 @@ If you wish to use the previous solution as a starting point:
     cd tethysapp-earth_engine
     git checkout -b rest-api-solution-solution rest-api-solution-solution-|version|
 
-1. Retrieve Service Account Credentials
-=======================================
+.. _service_account_key:
+
+1. Create Service Account Key
+=============================
 
 After you have setup your service account, you will need to create a key that the app can use to authenticate with Google Earth Engine.
 

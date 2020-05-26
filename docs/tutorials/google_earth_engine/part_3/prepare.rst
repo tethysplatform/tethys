@@ -69,7 +69,6 @@ Although using the :file:`gee/params.py` file to store our service account crede
     from ..app import EarthEngine as app
 
 .. code-block:: python
-    :emphasize-lines: 1-10
 
     service_account = app.get_custom_setting('service_account_email')
     private_key_path = app.get_custom_setting('private_key_file')
@@ -80,19 +79,12 @@ Although using the :file:`gee/params.py` file to store our service account crede
             ee.Initialize(credentials)
             log.info('Successfully initialized GEE using service account.')
         except EEException as e:
-            log.exception(str(e))
+            log.warning('Unable to initialize GEE using service account. If installing ignore this warning.')
     else:
         try:
             ee.Initialize()
         except EEException as e:
-            from oauth2client.service_account import ServiceAccountCredentials
-            credentials = ServiceAccountCredentials.from_p12_keyfile(
-                service_account_email='',
-                filename='',
-                private_key_password='notasecret',
-                scopes=ee.oauth.SCOPE + ' https://www.googleapis.com/auth/drive '
-            )
-            ee.Initialize(credentials)
+            log.warning('Unable to initialize GEE with local credentials. If installing ignore this warning.')
 
 3. **Remove** the following import statement from the top of :file:`gee/methods.py`:
 
