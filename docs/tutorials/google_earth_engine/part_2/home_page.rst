@@ -4,7 +4,7 @@ Add a Home Page
 
 **Last Updated:** May 2020
 
-In this tutorial you will create a home page for the Google Earth Engine app that you created in :ref:`google_earth_engine_part_1`. This page will contain introductory information about that app. This will involve moving the current "home page", which contains the map viewer, to a new endpoint. Then you will set up a new controller and template for the new home page. The following topics will be covered in this tutorial:
+In this tutorial you will create a home page for the Google Earth Engine app that you created in :ref:`google_earth_engine_part_1`. This page will contain introductory information about that app. This will involve moving the current "home page", which contains the map viewer, to a new endpoint. Then you will set up a new controller and template for the new home page. The following topics will be reviewed in this tutorial:
 
 * Adding a new view to your app
 * Responsive web design using Bootstrap

@@ -4,9 +4,7 @@ File Upload
 
 **Last Updated:** May 2020
 
-In this tutorial you will add a file upload form to the Viewer page to allow users to provide a clipping boundary for the imagery. This will include writing validation code to ensure that only shapefiles containing Polygons are uploaded. The file will be stored in the user's workspace directory after being uploaded.
-
-Topics covered in this tutorial include:
+In this tutorial you will add a file upload form to the Viewer page to allow users to provide a clipping boundary for the imagery. This will include writing validation code to ensure that only shapefiles containing Polygons are uploaded. The file will be stored in the user's workspace directory after being uploaded. The following topics will be reviewed in this tutorial:
 
 * File Uploads via HTML Forms
 * Validating Form Data

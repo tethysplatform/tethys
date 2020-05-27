@@ -4,17 +4,13 @@ Add a REST API
 
 **Last Updated:** May 2020
 
-In this tutorial you will add a REST API endpoint to the Earth Engine app. This will provide a programmatic access point to the data hosted by your app. Topics covered in this tutorial include:
+In this tutorial you will add a REST API endpoint to the Earth Engine app. The REST API will provide a programmatic access point to the underlying ``get_time_series_from_image_collection`` method. This is the same method that is used retrieve the time series for the plot at an area of interest capability of the Viewer page. Topics covered in this tutorial include:
 
-* REST APIs in Tethys Apps
-* Django REST Framework
+* :ref:`tethys_rest_api` in Tethys Apps
+* `Django REST Framework <https://www.django-rest-framework.org/>`_ in Tethys
 * Token Authentication
 * Controllers in Multiple Files
-* Developing REST APIs with Postman
-* REST APIs
-* API Tokens
-* `Django REST Framework <https://www.django-rest-framework.org/>`_ in Tethys
-* Debugging REST APIs using `Postman <https://www.postman.com/>`_
+* Developing REST APIs with `Postman <https://www.postman.com/>`_
 
 0. Start From Previous Solution (Optional)
 ==========================================
@@ -30,7 +26,7 @@ If you wish to use the previous solution as a starting point:
 1. Reorganize Controller Functions into Separate Files
 ======================================================
 
-The ``controllers.py`` file is getting quite long...
+The :file:`controllers.py` file is beginning to get quite long. To make the controller code more manageable, in this step you will refactor the controllers into several files.
 
 1. Create a new folder called :file:`controllers` in the :file:`earth_engine` directory with the following new empty Python modules in it:
 
@@ -43,6 +39,10 @@ The ``controllers.py`` file is getting quite long...
     .. note::
 
         A folder with a file named :file:`__init__.py` is called a Python package.
+
+    .. warning::
+
+        If you are using PyCharm, make sure it doesn't add an :file:`__init__.py` file in the :file:`tethysapp` directory. This will cause this app or other apps to stop working when installed in Tethys Platform.
 
 2. Copy the ``home`` and ``about`` controller functions, with any imports they need into the new :file:`controllers/home.py` module:
 
@@ -191,6 +191,8 @@ The ``controllers.py`` file is getting quite long...
 2. Create New UrlMap and Controller for REST API Endpoint
 =========================================================
 
+REST endpoints are similar to normal controllers. The primary difference is that they typically return data using JSON or XML format instead of HTML. In this step you will create a new controller function and ``UrlMap`` for the REST endpoint.
+
 1. Create a new controller function named ``get_time_series`` in :file:`controllers/rest.py` with the following contents:
 
 .. code-block:: python
@@ -216,7 +218,7 @@ The ``controllers.py`` file is getting quite long...
 
 .. tip::
 
-    TODO: Django REST Framework support in Tethys Platform.
+    Tethys includes the `Django REST Framework <https://www.django-rest-framework.org/>`_ to aid with the token authentication capability (i.e. ``api_view()`` and ``authentication_classes()`` decorators). It is quite a capable extension for Django websites and is worth investigating if you plan to make a large, stand alone REST API.
 
 2. Add a new ``UrlMap`` for the ``get_time_series`` controller to :file:`app.py`:
 
@@ -269,7 +271,7 @@ The ``controllers.py`` file is getting quite long...
 3. Test with Postman Application
 ================================
 
-Testing REST APIs is most easily done with a REST client like Postman.
+Most web browsers are surprisingly limited when it comes to testing REST APIs. The reason the test in the previous step resulted in a *401 Unauthorized* is because we sent a request without an authentication token. To more easily test this, you'll want to get a REST client that will allow you to set request headers and parameters. In this tutorial you will use the Postman client to test the REST API as you develop it.
 
 1. If you have not done so already, `download and install the Postman app <https://www.postman.com/>`_ and then launch it.
 
@@ -292,6 +294,8 @@ Testing REST APIs is most easily done with a REST client like Postman.
 4. Add Token Authorization Headers to Postman Request
 =====================================================
 
+In this step you will retrieve the API token for your user account and set authentication headers on the request.
+
 1. Navigate to `<http://localhost:8000/apps/>`_ and sign in if necessary.
 
 2. Click on the button with your username on it in the top-right-hand corner of the page to access your user profile.
@@ -308,6 +312,8 @@ Testing REST APIs is most easily done with a REST client like Postman.
 
 5. Define Parameters for REST API
 =================================
+
+In this step you'll define the parameters that the REST endpoint will accept. If you think of the REST endpoint as a function, then the parameters are like the arguments to the function. The controller will be configured to work with both the ``GET`` and ``POST`` methods for illustration purposes.
 
 1. Update the ``get_time_series`` controller in :file:`controllers/rest.py` as follows:
 
@@ -387,6 +393,8 @@ Testing REST APIs is most easily done with a REST client like Postman.
 
 6. Validate Platform, Sensor, Product, and Index
 ================================================
+
+In this step you'll add the validation logic for the ``platform``, ``sensor``, ``product``, and ``index`` parameters. The REST endpoint is like a function shared publicly on the internet--anyone can call it with whatever parameters they want. This includes bots that may try to exploit your website through its REST endpoints. Be sure to only allow valid values through and provide helpful feedback for users of the REST API.
 
 1. Modify the ``get_time_series`` controller in :file:`controllers/rest.py` to add validation for the ``platform``, ``sensor``, ``product``, and ``index`` parameters as follows:
 
@@ -489,7 +497,7 @@ Testing REST APIs is most easily done with a REST client like Postman.
 7. Validate Dates
 =================
 
-There is logic that already exists in the ``viewer`` controller that you can use to validate the date parameters in our REST API function. However, you should avoid copying code to prevent duplicating bugs and make the app easier to maintain. Instead, we'll generalize the bit of code from the ``viewer`` controller into a helper function and then use that function in both the ``viewer`` controller and the ``get_time_series`` controller.
+In this step you'll add the validation logic for the ``start_date`` and ``end_date`` parameters. There is logic that already exists in the ``viewer`` controller that you can use to validate the date parameters in our REST API function. However, you should avoid copying code to prevent duplicating bugs and make the app easier to maintain. Instead, you will generalize the bit of code from the ``viewer`` controller into a helper function and then use that function in both the ``viewer`` controller and the ``get_time_series`` controller.
 
 1. Create a new helper function called ``compute_dates_for_product`` in :file:`helpers.py` with contents based on the validation logic for dates in the ``viewer`` controller:
 
@@ -661,6 +669,8 @@ There is logic that already exists in the ``viewer`` controller that you can use
 8. Validate Reducer, Orient, and Scale
 ======================================
 
+In this step you'll add the validation logic for the ``reducer``, ``orient``, and ``scale`` parameters. The ``reducer`` and ``orient`` parameters each have a short list of valid options and the ``scale`` parameter needs to be a number.
+
 1. Modify the ``get_time_series`` controller in :file:`controllers/rest.py` to add validation for the ``reducer``, ``orient``, and ``scale`` parameters. Replace the ``response_data`` object with the following:
 
 .. code-block:: python
@@ -723,10 +733,10 @@ There is logic that already exists in the ``viewer`` controller that you can use
 
 8. Change ``scale`` to a valid value other than the default (e.g.: ``150``). Verify this value is returned.
 
-
-
 9. Validate Geometry
 ====================
+
+In this step you'll add the logic to validate the ``geometry`` parameter, which should be valid GeoJSON. An optimistic strategy will be used in which an attempt will be made to convert the string into a GeoJSON object. If it fails, then the given string is not valid GeoJSON and an error will be returned.
 
 1. Modify the ``get_time_series`` controller in :file:`controllers/rest.py` to add validation for the ``geometry`` parameter.  Replace the ``response_data`` object with the following:
 
@@ -780,6 +790,8 @@ There is logic that already exists in the ``viewer`` controller that you can use
 
 10. Reuse Existing Helper Function to Get Time Series
 =====================================================
+
+With the parameters properly vetted, you are now ready to call the ``get_time_series_from_image_collection`` function. It should be a fairly straightforward call of the function, mapping the REST parameters to the arguments of the function. You will need to make a few minor changes to the function, however, to accommodate the new ``orient`` option.
 
 1. Refactor the ``get_time_series_from_image_collection`` function in :file:`gee/methods.py` to accept the ``orient`` argument by replacing the function with this new definition:
 

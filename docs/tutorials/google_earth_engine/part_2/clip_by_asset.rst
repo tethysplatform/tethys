@@ -7,6 +7,7 @@ Clip by Asset
 In this tutorial you will use the shapefile uploaded using the file upload form to clip the dataset imagery. This will be done by uploading the shapefile to Google Earth Engine as an asset. Then the map will be reconfigured to check for the asset and clip the imagery if it exists. It will also use the bounding box of the asset to set the default map extent. The following topics will be reviewed in this tutorial:
 
 * `Google Earth Engine Assets <https://developers.google.com/earth-engine/asset_manager>`_
+* Clipping Google Earth Engine Imagery
 
 0. Start From Previous Solution (Optional)
 ==========================================
