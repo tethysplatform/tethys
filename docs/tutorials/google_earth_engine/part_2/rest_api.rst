@@ -11,6 +11,10 @@ In this tutorial you will add a REST API endpoint to the Earth Engine app. This 
 * Token Authentication
 * Controllers in Multiple Files
 * Developing REST APIs with Postman
+* REST APIs
+* API Tokens
+* `Django REST Framework <https://www.django-rest-framework.org/>`_ in Tethys
+* Debugging REST APIs using `Postman <https://www.postman.com/>`_
 
 0. Start From Previous Solution (Optional)
 ==========================================

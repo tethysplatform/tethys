@@ -4,12 +4,16 @@ File Upload
 
 **Last Updated:** May 2020
 
-In this tutorial you will learn how to upload files using HTML forms. Topics covered in this tutorial include:
+In this tutorial you will add a file upload form to the Viewer page to allow users to provide a clipping boundary for the imagery. This will include writing validation code to ensure that only shapefiles containing Polygons are uploaded. The file will be stored in the user's workspace directory after being uploaded.
+
+Topics covered in this tutorial include:
 
 * File Uploads via HTML Forms
 * Validating Form Data
 * User Workspaces
-* pyshp
+* `Bootstrap Modals <https://getbootstrap.com/docs/3.4/javascript/#modals>`_
+* Manipulating Shapefiles in Python with `pyshp <https://pypi.org/project/pyshp/>`_
+* Temp Files
 
 0. Start From Previous Solution (Optional)
 ==========================================
@@ -24,6 +28,8 @@ If you wish to use the previous solution as a starting point:
 
 1. Add New Modal for File Upload Form
 =====================================
+
+Create a new `Bootstrap Modal <https://getbootstrap.com/docs/3.4/javascript/#modals>`_ with a button in the left navigation to open it.
 
 1. Add a new button titled **Set Boundary** to the bottom of the ``viewer`` controller in :file:`controllers.py`:
 
@@ -124,6 +130,8 @@ If you wish to use the previous solution as a starting point:
 2. Add File Upload Form to Set Boundary Modal
 =============================================
 
+Add an HTML ``form`` element with the attributes that are required to perform a file upload. These include using a ``method`` of ``post`` and setting the ``enctype`` to ``multipart/form-data``. The form will also need an ``input`` element of type ``file``.
+
 1. Add a ``<form>`` element to the ``modal-body`` element of the Set Boundary modal in :file:`templates/earth_engine/viewer.html`:
 
 ..  code-block:: html+django
@@ -134,10 +142,6 @@ If you wish to use the previous solution as a starting point:
         <p>Create a zip archive containing a shapefile and supporting files (i.e.: .shp, .shx, .dbf). Then use the file browser button below to select it.</p>
       </form>
     </div>
-
-.. note::
-
-    TODO: Explanation of the different attributes of the form element
 
 2. Add the Cross Site Request Forgery token (``csrf_token``) to the new ``<form>`` element in :file:`templates/earth_engine/viewer.html`:
 
@@ -154,7 +158,7 @@ If you wish to use the previous solution as a starting point:
 
 .. note::
 
-    TODO: explanation of the csrf_token
+    The Cross Site Request Forgery (CSRF) token is used to verify that the call came from our client-side code and not from a site posing to be our site. As a security precaution, the server will reject any POST requests that do not include this token. For more information about CSRF see: `Cross Site Request Forgery protection <https://docs.djangoproject.com/en/2.2/ref/csrf/>`_.
 
 3. Add a Bootstrap ``form-group`` with an ``<input>`` element of type ``file`` to the new ``<form>`` element in :file:`templates/earth_engine/viewer.html`:
 
@@ -187,6 +191,8 @@ If you wish to use the previous solution as a starting point:
 
 3. Handle File Upload in Controller
 ===================================
+
+The ``action`` attribute of the HTML ``form`` element dictates endpoint to which to send the request. It is often set to a relative URL with a separate controller to handle the form submission (e.g. ``/apps/my-app/handle-file-upload``. If the ``action`` element is emtpy, then the form submission is submitted to the current URL, which means the same controller will handle the form submission as rendered it. This is the case with the file upload form you setup in the previous step. In this step you will add logic to the ``viewer`` controller to handle the file upload form submission. As this logic will get a little long, you'll first create a helper function that the ``viewer`` controller can call to handle the form submission.
 
 1. Create a new helper function called ``handle_shapefile_upload`` in :file:`controllers.py`:
 
@@ -239,7 +245,9 @@ If you wish to use the previous solution as a starting point:
 4. Write Uploaded File to Temporary Directory
 =============================================
 
-1. Add the following imports and replace ``handle_shapefile_upload`` in :file:`controllers.py` with this updated version:
+With the ``handle_shapefile_upload`` helper function wired to be called by the ``viewer`` controller whenever a file is uploaded, you can now focus on building out the logic. The uploaded file is accessible through the ``request.FILES`` object and is stored in memory. To validate the file, you will need to write it to disk. In this step you will write the in-memory file to the temp directory. The built-in ``tempfile`` module makes it easy to write files to the temp directory in a cross-platform safe manner.
+
+1. Add the following imports and replace ``handle_shapefile_upload`` in :file:`controllers.py` with this updated version that writes the in-memory file to the temp directory:
 
 .. code-block:: python
 
@@ -271,6 +279,10 @@ If you wish to use the previous solution as a starting point:
                 for chunk in uploaded_file.chunks():
                     temp_zip.write(chunk)
 
+.. note::
+
+    The temporary directory (``temp_dir``) and it's contents will be deleted as soon as the ``with`` statement is exited. Any additional logic that manipulates the ``temp_dir`` or ``temp_zip`` will need to occur within the ``with tempfile.TemporaryDirectory() as temp_dir:`` block.
+
 
 2. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload a file. Verify a path in the :file:`/tmp` directory is printed to the console.
 
@@ -280,6 +292,8 @@ If you wish to use the previous solution as a starting point:
 
 5. Validate File Uploaded is a Zip Archive
 ==========================================
+
+Now that the file is written to disk, use the built-in ``zipfile`` module to verify that the file is a ZIP archive. This is most easily done by attempting to extract the file and then handling the exception if it is not a ZIP file. This is a convenient pattern for this implementation, because the next step will be to verify that the ZIP archive contains a shapefile which will require extracting.
 
 1. Add the following imports and modify ``handle_shapefile_upload`` in :file:`controllers.py` as follows:
 
@@ -320,11 +334,7 @@ If you wish to use the previous solution as a starting point:
                 # Return error message
                 return 'You must provide a zip archive containing a shapefile.'
 
-.. note::
-
-    Any string returned by this function will be displayed as an error message to the user.
-
-2. Modify the Set Boundary form to display the error message. Replace the ``<div>`` with id ``boundary-file-form-group`` with this updated version in :file:`templates/earth_engine/viewer.html`:
+2. Notice that the docstring for the ``handle_shapefile_upload`` helper function indicates that the return value should be an error string if there are errors. The logic added in the previous step includes the first ``return`` statement for the function, which occurs when the given file is not a ZIP file. Modify the Set Boundary form to display the error messages returned by the ``handle_shapefile_upload`` function. Replace the ``<div>`` with id ``boundary-file-form-group`` with this updated version in :file:`templates/earth_engine/viewer.html`:
 
 .. code-block:: html+django
     :emphasize-lines: 1, 4-6
@@ -337,7 +347,7 @@ If you wish to use the previous solution as a starting point:
       {% endif %}
     </div>
 
-3. Automatically open the Set Boundary modal if there is an error to display. Replace the **INITIALIZATION / CONSTRUCTOR** section of :file:`public/js/gee_datasets.js` with the following:
+3. The modal is not open by default when the page loads, which is normally the desired behaviour. However, when the page refreshes after a form submission that yields errors, the errors will be obscured from the user until they open the dialog again. Automatically open the Set Boundary modal if there is an error to display. Replace the **INITIALIZATION / CONSTRUCTOR** section of :file:`public/js/gee_datasets.js` with the following:
 
 .. code-block:: javascript
     :emphasize-lines: 21-24
@@ -368,12 +378,14 @@ If you wish to use the previous solution as a starting point:
         }
     });
 
-4. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload a non-zip file. Verify that the error message is displayed in the modal and that it opens automatically. Upload a zip file and verify that the modal does not open automatically and no error is displayed.
+4. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload a non-zip file. Verify that the error message is displayed in the modal and that it opens automatically. Upload a zip file and verify that the modal does not open automatically and no error is displayed when you open it.
 
 6. Validate File is a Shapefile Containing Polygons
 ===================================================
 
-1. Install ``pyshp`` library for working with shapefiles. Run the following command in the terminal with your Tethys environment activated:
+In this step you will add the logic to validate that the file contained in the ZIP archive is a shapefile. You will use the ``pyshp`` library to do this, which will introduce a new dependency for the app.
+
+1. Install ``pyshp`` library into your Tethys conda environment. Run the following command in the terminal with your Tethys environment activated:
 
 .. code-block:: bash
 
@@ -437,7 +449,7 @@ If you wish to use the previous solution as a starting point:
         return shapefile_path
 
 
-4. Add logic to validate that the unzipped directory contains a shapefile and that it only contains polygons in ``handle_shapefile_upload`` in :file:`controllers.py`:
+4. Use the new ``find_shapefile`` helper function and ``pyshp`` in ``handle_shapefile_upload`` to validate that the unzipped directory contains a shapefile. Update ``handle_shapefile_upload`` in :file:`controllers.py`:
 
 .. code-block:: python
 
@@ -504,7 +516,9 @@ If you wish to use the previous solution as a starting point:
 7. Save Shapefile to the User's Workspace Directory
 ===================================================
 
-1. Add the following imports and create a new helper function ``prep_boundary_dir`` in :file:`helpers.py`:
+At this point you have confirmed that the user uploaded a ZIP archive containing a shapefile of polygons but the file is still stored as a temporary file and will be deleted as soon as the code finishes executing. In this step you will add the logic to write the file to the user's workspace directory. This will involve creating a few new helper functions and using the :ref:`tethys_workspaces_api`.
+
+1. The shapefile and its sidecars will be stored in a directory called :file:`boundary` within the user's workspace. Only one boundary shapefile will be stored for each user, so if the :file:`boundary` directory already exists, it will need to be cleared out. The ``prep_boundary_dir`` helper function will be responsible for initializing the :file:`boundary` directory in the user's workspace and clearing it out if needed. Add the following imports and create the ``prep_boundary_dir`` function in :file:`helpers.py`:
 
 .. code-block:: python
 
@@ -540,7 +554,7 @@ If you wish to use the previous solution as a starting point:
 
         return boundary_dir
 
-2. Create a new helper function ``write_boundary_shapefile`` in :file:`helpers.py`:
+2. The ``write_boundary_shapefile`` helper function takes the ``shapefile.Reader`` object that was used to validate the shapefile and uses it to write a copy of the shapefile to the given directory. Create the ``write_boundary_shapefile`` function in :file:`helpers.py`:
 
 .. code-block:: python
 
@@ -574,7 +588,7 @@ If you wish to use the previous solution as a starting point:
 
         return shapefile_path
 
-3. Add the ``user_workspace`` decorator to the ``viewer`` controller. The user workspace will be passed in as an additional argument to the controller, so don't forget to add an additional argument to accept the user workspace in :file:`controllers.py`:
+3. The :ref:`tethys_workspaces_api` provides controller decorators that are used to get the user and app workspaces. Add the ``user_workspace`` decorator to the ``viewer`` controller. The decorator passes the user workspace object as an additional argument to the controller, so you will need to add an additional argument to accept the user workspace in :file:`controllers.py`:
 
 .. code-block:: python
 
@@ -592,9 +606,9 @@ If you wish to use the previous solution as a starting point:
 
 .. tip:
 
-    TODO: workspace API tip
+    For more information about Tethys Workspaces, see :ref:`tethys_workspaces_api`.
 
-4. Modify the ``handle_shapefile_upload`` helper function to accept the ``user_workspace`` as an additional argument in :file:`controllers.py`:
+4. The ``viewer`` controller will need to be able to pass the ``user_workspace`` to the ``handle_shapefile_upload`` function. Modify the ``handle_shapefile_upload`` helper function to accept the ``user_workspace`` as an additional argument in :file:`controllers.py`:
 
 .. code-block:: python
     :emphasize-lines: 1
@@ -692,7 +706,9 @@ If you wish to use the previous solution as a starting point:
 8. Redirect Upon Successful File Upload
 =======================================
 
-1. If there are no errors returned by ``handle_shapefile_upload``, redirect back to same page to clear the form data. Add the logic to the ``viewer`` controller in :file:`controllers.py`:
+As a final user experience improvement, issue a redirect response instead of the normal response when there are now errors. This will clear the form and reset the state of the page.
+
+1. Add the logic to the ``viewer`` controller in :file:`controllers.py`:
 
 .. code-block:: python
     :emphasize-lines: 6-8

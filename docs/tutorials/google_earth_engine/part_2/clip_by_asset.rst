@@ -4,9 +4,9 @@ Clip by Asset
 
 **Last Updated:** May 2020
 
-In this tutorial you will learn how to upload a shapefile as a Google Earth Engine asset and use it to clip the imagery.
+In this tutorial you will use the shapefile uploaded using the file upload form to clip the dataset imagery. This will be done by uploading the shapefile to Google Earth Engine as an asset. Then the map will be reconfigured to check for the asset and clip the imagery if it exists. It will also use the bounding box of the asset to set the default map extent. The following topics will be reviewed in this tutorial:
 
-* Google Earth Engine Assets
+* `Google Earth Engine Assets <https://developers.google.com/earth-engine/asset_manager>`_
 
 0. Start From Previous Solution (Optional)
 ==========================================
@@ -23,6 +23,8 @@ If you wish to use the previous solution as a starting point:
 1. Stub out New Method for Uploading Shapefiles to GEE
 ======================================================
 
+In this step you will stub out a new GEE method called ``upload_shapefile_to_gee`` that will be responsible for uploading the shapefile provided by the user as an asset to GEE.
+
 1. Create new ``upload_shapefile_to_gee`` function in :file:`gee/methods.py` with the following contents:
 
 .. code-block:: python
@@ -38,7 +40,7 @@ If you wish to use the previous solution as a starting point:
         print(user.username)
         print(shp_file)
 
-2. Import the new ``upload_shapefile_to_gee`` function and call it in ``handle_shapefile_upload`` function in :file:`controllers.py` after validating the shapefile upload. Also modify the ``try-except`` block to handle any uncaught Google Earth Engine errors:
+2. Import the new ``upload_shapefile_to_gee`` function and call it in ``handle_shapefile_upload`` function in :file:`controllers.py` after validating the shapefile upload. Also add an additional ``except`` clause to handle any uncaught Google Earth Engine errors:
 
 .. code-block:: python
 
@@ -114,6 +116,8 @@ If you wish to use the previous solution as a starting point:
 2. Convert Shapefile to ee.FeatureCollection
 ============================================
 
+The first step to uploading the shapefile as an asset is to convert it to an ``ee.FeatureCollection``. However, ``ee`` API does not provide a way to create an ``ee.FeatureCollection`` directly from a shapefile. As an intermediate step, the shapefile will be converted first to GeoJSON, which can then be used to create the ``ee.FeatureCollection``.
+
 1. Update the ``upload_shapefile_to_gee`` function in :file:`gee/methods.py` to convert the uploaded shapefile to GeoJSON:
 
 .. code-block:: python
@@ -185,7 +189,9 @@ If you wish to use the previous solution as a starting point:
 3. Export the New ee.FeatureCollection to an Asset
 ==================================================
 
-1. Create a new ``get_asset_dir_for_user`` function in :file:`gee/methods.py` with the following contents:
+Now that the shapefile has been converted to an ``ee.FeatureCollection``, it can be exported as a Google Earth Engine table asset (see:  `Importing Table Data - Uploading a Shapefile <https://developers.google.com/earth-engine/importing>`_). Remember that ``ee`` objects are server objects, which means the features are already on the server. Exporting the ``ee.FeatureCollection`` as an asset persists it to storage in the GEE cloud infrastructure so that you can use it again later without needing to upload it again. Similar to when the shapefile was written to the user's workspace, several helper functions will also be created to manage the folder where the asset will be written.
+
+1. The ``get_asset_dir_for_user`` will create a folder for the user and return the path. function Create a new ``get_asset_dir_for_user`` function in :file:`gee/methods.py` with the following contents:
 
 .. code-block:: python
 
@@ -236,7 +242,7 @@ If you wish to use the previous solution as a starting point:
         return user_root_dir
 
 
-2. Create a new ``get_user_boundary_path`` function in :file:`gee/methods.py` with the following contents:
+2. The ``get_user_boundary_path`` function determines the path to the boundary asset for a given user. Create a new ``get_user_boundary_path`` function in :file:`gee/methods.py` with the following contents:
 
 .. code-block:: python
 
@@ -301,7 +307,7 @@ If you wish to use the previous solution as a starting point:
 
 4. Navigate to `<http://localhost:8000/apps/earth-engine/viewer/>`_ and upload the :file:`USA_simplified.zip`. Verify that the path returned from ``get_user_boundary_path`` is printed to the terminal where Tethys is running.
 
-    .. note::
+    .. warning::
 
         If you have already uploaded an asset, doing so again will fail because we haven't handled the case where the file already exists (see Step 3.7). Either manually delete the asset at `<https://code.earthengine.google.com/>`_ or skip to step 3.8 for the implementation that handles this issue.
 
@@ -376,7 +382,9 @@ If you wish to use the previous solution as a starting point:
 4. Use Boundary Asset to Clip Images
 ====================================
 
-1. Create a new ``get_boundary_fc_for_user`` function in :file:`gee/methods.py` with the following contents:
+In this step you will modify the ``get_image_collection_asset`` method to attempt to retrieve the boundary asset and use it to clip the boundary if it exists.
+
+1. The ``get_boundary_fc_for_user`` will retrieve the boundary asset and attempt to convert it to an ``ee.FeatureCollection``. If it succeeds, it will return the ``ee.FeatureCollection``, if it fails, the boundary asset likely has not been created so it will return ``None``. Create a new ``get_boundary_fc_for_user`` function in :file:`gee/methods.py` with the following contents:
 
 .. code-block:: python
 
@@ -453,7 +461,7 @@ If you wish to use the previous solution as a starting point:
         except EEException:
             log.exception('An error occurred while attempting to retrieve the image collection asset.')
 
-3. Modify the call of ``get_image_collection_asset`` in the ``get_image_collection`` controller in :file:`controllers.py` to pass the ``request`` as an additional argument:
+3. Modify ``get_image_collection`` controller in :file:`controllers.py` to call ``get_image_collection_asset`` with the ``request`` as an additional argument:
 
 .. code-block:: python
     :emphasize-lines: 22
@@ -505,7 +513,9 @@ If you wish to use the previous solution as a starting point:
 5. Use Boundary Asset for Map Extents
 =====================================
 
-1. Create a new ``get_boundary_fc_props_for_user`` function in :file:`gee/methods.py` with the following contents:
+In this step you will modify the ``MapView`` on the Viewer page to use the extents of the boundary asset as the default map extents. If the user has not uploaded a boundary, the boundary asset will not exist, so the ``MapView`` will be changed to default to world extents.
+
+1. The ``get_boundary_fc_props_for_user`` method is responsible for determining various properties about the boundary ``ee.FeatureCollection`` that will be used by the ``MapView``. These properties include the ``bounding_box``, ``centroid``, and ``zoom`` needed to frame the features when the view is centered on the centroid. Create a new ``get_boundary_fc_props_for_user`` function in :file:`gee/methods.py` with the following contents:
 
 .. code-block:: python
 
@@ -555,7 +565,7 @@ If you wish to use the previous solution as a starting point:
 
 .. note::
 
-    TODO: Explanation of zoom from diagonal equation.
+    The ``zoom`` is derived from an overly simplistic analysis on two countries of different size. A boundary polygon for each country was uploaded and the diagonal distance across the bounding box was calculated for each country using the distance formula. The zoom level that framed each country was also noted. A linear equation was developed using the equation of a line and the points formed by the computed diagonal and zoom level. This equation is likely not very robust, but it works as a good first pass.
 
 2. Use the ``get_boundary_fc_props_for_user`` function to get the bounding box and zoom level to use for the ``MapView``. Replace the definition of the ``MapView`` in the ``viewer`` controller in :file:`controllers.py` with the following:
 
