@@ -193,7 +193,7 @@ The links under the ``TETHYS PORTAL`` heading can be used to customize the look 
 
 .. tip::
 
-    For more information on customizing the Tethys Portal see the :doc:`./customize` documentation.
+    For more information on customizing the Tethys Portal see the :ref:`production_customize_theme` documentation.
 
 .. _admin_pages_tethys_quotas:
 
