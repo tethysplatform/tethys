@@ -8,7 +8,7 @@ Google Earth Engine Service Accounts
 ====================================
 
 Register
--------
+--------
 
 Keys
 ----
