@@ -9,7 +9,7 @@ In this tutorial you will add an About page and a disclaimer modal. The requirem
 * Adding a new view to your app
 * Responsive web design using Bootstrap
 * Bootstrap Grid System
-* Bootstrap Non-Fluid or Fixed Containers
+* Bootstrap Non-Fluid and Fixed Containers
 * Bootstrap Modals
 * Custom styling with CSS
 * Linking to other pages and navigation

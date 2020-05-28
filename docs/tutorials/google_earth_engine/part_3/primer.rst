@@ -1,17 +1,53 @@
-*********************************
-Publishing and Deploying Overview
-*********************************
+***************************************
+Part 3 Primer: Publishing and Deploying
+***************************************
 
 **Last Updated:** May 2020
 
-* Clean up code
-  * Sensitive information
-* Prepare for deploy
-  * Ensure all files are copied into site-packages
-* Publishing Code on GitHub
-  * Open Source Licenses
-* Deploying the app
-* Documentation
-  * Generating with Sphinx
-  * Hosting on Read the Docs
-* Automated Testing
+Google Earth Engine Service Accounts
+====================================
+
+Register
+-------
+
+Keys
+----
+
+Prepare App for Publishing
+==========================
+
+Git
+---
+
+gitignore
+---------
+
+GitHub
+------
+
+Sensitive Information
+---------------------
+
+Open Source Licenses
+--------------------
+
+README / Documentation
+----------------------
+
+Prepare for Deploy
+==================
+
+Dependencies
+------------
+
+Package Data
+------------
+
+Setup.py Metadata
+-----------------
+
+Semantic Versioning
+-------------------
+
+Installing Apps in Production
+=============================
