@@ -12,6 +12,10 @@ In this tutorial you will add a REST API endpoint to the Earth Engine app. The R
 * Controllers in Multiple Files
 * Developing REST APIs with `Postman <https://www.postman.com/>`_
 
+.. figure:: ./resources/rest_api_solution.png
+    :width: 800px
+    :align: center
+
 0. Start From Previous Solution (Optional)
 ==========================================
 

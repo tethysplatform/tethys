@@ -14,6 +14,10 @@ In this tutorial you will create a home page for the Google Earth Engine app tha
 * Linking to other pages and navigation
 * Placeholder content for development: lorem ipsum and images
 
+.. figure:: ./resources/home_page_solution.png
+    :width: 800px
+    :align: center
+
 0. Start From Previous Solution (Recommended)
 =============================================
 

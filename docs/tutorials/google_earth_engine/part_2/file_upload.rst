@@ -13,6 +13,10 @@ In this tutorial you will add a file upload form to the Viewer page to allow use
 * Manipulating Shapefiles in Python with `pyshp <https://pypi.org/project/pyshp/>`_
 * Temp Files
 
+.. figure:: ./resources/file_upload_solution.png
+    :width: 800px
+    :align: center
+
 0. Start From Previous Solution (Optional)
 ==========================================
 

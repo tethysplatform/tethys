@@ -9,6 +9,10 @@ In this tutorial you will use the shapefile uploaded using the file upload form 
 * `Google Earth Engine Assets <https://developers.google.com/earth-engine/asset_manager>`_
 * Clipping Google Earth Engine Imagery
 
+.. figure:: ./resources/clip_by_asset_solution.png
+    :width: 800px
+    :align: center
+
 0. Start From Previous Solution (Optional)
 ==========================================
 
