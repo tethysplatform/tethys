@@ -28,5 +28,3 @@ Outline
 
 Supporting Materials
 --------------------
-
-* TODO: When presentation is complete post here.
