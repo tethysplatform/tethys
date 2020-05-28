@@ -11,6 +11,10 @@ Topics covered in this tutorial include:
 * Installing Apps in Production
 * Cloning from GitHub
 
+.. figure:: ./resources/deploy_solution.png
+    :width: 800px
+    :align: center
+
 1. Copy Key Google Earth Engine to Server
 =========================================
 

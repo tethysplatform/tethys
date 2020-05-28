@@ -13,6 +13,10 @@ The following topics are covered in this tutorial:
 * Create Google Service Account Keys
 * Use Service Account for Google Earth Engine Operations
 
+.. figure:: ./resources/service_account_solution.png
+    :width: 800px
+    :align: center
+
 0. Start From Previous Solution (Optional)
 ==========================================
 

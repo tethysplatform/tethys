@@ -16,6 +16,10 @@ The following topics are covered in this tutorial:
 * setup.py Metadata
 * Resource Files / Package Data
 
+.. figure:: ./resources/prepare_publish_solution.png
+    :width: 800px
+    :align: center
+
 0. Start From Previous Solution (Optional)
 ==========================================
 

@@ -16,6 +16,10 @@ Topics covered in this tutorial include:
 * .gitignore
 * Adding a remote and Pushing Code to GitHub
 
+.. figure:: ./resources/publish_solution.png
+    :width: 800px
+    :align: center
+
 
 
 0. Start From Previous Solution (Optional)
