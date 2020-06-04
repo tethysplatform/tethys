@@ -10,27 +10,12 @@ This tutorial demonstrates how to use Google Earth Engine in a Tethys app.
     :width: 800px
     :align: center
 
-Prerequisites
--------------
-
-* Complete the :ref:`key_concepts_tutorial` Tutorial
-* Sign up for a `Google Earth Engine Account <https://signup.earthengine.google.com>`_
-
 Outline
 -------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
 
-   google_earth_engine/gee_primer
-   google_earth_engine/new_app_project
-   google_earth_engine/dataset_controls
-   google_earth_engine/dataset_controls_js
-   google_earth_engine/map_view
-   google_earth_engine/vis_gee_layers
-   google_earth_engine/plot_data
-
-Supporting Materials
---------------------
-
-* `Google Earth Engine Tutorial Presentation <https://docs.google.com/presentation/d/1n43AnLxk_3dSx8dShtWfAnrEuFbwEdw8j9RLQilhLdw/edit>`_
+   google_earth_engine/part_1
+   google_earth_engine/part_2
+   google_earth_engine/part_3

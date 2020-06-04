@@ -1,3 +1,5 @@
+.. _tethys_rest_api:
+
 ********
 REST API
 ********

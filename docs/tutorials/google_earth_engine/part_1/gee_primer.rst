@@ -1,6 +1,6 @@
-************************************************
-Google Earth Engine Primer for Tethys Developers
-************************************************
+********************************************************
+Part 1 Primer: Google Earth Engine for Tethys Developers
+********************************************************
 
 **Last Updated:** November 2019
 

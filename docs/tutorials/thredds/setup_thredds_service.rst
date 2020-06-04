@@ -99,10 +99,6 @@ For this tutorial you'll be using the publicly accesible UCAR THREDDS Data Serve
 
 6. Press the ``Save`` button to save the new Spatial Dataset Service.
 
-.. todo:
-
-    * Add screen capture of the filled out new sds form.
-
 .. tip::
 
     The ``Endpoint`` and ``Public Endpoint`` do not necessarily need to be the root endpoint. They can be any THREDDS endpoint, at any depth, containing a catalog.xml.

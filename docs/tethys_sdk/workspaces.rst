@@ -1,3 +1,5 @@
+.. _tethys_workspaces_api:
+
 **************
 Workspaces API
 **************

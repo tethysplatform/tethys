@@ -56,3 +56,7 @@ form[action="search.html"] {
 .rst-versions .rst-other-versions dd a:hover {
     color: gray!important;
 }
+
+.highlight .hll {
+    background-color: #cfef90;
+}
