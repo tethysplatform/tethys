@@ -27,6 +27,8 @@ If you wish to use the previous solution as a starting point:
     cd tethysapp-earth_engine
     git checkout -b map-view-solution map-view-solution-|version|
 
+.. _gee_authentication_step:
+
 1. Handle GEE Authentication
 ============================
 
@@ -167,8 +169,6 @@ Google Earth Engine provides XYZ tile services for each of their datasets. In th
         log.debug(f'Band Selector: {index}')
         log.debug(f'Vis Params: {vis_params}')
 
-        tile_url_template = "https://earthengine.googleapis.com/map/{mapid}/{{z}}/{{x}}/{{y}}?token={token}"
-
         try:
             ee_collection = ee.ImageCollection(collection)
 
@@ -187,9 +187,9 @@ Google Earth Engine provides XYZ tile services for each of their datasets. In th
             if reducer:
                 ee_collection = getattr(ee_collection, reducer)()
 
-            map_id_params = image_to_map_id(ee_collection, vis_params)
+            tile_url = image_to_map_id(ee_collection, vis_params)
 
-            return tile_url_template.format(**map_id_params)
+            return tile_url
 
         except EEException:
             log.exception('An error occurred while attempting to retrieve the image collection asset.')
@@ -205,11 +205,8 @@ Google Earth Engine provides XYZ tile services for each of their datasets. In th
         try:
             ee_image = ee.Image(image_name)
             map_id = ee_image.getMapId(vis_params)
-            map_id_params = {
-                'mapid': map_id['mapid'],
-                'token': map_id['token']
-            }
-            return map_id_params
+            tile_url = map_id['tile_fetcher'].url_format
+            return tile_url
 
         except EEException:
             log.exception('An error occurred while attempting to retrieve the map id.')

@@ -1,3 +1,5 @@
+.. _installing_apps_production:
+
 *****************************
 Installing Apps in Production
 *****************************

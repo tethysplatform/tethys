@@ -39,7 +39,7 @@ To generate a new Tethys App using the scaffold, open a terminal and execute the
 
 You will be prompted to enter metadata about the app such as, proper name, version, author, and description. All of these metadata are optional. You can accept the default values by pressing enter, repeatedly.
 
-In a file browser change into your :file:`Home` directory and open the :file:`tethysdev` directory. If the scaffolding worked, you should see a directory called :file:`tethysapp-earth_engine`. All of the source code for your app is located in this directory. For more information about the app project structure, see :doc:`../../supplementary/app_project`.
+In a file browser change into your :file:`Home` directory and open the :file:`tethysdev` directory. If the scaffolding worked, you should see a directory called :file:`tethysapp-earth_engine`. All of the source code for your app is located in this directory. For more information about the app project structure, see :doc:`../../../supplementary/app_project`.
 
 2. Add App Dependencies to :file:`install.yml`
 ==============================================
@@ -60,7 +60,7 @@ App dependencies should be managed using the :file:`install.yml` instead of the 
         channels:
           - conda-forge
         packages:
-          - earthengine-api=0.1.205
+          - earthengine-api
           - oauth2client
       pip:
 
