@@ -37,7 +37,7 @@ def login_view(request):
             password = form.cleaned_data['password']
 
             # Authenticate
-            user = authenticate(username=username, password=password)
+            user = authenticate(request, username=username, password=password)
 
             # If not authenticated, user will be None
             if user is not None:
@@ -104,7 +104,7 @@ def register(request):
             form.save()
 
             # Authenticate the new user
-            user = authenticate(username=username, password=password)
+            user = authenticate(request, username=username, password=password)
 
             if user is not None:
                 # The password has been verified for the user
