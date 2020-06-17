@@ -89,14 +89,10 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
 # Install APT packages
 RUN rm -rf /var/lib/apt/lists/*\
  && apt-get update \
- && apt-get -y install wget gnupg2 \
- && rm -rf /var/lib/apt/lists/*\
- && wget -O - http://repo.saltstack.com/apt/debian/9/amd64/archive/2019.2.0/SALTSTACK-GPG-KEY.pub | apt-key add - \
- && echo "deb http://repo.saltstack.com/apt/debian/9/amd64/archive/2019.2.0 stretch main" > /etc/apt/sources.list.d/saltstack.list
-RUN rm -rf /var/lib/apt/lists/*\
- && apt-get update \
  && apt-get -y install bzip2 git nginx supervisor gcc salt-minion procps pv \
  && rm -rf /var/lib/apt/lists/*\
+
+# Remove default NGINX site
 RUN rm -f /etc/nginx/sites-enabled/default
 
 # Setup Conda Environment
@@ -138,7 +134,7 @@ RUN mkdir -p ${TETHYS_PERSIST} ${APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT}
 ############
 # CLEAN UP #
 ############
-RUN apt-get -y remove wget gcc gnupg2 \
+RUN apt-get -y remove gcc \
   ; apt-get -y autoremove \
   ; apt-get -y clean
 
