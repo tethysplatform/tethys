@@ -489,7 +489,7 @@ class TestInstallServicesCommands(TestCase):
 
     @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_run_services_path_none(self, mock_pretty_output):
-        args = mock.MagicMock(services_file=None, only_dependencies=False, without_dependencies=False)
+        args = mock.MagicMock(services_file=None, no_db_sync=False, only_dependencies=False, without_dependencies=False)
 
         self.mock_path.exists.return_value = False
 
@@ -502,7 +502,8 @@ class TestInstallServicesCommands(TestCase):
     @mock.patch('tethys_cli.cli_colors.pretty_output')
     @mock.patch('tethys_cli.install_commands.open_file')
     def test_run_services(self, mock_open_file, mock_pretty_output, _):
-        args = mock.MagicMock(services_file='services_file', only_dependencies=False, without_dependencies=False)
+        args = mock.MagicMock(services_file='services_file', no_db_sync=False, only_dependencies=False,
+                              without_dependencies=False)
 
         self.mock_path.exists.return_value = True
         mock_open_file.side_effect = ['service_file', '']
@@ -532,7 +533,8 @@ class TestInstallCommands(TestCase):
     @mock.patch('tethys_cli.install_commands.exit')
     @mock.patch('tethys_cli.install_commands.call')
     def test_install_file_not_generate(self, mock_call, mock_exit, _, __):
-        args = mock.MagicMock(file=None, quiet=False, only_dependencies=False, without_dependencies=False)
+        args = mock.MagicMock(file=None, quiet=False, no_db_sync=False, only_dependencies=False,
+                              without_dependencies=False)
 
         mock_exit.side_effect = SystemExit
 
@@ -546,7 +548,8 @@ class TestInstallCommands(TestCase):
     @mock.patch('tethys_cli.install_commands.call')
     @mock.patch('tethys_cli.install_commands.exit')
     def test_install_file_generate(self, mock_exit, mock_call, _, __):
-        args = mock.MagicMock(file=None, quiet=False, only_dependencies=False, without_dependencies=False)
+        args = mock.MagicMock(file=None, quiet=False, no_db_sync=False, only_dependencies=False,
+                              without_dependencies=False)
         check_call = ['tethys', 'gen', 'install']
 
         mock_exit.side_effect = SystemExit
@@ -561,16 +564,18 @@ class TestInstallCommands(TestCase):
     @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_no_conda_input_file(self, mock_pretty_output, mock_exit, _, __):
         file_path = os.path.join(self.root_app_path, 'install-no-dep.yml')
-        args = mock.MagicMock(file=file_path, verbose=False, only_dependencies=False, without_dependencies=False)
+        args = mock.MagicMock(file=file_path, verbose=False, no_db_sync=False, only_dependencies=False,
+                              without_dependencies=False)
         mock_exit.side_effect = SystemExit
 
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertIn("Running application install....", po_call_args[0][0][0])
-        self.assertIn("Quiet mode: No additional service setting validation will be performed.", po_call_args[1][0][0])
-        self.assertIn("Services Configuration Completed.", po_call_args[2][0][0])
-        self.assertIn("Skipping syncstores.", po_call_args[3][0][0])
+        self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
+        self.assertIn("Running application install....", po_call_args[1][0][0])
+        self.assertIn("Quiet mode: No additional service setting validation will be performed.", po_call_args[2][0][0])
+        self.assertIn("Services Configuration Completed.", po_call_args[3][0][0])
+        self.assertIn("Skipping syncstores.", po_call_args[4][0][0])
         mock_exit.assert_called_with(0)
 
     @mock.patch('tethys_cli.install_commands.run_services')
@@ -579,18 +584,21 @@ class TestInstallCommands(TestCase):
     @mock.patch('tethys_cli.cli_colors.pretty_output')
     def test_input_file_with_post(self, mock_pretty_output, mock_exit, _, __):
         file_path = os.path.join(self.root_app_path, 'install-with-post.yml')
-        args = mock.MagicMock(file=file_path, verbose=False, only_dependencies=False, without_dependencies=False)
+        args = mock.MagicMock(file=file_path, verbose=False, no_db_sync=False, only_dependencies=False,
+                              without_dependencies=False)
         mock_exit.side_effect = SystemExit
 
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertIn("Running application install....", po_call_args[1][0][0])
-        self.assertIn("Quiet mode: No additional service setting validation will be performed.", po_call_args[2][0][0])
-        self.assertIn("Services Configuration Completed.", po_call_args[3][0][0])
-        self.assertIn("Skipping syncstores.", po_call_args[4][0][0])
-        self.assertIn("Running post installation tasks...", po_call_args[5][0][0])
-        self.assertIn("Post Script Result: b'test\\n'", po_call_args[6][0][0])
+        self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
+        self.assertEqual("Skipping package installation, Skip option found.", po_call_args[1][0][0])
+        self.assertIn("Running application install....", po_call_args[2][0][0])
+        self.assertIn("Quiet mode: No additional service setting validation will be performed.", po_call_args[3][0][0])
+        self.assertIn("Services Configuration Completed.", po_call_args[4][0][0])
+        self.assertIn("Skipping syncstores.", po_call_args[5][0][0])
+        self.assertIn("Running post installation tasks...", po_call_args[6][0][0])
+        self.assertIn("Post Script Result: b'test\\n'", po_call_args[7][0][0])
         mock_exit.assert_called_with(0)
 
     @mock.patch('tethys_cli.install_commands.run_services')
@@ -605,18 +613,21 @@ class TestInstallCommands(TestCase):
         file_path = os.path.join(self.root_app_path, 'install-skip-setup.yml')
         mock_exit.side_effect = SystemExit
 
-        args = mock.MagicMock(file=file_path, verbose=False, only_dependencies=False, without_dependencies=False)
+        args = mock.MagicMock(file=file_path, verbose=False, no_db_sync=False, only_dependencies=False,
+                              without_dependencies=False)
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
-        args = mock.MagicMock(file=file_path, develop=False, only_dependencies=False, without_dependencies=False)
+        args = mock.MagicMock(file=file_path, develop=False, no_db_sync=False, only_dependencies=False,
+                              without_dependencies=False)
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
         args = mock.MagicMock(file=file_path, verbose=False, develop=False, force_services=False, quiet=False,
-                              no_sync=False, only_dependencies=False, without_dependencies=False)
+                              no_sync_stores=False, no_db_sync=False, only_dependencies=False,
+                              without_dependencies=False)
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual("Skipping package installation, Skip option found.", po_call_args[0][0][0])
+        self.assertEqual("Skipping package installation, Skip option found.", po_call_args[1][0][0])
         mock_exit.assert_called_with(0)
 
     @mock.patch('tethys_cli.install_commands.run_services')
@@ -627,7 +638,7 @@ class TestInstallCommands(TestCase):
     def test_conda_and_pip_package_install(self, mock_pretty_output, mock_exit, mock_conda_run, mock_call, _):
         file_path = os.path.join(self.root_app_path, 'install-dep.yml')
         args = mock.MagicMock(file=file_path, develop=False, verbose=False, services_file=None, update_installed=False,
-                              only_dependencies=False, without_dependencies=False)
+                              no_db_sync=False, only_dependencies=False, without_dependencies=False)
         mock_exit.side_effect = SystemExit
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
@@ -635,13 +646,14 @@ class TestInstallCommands(TestCase):
                                           use_exception_handler=False, stdout=None, stderr=None)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual("Running conda installation tasks...", po_call_args[0][0][0])
-        self.assertIn("Warning: Packages installation ran into an error.", po_call_args[1][0][0])
-        self.assertEqual("Running pip installation tasks...", po_call_args[2][0][0])
-        self.assertEqual("Running application install....", po_call_args[3][0][0])
+        self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
+        self.assertEqual("Running conda installation tasks...", po_call_args[1][0][0])
+        self.assertIn("Warning: Packages installation ran into an error.", po_call_args[2][0][0])
+        self.assertEqual("Running pip installation tasks...", po_call_args[3][0][0])
+        self.assertEqual("Running application install....", po_call_args[4][0][0])
         self.assertEqual("Quiet mode: No additional service setting validation will be performed.",
-                         po_call_args[4][0][0])
-        self.assertEqual("Services Configuration Completed.", po_call_args[5][0][0])
+                         po_call_args[5][0][0])
+        self.assertEqual("Services Configuration Completed.", po_call_args[6][0][0])
 
         self.assertEqual(['pip', 'install', 'see'], mock_call.mock_calls[0][1][0])
         self.assertEqual(['python', 'setup.py', 'clean', '--all'], mock_call.mock_calls[1][1][0])
@@ -658,7 +670,7 @@ class TestInstallCommands(TestCase):
     def test_without_dependencies(self, mock_pretty_output, mock_exit, mock_conda_run, mock_call, _):
         file_path = os.path.join(self.root_app_path, 'install-dep.yml')
         args = mock.MagicMock(file=file_path, develop=False, verbose=False, services_file=None, update_installed=False,
-                              only_dependencies=False, without_dependencies=True)
+                              no_db_sync=False, only_dependencies=False, without_dependencies=True)
         mock_exit.side_effect = SystemExit
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
@@ -670,11 +682,11 @@ class TestInstallCommands(TestCase):
 
         # Validate output displayed to the user
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual("Skipping package installation.", po_call_args[0][0][0])
-        self.assertEqual("Running application install....", po_call_args[1][0][0])
+        self.assertEqual("Skipping package installation.", po_call_args[1][0][0])
+        self.assertEqual("Running application install....", po_call_args[2][0][0])
         self.assertEqual("Quiet mode: No additional service setting validation will be performed.",
-                         po_call_args[2][0][0])
-        self.assertEqual("Services Configuration Completed.", po_call_args[3][0][0])
+                         po_call_args[3][0][0])
+        self.assertEqual("Services Configuration Completed.", po_call_args[4][0][0])
 
         # Verify that the application install still happens
         self.assertEqual(['python', 'setup.py', 'clean', '--all'], mock_call.mock_calls[0][1][0])
@@ -692,7 +704,7 @@ class TestInstallCommands(TestCase):
                                                              mock_call, _):
         file_path = os.path.join(self.root_app_path, 'install-dep.yml')
         args = mock.MagicMock(file=file_path, develop=False, verbose=False, services_file=None, update_installed=False,
-                              only_dependencies=True, without_dependencies=False)
+                              no_db_sync=False, only_dependencies=True, without_dependencies=False)
         mock_exit.side_effect = SystemExit
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
@@ -700,10 +712,11 @@ class TestInstallCommands(TestCase):
                                           use_exception_handler=False, stdout=None, stderr=None)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
-        self.assertEqual("Running conda installation tasks...", po_call_args[0][0][0])
-        self.assertIn("Warning: Packages installation ran into an error.", po_call_args[1][0][0])
-        self.assertEqual("Running pip installation tasks...", po_call_args[2][0][0])
-        self.assertEqual("Installed dependencies only. Skipping remaining installation.", po_call_args[3][0][0])
+        self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
+        self.assertEqual("Running conda installation tasks...", po_call_args[1][0][0])
+        self.assertIn("Warning: Packages installation ran into an error.", po_call_args[2][0][0])
+        self.assertEqual("Running pip installation tasks...", po_call_args[3][0][0])
+        self.assertEqual("Successfully installed dependencies for test_app.", po_call_args[4][0][0])
 
         self.assertEqual(1, len(mock_call.mock_calls))
         self.assertEqual(['pip', 'install', 'see'], mock_call.mock_calls[0][1][0])
@@ -719,7 +732,7 @@ class TestInstallCommands(TestCase):
                                                             mock_call, _):
         file_path = os.path.join(self.root_app_path, 'install-dep.yml')
         args = mock.MagicMock(file=file_path, develop=False, verbose=False, services_file=None, update_installed=True,
-                              only_dependencies=False, without_dependencies=False)
+                              no_db_sync=True, only_dependencies=False, without_dependencies=False)
         mock_exit.side_effect = SystemExit
         self.assertRaises(SystemExit, install_commands.install_command, args)
 
@@ -727,20 +740,18 @@ class TestInstallCommands(TestCase):
                                           stdout=None, stderr=None)
 
         po_call_args = mock_pretty_output().__enter__().write.call_args_list
+        self.assertEqual("Installing dependencies...", po_call_args[0][0][0])
         self.assertEqual("Warning: Updating previously installed packages. This could break your Tethys environment.",
-                         po_call_args[0][0][0])
-        self.assertEqual("Running conda installation tasks...", po_call_args[1][0][0])
-        self.assertIn("Warning: Packages installation ran into an error.", po_call_args[2][0][0])
-        self.assertEqual("Running pip installation tasks...", po_call_args[3][0][0])
-        self.assertEqual("Running application install....", po_call_args[4][0][0])
-        self.assertEqual("Quiet mode: No additional service setting validation will be performed.",
-                         po_call_args[5][0][0])
-        self.assertEqual("Services Configuration Completed.", po_call_args[6][0][0])
+                         po_call_args[1][0][0])
+        self.assertEqual("Running conda installation tasks...", po_call_args[2][0][0])
+        self.assertIn("Warning: Packages installation ran into an error.", po_call_args[3][0][0])
+        self.assertEqual("Running pip installation tasks...", po_call_args[4][0][0])
+        self.assertEqual("Running application install....", po_call_args[5][0][0])
+        self.assertEqual("Successfully installed test_app.", po_call_args[6][0][0])
 
         self.assertEqual(['pip', 'install', 'see'], mock_call.mock_calls[0][1][0])
         self.assertEqual(['python', 'setup.py', 'clean', '--all'], mock_call.mock_calls[1][1][0])
         self.assertEqual(['python', 'setup.py', 'install'], mock_call.mock_calls[2][1][0])
-        self.assertEqual(['tethys', 'db', 'sync'], mock_call.mock_calls[3][1][0])
 
         mock_exit.assert_called_with(0)
 
