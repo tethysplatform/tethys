@@ -1,7 +1,19 @@
 image: docker:git
 
 stages:
-  - build
+  - Lint
+  - Build
+  - Test
+
+include:
+  - project: 'tethys/kubernetes/gl-k8s-integration'
+    ref: 1.3.0-rc2
+    file: '/test-tethys.yml'
+
+variables:
+  CONDA_HOME: '/opt/conda'
+  TETHYS_HOME: '/usr/lib/tethys'
+  POSTGRES_VERSION: '9.6'
 
 before_script:
   # Set up ssh-agent for use when checking out other repos
@@ -15,15 +27,43 @@ before_script:
   - mkdir -p ~/.ssh
   - '[[ -f /.dockerenv ]] && echo "$SSH_SERVER_HOSTKEYS" > ~/.ssh/known_hosts'
 
-build:
-  stage: build
+.kaniko_prep: &kaniko_prep
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  before_script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+
+Build:
+  stage: Build
+  <<: *kaniko_prep
   script:
-    # Docker Stuff
-    - docker build --squash -t $CI_REGISTRY_IMAGE/tethyscore:$CI_COMMIT_TAG -t $CI_REGISTRY_IMAGE/tethyscore:latest .
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push $CI_REGISTRY_IMAGE/tethyscore:$CI_COMMIT_TAG
-    - docker push $CI_REGISTRY_IMAGE/tethyscore:latest
-  tags:
-    - docker
+    - /kaniko/executor
+        --context $CI_PROJECT_DIR
+        --dockerfile $CI_PROJECT_DIR/Dockerfile
+        --destination $CI_REGISTRY_IMAGE/dev:$CI_COMMIT_SHORT_SHA
+        --cache
+        --cache-repo $CI_REGISTRY_IMAGE/cache
+  except:
+    - tags
+
+"Build and Push":
+  stage: Build
+  <<: *kaniko_prep
+  script:
+    - /kaniko/executor
+        --context $CI_PROJECT_DIR
+        --dockerfile $CI_PROJECT_DIR/Dockerfile
+        --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+        --destination $CI_REGISTRY_IMAGE:latest
+        --cache
+        --cache-repo $CI_REGISTRY_IMAGE/cache
   only:
     - tags
+
+"Unit Test":
+  script:
+    - echo "Run Tests"
+    - tethys test -cu

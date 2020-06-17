@@ -106,25 +106,11 @@ Generate_NGINX_Service_TethysCore:
 
 Generate_ASGI_Service_TethysCore:
   cmd.run:
-    - name: {{ TETHYS_BIN_DIR }}/tethys gen asgi_service --asgi-processes {{ ASGI_PROCESSES }} --overwrite
-    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
-
-Link_NGINX_Config_TethysCore:
-  file.symlink:
-    - name: /etc/nginx/sites-enabled/tethys_nginx.conf
-    - target: {{ TETHYS_HOME }}/tethys/tethys_portal/tethys_nginx.conf
-    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
-
-Link_NGINX_Service_TethysCore:
-  file.symlink:
-    - name: /etc/supervisor/conf.d/nginx_supervisord.conf
-    - target: {{ TETHYS_HOME }}/tethys/tethys_portal/nginx_supervisord.conf
-    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
-
-Link_ASGI_Config_TethysCore:
-  file.symlink:
-    - name: /etc/supervisor/conf.d/asgi_supervisord.conf
-    - target: {{ TETHYS_HOME }}/tethys/tethys_portal/asgi_supervisord.conf
+    - name: >
+        {{ TETHYS_BIN_DIR }}/tethys gen asgi_service
+        --asgi-processes {{ ASGI_PROCESSES }}
+        --conda-prefix {{ CONDA_HOME }}/envs/{{ CONDA_ENV_NAME }}
+        --overwrite
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 /run/asgi:
@@ -140,15 +126,29 @@ Link_ASGI_Config_TethysCore:
     - replace: False
     - makedirs: True
 
-Prepare_Database_TethysCore:
+Create_Database_User_and_SuperUser_TethysCore:
   cmd.run:
     - name: >
         . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} &&
-        PGPASSWORD="{{ POSTGRES_PASSWORD }}" {{ TETHYS_BIN_DIR }}/tethys db configure
+        PGPASSWORD="{{ POSTGRES_PASSWORD }}" {{ TETHYS_BIN_DIR }}/tethys db create
         -n {{ TETHYS_DB_USERNAME }}
         -p {{ TETHYS_DB_PASSWORD }}
         -N {{ TETHYS_DB_SUPERUSER }}
         -P {{ TETHYS_DB_SUPERUSER_PASS }}
+    - shell: /bin/bash
+    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
+
+Migrate_Database_TethysCore:
+  cmd.run:
+    - name: >
+        . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && {{ TETHYS_BIN_DIR }}/tethys db migrate
+    - shell: /bin/bash
+    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
+
+Create_Database_Portal_SuperUser_TethysCore:
+  cmd.run:
+    - name: >
+        . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && {{ TETHYS_BIN_DIR }}/tethys db createsuperuser
         {%- if PORTAL_SUPERUSER_NAME and PORTAL_SUPERUSER_PASSWORD %}
         --pn {{ PORTAL_SUPERUSER_NAME }} --pp {{ PORTAL_SUPERUSER_PASSWORD }}
         {% endif %}
@@ -162,14 +162,6 @@ Modify_Tethys_Site_TethysCore:
     - name: {{ TETHYS_BIN_DIR }}/tethys site {{ TETHYS_SITE_CONTENT }}
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 {% endif %}
-
-Collect_Static_Files:
-  cmd.run:
-    - name: >
-        . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }}
-        && {{ TETHYS_BIN_DIR }}/tethys manage collectstatic --noinput
-    - shell: /bin/bash
-    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 Flag_Complete_Setup_TethysCore:
   cmd.run:

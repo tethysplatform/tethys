@@ -123,9 +123,9 @@ def isstring(value):
 
 
 @register.filter
-def return_item(l, i):
+def return_item(container, i):
     try:
-        return l[i]
+        return container[i]
     except Exception:
         return None
 

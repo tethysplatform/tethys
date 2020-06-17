@@ -36,8 +36,11 @@ def add_install_parser(subparsers):
     application_install_parser.add_argument('-q', '--quiet',
                                             help='Skips interactive mode.',
                                             action='store_true')
-    application_install_parser.add_argument('-n', '--no-sync',
+    application_install_parser.add_argument('-n', '--no-sync-stores',
                                             help='Skips syncstores when linked persistent stores are found.',
+                                            action='store_true')
+    application_install_parser.add_argument('-N', '--no-db-sync',
+                                            help='Skips any database related commands.',
                                             action='store_true')
     application_install_parser.add_argument('-v', '--verbose',
                                             help='Will show all pip install output when enabled.',
@@ -411,7 +414,6 @@ def install_command(args):
     """
     install Command
     """
-    load_apps()
     app_name = None
     skip_config = False
     file_path = Path('./install.yml') if args.file is None else Path(args.file)
@@ -441,6 +443,7 @@ def install_command(args):
 
     # Install Dependencies
     if not skip_config:
+        write_msg("Installing dependencies...")
         install_options = open_file(file_path)
 
         if "name" in install_options:
@@ -466,8 +469,7 @@ def install_command(args):
 
     # Skip the rest if we are installing dependencies only
     if args.only_dependencies:
-        write_msg("Installed dependencies only. Skipping remaining installation.")
-        exit(0)
+        successful_exit(app_name, "installed dependencies for")
 
     # Run Setup.py
     write_msg("Running application install....")
@@ -484,10 +486,14 @@ def install_command(args):
         else:
             call(['python', 'setup.py', 'install'], stdout=FNULL, stderr=STDOUT)
 
+    if args.no_db_sync:
+        successful_exit(app_name)
+
     call(['tethys', 'db', 'sync'])
 
     # Run Portal Level Config if present
     if not skip_config:
+        load_apps()
         if args.force_services:
             run_services(app_name, args)
         else:
@@ -507,7 +513,7 @@ def install_command(args):
         if app_settings is not None:
             linked_settings = app_settings['linked_settings']
             unlinked_settings = app_settings['unlinked_settings']
-            if args.no_sync:
+            if args.no_sync_stores:
                 write_msg('Skipping syncstores.')
             else:
                 run_sync_stores(app_name, linked_settings)
@@ -523,8 +529,13 @@ def install_command(args):
                 process = Popen(str(path_to_post), shell=True, stdout=PIPE)
                 stdout = process.communicate()[0]
                 write_msg("Post Script Result: {}".format(stdout))
-    exit(0)
+    successful_exit(app_name)
 
 
 def validate_schema(check_str, check_list):
     return check_str in check_list and check_list[check_str] and len(check_list[check_str]) > 0
+
+
+def successful_exit(app_name, action="installed"):
+    write_success(f"Successfully {action} {app_name}.")
+    exit(0)

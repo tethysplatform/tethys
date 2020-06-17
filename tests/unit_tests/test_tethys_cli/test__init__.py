@@ -120,7 +120,8 @@ class TethysCommandTests(unittest.TestCase):
     @mock.patch('tethys_cli.gen_commands.generate_command')
     def test_generate_subcommand_nginx_settings_verbose_options(self, mock_gen_command):
         testargs = ['tethys', 'gen', 'nginx', '-d', '/tmp/foo/bar', '--client-max-body-size', '123M',
-                    '--asgi-processes', '4', '--overwrite', '--tethys-port', '8080']
+                    '--asgi-processes', '4', '--conda-prefix', '/path/to/conda/env', '--tethys-port', '8080',
+                    '--overwrite']
 
         with mock.patch.object(sys, 'argv', testargs):
             tethys_command()
@@ -132,6 +133,7 @@ class TethysCommandTests(unittest.TestCase):
         self.assertTrue(call_args[0][0][0].overwrite)
         self.assertEqual('nginx', call_args[0][0][0].type)
         self.assertEqual('4', call_args[0][0][0].asgi_processes)
+        self.assertEqual('/path/to/conda/env', call_args[0][0][0].conda_prefix)
         self.assertEqual('8080', call_args[0][0][0].tethys_port)
 
     @mock.patch('sys.stdout', new_callable=StringIO)
