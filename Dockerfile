@@ -30,17 +30,17 @@ ENV  BASH_PROFILE=".bashrc" \
 
 # Tethys settings arguments
 ENV  DEBUG="False" \
-     ALLOWED_HOSTS="localhost 127.0.0.1" \
+     ALLOWED_HOSTS="\"[localhost, 127.0.0.1]\"" \
      BYPASS_TETHYS_HOME_PAGE="True" \
-     ADD_DJANGO_APPS=None \
+     ADD_DJANGO_APPS="\"[]\"" \
      SESSION_WARN=1500 \
      SESSION_EXPIRE=1800 \
      STATIC_ROOT="${TETHYS_PERSIST}/static" \
      WORKSPACE_ROOT="${TETHYS_PERSIST}/workspaces" \
-     QUOTA_HANDLERS=None \
-     DJANGO_ANALYTICAL=None \
-     ADD_BACKENDS=None \
-     OAUTH_OPTIONS=None \
+     QUOTA_HANDLERS="\"[]\"" \
+     DJANGO_ANALYTICAL="\"{}\"" \
+     ADD_BACKENDS="\"[]\"" \
+     OAUTH_OPTIONS="\"{}\"" \
      CHANNEL_LAYER="" \
      RECAPTCHA_PRIVATE_KEY="" \
      RECAPTCHA_PUBLIC_KEY=""
