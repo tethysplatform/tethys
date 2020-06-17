@@ -886,7 +886,7 @@ def log_pull_stream(stream):
     """
     if platform.system() == 'Windows':  # i.e. can't uses curses
         for block in stream:
-            lines = [l for l in block.split(b'\r\n') if l]
+            lines = [line for line in block.split(b'\r\n') if line]
             for line in lines:
                 json_line = json.loads(line)
                 current_id = "{}:".format(json_line['id']) if 'id' in json_line else ''
@@ -918,7 +918,7 @@ def log_pull_stream(stream):
 
         try:
             for block in stream:
-                lines = [l for l in block.split(b'\r\n') if l]
+                lines = [line for line in block.split(b'\r\n') if line]
                 for line in lines:
                     json_line = json.loads(line)
                     current_id = json_line['id'] if 'id' in json_line else None

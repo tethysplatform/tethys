@@ -73,12 +73,14 @@ def add_gen_parser(subparsers):
                             help='Populate the client_max_body_size parameter for nginx config. Defaults to "75M".')
     gen_parser.add_argument('--asgi-processes', dest='asgi_processes',
                             help='The maximum number of asgi worker processes. Defaults to 4.')
+    gen_parser.add_argument('--conda-prefix', dest='conda_prefix',
+                            help='The path to the Tethys conda environment. Required if $CONDA_PREFIX is not defined.')
     gen_parser.add_argument('--tethys-port', dest='tethys_port',
                             help='Port for the Tethys Server to run on in production. This is used when generating the '
                                  'Daphne and nginx configuration files. Defaults to 8000.')
     gen_parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                             help='Overwrite existing file without prompting.')
-    gen_parser.set_defaults(func=generate_command, client_max_body_size='75M', asgi_processes=4,
+    gen_parser.set_defaults(func=generate_command, client_max_body_size='75M', asgi_processes=4, conda_prefix=False,
                             tethys_port=8000, overwrite=False, pin_level='none')
 
 
@@ -128,7 +130,7 @@ def gen_asgi_service(args):
                     nginx_user = tokens[1].strip(';')
                     break
 
-    conda_prefix = get_environment_value('CONDA_PREFIX')
+    conda_prefix = args.conda_prefix if args.conda_prefix else get_environment_value('CONDA_PREFIX')
     conda_home = Path(conda_prefix).parents[1]
 
     user_option_prefix = ''
