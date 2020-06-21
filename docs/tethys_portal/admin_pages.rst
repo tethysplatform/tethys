@@ -98,7 +98,7 @@ Tethys leverages the excellent `Python Social Auth <https://python-social-auth-d
 
 .. tip::
 
-    For more detailed information on using Python Social Auth in Tethys see the :doc:`../installation/production/configuration/social_auth` documentation.
+    For more detailed information on using Python Social Auth in Tethys see the :doc:`../installation/production/configuration/advanced/social_auth` documentation.
 
 
 .. _tethys_portal_terms_and_conditions:
