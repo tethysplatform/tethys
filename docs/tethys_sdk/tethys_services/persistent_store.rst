@@ -147,7 +147,7 @@ The columns of tables defined using SQLAlchemy classes are defined by properties
 Engine Object
 -------------
 
-Anytime you wish to retrieve data from a persistent store database, you will need to connect to it. In SQLAlchemy, the connection to a database is provided via ``engine`` objects. You can retrieve the SQLAlchemy ``engine`` object for a persistent store database using the ``get_persistent_store_database()`` method of the :term:`app class` provided by the Persistent Store API. The example above shows how the ``get_persistent_store_engine()`` function should be used. Provide the name of the persistent store to the function and it will return the ``engine`` object for that store.
+Anytime you wish to retrieve data from a persistent store database, you will need to connect to it. In SQLAlchemy, the connection to a database is provided via ``engine`` objects. You can retrieve the SQLAlchemy ``engine`` object for a persistent store database using the ``get_persistent_store_database()`` method of the :term:`app class` provided by the Persistent Store API. The example above shows how the ``get_persistent_store_database()`` function should be used. Provide the name of the persistent store to the function and it will return the ``engine`` object for that store.
 
 .. note::
 
