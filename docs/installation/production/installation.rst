@@ -19,7 +19,7 @@ Install Miniconda
             wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
             sh ./Miniconda3-latest-Linux-x86_64.sh
 
-    2. Read the license and accept when prompted. Install to the default location (:file:`~/miniconda3`) and configure the shel to start on startup.
+    2. Read the license and accept when prompted. Install to the default location (:file:`~/miniconda3`) and configure the shell to start on startup.
 
 Install Tethys Platform
 =======================

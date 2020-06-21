@@ -69,7 +69,7 @@ You will need to collect the workspaces and static files from the new app to the
     .. code-block:: bash
     
         sudo chown -R $USER <STATIC_ROOT>
-        sudo chown -R $USER <TETHYS_WORKSPACE_ROOT>
+        sudo chown -R $USER <TETHYS_WORKSPACES_ROOT>
     
     .. note::
     
@@ -87,7 +87,7 @@ You will need to collect the workspaces and static files from the new app to the
 
 
         sudo chown -R <NGINX_USER>: <STATIC_ROOT>
-        sudo chown -R <NGINX_USER>: <TETHYS_WORKSPACE_ROOT>
+        sudo chown -R <NGINX_USER>: <TETHYS_WORKSPACES_ROOT>
 
     .. note::
 

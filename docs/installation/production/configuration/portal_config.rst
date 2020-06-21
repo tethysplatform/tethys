@@ -40,7 +40,7 @@ The following settings should be changed for a production installation of Tethys
 ALLOWED_HOSTS
 -------------
 
-The `ALLOWED_HOSTS <https://docs.djangoproject.com/en/3.0/ref/settings/#allowed-hosts>`_ setting is used to specify a list of host/domain names that this Django site can server. If a request comes in with a host/domain name that is not listed here, it will be rejected. You should set this to the domain(s) of your server. For example, you can set this setting using the ``tethys settings`` command as follows:
+The `ALLOWED_HOSTS <https://docs.djangoproject.com/en/3.0/ref/settings/#allowed-hosts>`_ setting is used to specify a list of host/domain names that this Django site can serve. If a request comes in with a host/domain name that is not listed here, it will be rejected. You should set this to the domain(s) of your server. For example, you can set this setting using the ``tethys settings`` command as follows:
 
     .. code-block:: bash
 

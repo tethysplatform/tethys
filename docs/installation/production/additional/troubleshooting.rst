@@ -206,7 +206,7 @@ The minimum directories that should be owned by the ``NGXINX_USER`` at runtime a
 .. code-block:: bash
 
         sudo ln -l <STATIC_ROOT>
-        sudo ln -l <TETHYS_WORKSPACE_ROOT>
+        sudo ln -l <TETHYS_WORKSPACES_ROOT>
 
 You may also need to modify what level of access the ``NGINX_USER`` has. This can be done using the ``chmod`` command. For example, to set the owner to have read-only access to all files in a directory, you could run:
 

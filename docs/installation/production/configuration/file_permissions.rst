@@ -11,12 +11,12 @@ As NGINX is acting as the primary HTTP process, many of the files will need to b
 1. Change Static and Workspace Ownership
 ========================================
 
-Change the owner of the ``STATIC_ROOT`` and ``TETHYS_WORKSPACE_ROOT`` directories and contents to the ``NGINX_USER``:
+Change the owner of the ``STATIC_ROOT`` and ``TETHYS_WORKSPACES_ROOT`` directories and contents to the ``NGINX_USER``:
 
     .. code-block:: bash
 
         sudo chown -R <NGINX_USER>: <STATIC_ROOT>
-        sudo chown -R <NGINX_USER>: <TETHYS_WORKSPACE_ROOT>
+        sudo chown -R <NGINX_USER>: <TETHYS_WORKSPACES_ROOT>
 
     .. note::
 
@@ -34,7 +34,7 @@ You will often need to change the permissions of ``TETHYS_HOME``, ``STATIC_ROOT`
         export ACTIVATE_SCRIPT="<CONDA_HOME>/envs/<CONDA_ENV_NAME>/etc/conda/activate.d/tethys-activate.sh"
         export DEACTIVATE_SCRIPT="<CONDA_HOME>/envs/<CONDA_ENV_NAME>/etc/conda/deactivate.d/tethys-deactivate.sh"
         export STATIC_ROOT="<STATIC_ROOT>"
-        export TETHYS_WORKSPACE_ROOT="<TETHYS_WORKSPACE_ROOT>"
+        export TETHYS_WORKSPACES_ROOT="<TETHYS_WORKSPACES_ROOT>"
         export TETHYS_HOME="<TETHYS_HOME>"
         export NGINX_USER="<NGINX_USER>"
 
@@ -57,7 +57,7 @@ You will often need to change the permissions of ``TETHYS_HOME``, ``STATIC_ROOT`
 * ``<CONDA_HOME>``: Path to where you installed conda. The default is :file:`/home/<username>/miniconda3` or :file:`~/miniconda3`.
 * ``<CONDA_ENV_NAME>``: Name of your Tethys environment. This is usually `tethys` unless you specifically changed it during the :ref:`production_install_tethys` step.
 * ``<STATIC_ROOT>``: Path to the directory with the static files that you setup in the :ref:`production_static_workspaces_dirs` step.
-* ``<TETHYS_WORKSPACE_ROOT>``: Path to the directory with the app workspaces files that you setup in the :ref:`production_static_workspaces_dirs` step.
+* ``<TETHYS_WORKSPACES_ROOT>``: Path to the directory with the app workspaces files that you setup in the :ref:`production_static_workspaces_dirs` step.
 * ``<TETHYS_HOME>``: Path to the Tethys home directory that you noted in the :ref:`production_portal_config` step.
 * ``<NGINX_USER>``: Name of the NGINX user that you noted in the :ref:`production_nginx_config` step.
 
@@ -106,7 +106,7 @@ The following configuration is given as an example and is not meant to be our of
         sudo restorecon -v <TETHYS_HOME>/tethys_nginx.conf
         sudo semanage fcontext -a -t httpd_sys_content_t "<TETHYS_HOME>(/.*)?"
         sudo semanage fcontext -a -t httpd_sys_content_t "<STATIC_ROOT>(/.*)?"
-        sudo semanage fcontext -a -t httpd_sys_rw_content_t "<TETHYS_WORKSPACE_ROOT>(/.*)?"
+        sudo semanage fcontext -a -t httpd_sys_rw_content_t "<TETHYS_WORKSPACES_ROOT>(/.*)?"
         sudo restorecon -R -v <TETHYS_HOME> > /dev/null
         echo $'module tethys-selinux-policy 1.0;\nrequire {type httpd_t; type init_t; class unix_stream_socket connectto; }\n#============= httpd_t ==============\nallow httpd_t init_t:unix_stream_socket connectto;' > <TETHYS_HOME>/tethys-selinux-policy.te
         checkmodule -M -m -o <TETHYS_HOME>/tethys-selinux-policy.mod <TETHYS_HOME>/tethys-selinux-policy.te
@@ -120,5 +120,5 @@ The following configuration is given as an example and is not meant to be our of
 
             * ``<TETHYS_HOME>``: Path to the Tethys home directory that you noted in the :ref:`production_portal_config` step.
             * ``<STATIC_ROOT>``: Path to the directory with the static files that you setup in the :ref:`production_static_workspaces_dirs` step.
-            * ``<TETHYS_WORKSPACE_ROOT>``: Path to the directory with the app workspaces files that you setup in the :ref:`production_static_workspaces_dirs` step.
+            * ``<TETHYS_WORKSPACES_ROOT>``: Path to the directory with the app workspaces files that you setup in the :ref:`production_static_workspaces_dirs` step.
             * ``<NGINX_USER>``: Name of the NGINX user that you noted in the :ref:`production_nginx_config` step.

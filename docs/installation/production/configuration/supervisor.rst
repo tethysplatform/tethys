@@ -26,7 +26,7 @@ One configuration file will be needed for NGINX and another for Daphne. Use the 
 
     .. code-block:: bash
 
-        vim <TETHYS_HOME>/asgi_supervisord.conf
+        vim <TETHYS_HOME>/nginx_supervisord.conf
 
     In particular, the locations of the log files. These may be useful for debugging later on.
 
@@ -34,7 +34,7 @@ One configuration file will be needed for NGINX and another for Daphne. Use the 
 
     .. code-block:: bash
 
-        vim <TETHYS_HOME>/nginx_supervisord.conf
+        vim <TETHYS_HOME>/asgi_supervisord.conf
 
     In particular, verify the following:
 
@@ -103,3 +103,17 @@ Create the log file in the location where supervisor expects it to be (see last 
     .. tip::
 
         Replace ``<NGINX_USER>`` with the name of the user noted in the :ref:`production_nginx_config`.
+
+6. Reload the Configuration
+===========================
+
+Once you have finished the configuration steps, it is necessary to instruct Supervisor to reread and update as follows so that it loads our new Supervisor configurations:
+
+    .. code-block::
+
+        sudo supervisorctl reread
+        sudo supervisorctl update
+
+    .. note::
+
+        This step needs to be performed anytime you make changes to the ``nginx_supervisord.conf`` or ``asgi_supervisord.conf``
