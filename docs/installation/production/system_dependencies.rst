@@ -8,6 +8,45 @@ Install System Dependencies
 
 This guide describes how to install the necessary system dependencies. You will need ``sudo`` or root access on the server to complete these steps.
 
+Tools
+=====
+
+The following applications will be used during the installation process, but not necessarily needed by Tethys Portal.
+
+Text Editor
+-----------
+
+You will need a text editor to modify the configuration files during the installation.
+
+  **Ubuntu**:
+
+  .. code-block:: bash
+
+      sudo apt install -y vim nano
+
+  **CentOS**:
+
+  .. code-block:: bash
+
+      sudo yum install -y vim nano
+
+wget
+----
+
+Wget is used during the installation to download files needed for the installation, like the install script for Miniconda.
+
+  **Ubuntu**:
+
+  .. code-block:: bash
+
+      sudo apt install -y wget
+
+  **CentOS**:
+
+  .. code-block:: bash
+
+      sudo yum install -y wget
+
 PostgreSQL
 ==========
 
@@ -150,6 +189,7 @@ PostGIS Extension (Optional)
 
         .. code-block:: bash
 
+            sudo yum install -y epel-release
             sudo dnf config-manager --set-enabled PowerTools
             sudo yum install -y postgis30_12
 
@@ -236,7 +276,7 @@ Supervisor
 
 
 Postfix (Optional)
-------------------
+==================
 
 `Postfix <http://www.postfix.org/>`_ is an email server. You should install Postfix if you plan to support the "forgotten password" feature of Tethys Portal.
 
@@ -260,42 +300,3 @@ Postfix (Optional)
 
             sudo systemctl enable postfix
             sudo systemctl start postfix
-
-Miscellaneous
-=============
-
-The following applications will be used during the installation process, but not necessarily needed by Tethys Portal.
-
-Text Editor
------------
-
-You will need a text editor to modify the configuration files during the installation.
-
-  **Ubuntu**:
-
-  .. code-block:: bash
-
-      sudo apt install -y vim nano
-
-  **CentOS**:
-
-  .. code-block:: bash
-
-      sudo yum install -y vim nano
-
-wget
-----
-
-Wget is used during the installation to download the installer for Miniconda.
-
-  **Ubuntu**:
-
-  .. code-block:: bash
-
-      sudo apt install -y wget
-
-  **CentOS**:
-
-  .. code-block:: bash
-
-      sudo yum install -y wget
