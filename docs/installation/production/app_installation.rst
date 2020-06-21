@@ -6,7 +6,7 @@ Installing Apps in Production
 
 **Last Updated:** May 2020
 
-Installing apps in a Tethys Platform configured for production can be challenging. Most of the difficulties arise, because Tethys is served by NGINX in production and all the files need to be owned by the NGINX user. The following instructions for installing apps in a production environment are provided to aid administrators of Tethys Portals.
+Installing apps in a Tethys Portal configured for production can be challenging. Most of the difficulties arise, because Tethys is served by NGINX in production and all the files need to be owned by the NGINX user. The following instructions for installing apps in a production environment are provided to aid administrators of Tethys Portals.
 
 Activate the Tethys Environment
 ===============================

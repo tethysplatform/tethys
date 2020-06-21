@@ -6,7 +6,7 @@ NGINX Configuration
 
 **Last Updated:** May 2020
 
-`NGINX <https://www.nginx.com/resources/wiki/>`_ is used as the primary HTTP server for a Tethys Platform deployment. It is used to handle all incoming HTTP traffic and directs it to the Daphne/Django server. It also hosts the static files needed by the apps and Tethys Portal. In this section of the production installation guide, you will generate the NGINX configuration files.
+`NGINX <https://www.nginx.com/resources/wiki/>`_ is used as the primary HTTP server for a Tethys Portal deployment. It is used to handle all incoming HTTP traffic and directs it to the Daphne/Django server. It also hosts the static files needed by the apps and Tethys Portal. In this section of the production installation guide, you will generate the NGINX configuration files.
 
 1. Generate the NGINX Configuration
 ===================================
@@ -87,7 +87,7 @@ SSL is the standard  technology for establishing a secured connection between a 
 
 1. Obtain an SSL Certificate
 
-    An SSL certificate can be `self-signed <https://linuxize.com/post/creating-a-self-signed-ssl-certificate/>`_ for testing but should be purchased from a Certificate Authority for a production installation. Some of the top certificate authorities include: Digicert, VertiSign, GeoTrust, Comodo, Thawte, GoDaddy, and Nework Solutions. If your instance of Tethys Platform is part of a larger organization, contact your IT department to determine if an agreement with one of these authorities already exists.
+    An SSL certificate can be `self-signed <https://linuxize.com/post/creating-a-self-signed-ssl-certificate/>`_ for testing but should be purchased from a Certificate Authority for a production installation. Some of the top certificate authorities include: Digicert, VertiSign, GeoTrust, Comodo, Thawte, GoDaddy, and Nework Solutions. If your instance of Tethys Portal is part of a larger organization, contact your IT department to determine if an agreement with one of these authorities already exists.
 
 2. Modify NGINX Configuration
 

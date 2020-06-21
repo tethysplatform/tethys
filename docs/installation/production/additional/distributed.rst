@@ -26,9 +26,9 @@ Tethys Platform is composed of several software components, each of which has th
 .. figure:: ../../../images/tethys_deploy_stack.png
       :width: 600px
 
-      **Figure 1.** Tethys Platform consists of several software components that should be hosted on separate servers in a production environment.
+      **Figure 1.** Tethys Platform consists of several software components that may be hosted on separate servers in a production environment.
 
-The following requirements should be interpreted as minimum guidelines. It is likely you will need to expand storage, RAM, or processors as you add more apps. Each instance of Tethys Platform will need to be fine tuned depending to fit the requirements of the apps that it is serving.
+The following requirements should be interpreted as minimum guidelines. It is likely you will need to expand storage, RAM, or processors as you add more apps. Each deployment of Tethys Platform will need to be fine tuned depending to fit the requirements of the apps that it is serving.
 
 Tethys Portal
 -------------

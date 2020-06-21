@@ -6,9 +6,9 @@ Portal Configuration
 
 **Last Updated:** May 2020
 
-The :file:`portal_config.yml` is the primary configuration file for Tethys Platform. As of version 3.0, you should not edit the :file:`settings.py` file directly. Instead add any Django settings that you need to the ``settings`` section of the :file:`portal_config.yml`. This can be done by manually editing the file, or you can use the ``tethys settings`` command to add settings to it.
+The :file:`portal_config.yml` is the primary configuration file for Tethys Portal. As of version 3.0, you should not edit the :file:`settings.py` file directly. Instead add any Django settings that you need to the ``settings`` section of the :file:`portal_config.yml`. This can be done by manually editing the file, or you can use the ``tethys settings`` command to add settings to it.
 
-This part of the installation guide will show you how to create the :file:`portal_config.yml` and highlights a few of the settings that you should configure when setting up Tethys Platform for production. The following sections of the production installation guide will walk you through other important settings as well.
+This part of the installation guide will show you how to create the :file:`portal_config.yml` and highlights a few of the settings that you should configure when setting up Tethys Portal for production. The following sections of the production installation guide will walk you through other important settings as well.
 
 1. Generate Tethys Configuration
 ================================
@@ -35,7 +35,7 @@ The default location of ``TETHYS_HOME`` is :file:`~/.tethys/` or :file:`/home/<u
 3. Set Required Production Settings
 ===================================
 
-The following settings should be changed for a production installation of Tethys Platform.
+The following settings should be changed for a production installation of Tethys Portal.
 
 ALLOWED_HOSTS
 -------------

@@ -6,7 +6,7 @@ Production Database
 
 **Last Updated:** May 2020
 
-In this part of the production deployment guide, you will learn how to initialize and configure the Tethys Platform database for production.
+In this part of the production deployment guide, you will learn how to initialize and configure the Tethys Portal database for production.
 
 1. Set Database Settings
 ========================
@@ -28,7 +28,7 @@ Set the database settings in the :file:`portal_config.yml` using the ``tethys se
 2. Create Tethys Database and Database Users
 ============================================
 
-Use the ``tethys db create`` command to create the database users and tables required by Tethys Platform:
+Use the ``tethys db create`` command to create the database users and tables required by Tethys Portal:
 
     .. code-block:: bash
 

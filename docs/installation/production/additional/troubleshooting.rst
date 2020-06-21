@@ -227,7 +227,7 @@ The following tips can help you when searching for an issue:
 
     1. Include the software name somewhere in the search (i.e.: supervisor, nginx, Django)
     2. Include the error message from any traceback, but remove anything that is specific to your machine or instance
-    3. Tethys Platform is build on Django, so adding Django to your search terms often yields helpful results.
+    3. Tethys Portal is built on Django, so adding Django to your search terms often yields helpful results.
     4. Recognize that many issues you may encounter won't be Tethys specific. If you can figure out where the error is coming from then you can narrow your search (see: :ref:`production_troubleshooting_logs`). For example, if the error is occurring in one of the NGINX logs, then adding "NGINX" to your search terms would be more helpful than adding "Tethys".
 
 Tethys Platform Forum

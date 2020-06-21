@@ -9,7 +9,7 @@ Static and Workspaces Directories
 1. Create Static Directory
 ==========================
 
-Static files include all files in the ``public`` or ``static`` directories of Tethys Platform and apps and examples include JavaScript, CSS, and images. As the name implies, static files are not dynamically generated and can be served directly by NGINX, which will be able to do so much more efficiently than the Daphne-Django server could. You will need to collect all of the static files into one directory for NGINX to be able to more easily host them. This can be done as follows:
+Static files include all files in the ``public`` or ``static`` directories of Tethys Portal and apps and examples include JavaScript, CSS, and images. As the name implies, static files are not dynamically generated and can be served directly by NGINX, which will be able to do so much more efficiently than the Daphne-Django server could. You will need to collect all of the static files into one directory for NGINX to be able to more easily host them. This can be done as follows:
 
 1. Get the value of the static directory from the `STATIC_ROOT <https://docs.djangoproject.com/en/3.0/ref/settings/#static-root>`_ setting:
 

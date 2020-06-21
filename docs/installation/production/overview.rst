@@ -18,12 +18,12 @@ System requirements for your Tethys Portal will largely depend on the apps that 
 Operating System
 ================
 
-This guide provides instructions for installing Tethys Platform in production on an Ubuntu 20.04 and CentOS 8 server.
+This guide provides instructions for installing Tethys Portal for production on an Ubuntu 20.04 and CentOS 8 server.
 
 Production Server
 =================
 
-Tethys Platform is a Django web application with the `Django Channels app <https://channels.readthedocs.io/en/latest/>`_ installed, which makes it an `Asynchronous Server Gateway Interface (ASGI) <https://asgi.readthedocs.io/en/latest/>`_ application. As such, it requires an ASGI server to host it.
+Tethys Portal is a Django web application with the `Django Channels app <https://channels.readthedocs.io/en/latest/>`_ installed, which makes it an `Asynchronous Server Gateway Interface (ASGI) <https://asgi.readthedocs.io/en/latest/>`_ application. As such, it requires an ASGI server to host it.
 
 In this guide you will host Tethys Portal using the `Daphne <https://github.com/django/daphne>`_ ASGI server with `NGINX <https://www.nginx.com/resources/wiki/>`_ acting as the primary HTTP server (see: `Example Setups <https://channels.readthedocs.io/en/latest/deploying.html#example-setups>`_). All incoming HTTP traffic will be handled by NGINX which will route most of it to Daphne. Daphne in turn be hosting the Tethys Portal. The response will be returned up the change through Daphne to NGINX and back to the client. The NGINX server will handle requests for static files directly for efficiency.
 
@@ -41,7 +41,7 @@ A high-performance HTTP server and reverse proxy. It is know for it's rich featu
 Daphne
 ------
 
-An ASGI server for hosting Django Channels web applications, of which Tethys Platform is one. Daphne is used in the Tethys Portal production installation to host Tethys Portal, which is an ASGI application.
+An ASGI server for hosting Django Channels web applications, of which Tethys Portal is one. Daphne is used in the Tethys Portal production installation to host Tethys Portal, which is an ASGI application.
 
 Supervisor
 ----------

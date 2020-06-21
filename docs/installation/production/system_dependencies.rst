@@ -6,12 +6,12 @@ Install System Dependencies
 
 **Last Updated:** May 2020
 
-In this step of the Tethys Platform production installation you will install the necessary system dependencies. You will need ``sudo`` or root access on the server to complete these steps.
+This guide describes how to install the necessary system dependencies. You will need ``sudo`` or root access on the server to complete these steps.
 
 PostgreSQL
 ==========
 
-1. A `PostgreSQL <https://www.postgresql.org/>`_ database is required for a Tethys Platform installation. For a production installation we recommend that you DO NOT use the database that is installed via conda. Instead install PostgreSQL using the system package manager as follows:
+1. A `PostgreSQL <https://www.postgresql.org/>`_ database is required for a Tethys Portal installation. For a production installation we recommend that you DO NOT use the database that is installed via conda. Instead install PostgreSQL using the system package manager as follows:
 
     **Ubuntu**:
 
@@ -161,7 +161,7 @@ PostGIS Extension (Optional)
 NGINX
 =====
 
-`NGINX <https://www.nginx.com/resources/wiki/>`_ (pronounced "N-gin-X") is a free and open-source HTTP server and reverse proxy. It is known for its high performance, stability, rich feature set, simple configuration, and low resource consumption. NGINX is used in combination with Daphne as an HTTP server to host Tethys Platform in production.
+`NGINX <https://www.nginx.com/resources/wiki/>`_ (pronounced "N-gin-X") is a free and open-source HTTP server and reverse proxy. It is known for its high performance, stability, rich feature set, simple configuration, and low resource consumption. NGINX is used in combination with Daphne as an HTTP server to host Tethys Portal in production.
 
     Install NGINX as follows:
 
@@ -192,7 +192,7 @@ NGINX
 Supervisor
 ==========
 
-`Supervisor <http://supervisord.org/>`_ is a process control system. It allows users to control and monitor many processes on UNIX-like operating systems. Supervisor is used in the Tethys Platform production deployment to control the NGINX and Daphne server processes.
+`Supervisor <http://supervisord.org/>`_ is a process control system. It allows users to control and monitor many processes on UNIX-like operating systems. Supervisor is used in the Tethys Portal production deployment to control the NGINX and Daphne server processes.
 
     1. Install Supervisor as follows:
 
@@ -238,7 +238,7 @@ Supervisor
 Postfix (Optional)
 ------------------
 
-`Postfix <http://www.postfix.org/>`_ is an email server. You should install Postfix if you plan to support the "forgotten password" feature of Tethys Platform.
+`Postfix <http://www.postfix.org/>`_ is an email server. You should install Postfix if you plan to support the "forgotten password" feature of Tethys Portal.
 
     Install Postfix as follows:
 
@@ -264,7 +264,7 @@ Postfix (Optional)
 Miscellaneous
 =============
 
-The following applications will be used during the installation process, but not necessarily needed by Tethys Platform.
+The following applications will be used during the installation process, but not necessarily needed by Tethys Portal.
 
 Text Editor
 -----------

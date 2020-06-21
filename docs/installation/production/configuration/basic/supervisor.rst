@@ -87,7 +87,7 @@ For CentOS systems, modify :file:`supervisord.conf` to recognize our configurati
 
 Create the log file in the location where supervisor expects it to be (see last item in 2.2).
 
-1. Create a directory and file for Daphne/Django to write the Tethys Platform logs:
+1. Create a directory and file for Daphne/Django to write the Tethys Portal logs:
 
     .. code-block:: bash
 
