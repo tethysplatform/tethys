@@ -32,6 +32,7 @@ These guides describe additional configuration that you can perform to add more 
 .. toctree::
     :maxdepth: 1
 
+    configuration/advanced/https_config
     configuration/advanced/customize
     configuration/advanced/email_config
     configuration/advanced/social_auth
