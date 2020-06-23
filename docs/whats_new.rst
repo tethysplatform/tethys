@@ -77,7 +77,7 @@ Django Analytical
 * Tethys comes with `Django Analytical <https://django-analytical.readthedocs.io/en/latest/>`_ installed to enable support form a number of analytics and tracking services.
 * You can now enable analytics tracking (e.g. Google Analytics) to every page of your apps and portal with a few settings in the settings file.
 
-See: :doc:`./tethys_portal/webanalytics`
+See: :doc:`./installation/production/configuration/advanced/webanalytics`
 
 Tethys Quotas
 -------------
