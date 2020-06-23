@@ -17,9 +17,16 @@ Also, be sure that the system you are using meets the minimum :ref:`system_reqs`
 1. Install the ``tethys-platform`` Conda Package
 ------------------------------------------------
 
-To install the ``tethys-platform`` into a new conda environment then run the following commands::
+To install the ``tethys-platform`` into a new conda environment then run the following commands:
+
+.. code-block:: bash
 
     conda create -n tethys -c tethysplatform -c conda-forge tethys-platform
+
+Then activate the tethys conda environment:
+
+.. code-block:: bash
+
     conda activate tethys
 
 

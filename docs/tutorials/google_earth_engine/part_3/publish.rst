@@ -40,7 +40,7 @@ If you don't have a GitHub account yet, sign up using this link: `<https://githu
 
 Sign in to your GitHub account using this link: `<https://github.com/login>`_. After logging in, you'll be brought to your dashboard.
 
-1. Create GitHub Repository
+2. Create GitHub Repository
 ===========================
 
 Create a new repository on GitHub as follows:
@@ -63,7 +63,7 @@ Create a new repository on GitHub as follows:
 
         You may have noticed options to initialize your repository with a README, .gitignore, and LICENSE file. These are excellent features for setting up a repository if you don't already have code. However, **DO NOT** use these features for this tutorial.
 
-2. Initialize Local Git Repository
+3. Initialize Local Git Repository
 ==================================
 
 Before the code can be pushed to GitHub, you will need to initialize a git repository on your local machine and commit your code to it.
@@ -123,7 +123,7 @@ Before the code can be pushed to GitHub, you will need to initialize a git repos
     git commit -m "First commit."
 
 
-3. Update gitignore File
+4. Update gitignore File
 ========================
 
 The :file:`.gitignore` file is used to specify files that should not be committed or tracked by your git repository. The scaffold for Tethys apps includes a :file:`.gitignore` file with common files that should be ignored for Tethys apps. Any files that you removed in the previous step are good candidates for adding to the :file:`.gitignore`.
@@ -168,7 +168,7 @@ The :file:`.gitignore` file is used to specify files that should not be committe
     git commit -m "Adds zip files, shapefiles, and json files to gitignore."
 
 
-4. Push Code to GitHub Repository
+5. Push Code to GitHub Repository
 =================================
 
 With the code committed to your local git repository, you can push the code to GitHub.

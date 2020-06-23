@@ -1,10 +1,10 @@
-*************
-Web-Analytics
-*************
+************************
+Web-Analytics (Optional)
+************************
 
-**Last Updated:** April 29, 2019
+**Last Updated:** May 2020
 
-.. image:: ../images/software/webanalytics.png
+.. image:: ./images/webanalytics.png
    :width: 300px
    :align: right
 
@@ -18,9 +18,9 @@ Enabling Services
 =================
 After installing tethys in either a development or production environment, the tracking ID numbers or character strings can be specified in the Tethys portal's :file:`portal_config.yml` file found at ``$TETHYS_HOME/portal_config.yml``. In the ``settings`` section of the file you can add an ``AUTHENTICATION_CONFIGS`` tag and then add any of the following ID's for many of the services supported by Django-Anlytical that are applicable.
 
-::
+.. code-block:: yaml
 
-    AUTHENTICATION_CONFIGS:
+    ANALYTICS_CONFIGS:
       CLICKMAP_TRACKER_ID: False
       CLICKY_SITE_ID: False
       CRAZY_EGG_ACCOUNT_NUMBER: False
@@ -50,18 +50,32 @@ To start using one of these services to track your Tethys portal's usage, replac
 
 For example, Google Analytics generally requires a tracking ID in the format
 
-::
+.. code-block:: yaml
 
     UA-123456789-1
 
 You must include the dashes and capitalize the UA at the beginning. If you wanted to implement a Google Analytics tracking for your portal, you would replace
 
-::
+.. code-block:: yaml
 
     GOOGLE_ANALYTICS_JS_PROPERTY_ID = False
 
 With the correctly formatted user ID as a string such as
 
-::
+.. code-block:: yaml
 
-    GOOGLE_ANALYTICS_JS_PROPERTY_ID = 'UA-246813579-5'
+    GOOGLE_ANALYTICS_JS_PROPERTY_ID = 'UA-123456789-1'
+
+You can also use the ``tethys settings`` command to set these properties:
+
+.. code-block:: bash
+
+    tethys settings --set ANALYTICS_CONFIGS.GOOGLE_ANALYTICS_JS_PROPERTY_ID 'UA-123456789-1'
+
+.. important::
+
+    Remember to restart the Tethys servers to effect any changes to the :file:`portal_config.yml`:
+
+    .. code-block:: bash
+
+        sudo supervisor restart all
