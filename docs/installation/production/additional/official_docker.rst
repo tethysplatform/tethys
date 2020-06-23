@@ -268,7 +268,7 @@ You can overwrite the environment variable of the tethys base image in your app 
 
 This line in your docker file will change the environment variable ASGI_PROCESSES from the default value of 4 to 1.
 
-Here is an example of a tethys app:
+Here is an example of a dockerfile from a tethys app:
 ::
 
     # Use our Tethyscore base docker image as a parent image
@@ -351,7 +351,7 @@ Here is an example of a tethys app:
     #######
     CMD bash run.sh
 
-
+The bash script run.sh is executed during run time to finalize the container.
 
 ******
 Run.sh
@@ -379,3 +379,19 @@ Run.sh also has these following optional arguments:
 +---------------------------+------------------------------------------------------------------------------------------+
 | --test                    | only run salt scripts.                                                                   |
 +---------------------------+------------------------------------------------------------------------------------------+
+
+***********
+Salt Script
+***********
+
+Tethys uses `Salt Script`_ to setup the app when the docker container runs. The top file, named top.sls, contains a list of state files to run. These files are pre_tethys.sls, tethyscore.sls and post_app.sls. You can overwrite this file with your own top.sls file for your app. Here is an example of a top.sls file in a tethys app:
+::
+
+    base:
+      '*':
+        - pre_tethys
+        - tethyscore
+        - tethys_app
+        - post_app
+
+In this example, you can put in the salt script to enforce the starting state of your app in the tethys_app.sls file. The rest of the scripts are coming from tethys-core to help finalize the app setup up.
