@@ -106,7 +106,7 @@ API Tokens for Users
 
 Documentation
 -------------
-* Added SSL setup instruction to Production Installation (see: :ref:`production_installation_ssl`)
+* Added SSL setup instruction to Production Installation
 
 Bugs
 ----
@@ -251,8 +251,6 @@ HydroShare OAuth Backend and Helper Function
 * Refactor default HydroShare OAuth backend; Token refresh is available; Add backends for HydroShare-beta and HydroShare-playground.
 * Include hs_restclient library in requirements.txt; Provide a helper function to help initialize the ``hs`` object based on HydroShare social account.
 * Update python-social-auth to 0.2.21.
-
-See: :doc:`../tethys_portal/social_auth`
 
 
 
