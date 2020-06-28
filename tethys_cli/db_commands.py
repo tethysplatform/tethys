@@ -42,9 +42,13 @@ def add_db_parser(subparsers):
     db_parser.add_argument('-d', '--database', dest='db_alias',
                            help="Name of the database options from portal_config.yml to use (e.g. 'default').")
     db_parser.add_argument('-n', '--username', dest='username',
-                           help="Name of database user to add to database when creating.")
+                           help="Name of database user to add to database when creating. "
+                                "Defaults to the value of DATABASES.default.USER from the portal_config.yml "
+                                "or 'tethys_default' if not specified.")
     db_parser.add_argument('-p', '--password', dest='password',
-                           help="Password for the database user.")
+                           help="Password for the database user. "
+                                "Defaults to the value of DATABASES.default.PASSWORD from the portal_config.yml "
+                                "or 'pass' if not specified.")
     db_parser.add_argument('-N', '--superuser-name', dest='superuser_name',
                            help="Name of database super user to add to database when creating.")
     db_parser.add_argument('-P', '--superuser-password', dest='superuser_password',
