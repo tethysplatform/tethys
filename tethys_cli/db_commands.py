@@ -361,6 +361,8 @@ def process_args(args):
         hostname=db_settings.get('HOST'),
         port=db_settings.get('PORT'),
         db_name=db_settings.get('NAME'),
+        username=db_settings.get('USER'),
+        password=db_settings.get('PASSWORD')
     )
 
     return options
