@@ -1,17 +1,16 @@
-.. _production_official_docker:
-.. _`Tethys Portal Configuration`: ../../../tethys_portal/configuration.html?highlight=portal%20configuration
 .. _`Salt Script`: https://docs.saltstack.com/en/latest/topics/index.html
+.. _production_official_docker:
 
-***************************
+*********************
 Official Docker Image
-***************************
+*********************
 
-**Last Updated:** Jun 2020
+**Last Updated:** July 2020
 
-Download a Tethys Docker image
-##############################
+Versions and Tags
+#################
 
-The official Tethys Docker images are located in the tethysplatform/tethys-core Docker Hub repository. Image released are tagged using the following format:
+The official Tethys Docker images are located in the `tethysplatform/tethys-core Docker Hub repository<https://hub.docker.com/r/tethysplatform/tethys-core>`_. Images released are tagged using the following format:
 
 +---------------+------------------------------------------------------------------------------------------------------+
 |    Tag        | Description                                                                                          |
@@ -23,38 +22,58 @@ The official Tethys Docker images are located in the tethysplatform/tethys-core 
 | version       | Specify the version of Tethys image, for example: v3.0.5                                             |
 +---------------+------------------------------------------------------------------------------------------------------+
 
+Pull a Pre-Built Image
+######################
+
 The following commands will download Tethys image to your machine:
+
 ::
 
     docker pull tethysplatform/tethys-core:latest           # the latest Tethys release
+
+::
+
     docker pull tethysplatform/tethys-core:v3.0.5           # Tethys version 3.0.5
 
-How to Run
-##########
-Make sure that there isn't already a docker container or docker images with the desired name
+::
+
+    docker pull tethysplatform/tethys-core:master           # the latest development build
+
+Build From Source
+#################
+
+Make sure that there isn't already a docker container or docker images with the desired name:
+
 ::
 
     docker rm tethys-core
     docker rmi tethys-core
 
-Build a new docker with the desired name and tag
+To build a new docker image with the desired name and tag, run the following in the directory containing the Dockerfile:
+
 ::
 
     docker build -t tethys-core:latest
 
-### Running the docker
-To run the docker you can use the following flags
+Run Image
+#########
 
-use the following flag with the arguments listed in the environment variable table. (NOTE: args in the build arg table can be used here as well)
+When running the docker you can use the ``-e`` flag to set environment variables. A list of available environment variables is given in a table below.
+
 ::
 
     -e TETHYS_CONDA_ENV='tethys'
 
+.. note::
 
-Example of Command:
+    Variables in the build arg table can be used here as well.
+
+
+Example of Run Command:
+
 ::
 
-    docker run -p 127.0.0.1:8000:8000 --name tethys-core \
+    docker run -p 127.0.0.1:80:80 --name tethys-core \
         -e TETHYS_DB_SUPERUSER='tethys_super' -e TETHYS_DB_PASSWORD='3x@m9139@$$' \
         -e TETHYS_DB_PORT='5432' TETHYS_SUPERUSER='admin' \
         -e TETHYS_SUPERUSER_PASS='admin' tethyscore
@@ -62,7 +81,8 @@ Example of Command:
 Docker Compose
 ##############
 
-A faster way is to use the docker-compose.yml file to build and run the docker image.
+A more convenient way is to use a docker-compose.yml file to build and run the image.
+
 ::
 
     version: "3.2"
@@ -92,13 +112,17 @@ A faster way is to use the docker-compose.yml file to build and run the docker i
           POSTGRES_PASSWORD: pass
 
 You can build and run your docker image now with:
+
 ::
 
     docker-compose up
 
-***************************
+.. note::
+
+    If you remove or comment out the ``build`` section, it will pull the image from Docker Hub instead of building it locally.
+
 Environment Variables
-***************************
+#####################
 
 Tethys uses environment variables to build and initialize the app. These are the environment variables in Tethys:
 
@@ -107,12 +131,12 @@ Tethys uses environment variables to build and initialize the app. These are the
 +===========================+==========================================================================================+
 | TETHYS_HOME               | Path to tethys home directory.  Defaults to "/usr/lib/tethys".                           |
 +---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_PERSIST            | Path to tethys persist directory. All the data in this directory are persisted even      |
-|                           | after the container stops. Defaults to "/var/lib/tethys_persist"                         |
+| TETHYS_PERSIST            | Path to tethys persist directory. Mount a drive from the host machine to this location to|
+|                           | persist runtime data. Defaults to "/var/lib/tethys_persist"                              |
 +---------------------------+------------------------------------------------------------------------------------------+
 | TETHYS_APPS_ROOT          | Path to tethys apps root directory. Defaults to "${TETHYS_HOME}/apps".                   |
 +---------------------------+------------------------------------------------------------------------------------------+
-| TETHYS_PORT               | Tethys' port. Defaults to "8000".                                                        |
+| TETHYS_PORT               | Tethys' port. Defaults to "8000". Note: this port is only used inside the container.     |
 +---------------------------+------------------------------------------------------------------------------------------+
 | POSTGRES_PASSWORD         | Password of the postgres database. Defaults to "pass".                                   |
 +---------------------------+------------------------------------------------------------------------------------------+
@@ -148,13 +172,13 @@ Tethys uses environment variables to build and initialize the app. These are the
 +---------------------------+------------------------------------------------------------------------------------------+
 | CLIENT_MAX_BODY_SIZE      | client_max_body_size parameter for nginx config. Defaults to 75M.                        |
 +---------------------------+------------------------------------------------------------------------------------------+
-| DEBUG                     | the Django DEBUG setting. Defaults to False. See `Tethys Portal Configuration`_          |
+| DEBUG                     | the Django DEBUG setting. Defaults to False. See :ref:`tethys_configuration`          |
 +---------------------------+------------------------------------------------------------------------------------------+
 | ALLOWED_HOSTS             | The Django ALLOWED_HOSTS setting. Defaults to "\"[localhost, 127.0.0.1]\"".              |
-|                           | See `Tethys Portal Configuration`_                                                       |
+|                           | See :ref:`tethys_configuration`                                                       |
 +---------------------------+------------------------------------------------------------------------------------------+
 | BYPASS_TETHYS_HOME_PAGE   | The home page of Tethys Portal redirects to the Apps Library when True.                  |
-|                           | Defaults to False. See `Tethys Portal Configuration`_                                    |
+|                           | Defaults to False. See :ref:`tethys_configuration`                                    |
 +---------------------------+------------------------------------------------------------------------------------------+
 | ADD_DJANGO_APPS           | List of the DJANGO APPS in this format "\"[App1, App2]\"". Defaults to "\"[]\"" (Empty)  |
 +---------------------------+------------------------------------------------------------------------------------------+
@@ -169,27 +193,27 @@ Tethys uses environment variables to build and initialize the app. These are the
 +---------------------------+------------------------------------------------------------------------------------------+
 | QUOTA_HANDLERS            | A list of Tethys ResourceQuotaHandler classes to load in this format "\"[RQ1, RQ22]\"".  |
 |                           | Defaults to "\"[]\"" (Empty).                                                            |
-|                           | See RESOURCE_QUOTA_HANDLERS in `Tethys Portal Configuration`_                            |
+|                           | See RESOURCE_QUOTA_HANDLERS in :ref:`tethys_configuration`                            |
 +---------------------------+------------------------------------------------------------------------------------------+
 | DJANGO_ANALYTICAL         | the Django Analytical configuration settings for enabling analytics services on the      |
 |                           | Tethys Portal in this format "\"{CLICKY_SITE_ID:123}\"". Defaults to "\"{}}\"" (Empty).  |
-|                           | Tethys Portal. See ANALYTICS_CONFIGS in `Tethys Portal Configuration`_                   |
+|                           | Tethys Portal. See ANALYTICS_CONFIGS in :ref:`tethys_configuration`                   |
 +---------------------------+------------------------------------------------------------------------------------------+
 | ADD_BACKENDS              | the Django AUTHENTICATION_BACKENDS setting in this format "\"[Setting1, Setting2]\""     |
 |                           | Defaults to "\"[]\"" (Empty).                                                            |
-|                           | See AUTHENTICATION_BACKENDS in `Tethys Portal Configuration`_                            |
+|                           | See AUTHENTICATION_BACKENDS in :ref:`tethys_configuration`                            |
 +---------------------------+------------------------------------------------------------------------------------------+
 | OAUTH_OPTIONS             | the OAuth options for Tethys Portal in this format "\"{SOCIAL_AUTH_FACEBOOK_KEY:123}\""  |
 |                           | Defaults to "\"{}}\"" (Empty).                                                           |
-|                           | Tethys Portal. See OATH_CONFIGS in `Tethys Portal Configuration`_                        |
+|                           | Tethys Portal. See OATH_CONFIGS in :ref:`tethys_configuration`                        |
 +---------------------------+------------------------------------------------------------------------------------------+
 | CHANNEL_LAYER             | the Django Channel Layers Backend. Default to "channels.layers.InMemoryChannelLayer"     |
 +---------------------------+------------------------------------------------------------------------------------------+
 | RECAPTCHA_PRIVATE_KEY     | Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen.      |
-|                           | See RECAPTCHA_PRIVATE_KEY in `Tethys Portal Configuration`_                              |
+|                           | See RECAPTCHA_PRIVATE_KEY in :ref:`tethys_configuration`                              |
 +---------------------------+------------------------------------------------------------------------------------------+
 | RECAPTCHA_PUBLIC_KEY      | Public key for Google ReCaptcha. Required to enable ReCaptcha on the login screen.       |
-|                           | See RECAPTCHA_PUBLIC_KEY in `Tethys Portal Configuration`_                               |
+|                           | See RECAPTCHA_PUBLIC_KEY in :ref:`tethys_configuration`                               |
 +---------------------------+------------------------------------------------------------------------------------------+
 | TAB_TITLE                 | title to display in the web browser tab.                                                 |
 +---------------------------+------------------------------------------------------------------------------------------+
@@ -252,16 +276,17 @@ Tethys uses environment variables to build and initialize the app. These are the
 
 These environment variables can be overwritten in your app docker file.
 
-***************************************
-Build your app with Tethys Docker Image
-***************************************
+Build Your App with Tethys Docker Image
+#######################################
 
-You can build your app by extending from the tethys docker image.:
+You can build your app by extending from the tethys docker image. Include this at the top of your Dockerfile:
+
 ::
 
     FROM tethysplatform/tethys-core:master
 
 You can overwrite the environment variable of the tethys base image in your app docker file. For example:
+
 ::
 
     ENV ASGI_PROCESSES 1
@@ -269,6 +294,7 @@ You can overwrite the environment variable of the tethys base image in your app 
 This line in your docker file will change the environment variable ASGI_PROCESSES from the default value of 4 to 1.
 
 Here is an example of a dockerfile from a tethys app:
+
 ::
 
     # Use our Tethyscore base docker image as a parent image
@@ -310,18 +336,15 @@ Here is an example of a dockerfile from a tethys app:
     ###########
     # INSTALL #
     ###########
-    ADD --chown=www:www tethysapp ${TETHYSAPP_DIR}/tethysapp-steem/tethysapp
-    ADD --chown=www:www *.py ${TETHYSAPP_DIR}/tethysapp-steem/
-    ADD *.ini ${TETHYSAPP_DIR}/tethysapp-steem/
-    ADD *.sh ${TETHYSAPP_DIR}/tethysapp-steem/
-    ADD install.yml ${TETHYSAPP_DIR}/tethysapp-steem/
-    ADD --chown=www:www steem-adapter ${TETHYSAPP_DIR}/steem-adapter
+    ADD --chown=www:www tethysapp ${TETHYSAPP_DIR}/tethysapp-my_first_app/tethysapp
+    ADD --chown=www:www *.py ${TETHYSAPP_DIR}/tethysapp-my_first_app/
+    ADD *.ini ${TETHYSAPP_DIR}/tethysapp-my_first_app/
+    ADD *.sh ${TETHYSAPP_DIR}/tethysapp-my_first_app/
+    ADD install.yml ${TETHYSAPP_DIR}/tethysapp-my_first_app/
 
     RUN /bin/bash -c ". ${CONDA_HOME}/bin/activate tethys \
-      ; cd ${TETHYSAPP_DIR}/steem-adapter \
-      ; python setup.py install \
-      ; cd ${TETHYSAPP_DIR}/tethysapp-steem \
-      ; python setup.py install"
+      ; cd ${TETHYSAPP_DIR}/tethysapp-my_first_app \
+      ; tethys install -N"
 
     #########
     # CHOWN #
@@ -351,13 +374,11 @@ Here is an example of a dockerfile from a tethys app:
     #######
     CMD bash run.sh
 
-The bash script run.sh is executed during run time to finalize the container.
-
-******
 Run.sh
-******
+------
 
-Run.sh is a bash script used to run `Salt Script`_ and several other tasks when the Tethys docker image is built. Here is what it's trying to accomplish.
+The bash script ``run.sh`` is executed during run time to startup and initialize the container. Here is what it's trying to accomplish:
+
 * Create Salt Config.
 * Set extra ENVs to NGINX.
 * Check if Database is ready.
@@ -384,7 +405,8 @@ Run.sh also has these following optional arguments:
 Salt Script
 ***********
 
-Tethys uses `Salt Script`_ to setup the app when the docker container runs. The top file, named top.sls, contains a list of state files to run. These files are pre_tethys.sls, tethyscore.sls and post_app.sls. You can overwrite this file with your own top.sls file for your app. Here is an example of a top.sls file in a tethys app:
+Tethys uses `Salt Script`_ to setup the app when the docker container runs. The file, named ``top.sls``, contains a list of state files to run. These files are ``pre_tethys.sls``, ``tethyscore.sls`` and ``post_app.sls``. You can override this file with your own ``top.sls`` file to insert a salt state file for your app. Here is an example of a ``top.sls`` file in a tethys app:
+
 ::
 
     base:
@@ -394,4 +416,8 @@ Tethys uses `Salt Script`_ to setup the app when the docker container runs. The 
         - tethys_app
         - post_app
 
-In this example, you can put in the salt script to enforce the starting state of your app in the tethys_app.sls file. The rest of the scripts are coming from tethys-core to help finalize the app setup up.
+In this example, you can put logic needed to initialize your app in the ``tethys_app.sls`` file. The rest of the scripts are coming from tethys-core to help initialize the app setup up. Don't forget to add a line to the Dockerfile to add the new ``tethys_app.sls`` script to the ``/srv/salt`` directory:
+
+::
+
+    ADD tethys_app.sls /srv/salt/
