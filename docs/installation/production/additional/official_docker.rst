@@ -1,4 +1,7 @@
 .. _`Salt Script`: https://docs.saltstack.com/en/latest/topics/index.html
+.. _`pre_tethys.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/pre_tethys.sls
+.. _`tethyscore.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/tethyscore.sls
+.. _`post_app.sls`: https://github.com/tethysplatform/tethys/blob/master/docker/salt/post_app.sls
 .. _production_official_docker:
 
 *********************
@@ -66,8 +69,7 @@ When running the docker you can use the ``-e`` flag to set environment variables
 
 .. note::
 
-    Variables in the build arg table can be used here as well.
-
+    Variables in the `Build Arguments`_ table can be used here as well.
 
 Example of Run Command:
 
@@ -76,7 +78,7 @@ Example of Run Command:
     docker run -p 127.0.0.1:80:80 --name tethys-core \
         -e TETHYS_DB_SUPERUSER='tethys_super' -e TETHYS_DB_PASSWORD='3x@m9139@$$' \
         -e TETHYS_DB_PORT='5432' TETHYS_SUPERUSER='admin' \
-        -e TETHYS_SUPERUSER_PASS='admin' tethyscore
+        -e TETHYS_SUPERUSER_PASS='admin' tethysplatform/tethys-core
 
 Docker Compose
 ##############
@@ -126,6 +128,10 @@ Environment Variables
 
 Tethys uses environment variables to build and initialize the app. These are the environment variables in Tethys:
 
+.. _`Build Arguments`:
+
+*Build Arguments*
+
 +---------------------------+------------------------------------------------------------------------------------------+
 | Environment Variable      | Description                                                                              |
 +===========================+==========================================================================================+
@@ -162,6 +168,12 @@ Tethys uses environment variables to build and initialize the app. These are the
 +---------------------------+------------------------------------------------------------------------------------------+
 | TETHYS_MANAGE             | Path to manage.py file. Defaults to "${TETHYS_HOME}/tethys/tethys_portal/manage.py"      |
 +---------------------------+------------------------------------------------------------------------------------------+
+
+*Misc Arguments*
+
++---------------------------+------------------------------------------------------------------------------------------+
+| Environment Variable      | Description                                                                              |
++===========================+==========================================================================================+
 | BASH_PROFILE              | The location of bash profile file. Defaults to ".bashrc"                                 |
 +---------------------------+------------------------------------------------------------------------------------------+
 | CONDA_HOME                | Path of conda home. Defaults to "/opt/conda"                                             |
@@ -172,13 +184,19 @@ Tethys uses environment variables to build and initialize the app. These are the
 +---------------------------+------------------------------------------------------------------------------------------+
 | CLIENT_MAX_BODY_SIZE      | client_max_body_size parameter for nginx config. Defaults to 75M.                        |
 +---------------------------+------------------------------------------------------------------------------------------+
-| DEBUG                     | the Django DEBUG setting. Defaults to False. See :ref:`tethys_configuration`          |
+
+*Tethys Settings Arguments*
+
++---------------------------+------------------------------------------------------------------------------------------+
+| Environment Variable      | Description                                                                              |
++===========================+==========================================================================================+
+| DEBUG                     | the Django DEBUG setting. Defaults to False. See :ref:`tethys_configuration`             |
 +---------------------------+------------------------------------------------------------------------------------------+
 | ALLOWED_HOSTS             | The Django ALLOWED_HOSTS setting. Defaults to "\"[localhost, 127.0.0.1]\"".              |
-|                           | See :ref:`tethys_configuration`                                                       |
+|                           | See :ref:`tethys_configuration`                                                          |
 +---------------------------+------------------------------------------------------------------------------------------+
 | BYPASS_TETHYS_HOME_PAGE   | The home page of Tethys Portal redirects to the Apps Library when True.                  |
-|                           | Defaults to False. See :ref:`tethys_configuration`                                    |
+|                           | Defaults to False. See :ref:`tethys_configuration`                                       |
 +---------------------------+------------------------------------------------------------------------------------------+
 | ADD_DJANGO_APPS           | List of the DJANGO APPS in this format "\"[App1, App2]\"". Defaults to "\"[]\"" (Empty)  |
 +---------------------------+------------------------------------------------------------------------------------------+
@@ -193,28 +211,34 @@ Tethys uses environment variables to build and initialize the app. These are the
 +---------------------------+------------------------------------------------------------------------------------------+
 | QUOTA_HANDLERS            | A list of Tethys ResourceQuotaHandler classes to load in this format "\"[RQ1, RQ22]\"".  |
 |                           | Defaults to "\"[]\"" (Empty).                                                            |
-|                           | See RESOURCE_QUOTA_HANDLERS in :ref:`tethys_configuration`                            |
+|                           | See RESOURCE_QUOTA_HANDLERS in :ref:`tethys_configuration`                               |
 +---------------------------+------------------------------------------------------------------------------------------+
 | DJANGO_ANALYTICAL         | the Django Analytical configuration settings for enabling analytics services on the      |
 |                           | Tethys Portal in this format "\"{CLICKY_SITE_ID:123}\"". Defaults to "\"{}}\"" (Empty).  |
-|                           | Tethys Portal. See ANALYTICS_CONFIGS in :ref:`tethys_configuration`                   |
+|                           | Tethys Portal. See ANALYTICS_CONFIGS in :ref:`tethys_configuration`                      |
 +---------------------------+------------------------------------------------------------------------------------------+
 | ADD_BACKENDS              | the Django AUTHENTICATION_BACKENDS setting in this format "\"[Setting1, Setting2]\""     |
 |                           | Defaults to "\"[]\"" (Empty).                                                            |
-|                           | See AUTHENTICATION_BACKENDS in :ref:`tethys_configuration`                            |
+|                           | See AUTHENTICATION_BACKENDS in :ref:`tethys_configuration`                               |
 +---------------------------+------------------------------------------------------------------------------------------+
 | OAUTH_OPTIONS             | the OAuth options for Tethys Portal in this format "\"{SOCIAL_AUTH_FACEBOOK_KEY:123}\""  |
 |                           | Defaults to "\"{}}\"" (Empty).                                                           |
-|                           | Tethys Portal. See OATH_CONFIGS in :ref:`tethys_configuration`                        |
+|                           | Tethys Portal. See OATH_CONFIGS in :ref:`tethys_configuration`                           |
 +---------------------------+------------------------------------------------------------------------------------------+
 | CHANNEL_LAYER             | the Django Channel Layers Backend. Default to "channels.layers.InMemoryChannelLayer"     |
 +---------------------------+------------------------------------------------------------------------------------------+
 | RECAPTCHA_PRIVATE_KEY     | Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen.      |
-|                           | See RECAPTCHA_PRIVATE_KEY in :ref:`tethys_configuration`                              |
+|                           | See RECAPTCHA_PRIVATE_KEY in :ref:`tethys_configuration`                                 |
 +---------------------------+------------------------------------------------------------------------------------------+
 | RECAPTCHA_PUBLIC_KEY      | Public key for Google ReCaptcha. Required to enable ReCaptcha on the login screen.       |
-|                           | See RECAPTCHA_PUBLIC_KEY in :ref:`tethys_configuration`                               |
+|                           | See RECAPTCHA_PUBLIC_KEY in :ref:`tethys_configuration`                                  |
 +---------------------------+------------------------------------------------------------------------------------------+
+
+*Tethys Site Arguments*
+
++---------------------------+------------------------------------------------------------------------------------------+
+| Environment Variable      | Description                                                                              |
++===========================+==========================================================================================+
 | TAB_TITLE                 | title to display in the web browser tab.                                                 |
 +---------------------------+------------------------------------------------------------------------------------------+
 | FAVICON                   | icon to display in the web browser tab.                                                  |
@@ -401,6 +425,10 @@ Run.sh also has these following optional arguments:
 | --test                    | only run salt scripts.                                                                   |
 +---------------------------+------------------------------------------------------------------------------------------+
 
+For example, to only run the salt script you can run.
+
+    sudo docker run -it tethysplatform/tethys-core /bin/bash -c '. run.sh --test'
+
 ***********
 Salt Script
 ***********
@@ -421,3 +449,26 @@ In this example, you can put logic needed to initialize your app in the ``tethys
 ::
 
     ADD tethys_app.sls /srv/salt/
+
+
+Salt Script Description
+#######################
+
+`pre_tethys.sls`_:
+
+* Create static workspace and root for tethys.
+
+`tethyscore.sls`_:
+
+* Generate tethys settings.
+* Generate NGINX service.
+* Generate ASGI service.
+* Prepare database for tethys.
+
+`post_app.sls`_:
+
+* Persist portal_config.yaml.
+* Persist workspace and static data of the app.
+* Persist and link NGINX and ASGI for the app.
+
+
