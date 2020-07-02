@@ -73,7 +73,7 @@
           </a>
         {% endfor %}
         {% for app in apps.unconfigured %}
-          <a class="app-container isotopeSelector {{ app|get_tag_class }} unconfigured" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '/admin/tethys_apps/tethysapp/{{ app.id }}/change/');" data-app-theme-color="{{ app.color }}">
+          <a class="app-container isotopeSelector {{ app|get_tag_class }} unconfigured" href="javascript:void(0);" onclick="TETHYS_APPS_LIBRARY.launch_app(this, '{% url 'admin:index' %}tethys_apps/tethysapp/{{ app.id }}/change/');" data-app-theme-color="{{ app.color }}">
             <div class="app-icon">
               <img src="{% if app.icon %}{% if 'http' in app.icon %}{{ app.icon }}{% else %}{% static app.icon %}{% endif %}{% else %}{% static 'tethys_apps/images/default_app_icon.gif' %}{% endif %}" />
             </div>

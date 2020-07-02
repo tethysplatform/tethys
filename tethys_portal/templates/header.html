@@ -129,20 +129,20 @@
   <header class="site-header">
     <div class="header-logo">
       {% if site_globals.brand_image and 'http' in site_globals.brand_image %}
-        <a class="logo-image" href="/"><img  src="{{ site_globals.brand_image }}"></a>
+        <a class="logo-image" href="{% url 'home' %}"><img  src="{{ site_globals.brand_image }}"></a>
       {% elif site_globals.brand_image %}
-        <a class="logo-image" href="/"><img  src="{% static site_globals.brand_image %}"></a>
+        <a class="logo-image" href="{% url 'home' %}"><img  src="{% static site_globals.brand_image %}"></a>
       {% endif %}
 
       {% if site_globals.brand_text %}
         <h1 class="logo-title">
-          <a href="/">{{ site_globals.brand_text }}</a>
+          <a href="{% url 'home' %}">{{ site_globals.brand_text }}</a>
         </h1>
       {% endif %}
 
       {% if not site_globals.brand_text and not site_globals.brand_image %}
         <h1 class="logo-title">
-          <a href="/">Tethys</a>
+          <a href="{% url 'home' %}">Tethys</a>
         </h1>
       {% endif %}
     </div>
