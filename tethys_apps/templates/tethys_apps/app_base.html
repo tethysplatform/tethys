@@ -157,7 +157,7 @@
                   {% block settings_button_override %}
                       {% if request.user.is_staff %}
                       <div class="header-button settings-button">
-                        <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('/admin/tethys_apps/tethysapp/{{ tethys_app.id }}/change/');" data-toggle="tooltip" data-placement="bottom" title="Settings"><span class="glyphicon glyphicon-cog"></span></a>
+                        <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'admin:index' %}tethys_apps/tethysapp/{{ tethys_app.id }}/change/');" data-toggle="tooltip" data-placement="bottom" title="Settings"><span class="glyphicon glyphicon-cog"></span></a>
                       </div>
                       {%  endif %}
                   {% endblock %}
