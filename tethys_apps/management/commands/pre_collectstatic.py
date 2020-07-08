@@ -21,6 +21,11 @@ class Command(BaseCommand):
     Command class that handles the syncstores command. Provides persistent store management functionality.
     """
 
+    def add_arguments(self, parser):
+        parser.add_argument('-l', '--link', action='store_true', default=False,
+                            help='Link static directories of apps into STATIC_ROOT instead of copying them. '
+                                 'Not recommended.')
+
     def handle(self, *args, **options):
         """
         Symbolically link the static directories of each app into the static/public directory specified by the
@@ -45,25 +50,35 @@ class Command(BaseCommand):
             # Check for both variants of the static directory (public and static)
             public_path = os.path.join(path, 'public')
             static_path = os.path.join(path, 'static')
-            static_root_path = os.path.join(static_root, item)
+
+            if os.path.isdir(public_path):
+                app_static_dir = public_path
+            elif os.path.isdir(static_path):
+                app_static_dir = static_path
+            else:
+                print(f'WARNING: Cannot find a directory named "static" or "public" for app "{item}". Skipping...')
+                continue
+
+            # Path for app in the STATIC_ROOT directory
+            static_root_dir = os.path.join(static_root, item)
 
             # Clear out old symbolic links/directories if necessary
             try:
                 # Remove link
-                os.remove(static_root_path)
+                os.remove(static_root_dir)
             except OSError:
                 try:
                     # Remove directory
-                    shutil.rmtree(static_root_path)
+                    shutil.rmtree(static_root_dir)
                 except OSError:
                     # No file
                     pass
 
             # Create appropriate symbolic link
-            if os.path.isdir(public_path):
-                os.symlink(public_path, static_root_path)
+            if options['link']:
+                os.symlink(app_static_dir, static_root_dir)
                 print('INFO: Successfully linked public directory to STATIC_ROOT for app "{0}".'.format(item))
 
-            elif os.path.isdir(static_path):
-                os.symlink(static_path, static_root_path)
-                print('INFO: Successfully linked static directory to STATIC_ROOT for app "{0}".'.format(item))
+            else:
+                shutil.copytree(app_static_dir, static_root_dir)
+                print('INFO: Successfully copied public directory to STATIC_ROOT for app "{0}".'.format(item))
