@@ -25,10 +25,14 @@ Important Directories
 
 There are several directories that you will need to create and be aware of throughout the installation process. The following list describes each one along with the recommended locations for each.
 
-* **TETHYS_HOME** (~/.tethys): Directory that stores configuration for Tethys Portal. To change this from the default value you need to permenantly set the TETHYS_HOME environment variable.
-* **STATIC_ROOT** (/var/www/tethys/static): Direcory where all static files will be copied to to be hosted by NGINX.
-* **TETHYS_WORKSPACES_ROOT** (/var/www/tethys/workspaces): Directory where all workspace directories will be linked to for easier backup and managment of workspace files.
+* **TETHYS_HOME** (~/.tethys): Directory that stores configuration for Tethys Portal. To change this from the default value you need to permanently set the TETHYS_HOME environment variable.
+* **STATIC_ROOT** (/var/www/tethys/static): Directory where all static files will be copied to to be hosted by NGINX.
+* **TETHYS_WORKSPACES_ROOT** (/var/www/tethys/workspaces): Directory where all workspace directories will be copied to for easier backup and management of workspace files.
 * **APP_SOURCES_ROOT** (/var/www/tethys/apps): Location where app source code should be stored on the server.
+
+.. warning::
+
+    Since files in the ``public`` / ``static`` directories of your app are copied to a different directory during a production installation, any changes to files in these directories at runtime will not be reflected in the ``STATIC_ROOT`` directory. You should not use the ``public`` / ``static`` directory for dynamic operations. Instead, use the workspaces directories for dynamic file storage.
 
 Usernames and Passwords
 =======================
