@@ -954,4 +954,4 @@ This concludes this portion of the GEE Tutorial. You can view the solution on Gi
 
     git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
     cd tethysapp-earth_engine
-    git checkout -b rest-api-solution-solution rest-api-solution-solution-|version|
+    git checkout -b rest-api-solution rest-api-solution-|version|
