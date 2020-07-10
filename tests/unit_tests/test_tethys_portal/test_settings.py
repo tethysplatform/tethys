@@ -14,7 +14,7 @@ class TestSettings(TestCase):
     @mock.patch('tethys_portal.settings.yaml.safe_load', return_value={'settings': {'test': 'test'}})
     def test_local_settings(self, mock_local_settings):
         reload(settings)
-        self.assertDictEqual(settings.local_settings, mock_local_settings.return_value['settings'])
+        self.assertDictEqual(settings.portal_config_settings, mock_local_settings.return_value['settings'])
 
     @mock.patch('tethys_portal.settings.yaml.safe_load', side_effect=FileNotFoundError())
     @mock.patch('tethys_portal.settings.logging.getLogger')
