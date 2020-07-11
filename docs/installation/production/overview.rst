@@ -6,6 +6,13 @@ Overview
 
 **Last Updated:** May 2020
 
+Introduction
+============
+
+The purpose of this section of the guide is to provide background information on important aspects of the production installation of Tethys Portal. Every production installation is different due to the different requirements imposed by the apps that are installed. This section will help you to learn about the different components and how they work together.
+
+It is also important to understand that this guide provides instructions only for the minimal installation and configuration that is required and most installations will require modification. Taking time upfront to understand the different components, why they are needed, and where the important files are stored will save you time when you are debugging issues with the installation later on.
+
 System Requirements
 ===================
 
