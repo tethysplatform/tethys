@@ -27,7 +27,9 @@ Change the owner of the ``STATIC_ROOT`` and ``TETHYS_WORKSPACES_ROOT`` directori
 2. Setup Shortcuts for Changing Permissions (Optional)
 ======================================================
 
-You will often need to change the permissions of ``TETHYS_HOME``, ``STATIC_ROOT``, and ``TETHYS_WORKSPACES_ROOT`` to your user and back to the ``nginx`` user when performing maintenance operations. For convenience, you may consider setting up these or similar aliases in the activate script of your environment:
+You will often need to change the ownership of the ``TETHYS_HOME``, ``STATIC_ROOT``, and ``TETHYS_WORKSPACES_ROOT`` to your user and then back to the ``nginx`` user again. This needs to be done whenever you are making changes to files in one of these directories. For example, whenever you run ``tethys manage collectstatic`` or ``tethys manage collectworkspaces``, you will need to change the ownership of these directories to your user to allow the command to copy files into those directories. Then you will need to change it back to the ``nginx`` user to allow the server to have access to these files to serve them.
+
+For convenience, you may consider setting up these or similar aliases in the activate script of your environment:
 
     .. code-block:: bash
 

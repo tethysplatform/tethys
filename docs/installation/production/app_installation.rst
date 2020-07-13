@@ -18,12 +18,12 @@ Activate the Tethys Environment
 Setup App Directory (First Time Only)
 =====================================
 
-Decide on a location to download the app code. We recommend creating a :file:`/var/www/tethys/apps` directory:
+Create the APP_SOURCES_ROOT directory that you decided on in the preparation section. We recommend creating this directory somewhere in the default web directory of the server (e.g. :file:`/var/www/tethys/apps`).
     
     .. code-block:: bash
     
-        sudo mkdir -p /var/www/tethys/apps
-        sudo chown $USER /var/www/tethys/apps
+        sudo mkdir -p <APP_SOURCES_ROOT>
+        sudo chown $USER <APP_SOURCES_ROOT>
 
 Download App Source Code
 ========================
@@ -31,8 +31,8 @@ Download App Source Code
 You will need to copy the source code of the app to the server. There are many methods for accomplishing this, but one way is to create a repository for your code in GitHub, BitBucket, or another Git repository. To download the source from a Git repository, change into the app directory and then clone it as follows:
     
     .. code-block:: bash
-    
-        cd /var/www/tethys/apps
+
+        cd <APP_SOURCES_ROOT>
 
     .. code-block:: bash
 
@@ -49,18 +49,22 @@ Execute the install command in the app directory to make Python aware of the app
 
     .. code-block:: bash
     
-        cd /var/www/tethys/apps/<APP_DIR>
+        cd <APP_SOURCES_ROOT>/<APP_DIR>
 
     .. code-block:: bash
 
         tethys install
     
+    .. important::
+    
+        Installing your app in development mode on a production server (i.e.: ``tethys install -d`` or ``python setup.py develop``) is not recommended. Doing so has implications on file permissions that are not accounted for in these instructions. Do so at your own risk.
+
     .. seealso::
     
         :doc:`../application` for more information on the installation process.
 
-Collect and Static Files and Workspaces
-=======================================
+Collect Static Files and Workspaces
+===================================
 
 You will need to collect the workspaces and static files from the new app to the ``STATIC_ROOT`` and ``TETHYS_WORKSPACES_ROOT`` directories. This is easily done using the ``collectall`` command. However, you will need to change ownership the ``STATIC_ROOT`` and ``TETHYS_WORKSPACES_ROOT`` directories to your user before you can successfully run ``collectall``. Don't forget to change ownership of these files back to the ``NGINX_USER`` after you are done.
 

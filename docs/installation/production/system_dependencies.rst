@@ -82,6 +82,10 @@ PostgreSQL
 
             sudo systemctl start postgresql-12
             sudo systemctl enable postgresql-12
+            
+.. note::
+
+    You may be wondering why you didn't need to initialize the database and start/enable it when installing PostgreSQL on Ubuntu. This has to do with the differing philosophies between CentOS and Ubuntu. Ubuntu packages are usually installed with a reasonable default configurtaion and already enabled and running, whereas CentOS only installs the binaries and leaves the configurtaion and enabling up to you.
 
 
 2. Verify that PostgreSQL is Running:

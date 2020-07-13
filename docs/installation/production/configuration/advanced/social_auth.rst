@@ -343,7 +343,7 @@ The following settings in the :file:`portal_config.yml` are used to configure so
           SOCIAL_AUTH_HYDROSHARE_KEY: ''
           SOCIAL_AUTH_HYDROSHARE_SECRET: ''
 
-You can use the ``tethys settings`` command to easily set the settings in the :file:`portal_config.yaml`. For example:
+You can use the ``tethys settings`` command to easily set the settings in the :file:`portal_config.yml`. For example:
 
     .. code-block:: bash
 
