@@ -16,7 +16,7 @@ Web-Analytics generally work by adding an asynchronous script to the head of htm
 
 Enabling Services
 =================
-After installing tethys in either a development or production environment, the tracking ID numbers or character strings can be specified in the Tethys portal's :file:`portal_config.yml` file found at ``$TETHYS_HOME/portal_config.yml``. In the ``settings`` section of the file you can add an ``AUTHENTICATION_CONFIGS`` tag and then add any of the following ID's for many of the services supported by Django-Anlytical that are applicable.
+After installing tethys in either a development or production environment, the tracking ID numbers or character strings can be specified in the Tethys portal's :file:`portal_config.yml` file found at ``$TETHYS_HOME/portal_config.yml``. In the ``settings`` section of the file you can add an ``ANALYTICS_CONFIGS`` tag and then add any of the following ID's for many of the services supported by Django-Anlytical that are applicable.
 
 .. code-block:: yaml
 

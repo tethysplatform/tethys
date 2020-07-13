@@ -20,6 +20,20 @@ Server Attributes
 * **SERVER_DOMAIN_NAME**: You will need to obtain a public domain name for the server. Contact your IT department or search the documentation for the hosting provider for how this is to be done.
 * **SSL Certificate**: If you plan to setup SSL on your Tethys Portal installation, you will need to obtain an SSL certficate for your server's domain. An SSL certificate should be purchased from a Certificate Authority for a production installation. Some of the top certificate authorities include: `Digicert <https://www.digicert.com/>`_, `GeoTrust <https://www.geotrust.com/ssl/>`_, `Sectigo (formerly Comodo) <https://sectigo.com/>`_, `Thawte <https://www.thawte.com/>`_, `GoDaddy <https://www.godaddy.com/web-security/ssl-certificate>`_, and `Network Solutions <https://www.networksolutions.com/SSL-certificates/index.jsp>`_. If your instance of Tethys Portal is part of a larger organization, contact your IT department to determine if an agreement with one of these authorities already exists.
 
+Important Directories
+=====================
+
+There are several directories that you will need to create and be aware of throughout the installation process. The following list describes each one along with the recommended locations for each.
+
+* **TETHYS_HOME** (~/.tethys): Directory that stores configuration for Tethys Portal. To change this from the default value you need to permanently set the TETHYS_HOME environment variable.
+* **STATIC_ROOT** (/var/www/tethys/static): Directory where all static files will be copied to to be hosted by NGINX.
+* **TETHYS_WORKSPACES_ROOT** (/var/www/tethys/workspaces): Directory where all workspace directories will be copied to for easier backup and management of workspace files.
+* **APP_SOURCES_ROOT** (/var/www/tethys/apps): Location where app source code should be stored on the server.
+
+.. warning::
+
+    Since files in the ``public`` / ``static`` directories of your app are copied to a different directory during a production installation, any changes to files in these directories at runtime will not be reflected in the ``STATIC_ROOT`` directory. You should not use the ``public`` / ``static`` directory for dynamic operations. Instead, use the workspaces directories for dynamic file storage.
+
 Usernames and Passwords
 =======================
 
@@ -72,6 +86,14 @@ Copy this table into a text file or spreadsheet and fill in your values. The ins
       - Value
     * - SERVER_DOMAIN_NAME
       -
+    * - TETHYS_HOME
+      - ~/.tethys
+    * - STATIC_ROOT
+      - 
+    * - TETHYS_WORKSPACES_ROOT
+      -
+    * - APP_SOURCES_ROOT
+      -
     * - PORTAL_SUPERUSER_USERNAME
       -
     * - PORTAL_SUPERUSER_EMAIL
@@ -101,6 +123,6 @@ Tips
 
 * **Read the Guide**: Read through the entire Production Installation Guide before attempting your install so you can anticipate everything you will need.
 * **Plan Ahead**: Decide on usernames and passwords right now so you aren't tempted to use an insecure, default value.
-* **Don't Rush It**: Set aside at least a full day to your setup your production portal.
+* **Don't Rush It**: Set aside at least a full day to setup your production portal and an additional day for each app.
 * **Avoid the Copy-Paste Temptation**: Be sure you understand what the commands do before you run them. Don't just run through the guide copying and pasting every code block you see.
 * **Use the Internet**: Use your preferred search engine to look up problems when they occur and use the tips in our :ref:`production_troubleshooting` guide.
