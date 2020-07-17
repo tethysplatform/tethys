@@ -2,7 +2,7 @@
 Distributed Configuration
 *************************
 
-**Last Updated:** May 2020
+**Last Updated:** July 2020
 
 The Tethys Docker images can be used to easily install each of the software components of Tethys Platform on separate servers. However, you will not be able to use the Tethys commandline tools to install the Dockers as you do during development. The following article describes how to deploy each software component using the native Docker API.
 
@@ -37,16 +37,16 @@ Tethys Portal is a Django web application. It needs to be able to handle request
 
 * Processor: 2 CPU Cores @ 2 GHz each
 * RAM: 4 GB
-* Hard Disk: 20 GB
+* Hard Disk: 30 GB
 
 GeoServer
 ---------
 
 GeoServer is used to render maps and spatial data. It performs operations like coordinate transformations and format conversions on the fly, so it needs a decent amount of processing power and RAM. It also requires storage for the datasets that it is serving.
 
-* Processor: 4 CPU Cores @ 2 GHz each
+* Processor: 8 CPU Cores @ 2 GHz each
 * RAM: 8 GB
-* Hard Disk: 500 GB +
+* Hard Disk: 100 GB +
 
 
 52 North WPS
@@ -56,7 +56,7 @@ GeoServer is used to render maps and spatial data. It performs operations like c
 
 * Processors: 4 CPU Cores @ 2 GHz each
 * RAM: 8 GB
-* Hard Disk: 100 GB
+* Hard Disk: 100 GB +
 
 PostgreSQL with PostGIS
 -----------------------
@@ -64,8 +64,8 @@ PostgreSQL with PostGIS
 PostgreSQL is a database server and it should be optimized for storage. The PostGIS extension also provide the server with geoprocessing capabilities, which may require more processing power than recommended here.
 
 * Processors: 4 CPU Cores @ 2 GHz each
-* RAM: 4 GB
-* Hard Disk: 500 GB +
+* RAM: 8 GB
+* Hard Disk: 100 GB +
 
 GeoServer Docker Deployment
 ===========================
@@ -74,19 +74,28 @@ Pull the Docker image for GeoServer using the following command:
 
 ::
 
-    sudo docker pull ciwater/geoserver
+    sudo docker pull tethysplatform/geoserver
+
+This container has several environment variables that you can use to customize the performance of the geoserver:
+
+* ENABLED_NODES: Number of GeoServer nodes to start up to 4.
+* REST_NODES: Number of the enabled GeoServer nodes to have support the REST interface. We recommend setting this to 1.
+* MAX_MEMORY: Maximum memory to allow each node to allocate in MB. Set this based on the memory available on the machine you are installing GeoServer on. Caution: the total memory will be  MAX_MEMORY * ENABLED_NODES.
+* MIN_MEMORY: Minimum memory to allow each node to allocate initially in MB. Set this based on the memory available on the machine you are installing GeoServer on. Caution: the GeoServer will allocate MIN_MEMORY * ENABLED_NODES when it starts.
+* NUM_CORES: The number of cores you want GeoServer to use. This should be less than or equal to the number of cores on the machine.
+* MAX_TIMEOUT: Maximum time in seconds to wait before returning timeout. Defaults to 60 seconds.
 
 After the image has been pulled, run a new Docker container as follows:
 
 ::
 
-    sudo docker run -d -p 80:8080 --restart=always --name geoserver ciwater/geoserver
+    sudo docker run -d -p 80:8080 --restart=always --name geoserver -e ENABLED_NODES=4 -e REST_NODES=1 -e MAX_MEMORY=1024 -e MIN_MEMORY=512 -e NUM_CORES=4 -e MAX_TIMEOUT=60 tethysplatform/geoserver
 
 Refer to the `Docker Run Reference <https://docs.docker.com/reference/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name.
 
 More information about the GeoServer Docker can be found on the Docker Registry:
 
-`<https://registry.hub.docker.com/u/ciwater/geoserver/>`_
+`<https://hub.docker.com/r/tethysplatform/geoserver>`_
 
 .. important::
 
@@ -95,39 +104,38 @@ More information about the GeoServer Docker can be found on the Docker Registry:
 PostgreSQL with PostGIS Docker Deployment
 =========================================
 
-Pull the Docker image for PostgreSQL with PostGIS using the following command:
+We recommend using the `mdillon/postgis <https://hub.docker.com/r/mdillon/postgis>`_ image to deploy PostgreSQL with PostGIS using Docker. This image is based on the official PostgreSQL image. Pull the Docker image for PostgreSQL with PostGIS using the following command:
 
 ::
 
-    sudo docker pull ciwater/postgis
+    sudo docker pull mdillon/postgis
 
-The PostgreSQL with PostGIS Docker automatically initializes with the three database users that are needed for Tethys Platform:
-
-* tethys_default
-* tethys_db_manager
-* tethys_super
-
-The default password for each is “pass”. For production, you will obviously want to change these passwords. Do so using the appropriate environmental variable:
-
-* -e TETHYS_DEFAULT_PASS=<TETHYS_DEFAULT_PASS>
-* -e TETHYS_DB_MANAGER_PASS=<TETHYS_DB_MANAGER_PASS>
-* -e TETHYS_SUPER_PASS=<TETHYS_SUPER_PASS>
-
-Here is an example of how to use the environmental variables to set passwords when starting a container:
+Here is an example of how to start the container:
 
 ::
 
-    sudo docker run -d -p 80:5432 -e TETHYS_DEFAULT_PASS="pass" -e TETHYS_DB_MANAGER_PASS="pass" -e TETHYS_SUPER_PASS="pass" --restart=always --name postgis ciwater/postgis
+    sudo docker run -d -p 5432:5432 --restart=always --name postgis -e POSTGRES_PASSWORD=mysecretpassword mdillon/postgis
 
 Refer to the `Docker Run Reference <https://docs.docker.com/reference/run/>`_ for an explanation of each parameter. To summarize, this will start the container as a background process on port 80, with the restart policy set to always restart the container after a system reboot, and with an appropriate name. It also set the passwords for each database at startup.
 
+Once the container is running, you can initialize the database using the ``tethys db`` command from your Tethys Portal server.
+
+First set the database settings:
+
+::
+
+    tethys settings --set DATABASES.default.NAME tethys_platform --set DATABASES.default.USER <TETHYS_DB_USERNAME> --set DATABASES.default.PASSWORD <TETHYS_DB_PASSWORD> --set DATABASES.default.HOST <TETHYS_DB_HOST> --set DATABASES.default.PORT <TETHYS_DB_PORT>
+
+Then run the ``tethys db configure`` command, prepending it with the PGPASSWORD environment variable:
+
+::
+
+    PGPASSWORD=<POSTGRES_PASSWORD> tethys db configure --username <TETHYS_DB_USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD> --portal-superuser-name <PORTAL_SUPERUSER_USERNAME> --portal-superuser-email '<PORTAL_SUPERUSER_EMAIL>' --portal-superuser-pass <PORTAL_SUPERUSER_PASSWORD>
+
+
 More information about the PostgreSQL with PostGIS Docker can be found on the Docker Registry:
 
-`<https://registry.hub.docker.com/u/ciwater/postgis/>`_
-
-.. important::
-
-    Set strong passwords for each database user for a production system.
+`<https://hub.docker.com/r/mdillon/postgis>`_
 
 
 52 North WPS Docker Deployment

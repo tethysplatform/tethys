@@ -23,7 +23,7 @@ This will create a new :file:`portal_config.yml` file in your ``TETHYS_HOME`` di
     name: test
     apps:
     settings:
-      SECRETE_KEY: ...
+      SECRET_KEY: ...
     site_content:
 
 
