@@ -1,8 +1,8 @@
 .. _setup_email_capabilities:
 
-********************************************
-Enable Forgotten Password Feature (Optional)
-********************************************
+**************************************
+Forgotten Password Recovery (Optional)
+**************************************
 
 **Last Updated:** May 2020
 
