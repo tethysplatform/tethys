@@ -92,35 +92,12 @@ For convenience, you may consider setting up these or similar aliases in the act
 3. Security-Enhanced Linux File Permissions (CentOS, May not Apply)
 ===================================================================
 
-If you are installing Tethys Portal on a CentOS or RedHat system that has `Security-Enhanced Linux (SELinux) <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_ enabled and set to enforcing mode, you will need to perform additional setup to allow the server processes to access files. SELinux adds additional layers of security that define access controls for applications, processes, and files on a system. To learn more about SELinux see: `Security-Enhanced Linux <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_, `What is SELinux <https://www.redhat.com/en/topics/linux/what-is-selinux>`_, `CentOS SELinux <https://wiki.centos.org/HowTos/SELinux>`_, `RedHat SELinux <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/5/html/deployment_guide/ch-selinux>`_.
+If you are installing Tethys Portal on a CentOS or RedHat system that has `Security-Enhanced Linux (SELinux) <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_ enabled and set to enforcing mode, you may need to perform additional setup to allow the server processes to access files.
+
+SELinux adds additional layers of security that define access controls for applications, processes, and files on a system. To learn more about SELinux see: `Security-Enhanced Linux <https://en.wikipedia.org/wiki/Security-Enhanced_Linux>`_, `What is SELinux <https://www.redhat.com/en/topics/linux/what-is-selinux>`_, `CentOS SELinux <https://wiki.centos.org/HowTos/SELinux>`_, `RedHat SELinux <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/5/html/deployment_guide/ch-selinux>`_.
 
 .. note::
 
-    If you are using CentOS for your deployment, it does not necessarily mean that you are using it with SELinux enforcing. You can check the ``SELINUX`` variable in :file:`/etc/selinux/config` to see if SELinux is being enforced. If you don't plan on using SELinux on your CentOS machine, then you can skip this step.
+    If you are using CentOS for your deployment, it does not necessarily mean that you are using it with SELinux enforcing. You can check the ``SELINUX`` variable in :file:`/etc/selinux/config` to see if SELinux is being enforced. Alternatively, you can check using the ``getenforce`` command.
 
-The following configuration is given as an example and is not meant to be our official recommendation nor is it likely to be comprehensive. Ultimately, if you plan to use SELinux on your Tethys Server, you are responsible to learn how to configure it appropriately based on your organization's policies. **USE AT YOUR OWN RISK**.
-
-    .. code-block:: bash
-
-        sudo chown ${USER} <TETHYS_HOME>
-        sudo yum install setroubleshoot -y
-        sudo semanage fcontext -a -t httpd_config_t <TETHYS_HOME>/tethys_nginx.conf
-        sudo restorecon -v <TETHYS_HOME>/tethys_nginx.conf
-        sudo semanage fcontext -a -t httpd_sys_content_t "<TETHYS_HOME>(/.*)?"
-        sudo semanage fcontext -a -t httpd_sys_content_t "<STATIC_ROOT>(/.*)?"
-        sudo semanage fcontext -a -t httpd_sys_rw_content_t "<TETHYS_WORKSPACES_ROOT>(/.*)?"
-        sudo restorecon -R -v <TETHYS_HOME> > /dev/null
-        echo $'module tethys-selinux-policy 1.0;\nrequire {type httpd_t; type init_t; class unix_stream_socket connectto; }\n#============= httpd_t ==============\nallow httpd_t init_t:unix_stream_socket connectto;' > <TETHYS_HOME>/tethys-selinux-policy.te
-        checkmodule -M -m -o <TETHYS_HOME>/tethys-selinux-policy.mod <TETHYS_HOME>/tethys-selinux-policy.te
-        semodule_package -o <TETHYS_HOME>/tethys-selinux-policy.pp -m <TETHYS_HOME>/tethys-selinux-policy.mod
-        sudo semodule -i <TETHYS_HOME>/tethys-selinux-policy.pp
-        sudo chown <NGINX_USER> <TETHYS_HOME>
-
-    .. note::
-
-        Replace the variables in angle brackets as follows:
-
-            * ``<TETHYS_HOME>``: Path to the Tethys home directory that you noted in the :ref:`production_portal_config` step.
-            * ``<STATIC_ROOT>``: Path to the directory with the static files that you setup in the :ref:`production_static_workspaces_dirs` step.
-            * ``<TETHYS_WORKSPACES_ROOT>``: Path to the directory with the app workspaces files that you setup in the :ref:`production_static_workspaces_dirs` step.
-            * ``<NGINX_USER>``: Name of the NGINX user that you noted in the :ref:`production_nginx_config` step.
+For an example of SELinux configuration, see: :ref:`production_selinux_config`.
