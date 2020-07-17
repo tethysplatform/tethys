@@ -1,5 +1,5 @@
 ************************
-Web-Analytics (Optional)
+Web Analytics (Optional)
 ************************
 
 **Last Updated:** May 2020
@@ -12,7 +12,7 @@ Tethys portals are configured to allow portal administrators to track how users 
 
 Key Concepts
 ============
-Web-Analytics generally work by adding an asynchronous script to the head of html pages that sends information about what the user does to another website where that data is processed and made available to the website administrator. The tracked website's information is associated with an ID number or character string that needs to be included in the tracking code. Django-Analytical is a python package that automates including the asynchronous scripts for 24 services.
+Web Analytics generally work by adding an asynchronous script to the head of html pages that sends information about what the user does to another website where that data is processed and made available to the website administrator. The tracked website's information is associated with an ID number or character string that needs to be included in the tracking code. Django-Analytical is a python package that automates including the asynchronous scripts for 24 services.
 
 Enabling Services
 =================

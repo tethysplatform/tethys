@@ -32,11 +32,11 @@ Use the ``tethys db create`` command to create the database users and tables req
 
     .. code-block:: bash
 
-        PGPASSWORD=<POSTGRES_PASSWORD> tethys db create --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD>
+        PGPASSWORD=<POSTGRES_PASSWORD> tethys db create --username <TETHYS_DB_USERNAME> --password <TETHYS_DB_PASSWORD> --superuser-name <TETHYS_DB_SUPER_USERNAME> --superuser-password <TETHYS_DB_SUPER_PASSWORD>
 
     .. note::
 
-        Replace ``<TETHYS_DB_SUPER_USERNAME>``, ``<TETHYS_DB_SUPER_PASSWORD>``, and ``<POSTGRES_PASSWORD>`` with the values you determined during the :ref:`production_preparation` step. The ``tethys db create`` command uses the :file:`portal_config.yml` to get the normal database user credentials, host, and port.
+        Replace ``<TETHYS_DB_USERNAME>``, ``<TETHYS_DB_PASSWORD>``, ``<TETHYS_DB_SUPER_USERNAME>``, ``<TETHYS_DB_SUPER_PASSWORD>``, and ``<POSTGRES_PASSWORD>`` with the values you determined during the :ref:`production_preparation` step. The ``tethys db create`` command uses the :file:`portal_config.yml` to get the normal database user credentials, host, and port.
 
     .. important::
 
