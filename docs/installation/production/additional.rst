@@ -16,3 +16,4 @@ The following guides provide additional information on other aspects of producti
     additional/distributed
     additional/geoserver_ssl_config
     additional/official_docker
+    additional/selinux
