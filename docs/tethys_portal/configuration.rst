@@ -213,6 +213,22 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
 
 .. note::
 
+    All of the settings groupings that end in ``_CONFIG`` are merely for convenience and organization, but are not necessary. Thus the following two examples are effectively the same:
+
+    .. code-block:: yaml
+
+        settings:
+          TETHYS_PORTAL_CONFIG:
+            BYPASS_TETHYS_HOME_PAGE: False
+
+    .. code-block:: yaml
+
+        settings:
+          BYPASS_TETHYS_HOME_PAGE: False
+
+
+.. note::
+
     You may define any Django Setting as a key under the ``settings`` key. Only the most common Django settings are listed above. For a complete reference of Django settings see: `Django Settings Reference <https://docs.djangoproject.com/en/2.2/ref/settings/>`_.
 
 Example

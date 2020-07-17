@@ -30,8 +30,7 @@ from django.contrib.messages import constants as message_constants
 from tethys_apps.utilities import get_tethys_home_dir
 from tethys_cli.gen_commands import generate_secret_key
 
-from bokeh.settings import settings
-settings.resources = 'cdn'
+from bokeh.settings import settings as bokeh_settings
 
 log = logging.getLogger(__name__)
 this_module = sys.modules[__name__]
@@ -48,6 +47,8 @@ except FileNotFoundError:
              '"tethys gen portal_config"')
 except Exception:
     log.exception('There was an error while attempting to read the settings from the portal_config.yml file.')
+
+bokeh_settings.resources = portal_config_settings.pop('BOKEH_RESOURCES', 'cdn')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -286,7 +287,7 @@ MESSAGE_TAGS = {
 }
 
 # Email Configuration
-EMAIL_CONFIG = portal_config_settings.pop('OAUTH_CONFIGS', {})
+EMAIL_CONFIG = portal_config_settings.pop('EMAIL_CONFIG', {})
 for setting, value in EMAIL_CONFIG.items():
     setattr(this_module, setting, value)
 
@@ -306,7 +307,7 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/apps/'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/accounts/login/'
 
 # OAuth Providers
-OAUTH_CONFIG = portal_config_settings.pop('OAUTH_CONFIGS', {})
+OAUTH_CONFIG = portal_config_settings.pop('OAUTH_CONFIG', {})
 for setting, value in OAUTH_CONFIG.items():
     setattr(this_module, setting, value)
 
@@ -322,7 +323,7 @@ for setting, value in CAPTCHA_CONFIG.items():
 
 # Placeholders for the ID's required by various web-analytics services supported by Django-Analytical.
 # Replace False with the tracking ID as a string e.g. SERVICE_ID = 'abcd1234'
-ANALYTICS_CONFIG = portal_config_settings.pop('ANALYTICS_CONFIGS', {})
+ANALYTICS_CONFIG = portal_config_settings.pop('ANALYTICS_CONFIG', {})
 for setting, value in ANALYTICS_CONFIG.items():
     setattr(this_module, setting, value)
 
