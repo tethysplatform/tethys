@@ -16,11 +16,11 @@ Web Analytics generally work by adding an asynchronous script to the head of htm
 
 Enabling Services
 =================
-After installing tethys in either a development or production environment, the tracking ID numbers or character strings can be specified in the Tethys portal's :file:`portal_config.yml` file found at ``$TETHYS_HOME/portal_config.yml``. In the ``settings`` section of the file you can add an ``ANALYTICS_CONFIGS`` tag and then add any of the following ID's for many of the services supported by Django-Anlytical that are applicable.
+After installing tethys in either a development or production environment, the tracking ID numbers or character strings can be specified in the Tethys portal's :file:`portal_config.yml` file found at ``$TETHYS_HOME/portal_config.yml``. In the ``settings`` section of the file you can add an ``ANALYTICS_CONFIG`` tag and then add any of the following ID's for many of the services supported by Django-Anlytical that are applicable.
 
 .. code-block:: yaml
 
-    ANALYTICS_CONFIGS:
+    ANALYTICS_CONFIG:
       CLICKMAP_TRACKER_ID: False
       CLICKY_SITE_ID: False
       CRAZY_EGG_ACCOUNT_NUMBER: False
@@ -70,7 +70,7 @@ You can also use the ``tethys settings`` command to set these properties:
 
 .. code-block:: bash
 
-    tethys settings --set ANALYTICS_CONFIGS.GOOGLE_ANALYTICS_JS_PROPERTY_ID 'UA-123456789-1'
+    tethys settings --set ANALYTICS_CONFIG.GOOGLE_ANALYTICS_JS_PROPERTY_ID 'UA-123456789-1'
 
 .. important::
 

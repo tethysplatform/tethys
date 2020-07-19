@@ -99,7 +99,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         # Verify it makes the Tethys Home directory
         mock_makedirs.assert_called()
         rts_call_args = mock_write_info.call_args_list
-        self.assertIn('A Tethys Portal configuration file was generated at', rts_call_args[0][0][0])
+        self.assertIn('A Tethys Portal configuration file', rts_call_args[0][0][0])
 
     @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.render_template')
