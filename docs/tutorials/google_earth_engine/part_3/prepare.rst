@@ -29,7 +29,7 @@ If you wish to use the previous solution as a starting point:
 
     git clone https://github.com/tethysplatform/tethysapp-earth_engine.git
     cd tethysapp-earth_engine
-    git checkout -b rest-api-solution-solution rest-api-solution-solution-|version|
+    git checkout -b rest-api-solution rest-api-solution-|version|
 
 1. Move Service Account Credentials to Settings
 ===============================================

@@ -6,6 +6,13 @@ Overview
 
 **Last Updated:** May 2020
 
+Introduction
+============
+
+The purpose of this section of the guide is to provide background information on important aspects of the production installation of Tethys Portal. Every production installation is different due to the different requirements imposed by the apps that are installed. This section will help you to learn about the different components and how they work together.
+
+It is also important to understand that this guide provides instructions only for the minimal installation and configuration that is required and most installations will require modification. Taking time upfront to understand the different components, why they are needed, and where the important files are stored will save you time when you are debugging issues with the installation later on.
+
 System Requirements
 ===================
 
@@ -25,13 +32,13 @@ Production Server
 
 Tethys Portal is a Django web application with the `Django Channels app <https://channels.readthedocs.io/en/latest/>`_ installed, which makes it an `Asynchronous Server Gateway Interface (ASGI) <https://asgi.readthedocs.io/en/latest/>`_ application. As such, it requires an ASGI server to host it.
 
-In this guide you will host Tethys Portal using the `Daphne <https://github.com/django/daphne>`_ ASGI server with `NGINX <https://www.nginx.com/resources/wiki/>`_ acting as the primary HTTP server (see: `Example Setups <https://channels.readthedocs.io/en/latest/deploying.html#example-setups>`_). All incoming HTTP traffic will be handled by NGINX which will route most of it to Daphne. Daphne in turn be hosting the Tethys Portal. The response will be returned up the change through Daphne to NGINX and back to the client. The NGINX server will handle requests for static files directly for efficiency.
+In this guide you will host Tethys Portal using the `Daphne <https://github.com/django/daphne>`_ ASGI server with `NGINX <https://www.nginx.com/resources/wiki/>`_ acting as the primary HTTP server (see: `Example Setups <https://channels.readthedocs.io/en/latest/deploying.html#example-setups>`_). All incoming HTTP traffic will be handled by NGINX which will route most of it to Daphne. Daphne in turn will be hosting the Tethys Portal. The response will be returned up the chain through Daphne to NGINX and back to the client. The NGINX server will handle requests for static files directly for efficiency.
 
 .. figure:: ./images/tethys_production_diagram.png
     :width: 800px
     :align: center
 
-Daphne can and should be configured to run multiple processes. The default configuration will create 4 Daphne processes for example. To make managing the Daphne processes and NGINX process more manageable, `Supervisor <http://supervisord.org/>`_ will be used to allow all five processes to started, stopped, and restarted with a singled command.
+Daphne can and should be configured to run multiple processes. The default configuration will create 4 Daphne processes for example. To make managing the Daphne processes and NGINX process more manageable, `Supervisor <http://supervisord.org/>`_ will be used to allow all five processes to be started, stopped, and restarted with a single command.
 
 NGINX
 -----
