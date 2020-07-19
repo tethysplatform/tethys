@@ -12,6 +12,18 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def test_add_arguments(self):
+        mock_parser = mock.MagicMock()
+
+        cmd = pre_collectstatic.Command()
+        cmd.add_arguments(mock_parser)
+
+        add_arguments_calls = mock_parser.add_argument.call_args_list
+
+        self.assertEqual(1, len(add_arguments_calls))
+        self.assertIn('-l', add_arguments_calls[0][0])
+        self.assertIn('--link', add_arguments_calls[0][0])
+
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.exit')
     @mock.patch('tethys_apps.management.commands.pre_collectstatic.settings')
@@ -31,219 +43,301 @@ class ManagementCommandsPreCollectStaticTests(unittest.TestCase):
                       'file and try again.'
         self.assertEqual(msg_warning, print_args[0][0][0])
 
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.remove')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_extensions')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_apps')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.settings')
-    # def test_handle_public_not_static(self, mock_settings, mock_get_apps, mock_get_extensions, mock_os_remove,
-    #                                   mock_os_path_isdir, mock_os_symlink, mock_print):
-    #     mock_settings.STATIC_ROOT = '/foo/testing/tests'
-    #     mock_get_apps.return_value = {'foo_app': '/foo/testing/tests/foo_app'}
-    #     mock_get_extensions.return_value = {'foo_extension': '/foo/testing/tests/foo_extension'}
-    #     mock_os_remove.return_value = True
-    #     mock_os_path_isdir.return_value = True
-    #     mock_os_symlink.return_value = True
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.shutil.copytree')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.remove')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_extensions')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_apps')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.settings')
+    def test_handle__not_named_static_or_public(self, mock_settings, mock_get_apps, mock_get_extensions, mock_os_remove,
+                                                mock_os_path_isdir, mock_shutil_copytree, mock_print):
 
-    #     cmd = pre_collectstatic.Command()
-    #     cmd.handle(options='foo')
+        options = {'link': False}  # Don't create symbolic link (copy instead)
+        static_root_dir = '/foo/static/root'
+        app_source_dir = '/foo/sources/foo_app'
+        ext_source_dir = '/foo/sources/foo_ext'
+        app_public_dir = app_source_dir + '/public'
+        ext_public_dir = ext_source_dir + '/public'
+        app_static_dir = app_source_dir + '/static'
+        ext_static_dir = ext_source_dir + '/static'
 
-    #     mock_get_apps.assert_called_once()
-    #     mock_get_extensions.assert_called_once()
-    #     mock_os_remove.assert_any_call('/foo/testing/tests/foo_app')
-    #     mock_os_remove.assert_any_call('/foo/testing/tests/foo_extension')
-    #     mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_app/public')
-    #     mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_extension/public')
-    #     mock_os_symlink.assert_any_call('/foo/testing/tests/foo_app/public', '/foo/testing/tests/foo_app')
-    #     mock_os_symlink.assert_any_call('/foo/testing/tests/foo_extension/public',
-    #                                     '/foo/testing/tests/foo_extension')
-    #     print_args = mock_print.call_args_list
+        mock_settings.STATIC_ROOT = static_root_dir
+        mock_get_apps.return_value = {'foo_app': app_source_dir}
+        mock_get_extensions.return_value = {'foo_ext': ext_source_dir}
+        mock_os_remove.return_value = True  # Successfully remove old link or dir with os.remove
+        mock_os_path_isdir.side_effect = (False, False, False, False)  # "public" and "static" path don't exist
 
-    #     msg = 'INFO: Linking static and public directories of apps and extensions to "{0}".'\
-    #         . format(mock_settings.STATIC_ROOT)
+        cmd = pre_collectstatic.Command()
+        cmd.handle(**options)
 
-    #     msg_info_first = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_app".'
+        # Verify apps and extensions were gathered
+        mock_get_apps.assert_called_once()
+        mock_get_extensions.assert_called_once()
 
-    #     msg_info_second = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_extension".'
+        # Verify check for public dir was performed for app and extension
+        mock_os_path_isdir.assert_any_call(app_public_dir)
+        mock_os_path_isdir.assert_any_call(ext_public_dir)
+        mock_os_path_isdir.assert_any_call(app_static_dir)
+        mock_os_path_isdir.assert_any_call(ext_static_dir)
 
-    #     check_list = []
-    #     for i in range(len(print_args)):
-    #         check_list.append(print_args[i][0][0])
+        # Verify attempt to remove old dirs/links
+        mock_os_remove.assert_not_called()
 
-    #     self.assertIn(msg, check_list)
-    #     self.assertIn(msg_info_first, check_list)
-    #     self.assertIn(msg_info_second, check_list)
+        # Verify attempt to copy public dir to static root location
+        mock_shutil_copytree.assert_not_called()
 
-    #     msg_warning_not_in = 'WARNING: Cannot find the STATIC_ROOT setting'
-    #     msg_not_in = 'Please provide the path to the static directory'
-    #     info_not_in_first = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_app".'
-    #     info_not_in_second = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_extension".'
+        # Verify messages
+        print_args = mock_print.call_args_list
 
-    #     for i in range(len(print_args)):
-    #         self.assertNotEqual(msg_warning_not_in, print_args[i][0][0])
-    #         self.assertNotEqual(msg_not_in, print_args[i][0][0])
-    #         self.assertNotEqual(info_not_in_first, print_args[i][0][0])
-    #         self.assertNotEqual(info_not_in_second, print_args[i][0][0])
+        msg = 'INFO: Collecting static and public directories of apps and extensions to "{0}".' \
+            .format(mock_settings.STATIC_ROOT)
 
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.shutil.rmtree')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.remove')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_extensions')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_apps')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.settings')
-    # def test_handle_public_not_static_Exceptions(self, mock_settings, mock_get_apps, mock_get_extensions,
-    #                                              mock_os_remove, mock_shutil_rmtree, mock_os_path_isdir,
-    #                                              mock_os_symlink, mock_print):
-    #     mock_settings.STATIC_ROOT = '/foo/testing/tests'
-    #     mock_get_apps.return_value = {'foo_app': '/foo/testing/tests/foo_app'}
-    #     mock_get_extensions.return_value = {'foo_extension': '/foo/testing/tests/foo_extension'}
-    #     mock_os_remove.side_effect = OSError
-    #     mock_shutil_rmtree.side_effect = OSError
-    #     mock_os_path_isdir.return_value = True
-    #     mock_os_symlink.return_value = True
+        msg_info_first = 'WARNING: Cannot find a directory named "static" or "public" for app "foo_app". Skipping...'
 
-    #     cmd = pre_collectstatic.Command()
-    #     cmd.handle(options='foo')
+        msg_info_second = 'WARNING: Cannot find a directory named "static" or "public" for app "foo_ext". Skipping...'
 
-    #     mock_get_apps.assert_called_once()
-    #     mock_get_extensions.assert_called_once()
-    #     mock_os_remove.assert_any_call('/foo/testing/tests/foo_app')
-    #     mock_os_remove.assert_any_call('/foo/testing/tests/foo_extension')
-    #     mock_shutil_rmtree.assert_any_call('/foo/testing/tests/foo_app')
-    #     mock_shutil_rmtree.assert_any_call('/foo/testing/tests/foo_extension')
-    #     mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_app/public')
-    #     mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_extension/public')
-    #     mock_os_symlink.assert_any_call('/foo/testing/tests/foo_app/public', '/foo/testing/tests/foo_app')
-    #     mock_os_symlink.assert_any_call('/foo/testing/tests/foo_extension/public',
-    #                                     '/foo/testing/tests/foo_extension')
-    #     msg_infor_1 = 'INFO: Linking static and public directories of apps and extensions to "{0}".'\
-    #         .format(mock_settings.STATIC_ROOT)
-    #     msg_infor_2 = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_app".'
-    #     msg_infor_3 = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_extension".'
+        check_list = []
+        for i in range(len(print_args)):
+            check_list.append(print_args[i][0][0])
 
-    #     warn_not_in = 'WARNING: Cannot find the STATIC_ROOT setting'
-    #     msg_not_in = 'Please provide the path to the static directory'
-    #     info_not_in_first = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_app".'
-    #     info_not_in_second = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_extension".'
+        self.assertIn(msg, check_list)
+        self.assertIn(msg_info_first, check_list)
+        self.assertIn(msg_info_second, check_list)
 
-    #     print_args = mock_print.call_args_list
+        msg_warning_not_in = 'WARNING: Cannot find the STATIC_ROOT setting'
+        msg_not_in = 'Please provide the path to the static directory'
+        info_not_in_first = 'INFO: Successfully copied static directory to STATIC_ROOT for app "foo_app".'
+        info_not_in_second = 'INFO: Successfully copied static directory to STATIC_ROOT for app "foo_ext".'
 
-    #     check_list = []
-    #     for i in range(len(print_args)):
-    #         check_list.append(print_args[i][0][0])
+        for i in range(len(print_args)):
+            self.assertNotEqual(msg_warning_not_in, print_args[i][0][0])
+            self.assertNotEqual(msg_not_in, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_first, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_second, print_args[i][0][0])
 
-    #     self.assertIn(msg_infor_1, check_list)
-    #     self.assertIn(msg_infor_2, check_list)
-    #     self.assertIn(msg_infor_3, check_list)
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.shutil.copytree')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.shutil.rmtree')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.remove')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_extensions')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_apps')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.settings')
+    def test_handle__public__remove_fail__rmtree_fail(self, mock_settings, mock_get_apps, mock_get_extensions,
+                                                      mock_os_remove, mock_shutil_rmtree, mock_os_path_isdir,
+                                                      mock_shutil_copytree, mock_print):
 
-    #     for i in range(len(print_args)):
-    #         self.assertNotEqual(warn_not_in, print_args[i][0][0])
-    #         self.assertNotEqual(msg_not_in, print_args[i][0][0])
-    #         self.assertNotEqual(info_not_in_first, print_args[i][0][0])
-    #         self.assertNotEqual(info_not_in_second, print_args[i][0][0])
+        options = {'link': False}  # Don't create symbolic link (copy instead)
+        static_root_dir = '/foo/static/root'
+        app_source_dir = '/foo/sources/foo_app'
+        ext_source_dir = '/foo/sources/foo_ext'
+        app_public_dir = app_source_dir + '/public'
+        ext_public_dir = ext_source_dir + '/public'
+        app_static_root_dir = static_root_dir + '/foo_app'
+        ext_static_root_dir = static_root_dir + '/foo_ext'
 
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.remove')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_extensions')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_apps')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.settings')
-    # def test_handle_not_public_static(self, mock_settings, mock_get_apps, mock_get_extensions, mock_os_remove,
-    #                                   mock_os_path_isdir, mock_os_symlink, mock_print):
-    #     mock_settings.STATIC_ROOT = '/foo/testing/tests'
-    #     mock_get_apps.return_value = {'foo_app': '/foo/testing/tests/foo_app'}
-    #     mock_get_extensions.return_value = {'foo_extension': '/foo/testing/tests/foo_extension'}
-    #     mock_os_remove.return_value = True
-    #     mock_os_path_isdir.side_effect = [False, True, False, True]
-    #     mock_os_symlink.return_value = True
+        mock_settings.STATIC_ROOT = static_root_dir
+        mock_get_apps.return_value = {'foo_app': app_source_dir}
+        mock_get_extensions.return_value = {'foo_ext': ext_source_dir}
+        mock_os_remove.side_effect = OSError  # remove fails
+        mock_shutil_rmtree.side_effect = OSError  # rmtree fails
+        mock_os_path_isdir.side_effect = (True, True)  # "public" dir found
 
-    #     cmd = pre_collectstatic.Command()
-    #     cmd.handle(options='foo')
+        cmd = pre_collectstatic.Command()
+        cmd.handle(**options)
 
-    #     mock_get_apps.assert_called_once()
-    #     mock_get_extensions.assert_called_once()
-    #     mock_os_remove.assert_any_call('/foo/testing/tests/foo_app')
-    #     mock_os_remove.assert_any_call('/foo/testing/tests/foo_extension')
-    #     mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_app/static')
-    #     mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_extension/static')
-    #     mock_os_symlink.assert_any_call('/foo/testing/tests/foo_app/static', '/foo/testing/tests/foo_app')
-    #     mock_os_symlink.assert_any_call('/foo/testing/tests/foo_extension/static',
-    #                                     '/foo/testing/tests/foo_extension')
+        # Verify apps and extensions were gathered
+        mock_get_apps.assert_called_once()
+        mock_get_extensions.assert_called_once()
 
-    #     msg_info_one = 'INFO: Linking static and public directories of apps and extensions to "{0}".'\
-    #         .format(mock_settings.STATIC_ROOT)
-    #     msg_info_two = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_app".'
-    #     msg_info_three = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_extension".'
+        # Verify check for public dir was performed for app and extension
+        mock_os_path_isdir.assert_any_call(app_public_dir)
+        mock_os_path_isdir.assert_any_call(ext_public_dir)
 
-    #     warn_not_in = 'WARNING: Cannot find the STATIC_ROOT setting'
-    #     msg_not_in = 'Please provide the path to the static directory'
-    #     info_not_in_first = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_app".'
-    #     info_not_in_second = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_extension".'
+        # Verify attempt to remove old dirs/links
+        mock_os_remove.assert_any_call(app_static_root_dir)
+        mock_os_remove.assert_any_call(ext_static_root_dir)
+        mock_shutil_rmtree.assert_any_call(app_static_root_dir)
+        mock_shutil_rmtree.assert_any_call(ext_static_root_dir)
 
-    #     print_args = mock_print.call_args_list
+        # Verify attempt to copy public dir to static root location
+        mock_shutil_copytree.assert_any_call(app_public_dir, app_static_root_dir)
+        mock_shutil_copytree.assert_any_call(ext_public_dir, ext_static_root_dir)
 
-    #     check_list = []
-    #     for i in range(len(print_args)):
-    #         check_list.append(print_args[i][0][0])
+        # Verify messages
+        print_args = mock_print.call_args_list
 
-    #     self.assertIn(msg_info_one, check_list)
-    #     self.assertIn(msg_info_two, check_list)
-    #     self.assertIn(msg_info_three, check_list)
+        msg = 'INFO: Collecting static and public directories of apps and extensions to "{0}".' \
+            .format(mock_settings.STATIC_ROOT)
 
-    #     for i in range(len(print_args)):
-    #         self.assertNotEqual(warn_not_in, print_args[i][0][0])
-    #         self.assertNotEqual(msg_not_in, print_args[i][0][0])
-    #         self.assertNotEqual(info_not_in_first, print_args[i][0][0])
-    #         self.assertNotEqual(info_not_in_second, print_args[i][0][0])
+        msg_info_first = 'INFO: Successfully copied public directory to STATIC_ROOT for app "foo_app".'
 
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.remove')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_extensions')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_apps')
-    # @mock.patch('tethys_apps.management.commands.pre_collectstatic.settings')
-    # def test_handle_not_public_not_static(self, mock_settings, mock_get_apps, mock_get_extensions, mock_os_remove,
-    #                                       mock_os_path_isdir, mock_os_symlink, mock_print):
-    #     mock_settings.STATIC_ROOT = '/foo/testing/tests'
-    #     mock_get_apps.return_value = {'foo_app': '/foo/testing/tests/foo_app'}
-    #     mock_get_extensions.return_value = {'foo_extension': '/foo/testing/tests/foo_extension'}
-    #     mock_os_remove.return_value = True
-    #     mock_os_path_isdir.side_effect = [False, False, False, False]
-    #     mock_os_symlink.return_value = True
+        msg_info_second = 'INFO: Successfully copied public directory to STATIC_ROOT for app "foo_ext".'
 
-    #     cmd = pre_collectstatic.Command()
-    #     cmd.handle(options='foo')
+        check_list = []
+        for i in range(len(print_args)):
+            check_list.append(print_args[i][0][0])
 
-    #     mock_get_apps.assert_called_once()
-    #     mock_get_extensions.assert_called_once()
-    #     mock_os_remove.assert_any_call('/foo/testing/tests/foo_app')
-    #     mock_os_remove.assert_any_call('/foo/testing/tests/foo_extension')
-    #     mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_app/static')
-    #     mock_os_path_isdir.assert_any_call('/foo/testing/tests/foo_extension/static')
-    #     mock_os_symlink.assert_not_called()
-    #     msg_info = 'INFO: Linking static and public directories of apps and extensions to "{0}".'\
-    #         .format(mock_settings.STATIC_ROOT)
+        self.assertIn(msg, check_list)
+        self.assertIn(msg_info_first, check_list)
+        self.assertIn(msg_info_second, check_list)
 
-    #     warn_not_in = 'WARNING: Cannot find the STATIC_ROOT setting'
-    #     msg_not_in = 'Please provide the path to the static directory'
-    #     info_not_in_first = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_app".'
-    #     info_not_in_second = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_extension".'
-    #     info_not_in_third = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_app".'
-    #     info_not_in_fourth = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_extension".'
+        msg_warning_not_in = 'WARNING: Cannot find the STATIC_ROOT setting'
+        msg_not_in = 'Please provide the path to the static directory'
+        info_not_in_first = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_app".'
+        info_not_in_second = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_ext".'
 
-    #     print_args = mock_print.call_args_list
-    #     self.assertEqual(msg_info, print_args[0][0][0])
+        for i in range(len(print_args)):
+            self.assertNotEqual(msg_warning_not_in, print_args[i][0][0])
+            self.assertNotEqual(msg_not_in, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_first, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_second, print_args[i][0][0])
 
-    #     for i in range(len(print_args)):
-    #         self.assertNotEqual(warn_not_in, print_args[i][0][0])
-    #         self.assertNotEqual(msg_not_in, print_args[i][0][0])
-    #         self.assertNotEqual(info_not_in_first, print_args[i][0][0])
-    #         self.assertNotEqual(info_not_in_second, print_args[i][0][0])
-    #         self.assertNotEqual(info_not_in_third, print_args[i][0][0])
-    #         self.assertNotEqual(info_not_in_fourth, print_args[i][0][0])
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.shutil.copytree')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.remove')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_extensions')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_apps')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.settings')
+    def test_handle__named_public__copy(self, mock_settings, mock_get_apps, mock_get_extensions, mock_os_remove,
+                                        mock_os_path_isdir, mock_shutil_copytree, mock_print):
+        options = {'link': False}  # Don't create symbolic link (copy instead)
+        static_root_dir = '/foo/static/root'
+        app_source_dir = '/foo/sources/foo_app'
+        app_public_dir = app_source_dir + '/public'
+        ext_source_dir = '/foo/sources/foo_ext'
+        ext_public_dir = ext_source_dir + '/public'
+        app_static_root_dir = static_root_dir + '/foo_app'
+        ext_static_root_dir = static_root_dir + '/foo_ext'
+
+        mock_settings.STATIC_ROOT = static_root_dir
+        mock_get_apps.return_value = {'foo_app': app_source_dir}
+        mock_get_extensions.return_value = {'foo_ext': ext_source_dir}
+        mock_os_remove.return_value = True  # Successfully remove old link or dir with os.remove
+        mock_os_path_isdir.side_effect = (True, True)  # "public" test path exists
+
+        cmd = pre_collectstatic.Command()
+        cmd.handle(**options)
+
+        # Verify apps and extensions were gathered
+        mock_get_apps.assert_called_once()
+        mock_get_extensions.assert_called_once()
+
+        # Verify check for public dir was performed for app and extension
+        mock_os_path_isdir.assert_any_call(app_public_dir)
+        mock_os_path_isdir.assert_any_call(ext_public_dir)
+
+        # Verify attempt to remove old dirs/links
+        mock_os_remove.assert_any_call(app_static_root_dir)
+        mock_os_remove.assert_any_call(ext_static_root_dir)
+
+        # Verify attempt to copy public dir to static root location
+        mock_shutil_copytree.assert_any_call(app_public_dir, app_static_root_dir)
+        mock_shutil_copytree.assert_any_call(ext_public_dir, ext_static_root_dir)
+
+        # Verify messages
+        print_args = mock_print.call_args_list
+
+        msg = 'INFO: Collecting static and public directories of apps and extensions to "{0}".'\
+            . format(mock_settings.STATIC_ROOT)
+
+        msg_info_first = 'INFO: Successfully copied public directory to STATIC_ROOT for app "foo_app".'
+
+        msg_info_second = 'INFO: Successfully copied public directory to STATIC_ROOT for app "foo_ext".'
+
+        check_list = []
+        for i in range(len(print_args)):
+            check_list.append(print_args[i][0][0])
+
+        self.assertIn(msg, check_list)
+        self.assertIn(msg_info_first, check_list)
+        self.assertIn(msg_info_second, check_list)
+
+        msg_warning_not_in = 'WARNING: Cannot find the STATIC_ROOT setting'
+        msg_not_in = 'Please provide the path to the static directory'
+        info_not_in_first = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_app".'
+        info_not_in_second = 'INFO: Successfully linked static directory to STATIC_ROOT for app "foo_ext".'
+
+        for i in range(len(print_args)):
+            self.assertNotEqual(msg_warning_not_in, print_args[i][0][0])
+            self.assertNotEqual(msg_not_in, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_first, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_second, print_args[i][0][0])
+
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.print')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.symlink')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.path.isdir')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.os.remove')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_extensions')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.get_installed_tethys_apps')
+    @mock.patch('tethys_apps.management.commands.pre_collectstatic.settings')
+    def test_handle__named_static__link(self, mock_settings, mock_get_apps, mock_get_extensions, mock_os_remove,
+                                        mock_os_path_isdir, mock_os_symlink, mock_print):
+        options = {'link': True}  # Create symbolic link (instead of copy)
+        static_root_dir = '/foo/static/root'
+        app_source_dir = '/foo/sources/foo_app'
+        ext_source_dir = '/foo/sources/foo_ext'
+        app_static_root_dir = static_root_dir + '/foo_app'
+        ext_static_root_dir = static_root_dir + '/foo_ext'
+        app_public_dir = app_source_dir + '/public'
+        ext_public_dir = ext_source_dir + '/public'
+        app_static_dir = app_source_dir + '/static'
+        ext_static_dir = ext_source_dir + '/static'
+
+        mock_settings.STATIC_ROOT = static_root_dir
+        mock_get_apps.return_value = {'foo_app': app_source_dir}
+        mock_get_extensions.return_value = {'foo_ext': ext_source_dir}
+        mock_os_remove.return_value = True  # Successfully remove old link or dir with os.remove
+        mock_os_path_isdir.side_effect = (False, True, False, True)  # "public" path doesn't exist, "static" path does
+
+        cmd = pre_collectstatic.Command()
+        cmd.handle(**options)
+
+        # Verify apps and extensions were gathered
+        mock_get_apps.assert_called_once()
+        mock_get_extensions.assert_called_once()
+
+        # Verify check for public dir was performed for app and extension
+        mock_os_path_isdir.assert_any_call(app_public_dir)
+        mock_os_path_isdir.assert_any_call(ext_public_dir)
+        mock_os_path_isdir.assert_any_call(app_static_dir)
+        mock_os_path_isdir.assert_any_call(ext_static_dir)
+
+        # Verify attempt to remove old dirs/links
+        mock_os_remove.assert_any_call(app_static_root_dir)
+        mock_os_remove.assert_any_call(ext_static_root_dir)
+
+        # Verify attempt to copy public dir to static root location
+        mock_os_symlink.assert_any_call(app_static_dir, app_static_root_dir)
+        mock_os_symlink.assert_any_call(ext_static_dir, ext_static_root_dir)
+
+        # Verify messages
+        print_args = mock_print.call_args_list
+
+        msg = 'INFO: Collecting static and public directories of apps and extensions to "{0}".' \
+            .format(mock_settings.STATIC_ROOT)
+
+        msg_info_first = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_app".'
+
+        msg_info_second = 'INFO: Successfully linked public directory to STATIC_ROOT for app "foo_ext".'
+
+        check_list = []
+        for i in range(len(print_args)):
+            check_list.append(print_args[i][0][0])
+
+        self.assertIn(msg, check_list)
+        self.assertIn(msg_info_first, check_list)
+        self.assertIn(msg_info_second, check_list)
+
+        msg_warning_not_in = 'WARNING: Cannot find the STATIC_ROOT setting'
+        msg_not_in = 'Please provide the path to the static directory'
+        info_not_in_first = 'INFO: Successfully copied static directory to STATIC_ROOT for app "foo_app".'
+        info_not_in_second = 'INFO: Successfully copied static directory to STATIC_ROOT for app "foo_ext".'
+
+        for i in range(len(print_args)):
+            self.assertNotEqual(msg_warning_not_in, print_args[i][0][0])
+            self.assertNotEqual(msg_not_in, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_first, print_args[i][0][0])
+            self.assertNotEqual(info_not_in_second, print_args[i][0][0])
