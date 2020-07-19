@@ -161,7 +161,8 @@ def gen_nginx_service(args):
 
 
 def gen_portal_yaml(args):
-    write_info(f'A Tethys Portal configuration file was generated at {get_tethys_home_dir() + "/portal_config.yml"}. '
+    write_info(f'A Tethys Portal configuration file is being generated at '
+               f'{get_tethys_home_dir() + "/" + FILE_NAMES[GEN_PORTAL_OPTION]}. '
                f'Please review the file and fill in the appropriate settings.')
 
     context = {'SECRET_KEY': generate_secret_key()}

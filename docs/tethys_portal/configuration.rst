@@ -42,23 +42,26 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
 * **version**: the version of the :file:`portal_config.yml` file schema.
 * **name**: the name of the :file:`portal_config.yml`.
 * **apps**: settings for apps installed in this portal (see: :ref:`app_installation`).
-* **settings**: the Tethys Portal settings. Note: do not edit the :file:`settings.py` directly, Instead set any Django setting in this section, even those now listed here.
+* **settings**: the Tethys Portal settings. Note: do not edit the :file:`settings.py` directly, Instead set any Django setting in this section, even those not listed here.
 
   * **SECRET_KEY**: the Django `SECRET_KEY <https://docs.djangoproject.com/en/2.2/ref/settings/#secret-key>`_ setting. Automatically generated if not set, however setting it manually is recommended.
   * **DEBUG**: the Django `DEBUG <https://docs.djangoproject.com/en/2.2/ref/settings/#debug>`_ setting. Defaults to True.
   * **ALLOWED_HOSTS**: the Django `ALLOWED_HOSTS <https://docs.djangoproject.com/en/2.2/ref/settings/#allowed-hosts>`_ setting. Defaults to ``[]``.
   * **ADMINS**: the Django `ADMINS <https://docs.djangoproject.com/en/2.2/ref/settings/#admins>`_ setting.
-  * **BYPASS_TETHYS_HOME_PAGE**: the home page of Tethys Portal redirects to the Apps Library when ``True``. Defaults to ``False``.
-  * **ENABLE_OPEN_SIGNUP**: anyone can create a Tethys Portal account using a "Sign Up" link on the home page when ``True``. Defaults to ``False``.
-  * **ENABLE_OPEN_PORTAL**: no login required for Tethys Portal when ``True``. Defaults to ``False``. Controllers in apps need to use the ``login_required`` decorator from the Tethys SDK, rather than Django's ``login_required`` decorator.
-  * **TETHYS_WORKSPACES_ROOT**: location to which app workspaces will be synced when ``tethys manage collectworkspaces`` is executed. Gathering all workspaces to one location is recommended for production deployments to allow for easier updating and backing up of app data. Defaults to :file:`<TETHYS_HOME>/workspaces`.
-  * **STATIC_ROOT**: the Django `STATIC_ROOT <https://docs.djangoproject.com/en/2.2/ref/settings/#static-root>`_ setting. Defaults to :file:`<TETHYS_HOME>/static`.
+
+  * **TETHYS_PORTAL_CONFIG**:
+
+    * **BYPASS_TETHYS_HOME_PAGE**: the home page of Tethys Portal redirects to the Apps Library when ``True``. Defaults to ``False``.
+    * **ENABLE_OPEN_SIGNUP**: anyone can create a Tethys Portal account using a "Sign Up" link on the home page when ``True``. Defaults to ``False``.
+    * **ENABLE_OPEN_PORTAL**: no login required for Tethys Portal when ``True``. Defaults to ``False``. Controllers in apps need to use the ``login_required`` decorator from the Tethys SDK, rather than Django's ``login_required`` decorator.
+    * **TETHYS_WORKSPACES_ROOT**: location to which app workspaces will be synced when ``tethys manage collectworkspaces`` is executed. Gathering all workspaces to one location is recommended for production deployments to allow for easier updating and backing up of app data. Defaults to :file:`<TETHYS_HOME>/workspaces`.
+    * **STATIC_ROOT**: the Django `STATIC_ROOT <https://docs.djangoproject.com/en/2.2/ref/settings/#static-root>`_ setting. Defaults to :file:`<TETHYS_HOME>/static`.
 
   * **SESSION_CONFIG**:
 
-    * **EXPIRE_AT_BROWSER_CLOSE**: the Django `SESSION_EXPIRE_AT_BROWSER_CLOSE <https://docs.djangoproject.com/en/2.2/ref/settings/#session-expire-at-browser-close>`_ setting. Defaults to True.
-    * **SECURITY_WARN_AFTER**: the Django Session Security `WARN_AFTER <https://django-session-security.readthedocs.io/en/latest/full.html#module-session_security.settings>`_ setting. Defaults to 840 seconds.
-    * **SECURITY_EXPIRE_AFTER**: the Django Session Security `EXPIRE_AFTER <https://django-session-security.readthedocs.io/en/latest/full.html#module-session_security.settings>`_ setting. Defaults to 900 seconds.
+    * **SESSION_EXPIRE_AT_BROWSER_CLOSE**: the Django `SESSION_EXPIRE_AT_BROWSER_CLOSE <https://docs.djangoproject.com/en/2.2/ref/settings/#session-expire-at-browser-close>`_ setting. Defaults to True.
+    * **SESSION_SECURITY_WARN_AFTER**: the Django Session Security `WARN_AFTER <https://django-session-security.readthedocs.io/en/latest/full.html#module-session_security.settings>`_ setting. Defaults to 840 seconds.
+    * **SESSION_SECURITY_EXPIRE_AFTER**: the Django Session Security `EXPIRE_AFTER <https://django-session-security.readthedocs.io/en/latest/full.html#module-session_security.settings>`_ setting. Defaults to 900 seconds.
 
   * **DATABASES**: the Django `DATABASES <https://docs.djangoproject.com/en/2.2/ref/settings/#databases>`_ setting.
 
@@ -69,23 +72,29 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
       * **PASSWORD**: the Django default database `PASSWORD <https://docs.djangoproject.com/en/2.2/ref/settings/#password>`_ setting.
       * **HOST**: the Django default database `HOST <https://docs.djangoproject.com/en/2.2/ref/settings/#host>`_ setting.
       * **PORT**: the Django default database `PORT <https://docs.djangoproject.com/en/2.2/ref/settings/#port>`_ setting.
-      * **DIR**: name of psql directory for conda installation of PostgreSQL that ships with Tethys. This directory will be created in the ``TETHYS_HOME`` directory when ``tethys db create`` is executed. Defaults to "psql".
+      * **DIR**: name of psql directory for conda installation of PostgreSQL that ships with Tethys. This directory will be created in the ``TETHYS_HOME`` directory when ``tethys db create`` is executed. Defaults to "psql". If you are using an external database server then exclude this key or set it to `None`.
 
-  * **LOGGING_CONFIG**:
+  * **LOGGING**:
 
-    * **TETHYS_LOGGING**:
+    * **formatters**: override all of the default logging formatters.
+    * **handlers**: override all of the default logging handlers.
 
-      * **handlers**: override the default handlers for the ``tethys`` logger. Defaults to ``['console_verbose']``.
-      * **level**: override the default level for the ``tethys`` logger. Defaults to ``'INFO'``.
+    * **loggers**: define specific loggers or change the following default loggers:
 
-    * **TETHYS_APPS_LOGGING**:
+      * **django**:
 
-      * **handlers**: override the default handlers for the ``tethys.apps`` logger. Defaults to ``['console_verbose']``.
-      * **level**:override the default level for the ``tethys.apps`` logger. Defaults to ``'INFO'``.
+        * **handlers**: override the default handlers for the ``django`` logger. Defaults to ``['console_simple']``.
+        * **level**: override the default level for the ``django`` logger. Defaults to ``'WARNING'`` unless the ``DJANGO_LOG_LEVEL`` environment variable is set.
 
-    * **LOGGING_FORMATTERS**: override all of the default logging formatters.
-    * **LOGGING_HANDLERS**: override all of the default logging handlers.
-    * **LOGGERS**: override all of the default loggers.
+      * **tethys**:
+  
+        * **handlers**: override the default handlers for the ``tethys`` logger. Defaults to ``['console_verbose']``.
+        * **level**: override the default level for the ``tethys`` logger. Defaults to ``'INFO'``.
+
+      * **tethys.apps**:
+  
+        * **handlers**: override the default handlers for the ``tethys.apps`` logger. Defaults to ``['console_verbose']``.
+        * **level**:override the default level for the ``tethys.apps`` logger. Defaults to ``'INFO'``.
 
   * **INSTALLED_APPS**: the Django `INSTALLED_APPS <https://docs.djangoproject.com/en/2.2/ref/settings/#installed-apps>`_ setting. For convenience, any Django apps listed here will be appended to default list of Django apps required by Tethys. To override ``INSTALLED_APPS`` completely, use the ``INSTALLED_APPS_OVERRIDE`` setting.
 
@@ -110,7 +119,7 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
     * **RECAPTCHA_PUBLIC_KEY**: Public key for Google ReCaptcha. Required to enable ReCaptcha on the login screen. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.
     * **RECAPTCHA_PROXY_HOST**: Proxy host for Google ReCaptcha. Optional. See `Django Recaptcha 2 Installation <https://github.com/kbytesys/django-recaptcha2#how-to-install>`_.
 
-  * **OAUTH_CONFIGS**:
+  * **OAUTH_CONFIG**:
 
     * **SOCIAL_AUTH_GOOGLE_OAUTH2_KEY**: Key for authenticating with Google using their OAuth2 service. See :ref:`social_auth_google` OAuth2 Setup.
     * **SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET**: Secret for authenticating with Google using their OAuth2 service. See :ref:`social_auth_google` OAuth2 Setup.
@@ -122,7 +131,7 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
     * **SOCIAL_AUTH_HYDROSHARE_KEY**: Key for authenticating with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` OAuth2 Setup.
     * **SOCIAL_AUTH_HYDROSHARE_SECRET**: Secret for authentication with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` OAuth2 Setup.
 
-  * **ANALYTICS_CONFIGS**: the Django Analytical configuration settings for enabling analytics services on the Tethys Portal (see: `Enabling Services - Django Analytical <https://django-analytical.readthedocs.io/en/latest/install.html#enabling-the-services>`_. The following is a list of settings for some of the supported services that can be enabled.
+  * **ANALYTICS_CONFIG**: the Django Analytical configuration settings for enabling analytics services on the Tethys Portal (see: `Enabling Services - Django Analytical <https://django-analytical.readthedocs.io/en/latest/install.html#enabling-the-services>`_. The following is a list of settings for some of the supported services that can be enabled.
 
     * CLICKMAP_TRACKER_ID
     * CLICKY_SITE_ID
@@ -204,6 +213,22 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
 
 .. note::
 
+    All of the settings groupings that end in ``_CONFIG`` are merely for convenience and organization, but are not necessary. Thus the following two examples are effectively the same:
+
+    .. code-block:: yaml
+
+        settings:
+          TETHYS_PORTAL_CONFIG:
+            BYPASS_TETHYS_HOME_PAGE: False
+
+    .. code-block:: yaml
+
+        settings:
+          BYPASS_TETHYS_HOME_PAGE: False
+
+
+.. note::
+
     You may define any Django Setting as a key under the ``settings`` key. Only the most common Django settings are listed above. For a complete reference of Django settings see: `Django Settings Reference <https://docs.djangoproject.com/en/2.2/ref/settings/>`_.
 
 Example
@@ -224,6 +249,7 @@ Sample portal_config.yml file:
     DEBUG: True
     ALLOWED_HOSTS: []
     ADMINS: []
+
     TETHYS_PORTAL_CONFIG:
       BYPASS_TETHYS_HOME_PAGE: False
       ENABLE_OPEN_SIGNUP: False
@@ -232,9 +258,9 @@ Sample portal_config.yml file:
       #  TETHYS_WORKSPACES_ROOT: ''
   
     SESSION_CONFIG:
-      EXPIRE_AT_BROWSER_CLOSE: True
-      SECURITY_WARN_AFTER: 840
-      SECURITY_EXPIRE_AFTER: 900
+      SESSION_EXPIRE_AT_BROWSER_CLOSE: True
+      SESSION_SECURITY_WARN_AFTER: 840
+      SESSION_SECURITY_EXPIRE_AFTER: 900
   
     DATABASES:
       default:
@@ -244,19 +270,35 @@ Sample portal_config.yml file:
         HOST: localhost
         PORT:  5436
         DIR: psql
-  
-    LOGGING_CONFIG:
-      TETHYS_LOGGING:
-        handlers:
-          - console_verbose
-        level: INFO
-      TETHYS_APPS_LOGGING:
-        handlers:
-          - console_verbose
-        level: INFO
-      LOGGING_FORMATTERS: {}
-      LOGGING_HANDLERS: {}
-      LOGGERS: {}
+
+    # LOGGING:
+    #   formatters:
+    #     verbose:
+    #       format: '%(levelname)s:%(name)s:%(message)s'
+    #     simple:
+    #       format: '%(levelname)s %(message)s'
+    #   handlers:
+    #     console_simple:
+    #       class: logging.StreamHandler
+    #       formatter: simple
+    #     console_verbose:
+    #       class: logging.StreamHandler
+    #       formatter: verbose
+    #   loggers:
+    #     django:
+    #       handlers:
+    #         - console_simple
+    #       level: WARNING
+    #     tethys:
+    #       handlers:
+    #         - console_verbose
+    #       level: INFO
+    #     tethys.apps:
+    #       handlers:
+    #         - console_verbose
+    #       level: INFO
+
+
   
     #  INSTALLED_APPS_OVERRIDE: []
     INSTALLED_APPS: []
@@ -276,7 +318,7 @@ Sample portal_config.yml file:
       RECAPTCHA_PUBLIC_KEY: ''
       #  RECAPTCHA_PROXY_HOST: https://recaptcha.net
   
-    #  OAUTH_CONFIGS:
+    #  OAUTH_CONFIG:
     #    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY: ''
     #    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET: ''
     #
@@ -290,7 +332,7 @@ Sample portal_config.yml file:
     #    SOCIAL_AUTH_HYDROSHARE_KEY: ''
     #    SOCIAL_AUTH_HYDROSHARE_SECRET: ''
   
-    #  ANALYTICS_CONFIGS:
+    #  ANALYTICS_CONFIG:
     #    CLICKMAP_TRACKER_ID: False
     #    CLICKY_SITE_ID: False
     #    CRAZY_EGG_ACCOUNT_NUMBER: False
