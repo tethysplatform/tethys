@@ -9,10 +9,12 @@
 """
 from pathlib import Path
 from pprint import pformat
+from argparse import Namespace
 
 import yaml
 
-from tethys_cli.cli_colors import write_info, write_error
+from .gen_commands import generate_command
+from tethys_cli.cli_colors import write_info, write_warning, write_error
 from tethys_apps.utilities import get_tethys_home_dir
 
 from django.conf import settings
@@ -53,13 +55,23 @@ def add_settings_parser(subparsers):
 
 def read_settings():
     portal_yaml_file = TETHYS_HOME / 'portal_config.yml'
-    with portal_yaml_file.open() as portal_yaml:
-        tethys_settings = yaml.safe_load(portal_yaml).get('settings', {}) or {}
+    tethys_settings = {}
+    if portal_yaml_file.exists():
+        with portal_yaml_file.open() as portal_yaml:
+            tethys_settings = yaml.safe_load(portal_yaml).get('settings') or {}
     return tethys_settings
+
+
+def generate_portal_config_file():
+    write_warning('No Tethys Portal configuration file was found. Generating one now...')
+    args = Namespace(type='portal_config', directory=None, overwrite=False)
+    generate_command(args)
 
 
 def write_settings(tethys_settings):
     portal_yaml_file = TETHYS_HOME / 'portal_config.yml'
+    if not portal_yaml_file.exists():
+        generate_portal_config_file()
     with portal_yaml_file.open('r') as portal_yaml:
         portal_settings = yaml.safe_load(portal_yaml) or {}
     portal_settings['settings'] = tethys_settings
