@@ -69,7 +69,7 @@ Google
 
     .. code-block:: bash
 
-          tethys settings --set OAUTH_CONFIGS.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY <Client ID> --set OAUTH_CONFIGS.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET <Client secret>
+          tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY <Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET <Client secret>
 
 References
 ++++++++++
@@ -133,7 +133,7 @@ Facebook
 
     .. code-block:: bash
 
-          tethys settings --set OAUTH_CONFIGS.SOCIAL_AUTH_FACEBOOK_KEY <App ID> --set OAUTH_CONFIGS.SOCIAL_AUTH_FACEBOOK_SECRET <App Secret>
+          tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_FACEBOOK_KEY <App ID> --set OAUTH_CONFIG.SOCIAL_AUTH_FACEBOOK_SECRET <App Secret>
 
 References
 ++++++++++
@@ -184,7 +184,7 @@ LinkedIn
 
     .. code-block:: bash
 
-          tethys settings --set OAUTH_CONFIGS.SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY <Client ID> --set OAUTH_CONFIGS.SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET <Client Secret>
+          tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY <Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET <Client Secret>
 
 References
 ++++++++++
@@ -242,7 +242,7 @@ HydroShare
 
     .. code-block:: bash
 
-          tethys settings --set OAUTH_CONFIGS.SOCIAL_AUTH_HYDROSHARE_KEY <Client id> --set OAUTH_CONFIGS.SOCIAL_AUTH_HYDROSHARE_SECRET <Client secret>
+          tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_HYDROSHARE_KEY <Client id> --set OAUTH_CONFIG.SOCIAL_AUTH_HYDROSHARE_SECRET <Client secret>
 
 4. Work with HydroShare in your app
 
@@ -329,7 +329,7 @@ The following settings in the :file:`portal_config.yml` are used to configure so
           - social.backends.linkedin.LinkedinOAuth2
           - tethys_services.backends.hydroshare.HydroShareOAuth2
 
-        OAUTH_CONFIGS:
+        OAUTH_CONFIG:
           SOCIAL_AUTH_GOOGLE_OAUTH2_KEY: ''
           SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET: ''
 
@@ -351,11 +351,11 @@ You can use the ``tethys settings`` command to easily set the settings in the :f
 
     .. code-block:: bash
 
-        tethys settings --set OAUTH_CONFIGS.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY <Client ID> --set OAUTH_CONFIGS.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET <Client secret>
+        tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY <Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET <Client secret>
 
     .. code-block:: bash
 
-        tethys settings --set OAUTH_CONFIGS.SOCIAL_AUTH_FACEBOOK_KEY <App ID> --set OAUTH_CONFIGS.SOCIAL_AUTH_FACEBOOK_SECRET <App Secret>
+        tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_FACEBOOK_KEY <App ID> --set OAUTH_CONFIG.SOCIAL_AUTH_FACEBOOK_SECRET <App Secret>
 
 .. important::
 
