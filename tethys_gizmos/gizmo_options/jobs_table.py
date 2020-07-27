@@ -8,11 +8,18 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
-from .base import TethysGizmoOptions
+from collections import namedtuple
 import logging
+
+from tethys_sdk.jobs import TethysJob
+from .base import TethysGizmoOptions
+
 log = logging.getLogger('tethys.tethys_gizmos.gizmo_options.jobs_table')
 
 __all__ = ['JobsTable']
+
+
+JobsTableRow = namedtuple('JobsTableRow', ['columns', 'actions'])
 
 
 class JobsTable(TethysGizmoOptions):
@@ -68,10 +75,10 @@ class JobsTable(TethysGizmoOptions):
     """  # noqa: E501
     gizmo_name = "jobs_table"
 
-    def __init__(self, jobs, column_fields, status_actions=True, run_btn=True, delete_btn=True, monitor_url='',
-                 results_url='', hover=False, striped=False, bordered=False, condensed=False, attributes={}, classes='',
-                 refresh_interval=5000, delay_loading_status=True, show_detailed_status=False, show_resubmit_btn=False,
-                 show_log_btn=False):
+    def __init__(self, jobs, column_fields, show_status=True, show_actions=True, run_btn=None, delete_btn=None,
+                 monitor_url='', results_url='', hover=False, striped=False, bordered=False, condensed=False,
+                 attributes=None, classes='', refresh_interval=5000, delay_loading_status=True,
+                 show_detailed_status=False, actions=None, enable_data_table=False, data_table_options=None):
         """
         Constructor
         """
@@ -84,36 +91,68 @@ class JobsTable(TethysGizmoOptions):
         self.column_names = None
         self.set_rows_and_columns(jobs, column_fields)
 
-        self.status_actions = status_actions
-        self.run = run_btn
-        self.delete = delete_btn
+        # self.status_actions = status_actions
+        self.show_status = show_status
+        self.show_actions = show_actions
         self.monitor_url = monitor_url
         self.results_url = results_url
         self.hover = hover
         self.striped = striped
         self.bordered = bordered
         self.condensed = condensed
-        self.attributes = attributes
+        self.attributes = attributes or {}
         self.classes = classes
         self.refresh_interval = refresh_interval
         self.delay_loading_status = delay_loading_status
         self.show_detailed_status = show_detailed_status
-        self.show_resubmit_btn = show_resubmit_btn
-        self.show_log_btn = show_log_btn
+        self.enable_data_table = enable_data_table
+        self.data_table_options = data_table_options or {'ordering': True, 'searching': False, 'paging': False}
+
+        actions = actions or ['run', 'resubmit', 'logs', 'terminate', 'delete']
+        if monitor_url:
+            actions.append('monitor')
+        if results_url:
+            actions.append('results')
+
+        # code for backwards compatibility. Remove in Tethys v3.2
+        if run_btn is not None:
+            # deprecation warning
+            if run_btn:
+                actions.append('run')
+            else:
+                try:
+                    actions.remove('run')
+                except ValueError:
+                    pass
+        if delete_btn is not None:
+            # deprecation warning
+            if delete_btn:
+                actions.append('delete')
+            else:
+                try:
+                    actions.remove('delete')
+                except ValueError:
+                    pass
+        # end compatibility code
+
+        self.actions = dict(
+            run='run' in actions,
+            resubmit='resubmit' in actions,
+            logs='logs' in actions,
+            monitor='monitor' in actions and monitor_url,
+            results='results' in actions and monitor_url,
+            terminate='terminate' in actions,
+            delete='delete' in actions,
+        )
+
         # Compute column count
         self.num_cols = len(column_fields)
 
-        if status_actions:
+        if show_status:
             self.num_cols += 1
 
-            if self.delete:
-                self.num_cols += 1
-
-            if self.show_resubmit_btn:
-                self.num_cols += 1
-
-            if self.show_log_btn:
-                self.num_cols += 1
+        if show_actions:
+            self.num_cols += 1
 
     def set_rows_and_columns(self, jobs, column_fields):
         self.rows = list()
@@ -137,7 +176,7 @@ class JobsTable(TethysGizmoOptions):
                 log.warning('Column %s was not added because the %s has no attribute %s.',
                             column_name, str(first_job), field)
 
-        for job in jobs:
+        for job in sorted(jobs):
             row_values = self.get_row(job, self.column_fields)
             self.rows.append(row_values)
 
@@ -158,40 +197,42 @@ class JobsTable(TethysGizmoOptions):
             value = getattr(job, attribute)
             # Truncate fractional seconds
             if attribute == 'run_time':
-                # times = []
-                # total_seconds = value.seconds
-                # times.append(('days', run_time.days))
-                # times.append(('hr', total_seconds/3600))
-                # times.append(('min', (total_seconds%3600)/60))
-                # times.append(('sec', total_seconds%60))
-                # run_time_str = ''
-                # for time_str, time in times:
-                #     if time:
-                #         run_time_str += "%s %s " % (time, time_str)
-                # if not run_time_str or (run_time.days == 0 and total_seconds < 2):
-                #     run_time_str = '%.2f sec' % (total_seconds + float(run_time.microseconds)/1000000,)
                 value = str(value).split('.')[0]
             if attribute.startswith('extended_properties'):
                 extended_properties = job.extended_properties
-                value = extended_properties.get('monitor_url', '')
+                attribute = attribute.split('.')[-1]
+                value = extended_properties.get(attribute, '')
             row_values.append(value)
 
-        return row_values
+            job_status = job.status
+            job_actions = dict(
+                run=job_status == 'Pending',
+                resubmit=job_status in TethysJob.TERMINAL_STATUSES,
+                monitor=job_status in TethysJob.RUNNING_STATUSES,
+                results=job_status in TethysJob.TERMINAL_STATUSES,
+                logs=job_status not in TethysJob.PRE_RUNNING_STATUSES,
+                terminate=job_status in TethysJob.ACTIVE_STATUSES,
+                delete=job_status not in TethysJob.ACTIVE_STATUSES,
+            )
+
+        return JobsTableRow(row_values, actions=job_actions)
 
     @staticmethod
     def get_gizmo_css():
         return (
+            'https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css',
             'tethys_gizmos/css/jobs_table.css',
         )
 
     @staticmethod
     def get_vendor_js():
         return (
+            'https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js',
             'https://cdnjs.cloudflare.com/ajax/libs/d3/4.12.2/d3.min.js',
             'tethys_gizmos/vendor/lodash/lodash.min.js',
             'tethys_gizmos/vendor/graphlib/dist/graphlib.core.min.js',
             'tethys_gizmos/vendor/dagre/dist/dagre.core.min.js',
-            'tethys_gizmos/vendor/dagre-d3/dist/dagre-d3.core.min.js'
+            'tethys_gizmos/vendor/dagre-d3/dist/dagre-d3.core.min.js',
         )
 
     @staticmethod
@@ -199,4 +240,6 @@ class JobsTable(TethysGizmoOptions):
         """
         JavaScript specific to gizmo to be placed in the {% block scripts %} block
         """
-        return ('tethys_gizmos/js/jobs_table.js',)
+        return (
+            'tethys_gizmos/js/jobs_table.js',
+        )

@@ -44,8 +44,14 @@ class TethysJob(models.Model):
         ('RES', 'Results-Ready'),
     )
 
-    STATUS_DICT = {k: v for v, k in STATUSES}
     VALID_STATUSES = [v for v, _ in STATUSES]
+    DISPLAY_STATUSES = [k for _, k in STATUSES]
+    DISPLAY_STATUSES.insert(3, DISPLAY_STATUSES.pop(6))  # Move 'Various' to be by 'Running'
+
+    PRE_RUNNING_STATUSES = DISPLAY_STATUSES[:2]
+    RUNNING_STATUSES = DISPLAY_STATUSES[2:4]
+    ACTIVE_STATUSES = DISPLAY_STATUSES[1:4]
+    TERMINAL_STATUSES = DISPLAY_STATUSES[4:]
 
     name = models.CharField(max_length=1024)
     description = models.CharField(max_length=2048, blank=True, default='')
@@ -60,6 +66,9 @@ class TethysJob(models.Model):
     extended_properties = JSONField(default=dict, null=True, blank=True)
     _process_results_function = models.CharField(max_length=1024, blank=True, null=True)
     _status = models.CharField(max_length=3, choices=STATUSES, default=STATUSES[0][0])
+
+    def __lt__(self, other):
+        return self.id < other.id
 
     @property
     def type(self):

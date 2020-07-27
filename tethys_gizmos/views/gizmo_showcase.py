@@ -1605,11 +1605,13 @@ def jobs_table_demo(request):
         striped=False,
         bordered=False,
         condensed=False,
+        monitor_url='gizmos:results',
         results_url='gizmos:results',
         refresh_interval=10000,
+        run_btn=True,
         delete_btn=True,
         show_detailed_status=True,
-        show_resubmit_btn=True,
+        actions=['run', 'resubmit', 'log', 'monitor', 'results', 'terminate', 'delete'],
     )
 
     context = {'jobs_table': jobs_table_options}
@@ -1618,7 +1620,7 @@ def jobs_table_demo(request):
 
 
 def jobs_table_results(request, job_id):
-    return redirect(reverse('gizmos:showcase') + '#jobs_table_docs')
+    return redirect(reverse('gizmos:jobs_table'))
 
 
 def create_sample_jobs(request):
