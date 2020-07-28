@@ -2,7 +2,7 @@
 Social Authentication (Optional)
 ********************************
 
-**Last Updated:** May 2020
+**Last Updated:** July 2020
 
 Tethys Portal supports authenticating users with Google, Facebook, LinkedIn and HydroShare via the OAuth 2.0 method. The social authentication and authorization features have been implemented using the `Python Social Auth <http://psa.matiasaguirre.net/>`_ module and the social buttons provided by the `Social Buttons for Bootstrap <http://lipis.github.io/bootstrap-social/>`_. Social login is disabled by default, because enabling it requires registering your tethys portal instance with each provider.
 
@@ -16,68 +16,20 @@ Use the following instructions to setup social login for the providers you desir
 
     Beginning with Tethys Platform 3.0 you must configure the social auth settings in the :file:`portal_config.yml` file. See :ref:`tethys_configuration` for more details on how to create and configure this file. For instructions on how to configure social auth for previous versions of Tethys Platform please refer to the documentation specific to your version.
 
-.. _social_auth_google:
+.. _social_auth_azuread:
 
-Google
-------
-
-1. Create a Google Developer Account
-
-    Follow these instructions to register your project and create a client ID: `Setting Up OAuth 2.0 <https://support.google.com/googleapi/answer/6158849>`_. Provide the following as you setup OAuth2:
+Azure Active Directory
+----------------------
 
 
-    a. Provide Authorized JavaScript Origins
+.. code-block::
 
-      As a security precaution, Google will only accept authentication requests from the hosts listed in the ``Authorized JavaScript Origins`` box. Add the domain of your Tethys Portal to the list. Optionally, you may add a localhost domain to the list to be used during testing:
-
-      ::
-
-          https://<SERVER_DOMAIN_NAME>
-          http://localhost:8000
-
-    .. note::
-
-          Replace ``<SERVER_DOMAIN_NAME>`` with the value determined during the :ref:`production_preparation` step.
-
-    b. Provide Authorized Redirect URIs
-
-      You also need to provide the callback URI for Google to call once it has authenticated the user. This follows the pattern ``http://<host>/oauth2/complete/google-oauth2/``:
-
-      ::
-
-          https://<SERVER_DOMAIN_NAME>/oauth2/complete/google-oauth2/
-          https://localhost:8000/oauth2/complete/google-oauth2/
-
-    .. note::
-
-          Replace ``<SERVER_DOMAIN_NAME>`` with the value determined during the :ref:`production_preparation` step.
-
-    .. note::
-
-        Some Google APIs are free to use up to a certain quota of hits. Be sure to familiarize yourself with the terms of use for each service.
-
-
-2. Add the appropriate settings to the  :file:`portal_config.yml` file using the ``tethys settings`` command:
-
-    Add the ``social_core.backends.google.GoogleOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
-
-    .. code-block:: bash
-
-          tethys settings --set AUTHENTICATION_BACKENDS "['social_core.backends.google.GoogleOAuth2']"
-
-    Copy the ``Client ID`` and ``Client secret`` into the ``SOCIAL_AUTH_GOOGLE_OAUTH2_KEY`` and ``SOCIAL_AUTH_GOOGLE_AUTH2_SECRET`` settings, respectively:
-
-    .. code-block:: bash
-
-          tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY <Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET <Client secret>
-
-References
-++++++++++
-
-For more detailed information about using Google social authentication see the following articles:
-
-* `Developer Console Help <https://developers.google.com/console/help/new/?hl=en_US#generatingoauth2>`_
-* `Google Identity Platform <https://developers.google.com/identity/protocols/OAuth2>`_
+    # Azure AD B2C
+    social_core.backends.azuread_b2c.AzureADB2COAuth2
+    SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_KEY: <Application/Client ID>
+    SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_SECRET: <Client Secret>
+    SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_TENANT_ID: <Directory/Tenant ID>
+    SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY: b2c_ OR <Custom User Flow>
 
 .. _social_auth_facebook:
 
@@ -143,55 +95,68 @@ For more detailed information about using Facebook social authentication see the
 * `Facebook Login <https://developers.facebook.com/docs/facebook-login/v2.4>`_
 * `Facebook Login for the Web with the JavaScript SDK <https://developers.facebook.com/docs/facebook-login/login-flow-for-web/v2.4>`_
 
-.. _social_auth_linkedin:
+.. _social_auth_google:
 
-LinkedIn
---------
+Google
+------
 
-1. Create a LinkedIn Developer Account
+1. Create a Google Developer Account
 
-    You will need a LinkedIn developer account to register your Tethys Portal with LinkedIn. To create an account, visit `https://developer.linkedin.com/my-apps <https://developer.linkedin.com/my-apps>`_ and sign in with a LinkedIn account.
+    Follow these instructions to register your project and create a client ID: `Setting Up OAuth 2.0 <https://support.google.com/googleapi/answer/6158849>`_. Provide the following as you setup OAuth2:
 
-2. Create a LinkedIn Application
 
-    a. Navigate back to `https://www.linkedin.com/developers/apps <https://www.linkedin.com/developers/apps>`_, if necessary and press the ``Create App`` button.
-    b. Fill out the form and press ``Create App``.
+    a. Provide Authorized JavaScript Origins
 
-3. Open the **Auth** tab and note the ``Client ID`` and ``Client Secret`` for Step 5.
+      As a security precaution, Google will only accept authentication requests from the hosts listed in the ``Authorized JavaScript Origins`` box. Add the domain of your Tethys Portal to the list. Optionally, you may add a localhost domain to the list to be used during testing:
 
-4. Setup OAuth
+      ::
 
-    a. Add the call back URLs under the **OAuth 2.0 settings** section:
+          https://<SERVER_DOMAIN_NAME>
+          http://localhost:8000
 
-        ::
+    .. note::
 
-            https://<SERVER_DOMAIN_NAME>/oauth2/complete/linkedin-oauth2/
-            http://localhost:8000/oauth2/complete/linkedin-oauth2/
+          Replace ``<SERVER_DOMAIN_NAME>`` with the value determined during the :ref:`production_preparation` step.
 
-        .. note::
+    b. Provide Authorized Redirect URIs
 
-            Replace ``<SERVER_DOMAIN_NAME>`` with the value determined during the :ref:`production_preparation` step.
+      You also need to provide the callback URI for Google to call once it has authenticated the user. This follows the pattern ``http://<host>/oauth2/complete/google-oauth2/``:
 
-5. Add the appropriate settings to the  :file:`portal_config.yml` file using the ``tethys settings`` command:
+      ::
 
-    Add the ``social_core.backends.linkedin.LinkedinOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
+          https://<SERVER_DOMAIN_NAME>/oauth2/complete/google-oauth2/
+          https://localhost:8000/oauth2/complete/google-oauth2/
+
+    .. note::
+
+          Replace ``<SERVER_DOMAIN_NAME>`` with the value determined during the :ref:`production_preparation` step.
+
+    .. note::
+
+        Some Google APIs are free to use up to a certain quota of hits. Be sure to familiarize yourself with the terms of use for each service.
+
+
+2. Add the appropriate settings to the  :file:`portal_config.yml` file using the ``tethys settings`` command:
+
+    Add the ``social_core.backends.google.GoogleOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
 
     .. code-block:: bash
 
-        tethys settings --set AUTHENTICATION_BACKENDS "['social_core.backends.linkedin.LinkedinOAuth2']"
+          tethys settings --set AUTHENTICATION_BACKENDS "['social_core.backends.google.GoogleOAuth2']"
 
-    Copy the ``Client ID`` and ``Client Secret`` to the ``SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY`` and ``SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET`` settings, respectively:
+    Copy the ``Client ID`` and ``Client secret`` into the ``SOCIAL_AUTH_GOOGLE_OAUTH2_KEY`` and ``SOCIAL_AUTH_GOOGLE_AUTH2_SECRET`` settings, respectively:
 
     .. code-block:: bash
 
-          tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY <Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET <Client Secret>
+          tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY <Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET <Client secret>
 
 References
 ++++++++++
 
-For more detailed information about using LinkedIn social authentication see the following articles:
+For more detailed information about using Google social authentication see the following articles:
 
-* `LinkedIn: Authenticating with OAuth 2.0 <https://developer.linkedin.com/docs/oauth2>`_
+* `Developer Console Help <https://developers.google.com/console/help/new/?hl=en_US#generatingoauth2>`_
+* `Google Identity Platform <https://developers.google.com/identity/protocols/OAuth2>`_
 
 .. _social_auth_hydroshare:
 
@@ -307,6 +272,56 @@ References
 For more detailed information about using HydroShare social authentication see the following articles:
 
 * `https://github.com/hydroshare/hydroshare/wiki/HydroShare-REST-API#oauth-20-support <https://github.com/hydroshare/hydroshare/wiki/HydroShare-REST-API#oauth-20-support>`_
+
+.. _social_auth_linkedin:
+
+LinkedIn
+--------
+
+1. Create a LinkedIn Developer Account
+
+    You will need a LinkedIn developer account to register your Tethys Portal with LinkedIn. To create an account, visit `https://developer.linkedin.com/my-apps <https://developer.linkedin.com/my-apps>`_ and sign in with a LinkedIn account.
+
+2. Create a LinkedIn Application
+
+    a. Navigate back to `https://www.linkedin.com/developers/apps <https://www.linkedin.com/developers/apps>`_, if necessary and press the ``Create App`` button.
+    b. Fill out the form and press ``Create App``.
+
+3. Open the **Auth** tab and note the ``Client ID`` and ``Client Secret`` for Step 5.
+
+4. Setup OAuth
+
+    a. Add the call back URLs under the **OAuth 2.0 settings** section:
+
+        ::
+
+            https://<SERVER_DOMAIN_NAME>/oauth2/complete/linkedin-oauth2/
+            http://localhost:8000/oauth2/complete/linkedin-oauth2/
+
+        .. note::
+
+            Replace ``<SERVER_DOMAIN_NAME>`` with the value determined during the :ref:`production_preparation` step.
+
+5. Add the appropriate settings to the  :file:`portal_config.yml` file using the ``tethys settings`` command:
+
+    Add the ``social_core.backends.linkedin.LinkedinOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
+
+    .. code-block:: bash
+
+        tethys settings --set AUTHENTICATION_BACKENDS "['social_core.backends.linkedin.LinkedinOAuth2']"
+
+    Copy the ``Client ID`` and ``Client Secret`` to the ``SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY`` and ``SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET`` settings, respectively:
+
+    .. code-block:: bash
+
+          tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY <Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET <Client Secret>
+
+References
+++++++++++
+
+For more detailed information about using LinkedIn social authentication see the following articles:
+
+* `LinkedIn: Authenticating with OAuth 2.0 <https://developer.linkedin.com/docs/oauth2>`_
 
 .. _social_auth_settings:
 
