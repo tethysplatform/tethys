@@ -31,6 +31,14 @@ Azure Active Directory
     SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_TENANT_ID: <Directory/Tenant ID>
     SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY: b2c_ OR <Custom User Flow>
 
+https://python-social-auth.readthedocs.io/en/latest/backends/azuread.html
+https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app
+https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-create-new-tenant
+https://docs.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-tenant
+https://docs.microsoft.com/en-us/azure/active-directory-b2c/billing#link-an-azure-ad-b2c-tenant-to-a-subscription
+https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory?amp;clcid=0x9
+https://docs.microsoft.com/en-us/azure/active-directory-b2c/user-flow-overview
+
 .. _social_auth_facebook:
 
 Facebook

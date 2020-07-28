@@ -2343,6 +2343,14 @@ footer.site-footer .tethys-attribution a:hover {
     margin: 0 10%;
   }
 }
+.label-windows {
+  color: #3878d4;
+  border: #aaaaaa solid 1px;
+}
+.label-windows:hover {
+  color: #ffffff;
+  background-color: #3878d4;
+}
 .label-google {
   color: #dd4b39;
   border: #aaaaaa solid 1px;

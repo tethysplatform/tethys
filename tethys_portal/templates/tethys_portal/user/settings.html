@@ -83,7 +83,9 @@
 
             {% if user.has_usable_password or backends.associated|length > 1 %}
               {% for association in backends.associated %}
-                {% if 'linkedin' in association.provider %}
+                {% if 'azuread' in association.provider %}
+                  <a href="{% url 'user:disconnect' user.username association.provider association.id %}"><span class="label label-windows">Disconnect Microsoft</span></a>
+                {% elif 'linkedin' in association.provider %}
                   <a href="{% url 'user:disconnect' user.username 'linkedin-oauth2' association.id %}"><span class="label label-linkedin">Disconnect LinkedIn</span></a>
                 {% elif 'google' in association.provider %}
                   <a href="{% url 'user:disconnect' user.username 'google-oauth2' association.id %}"><span class="label label-google">Disconnect Google</span></a>
@@ -101,7 +103,9 @@
               {% endfor %}
             {% else %}
               {% for backend in backends.associated %}
-                {% if 'linkedin' in backend.provider %}
+                {% if 'azuread' in backend.provider %}
+                  <span class="label label-windows">Microsoft</span>
+                {% elif 'linkedin' in backend.provider %}
                   <span class="label label-linkedin">LinkedIn</span>
                 {% elif 'google' in backend.provider %}
                   <span class="label label-google">Google</span>
@@ -131,7 +135,9 @@
         {% if backends.not_associated %}
           <div class="social-label-container">
             {% for backend in backends.not_associated %}
-              {% if 'linkedin' in backend %}
+              {% if 'azuread' in backend %}
+                <a href="{% url 'social:begin' backend %}?next={{ request.path }}"><span class="label label-windows">Connect Microsoft</span></a>
+              {% elif 'linkedin' in backend %}
                 <a href="{% url 'social:begin' 'linkedin-oauth2' %}?next={{ request.path }}"><span class="label label-linkedin">Connect LinkedIn</span></a>
               {% elif 'google' in backend %}
                 <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}"><span class="label label-google">Connect Google</span></a>
