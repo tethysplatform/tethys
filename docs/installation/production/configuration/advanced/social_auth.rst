@@ -23,8 +23,19 @@ Azure Active Directory
 
 
 .. code-block::
+    # Azure AD
+    http://localhost:8000/oauth2/complete/azuread-oauth2/
+    SOCIAL_AUTH_AZUREAD_OAUTH2_KEY: <Application/Client ID>
+    SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET: <Client Secret>
+
+    # Azure AD Single Tenant
+    http://localhost:8000/oauth2/complete/azuread-tenant-oauth2/
+    SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY: <Application/Client ID>
+    SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET: <Client Secret>
+    SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID: <Directory/Tenant ID>
 
     # Azure AD B2C
+    http://localhost:8000/oauth2/complete/azuread-b2c/
     social_core.backends.azuread_b2c.AzureADB2COAuth2
     SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_KEY: <Application/Client ID>
     SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_SECRET: <Client Secret>

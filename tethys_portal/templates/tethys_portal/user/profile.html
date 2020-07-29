@@ -127,7 +127,7 @@
                   <div class="social-label-container">
                     {% for backend in backends.associated %}
                       {% if 'azuread' in backend.provider %}
-                        <span class="label label-windows">Microsoft</span>
+                        <span class="label label-windows">Azure AD</span>
                       {% elif 'linkedin' in backend.provider %}
                         <span class="label label-linkedin">LinkedIn</span>
                       {% elif 'google' in backend.provider %}
@@ -158,7 +158,7 @@
                   <div class="social-label-container">
                     {% for backend in backends.not_associated %}
                       {% if 'azuread' in backend %}
-                        <span class="label label-windows">Microsoft</span>
+                        <span class="label label-windows">Azure AD</span>
                       {% elif 'linkedin' in backend %}
                         <span class="label label-linkedin">LinkedIn</span>
                       {% elif 'google' in backend %}
