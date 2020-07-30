@@ -74,6 +74,35 @@
   background-position: 4px 5px;
 }
 
+.btn-okta {
+  background-color: #ffffff;
+  color: @default-header-text-color;
+  border-color: rgba(0,0,0,0.2);
+}
+
+.fa-circle-o {
+  color: @okta-color;
+}
+
+.btn-okta:hover {
+  background-color: @okta-color;
+  color: #ffffff;
+
+  .fa-circle-o {
+    color: #ffffff;
+    font-weight: 600;
+  }
+}
+
+.btn-okta:focus {
+  background-color: @okta-color;
+  color: #ffffff;
+
+  .fa-okta {
+    color: #ffffff;
+    font-weight: 600;
+  }
+}
 .btn-windows {
   background-color: #ffffff;
   color: @default-header-text-color;

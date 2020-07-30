@@ -2002,6 +2002,30 @@ footer.site-footer .tethys-attribution a:hover {
   background-size: 75%;
   background-position: 4px 5px;
 }
+.btn-okta {
+  background-color: #ffffff;
+  color: #555555;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.fa-circle-o {
+  color: #007dc1;
+}
+.btn-okta:hover {
+  background-color: #007dc1;
+  color: #ffffff;
+}
+.btn-okta:hover .fa-circle-o {
+  color: #ffffff;
+  font-weight: 600;
+}
+.btn-okta:focus {
+  background-color: #007dc1;
+  color: #ffffff;
+}
+.btn-okta:focus .fa-okta {
+  color: #ffffff;
+  font-weight: 600;
+}
 .btn-windows {
   background-color: #ffffff;
   color: #555555;
@@ -2342,6 +2366,14 @@ footer.site-footer .tethys-attribution a:hover {
     width: 80%;
     margin: 0 10%;
   }
+}
+.label-okta {
+  color: #007dc1;
+  border: #aaaaaa solid 1px;
+}
+.label-okta:hover {
+  color: #ffffff;
+  background-color: #007dc1;
 }
 .label-windows {
   color: #3878d4;

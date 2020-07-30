@@ -21,26 +21,30 @@ Use the following instructions to setup social login for the providers you desir
 Azure Active Directory
 ----------------------
 
-
 .. code-block::
     # Azure AD
+    social_core.backends.azuread.AzureADOAuth2
     http://localhost:8000/oauth2/complete/azuread-oauth2/
     SOCIAL_AUTH_AZUREAD_OAUTH2_KEY: <Application/Client ID>
     SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET: <Client Secret>
 
     # Azure AD Single Tenant
+    social_core.backends.azuread_tenant.AzureADTenantOAuth2
     http://localhost:8000/oauth2/complete/azuread-tenant-oauth2/
     SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY: <Application/Client ID>
     SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET: <Client Secret>
     SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID: <Directory/Tenant ID>
 
     # Azure AD B2C
-    http://localhost:8000/oauth2/complete/azuread-b2c/
     social_core.backends.azuread_b2c.AzureADB2COAuth2
+    http://localhost:8000/oauth2/complete/azuread-b2c/
     SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_KEY: <Application/Client ID>
     SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_SECRET: <Client Secret>
     SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_TENANT_ID: <Directory/Tenant ID>
     SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY: b2c_ OR <Custom User Flow>
+
+References
+++++++++++
 
 https://python-social-auth.readthedocs.io/en/latest/backends/azuread.html
 https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app
@@ -341,6 +345,39 @@ References
 For more detailed information about using LinkedIn social authentication see the following articles:
 
 * `LinkedIn: Authenticating with OAuth 2.0 <https://developer.linkedin.com/docs/oauth2>`_
+
+.. _social_auth_okta:
+
+Okta
+----
+
+Additional dependency for supporting OpenID Connect interface of Okta. At time of writing there was a syntax error in ``jose`` that prevented it from working.
+.. code-block::
+
+    pip install jose
+
+.. code-block::
+    # Okta OAuth2
+    social_core.backends.okta.OktaOAuth2
+    http://localhost:8000/oauth2/complete/okta-oauth/
+    SOCIAL_AUTH_OKTA_OAUTH2_KEY: <Client ID>
+    SOCIAL_AUTH_OKTA_OAUTH2_SECRET: <Client Secret>
+    SOCIAL_AUTH_OKTA_OAUTH2_API_URL: <Org URL>  # https://dev-000000.okta.com/oauth2
+
+    # Okta OpenID Connect
+    social_core.backends.okta_openidconnect.OktaOpenIdConnect
+    http://localhost:8000/oauth2/complete/okta-openidconnect/
+    SOCIAL_AUTH_OKTA_OPENIDCONNECT_KEY: <Client ID>
+    SOCIAL_AUTH_OKTA_OPENIDCONNECT_SECRET: <Client Secret>
+    SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL: <Org URL>  # https://dev-000000.okta.com/oauth2
+
+References
+++++++++++
+
+https://python-social-auth.readthedocs.io/en/latest/backends/okta.html
+https://login.okta.com/
+https://developer.okta.com/docs/guides/sign-into-web-app/go/create-okta-application/
+https://developer.okta.com/docs/guides/sign-into-web-app/go/configure-packages/#configure-the-package
 
 .. _social_auth_settings:
 

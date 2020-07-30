@@ -140,6 +140,8 @@
                         <span class="label label-hydroshare">HydroShare-beta</span>
                       {% elif 'hydroshare_playground' == backend.provider %}
                         <span class="label label-hydroshare">HydroShare-playground</span>
+                      {% elif 'okta' in backend.provider %}
+                        <span class="label label-okta">Okta</span>
                       {% else %}
                         <span class="label label-custom-oauth">{{ backend.provider }}</span>
                       {% endif %}
@@ -171,6 +173,8 @@
                         <span class="label label-hydroshare">HydroShare-beta</span>
                       {% elif 'hydroshare_playground' == backend %}
                         <span class="label label-hydroshare">HydroShare-playground</span>
+                      {% elif 'okta' in backend %}
+                        <span class="label label-okta">Okta</span>
                       {% else %}
                         <span class="label label-custom-oauth">{{ backend }}</span>
                       {% endif %}
