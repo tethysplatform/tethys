@@ -21,39 +21,93 @@ Use the following instructions to setup social login for the providers you desir
 Azure Active Directory
 ----------------------
 
-.. code-block::
+1. Sign up for a free Microsoft Developer account or sign in with an existing account if you already have one. See: `<https://azure.microsoft.com/en-us/free/>`_
 
-    # Azure AD
-    social_core.backends.azuread.AzureADOAuth2
-    http://localhost:8000/oauth2/complete/azuread-oauth2/
-    SOCIAL_AUTH_AZUREAD_OAUTH2_KEY: <Application/Client ID>
-    SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET: <Client Secret>
+2. Create an Azure AD or Azure AD B2C Tenant on `Microsoft Azure Portal <https://portal.azure.com/#home>`_ if you do not already have one. See: `Quickstart: Set up a tenant <https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-create-new-tenant#social-and-local-accounts>`_
 
-    # Azure AD Single Tenant
-    social_core.backends.azuread_tenant.AzureADTenantOAuth2
-    http://localhost:8000/oauth2/complete/azuread-tenant-oauth2/
-    SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY: <Application/Client ID>
-    SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET: <Client Secret>
-    SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID: <Directory/Tenant ID>
+    .. note::
 
-    # Azure AD B2C
-    social_core.backends.azuread_b2c.AzureADB2COAuth2
-    http://localhost:8000/oauth2/complete/azuread-b2c/
-    SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_KEY: <Application/Client ID>
-    SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_SECRET: <Client Secret>
-    SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_TENANT_ID: <Directory/Tenant ID>
-    SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY: b2c_ OR <Custom User Flow>
+        Tethys Platform supports single sign on with both the Azure AD and Azure AD B2C environments.
+
+3. Register a new application. See: `Register a new application using the Azure portal <https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-a-new-application-using-the-azure-portal>`_
+
+* Select **Web** as the type of app.
+* Enter one of the following for the redirect URL:
+
+    * If using an **Azure AD Tenant** and you selected either **Accounts in any organizational directory** or **Accounts in any organizational directory and personal Microsoft accounts**:
+
+        .. code-block::
+
+            http://localhost:8000/oauth2/complete/azuread-oauth2/
+
+    * If using an **Azure AD Tenant** and you selected **Accounts in this organizational directory only**:
+
+        .. code-block::
+
+            http://localhost:8000/oauth2/complete/azuread-tenant-oauth2/
+
+    * If using an **Azure AD B2C Tenant**:
+
+        .. code-block::
+
+            http://localhost:8000/oauth2/complete/azuread-b2c/
+
+4. On the **Overview** page of the **App Registration** you created in the previous step, note the **Application (client) ID** and **Directory (tenant) ID** for use in step 7.
+
+5. Select **Certificates & secrets** from the menu on the left. Create a **Client Secret** and note it's value for use in step 7.
+
+6. Enable the appropriate authentication backend:
+
+    * If using an **Azure AD Tenant** and you selected either **Accounts in any organizational directory** or **Accounts in any organizational directory and personal Microsoft accounts**:
+
+        .. code-block::
+
+            tethys settings --set AUTHENTICATION_BACKENDS "['social_core.backends.azuread.AzureADOAuth2']"
+
+    * If using an **Azure AD Tenant** and you selected **Accounts in this organizational directory only**:
+
+        .. code-block::
+
+            tethys settings --set AUTHENTICATION_BACKENDS "['social_core.backends.azuread_tenant.AzureADTenantOAuth2']"
+
+    * If using an **Azure AD B2C Tenant**:
+
+        .. code-block::
+
+            tethys settings --set AUTHENTICATION_BACKENDS "['social_core.backends.azuread_b2c.AzureADB2COAuth2']"
+
+7. Set the appropriate settings:
+
+    * If using an **Azure AD Tenant** and you selected either **Accounts in any organizational directory** or **Accounts in any organizational directory and personal Microsoft accounts**:
+
+        .. code-block::
+
+            tethys settings --set SOCIAL_AUTH_AZUREAD_OAUTH2_KEY <Application/Client ID> --set SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET <Client Secret>
+
+    * If using an **Azure AD Tenant** and you selected **Accounts in this organizational directory only**:
+
+        .. code-block::
+
+            tethys settings --set SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY <Application/Client ID> --set SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET <Client Secret> --set SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID <Directory/Tenant ID>
+
+    * If using an **Azure AD B2C Tenant**:
+
+        .. code-block::
+
+            tethys settings --set SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_KEY <Application/Client ID> --set SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_SECRET <Client Secret> --set SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_TENANT_ID <Directory/Tenant ID> --set SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY <Custom User Flow>
+
+        .. note::
+
+              Use ``b2c_`` as the value of ``SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY`` if you do not have a custom user flow. See: `User flows in Azure Active Directory B2C <https://docs.microsoft.com/en-us/azure/active-directory-b2c/user-flow-overview>`_ for more information.
 
 References
 ++++++++++
 
-https://python-social-auth.readthedocs.io/en/latest/backends/azuread.html
-https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app
-https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-create-new-tenant
-https://docs.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-tenant
-https://docs.microsoft.com/en-us/azure/active-directory-b2c/billing#link-an-azure-ad-b2c-tenant-to-a-subscription
-https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory?amp;clcid=0x9
-https://docs.microsoft.com/en-us/azure/active-directory-b2c/user-flow-overview
+For more detailed information about using Azure Active Directory social authentication see the following articles:
+
+* `Tutorial: Create an Azure Active Directory B2C tenant <https://docs.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-tenant>`_
+* `Associate or add an Azure subscription to your Azure Active Directory tenant <https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory?amp>`_
+* `Microsoft Azure Active Directory - Python Social Auth <https://python-social-auth.readthedocs.io/en/latest/backends/azuread.html>`_
 
 .. _social_auth_facebook:
 
