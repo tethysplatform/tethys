@@ -4,7 +4,7 @@ Social Authentication (Optional)
 
 **Last Updated:** July 2020
 
-Tethys Portal supports authenticating users with Google, Facebook, LinkedIn and HydroShare via the OAuth 2.0 method. The social authentication and authorization features have been implemented using the `Python Social Auth <http://psa.matiasaguirre.net/>`_ module and the social buttons provided by the `Social Buttons for Bootstrap <http://lipis.github.io/bootstrap-social/>`_. Social login is disabled by default, because enabling it requires registering your tethys portal instance with each provider.
+Tethys Portal supports authenticating users with several social authentication and single sign on providers such as Google, Facebook, and LinkedIn via the OAuth 2.0 method. The social authentication and authorization features have been implemented using the `Python Social Auth <http://psa.matiasaguirre.net/>`_ module and the social buttons provided by the `Social Buttons for Bootstrap <http://lipis.github.io/bootstrap-social/>`_. Social login is disabled by default, because enabling it requires registering your tethys portal instance with each provider.
 
 
 Enable Social Login
@@ -22,6 +22,7 @@ Azure Active Directory
 ----------------------
 
 .. code-block::
+
     # Azure AD
     social_core.backends.azuread.AzureADOAuth2
     http://localhost:8000/oauth2/complete/azuread-oauth2/
@@ -351,33 +352,80 @@ For more detailed information about using LinkedIn social authentication see the
 Okta
 ----
 
-Additional dependency for supporting OpenID Connect interface of Okta. At time of writing there was a syntax error in ``jose`` that prevented it from working.
-.. code-block::
+Tethys Platform supports two methods of Okta single sign on: OAuth 2.0 and OpenID Connect. Both methods should work and accomplish the same result. At the time of writing there were bugs in the extra dependency required by the OpenID Connect method that prevented it from working properly. Until the bugs are addressed, we recommend using the OAuth 2.0 method.
 
-    pip install jose
+0. If you would like to use the OpenID Connect method, you will need to install an additional dependency (skip if using OAuth2 method):
 
-.. code-block::
-    # Okta OAuth2
-    social_core.backends.okta.OktaOAuth2
-    http://localhost:8000/oauth2/complete/okta-oauth/
-    SOCIAL_AUTH_OKTA_OAUTH2_KEY: <Client ID>
-    SOCIAL_AUTH_OKTA_OAUTH2_SECRET: <Client Secret>
-    SOCIAL_AUTH_OKTA_OAUTH2_API_URL: <Org URL>  # https://dev-000000.okta.com/oauth2
+    .. code-block::
 
-    # Okta OpenID Connect
-    social_core.backends.okta_openidconnect.OktaOpenIdConnect
-    http://localhost:8000/oauth2/complete/okta-openidconnect/
-    SOCIAL_AUTH_OKTA_OPENIDCONNECT_KEY: <Client ID>
-    SOCIAL_AUTH_OKTA_OPENIDCONNECT_SECRET: <Client Secret>
-    SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL: <Org URL>  # https://dev-000000.okta.com/oauth2
+        pip install jose
+
+    .. warning::
+
+        At the time of writing, the ``jose`` package contained syntax errors that made the OpenID Connect method unusable.
+
+1. Create an Okta Developer Account
+
+    You will need an Okta developer account to register your Tethys Portal with Okta. To create an account, visit `<https://developer.okta.com/signup/>`_.
+
+2. Create an Okta Application
+
+    Follow the steps outlined in this document to create an Okta application: `Create an Okta application <https://developer.okta.com/docs/guides/sign-into-web-app/go/create-okta-application/>`_. Set the callback URL as follows:
+
+    OAuth 2.0 method (recommended):
+
+    .. code-block::
+
+        https://<SERVER_DOMAIN_NAME>/oauth/complete/okta-oauth2/
+
+    OpenID Connect method:
+
+    .. code-block::
+
+        http://<SERVER_DOMAIN_NAME>/oauth2/complete/okta-openidconnect/
+
+3. Select the **General** tab of the application and note the ``Client ID`` and ``Client Secret`` for Step 5.
+
+4. Navigate back to the **Dashboard** page of the developer console and note the **Org URL**, located  near the top right side of the page. The Org URL is needed for step 5.
+
+5. Add the appropriate settings to the  :file:`portal_config.yml` file using the ``tethys settings`` command:
+
+    a. Add the appropriate authentication backend:
+
+        OAuth 2.0 method (recommended):
+
+        .. code-block:: bash
+
+            tethys settings --set AUTHENTICATION_BACKENDS "['social_core.backends.okta.OktaOAuth2']"
+
+        OpenID method interface:
+
+        .. code-block:: bash
+
+            tethys settings --set AUTHENTICATION_BACKENDS "['social_core.backends.okta_openidconnect.OktaOpenIdConnect']"
+
+    b. Use the ``Client ID``, ``Client Secret``, and ``Org URL`` to set the appropriate ``KEY``, ``CLIENT``, and ``API_URL`` settings, respectively:
+
+        OAuth 2.0 method (recommended):
+
+        .. code-block:: bash
+
+            tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_OKTA_OAUTH2_KEY <Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_OKTA_OAUTH2_SECRET <Client Secret> --set OAUTH_CONFIG.SOCIAL_AUTH_OKTA_OAUTH2_API_URL <Org URL>
+
+        OpenID Connect method:
+
+        .. code-block:: bash
+
+            tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_OKTA_OPENIDCONNECT_KEY <Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_OKTA_OPENIDCONNECT_SECRET <Client Secret> --set OAUTH_CONFIG.SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL <Org URL>
 
 References
 ++++++++++
 
-https://python-social-auth.readthedocs.io/en/latest/backends/okta.html
-https://login.okta.com/
-https://developer.okta.com/docs/guides/sign-into-web-app/go/create-okta-application/
-https://developer.okta.com/docs/guides/sign-into-web-app/go/configure-packages/#configure-the-package
+For more detailed information about using Okta social authentication see the following articles:
+
+* `OAuth 2.0 Overview - Okta Developer <https://developer.okta.com/docs/concepts/auth-overview/#authentication-api>`_
+* `Sign users in to your web application: <https://developer.okta.com/docs/guides/sign-into-web-app/aspnet/before-you-begin/>`_
+* `Okta Backend - Python Social Auth <https://python-social-auth.readthedocs.io/en/latest/backends/okta.html>`_
 
 .. _social_auth_settings:
 
