@@ -11,6 +11,7 @@ import logging
 from tethys_sdk.permissions import login_required
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+from django.conf import settings
 from django.core.mail import send_mail
 from tethys_apps.base.app_base import TethysAppBase
 from tethys_apps.models import TethysApp
@@ -39,7 +40,7 @@ def library(request):
                 configured_apps.append(app)
             else:
                 unconfigured_apps.append(app)
-        elif user_can_access_app(request.user, app):
+        elif user_can_access_app(request.user, app) or not getattr(settings, "ENABLE_RESTRICTED_APP_ACCESS", False):
             if app.configured and app.show_in_apps_library:
                 configured_apps.append(app)
 
