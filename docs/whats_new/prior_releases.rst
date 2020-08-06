@@ -37,7 +37,7 @@ Conda Package
 * Tethys has been Conda packaged
 * It can be installed from our `Conda channel <https://anaconda.org/tethysplatform/tethysplatform>`_.
 
-See: :doc:`./installation`
+See: :doc:`../installation`
 
 Upgraded JQuery and Bootstrap
 -----------------------------
@@ -53,7 +53,7 @@ Django Channels
 * Django Channels wraps the synchronous Django process in an asynchronous process, allowing developers to use modern web protocols like WebSockets.
 * WebSockets allow for a bidirectional, long-lived connections between the server and client.
 
-See: :doc:`./tutorials/websockets`
+See: :doc:`../tutorials/websockets`
 
 Bokeh Integration
 -----------------
@@ -62,14 +62,14 @@ Bokeh Integration
 
 See: :ref:`bokeh_integration`
 
-See: :doc:`./tutorials/bokeh`
+See: :doc:`../tutorials/bokeh`
 
 URL Maps API
 ------------
 
 * Documentation for Tethys ``url_maps`` and ``UrlMap`` has been added. This includes a description of the newly added ``UrlMap`` parameters with ``Websockets`` and ``Bokeh Integration``.
 
-See: :doc:`./tethys_sdk/url_maps`
+See: :doc:`../tethys_sdk/url_maps`
 
 Django Analytical
 -----------------
@@ -77,7 +77,7 @@ Django Analytical
 * Tethys comes with `Django Analytical <https://django-analytical.readthedocs.io/en/latest/>`_ installed to enable support form a number of analytics and tracking services.
 * You can now enable analytics tracking (e.g. Google Analytics) to every page of your apps and portal with a few settings in the settings file.
 
-See: :doc:`./installation/production/configuration/advanced/webanalytics`
+See: :doc:`../installation/production/configuration/advanced/webanalytics`
 
 Tethys Quotas
 -------------
@@ -86,7 +86,7 @@ Tethys Quotas
 * Tethys ships with quotas for workspace storage implemented, but it is disabled by default. When enabled, portal administrators can set limits on the storage users or apps are able to use.
 * Tethys Quotas are completely extensible, allowing developer to create custom quotas for other resources (e.g. memory usage, database storage, wall time hours, etc.).
 
-See: :doc:`./tutorials/quotas` and :doc:`./tethys_sdk/tethys_quotas`
+See: :doc:`../tutorials/quotas` and :doc:`../tethys_sdk/tethys_quotas`
 
 Workspace Storage Management Pages
 ----------------------------------
@@ -137,7 +137,7 @@ Improved CLI Documentation
 * The documentation for the command line interface has moved to a new location.
 * The CLI documenation is automatically generated from the code to ensure accuracy.
 
-See: :doc:`./tethys_cli`
+See: :doc:`../tethys_cli`
 
 Automatic Application Installation
 ----------------------------------
@@ -146,7 +146,7 @@ Automatic Application Installation
 * Apps can also use an optional ``services.yml`` portal specific file that will automatically link services.
 * The CLI has a new command for installing apps: `tethys install`.
 
-See: :doc:`./installation/application`, :ref:`tethys_install_yml`, :ref:`tethys_services_yml`, and :ref:`Install Command <tethys_cli_install>`
+See: :doc:`../installation/application`, :ref:`tethys_install_yml`, :ref:`tethys_services_yml`, and :ref:`Install Command <tethys_cli_install>`
 
 
 New App Installation Approach
@@ -159,7 +159,7 @@ New App Installation Approach
 .. toctree::
    :maxdepth: 2
 
-   whats_new/app_migration
+   ./app_migration
 
 Dask Job Type
 -------------
@@ -167,7 +167,7 @@ Dask Job Type
 * New TethysJob types for submitting and managing Dask Jobs.
 * Dask allows pure Python code to be automagically parallelized and executed accross a distributed cluster of nodes.
 
-See: :doc:`./tethys_sdk/jobs/dask_job_type` API documentation and the :doc:`./tutorials/dask` tutorial
+See: :doc:`../tethys_sdk/jobs/dask_job_type` API documentation and the :doc:`../tutorials/dask` tutorial
 
 CesiumMapView Gizmo
 -------------------
