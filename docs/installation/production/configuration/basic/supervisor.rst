@@ -42,13 +42,23 @@ One configuration file will be needed for NGINX and another for Daphne. Use the 
         * The ``directory`` is the path to the directory where Tethys Platform is installed (usually the :file:`site-packages` directory of your ``tethys`` conda environment).
         * Adjust the ``numprocs`` to the number of Daphne processes you would like it to run.
         * Note the location of the ``stdout_logfile``.
+        * Note the location of the process file after the ``-u`` argument of the daphne command in the ``command`` parameter. The default value for the process file should be something like: :file:`/run/tethys_asgi%(process_num)d.sock`
 
 
 .. tip::
 
     Replace ``<TETHYS_HOME>`` with the path to the Tethys home directory as noted in :ref:`production_portal_config` section.
 
-3. Link the Tethys Supervisor Configuration Files
+3. Create Run Directory
+=======================
+
+Verify that the directory where the ASGI process files will be created exists. You noted this directory when verifying the :file:`asgi_supervisor.conf` file in the previous step. For example, if the path in :file:`asgi_supervisor.conf` was defined as :file:`/run/asgi/tethys_asgi%(process_num)d.sock`, then you would need to ensure that the :file:`/run/asgi` directory exists and is owned by the ``NGINX_USER``.
+
+.. note::
+
+    If the process file is specified to be created at the root :file:`/run` directory (e.g.: :file:`/run/tethys_asgi%(process_num)d.sock`), then no action is required for this step.
+
+4. Link the Tethys Supervisor Configuration Files
 =================================================
 
 Create a symbolic links from the two configuration files generated in the previous steps to the supervisor configuration directory (:file:`/etc/supervisor`):
@@ -71,7 +81,7 @@ Create a symbolic links from the two configuration files generated in the previo
 
         Replace ``<TETHYS_HOME>`` with the path to the Tethys home directory as noted in :ref:`production_portal_config` section.
 
-4. Modify :file:`supervisord.conf` (CentOS Only)
+5. Modify :file:`supervisord.conf` (CentOS Only)
 ================================================
 
 For CentOS systems, modify :file:`supervisord.conf` to recognize our configuration files:
@@ -82,7 +92,7 @@ For CentOS systems, modify :file:`supervisord.conf` to recognize our configurati
 
             sudo sed -i '$ s@$@ /etc/supervisord.d/*.conf@' "/etc/supervisord.conf"
 
-5. Setup Tethys Log
+6. Setup Tethys Log
 ===================
 
 Create the log file in the location where supervisor expects it to be (see last item in 2.2).
@@ -104,7 +114,7 @@ Create the log file in the location where supervisor expects it to be (see last 
 
         Replace ``<NGINX_USER>`` with the name of the user noted in the :ref:`production_nginx_config`.
 
-6. Reload the Configuration
+7. Reload the Configuration
 ===========================
 
 Once you have finished the configuration steps, it is necessary to instruct Supervisor to reread and update as follows so that it loads our new Supervisor configurations:
