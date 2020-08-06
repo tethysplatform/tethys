@@ -1,6 +1,6 @@
-********************************
-Social Authentication (Optional)
-********************************
+*************************
+Single Sign On (Optional)
+*************************
 
 **Last Updated:** July 2020
 
@@ -412,7 +412,7 @@ Tethys Platform supports two methods of Okta single sign on: OAuth 2.0 and OpenI
 
     .. code-block::
 
-        pip install jose
+        conda install -c conda-forge python-jose
 
     .. warning::
 
@@ -480,6 +480,30 @@ For more detailed information about using Okta social authentication see the fol
 * `OAuth 2.0 Overview - Okta Developer <https://developer.okta.com/docs/concepts/auth-overview/#authentication-api>`_
 * `Sign users in to your web application: <https://developer.okta.com/docs/guides/sign-into-web-app/aspnet/before-you-begin/>`_
 * `Okta Backend - Python Social Auth <https://python-social-auth.readthedocs.io/en/latest/backends/okta.html>`_
+
+.. _social_auth_onelogin:
+
+OneLogin
+--------
+
+.. code-block::
+
+    http://localhost:8000/login/
+    http://localhost:8000/oauth2/complete/onelogin-oidc/
+    SOCIAL_AUTH_ONELOGIN_OIDC_KEY: <Client ID>
+    SOCIAL_AUTH_ONELOGIN_OIDC_SECRET: <Client Secret>
+    SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN: <Organization Subdomain>
+
+References
+++++++++++
+
+https://developers.onelogin.com/openid-connect
+https://developers.onelogin.com/openid-connect/connect-to-onelogin # Change "Token Endpoint: Authentication Method" to "POST"
+https://developers.onelogin.com/openid-connect/api/provider-config
+
+
+For more detailed information about using OneLogin social authentication see the following articles:
+
 
 .. _social_auth_settings:
 
