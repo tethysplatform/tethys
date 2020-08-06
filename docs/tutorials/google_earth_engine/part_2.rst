@@ -28,3 +28,5 @@ Outline
 
 Supporting Materials
 --------------------
+
+* `Google Earth Engine Part 2 Tutorial Solutions YouTube Playlist <https://www.youtube.com/playlist?list=PLc2auKJMS_EhwhuOc2eJPQtVG0fITtKlo>`_
