@@ -38,19 +38,19 @@ Azure Active Directory
 
         .. code-block::
 
-            http://localhost:8000/oauth2/complete/azuread-oauth2/
+            http://<SERVER_DOMAIN_NAME>/oauth2/complete/azuread-oauth2/
 
     * If using an **Azure AD Tenant** and you selected **Accounts in this organizational directory only**:
 
         .. code-block::
 
-            http://localhost:8000/oauth2/complete/azuread-tenant-oauth2/
+            http://<SERVER_DOMAIN_NAME>/oauth2/complete/azuread-tenant-oauth2/
 
     * If using an **Azure AD B2C Tenant**:
 
         .. code-block::
 
-            http://localhost:8000/oauth2/complete/azuread-b2c/
+            http://<SERVER_DOMAIN_NAME>/oauth2/complete/azuread-b2c/
 
 4. On the **Overview** page of the **App Registration** you created in the previous step, note the **Application (client) ID** and **Directory (tenant) ID** for use in step 7.
 
@@ -486,24 +486,55 @@ For more detailed information about using Okta social authentication see the fol
 OneLogin
 --------
 
-.. code-block::
+1. Create an OneLogin Developer Account
 
-    http://localhost:8000/login/
-    http://localhost:8000/oauth2/complete/onelogin-oidc/
-    SOCIAL_AUTH_ONELOGIN_OIDC_KEY: <Client ID>
-    SOCIAL_AUTH_ONELOGIN_OIDC_SECRET: <Client Secret>
-    SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN: <Organization Subdomain>
+    You will need a OneLogin developer account to register your Tethys Portal with OneLogin. To create an account, visit `<https://www.onelogin.com/developer-signup>`_.
+
+2. Create an OneLogin Application
+
+    Follow the steps outlined in this document to add your portal as an app in OneLogin: `Connect an OIDC enabled app <https://developers.onelogin.com/openid-connect/connect-to-onelogin>`_.
+
+    a. When prompted, set the redirect URL as follows:
+
+        .. code-block::
+
+            http://<SERVER_DOMAIN_NAME>/oauth2/complete/onelogin-oidc/
+            http://localhost:8000/oauth2/complete/onelogin-oidc/
+
+    b. If you wish, you may also want to specify the login URL for your portal:
+
+        .. code-block::
+
+            http://<SERVER_DOMAIN_NAME>/login/
+            http://localhost:8000/login/
+
+    c. On the SSO tab, set the Token Endpoint Authentication Method to ``POST``.
+
+3. Select the **SSO** tab if you are not on it already and note the ``Client ID`` and ``Client Secret`` for Step 5.
+
+4. Point to **Settings > Account Settings** and note the ``Subdomain`` for step 5.
+
+5. Add the appropriate settings to the  :file:`portal_config.yml` file using the ``tethys settings`` command:
+
+    a. Add the appropriate authentication backend:
+
+        .. code-block:: bash
+
+            tethys settings --set AUTHENTICATION_BACKENDS "['tethys_services.backends.onelogin.OneLoginOIDC']"
+
+    b. Use the ``Client ID``, ``Client Secret``, and ``Subdomain`` to set the appropriate ``KEY``, ``CLIENT``, and ``SUBDOMAIN`` settings, respectively:
+
+        .. code-block:: bash
+
+            tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_ONELOGIN_OIDC_KEY <Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_ONELOGIN_OIDC_SECRET <Client Secret> --set OAUTH_CONFIG.SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN <Subdomain>
 
 References
 ++++++++++
 
-https://developers.onelogin.com/openid-connect
-https://developers.onelogin.com/openid-connect/connect-to-onelogin # Change "Token Endpoint: Authentication Method" to "POST"
-https://developers.onelogin.com/openid-connect/api/provider-config
-
-
 For more detailed information about using OneLogin social authentication see the following articles:
 
+* `Dev Overview of OpenID Connect <https://developers.onelogin.com/openid-connect>`_
+* `Provider Configuration <https://developers.onelogin.com/openid-connect/api/provider-config>`_
 
 .. _social_auth_settings:
 

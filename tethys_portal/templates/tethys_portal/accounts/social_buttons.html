@@ -31,6 +31,10 @@
     <a class="btn btn-block btn-social btn-okta" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
       <i class="fa fa-circle-o"></i> {{ action }} with Okta
     </a>
+  {% elif 'onelogin' in backend %}
+    <a class="btn btn-block btn-social btn-onelogin" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
+      <i class="fa fa-onelogin"></i> {{ action }} with OneLogin
+    </a>
   {% else %}
     <a class="btn btn-block btn-social btn-custom-oauth" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
       <i class="fa fa-unlock-alt"></i> {{ action }} with {{ backend }}

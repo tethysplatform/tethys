@@ -2007,7 +2007,7 @@ footer.site-footer .tethys-attribution a:hover {
   color: #555555;
   border-color: rgba(0, 0, 0, 0.2);
 }
-.fa-circle-o {
+.btn-okta .fa-circle-o {
   color: #007dc1;
 }
 .btn-okta:hover {
@@ -2022,9 +2022,35 @@ footer.site-footer .tethys-attribution a:hover {
   background-color: #007dc1;
   color: #ffffff;
 }
-.btn-okta:focus .fa-okta {
+.btn-okta:focus .fa-circle-o {
   color: #ffffff;
   font-weight: 600;
+}
+.btn-onelogin {
+  background-color: #ffffff;
+  color: #555555;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.btn-onelogin .fa-onelogin {
+  color: #1c1f2a;
+  background-image: url(/static/tethys_portal/images/onelogin_black_32.png);
+  background-repeat: no-repeat;
+  background-size: 75%;
+  background-position: 4px 5px;
+}
+.btn-onelogin:hover {
+  background-color: #1c1f2a;
+  color: #ffffff;
+}
+.btn-onelogin:hover .fa-onelogin {
+  background-image: url(/static/tethys_portal/images/onelogin_white_32.png);
+}
+.btn-onelogin:focus {
+  background-color: #1c1f2a;
+  color: #ffffff;
+}
+.btn-onelogin:focus .fa-onelogin {
+  background-image: url(/static/tethys_portal/images/onelogin_white_32.png);
 }
 .btn-windows {
   background-color: #ffffff;
@@ -2374,6 +2400,14 @@ footer.site-footer .tethys-attribution a:hover {
 .label-okta:hover {
   color: #ffffff;
   background-color: #007dc1;
+}
+.label-onelogin {
+  color: #1c1f2a;
+  border: #aaaaaa solid 1px;
+}
+.label-onelogin:hover {
+  color: #ffffff;
+  background-color: #1c1f2a;
 }
 .label-windows {
   color: #3878d4;

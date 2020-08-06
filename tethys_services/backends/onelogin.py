@@ -9,7 +9,18 @@ from social_core.exceptions import AuthTokenError
 class OneLoginOIDC(OpenIdConnectAuth):
     """OneLogin OpenIDConnect authentication backend."""
     name = 'onelogin-oidc'
-    OIDC_ENDPOINT = 'https://aquaveo-dev.onelogin.com/oidc/2'
+
+    @property
+    def OIDC_ENDPOINT(self):
+        subdomain = self.setting('SUBDOMAIN')
+        if not subdomain:
+            raise ValueError('You must specify your OneLogin subdomain via the "SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN" '
+                             'setting (e.g. https://my-org.onelogin.com).')
+
+        if subdomain[-1] == '/':
+            subdomain = subdomain[0:-1]
+
+        return subdomain + '/oidc/2'
 
     def find_valid_key(self, id_token):
         for key in self.get_jwks_keys():
