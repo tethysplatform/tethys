@@ -41,6 +41,8 @@ Permissions and users can be managed from the administrator dashboard using ``Us
 
 **Figure 3.** User management for Tethys Portal.
 
+.. _tethys_portal_app_permission_groups:
+
 Assign App Permission Groups
 ----------------------------
 
