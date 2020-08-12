@@ -1,3 +1,5 @@
+.. _tutorial_google_earth_engine:
+
 *******************
 Google Earth Engine
 *******************
