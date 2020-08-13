@@ -53,14 +53,11 @@ class TethysAppsViewsTest(unittest.TestCase):
         expected_context = {'apps': {'configured': [mock_app1, proxy_app_dict], 'unconfigured': [mock_app2]}}
         mock_render.assert_called_with(mock_request, 'tethys_apps/app_library.html', expected_context)
 
-    @mock.patch('tethys_apps.views.settings')
-    @mock.patch('tethys_apps.views.user_can_access_app')
     @mock.patch('tethys_apps.views.Setting.objects.get')
     @mock.patch('tethys_apps.views.render')
     @mock.patch('tethys_apps.views.TethysApp')
     @mock.patch('tethys_apps.views.ProxyApp')
-    def test_library_not_staff(self, mock_ProxyApp, mock_TethysApp, mock_render, mock_custom_template,
-                               mock_user_can_access_app, mock_settings):
+    def test_library_not_staff(self, mock_ProxyApp, mock_TethysApp, mock_render, mock_custom_template):
         mock_request = mock.MagicMock()
         mock_request.user.is_staff = False
 
@@ -68,14 +65,10 @@ class TethysAppsViewsTest(unittest.TestCase):
         mock_app1.configured = True
         mock_app2 = mock.MagicMock()
         mock_app2.configured = False
-        mock_app3 = mock.MagicMock()
-        mock_app3.configured = True
-        mock_TethysApp.objects.all.side_effect = [[mock_app1, mock_app2], [mock_app1, mock_app3]]
+        mock_TethysApp.objects.all.return_value = [mock_app1, mock_app2]
 
         mock_proxy_app1 = mock.MagicMock(spec=ProxyApp)
         mock_ProxyApp.objects.all.return_value = [mock_proxy_app1]
-        mock_settings.ENABLE_RESTRICTED_APP_ACCESS = True
-
         mock_custom_template.return_value = mock.MagicMock(content='custom_templates/test.html')
 
         mock_render.return_value = True
@@ -99,14 +92,6 @@ class TethysAppsViewsTest(unittest.TestCase):
         # Unconfigured apps hidden to non-staff users
         expected_context = {'apps': {'configured': [mock_app1, proxy_app_dict], 'unconfigured': []}}
         mock_render.assert_called_with(mock_request, 'custom_templates/test.html', expected_context)
-
-        # test with unrestricted app access
-        mock_user_can_access_app.return_value = False
-        mock_settings.ENABLE_RESTRICTED_APP_ACCESS = False
-
-        library(mock_request)
-        expected_context_unrestr = {'apps': {'configured': [mock_app1, mock_app3, proxy_app_dict], 'unconfigured': []}}
-        mock_render.assert_called_with(mock_request, 'custom_templates/test.html', expected_context_unrestr)
 
     @mock.patch('tethys_apps.views.HttpResponse')
     @mock.patch('tethys_apps.views.TethysAppBase')
