@@ -408,5 +408,7 @@ def user_can_access_app(user, app):
 
     if getattr(settings, 'ENABLE_OPEN_PORTAL', False):
         return True
-    else:
+    elif getattr(settings, "ENABLE_RESTRICTED_APP_ACCESS", False):
         return user.has_perm(f'{app.package}:access_app', app)
+    else:
+        return True
