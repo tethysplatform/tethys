@@ -16,6 +16,9 @@ from tethys_cli.gen_commands import (
     GEN_META_YAML_OPTION
 )
 
+from tethys_apps.utilities import get_tethys_src_dir
+TETHYS_SRC = get_tethys_src_dir()
+
 
 class CLIGenCommandsTest(unittest.TestCase):
 
@@ -385,7 +388,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.directory = None
         mock_args.pin_level = 'minor'
         mock_os_path_isfile.return_value = False
-        mock_os_path_join.return_value = "conda.recipe"
+        mock_os_path_join.return_value = f"{TETHYS_SRC}/conda.recipe"
         stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
                  '#\n' \
                  '# Name                    Version                   Build  Channel\n' \

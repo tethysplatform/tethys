@@ -600,15 +600,20 @@ class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
 
     @mock.patch('django.conf.settings')
     def test_user_can_access_app(self, mock_settings):
+        mock_settings.ENABLE_RESTRICTED_APP_ACCESS = False
         mock_settings.ENABLE_OPEN_PORTAL = False
         user = self.user
         app = utilities.get_active_app(url='/apps/test-app')
 
-        # test no permission
+        result0 = utilities.user_can_access_app(user, app)
+        self.assertTrue(result0)
+
+        # test restricted access no permission
+        mock_settings.ENABLE_RESTRICTED_APP_ACCESS = True
         result1 = utilities.user_can_access_app(user, app)
         self.assertFalse(result1)
 
-        # test permission
+        # test with permission
         assign_perm(f'{app.package}:access_app', user, app)
 
         result2 = utilities.user_can_access_app(user, app)
