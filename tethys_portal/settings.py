@@ -75,6 +75,9 @@ ENABLE_OPEN_SIGNUP = TETHYS_PORTAL_CONFIG.pop('ENABLE_OPEN_SIGNUP', False)
 # Set to True to allow Open Portal mode. This mode supersedes any specific user/group app access permissions
 ENABLE_OPEN_PORTAL = TETHYS_PORTAL_CONFIG.pop('ENABLE_OPEN_PORTAL', False)
 
+# Set to True to allow Open Portal mode. This mode supersedes any specific user/group app access permissions
+ENABLE_RESTRICTED_APP_ACCESS = TETHYS_PORTAL_CONFIG.pop('ENABLE_RESTRICTED_APP_ACCESS', False)
+
 SESSION_CONFIG = portal_config_settings.pop('SESSION_CONFIG', {})
 # Force user logout once the browser has been closed.
 # If changed, delete all django_session table entries from the tethys_default database to ensure updated behavior

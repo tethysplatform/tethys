@@ -54,6 +54,7 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
     * **BYPASS_TETHYS_HOME_PAGE**: the home page of Tethys Portal redirects to the Apps Library when ``True``. Defaults to ``False``.
     * **ENABLE_OPEN_SIGNUP**: anyone can create a Tethys Portal account using a "Sign Up" link on the home page when ``True``. Defaults to ``False``.
     * **ENABLE_OPEN_PORTAL**: no login required for Tethys Portal when ``True``. Defaults to ``False``. Controllers in apps need to use the ``login_required`` decorator from the Tethys SDK, rather than Django's ``login_required`` decorator.
+    * **ENABLE_RESTRICTED_APP_ACCESS**: app access can be restricted based on user object permissions when ``True``. Defaults to ``False``. If ``ENABLE_OPEN_PORTAL`` is set to ``True`` this setting has no effect. That is, users will have unrestricted access to apps independently of the value of this setting.
     * **TETHYS_WORKSPACES_ROOT**: location to which app workspaces will be synced when ``tethys manage collectworkspaces`` is executed. Gathering all workspaces to one location is recommended for production deployments to allow for easier updating and backing up of app data. Defaults to :file:`<TETHYS_HOME>/workspaces`.
     * **STATIC_ROOT**: the Django `STATIC_ROOT <https://docs.djangoproject.com/en/2.2/ref/settings/#static-root>`_ setting. Defaults to :file:`<TETHYS_HOME>/static`.
 
@@ -254,6 +255,7 @@ Sample portal_config.yml file:
       BYPASS_TETHYS_HOME_PAGE: False
       ENABLE_OPEN_SIGNUP: False
       ENABLE_OPEN_PORTAL: False
+      ENABLE_RESTRICTED_APP_ACCESS: False
       #  STATIC_ROOT: ''
       #  TETHYS_WORKSPACES_ROOT: ''
   
