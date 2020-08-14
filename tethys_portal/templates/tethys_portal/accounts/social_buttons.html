@@ -27,6 +27,10 @@
     <a class="btn btn-block btn-social btn-windows" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
       <i class="fa fa-windows"></i> {{ action }} with Azure AD
     </a>
+  {% elif 'adfs' in backend %}
+    <a class="btn btn-block btn-social btn-windows" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
+      <i class="fa fa-windows"></i> {{ action }} with ADFS
+    </a>
   {% elif 'okta' in backend %}
     <a class="btn btn-block btn-social btn-okta" href="{% url 'social:begin' backend %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
       <i class="fa fa-circle-o"></i> {{ action }} with Okta

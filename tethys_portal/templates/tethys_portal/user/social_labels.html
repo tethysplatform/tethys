@@ -8,6 +8,14 @@
       {% else %}
       <span class="label label-windows">Azure AD</span>
       {% endif %}
+    {% elif 'adfs' in backend or 'adfs' in backend.provider %}
+      {% if action == 'disconnect' %}
+      <a href="{% url 'user:disconnect' user.username backend.provider backend.id %}"><span class="label label-windows">Disconnect ADFS</span></a>
+      {% elif action == 'connect' %}
+      <a href="{% url 'social:begin' backend %}?next={{ request.path }}"><span class="label label-windows">Connect ADFS</span></a>
+      {% else %}
+      <span class="label label-windows">ADFS</span>
+      {% endif %}
     {% elif 'linkedin' in backend or 'linkedin' in backend.provider %}
       {% if action == 'disconnect' %}
       <a href="{% url 'user:disconnect' user.username 'linkedin-oauth2' backend.id %}"><span class="label label-linkedin">Disconnect LinkedIn</span></a>

@@ -109,6 +109,62 @@ For more detailed information about using Azure Active Directory social authenti
 * `Associate or add an Azure subscription to your Azure Active Directory tenant <https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory?amp>`_
 * `Microsoft Azure Active Directory - Python Social Auth <https://python-social-auth.readthedocs.io/en/latest/backends/azuread.html>`_
 
+.. _social_adfs:
+
+Active Directory Federation Services (AD FS)
+--------------------------------------------
+
+1. Coordinate with the administrator of your organization's Windows server that is running AD FS to create a new App Registration for your Tethys Portal (see Step 2).
+
+    .. important::
+
+        Tethys Platform only supports authenticating with **AD FS 2016 or later**.
+
+2. Follow the `App Registration in AD FS <https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/development/msal/adfs-msal-web-app-web-api#app-registration-in-ad-fs>`_ section of the `AD FS MSAL Web app (server app) calling web APIs <https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/development/msal/adfs-msal-web-app-web-api>`_ documentation to register your Tethys Portal with the AD FS server with the following considerations:
+
+    * On the **Welcome** tab:
+        * Select **Server application accessing a web API** as the **Template**.
+    * On the **Server application** tab:
+        * Note the **Client Identifier** for use in Step 3.
+        * Enter the following for the **Redirect URI**:
+
+            .. code-block::
+
+                    http://<SERVER_DOMAIN_NAME>/oauth2/complete/adfs-oidc/
+
+    * On the **Configure Application Credentials** tab:
+        * Note the **Secret** that is generated for use in Step 3.
+    * On the *Configure Web API** tab:
+        * Add the FQDN of your Tethys Portal as an **Identifier**.
+    * On the **Configure Application Permissions** tab:
+        * Only the **openid** scope is required. However, you may consider permitting the **email** and **profile** scopes as well to allow Tethys Portal to populate its user profile.
+
+    .. important::
+
+        You do not need to complete the **Code Configuration** section.
+
+3. Add the appropriate settings to the  :file:`portal_config.yml` file using the ``tethys settings`` command:
+
+    Add the ``tethys_services.backends.adfs.ADFSOpenIdConnect`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
+
+    .. code-block::
+
+        tethys settings --set AUTHENTICATION_BACKENDS "['tethys_services.backends.adfs.ADFSOpenIdConnect']"
+
+    Use the ``Client Identifier`` and ``Secret`` obtained in Step 2 to set the ``SOCIAL_AUTH_ADFS_OIDC_KEY`` and ``SOCIAL_AUTH_ADFS_OIDC_SECRET`` settings, respectively. Also, set the ``SOCIAL_AUTH_ADFS_OIDC_DOMAIN`` setting with the Fully Qualified Domain Name (FQDN) of your AD FS server (e.g. "https://adfs.my-org.com"):
+
+    .. code-block::
+
+        tethys settings --set SOCIAL_AUTH_ADFS_OIDC_KEY <Client Identifier> --set SOCIAL_AUTH_ADFS_OIDC_SECRET <Secret> --set SOCIAL_AUTH_ADFS_OIDC_DOMAIN <AD FS FQDN>
+
+References
+++++++++++
+
+For more detailed information about using Active Directory Federation Services social authentication see the following articles:
+
+* `Active Directory Federation Services <https://docs.microsoft.com/en-us/windows-server/identity/active-directory-federation-services>`_
+* `AD FS OpenID Connect/OAuth Concepts <https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-openid-connect-oauth-concepts>`_
+
 .. _social_auth_facebook:
 
 Facebook
