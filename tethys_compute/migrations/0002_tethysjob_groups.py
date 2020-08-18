@@ -6,7 +6,6 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('auth', '0011_update_proxy_permissions'),
         ('tethys_compute', '0001_initial_30'),
     ]
 
@@ -14,6 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tethysjob',
             name='groups',
-            field=models.ManyToManyField(blank=True, related_name='tethys_jobs', to='auth.Group', verbose_name='groups'),
+            field=models.ManyToManyField(blank=True, related_name='tethys_jobs', to='auth.Group',
+                                         verbose_name='groups'),
         ),
     ]
