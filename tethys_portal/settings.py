@@ -151,6 +151,7 @@ INSTALLED_APPS = portal_config_settings.pop('INSTALLED_APPS_OVERRIDE', [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_gravatar',
+    'django_mfa',
     'bootstrap3',
     'termsandconditions',
     'tethys_config',
@@ -181,7 +182,7 @@ MIDDLEWARE = portal_config_settings.pop('MIDDLEWARE_OVERRIDE', [
     'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
     'tethys_portal.middleware.TethysAppAccessMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
-
+    'django_mfa.middleware.MfaMiddleware',
 ])
 MIDDLEWARE = tuple(MIDDLEWARE + portal_config_settings.pop('MIDDLEWARE', []))
 

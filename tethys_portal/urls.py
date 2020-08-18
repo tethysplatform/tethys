@@ -92,6 +92,7 @@ urlpatterns = [
         name='update_dask_job_status'),
     url(r'^terms/', include('termsandconditions.urls')),
     url(r'session_security/', include('session_security.urls')),
+    url(r'^mfa/', include('django_mfa.urls')),
     # url(r'^error/', include(development_error_urls)),
 ]
 
