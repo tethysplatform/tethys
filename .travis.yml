@@ -10,7 +10,6 @@ notifications:
 
 os:
   - linux
-  - osx
 
 env:
   - CONDA_BUILD_PIN_LEVEL=minor
@@ -21,9 +20,9 @@ services:
 stages:
   - name: test
     if: tag IS NOT present
-  - name: docker-build
-    if: (branch = master) OR (branch = release) OR (tag IS present)
   - name: conda-build
+    if: (branch = master) OR (branch = release) OR (tag IS present)
+  - name: docker-build
     if: (branch = master) OR (branch = release) OR (tag IS present)
 
 install:
