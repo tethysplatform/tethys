@@ -19,7 +19,7 @@ services:
 
 stages:
   - name: test
-    if: tag IS NOT present
+    if: (tag IS NOT present)
   - name: conda-build
     if: (branch = master) OR (branch = release) OR (tag IS present)
   - name: docker-build
