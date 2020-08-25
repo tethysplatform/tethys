@@ -307,9 +307,10 @@ def make_gop_app_access_form():
 
 
 class UserKeyAdmin(admin.ModelAdmin):
-    fields = ('username', 'added_on', 'key_type', 'enabled', 'expires', 'last_used')
+    fields = ('username', 'added_on', 'key_type', 'enabled', 'last_used')
     readonly_fields = ('username', 'added_on', 'key_type', 'last_used')
-    list_display = ('username', 'added_on', 'key_type', 'enabled', 'expires', 'last_used')
+    list_display = ('username', 'added_on', 'key_type', 'enabled', 'last_used')
+    list_filter = ('username', )
     model = User_Keys
 
 
