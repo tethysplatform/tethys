@@ -91,7 +91,6 @@ class TethysMfaRequiredMiddleware():
             mfa_required = settings.MFA_REQUIRED is True
 
         if mfa_required and not has_mfa(request, request.user.username):
-            print(f'path: {request.path}')
             if '/mfa' not in request.path and request.path != '/' \
                     and request.path != '/accounts/login/' and request.path != '/accounts/logout/':
                 messages.error(request, 'You must configure Multi Factor Authentication to continue.')
