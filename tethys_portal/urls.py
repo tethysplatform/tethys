@@ -94,7 +94,7 @@ urlpatterns = [
     url(r'^terms/', include('termsandconditions.urls')),
     url(r'session_security/', include('session_security.urls')),
     url(r'^mfa/', include('mfa.urls')),
-    url(r'devices/add$', mfa.TrustedDevice.add,name="mfa_add_new_trusted_device"),
+    url(r'devices/add$', mfa.TrustedDevice.add, name="mfa_add_new_trusted_device"),
     # url(r'^error/', include(development_error_urls)),
 ]
 

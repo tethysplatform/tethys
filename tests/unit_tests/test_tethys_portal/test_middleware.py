@@ -336,4 +336,3 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         obj.__call__(mock_request)
 
         mock_redirect.assert_called_once_with('mfa_home')
-

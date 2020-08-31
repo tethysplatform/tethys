@@ -428,4 +428,3 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         mock_register.assert_called()
         mock_logwarning.assert_called_with('Unable to register UserKeys.')
-
