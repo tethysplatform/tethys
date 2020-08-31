@@ -318,7 +318,7 @@ for setting, value in OAUTH_CONFIG.items():
 # See: https://github.com/mkalioby/django-mfa2
 # Methods that shouldn't be allowed for the user, U2F, FIDO2, TOTP, Trusted_Devices, Email
 MFA_REQUIRED = False
-MFA_UNALLOWED_METHODS = ('U2F', 'FIDO2', 'Trusted_Devices')
+MFA_UNALLOWED_METHODS = ('U2F', 'FIDO2', 'Email', 'Trusted_Devices')
 # A function that should be called by username to login the user in session
 MFA_LOGIN_CALLBACK = 'tethys_portal.utilities.log_user_in'
 MFA_RECHECK = True                   # Allow random rechecking of the user
