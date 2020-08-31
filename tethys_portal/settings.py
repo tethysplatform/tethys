@@ -335,6 +335,7 @@ FIDO_SERVER_NAME = u'Tethys Portal'
 FIDO_LOGIN_URL = '/auth/login'
 
 MFA_CONFIG = portal_config_settings.pop('MFA_CONFIG', {})
+
 for setting, value in MFA_CONFIG.items():
     setattr(this_module, setting, value)
 
