@@ -63,6 +63,7 @@ def login_view(request):
 
     else:
         # Create new empty login form
+        # Create new empty login form
         form = LoginForm()
 
     # Determine if signup is disabled or not
