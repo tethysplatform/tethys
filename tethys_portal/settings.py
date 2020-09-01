@@ -167,6 +167,7 @@ INSTALLED_APPS = portal_config_settings.pop('INSTALLED_APPS_OVERRIDE', [
     'analytical',
     'channels',
     'mfa',
+    'axes',
 ])
 INSTALLED_APPS = tuple(INSTALLED_APPS + portal_config_settings.pop('INSTALLED_APPS', []))
 
@@ -181,11 +182,12 @@ MIDDLEWARE = portal_config_settings.pop('MIDDLEWARE_OVERRIDE', [
     'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
     'tethys_portal.middleware.TethysAppAccessMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
-
+    'axes.middleware.AxesMiddleware',
 ])
 MIDDLEWARE = tuple(MIDDLEWARE + portal_config_settings.pop('MIDDLEWARE', []))
 
 AUTHENTICATION_BACKENDS = portal_config_settings.pop('AUTHENTICATION_BACKENDS_OVERRIDE', [
+    'axes.backends.AxesBackend',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 ])
@@ -337,6 +339,23 @@ FIDO_LOGIN_URL = '/auth/login'
 MFA_CONFIG = portal_config_settings.pop('MFA_CONFIG', {})
 
 for setting, value in MFA_CONFIG.items():
+    setattr(this_module, setting, value)
+
+# Lockout Configuration
+AXES_ENABLED = True
+AXES_FAILURE_LIMIT = 3
+AXES_LOCK_OUT_AT_FAILURE = True
+AXES_COOLOFF_TIME = 1
+AXES_ONLY_ADMIN_SITE = False
+AXES_ONLY_USER_FAILURES = False
+AXES_ENABLE_ADMIN = True
+AXES_USE_USER_AGENT = True
+AXES_LOCKOUT_TEMPLATE = 'tethys_portal/accounts/lockout.html'
+AXES_VERBOSE = True
+AXES_RESET_ON_SUCCESS = True
+
+LOCKOUT_CONFIG = portal_config_settings.pop('LOCKOUT', {})
+for setting, value in LOCKOUT_CONFIG.items():
     setattr(this_module, setting, value)
 
 # Django Guardian Settings
