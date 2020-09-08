@@ -25,6 +25,7 @@ import os
 import sys
 import yaml
 import logging
+import datetime as dt
 
 from django.contrib.messages import constants as message_constants
 from tethys_apps.utilities import get_tethys_home_dir
@@ -342,20 +343,17 @@ for setting, value in MFA_CONFIG.items():
     setattr(this_module, setting, value)
 
 # Lockout Configuration
-AXES_ENABLED = True
+AXES_ENABLED = not DEBUG
 AXES_FAILURE_LIMIT = 3
 AXES_LOGGER = 'tethys.watch_login'
-AXES_LOCK_OUT_AT_FAILURE = True
-AXES_COOLOFF_TIME = 1
-AXES_ONLY_ADMIN_SITE = False
-AXES_ONLY_USER_FAILURES = False
+AXES_COOLOFF_TIME = dt.timedelta(hours=0.5)
+AXES_ONLY_USER_FAILURES = True
 AXES_ENABLE_ADMIN = True
-AXES_USE_USER_AGENT = True
 AXES_LOCKOUT_TEMPLATE = 'tethys_portal/accounts/lockout.html'
 AXES_VERBOSE = True
 AXES_RESET_ON_SUCCESS = True
 
-LOCKOUT_CONFIG = portal_config_settings.pop('LOCKOUT', {})
+LOCKOUT_CONFIG = portal_config_settings.pop('LOCKOUT_CONFIG', {})
 for setting, value in LOCKOUT_CONFIG.items():
     setattr(this_module, setting, value)
 
