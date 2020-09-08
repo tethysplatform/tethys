@@ -344,6 +344,7 @@ for setting, value in MFA_CONFIG.items():
 # Lockout Configuration
 AXES_ENABLED = True
 AXES_FAILURE_LIMIT = 3
+AXES_LOGGER = 'tethys.watch_login'
 AXES_LOCK_OUT_AT_FAILURE = True
 AXES_COOLOFF_TIME = 1
 AXES_ONLY_ADMIN_SITE = False
