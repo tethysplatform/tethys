@@ -74,6 +74,9 @@
             {% if context_user.has_usable_password and user.username == context_user.username %}
               <li><span class="parameter">Password:</span><span class="value">********</span></li>
             {% endif %}
+            {% if user.username == context_user.username %}
+              <li><span class="parameter">2-Step Verification: </span><span class="value">{% if has_mfa %}Enabled{% else %}Not Enabled{% endif %}</span></li>
+            {% endif %}
           </ul>
           {% endblock %}
         </div>
