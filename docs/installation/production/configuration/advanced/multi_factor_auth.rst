@@ -63,3 +63,7 @@ Follow these steps to enable MFA on your account:
 4. Select the method you would like to enable from the **Add Method** menu.
 5. Follow the on-screen instructions and enter the code to verify your method.
 6. Log out and log back in to verify that you are prompted for the second factor.
+
+.. important::
+
+   If you choose the Email MFA option, you must also provide an email in your profile.
