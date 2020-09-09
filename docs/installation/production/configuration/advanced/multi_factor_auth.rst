@@ -4,15 +4,13 @@ Multi Factor Authentication (Optional)
 
 **Last Updated:** August 2020
 
-Tethys allows you to enable/enforce the use of multi factor authentication through apps such as LastPass or Google Authenticate. This tutorial will show you how to enable that functionality.
+Tethys allows you to enable/enforce the use of multifactor authentication through apps such as LastPass Authenticator or Google Authenticator. This capability is provided by `Django MFA2 <https://github.com/mkalioby/django-mfa2/>`_. This tutorial will show you how to enable that functionality.
 
-Key Concepts
-============
-Multi factor authentication is available by default but can be enforced. Several other settings can also be changed to customize your multi factor authentication.
 
 Configuring Multi Factor Authentication
 =======================================
-Several options your portal configuration file can be changed to customize the multi factor authentication for your portal.
+
+Several options in your :file:`portal_config.yaml` file can be changed to customize the multi-factor authentication for your portal. See: the `Django MFA2 Documentation <https://pypi.org/project/django-mfa2/>`_ for more information about the different options. These are the default settings:
 
 .. code-block:: yaml
 
@@ -29,21 +27,39 @@ Several options your portal configuration file can be changed to customize the m
       MFA_QUICKLOGIN: true
       TOKEN_ISSUER_NAME: 'Tethys Portal'
 
-Changing any one of these options will customize the way multi factor authentication works in your portal.
+.. note::
+
+    Multifactor authentication is on by default but is not required. However, you it can be required by setting ``MFA_REQUIRED`` to ``True``.
 
 Email Configuration
 ===================
-Setting up email configuration for your multi factor authentication requires some extra setup. To enable email support for Multi factor authentication you must configure email for your portal, and remove 'Email' from the MFA_UNALLOWED_METHODS list in your portal config. Here is an example of using the free google email service.
+
+If you setup the Email option, users will be able to receive MFA codes through their email. Enabling this option for your multifactor authentication requires some extra setup.
+
+1. Remove ``'Email'`` from the `MFA_UNALLOWED_METHODS` list in your portal config.
+
+2. Setup emailing capabilities for your Tethys Portal. If you have a Gmail account you can use the free Gmail SMTP service as follows:
 
 .. code-block:: yaml
+
   EMAIL_CONFIG:
     EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
     EMAIL_HOST: smtp.gmail.com
     EMAIL_PORT: 587
-    EMAIL_HOST_USER: test_account@my-domain.com
+    EMAIL_HOST_USER: my.name@gmail.com
     EMAIL_HOST_PASSWORD: super-secret-password
     EMAIL_USE_TLS: true
-    DEFAULT_FROM_EMAIL: test_account@my-domain.com
+    DEFAULT_FROM_EMAIL: my.name@gmail.com
     EMAIL_FROM: 'My Name'
 
-configuring your email and removing 'Email' from the unallowed list will allow your portal to use email addresses for multi factor authentication.
+Enable MFA on Your Account
+==========================
+
+Follow these steps to enable MFA on your account:
+
+1. Log in to the Tethys Portal
+2. Navigate to the settings for your account by selecting "User Settings" from the drop down menu next to your username.
+3. Press the **Configure** button next to the **2-Step Verification** setting under the **Credentials** section.
+4. Select the method you would like to enable from the **Add Method** menu.
+5. Follow the on-screen instructions and enter the code to verify your method.
+6. Log out and log back in to verify that you are prompted for the second factor.
