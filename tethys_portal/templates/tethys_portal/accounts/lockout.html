@@ -1,17 +1,16 @@
 {% extends "page.html" %}
-
-{% load static %}
+{% load static humanize %}
 
 {% block title %}Locked Out!{% endblock %}
 
-{% block styles %}
-  {{ block.super }}
-  <link href="{% static '/tethys_portal/css/lockout.css' %}" type="text/css" rel="stylesheet" />
-  <style>
+<style>
     body {
       background: {{ site_globals.background_color|default:'#ffffff' }};
     }
   </style>
+{% block styles %}
+{{ block.super }}
+<link href="{% static '/tethys_portal/css/lockout.css' %}" type="text/css" rel="stylesheet" />
 {% endblock %}
 
 {% block primary_content %}
@@ -28,8 +27,12 @@
         <div class="row">
           <div class="col-lg-12">
             <div class="lockout-message-container">
-              <p>You have exceeded the amount of allowed login attempts ({{ failure_limit }})</p>
-              <p>Please contact your system admin for more assistance.</p>
+              <p>You have exceeded the amount of allowed login attempts ({{ failure_limit }}).</p>
+              {% if cooloff_time %}
+                <p>Your account will be unlocked {{ cooloff_time|human_duration }}, after which you may try again.</p>
+              {% else %}
+                <p>Please contact your system admin for more assistance.</p>
+              {% endif %}
             </div>
           </div>
         </div>
