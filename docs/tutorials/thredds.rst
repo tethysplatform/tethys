@@ -32,3 +32,8 @@ Supporting Materials
 --------------------
 
 * `THREDDS Tutorial Presentation <https://docs.google.com/presentation/d/1qvqg_02qjy3y1ajYQvU2neooqOl9_-lP9dDIF4XxijE/edit>`_
+
+Attribution
+-----------
+
+Funding for the development of this tutorial was provided by National Aeronautics and Space Administration (NASA) through SERVIR 80NSSC19P1973. SERVIR is a joint program led by the US Agency for International Development (USAID) and NASA.
