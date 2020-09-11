@@ -90,7 +90,14 @@
         </div>
         <div class="col-md-8 profile-parameters">
           <ul>
-            <li><span class="parameter">Token:</span><span class="value">{{ user_token }}</span></li>
+            <li>
+              <span class="parameter">Token:</span>
+              {% if user.username == context_user.username %}
+                <span class="value">{{ user_token }}</span>
+              {% else %}
+                <span class="label label-info">Private</span>
+              {% endif %}
+            </li>
           </ul>
         </div>
       </div>
@@ -124,25 +131,7 @@
             <li><span class="parameter">Connected:</span>
               {% if user.username == context_user.username %}
                 {% if backends.associated %}
-                  <div class="social-label-container">
-                    {% for backend in backends.associated %}
-                      {% if 'linkedin' in backend.provider %}
-                        <span class="label label-linkedin">LinkedIn</span>
-                      {% elif 'google' in backend.provider %}
-                        <span class="label label-google">Google</span>
-                      {% elif 'facebook' in backend.provider %}
-                        <span class="label label-facebook">Facebook</span>
-                      {% elif 'hydroshare' == backend.provider %}
-                        <span class="label label-hydroshare">HydroShare</span>
-                      {% elif 'hydroshare_beta' == backend.provider %}
-                        <span class="label label-hydroshare">HydroShare-beta</span>
-                      {% elif 'hydroshare_playground' == backend.provider %}
-                        <span class="label label-hydroshare">HydroShare-playground</span>
-                      {% else %}
-                        <span class="label label-custom-oauth">{{ backend.provider }}</span>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
+                  {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated %}
                 {% else %}
                   <span>None</span>
                 {% endif %}
@@ -153,25 +142,7 @@
             <li><span class="parameter">Not Connected:</span>
               {% if user.username == context_user.username %}
                 {% if backends.not_associated %}
-                  <div class="social-label-container">
-                    {% for backend in backends.not_associated %}
-                      {% if 'linkedin' in backend %}
-                        <span class="label label-linkedin">LinkedIn</span>
-                      {% elif 'google' in backend %}
-                        <span class="label label-google">Google</span>
-                      {% elif 'facebook' in backend %}
-                        <span class="label label-facebook">Facebook</span>
-                      {% elif 'hydroshare' == backend %}
-                        <span class="label label-hydroshare">HydroShare</span>
-                      {% elif 'hydroshare_beta' == backend %}
-                        <span class="label label-hydroshare">HydroShare-beta</span>
-                      {% elif 'hydroshare_playground' == backend %}
-                        <span class="label label-hydroshare">HydroShare-playground</span>
-                      {% else %}
-                        <span class="label label-custom-oauth">{{ backend }}</span>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
+                  {% include 'tethys_portal/user/social_labels.html' with backends=backends.not_associated %}
                 {% else %}
                   <span>None</span>
                 {% endif %}

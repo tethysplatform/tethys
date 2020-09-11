@@ -42,6 +42,7 @@ dependencies:
 - service_identity
 - condorpy
 - siphon
+- python-jose
 
 # django/plugin dependencies
 - django=2.2.*
