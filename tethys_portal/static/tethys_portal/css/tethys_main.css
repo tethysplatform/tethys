@@ -683,7 +683,7 @@ a:hover {
   z-index: 1000;
   top: 0;
   width: 100%;
-  background: #0a62a9;
+  background: #0A62A9;
   box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.35);
   box-sizing: border-box;
 }
@@ -1165,12 +1165,12 @@ a:hover {
   position: relative;
   max-height: 200px;
   z-index: 100;
-  background-color: #0a62a9;
+  background-color: #0A62A9;
   box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.25);
 }
 .blurb h3 {
   display: block;
-  color: #ffffff;
+  color: white;
   padding: 50px 0;
   white-space: pre;
   text-align: center;
@@ -1408,7 +1408,7 @@ a:hover {
 .nav-list > .active > a,
 .nav-list > .active > a:hover,
 .nav-list > .active > a:focus {
-  background-color: #0a62a9;
+  background-color: #0A62A9;
 }
 @media (max-width: 1250px) {
   .container {
@@ -1700,7 +1700,7 @@ li.dataset-item .dataset-content p {
   height: 40px;
 }
 .module-content.page-header .nav.nav-tabs li a {
-  color: #0a62a9;
+  color: #0A62A9;
 }
 .module-content.page-header .nav.nav-tabs li.active a {
   color: #555;
@@ -1712,7 +1712,7 @@ li.dataset-item .dataset-content p {
   top: 10px;
 }
 .tags .tag-list li a.tag:hover {
-  background-color: #0a62a9;
+  background-color: #0A62A9;
 }
 .additional-info h3 {
   font-weight: normal;
@@ -1729,7 +1729,7 @@ li.dataset-item .dataset-content p {
   color: #505050;
 }
 .nav-simple .nav-item.active a {
-  background-color: #0a62a9;
+  background-color: #0A62A9;
 }
 .nav-simple .nav-item.active a:before {
   background-image: none;
@@ -1737,29 +1737,29 @@ li.dataset-item .dataset-content p {
   width: 0;
   border-top: 17px solid transparent;
   border-bottom: 17px solid transparent;
-  border-left: 6px solid #0a62a9;
+  border-left: 6px solid #0A62A9;
 }
 .nav-simple .nav-item a:hover {
   color: #333;
 }
 .banner {
-  background-color: #0a62a9;
+  background-color: #0A62A9;
 }
 .popover-followee .popover-content .nav li a {
-  color: #0a62a9;
+  color: #0A62A9;
 }
 .popover-followee .popover-content .nav li a i {
   color: white;
-  background-color: #0a62a9;
+  background-color: #0A62A9;
   -webkit-font-smooting: antialiased;
 }
 .popover-followee .popover-content .nav li.active a {
   color: white;
-  background-color: #0a62a9;
+  background-color: #0A62A9;
 }
 .popover-followee .popover-content .nav li.active a i {
   background-color: white;
-  color: #0a62a9;
+  color: #0A62A9;
   -webkit-font-smooting: antialiased;
 }
 /*****************************************************************************
@@ -1773,7 +1773,7 @@ li.dataset-item .dataset-content p {
    The footer at the bottom of the site
    ==================================== */
 footer.site-footer {
-  background-color: #0a62a9;
+  background-color: #0A62A9;
   position: relative;
   z-index: 100;
   box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.25);
@@ -2001,6 +2001,78 @@ footer.site-footer .tethys-attribution a:hover {
   background-repeat: no-repeat;
   background-size: 75%;
   background-position: 4px 5px;
+}
+.btn-okta {
+  background-color: #ffffff;
+  color: #555555;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.btn-okta .fa-circle-o {
+  color: #007dc1;
+}
+.btn-okta:hover {
+  background-color: #007dc1;
+  color: #ffffff;
+}
+.btn-okta:hover .fa-circle-o {
+  color: #ffffff;
+  font-weight: 600;
+}
+.btn-okta:focus {
+  background-color: #007dc1;
+  color: #ffffff;
+}
+.btn-okta:focus .fa-circle-o {
+  color: #ffffff;
+  font-weight: 600;
+}
+.btn-onelogin {
+  background-color: #ffffff;
+  color: #555555;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.btn-onelogin .fa-onelogin {
+  color: #1c1f2a;
+  background-image: url(/static/tethys_portal/images/onelogin_black_32.png);
+  background-repeat: no-repeat;
+  background-size: 75%;
+  background-position: 4px 5px;
+}
+.btn-onelogin:hover {
+  background-color: #1c1f2a;
+  color: #ffffff;
+}
+.btn-onelogin:hover .fa-onelogin {
+  background-image: url(/static/tethys_portal/images/onelogin_white_32.png);
+}
+.btn-onelogin:focus {
+  background-color: #1c1f2a;
+  color: #ffffff;
+}
+.btn-onelogin:focus .fa-onelogin {
+  background-image: url(/static/tethys_portal/images/onelogin_white_32.png);
+}
+.btn-windows {
+  background-color: #ffffff;
+  color: #555555;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.fa-windows {
+  color: #3878d4;
+}
+.btn-windows:hover {
+  background-color: #3878d4;
+  color: #ffffff;
+}
+.btn-windows:hover .fa-windows {
+  color: #ffffff;
+}
+.btn-windows:focus {
+  background-color: #3878d4;
+  color: #ffffff;
+}
+.btn-windows:focus .fa-windows {
+  color: #ffffff;
 }
 .btn-google {
   background-color: #ffffff;
@@ -2320,6 +2392,30 @@ footer.site-footer .tethys-attribution a:hover {
     width: 80%;
     margin: 0 10%;
   }
+}
+.label-okta {
+  color: #007dc1;
+  border: #aaaaaa solid 1px;
+}
+.label-okta:hover {
+  color: #ffffff;
+  background-color: #007dc1;
+}
+.label-onelogin {
+  color: #1c1f2a;
+  border: #aaaaaa solid 1px;
+}
+.label-onelogin:hover {
+  color: #ffffff;
+  background-color: #1c1f2a;
+}
+.label-windows {
+  color: #3878d4;
+  border: #aaaaaa solid 1px;
+}
+.label-windows:hover {
+  color: #ffffff;
+  background-color: #3878d4;
 }
 .label-google {
   color: #dd4b39;
