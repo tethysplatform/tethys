@@ -82,19 +82,19 @@ Azure Active Directory
 
         .. code-block::
 
-            tethys settings --set SOCIAL_AUTH_AZUREAD_OAUTH2_KEY <Application/Client ID> --set SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET <Client Secret>
+            tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_AZUREAD_OAUTH2_KEY <Application/Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET <Client Secret>
 
     * If using an **Azure AD Tenant** and you selected **Accounts in this organizational directory only**:
 
         .. code-block::
 
-            tethys settings --set SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY <Application/Client ID> --set SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET <Client Secret> --set SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID <Directory/Tenant ID>
+            tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY <Application/Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET <Client Secret> --set OAUTH_CONFIG.SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID <Directory/Tenant ID>
 
     * If using an **Azure AD B2C Tenant**:
 
         .. code-block::
 
-            tethys settings --set SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_KEY <Application/Client ID> --set SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_SECRET <Client Secret> --set SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_TENANT_ID <Directory/Tenant ID> --set SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY <Custom User Flow>
+            tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_KEY <Application/Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_SECRET <Client Secret> --set OAUTH_CONFIG.SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_TENANT_ID <Directory/Tenant ID> --set OAUTH_CONFIG.SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY <Custom User Flow>
 
         .. note::
 
@@ -155,7 +155,7 @@ Active Directory Federation Services (AD FS)
 
     .. code-block::
 
-        tethys settings --set SOCIAL_AUTH_ADFS_OIDC_KEY <Client Identifier> --set SOCIAL_AUTH_ADFS_OIDC_SECRET <Secret> --set SOCIAL_AUTH_ADFS_OIDC_DOMAIN <AD FS FQDN>
+        tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_ADFS_OIDC_KEY <Client Identifier> --set OAUTH_CONFIG.SOCIAL_AUTH_ADFS_OIDC_SECRET <Secret> --set OAUTH_CONFIG.SOCIAL_AUTH_ADFS_OIDC_DOMAIN <AD FS FQDN>
 
 References
 ++++++++++
@@ -608,24 +608,59 @@ The following settings in the :file:`portal_config.yml` are used to configure so
     .. code-block:: yaml
 
         AUTHENTICATION_BACKENDS:
-          - social.backends.google.GoogleOAuth2
+          - social_core.backends.azuread.AzureADOAuth2
+          - social_core.backends.azuread_tenant.AzureADTenantOAuth2
+          - social_core.backends.azuread_b2c.AzureADB2COAuth2
+          - tethys_services.backends.adfs.ADFSOpenIdConnect
           - social.backends.facebook.FacebookOAuth2
-          - social.backends.linkedin.LinkedinOAuth2
+          - social.backends.google.GoogleOAuth2
           - tethys_services.backends.hydroshare.HydroShareOAuth2
+          - social.backends.linkedin.LinkedinOAuth2
+          - social_core.backends.okta.OktaOAuth2
+          - social_core.backends.okta_openidconnect.OktaOpenIdConnect
+          - tethys_services.backends.onelogin.OneLoginOIDC
 
         OAUTH_CONFIG:
-          SOCIAL_AUTH_GOOGLE_OAUTH2_KEY: ''
-          SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET: ''
+          SOCIAL_AUTH_AZUREAD_OAUTH2_KEY: ''
+          SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET: ''
+
+          SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY: ''
+          SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET: ''
+          SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID: ''
+
+          SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_KEY: ''
+          SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_SECRET: ''
+          SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_TENANT_ID: ''
+          SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY: 'b2c_'
+
+          SOCIAL_AUTH_ADFS_OIDC_KEY: ''
+          SOCIAL_AUTH_ADFS_OIDC_SECRET: ''
+          SOCIAL_AUTH_ADFS_OIDC_DOMAIN: ''
 
           SOCIAL_AUTH_FACEBOOK_KEY: ''
           SOCIAL_AUTH_FACEBOOK_SECRET: ''
           SOCIAL_AUTH_FACEBOOK_SCOPE: ['email']
 
-          SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY: ''
-          SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET: ''
+          SOCIAL_AUTH_GOOGLE_OAUTH2_KEY: ''
+          SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET: ''
 
           SOCIAL_AUTH_HYDROSHARE_KEY: ''
           SOCIAL_AUTH_HYDROSHARE_SECRET: ''
+
+          SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY: ''
+          SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET: ''
+
+          SOCIAL_AUTH_OKTA_OAUTH2_KEY: ''
+          SOCIAL_AUTH_OKTA_OAUTH2_SECRET: ''
+          SOCIAL_AUTH_OKTA_OAUTH2_API_URL: ''
+
+          SOCIAL_AUTH_OKTA_OPENIDCONNECT_KEY: ''
+          SOCIAL_AUTH_OKTA_OPENIDCONNECT_SECRET: ''
+          SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL: ''
+
+          SOCIAL_AUTH_ONELOGIN_OIDC_KEY: ''
+          SOCIAL_AUTH_ONELOGIN_OIDC_SECRET: ''
+          SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN: ''
 
 You can use the ``tethys settings`` command to easily set the settings in the :file:`portal_config.yml`. For example:
 
