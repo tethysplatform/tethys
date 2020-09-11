@@ -7,8 +7,10 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import redirect
+from mfa.helpers import has_mfa
 from social_django.middleware import SocialAuthExceptionMiddleware
 from social_core import exceptions as social_exceptions
 from tethys_cli.cli_colors import pretty_output, FG_WHITE
@@ -77,3 +79,23 @@ class TethysAppAccessMiddleware:
                 return response
             else:
                 return handler_404(request, PermissionDenied)
+
+
+class TethysMfaRequiredMiddleware():
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        mfa_required = False
+        if hasattr(settings, 'MFA_REQUIRED'):
+            mfa_required = settings.MFA_REQUIRED is True
+
+        if mfa_required and not has_mfa(request, request.user.username):
+            if '/mfa' not in request.path and request.path != '/' \
+                    and request.path != '/accounts/login/' and request.path != '/accounts/logout/':
+                messages.error(request, 'You must configure Multi Factor Authentication to continue.')
+                return redirect('mfa_home')
+
+        response = self.get_response(request)
+
+        return response
