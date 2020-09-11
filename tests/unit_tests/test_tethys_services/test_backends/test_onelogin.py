@@ -5,7 +5,7 @@ import string
 from unittest import mock
 import uuid
 from social_core.exceptions import AuthTokenError
-from jose.jwt import JWTError, JWTClaimsError, ExpiredSignatureError
+from jose.jwt import JWTError
 from jose import jwt
 from jose.utils import base64url_encode
 from django import test
@@ -40,21 +40,35 @@ class OneLoginOIDCBackendTest(test.SimpleTestCase):
             "e": "AQAB",
             "use": "sig",
             "kid": "APiZ0bGTMSgbLm_UitMgU7TDlE_9UC-RZArArPU4vcc",
-            "n": "ynmjBq8tJtmvvlKIhSHFBPWu1maBVa4y-r6Q4_ODbP956CvDd9w7ttHojyn-kMeIqiNTdDe7O3B7KRJ7qlLRRWERrwm-FVeQGVltNY5h7QuLjiwyA5Wcc5auczPeAPPJLy-MVo0xgmQHt_otr8nPM-groDwhecpZPlsF8XSRU5RBjfu04s52bFku26PonBLUopkJ05EKCf2r4sPqhunhfZi_nJ6iR5DHFovKOKJ5m4ER44vZW2WnuqSFZuO2zgeRwnJo2gdBLLDh6fiJmnyaTrW0oD4h7sW1BLJWgcEBBMC2-9qyeCdGwSQLqGGdoEI4JnFGbM6y6U6twNUsCB7mmQ"
+            "n": "ynmjBq8tJtmvvlKIhSHFBPWu1maBVa4y-r6Q4_ODbP956CvDd9w7ttHojyn-kMeIqiNTdDe7O3B7KRJ7qlLRRWERrwm-FVeQGV"
+                 "ltNY5h7QuLjiwyA5Wcc5auczPeAPPJLy-MVo0xgmQHt_otr8nPM-groDwhecpZPlsF8XSRU5RBjfu04s52bFku26PonBLUopkJ"
+                 "05EKCf2r4sPqhunhfZi_nJ6iR5DHFovKOKJ5m4ER44vZW2WnuqSFZuO2zgeRwnJo2gdBLLDh6fiJmnyaTrW0oD4h7sW1BLJWgc"
+                 "EBBMC2-9qyeCdGwSQLqGGdoEI4JnFGbM6y6U6twNUsCB7mmQ"
         }
 
         self.key_pair = {
-            "p": "5lRvOpLl0ryH9ReBhZfojJuY69Z-UhwcfaxCuxfNY19ehCQav5qpNL-A8DX3e7jfKQ7MLRWmVjOR8PAkIx7-lBn_U5Pd9DdE9lcUfGSvrNDnKkwMIx-7ybsUau2qi-SfHAjk3a-1scOInmTsY6uO9RmpotZvc5c31plSBNRzRH8",
+            "p": "5lRvOpLl0ryH9ReBhZfojJuY69Z-UhwcfaxCuxfNY19ehCQav5qpNL-A8DX3e7jfKQ7MLRWmVjOR8PAkIx7-lBn_U5Pd9DdE9l"
+                 "cUfGSvrNDnKkwMIx-7ybsUau2qi-SfHAjk3a-1scOInmTsY6uO9RmpotZvc5c31plSBNRzRH8",
             "kty": "RSA",
-            "q": "4Qp6OV-Nm2jrea1hLGPaITjdV0V8AaXxken3AY0qdATJPTxddXi903-U4mMCTjoX3yoDsmI_xiy-VAH1pyMt7JPhFDPtMPBKxYqnka6BI96cTG5vld8xe2jyiTE7vBHDXzCMld00teABThE6gYe7uI3nuvCp3c2-lxdVLXl36Oc",
-            "d": "QsRHkQ20-umvvTfkEtqm6FLHu6WDoqhV4T9z8ec8AHZiUcAUrfKuskOXx5XWfxF9LHWHsHwsPpaB1nJk2y6CGbm_phO1Xb5JI0LM82snOY6kD1bdizcLp0YZ8p046OF7BxdL1MKsf83SicVyyVPoArrdn_IUK-Ag-6HyXMPOpFtZ9Sm0xk2OdiqO5DIEfGrR0QnAs4t8Qk5uIQMzzB0PXYJYI6ecPSZC6zPYWwq6Gf6i320rIuzNHBVKR_jKCvhLMphOyB-QMdTTgMXJCj1gmCFuLdSk2-poQhLh160-dtF2LU6dU973yAApp1ubszsRrXLSecpNBOJBBdTTU6Z4vQ",
+            "q": "4Qp6OV-Nm2jrea1hLGPaITjdV0V8AaXxken3AY0qdATJPTxddXi903-U4mMCTjoX3yoDsmI_xiy-VAH1pyMt7JPhFDPtMPBKxY"
+                 "qnka6BI96cTG5vld8xe2jyiTE7vBHDXzCMld00teABThE6gYe7uI3nuvCp3c2-lxdVLXl36Oc",
+            "d": "QsRHkQ20-umvvTfkEtqm6FLHu6WDoqhV4T9z8ec8AHZiUcAUrfKuskOXx5XWfxF9LHWHsHwsPpaB1nJk2y6CGbm_phO1Xb5JI0"
+                 "LM82snOY6kD1bdizcLp0YZ8p046OF7BxdL1MKsf83SicVyyVPoArrdn_IUK-Ag-6HyXMPOpFtZ9Sm0xk2OdiqO5DIEfGrR0QnA"
+                 "s4t8Qk5uIQMzzB0PXYJYI6ecPSZC6zPYWwq6Gf6i320rIuzNHBVKR_jKCvhLMphOyB-QMdTTgMXJCj1gmCFuLdSk2-poQhLh16"
+                 "0-dtF2LU6dU973yAApp1ubszsRrXLSecpNBOJBBdTTU6Z4vQ",
             "e": "AQAB",
             "use": "sig",
             "kid": "APiZ0bGTMSgbLm_UitMgU7TDlE_9UC-RZArArPU4vcc",
-            "qi": "udVEXUjdnR-1Hh7QrYz3SHXcJRILy_AS1bbNQ5PaU-26IVkJquuUgHXIJHsqN8SjUwGSNJTtDkFlodo9O6sUgCtphMUzl8Hrr5wc6gcQTai4F8VEevRSSb7aElGlmHLHNJ49Sh2X_0ClWHbV8YbU_NplkTEMEos6LhGTUiAi-Bg",
-            "dp": "N6Ukbhk5Ls1fZ0Xzg6vsgbPBoRBj2kByXaY1RO_-LcjHk9MJJ0sdH-I4K1BOZvSF7WxmxWmaku7IjlXl1RpS1MLnHXD2yV5k6cKl71t_2ZdqkZxnvkCXZKguyZp7fmqQSfyYFjqyAa1En0ewmG_FDM_TXMTDjkB1PAI0f3g4FM8",
-            "dq": "2M6CUHIJeHdNnY13OA__H9CsFh9ASEo6gMw6h4kcJGhUBKX6mGk54OBibPTcTMdVJlBQ_XQAYwnKWB8HLv4KiYky6IbadjKaptRdelH34rneNRiUcnx0LKRAPgJrvVYTtsqMNvnFhY-JUk_w4MgHB9fXMFgaHzHP87qr-kKzTnM",
-            "n": "ynmjBq8tJtmvvlKIhSHFBPWu1maBVa4y-r6Q4_ODbP956CvDd9w7ttHojyn-kMeIqiNTdDe7O3B7KRJ7qlLRRWERrwm-FVeQGVltNY5h7QuLjiwyA5Wcc5auczPeAPPJLy-MVo0xgmQHt_otr8nPM-groDwhecpZPlsF8XSRU5RBjfu04s52bFku26PonBLUopkJ05EKCf2r4sPqhunhfZi_nJ6iR5DHFovKOKJ5m4ER44vZW2WnuqSFZuO2zgeRwnJo2gdBLLDh6fiJmnyaTrW0oD4h7sW1BLJWgcEBBMC2-9qyeCdGwSQLqGGdoEI4JnFGbM6y6U6twNUsCB7mmQ"
+            "qi": "udVEXUjdnR-1Hh7QrYz3SHXcJRILy_AS1bbNQ5PaU-26IVkJquuUgHXIJHsqN8SjUwGSNJTtDkFlodo9O6sUgCtphMUzl8Hrr"
+                  "5wc6gcQTai4F8VEevRSSb7aElGlmHLHNJ49Sh2X_0ClWHbV8YbU_NplkTEMEos6LhGTUiAi-Bg",
+            "dp": "N6Ukbhk5Ls1fZ0Xzg6vsgbPBoRBj2kByXaY1RO_-LcjHk9MJJ0sdH-I4K1BOZvSF7WxmxWmaku7IjlXl1RpS1MLnHXD2yV5k6"
+                  "cKl71t_2ZdqkZxnvkCXZKguyZp7fmqQSfyYFjqyAa1En0ewmG_FDM_TXMTDjkB1PAI0f3g4FM8",
+            "dq": "2M6CUHIJeHdNnY13OA__H9CsFh9ASEo6gMw6h4kcJGhUBKX6mGk54OBibPTcTMdVJlBQ_XQAYwnKWB8HLv4KiYky6IbadjKap"
+                  "tRdelH34rneNRiUcnx0LKRAPgJrvVYTtsqMNvnFhY-JUk_w4MgHB9fXMFgaHzHP87qr-kKzTnM",
+            "n": "ynmjBq8tJtmvvlKIhSHFBPWu1maBVa4y-r6Q4_ODbP956CvDd9w7ttHojyn-kMeIqiNTdDe7O3B7KRJ7qlLRRWERrwm-FVeQGV"
+                 "ltNY5h7QuLjiwyA5Wcc5auczPeAPPJLy-MVo0xgmQHt_otr8nPM-groDwhecpZPlsF8XSRU5RBjfu04s52bFku26PonBLUopkJ"
+                 "05EKCf2r4sPqhunhfZi_nJ6iR5DHFovKOKJ5m4ER44vZW2WnuqSFZuO2zgeRwnJo2gdBLLDh6fiJmnyaTrW0oD4h7sW1BLJWgc"
+                 "EBBMC2-9qyeCdGwSQLqGGdoEI4JnFGbM6y6U6twNUsCB7mmQ"
         }
 
     def tearDown(self):
