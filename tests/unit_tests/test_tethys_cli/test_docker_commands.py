@@ -9,8 +9,11 @@ class TestDockerCommands(unittest.TestCase):
         self.mock_dc = mock.MagicMock(name='docker_client')
         dc_patcher = mock.patch('tethys_cli.docker_commands.docker.from_env', return_value=self.mock_dc)
         self.mock_from_env = dc_patcher.start()
-        cli_docker_commands.ContainerMetadata.get_docker_client()  # this is required to reset the mock_dc on the docker commands module
         self.addCleanup(dc_patcher.stop)
+
+        # this is required to reset the mock_dc on the docker commands module
+        cli_docker_commands.ContainerMetadata.get_docker_client()
+
         input_patcher = mock.patch('tethys_cli.docker_commands.input', return_value=mock.MagicMock(name='input'))
         self.mock_input = input_patcher.start()
         self.addCleanup(input_patcher.stop)
@@ -1096,7 +1099,8 @@ class TestDockerCommands(unittest.TestCase):
 
     @mock.patch('tethys_cli.docker_commands.exit')
     @mock.patch('tethys_cli.docker_commands.write_error')
-    @mock.patch('tethys_cli.docker_commands.docker.from_env', side_effect=cli_docker_commands.docker.errors.DockerException)
+    @mock.patch('tethys_cli.docker_commands.docker.from_env',
+                side_effect=cli_docker_commands.docker.errors.DockerException)
     def test_docker_deamon_not_running(self, _, mock_write_error, mock_exit):
         cli_docker_commands.ContainerMetadata._docker_client = None
         cli_docker_commands.ContainerMetadata.get_docker_client()
