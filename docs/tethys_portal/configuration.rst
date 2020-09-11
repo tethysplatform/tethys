@@ -122,15 +122,36 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
 
   * **OAUTH_CONFIG**:
 
-    * **SOCIAL_AUTH_GOOGLE_OAUTH2_KEY**: Key for authenticating with Google using their OAuth2 service. See :ref:`social_auth_google` OAuth2 Setup.
-    * **SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET**: Secret for authenticating with Google using their OAuth2 service. See :ref:`social_auth_google` OAuth2 Setup.
-    * **SOCIAL_AUTH_FACEBOOK_KEY**: Key for authenticating with Facebook using their OAuth2 service. See :ref:`social_auth_facebook` OAuth2 Setup.
-    * **SOCIAL_AUTH_FACEBOOK_SECRET**: Secret for authenticating with Facebook using their OAuth2 service. See :ref:`social_auth_facebook` OAuth2 Setup.
-    * **SOCIAL_AUTH_FACEBOOK_SCOPE**: List of scopes for authenticating with Facebook using their OAuth2 service. See :ref:`social_auth_facebook` OAuth2 Setup.
-    * **SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY**: Key for authenticating with LinkedIn using their OAuth2 service. See :ref:`social_auth_linkedin` OAuth2 Setup.
-    * **SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET**: Secret for authenticating with LinkedIn using their OAuth2 service. See :ref:`social_auth_linkedin` OAuth2 Setup.
-    * **SOCIAL_AUTH_HYDROSHARE_KEY**: Key for authenticating with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` OAuth2 Setup.
-    * **SOCIAL_AUTH_HYDROSHARE_SECRET**: Secret for authentication with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` OAuth2 Setup.
+    * **SOCIAL_AUTH_AZUREAD_OAUTH2_KEY**: Key for authenticating with Azure Active Directory using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
+    * **SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET**: Secret for authenticating with Azure Active Directory using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
+    * **SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY**: Key for authenticating with Azure Active Directory against a single Tenant/Active Directory using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
+    * **SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET**: Secret for authenticating with Azure Active Directory against a single Tenant/Active Directory using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
+    * **SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID**: The ID of the Tenant/Active Directory to authenticate against. See :ref:`social_auth_azuread` SSO Setup.
+    * **SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_KEY**: Key for authenticating with Azure Active Directory B2C using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
+    * **SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_SECRET**: Secret for authenticating with Azure Active Directory B2C using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
+    * **SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_TENANT_ID**: The ID of the Tenant/Active Directory to authenticate against in Azure Active Directory B2C. See :ref:`social_auth_azuread` SSO Setup.
+    * **SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY**: The user flow policy to use. Use `'b2c_'` unless you have created a custom user flow that you would like to use. See :ref:`social_auth_azuread` SSO Setup.
+    * **SOCIAL_AUTH_ADFS_OIDC_KEY**: Client ID for authenticating with an AD FS services using its Open ID Connect interface. See :ref:`social_adfs` SSO Setup.
+    * **SOCIAL_AUTH_ADFS_OIDC_SECRET**: Secret for authenticating with an AD FS service using its Open ID Connect interface. See :ref:`social_adfs` SSO Setup.
+    * **SOCIAL_AUTH_ADFS_OIDC_DOMAIN**: Domain of the AD FS server. See :ref:`social_adfs` SSO Setup.
+    * **SOCIAL_AUTH_FACEBOOK_KEY**: Key for authenticating with Facebook using their OAuth2 service. See :ref:`social_auth_facebook` SSO Setup.
+    * **SOCIAL_AUTH_FACEBOOK_SECRET**: Secret for authenticating with Facebook using their OAuth2 service. See :ref:`social_auth_facebook` SSO Setup.
+    * **SOCIAL_AUTH_FACEBOOK_SCOPE**: List of scopes for authenticating with Facebook using their OAuth2 service. See :ref:`social_auth_facebook` SSO Setup.
+    * **SOCIAL_AUTH_GOOGLE_OAUTH2_KEY**: Key for authenticating with Google using their OAuth2 service. See :ref:`social_auth_google` SSO Setup.
+    * **SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET**: Secret for authenticating with Google using their OAuth2 service. See :ref:`social_auth_google` SSO Setup.
+    * **SOCIAL_AUTH_HYDROSHARE_KEY**: Key for authenticating with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` SSO Setup.
+    * **SOCIAL_AUTH_HYDROSHARE_SECRET**: Secret for authentication with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` SSO Setup.
+    * **SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY**: Key for authenticating with LinkedIn using their OAuth2 service. See :ref:`social_auth_linkedin` SSO Setup.
+    * **SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET**: Secret for authenticating with LinkedIn using their OAuth2 service. See :ref:`social_auth_linkedin` SSO Setup.
+    * **SOCIAL_AUTH_OKTA_OAUTH2_KEY**: Client ID for authenticating with Okta using their OAuth 2 interface. See :ref:`social_auth_okta` SSO Setup.
+    * **SOCIAL_AUTH_OKTA_OAUTH2_SECRET**: Secret for authenticating with Okta using their OAuth 2 interface. See :ref:`social_auth_okta` SSO Setup.
+    * **SOCIAL_AUTH_OKTA_OAUTH2_API_URL**: Your Okta Organization URL. See :ref:`social_auth_okta` SSO Setup.
+    * **SOCIAL_AUTH_OKTA_OPENIDCONNECT_KEY**: Client ID for authenticating with Okta using their Open ID Connect interface. See :ref:`social_auth_okta` SSO Setup.
+    * **SOCIAL_AUTH_OKTA_OPENIDCONNECT_SECRET**: Secret for authenticating with Okta using their Open ID Connect interface. See :ref:`social_auth_okta` SSO Setup.
+    * **SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL**: Your Okta Organization URL. See :ref:`social_auth_okta` SSO Setup.
+    * **SOCIAL_AUTH_ONELOGIN_OIDC_KEY**: Client ID for authenticating with OneLogin using their Open ID Connect interface. See :ref:`social_auth_onelogin` SSO Setup.
+    * **SOCIAL_AUTH_ONELOGIN_OIDC_SECRET**: Secret for authenticating with OneLogin using their Open ID Connect interface. See :ref:`social_auth_onelogin` SSO Setup.
+    * **SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN**: Your OneLogin Subdomain. See :ref:`social_auth_onelogin` SSO Setup.
 
   * **MFA_CONFIG**:
 

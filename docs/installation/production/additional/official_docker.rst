@@ -13,7 +13,7 @@ Official Docker Image
 Versions and Tags
 #################
 
-The official Tethys Docker images are located in the `tethysplatform/tethys-core Docker Hub repository<https://hub.docker.com/r/tethysplatform/tethys-core>`_. Images released are tagged using the following format:
+The official Tethys Docker images are located in the `tethysplatform/tethys-core Docker Hub repository <https://hub.docker.com/r/tethysplatform/tethys-core>`_. Images released are tagged using the following format:
 
 +---------------+------------------------------------------------------------------------------------------------------+
 |    Tag        | Description                                                                                          |
