@@ -42,6 +42,7 @@ class TethysPortalUserTests(unittest.TestCase):
             'user_token': mock_user_token.key,
             'current_use': '0 bytes',
             'quota': None,
+            'has_mfa': False
         }
 
         profile(mock_request, username)
@@ -53,6 +54,7 @@ class TethysPortalUserTests(unittest.TestCase):
             'user_token': mock_user_token.key,
             'current_use': '0 bytes',
             'quota': '0 bytes',
+            'has_mfa': False,
         }
 
         mock_get_quota.return_value = {'quota': 1, 'units': 0}

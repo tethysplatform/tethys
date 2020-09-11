@@ -59,6 +59,18 @@ class TestSettings(TestCase):
         self.assertEqual(settings.test_analytic, 'test')
 
     @mock.patch('tethys_portal.settings.yaml.safe_load',
+                return_value={'settings': {'MFA_CONFIG': {'MFA_REQUIRED': True}}})
+    def test_mfa_config(self, _):
+        reload(settings)
+        self.assertEqual(settings.MFA_REQUIRED, True)
+
+    @mock.patch('tethys_portal.settings.yaml.safe_load',
+                return_value={'settings': {'SESSION_CONFIG': {'SESSION_EXPIRES_AT_BROWSER_CLOSE': True}}})
+    def test_session_config(self, _):
+        reload(settings)
+        self.assertEqual(settings.SESSION_EXPIRES_AT_BROWSER_CLOSE, True)
+
+    @mock.patch('tethys_portal.settings.yaml.safe_load',
                 return_value={'settings': {'TEST_SETTING': 'test'}})
     def test_other_settings(self, _):
         reload(settings)

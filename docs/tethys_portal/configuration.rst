@@ -132,6 +132,16 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
     * **SOCIAL_AUTH_HYDROSHARE_KEY**: Key for authenticating with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` OAuth2 Setup.
     * **SOCIAL_AUTH_HYDROSHARE_SECRET**: Secret for authentication with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` OAuth2 Setup.
 
+  * **MFA_CONFIG**:
+
+    * **MFA_REQUIRED**: Is a user required to setup MFA in order to be able to use the Tethys portal.
+    * **MFA_RECHECK**: Allow random rechecking of the user.
+    * **MFA_RECHECK_MIN**: Minimum recheck interval in seconds.
+    * **MFA_RECHECK_MAX**: Maximum recheck interval in seconds.
+    * **MFA_QUICKLOGIN**: Allow quick login for returning users by provide only their 2FA.
+    * **TOKEN_ISSUER_NAME**: TOTP Issuer name.
+    * **MFA_UNALLOWED_METHODS**: A list of MFA methods to be disallowed.
+
   * **ANALYTICS_CONFIG**: the Django Analytical configuration settings for enabling analytics services on the Tethys Portal (see: `Enabling Services - Django Analytical <https://django-analytical.readthedocs.io/en/latest/install.html#enabling-the-services>`_. The following is a list of settings for some of the supported services that can be enabled.
 
     * CLICKMAP_TRACKER_ID

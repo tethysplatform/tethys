@@ -74,6 +74,9 @@
             {% if context_user.has_usable_password and user.username == context_user.username %}
               <li><span class="parameter">Password:</span><span class="value">********</span></li>
             {% endif %}
+            {% if user.username == context_user.username %}
+              <li><span class="parameter">2-Step Verification: </span><span class="value">{% if has_mfa %}Enabled{% else %}Not Enabled{% endif %}</span></li>
+            {% endif %}
           </ul>
           {% endblock %}
         </div>
@@ -97,7 +100,7 @@
     <div class="profile-section">
       <div class="row">
         <div class="col-md-2 col-md-offset-2 profile-section-header">
-          <h3>Gravatar</h3>
+          <h3>Email</h3>
         </div>
         <div class="col-md-8 profile-parameters">
           {% block gravatar_parameters %}

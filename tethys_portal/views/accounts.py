@@ -14,7 +14,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
+from mfa.helpers import has_mfa
 from tethys_portal.forms import LoginForm, RegisterForm
+from tethys_portal.utilities import log_user_in
 
 
 @never_cache
@@ -43,14 +45,12 @@ def login_view(request):
             if user is not None:
                 # The password has been verified for the user
                 if user.is_active:
-                    # The user is valid, active, and authenticated, so login in the user
-                    login(request, user)
+                    # Check for multi factor authentication
+                    mfa_response = has_mfa(request, user.username)
+                    if mfa_response:
+                        return mfa_response
 
-                    # Redirect after logged in using next parameter or default to user profile
-                    if 'next' in request.GET:
-                        return redirect(request.GET['next'])
-                    else:
-                        return redirect('app_library')
+                    return log_user_in(request, user)
                 else:
                     # The password is valid, but the user account has been disabled
                     # Return a disabled account 'error' message

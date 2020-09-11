@@ -49,6 +49,12 @@
         <p class="form-control-static"><a href="{% url 'user:change_password' username=user.username %}" class="btn btn-default">Change Password</a></p>
       </div>
     </div>
+    <div class="form-group">
+      <label class="col-md-3 control-label">2-Step Verification: </label>
+      <div class="col-md-6">
+        <p class="form-control-static"><a class="btn btn-default" href="{% url 'mfa_home' %}">Configure</a></p>
+      </div>
+    </div>
   {% endif %}
 
 {% endblock %}
