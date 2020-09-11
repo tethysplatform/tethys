@@ -14,6 +14,7 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from rest_framework.authtoken.models import Token
+from mfa.helpers import has_mfa
 
 from tethys_apps.harvester import SingletonHarvester
 from tethys_portal.forms import UserSettingsForm, UserPasswordChangeForm
@@ -46,6 +47,7 @@ def profile(request, username=None):
         'user_token': user_token.key,
         'current_use': current_use,
         'quota': quota,
+        'has_mfa': has_mfa(username=request.user.username, request=request)
     }
     return render(request, 'tethys_portal/user/profile.html', context)
 
