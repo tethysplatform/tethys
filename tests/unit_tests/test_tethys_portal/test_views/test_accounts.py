@@ -24,11 +24,10 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         login_view(mock_request)
         mock_redirect.assert_called_once_with('user:profile', username='sam')
 
-    @mock.patch('tethys_portal.views.accounts.login')
+    @mock.patch('tethys_portal.views.accounts.log_user_in')
     @mock.patch('tethys_portal.views.accounts.authenticate')
     @mock.patch('tethys_portal.views.accounts.LoginForm')
-    @mock.patch('tethys_portal.views.accounts.redirect')
-    def test_login_view_post_request(self, mock_redirect, mock_login_form, mock_authenticate, mock_login):
+    def test_login_view_post_request(self, mock_login_form, mock_authenticate, mock_login):
         mock_request = mock.MagicMock()
         mock_request.method = 'POST'
         mock_request.POST = 'login-submit'
@@ -65,14 +64,10 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         # mock the user is valid, active, and authenticated, so login in the user
         mock_login.assert_called_with(mock_request, mock_user)
 
-        # mock redirect after logged in using next parameter or default to user profile
-        mock_redirect.assert_called_once_with('app_library')
-
-    @mock.patch('tethys_portal.views.accounts.login')
+    @mock.patch('tethys_portal.views.accounts.log_user_in')
     @mock.patch('tethys_portal.views.accounts.authenticate')
     @mock.patch('tethys_portal.views.accounts.LoginForm')
-    @mock.patch('tethys_portal.views.accounts.redirect')
-    def test_login_view_get_method_next(self, mock_redirect, mock_login_form, mock_authenticate, mock_login):
+    def test_login_view_get_method_next(self, mock_login_form, mock_authenticate, mock_login):
         mock_request = mock.MagicMock()
         mock_request.method = 'POST'
         mock_request.POST = 'login-submit'
@@ -109,8 +104,48 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
         # mock the user is valid, active, and authenticated, so login in the user
         mock_login.assert_called_with(mock_request, mock_user)
 
-        # mock redirect after logged in using next parameter or default to user profile
-        mock_redirect.assert_called_once_with(mock_request.GET['next'])
+    @mock.patch('tethys_portal.views.accounts.has_mfa')
+    @mock.patch('tethys_portal.views.accounts.authenticate')
+    @mock.patch('tethys_portal.views.accounts.LoginForm')
+    def test_login_view_post_request_with_mfa(self, mock_login_form, mock_authenticate, mock_mfa):
+        mock_request = mock.MagicMock()
+        mock_request.method = 'POST'
+        mock_request.POST = 'login-submit'
+        mock_request.user.is_anonymous = True
+        mock_request.user.username = 'sam'
+        mock_request.GET = ''
+
+        mock_mfa.return_value = True
+
+        mock_form = mock.MagicMock()
+        mock_login_form.return_value = mock_form
+
+        # mock validate the form
+        mock_form.is_valid.return_value = True
+
+        mock_username = mock.MagicMock()
+        mock_password = mock.MagicMock()
+        mock_form.cleaned_data('username').return_value = mock_username
+        mock_form.cleaned_data('password').return_value = mock_password
+
+        # mock authenticate
+        mock_user = mock.MagicMock()
+        mock_user.username = 'testname'
+        mock_authenticate.return_value = mock_user
+
+        # mock the password has been verified for the user
+        mock_user.is_active = True
+
+        # call the login function with mock args
+        login_view(mock_request)
+
+        mock_login_form.assert_called_with(mock_request.POST)
+
+        # mock authenticate call
+        mock_authenticate.asset_called_with(username=mock_username, password=mock_password)
+
+        # mock the user is valid, active, and authenticated, so login in the user
+        mock_mfa.assert_called_with(mock_request, mock_user.username)
 
     @override_settings(ENABLE_OPEN_SIGNUP=False)
     @mock.patch('tethys_portal.views.accounts.render')

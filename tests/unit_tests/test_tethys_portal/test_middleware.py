@@ -1,7 +1,8 @@
 import unittest
 from unittest import mock
 
-from tethys_portal.middleware import TethysSocialAuthExceptionMiddleware, TethysAppAccessMiddleware
+from tethys_portal.middleware import TethysSocialAuthExceptionMiddleware, TethysAppAccessMiddleware, \
+    TethysMfaRequiredMiddleware
 from django.core.exceptions import PermissionDenied
 
 
@@ -321,3 +322,17 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         obj.__call__(mock_request)
 
         self.assertEqual(mock_404.call_args_list[0][0][1], PermissionDenied)
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = True
+        mock_request = mock.MagicMock()
+
+        mock_has_mfa.return_value = False
+
+        obj = TethysMfaRequiredMiddleware(mock_request)
+        obj.__call__(mock_request)
+
+        mock_redirect.assert_called_once_with('mfa_home')

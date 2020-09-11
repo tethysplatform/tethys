@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from tethys_apps.admin import TethysAppSettingInline, CustomSettingInline, DatasetServiceSettingInline, \
     SpatialDatasetServiceSettingInline, WebProcessingServiceSettingInline, PersistentStoreConnectionSettingInline, \
     PersistentStoreDatabaseSettingInline, TethysAppAdmin, TethysExtensionAdmin, CustomUser, make_gop_app_access_form, \
-    register_custom_group
+    register_custom_group, register_user_keys_admin
 from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
 
 from tethys_quotas.models import TethysAppQuota
@@ -418,3 +418,13 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         mock_gop_form.assert_called()
         mock_logwarning.assert_called_with('Unable to register CustomGroup.')
+
+    @mock.patch('tethys_apps.admin.tethys_log.warning')
+    @mock.patch('tethys_apps.admin.admin.site.register')
+    def test_admin_user_keys_programming_error(self, mock_register, mock_logwarning):
+        mock_register.side_effect = ProgrammingError
+
+        register_user_keys_admin()
+
+        mock_register.assert_called()
+        mock_logwarning.assert_called_with('Unable to register UserKeys.')
