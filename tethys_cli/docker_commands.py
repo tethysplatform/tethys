@@ -20,7 +20,7 @@ import getpass
 import docker
 from docker.types import Mount
 from docker.errors import NotFound as DockerNotFound
-from tethys_cli.cli_colors import write_pretty_output
+from tethys_cli.cli_colors import write_pretty_output, write_error
 from tethys_apps.utilities import get_tethys_home_dir
 
 
@@ -66,21 +66,26 @@ class ContainerMetadata(ABC):
     container_port = None
     default_host = '127.0.0.1'
 
-    _docker_client = docker.from_env()
+    _docker_client = None
     all_containers = None
 
     def __init__(self, docker_client=None):
         self._docker_client = docker_client
         self._container = None
 
-    @staticmethod
-    def get_docker_client():
+    @classmethod
+    def get_docker_client(cls):
         """
         Configure DockerClient
         """
-        docker_client = docker.from_env()
+        if cls._docker_client is None:
+            try:
+                cls._docker_client = docker.from_env()
+            except docker.errors.DockerException:
+                write_error('The Docker daemon must be running to use the tethys docker command.')
+                exit(1)
 
-        return docker_client
+        return cls._docker_client
 
     @property
     def docker_client(self):

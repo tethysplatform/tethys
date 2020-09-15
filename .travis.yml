@@ -10,6 +10,7 @@ notifications:
 
 os:
   - linux
+  - osx
 
 env:
   - CONDA_BUILD_PIN_LEVEL=minor
@@ -19,12 +20,10 @@ services:
 
 stages:
   - name: test
-    if: (tag IS NOT present)
-  - name: unit-test
-    if: (tag IS NOT present)
-  - name: conda-build
-    if: (branch = master) OR (branch = release) OR (tag IS present)
+    if: tag IS NOT present
   - name: docker-build
+    if: (branch = master) OR (branch = release) OR (tag IS present)
+  - name: conda-build
     if: (branch = master) OR (branch = release) OR (tag IS present)
 
 install:
@@ -54,29 +53,6 @@ after_success:
 
 jobs:
   include:
-    - stage: unit-test
-      install:
-        - cd ..
-        - bash ./tethys/scripts/install_tethys.sh -h
-        - bash ./tethys/scripts/install_tethys.sh --partial-tethys-install meds -n tethys -s $PWD/tethys
-
-        # activate conda environment
-        - . ~/miniconda/etc/profile.d/conda.sh
-        - conda activate tethys
-        - conda list
-        - tethys db start
-        # install test dependencies
-        - pip install coveralls
-        - cd $TRAVIS_BUILD_DIR
-      script:
-        # command to run tests
-        - tethys test -c -u -v 2
-      after_success:
-        - >
-          if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-            # generate test coverage information
-            coveralls
-          fi
     - stage: docker-build
       install:
         - skip
