@@ -65,6 +65,12 @@ class TestSettings(TestCase):
         self.assertEqual(settings.MFA_REQUIRED, True)
 
     @mock.patch('tethys_portal.settings.yaml.safe_load',
+                return_value={'settings': {'LOCKOUT_CONFIG': {'AXES_ENABLED': True}}})
+    def test_lockout_config(self, _):
+        reload(settings)
+        self.assertEqual(settings.AXES_ENABLED, True)
+
+    @mock.patch('tethys_portal.settings.yaml.safe_load',
                 return_value={'settings': {'SESSION_CONFIG': {'SESSION_EXPIRES_AT_BROWSER_CLOSE': True}}})
     def test_session_config(self, _):
         reload(settings)
