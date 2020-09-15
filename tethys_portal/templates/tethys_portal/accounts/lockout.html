@@ -31,7 +31,7 @@
             <div class="lockout-message-container">
               <p>You have exceeded the amount of allowed login attempts ({{ failure_limit }}).</p>
               {% if cooloff_time %}
-                <p>Your account will be unlocked {{ cooloff_time|human_duration }}, after which you may try again.</p>
+                <p>Your account will be unlocked {{ cooloff_time|human_duration }}, at which point you may try again.</p>
               {% else %}
                 <p>Please contact your system admin for more assistance.</p>
               {% endif %}
