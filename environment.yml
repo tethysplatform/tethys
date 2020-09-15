@@ -44,8 +44,13 @@ dependencies:
 - siphon
 - python-jose
 
+# datetime dependencies
+- arrow
+- isodate
+
 # django/plugin dependencies
 - django=2.2.*
+- django-axes
 - django-filter
 - djangorestframework
 - django-bootstrap3
