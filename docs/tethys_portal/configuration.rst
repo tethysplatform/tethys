@@ -204,13 +204,13 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
 
     * **AXES_ENABLED**: Disabled when ``DEBUG`` is on, and enabled when ``DEBUG`` is off.
     * **AXES_FAILURE_LIMIT**: Number of failed login attempts to allow before locking. Default ``3``.
-    * **AXES_COOLOFF_TIME**: Time to elapse before locked user is allowed to attempt logging in again. Default 30 minutes.
-    * **AXES_ONLY_USER_FAILURES**: Only lock based on username and do not lock based on IP when True. Defaults to ``False``.
+    * **AXES_COOLOFF_TIME**: Time to elapse before locked user is allowed to attempt logging in again. Default is 30 minutes.
+    * **AXES_ONLY_USER_FAILURES**: Only lock based on username and do not lock based on IP when True. Defaults to ``True``.
     * **AXES_ENABLE_ADMIN**: Enable the Django Axes admin interface. Defaults to ``True``.
-    * **AXES_LOCKOUT_TEMPLATE**: Template to render when user is locked out. Defaults to ``'tethys_portal/accounts/lockout.html'``
     * **AXES_VERBOSE**: More logging for Axes when True. Defaults to ``True``.
-    * **AXES_RESET_ON_SUCCESS**: Successful login will reset the number of failed logins when True. Defaults to ``True``.
-    * **AXES_LOGGER**: The logger Axes to use. Defaults to ``'tethys.watch_login'``.
+    * **AXES_RESET_ON_SUCCESS**: Successful login (after the cooloff time has passed) will reset the number of failed logins when True. Defaults to ``True``.
+    * **AXES_LOCKOUT_TEMPLATE**: Template to render when user is locked out. Defaults to ``'tethys_portal/accounts/lockout.html'``
+    * **AXES_LOGGER**: The logger for Django Axes to use. Defaults to ``'tethys.watch_login'``.
 
   * **CHANNEL_LAYERS**: the Django Channels `CHANNEL_LAYERS <https://channels.readthedocs.io/en/latest/topics/channel_layers.html#channel-layers>`_ setting.
 
