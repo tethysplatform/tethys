@@ -320,7 +320,9 @@ for setting, value in OAUTH_CONFIG.items():
 # MFA Settings
 # See: https://github.com/mkalioby/django-mfa2
 # Methods that shouldn't be allowed for the user, U2F, FIDO2, TOTP, Trusted_Devices, Email
-MFA_REQUIRED = False
+MFA_REQUIRED = False                # Require all users to set up MFA
+SSO_MFA_REQUIRED = False            # Require users logged in with SSO to set up MFA when MFA_REQUIRED is True
+ADMIN_MFA_REQUIRED = True           # Require admin users to set up MFA when MFA_REQUIRED is True
 MFA_UNALLOWED_METHODS = ('U2F', 'FIDO2', 'Email', 'Trusted_Devices')
 # A function that should be called by username to login the user in session
 MFA_LOGIN_CALLBACK = 'tethys_portal.utilities.log_user_in'
@@ -355,6 +357,9 @@ AXES_RESET_ON_SUCCESS = True
 
 LOCKOUT_CONFIG = portal_config_settings.pop('LOCKOUT_CONFIG', {})
 for setting, value in LOCKOUT_CONFIG.items():
+    if setting == 'LOCKOUT_CONFIG':
+        print(setting)
+        print(value)
     setattr(this_module, setting, value)
 
 # Django Guardian Settings
