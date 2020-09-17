@@ -45,8 +45,8 @@ def tethys_apps_context(request):
     context.update({
         'tethys': {
             'jquery': {
-                'version': '3.4.1',
-                'integrity': 'sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=',
+                'version': '3.5.1',
+                'integrity': 'sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=',
 
             },
             'bootstrap': {
