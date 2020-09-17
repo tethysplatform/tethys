@@ -155,9 +155,9 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
 
   * **MFA_CONFIG**:
 
-    * **MFA_REQUIRED**: Are users required to set up MFA to be able to use the Tethys portal. Defaults to False.
-    * **ADMIN_MFA_REQUIRED**: Are admin (staff) users required to set up MFA when MFA_REQUIRED is True. Defaults to True.
-    * **SSO_MFA_REQUIRED**: Are users logged in with SSO required to set up MFA when MFA_REQUIRED is True. Defaults to False.
+    * **MFA_REQUIRED**: Are users required to set up MFA to be able to use the Tethys portal. Defaults to ``False``.
+    * **ADMIN_MFA_REQUIRED**: Are admin (staff) users required to set up MFA when MFA_REQUIRED is ``True``. Defaults to ``True``.
+    * **SSO_MFA_REQUIRED**: Are users logged in with SSO required to set up MFA when MFA_REQUIRED is ``True``. Defaults to ``False``.
     * **MFA_RECHECK**: Allow random rechecking of the user.
     * **MFA_RECHECK_MIN**: Minimum recheck interval in seconds.
     * **MFA_RECHECK_MAX**: Maximum recheck interval in seconds.
@@ -206,7 +206,7 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
 
     * **AXES_ENABLED**: Disabled when ``DEBUG`` is on, and enabled when ``DEBUG`` is off.
     * **AXES_FAILURE_LIMIT**: Number of failed login attempts to allow before locking. Default ``3``.
-    * **AXES_COOLOFF_TIME**: Time to elapse before locked user is allowed to attempt logging in again. Default is 30 minutes.
+    * **AXES_COOLOFF_TIME**: Time to elapse before locked user is allowed to attempt logging in again. In the :file:`portal_config.yml` this setting accepts only integers or `ISO 8601 time duration formatted strings <https://en.wikipedia.org/wiki/ISO_8601#Durations>`_ (e.g.: ``"PT30M"``). Default is 30 minutes.
     * **AXES_ONLY_USER_FAILURES**: Only lock based on username and do not lock based on IP when True. Defaults to ``True``.
     * **AXES_ENABLE_ADMIN**: Enable the Django Axes admin interface. Defaults to ``True``.
     * **AXES_VERBOSE**: More logging for Axes when True. Defaults to ``True``.

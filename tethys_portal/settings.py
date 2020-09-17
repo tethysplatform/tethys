@@ -357,9 +357,13 @@ AXES_RESET_ON_SUCCESS = True
 
 LOCKOUT_CONFIG = portal_config_settings.pop('LOCKOUT_CONFIG', {})
 for setting, value in LOCKOUT_CONFIG.items():
-    if setting == 'LOCKOUT_CONFIG':
-        print(setting)
-        print(value)
+    if setting == 'AXES_COOLOFF_TIME' and isinstance(value, str):
+        import isodate
+        try:
+            value = isodate.parse_duration(value)
+        except Exception:
+            pass
+
     setattr(this_module, setting, value)
 
 # Django Guardian Settings
