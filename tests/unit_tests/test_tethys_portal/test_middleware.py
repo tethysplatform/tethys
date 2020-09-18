@@ -329,8 +329,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         Build a mock request with a mock user.
         """
         mock_request = mock.MagicMock(path=path)
-        mock_request.user = mock.MagicMock()
-        mock_request.user(is_staff=is_staff)
+        mock_request.user = mock.MagicMock(is_staff=is_staff)
         mock_request.user.social_auth.count = mock.MagicMock(return_value=1 if with_sso else 0)
         return mock_request
 
@@ -580,7 +579,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         mock_settings.SSO_MFA_REQUIRED = True
         mock_settings.ADMIN_MFA_REQUIRED = False
         mock_get_response = mock.MagicMock()
-        mock_request = self.mock_request_with_user(with_sso=True)
+        mock_request = self.mock_request_with_user(is_staff=True)
 
         mock_has_mfa.return_value = False
 
@@ -595,7 +594,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
     def test_mfa_required_excluded_paths(self, mock_settings, mock_has_mfa, mock_redirect):
         mock_settings.MFA_REQUIRED = True
         mock_settings.SSO_MFA_REQUIRED = True
-        mock_settings.ADMIN_MFA_REQUIRED = False
+        mock_settings.ADMIN_MFA_REQUIRED = True
         mock_has_mfa.return_value = False
         mock_get_response = mock.MagicMock()
 
@@ -603,7 +602,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
             '/',
             '/accounts/login/',
             '/accounts/logout/',
-            '/oath2/foo/',
+            '/oauth2/foo/',
             '/user/bar/',
             '/captcha/jar/',
             '/devices/123/',
