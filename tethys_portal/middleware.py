@@ -86,13 +86,27 @@ class TethysMfaRequiredMiddleware():
         self.get_response = get_response
 
     def __call__(self, request):
-        mfa_required = False
-        if hasattr(settings, 'MFA_REQUIRED'):
-            mfa_required = settings.MFA_REQUIRED is True
+        mfa_required = getattr(settings, 'MFA_REQUIRED', False)
+        sso_mfa_required = getattr(settings, 'SSO_MFA_REQUIRED', False)
+        admin_mfa_required = getattr(settings, 'ADMIN_MFA_REQUIRED', True)
+
+        # Override MFA_REQUIRED setting for users logged in with SSO
+        has_social_auth_attr = getattr(request.user, 'social_auth', None) is not None
+        if mfa_required and not sso_mfa_required and has_social_auth_attr and request.user.social_auth.count() > 0:
+            mfa_required = False
+
+        # Override MFA_REQUIRED setting for staff users
+        if mfa_required and not admin_mfa_required and request.user.is_staff:
+            mfa_required = False
 
         if mfa_required and not has_mfa(request, request.user.username):
-            if '/mfa' not in request.path and request.path != '/' \
-                    and request.path != '/accounts/login/' and request.path != '/accounts/logout/':
+            if '/mfa' not in request.path \
+                    and '/devices' not in request.path \
+                    and '/oauth2' not in request.path \
+                    and '/accounts' not in request.path \
+                    and '/user' not in request.path \
+                    and '/captcha' not in request.path \
+                    and request.path != '/':
                 messages.error(request, 'You must configure Multi Factor Authentication to continue.')
                 return redirect('mfa_home')
 
