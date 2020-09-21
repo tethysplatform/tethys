@@ -323,16 +323,295 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         self.assertEqual(mock_404.call_args_list[0][0][1], PermissionDenied)
 
+    @staticmethod
+    def mock_request_with_user(path='/apps', with_sso=False, is_staff=False):
+        """
+        Build a mock request with a mock user.
+        """
+        mock_request = mock.MagicMock(path=path)
+        mock_request.user = mock.MagicMock(is_staff=is_staff)
+        mock_request.user.social_auth.count = mock.MagicMock(return_value=1 if with_sso else 0)
+        return mock_request
+
     @mock.patch('tethys_portal.middleware.redirect')
     @mock.patch('tethys_portal.middleware.has_mfa')
     @mock.patch('tethys_portal.middleware.settings')
-    def test_mfa_required(self, mock_settings, mock_has_mfa, mock_redirect):
+    def test_mfa_required_all_true__normal_user(self, mock_settings, mock_has_mfa, mock_redirect):
         mock_settings.MFA_REQUIRED = True
-        mock_request = mock.MagicMock()
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user()
 
         mock_has_mfa.return_value = False
 
-        obj = TethysMfaRequiredMiddleware(mock_request)
-        obj.__call__(mock_request)
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
 
+        # required for all users
         mock_redirect.assert_called_once_with('mfa_home')
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required_all_true__sso_user(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = True
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user(with_sso=True)
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # required for all users
+        mock_redirect.assert_called_once_with('mfa_home')
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required_all_true__staff_user(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = True
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user(is_staff=True)
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # required for all users
+        mock_redirect.assert_called_once_with('mfa_home')
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required__all_false__normal_user(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = False
+        mock_settings.SSO_MFA_REQUIRED = False
+        mock_settings.ADMIN_MFA_REQUIRED = False
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user()
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # not required
+        mock_redirect.assert_not_called()
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required__all_false__sso_user(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = False
+        mock_settings.SSO_MFA_REQUIRED = False
+        mock_settings.ADMIN_MFA_REQUIRED = False
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user(with_sso=True)
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # not required
+        mock_redirect.assert_not_called()
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required__all_false__staff_user(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = False
+        mock_settings.SSO_MFA_REQUIRED = False
+        mock_settings.ADMIN_MFA_REQUIRED = False
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user(is_staff=True)
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # not required
+        mock_redirect.assert_not_called()
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required__mfa_required_false__normal_user(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = False
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user()
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # not required for all users user
+        mock_redirect.assert_not_called()
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required__mfa_required_false__sso_user(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = False
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user(with_sso=True)
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # not required for all users user
+        mock_redirect.assert_not_called()
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required__mfa_required_false__staff_user(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = False
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user(is_staff=True)
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # not required for all users user
+        mock_redirect.assert_not_called()
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required__sso_mfa_required_false__normal_user(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = True
+        mock_settings.SSO_MFA_REQUIRED = False
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user()
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # required for non-sso users
+        mock_redirect.assert_called_once_with('mfa_home')
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required__sso_mfa_required_false__sso_user(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = True
+        mock_settings.SSO_MFA_REQUIRED = False
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user(with_sso=True)
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # not required for SSO user
+        mock_redirect.assert_not_called()
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required__sso_mfa_required_false__staff_user(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = True
+        mock_settings.SSO_MFA_REQUIRED = False
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user(is_staff=True)
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # required for admins/staff user
+        mock_redirect.assert_called_once_with('mfa_home')
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required__admin_mfa_required_false__normal_user(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = True
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = False
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user()
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # required for non admin/staff user
+        mock_redirect.assert_called_once_with('mfa_home')
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required__admin_mfa_required_false__sso_user(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = True
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = False
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user(with_sso=True)
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # required for sso users
+        mock_redirect.assert_called_once_with('mfa_home')
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required__admin_mfa_required_false__admin_user(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = True
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = False
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user(is_staff=True)
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # not required for admin/staff user
+        mock_redirect.assert_not_called()
+
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required_excluded_paths(self, mock_settings, mock_has_mfa, mock_redirect):
+        mock_settings.MFA_REQUIRED = True
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_has_mfa.return_value = False
+        mock_get_response = mock.MagicMock()
+
+        excluded_paths = [
+            '/',
+            '/accounts/login/',
+            '/accounts/logout/',
+            '/oauth2/foo/',
+            '/user/bar/',
+            '/captcha/jar/',
+            '/devices/123/',
+            '/mfa/add/'
+        ]
+
+        for path in excluded_paths:
+            mock_request = self.mock_request_with_user(path=path)
+            TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+            # do not react on these paths
+            mock_redirect.assert_not_called()

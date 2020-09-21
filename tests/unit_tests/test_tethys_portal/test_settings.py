@@ -1,3 +1,4 @@
+import datetime as dt
 from importlib import reload
 from unittest import mock, TestCase
 from tethys_portal import settings
@@ -65,10 +66,22 @@ class TestSettings(TestCase):
         self.assertEqual(settings.MFA_REQUIRED, True)
 
     @mock.patch('tethys_portal.settings.yaml.safe_load',
-                return_value={'settings': {'LOCKOUT_CONFIG': {'AXES_ENABLED': True}}})
-    def test_lockout_config(self, _):
+                return_value={'settings': {'LOCKOUT_CONFIG': {'AXES_COOLOFF_TIME': 1}}})
+    def test_lockout_config__cooloff_int(self, _):
         reload(settings)
-        self.assertEqual(settings.AXES_ENABLED, True)
+        self.assertEqual(settings.AXES_COOLOFF_TIME, 1)
+
+    @mock.patch('tethys_portal.settings.yaml.safe_load',
+                return_value={'settings': {'LOCKOUT_CONFIG': {'AXES_COOLOFF_TIME': 'PT45M'}}})
+    def test_lockout_config__cooloff_iso_str(self, _):
+        reload(settings)
+        self.assertEqual(settings.AXES_COOLOFF_TIME, dt.timedelta(minutes=45))
+
+    @mock.patch('tethys_portal.settings.yaml.safe_load',
+                return_value={'settings': {'LOCKOUT_CONFIG': {'AXES_COOLOFF_TIME': 'foo'}}})
+    def test_lockout_config__cooloff_bad_str(self, _):
+        reload(settings)
+        self.assertEqual(settings.AXES_COOLOFF_TIME, 'foo')
 
     @mock.patch('tethys_portal.settings.yaml.safe_load',
                 return_value={'settings': {'SESSION_CONFIG': {'SESSION_EXPIRES_AT_BROWSER_CLOSE': True}}})
