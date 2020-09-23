@@ -34,6 +34,7 @@ def profile(request, username=None):
     # The profile should display information about the user that is given in the url.
     # However, the template will hide certain information if the username is not the same
     # as the username of the user that is accessing the page.
+    from django.conf import settings as django_settings
     context_user = User.objects.get(username=username)
     user_token, token_created = Token.objects.get_or_create(user=context_user)
     codename = 'user_workspace_quota'
@@ -47,7 +48,8 @@ def profile(request, username=None):
         'user_token': user_token.key,
         'current_use': current_use,
         'quota': quota,
-        'has_mfa': has_mfa(username=request.user.username, request=request)
+        'has_mfa': has_mfa(username=request.user.username, request=request),
+        'mfa_required': getattr(django_settings, 'MFA_REQUIRED', False)
     }
     return render(request, 'tethys_portal/user/profile.html', context)
 
@@ -58,6 +60,7 @@ def settings(request, username=None):
     """
     Handle the settings view. Access to change settings are not publicly accessible
     """
+    from django.conf import settings as django_settings
     # Get the user object from model
     request_user = request.user
 
@@ -102,6 +105,8 @@ def settings(request, username=None):
                'user_token': user_token.key,
                'current_use': current_use,
                'quota': quota,
+                'has_mfa': has_mfa(username=request.user.username, request=request),
+                'mfa_required': getattr(django_settings, 'MFA_REQUIRED', False),
                }
 
     return render(request, 'tethys_portal/user/settings.html', context)
