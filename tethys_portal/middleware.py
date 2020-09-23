@@ -92,7 +92,8 @@ class TethysMfaRequiredMiddleware():
         admin_mfa_required = getattr(settings, 'ADMIN_MFA_REQUIRED', True)
 
         # Override MFA_REQUIRED setting for API Token authentication
-        if mfa_required and 'Authorization' in request.headers and TokenAuthentication.keyword in request.headers['Authorization']:
+        if mfa_required and 'Authorization' in request.headers \
+                and TokenAuthentication.keyword in request.headers['Authorization']:
             # Verify Token
             try:
                 ta = TokenAuthentication()

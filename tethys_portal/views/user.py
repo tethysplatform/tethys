@@ -104,8 +104,8 @@ def settings(request, username=None):
                'user_token': user_token.key,
                'current_use': current_use,
                'quota': quota,
-                'has_mfa': has_mfa(username=request.user.username, request=request),
-                'mfa_required': getattr(django_settings, 'MFA_REQUIRED', False),
+               'has_mfa': has_mfa(username=request.user.username, request=request),
+               'mfa_required': getattr(django_settings, 'MFA_REQUIRED', False),
                }
 
     return render(request, 'tethys_portal/user/settings.html', context)
