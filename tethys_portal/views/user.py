@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from django.conf import settings as django_settings
 from django.shortcuts import render, redirect
 from tethys_sdk.permissions import login_required
 from django.contrib.auth.models import User
@@ -34,7 +35,6 @@ def profile(request, username=None):
     # The profile should display information about the user that is given in the url.
     # However, the template will hide certain information if the username is not the same
     # as the username of the user that is accessing the page.
-    from django.conf import settings as django_settings
     context_user = User.objects.get(username=username)
     user_token, token_created = Token.objects.get_or_create(user=context_user)
     codename = 'user_workspace_quota'
@@ -60,7 +60,6 @@ def settings(request, username=None):
     """
     Handle the settings view. Access to change settings are not publicly accessible
     """
-    from django.conf import settings as django_settings
     # Get the user object from model
     request_user = request.user
 
