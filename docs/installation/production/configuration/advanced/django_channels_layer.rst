@@ -31,6 +31,12 @@ Second, add or modify the ``CHANNEL_LAYERS`` parameter in the ``portal_config.ym
           hosts:
           - [127.0.0.1, 6379]
 
+Finally, start a redis instance. This can easily be done with docker as shown below.
+
+..
+
+    docker run -p 6379:6379 -d redis:5
+
 Once the ``CHANNEL_LAYER`` has been configured, the number of ``ASGI_PROCESSES`` can be increased as in the example below:
 
 ..
@@ -39,4 +45,4 @@ Once the ``CHANNEL_LAYER`` has been configured, the number of ``ASGI_PROCESSES``
 
 .. note::
 
-    If using a Docker image, the ``CHANNEL_LAYER``, ``CHANNEL_LAYER_CONFIG``, and ``ASGI_PROCESSES`` parameters can be set on the ``Dockerfile``.
+    If using a Docker image, the ``CHANNEL_LAYER`` and ``ASGI_PROCESSES`` parameters can be set on the ``Dockerfile``.
