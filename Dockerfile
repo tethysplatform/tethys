@@ -25,7 +25,7 @@ ENV  TETHYS_HOME="/usr/lib/tethys" \
 ENV  BASH_PROFILE=".bashrc" \
      CONDA_HOME="/opt/conda" \
      CONDA_ENV_NAME=tethys \
-     ASGI_PROCESSES=4 \
+     ASGI_PROCESSES=1 \
      CLIENT_MAX_BODY_SIZE="75M"
 
 # Tethys settings arguments
@@ -41,7 +41,7 @@ ENV  DEBUG="False" \
      DJANGO_ANALYTICAL="\"{}\"" \
      ADD_BACKENDS="\"[]\"" \
      OAUTH_OPTIONS="\"{}\"" \
-     CHANNEL_LAYER="" \
+     CHANNEL_LAYER="channels.layers.InMemoryChannelLayer" \
      RECAPTCHA_PRIVATE_KEY="" \
      RECAPTCHA_PUBLIC_KEY=""
 
