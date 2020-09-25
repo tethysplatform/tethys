@@ -344,6 +344,12 @@ Here is an example of a dockerfile from a tethys app:
     ENV APP_DB_PASSWORD ${TETHYS_DB_PASSWORD}
     ENV CONDORPY_HOME ${TETHYS_HOME}/tethys
 
+    ##################################
+    # PRODUCTION ENVIRONMENT VARIABLES
+    ##################################
+    ENV ASGI_PROCESSES 1
+    ENV CHANNEL_LAYER "channels_redis.core.RedisChannelLayer"
+
     #########
     # SETUP #
     #########

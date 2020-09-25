@@ -131,6 +131,10 @@ RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; tethys gen portal_config'
 RUN mkdir -p ${TETHYS_PERSIST} ${APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT}
 
+# Install channel-redis
+RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
+  ; pip install channels_redis'
+
 ############
 # CLEAN UP #
 ############
