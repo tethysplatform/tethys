@@ -9,14 +9,15 @@
 """
 from django.conf import settings
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 from mfa.helpers import has_mfa
 from social_django.middleware import SocialAuthExceptionMiddleware
 from social_core import exceptions as social_exceptions
 from tethys_cli.cli_colors import pretty_output, FG_WHITE
-
 from tethys_apps.utilities import get_active_app, user_can_access_app
-from django.core.exceptions import PermissionDenied
 from tethys_portal.views.error import handler_404
 
 
@@ -89,6 +90,17 @@ class TethysMfaRequiredMiddleware():
         mfa_required = getattr(settings, 'MFA_REQUIRED', False)
         sso_mfa_required = getattr(settings, 'SSO_MFA_REQUIRED', False)
         admin_mfa_required = getattr(settings, 'ADMIN_MFA_REQUIRED', True)
+
+        # Override MFA_REQUIRED setting for API Token authentication
+        if mfa_required and 'Authorization' in request.headers \
+                and TokenAuthentication.keyword in request.headers['Authorization']:
+            # Verify Token
+            try:
+                ta = TokenAuthentication()
+                ta.authenticate(request)
+                mfa_required = False
+            except AuthenticationFailed:
+                pass
 
         # Override MFA_REQUIRED setting for users logged in with SSO
         has_social_auth_attr = getattr(request.user, 'social_auth', None) is not None
