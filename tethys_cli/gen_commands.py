@@ -72,7 +72,7 @@ def add_gen_parser(subparsers):
     gen_parser.add_argument('--client-max-body-size', dest='client_max_body_size',
                             help='Populate the client_max_body_size parameter for nginx config. Defaults to "75M".')
     gen_parser.add_argument('--asgi-processes', dest='asgi_processes',
-                            help='The maximum number of asgi worker processes. Defaults to 4.')
+                            help='The maximum number of asgi worker processes. Defaults to 1.')
     gen_parser.add_argument('--conda-prefix', dest='conda_prefix',
                             help='The path to the Tethys conda environment. Required if $CONDA_PREFIX is not defined.')
     gen_parser.add_argument('--tethys-port', dest='tethys_port',
@@ -80,7 +80,7 @@ def add_gen_parser(subparsers):
                                  'Daphne and nginx configuration files. Defaults to 8000.')
     gen_parser.add_argument('--overwrite', dest='overwrite', action='store_true',
                             help='Overwrite existing file without prompting.')
-    gen_parser.set_defaults(func=generate_command, client_max_body_size='75M', asgi_processes=4, conda_prefix=False,
+    gen_parser.set_defaults(func=generate_command, client_max_body_size='75M', asgi_processes=1, conda_prefix=False,
                             tethys_port=8000, overwrite=False, pin_level='none')
 
 
