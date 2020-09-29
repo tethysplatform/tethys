@@ -224,7 +224,9 @@ Tethys uses environment variables to build and initialize the app. These are the
 |                           | Defaults to "\"{}}\"" (Empty).                                                           |
 |                           | Tethys Portal. See OATH_CONFIGS in :ref:`tethys_configuration`                           |
 +---------------------------+------------------------------------------------------------------------------------------+
-| CHANNEL_LAYER             | the Django Channel Layers Backend. Default to "channels.layers.InMemoryChannelLayer"     |
+| CHANNEL_LAYERS_BACKEND    | the Django Channel Layers backend. Default to "channels.layers.InMemoryChannelLayer"     |
++---------------------------+------------------------------------------------------------------------------------------+
+| CHANNEL_LAYERS_CONFIG     | the Django Channel Layers configuration if a layer other than the default is being used. |
 +---------------------------+------------------------------------------------------------------------------------------+
 | RECAPTCHA_PRIVATE_KEY     | Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen.      |
 |                           | See RECAPTCHA_PRIVATE_KEY in :ref:`tethys_configuration`                                 |
@@ -348,7 +350,8 @@ Here is an example of a dockerfile from a tethys app:
     # PRODUCTION ENVIRONMENT VARIABLES
     ##################################
     ENV ASGI_PROCESSES 1
-    ENV CHANNEL_LAYER "channels_redis.core.RedisChannelLayer"
+    ENV CHANNEL_LAYERS_BACKEND "channels_redis.core.RedisChannelLayer"
+    ENV CHANNEL_LAYERS_CONFIG "\"{\"hosts\": [[127.0.0.1, 6379]]}\""
 
     #########
     # SETUP #

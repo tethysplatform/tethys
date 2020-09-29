@@ -41,7 +41,8 @@ ENV  DEBUG="False" \
      DJANGO_ANALYTICAL="\"{}\"" \
      ADD_BACKENDS="\"[]\"" \
      OAUTH_OPTIONS="\"{}\"" \
-     CHANNEL_LAYER="channels.layers.InMemoryChannelLayer" \
+     CHANNEL_LAYERS_BACKEND="channels.layers.InMemoryChannelLayer" \
+     CHANNEL_LAYERS_CONFIG="\"{}\"" \
      RECAPTCHA_PRIVATE_KEY="" \
      RECAPTCHA_PUBLIC_KEY=""
 

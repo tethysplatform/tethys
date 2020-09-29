@@ -30,11 +30,8 @@
 {% set DJANGO_ANALYTICAL = salt['environ.get']('DJANGO_ANALYTICAL') %}
 {% set ADD_BACKENDS = salt['environ.get']('ADD_BACKENDS') %}
 {% set OAUTH_OPTIONS = salt['environ.get']('OAUTH_OPTIONS') %}
-{% if salt['environ.get']('CHANNEL_LAYER') %}
-{% set CHANNEL_LAYER = salt['environ.get']('CHANNEL_LAYER') %}
-{% else %}
-{% set CHANNEL_LAYER = "''" %}
-{% endif %}
+{% set CHANNEL_LAYERS_BACKEND = salt['environ.get']('CHANNEL_LAYERS_BACKEND') %}
+{% set CHANNEL_LAYERS_CONFIG = salt['environ.get']('CHANNEL_LAYERS_CONFIG') %}
 {% if salt['environ.get']('RECAPTCHA_PRIVATE_KEY') %}
 {% set RECAPTCHA_PRIVATE_KEY = salt['environ.get']('RECAPTCHA_PRIVATE_KEY') %}
 {% else %}
@@ -89,7 +86,8 @@ Generate_Tethys_Settings_TethysCore:
         --set ANALYTICS_CONFIG {{ DJANGO_ANALYTICAL }}
         --set AUTHENTICATION_BACKENDS {{ ADD_BACKENDS }}
         --set OAUTH_CONFIG {{ OAUTH_OPTIONS }}
-        --set CHANNEL_LAYERS.default.BACKEND {{ CHANNEL_LAYER }}
+        --set CHANNEL_LAYERS.default.BACKEND {{ CHANNEL_LAYERS_BACKEND }}
+        --set CHANNEL_LAYERS.default.CONFIG {{ CHANNEL_LAYERS_CONFIG }}
         --set CAPTCHA_CONFIG.RECAPTCHA_PRIVATE_KEY {{ RECAPTCHA_PRIVATE_KEY }}
         --set CAPTCHA_CONFIG.RECAPTCHA_PUBLIC_KEY {{ RECAPTCHA_PUBLIC_KEY }}
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"

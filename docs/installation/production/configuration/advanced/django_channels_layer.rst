@@ -51,14 +51,23 @@ Once a production ``CHANNEL_LAYER`` has been configured, the number of ``ASGI_PR
 With Tethys Docker
 ------------------
 
-If using Tethys Docker, the ``CHANNEL_LAYER`` and ``ASGI_PROCESSES`` parameters can be set on the ``Dockerfile`` or ``docker-compose``. Below is an example of how to set these variables in a ``Dockerfile``.
+If using Tethys Docker, the ``CHANNEL_LAYERS_BACKEND``, ``CHANNEL_LAYERS_CONFIG``, and ``ASGI_PROCESSES`` parameters can be set on the ``Dockerfile`` or ``docker-compose``. Below is an example of how to set these variables in a ``Dockerfile``.
 
 ::
 
     ENV ASGI_PROCESSES 1
-    ENV CHANNEL_LAYER "channels_redis.core.RedisChannelLayer"
+    ENV CHANNEL_LAYERS_BACKEND "channels_redis.core.RedisChannelLayer"
+    ENV CHANNEL_LAYERS_CONFIG "\"{\"hosts\": [[127.0.0.1, 6379]]}\""
 
-To configure redis this way, add the following to docker-compose at the same level as the other containters (db, geoserver, etc.):
+Finally, make sure that a ``REDIS Server`` is running. This can easily be done with a ``Docker container`` either by running it directly or adding it to a docker-compose.
+
+Directly:
+
+::
+
+    docker run -p 6379:6379 -d redis:5
+
+With docker-compose: (add the following piece of code at the same level as the db and  geoserver containers)
 
 .. code-block:: yaml
 
@@ -69,28 +78,3 @@ To configure redis this way, add the following to docker-compose at the same lev
         - "internal"
       ports:
         - "6379:6379"
-
-Finally, add the following code at the beginning of ``tethys_app.sls``
-
-.. code-block:: yaml
-
-    {% set CHANNEL_LAYER = salt['environ.get']('CHANNEL_LAYER') %}
-    {% set ASGI_PROCESSES = salt['environ.get']('ASGI_PROCESSES') %}
-
-
-    Insert_Redis_Channel_Layer:
-      cmd.run:
-        - name: >
-            {{TETHYS_BIN_DIR }}/tethys settings
-            --set CHANNEL_LAYERS.default.BACKEND {{ CHANNEL_LAYER }}
-            --set CHANNEL_LAYERS.default.CONFIG.hosts "[[docker_redis_1,6379],]"
-        - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/portal_config.yml" ];"
-
-    Regenerate_ASGI_Service_TethysCore:
-      cmd.run:
-        - name: >
-            {{TETHYS_BIN_DIR }}/tethys gen asgi_service
-            --asgi-processes {{ ASGI_PROCESSES }}
-            --conda-prefix {{ CONDA_HOME }}/envs/{{ CONDA_ENV_NAME }}
-            --overwrite
-        - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/portal_config.yml" ];"
