@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-
+from rest_framework.exceptions import AuthenticationFailed
 from tethys_portal.middleware import TethysSocialAuthExceptionMiddleware, TethysAppAccessMiddleware, \
     TethysMfaRequiredMiddleware
 from django.core.exceptions import PermissionDenied
@@ -615,3 +615,123 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
             # do not react on these paths
             mock_redirect.assert_not_called()
+
+    @mock.patch('tethys_portal.middleware.TokenAuthentication.authenticate')
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required_all_true__valid_token__normal_user(self, mock_settings, mock_has_mfa, mock_redirect, _):
+        mock_settings.MFA_REQUIRED = True
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user()
+        mock_request.headers = {'Authorization': 'Token abcdefghijklmnopqrstuvwxyz'}
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # not required for valid token
+        mock_redirect.assert_not_called()
+
+    @mock.patch('tethys_portal.middleware.TokenAuthentication.authenticate')
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required_all_true__valid_token__sso_user(self, mock_settings, mock_has_mfa, mock_redirect, _):
+        mock_settings.MFA_REQUIRED = True
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user(with_sso=True)
+        mock_request.headers = {'Authorization': 'Token abcdefghijklmnopqrstuvwxyz'}
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # not required for valid token
+        mock_redirect.assert_not_called()
+
+    @mock.patch('tethys_portal.middleware.TokenAuthentication.authenticate')
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required_all_true__valid_token__staff_user(self, mock_settings, mock_has_mfa, mock_redirect, _):
+        mock_settings.MFA_REQUIRED = True
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user(is_staff=True)
+        mock_request.headers = {'Authorization': 'Token abcdefghijklmnopqrstuvwxyz'}
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # not required for valid token
+        mock_redirect.assert_not_called()
+
+    @mock.patch('tethys_portal.middleware.TokenAuthentication.authenticate')
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required_all_true__invalid_token__normal_user(self, mock_settings, mock_has_mfa, mock_redirect,
+                                                               mock_authenticate):
+        mock_settings.MFA_REQUIRED = True
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user()
+        mock_request.headers = {'Authorization': 'Token abcdefghijklmnopqrstuvwxyz'}
+        mock_authenticate.side_effect = AuthenticationFailed
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # required for all users
+        mock_redirect.assert_called_once_with('mfa_home')
+
+    @mock.patch('tethys_portal.middleware.TokenAuthentication.authenticate')
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required_all_true__invalid_token__sso_user(self, mock_settings, mock_has_mfa, mock_redirect,
+                                                            mock_authenticate):
+        mock_settings.MFA_REQUIRED = True
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user(with_sso=True)
+        mock_request.headers = {'Authorization': 'Token abcdefghijklmnopqrstuvwxyz'}
+        mock_authenticate.side_effect = AuthenticationFailed
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # required for all users
+        mock_redirect.assert_called_once_with('mfa_home')
+
+    @mock.patch('tethys_portal.middleware.TokenAuthentication.authenticate')
+    @mock.patch('tethys_portal.middleware.redirect')
+    @mock.patch('tethys_portal.middleware.has_mfa')
+    @mock.patch('tethys_portal.middleware.settings')
+    def test_mfa_required_all_true__invalid_token__staff_user(self, mock_settings, mock_has_mfa, mock_redirect,
+                                                              mock_authenticate):
+        mock_settings.MFA_REQUIRED = True
+        mock_settings.SSO_MFA_REQUIRED = True
+        mock_settings.ADMIN_MFA_REQUIRED = True
+        mock_get_response = mock.MagicMock()
+        mock_request = self.mock_request_with_user(is_staff=True)
+        mock_request.headers = {'Authorization': 'Token abcdefghijklmnopqrstuvwxyz'}
+        mock_authenticate.side_effect = AuthenticationFailed
+
+        mock_has_mfa.return_value = False
+
+        TethysMfaRequiredMiddleware(mock_get_response)(mock_request)
+
+        # required for all users
+        mock_redirect.assert_called_once_with('mfa_home')
