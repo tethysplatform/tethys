@@ -101,7 +101,6 @@ A more convenient way is to use a docker-compose.yml file to build and run the i
         environment:
           TETHYS_DB_SUPERUSER: "tethys_super"
           TETHYS_DB_SUPERUSER_PASS: "pass"
-          ASGI_PROCESSES: 4
           CLIENT_MAX_BODY_SIZE: "75M"
         links:
           - db
@@ -180,7 +179,7 @@ Tethys uses environment variables to build and initialize the app. These are the
 +---------------------------+------------------------------------------------------------------------------------------+
 | CONDA_ENV_NAME            | Name of conda environment. Defaults to tethys.                                           |
 +---------------------------+------------------------------------------------------------------------------------------+
-| ASGI_PROCESSES            | The maximum number of asgi worker processes. Defaults to 4.                              |
+| ASGI_PROCESSES            | The maximum number of asgi worker processes. Defaults to 1.                              |
 +---------------------------+------------------------------------------------------------------------------------------+
 | CLIENT_MAX_BODY_SIZE      | client_max_body_size parameter for nginx config. Defaults to 75M.                        |
 +---------------------------+------------------------------------------------------------------------------------------+
@@ -225,7 +224,9 @@ Tethys uses environment variables to build and initialize the app. These are the
 |                           | Defaults to "\"{}}\"" (Empty).                                                           |
 |                           | Tethys Portal. See OATH_CONFIGS in :ref:`tethys_configuration`                           |
 +---------------------------+------------------------------------------------------------------------------------------+
-| CHANNEL_LAYER             | the Django Channel Layers Backend. Default to "channels.layers.InMemoryChannelLayer"     |
+| CHANNEL_LAYERS_BACKEND    | the Django Channel Layers backend. Default to "channels.layers.InMemoryChannelLayer"     |
++---------------------------+------------------------------------------------------------------------------------------+
+| CHANNEL_LAYERS_CONFIG     | the Django Channel Layers configuration if a layer other than the default is being used. |
 +---------------------------+------------------------------------------------------------------------------------------+
 | RECAPTCHA_PRIVATE_KEY     | Private key for Google ReCaptcha. Required to enable ReCaptcha on the login screen.      |
 |                           | See RECAPTCHA_PRIVATE_KEY in :ref:`tethys_configuration`                                 |
@@ -313,9 +314,9 @@ You can overwrite the environment variable of the tethys base image in your app 
 
 ::
 
-    ENV ASGI_PROCESSES 1
+    ENV ASGI_PROCESSES 4
 
-This line in your docker file will change the environment variable ASGI_PROCESSES from the default value of 4 to 1.
+This line in your docker file will change the environment variable ASGI_PROCESSES from the default value of 1 to 4.
 
 Here is an example of a dockerfile from a tethys app:
 
@@ -344,6 +345,13 @@ Here is an example of a dockerfile from a tethys app:
     ENV APP_DB_USERNAME ${TETHYS_DB_USERNAME}
     ENV APP_DB_PASSWORD ${TETHYS_DB_PASSWORD}
     ENV CONDORPY_HOME ${TETHYS_HOME}/tethys
+
+    ##################################
+    # PRODUCTION ENVIRONMENT VARIABLES
+    ##################################
+    ENV ASGI_PROCESSES 1
+    ENV CHANNEL_LAYERS_BACKEND "channels_redis.core.RedisChannelLayer"
+    ENV CHANNEL_LAYERS_CONFIG "\"{\"hosts\": [[127.0.0.1, 6379]]}\""
 
     #########
     # SETUP #

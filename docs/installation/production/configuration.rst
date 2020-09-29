@@ -39,3 +39,4 @@ These guides describe additional configuration that you can perform to add more 
     configuration/advanced/social_auth
     configuration/advanced/multi_factor_auth
     configuration/advanced/webanalytics
+    configuration/advanced/django_channels_layer
