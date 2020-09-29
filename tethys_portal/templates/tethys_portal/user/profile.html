@@ -93,7 +93,11 @@
             <li>
               <span class="parameter">Token:</span>
               {% if user.username == context_user.username %}
+                {% if mfa_required and has_mfa %}
                 <span class="value">{{ user_token }}</span>
+                {% else %}
+                <span class="value">Enable 2-Step verification to view token</span>
+                {% endif %}
               {% else %}
                 <span class="label label-info">Private</span>
               {% endif %}
