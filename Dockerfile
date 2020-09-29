@@ -25,7 +25,7 @@ ENV  TETHYS_HOME="/usr/lib/tethys" \
 ENV  BASH_PROFILE=".bashrc" \
      CONDA_HOME="/opt/conda" \
      CONDA_ENV_NAME=tethys \
-     ASGI_PROCESSES=4 \
+     ASGI_PROCESSES=1 \
      CLIENT_MAX_BODY_SIZE="75M"
 
 # Tethys settings arguments
@@ -41,7 +41,8 @@ ENV  DEBUG="False" \
      DJANGO_ANALYTICAL="\"{}\"" \
      ADD_BACKENDS="\"[]\"" \
      OAUTH_OPTIONS="\"{}\"" \
-     CHANNEL_LAYER="" \
+     CHANNEL_LAYERS_BACKEND="channels.layers.InMemoryChannelLayer" \
+     CHANNEL_LAYERS_CONFIG="\"{}\"" \
      RECAPTCHA_PRIVATE_KEY="" \
      RECAPTCHA_PUBLIC_KEY=""
 
@@ -130,6 +131,10 @@ RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
 RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; tethys gen portal_config'
 RUN mkdir -p ${TETHYS_PERSIST} ${APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT}
+
+# Install channel-redis
+RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
+  ; pip install channels_redis'
 
 ############
 # CLEAN UP #
