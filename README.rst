@@ -1,3 +1,4 @@
+An amazing hosting environment for water resources web app.
 Tethys Platform
 ===============
 .. image:: https://travis-ci.org/tethysplatform/tethys.svg?branch=master
