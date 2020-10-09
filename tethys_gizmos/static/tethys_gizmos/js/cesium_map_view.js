@@ -183,13 +183,23 @@ var CESIUM_MAP_VIEW = (function() {
 
             if ('source' in curr_layer) {
                 if (curr_layer.source == 'TileWMS' || curr_layer.source == 'ImageWMS') {
+                    var parameters = {
+                        format: 'image/png',
+                        transparent: true,
+                    }
+
+                    if (curr_layer.options.params.ENV) {
+                        parameters.ENV = curr_layer.options.params.ENV;
+                    }
+
+                    if (curr_layer.options.params.VIEWPARAMS) {
+                        parameters.VIEWPARAMS = curr_layer.options.params.VIEWPARAMS;
+                    }
+
                     var tile_wms = new Cesium.WebMapServiceImageryProvider({
                         url: curr_layer.options.url,
                         layers: curr_layer.options.params.LAYERS,
-                        parameters: {
-                            format: 'image/png',
-                            transparent: true,
-                        }
+                        parameters: parameters
                     });
                     var img_layer = m_viewer.imageryLayers.addImageryProvider(tile_wms);
                     img_layer['tethys_data'] = curr_layer.data;
