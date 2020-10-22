@@ -254,6 +254,17 @@ class TestTethysAppAdmin(unittest.TestCase):
         mock_ua_add_view.assert_called()
         self.assertNotIn(UserQuotasSettingInline, ret.inlines)
 
+        # Repeat to complete full cycle (change -> add -> change -> add)
+        # Add custom inline when change_view is called
+        ret.change_view(mock.MagicMock())
+        mock_ua_change_view.assert_called()
+        self.assertIn(UserQuotasSettingInline, ret.inlines)
+
+        # Remove custom inline when change_view is called
+        ret.add_view(mock.MagicMock())
+        mock_ua_add_view.assert_called()
+        self.assertNotIn(UserQuotasSettingInline, ret.inlines)
+
         # Check registration
         registry = admin.site._registry
         self.assertIn(User, registry)
