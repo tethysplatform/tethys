@@ -1,7 +1,10 @@
 import unittest
 from unittest import mock
 
-from tethys_compute.admin import JobAdmin, CondorSchedulerAdmin, DaskSchedulerAdmin
+from django import forms
+
+from tethys_compute.admin import JobAdmin, CondorSchedulerAdmin, DaskSchedulerAdmin, CondorSchedulerAdminForm
+from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 
 
 class TestTethysComputeAdmin(unittest.TestCase):
@@ -19,6 +22,18 @@ class TestTethysComputeAdmin(unittest.TestCase):
         sa = DaskSchedulerAdmin(mock_admin, mock_admin2)
         self.assertListEqual(['name', 'host', 'timeout', 'heartbeat_interval', 'append_link'],
                              sa.list_display)
+
+    def test_CondorSchedulerAdminForm(self):
+        mock_args = mock.MagicMock()
+        expected_fields = ('name', 'host', 'username', 'password', 'private_key_path', 'private_key_pass')
+
+        ret = CondorSchedulerAdminForm(mock_args)
+        self.assertEqual(CondorScheduler, ret.Meta.model)
+        self.assertEqual(expected_fields, ret.Meta.fields)
+        self.assertTrue('password' in ret.Meta.widgets)
+        self.assertIsInstance(ret.Meta.widgets['password'], forms.PasswordInput)
+        self.assertTrue('private_key_pass' in ret.Meta.widgets)
+        self.assertIsInstance(ret.Meta.widgets['private_key_pass'], forms.PasswordInput)
 
     def test_condor_scheduler_admin(self):
         mock_admin = mock.MagicMock()
