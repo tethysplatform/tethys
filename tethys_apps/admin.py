@@ -140,8 +140,14 @@ class TethysExtensionAdmin(GuardedModelAdmin):
 
 
 class CustomUser(UserAdmin):
+    def add_view(self, *args, **kwargs):
+        if UserQuotasSettingInline in self.inlines:
+            self.inlines.pop(self.inlines.index(UserQuotasSettingInline))
+        return super().add_view(*args, **kwargs)
+
     def change_view(self, *args, **kwargs):
-        self.inlines = [UserQuotasSettingInline]
+        if UserQuotasSettingInline not in self.inlines:
+            self.inlines.append(UserQuotasSettingInline)
         return super().change_view(*args, **kwargs)
 
 
