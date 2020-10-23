@@ -9,6 +9,7 @@
 """
 from django.contrib import admin
 from django.utils.html import format_html
+from django import forms
 from tethys_compute.models import TethysJob
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler
@@ -29,8 +30,19 @@ class DaskSchedulerAdmin(admin.ModelAdmin):
     append_link.short_description = 'dashboard'
 
 
+class CondorSchedulerAdminForm(forms.ModelForm):
+    class Meta:
+        model = CondorScheduler
+        fields = ('name', 'host', 'username', 'password', 'private_key_path', 'private_key_pass')
+        widgets = {
+            'password': forms.PasswordInput(),
+            'private_key_pass': forms.PasswordInput()
+        }
+
+
 @admin.register(CondorScheduler)
 class CondorSchedulerAdmin(admin.ModelAdmin):
+    form = CondorSchedulerAdminForm
     list_display = ['name', 'host', 'username', 'password', 'private_key_path', 'private_key_pass']
 
 
