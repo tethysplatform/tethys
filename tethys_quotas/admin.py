@@ -52,7 +52,12 @@ class UserQuotasSettingInline(TethysQuotasSettingInline):
             if not resource_quota.active:
                 return None
 
-            user_id = request.resolver_match.kwargs['object_id']
+            user_id = request.resolver_match.kwargs.get('object_id')
+
+            # new user form case
+            if not user_id:
+                return None
+
             user = User.objects.get(id=user_id)
 
             qs = qs.filter(entity=user)
