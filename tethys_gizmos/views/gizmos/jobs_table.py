@@ -5,6 +5,7 @@ from django.template.loader import render_to_string
 from tethys_compute.models import TethysJob, CondorWorkflow, DaskJob, DaskScheduler
 from tethys_gizmos.gizmo_options.jobs_table import JobsTable
 from bokeh.embed import server_document
+from tethys_sdk.gizmos import SelectInput
 
 log = logging.getLogger('tethys.tethys_gizmos.views.jobs_table')
 
@@ -70,24 +71,68 @@ def show_log(request, job_id):
         # Get the Job logs.
         data = job.get_logs()
 
-        def replace_new_lines(d):
-            for k, v in d.items():
-                if isinstance(v, str):
-                    d[k] = v.replace('\n', '<br/>')
-                elif isinstance(v, dict):
-                    replace_new_lines(v)
+        sub_job_options = [(k, k) for k in data.keys()]
+        sub_job_select = SelectInput(
+            display_text='Select Log:',
+            name='sub_job_select',
+            multiple=False,
+            options=sub_job_options,
+            attributes={'data-job-id': job_id}
+        )
 
-        replace_new_lines(data)
+        context = {'sub_job_select': sub_job_select, 'log_options': {}}
 
-        success = True
+        for k, v in data.items():
+            if isinstance(v, dict):
+                context['log_options'][f'log_select_{k}'] = SelectInput(
+                    name=f'log_{k}',
+                    multiple=False,
+                    options=[(key, key) for key in v.keys()],
+                )
 
-        return JsonResponse({'success': success, 'data': data})
+        html = render_to_string('tethys_gizmos/gizmos/job_logs.html', context)
+
+        def remove_callables(item):
+            if callable(item):
+                return
+            elif isinstance(item, dict):
+                for k, v in item.items():
+                    item[k] = remove_callables(v)
+                return item
+            else:
+                return item.replace('\n', '<br/>')
+        log_contents = remove_callables(data)
+
+        return JsonResponse({'success': True, 'html': html, 'log_contents': log_contents})
     except Exception as e:
-        success = False
         message = str(e)
-        log.error('The following error occurred when retrieving log for job %s: %s', job_id, message)
+        log.error('The following error occurred when retrieving logs for job %s: %s', job_id, message)
 
-        return JsonResponse({'success': success})
+        return JsonResponse({'success': False, 'error_message': 'ERROR: An error occurred while retrieving job logs.'})
+
+
+def get_log_content(request, job_id, key1, key2=None):
+    try:
+        job = TethysJob.objects.get_subclass(id=job_id)
+        # Get the Job logs.
+        data = job.get_logs()
+        log_func = data[key1]
+        if key2 is not None:
+            log_func = log_func[key2]
+        content = log_func() if callable(log_func) else log_func
+        content = content.replace('\n', '<br/>')
+
+        return JsonResponse({'content': content})
+    except Exception as e:
+        if key2 is None:
+            key2 = ''  # for error message formatting
+        message = str(e)
+        log.error('The following error occurred when retrieving log content for log %s in job %s: %s',
+                  job_id, f'{key1} {key2}', message)
+        return JsonResponse({
+            'success': False,
+            'error_message': f'ERROR: An error occurred while retrieving log content for: {key1} {key2}'
+        })
 
 
 def update_row(request, job_id):

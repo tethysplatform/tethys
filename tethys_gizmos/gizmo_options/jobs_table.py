@@ -13,6 +13,7 @@ import logging
 
 from tethys_sdk.jobs import TethysJob
 from .base import TethysGizmoOptions
+from .select_input import SelectInput
 
 log = logging.getLogger('tethys.tethys_gizmos.gizmo_options.jobs_table')
 
@@ -29,9 +30,9 @@ class JobsTable(TethysGizmoOptions):
     Attributes:
         jobs(tuple or list, required): A list/tuple of TethysJob objects.
         column_fields(tuple or list, required): A tuple or list of strings that represent TethysJob object attributes to show in the columns.
-        status_actions(bool): Add a column to the table to show dynamically updating status, and action buttons. If this is false then the values for run_btn, delete_btn, monitor_url, and results_url will be ignored. Default is True.
-        run_btn(bool): Add a button to run the job when job status is "Pending". Default is True.
-        delete_btn(bool): Add a button to delete jobs. Default is True.
+        show_status(bool): Add a column to the table to show dynamically updating job status. Default is True.
+        show_actions(bool): Add a column to the table to show a dynamically updating dropdown list of actions that can be done on the job. The available actions are determined by `actions` option. Actions are enabled/disabled based on the job status. If this is False then then `actions` option ignored.
+        actions(list): A list of actions that can be done on a job. Available actions are ['run', 'resubmit', 'logs', 'terminate', 'delete']. If `monitor_url` and `results_url` are supplied then 'monitor' and 'results' respectively will be added. If None then all actions will be used. Default is None.
         monitor_url(str):  A string representing the namespaced path to a controller to that displays monitoring information about a running job (e.g. app_name:monitoring_controller)
         results_url(str): A string representing the namespaced path to a controller to that displays job results (e.g. app_name:results_controller)
         hover(bool): Illuminate rows on hover (does not work on striped tables)
@@ -42,6 +43,11 @@ class JobsTable(TethysGizmoOptions):
         classes(str): Additional classes to add to the primary HTML element (e.g. "example-class another-class").
         refresh_interval(int): The refresh interval for the runtime and status fields in milliseconds. Default is 5000.
         show_detailed_status(bool): Show status of each node in CondorWorkflow jobs when True. Defaults to False.
+
+    Deprecated Attributes:
+        status_actions(bool): Add a column to the table to show dynamically updating status, and action buttons. If this is false then the values for run_btn, delete_btn, monitor_url, and results_url will be ignored. Default is True.
+        run_btn(bool): Add a button to run the job when job status is "Pending". Default is True.
+        delete_btn(bool): Add a button to delete jobs. Default is True.
         show_resubmit_btn(bool): Add a button to resubmit jobs. Default is False.
         show_log_btn(bool): Add a button to see log for submitted job. Default is False.
 
@@ -54,6 +60,7 @@ class JobsTable(TethysGizmoOptions):
         jobs_table_options = JobsTable(
                                        jobs=jobs,
                                        column_fields=('id', 'name', 'description', 'creation_time', 'execute_time'),
+                                       actions=['run', 'resubmit', 'logs', 'terminate', 'delete'],
                                        hover=True,
                                        striped=False,
                                        bordered=False,
@@ -75,10 +82,12 @@ class JobsTable(TethysGizmoOptions):
     """  # noqa: E501
     gizmo_name = "jobs_table"
 
-    def __init__(self, jobs, column_fields, show_status=True, show_actions=True, run_btn=None, delete_btn=None,
+    def __init__(self, jobs, column_fields, show_status=True, show_actions=True,
                  monitor_url='', results_url='', hover=False, striped=False, bordered=False, condensed=False,
                  attributes=None, classes='', refresh_interval=5000, delay_loading_status=True,
-                 show_detailed_status=False, actions=None, enable_data_table=False, data_table_options=None):
+                 show_detailed_status=False, actions=None, enable_data_table=False, data_table_options=None,
+                 # Deprecated options:
+                 status_actions=None, show_resubmit_btn=None, run_btn=None, delete_btn=None, show_log_btn=None):
         """
         Constructor
         """
@@ -91,7 +100,6 @@ class JobsTable(TethysGizmoOptions):
         self.column_names = None
         self.set_rows_and_columns(jobs, column_fields)
 
-        # self.status_actions = status_actions
         self.show_status = show_status
         self.show_actions = show_actions
         self.monitor_url = monitor_url
@@ -114,25 +122,21 @@ class JobsTable(TethysGizmoOptions):
         if results_url:
             actions.append('results')
 
-        # code for backwards compatibility. Remove in Tethys v3.2
-        if run_btn is not None:
+        # code for backwards compatibility. Remove in Tethys v3.3
+        if status_actions is not None:
             # deprecation warning
-            if run_btn:
-                actions.append('run')
-            else:
-                try:
-                    actions.remove('run')
-                except ValueError:
-                    pass
-        if delete_btn is not None:
-            # deprecation warning
-            if delete_btn:
-                actions.append('delete')
-            else:
-                try:
-                    actions.remove('delete')
-                except ValueError:
-                    pass
+            self.show_actions = status_actions
+        for option, action in ((run_btn, 'run'), (delete_btn, 'delete'), (show_resubmit_btn, 'resubmit'),
+                               (show_log_btn, 'logs')):
+            if option is not None:
+                # deprecation warning
+                if option:
+                    actions.append(action)
+                else:
+                    try:
+                        actions.remove(action)
+                    except ValueError:
+                        pass
         # end compatibility code
 
         self.actions = dict(
@@ -148,10 +152,10 @@ class JobsTable(TethysGizmoOptions):
         # Compute column count
         self.num_cols = len(column_fields)
 
-        if show_status:
+        if self.show_status:
             self.num_cols += 1
 
-        if show_actions:
+        if self.show_actions:
             self.num_cols += 1
 
     def set_rows_and_columns(self, jobs, column_fields):
@@ -193,6 +197,7 @@ class JobsTable(TethysGizmoOptions):
 
         """
         row_values = list()
+        job_actions = dict()
         for attribute in job_attributes:
             value = getattr(job, attribute)
             # Truncate fractional seconds
@@ -220,19 +225,19 @@ class JobsTable(TethysGizmoOptions):
     @staticmethod
     def get_gizmo_css():
         return (
-            'https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css',
             'tethys_gizmos/css/jobs_table.css',
+            *SelectInput.get_vendor_css(),
         )
 
     @staticmethod
     def get_vendor_js():
         return (
-            'https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js',
             'https://cdnjs.cloudflare.com/ajax/libs/d3/4.12.2/d3.min.js',
             'tethys_gizmos/vendor/lodash/lodash.min.js',
             'tethys_gizmos/vendor/graphlib/dist/graphlib.core.min.js',
             'tethys_gizmos/vendor/dagre/dist/dagre.core.min.js',
             'tethys_gizmos/vendor/dagre-d3/dist/dagre-d3.core.min.js',
+            *SelectInput.get_vendor_js(),
         )
 
     @staticmethod

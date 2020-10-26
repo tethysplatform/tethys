@@ -170,28 +170,99 @@ function bind_resubmit_button(btn){
     });
 }
 
+var log_contents = {};
+
 function load_log_content(job_id) {
+    // Clear content
+    $('#modal-dialog-jobs-table-log-content').html('')
+    $("#jobs_table_logs_overlay").removeClass('hidden');
+
+    $('#ModalJobLogTitle').html('Logs for Job ID: ' + $('#job_id-' + job_id).html())
     var show_log_url = '/developer/gizmos/ajax/' + job_id + '/show-log';
-        $.ajax({
-            url: show_log_url
-        }).done(function(json){
-            if(json.success){
-                var contents = json.data;
-                var log_html = generate_log_html(contents);
-                $('#modal-dialog-jobs-table-log-nav').html(log_html.nav_header_html);
-                $('#modal-dialog-jobs-table-log-content').html(log_html.nav_content_html);
-                $('.tethys_job_log_content').hide();
-                // Show the first log
-                var first_content_id = get_first_id_from_content(contents);
-                $(`#${first_content_id}`).show();
+    $.ajax({
+        url: show_log_url
+    }).done(function(json){
+        if(json.success){
+            log_contents = json.log_contents;
+            $('#modal-dialog-jobs-table-log-nav').html(json.html);
+            $('#modal-dialog-jobs-table-log-nav').find('.tethys-select2').select2();
+            if ($('.jobs-table-log-menu').length > 0){
+              $('#sub_job_select').on('change', update_log_menu);
+              $('.jobs-table-log-menu').on('change', update_log_content);
             }
-        });
+            else{
+              $('#sub_job_select').on('change', update_log_content);
+            }
+            $('#sub_job_select').trigger('change');
+        }
+        else{
+          $("#jobs_table_logs_overlay").addClass('hidden');
+          $('#modal-dialog-jobs-table-log-content').html(json.error_message);
+        }
+    });
+}
+
+function update_log_menu(event){
+  var key = event.target.value;
+  $('.jobs-table-log-menu').hide();
+  $('#log_select_' + key).show();
+  $('#log_' + key).trigger('change');
+}
+
+function update_log_content(event, use_cache=true){
+  var job_id = $('#sub_job_select').data('job-id');
+  var key1 = $('#sub_job_select').val();
+  var key2 = $('#log_' + key1).val();
+  var content;
+  var log_content_url = '/developer/gizmos/ajax/' + job_id + '/log-content/' + key1;
+  if (key2 === undefined){
+    content = log_contents[job_id][key1];
+  }else{
+    log_content_url += '/' + key2;
+    content = log_contents[key1][key2];
+  }
+
+  if(use_cache && content != null){
+    $("#jobs_table_logs_overlay").addClass('hidden');
+    $('#modal-dialog-jobs-table-log-content').html(content);
+  }
+  else{
+    $('#modal-dialog-jobs-table-log-content').html('');
+    $("#jobs_table_logs_overlay").removeClass('hidden');
+
+    $.ajax({
+        url: log_content_url
+    }).done(function(json){
+    $("#jobs_table_logs_overlay").addClass('hidden');
+      if(json.success){
+        $('#modal-dialog-jobs-table-log-content').html(json.content);
+        if (key2 === undefined){
+          log_contents[key1] = json.content;
+        }else{
+          log_contents[key1][key2] = json.content;
+        }
+      }
+      else{
+        $('#modal-dialog-jobs-table-log-content').html(json.error_message);
+      }
+    });
+  }
 }
 
 function bind_show_log_button(btn){
     var job_id = $(btn).data('job-id');
     $(btn).on('click', function(){
+        $('#modal-dialog-jobs-table-log-nav').html('');
+        bind_log_refresh_button(job_id);
         load_log_content(job_id);
+    });
+}
+
+function bind_log_refresh_button(job_id){
+  var $btn = $("#tethys_log_refresh_job_id");
+  $btn.val(job_id);
+  $btn.on('click', function(){
+        update_log_content(null, use_cache=false);
     });
 }
 
@@ -206,32 +277,6 @@ function get_first_id_from_content(contents) {
         first_id = `logfrom_${key1}_${key2}`;
     }
     return first_id
-}
-
-function generate_log_html(contents){
-  var nav_header_html = "";
-  var nav_content_html = "";
-
-  nav_header_html += "<nav class='navbar navbar-default' style='border:0'><div class='container-fluid'><ul class='nav navbar-nav'>";
-  $.each( contents, function(key, value) {
-        key = key.replace('.', '_');
-        // Create a nav if content is string
-        if (typeof(value) == "string" || value == null ) {
-            nav_header_html += "<li><a href='#' onclick=display_log_content('logfrom_" + key + "')>" + key + "</a></li>";
-            nav_content_html += "<div class='tethys_job_log_content' id='logfrom_" + key + "'>" + value + "</div>";
-        }
-        else {
-            nav_header_html += "<li class='dropdown'><a href='#' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>" + key + "<span class='caret'></span></a><ul class='dropdown-menu'>";
-            $.each( value, function(key2, value2) {
-                nav_header_html += "<li><a href='#' onclick=display_log_content('logfrom_" + key + "_" + key2 + "')>" + key2 + "</a></li>";
-                nav_content_html += "<div class='tethys_job_log_content' id='logfrom_" + key + "_" + key2 +"'>" + value2 + "</div>";
-            });
-            nav_header_html += "</ul></li>";
-            nav_content_html += "</ul></li>";
-        }
-    })
-    nav_header_html +="</ul></div></nav>";
-    return {'nav_header_html': nav_header_html, 'nav_content_html': nav_content_html};
 }
 
 function display_log_content(log_content_id) {
@@ -556,26 +601,6 @@ $('.job-row').each(function(){
 $('.workflow-nodes-row').each(function(){
     update_workflow_nodes_row(this);
 });
-
-// Assign job_id to load button
-$(document).on('click', '.btn-job-show-log', function () {
-    $('#modal-dialog-jobs-table-log-nav').html("");
-    $('#modal-dialog-jobs-table-log-content').html("<p>Loading logs...</p>");
-    var refresh_job_id = $(this).data('job-id');
-    $("#tethys_log_refresh_job_id").val(refresh_job_id);
-})
-
-// Reload log content
-$(document).on('click', '#tethys_log_refresh_job_id', function () {
-    var refresh_job_id = $(this).val();
-
-    // Clear content
-    $('#modal-dialog-jobs-table-log-content').html("<p>Refreshing...</p>")
-
-    // Load new content
-    load_log_content(refresh_job_id);
-})
-
 
 // Only show bokeh for the top row.
 var counter = 0;

@@ -242,11 +242,13 @@ class TestGizmoShowcase(unittest.TestCase):
             striped=False,
             bordered=False,
             condensed=False,
+            monitor_url='gizmos:results',
             results_url='gizmos:results',
             refresh_interval=10000,
+            run_btn=True,
             delete_btn=True,
             show_detailed_status=True,
-            show_resubmit_btn=True,
+            actions=['run', 'resubmit', 'log', 'monitor', 'results', 'terminate', 'delete'],
         )
 
         mock_render.assert_called_with(request, 'tethys_gizmos/gizmo_showcase/jobs_table.html',

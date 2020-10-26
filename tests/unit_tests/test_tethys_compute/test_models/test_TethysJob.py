@@ -375,3 +375,8 @@ class TethysJobTest(TethysTestCase):
         time_to_update_status = ret.is_time_to_update()
 
         self.assertFalse(time_to_update_status)
+
+    def test_lt(self):
+        ret = sorted((self.tethysjob, self.tethysjob_execute_time))
+        expected_value = [self.tethysjob, self.tethysjob_execute_time]
+        self.assertListEqual(ret, expected_value)
