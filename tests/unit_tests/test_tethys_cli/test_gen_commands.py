@@ -16,6 +16,9 @@ from tethys_cli.gen_commands import (
     GEN_META_YAML_OPTION
 )
 
+from tethys_apps.utilities import get_tethys_src_dir
+TETHYS_SRC = get_tethys_src_dir()
+
 
 class CLIGenCommandsTest(unittest.TestCase):
 
@@ -99,7 +102,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         # Verify it makes the Tethys Home directory
         mock_makedirs.assert_called()
         rts_call_args = mock_write_info.call_args_list
-        self.assertIn('A Tethys Portal configuration file was generated at', rts_call_args[0][0][0])
+        self.assertIn('A Tethys Portal configuration file', rts_call_args[0][0][0])
 
     @mock.patch('tethys_cli.gen_commands.write_info')
     @mock.patch('tethys_cli.gen_commands.render_template')
@@ -385,7 +388,7 @@ class CLIGenCommandsTest(unittest.TestCase):
         mock_args.directory = None
         mock_args.pin_level = 'minor'
         mock_os_path_isfile.return_value = False
-        mock_os_path_join.return_value = "conda.recipe"
+        mock_os_path_join.return_value = f"{TETHYS_SRC}/conda.recipe"
         stdout = '# packages in environment at /home/nswain/miniconda/envs/tethys:\n' \
                  '#\n' \
                  '# Name                    Version                   Build  Channel\n' \

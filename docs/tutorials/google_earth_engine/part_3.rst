@@ -30,3 +30,5 @@ Outline
 
 Supporting Materials
 --------------------
+
+* `Google Earth Engine Part 3 Tutorial Solutions YouTube Playlist <https://www.youtube.com/playlist?list=PLc2auKJMS_Eg58L09Ks7CHJv_D7ixlVnk>`_

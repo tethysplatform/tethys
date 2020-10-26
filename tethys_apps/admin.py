@@ -20,6 +20,7 @@ from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingI
 from guardian.admin import GuardedModelAdmin
 from guardian.shortcuts import assign_perm, remove_perm
 from guardian.models import GroupObjectPermission
+from mfa.models import User_Keys
 from tethys_quotas.utilities import get_quota, _convert_storage_units
 from tethys_quotas.handlers.workspace import WorkspaceQuotaHandler
 from tethys_apps.models import (TethysApp,
@@ -139,8 +140,14 @@ class TethysExtensionAdmin(GuardedModelAdmin):
 
 
 class CustomUser(UserAdmin):
+    def add_view(self, *args, **kwargs):
+        if UserQuotasSettingInline in self.inlines:
+            self.inlines.pop(self.inlines.index(UserQuotasSettingInline))
+        return super().add_view(*args, **kwargs)
+
     def change_view(self, *args, **kwargs):
-        self.inlines = [UserQuotasSettingInline]
+        if UserQuotasSettingInline not in self.inlines:
+            self.inlines.append(UserQuotasSettingInline)
         return super().change_view(*args, **kwargs)
 
 
@@ -305,6 +312,14 @@ def make_gop_app_access_form():
     return GOPAppAccessFormDynamic
 
 
+class UserKeyAdmin(admin.ModelAdmin):
+    fields = ('username', 'added_on', 'key_type', 'enabled', 'last_used')
+    readonly_fields = ('username', 'added_on', 'key_type', 'last_used')
+    list_display = ('username', 'added_on', 'key_type', 'enabled', 'last_used')
+    list_filter = ('username', )
+    model = User_Keys
+
+
 def register_custom_group():
     try:
         class CustomGroup(GroupAdmin):
@@ -316,9 +331,20 @@ def register_custom_group():
         tethys_log.warning("Unable to register CustomGroup.")
 
 
+def register_user_keys_admin():
+    try:
+        User_Keys._meta.app_label = 'auth'
+        User_Keys._meta.verbose_name = 'Users MFA Key'
+        User_Keys._meta.verbose_name_plural = 'Users MFA Keys'
+        admin.site.register(User_Keys, UserKeyAdmin)
+    except ProgrammingError:
+        tethys_log.warning("Unable to register UserKeys.")
+
+
 register_custom_group()
 admin.site.unregister(User)
 admin.site.register(User, CustomUser)
+register_user_keys_admin()
 admin.site.register(ProxyApp)
 admin.site.register(TethysApp, TethysAppAdmin)
 admin.site.register(TethysExtension, TethysExtensionAdmin)

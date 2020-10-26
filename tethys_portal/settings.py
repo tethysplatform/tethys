@@ -25,13 +25,13 @@ import os
 import sys
 import yaml
 import logging
+import datetime as dt
 
 from django.contrib.messages import constants as message_constants
 from tethys_apps.utilities import get_tethys_home_dir
 from tethys_cli.gen_commands import generate_secret_key
 
-from bokeh.settings import settings
-settings.resources = 'cdn'
+from bokeh.settings import settings as bokeh_settings
 
 log = logging.getLogger(__name__)
 this_module = sys.modules[__name__]
@@ -39,41 +39,47 @@ this_module = sys.modules[__name__]
 BASE_DIR = os.path.dirname(__file__)
 TETHYS_HOME = get_tethys_home_dir()
 
-local_settings = {}
+portal_config_settings = {}
 try:
     with open(os.path.join(TETHYS_HOME, 'portal_config.yml')) as portal_yaml:
-        local_settings = yaml.safe_load(portal_yaml).get('settings', {}) or {}
+        portal_config_settings = yaml.safe_load(portal_yaml).get('settings', {}) or {}
 except FileNotFoundError:
     log.info('Could not find the portal_config.yml file. To generate a new portal_config.yml run the command '
              '"tethys gen portal_config"')
 except Exception:
     log.exception('There was an error while attempting to read the settings from the portal_config.yml file.')
 
+bokeh_settings.resources = portal_config_settings.pop('BOKEH_RESOURCES', 'cdn')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = local_settings.pop('SECRET_KEY', generate_secret_key())
+SECRET_KEY = portal_config_settings.pop('SECRET_KEY', generate_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = local_settings.pop('DEBUG', True)
+DEBUG = portal_config_settings.pop('DEBUG', True)
 
-ALLOWED_HOSTS = local_settings.pop('ALLOWED_HOSTS', [])
+ALLOWED_HOSTS = portal_config_settings.pop('ALLOWED_HOSTS', [])
 
 # List those who should be notified of an error when DEBUG = False as a tuple of (name, email address).
 # i.e.: ADMINS = (('John', 'john@example.com'), ('Mary', 'mary@example.com'))
-ADMINS = local_settings.pop('ADMINS', ())
+ADMINS = portal_config_settings.pop('ADMINS', ())
 
+TETHYS_PORTAL_CONFIG = portal_config_settings.pop('TETHYS_PORTAL_CONFIG', {})
 # Use this setting to bypass the home page
-BYPASS_TETHYS_HOME_PAGE = local_settings.pop('BYPASS_TETHYS_HOME_PAGE', False)
+BYPASS_TETHYS_HOME_PAGE = TETHYS_PORTAL_CONFIG.pop('BYPASS_TETHYS_HOME_PAGE', False)
 
 # Use this setting to disable open account signup
-ENABLE_OPEN_SIGNUP = local_settings.pop('ENABLE_OPEN_SIGNUP', False)
+ENABLE_OPEN_SIGNUP = TETHYS_PORTAL_CONFIG.pop('ENABLE_OPEN_SIGNUP', False)
 
 # Set to True to allow Open Portal mode. This mode supersedes any specific user/group app access permissions
-ENABLE_OPEN_PORTAL = local_settings.pop('ENABLE_OPEN_PORTAL', False)
+ENABLE_OPEN_PORTAL = TETHYS_PORTAL_CONFIG.pop('ENABLE_OPEN_PORTAL', False)
 
-SESSION_CONFIG = local_settings.pop('SESSION_CONFIG', {})
+# Set to True to allow Open Portal mode. This mode supersedes any specific user/group app access permissions
+ENABLE_RESTRICTED_APP_ACCESS = TETHYS_PORTAL_CONFIG.pop('ENABLE_RESTRICTED_APP_ACCESS', False)
+
+SESSION_CONFIG = portal_config_settings.pop('SESSION_CONFIG', {})
 # Force user logout once the browser has been closed.
 # If changed, delete all django_session table entries from the tethys_default database to ensure updated behavior
 SESSION_EXPIRE_AT_BROWSER_CLOSE = SESSION_CONFIG.pop('SESSION_EXPIRE_AT_BROWSER_CLOSE', True)
@@ -84,8 +90,12 @@ SESSION_SECURITY_WARN_AFTER = SESSION_CONFIG.pop('SESSION_SECURITY_WARN_AFTER', 
 # Force user logout after a certain number of seconds
 SESSION_SECURITY_EXPIRE_AFTER = SESSION_CONFIG.pop('SESSION_SECURITY_EXPIRE_AFTER', 900)
 
-DATABASES = local_settings.pop('DATABASES', {})
-DATABASES.setdefault('default', {})
+# add any additional SESSION_CONFIG settings
+for setting, value in SESSION_CONFIG.items():
+    setattr(this_module, setting, value)
+
+DATABASES = portal_config_settings.pop('DATABASES', {})
+DATABASES.setdefault('default', {'DIR': 'psql'})
 DEFAULT_DB = DATABASES['default']
 DEFAULT_DB.setdefault('ENGINE', 'django.db.backends.postgresql_psycopg2')
 DEFAULT_DB.setdefault('NAME', 'tethys_platform')
@@ -93,53 +103,46 @@ DEFAULT_DB.setdefault('USER', 'tethys_default')
 DEFAULT_DB.setdefault('PASSWORD', 'pass')
 DEFAULT_DB.setdefault('HOST', 'localhost')
 DEFAULT_DB.setdefault('PORT', 5436)
-DEFAULT_DB.setdefault('DIR', 'psql')
 
-
-LOGGING_CONFIG = local_settings.pop('LOGGING_CONFIG', {})
+LOGGING_CONFIG = portal_config_settings.pop('LOGGING_CONFIG', {})
 # See https://docs.djangoproject.com/en/1.8/topics/logging/#configuring-logging for more logging configuration options.
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s:%(name)s:%(message)s'
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
+LOGGING = portal_config_settings.pop('LOGGING', {})
+LOGGING.setdefault('version', 1)
+LOGGING.setdefault('disable_existing_loggers', False)
+LOGGING.setdefault('formatters', {
+    'verbose': {
+        'format': '%(levelname)s:%(name)s:%(message)s'
     },
-    'handlers': {
-        'console_simple': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-        'console_verbose': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        },
+    'simple': {
+        'format': '%(levelname)s %(message)s'
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console_simple'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'WARNING'),
-        },
-        'tethys': LOGGING_CONFIG.pop('TETHYS_LOGGING', {
-            'handlers': ['console_verbose'],
-            'level': 'INFO',
-        }),
-        'tethys.apps': LOGGING_CONFIG.pop('TETHYS_APPS_LOGGING', {
-            'handlers': ['console_verbose'],
-            'level': 'INFO',
-        }),
+})
+LOGGING.setdefault('handlers', {
+    'console_simple': {
+        'class': 'logging.StreamHandler',
+        'formatter': 'simple'
     },
-}
+    'console_verbose': {
+        'class': 'logging.StreamHandler',
+        'formatter': 'verbose'
+    },
+})
+LOGGING.setdefault('loggers', {})
+LOGGERS = LOGGING['loggers']
+LOGGERS.setdefault('django', {
+    'handlers': ['console_simple'],
+    'level': os.getenv('DJANGO_LOG_LEVEL', 'WARNING'),
+})
+LOGGERS.setdefault('tethys', {
+    'handlers': ['console_verbose'],
+    'level': 'INFO',
+})
+LOGGERS.setdefault('tethys.apps', {
+    'handlers': ['console_verbose'],
+    'level': 'INFO',
+})
 
-LOGGING['formatters'].update(LOGGING_CONFIG.pop('LOGGING_FORMATTERS', {}))
-LOGGING['handlers'].update(LOGGING_CONFIG.pop('LOGGING_HANDLERS', {}))
-LOGGING['loggers'].update(LOGGING_CONFIG.pop('LOGGERS', {}))
-
-INSTALLED_APPS = local_settings.pop('INSTALLED_APPS_OVERRIDE', [
+INSTALLED_APPS = portal_config_settings.pop('INSTALLED_APPS_OVERRIDE', [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -164,33 +167,37 @@ INSTALLED_APPS = local_settings.pop('INSTALLED_APPS_OVERRIDE', [
     'rest_framework.authtoken',
     'analytical',
     'channels',
+    'mfa',
+    'axes',
 ])
-INSTALLED_APPS = tuple(INSTALLED_APPS + local_settings.pop('INSTALLED_APPS', []))
+INSTALLED_APPS = tuple(INSTALLED_APPS + portal_config_settings.pop('INSTALLED_APPS', []))
 
-MIDDLEWARE = local_settings.pop('MIDDLEWARE_OVERRIDE', [
+MIDDLEWARE = portal_config_settings.pop('MIDDLEWARE_OVERRIDE', [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'tethys_portal.middleware.TethysMfaRequiredMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'tethys_portal.middleware.TethysSocialAuthExceptionMiddleware',
     'tethys_portal.middleware.TethysAppAccessMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
-
+    'axes.middleware.AxesMiddleware',
 ])
-MIDDLEWARE = tuple(MIDDLEWARE + local_settings.pop('MIDDLEWARE', []))
+MIDDLEWARE = tuple(MIDDLEWARE + portal_config_settings.pop('MIDDLEWARE', []))
 
-AUTHENTICATION_BACKENDS = local_settings.pop('AUTHENTICATION_BACKENDS_OVERRIDE', [
+AUTHENTICATION_BACKENDS = portal_config_settings.pop('AUTHENTICATION_BACKENDS_OVERRIDE', [
+    'axes.backends.AxesBackend',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 ])
-AUTHENTICATION_BACKENDS = tuple(local_settings.pop('AUTHENTICATION_BACKENDS', []) + AUTHENTICATION_BACKENDS)
+AUTHENTICATION_BACKENDS = tuple(portal_config_settings.pop('AUTHENTICATION_BACKENDS', []) + AUTHENTICATION_BACKENDS)
 
-RESOURCE_QUOTA_HANDLERS = local_settings.pop('RESOURCE_QUOTA_HANDLERS_OVERRIDE', [
+RESOURCE_QUOTA_HANDLERS = portal_config_settings.pop('RESOURCE_QUOTA_HANDLERS_OVERRIDE', [
     "tethys_quotas.handlers.workspace.WorkspaceQuotaHandler",
 ])
-RESOURCE_QUOTA_HANDLERS = tuple(RESOURCE_QUOTA_HANDLERS + local_settings.pop('RESOURCE_QUOTA_HANDLERS', []))
+RESOURCE_QUOTA_HANDLERS = tuple(RESOURCE_QUOTA_HANDLERS + portal_config_settings.pop('RESOURCE_QUOTA_HANDLERS', []))
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -260,7 +267,7 @@ TEMPLATES = [
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -268,9 +275,13 @@ STATICFILES_FINDERS = (
     'tethys_apps.static_finders.TethysStaticFinder'
 )
 
-STATIC_ROOT = local_settings.pop('STATIC_ROOT', os.path.join(TETHYS_HOME, 'static'))
+STATIC_ROOT = TETHYS_PORTAL_CONFIG.pop('STATIC_ROOT', os.path.join(TETHYS_HOME, 'static'))
 
-TETHYS_WORKSPACES_ROOT = local_settings.pop('TETHYS_WORKSPACES_ROOT', os.path.join(TETHYS_HOME, 'workspaces'))
+TETHYS_WORKSPACES_ROOT = TETHYS_PORTAL_CONFIG.pop('TETHYS_WORKSPACES_ROOT', os.path.join(TETHYS_HOME, 'workspaces'))
+
+# add any additional TETHYS_PORTAL_CONFIG settings
+for setting, value in TETHYS_PORTAL_CONFIG.items():
+    setattr(this_module, setting, value)
 
 # Messaging settings
 MESSAGE_TAGS = {
@@ -280,6 +291,11 @@ MESSAGE_TAGS = {
     message_constants.WARNING: 'alert-warning',
     message_constants.ERROR: 'alert-danger'
 }
+
+# Email Configuration
+EMAIL_CONFIG = portal_config_settings.pop('EMAIL_CONFIG', {})
+for setting, value in EMAIL_CONFIG.items():
+    setattr(this_module, setting, value)
 
 # Gravatar Settings
 GRAVATAR_URL = 'http://www.gravatar.com/'
@@ -297,14 +313,63 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/apps/'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/accounts/login/'
 
 # OAuth Providers
-OAUTH_CONFIGS = local_settings.pop('OAUTH_CONFIGS', {})
-for setting, value in OAUTH_CONFIGS.items():
+OAUTH_CONFIG = portal_config_settings.pop('OAUTH_CONFIG', {})
+for setting, value in OAUTH_CONFIG.items():
+    setattr(this_module, setting, value)
+
+# MFA Settings
+# See: https://github.com/mkalioby/django-mfa2
+# Methods that shouldn't be allowed for the user, U2F, FIDO2, TOTP, Trusted_Devices, Email
+MFA_REQUIRED = False                # Require all users to set up MFA
+SSO_MFA_REQUIRED = False            # Require users logged in with SSO to set up MFA when MFA_REQUIRED is True
+ADMIN_MFA_REQUIRED = True           # Require admin users to set up MFA when MFA_REQUIRED is True
+MFA_UNALLOWED_METHODS = ('U2F', 'FIDO2', 'Email', 'Trusted_Devices')
+# A function that should be called by username to login the user in session
+MFA_LOGIN_CALLBACK = 'tethys_portal.utilities.log_user_in'
+MFA_RECHECK = True                   # Allow random rechecking of the user
+MFA_RECHECK_MIN = 10                 # Minimum interval in seconds
+MFA_RECHECK_MAX = 30                 # Maximum in seconds
+MFA_QUICKLOGIN = True                # Allow quick login for returning users by provide only their 2FA
+MFA_HIDE_DISABLE = ('FIDO2',)        # Can the user disable his key (Added in 1.2.0).
+MFA_OWNED_BY_ENTERPRISE = False      # Who owns security keys
+TOKEN_ISSUER_NAME = 'Tethys Portal'  # TOTP Issuer name
+
+U2F_APPID = 'http://localhost'       # URL For U2F
+FIDO_SERVER_ID = u'localhost'        # Server rp id for FIDO2, it's the full domain of your project
+FIDO_SERVER_NAME = u'Tethys Portal'
+FIDO_LOGIN_URL = '/auth/login'
+
+MFA_CONFIG = portal_config_settings.pop('MFA_CONFIG', {})
+
+for setting, value in MFA_CONFIG.items():
+    setattr(this_module, setting, value)
+
+# Lockout Configuration
+AXES_ENABLED = not DEBUG
+AXES_FAILURE_LIMIT = 3
+AXES_LOGGER = 'tethys.watch_login'
+AXES_COOLOFF_TIME = dt.timedelta(hours=0.5)
+AXES_ONLY_USER_FAILURES = True
+AXES_ENABLE_ADMIN = True
+AXES_LOCKOUT_TEMPLATE = 'tethys_portal/accounts/lockout.html'
+AXES_VERBOSE = True
+AXES_RESET_ON_SUCCESS = True
+
+LOCKOUT_CONFIG = portal_config_settings.pop('LOCKOUT_CONFIG', {})
+for setting, value in LOCKOUT_CONFIG.items():
+    if setting == 'AXES_COOLOFF_TIME' and isinstance(value, str):
+        import isodate
+        try:
+            value = isodate.parse_duration(value)
+        except Exception:
+            pass
+
     setattr(this_module, setting, value)
 
 # Django Guardian Settings
 ANONYMOUS_USER_ID = -1
 
-CAPTCHA_CONFIG = local_settings.pop('CAPTCHA_CONFIG', {})
+CAPTCHA_CONFIG = portal_config_settings.pop('CAPTCHA_CONFIG', {})
 for setting, value in CAPTCHA_CONFIG.items():
     setattr(this_module, setting, value)
 # If you require reCaptcha to be loaded from somewhere other than https://google.com
@@ -313,12 +378,12 @@ for setting, value in CAPTCHA_CONFIG.items():
 
 # Placeholders for the ID's required by various web-analytics services supported by Django-Analytical.
 # Replace False with the tracking ID as a string e.g. SERVICE_ID = 'abcd1234'
-ANALYTICS_CONFIGS = local_settings.pop('ANALYTICS_CONFIGS', {})
-for setting, value in ANALYTICS_CONFIGS.items():
+ANALYTICS_CONFIG = portal_config_settings.pop('ANALYTICS_CONFIG', {})
+for setting, value in ANALYTICS_CONFIG.items():
     setattr(this_module, setting, value)
 
 ASGI_APPLICATION = "tethys_portal.routing.application"
 
 # Add any additional specified settings to module
-for setting, value in local_settings.items():
+for setting, value in portal_config_settings.items():
     setattr(this_module, setting, value)

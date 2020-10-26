@@ -41,6 +41,8 @@ Permissions and users can be managed from the administrator dashboard using ``Us
 
 **Figure 3.** User management for Tethys Portal.
 
+.. _tethys_portal_app_permission_groups:
+
 Assign App Permission Groups
 ----------------------------
 
@@ -98,7 +100,7 @@ Tethys leverages the excellent `Python Social Auth <https://python-social-auth-d
 
 .. tip::
 
-    For more detailed information on using Python Social Auth in Tethys see the :doc:`./social_auth` documentation.
+    For more detailed information on using Python Social Auth in Tethys see the :doc:`../installation/production/configuration/advanced/social_auth` documentation.
 
 
 .. _tethys_portal_terms_and_conditions:
@@ -193,7 +195,7 @@ The links under the ``TETHYS PORTAL`` heading can be used to customize the look 
 
 .. tip::
 
-    For more information on customizing the Tethys Portal see the :doc:`./customize` documentation.
+    For more information on customizing the Tethys Portal see the :ref:`production_customize_theme` documentation.
 
 .. _admin_pages_tethys_quotas:
 

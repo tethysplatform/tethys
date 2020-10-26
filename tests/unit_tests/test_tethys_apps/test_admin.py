@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from tethys_apps.admin import TethysAppSettingInline, CustomSettingInline, DatasetServiceSettingInline, \
     SpatialDatasetServiceSettingInline, WebProcessingServiceSettingInline, PersistentStoreConnectionSettingInline, \
     PersistentStoreDatabaseSettingInline, TethysAppAdmin, TethysExtensionAdmin, CustomUser, make_gop_app_access_form, \
-    register_custom_group
+    register_custom_group, register_user_keys_admin
 from tethys_quotas.admin import TethysAppQuotasSettingInline, UserQuotasSettingInline
 
 from tethys_quotas.models import TethysAppQuota
@@ -239,12 +239,33 @@ class TestTethysAppAdmin(unittest.TestCase):
         self.assertFalse(ret.has_add_permission(mock.MagicMock()))
 
     @mock.patch('django.contrib.auth.admin.UserAdmin.change_view')
-    def test_admin_site_register_custom_user(self, mock_user_admin):
+    @mock.patch('django.contrib.auth.admin.UserAdmin.add_view')
+    def test_admin_site_register_custom_user(self, mock_ua_add_view, mock_ua_change_view):
         from django.contrib import admin
         ret = CustomUser(mock.MagicMock(), mock.MagicMock())
+
+        # Add custom inline when change_view is called
         ret.change_view(mock.MagicMock())
-        mock_user_admin.assert_called()
-        self.assertEqual([UserQuotasSettingInline], ret.inlines)
+        mock_ua_change_view.assert_called()
+        self.assertIn(UserQuotasSettingInline, ret.inlines)
+
+        # Remove custom inline when change_view is called
+        ret.add_view(mock.MagicMock())
+        mock_ua_add_view.assert_called()
+        self.assertNotIn(UserQuotasSettingInline, ret.inlines)
+
+        # Repeat to complete full cycle (change -> add -> change -> add)
+        # Add custom inline when change_view is called
+        ret.change_view(mock.MagicMock())
+        mock_ua_change_view.assert_called()
+        self.assertIn(UserQuotasSettingInline, ret.inlines)
+
+        # Remove custom inline when change_view is called
+        ret.add_view(mock.MagicMock())
+        mock_ua_add_view.assert_called()
+        self.assertNotIn(UserQuotasSettingInline, ret.inlines)
+
+        # Check registration
         registry = admin.site._registry
         self.assertIn(User, registry)
         self.assertIsInstance(registry[User], CustomUser)
@@ -418,3 +439,13 @@ class TestTethysAppAdmin(unittest.TestCase):
 
         mock_gop_form.assert_called()
         mock_logwarning.assert_called_with('Unable to register CustomGroup.')
+
+    @mock.patch('tethys_apps.admin.tethys_log.warning')
+    @mock.patch('tethys_apps.admin.admin.site.register')
+    def test_admin_user_keys_programming_error(self, mock_register, mock_logwarning):
+        mock_register.side_effect = ProgrammingError
+
+        register_user_keys_admin()
+
+        mock_register.assert_called()
+        mock_logwarning.assert_called_with('Unable to register UserKeys.')

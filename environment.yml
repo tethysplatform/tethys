@@ -42,9 +42,15 @@ dependencies:
 - service_identity
 - condorpy
 - siphon
+- python-jose
+
+# datetime dependencies
+- arrow
+- isodate
 
 # django/plugin dependencies
 - django=2.2.*
+- django-axes
 - django-filter
 - djangorestframework
 - django-bootstrap3
@@ -56,6 +62,7 @@ dependencies:
 - django-analytical
 - django-simple-captcha
 - django-recaptcha2
+- django-mfa2
 - social-auth-app-django
 
 # tests dependencies

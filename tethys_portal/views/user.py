@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from django.conf import settings as django_settings
 from django.shortcuts import render, redirect
 from tethys_sdk.permissions import login_required
 from django.contrib.auth.models import User
@@ -14,6 +15,7 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from rest_framework.authtoken.models import Token
+from mfa.helpers import has_mfa
 
 from tethys_apps.harvester import SingletonHarvester
 from tethys_portal.forms import UserSettingsForm, UserPasswordChangeForm
@@ -46,6 +48,8 @@ def profile(request, username=None):
         'user_token': user_token.key,
         'current_use': current_use,
         'quota': quota,
+        'has_mfa': has_mfa(username=request.user.username, request=request),
+        'mfa_required': getattr(django_settings, 'MFA_REQUIRED', False)
     }
     return render(request, 'tethys_portal/user/profile.html', context)
 
@@ -100,6 +104,8 @@ def settings(request, username=None):
                'user_token': user_token.key,
                'current_use': current_use,
                'quota': quota,
+               'has_mfa': has_mfa(username=request.user.username, request=request),
+               'mfa_required': getattr(django_settings, 'MFA_REQUIRED', False),
                }
 
     return render(request, 'tethys_portal/user/settings.html', context)

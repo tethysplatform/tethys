@@ -37,6 +37,7 @@ MOCK_MODULES = [
     'distro',
     'docker', 'docker.types', 'docker.errors',
     'guardian', 'guardian.admin', 'guardian.models', 'guardian.shortcuts',
+    'mfa', 'mfa.models',
     'model_utils', 'model_utils.managers',
     'plotly', 'plotly.offline',
     'siphon', 'siphon.catalog', 'siphon.http_util',
