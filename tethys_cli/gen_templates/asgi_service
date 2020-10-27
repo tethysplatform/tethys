@@ -22,6 +22,10 @@ process_name=tethys_asgi%(process_num)d
 autostart=true
 autorestart=true
 
+#Ensure process is killed correctly
+stopasgroup=true
+stopsignal=QUIT
+
 # Choose where you want your log to go
 stdout_logfile=/var/log/tethys/tethys.log
 redirect_stderr=true
