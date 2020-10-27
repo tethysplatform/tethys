@@ -122,7 +122,7 @@ def get_log_content(request, job_id, key1, key2=None):
         content = log_func() if callable(log_func) else log_func
         content = content.replace('\n', '<br/>')
 
-        return JsonResponse({'content': content})
+        return JsonResponse({'success': True, 'content': content})
     except Exception as e:
         if key2 is None:
             key2 = ''  # for error message formatting
