@@ -12,6 +12,7 @@ from collections import namedtuple
 import logging
 
 from tethys_sdk.jobs import TethysJob
+from tethys_cli.cli_colors import write_warning
 from .base import TethysGizmoOptions
 from .select_input import SelectInput
 
@@ -125,12 +126,18 @@ class JobsTable(TethysGizmoOptions):
         # code for backwards compatibility. Remove in Tethys v3.3
         if status_actions is not None:
             # deprecation warning
+            write_warning('Deprecation Warning: The "status_actions" option in JobsTable will be removed in '
+                          'the next release of Tethys. Please use "show_status" and "show_actions" instead.')
             self.show_actions = status_actions
-        for option, action in ((run_btn, 'run'), (delete_btn, 'delete'), (show_resubmit_btn, 'resubmit'),
-                               (show_log_btn, 'logs')):
-            if option is not None:
+        lcl = locals()
+        for option, action in (('run_btn', 'run'), ('delete_btn', 'delete'), ('show_resubmit_btn', 'resubmit'),
+                               ('show_log_btn', 'logs')):
+            option_val = lcl[option]
+            if option_val is not None:
                 # deprecation warning
-                if option:
+                write_warning(f'Deprecation Warning: The "{option}" option in JobsTable will be removed in the '
+                              f'next release of Tethys. Please use the "show_actions" and "actions" options instead.')
+                if option_val:
                     actions.append(action)
                 else:
                     try:
