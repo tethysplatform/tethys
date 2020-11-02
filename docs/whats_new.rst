@@ -9,7 +9,7 @@ What's New
 Refer to this article for information about each new release of Tethys Platform.
 
 Release |version|
-=================
+==================
 
 Multi-Factor Authentication
 ===========================
@@ -38,6 +38,19 @@ Automatic Lockout
 * This feature is opt-in.
 
 See: :ref:`advanced_config_lockout`
+
+
+Jobs Table
+==========
+
+* The Status and Actions Columns have been revamped to simplify the Jobs Table.
+* All action buttons (Delete, Resubmit, View Logs, etc.) have been moved into a drop down menu in the actions column.
+* Simple versions of each status are now shown for single-status jobs instead of a filled progress bar.
+* The progress bar is still used to show the status of multiple-status jobs (i.e. workflows).
+* Several arguments for the Jobs Table are now deprecated in favor of a simpler method.
+* Gizmo Showcase was updated for the Jobs Table.
+
+See: :ref:`jobs-table`
 
 Cesium Map View
 ===============
