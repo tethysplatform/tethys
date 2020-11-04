@@ -308,6 +308,6 @@ class CondorBaseTest(TethysTestCase):
 
     @mock.patch('tethys_compute.models.condor.condor_base.CondorBase.condor_object')
     def test_get_log_content(self, mock_co):
-        mock_co.execute.return_value = ('test_out', 'test_err')
+        mock_co._execute.return_value = ('test_out', 'test_err')
         self.condorbase.get_log_content('log_file')
-        mock_co.execute.assert_called_with(['cat', 'log_file'])
+        mock_co._execute.assert_called_with(['cat', 'log_file'])

@@ -400,7 +400,7 @@ function update_row(table_elem){
         data: {column_fields: column_fields, show_status: show_status, show_actions: show_actions, run: run, delete: delete_btn, monitor_url: monitor_url, show_resubmit_btn: resubmit_btn, show_log_btn: show_log_btn, results_url: results_url, actions: actions}
     }).done(function(json){
         if(json.success){
-            var current_status = $('#jobs-table-status-'+job_id).children('div').attr('title') || 'None'
+            var current_status = $('#jobs-table-status-'+job_id).children('div').attr('title') || 'None';
             if(current_status != json.status) {
                 $(table_elem).html(json.html);
                 bind_jobs_table_actions(table_elem);
@@ -417,6 +417,7 @@ function update_row(table_elem){
             $(table_elem).html(json.html);
             bind_jobs_table_actions(table_elem);
         }
+        $('[data-toggle="tooltip"]').tooltip();
     });
 }
 

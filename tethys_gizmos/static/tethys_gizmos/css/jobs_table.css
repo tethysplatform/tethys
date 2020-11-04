@@ -4,6 +4,7 @@
 
 .jobs-table th{
     white-space: nowrap;
+    text-align: center;
 }
 
 .jobs-table td{
@@ -216,33 +217,50 @@ p.loading-error {
 /* Status indicator */
 .status-indicator{
     border-radius: 50%;
-    height: 10px;
-    width: 10px;
+    height: 12px;
+    width: 12px;
     display: inline-block;
     margin-right: 5px;
 }
 
 .status-Pending{
   border: 1px solid black;
+  color: white;
 }
 
 .status-Submitted{
   background: #f0ad4e;
+  color: #f0ad4e;
 }
 
 .status-Running{
   background: #5bc1df;
+  color: #5bc1df;
 }
 
 .status-Complete{
   background: #5cb85b;
+  color: #5cb85b;
 }
 
 .status-Error{
   background: #d9524f;
+  color: #d9524f;
 }
 
 .status-Aborted{
+  background: black;
+  color: black;
+}
+
+.status-info{
+  background: white;
+  margin-right: 5px;
+  font-size: 14px;
+  top: 2px;
+}
+.status-info.status-Pending{
+  border-radius: 50%;
   background: black;
 }
 

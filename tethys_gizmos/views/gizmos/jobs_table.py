@@ -151,6 +151,7 @@ def update_row(request, job_id):
         filters = [f.strip('\'\" ') for f in filter_string.strip('[]').split(',')]
         job = TethysJob.objects.get_subclass(id=job_id)
         status = job.status
+        status_msg = job.status_message
         statuses = None
         if status in ['Various', 'Various-Complete']:
             # Hard code statues for the gizmo showcase
@@ -182,7 +183,7 @@ def update_row(request, job_id):
         row = JobsTable.get_row(job, filters)
 
         data.update({'job': job, 'job_id': job.id, 'row': row, 'column_fields': filters, 'job_status': status,
-                     'job_statuses': statuses, 'delay_loading_status': False})
+                     'job_statuses': statuses, 'delay_loading_status': False, 'error_message': status_msg})
         success = True
         html = render_to_string('tethys_gizmos/gizmos/job_row.html', data)
     except Exception as e:

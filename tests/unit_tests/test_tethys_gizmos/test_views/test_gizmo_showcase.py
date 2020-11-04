@@ -98,10 +98,10 @@ class TestGizmoShowcase(unittest.TestCase):
 
         # Check BasicJob Call
         mock_bj.assert_called_with(_status='VCP', description='Completed multi-process job with some errors',
-                                   label='gizmos_showcase', name='job_8', user=request.user)
+                                   label='gizmos_showcase', name='job_21', user=request.user, status_message=None)
         mock_cw.assert_called_once()
-        mock_cw.assert_called_with(name='job_9', user=request.user, description='Workflow job with multiple nodes.',
-                                   label='gizmos_showcase', _status='VAR')
+        mock_cw.assert_called_with(name='job_22', user=request.user, description='Workflow job with multiple nodes.',
+                                   label='gizmos_showcase', _status='VAR', status_message=None)
 
     @mock.patch('tethys_gizmos.views.gizmo_showcase.render')
     def test_cesium_map_view_home(self, mock_render):

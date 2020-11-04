@@ -107,7 +107,7 @@ class CondorBase(TethysJob):
 
     def _resubmit(self):
         self.condor_object.close_remote()
-        self._execute()
+        self.execute()
 
     @abstractmethod
     def _log_files(self):
@@ -139,7 +139,7 @@ class CondorBase(TethysJob):
         return contents
 
     def get_log_content(self, log_file):
-        content, _ = self.condor_object.execute(['cat', log_file])
+        content, _ = self.condor_object._execute(['cat', log_file])
         return content
 
     def _get_logs_from_workspace(self, log_files):
