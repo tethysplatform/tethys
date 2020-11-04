@@ -4,11 +4,6 @@
 
 .jobs-table th{
     white-space: nowrap;
-    text-align: center;
-}
-
-.jobs-table td{
-    text-align: center;
 }
 
 /* Workflow Nodes Row Styles */
