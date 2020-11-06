@@ -8,6 +8,7 @@
 """
 import logging
 import datetime
+
 from django.utils import timezone
 from django.db import models
 from dask.delayed import Delayed
@@ -307,12 +308,8 @@ class DaskJob(TethysJob):
         contents = dict()
         contents['Scheduler'] = self._parse_log_content(self.scheduler.client.get_scheduler_logs())
         log_workers = self.scheduler.client.get_worker_logs()
-        contents['Workers'] = dict()
-        increment = 0
-        for worker, worker_content in log_workers.items():
-            increment += 1
-
-            contents['Workers'][f'Worker-{increment}'] = self._parse_log_content(worker_content)
+        for i, (worker, worker_content) in enumerate(log_workers.items()):
+            contents[f'Worker-{i}'] = self._parse_log_content(worker_content)
         return contents
 
     @staticmethod

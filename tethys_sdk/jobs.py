@@ -10,6 +10,7 @@
 # flake8: noqa
 # DO NOT ERASE
 from tethys_compute.models import (
+    TethysJob,
     BasicJob,
     CondorJob,
     CondorWorkflow,

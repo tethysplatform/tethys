@@ -347,7 +347,6 @@ for setting, value in MFA_CONFIG.items():
 # Lockout Configuration
 AXES_ENABLED = not DEBUG
 AXES_FAILURE_LIMIT = 3
-AXES_LOGGER = 'tethys.watch_login'
 AXES_COOLOFF_TIME = dt.timedelta(hours=0.5)
 AXES_ONLY_USER_FAILURES = True
 AXES_ENABLE_ADMIN = True

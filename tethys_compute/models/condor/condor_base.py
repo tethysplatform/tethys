@@ -8,12 +8,17 @@
 """
 import os
 from abc import abstractmethod
+from pathlib import Path
+from functools import partial
+import logging
 
 from django.db import models
 from django.utils import timezone
 
 from tethys_compute.models.tethys_job import TethysJob
 from tethys_compute.models.condor.condor_scheduler import CondorScheduler
+
+log = logging.getLogger(__name__)
 
 
 class CondorBase(TethysJob):
@@ -102,7 +107,7 @@ class CondorBase(TethysJob):
 
     def _resubmit(self):
         self.condor_object.close_remote()
-        self._execute()
+        self.execute()
 
     @abstractmethod
     def _log_files(self):
@@ -111,12 +116,31 @@ class CondorBase(TethysJob):
         """
         pass
 
-    @abstractmethod
-    def _get_logs_from_remote(self, log_files, ):
+    def _get_logs_from_remote(self, log_files):
         """
-        Define in condor_workflow. Since we need the instance of condorpy_workflow.
+        Get logs from remote while job is running.
+
+        Args:
+            log_files: the nested dictionaries of all the log files
+
+        Returns: the contents of all the logs files in a nested dictionary.
         """
-        pass
+
+        contents = dict()
+        for log_file_type, log_file_path in log_files.items():
+            if log_file_type == 'workflow':
+                contents['workflow'] = partial(self.get_log_content, log_file_path)
+            else:
+                # Parse out logs for each job.
+                contents[log_file_type] = dict()
+                for job_log_type, job_log_path in log_file_path.items():
+                    contents[log_file_type][job_log_type] = partial(self.get_log_content, job_log_path)
+
+        return contents
+
+    def get_log_content(self, log_file):
+        content, _ = self.condor_object._execute(['cat', log_file])
+        return content
 
     def _get_logs_from_workspace(self, log_files):
         """
@@ -128,29 +152,34 @@ class CondorBase(TethysJob):
         for log_file_type, log_file_path in log_files.items():
             if log_file_type == 'workflow':
                 log_file = os.path.join(self.workspace, self.remote_id, log_file_path)
-                if os.path.isfile(log_file):
-                    with open(log_file) as file:
-                        contents['workflow'] = file.read()
-                else:
-                    contents['workflow'] = f"{log_file} does not exist"
+                contents['workflow'] = partial(self.read_file, log_file)
             else:
                 # Parse out logs for each job.
                 contents[log_file_type] = dict()
                 for job_log_type, job_log_path in log_file_path.items():
                     log_file_folder = os.path.join(self.workspace, self.remote_id, log_file_type, "logs")
                     log_file_ext = job_log_path[-4:]
-                    file_exist = False
+                    file_name = 'File'
                     if os.path.isdir(log_file_folder):
                         for file in os.listdir(log_file_folder):
                             if file.endswith(log_file_ext):
-                                file_exist = True
-                                file = os.path.join(log_file_folder, file)
-                                with open(file) as log_file:
-                                    contents[log_file_type][job_log_type] = log_file.read()
-                    if not file_exist:
-                        contents[log_file_type][job_log_type] = "File does not exist"
+                                file_name = os.path.join(log_file_folder, file)
+                    contents[log_file_type][job_log_type] = partial(self.read_file, file_name)
 
         return contents
+
+    @staticmethod
+    def read_file(file_name):
+        try:
+            file_path = Path(file_name)
+            if file_path.is_file():
+                with file_path.open() as f:
+                    return f.read()
+            else:
+                return f'{file_name} does not exist'
+        except Exception as e:
+            log.exception(e)
+            return f'There was an error while reading {file_name}'
 
     def _get_logs(self):
         """

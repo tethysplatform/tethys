@@ -11,6 +11,10 @@ class JobObject:
         self.creation_time = creation_time
         self.run_time = run_time
         self.extended_properties = {'processing_results': True}
+        self.status = 'Pending'
+
+    def __lt__(self, other):
+        return self.id < other.id
 
 
 class TestJobsTable(unittest.TestCase):
@@ -31,11 +35,10 @@ class TestJobsTable(unittest.TestCase):
                                          show_log_btn=True)
 
         mock_set.assert_called_with(jobs,  ['id', 'name', 'description', 'creation_time', 'run_time'])
-        self.assertTrue(ret.status_actions)
-        self.assertTrue(ret.run)
-        self.assertTrue(ret.delete)
-        self.assertTrue(ret.show_resubmit_btn)
-        self.assertTrue(ret.show_log_btn)
+        self.assertIn('run', ret.actions)
+        self.assertIn('delete', ret.actions)
+        self.assertIn('resubmit', ret.actions)
+        self.assertIn('logs', ret.actions)
         self.assertTrue(ret.delay_loading_status)
         self.assertFalse(ret.hover)
         self.assertFalse(ret.bordered)
@@ -46,20 +49,31 @@ class TestJobsTable(unittest.TestCase):
         self.assertEqual('', ret.classes)
         self.assertEqual(5000, ret.refresh_interval)
         self.assertFalse(ret.show_detailed_status)
-        self.assertEqual(9, ret.num_cols)
+        self.assertEqual(7, ret.num_cols)
 
     @mock.patch('tethys_gizmos.gizmo_options.jobs_table.JobsTable.set_rows_and_columns')
-    def test_JobsTable_init_no_status_actions(self, mock_set):
+    def test_JobsTable_init_monitor_url(self, mock_set):
         job1 = JobObject(1, 'name1', 'des1', 1, 1)
         job2 = JobObject(2, 'name2', 'des2', 2, 2)
         jobs = [job1, job2]
         column_fields = ['id', 'name', 'description', 'creation_time', 'run_time']
 
-        ret = gizmo_jobs_table.JobsTable(jobs=jobs, column_fields=column_fields, status_actions=False)
+        ret = gizmo_jobs_table.JobsTable(jobs=jobs, column_fields=column_fields, monitor_url='monitor')
 
-        mock_set.assert_called_with(jobs, ['id', 'name', 'description', 'creation_time', 'run_time'])
-        self.assertFalse(ret.status_actions)
-        self.assertEqual(5, ret.num_cols)
+        self.assertIn('monitor', ret.actions)
+        self.assertEqual('monitor', ret.monitor_url)
+
+    @mock.patch('tethys_gizmos.gizmo_options.jobs_table.JobsTable.set_rows_and_columns')
+    def test_JobsTable_init_results_url(self, mock_set):
+        job1 = JobObject(1, 'name1', 'des1', 1, 1)
+        job2 = JobObject(2, 'name2', 'des2', 2, 2)
+        jobs = [job1, job2]
+        column_fields = ['id', 'name', 'description', 'creation_time', 'run_time']
+
+        ret = gizmo_jobs_table.JobsTable(jobs=jobs, column_fields=column_fields, results_url='results')
+
+        self.assertIn('results', ret.actions)
+        self.assertEqual('results', ret.results_url)
 
     @mock.patch('tethys_gizmos.gizmo_options.jobs_table.JobsTable.set_rows_and_columns')
     def test_JobsTable_init_no_delete_btn(self, mock_set):
@@ -71,9 +85,8 @@ class TestJobsTable(unittest.TestCase):
         ret = gizmo_jobs_table.JobsTable(jobs=jobs, column_fields=column_fields, delete_btn=False)
 
         mock_set.assert_called_with(jobs, ['id', 'name', 'description', 'creation_time', 'run_time'])
-        self.assertTrue(ret.status_actions)
-        self.assertFalse(ret.delete)
-        self.assertEqual(6, ret.num_cols)
+        self.assertFalse(ret.actions['delete'])
+        self.assertEqual(7, ret.num_cols)
 
     def test_set_rows_and_columns(self):
         job1 = JobObject(1, 'name1', 'des1', 1, 1)
@@ -83,17 +96,16 @@ class TestJobsTable(unittest.TestCase):
 
         # This set_rows_and_columns method is called at the init
         result = gizmo_jobs_table.JobsTable(jobs=jobs, column_fields=column_fields)
-        self.assertIn(job1.id, result['rows'][0])
-        self.assertIn(job1.name, result['rows'][0])
-        self.assertIn(job1.description, result['rows'][0])
-        self.assertIn(job1.creation_time, result['rows'][0])
-        self.assertIn(job1.run_time, result['rows'][0])
-        self.assertIn(job2.id, result['rows'][1])
-        self.assertIn(job2.name, result['rows'][1])
-        self.assertIn(job2.description, result['rows'][1])
-        self.assertIn(job2.creation_time, result['rows'][1])
-        self.assertIn(job2.run_time, result['rows'][1])
-        self.assertTrue(result['status_actions'])
+        self.assertIn(job1.id, result['rows'][0].columns)
+        self.assertIn(job1.name, result['rows'][0].columns)
+        self.assertIn(job1.description, result['rows'][0].columns)
+        self.assertIn(job1.creation_time, result['rows'][0].columns)
+        self.assertIn(job1.run_time, result['rows'][0].columns)
+        self.assertIn(job2.id, result['rows'][1].columns)
+        self.assertIn(job2.name, result['rows'][1].columns)
+        self.assertIn(job2.description, result['rows'][1].columns)
+        self.assertIn(job2.creation_time, result['rows'][1].columns)
+        self.assertIn(job2.run_time, result['rows'][1].columns)
 
     def test_set_rows_and_columns_no_jobs(self):
         column_fields = ['id', 'name', 'description', 'creation_time', 'run_time']
@@ -116,13 +128,13 @@ class TestJobsTable(unittest.TestCase):
 
     def test_get_gizmo_css(self):
         gizmo_css = gizmo_jobs_table.JobsTable.get_gizmo_css()
-        self.assertEqual(1, len(gizmo_css))
+        self.assertEqual(2, len(gizmo_css))
         self.assertIn('jobs_table.css', gizmo_css[0])
         self.assertNotIn('.js', gizmo_css[0])
 
     def test_get_vendor_js(self):
         vendor_js = gizmo_jobs_table.JobsTable.get_vendor_js()
-        self.assertEqual(5, len(vendor_js))
+        self.assertEqual(6, len(vendor_js))
         self.assertIn('d3', vendor_js[0])
         self.assertIn('.js', vendor_js[0])
         self.assertNotIn('.css', vendor_js[0])
@@ -144,3 +156,26 @@ class TestJobsTable(unittest.TestCase):
         self.assertEqual(1, len(gizmo_js))
         self.assertIn('jobs_table.js', gizmo_js[0])
         self.assertNotIn('.css', gizmo_js[0])
+
+    def test_depricated_exception(self):
+        job1 = JobObject(1, 'name1', 'des1', 1, 1)
+        job2 = JobObject(2, 'name2', 'des2', 2, 2)
+        jobs = [job1, job2]
+        column_fields = ['id', 'name', 'description', 'creation_time', 'run_time']
+
+        ret = gizmo_jobs_table.JobsTable(jobs=jobs, column_fields=column_fields, actions=['delete'], run_btn=False)
+        self.assertTrue(ret.actions['delete'])
+        self.assertFalse(ret.actions['run'])
+
+    @mock.patch('tethys_gizmos.gizmo_options.jobs_table.JobsTable.set_rows_and_columns')
+    def test_deprecated_status_actions(self, mock_set):
+        job1 = JobObject(1, 'name1', 'des1', 1, 1)
+        job2 = JobObject(2, 'name2', 'des2', 2, 2)
+        jobs = [job1, job2]
+        column_fields = ['id', 'name', 'description', 'creation_time', 'run_time']
+
+        ret = gizmo_jobs_table.JobsTable(jobs=jobs, column_fields=column_fields, status_actions=False)
+
+        mock_set.assert_called_with(jobs, ['id', 'name', 'description', 'creation_time', 'run_time'])
+        self.assertFalse(ret.show_actions)
+        self.assertEqual(6, ret.num_cols)
