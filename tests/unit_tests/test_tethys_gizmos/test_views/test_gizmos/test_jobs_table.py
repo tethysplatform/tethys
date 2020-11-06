@@ -35,6 +35,25 @@ class TestJobsTable(unittest.TestCase):
         mock_log.error.assert_called_with('The following error occurred when executing job %s: %s', '1', 'error')
 
     @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
+    def test_terminate(self, mock_tj):
+        tj = mock_tj.objects.get_subclass()
+        tj.stop.return_value = mock.MagicMock()
+
+        result = gizmo_jobs_table.terminate(request='', job_id='1')
+
+        self.assertEqual(200, result.status_code)
+
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.log')
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
+    def test_terminate_exception(self, mock_tj, mock_log):
+        tj = mock_tj.objects.get_subclass()
+        tj.stop.side_effect = Exception('error')
+
+        gizmo_jobs_table.terminate(request='', job_id='1')
+
+        mock_log.error.assert_called_with('The following error occurred when terminating job %s: %s', '1', 'error')
+
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
     def test_delete(self, mock_tj):
         tj = mock_tj.objects.get_subclass()
         tj.delete.return_value = mock.MagicMock()
@@ -75,7 +94,7 @@ class TestJobsTable(unittest.TestCase):
     @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob.objects.get_subclass')
     def test_show_log(self, mock_tj):
         tj = mock_tj()
-        tj.get_logs.return_value = 'log_data'
+        tj.get_logs.return_value = {'log': {'sub_log_1': mock.MagicMock(), 'sub_log_2': 'log content'}}
 
         result = gizmo_jobs_table.show_log(request='', job_id='1')
         self.assertEqual(200, result.status_code)
@@ -88,8 +107,38 @@ class TestJobsTable(unittest.TestCase):
 
         gizmo_jobs_table.show_log(request='', job_id='1')
 
-        mock_log.error.assert_called_with('The following error occurred when retrieving log for job %s: %s',
+        mock_log.error.assert_called_with('The following error occurred when retrieving logs for job %s: %s',
                                           '1', 'error')
+
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
+    def test_get_log_content(self, mock_tj):
+        tj = mock_tj.objects.get_subclass()
+        tj.get_logs.return_value = {'log': 'log content'}
+
+        result = gizmo_jobs_table.get_log_content(request='', job_id='1', key1='log')
+        self.assertEqual(200, result.status_code)
+
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
+    def test_get_log_content_key2(self, mock_tj):
+        tj = mock_tj.objects.get_subclass()
+        log_func = mock.MagicMock()
+        log_func.return_value = 'log content'
+        tj.get_logs.return_value = {'log': {'sub_log_1': log_func, 'sub_log_2': 'log content'}}
+
+        result = gizmo_jobs_table.get_log_content(request='', job_id='1', key1='log', key2='sub_log_1')
+        self.assertEqual(200, result.status_code)
+
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.log')
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
+    def test_get_log_content_exception(self, mock_tj, mock_log):
+        tj = mock_tj.objects.get_subclass()
+        tj.get_logs.side_effect = Exception('error')
+
+        gizmo_jobs_table.get_log_content(request='', job_id='1', key1='log')
+
+        mock_log.error.assert_called_with(
+            'The following error occurred when retrieving log content for log %s in job %s: %s', '1', 'log ', 'error'
+        )
 
     @mock.patch('tethys_gizmos.views.gizmos.jobs_table.render_to_string')
     @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
@@ -108,6 +157,26 @@ class TestJobsTable(unittest.TestCase):
         self.assertEqual('Various', rts_call_args[0][0][1]['job_status'])
         self.assertIn('job_statuses', rts_call_args[0][0][1])
         self.assertEqual({'Completed': 40, 'Error': 10, 'Running': 30, 'Aborted': 5},
+                         rts_call_args[0][0][1]['job_statuses'])
+        self.assertEqual(200, result.status_code)
+
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.render_to_string')
+    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
+    def test_update_row_showcase_various_complete(self, mock_tj, mock_rts):
+        mock_rts.return_value = '{"job_statuses":[]}'
+        mock_tj.objects.get_subclass.return_value = mock.MagicMock(
+            spec=TethysJob, status='Various-Complete', label='gizmos_showcase'
+        )
+        rows = [('1', '30')]
+        column_names = ['id', 'creation_time']
+        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
+        result = gizmo_jobs_table.update_row(request, job_id='1')
+
+        # Check Result
+        rts_call_args = mock_rts.call_args_list
+        self.assertEqual('Various-Complete', rts_call_args[0][0][1]['job_status'])
+        self.assertIn('job_statuses', rts_call_args[0][0][1])
+        self.assertEqual({'Completed': 80, 'Error': 15, 'Running': 0, 'Aborted': 5},
                          rts_call_args[0][0][1]['job_statuses'])
         self.assertEqual(200, result.status_code)
 
@@ -142,7 +211,9 @@ class TestJobsTable(unittest.TestCase):
         )
         rows = [('1', '30')]
         column_names = ['id', 'creation_time']
-        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
+
+        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows,
+                                                  'actions[run]': False, 'actions[resubmit]': False})
         result = gizmo_jobs_table.update_row(request, job_id='1')
 
         # Check Result
@@ -207,116 +278,6 @@ class TestJobsTable(unittest.TestCase):
 
         # Check Result
         mock_log.warning.assert_called_with('Updating row for job 1 failed: error')
-
-    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
-    def test_update_status_showcase(self, mock_tj):
-        mock_tj.objects.get_subclass.return_value = mock.MagicMock(
-            spec=TethysJob, status='Various', label='gizmos_showcase'
-        )
-        rows = [('1', '30'),
-                ('2', '18'),
-                ('3', '26')]
-        column_names = ['id', 'creation_time']
-        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
-        result = gizmo_jobs_table.update_status(request, job_id='1')
-
-        # Check Result
-        self.assertEqual(200, result.status_code)
-        data = json.loads(result.content.decode())
-        self.assertTrue(data['success'])
-        self.assertEqual('Various', data['status'])
-        self.assertIn('40% Complete', data['html'])
-        self.assertIn('30% Running', data['html'])
-        self.assertIn('10% Error', data['html'])
-        self.assertIn('5% Aborted', data['html'])
-
-    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
-    def test_update_status_showcase_condor_workflow(self, mock_tj):
-        mock_tj.objects.get_subclass.return_value = mock.MagicMock(
-            spec=CondorWorkflow, status='Various', label='gizmos_showcase'
-        )
-        rows = [('1', '30'),
-                ('2', '18'),
-                ('3', '26')]
-        column_names = ['id', 'creation_time']
-        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
-        result = gizmo_jobs_table.update_status(request, job_id='1')
-
-        # Check Result
-        self.assertEqual(200, result.status_code)
-        data = json.loads(result.content.decode())
-        self.assertTrue(data['success'])
-        self.assertEqual('Various', data['status'])
-        self.assertIn('20% Complete', data['html'])
-        self.assertIn('40% Running', data['html'])
-        self.assertIn('20% Error', data['html'])
-        self.assertNotIn('Aborted', data['html'])
-
-    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
-    def test_update_status(self, mock_tj):
-        mock_tj.objects.get_subclass.return_value = mock.MagicMock(
-            spec=TethysJob, status='Various', label='test_label',
-            statuses={'Completed': 1, 'Running': 1}, num_jobs=2
-        )
-        rows = [('1', '30'),
-                ('2', '18'),
-                ('3', '26')]
-        column_names = ['id', 'creation_time']
-        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
-        result = gizmo_jobs_table.update_status(request, job_id='1')
-
-        # Check Result
-        self.assertEqual(200, result.status_code)
-        data = json.loads(result.content.decode())
-        self.assertTrue(data['success'])
-        self.assertEqual('Various', data['status'])
-        self.assertIn('50.0% Complete', data['html'])
-        self.assertIn('50.0% Running', data['html'])
-        self.assertNotIn('Aborted', data['html'])
-        self.assertNotIn('Error', data['html'])
-
-    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
-    def test_update_status_condor_workflow_no_status(self, mock_tj):
-        mock_tj.objects.get_subclass.return_value = mock.MagicMock(
-            spec=CondorWorkflow, status='Various', label='test_label',
-            statuses={'Completed': 0, 'Running': 0}, num_jobs=2
-        )
-        rows = [('1', '30'),
-                ('2', '18'),
-                ('3', '26')]
-        column_names = ['id', 'creation_time']
-        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
-        result = gizmo_jobs_table.update_status(request, job_id='1')
-
-        # Check Result
-        self.assertEqual(200, result.status_code)
-        data = json.loads(result.content.decode())
-        self.assertTrue(data['success'])
-        self.assertEqual('Submitted', data['status'])
-        self.assertIn('progress', data['html'])
-        self.assertIn('title="Submitted"', data['html'])
-        self.assertNotIn('Running', data['html'])
-        self.assertNotIn('Aborted', data['html'])
-        self.assertNotIn('Error', data['html'])
-
-    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.log')
-    @mock.patch('tethys_gizmos.views.gizmos.jobs_table.TethysJob')
-    def test_update_status_exception(self, mock_tj, mock_log):
-        mock_tj.objects.get_subclass.side_effect = Exception('error')
-        rows = [('1', '30'),
-                ('2', '18'),
-                ('3', '26')]
-        column_names = ['id', 'creation_time']
-        request = RequestFactory().post('/jobs', {'column_fields': column_names, 'row': rows})
-        result = gizmo_jobs_table.update_status(request, job_id='1')
-
-        mock_log.exception.assert_called_with('The following error occurred when updating status for job %s: %s', '1',
-                                              str('error'))
-        self.assertEqual(200, result.status_code)
-        data = json.loads(result.content.decode())
-        self.assertFalse(data['success'])
-        self.assertIsNone(data['status'])
-        self.assertIsNone(data['html'])
 
     def test_parse_value(self):
         result = gizmo_jobs_table._parse_value('True')

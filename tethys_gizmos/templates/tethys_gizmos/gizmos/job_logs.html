@@ -1,0 +1,8 @@
+{% load static tethys_gizmos %}
+
+{% gizmo sub_job_select %}
+{% for log, options in log_options.items %}
+<div id="{{log}}" class="jobs-table-log-menu" hidden>
+    {% gizmo options %}
+</div>
+{% endfor %}

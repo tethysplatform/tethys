@@ -1,11 +1,11 @@
 {% load static tethys_gizmos %}
 
-{% for column_value in row %}
+{% for column_value in row.columns %}
   {% with col_idx=forloop.counter0 %}
-    <td id="{{ column_fields|return_item:col_idx }}-{{ job_id }}">{{ column_value }}</td>
+    <td class="{{ column_fields|return_item:col_idx }}-field" id="{{ column_fields|return_item:col_idx }}-{{ job_id }}">{{ column_value }}</td>
   {% endwith %}
 {% endfor %}
-{% if status_actions %}
+{% if show_status %}
   <td id="jobs-table-status-{{ job.id }}" class="job-status status-col" data-job-id="{{ job_id }}">
     {% if delay_loading_status %}
     <div class="progress" style="margin-bottom: 0;">
@@ -14,22 +14,79 @@
       </div>
     </div>
     {% else %}
-      {% include "tethys_gizmos/gizmos/job_status.html" %}
+    <div align="left">
+      {% if job_status == 'Various' or job_status == 'Various-Complete' %}
+        <div class="progress" data-toggle="tooltip" title="{{ job_status }}" data-placement="top" style="margin-bottom: 0;">
+          {% if job_statuses.Aborted > 0 %}
+          <div class="progress-bar progress-bar progress-bar" role="progressbar" title="Aborted" aria-valuenow="{{ job_statuses.Aborted }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Aborted }}%; background-color: #555555;">
+            <span class="sr-only">{{ job_statuses.Aborted }}% Aborted</span>
+          </div>
+          {% endif %}
+          {% if job_statuses.Error > 0 %}
+          <div class="progress-bar progress-bar-danger progress-bar" role="progressbar" title="Error" aria-valuenow="{{ job_statuses.Error }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Error }}%">
+            <span class="sr-only">{{ job_statuses.Error }}% Error</span>
+          </div>
+          {% endif %}
+          {% if job_statuses.Completed > 0 %}
+          <div class="progress-bar progress-bar-success progress-bar" role="progressbar" title="Complete" aria-valuenow="{{ job_statuses.Completed }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Completed }}%">
+            <span class="sr-only">{{ job_statuses.Completed }}% Complete</span>
+          </div>
+          {% endif %}
+          {% if job_statuses.Running > 0 %}
+          <div class="progress-bar progress-bar-info progress-bar-striped active" title="Running" role="progressbar" aria-valuenow="{{ job_statuses.Running }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ job_statuses.Running }}%">
+            <span class="sr-only">{{ job_statuses.Running }}% Running</span>
+          </div>
+          {% endif %}
+        </div>
+      {% else %}
+        {% if error_message %}
+          <span class="glyphicon glyphicon-info-sign status-info status-{{ job_status }}" aria-hidden="true" data-toggle="tooltip" data-placement="left" title="{{ error_message }}"></span>
+        {% else %}
+          <div class="status-indicator status-{{ job_status }}"></div>
+        {% endif %}
+        {{ job_status }}
+      {% endif %}
+    </div>
     {% endif %}
   </td>
-  {% if delete %}
-    <td>
-      <a class='btn btn-danger btn-xs btn-job-delete' href="javascript:void(0)" data-job-id="{{ job_id }}" >Delete</a>
-    </td>
-  {% endif %}
-  {% if show_resubmit_btn %}
-    <td>
-      <a class='btn btn-warning btn-xs btn-job-resubmit' href="javascript:void(0)" data-job-id="{{ job_id }}" >Resubmit</a>
-    </td>
-  {% endif %}
-  {% if show_log_btn %}
-    <td>
-      <a class='btn btn-info btn-xs btn-job-show-log' href="javascript:void(0)" data-job-id="{{ job_id }}" data-toggle="modal" data-target="#modal-dialog-jobs-table-show-log">Logs</a>
-    </td>
-  {% endif %}
+{% endif %}
+{% if show_actions %}
+  <td>
+    <div class="btn-group">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-right">
+        {% if actions.run %}
+          <li class="{% if not row.actions.run %}disabled{% endif %}"><a class='dropdown-item btn-job-run' href="javascript:void(0)" data-job-id="{{ job_id }}" >Run</a></li>
+        {% endif %}
+        {% if actions.resubmit %}
+          <li class="{% if not row.actions.resubmit %}disabled{% endif %}"><a class='dropdown-item btn-job-resubmit' href="javascript:void(0)" data-job-id="{{ job_id }}" >Resubmit</a></li>
+        {% endif %}
+        {% if actions.run or actions.resubmit %}
+        {% if actions.logs or actions.monitor or actions.results %}
+          <li role="separator" class="divider"></li>
+        {% endif %}
+        {% endif %}
+        {% if actions.logs %}
+          <li class="{% if not row.actions.logs %}disabled{% endif %}"><a class="dropdown-item {% if row.actions.logs %}btn-job-show-log" href="javascript:void(0)" data-job-id="{{ job_id }}" data-toggle="modal" data-target="#modal-dialog-jobs-table-show-log"{% else %}" href="#"{% endif %}>View Logs</a></li>
+        {% endif %}
+        {% if actions.monitor %}
+          <li class="{% if not row.actions.monitor %}disabled{% endif %}"><a class='dropdown-item' href="{% if row.actions.monitor %}{% url monitor_url job_id=job.id %}{% else %}#{% endif %}">Monitor Job</a></li>
+        {% endif %}
+        {% if actions.results %}
+          <li class="{% if not row.actions.results %}disabled{% endif %}"><a class='dropdown-item' href="{% if row.actions.results %}{% url results_url job_id=job.id %}{% else %}#{% endif %}">View Results</a></li>
+        {% endif %}
+        {% if actions.delete or actions.terminate %}
+          <li role="separator" class="divider"></li>
+        {% endif %}
+        {% if actions.terminate %}
+          <li class="{% if not row.actions.terminate %}disabled{% endif %}"><a class="dropdown-item {% if row.actions.terminate %}btn-job-terminate" href="javascript:void(0)" data-job-id="{{ job_id }}" data-toggle="modal" data-target="#modal-dialog-jobs-table-confirm"{% else %}" href="#"{% endif %}>Terminate</a></li>
+        {% endif %}
+        {% if actions.delete %}
+          <li class="{% if not row.actions.delete %}disabled{% endif %}"><a class="dropdown-item {% if row.actions.delete %}btn-job-delete" href="javascript:void(0)" data-job-id="{{ job_id }}" data-toggle="modal" data-target="#modal-dialog-jobs-table-confirm"{% else %}" href="#"{% endif %}>Delete</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </td>
 {% endif %}
