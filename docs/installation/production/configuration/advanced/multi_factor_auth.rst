@@ -1,3 +1,5 @@
+.. _multi_factor_auth_config:
+
 **************************************
 Multi Factor Authentication (Optional)
 **************************************
