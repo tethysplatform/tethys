@@ -541,7 +541,7 @@ class DaskJobTest(TethysTestCase):
         # Create DaskJob
         djob = DaskJob(name='test_dj', user=self.user, label='label', scheduler=self.scheduler)
         expected_ret = {'Scheduler': '"INFO", "dask_scheduler_log1"\n"INFO", "dask_scheduler_log2"',
-                        'Workers': {'Worker-1': '"INFO", "dask_worker1_log1"\n"INFO", "dask_worker1_log2"'}}
+                        'Worker-0': '"INFO", "dask_worker1_log1"\n"INFO", "dask_worker1_log2"'}
         ret = djob._get_logs()
 
         self.assertEqual(expected_ret, ret)

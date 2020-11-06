@@ -99,28 +99,6 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
                                          }
         return log_folder_list
 
-    def _get_logs_from_remote(self, log_files):
-        """
-        Get logs from remote while job is running.
-
-        Args:
-            log_files: the nested dictionaries of all the log files
-
-        Returns: the contents of all the logs files in a nested dictionary.
-        """
-
-        contents = dict()
-        for log_file_type, log_file_path in log_files.items():
-            if log_file_type == 'workflow':
-                contents['workflow'], _ = self._condor_object._execute(['cat', log_file_path])
-            else:
-                # Parse out logs for each job.
-                contents[log_file_type] = dict()
-                for job_log_type, job_log_path in log_file_path.items():
-                    contents[log_file_type][job_log_type], _ = self._condor_object._execute(['cat', job_log_path])
-
-        return contents
-
 
 @receiver(pre_save, sender=CondorWorkflow)
 def condor_workflow_pre_save(sender, instance, raw, using, update_fields, **kwargs):

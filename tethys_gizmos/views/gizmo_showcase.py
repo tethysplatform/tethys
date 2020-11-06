@@ -1605,11 +1605,13 @@ def jobs_table_demo(request):
         striped=False,
         bordered=False,
         condensed=False,
+        monitor_url='gizmos:results',
         results_url='gizmos:results',
         refresh_interval=10000,
+        run_btn=True,
         delete_btn=True,
         show_detailed_status=True,
-        show_resubmit_btn=True,
+        actions=['run', 'resubmit', 'log', 'monitor', 'results', 'terminate', 'delete'],
     )
 
     context = {'jobs_table': jobs_table_options}
@@ -1618,36 +1620,35 @@ def jobs_table_demo(request):
 
 
 def jobs_table_results(request, job_id):
-    return redirect(reverse('gizmos:showcase') + '#jobs_table_docs')
+    return redirect(reverse('gizmos:jobs_table'))
 
 
 def create_sample_jobs(request):
-    def create_job(id, description, status, workflow=False):
-        if not workflow:
-            job = BasicJob(name='job_{0}'.format(id),
-                           user=request.user,
-                           description=description,
-                           label='gizmos_showcase',
-                           _status=status,
-                           )
-        else:
-            job = CondorWorkflow(
-                name='job_{0}'.format(id),
-                user=request.user,
-                description=description,
-                label='gizmos_showcase',
-                _status=status
-            )
+    def create_job(job_id, description, status, status_msg=None, workflow=False):
+        Job = CondorWorkflow if workflow else BasicJob
+        job = Job(
+            name=f'job_{job_id}',
+            user=request.user,
+            description=description,
+            label='gizmos_showcase',
+            status_message=status_msg,
+            _status=status,
+        )
         job.save()
 
-    create_job('1', 'Pending job', 'PEN')
-    create_job('2', 'Submitted job', 'SUB')
-    create_job('3', 'Running job', 'RUN')
-    create_job('4', 'Running multi-process job with various statuses', 'VAR')
-    create_job('5', 'Job error', 'ERR')
-    create_job('6', 'Aborted job', 'ABT')
-    create_job('7', 'Completed job', 'COM')
-    create_job('8', 'Completed multi-process job with some errors', 'VCP')
-    create_job('9', 'Workflow job with multiple nodes.', 'VAR', workflow=True)
+    for i, (desc, status) in enumerate((
+            ('Pending job', 'PEN'),
+            ('Submitted job', 'SUB'),
+            ('Running job', 'RUN'),
+            ('Job error', 'ERR'),
+            ('Aborted job', 'ABT'),
+            ('Completed job', 'COM'),
+    )):
+        create_job(i, desc, status)
+        create_job(i + 10, desc, status, status_msg=f'{desc} status message')
+
+    create_job('20', 'Running multi-process job with various statuses', 'VAR')
+    create_job('21', 'Completed multi-process job with some errors', 'VCP')
+    create_job('22', 'Workflow job with multiple nodes.', 'VAR', workflow=True)
 
     return redirect(reverse('gizmos:jobs_table') + '#jobs_table_docs')
