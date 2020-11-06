@@ -1,3 +1,5 @@
+.. _single_sign_on_config:
+
 *************************
 Single Sign On (Optional)
 *************************

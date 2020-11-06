@@ -1,3 +1,5 @@
+.. _production_channels_config:
+
 ********************************
 Django Channels Layer (Optional)
 ********************************
