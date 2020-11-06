@@ -5,7 +5,9 @@
 .jobs-table th{
     white-space: nowrap;
 }
-
+.jobs-table>tbody>tr>td {
+    vertical-align: middle;
+}
 /* Workflow Nodes Row Styles */
 .workflow-nodes-graph {
     overflow: hidden;

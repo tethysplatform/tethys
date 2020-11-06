@@ -152,6 +152,7 @@ function bind_resubmit_button(btn){
             url: resubmit_url
         }).done(function(json){
             update_row($(btn).closest('tr'));
+            update_workflow_nodes_row($(btn).closest('tr').next('tr'));
             $("#jobs_table_overlay").addClass('hidden');
             if(json.success){
                 var alert_html = '<div class="alert alert-success alert-dismissible" role="alert">' +
