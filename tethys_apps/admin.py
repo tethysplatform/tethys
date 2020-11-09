@@ -333,7 +333,6 @@ def register_custom_group():
 
 def register_user_keys_admin():
     try:
-        User_Keys._meta.app_label = 'auth'
         User_Keys._meta.verbose_name = 'Users MFA Key'
         User_Keys._meta.verbose_name_plural = 'Users MFA Keys'
         admin.site.register(User_Keys, UserKeyAdmin)
