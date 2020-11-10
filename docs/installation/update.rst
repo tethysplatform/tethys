@@ -22,9 +22,9 @@ Upgrade Steps
 
     conda activate tethys
 
-3. Update the Tethys Platform conda package and dependencies::
+3. Update the Tethys Platform conda package and dependencies by installing the new version of Tethys Platform::
 
-    conda update -c tethysplatform -c conda-forge tethys-platform
+    conda install -c tethysplatform -c conda-forge tethys-platform=3.*
 
 4. Migrate the Tethys Platform database tables::
 
@@ -34,7 +34,7 @@ Upgrade Steps
 
 .. note::
 
-    In previous versions of Tethys Platform it was required to back up the :file:`settings.py` file before upgrading and then copy your custom settings from the backup to the new :file:`settings.py` file after upgrading. As of version 3.0, this should no longer be the case. All custom settings should be defined in the :file:`portal_config.yml`, which is preserved during upgrades. See: :ref:`tethys_configuration` for more details.
+    In previous versions of Tethys Platform it was required to backup the :file:`settings.py` file before upgrading and then copy your custom settings from the backup to the new :file:`settings.py` file after upgrading. As of version 3.0, this should no longer be the case. All custom settings should be defined in the :file:`portal_config.yml`, which is preserved during upgrades. See: :ref:`tethys_configuration` for more details.
 
 Additional Upgrade Steps for Production Installations
 -----------------------------------------------------
