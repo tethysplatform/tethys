@@ -1,7 +1,7 @@
 {% if not original %}
   {% load static tethys_gizmos %}
 {% endif %}
-<div class="form-group {% if error %} has-error {% endif %}">
+<div id="form-group-{{ name }}" class="form-group {% if error %} has-error {% endif %}">
   {% if display_text %}<label class="control-label" for="{{ name }}">{{ display_text }}</label>{% endif %}
   <select id="{{ name }}" class="{% if not original %}tethys-select2{% else %}form-control{% endif %}{% if classes %} {{ classes }}{% endif %}"
     name="{{ name }}" {% if not original %}style="width:100%;"{% endif %}
