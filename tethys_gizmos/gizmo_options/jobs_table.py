@@ -11,7 +11,6 @@
 from collections import namedtuple
 import logging
 
-from tethys_sdk.jobs import TethysJob
 from tethys_cli.cli_colors import write_warning
 from .base import TethysGizmoOptions
 from .select_input import SelectInput
@@ -203,6 +202,7 @@ class JobsTable(TethysGizmoOptions):
             A list of field values for one row.
 
         """
+        from tethys_compute.models import TethysJob
         row_values = list()
         job_actions = dict()
         for attribute in job_attributes:
