@@ -279,3 +279,26 @@ class UserPasswordChangeForm(forms.Form):
         if commit:
             self.user.save()
         return self.user
+
+
+class SsoTenantForm(forms.Form):
+    tenant = forms.RegexField(
+        label='',
+        max_length=30,
+        required=True,
+        regex=r'^[\w\s_-]+$',
+        error_messages={
+            'invalid': "This field may contain only letters, numbers, spaces, and -/_ characters."
+        },
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Tenant',
+                'autofocus': 'autofocus'
+            }
+        )
+    )
+
+    remember = forms.BooleanField(
+        label='Remember for next time',
+        required=False,
+    )

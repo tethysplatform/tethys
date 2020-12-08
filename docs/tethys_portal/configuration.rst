@@ -122,6 +122,7 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
 
   * **OAUTH_CONFIG**:
 
+    * **SSO_TENANT_ALIAS**: Alias to use for "Tenant" on the /accounts/tenant/ page. This page is only needed when using Multi-Tenant SSO features. Defaults to "Tenant".
     * **SOCIAL_AUTH_AZUREAD_OAUTH2_KEY**: Key for authenticating with Azure Active Directory using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
     * **SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET**: Secret for authenticating with Azure Active Directory using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
     * **SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY**: Key for authenticating with Azure Active Directory against a single Tenant/Active Directory using their OAuth2 service. See :ref:`social_auth_azuread` SSO Setup.
