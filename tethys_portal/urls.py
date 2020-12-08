@@ -42,6 +42,7 @@ account_urls = [
     url(r'^login/$', tethys_portal_accounts.login_view, name='login'),
     url(r'^logout/$', tethys_portal_accounts.logout_view, name='logout'),
     url(r'^register/$', tethys_portal_accounts.register, name='register'),
+    url(r'^tenant/$', tethys_portal_accounts.sso_tenant, name='sso_tenant'),
     url(r'^password/reset/$', never_cache(PasswordResetView.as_view(
         success_url=reverse_lazy('accounts:password_reset_done'))
     ), name='password_reset'),
