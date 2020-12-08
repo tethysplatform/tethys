@@ -299,6 +299,6 @@ class SsoTenantForm(forms.Form):
     )
 
     remember = forms.BooleanField(
-        label='Remember my organization',
+        label='Remember for next time',
         required=False,
     )
