@@ -30,6 +30,13 @@ class TestUrls(TethysTestCase):
         self.assertEqual('register', resolver.func.__name__)
         self.assertEqual('tethys_portal.views.accounts', resolver.func.__module__)
 
+    def test_account_urls_accounts_tenant(self):
+        url = reverse('accounts:sso_tenant')
+        resolver = resolve(url)
+        self.assertEqual('/accounts/tenant/', url)
+        self.assertEqual('sso_tenant', resolver.func.__name__)
+        self.assertEqual('tethys_portal.views.accounts', resolver.func.__module__)
+
     def test_account_urls_accounts_password_reset(self):
         url = reverse('accounts:password_reset')
         resolver = resolve(url)

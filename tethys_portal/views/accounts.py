@@ -8,6 +8,7 @@
 ********************************************************************************
 """
 from django.conf import settings
+from django.http import HttpResponseBadRequest
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
@@ -176,25 +177,24 @@ def sso_tenant(request):
     """
     Handle tenant page request.
     """
-    # Only allow users to access this page if they are not logged in
-    if not request.user.is_anonymous:
-        return redirect('user:profile', username=request.user.username)
-
     # Get SSO_TENANT_ALIAS setting
     tenant_alias = getattr(settings, 'SSO_TENANT_ALIAS', 'Tenant').title()
 
     # Handle form
-    if request.method == 'POST' and 'sso-tenant-submit' in request.POST:
-        # Create form bound to request data
-        form = SsoTenantForm(request.POST)
+    if request.method == 'POST':
+        if 'sso-tenant-submit' not in request.POST:
+            return HttpResponseBadRequest()
+        else:
+            # Create form bound to request data
+            form = SsoTenantForm(request.POST)
 
-        # Validate the form
-        if form.is_valid():
-            cleaned_tenant = form.cleaned_data.get('tenant')
-            normalized_tenant = cleaned_tenant.lower()
-            print(f'"{cleaned_tenant}", "{normalized_tenant}"')
-            # TODO: validate that the normalized_tenant given is a valid tenant in settings
-            # TODO: redirect back to the SSO pipeline with correct Tenant
+            # Validate the form
+            if form.is_valid():
+                cleaned_tenant = form.cleaned_data.get('tenant')
+                normalized_tenant = cleaned_tenant.lower()
+                print(f'"{cleaned_tenant}", "{normalized_tenant}"')
+                # TODO: validate that the normalized_tenant given is a valid tenant in settings
+                # TODO: redirect back to the SSO pipeline with correct Tenant
     else:
         # Create new empty form
         form = SsoTenantForm()
