@@ -932,7 +932,7 @@ class TethysAppBase(TethysBase):
 
         Args:
             name(str): The name of the CustomSetting as defined in the app.py.
-            value(str/int/float/boolean): the value of the customSetting.
+            value(str/int/float/boolean/uuid.UUID): the value of the customSetting.
 
         Returns:
             variable: Value of the CustomSetting or None if no value assigned.
@@ -962,7 +962,7 @@ class TethysAppBase(TethysBase):
         elif custom_setting.type == 'FLOAT':
             type_matches = isinstance(value, float)
         elif custom_setting.type == 'BOOLEAN':
-            type_matches = isinstance(value, bool)
+            type_matches = str(value).lower() in ['true', 'false', 'yes', 'no', 't', 'f', 'y', 'n', '1', '0']
         elif custom_setting.type == 'UUID':
             type_matches = isinstance(value, uuid.UUID)
 

@@ -235,7 +235,7 @@ class CustomSetting(TethysAppSetting):
             description='Enable this feature when True.',
             required=True
         )
-        
+
         feature_id_setting = CustomSetting(
             name='feature_id',
             type=CustomSetting.TYPE_UUID,
