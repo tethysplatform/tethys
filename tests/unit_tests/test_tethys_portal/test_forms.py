@@ -4,6 +4,7 @@ from django.test import TestCase
 from captcha.models import CaptchaStore
 import tethys_portal.forms as tp_forms
 from django.contrib.auth.models import User
+from django.test import override_settings
 from django import forms
 from unittest import mock
 
@@ -313,3 +314,28 @@ class TethysPortalFormsTests(TestCase):
         form = tp_forms.SsoTenantForm(data)
 
         self.assertFalse(form.is_valid())
+
+    @override_settings(SSO_TENANT_REGEX=r'^[\w\s^$_-]+$')
+    def test_SSoTenantForm_custom_regex(self):
+        reload(tp_forms)
+        data = {
+            'remember': 'on',
+            'tenant': 'Git$^Hub'
+        }
+
+        form = tp_forms.SsoTenantForm(data)
+
+        self.assertTrue(form.is_valid())
+
+    @override_settings(SSO_TENANT_ALIAS='comPany')
+    def test_SsoTenantForm_tenant_alias(self):
+        reload(tp_forms)
+        data = {
+            'remember': 'on',
+            'tenant': 'GitHub'
+        }
+
+        form = tp_forms.SsoTenantForm(data)
+
+        self.assertTrue(form.is_valid())
+        self.assertEqual('Company', form.fields['tenant'].widget.attrs['placeholder'])

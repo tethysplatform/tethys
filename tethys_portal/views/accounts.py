@@ -199,9 +199,6 @@ def sso_tenant(request):
         # Create new empty form
         form = SsoTenantForm()
 
-    # Set placeholder for tenant text input to be same as tenant_alias
-    form.fields['tenant'].widget.attrs['placeholder'] = tenant_alias
-
     context = {
         'form': form,
         'form_title': tenant_alias,

@@ -286,13 +286,13 @@ class SsoTenantForm(forms.Form):
         label='',
         max_length=30,
         required=True,
-        regex=r'^[\w\s_-]+$',
+        regex=getattr(settings, 'SSO_TENANT_REGEX', r'^[\w\s_-]+$'),
         error_messages={
-            'invalid': "This field may contain only letters, numbers, spaces, and -/_ characters."
+            'invalid': "Invalid characters provided."
         },
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'Tenant',
+                'placeholder': getattr(settings, 'SSO_TENANT_ALIAS', 'Tenant').title(),
                 'autofocus': 'autofocus'
             }
         )
