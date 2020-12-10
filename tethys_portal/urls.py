@@ -14,11 +14,13 @@ from django.views.decorators.cache import never_cache
 from django.contrib import admin
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, \
     PasswordResetCompleteView
+from social_django import views as psa_views, urls as psa_urls
 
 from tethys_apps.urls import extension_urls
 
 from tethys_portal.views import accounts as tethys_portal_accounts, developer as tethys_portal_developer, \
-    error as tethys_portal_error, home as tethys_portal_home, user as tethys_portal_user, admin as tethys_portal_admin
+    error as tethys_portal_error, home as tethys_portal_home, user as tethys_portal_user, \
+    admin as tethys_portal_admin, psa as tethys_portal_psa
 from tethys_apps import views as tethys_apps_views
 from tethys_compute.views import dask_dashboard as tethys_dask_views
 
@@ -70,6 +72,15 @@ developer_urls = [
     url(r'^services/', include(('tethys_services.urls', 'services'), namespace='services')),
 ]
 
+oauth2_urls = [
+    # authentication / association
+    url(r'^login/(?P<backend>[^/]+)/$', tethys_portal_psa.auth, name='begin'),
+    url(r'^complete/(?P<backend>[^/]+)/$', psa_views.complete, name='complete'),
+    # disconnection
+    url(r'^disconnect/(?P<backend>[^/]+)/$', psa_views.disconnect, name='disconnect'),
+    url(r'^disconnect/(?P<backend>[^/]+)/(?P<association_id>\d+)/$', psa_views.disconnect, name='disconnect_individual'),
+]
+
 # development_error_urls = [
 #     url(r'^400/$', tethys_portal_error.handler_400, name='error_400'),
 #     url(r'^403/$', tethys_portal_error.handler_403, name='error_403'),
@@ -82,7 +93,7 @@ urlpatterns = [
     url(r'^admin/', admin_urls),
     url(r'^accounts/', include((account_urls, 'accounts'), namespace='accounts')),
     url(r'^captcha/', include('captcha.urls')),
-    url(r'^oauth2/', include('social_django.urls', namespace='social')),
+    url(r'^oauth2/', include((oauth2_urls, psa_urls.app_name), namespace='social')),
     url(r'^user/(?P<username>[\w.@+-]+)/', include((user_urls, 'user'), namespace='user')),
     url(r'^apps/', include('tethys_apps.urls')),
     url(r'^extensions/', include(extension_urls)),

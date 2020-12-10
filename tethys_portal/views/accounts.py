@@ -171,7 +171,8 @@ def reset(request):
         success_url=reverse('accounts:login')
     )
 
-
+# TODO: Move to psa.py
+# TODO: add backend name to URL and decorate with psa decorator?
 @never_cache
 def sso_tenant(request):
     """
@@ -194,7 +195,9 @@ def sso_tenant(request):
                 normalized_tenant = cleaned_tenant.lower()
                 print(f'"{cleaned_tenant}", "{normalized_tenant}"')
                 # TODO: validate that the normalized_tenant given is a valid tenant in settings
-                # TODO: redirect back to the SSO pipeline with correct Tenant
+                # TODO: get settings for matching tenant name
+                # TODO: set settings on backend
+                # TODO: redirect to auth provider to handle auth
     else:
         # Create new empty form
         form = SsoTenantForm()

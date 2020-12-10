@@ -65,6 +65,34 @@ class TestUrls(TethysTestCase):
         self.assertEqual('PasswordResetCompleteView', resolver.func.__name__)
         self.assertEqual('django.contrib.auth.views', resolver.func.__module__)
 
+    def test_oauth2_urls_login(self):
+        url = reverse('social:begin', kwargs={'backend': 'foo'})
+        resolver = resolve(url)
+        self.assertEqual('/oauth2/login/foo/', url)
+        self.assertEqual('auth', resolver.func.__name__)
+        self.assertEqual('tethys_portal.views.psa', resolver.func.__module__)
+
+    def test_oauth2_urls_complete(self):
+        url = reverse('social:complete', kwargs={'backend': 'foo'})
+        resolver = resolve(url)
+        self.assertEqual('/oauth2/complete/foo/', url)
+        self.assertEqual('complete', resolver.func.__name__)
+        self.assertEqual('social_django.views', resolver.func.__module__)
+
+    def test_oauth2_urls_disconnect(self):
+        url = reverse('social:disconnect', kwargs={'backend': 'foo'})
+        resolver = resolve(url)
+        self.assertEqual('/oauth2/disconnect/foo/', url)
+        self.assertEqual('disconnect', resolver.func.__name__)
+        self.assertEqual('social_django.views', resolver.func.__module__)
+
+    def test_oauth2_urls_disconnect_individual(self):
+        url = reverse('social:disconnect_individual', kwargs={'backend': 'foo', 'association_id': '123'})
+        resolver = resolve(url)
+        self.assertEqual('/oauth2/disconnect/foo/123/', url)
+        self.assertEqual('disconnect', resolver.func.__name__)
+        self.assertEqual('social_django.views', resolver.func.__module__)
+
     def test_user_urls_profile(self):
         url = reverse('user:profile', kwargs={'username': 'foo'})
         resolver = resolve(url)
