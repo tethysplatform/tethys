@@ -648,12 +648,12 @@ class TestTethysAppBase(unittest.TestCase):
     @mock.patch('tethys_apps.models.TethysApp')
     def test_set_custom_setting_type_not_match(self, mock_app):
         setting_name = 'fake_setting'
-        mock_app.objects.get().custom_settings.get.return_value = mock.MagicMock(type='STRING')
+        mock_app.objects.get().custom_settings.get.return_value = mock.MagicMock(type='UUID')
 
         with self.assertRaises(ValidationError) as ret:
             self.app.set_custom_setting(name=setting_name, value=1)
 
-        self.assertEqual('Value must be of type STRING.', ret.exception.message)
+        self.assertEqual('Value must be of type UUID.', ret.exception.message)
 
     @mock.patch('tethys_apps.models.TethysApp')
     def test_get_dataset_service(self, mock_ta):

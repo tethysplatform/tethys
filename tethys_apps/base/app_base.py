@@ -964,7 +964,10 @@ class TethysAppBase(TethysBase):
         elif custom_setting.type == 'BOOLEAN':
             type_matches = str(value).lower() in ['true', 'false', 'yes', 'no', 't', 'f', 'y', 'n', '1', '0']
         elif custom_setting.type == 'UUID':
-            type_matches = isinstance(value, uuid.UUID)
+            try:
+                type_matches = bool(uuid.UUID(str(value)))
+            except ValueError:
+                pass
 
         if type_matches:
             custom_setting.value = value
