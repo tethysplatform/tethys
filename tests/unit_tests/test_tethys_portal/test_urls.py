@@ -30,13 +30,6 @@ class TestUrls(TethysTestCase):
         self.assertEqual('register', resolver.func.__name__)
         self.assertEqual('tethys_portal.views.accounts', resolver.func.__module__)
 
-    def test_account_urls_accounts_tenant(self):
-        url = reverse('accounts:sso_tenant')
-        resolver = resolve(url)
-        self.assertEqual('/accounts/tenant/', url)
-        self.assertEqual('sso_tenant', resolver.func.__name__)
-        self.assertEqual('tethys_portal.views.accounts', resolver.func.__module__)
-
     def test_account_urls_accounts_password_reset(self):
         url = reverse('accounts:password_reset')
         resolver = resolve(url)
@@ -92,6 +85,13 @@ class TestUrls(TethysTestCase):
         self.assertEqual('/oauth2/disconnect/foo/123/', url)
         self.assertEqual('disconnect', resolver.func.__name__)
         self.assertEqual('social_django.views', resolver.func.__module__)
+
+    def test_oauth2_urls_tenant(self):
+        url = reverse('social:tenant', kwargs={'backend': 'foo'})
+        resolver = resolve(url)
+        self.assertEqual('/oauth2/tenant/foo/', url)
+        self.assertEqual('tenant', resolver.func.__name__)
+        self.assertEqual('tethys_portal.views.psa', resolver.func.__module__)
 
     def test_user_urls_profile(self):
         url = reverse('user:profile', kwargs={'username': 'foo'})

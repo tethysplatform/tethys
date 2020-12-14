@@ -44,7 +44,6 @@ account_urls = [
     url(r'^login/$', tethys_portal_accounts.login_view, name='login'),
     url(r'^logout/$', tethys_portal_accounts.logout_view, name='logout'),
     url(r'^register/$', tethys_portal_accounts.register, name='register'),
-    url(r'^tenant/$', tethys_portal_accounts.sso_tenant, name='sso_tenant'),
     url(r'^password/reset/$', never_cache(PasswordResetView.as_view(
         success_url=reverse_lazy('accounts:password_reset_done'))
     ), name='password_reset'),
@@ -78,7 +77,10 @@ oauth2_urls = [
     url(r'^complete/(?P<backend>[^/]+)/$', psa_views.complete, name='complete'),
     # disconnection
     url(r'^disconnect/(?P<backend>[^/]+)/$', psa_views.disconnect, name='disconnect'),
-    url(r'^disconnect/(?P<backend>[^/]+)/(?P<association_id>\d+)/$', psa_views.disconnect, name='disconnect_individual'),
+    url(r'^disconnect/(?P<backend>[^/]+)/(?P<association_id>\d+)/$', psa_views.disconnect,
+        name='disconnect_individual'),
+    # get tenant name for multi-tenant support
+    url(r'^tenant/(?P<backend>[^/]+)/$', tethys_portal_psa.tenant, name='tenant'),
 ]
 
 # development_error_urls = [

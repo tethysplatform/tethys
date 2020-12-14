@@ -8,7 +8,6 @@
 ********************************************************************************
 """
 from django.conf import settings
-from django.http import HttpResponseBadRequest
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
@@ -16,7 +15,7 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmVie
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from mfa.helpers import has_mfa
-from tethys_portal.forms import LoginForm, RegisterForm, SsoTenantForm
+from tethys_portal.forms import LoginForm, RegisterForm
 from tethys_portal.utilities import log_user_in
 
 
@@ -170,42 +169,3 @@ def reset(request):
         subject_template_name='tethys_portal/accounts/password_reset/reset_subject.txt',
         success_url=reverse('accounts:login')
     )
-
-# TODO: Move to psa.py
-# TODO: add backend name to URL and decorate with psa decorator?
-@never_cache
-def sso_tenant(request):
-    """
-    Handle tenant page request.
-    """
-    # Get SSO_TENANT_ALIAS setting
-    tenant_alias = getattr(settings, 'SSO_TENANT_ALIAS', 'Tenant').title()
-
-    # Handle form
-    if request.method == 'POST':
-        if 'sso-tenant-submit' not in request.POST:
-            return HttpResponseBadRequest()
-        else:
-            # Create form bound to request data
-            form = SsoTenantForm(request.POST)
-
-            # Validate the form
-            if form.is_valid():
-                cleaned_tenant = form.cleaned_data.get('tenant')
-                normalized_tenant = cleaned_tenant.lower()
-                print(f'"{cleaned_tenant}", "{normalized_tenant}"')
-                # TODO: validate that the normalized_tenant given is a valid tenant in settings
-                # TODO: get settings for matching tenant name
-                # TODO: set settings on backend
-                # TODO: redirect to auth provider to handle auth
-    else:
-        # Create new empty form
-        form = SsoTenantForm()
-
-    context = {
-        'form': form,
-        'form_title': tenant_alias,
-        'page_title': tenant_alias
-    }
-
-    return render(request, 'tethys_portal/accounts/sso_tenant.html', context)

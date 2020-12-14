@@ -1,14 +1,12 @@
 import unittest
 from unittest import mock
 
-from django.http import HttpResponseBadRequest
 from django.test import override_settings
 
 # Fixes the Cache-Control error in tests. Must appear before view imports.
 mock.patch('django.views.decorators.cache.never_cache', lambda x: x).start()
 
-from tethys_portal.views.accounts import login_view, register, logout_view, reset_confirm, reset, \
-    sso_tenant  # noqa: E402
+from tethys_portal.views.accounts import login_view, register, logout_view, reset_confirm, reset  # noqa: E402
 
 
 class TethysPortalViewsAccountsTest(unittest.TestCase):
@@ -596,53 +594,3 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
                                         email_template_name='tethys_portal/accounts/password_reset/reset_email.html',
                                         subject_template_name='tethys_portal/accounts/password_reset/reset_subject.txt',
                                         success_url='accounts:login')
-
-    @override_settings(SSO_TENANT_ALIAS='foo bar')
-    @mock.patch('tethys_portal.views.accounts.SsoTenantForm')
-    @mock.patch('tethys_portal.views.accounts.render')
-    def test_sso_tenant_get(self, mock_render, mock_tenant_form):
-        mock_request = mock.MagicMock(method='GET', POST=dict())  # GET request
-
-        ret = sso_tenant(mock_request)
-
-        mock_tenant_form.assert_called()
-
-        mock_render.assert_called_with(
-            mock_request,
-            'tethys_portal/accounts/sso_tenant.html',
-            {
-                'form': mock_tenant_form(),
-                'form_title': 'Foo Bar',
-                'page_title': 'Foo Bar'
-            }
-        )
-        self.assertEqual(mock_render(), ret)
-
-    @override_settings(SSO_TENANT_ALIAS='foo bar')
-    @mock.patch('tethys_portal.views.accounts.SsoTenantForm')
-    def test_sso_tenant_view_post_no_submit(self, mock_tenant_form):
-        mock_request = mock.MagicMock(method='POST', POST=dict())  # Empty POST dict
-
-        ret = sso_tenant(mock_request)
-
-        mock_tenant_form.assert_not_called()
-
-        self.assertIsInstance(ret, HttpResponseBadRequest)
-
-    @override_settings(SSO_TENANT_ALIAS='foo bar')
-    @mock.patch('tethys_portal.views.accounts.SsoTenantForm')
-    @mock.patch('tethys_portal.views.accounts.render')
-    def test_sso_tenant_view_post_valid(self, mock_render, mock_tenant_form):
-        post_params = {
-            'sso-tenant-submit': 'submit',
-            'tenant': 'GitHub',
-            'remember': False
-        }
-        mock_request = mock.MagicMock(method='POST', POST=post_params)  # valid POST request
-
-        ret = sso_tenant(mock_request)
-
-        # Make sure form is bound to POST data
-        mock_tenant_form.assert_called_with(mock_request.POST)
-
-        self.assertEqual(mock_render(), ret)
