@@ -29,7 +29,10 @@
         <div class="account-form-body">
           <form id="sso-tenant-form" role="form" method="post">
             {% csrf_token %}
+            {# Backend added as a hidden field to be used in save tenant feature #}
+            <input id="backend" type="hidden" value="{{ backend }}">
             {% bootstrap_form form %}
+            <a class="btn btn-default" href="{% url 'accounts:login' %}">Back</a>
             <button type="submit" id="sso-tenant-submit" class="btn btn-default" name="sso-tenant-submit">Next</button>
           </form>
         </div>

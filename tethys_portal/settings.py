@@ -311,6 +311,7 @@ SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
 SOCIAL_AUTH_SLUGIFY_USERNAMES = True
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/apps/'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/accounts/login/'
+SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['tenant']
 
 # OAuth Providers
 OAUTH_CONFIG = portal_config_settings.pop('OAUTH_CONFIG', {})

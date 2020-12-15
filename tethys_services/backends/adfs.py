@@ -1,7 +1,9 @@
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 
+from tethys_services.backends.multi_tenant_mixin import MultiTenantMixin
 
-class ADFSOpenIdConnect(OpenIdConnectAuth):
+
+class ADFSOpenIdConnect(MultiTenantMixin, OpenIdConnectAuth):
     """AD FS 4.0+ OpenIDConnect authentication backend."""
     name = 'adfs-oidc'
 

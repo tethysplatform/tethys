@@ -5,8 +5,10 @@ from jose.constants import ALGORITHMS
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 from social_core.exceptions import AuthTokenError
 
+from tethys_services.backends.multi_tenant_mixin import MultiTenantMixin
 
-class OneLoginOIDC(OpenIdConnectAuth):
+
+class OneLoginOIDC(MultiTenantMixin, OpenIdConnectAuth):
     """OneLogin OpenIDConnect authentication backend."""
     name = 'onelogin-oidc'
 

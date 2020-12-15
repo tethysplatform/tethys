@@ -74,7 +74,7 @@ developer_urls = [
 oauth2_urls = [
     # authentication / association
     url(r'^login/(?P<backend>[^/]+)/$', tethys_portal_psa.auth, name='begin'),
-    url(r'^complete/(?P<backend>[^/]+)/$', psa_views.complete, name='complete'),
+    url(r'^complete/(?P<backend>[^/]+)/$', tethys_portal_psa.complete, name='complete'),
     # disconnection
     url(r'^disconnect/(?P<backend>[^/]+)/$', psa_views.disconnect, name='disconnect'),
     url(r'^disconnect/(?P<backend>[^/]+)/(?P<association_id>\d+)/$', psa_views.disconnect,
