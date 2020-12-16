@@ -6,6 +6,7 @@ from django.test import override_settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.exceptions import ImproperlyConfigured
 from social_core.backends.base import BaseAuth
+from social_django.views import _do_login
 
 from tethys_services.backends.multi_tenant_mixin import MultiTenantMixin
 from tethys_portal.forms import SsoTenantForm
@@ -15,7 +16,7 @@ from .mock_decorator import mock_decorator
 mock.patch('django.views.decorators.cache.never_cache', lambda x: x).start()
 mock.patch('social_django.utils.psa', side_effect=mock_decorator).start()
 
-from tethys_portal.views.psa import tenant  # noqa: E402
+from tethys_portal.views.psa import tenant, auth, complete  # noqa: E402
 
 
 class TethysPortalViewsAccountsTest(unittest.TestCase):
@@ -25,6 +26,153 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
 
     def tearDown(self):
         pass
+
+    @mock.patch('tethys_portal.views.psa.do_auth')
+    def test_auth_not_mtm(self, mock_do_auth):
+        mock_backend = mock.MagicMock(spec=BaseAuth)  # Not a MultiTenantMixin
+        mock_backend.name = 'other backend'
+        mock_request = mock.MagicMock(method='GET', backend=mock_backend)  # GET request
+        url_backend = 'foo'
+
+        ret = auth(mock_request, url_backend)
+
+        mock_do_auth.assert_called_with(mock_backend, redirect_name=REDIRECT_FIELD_NAME)
+        self.assertEqual(mock_do_auth(), ret)
+
+    @mock.patch('tethys_portal.views.psa.do_auth')
+    def test_auth_is_mtm_multi_tenant_none(self, mock_do_auth):
+        mock_backend = mock.MagicMock(spec=MultiTenantMixin)
+        mock_backend.name = 'foo'
+        mock_backend.setting = mock.MagicMock(return_value=None)  # MULTI_TENANT returns None
+        mock_request = mock.MagicMock(method='GET', backend=mock_backend)  # GET request
+        url_backend = 'foo'
+
+        ret = auth(mock_request, url_backend)
+
+        mock_do_auth.assert_called_with(mock_backend, redirect_name=REDIRECT_FIELD_NAME)
+        self.assertEqual(mock_do_auth(), ret)
+
+    @mock.patch('tethys_portal.views.psa.redirect')
+    @mock.patch('tethys_portal.views.psa.do_auth')
+    def test_auth_is_mtm_configured(self, mock_do_auth, mock_redirect):
+        mock_backend = mock.MagicMock(spec=MultiTenantMixin)
+        mock_backend.name = 'foo'
+        mock_backend.setting = mock.MagicMock(return_value={'foo bar': {}})  # MULTI_TENANT returns settings
+        mock_request = mock.MagicMock(method='GET', backend=mock_backend)  # GET request
+        url_backend = 'foo'
+
+        ret = auth(mock_request, url_backend)
+
+        mock_redirect.assert_called_with('social:tenant', backend=url_backend)
+        mock_do_auth.assert_not_called()
+        self.assertEqual(mock_redirect(), ret)
+
+    @mock.patch('tethys_portal.views.psa.do_complete')
+    def test_complete_not_mtm(self, mock_do_complete):
+        mock_backend = mock.MagicMock(spec=BaseAuth)  # Not a MultiTenantMixin
+        mock_backend.name = 'other backend'
+        mock_request = mock.MagicMock(method='GET', backend=mock_backend)  # GET request
+        url_backend = 'foo'
+
+        ret = complete(mock_request, url_backend)
+
+        mock_do_complete.assert_called_with(
+            mock_backend,
+            _do_login,
+            user=mock_request.user,
+            redirect_name=REDIRECT_FIELD_NAME,
+            request=mock_request,
+        )
+        self.assertEqual(mock_do_complete(), ret)
+
+    @mock.patch('tethys_portal.views.psa.log')
+    @mock.patch('tethys_portal.views.psa.redirect')
+    @mock.patch('tethys_portal.views.psa.do_complete')
+    def test_complete_is_mtm_no_saved_tenant(self, mock_do_complete, mock_redirect, mock_log):
+        mock_backend = mock.MagicMock(
+            spec=MultiTenantMixin,
+            strategy=mock.MagicMock(
+                session_get=mock.MagicMock(return_value=None)
+            )
+        )
+        mock_backend.name = 'foo'
+        mock_request = mock.MagicMock(method='GET', backend=mock_backend)  # GET request
+        url_backend = 'foo'
+
+        ret = complete(mock_request, url_backend)
+
+        mock_log.error.assert_called_with('Session contains no value for "tenant".')
+        mock_redirect.assert_called_with('accounts:login')
+        mock_do_complete.assert_not_called()
+        self.assertEqual(mock_redirect(), ret)
+
+    @mock.patch('tethys_portal.views.psa.do_complete')
+    def test_complete_is_mtm_tenant_valid(self, mock_do_complete):
+        mock_backend = mock.MagicMock(
+            spec=MultiTenantMixin,
+            strategy=mock.MagicMock(
+                session_get=mock.MagicMock(return_value='Foo')
+            )
+        )
+        mock_backend.name = 'foo'
+        mock_request = mock.MagicMock(method='GET', backend=mock_backend)  # GET request
+        url_backend = 'foo'
+
+        ret = complete(mock_request, url_backend)
+
+        self.assertEqual(mock_backend.tenant, 'Foo')
+        mock_do_complete.assert_called_with(
+            mock_backend,
+            _do_login,
+            user=mock_request.user,
+            redirect_name=REDIRECT_FIELD_NAME,
+            request=mock_request,
+        )
+        self.assertEqual(mock_do_complete(), ret)
+
+    @mock.patch('tethys_portal.views.psa.log')
+    @mock.patch('tethys_portal.views.psa.redirect')
+    @mock.patch('tethys_portal.views.psa.do_complete')
+    def test_complete_is_mtm_improperly_configured(self, mock_do_complete, mock_redirect, mock_log):
+        mock_backend = mock.MagicMock(
+            spec=MultiTenantMixin,
+            strategy=mock.MagicMock(
+                session_get=mock.MagicMock(return_value='Foo')
+            )
+        )
+        type(mock_backend).tenant = mock.PropertyMock(side_effect=ImproperlyConfigured('some error'))
+        mock_backend.name = 'foo'
+        mock_request = mock.MagicMock(method='GET', backend=mock_backend)  # GET request
+        url_backend = 'foo'
+
+        ret = complete(mock_request, url_backend)
+
+        mock_log.error.assert_called_with('some error')
+        mock_redirect.assert_called_with('accounts:login')
+        mock_do_complete.assert_not_called()
+        self.assertEqual(mock_redirect(), ret)
+
+    @mock.patch('tethys_portal.views.psa.log')
+    @mock.patch('tethys_portal.views.psa.redirect')
+    @mock.patch('tethys_portal.views.psa.do_complete')
+    def test_complete_is_mtm_value_error(self, mock_do_complete, mock_redirect, mock_log):
+        mock_backend = mock.MagicMock(
+            spec=MultiTenantMixin,
+            strategy=mock.MagicMock(
+                session_get=mock.MagicMock(return_value='Foo')
+            )
+        )
+        type(mock_backend).tenant = mock.PropertyMock(side_effect=ValueError('some error'))
+        mock_backend.name = 'foo'
+        mock_request = mock.MagicMock(method='GET', backend=mock_backend)  # GET request
+        url_backend = 'foo'
+
+        ret = complete(mock_request, url_backend)
+
+        mock_log.error.assert_called_with('some error')
+        mock_redirect.assert_called_with('accounts:login')
+        mock_do_complete.assert_not_called()
+        self.assertEqual(mock_redirect(), ret)
 
     @override_settings(SSO_TENANT_ALIAS='foo bar')
     @mock.patch('tethys_portal.views.psa.log')
