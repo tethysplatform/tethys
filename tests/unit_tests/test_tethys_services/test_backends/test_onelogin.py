@@ -10,6 +10,7 @@ from jose import jwt
 from jose.utils import base64url_encode
 from django import test
 from tethys_services.backends.onelogin import OneLoginOIDC
+from tethys_services.backends.multi_tenant_mixin import MultiTenantMixin
 
 
 client_id = '182f8cb0-b8b2-0138-3936-0647e35409d7174645'
@@ -134,6 +135,10 @@ class OneLoginOIDCBackendTest(test.SimpleTestCase):
         digest_truncated = digest[:(int(len(digest) / 2))]
         at_hash = base64url_encode(digest_truncated).decode()
         return at_hash
+
+    def test_is_mtm(self):
+        inst = OneLoginOIDC()
+        self.assertIsInstance(inst, MultiTenantMixin)
 
     def test_oidc_endpoint(self):
         inst = OneLoginOIDC()

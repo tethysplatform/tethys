@@ -1,5 +1,6 @@
 from django import test
 from tethys_services.backends.adfs import ADFSOpenIdConnect
+from tethys_services.backends.multi_tenant_mixin import MultiTenantMixin
 
 
 @test.override_settings(
@@ -14,6 +15,10 @@ class ADFSOpenIdConnectBackendTest(test.SimpleTestCase):
 
     def tearDown(self):
         pass
+
+    def test_is_mtm(self):
+        inst = ADFSOpenIdConnect()
+        self.assertIsInstance(inst, MultiTenantMixin)
 
     def test_oidc_endpoint(self):
         inst = ADFSOpenIdConnect()
