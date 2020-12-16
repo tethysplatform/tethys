@@ -30,10 +30,7 @@ class MultiTenantMixin:
             if not multi_tenant_settings:
                 return None
 
-            try:
-                self._tenant_settings = multi_tenant_settings.get(self._tenant)
-            except KeyError:
-                return None
+            self._tenant_settings = multi_tenant_settings.get(self._tenant)
         return self._tenant_settings
 
     @property
@@ -65,7 +62,7 @@ class MultiTenantMixin:
         multi_tenant_setting_name = setting_name(self.name, 'MULTI_TENANT')
         multi_tenant_settings = self.setting('MULTI_TENANT')
         if not multi_tenant_settings:
-            raise ImproperlyConfigured(f'Backend "{type(self)}" not configured for multi-tenant: '
+            raise ImproperlyConfigured(f'Backend "{self.name}" not configured for multi-tenant: '
                                        f'{multi_tenant_setting_name} setting not found.')
         if normalized_tenant not in multi_tenant_settings:
             raise ValueError(f'Tenant "{normalized_tenant}" not found in {multi_tenant_setting_name}.')
