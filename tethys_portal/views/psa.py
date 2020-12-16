@@ -62,7 +62,7 @@ def tenant(request, backend):
     """
     # Send back to login of tenant page accessed for non-multi-tenant backend
     if not isinstance(request.backend, MultiTenantMixin):
-        log.error(f'Backend "{type(request.backend)}" does not support MULTI_TENANT features.')
+        log.error(f'Backend "{request.backend.name}" does not support MULTI_TENANT features.')
         return redirect('accounts:login')
 
     # Get the Tenant alias to use for titles in the form

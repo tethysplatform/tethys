@@ -70,7 +70,7 @@ class TestUrls(TethysTestCase):
         resolver = resolve(url)
         self.assertEqual('/oauth2/complete/foo/', url)
         self.assertEqual('complete', resolver.func.__name__)
-        self.assertEqual('social_django.views', resolver.func.__module__)
+        self.assertEqual('tethys_portal.views.psa', resolver.func.__module__)
 
     def test_oauth2_urls_disconnect(self):
         url = reverse('social:disconnect', kwargs={'backend': 'foo'})
