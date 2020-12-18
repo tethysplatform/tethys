@@ -604,7 +604,7 @@ A multi-tenant SSO provider is one that provides separate instances of it's SSO 
 Authentication Flow
 -------------------
 
-The multi-tenant SSO authentication flow introduces an additional step in the authentication process that prompts the user for an identifier called a tenant key. Usually the tenant key is just the name of their organization or some variant of it. To illustrate the multi-tenant SSO authentication flow, consider the following example:
+The multi-tenant SSO authentication flow introduces an additional step in the authentication process that prompts the user for an identifier called a Tenant Key. Usually the Tenant Key is just the name of their organization or some variant of it. To illustrate the multi-tenant SSO authentication flow, consider the following example:
 
 Jyn Erso would like to log in to a Tethys Portal that has been configured to use her company's SSO provider, OneLogin. To login, Jyn completes the following steps:
 
@@ -615,7 +615,7 @@ Jyn Erso would like to log in to a Tethys Portal that has been configured to use
 
 2. Next, Jyn clicks on the **Log In with OneLogin** link.
 
-3. She enters the name of her company, "Rebel Acquisitions", as the tenant key and presses the **Next** button.
+3. She enters the name of her company, "Rebel Acquisitions", as the Tenant Key and presses the **Next** button.
 
 .. figure:: ./images/multi-tenant-tenant-page.png
     :width: 675px
@@ -634,7 +634,7 @@ Jyn Erso would like to log in to a Tethys Portal that has been configured to use
 
 .. note::
 
-    The default title for the page that requests the tenant key (see screenshot for step 3) is "Tenant", but it can be customized via the ``SSO_TENANT_ALIAS`` setting:
+    The default title for the page that requests the Tenant Key (see screenshot for step 3) is "Tenant", but it can be customized via the ``SSO_TENANT_ALIAS`` setting:
 
     .. code-block::
 
@@ -643,7 +643,7 @@ Jyn Erso would like to log in to a Tethys Portal that has been configured to use
 Configuration
 -------------
 
-Configuring multi-tenant SSO backends is similar to configuring other SSO backends. The primary difference is that you will need to provide the required settings (i.e. ``KEY``, ``SECRET``, etc.) for multiple tenants instead of just a globally for the backend. All of these tenant settings are organized under a ``MULTI_TENANT`` setting for the backend, and settings for each tenant are grouped under a Tenant Key. For example:
+Configuring multi-tenant SSO backends is similar to configuring other SSO backends. The primary difference is that you will need to provide the required settings (i.e. ``KEY``, ``SECRET``, etc.) for multiple tenants instead of globally for the backend. All of these tenant settings are organized under a ``MULTI_TENANT`` setting for the backend, and settings for each tenant are grouped under a Tenant Key. For example:
 
 .. code-block::
 
@@ -691,7 +691,7 @@ The following values are examples of **valid** Tenant Keys for the :file:`portal
 * "wattos_repair"
 * "maz-kanatas"
 
-The following is an example of a ``MULTI_TENANT`` setting with valid tenant keys:
+The following is an example of a ``MULTI_TENANT`` setting with valid Tenant Keys:
 
 .. code-block::
 
@@ -746,7 +746,7 @@ Azure AD Multi Tenant
 
             Do not enable both the ``AzureADB2COAuth2MultiTenant`` and ``AzureADB2COAuth2`` backends at the same time. The ``AzureADB2COAuth2MultiTenant`` will fall back to behaving like the ``AzureADB2COAuth2`` if the ``MULTI_TENANT`` setting is not present, so it is not necessary to use both.
 
-3. Add the appropriate ``MULTI_TENANT`` setting with the settings for one or more tenants grouped under the desired tenant key:
+3. Add the appropriate ``MULTI_TENANT`` setting with the settings for one or more tenants grouped under the desired Tenant Key:
 
     * If using an **Azure AD Tenant** and you selected **Accounts in this organizational directory only**:
 
@@ -796,7 +796,7 @@ AD FS Multi Tenant
 
         Do not enable both the ``ADFSOpenIdConnectMultiTenant`` and ``ADFSOpenIdConnect`` backends at the same time. The ``ADFSOpenIdConnectMultiTenant`` will fall back to behaving like the ``ADFSOpenIdConnect`` if the ``MULTI_TENANT`` setting is not present, so it is not necessary to use both.
 
-3. Add the ``MULTI_TENANT`` setting with the settings for one or more AD FS servers grouped under the desired tenant key:
+3. Add the ``MULTI_TENANT`` setting with the settings for one or more AD FS servers grouped under the desired Tenant Key:
 
     .. code-block::
 
@@ -842,7 +842,7 @@ Okta Multi Tenant
 
             Do not enable both the ``OktaOpenIdConnectMultiTenant`` and ``OktaOpenIdConnect`` backends at the same time. The ``OktaOpenIdConnectMultiTenant`` will fall back to behaving like the ``OktaOpenIdConnect`` if the ``MULTI_TENANT`` setting is not present, so it is not necessary to use both.
 
-3. Add the appropriate ``MULTI_TENANT`` setting with the settings for one or more tenants grouped under the desired tenant key:
+3. Add the appropriate ``MULTI_TENANT`` setting with the settings for one or more tenants grouped under the desired Tenant Key:
 
     * OAuth 2.0 method (recommended):
 
@@ -890,7 +890,7 @@ OneLogin Multi Tenant
 
         Do not enable both the ``OneLoginOIDCMultiTenant`` and ``OneLoginOIDC`` backends at the same time. The ``OneLoginOIDCMultiTenant`` will fall back to behaving like the ``OneLoginOIDC`` if the ``MULTI_TENANT`` setting is not present, so it is not necessary to use both.
 
-3. Add the ``MULTI_TENANT`` setting with the settings for one or more OneLogin servers grouped under the desired tenant key:
+3. Add the ``MULTI_TENANT`` setting with the settings for one or more OneLogin servers grouped under the desired Tenant Key:
 
     .. code-block::
 
