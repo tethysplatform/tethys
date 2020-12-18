@@ -201,7 +201,7 @@ class TethysPortalUserTests(unittest.TestCase):
             'quota': None,
             'has_mfa': True,
             'mfa_required': False,
-            'show_user_token_mfa': True  # Show user token b/c mfa is required and user has setup mfa
+            'show_user_token_mfa': True  # Show user token b/c not mfa is required
         }
 
         profile(mock_request, username)
