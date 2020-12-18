@@ -166,10 +166,10 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
     * **MFA_REQUIRED**: Are users required to set up MFA to be able to use the Tethys portal. Defaults to ``False``.
     * **ADMIN_MFA_REQUIRED**: Are admin (staff) users required to set up MFA when MFA_REQUIRED is ``True``. Defaults to ``True``.
     * **SSO_MFA_REQUIRED**: Are users logged in with SSO required to set up MFA when MFA_REQUIRED is ``True``. Defaults to ``False``.
-    * **MFA_RECHECK**: Allow random rechecking of the user.
-    * **MFA_RECHECK_MIN**: Minimum recheck interval in seconds.
-    * **MFA_RECHECK_MAX**: Maximum recheck interval in seconds.
-    * **MFA_QUICKLOGIN**: Allow quick login for returning users by provide only their 2FA.
+    * **MFA_RECHECK**: Allow random rechecking of the user. Defaults to False.
+    * **MFA_RECHECK_MIN**: Minimum recheck interval in seconds. Defaults to 600 seconds (10 minutes).
+    * **MFA_RECHECK_MAX**: Maximum recheck interval in seconds. Defaults to 1800 seconds (30 minutes).
+    * **MFA_QUICKLOGIN**: Allow quick login for returning users by provide only their 2FA. Defaults to False.
     * **TOKEN_ISSUER_NAME**: TOTP Issuer name to display in the app. Defaults to ``Tethys Portal``.
     * **MFA_UNALLOWED_METHODS**: A list of MFA methods to be disallowed. Valid methods are include ``U2F``, ``FIDO2``, ``Email``, ``Trusted_Devices``, and ``TOTP``. All but ``TOPT`` are disabled by default.
 
