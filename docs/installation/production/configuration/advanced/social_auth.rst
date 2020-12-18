@@ -599,18 +599,14 @@ For more detailed information about using OneLogin social authentication see the
 Multi-Tenant SSO
 ================
 
-Several of the Single Sign-On (SSO) providers supported by Tethys handle authentication for different organizations using separate instances of their services. For example, if Organization A and Company B use OneLogin as their SSO provider, they would each have an isolated instance of the SSO service for their organization that they can access using a unique URL endpoint (e.g.: organization-a.onelogin.com and company-b.onelogin.com).  Each instance of the SSO service contains a separate database of users that is maintained by the organization. Only users belonging to the organization are able to authentication against that organization's instance of the SSO. The individual instances of the SSO service are sometimes referred to as tenants and SSO providers that support multiple tenants are referred to as multi-tenant SSO providers.
-
-The SSO providers supported by Tethys Platform that provide multi-tenant authentication include Okta, OneLogin, AzureAD, and AD FS. Okta and OneLogin provide unique subdomains off of their primary domain for different tenants like in the example above. AzureAD assigns a unique ID to each tenant that is include in the URL of the authentication request to identify which tenant to authenticate against (e.g.: https://login.microsoftonline.com/<tenant-id>/oauth2/authorize). In the case of AD FS, the organization hosts usually hosts the SSO service on their own server. As a result the domain of that sever is used to authenticate against AD FS SSO services (e.g.: adfs.my-organization.org). This means that to authenticate against a specific tenant of one of these SSO providers, additional identifying information must be provided in the authentication request, usually a custom subdomain, custom domain, or tenant ID. This is evident in the additional settings required for these four providers (see: ``SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID``, ``SOCIAL_AUTH_ADFS_OIDC_DOMAIN``, ``SOCIAL_AUTH_OKTA_OAUTH2_API_URL``, and ``SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN``).
+A multi-tenant SSO provider is one that provides separate instances of it's SSO services for each organization or tenant that uses it. Each instance of the service is accessed via a different URL (e.g.: my-organization.onelogin.com, login.microsoftonline.com/<tenant-id>/, adfs.my-organization.com). Tethys Portal provides custom backends for some of the multi-tenant SSO providers that are able to handle multiple sets of credentials, one for each tenant. The providers supported include Okta, OneLogin, AzureAD, and AD FS.
 
 Authentication Flow
 -------------------
 
-Tethys Platform supports multi-tenant SSO flows for the following providers: Okta, OneLogin, ADFS, and AzureAD. If you have two or more organizations using different tenants of the same SSO provider, you will need to configure your Tethys Portal to use the multi-tenant version of the backend for that provider. This will enable the multi-tenant SSO authentication flow for that provider.
+The multi-tenant SSO authentication flow introduces an additional step in the authentication process that prompts the user for an identifier called a tenant key. Usually the tenant key is just the name of their organization or some variant of it. To illustrate the multi-tenant SSO authentication flow, consider the following example:
 
-The multi-tenant SSO flow introduces an additional step in the authentication process that prompts the user for a tenant key. Users are redirected to this view after clicking on the link for the specific SSO provider if the multi-tenant version of the backend is being used and the settings are configured correctly. The tenant key is an arbitrary string that is used to lookup the settings for a particular tenant. We recommend using the name of the organization or some variant that is easy for users to remember for tenant keys (e.g.: NASA SERVIR, Brigham Young University, Aquaveo). When the user submits the correct tenant key, they will be redirected to the authentication page of appropriate tenant of that SSO service. Authentication proceeds as usual after this point. To illustrate the multi-tenant SSO authentication flow, consider the following example:
-
-Jyn Erso needs to log in to a Tethys Portal that has been configured to allow authentication against his company's SSO provider, OneLogin. To login, Jyn completes the following steps:
+Jyn Erso would like to log in to a Tethys Portal that has been configured to use her company's SSO provider, OneLogin. To login, Jyn completes the following steps:
 
 1. She navigates to the login page for the Tethys Portal: http://tethys.not-real.org/login/
 
@@ -619,7 +615,7 @@ Jyn Erso needs to log in to a Tethys Portal that has been configured to allow au
 
 2. Next, Jyn clicks on the **Log In with OneLogin** link.
 
-3. On the Tenant page, she enters the name of her company, "Rebel Acquisitions", as the tenant key and presses the **Next** button.
+3. She enters the name of her company, "Rebel Acquisitions", as the tenant key and presses the **Next** button.
 
 .. figure:: ./images/multi-tenant-tenant-page.png
     :width: 675px
@@ -631,20 +627,93 @@ Jyn Erso needs to log in to a Tethys Portal that has been configured to allow au
 
 5. She enters her username and password as usual.
 
-6. Once authenticated, she is returned to the Tethys Portal, now logged in.
+6. Jyn is then returned to the Tethys Portal, now logged in.
 
 .. figure:: ./images/multi-tenant-logged-in.png
     :width: 675px
 
+.. note::
+
+    The default title for the page that requests the tenant key (see screenshot for step 3) is "Tenant", but it can be customized via the ``SSO_TENANT_ALIAS`` setting:
+
+    .. code-block::
+
+        SSO_TENANT_ALIAS: 'Company'
+
 Configuration
 -------------
+
+Configuring multi-tenant SSO backends is similar to configuring other SSO backends. The primary difference is that you will need to provide the required settings (i.e. ``KEY``, ``SECRET``, etc.) for multiple tenants instead of just a globally for the backend. All of these tenant settings are organized under a ``MULTI_TENANT`` setting for the backend, and settings for each tenant are grouped under a Tenant Key. For example:
+
+.. code-block::
+
+    SOCIAL_AUTH_ONELOGIN_OIDC_MULTI_TENANT:
+      tenant1:
+        SOCIAL_AUTH_ONELOGIN_OIDC_KEY: <Tenant 1 Key>
+        SOCIAL_AUTH_ONELOGIN_OIDC_SECRET: <Tenant 1 Secret>
+        SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN: <Tenant 1 Subdomain>
+      tenant2:
+        SOCIAL_AUTH_ONELOGIN_OIDC_KEY: <Tenant 2 Key>
+        SOCIAL_AUTH_ONELOGIN_OIDC_SECRET: <Tenant 2 Secret>
+        SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN: <Tenant 2 Subdomain>
 
 Tenant Keys
 +++++++++++
 
-    .. important::
+A Tenant Key is a string that is used to identify a set of settings for a tenant under one of the ``MULTI_TENANT`` settings. Tenant Keys may only contain the following characters:
 
-        Tenant keys should be specified in all lower case characters with the same spacing as you expect the user to enter. Tenant keys provided by users are normalized to lower case characters before lookup in the ``MULTI_TENANT`` setting. This means that "Rebel Acquisitions", "rebel acquisitions" and "REBEL ACQUISITIONS" will all match the tenant key "rebel acquisitions".
+    * any lowercase letter
+    * any number
+    * spaces
+    * hyphens (-)
+    * underscores (_)
+
+Care should be taken when selecting Tenant Keys, as users will be required to enter it whenever they login to your Tethys Portal using that tenant. The values provided by users are normalized to all lower case characters before attempting the lookup in the ``MULTI_AUTH`` settings. In other words, "Rebel Acquisitions", "rebel acquisitions" and "REBEL ACQUISITIONS" are all normalized to the Tenant Key "rebel acquisitions".
+
+Please use the following guidelines when choosing a Tenant Key:
+
+    * Choose something easy to remember and intuitive for the user.
+    * Use the name of the organization or a short variant of it if possible.
+    * Tenant keys may include spaces to allow for more intuitive values for users.
+    * Users may use title case or any other case when entering the Tenant Key, but the Tenant Key must always be specified using lowercase letters in the :file:`portal_config.yml`.
+
+The following values are examples of **invalid** Tenant Keys for the :file:`portal_config.yml`:
+
+* "Rebel Acquisitions" -> no uppercase characters allowed.
+* "palpatine & vaders" -> the "&" character is not allowed.
+* "watto's_repair" -> no apostrophes allowed.
+
+
+The following values are examples of **valid** Tenant Keys for the :file:`portal_config.yml`:
+
+* "rebel acquisitions"
+* "palpatine and vaders"
+* "wattos_repair"
+* "maz-kanatas"
+
+The following is an example of a ``MULTI_TENANT`` setting with valid tenant keys:
+
+.. code-block::
+
+    SOCIAL_AUTH_ONELOGIN_OIDC_MULTI_TENANT:
+      rebel acquisitions:
+        ...
+      palpatine and vaders:
+        ...
+      wattos_repair:
+        ...
+      maz-kanatas:
+        ...
+
+.. note::
+
+    The following regular expression is used to validate Tenant Keys: ``'^[\w\s_-]+$'``. You may override this value with your own using the ``SSO_TENANT_REGEX`` setting:
+
+    .. code-block::
+
+        SSO_TENANT_REGEX: '^[\w\s^$_-]+$'
+
+    See `Regular expression operations <https://docs.python.org/3.7/library/re.html>`_ for more details on valid regular expression syntax in Python.
 
 .. _social_auth_azuread_multi:
 
@@ -747,7 +816,7 @@ AD FS Multi Tenant
 Okta Multi Tenant
 +++++++++++++++++
 
-1. Follow the normal steps for registering the Tethys Portal with the organization's Okta instance and obtain the **Client ID**, **Client Secret**, and **Org URL** (see: :ref:`social_auth_okta` Steps 1-4).
+1. Follow the normal steps for registering the Tethys Portal with the organization's Okta instance and obtain the **Client ID**, **Client Secret**, and **Org URL** (see: :ref:`social_auth_okta` Steps 2-4).
 
 2. Enable the appropriate multi-tenant backend for Azure AD:
 
@@ -803,25 +872,37 @@ Okta Multi Tenant
                 SOCIAL_AUTH_OKTA_OPENIDCONNECT_SECRET: <Client Secret>
                 SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL: <Org URL>
 
+.. _social_auth_onelogin_multi:
+
 OneLogin Multi Tenant
 +++++++++++++++++++++
 
-.. code-block::
+1. Follow the normal steps for registering the Tethys Portal on with the OneLogin server and obtain the **Client ID**, **Client Secret**, and **Subdomain** (see: :ref:`social_auth_onelogin` Steps 2-4).
 
-    AUTHENTICATION_BACKENDS:
-      - tethys_services.backends.onelogin.OneLoginOIDCMultiTenant
+2. Enable the multi-tenant backend for OneLogin:
 
-.. code-block::
+    .. code-block::
 
-    SOCIAL_AUTH_ONELOGIN_OIDC_MULTI_TENANT:
-      <tenant_key>:
-        SOCIAL_AUTH_ONELOGIN_OIDC_KEY: <Client ID>
-        SOCIAL_AUTH_ONELOGIN_OIDC_SECRET: <Client Secret>
-        SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN: <Subdomain>
-      <tenant_key>:
-        SOCIAL_AUTH_ONELOGIN_OIDC_KEY: <Client ID>
-        SOCIAL_AUTH_ONELOGIN_OIDC_SECRET: <Client Secret>
-        SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN: <Subdomain>
+        AUTHENTICATION_BACKENDS:
+          - tethys_services.backends.onelogin.OneLoginOIDCMultiTenant
+
+    .. warning::
+
+        Do not enable both the ``OneLoginOIDCMultiTenant`` and ``OneLoginOIDC`` backends at the same time. The ``OneLoginOIDCMultiTenant`` will fall back to behaving like the ``OneLoginOIDC`` if the ``MULTI_TENANT`` setting is not present, so it is not necessary to use both.
+
+3. Add the ``MULTI_TENANT`` setting with the settings for one or more OneLogin servers grouped under the desired tenant key:
+
+    .. code-block::
+
+        SOCIAL_AUTH_ONELOGIN_OIDC_MULTI_TENANT:
+          <tenant_key>:
+            SOCIAL_AUTH_ONELOGIN_OIDC_KEY: <Client ID>
+            SOCIAL_AUTH_ONELOGIN_OIDC_SECRET: <Client Secret>
+            SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN: <Subdomain>
+          <tenant_key>:
+            SOCIAL_AUTH_ONELOGIN_OIDC_KEY: <Client ID>
+            SOCIAL_AUTH_ONELOGIN_OIDC_SECRET: <Client Secret>
+            SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN: <Subdomain>
 
 
 .. _social_auth_settings:
@@ -842,29 +923,38 @@ The following settings in the :file:`portal_config.yml` are used to configure so
         AUTHENTICATION_BACKENDS:
           - social_core.backends.azuread.AzureADOAuth2
           - social_core.backends.azuread_tenant.AzureADTenantOAuth2
+          - tethys_services.backends.azuread.AzureADTenantOAuth2MultiTenant
           - social_core.backends.azuread_b2c.AzureADB2COAuth2
+          - tethys_services.backends.azuread.AzureADB2COAuth2MultiTenant
           - tethys_services.backends.adfs.ADFSOpenIdConnect
+          - tethys_services.backends.adfs.ADFSOpenIdConnectMultiTenant
           - social.backends.facebook.FacebookOAuth2
           - social.backends.google.GoogleOAuth2
           - tethys_services.backends.hydroshare.HydroShareOAuth2
           - social.backends.linkedin.LinkedinOAuth2
           - social_core.backends.okta.OktaOAuth2
+          - tethys_services.backends.okta.OktaOauth2MultiTenant
           - social_core.backends.okta_openidconnect.OktaOpenIdConnect
+          - tethys_services.backends.okta.OktaOpenIdConnectMultiTenant
           - tethys_services.backends.onelogin.OneLoginOIDC
+          - tethys_services.backends.onelogin.OneLoginOIDCMultiTenant
 
         OAUTH_CONFIG:
           SOCIAL_AUTH_AZUREAD_OAUTH2_KEY: ''
           SOCIAL_AUTH_AZUREAD_OAUTH2_SECRET: ''
 
+          SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_MULTI_TENANT: <tenants>
           SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY: ''
           SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET: ''
           SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID: ''
 
+          SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_MULTI_TENANT: <tenants>
           SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_KEY: ''
           SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_SECRET: ''
           SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_TENANT_ID: ''
           SOCIAL_AUTH_AZUREAD_B2C_OAUTH2_POLICY: 'b2c_'
 
+          SOCIAL_AUTH_ADFS_OIDC_MULTI_TENANT: <tenants>
           SOCIAL_AUTH_ADFS_OIDC_KEY: ''
           SOCIAL_AUTH_ADFS_OIDC_SECRET: ''
           SOCIAL_AUTH_ADFS_OIDC_DOMAIN: ''
@@ -882,14 +972,17 @@ The following settings in the :file:`portal_config.yml` are used to configure so
           SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY: ''
           SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET: ''
 
+          SOCIAL_AUTH_OKTA_OAUTH2_MULTI_TENANT: <tenants>
           SOCIAL_AUTH_OKTA_OAUTH2_KEY: ''
           SOCIAL_AUTH_OKTA_OAUTH2_SECRET: ''
           SOCIAL_AUTH_OKTA_OAUTH2_API_URL: ''
 
+          SOCIAL_AUTH_OKTA_OPENIDCONNECT_MULTI_TENANT: <tenants>
           SOCIAL_AUTH_OKTA_OPENIDCONNECT_KEY: ''
           SOCIAL_AUTH_OKTA_OPENIDCONNECT_SECRET: ''
           SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL: ''
 
+          SOCIAL_AUTH_ONELOGIN_OIDC_MULTI_TENANT: <tenants>
           SOCIAL_AUTH_ONELOGIN_OIDC_KEY: ''
           SOCIAL_AUTH_ONELOGIN_OIDC_SECRET: ''
           SOCIAL_AUTH_ONELOGIN_OIDC_SUBDOMAIN: ''
