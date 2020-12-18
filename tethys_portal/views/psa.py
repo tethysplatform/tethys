@@ -106,5 +106,3 @@ def tenant(request, backend):
     }
 
     return render(request, 'tethys_portal/accounts/sso_tenant.html', context)
-
-# TODO: implement custom versions of the other methods? complete, disconnect, disconnect single
