@@ -9,6 +9,7 @@
 """
 import sqlalchemy
 import logging
+import uuid
 
 import django.dispatch
 from django.db import models
@@ -195,7 +196,7 @@ class CustomSetting(TethysAppSetting):
 
     Attributes:
         name(str): Unique name used to identify the setting.
-        type(enum): The type of the custom setting. Either CustomSetting.TYPE_STRING, CustomSetting.TYPE_INTEGER, CustomSetting.TYPE_FLOAT, CustomSetting.TYPE_BOOLEAN
+        type(enum): The type of the custom setting. Either CustomSetting.TYPE_STRING, CustomSetting.TYPE_INTEGER, CustomSetting.TYPE_FLOAT, CustomSetting.TYPE_BOOLEAN, CustomSetting.TYPE_UUID
         description(str): Short description of the setting.
         required(bool): A value will be required if True.
         default(str): Value as a string that may be provided as a default.
@@ -235,12 +236,20 @@ class CustomSetting(TethysAppSetting):
             required=True
         )
 
+        feature_id_setting = CustomSetting(
+            name='feature_id',
+            type=CustomSetting.TYPE_UUID,
+            description='Feature ID.',
+            required=True
+        )
+
     """  # noqa: E501
     TYPE_STRING = 'STRING'
     TYPE_INTEGER = 'INTEGER'
     TYPE_FLOAT = 'FLOAT'
     TYPE_BOOLEAN = 'BOOLEAN'
-    VALID_TYPES = (TYPE_STRING, TYPE_INTEGER, TYPE_FLOAT, TYPE_BOOLEAN)
+    TYPE_UUID = 'UUID'
+    VALID_TYPES = (TYPE_STRING, TYPE_INTEGER, TYPE_FLOAT, TYPE_BOOLEAN, TYPE_UUID)
     VALID_BOOL_STRINGS = ('true', 'false', 'yes', 'no', 't', 'f', 'y', 'n', '1', '0')
     TRUTHY_BOOL_STRINGS = ('true', 'yes', 't', 'y', '1')
     TYPE_CHOICES = (
@@ -248,6 +257,7 @@ class CustomSetting(TethysAppSetting):
         (TYPE_INTEGER, 'Integer'),
         (TYPE_FLOAT, 'Float'),
         (TYPE_BOOLEAN, 'Boolean'),
+        (TYPE_UUID, 'UUID'),
     )
     value = models.CharField(max_length=1024, blank=True, default='')
     default = models.CharField(max_length=1024, blank=True, default='')
@@ -281,6 +291,12 @@ class CustomSetting(TethysAppSetting):
             if self.value.lower() not in self.VALID_BOOL_STRINGS:
                 raise ValidationError('Value must be a boolean.')
 
+        elif self.value != '' and self.type == self.TYPE_UUID:
+            try:
+                uuid.UUID(self.value)
+            except Exception:
+                raise ValidationError('Value must be a uuid.')
+
     def get_value(self):
         """
         Get the value, automatically casting it to the correct type.
@@ -309,6 +325,9 @@ class CustomSetting(TethysAppSetting):
 
         if self.type == self.TYPE_BOOLEAN:
             return self.value.lower() in self.TRUTHY_BOOL_STRINGS
+
+        if self.type == self.TYPE_UUID:
+            return uuid.UUID(self.value)
 
 
 @django.dispatch.receiver(models.signals.post_init, sender=CustomSetting)

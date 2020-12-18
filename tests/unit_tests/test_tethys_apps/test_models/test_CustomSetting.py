@@ -1,3 +1,4 @@
+import uuid
 from tethys_sdk.testing import TethysTestCase
 from tethys_apps.models import TethysApp, CustomSetting
 from django.core.exceptions import ValidationError
@@ -56,6 +57,16 @@ class CustomSettingTests(TethysTestCase):
         custom_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')
         custom_setting.value = 'test'
         custom_setting.type = 'BOOLEAN'
+        custom_setting.save()
+
+        # Check ValidationError
+        ret = CustomSetting.objects.get(name='default_name')
+        self.assertRaises(ValidationError, ret.clean)
+
+    def test_clean_uuid_validation_error(self):
+        custom_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')
+        custom_setting.value = 'test'
+        custom_setting.type = 'UUID'
         custom_setting.save()
 
         # Check ValidationError
@@ -128,3 +139,13 @@ class CustomSettingTests(TethysTestCase):
 
             ret = CustomSetting.objects.get(name='default_name').get_value()
             self.assertFalse(ret)
+
+    def test_get_value_uuid(self):
+        mock_uuid = uuid.uuid4()
+        custom_setting = self.test_app.settings_set.select_subclasses().get(name='default_name')
+        custom_setting.value = mock_uuid
+        custom_setting.type = 'UUID'
+        custom_setting.save()
+
+        ret = CustomSetting.objects.get(name='default_name').get_value()
+        self.assertEqual(mock_uuid, ret)
