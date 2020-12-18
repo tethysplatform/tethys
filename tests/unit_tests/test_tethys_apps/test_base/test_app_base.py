@@ -2,10 +2,11 @@ import unittest
 import tethys_apps.base.app_base as tethys_app_base
 from unittest import mock
 
+import uuid
 from django.db.utils import ProgrammingError
 from django.test import RequestFactory
 from ... import UserFactory
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from tethys_apps.exceptions import TethysAppSettingDoesNotExist, TethysAppSettingNotAssigned
 from types import FunctionType
 from tethys_apps.base.permissions import Permission, PermissionGroup
@@ -610,6 +611,49 @@ class TestTethysAppBase(unittest.TestCase):
         self.assertRaises(TypeError, self.app.get_custom_setting, name='test')
 
         mock_tas_dne.assert_called_with('CustomTethysAppSetting', 'test', '')
+
+    @mock.patch('tethys_apps.models.TethysApp')
+    def test_set_custom_setting(self, mock_app):
+        setting_name = 'fake_setting'
+        mock_save = mock.MagicMock()
+        mock_app.objects.get().custom_settings.get.side_effect = [
+            mock.MagicMock(type='STRING', save=mock_save),
+            mock.MagicMock(type='INTEGER', save=mock_save),
+            mock.MagicMock(type='FLOAT', save=mock_save),
+            mock.MagicMock(type='BOOLEAN', save=mock_save),
+            mock.MagicMock(type='UUID', save=mock_save),
+        ]
+
+        TethysAppChild.set_custom_setting(name=setting_name, value='test')
+        TethysAppChild.set_custom_setting(name=setting_name, value=1)
+        TethysAppChild.set_custom_setting(name=setting_name, value=1.0)
+        TethysAppChild.set_custom_setting(name=setting_name, value=True)
+        TethysAppChild.set_custom_setting(name=setting_name, value=uuid.uuid4())
+
+        self.assertEqual(5, mock_save.call_count)
+
+    @mock.patch('tethys_apps.base.app_base.TethysAppSettingDoesNotExist')
+    @mock.patch('tethys_apps.models.TethysApp')
+    def test_set_custom_setting_object_not_exist(self, mock_app, mock_tas_dne):
+        setting_name = 'fake_setting'
+        mock_db_app = mock_app.objects.get
+        mock_db_app.return_value = mock.MagicMock()
+
+        mock_app.objects.get().custom_settings.get.side_effect = [ObjectDoesNotExist]
+        mock_tas_dne.return_value = TypeError
+
+        self.assertRaises(TypeError, self.app.set_custom_setting, name=setting_name, value='test')
+        mock_tas_dne.assert_called_with('CustomTethysAppSetting', setting_name, '')
+
+    @mock.patch('tethys_apps.models.TethysApp')
+    def test_set_custom_setting_type_not_match(self, mock_app):
+        setting_name = 'fake_setting'
+        mock_app.objects.get().custom_settings.get.return_value = mock.MagicMock(type='UUID')
+
+        with self.assertRaises(ValidationError) as ret:
+            self.app.set_custom_setting(name=setting_name, value=1)
+
+        self.assertEqual('Value must be of type UUID.', ret.exception.message)
 
     @mock.patch('tethys_apps.models.TethysApp')
     def test_get_dataset_service(self, mock_ta):

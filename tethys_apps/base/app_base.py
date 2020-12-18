@@ -12,9 +12,10 @@ import os
 import sys
 import traceback
 import warnings
+import uuid
 
 from django.db.utils import ProgrammingError
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.http import HttpRequest
 from django.utils.functional import SimpleLazyObject
 from django.conf.urls import url
@@ -923,6 +924,53 @@ class TethysAppBase(TethysBase):
             return custom_setting.get_value()
         except ObjectDoesNotExist:
             raise TethysAppSettingDoesNotExist('CustomTethysAppSetting', name, cls.name)
+
+    @classmethod
+    def set_custom_setting(cls, name, value):
+        """
+        Assign the value of a CustomSetting for the app.
+
+        Args:
+            name(str): The name of the CustomSetting as defined in the app.py.
+            value(str/int/float/boolean/uuid.UUID): the value of the customSetting.
+
+        **Example:**
+
+        ::
+
+            from my_first_app.app import MyFirstApp as app
+
+            max_count = app.set_custom_setting('max_count', 5)
+
+        """
+        from tethys_apps.models import TethysApp
+        db_app = TethysApp.objects.get(package=cls.package)
+        custom_settings = db_app.custom_settings
+        try:
+            custom_setting = custom_settings.get(name=name)
+        except ObjectDoesNotExist:
+            raise TethysAppSettingDoesNotExist('CustomTethysAppSetting', name, cls.name)
+
+        type_matches = False
+        if custom_setting.type == 'STRING':
+            type_matches = isinstance(value, str)
+        elif custom_setting.type == 'INTEGER':
+            type_matches = isinstance(value, int)
+        elif custom_setting.type == 'FLOAT':
+            type_matches = isinstance(value, float)
+        elif custom_setting.type == 'BOOLEAN':
+            type_matches = str(value).lower() in ['true', 'false', 'yes', 'no', 't', 'f', 'y', 'n', '1', '0']
+        elif custom_setting.type == 'UUID':
+            try:
+                type_matches = bool(uuid.UUID(str(value)))
+            except ValueError:
+                pass
+
+        if type_matches:
+            custom_setting.value = value
+            custom_setting.save()
+        else:
+            raise ValidationError(f'Value must be of type {custom_setting.type}.')
 
     @classmethod
     def get_dataset_service(cls, name, as_public_endpoint=False, as_endpoint=False,
