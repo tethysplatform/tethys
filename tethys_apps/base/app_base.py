@@ -934,9 +934,6 @@ class TethysAppBase(TethysBase):
             name(str): The name of the CustomSetting as defined in the app.py.
             value(str/int/float/boolean/uuid.UUID): the value of the customSetting.
 
-        Returns:
-            variable: Value of the CustomSetting or None if no value assigned.
-
         **Example:**
 
         ::
