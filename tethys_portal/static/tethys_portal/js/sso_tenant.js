@@ -9,9 +9,6 @@ $(function() {
     let tenant_key = `${backend}-tenant`;
     let remember = localStorage.getItem(remember_key);
     let tenant = localStorage.getItem(tenant_key);
-    console.log(backend);
-    console.log(remember_key);
-    console.log(tenant_key);
 
     // Set remember field with saved value
     if (remember != null) {
