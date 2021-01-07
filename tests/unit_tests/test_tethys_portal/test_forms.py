@@ -19,6 +19,19 @@ class TethysPortalFormsTests(TestCase):
                                              email='foo_exist@aquaveo.com',
                                              password='glass_onion')
 
+        self.username_150 = 'abdNa8LteA7B3DJt0uFGVVcJHBY4UaT5JkLSjcFH5EKmCooqIxXnwgjI4sfqbet4CwHiInAHB436Yh3Y41KlgtC' \
+                            '1cJPyxm5rGEm9QoIKggtJ2K89253X4DsrPbATSEZ2ce6rZmZTJfS9O5GWs8BK6d'
+        self.username_151 = '_' + self.username_150
+        self.email_254 = 'v3lN3XMFF1HAI9vd9G8irDipnVzcx3k9nL0V1ygZbVCCSqEL38AxxY86sU7wPDPiP5nMq1yULDOSB0yu7F4y4wD' \
+                         'UFZC1p1SXLDSdMmSWSpirdKh6iQMianVTEnaVc0FSVxXuoGoKIq67xGUSeYxivFS8UvRGMtxCKt4t7MgHvIMfB9' \
+                         '3wbpNoKgCGtre6kAChxwLn8FbyhAevlZIMMVocbKpQJQU5YkESaVt3XK7Jo6SXaS0bAg@aquaveo.com'
+        self.email_255 = '_' + self.email_254
+        self.first_name_30 = '2DUgjx5L2fIPs82WQCI2jbpqkW45yJ'
+        self.first_name_31 = '_' + self.first_name_30
+        self.last_name_150 = 'iHMyy86qndpiLxE3AEx7G59q9IwYJ3MIjBY8R8gZh4NoHx3poixmjk6gCGxWBNAlg8uawsy7Kw84XR5hjt2lYG' \
+                             'x226MgujHLdNOC3IVEXbc68QgHNRxgWD3nFSUyC7KP7hapo63n9B8ostrUY38kl3'
+        self.last_name_151 = '_' + self.last_name_150
+
     def tearDown(self):
         pass
     # Login Form
@@ -31,6 +44,26 @@ class TethysPortalFormsTests(TestCase):
             reload(tp_forms)
             login_form = tp_forms.LoginForm(login_data)
             self.assertTrue(login_form.is_valid())
+
+    def test_LoginForm_no_captcha_long_username(self):
+        login_data = {
+            'username': self.username_150,
+            'password': 'test1231'}
+
+        with self.settings(ENABLE_CAPTCHA=False):
+            reload(tp_forms)
+            login_form = tp_forms.LoginForm(login_data)
+            self.assertTrue(login_form.is_valid())
+
+    def test_LoginForm_no_captcha_username_too_long(self):
+        login_data = {
+            'username': self.username_151,
+            'password': 'test1231'}
+
+        with self.settings(ENABLE_CAPTCHA=False):
+            reload(tp_forms)
+            login_form = tp_forms.LoginForm(login_data)
+            self.assertFalse(login_form.is_valid())
 
     def test_LoginForm_simple_captcha(self):
 
@@ -83,12 +116,36 @@ class TethysPortalFormsTests(TestCase):
         register_form = tp_forms.RegisterForm(data=register_data)
         self.assertTrue(register_form.is_valid())
 
-    def test_RegisterForm_invalid_user(self):
+    def test_RegisterForm_long_username(self):
+        register_data = {'username': self.username_150, 'email': 'foo@aquaveo.com', 'password1': 'abc123',
+                         'password2': 'abc123', 'captcha_0': self.hashkey, 'captcha_1': self.response}
+        register_form = tp_forms.RegisterForm(data=register_data)
+        self.assertTrue(register_form.is_valid())
+
+    def test_RegisterForm_username_too_long(self):
+        register_data = {'username': self.username_151, 'email': 'foo@aquaveo.com', 'password1': 'abc123',
+                         'password2': 'abc123', 'captcha_0': self.hashkey, 'captcha_1': self.response}
+        register_form = tp_forms.RegisterForm(data=register_data)
+        self.assertFalse(register_form.is_valid())
+
+    def test_RegisterForm_invalid_username_chars(self):
         register_data = {'username': 'user1&!$', 'email': 'foo@aquaveo.com', 'password1': 'abc123',
                          'password2': 'abc123', 'captcha_0': self.hashkey, 'captcha_1': self.response}
         register_form = tp_forms.RegisterForm(data=register_data)
         err_msg = "This value may contain only letters, numbers and @/./+/-/_ characters."
         self.assertEqual(register_form.errors['username'], [err_msg])
+        self.assertFalse(register_form.is_valid())
+
+    def test_RegisterForm_long_email(self):
+        register_data = {'username': 'user1', 'email': self.email_254, 'password1': 'abc123',
+                         'password2': 'abc123', 'captcha_0': self.hashkey, 'captcha_1': self.response}
+        register_form = tp_forms.RegisterForm(data=register_data)
+        self.assertTrue(register_form.is_valid())
+
+    def test_RegisterForm_email_too_long(self):
+        register_data = {'username': 'user1', 'email': self.email_255, 'password1': 'abc123',
+                         'password2': 'abc123', 'captcha_0': self.hashkey, 'captcha_1': self.response}
+        register_form = tp_forms.RegisterForm(data=register_data)
         self.assertFalse(register_form.is_valid())
 
     def test_RegisterForm_clean_username(self):
@@ -192,10 +249,42 @@ class TethysPortalFormsTests(TestCase):
         self.assertEqual('user1', ret.username)
         self.assertEqual('user1', ret_database.username)
 
+    # User Settings Form
+
     def test_UserSettingsForm(self):
         user_settings_data = {'first_name': 'fname', 'last_name': 'lname', 'email': 'user@aquaveo.com'}
         user_settings_form = tp_forms.UserSettingsForm(data=user_settings_data)
         self.assertTrue(user_settings_form.is_valid())
+
+    def test_UserSettingsForm_long_first_name(self):
+        user_settings_data = {'first_name': self.first_name_30, 'last_name': 'lname', 'email': 'user@aquaveo.com'}
+        user_settings_form = tp_forms.UserSettingsForm(data=user_settings_data)
+        self.assertTrue(user_settings_form.is_valid())
+
+    def test_UserSettingsForm_first_name_too_long(self):
+        user_settings_data = {'first_name': self.first_name_31, 'last_name': 'lname', 'email': 'user@aquaveo.com'}
+        user_settings_form = tp_forms.UserSettingsForm(data=user_settings_data)
+        self.assertFalse(user_settings_form.is_valid())
+
+    def test_UserSettingsForm_long_last_name(self):
+        user_settings_data = {'first_name': 'fname', 'last_name': self.last_name_150, 'email': 'user@aquaveo.com'}
+        user_settings_form = tp_forms.UserSettingsForm(data=user_settings_data)
+        self.assertTrue(user_settings_form.is_valid())
+
+    def test_UserSettingsForm_last_name_too_long(self):
+        user_settings_data = {'first_name': 'fname', 'last_name': self.last_name_151, 'email': 'user@aquaveo.com'}
+        user_settings_form = tp_forms.UserSettingsForm(data=user_settings_data)
+        self.assertFalse(user_settings_form.is_valid())
+
+    def test_UserSettingsForm_long_email(self):
+        user_settings_data = {'first_name': 'fname', 'last_name': 'lname', 'email': self.email_254}
+        user_settings_form = tp_forms.UserSettingsForm(data=user_settings_data)
+        self.assertTrue(user_settings_form.is_valid())
+
+    def test_UserSettingsForm_email_too_long(self):
+        user_settings_data = {'first_name': 'fname', 'last_name': 'lname', 'email': self.email_255}
+        user_settings_form = tp_forms.UserSettingsForm(data=user_settings_data)
+        self.assertFalse(user_settings_form.is_valid())
 
     # UserPasswordChange Form
 
