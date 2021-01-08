@@ -1,5 +1,7 @@
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 
+from tethys_services.backends.multi_tenant_mixin import MultiTenantMixin
+
 
 class ADFSOpenIdConnect(OpenIdConnectAuth):
     """AD FS 4.0+ OpenIDConnect authentication backend."""
@@ -16,3 +18,7 @@ class ADFSOpenIdConnect(OpenIdConnectAuth):
             subdomain = subdomain[0:-1]
 
         return subdomain + '/adfs'
+
+
+class ADFSOpenIdConnectMultiTenant(MultiTenantMixin, ADFSOpenIdConnect):
+    pass

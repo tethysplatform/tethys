@@ -5,6 +5,8 @@ from jose.constants import ALGORITHMS
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 from social_core.exceptions import AuthTokenError
 
+from tethys_services.backends.multi_tenant_mixin import MultiTenantMixin
+
 
 class OneLoginOIDC(OpenIdConnectAuth):
     """OneLogin OpenIDConnect authentication backend."""
@@ -62,3 +64,7 @@ class OneLoginOIDC(OpenIdConnectAuth):
             raise AuthTokenError(self, 'Invalid signature')
 
         self.validate_claims(claims)
+
+
+class OneLoginOIDCMultiTenant(MultiTenantMixin, OneLoginOIDC):
+    pass
