@@ -1,5 +1,6 @@
 from django import test
-from tethys_services.backends.adfs import ADFSOpenIdConnect
+from tethys_services.backends.adfs import ADFSOpenIdConnect, ADFSOpenIdConnectMultiTenant
+from tethys_services.backends.multi_tenant_mixin import MultiTenantMixin
 
 
 @test.override_settings(
@@ -46,3 +47,16 @@ class ADFSOpenIdConnectBackendTest(test.SimpleTestCase):
         ret = inst.OIDC_ENDPOINT
 
         self.assertEqual('https://adfs.my-org.mok/adfs', ret)
+
+
+class ADFSOpenIdConnectMultiTenantBackendTest(test.SimpleTestCase):
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_is_mtm(self):
+        inst = ADFSOpenIdConnectMultiTenant()
+        self.assertIsInstance(inst, MultiTenantMixin)

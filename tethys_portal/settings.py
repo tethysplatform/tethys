@@ -311,6 +311,7 @@ SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
 SOCIAL_AUTH_SLUGIFY_USERNAMES = True
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/apps/'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/accounts/login/'
+SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['tenant']
 
 # OAuth Providers
 OAUTH_CONFIG = portal_config_settings.pop('OAUTH_CONFIG', {})
@@ -326,10 +327,10 @@ ADMIN_MFA_REQUIRED = True           # Require admin users to set up MFA when MFA
 MFA_UNALLOWED_METHODS = ('U2F', 'FIDO2', 'Email', 'Trusted_Devices')
 # A function that should be called by username to login the user in session
 MFA_LOGIN_CALLBACK = 'tethys_portal.utilities.log_user_in'
-MFA_RECHECK = True                   # Allow random rechecking of the user
-MFA_RECHECK_MIN = 10                 # Minimum interval in seconds
-MFA_RECHECK_MAX = 30                 # Maximum in seconds
-MFA_QUICKLOGIN = True                # Allow quick login for returning users by provide only their 2FA
+MFA_RECHECK = False                  # Allow random rechecking of the user
+MFA_RECHECK_MIN = 600                # Minimum interval in seconds
+MFA_RECHECK_MAX = 1800               # Maximum in seconds
+MFA_QUICKLOGIN = False               # Allow quick login for returning users by provide only their 2FA
 MFA_HIDE_DISABLE = ('FIDO2',)        # Can the user disable his key (Added in 1.2.0).
 MFA_OWNED_BY_ENTERPRISE = False      # Who owns security keys
 TOKEN_ISSUER_NAME = 'Tethys Portal'  # TOTP Issuer name

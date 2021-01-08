@@ -9,7 +9,8 @@ from jose.jwt import JWTError
 from jose import jwt
 from jose.utils import base64url_encode
 from django import test
-from tethys_services.backends.onelogin import OneLoginOIDC
+from tethys_services.backends.onelogin import OneLoginOIDC, OneLoginOIDCMultiTenant
+from tethys_services.backends.multi_tenant_mixin import MultiTenantMixin
 
 
 client_id = '182f8cb0-b8b2-0138-3936-0647e35409d7174645'
@@ -234,3 +235,16 @@ class OneLoginOIDCBackendTest(test.SimpleTestCase):
             inst.validate_and_return_id_token(id_token, access_token)
 
         self.assertEqual(str(cm.exception), 'Token error: Invalid signature')
+
+
+class OneLoginOIDCMultiTenantBackendTest(test.SimpleTestCase):
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_is_mtm(self):
+        inst = OneLoginOIDCMultiTenant()
+        self.assertIsInstance(inst, MultiTenantMixin)
