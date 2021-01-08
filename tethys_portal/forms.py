@@ -32,7 +32,7 @@ def get_captcha():
 class LoginForm(forms.Form):
 
     username = forms.RegexField(
-        label='', max_length=30,
+        label='', max_length=150,
         regex=r'^[\w.@+-]+$',
         error_messages={
             'invalid': "This value may contain only letters, numbers and @/./+/-/_ characters."
@@ -70,7 +70,7 @@ class RegisterForm(forms.ModelForm):
     }
 
     username = forms.RegexField(
-        label='', max_length=30,
+        label='', max_length=150,
         regex=r'^[\w.@+-]+$',
         error_messages={
             'invalid': "This value may contain only letters, numbers and @/./+/-/_ characters."},
@@ -84,7 +84,7 @@ class RegisterForm(forms.ModelForm):
 
     email = forms.CharField(
         label='',
-        max_length=30,
+        max_length=254,
         widget=forms.EmailInput(
             attrs={'placeholder': 'Email'}
         )
@@ -179,7 +179,7 @@ class UserSettingsForm(forms.ModelForm):
     )
 
     last_name = forms.CharField(
-        max_length=30,
+        max_length=150,
         label='',
         required=False,
         widget=forms.TextInput(
@@ -191,7 +191,7 @@ class UserSettingsForm(forms.ModelForm):
     )
 
     email = forms.EmailField(
-        max_length=30,
+        max_length=254,
         label='Email:',
         widget=forms.EmailInput(
             attrs={
@@ -279,3 +279,26 @@ class UserPasswordChangeForm(forms.Form):
         if commit:
             self.user.save()
         return self.user
+
+
+class SsoTenantForm(forms.Form):
+    tenant = forms.RegexField(
+        label='',
+        max_length=30,
+        required=True,
+        regex=getattr(settings, 'SSO_TENANT_REGEX', r'^[\w\s_-]+$'),
+        error_messages={
+            'invalid': "Invalid characters provided."
+        },
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': getattr(settings, 'SSO_TENANT_ALIAS', 'Tenant').title(),
+                'autofocus': 'autofocus'
+            }
+        )
+    )
+
+    remember = forms.BooleanField(
+        label='Remember for next time',
+        required=False,
+    )
