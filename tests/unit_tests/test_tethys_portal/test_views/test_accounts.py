@@ -1,5 +1,6 @@
 import unittest
 from unittest import mock
+
 from django.test import override_settings
 
 # Fixes the Cache-Control error in tests. Must appear before view imports.
