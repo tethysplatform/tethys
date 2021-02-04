@@ -116,9 +116,12 @@ class TethysJob(models.Model):
         """
         executes the job
         """
-        self._execute(*args, **kwargs)
-        self.execute_time = timezone.now()
-        self._status = 'SUB'
+        try:
+            self._execute(*args, **kwargs)
+            self.execute_time = timezone.now()
+            self._status = 'SUB'
+        except Exception:
+            self._status = 'ERR'
         self.save()
 
     def update_status(self, status=None, *args, **kwargs):
