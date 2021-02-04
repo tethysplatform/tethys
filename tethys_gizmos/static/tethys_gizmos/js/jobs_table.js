@@ -217,7 +217,7 @@ function update_log_content(event, use_cache=true){
   var content;
   var log_content_url = '/developer/gizmos/ajax/' + job_id + '/log-content/' + key1;
   if (key2 === undefined){
-    content = log_contents[job_id][key1];
+    content = log_contents[key1];
   }else{
     log_content_url += '/' + key2;
     content = log_contents[key1][key2];
@@ -558,8 +558,8 @@ function parse_datetime(date){
     var day = parts[1];
     var year = parts[2];
     var hour = parseInt(parts[3]);
-    var min = parts[4];
-    if(parts[5] == 'p.m.'){
+    var min = parts.length > 5 ? parts[4] : 0;
+    if(parts[parts.length - 1] == 'p.m.'){
       hour += 12;
     }
 
