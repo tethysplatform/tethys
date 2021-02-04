@@ -120,7 +120,7 @@ class TethysJob(models.Model):
             self._execute(*args, **kwargs)
             self.execute_time = timezone.now()
             self._status = 'SUB'
-        except:
+        except Exception:
             self._status = 'ERR'
         self.save()
 
