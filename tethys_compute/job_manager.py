@@ -119,7 +119,7 @@ class JobManager:
             A instance of a subclass of TethysJob if a job with job_id exists (and was created by user if the user argument is passed in).
         """  # noqa: E501
         filters = filters or dict()
-        filters['label'] = self.label
+        filters.setdefault('label', self.label)
         filters['id'] = job_id
         if user:
             filters['user'] = user
