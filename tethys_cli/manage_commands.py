@@ -32,6 +32,9 @@ def add_manage_parser(subparsers):
     manage_parser.add_argument('-f', '--force', required=False, action='store_true',
                                help='Used only with {} to force the overwrite the app directory into its collect-to '
                                     'location.')
+    manage_parser.add_argument('-l', '--link', required=False, action='store_true',
+                               help='Only used with collectstatic command. Link static directory to STATIC_ROOT '
+                                    'instead of copying it. Not recommended.')
     manage_parser.set_defaults(func=manage_command)
 
 
@@ -54,6 +57,10 @@ def manage_command(args):
     elif args.command == MANAGE_COLLECTSTATIC:
         # Run pre_collectstatic
         intermediate_process = ['python', manage_path, 'pre_collectstatic']
+
+        if args.link:
+            intermediate_process.append('--link')
+
         run_process(intermediate_process)
 
         # Setup for main collectstatic

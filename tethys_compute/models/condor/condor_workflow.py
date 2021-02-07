@@ -8,6 +8,7 @@
 """
 import shutil
 import logging
+import os
 
 from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
@@ -78,6 +79,25 @@ class CondorWorkflow(CondorBase, CondorPyWorkflow):
     def update_database_fields(self):
         CondorBase.update_database_fields(self)
         CondorPyWorkflow.update_database_fields(self)
+
+    def _log_files(self):
+        """
+        Build a nested dictionary with all the log files we want to retrieve.
+        """
+        log_folder_list = dict()
+        # The first item of the log_folder_list is always the workflow log
+        workflow_name = self.name.replace(" ", "_")
+        log_folder_list['workflow'] = f'{workflow_name}.dag.dagman.out'
+        for job_node in self.nodes:
+            job_name = job_node.name
+            log_file_path = os.path.join(job_name, 'logs', '*.log')
+            error_file_path = os.path.join(job_name, 'logs', '*.err')
+            out_file_path = os.path.join(job_name, 'logs', '*.out')
+            log_folder_list[job_name] = {'log': log_file_path,
+                                         'error': error_file_path,
+                                         'output': out_file_path,
+                                         }
+        return log_folder_list
 
 
 @receiver(pre_save, sender=CondorWorkflow)

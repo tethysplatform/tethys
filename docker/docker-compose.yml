@@ -12,7 +12,6 @@ services:
     environment:
       TETHYS_DB_SUPERUSER: "tethys_super"
       TETHYS_DB_SUPERUSER_PASS: "pass"
-      ASGI_PROCESSES: 4
       CLIENT_MAX_BODY_SIZE: "75M"
     links:
       - db
@@ -22,4 +21,5 @@ services:
     image: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "pass"

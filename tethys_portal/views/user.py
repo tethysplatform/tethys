@@ -7,6 +7,7 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+from django.conf import settings as django_settings
 from django.shortcuts import render, redirect
 from tethys_sdk.permissions import login_required
 from django.contrib.auth.models import User
@@ -14,6 +15,7 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from rest_framework.authtoken.models import Token
+from mfa.helpers import has_mfa
 
 from tethys_apps.harvester import SingletonHarvester
 from tethys_portal.forms import UserSettingsForm, UserPasswordChangeForm
@@ -40,12 +42,18 @@ def profile(request, username=None):
     current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
     quota = get_quota(context_user, codename)
     quota = _check_quota_helper(quota)
+    user_has_mfa = has_mfa(username=request.user.username, request=request)
+    mfa_is_required = getattr(django_settings, 'MFA_REQUIRED', False)
+    show_user_token_mfa = not mfa_is_required or (mfa_is_required and user_has_mfa)
 
     context = {
         'context_user': context_user,
         'user_token': user_token.key,
         'current_use': current_use,
         'quota': quota,
+        'has_mfa': user_has_mfa,
+        'mfa_required': mfa_is_required,
+        'show_user_token_mfa': show_user_token_mfa
     }
     return render(request, 'tethys_portal/user/profile.html', context)
 
@@ -94,14 +102,20 @@ def settings(request, username=None):
     current_use = _convert_storage_units(rqh.units, rqh.get_current_use())
     quota = get_quota(request_user, codename)
     quota = _check_quota_helper(quota)
+    user_has_mfa = has_mfa(username=request.user.username, request=request)
+    mfa_is_required = getattr(django_settings, 'MFA_REQUIRED', False)
+    show_user_token_mfa = not mfa_is_required or (mfa_is_required and user_has_mfa)
 
-    context = {'form': form,
-               'context_user': request.user,
-               'user_token': user_token.key,
-               'current_use': current_use,
-               'quota': quota,
-               }
-
+    context = {
+        'form': form,
+        'context_user': request.user,
+        'user_token': user_token.key,
+        'current_use': current_use,
+        'quota': quota,
+        'has_mfa': user_has_mfa,
+        'mfa_required': mfa_is_required,
+        'show_user_token_mfa': show_user_token_mfa
+    }
     return render(request, 'tethys_portal/user/settings.html', context)
 
 

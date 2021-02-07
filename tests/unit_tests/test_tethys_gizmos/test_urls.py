@@ -121,11 +121,3 @@ class TestUrls(TethysTestCase):
         self.assertEqual('bokeh_row', resolver.func.__name__)
         self.assertEqual('tethys_gizmos.views.gizmos.jobs_table', resolver.func.__module__)
         self.assertEqual('gizmos', resolver.namespaces[0])
-
-    def test_ajax_urls_update_job_status(self):
-        url = reverse('gizmos:update_job_status', kwargs={'job_id': '123'})
-        resolver = resolve(url)
-        self.assertEqual('/developer/gizmos/ajax/123/update-status', url)
-        self.assertEqual('update_status', resolver.func.__name__)
-        self.assertEqual('tethys_gizmos.views.gizmos.jobs_table', resolver.func.__module__)
-        self.assertEqual('gizmos', resolver.namespaces[0])

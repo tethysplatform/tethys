@@ -25,23 +25,24 @@ ENV  TETHYS_HOME="/usr/lib/tethys" \
 ENV  BASH_PROFILE=".bashrc" \
      CONDA_HOME="/opt/conda" \
      CONDA_ENV_NAME=tethys \
-     ASGI_PROCESSES=4 \
+     ASGI_PROCESSES=1 \
      CLIENT_MAX_BODY_SIZE="75M"
 
 # Tethys settings arguments
 ENV  DEBUG="False" \
-     ALLOWED_HOSTS="localhost 127.0.0.1" \
+     ALLOWED_HOSTS="\"[localhost, 127.0.0.1]\"" \
      BYPASS_TETHYS_HOME_PAGE="True" \
-     ADD_DJANGO_APPS=None \
+     ADD_DJANGO_APPS="\"[]\"" \
      SESSION_WARN=1500 \
      SESSION_EXPIRE=1800 \
      STATIC_ROOT="${TETHYS_PERSIST}/static" \
      WORKSPACE_ROOT="${TETHYS_PERSIST}/workspaces" \
-     QUOTA_HANDLERS=None \
-     DJANGO_ANALYTICAL=None \
-     ADD_BACKENDS=None \
-     OAUTH_OPTIONS=None \
-     CHANNEL_LAYER="" \
+     QUOTA_HANDLERS="\"[]\"" \
+     DJANGO_ANALYTICAL="\"{}\"" \
+     ADD_BACKENDS="\"[]\"" \
+     OAUTH_OPTIONS="\"{}\"" \
+     CHANNEL_LAYERS_BACKEND="channels.layers.InMemoryChannelLayer" \
+     CHANNEL_LAYERS_CONFIG="\"{}\"" \
      RECAPTCHA_PRIVATE_KEY="" \
      RECAPTCHA_PUBLIC_KEY=""
 
@@ -89,14 +90,10 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup \
 # Install APT packages
 RUN rm -rf /var/lib/apt/lists/*\
  && apt-get update \
- && apt-get -y install wget gnupg2 \
- && rm -rf /var/lib/apt/lists/*\
- && wget -O - http://repo.saltstack.com/apt/debian/9/amd64/archive/2019.2.0/SALTSTACK-GPG-KEY.pub | apt-key add - \
- && echo "deb http://repo.saltstack.com/apt/debian/9/amd64/archive/2019.2.0 stretch main" > /etc/apt/sources.list.d/saltstack.list
-RUN rm -rf /var/lib/apt/lists/*\
- && apt-get update \
  && apt-get -y install bzip2 git nginx supervisor gcc salt-minion procps pv \
  && rm -rf /var/lib/apt/lists/*\
+
+# Remove default NGINX site
 RUN rm -f /etc/nginx/sites-enabled/default
 
 # Setup Conda Environment
@@ -135,10 +132,14 @@ RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
   ; tethys gen portal_config'
 RUN mkdir -p ${TETHYS_PERSIST} ${APPS_ROOT} ${WORKSPACE_ROOT} ${STATIC_ROOT}
 
+# Install channel-redis
+RUN /bin/bash -c '. ${CONDA_HOME}/bin/activate ${CONDA_ENV_NAME} \
+  ; pip install channels_redis'
+
 ############
 # CLEAN UP #
 ############
-RUN apt-get -y remove wget gcc gnupg2 \
+RUN apt-get -y remove gcc \
   ; apt-get -y autoremove \
   ; apt-get -y clean
 

@@ -11,7 +11,7 @@ import datetime
 import inspect
 from abc import abstractmethod
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils import timezone
@@ -44,12 +44,19 @@ class TethysJob(models.Model):
         ('RES', 'Results-Ready'),
     )
 
-    STATUS_DICT = {k: v for v, k in STATUSES}
     VALID_STATUSES = [v for v, _ in STATUSES]
+    DISPLAY_STATUSES = [k for _, k in STATUSES]
+    DISPLAY_STATUSES.insert(3, DISPLAY_STATUSES.pop(6))  # Move 'Various' to be by 'Running'
+
+    PRE_RUNNING_STATUSES = DISPLAY_STATUSES[:2]
+    RUNNING_STATUSES = DISPLAY_STATUSES[2:4]
+    ACTIVE_STATUSES = DISPLAY_STATUSES[1:4]
+    TERMINAL_STATUSES = DISPLAY_STATUSES[4:]
 
     name = models.CharField(max_length=1024)
     description = models.CharField(max_length=2048, blank=True, default='')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    groups = models.ManyToManyField(Group, verbose_name='groups', related_name='tethys_jobs', blank=True)
     label = models.CharField(max_length=1024)
     creation_time = models.DateTimeField(auto_now_add=True)
     execute_time = models.DateTimeField(blank=True, null=True)
@@ -57,8 +64,12 @@ class TethysJob(models.Model):
     completion_time = models.DateTimeField(blank=True, null=True)
     workspace = models.CharField(max_length=1024, default='')
     extended_properties = JSONField(default=dict, null=True, blank=True)
+    status_message = models.CharField(max_length=2048, blank=True, null=True)
     _process_results_function = models.CharField(max_length=1024, blank=True, null=True)
     _status = models.CharField(max_length=3, choices=STATUSES, default=STATUSES[0][0])
+
+    def __lt__(self, other):
+        return self.id < other.id
 
     @property
     def type(self):
@@ -105,9 +116,12 @@ class TethysJob(models.Model):
         """
         executes the job
         """
-        self._execute(*args, **kwargs)
-        self.execute_time = timezone.now()
-        self._status = 'SUB'
+        try:
+            self._execute(*args, **kwargs)
+            self.execute_time = timezone.now()
+            self._status = 'SUB'
+        except Exception:
+            self._status = 'ERR'
         self.save()
 
     def update_status(self, status=None, *args, **kwargs):
@@ -183,6 +197,20 @@ class TethysJob(models.Model):
         self._status = 'COM'
         self.save()
         log.debug('Finished processing results for job: {}'.format(self))
+
+    def resubmit(self):
+        self._resubmit()
+
+    def get_logs(self):
+        return self._get_logs()
+
+    @abstractmethod
+    def _get_logs(self):
+        pass
+
+    @abstractmethod
+    def _resubmit(self, *args, **kwargs):
+        pass
 
     @abstractmethod
     def _execute(self, *args, **kwargs):

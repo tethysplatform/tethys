@@ -1,0 +1,9 @@
+{% extends "admin/guardian/model/obj_perms_manage.html" %}
+
+{% block extrahead %}{{ block.super }}
+<style>
+    .form-row.user_permissions {
+        overflow-x: auto;
+    }
+</style>
+{% endblock %}

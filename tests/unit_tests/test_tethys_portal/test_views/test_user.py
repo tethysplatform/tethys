@@ -1,13 +1,14 @@
 import unittest
 from unittest import mock
+from django.test import override_settings
 from django.contrib.auth.models import User
 
 # Fixes the Cache-Control error in tests. Must appear before view imports.
 mock.patch('django.views.decorators.cache.never_cache', lambda x: x).start()
 
-from tethys_portal.views.user \
-    import profile, settings, change_password, social_disconnect, delete_account, manage_storage, clear_workspace
-from tethys_apps.models import TethysApp
+from tethys_portal.views.user import profile, settings, change_password, social_disconnect, delete_account, \
+    manage_storage, clear_workspace  # noqa: E402
+from tethys_apps.models import TethysApp  # noqa: E402
 
 
 class TethysPortalUserTests(unittest.TestCase):
@@ -18,13 +19,16 @@ class TethysPortalUserTests(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @override_settings(MFA_REQUIRED=False)
     @mock.patch('tethys_quotas.utilities.log')
+    @mock.patch('tethys_portal.views.user.has_mfa')
     @mock.patch('tethys_portal.views.user._convert_storage_units')
     @mock.patch('tethys_portal.views.user.get_quota')
     @mock.patch('tethys_portal.views.user.render')
     @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
     @mock.patch('tethys_portal.views.user.User.objects.get')
-    def test_profile(self, mock_get_user, mock_token_get_create, mock_render, mock_get_quota, mock_convert_units, _):
+    def test_profile(self, mock_get_user, mock_token_get_create, mock_render, mock_get_quota, mock_convert_units,
+                     mock_has_mfa, _):
         mock_request = mock.MagicMock()
         username = 'foo'
 
@@ -36,26 +40,54 @@ class TethysPortalUserTests(unittest.TestCase):
         mock_token_get_create.return_value = mock_user_token, mock_token_created
         mock_convert_units.return_value = '0 bytes'
         mock_get_quota.return_value = {'quota': None}
+        mock_has_mfa.return_value = False
 
         expected_context = {
             'context_user': mock_context_user,
             'user_token': mock_user_token.key,
             'current_use': '0 bytes',
             'quota': None,
+            'has_mfa': False,
+            'mfa_required': False,
+            'show_user_token_mfa': True
         }
 
         profile(mock_request, username)
 
         mock_render.assert_called_with(mock_request, 'tethys_portal/user/profile.html', expected_context)
 
+    @override_settings(MFA_REQUIRED=False)
+    @mock.patch('tethys_quotas.utilities.log')
+    @mock.patch('tethys_portal.views.user.has_mfa')
+    @mock.patch('tethys_portal.views.user._convert_storage_units')
+    @mock.patch('tethys_portal.views.user.get_quota')
+    @mock.patch('tethys_portal.views.user.render')
+    @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
+    @mock.patch('tethys_portal.views.user.User.objects.get')
+    def test_profile_quota(self, mock_get_user, mock_token_get_create, mock_render, mock_get_quota,
+                           mock_convert_units, mock_has_mfa, _):
+        mock_request = mock.MagicMock()
+        username = 'foo'
+
+        mock_context_user = mock.MagicMock()
+        mock_get_user.return_value = mock_context_user
+
+        mock_user_token = mock.MagicMock()
+        mock_token_created = mock.MagicMock()
+        mock_token_get_create.return_value = mock_user_token, mock_token_created
+        mock_convert_units.return_value = '0 bytes'
+        mock_get_quota.return_value = {'quota': 1, 'units': 0}
+        mock_has_mfa.return_value = False
+
         expected_context = {
             'context_user': mock_context_user,
             'user_token': mock_user_token.key,
             'current_use': '0 bytes',
             'quota': '0 bytes',
+            'has_mfa': False,
+            'mfa_required': False,
+            'show_user_token_mfa': True  # Show user token b/c mfa is not required
         }
-
-        mock_get_quota.return_value = {'quota': 1, 'units': 0}
 
         profile(mock_request, username)
 
@@ -64,6 +96,117 @@ class TethysPortalUserTests(unittest.TestCase):
         mock_get_user.assert_called_with(username='foo')
 
         mock_token_get_create.assert_called_with(user=mock_context_user)
+
+    @override_settings(MFA_REQUIRED=True)
+    @mock.patch('tethys_quotas.utilities.log')
+    @mock.patch('tethys_portal.views.user.has_mfa')
+    @mock.patch('tethys_portal.views.user._convert_storage_units')
+    @mock.patch('tethys_portal.views.user.get_quota')
+    @mock.patch('tethys_portal.views.user.render')
+    @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
+    @mock.patch('tethys_portal.views.user.User.objects.get')
+    def test_profile_mfa_required_no_mfa_set(self, mock_get_user, mock_token_get_create, mock_render, mock_get_quota,
+                                             mock_convert_units, mock_has_mfa, _):
+        mock_request = mock.MagicMock()
+        username = 'foo'
+
+        mock_context_user = mock.MagicMock()
+        mock_get_user.return_value = mock_context_user
+
+        mock_user_token = mock.MagicMock()
+        mock_token_created = mock.MagicMock()
+        mock_token_get_create.return_value = mock_user_token, mock_token_created
+        mock_convert_units.return_value = '0 bytes'
+        mock_get_quota.return_value = {'quota': None}
+        mock_has_mfa.return_value = False
+
+        expected_context = {
+            'context_user': mock_context_user,
+            'user_token': mock_user_token.key,
+            'current_use': '0 bytes',
+            'quota': None,
+            'has_mfa': False,
+            'mfa_required': True,
+            'show_user_token_mfa': False  # Don't show user token b/c mfa is required but user has not setup mfa
+        }
+
+        profile(mock_request, username)
+
+        mock_render.assert_called_with(mock_request, 'tethys_portal/user/profile.html', expected_context)
+
+    @override_settings(MFA_REQUIRED=True)
+    @mock.patch('tethys_quotas.utilities.log')
+    @mock.patch('tethys_portal.views.user.has_mfa')
+    @mock.patch('tethys_portal.views.user._convert_storage_units')
+    @mock.patch('tethys_portal.views.user.get_quota')
+    @mock.patch('tethys_portal.views.user.render')
+    @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
+    @mock.patch('tethys_portal.views.user.User.objects.get')
+    def test_profile_mfa_required_mfa_set(self, mock_get_user, mock_token_get_create, mock_render, mock_get_quota,
+                                          mock_convert_units, mock_has_mfa, _):
+        mock_request = mock.MagicMock()
+        username = 'foo'
+
+        mock_context_user = mock.MagicMock()
+        mock_get_user.return_value = mock_context_user
+
+        mock_user_token = mock.MagicMock()
+        mock_token_created = mock.MagicMock()
+        mock_token_get_create.return_value = mock_user_token, mock_token_created
+        mock_convert_units.return_value = '0 bytes'
+        mock_get_quota.return_value = {'quota': None}
+        mock_has_mfa.return_value = True
+
+        expected_context = {
+            'context_user': mock_context_user,
+            'user_token': mock_user_token.key,
+            'current_use': '0 bytes',
+            'quota': None,
+            'has_mfa': True,
+            'mfa_required': True,
+            'show_user_token_mfa': True  # Show user token b/c mfa is required and user has setup mfa
+        }
+
+        profile(mock_request, username)
+
+        mock_render.assert_called_with(mock_request, 'tethys_portal/user/profile.html', expected_context)
+
+    @override_settings(MFA_REQUIRED=False)
+    @mock.patch('tethys_quotas.utilities.log')
+    @mock.patch('tethys_portal.views.user.has_mfa')
+    @mock.patch('tethys_portal.views.user._convert_storage_units')
+    @mock.patch('tethys_portal.views.user.get_quota')
+    @mock.patch('tethys_portal.views.user.render')
+    @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
+    @mock.patch('tethys_portal.views.user.User.objects.get')
+    def test_profile_mfa_not_required_mfa_set(self, mock_get_user, mock_token_get_create, mock_render, mock_get_quota,
+                                              mock_convert_units, mock_has_mfa, _):
+        mock_request = mock.MagicMock()
+        username = 'foo'
+
+        mock_context_user = mock.MagicMock()
+        mock_get_user.return_value = mock_context_user
+
+        mock_user_token = mock.MagicMock()
+        mock_token_created = mock.MagicMock()
+        mock_token_get_create.return_value = mock_user_token, mock_token_created
+        mock_convert_units.return_value = '0 bytes'
+        mock_get_quota.return_value = {'quota': None}
+        mock_has_mfa.return_value = True
+
+        expected_context = {
+            'context_user': mock_context_user,
+            'user_token': mock_user_token.key,
+            'current_use': '0 bytes',
+            'quota': None,
+            'has_mfa': True,
+            'mfa_required': False,
+            'show_user_token_mfa': True  # Show user token b/c not mfa is required
+        }
+
+        profile(mock_request, username)
+
+        mock_render.assert_called_with(mock_request, 'tethys_portal/user/profile.html', expected_context)
 
     @mock.patch('tethys_portal.views.user.messages.warning')
     @mock.patch('tethys_portal.views.user.redirect')
@@ -112,10 +255,11 @@ class TethysPortalUserTests(unittest.TestCase):
         mock_redirect.assert_called_once_with('user:profile', username='foo')
 
     @mock.patch('tethys_quotas.utilities.log')
+    @mock.patch('tethys_portal.views.user.django_settings')
     @mock.patch('tethys_portal.views.user.Token.objects.get_or_create')
     @mock.patch('tethys_portal.views.user.UserSettingsForm')
     @mock.patch('tethys_portal.views.user.render')
-    def test_settings_request_get(self, mock_render, mock_usf, mock_token_get_create, _):
+    def test_settings_request_get(self, mock_render, mock_usf, mock_token_get_create, mock_django_settings, _):
         username = 'foo'
 
         mock_request_user = mock.MagicMock()
@@ -132,11 +276,16 @@ class TethysPortalUserTests(unittest.TestCase):
         mock_token_created = mock.MagicMock()
         mock_token_get_create.return_value = mock_user_token, mock_token_created
 
+        mock_django_settings.MFA_REQUIRED = False
+
         expected_context = {'form': mock_form,
                             'context_user': mock_request.user,
                             'user_token': mock_user_token.key,
                             'current_use': '0 bytes',
                             'quota': None,
+                            'mfa_required': False,
+                            'has_mfa': False,
+                            'show_user_token_mfa': True
                             }
 
         settings(mock_request, username)

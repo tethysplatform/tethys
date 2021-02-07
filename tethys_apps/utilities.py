@@ -249,7 +249,7 @@ def create_ps_database_setting(app_package, name, description='', required=False
     except Exception as e:
         print(e)
         with pretty_output(FG_RED) as p:
-            p.write('The above error was encountered. Aborted.'.format(app_package))
+            p.write('The above error was encountered. Aborted.')
         return False
 
 
@@ -401,3 +401,14 @@ def get_service_model_from_type(service_type):
     }
 
     return service_type_to_model_dict[service_type]
+
+
+def user_can_access_app(user, app):
+    from django.conf import settings
+
+    if getattr(settings, 'ENABLE_OPEN_PORTAL', False):
+        return True
+    elif getattr(settings, "ENABLE_RESTRICTED_APP_ACCESS", False):
+        return user.has_perm(f'{app.package}:access_app', app)
+    else:
+        return True

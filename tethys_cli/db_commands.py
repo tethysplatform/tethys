@@ -161,7 +161,7 @@ def purge_db_server(**kwargs):
     stop_db_server(**kwargs)
     if kwargs['db_dir']:
         write_error("This action will permanently delete the database. DATA WILL BE LOST!")
-        response = 'y' if kwargs['no_confirmation'] else input(f"Are you sure you want to continue? [y/N]: ")
+        response = 'y' if kwargs['no_confirmation'] else input("Are you sure you want to continue? [y/N]: ")
         if response.lower() in ['y', 'yes']:
             shutil.rmtree(kwargs['db_dir'])
 

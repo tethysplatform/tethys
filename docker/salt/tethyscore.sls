@@ -30,11 +30,8 @@
 {% set DJANGO_ANALYTICAL = salt['environ.get']('DJANGO_ANALYTICAL') %}
 {% set ADD_BACKENDS = salt['environ.get']('ADD_BACKENDS') %}
 {% set OAUTH_OPTIONS = salt['environ.get']('OAUTH_OPTIONS') %}
-{% if salt['environ.get']('CHANNEL_LAYER') %}
-{% set CHANNEL_LAYER = salt['environ.get']('CHANNEL_LAYER') %}
-{% else %}
-{% set CHANNEL_LAYER = "''" %}
-{% endif %}
+{% set CHANNEL_LAYERS_BACKEND = salt['environ.get']('CHANNEL_LAYERS_BACKEND') %}
+{% set CHANNEL_LAYERS_CONFIG = salt['environ.get']('CHANNEL_LAYERS_CONFIG') %}
 {% if salt['environ.get']('RECAPTCHA_PRIVATE_KEY') %}
 {% set RECAPTCHA_PRIVATE_KEY = salt['environ.get']('RECAPTCHA_PRIVATE_KEY') %}
 {% else %}
@@ -86,10 +83,11 @@ Generate_Tethys_Settings_TethysCore:
         --set TETHYS_PORTAL_CONFIG.STATIC_ROOT {{ STATIC_ROOT }}
         --set TETHYS_PORTAL_CONFIG.TETHYS_WORKSPACES_ROOT {{ WORKSPACE_ROOT }}
         --set RESOURCE_QUOTA_HANDLERS {{ QUOTA_HANDLERS }}
-        --set ANALYTICS_CONFIGS {{ DJANGO_ANALYTICAL }}
+        --set ANALYTICS_CONFIG {{ DJANGO_ANALYTICAL }}
         --set AUTHENTICATION_BACKENDS {{ ADD_BACKENDS }}
-        --set OAUTH_CONFIGS {{ OAUTH_OPTIONS }}
-        --set CHANNEL_LAYERS.default.BACKEND {{ CHANNEL_LAYER }}
+        --set OAUTH_CONFIG {{ OAUTH_OPTIONS }}
+        --set CHANNEL_LAYERS.default.BACKEND {{ CHANNEL_LAYERS_BACKEND }}
+        --set CHANNEL_LAYERS.default.CONFIG {{ CHANNEL_LAYERS_CONFIG }}
         --set CAPTCHA_CONFIG.RECAPTCHA_PRIVATE_KEY {{ RECAPTCHA_PRIVATE_KEY }}
         --set CAPTCHA_CONFIG.RECAPTCHA_PUBLIC_KEY {{ RECAPTCHA_PUBLIC_KEY }}
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
@@ -106,25 +104,11 @@ Generate_NGINX_Service_TethysCore:
 
 Generate_ASGI_Service_TethysCore:
   cmd.run:
-    - name: {{ TETHYS_BIN_DIR }}/tethys gen asgi_service --asgi-processes {{ ASGI_PROCESSES }} --overwrite
-    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
-
-Link_NGINX_Config_TethysCore:
-  file.symlink:
-    - name: /etc/nginx/sites-enabled/tethys_nginx.conf
-    - target: {{ TETHYS_HOME }}/tethys/tethys_portal/tethys_nginx.conf
-    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
-
-Link_NGINX_Service_TethysCore:
-  file.symlink:
-    - name: /etc/supervisor/conf.d/nginx_supervisord.conf
-    - target: {{ TETHYS_HOME }}/tethys/tethys_portal/nginx_supervisord.conf
-    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
-
-Link_ASGI_Config_TethysCore:
-  file.symlink:
-    - name: /etc/supervisor/conf.d/asgi_supervisord.conf
-    - target: {{ TETHYS_HOME }}/tethys/tethys_portal/asgi_supervisord.conf
+    - name: >
+        {{ TETHYS_BIN_DIR }}/tethys gen asgi_service
+        --asgi-processes {{ ASGI_PROCESSES }}
+        --conda-prefix {{ CONDA_HOME }}/envs/{{ CONDA_ENV_NAME }}
+        --overwrite
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 /run/asgi:
@@ -140,15 +124,29 @@ Link_ASGI_Config_TethysCore:
     - replace: False
     - makedirs: True
 
-Prepare_Database_TethysCore:
+Create_Database_User_and_SuperUser_TethysCore:
   cmd.run:
     - name: >
         . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} &&
-        PGPASSWORD="{{ POSTGRES_PASSWORD }}" {{ TETHYS_BIN_DIR }}/tethys db configure
+        PGPASSWORD="{{ POSTGRES_PASSWORD }}" {{ TETHYS_BIN_DIR }}/tethys db create
         -n {{ TETHYS_DB_USERNAME }}
         -p {{ TETHYS_DB_PASSWORD }}
         -N {{ TETHYS_DB_SUPERUSER }}
         -P {{ TETHYS_DB_SUPERUSER_PASS }}
+    - shell: /bin/bash
+    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
+
+Migrate_Database_TethysCore:
+  cmd.run:
+    - name: >
+        . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && {{ TETHYS_BIN_DIR }}/tethys db migrate
+    - shell: /bin/bash
+    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
+
+Create_Database_Portal_SuperUser_TethysCore:
+  cmd.run:
+    - name: >
+        . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }} && {{ TETHYS_BIN_DIR }}/tethys db createsuperuser
         {%- if PORTAL_SUPERUSER_NAME and PORTAL_SUPERUSER_PASSWORD %}
         --pn {{ PORTAL_SUPERUSER_NAME }} --pp {{ PORTAL_SUPERUSER_PASSWORD }}
         {% endif %}
@@ -162,14 +160,6 @@ Modify_Tethys_Site_TethysCore:
     - name: {{ TETHYS_BIN_DIR }}/tethys site {{ TETHYS_SITE_CONTENT }}
     - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 {% endif %}
-
-Collect_Static_Files:
-  cmd.run:
-    - name: >
-        . {{ CONDA_HOME }}/bin/activate {{ CONDA_ENV_NAME }}
-        && {{ TETHYS_BIN_DIR }}/tethys manage collectstatic --noinput
-    - shell: /bin/bash
-    - unless: /bin/bash -c "[ -f "{{ TETHYS_PERSIST }}/setup_complete" ];"
 
 Flag_Complete_Setup_TethysCore:
   cmd.run:

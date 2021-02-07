@@ -8,6 +8,7 @@
 """
 import logging
 import datetime
+
 from django.utils import timezone
 from django.db import models
 from dask.delayed import Delayed
@@ -15,6 +16,7 @@ from dask.distributed import Client, Future, fire_and_forget
 from tethys_compute.models.tethys_job import TethysJob
 from tethys_compute.models.dask.dask_scheduler import DaskScheduler
 from tethys_compute.models.dask.dask_field import DaskSerializedField
+import json
 
 log = logging.getLogger('tethys.' + __name__)
 client_fire_forget = None
@@ -292,3 +294,27 @@ class DaskJob(TethysJob):
 
         if future:
             future.retry()
+
+    def _resubmit(self, *args, **kwargs):
+        """
+        Resubmit this job. Simply use the retry function.
+        """
+        self.retry()
+
+    def _get_logs(self):
+        """
+        Resubmit this job. Simply use the retry function.
+        """
+        contents = dict()
+        contents['Scheduler'] = self._parse_log_content(self.scheduler.client.get_scheduler_logs())
+        log_workers = self.scheduler.client.get_worker_logs()
+        for i, (worker, worker_content) in enumerate(log_workers.items()):
+            contents[f'Worker-{i}'] = self._parse_log_content(worker_content)
+        return contents
+
+    @staticmethod
+    def _parse_log_content(log_content):
+        if log_content:
+            log_content = json.dumps(log_content).strip("[]")
+            log_content = log_content.replace("], [", "\n")
+        return log_content
