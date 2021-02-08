@@ -9,9 +9,9 @@ class TethysPasswordResetView(PasswordResetView):
     if '@' not in from_email_address:
         from_email_address = settings.DEFAULT_FROM_EMAIL
     # This removes the first and last angle brackets if email format is <foo@email.com>
-    # and is for backwards compatibility
+    # and is for Tethys backwards compatibility
     if from_email_address[0] == '<':
         from_email_address = from_email_address[1:len(from_email_address)]
-    if from_email_address[len(from_email_address)] == '>':
+    if from_email_address[len(from_email_address) - 1] == '>':
         from_email_address = from_email_address[0:len(from_email_address) - 1]
     from_email = "%s <%s>" % (settings.EMAIL_FROM, from_email_address)
