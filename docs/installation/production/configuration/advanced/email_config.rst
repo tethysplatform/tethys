@@ -145,15 +145,21 @@ Several email settings in the :file:`portal_config.yml` file need to be configur
 
     .. code-block:: bash
 
-        tethys settings --set EMAIL_BACKEND "django.core.mail.backends.smtp.EmailBackend" --set EMAIL_HOST localhost --set EMAIL_PORT 25 --set EMAIL_HOST_USER "" --set EMAIL_HOST_PASSWORD "" --set EMAIL_USE_TLS False --set DEFAULT_FROM_EMAIL "<DEFAULT_FROM_EMAIL>"
+        tethys settings --set EMAIL_CONFIG.EMAIL_BACKEND "django.core.mail.backends.smtp.EmailBackend" --set EMAIL_CONFIG.EMAIL_HOST localhost --set EMAIL_CONFIG.EMAIL_PORT 25 --set EMAIL_CONFIG.EMAIL_HOST_USER "" --set EMAIL_CONFIG.EMAIL_HOST_PASSWORD "" --set EMAIL_CONFIG.EMAIL_USE_TLS False --set EMAIL_CONFIG.DEFAULT_FROM_EMAIL "<DEFAULT_FROM_EMAIL>" --set EMAIL_CONFIG.EMAIL_FROM "<EMAIL_FROM>"
 
     .. note::
 
-        Replace ``<DEFAULT_FROM_EMAIL>`` with the value determined during the :ref:`production_preparation` step. It should use the following format (with angle braces):
+        Replace ``<DEFAULT_FROM_EMAIL>`` with the value determined during the :ref:`production_preparation` step. It should use the following format (without angle braces):
 
             .. code-block:: bash
 
-                <Title foo@example.com>
+                <foo@example.com>
+
+        Replace ``<EMAIL_FROM>`` with the "FROM" email alias or name of sender determined during the :ref:`production_preparation` step.
+
+            .. code-block:: bash
+
+                "John Smith"
 
 5. Restart Tethys Portal
 ------------------------

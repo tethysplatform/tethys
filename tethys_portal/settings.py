@@ -294,6 +294,7 @@ MESSAGE_TAGS = {
 
 # Email Configuration
 EMAIL_CONFIG = portal_config_settings.pop('EMAIL_CONFIG', {})
+EMAIL_FROM = portal_config_settings.pop('EMAIL_FROM', '')
 for setting, value in EMAIL_CONFIG.items():
     setattr(this_module, setting, value)
 

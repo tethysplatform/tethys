@@ -66,7 +66,8 @@ Email Support
 
 If you plan to enable the email capabilities to allow users to reset their forgotten passwords, you'll need to identify an email address to use as the "From" field. Users will be able to reply to these emails, so if your organization has a "noreply" email address, that would be ideal.
 
-* **DEFAULT_FROM_EMAIL**: The "FROM" email address and name of sender that will be shown on forgotten password emails (e.g.: <My App Portal noreply@my.domain.com>).
+* **DEFAULT_FROM_EMAIL**: The "FROM" email address of sender that will be shown on forgotten password emails (e.g.: "noreply@my.domain.com" or "<noreply@my.domain.com>").
+* **EMAIL_FROM**: The "FROM" email alias or name of sender that will be shown on forgotten emails (e.g.: "My App Portal").
 
 Security Enhanced Linux (SELinux)
 =================================

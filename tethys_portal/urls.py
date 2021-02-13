@@ -12,7 +12,7 @@ from django.conf.urls import include, url
 from django.urls import reverse_lazy
 from django.views.decorators.cache import never_cache
 from django.contrib import admin
-from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, \
+from django.contrib.auth.views import PasswordResetDoneView, PasswordResetConfirmView, \
     PasswordResetCompleteView
 from social_django import views as psa_views, urls as psa_urls
 
@@ -20,7 +20,7 @@ from tethys_apps.urls import extension_urls
 
 from tethys_portal.views import accounts as tethys_portal_accounts, developer as tethys_portal_developer, \
     error as tethys_portal_error, home as tethys_portal_home, user as tethys_portal_user, \
-    admin as tethys_portal_admin, psa as tethys_portal_psa
+    admin as tethys_portal_admin, psa as tethys_portal_psa, email as tethys_portal_email
 from tethys_apps import views as tethys_apps_views
 from tethys_compute.views import dask_dashboard as tethys_dask_views
 
@@ -44,7 +44,7 @@ account_urls = [
     url(r'^login/$', tethys_portal_accounts.login_view, name='login'),
     url(r'^logout/$', tethys_portal_accounts.logout_view, name='logout'),
     url(r'^register/$', tethys_portal_accounts.register, name='register'),
-    url(r'^password/reset/$', never_cache(PasswordResetView.as_view(
+    url(r'^password/reset/$', never_cache(tethys_portal_email.TethysPasswordResetView.as_view(
         success_url=reverse_lazy('accounts:password_reset_done'))
     ), name='password_reset'),
     url(r'^password/reset/done/$', never_cache(PasswordResetDoneView.as_view()), name='password_reset_done'),
