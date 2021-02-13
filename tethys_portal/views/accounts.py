@@ -147,25 +147,3 @@ def logout_view(request):
 
     # Redirect home
     return redirect('home')
-
-
-@never_cache
-def reset_confirm(request, uidb64=None, token=None):
-    return PasswordResetConfirmView(
-        request,
-        template_name='tethys_portal/accounts/password_reset/reset_confirm.html',
-        uidb64=uidb64,
-        token=token,
-        success_url=reverse('accounts:login')
-    )
-
-
-@never_cache
-def reset(request):
-    return PasswordResetView(
-        request,
-        template_name='tethys_portal/accounts/password_reset/reset_request.html',
-        email_template_name='tethys_portal/accounts/password_reset/reset_email.html',
-        subject_template_name='tethys_portal/accounts/password_reset/reset_subject.txt',
-        success_url=reverse('accounts:login')
-    )
