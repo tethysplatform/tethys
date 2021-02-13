@@ -6,7 +6,7 @@ from django.test import override_settings
 # Fixes the Cache-Control error in tests. Must appear before view imports.
 mock.patch('django.views.decorators.cache.never_cache', lambda x: x).start()
 
-from tethys_portal.views.accounts import login_view, register, logout_view, reset_confirm, reset  # noqa: E402
+from tethys_portal.views.accounts import login_view, register, logout_view  # noqa: E402
 
 
 class TethysPortalViewsAccountsTest(unittest.TestCase):
@@ -566,31 +566,3 @@ class TethysPortalViewsAccountsTest(unittest.TestCase):
                                                       format(mock_request.user.first_name))
 
         mock_redirect.assert_called_once_with('home')
-
-    @mock.patch('tethys_portal.views.accounts.reverse')
-    @mock.patch('tethys_portal.views.accounts.PasswordResetConfirmView')
-    def test_reset_confirm(self, mock_prc, mock_reverse):
-        mock_request = mock.MagicMock()
-        mock_reverse.return_value = 'accounts:login'
-        mock_prc.return_value = True
-        ret = reset_confirm(mock_request)
-        self.assertTrue(ret)
-        mock_prc.assert_called_once_with(mock_request,
-                                         template_name='tethys_portal/accounts/password_reset/reset_confirm.html',
-                                         uidb64=None,
-                                         token=None,
-                                         success_url='accounts:login')
-
-    @mock.patch('tethys_portal.views.accounts.reverse')
-    @mock.patch('tethys_portal.views.accounts.PasswordResetView')
-    def test_reset(self, mock_pr, mock_reverse):
-        mock_request = mock.MagicMock()
-        mock_reverse.return_value = 'accounts:login'
-        mock_pr.return_value = True
-        ret = reset(mock_request)
-        self.assertTrue(ret)
-        mock_pr.assert_called_once_with(mock_request,
-                                        template_name='tethys_portal/accounts/password_reset/reset_request.html',
-                                        email_template_name='tethys_portal/accounts/password_reset/reset_email.html',
-                                        subject_template_name='tethys_portal/accounts/password_reset/reset_subject.txt',
-                                        success_url='accounts:login')
