@@ -209,6 +209,7 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
     * **EMAIL_HOST_PASSWORD**: the Django `EMAIL_HOST_PASSWORD <https://docs.djangoproject.com/en/2.2/ref/settings/#email-host-password>`_ setting.
     * **EMAIL_USE_TLS**: the Django `EMAIL_USE_TLS <https://docs.djangoproject.com/en/2.2/ref/settings/#email-use-tls>`_ setting.
     * **DEFAULT_FROM_EMAIL**: the Django `DEFAULT_FROM_EMAIL <https://docs.djangoproject.com/en/2.2/ref/settings/#default-from-email>`_ setting.
+    * **EMAIL_FROM**: the email alias setting (e.g.: 'John Smith').
 
   * **LOCKOUT_CONFIG**: the Django Axes configuration settings for enabling lockout capabilities on Tethys Portal (see: :ref:`advanced_config_lockout`). The following is a list of the Django Axes settings that are configured for the default lockout capabilities in Tethys Portal. For a full list of Django Axes settings, see: `Django Axes Configuration Documentation <https://django-axes.readthedocs.io/en/latest/4_configuration.html>`_.
 

@@ -34,8 +34,8 @@ class TestUrls(TethysTestCase):
         url = reverse('accounts:password_reset')
         resolver = resolve(url)
         self.assertEqual('/accounts/password/reset/', url)
-        self.assertEqual('PasswordResetView', resolver.func.__name__)
-        self.assertEqual('django.contrib.auth.views', resolver.func.__module__)
+        self.assertEqual('TethysPasswordResetView', resolver.func.__name__)
+        self.assertEqual('tethys_portal.views.email', resolver.func.__module__)
 
     def test_account_urls_accounts_password_reset_done(self):
         url = reverse('accounts:password_reset_done')
