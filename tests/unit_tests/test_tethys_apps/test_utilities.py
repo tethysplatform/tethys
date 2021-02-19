@@ -1,10 +1,10 @@
 import unittest
 from unittest import mock
 
-from tethys_sdk.testing import TethysTestCase
-
-from tethys_apps import utilities
 from guardian.shortcuts import assign_perm
+
+from tethys_sdk.testing import TethysTestCase
+from tethys_apps import utilities
 
 
 class TethysAppsUtilitiesTests(unittest.TestCase):
@@ -588,6 +588,41 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
         # Returns default tethys home environment path
         self.assertEqual(default_tethys_home, ret)
+
+    def test_get_app_class(self):
+        """"""
+        from tethysapp.test_app.app import TestApp
+        mock_app = mock.MagicMock()
+        mock_app.name = 'Test App'  # This needs to match one of the test apps
+        mock_app.package = 'test_app'
+
+        ret = utilities.get_app_class(mock_app)
+
+        self.assertTrue(ret is TestApp)
+
+    def test_get_app_class__different_name(self):
+        """Test case when user changes name of app in DB (from app settings)."""
+        from tethysapp.test_app.app import TestApp
+        mock_app = mock.MagicMock()
+        mock_app.name = 'Different Name'  # This shouldn't match the name of any test app
+        mock_app.package = 'test_app'
+
+        ret = utilities.get_app_class(mock_app)
+
+        # Should still work because package is used to find the class
+        self.assertTrue(ret is TestApp)
+
+    def test_get_app_class__no_matching_class(self):
+        """Test case when no app class can be found for the app."""
+        from tethysapp.test_app.app import TestApp
+        mock_app = mock.MagicMock()
+        mock_app.name = 'Does Not Exist'  # This shouldn't match the name of any test app
+        mock_app.package = 'does_not_exist'
+
+        ret = utilities.get_app_class(mock_app)
+
+        # Should still work because package is used to find the class
+        self.asssertIsNone(ret)
 
 
 class TestTethysAppsUtilitiesTethysTestCase(TethysTestCase):
