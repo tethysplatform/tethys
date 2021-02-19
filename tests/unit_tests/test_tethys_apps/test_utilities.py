@@ -614,7 +614,6 @@ class TethysAppsUtilitiesTests(unittest.TestCase):
 
     def test_get_app_class__no_matching_class(self):
         """Test case when no app class can be found for the app."""
-        from tethysapp.test_app.app import TestApp
         mock_app = mock.MagicMock()
         mock_app.name = 'Does Not Exist'  # This shouldn't match the name of any test app
         mock_app.package = 'does_not_exist'
