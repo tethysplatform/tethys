@@ -279,6 +279,8 @@ STATIC_ROOT = TETHYS_PORTAL_CONFIG.pop('STATIC_ROOT', os.path.join(TETHYS_HOME, 
 
 TETHYS_WORKSPACES_ROOT = TETHYS_PORTAL_CONFIG.pop('TETHYS_WORKSPACES_ROOT', os.path.join(TETHYS_HOME, 'workspaces'))
 
+OPEN_USER_PROFILES = TETHYS_PORTAL_CONFIG.pop('OPEN_USER_PROFILES', False)
+
 # add any additional TETHYS_PORTAL_CONFIG settings
 for setting, value in TETHYS_PORTAL_CONFIG.items():
     setattr(this_module, setting, value)

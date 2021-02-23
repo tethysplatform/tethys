@@ -10,6 +10,7 @@
 from django.conf import settings as django_settings
 from django.shortcuts import render, redirect
 from tethys_sdk.permissions import login_required
+from django.conf import settings as tethys_settings
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.contrib import messages
@@ -32,6 +33,12 @@ def profile(request, username=None):
     """
     Handle the profile view. Profiles could potentially be publicly accessible.
     """
+    if not tethys_settings.OPEN_USER_PROFILES:
+        # Users are not allowed to make changes to other users settings
+        if request.user.username != username:
+            messages.warning(request, "You are not allowed to view other users' profiles.")
+            return redirect('user:profile', username=request.user.username)
+
     # The profile should display information about the user that is given in the url.
     # However, the template will hide certain information if the username is not the same
     # as the username of the user that is accessing the page.
