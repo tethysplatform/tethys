@@ -19,6 +19,7 @@ class TethysPortalUserTests(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @override_settings(OPEN_USER_PROFILES=True)
     @override_settings(MFA_REQUIRED=False)
     @mock.patch('tethys_quotas.utilities.log')
     @mock.patch('tethys_portal.views.user.has_mfa')
@@ -56,6 +57,21 @@ class TethysPortalUserTests(unittest.TestCase):
 
         mock_render.assert_called_with(mock_request, 'tethys_portal/user/profile.html', expected_context)
 
+    @override_settings(OPEN_USER_PROFILES=False)
+    @mock.patch('tethys_portal.views.user.messages')
+    @mock.patch('tethys_portal.views.user.redirect')
+    def test_profile_open_user_profiles_false(self, mock_redirect, mock_messages):
+        mock_request = mock.MagicMock()
+        mock_request.user.username = 'bar'
+
+        username = 'foo'
+
+        profile(mock_request, username)
+
+        mock_messages.warning.assert_called()
+        mock_redirect.assert_called_with('user:profile', username='bar')
+
+    @override_settings(OPEN_USER_PROFILES=True)
     @override_settings(MFA_REQUIRED=False)
     @mock.patch('tethys_quotas.utilities.log')
     @mock.patch('tethys_portal.views.user.has_mfa')
@@ -97,6 +113,7 @@ class TethysPortalUserTests(unittest.TestCase):
 
         mock_token_get_create.assert_called_with(user=mock_context_user)
 
+    @override_settings(OPEN_USER_PROFILES=True)
     @override_settings(MFA_REQUIRED=True)
     @mock.patch('tethys_quotas.utilities.log')
     @mock.patch('tethys_portal.views.user.has_mfa')
@@ -134,6 +151,7 @@ class TethysPortalUserTests(unittest.TestCase):
 
         mock_render.assert_called_with(mock_request, 'tethys_portal/user/profile.html', expected_context)
 
+    @override_settings(OPEN_USER_PROFILES=True)
     @override_settings(MFA_REQUIRED=True)
     @mock.patch('tethys_quotas.utilities.log')
     @mock.patch('tethys_portal.views.user.has_mfa')
@@ -171,6 +189,7 @@ class TethysPortalUserTests(unittest.TestCase):
 
         mock_render.assert_called_with(mock_request, 'tethys_portal/user/profile.html', expected_context)
 
+    @override_settings(OPEN_USER_PROFILES=True)
     @override_settings(MFA_REQUIRED=False)
     @mock.patch('tethys_quotas.utilities.log')
     @mock.patch('tethys_portal.views.user.has_mfa')
