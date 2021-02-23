@@ -299,3 +299,25 @@ var TETHYS_APP_BASE = (function() {
 }()); // End of package wrapper
 // NOTE: that the call operator (open-closed parenthesis) is used to invoke the library wrapper
 // function immediately after being parsed, returning the public interface object.
+
+
+// Global Functions for App Util
+
+/*****************************************************************************
+ *
+ * Cross Site Request Forgery Token Configuration
+ *   copied from (https://docs.djangoproject.com/en/1.7/ref/contrib/csrf/)
+ *
+ *****************************************************************************/
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);  // Note csrftoken is defined in app_base.html
+        }
+    }
+});

@@ -266,6 +266,10 @@
     {% endcomment %}
 
     {% block scripts %}
+      {% csrf_token %}
+      <script>
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      </script>
       <script src="{% static 'tethys_apps/vendor/cookies.js' %}" type="text/javascript"></script>
       {% block app_base_js %}
         <script src="{% static 'tethys_apps/js/app_base.js' %}" type="text/javascript"></script>
