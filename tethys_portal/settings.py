@@ -28,6 +28,7 @@ import logging
 import datetime as dt
 
 from django.contrib.messages import constants as message_constants
+from django.utils.translation import ugettext_lazy as _
 from tethys_apps.utilities import get_tethys_home_dir
 from tethys_cli.gen_commands import generate_secret_key
 
@@ -174,6 +175,7 @@ INSTALLED_APPS = tuple(INSTALLED_APPS + portal_config_settings.pop('INSTALLED_AP
 
 MIDDLEWARE = portal_config_settings.pop('MIDDLEWARE_OVERRIDE', [
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -217,9 +219,18 @@ TERMS_BASE_TEMPLATE = 'page.html'
 ROOT_URLCONF = 'tethys_portal.urls'
 
 # Internationalization
-# https://docs.djangoproject.com/en/1.9/topics/i18n/
+# https://docs.djangoproject.com/en/2.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+
+LANGUAGES = [
+    ('en', _('English')),
+    ('es', _('Spanish')),
+]
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
 
 TIME_ZONE = 'UTC'
 
