@@ -96,7 +96,7 @@ urlpatterns = [
     url(r'^accounts/', include((account_urls, 'accounts'), namespace='accounts')),
     url(r'^captcha/', include('captcha.urls')),
     url(r'^oauth2/', include((oauth2_urls, psa_urls.app_name), namespace='social')),
-    url(r'^user/(?P<username>[\w.@+-]+)/', include((user_urls, 'user'), namespace='user')),
+    url(r'^user/', include((user_urls, 'user'), namespace='user')),
     url(r'^apps/', include('tethys_apps.urls')),
     url(r'^extensions/', include(extension_urls)),
     url(r'^developer/', include(developer_urls)),
