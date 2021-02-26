@@ -1444,7 +1444,6 @@ class TethysAppBase(TethysBase):
                 db_app = db_apps[0]
                 db_app.index = self.index
                 db_app.root_url = self.root_url
-                db_app.color = self.color
 
                 # custom settings
                 db_app.add_settings(self.custom_settings())
@@ -1463,6 +1462,7 @@ class TethysAppBase(TethysBase):
                     db_app.name = self.name
                     db_app.description = self.description
                     db_app.icon = self.icon
+                    db_app.color = self.color
                     db_app.tags = self.tags
                     db_app.enable_feedback = self.enable_feedback
                     db_app.feedback_emails = self.feedback_emails
