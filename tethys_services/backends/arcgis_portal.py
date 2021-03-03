@@ -15,7 +15,7 @@ class ArcGISPortalOAuth2(ArcGISOAuth2):
     ArcGISPortal OAuth2 authentication backend.
     """
     name = 'arcgis_portal'
-    
+
     try:
         PORTAL_URL = settings.OAUTH_CONFIG['SOCIAL_AUTH_ARCGIS_PORTAL_URL']
         if not PORTAL_URL:
@@ -24,13 +24,13 @@ class ArcGISPortalOAuth2(ArcGISOAuth2):
         raise ValueError('You must specify the url of your ArcGIS Enterprise Portal via '
                          'the "SOCIAL_AUTH_ARCGIS_PORTAL_URL" setting in your '
                          'portal_config.yml file.')
-                         
+
     if PORTAL_URL[-1] == '/':
         PORTAL_URL = PORTAL_URL[0:-1]
-    
+
     AUTHORIZATION_URL = f'{PORTAL_URL}/sharing/rest/oauth2/authorize'
     ACCESS_TOKEN_URL = f'{PORTAL_URL}/sharing/rest/oauth2/token'
-    
+
     def user_data(self, access_token, *args, **kwargs):
         """Loads user data from service"""
         return self.get_json(
@@ -40,7 +40,7 @@ class ArcGISPortalOAuth2(ArcGISOAuth2):
                 'f': 'json'
             }
         )
-    
+
     def get_user_details(self, response):
         """Return user details from ArcGIS Enterprise Portal account"""
         name_parts = response['fullName'].split(' ')
@@ -48,10 +48,11 @@ class ArcGISPortalOAuth2(ArcGISOAuth2):
         last_name = ''
         if len(name_parts) > 1:
             last_name = name_parts[-1]
-        
-        return {'username': response['username'],
-                'email': response['email'],
-                'fullname': response['fullName'],
-                'first_name': first_name,
-                'last_name': last_name
+
+        return {
+            'username': response['username'],
+            'email': response['email'],
+            'fullname': response['fullName'],
+            'first_name': first_name,
+            'last_name': last_name
         }

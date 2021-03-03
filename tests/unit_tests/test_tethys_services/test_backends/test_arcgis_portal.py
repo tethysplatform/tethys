@@ -20,7 +20,7 @@ class ArcGISPortalBackendTest(test.SimpleTestCase):
         inst = ArcGISPortalOAuth2()
 
         self.assertEqual('https://my.test.arcgis/portal', inst.PORTAL_URL)
-        self.assertEqual(f'{inst.PORTAL_URL}/sharing/rest/oauth2/authorize', 
+        self.assertEqual(f'{inst.PORTAL_URL}/sharing/rest/oauth2/authorize',
                          inst.AUTHORIZATION_URL)
         self.assertEqual(f'{inst.PORTAL_URL}/sharing/rest/oauth2/token',
                          inst.ACCESS_TOKEN_URL)
@@ -42,7 +42,7 @@ class ArcGISPortalBackendTest(test.SimpleTestCase):
 
     def test_user_data(self):
         inst = ArcGISPortalOAuth2()
-        inst.get_json() = mock.MagicMock()
+        inst.get_json = mock.MagicMock()
         inst.user_data('my_special_token_12345')
         inst.get_json.assert_called_once_with(
             f'https://my.test.arcgis/portal/sharing/rest/community/self',
@@ -51,50 +51,50 @@ class ArcGISPortalBackendTest(test.SimpleTestCase):
                 'f': 'json'
             }
         )
-        
+
     def test_get_user_details__no_fullname(self):
         response = {
             'username': 'user1920394',
             'fullName': '',
             'email': 'test@email.com'
         }
-        
+
         inst = ArcGISPortalOAuth2()
         details = inst.get_user_details(response)
-        
+
         self.assertEqual(details['username'], 'user1920394')
         self.assertEqual(details['email'], 'test@email.com')
         self.assertEqual(details['fullname'], '')
         self.assertEqual(details['first_name'], '')
         self.assertEqual(details['last_name'], '')
-        
-    
+
+
     def test_get_user_details__firstname_only(self):
         response = {
             'username': 'user1920394',
             'fullName': 'John',
             'email': 'test@email.com'
         }
-        
+
         inst = ArcGISPortalOAuth2()
         details = inst.get_user_details(response)
-        
+
         self.assertEqual(details['username'], 'user1920394')
         self.assertEqual(details['email'], 'test@email.com')
         self.assertEqual(details['fullname'], 'John')
         self.assertEqual(details['first_name'], 'John')
         self.assertEqual(details['last_name'], '')
-    
+
     def test_get_user_details__fullname(self):
         response = {
             'username': 'user1920394',
             'fullName': 'John Doe',
             'email': 'test@email.com'
         }
-        
+
         inst = ArcGISPortalOAuth2()
         details = inst.get_user_details(response)
-        
+
         self.assertEqual(details['username'], 'user1920394')
         self.assertEqual(details['email'], 'test@email.com')
         self.assertEqual(details['fullname'], 'John Doe')
