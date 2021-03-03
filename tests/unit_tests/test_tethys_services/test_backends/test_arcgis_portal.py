@@ -45,7 +45,7 @@ class ArcGISPortalBackendTest(test.SimpleTestCase):
         inst.get_json = mock.MagicMock()
         inst.user_data('my_special_token_12345')
         inst.get_json.assert_called_once_with(
-            f'https://my.test.arcgis/portal/sharing/rest/community/self',
+            'https://my.test.arcgis/portal/sharing/rest/community/self',
             params={
                 'token': 'my_special_token_12345',
                 'f': 'json'
@@ -67,7 +67,6 @@ class ArcGISPortalBackendTest(test.SimpleTestCase):
         self.assertEqual(details['fullname'], '')
         self.assertEqual(details['first_name'], '')
         self.assertEqual(details['last_name'], '')
-
 
     def test_get_user_details__firstname_only(self):
         response = {
