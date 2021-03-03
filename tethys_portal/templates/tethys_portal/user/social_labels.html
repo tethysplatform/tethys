@@ -64,6 +64,26 @@
       {% else %}
       <span class="label label-hydroshare">HydroShare</span>
       {% endif %}
+    {% elif 'arcgis' in backend or 'arcgis' in backend.provider %}
+      {% if action == 'disconnect' %}
+        {% if 'portal' in backend or 'portal' in backend.provider %}
+        <a href="{% url 'user:disconnect' user.username 'arcgis_portal' backend.id %}"><span class="label label-arcgis">Disconnect ArcGIS Enterprise Portal</span></a>
+        {% else %}
+        <a href="{% url 'user:disconnect' user.username 'arcgis' backend.id %}"><span class="label label-arcgis">Disconnect ArcGIS Online</span></a>
+        {% endif %}
+      {% elif action == 'connect' %}
+        {% if 'portal' in backend or 'portal' in backend.provider %}
+        <a href="{% url 'social:begin' 'arcgis_portal' %}?next={{ request.path }}"><span class="label label-arcgis">Connect ArcGIS Enterprise Portal</span></a>
+        {% else %}
+        <a href="{% url 'social:begin' 'arcgis' %}?next={{ request.path }}"><span class="label label-arcgis">Connect ArcGIS Online</span></a>
+        {% endif %}
+      {% else %}
+        {% if 'portal' in backend or 'portal' in backend.provider %}
+        <span class="label label-arcgis">ArcGIS Enterprise Portal</span>
+        {% else %}
+        <span class="label label-arcgis">ArcGIS Online</span>
+        {% endif %}
+      {% endif %}
     {% elif 'okta' in backend or 'okta' in backend.provider %}
       {% if action == 'disconnect' %}
       <a href="{% url 'user:disconnect' user.username backend.provider backend.id %}"><span class="label label-okta">Disconnect Okta</span></a>

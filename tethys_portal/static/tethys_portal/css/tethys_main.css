@@ -2002,6 +2002,21 @@ footer.site-footer .tethys-attribution a:hover {
   background-size: 75%;
   background-position: 4px 5px;
 }
+.btn-arcgis {
+  color: white;
+  background-color: #0079C1;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.btn-arcgis {
+  color: white;
+  background-color: #005E95;
+}
+.fa-arcgis {
+  background-image: url(/static/tethys_portal/images/arcgis-icon-sm.png);
+  background-repeat: no-repeat;
+  background-size: 75%;
+  background-position: 4px 5px;
+}
 .btn-okta {
   background-color: #ffffff;
   color: #555555;
@@ -2440,6 +2455,14 @@ footer.site-footer .tethys-attribution a:hover {
 .label-hydroshare:hover {
   color: #ffffff;
   background-color: #71a43a;
+}
+.label-arcgis {
+  color: #005E95;
+  border: #aaaaaa solid 1px;
+}
+.label-arcgis:hover {
+  color: white;
+  background-color: #005E95;
 }
 .label-linkedin {
   color: #007bb6;

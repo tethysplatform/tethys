@@ -11,6 +11,16 @@
     <a class="btn btn-block btn-social btn-hydroshare" href="{% url 'social:begin' 'hydroshare_playground' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
       <i class="fa fa-hydroshare"></i> {{ action }} with HydroShare-playground
     </a>
+  {% elif 'arcgis' in backend %}
+    {% if 'portal' in backend %}
+      <a class="btn btn-block btn-social btn-arcgis" href="{% url 'social:begin' 'arcgis_portal' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
+        <i class="fa fa-arcgis"></i> {{ action }} with ArcGIS Enterprise Portal
+      </a>
+    {% else %}
+      <a class="btn btn-block btn-social btn-arcgis" href="{% url 'social:begin' 'arcgis' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
+        <i class="fa fa-arcgis"></i> {{ action }} with ArcGIS Online
+      </a>
+    {% endif %}
   {% elif backend == 'google-oauth2' %}
     <a class="btn btn-block btn-social btn-google" href="{% url 'social:begin' 'google-oauth2' %}{% if request.GET.next %}?next={{request.GET.next|urlencode}}{% endif %}">
       <i class="fa fa-google"></i> {{ action }} with Google

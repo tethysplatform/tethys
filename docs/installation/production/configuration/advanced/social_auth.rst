@@ -409,6 +409,85 @@ For more detailed information about using HydroShare social authentication see t
 
 * `https://github.com/hydroshare/hydroshare/wiki/HydroShare-REST-API#oauth-20-support <https://github.com/hydroshare/hydroshare/wiki/HydroShare-REST-API#oauth-20-support>`_
 
+.. _social_auth_arcgis:
+ArcGIS Online or ArcGIS Enterprise Portal
+-------------
+
+.. note::
+
+    There are a few differences when enabling social login against ArcGIS Online vs ArcGIS Enterprise Portal. Pay close attention to the steps below for these differences.
+
+1. Log in to your existing ArcGIS Online or ArcGIS Enterprise Portal account
+
+2. Create an Application Item
+
+    a. Browse to your "Content"
+    b. Select "Add Item" and choose "An Application" from the dropdown
+    c. In the popup, choose "Application" as the "Type"
+    d. For the "Title", type "Tethys Platform" or anything else you choose
+    e. Type one or more tags of your choice, such as "Tethys"
+    d. Click "Add Item"
+
+3. Update the Application Registration metadata
+
+    a. On the newly-created "Item" page, select the "Settings" tab
+    b. Scroll to the "Application" section at the very bottom of the page
+    c. Click the "Update" button under the "App Registration" subsection
+    d. For "Redirect URI", type "https://<SERVER_DOMAIN_NAME>", replacing ``<SERVER_DOMAIN_NAME>`` with the value determined during the :ref:`production_preparation` step.
+    e. Click "Add"
+    f. Click "Update"
+
+4. Take note of the ``App ID`` and ``App Secret`` (click "Show Secret" to view the latter) for Step 5.
+
+5. Add the appropriate settings to the  :file:`portal_config.yml` file using the ``tethys settings`` command:
+
+    a. If you are configuring your Tethys Portal to authenticate users against ArcGIS Online:
+    
+        Add the ``social_core.backends.arcgis.ArcGISOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
+
+        .. code-block:: bash
+
+            tethys settings --set AUTHENTICATION_BACKENDS "['social_core.backends.arcgis.ArcGISOAuth2']"
+
+        Copy the ``Client ID`` and ``Client Secret`` to the ``SOCIAL_AUTH_ARCGIS_KEY`` and ``SOCIAL_AUTH_ARCGIS_SECRET`` settings, respectively:
+
+        .. code-block:: bash
+
+              tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_ARCGIS_KEY <Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_ARCGIS_SECRET <Client Secret>
+
+    b. If you are configuring your Tethys Portal to authenticate users against an ArcGIS Enterprise Portal:
+    
+        Add the ``tethys_services.backends.arcgis_portal.ArcGISPortalOAuth2`` backend to the ``AUTHENTICATION_BACKENDS`` setting:
+
+        .. code-block:: bash
+
+            tethys settings --set AUTHENTICATION_BACKENDS "['tethys_services.backends.arcgis_portal.ArcGISPortalOAuth2']"
+
+        Copy the ``Client ID`` and ``Client Secret`` to the ``SOCIAL_AUTH_ARCGIS_KEY`` and ``SOCIAL_AUTH_ARCGIS_SECRET`` settings, respectively:
+
+        .. code-block:: bash
+
+              tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_ARCGIS_KEY <Client ID> --set OAUTH_CONFIG.SOCIAL_AUTH_ARCGIS_SECRET <Client Secret>
+        
+        Copy the root URL at which your ArcGIS Enterprise Portal is hosted to the ``SOCIAL_AUTH_ARCGIS_PORTAL_URL`` setting.
+        
+        .. code-block:: bash
+
+              tethys settings --set OAUTH_CONFIG.SOCIAL_AUTH_ARCGIS_PORTAL_URL <Portal URL>
+        
+        .. note::
+        
+            If unsure of the <Portal URL> value, browse to the "Home" tab of your ArcGIS Enterprise Portal, and then copy the URL up to but NOT including "/home/" (e.g. a home page at "https://arcgis_enterprise_host.domain.com/portal/home" would yield "https://arcgis_enterprise_host.domain.com/portal").
+
+References
+++++++++++
+
+For more detailed information about using the ArcGIS Online or ArcGIS Enterprise Portal social logins see the following articles:
+
+* `Portal for ArcGIS: Register Your App <https://enterprise.arcgis.com/en/portal/latest/administer/windows/add-items.htm#REG_APP>`_
+* `ArcGIS Rest API: Authentication <https://developers.arcgis.com/rest/users-groups-and-items/authentication.htm>`_
+
+
 .. _social_auth_linkedin:
 
 LinkedIn
