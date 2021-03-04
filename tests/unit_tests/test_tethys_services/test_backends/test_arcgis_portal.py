@@ -4,9 +4,9 @@ from tethys_services.backends.arcgis_portal import ArcGISPortalOAuth2
 
 
 @test.override_settings(
-    SOCIAL_AUTH_ARCGIS_PORTAL_KEY='dfdadf78987d8',
-    SOCIAL_AUTH_ARCGIS_PORTAL_SECRET='wrewdcdks212d5kds987f8a03id9f',
-    SOCIAL_AUTH_ARCGIS_PORTAL_URL='https://my.test.arcgis/portal'
+    OAUTH_CONFIG={
+        'SOCIAL_AUTH_ARCGIS_PORTAL_URL': 'https://my.test.arcgis/portal'
+    }
 )
 class ArcGISPortalBackendTest(test.SimpleTestCase):
 
