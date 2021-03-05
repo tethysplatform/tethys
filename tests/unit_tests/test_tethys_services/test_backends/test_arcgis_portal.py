@@ -9,6 +9,7 @@ from tethys_services.backends.arcgis_portal import ArcGISPortalOAuth2
     }
 )
 class ArcGISPortalBackendTest(test.SimpleTestCase):
+    strategy = mock.MagicMock()
 
     def setUp(self):
         pass
@@ -17,7 +18,7 @@ class ArcGISPortalBackendTest(test.SimpleTestCase):
         pass
 
     def test_attributes(self):
-        inst = ArcGISPortalOAuth2()
+        inst = ArcGISPortalOAuth2(self.strategy)
 
         self.assertEqual('https://my.test.arcgis/portal', inst.PORTAL_URL)
         self.assertEqual(f'{inst.PORTAL_URL}/sharing/rest/oauth2/authorize',
@@ -25,23 +26,27 @@ class ArcGISPortalBackendTest(test.SimpleTestCase):
         self.assertEqual(f'{inst.PORTAL_URL}/sharing/rest/oauth2/token',
                          inst.ACCESS_TOKEN_URL)
 
-    @test.override_settings(SOCIAL_AUTH_ARCGIS_PORTAL_URL='')
+    @test.override_settings(OAUTH_CONFIG={
+        'SOCIAL_AUTH_ARCGIS_PORTAL_URL': ''
+    })
     def test_oidc_endpoint__no_portal_url(self):
         with self.assertRaises(ValueError) as exc:
             self.assertEqual('You must specify the url of your ArcGIS Enterprise Portal via '
                              'the "SOCIAL_AUTH_ARCGIS_PORTAL_URL" setting in your '
                              'portal_config.yml file.', str(exc))
 
-    @test.override_settings(SOCIAL_AUTH_ARCGIS_PORTAL_URL='https://my.test.arcgis/portal/')
+    @test.override_settings(OAUTH_CONFIG={
+        'SOCIAL_AUTH_ARCGIS_PORTAL_URL': 'https://my.test.arcgis/portal'
+    })
     def test_oidc_endpoint__portal_url_end_slash(self):
-        inst = ArcGISPortalOAuth2()
+        inst = ArcGISPortalOAuth2(self.strategy)
 
         ret = inst.PORTAL_URL
 
         self.assertEqual('https://my.test.arcgis/portal', ret)
 
     def test_user_data(self):
-        inst = ArcGISPortalOAuth2()
+        inst = ArcGISPortalOAuth2(self.strategy)
         inst.get_json = mock.MagicMock()
         inst.user_data('my_special_token_12345')
         inst.get_json.assert_called_once_with(
@@ -59,7 +64,7 @@ class ArcGISPortalBackendTest(test.SimpleTestCase):
             'email': 'test@email.com'
         }
 
-        inst = ArcGISPortalOAuth2()
+        inst = ArcGISPortalOAuth2(self.strategy)
         details = inst.get_user_details(response)
 
         self.assertEqual(details['username'], 'user1920394')
@@ -75,7 +80,7 @@ class ArcGISPortalBackendTest(test.SimpleTestCase):
             'email': 'test@email.com'
         }
 
-        inst = ArcGISPortalOAuth2()
+        inst = ArcGISPortalOAuth2(self.strategy)
         details = inst.get_user_details(response)
 
         self.assertEqual(details['username'], 'user1920394')
@@ -91,7 +96,7 @@ class ArcGISPortalBackendTest(test.SimpleTestCase):
             'email': 'test@email.com'
         }
 
-        inst = ArcGISPortalOAuth2()
+        inst = ArcGISPortalOAuth2(self.strategy)
         details = inst.get_user_details(response)
 
         self.assertEqual(details['username'], 'user1920394')

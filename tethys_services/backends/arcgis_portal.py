@@ -16,20 +16,28 @@ class ArcGISPortalOAuth2(ArcGISOAuth2):
     """
     name = 'arcgis_portal'
 
-    try:
-        PORTAL_URL = settings.OAUTH_CONFIG['SOCIAL_AUTH_ARCGIS_PORTAL_URL']
-        if not PORTAL_URL:
-            raise ValueError()
-    except (AttributeError, KeyError, ValueError):
-        raise ValueError('You must specify the url of your ArcGIS Enterprise Portal via '
-                         'the "SOCIAL_AUTH_ARCGIS_PORTAL_URL" setting in your '
-                         'portal_config.yml file.')
+    @property
+    def PORTAL_URL(self):
+        portal_url = ''
+        try:
+            portal_url = settings.OAUTH_CONFIG['SOCIAL_AUTH_ARCGIS_PORTAL_URL']
+            if not portal_url:
+                raise ValueError()
+            if portal_url[-1] == '/':
+                portal_url = portal_url[0:-1]
+        except (AttributeError, KeyError, ValueError):
+            raise ValueError('You must specify the url of your ArcGIS Enterprise Portal via '
+                             'the "SOCIAL_AUTH_ARCGIS_PORTAL_URL" setting in your '
+                             'portal_config.yml file.')
+        return portal_url
 
-    if PORTAL_URL[-1] == '/':
-        PORTAL_URL = PORTAL_URL[0:-1]
+    @property
+    def AUTHORIZATION_URL(self):
+        return f'{self.PORTAL_URL}/sharing/rest/oauth2/authorize'
 
-    AUTHORIZATION_URL = f'{PORTAL_URL}/sharing/rest/oauth2/authorize'
-    ACCESS_TOKEN_URL = f'{PORTAL_URL}/sharing/rest/oauth2/token'
+    @property
+    def ACCESS_TOKEN_URL(self):
+        return f'{self.PORTAL_URL}/sharing/rest/oauth2/token'
 
     def user_data(self, access_token, *args, **kwargs):
         """Loads user data from service"""
