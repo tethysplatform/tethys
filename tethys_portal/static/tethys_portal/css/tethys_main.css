@@ -365,26 +365,26 @@ a:hover {
 	background-image: none;
 	background-repeat: no-repeat;
 	background-color: @default-color;
-	
-	
+
+
 	// Hover
 	&:hover {
 		color: #505050;
 		background-color: @default-color - @btn-hover-difference;
 	}
-	
+
 	&.btn-mini {
 		padding: 0 4px;
 	}
-	
+
 	&.btn-small {
 		padding: 2px 6px;
 	}
-	
+
 	&.btn-large {
 		padding: 10px 18px;
 	}
-	
+
 	&.active {
 		-webkit-box-shadow: none;
 		   -moz-box-shadow: none;
@@ -392,7 +392,7 @@ a:hover {
 		     -o-box-shadow: none;
 		box-shadow: none;
 	}
-	
+
 	&:focus {
 		-webkit-box-shadow: none;
 		   -moz-box-shadow: none;
@@ -400,156 +400,156 @@ a:hover {
 		     -o-box-shadow: none;
 		box-shadow: none;
 	}
-	
+
 	// Default
 	&.btn-default {
 		border: 1px solid #505050;
 		color: #505050;
 		background-color: @default-color;
-		
+
 		&:hover {
 			color: #505050;
 			background-color: @default-color - @btn-hover-difference;
 		}
-		
+
 		&.btn-small {
 			padding: 2px 6px;
 		}
-		
+
 		&.btn-large {
 			padding: 10px 18px;
 		}
-	
+
 		&.btn-mini {
 			padding: 0 4px;
 		}
 	}
-	
+
 	// Primary
 	&.btn-primary {
 		.non-default-btn();
 		background-color: @primary-color;
-		
+
 		&:hover {
 			color: #ffffff;
 			background-color: @primary-color - @btn-hover-difference;
 		}
-		
+
 		&.btn-small {
 			.small-buttons();
 		}
-		
+
 		&.btn-large {
 			.large-buttons();
 		}
-	
+
 		&.btn-mini {
 			padding: 0 4px;
 		}
 	}
-	
+
 	// Success
 	&.btn-success {
 		.non-default-btn();
 		background-color: @success-color;
-		
+
 		&:hover {
 			color: #ffffff;
 			background-color: @success-color - @btn-hover-difference;
 		}
-		
+
 		&.btn-small {
 			.small-buttons();
 		}
-		
+
 		&.btn-large {
 			.large-buttons();
 		}
-	
+
 		&.btn-mini {
 			padding: 0 4px;
 		}
 	}
-	
+
 	// Warning
 	&.btn-warning {
 		.non-default-btn();
 		background-color: @warning-color;
-		
+
 		&:hover {
 			color: #ffffff;
 			background-color: @warning-color - @btn-hover-difference;
 		}
-		
+
 		&.btn-small {
 			.small-buttons();
 		}
-		
+
 		&.btn-large {
 			.large-buttons();
 		}
-	
+
 		&.btn-mini {
 			padding: 0 4px;
 		}
 	}
-	
+
 	// Danger
 	&.btn-danger {
 		.non-default-btn();
 		background-color: @danger-color;
-		
+
 		&:hover {
 			color: #ffffff;
 			background-color: @danger-color - @btn-hover-difference;
 		}
-		
+
 		&.btn-small {
 			.small-buttons();
 		}
-		
+
 		&.btn-large {
 			.large-buttons();
 		}
-	
+
 		&.btn-mini {
 			padding: 0 4px;
 		}
 	}
-	
+
 	// Info
 	&.btn-info {
 		.non-default-btn();
 		background-color: @info-color;
-		
+
 		&:hover {
 			color: #ffffff;
 			background-color: @info-color - @btn-hover-difference;
 		}
-		
+
 		&.btn-small {
 			.small-buttons();
 		}
-		
+
 		&.btn-large {
 			.large-buttons();
 		}
-	
+
 		&.btn-mini {
 			padding: 0 4px;
 		}
 	}
-	
+
 	// Button link
 	&.btn-link {
 		border: none;
 		background-color: transparent;
 		color: @link-color;
-		
+
 		&:hover {
 			color: @link-hover-color;
 		}
-		
+
 		&:focus {
 			outline: none;
 		}
@@ -565,12 +565,12 @@ a:hover {
 			    -ms-box-shadow: none;
 			     -o-box-shadow: none;
 			box-shadow: none;
-			
+
 			&.btn-default {
 				color: #505050;
 				background-color: @default-color - @btn-hover-difference;
-				
-				
+
+
 				& + .dropdown-menu {
 					li a:hover {
 						background-color: #505050;
@@ -578,11 +578,11 @@ a:hover {
 					}
 				}
 			}
-			
+
 			&.btn-primary {
 				color: #ffffff;
 				background-color: @primary-color - @btn-hover-difference;
-				
+
 				& + .dropdown-menu {
 					li a:hover {
 						background-color: @primary-color;
@@ -590,11 +590,11 @@ a:hover {
 					}
 				}
 			}
-			
+
 			&.btn-success {
 				color: #ffffff;
 				background-color: @success-color - @btn-hover-difference;
-				
+
 				& + .dropdown-menu {
 					li a:hover {
 						background-color: @success-color;
@@ -602,11 +602,11 @@ a:hover {
 					}
 				}
 			}
-			
+
 			&.btn-warning {
 				color: #ffffff;
 				background-color: @warning-color - @btn-hover-difference;
-				
+
 				& + .dropdown-menu {
 					li a:hover {
 						background-color: @warning-color;
@@ -614,11 +614,11 @@ a:hover {
 					}
 				}
 			}
-			
+
 			&.btn-danger {
 				color: #ffffff;
 				background-color: @danger-color - @btn-hover-difference;
-				
+
 				& + .dropdown-menu {
 					li a:hover {
 						background-color: @danger-color;
@@ -626,11 +626,11 @@ a:hover {
 					}
 				}
 			}
-			
+
 			&.btn-info {
 				color: #ffffff;
 				background-color: @info-color - @btn-hover-difference;
-				
+
 				& + .dropdown-menu {
 					li a:hover {
 						background-color: @info-color;
@@ -648,7 +648,7 @@ a:hover {
 		.checkbox.btn {
 			background-image: none;
 			background-color: @danger-color - @btn-hover-difference*3;
-			
+
 			&:hover {
 			background-color: @danger-color - @btn-hover-difference*3;
 			}
@@ -676,7 +676,7 @@ a:hover {
  * LICENSE: BSD 2-Clause
  *****************************************************************************/
 /* =====================================================
-   Header 
+   Header
    ===================================================== */
 .header-wrapper {
   position: fixed;
@@ -1574,7 +1574,7 @@ a:hover {
 				content: "1";
 			}
 		}
-		
+
 		li:nth-of-type(2){
 			&:before {
 				content: "2";
@@ -1884,14 +1884,14 @@ footer.site-footer .tethys-attribution a:hover {
 		width: 200px;
 		margin-left: -11px;
 	}
-	
+
 	.footer-col {
 		float: none;
 		font-size: 16px;
 		width: 100%;
 		margin: 0;
 		text-align: center;
-		
+
 		&.one {
 			display: none;
 		}
@@ -1903,12 +1903,12 @@ footer.site-footer .tethys-attribution a:hover {
 		&.three {
 		  width: 100%;
 		}
-		
+
 		&:last-child {
 			width: 100%;
 			margin-bottom: 40px;
 		}
-		
+
 		h5 {
 			margin-top: 20px;
 		}
@@ -1918,11 +1918,11 @@ footer.site-footer .tethys-attribution a:hover {
 		display: block;
 		position: relative;
 		margin-top: 40px;
-		
+
 		img {
 			width: 100px;
 		}
-		
+
 		.copyright {
 			margin-top: 40px;
 			font-size: 18px;
@@ -1998,6 +1998,20 @@ footer.site-footer .tethys-attribution a:hover {
 }
 .fa-hydroshare {
   background-image: url(/static/tethys_portal/images/hs-icon-sm.png);
+  background-repeat: no-repeat;
+  background-size: 75%;
+  background-position: 4px 5px;
+}
+.btn-arcgis {
+  color: white;
+  background-color: #0079C1;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.btn-arcgis:hover {
+  background-color: #005E95;
+}
+.fa-arcgis {
+  background-image: url(/static/tethys_portal/images/arcgis-icon-sm.png);
   background-repeat: no-repeat;
   background-size: 75%;
   background-position: 4px 5px;
@@ -2440,6 +2454,14 @@ footer.site-footer .tethys-attribution a:hover {
 .label-hydroshare:hover {
   color: #ffffff;
   background-color: #71a43a;
+}
+.label-arcgis {
+  color: #005E95;
+  border: #aaaaaa solid 1px;
+}
+.label-arcgis:hover {
+  color: white;
+  background-color: #005E95;
 }
 .label-linkedin {
   color: #007bb6;
