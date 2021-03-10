@@ -9,10 +9,8 @@ from tethys_services.backends.arcgis_portal import ArcGISPortalOAuth2
     }
 )
 class ArcGISPortalBackendTest(test.SimpleTestCase):
-    strategy = mock.MagicMock()
-
     def setUp(self):
-        pass
+        self.strategy = mock.MagicMock()
 
     def tearDown(self):
         pass
