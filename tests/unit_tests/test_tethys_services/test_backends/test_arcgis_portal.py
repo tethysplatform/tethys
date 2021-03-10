@@ -30,13 +30,15 @@ class ArcGISPortalBackendTest(test.SimpleTestCase):
         'SOCIAL_AUTH_ARCGIS_PORTAL_URL': ''
     })
     def test_oidc_endpoint__no_portal_url(self):
-        with self.assertRaises(ValueError) as exc:
-            self.assertEqual('You must specify the url of your ArcGIS Enterprise Portal via '
-                             'the "SOCIAL_AUTH_ARCGIS_PORTAL_URL" setting in your '
-                             'portal_config.yml file.', str(exc))
+        with self.assertRaises(ValueError) as context:
+            inst = ArcGISPortalOAuth2(self.strategy)
+            inst.PORTAL_URL
+        self.assertEqual('You must specify the url of your ArcGIS Enterprise Portal via '
+                         'the "SOCIAL_AUTH_ARCGIS_PORTAL_URL" setting in your '
+                         'portal_config.yml file.', str(context.exception))
 
     @test.override_settings(OAUTH_CONFIG={
-        'SOCIAL_AUTH_ARCGIS_PORTAL_URL': 'https://my.test.arcgis/portal'
+        'SOCIAL_AUTH_ARCGIS_PORTAL_URL': 'https://my.test.arcgis/portal/'
     })
     def test_oidc_endpoint__portal_url_end_slash(self):
         inst = ArcGISPortalOAuth2(self.strategy)
