@@ -34,6 +34,8 @@
               <p>Are you sure you want to disconnect your HydroShare-beta account?</p>
             {% elif 'hydroshare_playground' == provider %}
               <p>Are you sure you want to disconnect your HydroShare-playground account?</p>
+            {% elif 'arcgis' in provider %}
+              <p>Are you sure you want to disconnect your ArcGIS {% if 'portal' in provider %}Enterprise Portal{% else %}Online{% endif %} account?</p>
             {% endif %}
 
             {% csrf_token %}

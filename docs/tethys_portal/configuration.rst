@@ -146,6 +146,11 @@ The following is a list of keys that can be added to the :file:`portal_config.ym
     * **SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET**: Secret for authenticating with Google using their OAuth2 service. See :ref:`social_auth_google` SSO Setup.
     * **SOCIAL_AUTH_HYDROSHARE_KEY**: Key for authenticating with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` SSO Setup.
     * **SOCIAL_AUTH_HYDROSHARE_SECRET**: Secret for authentication with HydroShare using their OAuth2 service. See :ref:`social_auth_hydroshare` SSO Setup.
+    * **SOCIAL_AUTH_ARCGIS_KEY**: Key for authenticating with ArcGIS Online using their OAuth2 service. See :ref:`social_auth_arcgis` SSO Setup.
+    * **SOCIAL_AUTH_ARCGIS_SECRET**: Secret for authentication with ArcGIS Online using their OAuth2 service. See :ref:`social_auth_arcgis` SSO Setup.
+    * **SOCIAL_AUTH_ARCGIS_PORTAL_KEY**: Key for authenticating with an ArcGIS Enterprise Portal using their OAuth2 service. See :ref:`social_auth_arcgis` SSO Setup.
+    * **SOCIAL_AUTH_ARCGIS_PORTAL_SECRET**: Secret for authentication with an ArcGIS Enterprise Portal using their OAuth2 service. See :ref:`social_auth_arcgis` SSO Setup.
+    * **SOCIAL_AUTH_ARCGIS_PORTAL_URL**: Root URL of the ArcGIS Enterprise Portal that will provide their OAuth2 service. See :ref:`social_auth_arcgis` SSO Setup.
     * **SOCIAL_AUTH_LINKEDIN_OAUTH2_KEY**: Key for authenticating with LinkedIn using their OAuth2 service. See :ref:`social_auth_linkedin` SSO Setup.
     * **SOCIAL_AUTH_LINKEDIN_OAUTH2_SECRET**: Secret for authenticating with LinkedIn using their OAuth2 service. See :ref:`social_auth_linkedin` SSO Setup.
     * **SOCIAL_AUTH_OKTA_OAUTH2_MULTI_TENANT**: Define one or more sets of settings for multiple tenants, each indexed by a Tenant Key. See: :ref:`social_auth_okta_multi` Setup.
