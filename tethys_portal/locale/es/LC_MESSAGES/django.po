@@ -1,0 +1,73 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-11 04:13+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: settings.py:227
+msgid "English"
+msgstr "Inglés"
+
+#: settings.py:228
+msgid "Spanish"
+msgstr "Español"
+
+#: templates/admin/base.html:71
+msgid "Home"
+msgstr "Inicio"
+
+#: templates/registration/password_reset_complete.html:21
+msgid "Reset Complete"
+msgstr "Reinicio completado"
+
+#: templates/registration/password_reset_complete.html:24
+msgid "Your password has been reset, please log in now"
+msgstr "Su contraseña ha sido restablecida, por favor inicie sesión ahora"
+
+#: templates/registration/password_reset_complete.html:25
+msgid "Log In"
+msgstr "Iniciar Session"
+
+#: templates/registration/password_reset_confirm.html:26
+msgid "New Password"
+msgstr "Nueva contraseña"
+
+#: templates/registration/password_reset_confirm.html:33
+msgid "Reset Password"
+msgstr "Restablecer contraseña"
+
+#: templates/registration/password_reset_confirm.html:36
+msgid ""
+"The password reset link was invalid. We apologize for the inconvenience."
+msgstr "El enlace para restablecer la contraseña es invalido. Disculpe los inconvenientes."
+
+#: templates/tethys_portal/admin/edit_inline/tabular.html:17
+msgid "Delete?"
+msgstr "¿Borrar?"
+
+#: templates/tethys_portal/admin/edit_inline/tabular.html:18
+msgid "Errors"
+msgstr "Errores"
+
+#: templates/tethys_portal/admin/edit_inline/tabular.html:74
+#, python-format
+msgid "Add another %(verbose_name)s"
+msgstr "Agregar otro %(verbose_name)s"
+
+#: templates/tethys_portal/admin/edit_inline/tabular.html:75
+msgid "Remove"
+msgstr "Remover"
