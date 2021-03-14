@@ -9,6 +9,7 @@
 ********************************************************************************
 """
 from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 from .models import SettingsCategory, Setting
 
 
@@ -96,7 +97,7 @@ def setting_defaults(category):
 
     if category.name == 'General Settings':
         category.setting_set.create(name="Site Title",
-                                    content="Tethys Portal",
+                                    content=_("Tethys Portal"),
                                     date_modified=now)
 
         category.setting_set.create(name="Favicon",
@@ -104,7 +105,7 @@ def setting_defaults(category):
                                     date_modified=now)
 
         category.setting_set.create(name="Brand Text",
-                                    content="Tethys Portal",
+                                    content=_("Tethys Portal"),
                                     date_modified=now)
 
         category.setting_set.create(name="Brand Image",
@@ -124,7 +125,7 @@ def setting_defaults(category):
                                     date_modified=now)
 
         category.setting_set.create(name="Apps Library Title",
-                                    content="Apps Library",
+                                    content=_("Apps Library"),
                                     date_modified=now)
 
         category.setting_set.create(name="Primary Color",
@@ -156,27 +157,27 @@ def setting_defaults(category):
                                     date_modified=now)
 
         category.setting_set.create(name="Footer Copyright",
-                                    content="Copyright © 2019 Your Organization",
+                                    content=_("Copyright © 2019 Your Organization"),
                                     date_modified=now)
 
     elif category.name == 'Home Page':
         category.setting_set.create(name="Hero Text",
-                                    content="Welcome to Tethys Portal,\nthe hub for your apps.",
+                                    content=_("Welcome to Tethys Portal,\nthe hub for your apps."),
                                     date_modified=now)
 
         category.setting_set.create(name="Blurb Text",
-                                    content="Tethys Portal is designed to be customizable, so that you can host "
-                                            "apps for your\norganization. You can change everything on this page "
-                                            "from the Home Page settings.",
+                                    content=_("Tethys Portal is designed to be customizable, so that you can host "
+                                              "apps for your\norganization. You can change everything on this page "
+                                              "from the Home Page settings."),
                                     date_modified=now)
 
         category.setting_set.create(name="Feature 1 Heading",
-                                    content="Feature 1",
+                                    content=_("Feature 1"),
                                     date_modified=now)
 
         category.setting_set.create(name="Feature 1 Body",
-                                    content="Use these features to brag about all of the things users can do with "
-                                            "your instance of Tethys Portal.",
+                                    content=_("Use these features to brag about all of the things users can do with "
+                                              "your instance of Tethys Portal."),
                                     date_modified=now)
 
         category.setting_set.create(name="Feature 1 Image",
@@ -184,12 +185,12 @@ def setting_defaults(category):
                                     date_modified=now)
 
         category.setting_set.create(name="Feature 2 Heading",
-                                    content="Feature 2",
+                                    content=_("Feature 2"),
                                     date_modified=now)
 
         category.setting_set.create(name="Feature 2 Body",
-                                    content="Describe the apps and tools that your Tethys Portal provides and add "
-                                            "custom pictures to each feature as a finishing touch.",
+                                    content=_("Describe the apps and tools that your Tethys Portal provides and add "
+                                              "custom pictures to each feature as a finishing touch."),
                                     date_modified=now)
 
         category.setting_set.create(name="Feature 2 Image",
@@ -197,13 +198,13 @@ def setting_defaults(category):
                                     date_modified=now)
 
         category.setting_set.create(name="Feature 3 Heading",
-                                    content="Feature 3",
+                                    content=_("Feature 3"),
                                     date_modified=now)
 
         category.setting_set.create(name="Feature 3 Body",
-                                    content="You can change the color theme and branding of your Tethys Portal in a "
-                                            "jiffy. Visit the Site Admin settings from the user menu and select "
-                                            "General Settings.",
+                                    content=_("You can change the color theme and branding of your Tethys Portal in a "
+                                              "jiffy. Visit the Site Admin settings from the user menu and select "
+                                              "General Settings."),
                                     date_modified=now)
 
         category.setting_set.create(name="Feature 3 Image",
@@ -211,11 +212,11 @@ def setting_defaults(category):
                                     date_modified=now)
 
         category.setting_set.create(name="Call to Action",
-                                    content="Ready to get started?",
+                                    content=_("Ready to get started?"),
                                     date_modified=now)
 
         category.setting_set.create(name="Call to Action Button",
-                                    content="Start Using Tethys!",
+                                    content=_("Start Using Tethys!"),
                                     date_modified=now)
 
     elif category.name == 'Custom Styles':
