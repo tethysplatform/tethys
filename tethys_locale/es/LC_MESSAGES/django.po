@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-14 08:04+0000\n"
+"POT-Creation-Date: 2021-03-14 20:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,6 +36,19 @@ msgstr "Iniciar Sesión"
 msgid "Close"
 msgstr "Cerrar"
 
+#: tethys_apps/templates/tethys_apps/app_library.html:25
+#: tethys_config/init.py:128
+msgid "Apps Library"
+msgstr "Aplicaciones"
+
+#: tethys_apps/templates/tethys_apps/app_library.html:37
+msgid "All"
+msgstr "Todo"
+
+#: tethys_apps/templates/tethys_apps/app_library.html:95
+msgid "There are no apps loaded."
+msgstr "No hay aplicaciones"
+
 #: tethys_compute/graveyard.py:77
 msgid "Dictionary object"
 msgstr "Objetos del diccionario"
@@ -43,6 +56,80 @@ msgstr "Objetos del diccionario"
 #: tethys_compute/graveyard.py:125
 msgid "List object"
 msgstr "Lista de objetos"
+
+#: tethys_config/init.py:100 tethys_config/init.py:108
+msgid "Tethys Portal"
+msgstr "Portal de Tethys"
+
+#: tethys_config/init.py:160
+msgid "Copyright © 2019 Your Organization"
+msgstr "Derechos de Autor © 2019 Su Organización"
+
+#: tethys_config/init.py:165 tethys_portal/templates/tethys_portal/home.html:46
+msgid ""
+"Welcome to Tethys Portal,\n"
+"the hub for your apps."
+msgstr ""
+"Bienvenido al Portal de Tethys,\n"
+"el lugar para sus aplicaciones."
+
+#: tethys_config/init.py:169 tethys_portal/templates/tethys_portal/home.html:57
+msgid ""
+"Tethys Portal is designed to be customizable, so that you can host apps for "
+"your\n"
+"organization. You can change everything on this page from the Home Page "
+"settings."
+msgstr ""
+"El Portal de Tethys está diseñado para ser personalizado, para que pueda "
+"hospedar  aplocaciones para su\n"
+"organización. Usted puede cambiar todo en esta página llendo a congiguración "
+"y luego a Página Principal."
+
+#: tethys_config/init.py:175 tethys_portal/templates/tethys_portal/home.html:63
+msgid "Feature 1"
+msgstr "Punto 1"
+
+#: tethys_config/init.py:179 tethys_portal/templates/tethys_portal/home.html:64
+msgid ""
+"Use these features to brag about all of the things users can do with your "
+"instance of Tethys Portal."
+msgstr ""
+"Use estos puntos a destacar para informar a sus usuarios de las cosas que "
+"pueden hacer en el Portal de Tethys."
+
+#: tethys_config/init.py:188 tethys_portal/templates/tethys_portal/home.html:65
+msgid "Feature 2"
+msgstr "Punto 2"
+
+#: tethys_config/init.py:192 tethys_portal/templates/tethys_portal/home.html:66
+msgid ""
+"Describe the apps and tools that your Tethys Portal provides and add custom "
+"pictures to each feature as a finishing touch."
+msgstr ""
+"Describa las aplicaciones y herramientas que su Portal de Tethys provee y "
+"añada imágenes de cada punto a destacar."
+
+#: tethys_config/init.py:201 tethys_portal/templates/tethys_portal/home.html:67
+msgid "Feature 3"
+msgstr "Punto 3"
+
+#: tethys_config/init.py:205 tethys_portal/templates/tethys_portal/home.html:68
+msgid ""
+"You can change the color theme and branding of your Tethys Portal in a "
+"jiffy. Visit the Site Admin settings from the user menu and select General "
+"Settings."
+msgstr ""
+"Usted puede cambiar los colores y el aspecto de su Portal de Tethys.Visite "
+"la configuración de administrador desde su menú de usuario y seleccione "
+"configuración general."
+
+#: tethys_config/init.py:215 tethys_portal/templates/tethys_portal/home.html:69
+msgid "Ready to get started?"
+msgstr "¿Listo para comenzar?"
+
+#: tethys_config/init.py:219 tethys_portal/templates/tethys_portal/home.html:70
+msgid "Start Using Tethys!"
+msgstr "¡Empiece a usar Tethys!"
 
 #: tethys_portal/settings.py:227
 msgid "English"
@@ -346,72 +433,6 @@ msgstr "Ir a la herramienta"
 #: tethys_portal/templates/tethys_portal/home.html:5
 msgid "Welcome!"
 msgstr "¡Bienvenido!"
-
-#: tethys_portal/templates/tethys_portal/home.html:46
-msgid ""
-"Welcome to Tethys Portal,\n"
-"the hub for your apps."
-msgstr ""
-"Bienvenido al Portal de Tethys,\n"
-"el lugar para sus aplicaciones."
-
-#: tethys_portal/templates/tethys_portal/home.html:57
-msgid ""
-"Tethys Portal is designed to be customizable, so that you can host apps for "
-"your\n"
-"organization. You can change everything on this page from the Home Page "
-"settings."
-msgstr ""
-"El Portal de Tethys está diseñado para ser personalizado, para que pueda "
-"hospedar  aplocaciones para su\n"
-"organización. Usted puede cambiar todo en esta página llendo a congiguración "
-"y luego a Página Principal."
-
-#: tethys_portal/templates/tethys_portal/home.html:63
-msgid "Feature 1"
-msgstr "Punto 1"
-
-#: tethys_portal/templates/tethys_portal/home.html:64
-msgid ""
-"Use these features to brag about all of the things users can do with your "
-"instance of Tethys Portal."
-msgstr ""
-"Use estos puntos a destacar para informar a sus usuarios de las cosas que "
-"pueden hacer en el Portal de Tethys."
-
-#: tethys_portal/templates/tethys_portal/home.html:65
-msgid "Feature 2"
-msgstr "Punto 2"
-
-#: tethys_portal/templates/tethys_portal/home.html:66
-msgid ""
-"Describe the apps and tools that your Tethys Portal provides and add custom "
-"pictures to each feature as a finishing touch."
-msgstr ""
-"Describa las aplicaciones y herramientas que su Portal de Tethys provee y "
-"añada imágenes de cada punto a destacar."
-
-#: tethys_portal/templates/tethys_portal/home.html:67
-msgid "Feature 3"
-msgstr "Punto 3"
-
-#: tethys_portal/templates/tethys_portal/home.html:68
-msgid ""
-"You can change the color theme and branding of your Tethys Portal in a "
-"jiffy. Visit the Site Admin settings from the user menu and select General "
-"Settings."
-msgstr ""
-"Usted puede cambiar los colores y el aspecto de su Portal de Tethys.Visite "
-"la configuración de administrador desde su menú de usuario y seleccione "
-"configuración general."
-
-#: tethys_portal/templates/tethys_portal/home.html:69
-msgid "Ready to get started?"
-msgstr "¿Listo para comenzar?"
-
-#: tethys_portal/templates/tethys_portal/home.html:70
-msgid "Start Using Tethys!"
-msgstr "¡Empiece a usar Tethys!"
 
 #: tethys_portal/templates/tethys_portal/user/change_password.html:5
 #: tethys_portal/templates/tethys_portal/user/change_password.html:23
