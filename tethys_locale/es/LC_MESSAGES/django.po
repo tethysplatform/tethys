@@ -1,0 +1,122 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-14 00:28+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: tests/unit_tests/test_tethys_services/test_admin.py:15
+#: tethys_services/admin.py:24 tethys_services/admin.py:36
+#: tethys_services/admin.py:48
+msgid "Public Endpoint"
+msgstr "Punto de Conexión Público"
+
+#: tethys_apps/templates/tethys_apps/app_base.html:154
+#: tethys_portal/templates/header.html:101
+#: tethys_portal/templates/registration/password_reset_complete.html:25
+msgid "Log In"
+msgstr "Iniciar Sesión"
+
+#: tethys_apps/templates/tethys_apps/app_base.html:193
+msgid "Close"
+msgstr "Cerrar"
+
+#: tethys_compute/graveyard.py:77
+msgid "Dictionary object"
+msgstr "Objetos del diccionario"
+
+#: tethys_compute/graveyard.py:125
+msgid "List object"
+msgstr "Lista de objetos"
+
+#: tethys_portal/settings.py:227
+msgid "English"
+msgstr "Inglés"
+
+#: tethys_portal/settings.py:228
+msgid "Spanish"
+msgstr "Español"
+
+#: tethys_portal/templates/admin/base.html:71
+msgid "Home"
+msgstr "Inicio"
+
+#: tethys_portal/templates/header.html:95
+msgid "Apps"
+msgstr "Aplicaciones"
+
+#: tethys_portal/templates/header.html:96
+msgid "Developer"
+msgstr "Desarrollador"
+
+#: tethys_portal/templates/header.html:97
+msgid "Profile"
+msgstr "Perfil"
+
+#: tethys_portal/templates/header.html:98
+msgid "Site Admin"
+msgstr "Administrador"
+
+#: tethys_portal/templates/header.html:99
+msgid "Log Out"
+msgstr "Cerrar Sesión"
+
+#: tethys_portal/templates/header.html:100
+msgid "User Settings"
+msgstr "Usuario"
+
+#: tethys_portal/templates/registration/password_reset_complete.html:21
+msgid "Reset Complete"
+msgstr "Cambio Completado"
+
+#: tethys_portal/templates/registration/password_reset_complete.html:24
+msgid "Your password has been reset, please log in now"
+msgstr "Su contraseña ha sido restablecida, por favor reinicie sesión"
+
+#: tethys_portal/templates/registration/password_reset_confirm.html:26
+msgid "New Password"
+msgstr "Nueva Contraseña"
+
+#: tethys_portal/templates/registration/password_reset_confirm.html:33
+msgid "Reset Password"
+msgstr "Cambiar Contraseña"
+
+#: tethys_portal/templates/registration/password_reset_confirm.html:36
+msgid ""
+"The password reset link was invalid. We apologize for the inconvenience."
+msgstr ""
+"El enlace de cambio de contraseña fue invalido. Perdón por los "
+"inconvenientes."
+
+#: tethys_portal/templates/tethys_portal/admin/edit_inline/tabular.html:17
+#: tethys_quotas/templates/tethys_quotas/admin/edit_inline/tabular.html:18
+msgid "Delete?"
+msgstr "¿Ɓorrar?"
+
+#: tethys_portal/templates/tethys_portal/admin/edit_inline/tabular.html:18
+msgid "Errors"
+msgstr "Errores"
+
+#: tethys_portal/templates/tethys_portal/admin/edit_inline/tabular.html:74
+#: tethys_quotas/templates/tethys_quotas/admin/edit_inline/tabular.html:70
+#, python-format
+msgid "Add another %(verbose_name)s"
+msgstr "Añadir otro %(verbose_name)s"
+
+#: tethys_portal/templates/tethys_portal/admin/edit_inline/tabular.html:75
+#: tethys_quotas/templates/tethys_quotas/admin/edit_inline/tabular.html:71
+msgid "Remove"
+msgstr "Remover"

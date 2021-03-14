@@ -1,4 +1,4 @@
-{% load gravatar staticfiles %}
+{% load gravatar staticfiles i18n %}
 
 <style>
   .user-dropdown .user-profile-nav-item a.lit {
@@ -91,32 +91,41 @@
   }
 </style>
 
+{# Translations #}
+{% trans "Apps" as apps_tr %}
+{% trans "Developer" as developer_tr %}
+{% trans "Profile" as profile_tr %}
+{% trans "Site Admin" as site_admin_tr %}
+{% trans "Log Out" as log_out_tr %}
+{% trans "User Settings" as user_settings_tr %}
+{% trans "Log In" as log_in_tr %}
+
 {# Mobile site navigation #}
 {% block mobile_nav %}
   <div class="mobile-nav mobile-nav-links">
     <ul>
       {% block mobile_nav_items %}
-        <li><a href="{% url 'app_library' %}" title="Apps">Apps</a></li>
+        <li><a href="{% url 'app_library' %}" title="Apps">{{ apps_tr }}</a></li>
         {% if user.is_staff or user.is_superuser %}
-        <li><a href="{% url 'developer_home' %}" title="Developer">Developer</a></li>
+        <li><a href="{% url 'developer_home' %}" title="Developer">{{ developer_tr }}</a></li>
         {% endif %}
         {% if user.is_authenticated and user.is_active %}
           <li>
             <a href="{% url 'user:profile' username=user.username %}" title="User Profile">
-              <span>Profile</span>
+              <span>{{ profile_tr }}</span>
             </a>
           </li>
           {% if user.is_staff %}
             <li>
               <a href="{% url 'admin:index' %}" title="System Admin Settings">
-                <span>Site Admin</span>
+                <span>{{ site_admin_tr }}</span>
               </a>
             </li>
           {% endif %}
 
           <li>
             <a href="{% url 'accounts:logout' %}" title="Log Out">
-              <span>Log Out</span>
+              <span>{{ log_out_tr }}</span>
             </a>
           </li>
         {% endif %}
@@ -151,11 +160,11 @@
     <ul class="header-nav">
       {% block header_nav_items %}
         {% if ENABLE_OPEN_PORTAL %}
-          <li><a href="{% url 'app_library' %}" title="Apps">Apps</a></li>
+          <li><a href="{% url 'app_library' %}" title="Apps">{{ apps_tr }}</a></li>
         {% elif user.is_authenticated and user.is_active %}
-          <li><a href="{% url 'app_library' %}" title="Apps">Apps</a></li>
+          <li><a href="{% url 'app_library' %}" title="Apps">{{ apps_tr }}</a></li>
           {% if user.is_staff or user.is_superuser %}
-          <li><a href="{% url 'developer_home' %}" title="Developer">Developer</a></li>
+          <li><a href="{% url 'developer_home' %}" title="Developer">{{ developer_tr }}</a></li>
           {% endif %}
         {% endif %}
       {% endblock %}
@@ -170,7 +179,7 @@
           <ul id="user-dropdown-menu" class="user-dropdown-menu">
             <li>
               <a href="{% url 'user:settings' username=user.username %}" title="User Settings">
-                <span class="glyphicon glyphicon-user"></span><span>    User Settings</span>
+                <span class="glyphicon glyphicon-user"></span><span>    {{ user_settings_tr }}</span>
               </a>
             </li>
 
@@ -178,7 +187,7 @@
               <li class="separator"></li>
               <li>
                 <a href="{% url 'admin:index' %}" title="System Admin Settings">
-                  <span class="glyphicon glyphicon-cog"></span><span>   Site Admin</span>
+                  <span class="glyphicon glyphicon-cog"></span><span>   {{ site_admin_tr }}</span>
                 </a>
               </li>
             {% endif %}
@@ -186,13 +195,13 @@
             <li class="separator"></li>
             <li>
               <a href="{% url 'accounts:logout' %}" title="Log Out">
-                <span class="glyphicon glyphicon-log-out"></span><span>   Log Out</span>
+                <span class="glyphicon glyphicon-log-out"></span><span>   {{ log_out_tr }}</span>
               </a>
             </li>
           </ul> {# END user-dropdown-menu #}
         </li> {# END user-dropdown #}
       {% else %}
-        <li class="action header-action"><a href="{% url 'accounts:login' %}" title="Log In">Log In</a></li>
+        <li class="action header-action"><a href="{% url 'accounts:login' %}" title="Log In">{{ log_in_tr }}</a></li>
       {% endif %}
 
     </ul>
@@ -205,7 +214,7 @@
           <div></div>
       </a>
     {% else %}
-      <a class="mobile-nav-button mobile-login" href="{% url 'accounts:login' %}" title="Log In">Log In</a>
+      <a class="mobile-nav-button mobile-login" href="{% url 'accounts:login' %}" title="Log In">{{ log_in_tr }}</a>
     {% endif %}
   </header>
 </div>
