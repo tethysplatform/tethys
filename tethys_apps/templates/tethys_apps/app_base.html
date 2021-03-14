@@ -1,12 +1,13 @@
-{% load static tethys_gizmos terms_tags analytical%}
+{% load static tethys_gizmos terms_tags analytical i18n %}
 <!DOCTYPE html>
 
 {# Allows custom attributes to be added to the html tag #}
 {% block htmltag %}
-<!--[if IE 7]> <html lang="en" class="ie ie7"> <![endif]-->
-<!--[if IE 8]> <html lang="en"  class="ie ie8"> <![endif]-->
-<!--[if IE 9]> <html lang="en"  class="ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html lang="en" > <!--<![endif]-->
+{% get_current_language as LANGUAGE_CODE %}
+<!--[if IE 7]> <html lang="{{ LANGUAGE_CODE }}" class="ie ie7"> <![endif]-->
+<!--[if IE 8]> <html lang="{{ LANGUAGE_CODE }}"  class="ie ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="{{ LANGUAGE_CODE }}"  class="ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="{{ LANGUAGE_CODE }}" > <!--<![endif]-->
 {% endblock %}
 
   {# Allows custom attributes to be added to the head tag #}
@@ -150,7 +151,7 @@
                   {% block login_button_override %}
                     {% if not request.user.is_authenticated %}
                     <div class="header-button login-button">
-                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'accounts:login' %}?next={{request.path}}');"data-toggle="tooltip" data-placement="bottom" title="Log In">Log In</a>
+                      <a href="javascript:void(0);" onclick="TETHYS_APP_BASE.exit_app('{% url 'accounts:login' %}?next={{request.path}}');"data-toggle="tooltip" data-placement="bottom" title="Log In">{% trans "Log In" %}</a>
                     </div>
                     {%  endif %}
                   {% endblock %}
@@ -189,7 +190,7 @@
                     <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible" role="alert">
                       <button type="button" class="close" data-dismiss="alert">
                         <span aria-hidden="true">&times;</span>
-                        <span class="sr-only">Close</span>
+                        <span class="sr-only">{% trans "Close" %}</span>
                       </button>
                       {{ message }}
                     </div>

@@ -229,7 +229,7 @@ LANGUAGES = [
 ]
 
 LOCALE_PATHS = [
-    os.path.join(BASE_DIR, 'locale'),
+    os.path.join(os.path.dirname(BASE_DIR), 'tethys_locale'),
 ]
 
 TIME_ZONE = 'UTC'
