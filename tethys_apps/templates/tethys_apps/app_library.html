@@ -1,7 +1,7 @@
 
 {% extends "page.html" %}
 
-{% load static tags site_settings %}
+{% load static tags site_settings i18n %}
 
 {% block title %}- Apps Library{% endblock %}
 
@@ -22,7 +22,7 @@
 {% block primary_content %}
   <div class="tethys-secondary-header narrow clearfix" style="background-color: {{ site_globals.secondary_color|default:'#1b95dc' }};">
     <div class="secondary-title-wrapper">
-      <span class="secondary-title">{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}Apps Library{% endif %}</span>
+      <span class="secondary-title">{% if site_globals.apps_library_title %}{{ site_globals.apps_library_title }}{% else %}{% trans "Apps Library" %}{% endif %}</span>
     </div>
   </div>
   <div class="app-library-wrapper clearfix">
@@ -34,7 +34,7 @@
                     <ul class="list-inline filter">
 
               {% if  apps|get_tags_from_apps %}
-                  <li><a href="#" data-filter="*" class="tag-button active" >All </a></li>
+                  <li><a href="#" data-filter="*" class="tag-button active" >{% trans "All" %} </a></li>
                     {% for tag in apps|get_tags_from_apps%}
                         {% if tag %}
                         <li><a href="#" data-filter=".{{ tag }}" class="tag-button">{{ tag }}</a></li>
@@ -92,7 +92,7 @@
         {% endfor %}
       </div>
     {% else %}
-      <h2 class="no-apps-loaded-message">There are no apps loaded.</h2>
+      <h2 class="no-apps-loaded-message">{% trans "There are no apps loaded." %}</h2>
     {% endif %}
   </div>
   <div id="app-library-curtain"></div>
