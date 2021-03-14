@@ -1,11 +1,11 @@
 {% extends "tethys_portal/user/profile.html" %}
 
-{% load bootstrap3 %}
+{% load bootstrap3 i18n %}
 
 {% block edit_button %}
 {% endblock %}
 
-{% block title %}- User Settings{% endblock %}
+{% block title %}- {% trans "User Settings" %}{% endblock %}
 
 {% block styles %}
   {{ block.super }}
@@ -22,13 +22,13 @@
 
 {% block name_parameters %}
   <div class="form-group">
-    <label for="id_first_name" class="control-label col-md-3">First Name:</label>
+    <label for="id_first_name" class="control-label col-md-3">{% trans "First Name" %}"</label>
     <div class="col-md-6">
       {{ form.first_name }}
     </div>
   </div>
   <div class="form-group">
-    <label for="id_last_name" class="control-label col-md-3">Last Name:</label>
+    <label for="id_last_name" class="control-label col-md-3">{% trans "Last Name" %}:</label>
     <div class="col-md-6">
       {{ form.last_name }}
     </div>
@@ -37,22 +37,22 @@
 
 {% block credential_parameters %}
   <div class="form-group">
-    <label class="col-md-3 control-label">Username: </label>
+    <label class="col-md-3 control-label">{% trans "Username" %}: </label>
     <div class="col-md-6">
       <p class="form-control-static">{{ user.username }}</p>
     </div>
   </div>
   {% if context_user.has_usable_password and user.username == context_user.username %}
     <div class="form-group">
-      <label class="col-md-3 control-label">Password: </label>
+      <label class="col-md-3 control-label">{% trans "Password" %}: </label>
       <div class="col-md-6">
-        <p class="form-control-static"><a href="{% url 'user:change_password' username=user.username %}" class="btn btn-default">Change Password</a></p>
+        <p class="form-control-static"><a href="{% url 'user:change_password' username=user.username %}" class="btn btn-default">{% trans "Change Password" %}</a></p>
       </div>
     </div>
     <div class="form-group">
-      <label class="col-md-3 control-label">2-Step Verification: </label>
+      <label class="col-md-3 control-label">{% trans "2-Step Verification" %}: </label>
       <div class="col-md-6">
-        <p class="form-control-static"><a class="btn btn-default" href="{% url 'mfa_home' %}">Configure</a></p>
+        <p class="form-control-static"><a class="btn btn-default" href="{% url 'mfa_home' %}">{% trans "Configure" %}</a></p>
       </div>
     </div>
   {% endif %}
@@ -61,7 +61,7 @@
 
 {% block gravatar_parameters %}
   <div class="form-group {% if form.email.errors %}has-error{% endif %}">
-    <label for="id_email" class="control-label col-md-3">Email:</label>
+    <label for="id_email" class="control-label col-md-3">{% trans "Email" %}:</label>
     <div class="col-md-6">
       {{ form.email }}
     </div>
@@ -75,7 +75,7 @@
 
 {% block social_parameters %}
   <ul>
-    <li><span class="parameter">Connected:</span>
+    <li><span class="parameter">{% trans "Connected" %}:</span>
       {{association.provider}}
       {% if user.username == context_user.username %}
         {% if backends.associated %}
@@ -85,21 +85,21 @@
             {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated %}
           {% endif %}
         {% else %}
-          <span>None</span>
+          <span>{% trans "None" %}</span>
         {% endif %}
       {% else %}
-        <span class="label label-info">Private</span>
+        <span class="label label-info">{% trans "Private" %}</span>
       {% endif %}
     </span></li>
-    <li><span class="parameter">Not Connected:</span>
+    <li><span class="parameter">{% trans "Not Connected" %}:</span>
       {% if user.username == context_user.username %}
         {% if backends.not_associated %}
           {% include 'tethys_portal/user/social_labels.html' with backends=backends.not_associated action='connect' %}
         {% else %}
-          <span>None</span>
+          <span>{% trans "None" %}</span>
         {% endif %}
       {% else %}
-        <span class="label label-info">Private</span>
+        <span class="label label-info">{% trans "Private" %}</span>
       {% endif %}
     </span></li>
   </ul>
@@ -109,13 +109,13 @@
   <div class="profile-section">
     <div class="row">
       <div class="col-md-2 col-md-offset-2 profile-section-header">
-        <h3>Account</h3>
+        <h3>{% trans "Account" %}</h3>
       </div>
       <div class="col-md-8 profile-parameters">
         <ul>
-          <li><span class="parameter">Member Since:</span><span class="value">{{ context_user.date_joined|date:"F j, Y" }}</span></li>
-          <li><span class="parameter">Status:</span><span class="value">{% if context_user.is_active %}Active{% else %}Inactive{% endif %}</span></li>
-          <li><span class="parameter">Delete Account:</span><span class="value button"><a class="btn btn-danger btn-sm" href="{% url 'user:delete' user.username %}">Delete Account</a></span></li>
+          <li><span class="parameter">{% trans "Member Since" %}:</span><span class="value">{{ context_user.date_joined|date:"F j, Y" }}</span></li>
+          <li><span class="parameter">{% trans "Status" %}:</span><span class="value">{% if context_user.is_active %}{% trans "Active" %}{% else %}{% trans "Inactive" %}{% endif %}</span></li>
+          <li><span class="parameter">{% trans "Delete Account" %}:</span><span class="value button"><a class="btn btn-danger btn-sm" href="{% url 'user:delete' user.username %}">{% trans "Delete Account" %}</a></span></li>
         </ul>
       </div>
     </div>
@@ -126,12 +126,12 @@
 <div class="profile-section last">
   <div class="row">
     <div class="col-md-2 col-md-offset-2 profile-section-header">
-      <h3>Workspace</h3>
+      <h3>{% trans "Workspace" %}</h3>
     </div>
     <div class="col-md-8 profile-parameters">
       <ul>
-        <li><span class="parameter">Storage Summary:</span><span class="value">{{ current_use }} of {{ quota|default:"&#8734;" }}</span></li>
-        <li><span class="parameter">Manage Storage:</span><span class="value button"><a class="btn btn-default btn-sm" href="{% url 'user:manage_storage' user.username %}">Manage Storage</a></span></li>
+        <li><span class="parameter">{% trans "Storage Summary" %}:</span><span class="value">{{ current_use }} {% trans "of" %} {{ quota|default:"&#8734;" }}</span></li>
+        <li><span class="parameter">{% trans "Manage Storage" %}:</span><span class="value button"><a class="btn btn-default btn-sm" href="{% url 'user:manage_storage' user.username %}">{% trans "Manage Storage" %}</a></span></li>
       </ul>
     </div>
   </div>
@@ -147,10 +147,10 @@
         <div class="col-md-12">
           <div class="btn-toolbar pull-right" role="toolbar">
             <div class="btn-group">
-              <a href="{% url 'user:profile' username=user.username %}" class="btn btn-default btn-lg">Cancel</a>
+              <a href="{% url 'user:profile' username=user.username %}" class="btn btn-default btn-lg">{% trans "Cancel" %}</a>
             </div>
             <div class="btn-group">
-              <button type="submit" id="user-settings-submit" class="btn btn-success btn-lg" name="user-settings-submit">Save</button>
+              <button type="submit" id="user-settings-submit" class="btn btn-success btn-lg" name="user-settings-submit">{% trans "Save" %}</button>
             </div>
           </div>
         </div>

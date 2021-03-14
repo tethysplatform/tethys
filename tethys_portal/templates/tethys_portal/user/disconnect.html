@@ -1,6 +1,8 @@
 {% extends "page.html" %}
 
-{% block title %}- Disconnect Social Account Confirmation{% endblock %}
+{% laod i18n %}
+
+{% block title %}- {% trans "Disconnect Social Account Confirmation" %}{% endblock %}
 
 {% block styles %}
   {{ block.super }}
@@ -18,29 +20,33 @@
     <div class="col-md-4 col-md-offset-4">
       <div class="account-form-wrapper disconnect">
         <div class="account-form-header">
-          <h1>Disconnect</h1>
+          <h1>{% trans "Disconnect" %}</h1>
         </div>
         <div class="account-form-body">
           <form role="form" method="post" action="{% url 'social:disconnect_individual' provider association_id %}?next=/user/{{ user.username }}/settings/">
             {% if 'google' in provider %}
-              <p>Are you sure you want to disconnect your Google account?</p>
+              <p>{% trans "Are you sure you want to disconnect your Google account?" %}</p>
             {% elif 'linkedin' in provider %}
-              <p>Are you sure you want to disconnect your LinkedIn account?</p>
+              <p>{% trans "Are you sure you want to disconnect your LinkedIn account?" %}</p>
             {% elif 'facebook' in provider %}
-              <p>Are you sure you want to disconnect your Facebook account?</p>
+              <p>{% trans "Are you sure you want to disconnect your Facebook account?" %}</p>
             {% elif 'hydroshare' == provider %}
-              <p>Are you sure you want to disconnect your HydroShare account?</p>
+              <p>{% trans "Are you sure you want to disconnect your HydroShare account?" %}</p>
             {% elif 'hydroshare_beta' == provider %}
-              <p>Are you sure you want to disconnect your HydroShare-beta account?</p>
+              <p>{% trans "Are you sure you want to disconnect your HydroShare-beta account?" %}</p>
             {% elif 'hydroshare_playground' == provider %}
-              <p>Are you sure you want to disconnect your HydroShare-playground account?</p>
+              <p>{% trans "Are you sure you want to disconnect your HydroShare-playground account?" %}</p>
             {% elif 'arcgis' in provider %}
-              <p>Are you sure you want to disconnect your ArcGIS {% if 'portal' in provider %}Enterprise Portal{% else %}Online{% endif %} account?</p>
+              {% if 'portal' in provider %}
+                <p>{% trans "Are you sure you want to disconnect your ArcGIS Enterprise Portal account?" %}</p>
+              {% else %}
+                <p>{% trans "Are you sure you want to disconnect your ArcGIS Online account?" %}</p>
+              {% endif %}
             {% endif %}
 
             {% csrf_token %}
             <a href="{% url 'user:settings' username=user.username %}" class="btn btn-default">Cancel</a>
-            <button type="submit" id="disconnect-social-submit" class="btn btn-danger" name="disconnect-social-submit">Disconnect</button>
+            <button type="submit" id="disconnect-social-submit" class="btn btn-danger" name="disconnect-social-submit">{% trans "Disconnect" %}</button>
           </form>
         </div>
       </div>

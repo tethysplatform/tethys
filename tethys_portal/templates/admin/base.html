@@ -57,8 +57,6 @@
   <script type="text/javascript">window.__admin_utc_offset__ = "{% filter escapejs %}{% now "Z" %}{% endfilter %}";</script>
 {% endblock %}
 
-{% load i18n %}
-
 {% block bodytag %}class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"{% endblock %}
 
 {% block admin_content %}

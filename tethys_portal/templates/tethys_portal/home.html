@@ -1,8 +1,8 @@
 {% extends "page.html" %}
 
-{% load static site_settings %}
+{% load static site_settings i18n %}
 
-{% block title %}- Welcome!{% endblock %}
+{% block title %}- {% trans "Welcome!" %}{% endblock %}
 
 {% block styles %}
   {{ block.super }}
@@ -43,10 +43,10 @@
 	<div class="hero-background"></div>
 	<div class="bucket clearfix">
 		<div class="hero-message" style="margin-top: 0px;">
-			<h2>{% if site_globals.hero_text %}{{ site_globals.hero_text }}{% else %}Welcome to Tethys Portal,
-the hub for your apps.{% endif %}</h2>
+			<h2>{% if site_globals.hero_text %}{{ site_globals.hero_text }}{% else %}{% blocktrans %}Welcome to Tethys Portal,
+the hub for your apps.{% endblocktrans %}{% endif %}</h2>
 			{% if not user.is_authenticated and ENABLE_OPEN_SIGNUP %}
-			  <a href="{% url 'accounts:register' %}" class="action hero-action">Sign Up</a>
+			  <a href="{% url 'accounts:register' %}" class="action hero-action">{% trans "Sign Up" %}</a>
 			{% endif %}
 		</div>
 	</div>
@@ -54,27 +54,37 @@ the hub for your apps.{% endif %}</h2>
 
 <section class="blurb clearfix" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
 	<div class="bucket clearfix">
-		<h3>{% if site_globals.blurb_text %}{{ site_globals.blurb_text }}{% else %}Tethys Portal is designed to be customizable, so that you can host apps for your
-organization. You can change everything on this page from the Home Page settings.{% endif %}</h3>
+		<h3>{% if site_globals.blurb_text %}{{ site_globals.blurb_text }}{% else %}{% blocktrans %}Tethys Portal is designed to be customizable, so that you can host apps for your
+organization. You can change everything on this page from the Home Page settings.{% endblocktrans %}{% endif %}</h3>
 	</div>
 </section>
+
+{# Translations #}
+{% trans "Feature 1" as ft1_tr %}
+{% trans "Use these features to brag about all of the things users can do with your instance of Tethys Portal." as default_ft1_tr %}
+{% trans "Feature 2" as ft2_tr %}
+{% trans "Describe the apps and tools that your Tethys Portal provides and add custom pictures to each feature as a finishing touch." as default_ft2_tr %}
+{% trans "Feature 3" as ft3_tr %}
+{% trans "You can change the color theme and branding of your Tethys Portal in a jiffy. Visit the Site Admin settings from the user menu and select General Settings."  as default_ft3_tr %}
+{% trans "Ready to get started?" as default_call_to_action_tr %}
+{% trans "Start Using Tethys!" as default_call_to_action_bt_tr %}
 
 <section class="features clearfix">
 	<div class="bucket clearfix">
 		<div class="feature one">
 			<img src="{% static site_globals.feature_1_image|default:'tethys_portal/images/placeholder.gif' %}" alt="">
-			<h4>{{ site_globals.feature_1_heading|default:"Feature 1" }}</h4>
-			<span>{{ site_globals.feature_1_body|default:"Use these features to brag about all of the things users can do with your instance of Tethys Portal." }}</span>
+			<h4>{{ site_globals.feature_1_heading|default:ft1_tr }}</h4>
+			<span>{{ site_globals.feature_1_body|default:default_ft1_tr }}</span>
 		</div>
 		<div class="feature two">
 			<img src="{% static site_globals.feature_2_image|default:'tethys_portal/images/placeholder.gif' %}" alt="">
-			<h4>{{ site_globals.feature_2_heading|default:"Feature 2" }}</h4>
-			<span>{{ site_globals.feature_2_body|default:"Describe the apps and tools that your Tethys Portal provides and add custom pictures to each feature as a finishing touch." }}</span>
+			<h4>{{ site_globals.feature_2_heading|default:ft2_tr }}</h4>
+			<span>{{ site_globals.feature_2_body|default:default_ft2_tr }}</span>
 		</div>
 		<div class="feature three">
 			<img src="{% static site_globals.feature_3_image|default:'tethys_portal/images/placeholder.gif' %}" alt="">
-			<h4>{{ site_globals.feature_3_heading|default:"Feature 3" }}</h4>
-			<span>{{ site_globals.feature_3_body|default:"You can change the color theme and branding of your Tethys Portal in a jiffy. Visit the Site Admin settings from the user menu and select General Settings." }}</span>
+			<h4>{{ site_globals.feature_3_heading|default:ft3_tr }}</h4>
+			<span>{{ site_globals.feature_3_body|default:default_ft3_tr }}</span>
 		</div>
 	</div>
 </section>
@@ -83,8 +93,8 @@ organization. You can change everything on this page from the Home Page settings
 	<div class="bucket clearfix">
 		<div class="get-started-message">
 			{% if not user.is_authenticated %}
-			  <h2>{{ site_globals.call_to_action|default:"Ready to get started?" }}</h2>
-			  <a class="action hero-action" href="{% url 'accounts:login' %}">{{ site_globals.call_to_action_button|default:"Start Using Tethys!" }}</a>
+			  <h2>{{ site_globals.call_to_action|default:default_call_to_action_tr }}</h2>
+			  <a class="action hero-action" href="{% url 'accounts:login' %}">{{ site_globals.call_to_action_button|default:default_call_to_action_bt_tr }}</a>
 			{% endif %}
 		</div>
 	</div>

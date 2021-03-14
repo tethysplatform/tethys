@@ -1,11 +1,11 @@
 {% extends "tethys_portal/user/profile.html" %}
 
-{% load bootstrap3 %}
+{% load bootstrap3 i18n %}
 
 {% block edit_button %}
 {% endblock %}
 
-{% block title %}- User Settings{% endblock %}
+{% block title %}- {% trans "User Settings" %}{% endblock %}
 
 {% block styles %}
   {{ block.super }}
@@ -36,9 +36,9 @@
     <table id="app_list" class="table table-striped table-bordered" style="width:100%">
       <thead>
         <tr>
-          <th>App Name</th>
-          <th>Current Usage</th>
-          <th>Manage Storage</th>
+          <th>{% trans "App Name" %}</th>
+          <th>{% trans "Current Usage" %}</th>
+          <th>{% trans "Manage Storage" %}</th>
         </tr>
       </thead>
       <tbody>
@@ -49,13 +49,13 @@
           </td>
           <td>{{ app.current_use }}</td>
           <td>
-            <a class="btn btn-danger btn-sm" href="{% url 'user:clear_workspace' user.username app.root_url %}">Clear Workspace</a>
+            <a class="btn btn-danger btn-sm" href="{% url 'user:clear_workspace' user.username app.root_url %}">{% trans "Clear Workspace" %}</a>
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-    <div id="storage_summary" style="text-align: center;"><span class="parameter">Storage Summary:</span><span class="value">{{ current_use }} of {{ quota|default:"&#8734;" }}</span></div>
+    <div id="storage_summary" style="text-align: center;"><span class="parameter">{% trans "Storage Summary" %}:</span><span class="value">{{ current_use }} {% trans "of" %} {{ quota|default:"&#8734;" }}</span></div>
   </div>
 </div>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
