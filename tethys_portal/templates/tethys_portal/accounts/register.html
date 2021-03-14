@@ -1,9 +1,8 @@
 {% extends "page.html" %}
 
-{% load bootstrap3 %}
-{% load recaptcha2 %}
+{% load bootstrap3 recaptcha2 i18n %}
 
-{% block title %}- Sign Up{% endblock %}
+{% block title %}- {% trans "Sign Up" %}{% endblock %}
 
 {% block styles %}
   {{ block.super }}
@@ -20,21 +19,22 @@
     <div class="col-md-4 col-md-offset-4">
       <div class="account-form-wrapper">
         <div class="account-form-header">
-          <h1>Sign Up</h1>
+          <h1>{% trans "Sign Up" %}</h1>
         </div>
         <div class="account-form-body">
           <form role="form" method="post">
             {% if backends.not_associated %}
-              {% include 'tethys_portal/accounts/social_buttons.html' with action='Sign up' backends=backends.not_associated %}
+              {% trans "Sign up"  as sign_up_tr %}
+              {% include 'tethys_portal/accounts/social_buttons.html' with action='{{ sign_up_tr }}' backends=backends.not_associated %}
               <div class="social-divide-or">
                 <div class="line"></div>
-                <span class="or">or</span>
+                <span class="or">{% trans "or" %}</span>
               </div>
             {% endif %}
             {% csrf_token %}
             {% bootstrap_form form %}
-            <button type="submit" id="register-submit" class="btn btn-default" name="register-submit">Sign Up</button>
-            <span class="help-block">Already have an account? <a href="{% url 'accounts:login' %}">Login</a></span>
+            <button type="submit" id="register-submit" class="btn btn-default" name="register-submit">{% trans "Sign Up" %}</button>
+            <span class="help-block">{% trans "Already have an account?" %} <a href="{% url 'accounts:login' %}">{% trans "Login" %}</a></span>
           </form>
         </div>
       </div>

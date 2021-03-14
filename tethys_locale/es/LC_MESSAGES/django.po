@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-14 00:28+0000\n"
+"POT-Creation-Date: 2021-03-14 07:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,6 +27,8 @@ msgstr "Punto de Conexión Público"
 #: tethys_apps/templates/tethys_apps/app_base.html:154
 #: tethys_portal/templates/header.html:101
 #: tethys_portal/templates/registration/password_reset_complete.html:25
+#: tethys_portal/templates/tethys_portal/accounts/login.html:5
+#: tethys_portal/templates/tethys_portal/accounts/login.html:22
 msgid "Log In"
 msgstr "Iniciar Sesión"
 
@@ -50,9 +52,17 @@ msgstr "Inglés"
 msgid "Spanish"
 msgstr "Español"
 
-#: tethys_portal/templates/admin/base.html:71
+#: tethys_portal/templates/admin/base.html:69
 msgid "Home"
 msgstr "Inicio"
+
+#: tethys_portal/templates/footer.html:18
+msgid "Copyright © 2015 Your Organization"
+msgstr "Derechos de Autor © 2015 Su Organización"
+
+#: tethys_portal/templates/footer.html:29
+msgid "Powered by"
+msgstr "Generado por"
 
 #: tethys_portal/templates/header.html:95
 msgid "Apps"
@@ -63,6 +73,7 @@ msgid "Developer"
 msgstr "Desarrollador"
 
 #: tethys_portal/templates/header.html:97
+#: tethys_portal/templates/tethys_portal/user/profile.html:5
 msgid "Profile"
 msgstr "Perfil"
 
@@ -75,8 +86,18 @@ msgid "Log Out"
 msgstr "Cerrar Sesión"
 
 #: tethys_portal/templates/header.html:100
+#: tethys_portal/templates/tethys_portal/user/manage_storage.html:8
+#: tethys_portal/templates/tethys_portal/user/settings.html:8
 msgid "User Settings"
 msgstr "Usuario"
+
+#: tethys_portal/templates/mfa_email_token_template.html:2
+msgid "Here is the one time passcode you requested"
+msgstr "Aquí esta la clave de un solo uso requerida"
+
+#: tethys_portal/templates/registration/password_reset_complete.html:5
+msgid "Password Reset Complete"
+msgstr "Cambio de Contraseña Completado"
 
 #: tethys_portal/templates/registration/password_reset_complete.html:21
 msgid "Reset Complete"
@@ -91,6 +112,8 @@ msgid "New Password"
 msgstr "Nueva Contraseña"
 
 #: tethys_portal/templates/registration/password_reset_confirm.html:33
+#: tethys_portal/templates/registration/password_reset_form.html:5
+#: tethys_portal/templates/registration/password_reset_form.html:26
 msgid "Reset Password"
 msgstr "Cambiar Contraseña"
 
@@ -100,6 +123,127 @@ msgid ""
 msgstr ""
 "El enlace de cambio de contraseña fue invalido. Perdón por los "
 "inconvenientes."
+
+#: tethys_portal/templates/registration/password_reset_done.html:5
+msgid "Password Reset Sent"
+msgstr "Restablecimiento de contraseña enviado"
+
+#: tethys_portal/templates/registration/password_reset_done.html:24
+msgid ""
+"We've e-mailed you instructions for resetting your password. You should be "
+"receiving it shortly."
+msgstr ""
+"Le hemos enviado instrucciones para restablecer su contraseña. Estará "
+"recibiendo este email en corto tiempo."
+
+#: tethys_portal/templates/registration/password_reset_done.html:25
+msgid "Keep in mind that it may arrive in your spam folder."
+msgstr "Tenga en cuenta que le puede llegar al buzón de spam."
+
+#: tethys_portal/templates/registration/password_reset_email.html:3
+#, python-format
+msgid ""
+"You're receiving this e-mail because you requested a password reset for your "
+"user account at %(site_name)s."
+msgstr ""
+"Usted está recibiendo este email porque pidió un cambio de contraseña para "
+"la cuenta de usuario en %(site_name)s."
+
+#: tethys_portal/templates/registration/password_reset_email.html:5
+msgid "Please use the following link to reset your password:"
+msgstr "Por favor use el siguiente enlace para restrablecer su contraseña:"
+
+#: tethys_portal/templates/registration/password_reset_email.html:11
+msgid "Thank you for using our site!"
+msgstr "¡Gracias por usar nuestra página web!"
+
+#: tethys_portal/templates/registration/password_reset_email.html:13
+#, python-format
+msgid "The %(site_name)s team."
+msgstr "El equipo de %(site_name)s."
+
+#: tethys_portal/templates/registration/password_reset_form.html:29
+msgid "Please enter the email address associated with your account."
+msgstr "Por favor entre el email asociado a su cuenta."
+
+#: tethys_portal/templates/registration/password_reset_form.html:34
+#: tethys_portal/templates/tethys_portal/accounts/register.html:37
+msgid "Already have an account?"
+msgstr "¿Ya tiene una cuenta?"
+
+#: tethys_portal/templates/registration/password_reset_form.html:34
+#: tethys_portal/templates/tethys_portal/accounts/login.html:37
+#: tethys_portal/templates/tethys_portal/accounts/register.html:37
+msgid "Login"
+msgstr "Iniciar"
+
+#: tethys_portal/templates/tethys_portal/accounts/lockout.html:4
+msgid "Locked Out!"
+msgstr "¡Bloqueado!"
+
+#: tethys_portal/templates/tethys_portal/accounts/lockout.html:32
+#, python-format
+msgid ""
+"You have exceeded the amount of allowed login attempts (%(failure_limit)s)."
+msgstr "Usted a excedido el número de intentos permitido (%(failure_limit)s)."
+
+#: tethys_portal/templates/tethys_portal/accounts/lockout.html:34
+#, python-format
+msgid ""
+"Your account will be unlocked %(cooloff_time|human_duration)s, at which "
+"point you may try again."
+msgstr ""
+"Su cuenta será desbloqueada %(cooloff_time|human_duration)s, y en ese "
+"momento puede intentarlo de nuevo."
+
+#: tethys_portal/templates/tethys_portal/accounts/lockout.html:36
+msgid "Please contact your system admin for more assistance."
+msgstr "Por favor contacte a su administrador de sistema para más información."
+
+#: tethys_portal/templates/tethys_portal/accounts/login.html:27
+#, fuzzy
+#| msgid "Log In"
+msgid "Log in"
+msgstr "Iniciar Sesión"
+
+#: tethys_portal/templates/tethys_portal/accounts/login.html:31
+#: tethys_portal/templates/tethys_portal/accounts/register.html:31
+msgid "or"
+msgstr "o"
+
+#: tethys_portal/templates/tethys_portal/accounts/login.html:39
+msgid "Don't have an account?"
+msgstr "¿No tiene una cuenta?"
+
+#: tethys_portal/templates/tethys_portal/accounts/login.html:39
+#: tethys_portal/templates/tethys_portal/accounts/register.html:5
+#: tethys_portal/templates/tethys_portal/accounts/register.html:22
+#: tethys_portal/templates/tethys_portal/accounts/register.html:36
+#: tethys_portal/templates/tethys_portal/home.html:49
+msgid "Sign Up"
+msgstr "Registrarse"
+
+#: tethys_portal/templates/tethys_portal/accounts/login.html:41
+msgid "Forgot your password?"
+msgstr "¿Olvidó su contraseña?"
+
+#: tethys_portal/templates/tethys_portal/accounts/register.html:27
+#, fuzzy
+#| msgid "Sign Up"
+msgid "Sign up"
+msgstr "Registrarse"
+
+#: tethys_portal/templates/tethys_portal/accounts/social_buttons.html:2
+msgid "with"
+msgstr "con"
+
+#: tethys_portal/templates/tethys_portal/accounts/sso_tenant.html:35
+msgid "Back"
+msgstr "Atrás"
+
+#: tethys_portal/templates/tethys_portal/accounts/sso_tenant.html:36
+msgid "Next"
+msgstr "Continuar"
 
 #: tethys_portal/templates/tethys_portal/admin/edit_inline/tabular.html:17
 #: tethys_quotas/templates/tethys_quotas/admin/edit_inline/tabular.html:18
@@ -120,3 +264,430 @@ msgstr "Añadir otro %(verbose_name)s"
 #: tethys_quotas/templates/tethys_quotas/admin/edit_inline/tabular.html:71
 msgid "Remove"
 msgstr "Remover"
+
+#: tethys_portal/templates/tethys_portal/admin/tethys_app/clear_workspace.html:5
+#: tethys_portal/templates/tethys_portal/user/clear_workspace.html:5
+msgid "Clear Workspace Confirmation"
+msgstr "Confirmación Limpieza del Espacio de Trabajo"
+
+#: tethys_portal/templates/tethys_portal/admin/tethys_app/clear_workspace.html:27
+#: tethys_portal/templates/tethys_portal/admin/tethys_app/clear_workspace.html:34
+#: tethys_portal/templates/tethys_portal/user/clear_workspace.html:34
+msgid "Clear"
+msgstr "Limpiar"
+
+#: tethys_portal/templates/tethys_portal/admin/tethys_app/clear_workspace.html:31
+#, python-format
+msgid "Are you sure you want to clear the %(app_name)s workspace?"
+msgstr "¿Está seguro que quiere limpiar el espacio de trabajo de %(app_name)s?"
+
+#: tethys_portal/templates/tethys_portal/admin/tethys_app/clear_workspace.html:33
+#: tethys_portal/templates/tethys_portal/user/change_password.html:29
+#: tethys_portal/templates/tethys_portal/user/clear_workspace.html:33
+#: tethys_portal/templates/tethys_portal/user/delete.html:29
+#: tethys_portal/templates/tethys_portal/user/settings.html:150
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: tethys_portal/templates/tethys_portal/developer/home.html:5
+#: tethys_portal/templates/tethys_portal/developer/home.html:24
+msgid "Developer Tools"
+msgstr "Herramientas de Desarrollo"
+
+#: tethys_portal/templates/tethys_portal/developer/home.html:38
+msgid ""
+"\n"
+"              Gizmos are building blocks that can be used to create "
+"beautiful interactive controls in Tethys Apps.\n"
+"              Using gizmos, developers can add date-pickers, plots, and maps "
+"to their templates with minimal coding.\n"
+"              Follow the link to learn more.\n"
+"              "
+msgstr ""
+"\n"
+"              Los Gizmos son bloques de construcción que pueden ser usados "
+"para crear controles interactivos en aplicaciones de Tethys.\n"
+"              Usando gizmos, desarrolladores pueden añadir seleccionadores "
+"de fecha, gráficos y mapas a sus plantillas con mínimos códigos.\n"
+"              Siga los enlaces para aprender más.\n"
+"              "
+
+#: tethys_portal/templates/tethys_portal/developer/home.html:44
+msgid "Show me the docs."
+msgstr "Mostrar la documentación."
+
+#: tethys_portal/templates/tethys_portal/developer/home.html:71
+msgid "Web Processing Services"
+msgstr "Servicios de Procesamiento Web"
+
+#: tethys_portal/templates/tethys_portal/developer/home.html:73
+msgid ""
+"\n"
+"              Geoprocessing in Tethys apps can be accomplished using any web "
+"processing service (WPS). For convenience, Tethys\n"
+"              provides the 52 North WPS service built in. Use this tool to "
+"explore the processes that are available and how to\n"
+"              parameterize them.\n"
+"              "
+msgstr ""
+"\n"
+"              Geoprocesamiento en aplicaciones Tethys puede ser llevado a "
+"cabo usando cualquier servicio de procesamiento (WPS). Por conveniencia, "
+"Tethys\n"
+"              provee el servicio 52 North. Use esta herramienta para "
+"explorar los procesos que están disponibles y aprender a como\n"
+"              parametizarlos.\n"
+"              "
+
+#: tethys_portal/templates/tethys_portal/developer/home.html:79
+msgid "Go to tool."
+msgstr "Ir a la herramienta"
+
+#: tethys_portal/templates/tethys_portal/home.html:5
+msgid "Welcome!"
+msgstr "¡Bienvenido!"
+
+#: tethys_portal/templates/tethys_portal/home.html:46
+msgid ""
+"Welcome to Tethys Portal,\n"
+"the hub for your apps."
+msgstr ""
+"Bienvenido al Portal de Tethys,\n"
+"el lugar para sus aplicaciones."
+
+#: tethys_portal/templates/tethys_portal/home.html:57
+msgid ""
+"Tethys Portal is designed to be customizable, so that you can host apps for "
+"your\n"
+"organization. You can change everything on this page from the Home Page "
+"settings."
+msgstr ""
+"El Portal de Tethys está diseñado para ser personalizado, para que pueda "
+"hospedar  aplocaciones para su\n"
+"organización. Usted puede cambiar todo en esta página llendo a congiguración "
+"y luego a Página Principal."
+
+#: tethys_portal/templates/tethys_portal/home.html:63
+msgid "Feature 1"
+msgstr "Punto 1"
+
+#: tethys_portal/templates/tethys_portal/home.html:64
+msgid ""
+"Use these features to brag about all of the things users can do with your "
+"instance of Tethys Portal."
+msgstr ""
+"Use estos puntos a destacar para informar a sus usuarios de las cosas que "
+"pueden hacer en el Portal de Tethys."
+
+#: tethys_portal/templates/tethys_portal/home.html:65
+msgid "Feature 2"
+msgstr "Punto 2"
+
+#: tethys_portal/templates/tethys_portal/home.html:66
+msgid ""
+"Describe the apps and tools that your Tethys Portal provides and add custom "
+"pictures to each feature as a finishing touch."
+msgstr ""
+"Describa las aplicaciones y herramientas que su Portal de Tethys provee y "
+"añada imágenes de cada punto a destacar."
+
+#: tethys_portal/templates/tethys_portal/home.html:67
+msgid "Feature 3"
+msgstr "Punto 3"
+
+#: tethys_portal/templates/tethys_portal/home.html:68
+msgid ""
+"You can change the color theme and branding of your Tethys Portal in a "
+"jiffy. Visit the Site Admin settings from the user menu and select General "
+"Settings."
+msgstr ""
+"Usted puede cambiar los colores y el aspecto de su Portal de Tethys.Visite "
+"la configuración de administrador desde su menú de usuario y seleccione "
+"configuración general."
+
+#: tethys_portal/templates/tethys_portal/home.html:69
+msgid "Ready to get started?"
+msgstr "¿Listo para comenzar?"
+
+#: tethys_portal/templates/tethys_portal/home.html:70
+msgid "Start Using Tethys!"
+msgstr "¡Empiece a usar Tethys!"
+
+#: tethys_portal/templates/tethys_portal/user/change_password.html:5
+#: tethys_portal/templates/tethys_portal/user/change_password.html:23
+#: tethys_portal/templates/tethys_portal/user/settings.html:49
+msgid "Change Password"
+msgstr "Cambiar Contraseña"
+
+#: tethys_portal/templates/tethys_portal/user/change_password.html:30
+#: tethys_portal/templates/tethys_portal/user/settings.html:153
+msgid "Save"
+msgstr "Guardar"
+
+#: tethys_portal/templates/tethys_portal/user/clear_workspace.html:31
+#, python-format
+msgid "Are you sure you want to clear your workspace in the %(app_name)s app?"
+msgstr ""
+"¿Está seguro que desea limpiar el espacio de trabajo en la aplicación "
+"%(app_name)s?"
+
+#: tethys_portal/templates/tethys_portal/user/delete.html:5
+msgid "Delete Account Confirmation"
+msgstr "Confirmación Borrar Cuenta"
+
+#: tethys_portal/templates/tethys_portal/user/delete.html:27
+#, python-format
+msgid ""
+"Are you sure you want delete your account with %(site_globals.brand_text)s?"
+msgstr ""
+"¿Está seguro que desea borrar su cuenta con %(site_globals.brand_text)s?"
+
+#: tethys_portal/templates/tethys_portal/user/delete.html:30
+msgid "Delete"
+msgstr "Ɓorrar"
+
+#: tethys_portal/templates/tethys_portal/user/disconnect.html:5
+msgid "Disconnect Social Account Confirmation"
+msgstr "Confirmación Desconectar Cuenta Social"
+
+#: tethys_portal/templates/tethys_portal/user/disconnect.html:23
+#: tethys_portal/templates/tethys_portal/user/disconnect.html:49
+#: tethys_portal/templates/tethys_portal/user/social_labels.html:4
+msgid "Disconnect"
+msgstr "Desconectar"
+
+#: tethys_portal/templates/tethys_portal/user/disconnect.html:28
+msgid "Are you sure you want to disconnect your Google account?"
+msgstr "¿Está seguro que desea desconectar su cuenta de Google?"
+
+#: tethys_portal/templates/tethys_portal/user/disconnect.html:30
+msgid "Are you sure you want to disconnect your LinkedIn account?"
+msgstr "¿Está seguro que desea desconectar su cuenta de LinkedIn?"
+
+#: tethys_portal/templates/tethys_portal/user/disconnect.html:32
+msgid "Are you sure you want to disconnect your Facebook account?"
+msgstr "¿Está seguro que desea desconectar su cuenta de Facebook?"
+
+#: tethys_portal/templates/tethys_portal/user/disconnect.html:34
+msgid "Are you sure you want to disconnect your HydroShare account?"
+msgstr "¿Está seguro que desea desconectar su cuenta de HydroShare?"
+
+#: tethys_portal/templates/tethys_portal/user/disconnect.html:36
+msgid "Are you sure you want to disconnect your HydroShare-beta account?"
+msgstr "¿Está seguro que desea desconectar su cuenta de HydroShare-beta?"
+
+#: tethys_portal/templates/tethys_portal/user/disconnect.html:38
+msgid "Are you sure you want to disconnect your HydroShare-playground account?"
+msgstr "¿Está seguro que desea desconectar su cuenta de HydroShare-playground?"
+
+#: tethys_portal/templates/tethys_portal/user/disconnect.html:41
+msgid ""
+"Are you sure you want to disconnect your ArcGIS Enterprise Portal account?"
+msgstr "¿Está seguro que desea desconectar su cuenta de ArcGIS Enterprise?"
+
+#: tethys_portal/templates/tethys_portal/user/disconnect.html:43
+msgid "Are you sure you want to disconnect your ArcGIS Online account?"
+msgstr "¿Está seguro que desea desconectar su cuenta de ArcGIS Online?"
+
+#: tethys_portal/templates/tethys_portal/user/manage_storage.html:39
+msgid "App Name"
+msgstr "Nombre de la Aplicación"
+
+#: tethys_portal/templates/tethys_portal/user/manage_storage.html:40
+msgid "Current Usage"
+msgstr "Uso Actual"
+
+#: tethys_portal/templates/tethys_portal/user/manage_storage.html:41
+#: tethys_portal/templates/tethys_portal/user/settings.html:134
+msgid "Manage Storage"
+msgstr "Manejar Espacio"
+
+#: tethys_portal/templates/tethys_portal/user/manage_storage.html:52
+msgid "Clear Workspace"
+msgstr "Limpiar Espacio de Trabajo"
+
+#: tethys_portal/templates/tethys_portal/user/manage_storage.html:58
+#: tethys_portal/templates/tethys_portal/user/profile.html:193
+#: tethys_portal/templates/tethys_portal/user/settings.html:133
+msgid "Storage Summary"
+msgstr "Resumen de Espacio"
+
+#: tethys_portal/templates/tethys_portal/user/manage_storage.html:58
+#: tethys_portal/templates/tethys_portal/user/profile.html:193
+#: tethys_portal/templates/tethys_portal/user/settings.html:133
+msgid "of"
+msgstr "de"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:41
+msgid "Edit"
+msgstr "Editar"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:49
+msgid "Not Given"
+msgstr "No dado"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:53
+msgid "Name"
+msgstr "Nombre"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:58
+#: tethys_portal/templates/tethys_portal/user/settings.html:25
+msgid "First Name"
+msgstr "Primer Nombre"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:59
+#: tethys_portal/templates/tethys_portal/user/settings.html:31
+msgid "Last Name"
+msgstr "Apellido"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:69
+msgid "Credentials"
+msgstr "Credenciales"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:74
+#: tethys_portal/templates/tethys_portal/user/settings.html:40
+msgid "Username"
+msgstr "Usuario"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:76
+#: tethys_portal/templates/tethys_portal/user/settings.html:47
+msgid "Password"
+msgstr "Contraseña"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:79
+#: tethys_portal/templates/tethys_portal/user/settings.html:53
+msgid "2-Step Verification"
+msgstr "Verificación de dos pasos"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:79
+msgid "Not Enabled"
+msgstr "No Habilitado"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:90
+msgid "API Key"
+msgstr "Clave API"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:95
+msgid "Token"
+msgstr "Token"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:100
+msgid "Enable 2-Step verification to view token"
+msgstr "Habilitar Verificación de dos pasos para ver token"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:103
+#: tethys_portal/templates/tethys_portal/user/profile.html:120
+#: tethys_portal/templates/tethys_portal/user/profile.html:144
+#: tethys_portal/templates/tethys_portal/user/profile.html:155
+#: tethys_portal/templates/tethys_portal/user/settings.html:91
+#: tethys_portal/templates/tethys_portal/user/settings.html:102
+msgid "Private"
+msgstr "Privado"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:115
+#: tethys_portal/templates/tethys_portal/user/profile.html:120
+#: tethys_portal/templates/tethys_portal/user/settings.html:64
+msgid "Email"
+msgstr "Email"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:131
+msgid "Social"
+msgstr "Social"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:141
+#: tethys_portal/templates/tethys_portal/user/profile.html:152
+#: tethys_portal/templates/tethys_portal/user/settings.html:88
+#: tethys_portal/templates/tethys_portal/user/settings.html:99
+msgid "None"
+msgstr "Ninguno"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:147
+#: tethys_portal/templates/tethys_portal/user/settings.html:94
+msgid "Not Connected"
+msgstr "No Conectado"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:173
+#: tethys_portal/templates/tethys_portal/user/settings.html:112
+msgid "Account"
+msgstr "Cuenta"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:177
+#: tethys_portal/templates/tethys_portal/user/settings.html:116
+msgid "Member Since"
+msgstr "Miembro Desde"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:178
+#: tethys_portal/templates/tethys_portal/user/settings.html:117
+msgid "Status"
+msgstr "Estado"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:178
+#: tethys_portal/templates/tethys_portal/user/settings.html:117
+msgid "Active"
+msgstr "Activo"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:178
+#: tethys_portal/templates/tethys_portal/user/settings.html:117
+msgid "Inactive"
+msgstr "Inactivo"
+
+#: tethys_portal/templates/tethys_portal/user/profile.html:189
+#: tethys_portal/templates/tethys_portal/user/settings.html:129
+msgid "Workspace"
+msgstr "Espacio de Trabajo"
+
+#: tethys_portal/templates/tethys_portal/user/settings.html:55
+msgid "Configure"
+msgstr "Configurar"
+
+#: tethys_portal/templates/tethys_portal/user/settings.html:78
+msgid "Connected"
+msgstr "Conectado"
+
+#: tethys_portal/templates/tethys_portal/user/settings.html:118
+msgid "Delete Account"
+msgstr "Borrar Cuenta"
+
+#: tethys_portal/templates/tethys_portal/user/social_labels.html:3
+msgid "Connect"
+msgstr "Conectar"
+
+#: tethys_portal/views/error.py:19
+msgid "Bad Request"
+msgstr "Solicitud Incorrecta"
+
+#: tethys_portal/views/error.py:20
+msgid "Sorry, but we can't process your request. Try something different."
+msgstr "Lo sentimos, pero no podemos procesar su solicitud. Intente algo diferente."
+
+#: tethys_portal/views/error.py:29
+msgid "Permission Denied"
+msgstr "Permiso Denegado"
+
+#: tethys_portal/views/error.py:35
+msgid "Sorry, you are unable to access this page right now."
+msgstr "Lo sentimos, no puede aceder a esta página ahora."
+
+#: tethys_portal/views/error.py:47
+msgid ""
+"We are unable to find the page you requested. Please, check the address and "
+"try again."
+msgstr ""
+"No podemos encontrar la página que solicitó. Por favor, verifique la "
+"dirección e intente de nuevo."
+
+#: tethys_portal/views/error.py:50
+msgid "Page Not Found"
+msgstr "Página No Encontrada"
+
+#: tethys_portal/views/error.py:61
+msgid "Internal Server Error"
+msgstr "Error Interno de Servidor"
+
+#: tethys_portal/views/error.py:62
+msgid ""
+"We're sorry, but we seem to have a problem. Please, come back later and try "
+"again."
+msgstr ""
+"Lo sentimos, pero al parecer tenemos un problema. Por favor regrese más "
+"tarde e intente de nuevo."

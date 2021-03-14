@@ -1,7 +1,7 @@
 {% extends "page.html" %}
-{% load static humanize %}
+{% load static humanize i18n %}
 
-{% block title %}Locked Out!{% endblock %}
+{% block title %}{% trans "Locked Out!" %}{% endblock %}
 
 {% block styles %}
 {{ block.super }}
@@ -29,11 +29,11 @@
         <div class="row">
           <div class="col-lg-12">
             <div class="lockout-message-container">
-              <p>You have exceeded the amount of allowed login attempts ({{ failure_limit }}).</p>
+              <p>{% blocktrans %}You have exceeded the amount of allowed login attempts ({{ failure_limit }}).{% endblocktrans %}</p>
               {% if cooloff_time %}
-                <p>Your account will be unlocked {{ cooloff_time|human_duration }}, at which point you may try again.</p>
+                <p>{% blocktrans %}Your account will be unlocked {{ cooloff_time|human_duration }}, at which point you may try again.{% endblocktrans %}</p>
               {% else %}
-                <p>Please contact your system admin for more assistance.</p>
+                <p>{% trans "Please contact your system admin for more assistance." %}</p>
               {% endif %}
             </div>
           </div>

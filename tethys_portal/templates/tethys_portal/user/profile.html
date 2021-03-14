@@ -1,8 +1,8 @@
 {% extends "page.html" %}
 
-{% load gravatar %}
+{% load gravatar i18n %}
 
-{% block title %}- Profile{% endblock %}
+{% block title %}- {% trans "Profile" %}{% endblock %}
 
 {% block styles %}
   {{ block.super }}
@@ -38,7 +38,7 @@
       <div class="row">
         <div class="col-md-12">
           <div class="profile-edit-button">
-            <a href="{% url 'user:settings' username=context_user.username %}" class="btn btn-default btn-lg">Edit</a>
+            <a href="{% url 'user:settings' username=context_user.username %}" class="btn btn-default btn-lg">{% trans "Edit" %}</a>
           </div>
         </div>
       </div>
@@ -46,16 +46,17 @@
   {% endblock %}
 
   {% block profile_sections %}
+    {% trans "Not Given" as not_given_tr %}
     <div class="profile-section first">
       <div class="row">
         <div class="col-md-2 col-md-offset-2 profile-section-header">
-          <h3>Name</h3>
+          <h3>{% trans "Name" %}</h3>
         </div>
         <div class="col-md-8 profile-parameters">
           {% block name_parameters %}
           <ul>
-            <li><span class="parameter">First Name:</span><span class="value">{{ context_user.first_name|default:"Not Given" }}</span></li>
-            <li><span class="parameter">Last Name:</span><span class="value">{{ context_user.last_name|default:"Not Given" }}</span></li>
+            <li><span class="parameter">{% trans "First Name" %}:</span><span class="value">{{ context_user.first_name|default:not_given_tr }}</span></li>
+            <li><span class="parameter">{% trans "Last Name" %}:</span><span class="value">{{ context_user.last_name|default:not_given_tr }}</span></li>
           </ul>
           {% endblock %}
         </div>
@@ -65,17 +66,17 @@
     <div class="profile-section">
       <div class="row">
         <div class="col-md-2 col-md-offset-2 profile-section-header">
-          <h3>Credentials</h3>
+          <h3>{% trans "Credentials" %}</h3>
         </div>
         <div class="col-md-8 profile-parameters">
           {% block credential_parameters %}
           <ul>
-            <li><span class="parameter">Username:</span><span class="value">{{ context_user.username }}</span></li>
+            <li><span class="parameter">{% trans "Username" %}:</span><span class="value">{{ context_user.username }}</span></li>
             {% if context_user.has_usable_password and user.username == context_user.username %}
-              <li><span class="parameter">Password:</span><span class="value">********</span></li>
+              <li><span class="parameter">{% trans "Password" %}:</span><span class="value">********</span></li>
             {% endif %}
             {% if user.username == context_user.username %}
-              <li><span class="parameter">2-Step Verification: </span><span class="value">{% if has_mfa %}Enabled{% else %}Not Enabled{% endif %}</span></li>
+              <li><span class="parameter">{% trans "2-Step Verification" %}: </span><span class="value">{% if has_mfa %}Enabled{% else %}{% trans "Not Enabled" %}{% endif %}</span></li>
             {% endif %}
           </ul>
           {% endblock %}
@@ -86,20 +87,20 @@
     <div class="profile-section">
       <div class="row">
         <div class="col-md-2 col-md-offset-2 profile-section-header">
-          <h3>API Key</h3>
+          <h3>{% trans "API Key" %}</h3>
         </div>
         <div class="col-md-8 profile-parameters">
           <ul>
             <li>
-              <span class="parameter">Token:</span>
+              <span class="parameter">{% trans "Token" %}:</span>
               {% if user.username == context_user.username %}
                 {% if show_user_token_mfa %}
                 <span class="value">{{ user_token }}</span>
                 {% else %}
-                <span class="value">Enable 2-Step verification to view token</span>
+                <span class="value">{% trans "Enable 2-Step verification to view token" %}</span>
                 {% endif %}
               {% else %}
-                <span class="label label-info">Private</span>
+                <span class="label label-info">{% trans "Private" %}</span>
               {% endif %}
             </li>
           </ul>
@@ -111,12 +112,12 @@
     <div class="profile-section">
       <div class="row">
         <div class="col-md-2 col-md-offset-2 profile-section-header">
-          <h3>Email</h3>
+          <h3>{% trans "Email" %}</h3>
         </div>
         <div class="col-md-8 profile-parameters">
           {% block gravatar_parameters %}
           <ul>
-            <li><span class="parameter">Email:</span><span class="value">{% if user.username == context_user.username %}{{ user.email|default:"Not Given" }}{% else %}<span class="label label-info">Private</span>{% endif %}</span></li>
+            <li><span class="parameter">{% trans "Email" %}:</span><span class="value">{% if user.username == context_user.username %}{{ user.email|default:not_given_tr }}{% else %}<span class="label label-info">{% trans "Private" %}</span>{% endif %}</span></li>
           </ul>
           {% endblock %}
         </div>
@@ -127,7 +128,7 @@
     <div class="profile-section social">
       <div class="row">
         <div class="col-md-2 col-md-offset-2 profile-section-header">
-          <h3>Social</h3>
+          <h3>{% trans "Social" %}</h3>
         </div>
         <div class="col-md-8 profile-parameters">
           {% block social_parameters %}
@@ -137,21 +138,21 @@
                 {% if backends.associated %}
                   {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated %}
                 {% else %}
-                  <span>None</span>
+                  <span>{% trans "None" %}</span>
                 {% endif %}
               {% else %}
-                <span class="label label-info">Private</span>
+                <span class="label label-info">{% trans "Private" %}</span>
               {% endif %}
             </span></li>
-            <li><span class="parameter">Not Connected:</span>
+            <li><span class="parameter">{% trans "Not Connected" %}:</span>
               {% if user.username == context_user.username %}
                 {% if backends.not_associated %}
                   {% include 'tethys_portal/user/social_labels.html' with backends=backends.not_associated %}
                 {% else %}
-                  <span>None</span>
+                  <span>{% trans "None" %}</span>
                 {% endif %}
               {% else %}
-                <span class="label label-info">Private</span>
+                <span class="label label-info">{% trans "Private" %}</span>
               {% endif %}
             </span></li>
           </ul>
@@ -169,12 +170,12 @@
       {% endif %}
       <div class="row">
         <div class="col-md-2 col-md-offset-2 profile-section-header">
-          <h3>Account</h3>
+          <h3>{% trans "Account" %}</h3>
         </div>
         <div class="col-md-8 profile-parameters">
           <ul>
-            <li><span class="parameter">Member Since:</span><span class="value">{{ context_user.date_joined|date:"F j, Y" }}</span></li>
-            <li><span class="parameter">Status:</span><span class="value">{% if context_user.is_active %}Active{% else %}Inactive{% endif %}</span></li>
+            <li><span class="parameter">{% trans "Member Since" %}:</span><span class="value">{{ context_user.date_joined|date:"F j, Y" }}</span></li>
+            <li><span class="parameter">{% trans "Status" %}:</span><span class="value">{% if context_user.is_active %}{% trans "Active" %}{% else %}{% trans "Inactive" %}{% endif %}</span></li>
           </ul>
         </div>
       </div>
@@ -185,11 +186,11 @@
         <div class="profile-section last">
           <div class="row">
             <div class="col-md-2 col-md-offset-2 profile-section-header">
-              <h3>Workspace</h3>
+              <h3>{% trans "Workspace" %}</h3>
             </div>
             <div class="col-md-8 profile-parameters">
               <ul>
-                <li><span class="parameter">Storage Summary:</span><span class="value">{{ current_use }} of {{ quota|default:"&#8734;" }}</span></li>
+                <li><span class="parameter">{% trans "Storage Summary" %}:</span><span class="value">{{ current_use }} {% trans "of" %} {{ quota|default:"&#8734;" }}</span></li>
               </ul>
             </div>
           </div>

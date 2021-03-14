@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 <style>
   .copyright {
     color: {{ site_globals.primary_text_color|default:'#ffffff' }};
@@ -15,9 +15,10 @@
 </style>
 <footer id="site-footer" class="site-footer" style="background-color: {{ site_globals.primary_color|default:'#0a62a9' }};">
   {% block footer_content %}
+    {% trans "Copyright © 2015 Your Organization" as default_copyright_tr %}
 
     <div class="copyright-wrapper">
-      <span class="copyright">{{ site_globals.footer_copyright|default:"Copyright © 2015 Your Organization"}}</span>
+      <span class="copyright">{{ site_globals.footer_copyright|default:default_copyright_tr }}</span>
     </div>
     <div class="documents-wrapper">
       {% for document in site_globals.documents %}
@@ -25,7 +26,7 @@
       {% endfor %}
     </div>
     <div class="tethys-attribution">
-      <span class="powered-by-tethys">Powered by <a href="http://www.tethysplatform.org"><img src="{% static 'tethys_portal/images/tethys-logo-25.png' %}"> Tethys Platform</a></span>
+      <span class="powered-by-tethys">{% trans "Powered by" %}<a href="http://www.tethysplatform.org"><img src="{% static 'tethys_portal/images/tethys-logo-25.png' %}"> Tethys Platform</a></span>
     </div>
   {% endblock %}
 </footer>

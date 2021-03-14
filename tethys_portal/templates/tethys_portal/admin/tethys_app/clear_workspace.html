@@ -1,6 +1,8 @@
 {% extends "page.html" %}
 
-{% block title %}- Clear Workspace Confirmation{% endblock %}
+{% load i18n %}
+
+{% block title %}- {% trans "Clear Workspace Confirmation" %}{% endblock %}
 
 {% block styles %}
   {{ block.super }}
@@ -22,14 +24,14 @@
     <div class="col-md-4 col-md-offset-4">
       <div class="account-form-wrapper disconnect">
         <div class="account-form-header">
-          <h1>Clear</h1>
+          <h1>{% trans "Clear" %}</h1>
         </div>
         <div class="account-form-body">
           <form role="form" method="post" action="">
-            <p>Are you sure you want to clear the {{ app_name }} workspace?</p>
+            <p>{% blocktrans %}Are you sure you want to clear the {{ app_name }} workspace?{% endblocktrans %}</p>
             {% csrf_token %}
-            <a href="{{ change_url }}" class="btn btn-default">Cancel</a>
-            <button type="submit" id="clear-workspace-submit" class="btn btn-danger" name="clear-workspace-submit">Clear</button>
+            <a href="{{ change_url }}" class="btn btn-default">{% trans "Cancel" %}</a>
+            <button type="submit" id="clear-workspace-submit" class="btn btn-danger" name="clear-workspace-submit">{% trans "Clear" %}</button>
           </form>
         </div>
       </div>
