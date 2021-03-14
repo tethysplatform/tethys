@@ -210,7 +210,7 @@ def gen_site_content(args):
             valid_inputs = ('y', 'n', 'yes', 'no')
             no_inputs = ('n', 'no')
 
-            generate_input = input('Would you like to generate a template portal_config.yml file that you can then'
+            generate_input = input('Would you like to generate a template portal_config.yml file that you can then '
                                    'customize? (y/n): ')
 
             while generate_input not in valid_inputs:
@@ -220,7 +220,7 @@ def gen_site_content(args):
                 write_msg('Generation of portal_config.yml file cancelled. Please generate one manually or provide '
                           'specific site content arguments.')
             else:
-                call(['tethys', 'gen', 'portal'])
+                call(['tethys', 'gen', 'portal_config'])
                 write_msg('\nRe-run the tethys site command with the --from-file argument.')
                 exit(0)
 
