@@ -83,9 +83,11 @@ class TestInit(unittest.TestCase):
         mock_cat.delete.assert_called_once()
         mock_set.delete.assert_called_once()
 
+    @mock.patch('tethys_config.init.locale.getdefaultlocale')
     @mock.patch('tethys_config.init.timezone.now')
     @mock.patch('tethys_config.init.SettingsCategory')
-    def test_setting_defaults(self, mock_settings, mock_now):
+    def test_setting_defaults(self, mock_settings, mock_now, mock_lang):
+        mock_lang.return_value = ('en_US', 'UTF-8')
 
         # General settings
         type(mock_settings()).name = mock.PropertyMock(return_value="General Settings")

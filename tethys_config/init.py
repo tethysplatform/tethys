@@ -8,8 +8,10 @@
 * License: BSD 2-Clause
 ********************************************************************************
 """
+import locale
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import activate, deactivate
 from .models import SettingsCategory, Setting
 
 
@@ -94,6 +96,8 @@ def reverse_custom(apps, schema_editor):
 def setting_defaults(category):
     # Figure out what time it is right now
     now = timezone.now()
+    lang = locale.getdefaultlocale()[0]
+    activate(lang)
 
     if category.name == 'General Settings':
         category.setting_set.create(name="Site Title",
@@ -157,7 +161,7 @@ def setting_defaults(category):
                                     date_modified=now)
 
         category.setting_set.create(name="Footer Copyright",
-                                    content=_("Copyright © 2019 Your Organization"),
+                                    content=f'{_("Copyright")} © 2019 {_("Your Organization")}',
                                     date_modified=now)
 
     elif category.name == 'Home Page':
@@ -231,7 +235,7 @@ def setting_defaults(category):
                                     content="",
                                     date_modified=now)
 
-    elif category.name == 'Custom Templates':
+    if category.name == 'Custom Templates':
         category.setting_set.create(name="Home Page Template",
                                     content="",
                                     date_modified=now)
@@ -240,4 +244,5 @@ def setting_defaults(category):
                                     content="",
                                     date_modified=now)
 
+    deactivate()
     category.save()

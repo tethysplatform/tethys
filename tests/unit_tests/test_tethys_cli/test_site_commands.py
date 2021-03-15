@@ -45,8 +45,10 @@ class CLISiteCommandsTest(unittest.TestCase):
         call_args = mock_get.call_args_list
         self.assertEqual("General Settings", call_args[0][1]['name'])
         self.assertEqual("Home Page", call_args[1][1]['name'])
+        self.assertEqual("Custom Templates", call_args[0][1]['name'])
+        self.assertEqual("Custom Styles", call_args[1][1]['name'])
 
-        self.assertEqual(2, mock_setting_defaults.call_count)
+        self.assertEqual(4, mock_setting_defaults.call_count)
 
     @mock.patch('tethys_cli.site_commands.Path')
     @mock.patch('tethys_config.models.Setting.objects.filter')
