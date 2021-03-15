@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-14 20:11+0000\n"
+"POT-Creation-Date: 2021-03-14 23:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgstr "Cerrar"
 #: tethys_apps/templates/tethys_apps/app_library.html:25
 #: tethys_config/init.py:128
 msgid "Apps Library"
-msgstr "Aplicaciones"
+msgstr "Catálogo de Aplicaciones"
 
 #: tethys_apps/templates/tethys_apps/app_library.html:37
 msgid "All"
@@ -62,8 +62,12 @@ msgid "Tethys Portal"
 msgstr "Portal de Tethys"
 
 #: tethys_config/init.py:160
-msgid "Copyright © 2019 Your Organization"
-msgstr "Derechos de Autor © 2019 Su Organización"
+msgid "Copyright"
+msgstr "Derechos de Autor"
+
+#: tethys_config/init.py:160
+msgid "Your Organization"
+msgstr "Su Organización"
 
 #: tethys_config/init.py:165 tethys_portal/templates/tethys_portal/home.html:46
 msgid ""
@@ -81,9 +85,10 @@ msgid ""
 "settings."
 msgstr ""
 "El Portal de Tethys está diseñado para ser personalizado, para que pueda "
-"hospedar  aplocaciones para su\n"
-"organización. Usted puede cambiar todo en esta página llendo a congiguración "
-"y luego a Página Principal."
+"hospedar\n"
+"aplicaciones para su organización. Usted puede cambiar todo en esta página "
+"llendo a\n"
+"congiguración y luego a Página Principal."
 
 #: tethys_config/init.py:175 tethys_portal/templates/tethys_portal/home.html:63
 msgid "Feature 1"
