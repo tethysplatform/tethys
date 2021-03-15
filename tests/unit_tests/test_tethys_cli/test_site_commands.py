@@ -45,8 +45,8 @@ class CLISiteCommandsTest(unittest.TestCase):
         call_args = mock_get.call_args_list
         self.assertEqual("General Settings", call_args[0][1]['name'])
         self.assertEqual("Home Page", call_args[1][1]['name'])
-        self.assertEqual("Custom Templates", call_args[0][1]['name'])
-        self.assertEqual("Custom Styles", call_args[1][1]['name'])
+        self.assertEqual("Custom Templates", call_args[2][1]['name'])
+        self.assertEqual("Custom Styles", call_args[3][1]['name'])
 
         self.assertEqual(4, mock_setting_defaults.call_count)
 
@@ -88,5 +88,5 @@ class CLISiteCommandsTest(unittest.TestCase):
         self.assertIn('Generation of portal_config.yml file cancelled', po_call_args[0][0][0])
 
         gen_site_content(mock_args)
-        self.assertIn('portal', mock_call.call_args_list[0][0][0])
+        self.assertIn('portal_config', mock_call.call_args_list[0][0][0])
         mock_exit.assert_called_with(0)
