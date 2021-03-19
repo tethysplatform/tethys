@@ -24,7 +24,7 @@
           <form role="form" method="post" action="">
             <p>Are you sure you want delete your account with {{ site_globals.brand_text }}?</p>
             {% csrf_token %}
-            <a href="{% url 'user:settings' username=user.username %}" class="btn btn-default">Cancel</a>
+            <a href="{% url 'user:settings' %}" class="btn btn-default">Cancel</a>
             <button type="submit" id="delete-account-submit" class="btn btn-danger" name="delete-account-submit">Delete</button>
           </form>
         </div>

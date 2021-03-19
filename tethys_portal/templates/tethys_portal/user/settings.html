@@ -42,11 +42,11 @@
       <p class="form-control-static">{{ user.username }}</p>
     </div>
   </div>
-  {% if context_user.has_usable_password and user.username == context_user.username %}
+  {% if user.has_usable_password %}
     <div class="form-group">
       <label class="col-md-3 control-label">Password: </label>
       <div class="col-md-6">
-        <p class="form-control-static"><a href="{% url 'user:change_password' username=user.username %}" class="btn btn-default">Change Password</a></p>
+        <p class="form-control-static"><a href="{% url 'user:change_password' %}" class="btn btn-default">Change Password</a></p>
       </div>
     </div>
     <div class="form-group">
@@ -77,29 +77,21 @@
   <ul>
     <li><span class="parameter">Connected:</span>
       {{association.provider}}
-      {% if user.username == context_user.username %}
-        {% if backends.associated %}
-          {% if user.has_usable_password or backends.associated|length > 1 %}
-            {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated action='disconnect' %}
-          {% else %}
-            {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated %}
-          {% endif %}
+      {% if backends.associated %}
+        {% if user.has_usable_password or backends.associated|length > 1 %}
+          {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated action='disconnect' %}
         {% else %}
-          <span>None</span>
+          {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated %}
         {% endif %}
       {% else %}
-        <span class="label label-info">Private</span>
+        <span>None</span>
       {% endif %}
     </span></li>
     <li><span class="parameter">Not Connected:</span>
-      {% if user.username == context_user.username %}
-        {% if backends.not_associated %}
-          {% include 'tethys_portal/user/social_labels.html' with backends=backends.not_associated action='connect' %}
-        {% else %}
-          <span>None</span>
-        {% endif %}
+      {% if backends.not_associated %}
+        {% include 'tethys_portal/user/social_labels.html' with backends=backends.not_associated action='connect' %}
       {% else %}
-        <span class="label label-info">Private</span>
+        <span>None</span>
       {% endif %}
     </span></li>
   </ul>
@@ -113,9 +105,9 @@
       </div>
       <div class="col-md-8 profile-parameters">
         <ul>
-          <li><span class="parameter">Member Since:</span><span class="value">{{ context_user.date_joined|date:"F j, Y" }}</span></li>
-          <li><span class="parameter">Status:</span><span class="value">{% if context_user.is_active %}Active{% else %}Inactive{% endif %}</span></li>
-          <li><span class="parameter">Delete Account:</span><span class="value button"><a class="btn btn-danger btn-sm" href="{% url 'user:delete' user.username %}">Delete Account</a></span></li>
+          <li><span class="parameter">Member Since:</span><span class="value">{{ user.date_joined|date:"F j, Y" }}</span></li>
+          <li><span class="parameter">Status:</span><span class="value">{% if user.is_active %}Active{% else %}Inactive{% endif %}</span></li>
+          <li><span class="parameter">Delete Account:</span><span class="value button"><a class="btn btn-danger btn-sm" href="{% url 'user:delete' %}">Delete Account</a></span></li>
         </ul>
       </div>
     </div>
@@ -131,7 +123,7 @@
     <div class="col-md-8 profile-parameters">
       <ul>
         <li><span class="parameter">Storage Summary:</span><span class="value">{{ current_use }} of {{ quota|default:"&#8734;" }}</span></li>
-        <li><span class="parameter">Manage Storage:</span><span class="value button"><a class="btn btn-default btn-sm" href="{% url 'user:manage_storage' user.username %}">Manage Storage</a></span></li>
+        <li><span class="parameter">Manage Storage:</span><span class="value button"><a class="btn btn-default btn-sm" href="{% url 'user:manage_storage' %}">Manage Storage</a></span></li>
       </ul>
     </div>
   </div>
@@ -147,7 +139,7 @@
         <div class="col-md-12">
           <div class="btn-toolbar pull-right" role="toolbar">
             <div class="btn-group">
-              <a href="{% url 'user:profile' username=user.username %}" class="btn btn-default btn-lg">Cancel</a>
+              <a href="{% url 'user:profile' %}" class="btn btn-default btn-lg">Cancel</a>
             </div>
             <div class="btn-group">
               <button type="submit" id="user-settings-submit" class="btn btn-success btn-lg" name="user-settings-submit">Save</button>

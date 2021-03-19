@@ -43,7 +43,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         obj = TethysSocialAuthExceptionMiddleware()
         obj.process_exception(mock_request, mock_exception)
 
-        mock_redirect.assert_called_once_with('user:settings', username='foo')
+        mock_redirect.assert_called_once_with('user:settings')
 
     @mock.patch('tethys_portal.middleware.pretty_output')
     @mock.patch('tethys_portal.middleware.messages.success')
@@ -211,7 +211,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
         self.assertEqual('The social account you tried to connect to has already been associated with '
                          'another account.', call_args[0][0][1])
 
-        mock_redirect.assert_called_once_with('user:settings', username='foo')
+        mock_redirect.assert_called_once_with('user:settings')
 
     @mock.patch('tethys_portal.middleware.messages.success')
     @mock.patch('tethys_portal.middleware.isinstance')
@@ -239,7 +239,7 @@ class TethysPortalMiddlewareTests(unittest.TestCase):
 
         self.assertEqual('Unable to disconnect from this social account.', call_args[0][0][1])
 
-        mock_redirect.assert_called_once_with('user:settings', username='foo')
+        mock_redirect.assert_called_once_with('user:settings')
 
     @mock.patch('tethys_portal.middleware.messages.success')
     @mock.patch('tethys_portal.middleware.isinstance')

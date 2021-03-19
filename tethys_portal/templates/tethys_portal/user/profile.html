@@ -23,26 +23,24 @@
       <div class="row">
         <div class="col-md-3 col-md-offset-2">
           <div class="profile-image-wrapper">
-            {% gravatar context_user.email 250 %}
+            {% gravatar user.email 250 %}
           </div>
         </div>
         <div class="col-md-7">
-          <span class="profile-name">{% if context_user.first_name %}{{ context_user.first_name }} {{ context_user.last_name }}{% else %}{{ context_user.username }}{% endif %}</span>
+          <span class="profile-name">{% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}</span>
         </div>
       </div>
     </div>
   {% endblock %}
 
   {% block edit_button %}
-    {% if context_user.username == user.username %}
-      <div class="row">
-        <div class="col-md-12">
-          <div class="profile-edit-button">
-            <a href="{% url 'user:settings' username=context_user.username %}" class="btn btn-default btn-lg">Edit</a>
-          </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="profile-edit-button">
+          <a href="{% url 'user:settings' %}" class="btn btn-default btn-lg">Edit</a>
         </div>
       </div>
-    {% endif %}
+    </div>
   {% endblock %}
 
   {% block profile_sections %}
@@ -54,8 +52,8 @@
         <div class="col-md-8 profile-parameters">
           {% block name_parameters %}
           <ul>
-            <li><span class="parameter">First Name:</span><span class="value">{{ context_user.first_name|default:"Not Given" }}</span></li>
-            <li><span class="parameter">Last Name:</span><span class="value">{{ context_user.last_name|default:"Not Given" }}</span></li>
+            <li><span class="parameter">First Name:</span><span class="value">{{ user.first_name|default:"Not Given" }}</span></li>
+            <li><span class="parameter">Last Name:</span><span class="value">{{ user.last_name|default:"Not Given" }}</span></li>
           </ul>
           {% endblock %}
         </div>
@@ -70,13 +68,11 @@
         <div class="col-md-8 profile-parameters">
           {% block credential_parameters %}
           <ul>
-            <li><span class="parameter">Username:</span><span class="value">{{ context_user.username }}</span></li>
-            {% if context_user.has_usable_password and user.username == context_user.username %}
+            <li><span class="parameter">Username:</span><span class="value">{{ user.username }}</span></li>
+            {% if user.has_usable_password %}
               <li><span class="parameter">Password:</span><span class="value">********</span></li>
             {% endif %}
-            {% if user.username == context_user.username %}
               <li><span class="parameter">2-Step Verification: </span><span class="value">{% if has_mfa %}Enabled{% else %}Not Enabled{% endif %}</span></li>
-            {% endif %}
           </ul>
           {% endblock %}
         </div>
@@ -92,14 +88,10 @@
           <ul>
             <li>
               <span class="parameter">Token:</span>
-              {% if user.username == context_user.username %}
-                {% if show_user_token_mfa %}
-                <span class="value">{{ user_token }}</span>
-                {% else %}
-                <span class="value">Enable 2-Step verification to view token</span>
-                {% endif %}
+              {% if show_user_token_mfa %}
+              <span class="value">{{ user_token }}</span>
               {% else %}
-                <span class="label label-info">Private</span>
+              <span class="value">Enable 2-Step verification to view token</span>
               {% endif %}
             </li>
           </ul>
@@ -116,7 +108,7 @@
         <div class="col-md-8 profile-parameters">
           {% block gravatar_parameters %}
           <ul>
-            <li><span class="parameter">Email:</span><span class="value">{% if user.username == context_user.username %}{{ user.email|default:"Not Given" }}{% else %}<span class="label label-info">Private</span>{% endif %}</span></li>
+            <li><span class="parameter">Email:</span><span class="value">{{ user.email|default:"Not Given" }}</span></li>
           </ul>
           {% endblock %}
         </div>
@@ -133,25 +125,17 @@
           {% block social_parameters %}
           <ul>
             <li><span class="parameter">Connected:</span>
-              {% if user.username == context_user.username %}
-                {% if backends.associated %}
-                  {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated %}
-                {% else %}
-                  <span>None</span>
-                {% endif %}
+              {% if backends.associated %}
+                {% include 'tethys_portal/user/social_labels.html' with backends=backends.associated %}
               {% else %}
-                <span class="label label-info">Private</span>
+                <span>None</span>
               {% endif %}
             </span></li>
             <li><span class="parameter">Not Connected:</span>
-              {% if user.username == context_user.username %}
-                {% if backends.not_associated %}
-                  {% include 'tethys_portal/user/social_labels.html' with backends=backends.not_associated %}
-                {% else %}
-                  <span>None</span>
-                {% endif %}
+              {% if backends.not_associated %}
+                {% include 'tethys_portal/user/social_labels.html' with backends=backends.not_associated %}
               {% else %}
-                <span class="label label-info">Private</span>
+                <span>None</span>
               {% endif %}
             </span></li>
           </ul>
@@ -162,39 +146,33 @@
     {% endif %}
 
     {% block account_parameters %}
-      {% if user.username == context_user.username %}
-        <div class="profile-section">
-      {% else %}
-        <div class="profile-section last">
-      {% endif %}
+      <div class="profile-section">
       <div class="row">
         <div class="col-md-2 col-md-offset-2 profile-section-header">
           <h3>Account</h3>
         </div>
         <div class="col-md-8 profile-parameters">
           <ul>
-            <li><span class="parameter">Member Since:</span><span class="value">{{ context_user.date_joined|date:"F j, Y" }}</span></li>
-            <li><span class="parameter">Status:</span><span class="value">{% if context_user.is_active %}Active{% else %}Inactive{% endif %}</span></li>
+            <li><span class="parameter">Member Since:</span><span class="value">{{ user.date_joined|date:"F j, Y" }}</span></li>
+            <li><span class="parameter">Status:</span><span class="value">{% if user.is_active %}Active{% else %}Inactive{% endif %}</span></li>
           </ul>
         </div>
       </div>
     </div>
     {% endblock %}
     {% block workspace_management %}
-      {% if user.username == context_user.username %}
-        <div class="profile-section last">
-          <div class="row">
-            <div class="col-md-2 col-md-offset-2 profile-section-header">
-              <h3>Workspace</h3>
-            </div>
-            <div class="col-md-8 profile-parameters">
-              <ul>
-                <li><span class="parameter">Storage Summary:</span><span class="value">{{ current_use }} of {{ quota|default:"&#8734;" }}</span></li>
-              </ul>
-            </div>
+      <div class="profile-section last">
+        <div class="row">
+          <div class="col-md-2 col-md-offset-2 profile-section-header">
+            <h3>Workspace</h3>
+          </div>
+          <div class="col-md-8 profile-parameters">
+            <ul>
+              <li><span class="parameter">Storage Summary:</span><span class="value">{{ current_use }} of {{ quota|default:"&#8734;" }}</span></li>
+            </ul>
           </div>
         </div>
-      {% endif%}
+      </div>
     {% endblock %}
   {% endblock %}
 
